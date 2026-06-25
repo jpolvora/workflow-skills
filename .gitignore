@@ -1,0 +1,19 @@
+# System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node / Dependencies (in case any are added in the future)
+node_modules/
+package-lock.json
+
+# Temporary files & Logs
+*.log
+.tmp-*/
