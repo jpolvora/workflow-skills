@@ -4,24 +4,42 @@ Este repositório centraliza uma coleção de diretrizes agênticas e comportame
 
 ---
 
-## 🛠️ Como Instalar e Atualizar Skills (`install-skills.sh`)
+## 🛠️ Como Instalar e Atualizar Skills
 
-O instalador interativo permite que você selecione e instale apenas as skills necessárias diretamente na pasta `.agents/skills` do seu projeto de desenvolvimento.
+Você pode instalar ou atualizar as diretrizes agênticas (**skills**) diretamente na pasta `.agents/skills` do seu projeto de desenvolvimento local de duas maneiras:
 
-### Execução via cURL (Recomendado)
-Para executar o instalador diretamente do repositório público na raiz do seu projeto local:
+### Opção A: Execução via NPX (Recomendado)
+Se você possui Node.js instalado, você pode executar o CLI diretamente via `npx` de forma nativa e multiplataforma:
+
+#### 1. Menu Interativo (Instalação/Seleção)
+Para abrir o menu interativo e selecionar as skills a serem instaladas:
+```bash
+npx workflow-skills
+```
+
+#### 2. Auto-Update (Atualização Rápida)
+Se você já possui skills instaladas e deseja apenas atualizá-las para as versões mais recentes, execute:
+```bash
+npx workflow-skills update
+```
+*(Este comando detecta automaticamente quais skills estão no diretório `.agents/skills/` do seu projeto e as atualiza de forma silenciosa, sem necessidade de menu interativo.)*
+
+---
+
+### Opção B: Execução via cURL (Bash Script)
+Caso prefira rodar o instalador diretamente do repositório público usando o shell script:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash
 ```
 
-### Menu Interativo
-O script abrirá um menu visual no console:
+### Menu Interativo (cURL/NPX)
+Ambas as opções interativas abrirão o menu visual no console:
 ```text
 ============================================================
   Workflow Skills - Skill Installer
 ============================================================
-Source: /tmp/workflow-skills/.agents/skills
+Source: /path/to/workflow-skills/.agents/skills
 Target: /path/to/my-project/.agents/skills
 ------------------------------------------------------------
 Toggle selection by entering the number.
