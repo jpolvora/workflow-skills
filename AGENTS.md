@@ -31,7 +31,7 @@ Whenever skills are created, modified, or updated, or any harness file is change
 
 To audit, load the `.agents/skills/check-harness.md` skill and execute the scan phases (Phases 0–5c) followed by the correction plan (Phase 6).
 
-> **Note:** This is the `workflow-skills` source repository. **Never** run scripts via `npx github:jpolvora/workflow-skills` — use local files from this repository.
+> **Note:** This is the `workflow-skills` source repository. **Never** run scripts via `npx github:jpolvora/workflow-skills` — use local files from this repository (remote installations are permitted only within the `test/` folder for testing/verification).
 
 ---
 
@@ -131,15 +131,37 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 
 ## Verification
 
-Before closing a task or committing, run:
+Before closing a task or committing, run the following verification steps:
 
+### 1. Harness Integrity
 ```bash
 # Check harness integrity (paths, routing, redundancy)
 # Load .agents/skills/check-harness.md and execute Phases 0–5c
+```
 
+### 2. Automated Installation & Packaging Verification
+Verify that the package is correctly bundled and can be successfully installed and executed by target projects:
+```bash
+# Test remote installation of the live main branch
+npm run tests
+
+# Test local installation (packs current local changes and tests them in a test consumer)
+npm run tests -- --local
+```
+
+### 3. Build Status Verification (Optional)
+```bash
 # Or via gh API if installed globally
 gh api repos/jpolvora/workflow-skills/pages   # verify site is building
 ```
+
+### 4. Website Catalog Update
+Whenever skills, layers, or routing tables are modified, you must regenerate the static catalog website (`docs/index.html`) using the build script:
+```bash
+# Regenerate the site catalog based on AGENTS.md layers
+node bin/build-site.js
+```
+Commit the updated `docs/index.html` along with your source changes.
 
 ---
 

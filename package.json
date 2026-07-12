@@ -15,6 +15,10 @@
   "bin": {
     "workflow-skills": "bin/cli.js"
   },
+  "scripts": {
+    "pretests": "npm pack",
+    "tests": "node test/test-install.js"
+  },
   "files": [
     "bin/",
     ".agents/skills/"

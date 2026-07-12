@@ -69,6 +69,32 @@ Enter 'q' to quit.
 
 ---
 
+## 🔒 Safety, Reliability & How it Works
+
+The workflow-skills installation engine is designed to be lightweight, secure, and cross-platform.
+
+### 🛡️ Safety & Security
+* **Zero Remote Shell Execution:** The NPX script runs completely locally using package files downloaded directly from Git/npm. It does not execute arbitrary scripts from remote hosts behind the scenes.
+* **No External Dependencies:** The CLI installer ([bin/cli.js](file:///l:/source/workflow-skills/bin/cli.js)) has **zero runtime dependencies** outside of native Node.js core modules. This minimizes the risk of dependency confusion or supply chain vulnerabilities.
+* **Accidental Self-Overwrite Protection:** The installer checks if the target installation directory matches the source repository. Running remote installation commands inside the core `workflow-skills` source repository itself is blocked to prevent developers from accidentally overwriting local guideline changes (except inside the `test/` folder).
+* **Conservative Overwrites:** If a skill directory already exists in the target project, the installer prompts for explicit confirmation (`Overwrite? (y/n)`) before removing the old folder.
+
+### ⚙️ Reliability & Portability
+* **Native Node.js API:** The CLI tool uses built-in filesystem APIs (`fs.copyFileSync`, `fs.mkdirSync`, `fs.rmSync`) instead of spawning OS shell commands (`cp`, `mkdir`, `rm`). This makes the installer **100% cross-platform compatible**, working seamlessly on Windows (PowerShell/CMD), macOS, and Linux.
+* **Offline-Friendly Local Execution:** You can pack the repository locally (`npm pack`) and run the test consumer directly on the resulting package file.
+
+### 🧪 Automated Test Runner
+The repository features an automated test runner ([test/test-install.js](file:///l:/source/workflow-skills/test/test-install.js)) that automatically packs the current state, installs it into a clean test project environment (`test/`), runs the interactive selection, and performs a recursive diff/verification of the installed files against the source. You can trigger it with:
+```bash
+# Run remote installation verification
+npm run tests
+
+# Run local installation verification (using your uncommitted changes)
+npm run tests -- --local
+```
+
+---
+
 ## 🗂️ Available Skills Catalog
 
 > ⚠️ This section contains legacy skills. For the **complete and updated index** with all skills, layers, task router, and auto-load, see [`AGENTS.md`](AGENTS.md).
