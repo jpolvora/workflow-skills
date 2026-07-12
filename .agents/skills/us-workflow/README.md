@@ -264,16 +264,17 @@ Everything under `.cursor/plans/{slug}/` (one per feature/US). `MEMORY.md` is sh
 | Artifact | Path |
 |----------|------|
 | State | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| **Spec (canonical)** | `.cursor/plans/{slug}/{slug}.spec.md` |
-| GitHub issue (audit, optional) | `.cursor/plans/{slug}/{slug}.issue.json` |
-| Plan | `.cursor/plans/{slug}/{slug}.plan.md` |
-| Exec | `.cursor/plans/{slug}/{slug}.plan.exec.md` |
-| DAG | `.cursor/plans/{slug}/{slug}.exec.dag.json` |
-| Verification | `.cursor/plans/{slug}/{slug}.plan.report.md` |
-| Delivery | `.cursor/plans/{slug}/{slug}.report.md` |
-| Integration test plan | `.cursor/plans/{slug}/{slug}.integration-test.plan.md` |
-| Integration test report | `.cursor/plans/{slug}/{slug}.integration-test.report.md` |
-| Delivery result | `.cursor/plans/{slug}/{slug}.result.md` |
+| **Spec (canonical)** | `.cursor/plans/{slug}/step-00-{slug}.spec.md` |
+| GitHub issue (audit, optional) | `.cursor/plans/{slug}/step-00-{slug}.issue.json` |
+| Plan (initial draft) | `.cursor/plans/{slug}/step-01-{slug}.plan.md` |
+| Plan (refined ok) | `.cursor/plans/{slug}/step-02-{slug}.plan.refined.md` |
+| Exec | `.cursor/plans/{slug}/step-03-{slug}.plan.exec.md` |
+| DAG | `.cursor/plans/{slug}/step-03-{slug}.exec.dag.json` |
+| Verification | `.cursor/plans/{slug}/step-06-{slug}.plan.report.md` |
+| Delivery | `.cursor/plans/{slug}/step-10-{slug}.report.md` |
+| Integration test plan | `.cursor/plans/{slug}/step-11-{slug}.integration-test.plan.md` |
+| Integration test report | `.cursor/plans/{slug}/step-11-{slug}.integration-test.report.md` |
+| Delivery result | `.cursor/plans/{slug}/step-12-{slug}.result.md` |
 | Worktrees (git-ignored) | `.cursor/plans/{slug}/worktrees/step-{N}/` |
 | Baseline (git-ignored) | `.cursor/plans/{slug}/{workflow-id}.baseline/` |
 | Technical memory (root, shared) | `MEMORY.md` |

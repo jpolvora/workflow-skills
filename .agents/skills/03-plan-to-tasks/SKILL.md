@@ -1,13 +1,13 @@
 ---
 name: 03-plan-to-tasks
-description: Breaks an implementation plan (*.plan.md) into atomic tasks with files, acceptance criteria, and coderPrompt, organized in a DAG of topological levels for safe parallel execution. Auto-detects small plans and recommends sequential execution.
+description: Breaks an implementation plan (step-02-{slug}.plan.refined.md or fallback step-01-{slug}.plan.md) into atomic tasks with files, acceptance criteria, and coderPrompt, organized in a DAG of topological levels for safe parallel execution. Auto-detects small plans and recommends sequential execution.
 version: 2.0
 disable-model-invocation: true
 ---
 
 # plan-to-tasks
 
-Transforms a `*.plan.md` (ideally post-`interview`, without `blocking` gaps) into an operational execution plan: atomic tasks + dependency graph (DAG) ready for a coding agent (`implement-tasks`) to execute without ambiguity.
+Transforms a refined plan `step-02-{slug}.plan.refined.md` (or falls back to `step-01-{slug}.plan.md` if Step 2 refinement was bypassed) into an operational execution plan: atomic tasks + dependency graph (DAG) ready for a coding agent (`implement-tasks`) to execute without ambiguity.
 
 **Automatic size detection:** before generating the DAG, evaluates whether the plan is small enough for direct sequential execution — if so, returns `execMode: sequential` and skips DAG generation (see [Size Detection](#size-detection--sequential-mode)).
 
@@ -15,16 +15,16 @@ Transforms a `*.plan.md` (ideally post-`interview`, without `blocking` gaps) int
 
 ## Input
 
-Path to a `*.plan.md` (`write-plan` format, ideally already reviewed by `interview`). If not provided, ask.
+Path to `step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md`. If not provided, search for `step-02-*.plan.refined.md` first; if it exists, read it; otherwise, fall back to `step-01-*.plan.md`. If neither exists, ask.
 
 ## Size Detection & Sequential Mode
 
-Before breaking into atomic tasks, evaluate the plan size by reading the section "3. Plano de Implementacao Passo a Passo" and the file matrix. If the plan meets **all** criteria below, it is considered **small** — return `execMode: sequential` and skip DAG generation:
+Before breaking into atomic tasks, evaluate the plan size by reading the section "3. Step-by-Step Plan" and the file matrix. If the plan meets **all** criteria below, it is considered **small** — return `execMode: sequential` and skip DAG generation:
 
 | Criterion | Limit | How to measure |
 |----------|--------|------------|
 | Implementation steps | ≤ 3 | Count numbered sub-steps in section 3 |
-| Expected files | ≤ 6 | Sum all files listed under "Arquivos" in the steps |
+| Expected files | ≤ 6 | Sum all files listed under "Files" in the steps |
 | Layers involved | ≤ 2 | Core / Infrastructure / API / web — count distinct |
 
 **Customizable thresholds:** the [`config.json`](../us-workflow/config.json) file may override these values in the `dagThresholds` field. If the field exists, use those values. If absent, use the defaults above.
@@ -39,21 +39,21 @@ If **all** criteria are within the limit → `execMode: sequential`.
 
 When `execMode: sequential`, the output is minimal — no DAG, no `tasks[]`, no `levels[]`:
 
-### `*.plan.exec.md`
+### `step-03-{slug}.plan.exec.md`
 ```markdown
 # {slug} — Execution Plan (Sequential)
 **Mode:** sequential — small plan, direct execution without DAG.
 **Reason:** {n} steps, {m} files, {k} layers — below thresholds.
 
-Run via `implement-tasks` `build` mode with the `*.plan.md` directly.
+Run via `implement-tasks` `build` mode with the `step-01-{slug}.plan.md` directly.
 ```
 
-### `*.exec.dag.json`
+### `step-03-{slug}.exec.dag.json`
 ```json
 {
   "execMode": "sequential",
   "reason": "{n} steps, {m} files, {k} layers — sequential execution is more efficient.",
-  "planPath": "{slug}.plan.md",
+  "planPath": "step-01-{slug}.plan.md",
   "tasks": [],
   "levels": []
 }
@@ -65,7 +65,7 @@ When `execMode: parallel`, follow the normal flow below.
 
 ### What to do
 
-1. Read the entire plan, focusing on the section "3. Plano de Implementacao Passo a Passo" and the AC matrix.
+1. Read the entire plan, focusing on the section "3. Step-by-Step Plan" and the AC matrix.
 2. Break each step into **atomic tasks** (`T1`, `T2`, ...), each with:
    - `id`: `T{n}`
    - `title`: short, imperative (e.g.: "Create DTO `WithdrawalDto` with validations")
@@ -79,10 +79,10 @@ When `execMode: parallel`, follow the normal flow below.
 
 ### Output
 
-#### `*.plan.exec.md` (human-readable)
+#### `step-03-{slug}.plan.exec.md` (human-readable)
 Markdown with one section per task (`id`, `title`, `files`, `dependsOn`, `acceptance`, summary of the `coderPrompt`) and a final table with levels (`Level | Tasks`).
 
-#### `*.exec.dag.json` (machine-readable)
+#### `step-03-{slug}.exec.dag.json` (machine-readable)
 ```json
 {
   "execMode": "parallel",
@@ -102,7 +102,7 @@ Markdown with one section per task (`id`, `title`, `files`, `dependsOn`, `accept
 }
 ```
 
-**File naming convention:** same names used by `us-workflow` (`us-{id}.plan.exec.md`, `us-{id}.exec.dag.json`) when invoked by the workflow, inside `.cursor/plans/us-{id}/`. When standalone without a US, use the same basename as the input `*.plan.md` swapping the extension (`meu-plano.plan.md` → `meu-plano.plan.exec.md` / `meu-plano.exec.dag.json`), in the same folder as the plan.
+**File naming convention:** same names used by `us-workflow` (`step-03-us-{id}.plan.exec.md`, `step-03-us-{id}.exec.dag.json`) when invoked by the workflow, inside `.cursor/plans/us-{id}/`. When standalone without a US, use the same basename as the input `step-01-*.plan.md` swapping the extension (`step-01-meu-plano.plan.md` → `step-03-meu-plano.plan.exec.md` / `step-03-meu-plano.exec.dag.json`), in the same folder as the plan.
 
 ## step-output (us-workflow)
 
@@ -115,8 +115,8 @@ step-output:
     planExecMd: "{path}"
     execDagJson: "{path}"
   files_touched:
-    - "{path}/us-{id}.plan.exec.md"
-    - "{path}/us-{id}.exec.dag.json"
+    - "{path}/step-03-us-{id}.plan.exec.md"
+    - "{path}/step-03-us-{id}.exec.dag.json"
   summary: "{execMode} — {n} steps, {m} files, {k} layers"
   decisions:
     - "Sequential: small plan — direct execution without DAG"   # when sequential

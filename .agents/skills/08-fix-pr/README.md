@@ -31,7 +31,7 @@ Merged from the former `solve-pr` (GitHub) and `08-fix-pr` (Azure DevOps) skills
 5. Execution plan (`plan-exec.md`)
 6. Fix code (Score > 5) or resolve with comment (Score ≤ 5)
 7. Validate (build + test + auto-review)
-8. Report (`.cursor/codereviews/PR-XXX-rodada-N.md`)
+8. Report (`.cursor/codereviews/PR-XXX-round-N.md`)
 9. Resolve threads on platform + commit + push
 
 ## Thread scoring

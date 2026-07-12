@@ -55,7 +55,7 @@ def resolve_state_path(arg: str) -> Path:
 def extract_frontmatter(text: str) -> str:
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
     if not m:
-        raise ValueError("frontmatter YAML (--- ... ---) nao encontrado")
+        raise ValueError("frontmatter YAML (--- ... ---) not found")
     return m.group(1)
 
 
@@ -176,7 +176,7 @@ def validate(state_path: Path) -> dict:
 
     for k in REQUIRED_KEYS:
         if k not in data:
-            errors.append(f"chave obrigatoria ausente no frontmatter: {k}")
+            errors.append(f"mandatory key missing in frontmatter: {k}")
 
     dry_run = str(data.get("dryRun", "false")).lower() == "true"
     status = str(data.get("status", "")).strip().lower()
@@ -191,22 +191,22 @@ def validate(state_path: Path) -> dict:
         current = int(str(cur_raw).strip())
     except (TypeError, ValueError):
         current = None
-        errors.append(f"currentStep nao numerico: {cur_raw!r}")
+        errors.append(f"currentStep is non-numeric: {cur_raw!r}")
 
     if current is not None and completed:
         mx = max(completed)
         if current not in (mx + 1, mx) and current not in completed:
             errors.append(
-                f"currentStep={current} incoerente com completedSteps "
-                f"(esperado {mx} ou {mx + 1})"
+                f"currentStep={current} inconsistent with completedSteps "
+                f"(expected {mx} or {mx + 1})"
             )
 
     # v7 invariant: model sub-gate steps 4/8 are never in completedSteps
     subgate_present = sorted(set(completed) & MODEL_SUBGATE_STEPS)
     if subgate_present:
         errors.append(
-            f"completedSteps contem steps de sub-gate de modelo {subgate_present} "
-            f"(v7: 4/8 sao sub-gates, nunca entram em completedSteps)"
+            f"completedSteps contains model sub-gate steps {subgate_present} "
+            f"(v7: steps 4 and 8 are sub-gates, they must never be added to completedSteps)"
         )
 
     # files on disk (skip in dry-run)
@@ -223,7 +223,7 @@ def validate(state_path: Path) -> dict:
             checked += 1
             target = (REPO_ROOT / path).resolve()
             if not target.exists():
-                msg = f"arquivo do manifest ausente no disco: {path}"
+                msg = f"manifest file missing on disk: {path}"
                 (warnings if closed else errors).append(msg)
 
     # commits exist in git (best-effort) — scan raw frontmatter for `sha:` to
@@ -235,7 +235,7 @@ def validate(state_path: Path) -> dict:
     if not dry_run:
         for sha in commit_shas:
             if not git_commit_exists(sha):
-                errors.append(f"commit registrado nao existe no git: {sha}")
+                errors.append(f"registered commit does not exist in git: {sha}")
 
     return {
         "state": str(state_path),
@@ -264,13 +264,13 @@ def main():
 
     state_path = resolve_state_path(args[0])
     if not state_path.exists():
-        print(f"Erro: state.md nao encontrado: {args[0]}")
+        print(f"Error: state.md not found: {args[0]}")
         sys.exit(1)
 
     try:
         result = validate(state_path)
     except (ValueError, OSError) as exc:
-        print(f"Erro ao validar {state_path}: {exc}")
+        print(f"Error validating {state_path}: {exc}")
         sys.exit(1)
 
     if as_json:
@@ -283,18 +283,18 @@ def main():
         print(f"Workflow: {result['workflowId']} | status: {result['status']} "
               f"| currentStep: {result['currentStep']} | dryRun: {result['dryRun']}")
         print(f"completedSteps: {result['completedSteps']}")
-        print(f"Arquivos verificados: {result['files_checked']} | "
+        print(f"Files verified: {result['files_checked']} | "
               f"commits: {len(result['commits_checked'])}")
         if result["warnings"]:
-            print("\n## Avisos")
+            print("\n## Warnings")
             for w in result["warnings"]:
                 print(f"  ! {w}")
         if result["errors"]:
-            print("\n## ERROS")
+            print("\n## ERRORS")
             for e in result["errors"]:
                 print(f"  x {e}")
         else:
-            print("\n[OK] state coerente com o manifest e git.")
+            print("\n[OK] state is consistent with manifest and git.")
 
     sys.exit(0 if result["ok"] else 1)
 

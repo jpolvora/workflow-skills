@@ -68,7 +68,7 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | Banners | `autoMode` or `dryRun` → Step Output Banner every step. |
 | Revert | Workflow manifest + checkpoint only — no global `reset --hard` / `restore .`. |
 | Checkpoints | Local tag `uswf/{workflow-id}/before-step-{N}` every boundary. |
-| **Workflow artifacts** | **Never `git commit` `.cursor/plans/` files during Steps 0–11.** Code commits (7/10/11 fix) stage `src/`/`web/`/`tests/` only. Delivery commit at Step 12: `{slug}.plan.md` + `{slug}.result.md` only. |
+| **Workflow artifacts** | **Never `git commit` `.cursor/plans/` files during Steps 0–11.** Code commits (7/10/11 fix) stage `src/`/`web/`/`tests/` only. Delivery commit at Step 12: `step-01-{slug}.plan.md` + `step-12-{slug}.result.md` only. |
 | **Pause** | **Pause workflow** keeps **all** artifacts on disk — no cleanup, no delete. `status: active`. |
 | `--model` | Set `currentModel` at workflow start. Overrides default. |
 | `--model-chain` | Map `{step}:{model}` pairs. Only way to switch models in auto mode. Takes precedence over `--model` at matching steps. Stored in `state.modelChain`. |
@@ -100,11 +100,11 @@ Filesystem paths use numeric prefix; skill `name:` unprefixed. Post-12 PR: [`cod
 | Issue `{id}` | `us-{id}` |
 | `*.spec.md` | basename or frontmatter `slug:` |
 
-State: `{us-dir}/{workflow-id}.state.md` · Canonical spec: `{us-dir}/{slug}.spec.md`.
+State: `{us-dir}/{workflow-id}.state.md` · Canonical spec: `{us-dir}/step-00-{slug}.spec.md`.
 
-Artifacts: `{slug}.issue.json`, `.plan.md`, `.plan.exec.md`, `.exec.dag.json`, `.plan.report.md`, `.report.md`, `.integration-test.plan.md`, `.integration-test.report.md`, **`.result.md`** (Step 12 delivery summary — committable).
+Artifacts: `step-00-{slug}.issue.json`, `step-00-{slug}.spec.md`, `step-01-{slug}.plan.md`, `step-02-{slug}.plan.refined.md`, `step-03-{slug}.plan.exec.md`, `step-03-{slug}.exec.dag.json`, `step-06-{slug}.plan.report.md`, `step-10-{slug}.report.md`, `step-11-{slug}.integration-test.plan.md`, `step-11-{slug}.integration-test.report.md`, `step-12-{slug}.result.md` (Step 12 delivery summary — committable).
 
-**Committable (Step 12 only):** `{slug}.plan.md`, `{slug}.result.md`. Other plan-dir files stay uncommitted unless user explicitly asks.
+**Committable (Step 12 only):** `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md` if generated), `step-12-{slug}.result.md`. Other plan-dir files stay uncommitted unless user explicitly asks.
 
 Git-ignored: `worktrees/step-{N}/`, `{workflow-id}.baseline/`, `{workflow-id}.archive/`. Never write state under `.agents/`.
 
@@ -232,8 +232,24 @@ branch-direct: edits on `state.branch`; subagent `wip(us-{id}): step-{N}` or dir
 
 ### State Hygiene
 
-After step N, before board. `Read` → `Write`/`StrReplace` → `Glob` asserts. Fail → HS-5.
+After step N, before the progress board, the orchestrator MUST execute State Hygiene. To prevent manual markdown formatting errors and streamline execution, run the automated state update utility.
 
+**Automated State Hygiene Update:**
+```bash
+python .agents/skills/us-workflow/scripts/update_state.py \
+  .cursor/plans/{slug}/{workflow-id}.state.md \
+  --step {N} \
+  --status {completed|failed|skipped} \
+  --elapsed {elapsedSec} \
+  --tokens {promptTokens}:{completionTokens} \
+  --model {modelName} \
+  --created "{comma_separated_created_files}" \
+  --modified "{comma_separated_modified_files}" \
+  --deleted "{comma_separated_deleted_files}" \
+  --gate-choice "{gateChoice}"
+```
+
+**Manual Fallback (if Python is unavailable):**
 ```yaml
 - Check modelChain[N+1] → if set, update currentModel and log model-chain in ## Gate history
 - Append ## Step outputs ### Step N (include model: {modelName} in block)
@@ -243,7 +259,6 @@ After step N, before board. `Read` → `Write`/`StrReplace` → `Glob` asserts. 
 - Record telemetry: elapsedSec, promptTokens, completionTokens, estimated → ## Telemetry ### Step N
 - Append to ## Telemetry log: | Step N | {label} | {model} | {elapsedSec}s | {tokens} |
 - Recompute workflowManifest; update completedSteps, stepStatus, currentStep
-- Append stepDispatches; commits[] if commit
 - Assert created paths exist; currentStep = next gate
 - Step 2: ## Refinement registry
 ```
@@ -301,7 +316,7 @@ Task:
 Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree 5/10/11 via `Shell`: `worktree add` → merge → `worktree remove` → `branch -d`. Max 1 active. Audit: `Write` `stepDispatches[]`. No per-DAG-task worktree.
 
 **Step 5 dispatch:**
-- `execMode: sequential` → single `Task` `04-implement-tasks` mode `build` with `*.plan.md` directly (no DAG).
+- `execMode: sequential` → single `Task` `04-implement-tasks` mode `build` with `step-01-*.plan.md` directly (no DAG).
 - `execMode: parallel` → DAG: `Task` per level, ≤3 concurrent, no file overlap within level.
 
 ### Learning & Memory Protocol
@@ -396,8 +411,8 @@ Orch `git add` must be path-scoped — never `git add .` on steps 7/10/11.
 
 ### Delivery Result Protocol (Step 12 — before delivery commit)
 
-1. **`Read`** sources: `{slug}.spec.md`, `{slug}.plan.md`, `{slug}.plan.report.md`, `{slug}.report.md`, integration report if exists, `## Open items` in state.
-2. **`Write`** `{us-dir}/{slug}.result.md`:
+1. **`Read`** sources: `step-00-{slug}.spec.md`, `step-02-{slug}.plan.refined.md` (or `step-01-{slug}.plan.md` if Step 2 was bypassed), `step-06-{slug}.plan.report.md`, `step-10-{slug}.report.md`, integration report if exists, `## Open items` in state.
+2. **`Write`** `{us-dir}/step-12-{slug}.result.md`:
 
 ```markdown
 # {slug} — Delivery Result
@@ -413,9 +428,9 @@ Orch `git add` must be path-scoped — never `git add .` on steps 7/10/11.
 
 ## References
 - Spec: {specPath}
-- Plan: {slug}.plan.md
-- Verify: {slug}.plan.report.md
-- Delivery: {slug}.report.md
+- Plan: step-02-{slug}.plan.refined.md (or step-01-{slug}.plan.md if Step 2 was bypassed)
+- Verify: step-06-{slug}.plan.report.md
+- Delivery: step-10-{slug}.report.md
 ```
 
 3. **Capture LOC delta:** `Shell` from repo root:
@@ -424,10 +439,10 @@ Orch `git add` must be path-scoped — never `git add .` on steps 7/10/11.
    - Diff stat: `git diff --stat {baselineCommit} -- src/ web/ tests/ | tail -1`
    - Parse added/removed; store in `telemetry.loc`.
 4. **Compute benchmark:** aggregate `telemetry.steps[].elapsedSec` → `totalElapsedSec`; sum `promptTokens + completionTokens` → `totalTokens`; compute `netDelta = added - removed`.
-5. **Append Benchmark** to `{slug}.result.md` per template below; populate from `telemetry.steps[]`.
+5. **Append Benchmark** to `step-12-{slug}.result.md` per template below; populate from `telemetry.steps[]`.
 6. **Update plan checkmarks:** mark completed tasks/ACs `[x]` per verify report + `completedTasks` + `completedSteps` ≥5.
 7. Register `resultSnapshot` + `telemetry.workflowEndedAt` in state `## Artifacts`.
-8. **G2-delivery gate** → `Shell` stage `{slug}.plan.md` + `{slug}.result.md` → `git commit -m "docs({slug}): delivery plan and result"`.
+8. **G2-delivery gate** → `Shell` stage `step-01-{slug}.plan.md` + `step-02-{slug}.plan.refined.md` (if generated) + `step-12-{slug}.result.md` → `git commit -m "docs({slug}): delivery plan and result"`.
 9. Log `step-12-delivery-commit | {sha}` in `## Gate history` and `commits[]`.
 
 `dryRun`: simulate result + plan edits + benchmark; no real commit.
@@ -437,19 +452,19 @@ Orch `git add` must be path-scoped — never `git add .` on steps 7/10/11.
 **Only when `status: completed` and user explicitly chooses cleanup** — never on **Pause workflow**.
 
 **Gate options:**
-- **Delete temporary artifacts** (rec if lean repo) — `.plan.exec.md`, `.exec.dag.json`, `.issue.json`, `.plan.report.md`, `.integration-test.*.md`, worktrees, baseline, archive, checkpoint tags
+- **Delete temporary artifacts** (rec if lean repo) — `step-03-*.plan.exec.md`, `step-03-*.exec.dag.json`, `step-00-*.issue.json`, `step-06-*.plan.report.md`, `step-11-*.integration-test.*.md`, worktrees, baseline, archive, checkpoint tags
 - **Keep all artifacts** (rec for audit) — no delete
 
 **Cleanup execution (when user chooses delete):**
 
 1. Delete temp files:
    ```bash
-   rm {us-dir}/{slug}.plan.exec.md
-   rm {us-dir}/{slug}.exec.dag.json
-   rm {us-dir}/{slug}.issue.json
-   rm {us-dir}/{slug}.plan.report.md
-   rm {us-dir}/{slug}.integration-test.plan.md
-   rm {us-dir}/{slug}.integration-test.report.md
+   rm {us-dir}/step-03-{slug}.plan.exec.md
+   rm {us-dir}/step-03-{slug}.exec.dag.json
+   rm {us-dir}/step-00-{slug}.issue.json
+   rm {us-dir}/step-06-{slug}.plan.report.md
+   rm {us-dir}/step-11-{slug}.integration-test.plan.md
+   rm {us-dir}/step-11-{slug}.integration-test.report.md
    ```
 2. Remove checkpoint tags:
    ```bash
@@ -465,7 +480,7 @@ Orch `git add` must be path-scoped — never `git add .` on steps 7/10/11.
 4. Remove baseline backup: `rm -rf {us-dir}/{workflow-id}.baseline/`
 5. Remove archive: `rm -rf {us-dir}/{workflow-id}.archive/`
 
-**Preserved (never deleted):** `{slug}.plan.md`, `{slug}.result.md`, `{slug}.spec.md`, `{workflow-id}.state.md` (while `status: active`).
+**Preserved (never deleted):** `step-01-{slug}.plan.md`, `step-02-{slug}.plan.refined.md` (if generated), `step-12-{slug}.result.md`, `step-00-{slug}.spec.md`, `{workflow-id}.state.md` (while `status: active`).
 
 **Post-cleanup verification:**
 ```bash
@@ -771,19 +786,19 @@ Delegated to [`setup.md`](setup.md) § Bootstrap & Entry. Before Step 0, the orc
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (AskQuestion). US/spec provided → skip to Step 1. No args → free-text description → `Task` `00-write-spec`. Register specPath. | `{slug}.spec.md` |
-| 1 | `Task` `01-write-plan` + specPath (Bypassed if Dynamic Execution active) | `{slug}.plan.md` |
-| 2 | `Task` `02-interview`; FSM 2c/2e; block Step 3 until 2e confirmed (Bypassed if Dynamic Execution active) | plan in-place |
-| 3 | `Task` `03-plan-to-tasks`; detect plan size → `execMode`. Sequential → skip DAG. Parallel → DAG. | `.plan.exec.md`, `.exec.dag.json` |
+| 0 | Entry gate (AskQuestion). US/spec provided → skip to Step 1. No args → free-text description → `Task` `00-write-spec`. Register specPath. | `step-00-{slug}.spec.md` |
+| 1 | `Task` `01-write-plan` + specPath (Bypassed if Dynamic Execution active) | `step-01-{slug}.plan.md` |
+| 2 | `Task` `02-interview`; FSM 2c/2e; block Step 3 until 2e confirmed (Bypassed if Dynamic Execution active) | `step-02-{slug}.plan.refined.md` |
+| 3 | `Task` `03-plan-to-tasks`; detect plan size → `execMode`. Sequential → skip DAG. Parallel → DAG. | `step-03-{slug}.plan.exec.md`, `step-03-{slug}.exec.dag.json` |
 | 4† | Model sub-gate F1→F2 | not in completedSteps |
 | 5 | `Task` `04-implement-tasks` mode build; worktree. `sequential` → single Task. `parallel` → DAG ≤3/level. | verification |
-| 6 | `Task` `05-verify-sync-plan-us` readonly | `.plan.report.md` |
+| 6 | `Task` `05-verify-sync-plan-us` readonly | `step-06-{slug}.plan.report.md` |
 | 7 | AskQuestion G2-code → Shell build/test → `git commit` code `feat(us-{id}): US {id} implementation` | commit; no `.cursor/plans/` |
 | 8† | Model sub-gate F3→F4 | not in completedSteps |
 | 9 | `Task` `06-code-review`; scoped diff per `config.json.rules.stackFile` | score ≥6 or "No feedback" |
-| 10 | `Task` `04-implement-tasks` mode fix; G2-code only; `.report.md` uncommitted | HS-3/4 |
-| 11 | skipIntegration→Write skip; else `Task` integration-validation; browser if gated | reports uncommitted |
-| 12 | [Delivery Result Protocol](#delivery-result-protocol-step-12--before-delivery-commit) → LOC capture + benchmark → G2-delivery commit → optional [cleanup](#optional-artifact-cleanup-protocol-step-12--after-delivery-commit). `status: completed` unless `fullMode`. | `{slug}.result.md` + benchmark |
+| 10 | `Task` `04-implement-tasks` mode fix; G2-code only; `step-10-{slug}.report.md` uncommitted | HS-3/4 |
+| 11 | skipIntegration→Write skip; else `Task` integration-validation; browser if gated | reports uncommitted (`step-11-{slug}.integration-test.*`) |
+| 12 | [Delivery Result Protocol](#delivery-result-protocol-step-12--before-delivery-commit) → LOC capture + benchmark → G2-delivery commit → optional [cleanup](#optional-artifact-cleanup-protocol-step-12--after-delivery-commit). `status: completed` unless `fullMode`. | `step-12-{slug}.result.md` + benchmark |
 | 13 | `fullMode` only. Gate → `Task`/`Shell` `11-ship-pr`: push → PR → goal-fix-pr (5m, max 10) → merge. | PR URL, merge |
 
 Post-mutating: merge files_touched → Step file log; backup preExistingDirty; checkpoint `before-step-{N+1}`.

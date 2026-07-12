@@ -24,7 +24,7 @@ On-demand Layer 2. **Not** PR/branch review ([code-review](../06-code-review/SKI
 | Token | Effect |
 |-------|--------|
 | `<slug>` | Select domain (index). Optional if `next`. |
-| `next` | Auto-pick: never stamped first, else oldest `## Última revisão` **Data** ([§ next](#next--auto-pick)). No catalog wait. |
+| `next` | Auto-pick: never reviewed first, else oldest `## Last review` **Date** ([§ next](#next--auto-pick)). No catalog wait. |
 | `auto` | After report: apply all C/W → verify → commit → push → PR → [goal-fix-pr](../09-goal-fix-pr/SKILL.md) `max 10`, **5 min** waits ([AUTO.md](AUTO.md)). |
 | `dry-run` | With `auto`: simulate git/gh/resolve; no writes. |
 
@@ -37,15 +37,15 @@ Combine: `/domain-review next auto`. Restate: slug|next-pick, auto?, dry-run?.
 3. **Read domain `.md` first.** Then code.
 4. **Report:** Critical + Warning table, explanations, fix plan for every finding ([REPORT.md](REPORT.md)).
 5. **No implement** until user asks — **except `auto`** (= apply all C/W).
-6. **Stamp** `## Última revisão` after report (after fixes when `auto`): today's Data, counts, existing Specs & ADRs only. Re-review via `next` **must** refresh Data.
+6. **Stamp** `## Last review` after report (after fixes when `auto`): today's Date, counts, existing Specs & ADRs only. Re-review via `next` **must** refresh Date.
 
 ## next — auto-pick
 
 1. Slugs from index § Índice (main table; not subdomains).
-2. Per slug: parse `## Última revisão` → **Data** (`YYYY-MM-DD`). Missing = never reviewed.
+2. Per slug: parse `## Last review` → **Date** (`YYYY-MM-DD`). Missing = never reviewed.
 3. Order = index § **Ordem sugerida** (flatten); others append A–Z.
-4. Pick: first never-reviewed in that order; else oldest Data (tie → suggested order).
-5. Announce `next → {slug} (never | Data YYYY-MM-DD)`; continue. No subdomain auto-pick.
+4. Pick: first never-reviewed in that order; else oldest Date (tie → suggested order).
+5. Announce `next → {slug} (never | Date YYYY-MM-DD)`; continue. No subdomain auto-pick.
 
 ## Workflow
 
@@ -78,7 +78,7 @@ catalog | next → select → domain.md → investigate → report → stamp →
 | Excuse | Reality |
 |--------|---------|
 | Skip index / silent neighbors | Cite catalog; open domain `.md`; one perimeter. |
-| `next` = favorite | Algorithm only (never → oldest Data → suggested order). |
+| `next` = favorite | Algorithm only (never → oldest Date → suggested order). |
 | Critical-only / no plan / skip stamp | Table + plan + stamp mandatory. |
 | Skip BE sub-skill | Any `src/` path → load it; fold into REPORT. |
 | `auto` still ask SIM / skip goal-fix-pr / 2m wait | `auto` = all C/W; [AUTO.md](AUTO.md) always goal-fix-pr + **5m** (incl. first). |

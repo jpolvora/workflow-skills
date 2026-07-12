@@ -1,6 +1,6 @@
-# goal-fix-pr — exemplos
+# goal-fix-pr — Examples
 
-## 1. PR com threads ativas até convergence
+## 1. PR with active threads until convergence
 
 ```
 /goal-fix-pr 15
@@ -9,64 +9,64 @@
 **Setup**
 - PR number: `15` (GitHub)
 - Success: `activeThreads == 0`
-- Mode: Drive + heartbeat 5m pós-push
+- Mode: Drive + heartbeat 5m post-push
 - Max: 20
 
-**Iteração 1**
-1. `gh pr view 15 --json comments` → 3 threads ativas
-2. fix-pr com auto-gates → corrige 2, resolve 1 sem código
+**Iteration 1**
+1. `gh pr view 15 --json comments` → 3 active threads
+2. fix-pr with auto-gates → fixes 2, resolves 1 without code
 3. `dotnet test` + code-review → "No feedback"
 4. Commit `fix(#15): fix issues from review threads [PRRT_..., ...]` + push
-5. Armar `sleep 300` → `AGENT_GOAL_WAKE_fixpr_15`
+5. Arm `sleep 300` → `AGENT_GOAL_WAKE_fixpr_15`
 
-**Iteração 2** (após wake)
-1. `collect` → 1 thread nova (reviewer CI)
-2. fix-pr rodada 2 → corrige, push
-3. Heartbeat 5m
+**Iteration 2** (after wake)
+1. `collect` → 1 new thread (reviewer CI)
+2. fix-pr round 2 → fixes, push
+3. 5m Heartbeat
 
-**Iteração 3**
+**Iteration 3**
 1. `collect` → `activeThreads: []`
 2. **Done** — convergence
 
 ---
 
-## 2. Dry-run (sem publicar)
+## 2. Dry-run (without publishing)
 
 ```
 /goal-fix-pr 15 dry-run
 ```
 
-- Gates auto-aprovados; sem resolve nem `git push`
-- Sem commit real (ou commit local descartável, conforme política da sessão)
-- Re-coleta **imediata** (sem sleep 5m) entre iterações
-- Para quando simulação mostra 0 threads ou `max` atingido
+- Auto-approved gates; no resolve or `git push`
+- No real commit (or discardable local commit, depending on session policy)
+- Immediate re-collect (no sleep 5m) between iterations
+- Stops when simulation shows 0 threads or `max` is reached
 
 ---
 
-## 3. PR grande com teto
+## 3. Large PR with limit
 
 ```
 /goal-fix-pr 15 max 5
 ```
 
-- Para na 5ª iteração se ainda houver threads
-- Reporta IDs restantes para continuação manual ou `max 15`
+- Stops at 5th iteration if there are still threads
+- Reports remaining IDs for manual continuation or `max 15`
 
 ---
 
-## 4. Bloqueio por escalação
+## 4. Escalation block
 
-**Iteração 1**
-- Thread `PRRT_...`: conflito spec vs comentário → classificada **Escalar**
-- Goal **para** sem auto-aprovar
-- Usuário decide → retoma com `/goal-fix-pr 15` após alinhamento
+**Iteration 1**
+- Thread `PRRT_...`: spec vs comment conflict → classified as **Escalate**
+- Goal **stops** without auto-approving
+- User decides → resumes with `/goal-fix-pr 15` after alignment
 
 ---
 
-## Contar threads ativas (verificação rápida)
+## Count active threads (quick check)
 
 ```bash
 gh pr view 15 --json comments --jq '[.comments[] | select(.isResolved == false)] | length'
 ```
 
-Exit `0` = convergence; `1` = ainda há trabalho.
+Exit `0` = convergence; `1` = still has work.

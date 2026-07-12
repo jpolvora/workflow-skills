@@ -1,6 +1,6 @@
 # §9 Post-workflow follow-up — Template reference
 
-Use when appending to `{slug}.plan.md` under `.cursor/plans/{slug}/`. Replace placeholders; keep tables sortable by `finding-id` / step id.
+Use when appending to `step-01-{slug}.plan.md` under `.cursor/plans/{slug}/`. Replace placeholders; keep tables sortable by `finding-id` / step id.
 
 Matrix plans typically use sections **0–8** from [`01-write-plan`](../01-write-plan/SKILL.md). §9 is appended **after** existing content.
 
@@ -43,14 +43,14 @@ Matrix plans typically use sections **0–8** from [`01-write-plan`](../01-write
 | Build | pass |
 | Tests (scoped) | pass — Vitest + integration |
 | Plan ↔ code | pass |
-| result.md updated | done |
+| step-12-result.md updated | done |
 ```
 
 ---
 
-## result.md patch pattern (Matrix)
+## step-12-result.md patch pattern (Matrix)
 
-Update `{slug}.result.md` sections **Done** and **Next steps**:
+Update `step-12-{slug}.result.md` sections **Done** and **Next steps**:
 
 **Done** — append bullets:
 
@@ -66,10 +66,10 @@ Update `{slug}.result.md` sections **Done** and **Next steps**:
 - Open PR `develop` → `master` when ready.
 ```
 
-If stub `result.md` did not exist, create full file per [`us-workflow` Delivery Result Protocol](../../us-workflow/SKILL.md#delivery-result-protocol-step-12--before-delivery-commit).
+If stub `step-12-result.md` did not exist, create full file per [`us-workflow` Delivery Result Protocol](../../us-workflow/SKILL.md#delivery-result-protocol-step-12--before-delivery-commit).
 
 ---
 
 ## GitHub issue slug example (`us-2517`)
 
-Commit messages may use `fix(us-2517): …` when `{slug}` is `us-2517`; folder remains `.cursor/plans/us-2517/us-2517.plan.md`.
+Commit messages may use `fix(us-2517): …` when `{slug}` is `us-2517`; folder remains `.cursor/plans/us-2517/step-01-us-2517.plan.md`.

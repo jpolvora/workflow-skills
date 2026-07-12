@@ -19,24 +19,21 @@ report → apply C/W fixes → stamp → verify → commit → push branch → g
 
 ### 1. Apply fixes
 
-1. Treat `auto` as **SIM** for every Critical + Warning ID in the fix plan.
+1. Treat `auto` as **YES** for every Critical + Warning ID in the fix plan.
 2. Skip Enhancements unless the user also said to include them.
 3. Surgical diffs only ([karpathy](../karpathy-guidelines/SKILL.md)); stay inside domain perimeter + necessary tests/docs.
-4. If Findings = nenhum → still stamp (refresh **Data**), then skip code commit unless stamp/docs alone warrant a docs PR (prefer one docs commit on the auto branch).
+4. If Findings = none → still stamp (refresh **Date**), then skip code commit unless stamp/docs alone warrant a docs PR (prefer one docs commit on the auto branch).
 
 ### 2. Stamp
 
-Update `## Última revisão` on `specs/domains/{slug}.md` with **today's** Data and post-fix Critical/Warning counts (0/0 if all fixed). Required for `next` rotation.
+Update `## Last review` on `specs/domains/{slug}.md` with **today's** Date and post-fix Critical/Warning counts (0/0 if all fixed). Required for `next` rotation.
 
 ### 3. Verify
 
 Per [AGENTS.md](../../../AGENTS.md) § Verification + [senior-developer](../senior-developer/SKILL.md):
 
 ```bash
-dotnet build Matrix.slnx
-dotnet test tests/Matrix.Tests/Matrix.Tests.csproj
-# if web/ touched:
-cd web && npm test && npm run build
+# Run build/test verification commands configured in config.json.verification
 ```
 
 Port conflict (5080/5173) → ask before `npm stop`. Fail → fix or stop; do not open PR on red.
@@ -64,11 +61,10 @@ Port conflict (5080/5173) → ask before `npm stop`. Fail → fix or stop; do no
 gh pr create --title "review({slug}): domain-review fixes" --body "$(cat <<'EOF'
 ## Summary
 - Domain-review auto pass for `{slug}` (catalog: specs/domains/index.md).
-- Applied Critical/Warning fix plan; stamped `## Última revisão`.
+- Applied Critical/Warning fix plan; stamped `## Last review`.
 
 ## Test plan
-- [ ] `dotnet test tests/Matrix.Tests/Matrix.Tests.csproj`
-- [ ] `npm test` / `npm run build` if `web/` changed
+- [ ] Run verification tests (backend build & test, frontend build & test if applicable)
 - [ ] Spot-check perimeter paths listed in the review report
 
 EOF
@@ -140,5 +136,5 @@ Loop:
 | "Skip 5m first wait — no CI yet" | First 5m is mandatory for GH review Action. |
 | "Use goal-fix-pr 2m default" | Auto domain-review always 5m. |
 | "max 20 is fine" | Cap **10** under this pipeline. |
-| "No findings — skip stamp" | Stamp anyway (Data refresh for `next`). |
+| "No findings — skip stamp" | Stamp anyway (Date refresh for `next`). |
 | "Commit without auto / user ask" | Only `auto` (or later explicit ask) authorizes commit/push/PR. |

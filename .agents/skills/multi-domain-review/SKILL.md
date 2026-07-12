@@ -27,13 +27,13 @@ Orchestrator only. Does **not** replace [domain-review](../domain-review/SKILL.m
 
 ## Candidate rule (7 days)
 
-`age_days = today − Data` (calendar days). `cutoff = today − 7` (example: today `2026-07-08` → cutoff `2026-07-01`).
+`age_days = today − Date` (calendar days). `cutoff = today − 7` (example: today `2026-07-08` → cutoff `2026-07-01`).
 
-1. Slugs from [`specs/domains/index.md`](../../../specs/domains/index.md) § Índice **main table only** (not Subdomínios).
-2. Per slug: `specs/domains/{slug}.md` → `## Última revisão` → **Data** (`YYYY-MM-DD`). Missing = never reviewed.
-3. **Enqueue** if never reviewed **OR** `age_days >= 7` (equiv. `Data <= cutoff`).
-4. **Skip** if `age_days < 7` (equiv. `Data > cutoff`). Example today `2026-07-08`: Data `2026-07-02`…`08` skip; Data `2026-07-01` or earlier enqueue.
-5. **Order:** § **Ordem sugerida** (flatten); leftovers A–Z. No risk-weight, no “tonight” reorder.
+1. Slugs from [`specs/domains/index.md`](../../../specs/domains/index.md) § Index **main table only** (not Subdomains).
+2. Per slug: `specs/domains/{slug}.md` → `## Last review` → **Date** (`YYYY-MM-DD`). Missing = never reviewed.
+3. **Enqueue** if never reviewed **OR** `age_days >= 7` (equiv. `Date <= cutoff`).
+4. **Skip** if `age_days < 7` (equiv. `Date > cutoff`). Example today `2026-07-08`: Date `2026-07-02`…`08` skip; Date `2026-07-01` or earlier enqueue.
+5. **Order:** § Suggested order (flatten); leftovers A–Z. No risk-weight, no “tonight” reorder.
 
 Announce full queue + skipped-fresh list **before** first spawn.
 
@@ -49,7 +49,7 @@ Announce full queue + skipped-fresh list **before** first spawn.
 ## Workflow
 
 ```text
-index → stamps → filter (never | Data <= cutoff) → order → dry-run? stop : max N
+index → stamps → filter (never | Date <= cutoff) → order → dry-run? stop : max N
   → for each: spawn(domain-review {slug} auto) → wait → handoff → status
   → rollup
 ```
@@ -125,7 +125,7 @@ activeThreads == 0 → approve+merge PR → checkout master → pull → (if mor
 | "`next auto` loop is enough" | Enumerate + `{slug} auto`. `next` ≠ this skill. |
 | "Parallel waves / batch = concurrent" | Serial only. "Batch" = queue, not parallel git. |
 | "Default dry-run to be safe" | Default = **execute**. `dry-run` only if token set. |
-| "Cutoff day still fresh" | `age_days >= 7` / `Data <= cutoff` → **enqueue**. Only `age_days < 7` skips. |
+| "Cutoff day still fresh" | `age_days >= 7` / `Date <= cutoff` → **enqueue**. Only `age_days < 7` skips. |
 | "Mega-agent for small domains" | One slug per child. |
 | "Cap/risk-order for tonight" | Full queue unless user `max N`. |
 | "Parent auto inline" | Coordinator only (except handoff git/gh). |
@@ -134,4 +134,4 @@ activeThreads == 0 → approve+merge PR → checkout master → pull → (if mor
 | "Git ceremony wastes time" | Without merge+pull, next domain branches from stale/wrong base. |
 | "Leave PR open; merge later" | Batch owns merge when `activeThreads == 0` before next domain. |
 
-**STOP:** parallel auto; `next` as batch driver; multi-domain child; parent inline auto; skip enumerate; skip `Data == cutoff` (age 7 must enqueue); invent default dry-run; silent risk reorder; continue after escalate without `continue-on-error`; spawn next domain while previous PR still open/unmerged; skip `git pull origin master` before next branch.
+**STOP:** parallel auto; `next` as batch driver; multi-domain child; parent inline auto; skip enumerate; skip `Date == cutoff` (age 7 must enqueue); invent default dry-run; silent risk reorder; continue after escalate without `continue-on-error`; spawn next domain while previous PR still open/unmerged; skip `git pull origin master` before next branch.
