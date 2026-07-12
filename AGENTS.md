@@ -26,13 +26,13 @@ Skills carregadas automaticamente por tipo de tarefa:
 | `check-harness` | `.agents/skills/check-harness.md` | Auditoria e manutenção do harness (AGENTS.md, skills, rules) |
 | `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Criação de novas skills com estrutura e progressive disclosure |
 | `handoff` | `.agents/skills/handoff/SKILL.md` | Compressão de conversa em documento de handoff |
+| `using-superpowers` | `.agents/skills/using-superpowers/SKILL.md` | Onboarding do agente: descoberta de skills via Skill tool |
 
 ### Layer 1 — Engineering Standards (Auto-load por tarefa)
 
 | Skill | Path | Descrição |
 |-------|------|-----------|
 | `senior-developer` | `.agents/skills/senior-developer/SKILL.md` | Padrões .NET 10 / C# — Clean Code, SOLID, EF Core, testes |
-| `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Redução de erros comuns de LLM — edições cirúrgicas |
 | `matrix-view-patterns` | `.agents/skills/matrix-view-patterns/SKILL.md` | Padrões de UI CRUD (hash routing, cursor lists, filters) |
 | `mobile-first-design` | `.agents/skills/mobile-first-design/SKILL.md` | Design responsivo mobile-first |
 | `taste-skill` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend — landing pages, portfolios, redesigns |
@@ -77,6 +77,8 @@ Skills carregadas automaticamente por tipo de tarefa:
 
 | Skill | Path | Descrição |
 |-------|------|-----------|
+| `caveman` | `.agents/skills/caveman/SKILL.md` | Compressão ultra de resposta (~75% menos tokens) |
+| `gabarito` | `.agents/skills/gabarito/SKILL.md` | Dez diretrizes operacionais de resposta (accountability, anti-sycophancy, chain-of-verification) |
 | `us-workflow` | `.agents/skills/us-workflow/SKILL.md` | Orquestrador E2E de User Story (FSM F0-F6, steps 0-12) |
 | `modular-orchestrator` | `.agents/skills/modular-orchestrator/SKILL.md` | Orquestrador stateful por steps com FSM e memória compartilhada |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Cria, revisa ou formata artefatos *.spec.md |
@@ -84,7 +86,7 @@ Skills carregadas automaticamente por tipo de tarefa:
 | `learning` | `.agents/skills/learning/SKILL.md` | Registro de conhecimento anti-regressão em MEMORY.md |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | Registro histórico resumido em CHANGELOG.md |
 | `grill-with-docs` | `.agents/skills/grill-with-docs/SKILL.md` | Sessão de questionamento contra domínio existente + docs |
-| `find-skills` | Consultar o skill `using-superpowers` | Descoberta e instalação de novas skills |
+| `find-skills` | `using-superpowers` (skill global) | Descoberta e instalação de novas skills |
 
 ---
 
@@ -95,16 +97,20 @@ Skills carregadas automaticamente por tipo de tarefa:
 | Quero escrever uma spec | `00-write-spec` |
 | Quero planejar implementação | `write-plan` → `refine` → `plan-exec-dag` |
 | Quero implementar | `implement-plan` |
-| Quero verificar o que foi feito | `verify-sync-write-plan` |
+| Quero verificar o que foi feito | `verify-sync-write-plan` ou `verify-plan` |
 | Quero revisar código local | `code-review` ou `us-code-review` |
 | Quero revisar segurança | `security-review` ou `dotnet-security-performance-review` |
 | Quero revisar arquitetura (DDD) | `tdd-sdd-ddd-reviewer` |
 | Quero revisar domínio | `domain-review` ou `multi-domain-review` |
+| Quero testar integração pré-PR | `integration-validation` |
 | Quero corrigir PR | `fix-pr` |
 | Quero entregar (ship PR) | `11-ship-pr` |
 | Quero workflow E2E completo | `us-workflow` |
+| Quero orquestrador stateful por steps | `modular-orchestrator` |
+| Quero formatar/revisar spec | `spec-format` |
 | Quero criar skill nova | `write-a-skill` |
 | Quero auditar o harness | `check-harness` |
+| Quero questionar plano contra docs | `grill-with-docs` |
 | Quero documentação de lib | `context7-mcp` |
 | Quero trabalhar com Supabase | `supabase` |
 | Quero otimizar Postgres | `supabase-postgres-best-practices` |
@@ -112,5 +118,26 @@ Skills carregadas automaticamente por tipo de tarefa:
 | Quero registrar aprendizado | `learning` |
 | Quero registrar changelog | `changelog` |
 | Quero passar bastão | `handoff` |
-| Quero questionar plano contra docs | `grill-with-docs` |
-| Quero descobrir/instalar skills | Consultar `using-superpowers` ou `find-skills` |
+| Quero descobrir/instalar skills | `find-skills` ou `using-superpowers` |
+
+---
+
+## Verification
+
+Before closing a task or committing, run:
+
+```bash
+# Check harness integrity (paths, routing, redundancy)
+npx workflow-skills check-harness --dry-run
+
+# Or via gh API if installed globally
+gh api repos/jpolvora/workflow-skills/pages   # verify site is building
+```
+
+---
+
+## Custom Commands
+
+| Command | File | Descrição |
+|---------|------|-----------|
+| `/check-harness` | `commands/check-harness.md` | Audit harness integrity (paths, links, routing, redundancy) |
