@@ -1,145 +1,145 @@
 # FAQ — US Delivery Workflow
 
-> **Nota de arquitetura (v9.1):** Steps 0–11 delegam seu conteúdo funcional a skills dedicadas (`00`–`07`). Stack detectada via `config.json`; ferramentas via `tools.md`. Projeto-agnóstico. Step 13 opcional via `--full`. A mecânica de orquestração (fases, gates, worktrees, banners, state.md) permanece válida.
-
-> **Público:** desenvolvedores, líderes técnicos e agentes que precisam entender **como funciona** o pipeline ponta a ponta de entrega de User Stories.  
-> **Ordem deste documento:** as seções seguem a **sequência de execução** (F0→F6, steps 0–12; 13 com `--full`), da invocação inicial até o fechamento.  
-> **Complementa:** [`README.md`](../README.md) · [`SKILL.md`](../SKILL.md) · [`DIAGRAM.md`](../DIAGRAM.md)
+> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/us-workflow/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
+>
+> **Audience:** developers, tech leads, and agents who need to understand **how** the end-to-end User Story delivery pipeline works.
+> **Order:** sections follow **execution sequence** (F0→F6, steps 0–12; 13 with `--full`), from invocation to closure.
+> **Complements:** [`README.md`](../README.md) · [`SKILL.md`](../SKILL.md) · [`DIAGRAM.md`](../DIAGRAM.md)
 
 ---
 
-## Índice rápido *(ordem de execução)*
+## Quick index *(execution order)*
 
-| # | Seção | Momento no pipeline |
-|---|--------|---------------------|
-| 1 | [Visão geral](#1-visão-geral) | — |
-| 2 | [O que faz e não faz](#2-o-que-o-workflow-faz-e-não-faz) | — |
-| 3 | [Linha do tempo](#3-linha-do-tempo-ordem-de-execução) | Mapa completo |
-| 4 | [Como iniciar](#4-como-iniciar-inputs-e-modos) | Antes do Step 0 |
-| 5 | [**F0 — Step 0: Inicialização**](#5-f0--step-0-inicialização-do-workflow) | Bootstrap |
-| 6 | [**F1 — Step 1: Planejamento**](#6-f1--step-1-planejamento-e-brainstorm) | Especificação |
-| 7 | [**F1 — Step 2: Refinement**](#7-f1--step-2-refinement) | Especificação |
-| 8 | [**F1 — Step 3: Exec + DAG**](#8-f1--step-3-plano-de-execução-e-dag) | Especificação |
-| 9 | [**Sub-gate 4: Coder readiness**](#9-sub-gate-4-preparação-para-codificação) | F1→F2 |
-| 10 | [**F2 — Step 5: Implementação**](#10-f2--step-5-implementação-dag) | Implementação |
-| 11 | [**F3 — Step 6: Verificação**](#11-f3--step-6-verificação-e-relatório) | Verify |
-| 12 | [**F3 — Step 7: 1º commit**](#12-f3--step-7-decisão-e-1º-commit) | Verify + G2 |
-| 13 | [**Sub-gate 8: Review readiness**](#13-sub-gate-8-preparação-para-code-review) | F3→F4 |
+| # | Section | Pipeline moment |
+|---|---------|-----------------|
+| 1 | [Overview](#1-overview) | — |
+| 2 | [What it does and does not do](#2-what-the-workflow-does-and-does-not-do) | — |
+| 3 | [Timeline](#3-timeline-execution-order) | Full map |
+| 4 | [How to start](#4-how-to-start-inputs-and-modes) | Before Step 0 |
+| 5 | [**F0 — Step 0: Initialization**](#5-f0--step-0-workflow-initialization) | Bootstrap |
+| 6 | [**F1 — Step 1: Planning**](#6-f1--step-1-planning-and-brainstorm) | Specification |
+| 7 | [**F1 — Step 2: Refinement**](#7-f1--step-2-refinement) | Specification |
+| 8 | [**F1 — Step 3: Execution Plan + DAG**](#8-f1--step-3-execution-plan-and-dag) | Specification |
+| 9 | [**Sub-gate 4: Coder readiness**](#9-sub-gate-4-coder-readiness) | F1→F2 |
+| 10 | [**F2 — Step 5: Implementation**](#10-f2--step-5-implementation-dag) | Implementation |
+| 11 | [**F3 — Step 6: Verification**](#11-f3--step-6-verification-and-report) | Verify |
+| 12 | [**F3 — Step 7: 1st commit**](#12-f3--step-7-decision-and-1st-commit) | Verify + G2 |
+| 13 | [**Sub-gate 8: Review readiness**](#13-sub-gate-8-review-readiness) | F3→F4 |
 | 14 | [**F4 — Step 9: Code review**](#14-f4--step-9-code-review) | Review |
-| 15 | [**F4 — Step 10: Fix + 2º commit**](#15-f4--step-10-correções-2º-commit-e-relatório) | Review + G2 |
-| 16 | [**F5 — Step 11: Integração**](#16-f5--step-11-validação-de-integração-e-pré-pr) | Pré-PR |
-| 17 | [**F6 — Step 12: Fechamento**](#17-f6--step-12-consolidação-e-limpeza-final) | Cleanup + G3 |
-| 18 | [Gates e navegação](#18-gates-navegação-e-checkpoints) | Transversal |
-| 19 | [Artefatos e estado](#19-artefatos-e-estado-compartilhado) | Transversal |
-| 20 | [Modos especiais](#20-modos-especiais-auto-dry-run-skip) | Transversal |
+| 15 | [**F4 — Step 10: Fix + 2nd commit**](#15-f4--step-10-fixes-2nd-commit-and-report) | Review + G2 |
+| 16 | [**F5 — Step 11: Integration**](#16-f5--step-11-integration-validation-and-pre-pr) | Pre-PR |
+| 17 | [**F6 — Step 12: Closure**](#17-f6--step-12-consolidation-and-final-cleanup) | Cleanup + G3 |
+| 18 | [Gates and navigation](#18-gates-navigation-and-checkpoints) | Cross-cutting |
+| 19 | [Artifacts and state](#19-artifacts-and-shared-state) | Cross-cutting |
+| 20 | [Special modes](#20-special-modes-auto-dry-run-skip) | Cross-cutting |
 | 21 | [Troubleshooting](#21-troubleshooting) | — |
 
 ---
 
-## 1. Visão geral
+## 1. Overview
 
-### O que é o US Delivery Workflow?
+### What is the US Delivery Workflow?
 
-É um **pipeline orquestrado** para entregar uma User Story (ou feature descrita em texto livre) no Matrix, de ponta a ponta: plano → implementação → verificação → code review → validação de integração → fechamento. O **orquestrador** (agente principal) coordena **subagentes** dedicados por step, mantém estado persistente e aplica **gates de autorização** antes de qualquer efeito colateral (commit, push, edição de código).
+An **orchestrated pipeline** for delivering a User Story (or feature described in free text) end-to-end: plan → implementation → verification → code review → integration validation → closure. The **orchestrator** (main agent) coordinates **sub-agents** dedicated per step, maintains persistent state, and enforces **authorization gates** before any side effect (commit, push, code edit).
 
-**Evidência:** [`README.md`](../README.md), [`SKILL.md`](../SKILL.md) § Phase Architecture.
+**Evidence:** [`README.md`](../README.md), [`SKILL.md`](../SKILL.md) § Phase Architecture.
 
-### Quem executa o quê?
+### Who executes what?
 
-| Papel | Responsabilidade |
-|-------|------------------|
-| **Orquestrador** | Estado, gates, dispatch de subagentes, checkpoints git, Progress Board — **não implementa código** |
-| **Subagente** | Executa um step isolado (contexto limpo via `Task`, nunca `resume` entre steps) |
-| **Usuário** | Decide nos gates (`AskQuestion`) — exceto em modo `auto` |
+| Role | Responsibility |
+|------|----------------|
+| **Orchestrator** | State, gates, sub-agent dispatch, git checkpoints, Progress Board — **does not implement code** |
+| **Sub-agent** | Executes an isolated step (clean context via `Task`, never `resume` between steps) |
+| **User** | Decides at gates (`AskQuestion`) — except in `auto` mode |
 
-### O que são as 7 fases (F0–F6)?
+### What are the 7 phases (F0–F6)?
 
-Visão **humana** do pipeline. Internamente o `state.md` rastreia **steps 0–12** para checkpoints e revert.
+**Human** view of the pipeline. Internally, `state.md` tracks **steps 0–12** for checkpoints and revert.
 
-| Fase | Nome | Steps |
-|------|------|-------|
+| Phase | Name | Steps |
+|-------|------|-------|
 | F0 | Bootstrap | 0 |
-| F1 | Especificação | 1, 2, 3 |
-| F2 | Implementação | 4†, 5 |
-| F3 | Verificação + 1º commit | 6, 7 |
-| F4 | Review + correções | 8†, 9, 10 |
-| F5 | Integração pré-PR | 11 |
-| F6 | Fechamento | 12 |
+| F1 | Specification | 1, 2, 3 |
+| F2 | Implementation | 4†, 5 |
+| F3 | Verification + 1st commit | 6, 7 |
+| F4 | Review + fixes | 8†, 9, 10 |
+| F5 | Pre-PR integration | 11 |
+| F6 | Closure | 12 |
 
-† Steps **4 e 8** são **sub-gates de modelo** — não entram em `completedSteps`.
-
----
-
-## 2. O que o workflow faz e não faz
-
-### O que faz?
-
-| # | Ação | Steps |
-|---|------|-------|
-| 1 | Busca snapshot da issue GitHub da US | 0 |
-| 2 | Gera plano detalhado .NET 10 + React | 1 |
-| 3 | Refina lacunas (refinement) | 2 |
-| 4 | Quebra em tarefas DAG paralelizáveis | 3 |
-| 5 | Implementa código por níveis do DAG | 5 |
-| 6 | Verifica implementação vs plano | 6 |
-| 7 | Commita implementação aprovada | 7 |
-| 8 | Code review local (diff vs `master`) | 9 |
-| 9 | Corrige achados + 2º commit | 10 |
-| 10 | Valida integração (API, testes, browser opcional) | 11 |
-| 11 | Limpa temporários, consolida docs, consentimento de push | 12 |
-
-### O que **não** faz?
-
-- Abrir ou atualizar Pull Request ([`fix-pr`](../08-fix-pr/SKILL.md) é **manual**, após Step 12)
-- Push automático para remote (só com consentimento explícito no Step 12)
-- Commit sem gate G2 explícito (Steps 7, 10, 11)
-- Inferir "sim" quando o usuário cancela um `AskQuestion` (HS-1)
-
-**Evidência:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder.
+† Steps **4 and 8** are **model sub-gates** — never in `completedSteps`.
 
 ---
 
-## 3. Linha do tempo (ordem de execução)
+## 2. What the workflow does and does not do
+
+### What it does
+
+| # | Action | Steps |
+|---|--------|-------|
+| 1 | Fetches GitHub issue snapshot for the US | 0 |
+| 2 | Generates detailed implementation plan | 1 |
+| 3 | Refines gaps (refinement) | 2 |
+| 4 | Breaks into parallelizable DAG tasks | 3 |
+| 5 | Implements code by DAG levels | 5 |
+| 6 | Verifies implementation vs plan | 6 |
+| 7 | Commits approved implementation | 7 |
+| 8 | Local code review (diff vs base branch) | 9 |
+| 9 | Fixes findings + 2nd commit | 10 |
+| 10 | Integration validation (API, tests, optional browser) | 11 |
+| 11 | Cleans temporaries, consolidates docs, push consent | 12 |
+
+### What it does **not** do
+
+- Open or update Pull Request ([`fix-pr`](../../08-fix-pr/SKILL.md) is **manual**, after Step 12)
+- Automatic push to remote (only with explicit consent at Step 12)
+- Commit without explicit G2 gate (Steps 7, 10, 11)
+- Infer "yes" when the user cancels an `AskQuestion` (HS-1)
+
+**Evidence:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder.
+
+---
+
+## 3. Timeline (execution order)
 
 ```mermaid
 flowchart TD
-    START(["Invocação: /us-workflow 2416"]) --> S0["§5 Step 0 Bootstrap"]
-    S0 --> S1["§6 Step 1 Planejar"]
+    START(["Invocation: /us-workflow 2416"]) --> S0["§5 Step 0 Bootstrap"]
+    S0 --> S1["§6 Step 1 Plan"]
     S1 --> S2["§7 Step 2 Refinement"]
     S2 --> S3["§8 Step 3 Exec + DAG"]
     S3 --> SG4["§9 Sub-gate 4 Coder"]
-    SG4 --> S5["§10 Step 5 Implementar"]
-    S5 --> S6["§11 Step 6 Verificar"]
-    S6 --> S7["§12 Step 7 1º commit"]
+    SG4 --> S5["§10 Step 5 Implement"]
+    S5 --> S6["§11 Step 6 Verify"]
+    S6 --> S7["§12 Step 7 1st commit"]
     S7 --> SG8["§13 Sub-gate 8 Review"]
     SG8 --> S9["§14 Step 9 Code review"]
-    S9 --> S10["§15 Step 10 Fix + 2º commit"]
-    S10 --> S11["§16 Step 11 Integração"]
+    S9 --> S10["§15 Step 10 Fix + 2nd commit"]
+    S10 --> S11["§16 Step 11 Integration"]
     S11 --> S12["§17 Step 12 Cleanup"]
-    S12 --> END(["PR manual / push opcional"])
+    S12 --> END(["Manual PR / optional push"])
 ```
 
-| Etapa | Seção FAQ | Executor | Gate após |
-|-------|-----------|----------|-----------|
-| 0 | [§5](#5-f0--step-0-inicialização-do-workflow) | Orquestrador | Transition → Step 1 |
-| 1 | [§6](#6-f1--step-1-planejamento-e-brainstorm) | Subagente Planner | Transition → Step 2 |
-| 2 | [§7](#7-f1--step-2-refinement) | Subagente Planner | Transition → Step 3 |
-| 3 | [§8](#8-f1--step-3-plano-de-execução-e-dag) | Subagente Planner | Transition + sub-gate 4 → Step 5 |
-| 4† | [§9](#9-sub-gate-4-preparação-para-codificação) | Orquestrador | Embutido no gate F1→F2 |
-| 5 | [§10](#10-f2--step-5-implementação-dag) | Subagente Coder | Transition → Step 6 |
-| 6 | [§11](#11-f3--step-6-verificação-e-relatório) | Subagente Verifier (readonly) | Transition → Step 7 |
-| 7 | [§12](#12-f3--step-7-decisão-e-1º-commit) | Orquestrador + subagente + shell | G2 + sub-gate 8 → Step 9 |
-| 8† | [§13](#13-sub-gate-8-preparação-para-code-review) | Orquestrador | Embutido no gate F3→F4 |
-| 9 | [§14](#14-f4--step-9-code-review) | Subagente Reviewer | Transition → Step 10 |
-| 10 | [§15](#15-f4--step-10-correções-2º-commit-e-relatório) | Subagente Coder + shell | G2 → Step 11 |
-| 11 | [§16](#16-f5--step-11-validação-de-integração-e-pré-pr) | Subagente + browser + shell | Transition → Step 12 |
-| 12 | [§17](#17-f6--step-12-consolidação-e-limpeza-final) | Orquestrador + shell | G3 push consent |
+| Step | FAQ Section | Executor | Gate after |
+|------|-------------|----------|------------|
+| 0 | [§5](#5-f0--step-0-workflow-initialization) | Orchestrator | Transition → Step 1 |
+| 1 | [§6](#6-f1--step-1-planning-and-brainstorm) | Planner sub-agent | Transition → Step 2 |
+| 2 | [§7](#7-f1--step-2-refinement) | Planner sub-agent | Transition → Step 3 |
+| 3 | [§8](#8-f1--step-3-execution-plan-and-dag) | Planner sub-agent | Transition + sub-gate 4 → Step 5 |
+| 4† | [§9](#9-sub-gate-4-coder-readiness) | Orchestrator | Embedded in F1→F2 gate |
+| 5 | [§10](#10-f2--step-5-implementation-dag) | Coder sub-agent | Transition → Step 6 |
+| 6 | [§11](#11-f3--step-6-verification-and-report) | Verifier sub-agent (readonly) | Transition → Step 7 |
+| 7 | [§12](#12-f3--step-7-decision-and-1st-commit) | Orchestrator + sub-agent + shell | G2 + sub-gate 8 → Step 9 |
+| 8† | [§13](#13-sub-gate-8-review-readiness) | Orchestrator | Embedded in F3→F4 gate |
+| 9 | [§14](#14-f4--step-9-code-review) | Reviewer sub-agent | Transition → Step 10 |
+| 10 | [§15](#15-f4--step-10-fixes-2nd-commit-and-report) | Coder sub-agent + shell | G2 → Step 11 |
+| 11 | [§16](#16-f5--step-11-integration-validation-and-pre-pr) | Sub-agent + browser + shell | Transition → Step 12 |
+| 12 | [§17](#17-f6--step-12-consolidation-and-final-cleanup) | Orchestrator + shell | G3 push consent |
 
 ---
 
-## 4. Como iniciar (inputs e modos)
+## 4. How to start (inputs and modes)
 
-### Como invoco o workflow?
+### How do I invoke the workflow?
 
 ```text
 @[us-workflow] 2416
@@ -151,669 +151,555 @@ flowchart TD
 @[us-workflow] soft-delete em fornecedores
 ```
 
-### Qual o input de cada forma?
+### What input does each form accept?
 
-| Input | O que o Step 0 interpreta |
-|-------|---------------------------|
-| Número (`2416`) | Issue no GitHub → pasta `.cursor/plans/us-2416/` |
-| `us-2375.plan.md` | Retoma/continua a partir de plano existente |
-| Texto livre (`soft-delete em fornecedores`) | Feature sem US — slug como pasta |
-| `auto` / `automatico` | `autoMode: true` — sem menus interativos |
-| `dry-run` / `simular` | `dryRun: true` — simulação sem side effects |
-| `skip-integration` | `skipIntegration: true` — pula Step 11 inteiro |
-| `skip-tests` | `skipTests: true` — pula suites de teste (build continua) |
+| Input | What Step 0 interprets |
+|-------|------------------------|
+| Number (`2416`) | GitHub issue → folder `.cursor/plans/us-2416/` |
+| `us-2375.plan.md` | Resumes/continues from existing plan |
+| Free text (`soft-delete em fornecedores`) | Feature without US — slug as folder name |
+| `auto` / `automatico` | `autoMode: true` — no interactive menus |
+| `dry-run` | `dryRun: true` — simulation without side effects |
+| `skip-integration` | `skipIntegration: true` — skips Step 11 entirely |
+| `skip-tests` | `skipTests: true` — skips test suites (build still runs) |
 
-### O que acontece se já existe workflow ativo?
+### What happens if an active workflow already exists?
 
-Em **modo normal**, o Step 0 verifica `.cursor/plans/*/*.state.md` e oferece menu: continuar, reiniciar do zero ou iniciar novo workflow. Em **modo auto**, retoma apenas workflow `autoMode: true` **da mesma US**; ignora outros ativos.
+In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu: resume, restart from scratch, or start a new workflow. In **auto mode**, resumes only `autoMode: true` workflow **for the same US**; ignores other active ones.
 
-### Qual o output global ao final?
+### What is the final global output?
 
-- Código commitado na branch de trabalho (`state.branch`)
-- Artefatos em `.cursor/plans/us-{id}/` (plano, relatórios)
-- `state.md` com `status: completed`
-- Opcionalmente: push (consentimento Step 12) — PR manual pelo desenvolvedor
+- Code committed on the working branch (`state.branch`)
+- Artifacts in `.cursor/plans/us-{id}/` (plan, reports)
+- `state.md` with `status: completed`
+- Optionally: push (Step 12 consent) — PR manually by developer
 
 ---
 
-## 5. F0 — Step 0: Inicialização do Workflow
+## 5. F0 — Step 0: Workflow Initialization
 
-### O que é o Step 0?
+### What is Step 0?
 
-**Bootstrap** do pipeline. O orquestrador prepara o ambiente: parseia flags, cria ou retoma estado, captura baseline git, **resolve especificação** (`*.spec.md` — de US id (issue GitHub) ou arquivo local) e renderiza o Progress Board inicial. **Não dispara subagente.**
+**Bootstrap** of the pipeline. The orchestrator prepares the environment: parses flags, creates or resumes state, captures git baseline, **resolves specification** (`*.spec.md` — from US id (GitHub issue) or local file), and renders the initial Progress Board. **Does not dispatch a sub-agent.**
 
-### Como é feito?
+### How is it done?
 
-1. Parse de `workflow-id`, flags (`dryRun`, `autoMode`, `skipIntegration`, `skipTests`) e **entrada** (US id **ou** `*.spec.md`)
-2. Verificação de workflows ativos (resume ou novo)
-3. Criação de `{us-dir}/{workflow-id}.state.md` em `.cursor/plans/{slug}/`
-4. Captura de baseline: `baselineCommit`, `preExistingDirty`, tag `before-step-1`
-5. **Specification Protocol:** modo GitHub → `gh issue view {n}` + `github-issue-to-spec.py` → `{slug}.spec.md`; modo local → copiar/usar spec existente
-6. **Memory & Decisions Consultation** (protocolo): ler primeiro as seções `## Workflow memory`, `## Accumulated decisions` e `## Doc consolidation log` do `state.md` (em resume) e depois consultar `MEMORY.md` (raiz) só no escopo relevante
-7. Progress Board inicial + Transition Gate → Step 1 (ou auto-advance em `autoMode`)
+1. Parse `workflow-id`, flags (`dryRun`, `autoMode`, `skipIntegration`, `skipTests`) and **entry** (US id **or** `*.spec.md`)
+2. Check for active workflows (resume or new)
+3. Create `{us-dir}/{workflow-id}.state.md` in `.cursor/plans/{slug}/`
+4. Capture baseline: `baselineCommit`, `preExistingDirty`, tag `before-step-1`
+5. **Specification Protocol:** GitHub mode → `gh issue view {n}` + `github-issue-to-spec.py` → `{slug}.spec.md`; local mode → copy/use existing spec
+6. **Memory & Decisions Consultation** (protocol): read `## Workflow memory`, `## Accumulated decisions` and `## Doc consolidation log` from `state.md` (on resume), then consult `MEMORY.md` (root) only on relevant scope
+7. Initial Progress Board + Transition Gate → Step 1 (or auto-advance in `autoMode`)
 
 ### Input
 
-| Campo | Origem |
+| Field | Source |
 |-------|--------|
-| US id **ou** `*.spec.md` | Mensagem do usuário |
-| Flags de modo | `auto`, `dry-run`, `skip-*` na invocação |
-| Config GitHub | `gh` CLI autenticado (`gh auth status`) |
-| Estado anterior | `{workflow-id}.state.md` (se resume) |
+| US id **or** `*.spec.md` | User message |
+| Mode flags | `auto`, `dry-run`, `skip-*` in invocation |
+| GitHub config | `gh` CLI authenticated (`gh auth status`) |
+| Previous state | `{workflow-id}.state.md` (if resume) |
 
 ### Output
 
-| Artefato | Caminho |
-|----------|---------|
-| Estado do workflow | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| **Spec canônico** | `.cursor/plans/{slug}/{slug}.spec.md` |
-| Snapshot issue GitHub (opcional) | `.cursor/plans/{slug}/{slug}.issue.json` |
-| Checkpoint git | Tag local `uswf/{workflow-id}/before-step-1` |
-| Progress Board | Renderizado no chat |
+| Artifact | Path |
+|----------|------|
+| Workflow state | `.cursor/plans/{slug}/{workflow-id}.state.md` |
+| **Canonical spec** | `.cursor/plans/{slug}/{slug}.spec.md` |
+| GitHub issue snapshot (optional) | `.cursor/plans/{slug}/{slug}.issue.json` |
+| Git checkpoint | Local tag `uswf/{workflow-id}/before-step-1` |
+| Progress Board | Rendered in chat |
 
-### Perguntas frequentes
+### Frequently asked questions
 
-**O Step 0 altera código?** Não. Nível de autorização G0 (leitura).
+**Does Step 0 alter code?** No. Authorization level G0 (read-only).
 
-**O que é `workflow-id`?** Identificador único da execução (ex.: `us-2416-20260621T214006`), distinto do número da US.
+**What is `workflow-id`?** Unique execution identifier (e.g., `us-2416-20260621T214006`), distinct from the US number.
 
-**Posso validar o estado?** Opcionalmente: `python .agents/skills/us-workflow/scripts/validate_state.py {workflow-id}`.
+**Can I validate the state?** Optionally: `python .agents/skills/us-workflow/scripts/validate_state.py {workflow-id}`.
 
 ---
 
-## 6. F1 — Step 1: Planejamento e Brainstorm
+## 6. F1 — Step 1: Planning and Brainstorm
 
-### O que é o Step 1?
+### What is Step 1?
 
-Geração do **plano detalhado** da US no padrão .NET 10 + React: escopo, design técnico, passos de implementação, permissões, testes e checklist.
+Generation of the **detailed plan** for the US: scope, technical design, implementation steps, permissions, tests, and checklist. Stack-agnostic — all project-specific parameters read from `config.json` and `stack.md`.
 
-### Como é feito?
+### How is it done?
 
-Subagente `generalPurpose` (modelo Planner) executa o **Context Loading Protocol**: lê rules, docs, glossário, snapshot da issue e `MEMORY.md`. Produz `us-{id}.plan.md` com seções 0–8 (Resumo, DoR, Design, Passo a Passo, Permissões, Testes, Restrições, Checklist, Perguntas em Aberto).
+Sub-agent `generalPurpose` (Planner model) executes the **Context Loading Protocol**: reads rules, docs, glossary, issue snapshot, and `MEMORY.md`. Produces `us-{id}.plan.md` with sections 0–8 (Summary, DoR, Design, Step-by-Step, Permissions, Tests, Constraints, Checklist, Open Questions).
 
 ### Input
 
-| Campo | Origem |
+| Field | Source |
 |-------|--------|
-| `state.md` | Contexto do workflow |
-| `us-{id}.issue.json` | Critérios de aceite, descrição da issue |
+| `state.md` | Workflow context |
+| `us-{id}.issue.json` | Acceptance criteria, issue description |
 | Rules/docs | Via Context Loading Protocol |
-| `MEMORY.md` | Patterns e traps |
+| `MEMORY.md` | Patterns and traps |
 
 ### Output
 
-| Artefato | Caminho |
-|----------|---------|
-| Plano | `.cursor/plans/us-{id}/us-{id}.plan.md` |
-| `step-output` | Bloco no retorno do subagente (status, summary, artifacts) |
-
-### Gate após Step 1
-
-**Transition Gate:** Avançar → Step 2 | Repetir | Voltar | Pausar.
+| Artifact | Path |
+|----------|------|
+| Plan | `.cursor/plans/us-{id}/us-{id}.plan.md` |
+| `step-output` | Block in sub-agent return (status, summary, artifacts) |
 
 ---
 
 ## 7. F1 — Step 2: Refinement
 
-### O que é o Step 2?
+### What is Step 2?
 
-**Refinement** — interrogatório ativo de lacunas no plano antes da implementação (skill `refine` = abreviação de *refinement*). Filosofia **grilling** ([Matt Pocock](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md)): entrevistar ramo a ramo até **entendimento compartilhado** — ambiguidades, edge cases e contradições fechados até critérios testáveis.
+**Audit and interrogation** of the plan produced in Step 1. The sub-agent runs the `02-interview` skill FSM: audit the plan against the spec, acceptance criteria, codebase, `MEMORY.md`, and project rules. Closes gaps with evidence.
 
-### Como é feito?
+### How does it work?
 
-Máquina de estados (**Refinement FSM**): Audit → Resolve → Escalate → Shared Understanding.
+Starts with a **design tree** of the plan (architecture → layers → routes/models → tests → security). For each branch, checks coverage, consistency, and evidence in the codebase. Records `gap_registry[]` with severity `blocking` or `non-blocking`.
 
-1. Subagente audita seções 0–8 do plano e cada AC (happy path, validação, auth, tenant, etc.) — ordena gaps pela **árvore de design** (escopo → domínio → auth → comportamento → edge cases)
-2. Mantém **gap registry** (`blocking` vs `non-blocking`, `dependsOn`)
-3. Resolve com evidência (**explora codebase antes de escalar** — código, docs, spec, MEMORY) ou escala ao usuário
-4. Orquestrador apresenta **exatamente uma pergunta por rodada** (`AskQuestion`) + opção **Encerrar refinamento e avançar**
-5. Máximo 3 rodadas de escalação; depois só responder ou encerrar
-6. Após critérios técnicos (2d), gate **Shared Understanding** — usuário confirma antes de Step 3
-7. Atualiza `plan.md` in-place e `## Refinement registry` no state
+### Refinement FSM states
+
+| State | Description |
+|-------|-------------|
+| **2a — Audit** | Build gap registry per design tree branch |
+| **2b — Resolve** | Close gaps with codebase evidence before escalating |
+| **2c — Escalate** | One question per round (max 3 rounds); **End refinement** uses assumed defaults |
+| **2d — Exit** | Registry empty or all `assumed-default`; shared_understanding: pending |
+| **2e — Shared Understanding** | Orchestrator gate: confirm or continue refinement |
+
+---
+
+## 8. F1 — Step 3: Execution Plan and DAG
+
+### What is Step 3?
+
+Breaks the implementation plan into **atomic tasks** organized in a **DAG** (Directed Acyclic Graph) of topological levels, for safe parallel execution. Detects plan size and recommends sequential or parallel execution.
+
+### How is it done?
+
+1. Reads `us-{id}.plan.md` and extracts all implementation steps (files, acceptance criteria, dependencies)
+2. Evaluates plan size against thresholds (files, layers, dependencies, tasks)
+3. **Small plan** → `execMode: sequential` — single file `us-{id}.plan.exec.md` with flat steps
+4. **Large plan** → `execMode: parallel` — generates `us-{id}.plan.exec.md` + `us-{id}.exec.dag.json` with `levels` and non-overlapping `files[]` per level
+5. Runs `check_memory_conflict.py` against `MEMORY.md` to detect conflicts
+6. Runs `validate_state.py` to assert state integrity
 
 ### Input
 
-| Campo | Origem |
+| Field | Source |
 |-------|--------|
 | `us-{id}.plan.md` | Step 1 |
-| `us-{id}.issue.json` | Snapshot da issue |
-| `MEMORY.md` | Traps conhecidas |
-| Respostas do usuário | Gates de escalação |
+| `MEMORY.md` | Patterns and traps |
+| `config.json.stack` | Layers, paths, invariants |
 
 ### Output
 
-| Artefato | Conteúdo |
-|----------|----------|
-| `us-{id}.plan.md` | Atualizado — §8 vazio, sem TBDs bloqueantes |
-| `## Refinement registry` | No `state.md` |
-| `## Accumulated decisions` | Decisões e `assumed-default` |
-
-### Perguntas frequentes
-
-**O que é um gap `blocking`?** Impede testes objetivos ou muda escopo/AC — exige resposta ou default explícito.
-
-**Posso pular o refinement?** Parcialmente — **Encerrar refinamento e avançar** aplica defaults recomendados, mas ainda exige o gate **Shared Understanding** antes de Step 3.
-
-**Posso ir direto para implementação sem confirmar entendimento?** Não — Step 3 só após **Confirmo entendimento compartilhado** (gate 2e), exceto em `autoMode` com `blocking_open: 0`.
-
-**O subagente pode retornar `success` com lacunas bloqueantes?** Não, se `refineRound < 1` e nenhum `assumed-default` foi logado.
-
----
-
-## 8. F1 — Step 3: Plano de Execução e DAG
-
-### O que é o Step 3?
-
-Transforma o plano refinado em **tarefas atômicas** com dependências, prompts literais para o Coder e um **DAG** de execução paralela.
-
-### Como é feito?
-
-1. Roda **Memory-Conflict Protocol** (`check_memory_conflict.py` vs `MEMORY.md`)
-2. Divide o plano em tasks `T1`, `T2`, … com `files[]`, `acceptance`, `coderPrompt`, `dependsOn`
-3. Monta níveis topológicos (`levels`) — até **3 tasks paralelas** por nível, sem overlap de arquivos
-4. Gera `plan.exec.md` (narrativa) e `exec.dag.json` (máquina)
-
-### Input
-
-| Campo | Origem |
-|-------|--------|
-| `us-{id}.plan.md` | Steps 1–2 |
-| Resultado memory-conflict | Script Python |
-| `state.md` | Contexto |
-
-### Output
-
-| Artefato | Caminho |
+| Artifact | Content |
 |----------|---------|
-| Plano de execução | `.cursor/plans/us-{id}/us-{id}.plan.exec.md` |
-| DAG JSON | `.cursor/plans/us-{id}/us-{id}.exec.dag.json` |
+| `us-{id}.plan.exec.md` | Implementation steps or DAG task list |
+| `us-{id}.exec.dag.json` | DAG structure (missing when `execMode: sequential`) |
+| `execMode` | `sequential` or `parallel` (set in `state.md`) |
 
-Formato DAG: `{"targetModel":"...", "tasks":[...], "levels":[["T1"],["T2","T3"]]}`
+### Frequently asked questions
 
-### Gate após Step 3
-
-**Transition Gate F1→F2** — inclui **sub-gate 4** (troca de modelo Coder) antes de disparar Step 5.
-
----
-
-## 9. Sub-gate 4: Preparação para Codificação
-
-### O que é o Step 4?
-
-**Não é um step do board.** É um **sub-gate de modelo** na transição F1→F2, embutido no gate após o Step 3. Garante que o LLM atual é adequado para codificação (classe Coder).
-
-### Como é feito?
-
-Orquestrador inspeciona `currentModel` no state:
-- Se já é Coder-class → avança automaticamente
-- Senão → menu: **Confirmar troca para modelo Coder** (recomendado) | Continuar com atual (warning) | Pausar
-- Log em `## Gate history`: `model-gate | F1→F2 | …`
-- **Nunca** adiciona `4` a `completedSteps`
-
-### Input / Output
-
-| | |
-|---|---|
-| **Input** | Modelo LLM atual, preferência do usuário |
-| **Output** | Log no gate history; dispatch do Step 5 |
+**When is `execMode: sequential` vs `parallel`?** The orchestrator checks thresholds: ≤2 files, ≤2 layers, ≤3 tasks → sequential. Above thresholds → parallel DAG.
 
 ---
 
-## 10. F2 — Step 5: Implementação (DAG)
+## 9. Sub-gate 4: Coder Readiness
 
-### O que é o Step 5?
+### What is the sub-gate?
 
-**Implementação do código** seguindo o DAG, nível a nível, com isolamento por worktree (ou branch-direct no Windows/paths longos).
+A **model readiness check** embedded in the F1→F2 transition gate (after Step 3). Not a board step — never in `completedSteps`. The orchestrator recommends switching to a Coder-class model for implementation (Steps 5, 10).
 
-### Como é feito?
+### Options (normal mode)
 
-1. Orquestrador decide **Worktree Fallback**: `step-worktree` ou `branch-direct`
-2. Em worktree: cria `.cursor/plans/us-{id}/worktrees/step-5/` na branch `state.branch`
-3. Para cada nível do DAG: até 3 subagentes `generalPurpose` (Coder) em paralelo
-4. Cada task implementa conforme `coderPrompt` e `files[]` do JSON
-5. Após cada nível: atualiza `completedTasks` no Progress Board
-6. Ao final: **Post-step verification** (arquivos no disco, diff esperado, build/testes)
-7. Merge do worktree → branch principal; remove worktree
-8. **HS-3/HS-4** se `files_touched` vazio ou arquivos esperados ausentes
+- **Switch to recommended Coder model** (Suggested)
+- **Keep current model**
+- **Choose a different model**
+- **Repeat Step 3**
+- **Go back / Pause**
+
+---
+
+## 10. F2 — Step 5: Implementation (DAG)
+
+### What is Step 5?
+
+**Code implementation** following the DAG or sequential plan. Each level of the DAG is dispatched to a dedicated sub-agent. Files are created/modified in the working tree (worktree or branch-direct). **No commit yet.**
+
+### Parallel execution (DAG)
+
+- Levels processed sequentially
+- Up to **3** sub-agents in parallel per level
+- No file overlap within a level (each task gets exclusive `files[]`)
+- Same worktree or branch-direct for all tasks
+
+### Worktree Fallback
+
+| Condition | Strategy |
+|-----------|----------|
+| `dryRun` | No worktree |
+| Windows or path > 180 chars | branch-direct (edits on branch, no worktree) |
+| `git worktree add` fails | branch-direct (logged in `## Gate history`) |
+| Normal | Step worktree |
 
 ### Input
 
-| Campo | Origem |
+| Field | Source |
 |-------|--------|
 | `us-{id}.plan.exec.md` | Step 3 |
-| `us-{id}.exec.dag.json` | Step 3 |
+| `us-{id}.exec.dag.json` | Step 3 (when parallel) |
 | `state.md` | Branch, manifest |
-| Tag âncora | `uswf/{id}/before-step-5` |
+| Anchor tag | `uswf/{id}/before-step-5` |
 
 ### Output
 
-| Artefato | Conteúdo |
-|----------|----------|
-| Código alterado | `src/Matrix.`, `web/src/` (não commitado ainda) |
-| `## Step file log` | Paths tocados no state |
-| `verification` block | Build/testes locais no step-output |
-| `learning` | Patterns/traps candidatos |
-
-### Perguntas frequentes
-
-**Por que worktree?** Isola edições do step; permite revert cirúrgico via checkpoint.
-
-**O que é branch-direct?** Fallback quando worktree falha (Windows, path longo) — edita direto na branch.
-
-**Dry-run no Step 5?** Simula apenas; registra o que *seria* alterado, sem tocar arquivos.
-
----
-
-## 11. F3 — Step 6: Verificação e Relatório
-
-### O que é o Step 6?
-
-**Auditoria readonly** da implementação contra o plano e os ACs da US. Gera tabela de qualidade feature a feature.
-
-### Como é feito?
-
-Subagente `generalPurpose` com `readonly: true` (Verifier):
-1. Compara código vs `plan.md` e ACs da issue
-2. Gera `us-{id}.plan.report.md` com tabela estruturada
-
-Colunas da tabela:
-- **Feature / AC**
-- **Status:** Implementada | Falta implementar | Divergente
-- **Qualidade:** Excelente | Regular | Insuficiente
-- **Notas:** evidências (path/símbolo), edge cases faltantes
-
-### Input
-
-| Campo | Origem |
-|-------|--------|
-| Código na branch | Step 5 |
-| `us-{id}.plan.md` | Steps 1–2 |
-| `us-{id}.issue.json` | Snapshot |
-
-### Output
-
-| Artefato | Caminho |
+| Artifact | Content |
 |----------|---------|
-| Relatório de verificação | `.cursor/plans/us-{id}/us-{id}.plan.report.md` |
+| Code changed | Source files under `src/`, `web/`, `tests/` (not yet committed) |
+| `## Step file log` | Paths touched in state |
+| `verification` block | Build/tests local in step-output |
+| `learning` | Candidate patterns/traps |
+
+### Frequently asked questions
+
+**Why use a worktree?** Isolates step edits; allows surgical revert via checkpoint.
+
+**What if I'm on Windows?** Worktree creation may fail on long paths. The **Worktree Fallback** protocol automatically switches to branch-direct mode.
 
 ---
 
-## 12. F3 — Step 7: Decisão e 1º Commit
+## 11. F3 — Step 6: Verification and Report
 
-### O que é o Step 7?
+### What is Step 6?
 
-**Gate G2** — o usuário decide se aprova a implementação e faz o **primeiro commit**, refaz com outro modelo Coder, ou repete a verificação.
+**Read-only verification** comparing implementation against the spec and plan. Generates `us-{id}.plan.report.md` with a feature-by-feature table. Does not modify any file.
 
-### Como é feito?
+### How is it done?
 
-1. Orquestrador exibe resumo do relatório Step 6
-2. Menu `AskQuestion`:
-   - **Aprovar, validar build/testes e commitar** (recomendado)
-   - **Refazer implementação com outro modelo Coder** (= Backward Navigation ao Step 5)
-   - **Repetir verificação** (re-run Step 6)
-   - **Pausar / cancelar**
-3. Se aprovado: **Build & Test Validation Protocol** — comandos exatos em [`stack.md`](../stack.md) § Validation & Quality Commands (testes se `skipTests: false`). Se houver falha, o step pode disparar subagente de apoio para corrigir e revalidar antes do commit.
-4. Shell: stage apenas arquivos do workflow (não `git add .`), commit `feat(us-{id}): implementação US {id}`
-5. Log: `step-7-commit | {sha}` em `commits[]` e `## Gate history`
-6. Sub-gate 8 embutido no gate de avanço → Step 9
+1. Reads the spec (`us-{id}.spec.md`), plan (`us-{id}.plan.md`), and the current code
+2. For each acceptance criterion, checks: **Implemented** / **Not implemented** / **Implemented differently**
+3. Writes `us-{id}.plan.report.md` with the table + additional features + gaps
 
 ### Input
 
-| Campo | Origem |
+| Field | Source |
 |-------|--------|
-| `us-{id}.plan.report.md` | Step 6 |
-| Código unstaged | Step 5 |
-| Decisão do usuário | Gate G2 |
+| Spec | `us-{id}.spec.md` |
+| Plan | `us-{id}.plan.md` |
+| Code | Current working tree |
+| GitHub issue | `us-{id}.issue.json` (optional) |
 
 ### Output
 
-| Artefato | Conteúdo |
-|----------|----------|
-| Commit | `{sha, step: 7, message}` em `commits[]` |
-| Branch atualizada | Código commitado em `state.branch` |
+| Artifact | Path |
+|----------|------|
+| Verification report | `.cursor/plans/us-{id}/us-{id}.plan.report.md` |
 
-### Perguntas frequentes
+### Frequently asked questions
 
-**Pode commitar sem o usuário escolher?** Não — HS-2 proíbe commit oportunístico.
-
-**E se o build falhar?** Não commita; oferece retry ou pausa.
-
-**`skip-tests` afeta o Step 7?** Sim — roda só build; `verification.tests: skipped`.
+**Does Step 6 alter code?** No. Authorization level G0 (read-only). Strictly read-only.
 
 ---
 
-## 13. Sub-gate 8: Preparação para Code Review
+## 12. F3 — Step 7: Decision and 1st Commit
 
-### O que é o Step 8?
+### What is Step 7?
 
-**Sub-gate de modelo** na transição F3→F4, embutido no gate após o Step 7. Garante LLM adequado para review (classe thinking/reviewer).
+**G2 gate** for the first commit. The orchestrator presents verification results (score, findings), then:
+1. **Gate G2** — user decides to approve, reject, or adjust
+2. If approved: runs build (+ tests unless `skipTests`) → on success → `git commit` code only (`src/`, `web/`, `tests/`)
+3. On failure: fix loop with Coder sub-agent, max 3 retries
 
-### Como é feito?
+### G2 gate menu
 
-Mesma lógica do sub-gate 4:
-- Se já é reviewer-class → avança
-- Senão → menu de troca de modelo
-- Log: `model-gate | F3→F4 | …`
-- **Nunca** em `completedSteps`
+- **Approve, validate build/tests and commit code** (Recommended)
+- **Reject — back to Step 5** (revert checkpoint)
+- **Reject — back to Step 6** (adjust verification)
+- **Pause or cancel**
 
-### Input / Output
+### Commit scope
 
-| | |
-|---|---|
-| **Input** | Modelo LLM atual |
-| **Output** | Log; dispatch do Step 9 |
+Only files under `src/`, `web/`, `tests/`. **Never** `.cursor/plans/` files (forbidden until Step 12 delivery commit).
+
+---
+
+## 13. Sub-gate 8: Review Readiness
+
+### What is the sub-gate?
+
+A **model readiness check** embedded in the F3→F4 transition gate (after Step 7). Not a board step. The orchestrator recommends switching to a Thinking/Reviewer-class model for review (Steps 9, 10).
+
+### Options (normal mode)
+
+- **Switch to recommended Reviewer model** (Suggested)
+- **Keep current model**
+- **Choose a different model**
+- **Repeat Step 7**
+- **Go back / Pause**
 
 ---
 
 ## 14. F4 — Step 9: Code Review
 
-### O que é o Step 9?
+### What is Step 9?
 
-**Code review local** do diff da branch vs `master`, usando a skill interna [`code-review`](../06-code-review/SKILL.md) — mesma metodologia do [`fix-pr`](../08-fix-pr/SKILL.md).
+**Local code review** of the diff vs base branch, using the `06-code-review` skill — same methodology as `fix-pr`. The reviewer sub-agent runs a two-phase analysis: triage → investigation with evidence-backed proof.
 
-### Como é feito?
+### How is it done?
 
-1. Subagente Reviewer carrega `.agents/skills/06-code-review/SKILL.md`
-2. Escopo: diff definido em [`stack.md`](../stack.md) § **Code Review Diff Scope (Step 9)**, limitado ao manifest do workflow (`{base_branch}` detectado dinamicamente — ver `stack.md` § Dynamic Environment Detection)
+1. Scoped diff: `git diff {base_branch}...HEAD -- 'src/**' 'web/src/**' 'tests/**'`
+2. **Phase 1 — Triage:** list hypotheses anchored to changed lines (security, correctness, patterns)
+3. **Phase 2 — Investigation + Proof:** for each hypothesis, complete 4 steps (evidence read, failure scenario, missing protection, discards)
+4. **Generalization by class:** sweep sibling occurrences of each confirmed defect
+5. **Review Patterns check:** grep `MEMORY.md` → `## Review Patterns` for applicable patterns
 
-3. Análise em **duas fases** (triagem → investigação com prova)
-4. **Generalização por classe** de defeito — reporta todas as ocorrências
-5. Score gate: reporta apenas issues com score ≥ 6
-6. **Não corrige** — só detecta (correções no Step 10)
+### Classification
 
-### Input
+| Class | Score | Description |
+|-------|-------|-------------|
+| **No feedback** | — | No findings; proceed |
+| **Critical** | 9/10 | Security vulnerability, data loss, broken invariant |
+| **Warning** | 7/10 | Functional issue, missing edge case |
+| **Suggestion** | 6/10 | Clarity, minor improvement |
 
-| Campo | Origem |
-|-------|--------|
-| Diff escopado | `{base_branch}...HEAD` (ver `stack.md`) |
-| `workflowManifest` | State — paths desta US |
-| Skill `code-review` | Metodologia |
+### Frequently asked questions
 
-### Output
+**What if there are no findings?** Report says "No feedback" and workflow advances to Step 10.
 
-| Artefato | Conteúdo |
-|----------|----------|
-| Relatório de review | Critical / Warning / Suggestion com Análise, Caminhos, Score |
-| Ou | **"Sem feedback"** se limpo |
+**Can I apply fixes automatically?** Step 9 is analysis only. Fixes happen in Step 10.
 
 ---
 
-## 15. F4 — Step 10: Correções, 2º Commit e Relatório
+## 15. F4 — Step 10: Fixes, 2nd Commit, and Report
 
-### O que é o Step 10?
+### What is Step 10?
 
-Corrige achados do Step 9 (por **classe de defeito**, não só instância), faz o **segundo commit** e gera o relatório de entrega.
+Fixes findings from Step 9, creates the 2nd commit, and generates `us-{id}.report.md`. The Coder sub-agent applies **surgical fixes** (no scope expansion), runs build/tests, and commits.
 
-### Como é feito?
+### Fix mode
 
-1. Subagente Coder (+ shell) — orquestrador **nunca** implementa fixes
-2. Worktree step-10 (ou branch-direct)
-3. Corrige issues do Step 9 + varre ocorrências irmãs do mesmo padrão
-4. Build & Test Validation Protocol
-5. Merge worktree → branch
-6. **Gate G2** explícito → commit `fix(us-{id}): correções pós-review`
-7. Gera `us-{id}.report.md` (resumo de entrega)
-8. Learning protocol acumula candidatos
-
-### Input
-
-| Campo | Origem |
-|-------|--------|
-| Relatório Step 9 | Critical/Warning list |
-| Código na branch | Pós Step 7 |
+1. Read findings from Step 9 (file:line, severity, analysis)
+2. For each confirmed finding, sweep **sibling occurrences** — fix the class, not the instance
+3. Apply fixes surgically — no refactoring beyond the finding
+4. Run `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` if UI)
+5. If `skipTests`: build only
+6. On failure: fix loop, max 3 retries
+7. G2 gate → `git commit` code only
 
 ### Output
 
-| Artefato | Caminho |
+| Artifact | Content |
 |----------|---------|
-| Código corrigido | Commitado |
-| Relatório de entrega | `.cursor/plans/us-{id}/us-{id}.report.md` |
-| Commit | `{sha, step: 10}` em `commits[]` |
+| Fixed code | Working tree (committed after gate) |
+| `us-{id}.report.md` | Problem → fix → anti-regression test documentation |
 
 ---
 
-## 16. F5 — Step 11: Validação de Integração e Pré-PR
+## 16. F5 — Step 11: Integration Validation and Pre-PR
 
-### O que é o Step 11?
+### What is Step 11?
 
-**Bateria de validação** antes da PR: plano de testes de integração, execução (build, testes, seed, API, browser opcional) e loop de correção.
+**Integration test battery** before opening a PR. Generates a test plan, runs build + automated tests, executes API/permission checks, and optionally browser tests.
 
-### Como é feito?
+### How is it done?
 
-**Se `skipIntegration: true`:** step inteiro pulado → Step 12.
+1. Generate `us-{id}.integration-test.plan.md` with 8 sections (Prerequisites, Seed, Build/Tests, API, Permissions, Browser, Evidence, Exit criteria)
+2. Present plan → gate: **Approve and run** / **Adjust plan** / **Skip** / **Pause**
+3. On approve: build → tests → seed → API checks → permission matrix → browser (if gated and normal mode)
+4. On failure: fix → revalidate, max 3 iterations
+5. Write `us-{id}.integration-test.report.md` — pass/fail per AC
 
-Caso contrário:
-1. Gera `us-{id}.integration-test.plan.md` a partir dos ACs
-2. Exibe plano ao usuário (gate de confirmação — pulado em `auto`)
-3. Se aprovado:
-   - §1–§5: build, testes, seed, API/permissões/segurança
-   - §6 browser: **só** se `autoMode: false` **e** `dryRun: false`
-4. Gera `us-{id}.integration-test.report.md`
-5. Loop de correção (máx. 3 iterações) se houver falhas
-6. Opção **Pular validação** → Step 12 com warning
+### Browser tests
 
-### Input
-
-| Campo | Origem |
-|-------|--------|
-| ACs / plano / relatórios | Steps 1–10 |
-| Flags | `skipIntegration`, `skipTests`, `autoMode`, `dryRun` |
-| Ambiente local | API, DB seed, credenciais |
-
-### Output
-
-| Artefato | Caminho |
-|----------|---------|
-| Plano de testes | `.cursor/plans/us-{id}/us-{id}.integration-test.plan.md` |
-| Relatório | `.cursor/plans/us-{id}/us-{id}.integration-test.report.md` |
-| Commits de fix | `{sha, step: 11}` (se loop de correção) |
-
-### Perguntas frequentes
-
-**Browser roda em `auto`?** Nunca. UI ACs marcados como `⏭ pulado`.
-
-**Qual a diferença entre `skip-integration` e "Pular validação"?** `skip-integration` é flag na invocação (pula step inteiro); "Pular validação" é escolha no gate do Step 11.
-
-**Quantas iterações de correção?** Máximo 3; depois hard stop ou aceitar com ressalvas.
+| Mode | Browser |
+|------|---------|
+| Normal + gated | `CallMcpTool` cursor-ide-browser |
+| Auto | Skipped (auto-gate: **Approve without browser**) |
+| Dry-run | Skipped |
+| `skipIntegration` | Step 11 skipped entirely |
 
 ---
 
-## 17. F6 — Step 12: Consolidação e Limpeza Final
+## 17. F6 — Step 12: Consolidation and Final Cleanup
 
-### O que é o Step 12?
+### What is Step 12?
 
-**Fechamento** do workflow: sweep final da consolidação de documentação (§Doc), eventuais ajustes remanescentes em `MEMORY.md`, limpeza de temporários e **consentimento de push** (G3).
+**Delivery consolidation** and optional cleanup. The orchestrator:
+1. Generates `{slug}.result.md` (delivery summary with benchmark)
+2. Captures LOC delta and computes benchmark (wall-clock time, tokens, LOC)
+3. Updates plan checkmarks (`{slug}.plan.md`)
+4. **MEMORY.md sweep** — promotes generalizable learnings from `## Workflow memory` to root `MEMORY.md`
+5. **G2-delivery gate** — commits `{slug}.plan.md` + `{slug}.result.md` only
+6. **Cleanup gate** — delete temp artifacts (`.plan.exec.md`, `.exec.dag.json`, worktrees, tags) or keep all
+7. **Push consent** — optional; tags never pushed
+8. Sets `status: completed`
 
-### Como é feito?
+### Step 12 delivery commit
 
-1. Gate: consolidar docs + limpar temporários?
-2. **Learning write flow final:** revisar candidatos ainda pendentes para `MEMORY.md` (só patterns técnicos genéricos, gate do usuário)
-3. Atualiza `state.md`: `status: completed`, `completedSteps: [0..12]`, `endedAt`
-4. Progress Board final (todos `[x]`)
-5. Limpeza opcional:
-   - `plan.exec.md`, `exec.dag.json`
-   - Worktrees `step-*/`
-   - Branches `uswf/{id}/step-*`
-   - Baseline/archive internos
-   - Tags checkpoint `uswf/{id}/*`
-6. **Push consent (G3):** pergunta se deseja push — nunca automático
-7. Lembrete: **abrir PR é manual** (fora do escopo)
+Only two files are committed: `{slug}.plan.md` (with updated checkmarks) and `{slug}.result.md`.
 
-### Input
+### Benchmark report
 
-| Campo | Origem |
-|-------|--------|
-| `learning` acumulado | Todos os steps que produziram aprendizado relevante |
-| `## Doc consolidation log` | Todos os steps |
-| Commits na branch | Steps 7, 10, 11 |
-
-### Output
-
-| Artefato | Conteúdo |
-|----------|----------|
-| `state.md` | `status: completed` |
-| `MEMORY.md` | Atualizado (se aprovado) |
-| Branch limpa | Sem worktrees/tags locais do workflow |
-
----
-
-## 18. Gates, navegação e checkpoints
-
-### O que é o Transition Gate?
-
-Menu `AskQuestion` após cada step: **Avançar** | **Repetir** | **Voltar (Previous)** | **Pausar**. Em modo normal, o próximo step só dispara **após** a seleção.
-
-### O que é a Authorization Ladder?
-
-| Nível | Operação | Gate |
-|-------|----------|------|
-| G0 | Leitura | Nenhum |
-| G1 | Editar arquivos | Transition gate |
-| G2 | `git commit` | Steps 7, 10, 11 |
-| G3 | `git push` | Step 12 apenas |
-
-### O que são os checkpoints git?
-
-Tags locais **nunca pushed**:
-
-```text
-uswf/{workflow-id}/before-step-1   # baseline (Step 0)
-uswf/{workflow-id}/before-step-2   # antes do Step 1
-…
-uswf/{workflow-id}/before-step-13  # após Step 12
+```markdown
+## Benchmark
+| Metric | Value |
+|--------|-------|
+| Total wall-clock time | {h}h {m}m {s}s |
+| Steps executed | {N} |
+| Total tokens | {sum} |
+| Lines +/- | +{added}/-{removed} |
 ```
 
-Usados pelo **Checkpoint Revert Algorithm** para voltar/repetir steps sem afetar arquivos pré-existentes fora do workflow.
+---
 
-### O que é Backward Navigation?
+## 18. Gates, navigation, and checkpoints
 
-Voltar a **qualquer step já concluído** (1–3, 5–7, 9–11):
-1. Escolher fase → step alvo `M`
-2. Preview do que será desfeito vs preservado
-3. Confirmar → revert + redispatch do Step M
+### Transition Gate (after every step)
 
-**Desabilitado em `autoMode`** — sugerir mudar para modo normal.
+| Action | Menu option |
+|--------|-------------|
+| **Next** | Advance to Step N+1 |
+| **Repeat** | Repeat Step N (partial revert if `files_touched` exists) |
+| **Previous** | Go back to earlier step — sub-menu by phase |
+| **Pause** | Pause / cancel without revert / cancel and revert all |
 
-### O que é State Hygiene?
+### Authorization Ladder
 
-Após cada step o orquestrador sincroniza `## Step file log`, manifest, `completedSteps` e valida existência de arquivos/commits **antes** do Progress Board. Falha → **HS-5** (stop).
+| Level | Operations | Gate |
+|-------|------------|------|
+| G0 | Read, RO reports | — |
+| G1 | Edit plans, state (no commit) | Transition gate |
+| G2-code | `git commit` code only (`src/`, `web/`, `tests/`) | Steps 7, 10, 11 fix |
+| G2-delivery | `git commit` `{slug}.plan.md` + `{slug}.result.md` | Step 12 |
+| G3 | `git push`, PR | Step 12 consent |
+
+### Hard stops
+
+| Code | Condition |
+|------|-----------|
+| HS-1 | AskQuestion cancelled → stop; never infer "yes" |
+| HS-2 | Commit without explicit gate → stop |
+| HS-2a | `git add` `.cursor/plans/` during Steps 0–11 → stop |
+| HS-3 | Mutating step success + empty `files_touched` → failed |
+| HS-4 | Step 5/10/11 success without expected files on branch → failed |
+| HS-5 | State hygiene failed → stop before Progress Board |
+
+### Git checkpoints
+
+Local tags `uswf/{workflow-id}/before-step-{N}` created after each step. Used for **Backward Navigation** and **Repeat Step N**. Never pushed.
 
 ---
 
-## 19. Artefatos e estado compartilhado
+## 19. Artifacts and shared state
 
-### Onde ficam os arquivos?
+### Workflow artifacts
 
-Tudo sob `.cursor/plans/us-{id}/` — **nada** em `.agents/`.
+Everything under `.cursor/plans/{slug}/` (one per feature/US). `MEMORY.md` is shared at root.
 
-| Artefato | Caminho |
-|----------|---------|
-| Estado | `{workflow-id}.state.md` |
-| Issue GitHub | `us-{id}.issue.json` |
-| Plano | `us-{id}.plan.md` |
-| Exec | `us-{id}.plan.exec.md` |
-| DAG | `us-{id}.exec.dag.json` |
-| Verificação | `us-{id}.plan.report.md` |
-| Entrega | `us-{id}.report.md` |
-| Testes integração | `us-{id}.integration-test.plan.md` / `.report.md` |
-| Worktrees (gitignored) | `worktrees/step-{N}/` |
-| Memória compartilhada | `MEMORY.md` (raiz) |
+| Artifact | Path |
+|----------|------|
+| State | `.cursor/plans/{slug}/{workflow-id}.state.md` |
+| Spec (canonical) | `.cursor/plans/{slug}/{slug}.spec.md` |
+| GitHub issue (optional) | `.cursor/plans/{slug}/{slug}.issue.json` |
+| Plan | `.cursor/plans/{slug}/{slug}.plan.md` |
+| Execution plan | `.cursor/plans/{slug}/{slug}.plan.exec.md` |
+| DAG | `.cursor/plans/{slug}/{slug}.exec.dag.json` |
+| Verification | `.cursor/plans/{slug}/{slug}.plan.report.md` |
+| Delivery | `.cursor/plans/{slug}/{slug}.report.md` |
+| Integration test plan | `.cursor/plans/{slug}/{slug}.integration-test.plan.md` |
+| Integration test report | `.cursor/plans/{slug}/{slug}.integration-test.report.md` |
+| Delivery result | `.cursor/plans/{slug}/{slug}.result.md` |
+| Technical memory (root) | `MEMORY.md` |
 
-### O que é o `step-output`?
+### State file sections (`state.md`)
 
-Contrato de retorno de cada subagente:
-
-| Campo | Descrição |
-|-------|-----------|
-| `status` | `success` \| `partial` \| `failed` \| `needs_user` |
-| `step` | Número do step |
-| `artifacts[]` | Paths + `exists: true/false` |
-| `summary` | 3–5 bullets para o usuário |
-| `evidence` | Comandos/checks executados |
-| `decisions` | Decisões de domínio |
-| `learning` | Pattern/trap candidato ou `N/A` |
-| `errors` + `retry_hint` | Para retry (máx. 3) |
-
-### O que é o Progress Board?
-
-Checklist markdown em pt-BR renderizado no chat: progresso steps 0–12, tasks DAG (Step 5), artefatos-chave. Comando `/status` renderiza só o board, sem dispatch.
+- Workflow baseline (`workflowId`, `slug`, `branch`, `baselineCommit`)
+- Manifest (`completedSteps`, `stepStatus`, `skippedSteps`, `execMode`)
+- Context (`currentModel`, `modelChain`, `refineRound`)
+- Artifacts (`specPath`, `specSnapshot`, `resultSnapshot`)
+- Step outputs (all `### Step N` blocks)
+- Workflow memory (learnings, traps within this workflow)
+- Accumulated decisions (design choices, deviations)
+- Doc consolidation log (docs updated)
+- Gate history (model changes, auto-gates, checkpoints)
+- Telemetry (timing, tokens, LOC per step)
 
 ---
 
-## 20. Modos especiais (auto, dry-run, skip)
+## 20. Special modes: Auto, Dry-run, Skip
 
-### Modo automático (`auto`)
+### Auto mode (`auto`)
 
-| Aspecto | Comportamento |
-|---------|---------------|
-| Gates | Sempre opção recomendada (primeira) |
-| Dispatch | Próximo step no **mesmo turno** |
-| Resume | Só workflow `autoMode: true` da **mesma US** |
-| Browser | Nunca no Step 11 |
-| Prefixo | `[AUTO]` nas mensagens |
-| Hard stops | HS-3, HS-4, HS-5 ainda pausam |
+| Aspect | Behavior |
+|--------|----------|
+| Menus | All auto-selected (option 0) |
+| Gates | Auto-advance to next step |
+| Dispatch | Next step in **same turn** |
+| Resume | Only `autoMode: true` workflow for **same US** |
+| Browser | Never in Step 11 |
+| Prefix | `[AUTO]` in messages |
+| Hard stops | HS-3, HS-4, HS-5 still pause |
 
 ### Dry-run (`dry-run`)
 
-| Aspecto | Comportamento |
-|---------|---------------|
-| Código | Steps 5, 10, 11 **não editam** `src/Matrix.`/`web/src/` |
-| Commits | Simulados apenas |
-| Worktrees | Não criados |
-| MEMORY.md | Não alterado |
-| Browser | Nunca |
-| Prefixo | `[DRY-RUN]` |
+| Aspect | Behavior |
+|--------|----------|
+| Code | Steps 5, 10, 11 **do not edit** source files |
+| Commits | Simulated only |
+| Worktrees | Not created |
+| MEMORY.md | Not changed |
+| Browser | Never |
+| Prefix | `[DRY-RUN]` |
 
 ### `skip-integration`
 
-Pula **Step 11 inteiro** — sem plano, sem bateria, sem browser. Vai direto ao Step 12.
+Skips **Step 11 entirely** — no plan, no battery, no browser. Goes directly to Step 12.
 
 ### `skip-tests`
 
-Pula os comandos de **teste** em [`stack.md`](../stack.md) nos Steps 7, 10 e §3 do Step 11. **Build continua** — commit nunca em build quebrado.
+Skips **test** commands in `stack.md` at Steps 7, 10, and Step 11 §3. **Build still runs** — commit never with broken build.
 
 ---
 
 ## 21. Troubleshooting
 
-### O workflow parou com HS-5 — o que fazer?
+### The workflow stopped with HS-5 — what now?
 
-State Hygiene falhou (arquivo/commit esperado ausente). Verifique `state.md` vs disco; rode `validate_state.py`. Corrija inconsistência e retome com `/us-workflow {id}`.
+**HS-5 (State Hygiene failed):** The post-step state validation (`validate_state.py`) detected inconsistencies. The step block contains the error details. **Do not retry blindly** — the state may be corrupt. Options:
+1. **Pause** (Recommended) — inspect `state.md` manually, fix, resume
+2. **Repeat Step N** — triggers checkpoint revert; state is recreated from last valid checkpoint
+3. **Cancel** — clean abort
 
-### Step 5 retornou success mas arquivos não existem (HS-4)
+### Step 5/10/11 shows HS-3 or HS-4
 
-Tratado como FAILED. Orquestrador oferece retry (até 3x com backoff 0s/30s/60s).
+**HS-3:** Step succeeded but `files_touched` is empty → possible simulation or dry-run without flag. Check `dryRun` in state. If not dry-run, the sub-agent may have failed silently → **Repeat Step N** to re-dispatch.
 
-### Quero voltar ao Step 1 depois de implementar
+**HS-4:** Step 5/10/11 succeeded but expected files are not on `state.branch`. The worktree/branch-direct merge may have failed → check `## Gate history` for worktree logs. **Repeat Step N** after manual inspection.
 
-Use **Backward Navigation** no Transition Gate (modo normal): Previous → Planejamento → Step 1. Preview + confirm → Checkpoint Revert.
+### The workflow paused mid-step — can I resume?
 
-### Worktree falhou no Windows
+Yes. Re-invoke with the same US number: `/us-workflow 2416`. The orchestrator detects `status: active` and offers to resume. In auto mode, pass `auto US 2416`.
 
-**Worktree Fallback** usa `branch-direct` — edita na branch sem worktree. Logado no state.
+### How do I switch models mid-workflow?
 
-### Posso retomar depois de pausar?
+Every **Transition Gate** (after each step) includes a **Switch model and advance** option. In **auto mode**, use `--model-chain` at invocation to pre-specify per-step models: `--model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4`.
 
-Sim: `/us-workflow {id}` ou `@[us-workflow] {id}` — Step 0 detecta estado ativo e oferece continuar.
+### What happens if I cancel an AskQuestion?
 
-### O orquestrador implementou código no Step 10 — é bug?
+The orchestrator **never infers "yes"**. HS-1 activates: stop, re-present the gate with a warning.
 
-Sim — violação das Conduct Rules. Steps 5/10/11 code work é **sempre** subagente Coder.
+### Step 11 wants to use the browser but I'm on auto/dry-run
 
-### Onde está a especificação completa?
+Browser is skipped automatically in auto, dry-run, and `skipIntegration` modes. If you're in normal mode and don't want browser, choose **Run without browser** at the test plan gate.
 
-[`SKILL.md`](../SKILL.md) — fonte de verdade para o orquestrador. Este FAQ é guia humano; em caso de divergência, prevalece o agente.
+### Build/tests fail and I'm stuck in a fix loop
 
----
-
-## Mapa de evidências
-
-| Tópico | Arquivo |
-|--------|---------|
-| Visão geral e happy path | [`README.md`](../README.md) |
-| Steps, protocols, gates | [`SKILL.md`](../SKILL.md) |
-| Diagramas Mermaid | [`DIAGRAM.md`](../DIAGRAM.md) |
-| Validação de state | [`scripts/validate_state.py`](../scripts/validate_state.py) |
-| Memory conflict | [`scripts/check_memory_conflict.py`](../scripts/check_memory_conflict.py) |
-| Code review (Step 9) | [`.agents/skills/06-code-review/SKILL.md`](../06-code-review/SKILL.md) |
-| GitHub issue fetch | [`scripts/github-issue-to-spec.py`](../scripts/github-issue-to-spec.py) (via `gh issue view {n}`) |
+Max 3 retries per step. After exhaustion, the workflow pauses with a warning. Options:
+1. **Pause** — fix the issue manually, then resume
+2. **Repeat Step** — revert to checkpoint and re-dispatch
+3. **Skip validation** (Step 11 only) — advance without passing
+    

@@ -53,7 +53,7 @@ These override generic DDD/CQRS advice when they conflict.
 
 ## Backend audit criteria (C# .NET)
 
-Apply within the [code-review](../code-review/SKILL.md) touch set (whole changed files + one-hop references). Flag systemic layer violations even outside the diff hunk.
+Apply within the [code-review](../06-code-review/SKILL.md) touch set (whole changed files + one-hop references). Flag systemic layer violations even outside the diff hunk.
 
 ### Modern syntax (suggestions on touched code)
 

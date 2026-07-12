@@ -21,7 +21,7 @@ description: >-
 
 ## Native tool contract
 
-Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](config.json). Never narrate undone work.
+Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](.agents/skills/us-workflow/config.json). Never narrate undone work.
 
 | Intent | Tool alias | Native | Rule |
 |--------|------------|--------|------|
@@ -82,7 +82,7 @@ Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
 |----------|------|
 | Orchestrator | `SKILL.md` |
 | **Setup** | `setup.md` — initialization, config bootstrap, flags, resume, stack file generation |
-| **Config** | `config.json` — project identity, stack, issue trackers, verification commands, invariants |
+| **Config** | `.agents/skills/us-workflow/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
 | Scripts | `check_memory_conflict.py`, `validate_state.py`, `github-issue-to-spec.py` |
@@ -91,7 +91,7 @@ Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
 | Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-tasks`→5 build, 10/11 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
 | Spec | `spec-format` |
 
-Filesystem paths use numeric prefix; skill `name:` unprefixed. Post-12 PR: [`code-review`](../code-review/SKILL.md) / [`fix-pr`](../08-fix-pr/SKILL.md).
+Filesystem paths use numeric prefix; skill `name:` unprefixed. Post-12 PR: [`code-review`](../06-code-review/SKILL.md) / [`fix-pr`](../08-fix-pr/SKILL.md).
 
 ### Work dir `{us-dir}` = `.cursor/plans/{slug}/`
 

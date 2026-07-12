@@ -1,279 +1,292 @@
-# US Delivery Workflow — Guia rápido
+# US Delivery Workflow
 
-> **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) v9.1 — English agent contract; do not use it for onboarding. Use this README + FAQ + diagrams.
+> **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract; do not use it for onboarding. Use this README + FAQ + diagrams.
 >
-> **v9.1:** English-only orchestrator output. Native tools (`Task`, `AskQuestion`, `Shell`, MCP). Tools via [`tools.md`](tools.md). Config via [`config.json`](config.json). Project-agnostic — skills detect stack from config. Steps delegate skills `00`–`07`, `09`, `11`. Step 0 Spec Creation. `--full` flag activates Step 13 (Ship & PR). Per-step model recording.
+> **v10.0:** English-only output. Native tools (`Task`, `AskQuestion`, `Shell`, MCP). Tools via [`tools.md`](tools.md). Config via [`config.json`](.agents/skills/us-workflow/config.json). Project-agnostic — skills detect stack from config. Steps delegate skills `00`–`07`, `09`, `11`. Step 0 Spec Creation. `--full` flag activates Step 13 (Ship & PR). Per-step model recording.
 
-Pipeline ponta a ponta para entregar uma User Story no Matrix usando **orquestrador + subagentes** com contexto limpo, estado compartilhado e gates de confirmação (incluindo troca de modelo LLM).
+End-to-end pipeline for delivering a User Story using **orchestrator + sub-agents** with clean context, shared state, and confirmation gates (including LLM model switching).
 
-O **`us-workflow`** coordena a execução de etapas através de skills compostas. Cada step é executado por subagentes em contextos específicos e isolados, consumindo e atualizando o estado compartilhado (`state.md` e `MEMORY.md`). Cada etapa recebe um input e gera um output preciso, permitindo que os passos seguintes reutilizem o conhecimento adquirido e as decisões acumuladas. Isso evita a reintrodução de erros e garante a continuidade das auto-correções realizadas durante o fluxo.
+The **`us-workflow`** coordinates execution steps through composable skills. Each step runs in isolated sub-agent contexts, consuming and updating shared state (`state.md` and `MEMORY.md`). Each step receives input and produces precise output, allowing subsequent steps to reuse acquired knowledge and accumulated decisions.
 
-## Objetivos Centrais
-1. **Entrega de Ponta a Ponta:** Automatizar o ciclo completo de entrega de uma User Story/Feature, da especificação ao PR/Merge (etapas 0 a 13).
-2. **Isolamento de Contexto e Estado:** Executar cada etapa em uma Task limpa e isolada com worktrees específicos por step, mantendo a integridade do estado compartilhado (`state.md` + `MEMORY.md`).
-3. **Segurança e Confirmações:** Exigir gates de transição explícitos e verificação de prontidão de modelo antes das fases de código e revisão para prevenir commits errôneos.
-4. **Portabilidade:** Manter o fluxo de orquestração agnóstico de stack e totalmente guiado por configuração, resolvendo caminhos e comandos dinamicamente através de `config.json` e `stack.md`.
+## Core Goals
+1. **End-to-End Delivery:** Automate the complete feature/US lifecycle from specification to PR/Merge (steps 0 to 13).
+2. **Context Isolation & State Hygiene:** Execute each step in a clean, isolated Task with step-specific worktrees, maintaining shared state integrity (`state.md` + `MEMORY.md`).
+3. **Safety & Gates:** Require explicit transition gates and model readiness checks before coding and review phases to prevent accidental commits.
+4. **Portability:** Keep the orchestration FSM stack-agnostic and configuration-driven, resolving all project metadata and commands dynamically from `config.json` and `stack.md`.
 
-> **v8.1:** **7 fases (F0–F6)** sobre steps internos 0–12; **Authorization Ladder** (gates enforced + hard stops HS-1..5); **Refinement FSM**; **Worktree Fallback**; **State Hygiene** obrigatório (+ `validate_state.py`); steps 4/8 são **sub-gates de modelo**; `state.md` registra memória local por workflow e `MEMORY.md` concentra padrões compartilhados.
+| Document | Audience | Content |
+|----------|----------|---------|
+| **This README** | Humans + agents | Overview, phases, steps, gates, happy path |
+| [`docs/faq.md`](docs/faq.md) | Humans + clients | FAQ in execution order — what each step does, input/output, common questions |
+| [`SKILL.md`](SKILL.md) | **Agent (FSM)** | English agent contract; no plan-dir commits until Step 12; `{slug}.result.md` delivery |
+| [`stack.md`](stack.md) | Orchestrator + sub-agents | Stack definition — build/test commands, paths, rules, diff scope |
+| [`DIAGRAM.md`](DIAGRAM.md) | Visual reference | Mermaid flowcharts |
 
-| Documento | Público | Conteúdo |
-|-----------|---------|----------|
-| **Este README** | Humanos + agentes | Visão geral, fases, steps, gates, happy path |
-| [`docs/faq.md`](docs/faq.md) | Humanos + clientes | FAQ na ordem de execução — o que cada step faz, input/output, dúvidas frequentes |
-| [`SKILL.md`](SKILL.md) | **Agent (FSM)** | v8.5 — English; no plan-dir commits until Step 12; `{slug}.result.md` delivery |
-| [`stack.md`](stack.md) | Orquestrador + subagentes | Stack .NET 10 + React/Vite — comandos build/test/lint, paths, regras e diff scope |
-| [`DIAGRAM.md`](DIAGRAM.md) | Referência visual | Fluxogramas Mermaid |
-
-**Entrada no projeto:** [`AGENTS.md`](../../../AGENTS.md).
+**Project entry:** [`AGENTS.md`](../../../AGENTS.md).
 
 ---
 
-## Fases (visão v8.1)
+## Phases
 
-| Fase | Nome | Steps | Executor |
-|------|------|-------|----------|
-| **F0** | Bootstrap | 0 | Orquestrador |
-| **F1** | Especificação | 1, 2, 3 | Subagente (Planner) |
-| **F2** | Implementação | 4†, 5 | Subagente (Coder) |
-| **F3** | Verificação + 1º commit | 6, 7 | Subagente (Verifier) + Orquestrador + shell |
-| **F4** | Review + correções | 8†, 9, 10 | Subagente (Reviewer + Coder) |
-| **F5** | Integração pré-PR | 11 | Subagente (Verifier) + browser opcional |
-| **F6** | Fechamento | 12 | Orquestrador + shell |
+| Phase | Name | Steps | Executor |
+|-------|------|-------|----------|
+| **F0** | Bootstrap | 0 | Orchestrator |
+| **F1** | Specification | 1, 2, 3 | Sub-agent (Planner) |
+| **F2** | Implementation | 4†, 5 | Sub-agent (Coder) |
+| **F3** | Verification + 1st commit | 6, 7 | Sub-agent (Verifier) + Orchestrator + shell |
+| **F4** | Review + fixes | 8†, 9, 10 | Sub-agent (Reviewer + Coder) |
+| **F5** | Pre-PR integration | 11 | Sub-agent (Verifier) + optional browser |
+| **F6** | Closure | 12, 13 | Orchestrator + shell (+ ship sub-agent when `--full`) |
 
-† Steps **4 e 8** não são mais steps do board — são **sub-gates de modelo** (F1→F2 e F3→F4), nunca entram em `completedSteps`.
+† Steps **4 and 8** are **model sub-gates** (F1→F2 and F3→F4), never in `completedSteps`.
 
-### Happy path (v8.1)
+### Happy path
 
 ```text
 /us-workflow 2416
-  → F0: bootstrap, issue GitHub (gh), state, gate → F1
-  → F1: plan (1) → refinement FSM se blocking (2) → DAG (3) → model sub-gate → F2
-  → F2: implementa DAG na branch (worktree se estável, senão branch-direct) → verify files/build → gate → F3
-  → F3: report readonly (6) → gate COMMIT explícito G2 (7) → model sub-gate → F4
-  → F4: review diff escopado (9) → gate → fix subagente Coder (10) → gate COMMIT G2 → F5
-  → F5: plano integração → gate → bateria (+ browser se aprovado) → F6
-  → F6: §Doc → cleanup → consentimento de push (opcional) → completed
+  → F0: bootstrap, issue fetch (gh), state, gate → F1
+  → F1: plan (1) → refinement FSM if blocking (2) → DAG (3) → model sub-gate → F2
+  → F2: implement DAG on branch (worktree if stable, else branch-direct) → verify files/build → gate → F3
+  → F3: readonly report (6) → explicit G2 commit gate (7) → model sub-gate → F4
+  → F4: scoped diff review (9) → gate → fix sub-agent Coder (10) → G2 commit gate → F5
+  → F5: integration plan → gate → test battery (+ browser if approved) → F6
+  → F6: §Doc → cleanup → push consent (optional) → completed
 ```
 
-Pausa em qualquer gate → "Pausar workflow" → estado salvo; retomar com `/us-workflow 2416`.
+Pause at any gate → "Pause workflow" → state saved; resume with `/us-workflow 2416`.
 
 ---
 
-## Como iniciar
+## How to start
 
 ```text
 @[us-workflow] 2338
 @[us-workflow] dry-run 2338
 @[us-workflow] auto 2338
-@[us-workflow] automatico dry-run 2338
+@[us-workflow] auto dry-run 2338
 @[us-workflow] auto skip-integration 2338
 @[us-workflow] auto skip-tests skip-integration 2338
 @[us-workflow] us-2375.plan.md
 @[us-workflow] soft-delete em fornecedores
+@[us-workflow] --model sonnet-4 auto US 567
+@[us-workflow] --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 123
 ```
 
-Estado persistente: `.cursor/plans/us-{id}/{workflow-id}.state.md` (campos `dryRun`, `autoMode`, `skipIntegration`, `skipTests`). **Tudo** do workflow vive sob `.cursor/plans/us-{id}/` — nada é gravado em `.agents/`.
+Persistent state: `.cursor/plans/us-{id}/{workflow-id}.state.md` (fields `dryRun`, `autoMode`, `skipIntegration`, `skipTests`, `fullMode`). **Everything** workflow lives under `.cursor/plans/us-{id}/` — nothing written to `.agents/`.
 
-Ao iniciar em **modo normal**, o workflow verifica se já existe estado ativo em `.cursor/plans/*/*.state.md`. Se existir, apresenta menu para checar e continuar, iniciar um novo workflow ou cancelar.
+On **normal mode** start, the workflow checks for existing active state in `.cursor/plans/*/*.state.md`. If found, presents a menu to resume, start new, or cancel.
 
-### Modo automático (`auto` / `automatico`)
+### Auto mode (`auto` / `automatico`)
 
-Pipeline **sem menus interativos**: o orquestrador escolhe sempre a **opção recomendada** de cada gate e dispara o próximo step no mesmo turno.
+Pipeline **without interactive menus**: the orchestrator always picks the **recommended option** at each gate and dispatches the next step in the same turn.
 
-- **Retoma** apenas workflow **`autoMode: true` ativo da mesma US** (continua de `currentStep`).
-- **Ignora** outros workflows ativos (qualquer US/modo) — inicia fluxo novo se não houver auto ativo para aquela US.
-- **Combina com dry-run** → simulação completa sem commits nem edição de código; **browser sempre pulado** no Step 11.
-- **Hard stop** em falhas irrecuperáveis (3 retries, build/test esgotado) — pausa e avisa; reinvocar `auto US {id}` retoma.
+- **Resumes** only an active `autoMode: true` workflow for the same US (continues from `currentStep`).
+- **Ignores** other active workflows (any US/mode) — starts fresh if no active auto for that US.
+- **Combines with dry-run** → full simulation without commits or code edits; **browser always skipped** at Step 11.
+- **Hard stop** on unrecoverable failures (3 retries, build/test exhausted) — pauses and warns; re-invoke `auto US {id}` resumes.
 
-Prefixo nas mensagens: `[AUTO]` (e `[DRY-RUN]` se aplicável).
+Prefix on messages: `[AUTO]` (and `[DRY-RUN]` if applicable).
 
-Em **auto** e/ou **dry-run**, cada step exibe banners obrigatórios no chat:
+In **auto** and/or **dry-run**, each step displays required banners:
 
 ```text
-**Iniciando step 5 Implementação (DAG)**
+**Starting step 5 Implementation**
 …
-**Fim do step 5 Implementação (DAG)**
+**Finished step 5 Implementation**
 ```
 
-### Dry-run (simulação)
+### Dry-run (simulation)
 
-Simula o fluxo completo (gates, planos, exec, verify, review, **validação integração**) **sem**:
+Simulates the full flow (gates, plans, exec, verify, review, **integration validation**) **without**:
 
-- commits ou push
-- edição de `src/Matrix.` / `web/src/` (steps 5, 10 e correções do 11)
-- automação browser / seed de dados
+- commits or push
+- editing `src/` / `web/` / `tests/` (steps 5, 10, and 11 fixes)
+- browser automation / data seed
 - worktrees
-- alterações em `MEMORY.md` (raiz)
+- changes to `MEMORY.md` (root)
 
-Útil para validar plano e DAG antes de implementar. Detalhes em [`SKILL.md`](SKILL.md).
+Useful for validating plan and DAG before implementing. Details in [`SKILL.md`](SKILL.md).
 
-### Flags de skip (`skip-integration` / `skip-tests`)
+### Skip flags (`skip-integration` / `skip-tests`)
 
-Flags independentes, combináveis com `auto` e `dry-run`, em qualquer ordem:
+Independent flags, combinable with `auto` and `dry-run`, in any order:
 
-- **`skip-integration`** (ou `pular-integracao`) → `skipIntegration: true`: pula o **Step 11 por completo** — não gera plano de testes de integração, não executa bateria nem browser. Marca `11` em `skippedSteps`/`completedSteps`, registra no `## Gate history` e avança direto ao Step 12. Em **auto**, é a forma de pular toda a parte de integração/browser.
-- **`skip-tests`** (ou `pular-testes`) → `skipTests: true`: pula a **execução das suites de teste** registradas em [`stack.md`](stack.md) no **Build & Test Validation Protocol** (Steps 7 e 10) e no §3 do Step 11. O **build continua rodando** (comandos de build em `stack.md`) — commit nunca acontece com build quebrado. `verification.tests: skipped`; avisa o usuário uma vez.
+- **`skip-integration`** → `skipIntegration: true`: skips **Step 11 entirely** — no integration test plan, no battery, no browser. Marks `11` in `skippedSteps`/`completedSteps`, logs in `## Gate history`, advances to Step 12.
+- **`skip-tests`** → `skipTests: true`: skips **test suite execution** in the Build & Test Validation Protocol (Steps 7 and 10) and Step 11 §3. **Build still runs** — commit never happens with broken build. `verification.tests: skipped`; warns user once.
 
----
+### Full mode (`--full`)
 
-## Steps enumerados
+Activates Step 13 (Ship & PR): push → create PR → goal-fix-pr monitoring loop → merge. Default: off.
 
-Cada step termina com **consolidação de documentação** (§Doc), **checkpoint git** (`before-step-{N+1}`) e **Transition Gate** com navegação **next / repeat / previous / pause**. Steps 4 e 8 integram troca de modelo no gate (sem turno separado). Todas as decisões do usuário são **menus de opções** (`AskQuestion`), não texto livre.
+### Model flags
 
-| # | Nome | Quem executa | Objetivo |
-|---|------|--------------|----------|
-| **0** | Bootstrap | Orquestrador | State, snapshot da issue, contexto MEMORY |
-| **1** | Planejar | Subagente | `us-{id}.plan.md` (Condicional — pulado se Execução Dinâmica ativo) |
-| **2** | Refinement | Subagente | Grilling do plano (Condicional — pulado se Execução Dinâmica ativo) |
-| **3** | Exec + DAG | Subagente | `*.plan.exec.md` + `*.exec.dag.json` + memory-conflict |
-| **4†** | **Coder readiness** | **Sub-gate F1→F2** | Troca para modelo Coder embutida no gate (não é step do board) |
-| **5** | Implementar | Subagente(s) Coder | Código por level do DAG (paralelo até 3) + learning |
-| **6** | Verificar | Subagente (readonly) | `us-{id}.plan.report.md` (tabela de qualidade da implementação vs plano) |
-| **7** | Decidir + commit | Orquestrador + subagente + shell | Gate G2; pode disparar validação/correção antes do commit e depois commitar ou voltar ao Step 5 |
-| **8†** | **Review readiness** | **Sub-gate F3→F4** | Troca para modelo de review embutida no gate (não é step do board) |
-| **9** | Code review | Subagente | Critical / Warning (diff vs master) |
-| **10** | Fix + fechar | Subagente + shell | 2º commit + `us-{id}.report.md` + learning |
-| **11** | **Validação integração** | Subagente + browser + shell | Bateria de testes (gerar plano, exibir p/ revisão, pular/executar) |
-| **12** | Cleanup | Orquestrador + shell | §Doc final, limpeza temporários, consentimento de push |
-
-### Step 11 — validação de integração (resumo)
-
-Antes de executar os testes de integração e abrir a PR (manual), o workflow:
-
-1. Roda o **Integration Validation Protocol** e elabora o plano de testes `us-{id}.integration-test.plan.md`.
-2. Exibe o plano (ou resumo) ao usuário e pergunta se deseja continuar ou pular (pulado em **auto**).
-3. Se **Aprovar e executar** (modo normal): build, testes, seed, API/permissões — **browser só se não for auto nem dry-run**.
-4. Em **`auto` ou `dry-run`:** **§6 browser sempre pulado** — relatório marca UI ACs como `⏭ pulado`; validar UI manualmente antes da PR.
-5. **Pular validação:** avança direto ao Step 12.
-6. Falhas: correções → revalida (até 3 iterações).
-
-### Regra de ouro
-
-Após confirmar no Transition Gate, o orquestrador **dispara o próximo step no mesmo turno**. Steps 4 e 8 embutem a troca de modelo no gate de avanço (Step 3→5 e Step 7→9).
+| Flag | Effect |
+|------|--------|
+| `--model {name}` | Set `currentModel` at workflow start. Overrides default. |
+| `--model-chain "{step}:{model},{step}:{model}"` | Pre-specify per-step models. Only way to switch models in auto mode. Overrides `--model` at matching steps. |
 
 ---
 
-## Checkpoints git
+## Steps
 
-Tags locais **nunca pushed**:
+Each step ends with **documentation consolidation** (§Doc), **git checkpoint** (`before-step-{N+1}`), and **Transition Gate** with **next / repeat / previous / pause** navigation. Steps 4 and 8 embed model switching in the gate (no separate turn). All user decisions are **option menus** (`AskQuestion`), not free text.
+
+| # | Name | Who executes | Objective |
+|---|------|--------------|-----------|
+| **0** | Bootstrap | Orchestrator | State, issue snapshot, MEMORY context |
+| **1** | Plan | Sub-agent | `us-{id}.plan.md` (Conditional — skipped if Dynamic Execution active) |
+| **2** | Refinement | Sub-agent | Plan grilling (Conditional — skipped if Dynamic Execution active) |
+| **3** | Exec + DAG | Sub-agent | `*.plan.exec.md` + `*.exec.dag.json` + memory-conflict |
+| **4†** | **Coder readiness** | **Sub-gate F1→F2** | Model switch embedded in gate (not a board step) |
+| **5** | Implement | Sub-agent(s) Coder | Code per DAG level (parallel up to 3) + learning |
+| **6** | Verify | Sub-agent (readonly) | `us-{id}.plan.report.md` (quality table vs plan) |
+| **7** | Decide + commit | Orchestrator + sub-agent + shell | G2 gate; may trigger validation/fix before commit, or return to Step 5 |
+| **8†** | **Review readiness** | **Sub-gate F3→F4** | Model switch embedded in gate (not a board step) |
+| **9** | Code review | Sub-agent | Critical / Warning (scoped diff vs base branch) |
+| **10** | Fix + close | Sub-agent + shell | 2nd commit + `us-{id}.report.md` + learning |
+| **11** | **Integration validation** | Sub-agent + browser + shell | Test battery (generate plan, review, execute/skip) |
+| **12** | Cleanup | Orchestrator + shell | Final §Doc, MEMORY.md sweep, temp cleanup, push consent, delivery commit |
+| **13** | Ship & PR | Sub-agent + shell | Push, PR, goal-fix-pr loop, merge (fullMode only) |
+
+### Step 11 — integration validation (summary)
+
+Before executing integration tests and opening a PR (manual), the workflow:
+
+1. Runs the **Integration Validation Protocol** and generates `us-{id}.integration-test.plan.md`.
+2. Shows the plan (or summary) and asks whether to continue or skip (auto mode skips browser).
+3. If **approve and execute** (normal mode): build, tests, seed, API/permissions — **browser only if not auto nor dry-run**.
+4. In **auto or dry-run:** **§6 browser always skipped** — report marks UI ACs as `⏭ skipped`; validate UI manually before PR.
+5. **Skip validation:** advances directly to Step 12.
+6. Failures: fixes → revalidate (up to 3 iterations).
+
+### Golden rule
+
+After confirming in the Transition Gate, the orchestrator **dispatches the next step in the same turn**. Steps 4 and 8 embed model switching in the advance gate (Step 3→5 and Step 7→9).
+
+---
+
+## Git checkpoints
+
+Local tags **never pushed**:
 
 ```text
 uswf/{workflow-id}/before-step-1   # baseline (Step 0)
-uswf/{workflow-id}/before-step-2   # antes do Step 1 mutar
+uswf/{workflow-id}/before-step-2   # before Step 1 mutates
 …
-uswf/{workflow-id}/before-step-13  # após Step 12
+uswf/{workflow-id}/before-step-13  # after Step 12
 ```
 
-- Criadas após cada step completar; espelhadas em `state.md` → `checkpoints[]`.
-- **Backward Navigation** e **Repetir Step N** usam o **Checkpoint Revert Algorithm** ancorado na tag alvo.
-- Removidas no Step 12 (ou full reset); commits vão no push, tags não.
+- Created after each step completes; mirrored in `state.md` → `checkpoints[]`.
+- **Backward Navigation** and **Repeat Step N** use the **Checkpoint Revert Algorithm** anchored on the target tag.
+- Removed at Step 12 (or full reset); commits go in push, tags do not.
 
 ---
 
-## Gates — navegação next / repeat / previous / skip
+## Gates — next / repeat / previous / skip
 
-### Transition Gate (após cada step)
+### Transition Gate (after each step)
 
-| Ação | Opção no menu |
-|------|----------------|
-| **Next** | Avançar para Step N+1 |
-| **Repeat** | Repetir Step N (revert parcial se já houve `files_touched`) |
-| **Previous** | Voltar para Step anterior — sub-menu por fase (Planejamento / Implementação / Review / Validação) |
-| **Pause** | Pausar / cancelar sem reverter / cancelar e reverter tudo |
+| Action | Menu option |
+|--------|-------------|
+| **Next** | Advance to Step N+1 |
+| **Repeat** | Repeat Step N (partial revert if `files_touched` exists) |
+| **Previous** | Go back to earlier step — sub-menu by phase (Planning / Implementation / Review / Validation) |
+| **Pause** | Pause / cancel without revert / cancel and revert all |
 
-**Step 11 — skip:** **Pular validação** no gate de confirmação do plano de testes (avança direto ao Step 12).
+**Step 11 — skip:** **Skip validation** in the test plan confirmation gate (advances directly to Step 12).
 
-**Step 2 — refinement:** uma pergunta por rodada; **Encerrar refinamento e avançar** aplica defaults e leva ao gate **Shared Understanding**; Step 3 só após **Confirmo entendimento compartilhado**.
+**Step 2 — refinement:** one question per round; **End refinement and advance** applies defaults and leads to **Shared Understanding** gate; Step 3 only after **I confirm shared understanding**.
 
 ### Backward Navigation (Previous)
 
-Volta a **qualquer step já concluído** (1–3, 5–7, 9–11), não só repetir o atual:
+Returns to **any completed step** (1–3, 5–7, 9–11), not just the current one:
 
-1. Escolher fase → step alvo `M`
-2. Preview: *Será desfeito* (Steps M–N) vs *Será preservado*
-3. Confirmar → Checkpoint Revert + redispatch imediato do Step M
+1. Choose phase → target step `M`
+2. Preview: *Will be undone* (Steps M–N) vs *Will be preserved*
+3. Confirm → Checkpoint Revert + immediate redispatch of Step M
 
-Atalho: Step 7 **Refazer implementação com outro modelo Coder** = voltar ao Step 5.
-
----
-
-## Protocolos internos (SKILL.md)
-
-| Protocolo | Usado em | Função |
-|-----------|----------|--------|
-| **Authorization Ladder** | todos | Gates enforced G0–G3 + hard stops HS-1..5 (nenhum commit/push sem gate) |
-| **Transition Discipline** | transições | Regra única: normal dispara após o gate; auto dispara no mesmo turno |
-| **Refinement FSM** | 2 | Audit → Resolve → Escalate → Exit; registry persistido; blocking/non-blocking |
-| **Execução Dinâmica (Simplicity First)** | 1, 2 | Orquestrador avalia complexidade e decide se giza plano profundo ou se pula planejamento/refinamento direto para implementação cirúrgica |
-| **Worktree Fallback** | 5, 10, 11 | branch-direct no Windows/path longo + verificação pós-step |
-| **State Hygiene** | todos | Sync obrigatório do state pós-step + asserts (`validate_state.py`) |
-| **Learning & Memory** | todos (início + fim + Step 12) | Consulta e atualização do estado (`state.md`) e `MEMORY.md` para reaproveitar aprendizados técnicos e evitar repetir erros |
-| Context loading | 1, 2, 5 | Docs, rules, glossário de domínio |
-| Specification | 0 (fetch/resolve), 1–2/6/11 (read) | Entrada: **US id** ou **`*.spec.md`**. Modo GitHub: `gh issue view {n}` → `*.issue.json` → `github-issue-to-spec.py` → **`{slug}.spec.md`** (canônico). Skills downstream leem **spec**, não a issue direto |
-| Memory-conflict | 2, 3 | Script Python vs `MEMORY.md` (raiz) |
-| Integration validation | 11 | Plano + execução browser/API/seed |
-| Step checkpoint | 0–12 | Tags git `uswf/{id}/before-step-{N}` |
-| Step dispatch | 1–11 | Subagent dedicado + tag âncora + worktree step-scoped (5/10/11) |
-| Checkpoint revert | reset / previous / repeat | Revert escopado via `## Step file log` |
-
-Scripts locais: `.agents/skills/us-workflow/scripts/check_memory_conflict.py`, `.agents/skills/us-workflow/scripts/validate_state.py`
+Shortcut: Step 7 **Re-implement with different Coder model** = return to Step 5.
 
 ---
 
-## Consolidação de documentação (§Doc)
+## Internal protocols (SKILL.md)
 
-Ao fim de **cada** step (0–11), o orquestrador executa o checklist §Doc antes do gate pós-etapa. Registro em `state.md` → `## Workflow memory` e `## Doc consolidation log`, com consolidação incremental em `MEMORY.md` quando o aprendizado já passar no gate de escrita. O Step 12 faz o sweep final e a limpeza.
+| Protocol | Used in | Function |
+|----------|---------|----------|
+| **Authorization Ladder** | all | G0–G3 gates enforced + hard stops HS-1..5 (no commit/push without gate) |
+| **Transition Discipline** | transitions | Single rule: normal dispatches after gate; auto dispatches same turn |
+| **Refinement FSM** | 2 | Audit → Resolve → Escalate → Exit; registry persisted; blocking/non-blocking |
+| **Dynamic Execution (Simplicity First)** | 1, 2 | Orchestrator evaluates complexity — bypasses planning/refinement for surgical changes |
+| **Worktree Fallback** | 5, 10, 11 | branch-direct on Windows/long path + post-step verification |
+| **State Hygiene** | all | Mandatory state sync post-step + asserts (`validate_state.py`) |
+| **Learning & Memory** | all (start + end + Step 12) | Read and update state (`state.md`) and `MEMORY.md` to reuse technical learnings and avoid repeating errors |
+| **Context loading** | 1, 2, 5 | Docs, rules, domain glossary |
+| **Specification** | 0 (fetch/resolve), 1–2/6/11 (read) | Entry: **US id** or **`*.spec.md`**. GitHub: `gh issue view {n}` → `*.issue.json` → `github-issue-to-spec.py` → **`{slug}.spec.md`** (canonical). Downstream skills read **spec**, not raw issue |
+| **Memory-conflict** | 2, 3 | Python script vs `MEMORY.md` (root) |
+| **Integration validation** | 11 | Plan + browser/API/seed execution |
+| **Step checkpoint** | 0–12 | Git tags `uswf/{id}/before-step-{N}` |
+| **Step dispatch** | 1–11 | Dedicated sub-agent + anchor tag + step-scoped worktree (5/10/11) |
+| **Checkpoint revert** | reset / previous / repeat | Scoped revert via `## Step file log` |
+
+Local scripts: `.agents/skills/us-workflow/scripts/check_memory_conflict.py`, `.agents/skills/us-workflow/scripts/validate_state.py`
 
 ---
 
-## Paralelização (DAG)
+## Documentation consolidation (§Doc)
 
-- Step 3 gera `us-{id}.exec.dag.json` com `levels` e `parallelGroup`.
-- Step 5 executa **level a level**; dentro do level, até **3** subagentes `generalPurpose` em paralelo.
-- **Isolamento:** um worktree git **por step de código** (5, 10, 11) — não por tarefa DAG. Ver **Step Dispatch & Isolation Protocol** em `SKILL.md`.
+At the **end of each** step (0–11), the orchestrator runs the §Doc checklist before the post-step gate. Recorded in `state.md` → `## Workflow memory` and `## Doc consolidation log`, with incremental consolidation in `MEMORY.md` when learning passes the write gate. Step 12 performs the final sweep and cleanup.
 
-Exemplo de levels: `[T1] → [T2, T3] → [T4]`
+---
 
-## Isolamento por step (resumo)
+## Parallelization (DAG)
 
-| Step | Subagent | Worktree | Tag âncora |
-|------|----------|----------|------------|
+- Step 3 generates `us-{id}.exec.dag.json` with `levels` and `parallelGroup`.
+- Step 5 executes **level by level**; within a level, up to **3** sub-agents in parallel.
+- **Isolation:** one git worktree **per code step** (5, 10, 11) — not per DAG task. See **Step Dispatch & Isolation Protocol** in `SKILL.md`.
+
+Example levels: `[T1] → [T2, T3] → [T4]`
+
+## Per-step isolation
+
+| Step | Sub-agent | Worktree | Anchor tag |
+|------|-----------|----------|------------|
 | 1–3, 6, 9 | `generalPurpose` | — (repo root) | `before-step-{N}` |
 | 5, 10, 11 | `generalPurpose` | `.cursor/plans/us-{id}/worktrees/step-{N}/` | `before-step-{N}` |
 | 7, 12 (shell) | `shell` | — | — |
-| Todos | **fresh Task** — nunca `resume` entre steps | máx. 1 worktree ativo | checkpoint local |
+| All | **fresh Task** — never `resume` between steps | max. 1 active worktree | local checkpoint |
 
 ---
 
-## Artefatos principais
+## Main artifacts
 
-Tudo sob a pasta de trabalho `.cursor/plans/{slug}/` (uma por feature/US). `MEMORY.md` é compartilhado na raiz.
+Everything under `.cursor/plans/{slug}/` (one per feature/US). `MEMORY.md` is shared at root.
 
-| Artefato | Caminho |
-|----------|---------|
-| Estado | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| **Spec (canônico)** | `.cursor/plans/{slug}/{slug}.spec.md` |
-| Issue GitHub (auditoria, opcional) | `.cursor/plans/{slug}/{slug}.issue.json` |
-| Plano | `.cursor/plans/{slug}/{slug}.plan.md` |
+| Artifact | Path |
+|----------|------|
+| State | `.cursor/plans/{slug}/{workflow-id}.state.md` |
+| **Spec (canonical)** | `.cursor/plans/{slug}/{slug}.spec.md` |
+| GitHub issue (audit, optional) | `.cursor/plans/{slug}/{slug}.issue.json` |
+| Plan | `.cursor/plans/{slug}/{slug}.plan.md` |
 | Exec | `.cursor/plans/{slug}/{slug}.plan.exec.md` |
 | DAG | `.cursor/plans/{slug}/{slug}.exec.dag.json` |
-| Verificação | `.cursor/plans/{slug}/{slug}.plan.report.md` |
-| Entrega | `.cursor/plans/{slug}/{slug}.report.md` |
-| Plano testes integração | `.cursor/plans/{slug}/{slug}.integration-test.plan.md` |
-| Relatório testes integração | `.cursor/plans/{slug}/{slug}.integration-test.report.md` |
+| Verification | `.cursor/plans/{slug}/{slug}.plan.report.md` |
+| Delivery | `.cursor/plans/{slug}/{slug}.report.md` |
+| Integration test plan | `.cursor/plans/{slug}/{slug}.integration-test.plan.md` |
+| Integration test report | `.cursor/plans/{slug}/{slug}.integration-test.report.md` |
+| Delivery result | `.cursor/plans/{slug}/{slug}.result.md` |
 | Worktrees (git-ignored) | `.cursor/plans/{slug}/worktrees/step-{N}/` |
 | Baseline (git-ignored) | `.cursor/plans/{slug}/{workflow-id}.baseline/` |
-| Memória técnica (raiz, compartilhada) | `MEMORY.md` |
+| Technical memory (root, shared) | `MEMORY.md` |
 
 ---
 
-## Fora do escopo
+## Out of scope
 
-- Abrir/atualizar Pull Request ([`fix-pr`](../08-fix-pr/SKILL.md) é manual) — **após Step 12**
-- Push sem consentimento explícito no gate do **Step 12** (após validação integração no Step 11)
+- Opening/updating Pull Request (without `--full` flag) — manual after Step 12
+- Push without explicit consent in Step 12 gate
 
 ---
 
-## Portabilidade
+## Portability
 
-A skill `us-workflow` é projetada para ser totalmente **genérica e portátil**. Qualquer configuração, metadados, caminhos de arquivo ou comandos específicos do projeto devem ser definidos no arquivo `config.json` ou `stack.md`. Nunca adicione caminhos rígidos (*hardcoded*) ou comandos específicos do repositório atual diretamente nas instruções da skill.
+The `us-workflow` skill is designed to be fully **generic and portable**. All configuration, metadata, file paths, and commands specific to a project must be defined in `config.json` or `stack.md`. Never add hardcoded paths or project-specific commands directly in the skill instructions.

@@ -9,7 +9,7 @@ description: >
 
 # Domain review
 
-On-demand Layer 2. **Not** PR/branch review ([code-review](../code-review/SKILL.md)). Extra OWASP depth → [security-review](../security-review/SKILL.md).
+On-demand Layer 2. **Not** PR/branch review ([code-review](../06-code-review/SKILL.md)). Extra OWASP depth → [security-review](../security-review/SKILL.md).
 
 **REQUIRED SUB-SKILL (BE):** [dotnet-security-performance-review](../dotnet-security-performance-review/SKILL.md) on every review that touches `src/`. Fold findings into [REPORT.md](REPORT.md) Critical/Warning + fix plan (not that skill's 4-section report).
 
@@ -64,7 +64,7 @@ catalog | next → select → domain.md → investigate → report → stamp →
 
 | Ask | Skill |
 |-----|-------|
-| Branch/PR vs `master` | [code-review](../code-review/SKILL.md) |
+| Branch/PR vs `master` | [code-review](../06-code-review/SKILL.md) |
 | Bounded context / `next` / `auto` | **This** (+ BE sub-skill; `auto` → [AUTO.md](AUTO.md)) |
 | All stale/never domains (≥7d batch) | [multi-domain-review](../multi-domain-review/SKILL.md) |
 | C# auth/EF/perf only | [dotnet-security-performance-review](../dotnet-security-performance-review/SKILL.md) |

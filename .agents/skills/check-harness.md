@@ -400,7 +400,7 @@ This phase generates three independent analyses that compose the **context simul
    | Documentation | `learning`, `changelog` |
    | UI/Frontend | `matrix-view-patterns`, `mobile-first-design`, `taste-skill` |
    | Harness/Agents | `check-harness`, `write-a-skill`, `handoff` |
-   | External library | `context7-mcp`, `supabase`, `supabase-postgres-best-practices` |
+    | External library | `context7-mcp` |
 
 2. **For each domain with 2+ skills**, analyze overlap:
 

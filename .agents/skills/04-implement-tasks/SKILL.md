@@ -12,7 +12,7 @@ Implements or fixes code following an execution plan. Two modes — declare the 
 ## Mandatory pre-read
 
 Before starting, read:
-- `config.json` — stack, commands, invariants (`.agents/skills/us-workflow/config.json`)
+- `.agents/skills/us-workflow/config.json` — stack, commands, invariants
 - `tools.md` — tool aliases (`.agents/skills/us-workflow/tools.md`)
 - `stack.md` — code and paths (`.agents/skills/us-workflow/stack.md`)
 - Hub: `AGENTS.md` (root)

@@ -8,8 +8,8 @@ Initialization, configuration bootstrap, flags, resume logic, and first-run setu
 
 Before Step 0:
 
-1. **Config check**: `Shell` `test -f config.json`. If missing:
-   - `cp config.json.example config.json`
+1. **Config check**: `Shell` `test -f .agents/skills/us-workflow/config.json`. If missing:
+   - `cp .agents/skills/us-workflow/config.json.example .agents/skills/us-workflow/config.json`
    - AskQuestion: **Fill config now** / **Skip**
    - If "Fill now": present each top-level section, collect values. Skip optional sections.
 1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). `Shell` `test -f {stackFile}`. If missing:

@@ -15,24 +15,27 @@ Verify the us-workflow FSM executes without error in simulated mode, covering al
 
 ## Prerequisites
 
-1. **BOOTSTRAP** section in [`setup.md`](setup.md) — ensure `config.json` points at this repo. If absent, create one:
+1. **BOOTSTRAP** section in [`setup.md`](setup.md) — ensure `.agents/skills/us-workflow/config.json` points at this repo. If absent, create one:
 
-   ```json
-   {
-     "project": {
-       "name": "workflow-skills",
-       "baseBranch": "main",
-       "gitRemote": "origin"
-     },
-     "stack": {
-       "id": "markdown-only",
-       "description": "Documentation-only repo (markdown)",
-       "srcDir": ".",
-       "layers": [{ "name": "docs", "path": ".", "role": "skills, specs, docs" }]
-     },
-     "verification": {}
-   }
-   ```
+    ```json
+    {
+      "project": {
+        "name": "workflow-skills",
+        "baseBranch": "main",
+        "gitRemote": "origin"
+      },
+      "stack": {
+        "id": "markdown-only",
+        "description": "Documentation-only repo (markdown)",
+        "srcDir": ".",
+        "rules": {
+          "stackFile": ".agents/skills/us-workflow/stack.md"
+        },
+        "layers": [{ "name": "docs", "path": ".", "role": "skills, specs, docs" }]
+      },
+      "verification": {}
+    }
+    ```
 
    > **Note:** In `dry-run` mode, verification commands are never executed — an empty `verification` block suffices.
 
@@ -151,7 +154,7 @@ Or reuse for the next dry-run iteration (workflow auto-detects and resumes).
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
-| `config.json` not found | No config in repo root | Create minimal config (see prerequisites) |
+| `.agents/skills/us-workflow/config.json` not found | Config not in skill directory | Create minimal config (see prerequisites) |
 | Step 1/2 not skipped with simple spec | Dynamic Execution threshold not met | Expected — workflow still runs correctly, just slower |
 | Step 11 tries browser | `dry-run` not parsed | Confirm `dry-run` flag is before spec path |
 | Step 13 not reached | `full` flag absent | Add `full` before spec path |

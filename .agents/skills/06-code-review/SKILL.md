@@ -11,7 +11,7 @@ Senior code reviewer — two-phase analysis, evidence-backed proof, generalizati
 
 ## Pre-reading (mandatory)
 
-- `config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
+- `.agents/skills/us-workflow/config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
 - `AGENTS.md` — hub routing
 - `MEMORY.md` — Review Patterns
 

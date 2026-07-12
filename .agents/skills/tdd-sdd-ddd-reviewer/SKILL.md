@@ -7,7 +7,7 @@ description: >
 
 # TDD / SDD / DDD Code Reviewer
 
-On-demand Layer 2 skill per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. **Does not replace** [code-review](../code-review/SKILL.md) or auto-loaded [senior-developer](../senior-developer/SKILL.md).
+On-demand Layer 2 skill per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. **Does not replace** [code-review](../06-code-review/SKILL.md) or auto-loaded [senior-developer](../senior-developer/SKILL.md).
 
 ## Precedence
 
@@ -19,11 +19,11 @@ On-demand Layer 2 skill per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. 
 
 | Task | Use |
 |------|-----|
-| PR / branch review, bugs, tenancy | [code-review](../code-review/SKILL.md) |
+| PR / branch review, bugs, tenancy | [code-review](../06-code-review/SKILL.md) |
 | OWASP, authz, injection | [security-review](../security-review/SKILL.md) |
 | Layer boundaries, testability, DDD/TDD audit | **This skill** |
 
-**Scope:** same touch set as [code-review](../code-review/SKILL.md) (whole changed files + one-hop references). Style modernization is **suggestion** unless it blocks layer boundaries or testability.
+**Scope:** same touch set as [code-review](../06-code-review/SKILL.md) (whole changed files + one-hop references). Style modernization is **suggestion** unless it blocks layer boundaries or testability.
 
 ## Quick start
 
