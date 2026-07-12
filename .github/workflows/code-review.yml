@@ -27,7 +27,7 @@ jobs:
             --model opencode-go/deepseek-v4-flash \
             --gh \
             --stack Custom \
-            --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.js,**/*.ts,**/*.css,**/*.html" \
+            --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
             --source-branch "refs/heads/${{ github.head_ref }}" \
             --target-branch "refs/heads/${{ github.event.pull_request.base.ref }}"
         continue-on-error: true
