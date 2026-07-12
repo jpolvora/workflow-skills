@@ -28,7 +28,7 @@
   <h1>Workflow <span>Skills</span></h1>
   <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
   <div class="badges">
-    <span class="badge">29 skills</span>
+    <span class="badge">30 skills</span>
     <span class="badge">6 layers</span>
     <span class="badge">MIT license</span>
     <span class="badge">npx github:jpolvora/workflow-skills</span>
@@ -40,33 +40,27 @@
 
   <!-- Layer 0 -->
   <div class="layer">
-    <h3>Layer 0 — Harness &amp; Agent Infrastructure <span class="count">(3)</span></h3>
+    <h3>Layer 0 — Harness & Agent Infrastructure <span class="count">(2)</span></h3>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/check-harness.md">
-        <div class="name">check-harness</div>
-        <div class="desc">Auditing and maintenance agent for the agent harness (AGENTS.md as hub, .agents/skills, docs). Detects skills/rules on disk missing from AGENTS.md routing, broken links, absolute paths, and redundancies.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/check-harness.md">View skill</a>
-      </div>
       <div class="skill-card" data-path=".agents/skills/write-a-skill/SKILL.md">
         <div class="name">write-a-skill</div>
-        <div class="desc">Create new agent skills with proper structure, progressive disclosure, and bundled resources.</div>
+        <div class="desc">Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, or build a new skill.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/write-a-skill/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card">
-        <div class="name">using-superpowers</div>
-        <div class="desc">Agent onboarding: skill discovery via Skill tool</div>
-        <span class="global-tag">global</span>
+      <div class="skill-card" data-path=".agents/skills/check-harness.md">
+        <div class="name">check-harness</div>
+        <div class="desc">Auditing and maintenance agent for the agent harness (AGENTS.md as hub,   .agents/skills, docs). Detects skills/rules on disk missing from   AGENTS.md routing, broken links, absolute paths, and redundancies.   Optionally proposes skill writing improvements via writing-great-skills   (global skill, when installed). Supports dry-run mode (`--dry-run`) for   report-only without edits. Mandatory flow: read-only scan →   correction plan → execution only after explicit user approval   (dry-run stops at the plan). Load ONLY when user explicitly invokes   /check-harness, @check-harness, "audit harness", "check   harness references", or requests a cohesion/redundancy review between skills   and AGENTS.md. Do not confuse with us-workflow (E2E delivery pipeline).</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/check-harness.md">View skill</a>
       </div>
     </div>
   </div>
-
   <!-- Layer 1 -->
   <div class="layer">
     <h3>Layer 1 — Engineering Standards (Auto-load by task) <span class="count">(2)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/mobile-first-design/SKILL.md">
         <div class="name">mobile-first-design</div>
-        <div class="desc">Design for mobile devices first, then scale up to larger screens. Create responsive interfaces that work seamlessly across all device sizes.</div>
+        <div class="desc">Design for mobile devices first, then scale up to larger screens. Create   responsive interfaces that work seamlessly across all device sizes.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/mobile-first-design/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/taste-skill/SKILL.md">
@@ -76,14 +70,13 @@
       </div>
     </div>
   </div>
-
   <!-- Layer 2 -->
   <div class="layer">
     <h3>Layer 2 — Workflow Pipeline (numbered, 00-11) <span class="count">(12)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md">
         <div class="name">00-write-spec</div>
-        <div class="desc">Receives a high-level feature description and returns a spec.md result file, ready for the next step (01-write-plan).</div>
+        <div class="desc">Receives a high-level feature description and returns a spec.md result file,   ready for the next step (01-write-plan).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/00-write-spec/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/01-write-plan/SKILL.md">
@@ -108,7 +101,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md">
         <div class="name">05-verify-plan</div>
-        <div class="desc">Compares criteria/plan against current code. Two modes: (1) Quick Score — evaluates overall implementation with a 0-10 grade; (2) US Verification — from spec.md or issue number, generates a feature-by-feature table in .cursor/plans/{slug}.plan.report.md.</div>
+        <div class="desc">Compares criteria/plan against current code. Two modes: (1) Quick Score — evaluates overall implementation with a 0-10 grade; (2) US Verification — from spec.md or issue number, generates a feature-by-feature table in `.cursor/plans/{slug}.plan.report.md`.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/05-verify-plan/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md">
@@ -123,7 +116,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/08-fix-pr/SKILL.md">
         <div class="name">08-fix-pr</div>
-        <div class="desc">Cooperatively fix active code review threads on GitHub or Azure DevOps PRs. Thread scoring, confirmation gate, surgical fixes, validation, structured reports. Use when user asks to fix/review/resolve PR review threads.</div>
+        <div class="desc">Cooperatively fix active code review threads on GitHub or Azure DevOps PRs. Thread scoring, confirmation gate, surgical fixes, validation, structured reports. Use when user asks to fix/review/resolve PR review threads. Also wrapped by goal-fix-pr for convergence loops.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/08-fix-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/09-goal-fix-pr/SKILL.md">
@@ -133,362 +126,95 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/10-update-plan-implementation/SKILL.md">
         <div class="name">10-update-plan-implementation</div>
-        <div class="desc">Post-workflow follow-up after us-workflow. Captures manual QA findings, implements delta fixes, appends implementation steps to the last US plan, verifies against code, updates result.md, and certifies the pack for the next PR. Use on demand; not part of us-workflow.</div>
+        <div class="desc">Post-workflow follow-up after us-workflow. Captures manual QA findings, implements delta fixes, appends implementation steps to the last US plan, verifies against code, updates result.md, and certifies the pack for the next PR. Use on demand when tests after workflow reveal more work — invoke explicitly; not part of us-workflow.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/10-update-plan-implementation/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/11-ship-pr/SKILL.md">
         <div class="name">11-ship-pr</div>
-        <div class="desc">End-to-end delivery — code-review auto-fix, verify, commit on develop, push, PR develop→master/main (auto-detect), goal-fix-pr (5m waits, max 10), merge commit. Use when user asks to ship, deliver, commit-and-PR, push-and-merge.</div>
+        <div class="desc">End-to-end delivery — code-review auto-fix, verify, commit on develop, push, PR develop→master/main (auto-detect), goal-fix-pr (5m waits, max 10), merge commit. Use when user asks to ship, deliver, commit-and-PR, push-and-merge, or `/ship-pr`. Also dispatched by us-workflow as Step 13 when --full flag is active.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/11-ship-pr/SKILL.md">View skill</a>
       </div>
     </div>
   </div>
-
   <!-- Layer 4 -->
   <div class="layer">
-    <h3>Layer 4 — Review &amp; Audit <span class="count">(6)</span></h3>
+    <h3>Layer 4 — Review & Audit <span class="count">(6)</span></h3>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/security-review/SKILL.md">
-        <div class="name">security-review</div>
-        <div class="desc">Security code review for vulnerabilities. Use when asked to "security review", "find vulnerabilities", "check for security issues", "audit security", "OWASP review", or review code for injection, XSS, authentication, authorization, cryptography issues. Provides systematic review with confidence-based reporting.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/security-review/SKILL.md">View skill</a>
+      <div class="skill-card" data-path=".agents/skills/domain-review/SKILL.md">
+        <div class="name">domain-review</div>
+        <div class="desc">Use when the user asks for domain review, bounded-context review, code-review by domain,   subdomain audit, or to pick a domain from specs/domains for smells/security/SOLID/perf.   Also when they say /domain-review, /domain-review next, /domain-review auto, or   /domain-review next auto (auto-pick + optional full fix/PR/goal-fix-pr cycle).</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/domain-review/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/dotnet-security-performance-review/SKILL.md">
         <div class="name">dotnet-security-performance-review</div>
         <div class="desc">Perform C# security and performance code reviews for login, authorization, and database access. Use when auditing backend auth, checking EF transactions, database queries, roles, impersonation safety, or optimizing API endpoints.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/dotnet-security-performance-review/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/tdd-sdd-ddd-reviewer/SKILL.md">
-        <div class="name">tdd-sdd-ddd-reviewer</div>
-        <div class="desc">Architectural audit (TDD, spec-driven design, DDD) for C# .NET backends and React frontends. Use when explicitly asked for clean-architecture, layer-boundary, or TDD/DDD review — not default PR review.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/tdd-sdd-ddd-reviewer/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/domain-review/SKILL.md">
-        <div class="name">domain-review</div>
-        <div class="desc">Use when the user asks for domain review, bounded-context review, code-review by domain, subdomain audit, or to pick a domain from specs/domains for smells/security/SOLID/perf. Also supports auto-pick and optional full fix/PR/goal-fix-pr cycle.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/domain-review/SKILL.md">View skill</a>
-      </div>
       <div class="skill-card" data-path=".agents/skills/multi-domain-review/SKILL.md">
         <div class="name">multi-domain-review</div>
-        <div class="desc">Use when the user asks to review multiple domains, batch domain-review, rotate all stale/never-reviewed domains, or says /multi-domain-review. Uses a 7-day freshness window for stale detection.</div>
+        <div class="desc">Use when the user asks to review multiple domains, batch domain-review, rotate all   stale/never-reviewed domains, or says /multi-domain-review, multi-domain review,   review all domains, or domain-review queue/batch with the 7-day freshness window.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/multi-domain-review/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/secrets-leak-review/SKILL.md">
         <div class="name">secrets-leak-review</div>
-        <div class="desc">Scans repository for hardcoded secrets, passwords, API keys, PII, private keys, connection strings, .env files, and client-confidential data before commit. Use before pushing to a public repository.</div>
+        <div class="desc">Scans repository for hardcoded secrets, passwords, API keys, PII, private keys, connection strings, .env files, and client-confidential data before commit. Use when asked to "check for secrets", "leak check", "secrets scan", "pre-commit security check", "check for hardcoded passwords", "PII scan", "repo leak audit", or before pushing to a public repository.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/secrets-leak-review/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/security-review/SKILL.md">
+        <div class="name">security-review</div>
+        <div class="desc">Security code review for vulnerabilities. Use when asked to "security review", "find vulnerabilities", "check for security issues", "audit security", "OWASP review", or review code for injection, XSS, authentication, authorization, cryptography issues. Provides systematic review with confidence-based reporting.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/security-review/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/tdd-sdd-ddd-reviewer/SKILL.md">
+        <div class="name">tdd-sdd-ddd-reviewer</div>
+        <div class="desc">Architectural audit (TDD, spec-driven design, DDD) for C# .NET backends and React frontends.   Use when explicitly asked for clean-architecture, layer-boundary, or TDD/DDD review — not default PR review.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/tdd-sdd-ddd-reviewer/SKILL.md">View skill</a>
       </div>
     </div>
   </div>
-
   <!-- Layer 5 -->
   <div class="layer">
-    <h3>Layer 5 — Utility &amp; Meta <span class="count">(8)</span></h3>
+    <h3>Layer 5 — Utility & Meta <span class="count">(8)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md">
         <div class="name">caveman</div>
-        <div class="desc">Ultra-compressed communication mode. Autoloaded every prompt at full intensity per AGENTS.md. Cuts token usage ~75% while keeping full technical accuracy. Supports intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra.</div>
+        <div class="desc">Ultra-compressed communication mode. Autoloaded every prompt at full intensity per AGENTS.md   unless stop caveman or normal mode. Cuts token usage ~75% while keeping full technical accuracy.   Supports intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra.   User may invoke /caveman to change level; less tokens and be brief still apply full when autoloaded.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/caveman/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/gabarito/SKILL.md">
-        <div class="name">gabarito</div>
-        <div class="desc">Ten operational response guidelines (accountability, anti-sycophancy, systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification, calibrated confidence, prompt refinement) plus style discipline. Apply on every user-facing response.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/gabarito/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md">
-        <div class="name">karpathy-guidelines</div>
-        <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/karpathy-guidelines/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/us-workflow/SKILL.md">
-        <div class="name">us-workflow</div>
-        <div class="desc">E2E US orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs. Invoke: /us-workflow | @[us-workflow]. Entry: GitHub issue | *.spec.md | feature description. Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md">
-        <div class="name">spec-format</div>
-        <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic. Load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/learning/SKILL.md">
-        <div class="name">learning</div>
-        <div class="desc">Analyze session output and record ONLY anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into MEMORY.md, then print a summary. Use when completing a task or implementation.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/learning/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/changelog/SKILL.md">
         <div class="name">changelog</div>
         <div class="desc">Write a summarized historical record of the task into CHANGELOG.md. Use at the very end of every implementation task.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/changelog/SKILL.md">View skill</a>
       </div>
+      <div class="skill-card" data-path=".agents/skills/gabarito/SKILL.md">
+        <div class="name">gabarito</div>
+        <div class="desc">Gabarito — ten operational response guidelines (accountability, anti-sycophancy,   systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification,   calibrated confidence, prompt refinement) plus style discipline. Apply on every user-facing   response in this conversation unless the user opts out. Governs tone, structure, and reasoning;   does not override design specs, repo architecture skills, or explicit user format requests.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/gabarito/SKILL.md">View skill</a>
+      </div>
       <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md">
         <div class="name">goal-loop</div>
-        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect → check → continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.</div>
+        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel   management, heartbeat/sleeper, re-collect → check → continue/done loop,   stop conditions, verify framework, and report format. Consumed by   goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill</a>
       </div>
-    </div>
-  </div>
-</section>
-
-<section id="install">
-  <h2>Install</h2>
-  <div class="install-steps">
-    <div class="install-step">
-      <h4>Interactive Menu</h4>
-      <p>Open the visual menu to select skills:</p>
-      <pre><code>npx github:jpolvora/workflow-skills</code></pre>
-    </div>
-    <div class="install-step">
-      <h4>Auto-Update</h4>
-      <p>Silently update already installed skills:</p>
-      <pre><code>npx github:jpolvora/workflow-skills update</code></pre>
-    </div>
-    <div class="install-step">
-      <h4>cURL (alternative)</h4>
-      <p>Run the installer via shell script:</p>
-      <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash</code></pre>
-    </div>
-  </div>
-</section>
-
-<section id="contribute">
-  <h2>Contribute</h2>
-  <p>
-    Skills live in <code>.agents/skills/&lt;name&gt;/SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>).
-    See <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md">AGENTS.md</a> for the full routing table.
-  </p>
-</section>
-
-<footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a></p>
-</footer>
-
-<!-- Modal -->
-<div id="skill-modal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span class="modal-title"></span>
-      <div class="modal-actions">
-        <button class="copy-btn" title="Copy to clipboard">Copy</button>
-        <button class="close-btn" title="Close">&times;</button>
-      </div>
-    </div>
-    <div class="modal-body">
-      <div class="modal-markdown"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-(function() {
-  const RAW_BASE = 'https://raw.githubusercontent.com/jpolvora/workflow-skills/main/';
-  const modal = document.getElementById('skill-modal');
-  const modalTitle = modal.querySelector('.modal-title');
-  const modalBody = modal.querySelector('.modal-markdown');
-  const closeBtn = modal.querySelector('.close-btn');
-  const copyBtn = modal.querySelector('.copy-btn');
-
-  function closeModal() {
-    modal.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) closeModal();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeModal();
-  });
-
-  function stripFrontmatter(text) {
-    return text.replace(/^---[\s\S]*?---\n*/, '');
-  }
-
-  copyBtn.addEventListener('click', function() {
-    const text = modalBody.textContent;
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(function() {
-      copyBtn.textContent = 'Copied!';
-      setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
-    }).catch(function() {
-      copyBtn.textContent = 'Failed';
-      setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
-    });
-  });
-
-  document.querySelectorAll('.view-skill').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const path = this.getAttribute('data-path');
-      const card = this.closest('.skill-card');
-      const name = card.querySelector('.name').textContent;
-      const url = RAW_BASE + path;
-
-      modalTitle.textContent = name;
-      modalBody.innerHTML = '<p style="color:var(--text-muted)">Loading...</p>';
-      copyBtn.textContent = 'Copy';
-      modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-
-      fetch(url)
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.text();
-        })
-        .then(function(text) {
-          var cleaned = stripFrontmatter(text);
-          var html = marked.parse(cleaned, { breaks: true, gfm: true });
-          modalBody.innerHTML = html;
-        })
-        .catch(function(err) {
-          modalBody.innerHTML = '<p style="color:var(--text-muted)">Failed to load skill: ' + err.message + '</p><pre style="color:var(--accent-orange);margin-top:8px">' + url + '</pre>';
-        });
-    });
-  });
-})();
-</script>
-
-</body>
-</html><section id="catalogo">
-  <h2>Catálogo de Skills</h2>
-
-  <!-- Layer 1 -->
-  <div class="layer">
-    <h3>Layer 1 — Engineering Standards (Auto-load by task) <span class="count">(2)</span></h3>
-    <div class="skill-grid">
-      <div class="skill-card">
-        <div class="name">mobile-first-design</div>
-        <div class="desc">Design for mobile devices first, then scale up to larger screens. Create</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">design-taste-frontend</div>
-        <div class="desc">Anti-slop frontend — landing pages, portfolios, redesigns</div>
-      </div>
-    </div>
-  </div>
-  <!-- Layer 4 -->
-  <div class="layer">
-    <h3>Layer 4 — Review & Audit <span class="count">(4)</span></h3>
-    <div class="skill-grid">
-      <div class="skill-card">
-        <div class="name">domain-review</div>
-        <div class="desc">Use when the user asks for domain review, bounded-context review, code-review by domain,</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">dotnet-security-performance-review</div>
-        <div class="desc">C# security and performance review (login, auth, EF)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">multi-domain-review</div>
-        <div class="desc">Use when the user asks to review multiple domains, batch domain-review, rotate all</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">security-review</div>
-        <div class="desc">Security review (OWASP, injection, XSS, auth, crypto)</div>
-      </div>
-    </div>
-  </div>
-  <!-- Layer 5 -->
-  <div class="layer">
-    <h3>Layer 5 — Utility & Meta <span class="count">(13)</span></h3>
-    <div class="skill-grid">
-      <div class="skill-card">
-        <div class="name">00-write-spec</div>
-        <div class="desc">Receives a high-level feature description and returns a spec.md result file,</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">11-ship-pr</div>
-        <div class="desc">`11-ship-pr`</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">caveman</div>
-        <div class="desc">Ultra-compressed communication mode. Autoloaded every prompt at full intensity per AGENTS.md</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">changelog</div>
-        <div class="desc">`changelog`</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">gabarito</div>
-        <div class="desc">Gabarito — ten operational response guidelines (accountability, anti-sycophancy,</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">goal-loop</div>
-        <div class="desc">-</div>
-      </div>
-      <div class="skill-card">
+      <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md">
         <div class="name">karpathy-guidelines</div>
-        <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep</div>
+        <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/karpathy-guidelines/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card">
+      <div class="skill-card" data-path=".agents/skills/learning/SKILL.md">
         <div class="name">learning</div>
-        <div class="desc">`learning`</div>
+        <div class="desc">Analyze session output and record ONLY anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into MEMORY.md, then print a summary. Use when completing a task or implementation.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/learning/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card">
-        <div class="name">secrets-leak-review</div>
-        <div class="desc">`secrets-leak-review`</div>
-      </div>
-      <div class="skill-card">
+      <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md">
         <div class="name">spec-format</div>
-        <div class="desc">-</div>
+        <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic.   Load when the user invokes /spec-format, @spec-format, "create spec", "review spec",   "format spec" or requests validation of local specification format.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card">
-        <div class="name">tdd-sdd-ddd-reviewer</div>
-        <div class="desc">Architectural audit (TDD, spec-driven design, DDD) for C# .NET backends and React frontends.</div>
-      </div>
-      <div class="skill-card">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/SKILL.md">
         <div class="name">us-workflow</div>
-        <div class="desc">-</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">write-a-skill</div>
-        <div class="desc">`write-a-skill`</div>
-      </div>
-    </div>
-  </div>
-  <!-- outros -->
-  <div class="layer">
-    <h3>outros — Outros <span class="count">(10)</span></h3>
-    <div class="skill-grid">
-      <div class="skill-card">
-        <div class="name">01-write-plan</div>
-        <div class="desc">Generates implementation plan from GH {n}, US {n}, or {slug}.spec.md. Reads project stack from config.json — stack-agnostic.</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">02-interview</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">03-plan-to-tasks</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">04-implement-tasks</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">05-verify-plan</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">06-code-review</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">07-integration-validation</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">08-fix-pr</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">09-goal-fix-pr</div>
-        <div class="desc">(sem descrição)</div>
-      </div>
-      <div class="skill-card">
-        <div class="name">10-update-plan-implementation</div>
-        <div class="desc">(sem descrição)</div>
+        <div class="desc">E2E US orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.   Invoke: /us-workflow | @[us-workflow]. Entry: GitHub issue | *.spec.md | feature description.   Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/SKILL.md">View skill</a>
       </div>
     </div>
   </div>

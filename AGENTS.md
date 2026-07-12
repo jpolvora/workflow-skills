@@ -57,16 +57,16 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | Step | Skill | Path | Description |
 |------|-------|------|-------------|
 | 00 | `00-write-spec` | `.agents/skills/00-write-spec/SKILL.md` | Generates spec.md from feature description |
-| 01 | `write-plan` | `.agents/skills/01-write-plan/SKILL.md` | Generates implementation plan from GH issue / spec.md |
-| 02 | `interview` | `.agents/skills/02-interview/SKILL.md` | Audits and interrogates a plan until shared understanding |
-| 03 | `plan-to-tasks` | `.agents/skills/03-plan-to-tasks/SKILL.md` | Breaks plan into atomic tasks in a DAG of parallelizable topological levels |
-| 04 | `implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` | Executes or fixes code following plan/DAG |
-| 05 | `verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` | Compares criteria/plan against current code (Quick Score + US verification) |
-| 06 | `us-code-review` | `.agents/skills/06-code-review/SKILL.md` | Local code review in two phases (triage → investigation) |
-| 07 | `integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |
-| 08 | `fix-pr` | `.agents/skills/08-fix-pr/SKILL.md` | Automatic code review thread fixer for PRs |
-| 09 | `goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
-| 10 | `step-10-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` | Post-workflow: capture QA findings and apply deltas |
+| 01 | `01-write-plan` | `.agents/skills/01-write-plan/SKILL.md` | Generates implementation plan from GH issue / spec.md |
+| 02 | `02-interview` | `.agents/skills/02-interview/SKILL.md` | Audits and interrogates a plan until shared understanding |
+| 03 | `03-plan-to-tasks` | `.agents/skills/03-plan-to-tasks/SKILL.md` | Breaks plan into atomic tasks in a DAG of parallelizable topological levels |
+| 04 | `04-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` | Executes or fixes code following plan/DAG |
+| 05 | `05-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` | Compares criteria/plan against current code (Quick Score + US verification) |
+| 06 | `06-code-review` | `.agents/skills/06-code-review/SKILL.md` | Local code review in two phases (triage → investigation) |
+| 07 | `07-integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |
+| 08 | `08-fix-pr` | `.agents/skills/08-fix-pr/SKILL.md` | Automatic code review thread fixer for PRs |
+| 09 | `09-goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
+| 10 | `10-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` | Post-workflow: capture QA findings and apply deltas |
 | 11 | `11-ship-pr` | `.agents/skills/11-ship-pr/SKILL.md` | End-to-end delivery: PR develop→master/main, merge |
 
 ### Layer 3 — Discovery & Library Integration
@@ -106,16 +106,16 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | When to use | Skill to load |
 |-------------|---------------|
 | I want to write a spec | `00-write-spec` |
-| I want to plan implementation | `write-plan` → `interview` → `plan-to-tasks` |
-| I want to implement | `implement-tasks` |
-| I want to verify what was done | `verify-plan` |
-| I want to review local code | `us-code-review` |
+| I want to plan implementation | `01-write-plan` → `02-interview` → `03-plan-to-tasks` |
+| I want to implement | `04-implement-tasks` |
+| I want to verify what was done | `05-verify-plan` |
+| I want to review local code | `06-code-review` |
 | I want to review security | `security-review` or `dotnet-security-performance-review` |
 | I want to scan for secrets/leaks | `secrets-leak-review` |
 | I want to review architecture (DDD) | `tdd-sdd-ddd-reviewer` |
 | I want to review domain | `domain-review` or `multi-domain-review` |
-| I want to test integration pre-PR | `integration-validation` |
-| I want to fix PR | `fix-pr` |
+| I want to test integration pre-PR | `07-integration-validation` |
+| I want to fix PR | `08-fix-pr` |
 | I want to ship PR | `11-ship-pr` |
 | I want E2E workflow | `us-workflow` |
 | I want to format/review spec | `spec-format` |
