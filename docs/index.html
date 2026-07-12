@@ -27,7 +27,7 @@
   <h1>Workflow <span>Skills</span></h1>
   <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
   <div class="badges">
-    <span class="badge">31 skills</span>
+    <span class="badge">29 skills</span>
     <span class="badge">6 layers</span>
     <span class="badge">MIT license</span>
     <span class="badge">npx github:jpolvora/workflow-skills</span>
@@ -275,6 +275,267 @@
       </div>
       <div class="skill-card">
         <div class="name">09-goal-fix-pr</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <h2>Install</h2>
+  <div class="install-steps">
+    <div class="install-step">
+      <h4>Interactive Menu</h4>
+      <p>Open the visual menu to select skills:</p>
+      <pre><code>npx github:jpolvora/workflow-skills</code></pre>
+    </div>
+    <div class="install-step">
+      <h4>Auto-Update</h4>
+      <p>Silently update already installed skills:</p>
+      <pre><code>npx github:jpolvora/workflow-skills update</code></pre>
+    </div>
+    <div class="install-step">
+      <h4>cURL (alternative)</h4>
+      <p>Run the installer via shell script:</p>
+      <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash</code></pre>
+    </div>
+  </div>
+</section>
+
+<section id="contribute">
+  <h2>Contribute</h2>
+  <p>
+    Skills live in <code>.agents/skills/&lt;name&gt;/SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>).
+    See <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md">AGENTS.md</a> for the full routing table.
+  </p>
+</section>
+
+<footer>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a></p>
+</footer>
+
+<!-- Modal -->
+<div id="skill-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="modal-title"></span>
+      <div class="modal-actions">
+        <button class="copy-btn" title="Copy to clipboard">Copy</button>
+        <button class="close-btn" title="Close">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <pre class="modal-pre"><code class="modal-code"></code></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const RAW_BASE = 'https://raw.githubusercontent.com/jpolvora/workflow-skills/main/';
+  const modal = document.getElementById('skill-modal');
+  const modalTitle = modal.querySelector('.modal-title');
+  const modalCode = modal.querySelector('.modal-code');
+  const modalPre = modal.querySelector('.modal-pre');
+  const closeBtn = modal.querySelector('.close-btn');
+  const copyBtn = modal.querySelector('.copy-btn');
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  copyBtn.addEventListener('click', function() {
+    const text = modalCode.textContent;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(function() {
+      copyBtn.textContent = 'Copied!';
+      setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+    }).catch(function() {
+      copyBtn.textContent = 'Failed';
+      setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  document.querySelectorAll('.view-skill').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const path = this.getAttribute('data-path');
+      const card = this.closest('.skill-card');
+      const name = card.querySelector('.name').textContent;
+      const url = RAW_BASE + path;
+
+      modalTitle.textContent = name;
+      modalCode.textContent = 'Loading...';
+      copyBtn.textContent = 'Copy';
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      fetch(url)
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function(text) {
+          modalCode.textContent = text;
+          modalPre.scrollTop = 0;
+        })
+        .catch(function(err) {
+          modalCode.textContent = 'Failed to load skill: ' + err.message + '\n\nTry opening directly:\n' + url;
+        });
+    });
+  });
+})();
+</script>
+
+</body>
+</html><section id="catalogo">
+  <h2>Catálogo de Skills</h2>
+
+  <!-- Layer 1 -->
+  <div class="layer">
+    <h3>Layer 1 — Engineering Standards (Auto-load by task) <span class="count">(2)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="name">mobile-first-design</div>
+        <div class="desc">Design for mobile devices first, then scale up to larger screens. Create</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">design-taste-frontend</div>
+        <div class="desc">Anti-slop frontend — landing pages, portfolios, redesigns</div>
+      </div>
+    </div>
+  </div>
+  <!-- Layer 4 -->
+  <div class="layer">
+    <h3>Layer 4 — Review & Audit <span class="count">(4)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="name">domain-review</div>
+        <div class="desc">Use when the user asks for domain review, bounded-context review, code-review by domain,</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">dotnet-security-performance-review</div>
+        <div class="desc">C# security and performance review (login, auth, EF)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">multi-domain-review</div>
+        <div class="desc">Use when the user asks to review multiple domains, batch domain-review, rotate all</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">security-review</div>
+        <div class="desc">Security review (OWASP, injection, XSS, auth, crypto)</div>
+      </div>
+    </div>
+  </div>
+  <!-- Layer 5 -->
+  <div class="layer">
+    <h3>Layer 5 — Utility & Meta <span class="count">(13)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="name">00-write-spec</div>
+        <div class="desc">Receives a high-level feature description and returns a spec.md result file,</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">11-ship-pr</div>
+        <div class="desc">`11-ship-pr`</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">caveman</div>
+        <div class="desc">Ultra-compressed communication mode. Autoloaded every prompt at full intensity per AGENTS.md</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">changelog</div>
+        <div class="desc">`changelog`</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">gabarito</div>
+        <div class="desc">Gabarito — ten operational response guidelines (accountability, anti-sycophancy,</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">goal-loop</div>
+        <div class="desc">-</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">karpathy-guidelines</div>
+        <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">learning</div>
+        <div class="desc">`learning`</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">secrets-leak-review</div>
+        <div class="desc">`secrets-leak-review`</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">spec-format</div>
+        <div class="desc">-</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">tdd-sdd-ddd-reviewer</div>
+        <div class="desc">Architectural audit (TDD, spec-driven design, DDD) for C# .NET backends and React frontends.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">us-workflow</div>
+        <div class="desc">-</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">write-a-skill</div>
+        <div class="desc">`write-a-skill`</div>
+      </div>
+    </div>
+  </div>
+  <!-- outros -->
+  <div class="layer">
+    <h3>outros — Outros <span class="count">(10)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="name">01-write-plan</div>
+        <div class="desc">Generates implementation plan from GH {n}, US {n}, or {slug}.spec.md. Reads project stack from config.json — stack-agnostic.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">02-interview</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">03-plan-to-tasks</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">04-implement-tasks</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">05-verify-plan</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">06-code-review</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">07-integration-validation</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">08-fix-pr</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">09-goal-fix-pr</div>
+        <div class="desc">(sem descrição)</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">10-update-plan-implementation</div>
         <div class="desc">(sem descrição)</div>
       </div>
     </div>
