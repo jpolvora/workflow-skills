@@ -143,6 +143,24 @@ gh api repos/jpolvora/workflow-skills/pages   # verify site is building
 
 ---
 
+## Local Dry-Run: Agentic Code Reviewers
+
+Run the multi-agent code reviewer locally in dry-run mode before pushing. Requires `OPENCODE_API_KEY` set in the environment.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh | bash -s -- \
+  --dry-run \
+  --gh \
+  --engine opencode \
+  --model opencode-go/deepseek-v4-flash \
+  --target-branch refs/heads/main \
+  --source-branch refs/heads/develop
+```
+
+This reviews the diff between `develop` and `main` using the opencode engine. Remove `--dry-run` to publish threads on the PR. See [agentic-code-reviewers](https://github.com/jpolvora/agentic-code-reviewers) for engine options and stack configuration.
+
+---
+
 ## External Dependencies
 
 Some skills reference `senior-developer` (a global skill installed at `~/.agents/skills/senior-developer/SKILL.md`) and `.cursor/rules/ef-migrations.mdc`. These are **not** included in this repository — they must be installed separately in consumer projects for the referenced skills to resolve correctly.
