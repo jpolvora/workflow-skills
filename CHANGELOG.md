@@ -5,6 +5,11 @@
 - **Done**: Fixed `spec-to-pr` Step 6 dispatch (`05-verify-plan`); corrected relative links (`plan-delta-template`, config.json links inside skill); pointed karpathy/senior-developer refs at shipped extra-skills + `AGENTS.md` § External Dependencies; fixed UTF-8 `§`/`·`; updated `config.json.example` karpathy path; documented dual-hub consumers; soft-warn ADO legacy fallback; added `specs/domains/index.md.example`; check-harness detects retired skill ids.
 - **Result**: Pending local validation / commit by maintainer.
 
+### 2026-07-12 — Force AskQuestion + fix validate_state REPO_ROOT
+- **Prompt**: Promote FiscalWR consumer fixes for `spec-to-pr` gates and state validation into upstream workflow-skills.
+- **Done**: Added § AskQuestion requirement (FORCE invoke / probe / fallback-only-after-failure) in `spec-to-pr/SKILL.md` and `tools.md`; fixed `validate_state.py` `REPO_ROOT` to `parents[4]` (was resolving to `.agents`); shipped `cursor-rules/ask-question-gates.mdc` (+ hub `.cursor/rules/` copy); setup bootstrap copies the rule when missing; FAQ + MEMORY traps updated.
+- **Result**: Consumer gate UX and state-path resolution match the corrected FiscalWR harness.
+
 ### 2026-07-12 — Spec entry: GitHub, Azure DevOps, hand-written
 - **Prompt**: Ensure compatibility with gh, ADO, and hand-written specs.
 - **Done**: Added `ado-workitem-to-spec.py`; expanded Specification Protocol with concrete fetch/register steps for GitHub (`gh` + `github-issue-to-spec.py`), Azure DevOps (`ADO {id}` / `{org}/{project}#{id}`), and local `*.spec.md` copy/normalize; updated ARTIFACTS, FAQ, README, spec-format, config.example.

@@ -28,7 +28,7 @@ Canonical tool names from [`tools.md`](tools.md). Project params from [`config.j
 | Intent | Tool alias | Native | Rule |
 |--------|------------|--------|------|
 | Step work | `dispatch-agent` | `Task` | `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"`; `readonly: true` step 6 only; no resume across steps; step 5 DAG ≤3 parallel |
-| User gate | `user-gate` / `user-gate-auto` | `AskQuestion` | ≥2 options; recommended first; cancelled → HS-1; auto → auto-gate |
+| User gate | `user-gate` / `user-gate-auto` | `AskQuestion` | **FORCE invoke** every normal-mode gate — probe exposure, call tool, fallback only after failed invoke; see [AskQuestion requirement](#askquestion-requirement); ≥2 options; recommended first; cancelled → HS-1; auto → auto-gate |
 | Build/test | `build-backend`, `test-backend`, etc. | `Shell` | values from `config.json.verification` |
 | Source control | `commit-code`, `push-branch`, etc. | `Shell` | `gh`, `git`; cite real output |
 | State | `read-state` / `write-state` | `Read` + `Write`/`StrReplace` | truth source; hygiene before board |
@@ -40,6 +40,52 @@ Canonical tool names from [`tools.md`](tools.md). Project params from [`config.j
 Subagents: native tools for evidence; end with parseable `step-output` block.
 
 User output: post-tool summaries + Progress Board + banners.
+
+### AskQuestion requirement
+
+**FORCE:** In agent chat (normal mode), every user decision MUST attempt the native `AskQuestion` tool **before** any markdown menu. Do not skip the call because the model “thinks” the tool is missing — **probe by invoking**.
+
+| Applies to | Examples |
+|------------|----------|
+| Transition gates | Advance / switch model / repeat / go back / pause |
+| Entry / resume / auth / config gates | Step 0 entry, Active Resume, tracker auth, config bootstrap |
+| Model sub-gates | Steps 4† / 8† |
+| Refinement | 2c Escalate, 2e Shared Understanding |
+| Commit / delivery / cleanup / push / ship | Steps 7, 12, 13 |
+| Any clarifying choice with ≥2 discrete options | Harness maintenance confirmations, blocker resolution |
+
+**Probe protocol (every gate, same turn as Progress Board):**
+
+1. **Check tool exposed** — Inspect the current agent callable tool list / system tool catalog for a native tool named `AskQuestion` (or alias `ask_question`). Record in `## Gate history`:
+   - `askquestion-exposed | true|false | {gate} | ISO`
+2. **FORCE invoke** — If exposed **or unknown**, call `AskQuestion` immediately with ≥2 options (recommended first). Do **not** wait for free-text. Prefer one `AskQuestion` per assistant message.
+3. **Success** — Stop and wait for the UI selection. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer “yes”).
+4. **Hard failure only** — Fallback markdown is allowed **only** after the runtime returns an explicit error such as `Tool not found: AskQuestion` / tool absent from catalog **and** the invoke failed. Then log `askquestion-unavailable | {gate} | {error} | ISO` and present an equivalent numbered menu.
+5. **`autoMode`** — no `AskQuestion`; use auto-gate table (option index 0) only.
+6. **Forbidden** — Skipping the invoke and going straight to “reply with 1/2/3”; inferring a choice from chat tone; continuing past a gate without a selected option (except `autoMode`); claiming “AskQuestion unavailable” without a failed invoke + log line.
+
+**Typical `AskQuestion` shape** (runtime may vary slightly):
+
+```yaml
+AskQuestion:
+  title: "Spec-to-PR — {gate label}"   # optional
+  questions:
+    - id: "{gate_id}"
+      prompt: "{short prompt; include current model + next step}"
+      options:
+        - id: advance
+          label: "Advance to Step N — Recommended"
+        - id: switch_model
+          label: "Switch model and advance"
+        - id: repeat
+          label: "Repeat Step M"
+        - id: go_back
+          label: "Go back to earlier step"
+        - id: pause
+          label: "Pause workflow"
+```
+
+If Composer / current model does not expose `AskQuestion`, log exposure=`false`, attempt once, then fallback — and tell the user to switch model (Claude/GPT) or Plan mode for picker UI.
 
 ---
 
@@ -765,7 +811,7 @@ Post-step: hygiene → checkpoint (`Shell` tag) → board → gate.
 | Mode | Tool |
 |------|------|
 | auto | auto-gate table → immediate `Task`/`Shell` |
-| normal | **AskQuestion** 5 options → `Task` same turn |
+| normal | **`AskQuestion` (mandatory when available)** — 5 options → `Task` same turn. See [AskQuestion requirement](#askquestion-requirement). |
 
 **AskQuestion (normal) — every transition gate, steps 0→1 through 11→12:**
 
