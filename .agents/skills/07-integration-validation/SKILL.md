@@ -1,5 +1,5 @@
 ---
-name: integration-validation
+name: 07-integration-validation
 description: Plans and executes a pre-PR integration test battery. Detects stack via config.json; generates pass/fail report by AC. Stack-agnostic.
 version: 2.0
 disable-model-invocation: true
@@ -56,7 +56,7 @@ Read plan, ACs from `*.spec.md`, verification/delivery reports. Generate `*.inte
 ## Code of conduct
 
 - **Never decide browser on its own** — explicit authorization
-- **Does not fix code** — report gaps; fix is `implement-plan` (fix)
+- **Does not fix code** — report gaps; fix is `implement-tasks` (fix)
 - Maximum **3 iterations** of validation
 
 ## Triggers

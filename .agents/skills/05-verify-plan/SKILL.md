@@ -1,5 +1,5 @@
 ---
-name: verify-plan
+name: 05-verify-plan
 description: Compares criteria/plan against current code. Two modes: (1) Quick Score — evaluates overall implementation with a 0-10 grade; (2) US Verification — from spec.md or issue number, generates a feature-by-feature table in `.cursor/plans/{slug}.plan.report.md`.
 version: 2.0
 disable-model-invocation: true

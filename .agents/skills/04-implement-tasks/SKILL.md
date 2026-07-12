@@ -1,11 +1,11 @@
 ---
-name: implement-plan
+name: 04-implement-tasks
 description: Executes or fixes code following a plan/DAG or review findings. Detects stack via config.json; stack-agnostic. Modes: build and fix.
 version: 2.0
 disable-model-invocation: true
 ---
 
-# implement-plan
+# implement-tasks
 
 Implements or fixes code following an execution plan. Two modes — declare the mode explicitly.
 
@@ -82,6 +82,6 @@ summary: |
 
 ## Triggers
 
-- `@[implement-plan] us-{id}.plan.md` (standalone build)
-- `@[implement-plan] "fix findings: ..."` (standalone fix)
+- `@[implement-tasks] us-{id}.plan.md` (standalone build)
+- `@[implement-tasks] "fix findings: ..."` (standalone fix)
 - Dispatch workflow — Step 5 (build), Step 10 (fix)

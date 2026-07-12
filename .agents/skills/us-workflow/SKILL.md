@@ -88,7 +88,7 @@ Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
 | Scripts | `check_memory_conflict.py`, `validate_state.py`, `github-issue-to-spec.py` |
 | GitHub | `gh` CLI only |
 | State | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-plan`→5 build, 10/11 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
+| Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-tasks`→5 build, 10/11 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
 | Spec | `spec-format` |
 
 Filesystem paths use numeric prefix; skill `name:` unprefixed. Post-12 PR: [`code-review`](../code-review/SKILL.md) / [`fix-pr`](../08-fix-pr/SKILL.md).
@@ -301,7 +301,7 @@ Task:
 Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree 5/10/11 via `Shell`: `worktree add` → merge → `worktree remove` → `branch -d`. Max 1 active. Audit: `Write` `stepDispatches[]`. No per-DAG-task worktree.
 
 **Step 5 dispatch:**
-- `execMode: sequential` → single `Task` `04-implement-plan` mode `build` with `*.plan.md` directly (no DAG).
+- `execMode: sequential` → single `Task` `04-implement-tasks` mode `build` with `*.plan.md` directly (no DAG).
 - `execMode: parallel` → DAG: `Task` per level, ≤3 concurrent, no file overlap within level.
 
 ### Learning & Memory Protocol
@@ -776,12 +776,12 @@ Delegated to [`setup.md`](setup.md) § Bootstrap & Entry. Before Step 0, the orc
 | 2 | `Task` `02-interview`; FSM 2c/2e; block Step 3 until 2e confirmed (Bypassed if Dynamic Execution active) | plan in-place |
 | 3 | `Task` `03-plan-to-tasks`; detect plan size → `execMode`. Sequential → skip DAG. Parallel → DAG. | `.plan.exec.md`, `.exec.dag.json` |
 | 4† | Model sub-gate F1→F2 | not in completedSteps |
-| 5 | `Task` `04-implement-plan` mode build; worktree. `sequential` → single Task. `parallel` → DAG ≤3/level. | verification |
+| 5 | `Task` `04-implement-tasks` mode build; worktree. `sequential` → single Task. `parallel` → DAG ≤3/level. | verification |
 | 6 | `Task` `05-verify-sync-plan-us` readonly | `.plan.report.md` |
 | 7 | AskQuestion G2-code → Shell build/test → `git commit` code `feat(us-{id}): US {id} implementation` | commit; no `.cursor/plans/` |
 | 8† | Model sub-gate F3→F4 | not in completedSteps |
 | 9 | `Task` `06-code-review`; scoped diff per `config.json.rules.stackFile` | score ≥6 or "No feedback" |
-| 10 | `Task` `04-implement-plan` mode fix; G2-code only; `.report.md` uncommitted | HS-3/4 |
+| 10 | `Task` `04-implement-tasks` mode fix; G2-code only; `.report.md` uncommitted | HS-3/4 |
 | 11 | skipIntegration→Write skip; else `Task` integration-validation; browser if gated | reports uncommitted |
 | 12 | [Delivery Result Protocol](#delivery-result-protocol-step-12--before-delivery-commit) → LOC capture + benchmark → G2-delivery commit → optional [cleanup](#optional-artifact-cleanup-protocol-step-12--after-delivery-commit). `status: completed` unless `fullMode`. | `{slug}.result.md` + benchmark |
 | 13 | `fullMode` only. Gate → `Task`/`Shell` `11-ship-pr`: push → PR → goal-fix-pr (5m, max 10) → merge. | PR URL, merge |

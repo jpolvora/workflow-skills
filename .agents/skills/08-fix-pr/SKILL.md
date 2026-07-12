@@ -1,5 +1,5 @@
 ---
-name: fix-pr
+name: 08-fix-pr
 description: Cooperatively fix active code review threads on GitHub or Azure DevOps PRs. Thread scoring, confirmation gate, surgical fixes, validation, structured reports. Use when user asks to fix/review/resolve PR review threads. Also wrapped by goal-fix-pr for convergence loops.
 version: 1.0
 disable-model-invocation: true

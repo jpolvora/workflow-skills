@@ -1,5 +1,5 @@
 ---
-name: goal-fix-pr
+name: 09-goal-fix-pr
 description: Loop fix-pr até zerar threads abertas — auto-aprova gates, commit/push e re-checa após 5 minutos.
 version: 1.0
 disable-model-invocation: true
@@ -197,6 +197,6 @@ Iteração 1 roda **agora** após armar o primeiro sleeper (só após push real;
 | Resolver thread (GitHub) | `gh api "repos/.../pulls/.../comments/.../replies"` |
 | Coleta/resolve (Azure DevOps) | `.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py` |
 | Code review | [`code-review/SKILL.md`](../code-review/SKILL.md) |
-| Padrão goal/loop | Skill `goal` (sentinel + verify) |
+| Goal/loop pattern | [`goal-loop`](../goal-loop/SKILL.md) (sentinel + converge) |
 
 Walkthroughs: [`examples.md`](examples.md).

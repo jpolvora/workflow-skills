@@ -64,12 +64,12 @@ Verify the us-workflow FSM executes without error in simulated mode, covering al
 | **2** | Refinement | `Task` `02-interview` → gap registry (Bypassed if Dynamic Execution active) |
 | **3** | Execution Plan & DAG | `Task` `03-plan-to-tasks` → `test-workflow.plan.exec.md` + `test-workflow.exec.dag.json` |
 | **4†** | Model sub-gate F1→F2 | Auto-gate: continue with current model |
-| **5** | Implementation | `Task` `04-implement-plan` mode build — simulates editing AGENTS.md |
+| **5** | Implementation | `Task` `04-implement-tasks` mode build — simulates editing AGENTS.md |
 | **6** | Verification & Report | `Task` `05-verify-plan` → `test-workflow.plan.report.md` (readonly) |
 | **7** | Decision & First Commit | Auto-gate: approve → simulate build/test → simulate commit (dry-run skips real commit) |
 | **8†** | Model sub-gate F3→F4 | Auto-gate: continue with current model |
 | **9** | Code Review | `Task` `06-code-review` → score + findings |
-| **10** | Fixes & Second Commit | `Task` `04-implement-plan` mode fix → simulate fixes + build/test → simulate commit |
+| **10** | Fixes & Second Commit | `Task` `04-implement-tasks` mode fix → simulate fixes + build/test → simulate commit |
 | **11** | Integration Validation | `Task` `07-integration-validation` — no browser in dry-run |
 | **12** | Consolidation & Cleanup | G2-delivery gate → simulate `test-workflow.result.md` + benchmark + MEMORY.md sweep (dry-run: log only) |
 | **13** | Ship & PR (`full`) | `Task` `11-ship-pr` — simulates push, PR creation, goal-fix-pr loop, merge |

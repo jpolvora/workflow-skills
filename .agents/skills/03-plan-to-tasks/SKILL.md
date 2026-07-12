@@ -1,5 +1,5 @@
 ---
-name: plan-to-tasks
+name: 03-plan-to-tasks
 description: Breaks an implementation plan (*.plan.md) into atomic tasks with files, acceptance criteria, and coderPrompt, organized in a DAG of topological levels for safe parallel execution. Auto-detects small plans and recommends sequential execution.
 version: 2.0
 disable-model-invocation: true
@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # plan-to-tasks
 
-Transforms a `*.plan.md` (ideally post-`interview`, without `blocking` gaps) into an operational execution plan: atomic tasks + dependency graph (DAG) ready for a coding agent (`implement-plan`) to execute without ambiguity.
+Transforms a `*.plan.md` (ideally post-`interview`, without `blocking` gaps) into an operational execution plan: atomic tasks + dependency graph (DAG) ready for a coding agent (`implement-tasks`) to execute without ambiguity.
 
 **Automatic size detection:** before generating the DAG, evaluates whether the plan is small enough for direct sequential execution — if so, returns `execMode: sequential` and skips DAG generation (see [Size Detection](#size-detection--sequential-mode)).
 
@@ -45,7 +45,7 @@ When `execMode: sequential`, the output is minimal — no DAG, no `tasks[]`, no 
 **Mode:** sequential — small plan, direct execution without DAG.
 **Reason:** {n} steps, {m} files, {k} layers — below thresholds.
 
-Run via `implement-plan` `build` mode with the `*.plan.md` directly.
+Run via `implement-tasks` `build` mode with the `*.plan.md` directly.
 ```
 
 ### `*.exec.dag.json`
@@ -75,7 +75,7 @@ When `execMode: parallel`, follow the normal flow below.
    - `coderPrompt`: literal, complete instruction for the implementer — namespaces, classes, DTOs, permissions; cite a real reference file from the repo (e.g.: service or controller in the project layers defined in `config.json.stack`)
    - `parallelGroup`: filled in at step 3 below
 3. Assemble **topological levels** (`levels`): tasks with no pending dependencies go in the same level, **max. 3 concurrent tasks per level**, and **no file overlap** within the same level (two tasks at the same level must never touch the same file — if they do, force a dependency between them and move them to different levels).
-4. Do **not** define worktree per task — execution isolation is the responsibility of whoever runs the DAG (`implement-plan`/orchestrator), not of the DAG itself.
+4. Do **not** define worktree per task — execution isolation is the responsibility of whoever runs the DAG (`implement-tasks`/orchestrator), not of the DAG itself.
 
 ### Output
 

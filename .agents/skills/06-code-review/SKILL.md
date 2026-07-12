@@ -1,5 +1,5 @@
 ---
-name: us-code-review
+name: 06-code-review
 description: Reviewer for us-workflow Step 9. Local code review in two phases (triage → investigation) + generalization by defect class. Detects stack via config.json; stack-agnostic. Invoked by path at Step 9; also standalone.
 version: 3.0
 disable-model-invocation: true

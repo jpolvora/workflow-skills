@@ -393,7 +393,7 @@ This phase generates three independent analyses that compose the **context simul
    | Code review | `code-review`, `us-code-review` (`06-code-review`), `tdd-sdd-ddd-reviewer`, `dotnet-security-performance-review` |
    | Security | `security-review`, `dotnet-security-performance-review` |
     | Planning | `01-write-plan`, `03-plan-to-tasks`, `02-interview` |
-   | Implementation | `04-implement-plan`, `senior-developer` |
+    | Implementation | `04-implement-tasks`, `senior-developer` |
    | Verification | `05-verify-plan`, `07-integration-validation` |
    | PR workflow | `fix-pr`, `09-goal-fix-pr`, `11-ship-pr` |
    | Domain | `domain-review`, `multi-domain-review` |

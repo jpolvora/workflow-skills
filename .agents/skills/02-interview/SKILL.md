@@ -1,5 +1,5 @@
 ---
-name: interview
+name: 02-interview
 description: Audits and interrogates an implementation plan until shared understanding — acceptance criteria, code, MEMORY.md, and project rules; closes gaps with evidence, escalating one question at a time. Stack-agnostic.
 version: 1.5
 disable-model-invocation: true
