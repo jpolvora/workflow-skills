@@ -6,6 +6,7 @@
   <title>Workflow Skills — Agent Skills Hub</title>
   <meta name="description" content="Centralized agent skill repository — installable, auto-loading skills for Cursor/opencode agents">
   <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.6/marked.min.js"></script>
 </head>
 <body>
 
@@ -272,7 +273,7 @@
       </div>
     </div>
     <div class="modal-body">
-      <pre class="modal-pre"><code class="modal-code"></code></pre>
+      <div class="modal-markdown"></div>
     </div>
   </div>
 </div>
@@ -282,8 +283,7 @@
   const RAW_BASE = 'https://raw.githubusercontent.com/jpolvora/workflow-skills/main/';
   const modal = document.getElementById('skill-modal');
   const modalTitle = modal.querySelector('.modal-title');
-  const modalCode = modal.querySelector('.modal-code');
-  const modalPre = modal.querySelector('.modal-pre');
+  const modalBody = modal.querySelector('.modal-markdown');
   const closeBtn = modal.querySelector('.close-btn');
   const copyBtn = modal.querySelector('.copy-btn');
 
@@ -300,8 +300,12 @@
     if (e.key === 'Escape') closeModal();
   });
 
+  function stripFrontmatter(text) {
+    return text.replace(/^---[\s\S]*?---\n*/, '');
+  }
+
   copyBtn.addEventListener('click', function() {
-    const text = modalCode.textContent;
+    const text = modalBody.textContent;
     if (!text) return;
     navigator.clipboard.writeText(text).then(function() {
       copyBtn.textContent = 'Copied!';
@@ -321,7 +325,7 @@
       const url = RAW_BASE + path;
 
       modalTitle.textContent = name;
-      modalCode.textContent = 'Loading...';
+      modalBody.innerHTML = '<p style="color:var(--text-muted)">Loading...</p>';
       copyBtn.textContent = 'Copy';
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -332,11 +336,12 @@
           return res.text();
         })
         .then(function(text) {
-          modalCode.textContent = text;
-          modalPre.scrollTop = 0;
+          var cleaned = stripFrontmatter(text);
+          var html = marked.parse(cleaned, { breaks: true, gfm: true });
+          modalBody.innerHTML = html;
         })
         .catch(function(err) {
-          modalCode.textContent = 'Failed to load skill: ' + err.message + '\n\nTry opening directly:\n' + url;
+          modalBody.innerHTML = '<p style="color:var(--text-muted)">Failed to load skill: ' + err.message + '</p><pre style="color:var(--accent-orange);margin-top:8px">' + url + '</pre>';
         });
     });
   });
