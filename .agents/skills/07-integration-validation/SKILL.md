@@ -1,6 +1,7 @@
 ---
 name: 07-integration-validation
 description: Plans and executes pre-PR integration test batteries, verifying backend, database, RBAC, tenancy, and UI interfaces.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---

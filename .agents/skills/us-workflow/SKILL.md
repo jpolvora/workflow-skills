@@ -4,6 +4,7 @@ description: >-
   E2E US orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.
   Invoke: /us-workflow | @[us-workflow]. Entry: GitHub issue | *.spec.md | feature description.
   Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
 
 ## Audience & load
@@ -349,7 +350,7 @@ At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.l
 
 ### Specification Protocol
 
-[`spec-format`](../spec-format/SKILL.md). Canonical spec: `{us-dir}/{slug}.spec.md` — never GitHub API or `*.issue.json`.
+[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/{slug}.spec.md` — never GitHub API or `*.issue.json`.
 
 | Input | Action | Uses Step 0? |
 |-------|--------|--------------|

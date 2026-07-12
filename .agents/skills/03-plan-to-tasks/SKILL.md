@@ -1,6 +1,7 @@
 ---
 name: 03-plan-to-tasks
 description: Breaks an implementation plan into atomic tasks with files, ACs, and coderPrompts, organized in a DAG topological order.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---

@@ -1,6 +1,7 @@
 ---
 name: 06-code-review
 description: Senior code reviewer â€” two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 3.1
 disable-model-invocation: true
 ---

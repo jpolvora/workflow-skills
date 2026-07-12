@@ -1,6 +1,7 @@
 ---
 name: 05-verify-plan
 description: Compares implementation quality and code deliverables against the plan and acceptance criteria.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---

@@ -78,7 +78,7 @@ for (let i = 0; i < layerSections.length; i++) {
     }
   }
 }
-// --- 2. Scan skills directories and flat .md files ---
+// --- 2. Scan skills directories (top-level + one level deep) ---
 const skillsDir = path.join(root, '.agents', 'skills');
 const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
 const skillDirs = entries
@@ -88,8 +88,57 @@ const skillFiles = entries
   .filter(e => e.isFile() && e.name.endsWith('.md'))
   .map(e => e.name.replace(/\.md$/, ''));
 
-// Merge, keeping directories first (files overwrite dir names when both exist)
-const allSkillSlugs = [...new Set([...skillDirs, ...skillFiles])];
+// Also scan nested skill directories (e.g. us-workflow/extra-skills/*)
+for (const dir of skillDirs) {
+  const nestedPath = path.join(skillsDir, dir);
+  try {
+    const nestedEntries = fs.readdirSync(nestedPath, { withFileTypes: true });
+    for (const ne of nestedEntries) {
+      if (ne.isDirectory()) {
+        const subNestedPath = path.join(nestedPath, ne.name);
+        try {
+          const subEntries = fs.readdirSync(subNestedPath, { withFileTypes: true });
+          for (const se of subEntries) {
+            if (se.isDirectory() && !skillDirs.includes(se.name)) {
+              skillDirs.push(se.name);
+            }
+          }
+        } catch (_) {}
+      }
+    }
+  } catch (_) {}
+}
+
+function findSkillMdPath(dirSlug) {
+  const candidates = [
+    path.join(skillsDir, dirSlug, 'SKILL.md'),
+    path.join(skillsDir, dirSlug + '.md'),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  // Search nested subdirectories (e.g. us-workflow/extra-skills/<slug>/SKILL.md)
+  for (const topDir of skillDirs) {
+    const nestedPath = path.join(skillsDir, topDir);
+    try {
+      const nestedEntries = fs.readdirSync(nestedPath, { withFileTypes: true });
+      for (const ne of nestedEntries) {
+        if (!ne.isDirectory()) continue;
+        const subNestedPath = path.join(nestedPath, ne.name);
+        try {
+          const subEntries = fs.readdirSync(subNestedPath, { withFileTypes: true });
+          for (const se of subEntries) {
+            if (se.name === dirSlug) {
+              const candidate = path.join(subNestedPath, dirSlug, 'SKILL.md');
+              if (fs.existsSync(candidate)) return candidate;
+            }
+          }
+        } catch (_) {}
+      }
+    } catch (_) {}
+  }
+  return '';
+}
 
 function readFrontmatter(filePath) {
   if (!fs.existsSync(filePath)) return { name: '', description: '', version: '' };
@@ -133,24 +182,18 @@ function readFrontmatter(filePath) {
   return { name, description, version };
 }
 
+// Merge, keeping directories first (files overwrite dir names when both exist)
+const allSkillSlugs = [...new Set([...skillDirs, ...skillFiles])];
+
 const skills = [];
 
 for (const slug of allSkillSlugs) {
-  const possiblePaths = [
-    path.join(skillsDir, slug, 'SKILL.md'),
-    path.join(skillsDir, slug + '.md'),
-  ];
-  let content = '';
-  let actualPath = '';
-  for (const p of possiblePaths) {
-    if (fs.existsSync(p)) {
-      content = fs.readFileSync(p, 'utf-8');
-      actualPath = path.relative(root, p).replace(/\\/g, '/');
-      break;
-    }
-  }
+  const actualPath = findSkillMdPath(slug);
+  const content = actualPath ? fs.readFileSync(actualPath, 'utf-8') : '';
+  const relPath = actualPath ? path.relative(root, actualPath).replace(/\\/g, '/') : '';
 
-  const fm = readFrontmatter(possiblePaths.find(p => fs.existsSync(p)) || '');
+
+  const fm = readFrontmatter(actualPath || '');
   const name = fm.name || slug;
   const description = fm.description;
   const version = fm.version;
@@ -160,7 +203,7 @@ for (const slug of allSkillSlugs) {
   if (!info) info = skillLayerMap[slug];
 
   if (info) {
-    skills.push({ name, description, version, layerNumber: info.layerNumber, layerName: info.layerName, path: actualPath });
+    skills.push({ name, description, version, layerNumber: info.layerNumber, layerName: info.layerName, path: relPath });
   }
 }
 

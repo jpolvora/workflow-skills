@@ -1,6 +1,7 @@
 ---
 name: 02-interview
 description: Audits and interrogates an implementation plan to resolve ambiguities and verify ready criteria before tasks are created.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.6
 disable-model-invocation: true
 ---

@@ -11,6 +11,46 @@ This repository centralizes a collection of behavioral agent guidelines (**skill
 
 ---
 
+## ⭐ Canonical Source for `us-workflow`
+
+**This repository is the canonical, authoritative upstream source for the `us-workflow` skill and all of its pipeline dependencies.**
+
+`us-workflow` is a full end-to-end delivery orchestrator (FSM, Steps 0–13) that delegates each phase of the software lifecycle to a dedicated sub-skill. Every skill listed below is an **integral part of the `us-workflow` pipeline** — they are designed, versioned, and tested together as a cohesive system.
+
+### `us-workflow` Dependency Graph
+
+| Step(s) | Skill | Role in pipeline |
+|---------|-------|-----------------|
+| Step 0 | [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) | Draft canonical spec from free-text description |
+| Step 1 | [`01-write-plan`](.agents/skills/01-write-plan/SKILL.md) | Generate implementation plan from spec |
+| Step 2 | [`02-interview`](.agents/skills/02-interview/SKILL.md) | Refine and audit plan — resolve ambiguities |
+| Step 3 | [`03-plan-to-tasks`](.agents/skills/03-plan-to-tasks/SKILL.md) | Break plan into atomic DAG tasks |
+| Steps 5, 10, 11 | [`04-implement-tasks`](.agents/skills/04-implement-tasks/SKILL.md) | Execute code changes (build + fix modes) |
+| Step 6 | [`05-verify-plan`](.agents/skills/05-verify-plan/SKILL.md) | Verify deliverables against acceptance criteria |
+| Step 9 | [`06-code-review`](.agents/skills/06-code-review/SKILL.md) | Two-phase code review (triage → investigation) |
+| Step 11 | [`07-integration-validation`](.agents/skills/07-integration-validation/SKILL.md) | Pre-PR integration test battery |
+| Step 13 (via ship-pr) | [`08-fix-pr`](.agents/skills/08-fix-pr/SKILL.md) | Resolve active PR review threads |
+| Step 13 (via ship-pr) | [`09-goal-fix-pr`](.agents/skills/09-goal-fix-pr/SKILL.md) | Convergence loop — fix-pr until zero open threads |
+| Post-workflow | [`10-update-plan-implementation`](.agents/skills/10-update-plan-implementation/SKILL.md) | Delta adjustments from QA findings |
+| Step 13 | [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | End-to-end PR delivery and merge |
+| Spec protocol | [`spec-format`](.agents/skills/us-workflow/extra-skills/spec-format/SKILL.md) | Canonical spec format validation |
+| Loop primitive | [`goal-loop`](.agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
+
+### ⚠️ Contribution Policy for `us-workflow` Dependencies
+
+> **All changes to `us-workflow` and its dependency skills MUST originate from this repository.**
+>
+> Consumer projects that install these skills via `npx github:jpolvora/workflow-skills` receive **read-only copies** of the pipeline. If you find a bug, want to improve a skill, or need to extend its behavior:
+>
+> 1. **Fork or clone this repository** — `https://github.com/jpolvora/workflow-skills`
+> 2. **Make your changes here** (the upstream source)
+> 3. **Open a PR** against the `develop` branch
+> 4. Once merged, **run `npx github:jpolvora/workflow-skills update`** in your consumer project to pull in the changes
+>
+> **Do not edit skill files directly inside a consumer project** — they will be overwritten on the next `update` run (except for your `config.json`, which is always preserved).
+
+---
+
 ## 🛠️ How to Install and Update Skills
 
 You can install or update the agent guidelines (**skills**) directly into the `.agents/skills` folder of your local development project in two ways:

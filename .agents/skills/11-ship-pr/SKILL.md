@@ -1,6 +1,7 @@
 ---
 name: 11-ship-pr
 description: End-to-end delivery — verify branch state, commit, push, create PR develop → main/master, run goal-fix-pr loops, and merge.
+upstream: jpolvora/workflow-skills � this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---

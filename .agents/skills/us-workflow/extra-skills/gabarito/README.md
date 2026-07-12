@@ -14,7 +14,7 @@ Listed in `AGENTS.md` § Skill loading (autoload every prompt). Works alongside 
 
 ## Caveman
 
-**caveman full** autoloaded with Gabarito unless `stop caveman` / `normal mode`. Level switches: `/caveman lite|ultra|…`. See `.agents/skills/caveman/SKILL.md`.
+**caveman full** autoloaded with Gabarito unless `stop caveman` / `normal mode`. Level switches: `/caveman lite|ultra|…`. See `../caveman/SKILL.md`.
 
 ## Opt-out
 
