@@ -1,0 +1,32 @@
+name: Agentic Code Review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  review-cursor:
+    name: Review (cursor-sdk)
+    uses: jpolvora/agentic-code-reviewers/.github/workflows/review-remote.yml@release
+    with:
+      engine: cursor-sdk
+      model: composer-2.5
+      score_min: '1'
+    secrets:
+      CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+      AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN: ${{ secrets.AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN || github.token }}
+
+  review-opencode:
+    name: Review (opencode)
+    uses: jpolvora/agentic-code-reviewers/.github/workflows/review-remote.yml@release
+    with:
+      engine: opencode
+      model: opencode-go/deepseek-v4-flash
+      score_min: '1'
+    secrets:
+      OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+      AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN: ${{ secrets.AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN || github.token }}
