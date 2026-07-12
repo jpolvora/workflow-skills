@@ -30,3 +30,18 @@ jobs:
             --source-branch "refs/heads/${{ github.head_ref }}" \
             --target-branch "refs/heads/${{ github.event.pull_request.base.ref }}"
         continue-on-error: true
+
+      - name: Check for unresolved threads
+        id: check-threads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ACTIVE=$(gh pr view ${{ github.event.pull_request.number }} --json comments --jq '[.comments[] | select(.isResolved == false and .author.login != "github-actions[bot]" and .author.login != "github-actions")] | length' 2>/dev/null || echo 0)
+          echo "active_threads=$ACTIVE" >> $GITHUB_OUTPUT
+          echo "Unresolved threads: $ACTIVE"
+
+      - name: Block merge on unresolved threads
+        if: ${{ steps.check-threads.outputs.active_threads != '0' }}
+        run: |
+          echo "::error::PR has ${{ steps.check-threads.outputs.active_threads }} unresolved review thread(s). Resolve them before merging."
+          exit 1
