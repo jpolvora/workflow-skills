@@ -1,5 +1,10 @@
 # 🎯 Workflow Skills — Central de Diretrizes e Skills para Cursor
 
+> **Site:** [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills) — Catálogo interativo de todas as skills.
+
+[![npx](https://img.shields.io/badge/npx-github:jpolvora/workflow--skills-blue?logo=npm)](https://github.com/jpolvora/workflow-skills)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-site-success?logo=github)](https://jpolvora.github.io/workflow-skills)
+
 Este repositório centraliza uma coleção de diretrizes agênticas e comportamentais (**skills**) pré-configuradas para o Cursor Agent. O objetivo é servir como uma **fonte única de verdade** (source of truth) para instalar, atualizar e sincronizar essas instruções em múltiplos projetos locais de forma prática e consistente.
 
 > 📖 **Consulte o [`AGENTS.md`](AGENTS.md)** para o roteamento completo de todas as skills, layers, task router e instruções de carregamento automático (skill loading).

@@ -1,6 +1,7 @@
 ---
 name: 11-ship-pr
 description: End-to-end delivery — code-review auto-fix, verify, commit on develop, push, PR develop→master/main (auto-detect), goal-fix-pr (5m waits, max 10), merge commit. Use when user asks to ship, deliver, commit-and-PR, push-and-merge, or `/ship-pr`. Also dispatched by us-workflow as Step 13 when --full flag is active.
+version: 1.0
 disable-model-invocation: true
 ---
 
