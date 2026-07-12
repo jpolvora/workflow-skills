@@ -116,6 +116,18 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('07-integration-validation')) fail('ARTIFACTS.md missing Step 11 ownership');
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py'))) {
+    fail('Missing github-issue-to-spec.py');
+  }
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py'))) {
+    fail('Missing ado-workitem-to-spec.py');
+  }
+  if (!artifacts.includes('azure-devops') && !artifacts.includes('Azure DevOps')) {
+    fail('ARTIFACTS.md must document Azure DevOps entry');
+  }
+  if (!artifacts.includes('Hand-written') && !artifacts.includes('hand-written')) {
+    fail('ARTIFACTS.md must document hand-written/local spec entry');
+  }
   const goalLoop = fs.readFileSync(
     path.join(parentDir, '.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md'),
     'utf8'

@@ -78,11 +78,12 @@
     },
     "azureDevOps": {
       "enabled": false,
-      "_comment": "Set enabled: true and fill org/project. Put token in ADO_PAT env var — never commit it.",
+      "_comment": "Set enabled: true and fill org/project. Put token in ADO_PAT (or AZURE_DEVOPS_PAT) — never commit it.",
       "org": "",
       "project": "",
       "patEnvVar": "ADO_PAT",
-      "apiBase": "https://dev.azure.com"
+      "apiBase": "https://dev.azure.com",
+      "workItemToSpecScript": ".agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py"
     }
   },
 

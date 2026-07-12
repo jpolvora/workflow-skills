@@ -41,13 +41,16 @@ Stage **only**:
 
 ## Spec entry rules
 
-| Input | Action | Canonical write |
-|-------|--------|-----------------|
-| US/issue id | Fetch → convert | `{us-dir}/step-00-{slug}.spec.md` |
-| Local `*.spec.md` | Register / copy into us-dir | `{us-dir}/step-00-{slug}.spec.md` |
-| Free-text brainstorm | `00-write-spec` | `{us-dir}/step-00-{slug}.spec.md` |
+| Input | Action | Canonical write | `source` frontmatter |
+|-------|--------|-----------------|----------------------|
+| GitHub `{n}` / `US {n}` | `gh issue view` → `github-issue-to-spec.py` | `{us-dir}/step-00-{slug}.spec.md` | `github` |
+| ADO `{org}/{project}#{id}` or `ADO {id}` / `WI {id}` | `ado-workitem-to-spec.py` (live or offline JSON) | `{us-dir}/step-00-{slug}.spec.md` | `azure-devops` |
+| Hand-written `*.spec.md` (any path) | Copy/normalize into us-dir; ensure `source: local` | `{us-dir}/step-00-{slug}.spec.md` | `local` |
+| Free-text brainstorm | `00-write-spec` | `{us-dir}/step-00-{slug}.spec.md` | `local` |
 
 Optional: copy a read-only mirror to `{specs-dir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `## Artifacts.specPath` (must point at the `step-00-` file under `{us-dir}`).
+
+**Snapshot (audit-only):** tracker fetches also write `step-00-{slug}.issue.json` (GitHub issue JSON or ADO WIT JSON). Never treat the snapshot as the canonical spec.
 
 ## Forbidden aliases
 

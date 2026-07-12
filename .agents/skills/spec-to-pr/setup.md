@@ -1,4 +1,4 @@
-# Setup & Bootstrap — US Workflow
+# Setup & Bootstrap — Spec-to-PR
 
 Initialization, configuration bootstrap, flags, resume logic, and first-run setup. Extracted from [`SKILL.md`](SKILL.md) to keep the orchestrator lean.
 Artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md). Resume rules in this file are canonical; FAQ/DIAGRAM must link here.

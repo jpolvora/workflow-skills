@@ -94,7 +94,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | `mobile-first-design` | `.agents/skills/mobile-first-design/SKILL.md` | Responsive mobile-first design |
 | `design-taste-frontend` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend — landing pages, portfolios, redesigns |
 
-### Layer 2 — `spec-to-pr` Pipeline (numbered, 00-11)
+### Layer 2 — spec-to-pr Pipeline (numbered, 00-11)
 
 | Step | Skill | Path | Description |
 |------|-------|------|-------------|
@@ -115,6 +115,8 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 
 | Skill | Path | Description |
 |-------|------|-------------|
+| _(reserved)_ | — | Future workflow discovery skills; install via `using-superpowers` / `find-skills` until routed here |
+
 ### Layer 4 — Review & Audit
 
 | Skill | Path | Description |
@@ -164,7 +166,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | I want to create new skill | `write-a-skill` |
 | I want to audit harness | `check-harness` |
 | I want to grill plan against docs | `grill-with-docs` |
-| I want to do frontend design | `taste-skill` or `mobile-first-design` |
+| I want to do frontend design | `design-taste-frontend` or `mobile-first-design` |
 | I want to record learning | `learning` |
 | I want to record changelog | `changelog` |
 | I want to discover/install skills | `find-skills` or `using-superpowers` |

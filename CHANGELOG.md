@@ -1,5 +1,10 @@
 # Changelog
 
+### 2026-07-12 — Spec entry: GitHub, Azure DevOps, hand-written
+- **Prompt**: Ensure compatibility with gh, ADO, and hand-written specs.
+- **Done**: Added `ado-workitem-to-spec.py`; expanded Specification Protocol with concrete fetch/register steps for GitHub (`gh` + `github-issue-to-spec.py`), Azure DevOps (`ADO {id}` / `{org}/{project}#{id}`), and local `*.spec.md` copy/normalize; updated ARTIFACTS, FAQ, README, spec-format, config.example.
+- **Result**: Install tests pass; offline ADO/GitHub converters smoke-tested.
+
 ### 2026-07-12 — Rename orchestrator `us-workflow` → `spec-to-pr`
 - **Prompt**: Rename us-workflow to spec-to-pr across the multi-workflow hub; migrate consumers.
 - **Done**: Renamed skill folder and all references; legacy invoke aliases kept; CLI `update` migrates `us-workflow` → `spec-to-pr` preserving `config.json`; AGENTS/README frame repo as multi-workflow hub; runtime tokens `uswf/` and `us-{id}` unchanged.

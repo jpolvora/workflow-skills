@@ -63,13 +63,15 @@ Pause at any gate → "Pause workflow" → state saved; resume with `/spec-to-pr
 
 ```text
 @[spec-to-pr] 2338
+@[spec-to-pr] contoso/MyProject#2338
+@[spec-to-pr] ADO 2338
+@[spec-to-pr] specs/my-feature.spec.md
 @[spec-to-pr] dry-run 2338
 @[spec-to-pr] auto 2338
 @[spec-to-pr] auto dry-run 2338
 @[spec-to-pr] auto skip-integration 2338
 @[spec-to-pr] auto skip-tests skip-integration 2338
-@[spec-to-pr] us-2375.plan.md
-@[spec-to-pr] soft-delete em fornecedores
+@[spec-to-pr] soft-delete for suppliers
 @[spec-to-pr] --model sonnet-4 auto US 567
 @[spec-to-pr] --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 123
 ```
@@ -78,7 +80,7 @@ Persistent state: `.cursor/plans/us-{id}/{workflow-id}.state.md` (fields `dryRun
 
 On **normal mode** start, the workflow checks for existing active state in `.cursor/plans/*/*.state.md`. If found, presents a menu to resume, start new, or cancel.
 
-### Auto mode (`auto` / `automatico`)
+### Auto mode (`auto`)
 
 Pipeline **without interactive menus**: the orchestrator always picks the **recommended option** at each gate and dispatches the next step in the same turn.
 

@@ -486,7 +486,7 @@ flowchart TB
 - `@[spec-to-pr] 1925`
 - `@[spec-to-pr] dry-run 1925`
 - `@[spec-to-pr] auto 1925`
-- `@[spec-to-pr] automatico dry-run 1925`
+- `@[spec-to-pr] auto dry-run 1925`
 - `/spec-to-pr US 1925`
 - `/spec-to-pr auto US 1925`
 - `/spec-to-pr dry-run auto US 1925`
