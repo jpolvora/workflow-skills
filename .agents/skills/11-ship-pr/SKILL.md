@@ -102,7 +102,7 @@ gh pr view <N> --json number,url,state -q '{number: .number, url: .url}'
 
 ### 7. Merge
 
-`activeThreads == 0` → `gh pr checks --watch` → `gh pr merge --merge --delete-branch`. Skip if `no-merge`/`dry-run`. Do **not** `--delete-branch` when head is `develop`.
+`activeThreads == 0` → `gh pr checks --watch` → `gh pr merge --merge`. **Never** delete or request deletion of the branch after merging, regardless of branch name. Skip if `no-merge`/`dry-run`.
 
 ## Final reply (mandatory)
 
