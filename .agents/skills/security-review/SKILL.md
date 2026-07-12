@@ -29,7 +29,7 @@ Skip: test files (unless requested), dead code, server-controlled config (`setti
 ## Process
 
 1. **Detect context** — load matching refs from [REFERENCE.md](REFERENCE.md) § Reference index (`references/`, `languages/`, `infrastructure/`).
-2. **Matrix tenancy** — verify `ITenantContext`, company-scoped queries, authz on admin/platform routes; treat unvetted `IgnoreQueryFilters()` as review focus (bg jobs OK when row carries `CompanyId`).
+2. **Multi-tenant isolation** — verify tenancy filters, company-scoped queries, authz on admin/platform routes; treat unvetted `IgnoreQueryFilters()` as review focus (bg jobs OK when row carries scoping field).
 3. **Verify exploitability** — attacker-controlled vs server-controlled (see REFERENCE § Input sources).
 4. **Report HIGH only** — severity table and output template in [REFERENCE.md](REFERENCE.md) § Output format.
 

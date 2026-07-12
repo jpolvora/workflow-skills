@@ -128,7 +128,7 @@ Sem claim de progresso sem evidência fresca:
 
 | Check | Evidência |
 |-------|-----------|
-| Build/testes | Saída de `dotnet test` / `dotnet build`; se diff tocar `web/` → `npm test` e `npm run build` |
+| Build/testes | Output from build/test commands (see `config.json.verification` or tools.md aliases) |
 | Auto-revisão | Status **"No feedback"** da skill [`code-review`](../code-review/SKILL.md) |
 | Publicação | Hash do commit + confirmação de push (ou log dry-run) |
 | Threads resolvidas | resolve exit 0 (ou skip documentado em dry-run) |

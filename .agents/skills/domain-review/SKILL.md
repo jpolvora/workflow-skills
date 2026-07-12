@@ -7,7 +7,7 @@ description: >
   /domain-review next auto (auto-pick + optional full fix/PR/goal-fix-pr cycle).
 ---
 
-# Domain review — Matrix
+# Domain review
 
 On-demand Layer 2. **Not** PR/branch review ([code-review](../code-review/SKILL.md)). Extra OWASP depth → [security-review](../security-review/SKILL.md).
 

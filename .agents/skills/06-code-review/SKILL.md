@@ -1,134 +1,134 @@
 ---
 name: us-code-review
-description: Reviewer do Step 9 do us-workflow. Code review local em duas fases (triagem → investigação) + generalização por classe de defeito. Detecta stack via config.json; projeto-agnóstico. Invocado por path no Step 9; também standalone.
+description: Reviewer for us-workflow Step 9. Local code review in two phases (triage → investigation) + generalization by defect class. Detects stack via config.json; stack-agnostic. Invoked by path at Step 9; also standalone.
 version: 3.0
 disable-model-invocation: true
 ---
 
 # Code Reviewer (Workflow Step 9)
 
-Revisor de código sênior — análise em duas fases, prova por evidência, generalização por classe de defeito. Objetivo: encontrar erros críticos antes da PR.
+Senior code reviewer — two-phase analysis, evidence-backed proof, generalization by defect class. Goal: find critical errors before the PR.
 
-## Pré-leitura obrigatória
+## Pre-reading (mandatory)
 
 - `config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
 - `AGENTS.md` — hub routing
 - `MEMORY.md` — Review Patterns
 
-## Propósito Anti-Loop
+## Anti-Loop Purpose
 
-**Precisão + completude na mesma rodada:**
+**Precision + completeness in the same round:**
 
-- **Precisão:** publique apenas o comprovável com evidência estruturada
-- **Completude:** enumere **todos** os achados de uma só vez
-- **Classe, não instância:** varra ocorrências irmãs do mesmo padrão
+- **Precision:** publish only what is provable with structured evidence
+- **Completeness:** enumerate **all** findings at once
+- **Class, not instance:** sweep sibling occurrences of the same pattern
 
-Convergência alvo: **uma única rodada** — lista completa ou "Sem feedback".
+Target convergence: **a single round** — complete list or "No feedback".
 
-## Fase 0 — Detecção de Stack
+## Phase 0 — Stack Detection
 
-Leia `config.json.stack` para identificar:
+Read `config.json.stack` to identify:
 - Backend: layers, solution, test project
 - Frontend: framework, source dir, i18n
-- Database: tipo, ORM
+- Database: type, ORM
 
-Ignore: markdown, CI configs, traduções, artefatos de build (`bin/`, `obj/`, `*/dist/`, `node_modules/`).
+Ignore: markdown, CI configs, translations, build artifacts (`bin/`, `obj/`, `*/dist/`, `node_modules/`).
 
-## Como Executar
+## How to Execute
 
-### 0. Diff Local
+### 0. Local Diff
 
 ```bash
-git diff --name-status master...HEAD -- 'src/**' 'web/src/**' 'tests/**' ':!**/bin/**' ':!**/obj/**' ':!web/node_modules/**' ':!web/dist/**'
+git diff --name-status {base}...HEAD -- ':!**/bin/**' ':!**/obj/**' ':!**/node_modules/**' ':!**/dist/**'
 ```
 
-### 1. Fase 1 — Triagem
+### 1. Phase 1 — Triage
 
-Lista de hipóteses ancoradas em linhas alteradas — sem veredito.
+List of hypotheses anchored to changed lines — no verdict.
 
-- Para cada arquivo elegível, identifique linhas com potencial problema real
-- **Descarte:** nits estéticos, formatação, estilo, alertas sem falha plausível, código pré-existente
-- UI (`*.tsx`): candidate apenas segurança (`dangerouslySetInnerHTML`), bindings críticos, forms, permissões
+- For each eligible file, identify lines with real problem potential
+- **Discard:** cosmetic nits, formatting, style, alerts without plausible failure, pre-existing code
+- UI (`*.tsx`): only consider security (`dangerouslySetInnerHTML`), critical bindings, forms, permissions
 
-### 2. Fase 2 — Investigação + Prova
+### 2. Phase 2 — Investigation + Proof
 
-Para cada hipótese, preencha os **4 passos** antes de reportar:
+For each hypothesis, complete the **4 steps** before reporting:
 
-1. **Evidência lida:** arquivos, símbolos, chamadores inspecionados
-2. **Cenário de falha:** entradas/estados que disparam o problema
-3. **Proteção ausente:** por que validações/testes existentes não impedem
-4. **Descartes:** hipóteses alternativas rejeitadas
+1. **Evidence read:** files, symbols, callers inspected
+2. **Failure scenario:** inputs/states that trigger the issue
+3. **Missing protection:** why existing validations/tests don't prevent it
+4. **Discards:** rejected alternative hypotheses
 
-Se não preencher os 4 passos → **descarte**.
+If unable to complete the 4 steps → **discard**.
 
-### 2.5 Generalização por Classe
+### 2.5 Generalization by Class
 
-Para cada achado comprovado, busque ocorrências irmãs no diff e reporte todas juntas.
+For each proven finding, search for sibling occurrences in the diff and report all together.
 
 ### 2.6 Review Patterns (MEMORY.md)
 
-Execute grep de cada ID em `MEMORY.md → ## Review Patterns` cujo escopo bata com os arquivos alterados. Reporte violações.
+Run grep for each ID in `MEMORY.md → ## Review Patterns` whose scope matches the changed files. Report violations.
 
-### 2.7 Checklists grep (completude)
+### 2.7 Checklists grep (completeness)
 
-Execute todos os checklists aplicáveis baseados em `config.json.invariants` e `config.json.rules`. Exemplos genéricos:
+Execute all applicable checklists based on `config.json.invariants` and `config.json.rules`. Generic examples:
 
-| Checklist | O que buscar |
+| Checklist | What to look for |
 |-----------|-------------|
-| Tenancy | `config.json.domain.tenancyField` — filtros, exceções documentadas |
-| EF migrations | `config.json.invariants.migrationsCliOnly` — sem edição manual |
-| Domain rules | Regras em `config.json.domain.model` |
-| React hooks | `useEffect` — cleanup, dependências |
-| i18n | Keys novas em todas as locales de `config.json.stack.frontend.i18n.locales[]` |
+| Tenancy | `config.json.domain.tenancyField` — filters, documented exceptions |
+| EF migrations | `config.json.invariants.migrationsCliOnly` — no manual editing |
+| Domain rules | Rules in `config.json.domain.model` |
+| React hooks | `useEffect` — cleanup, dependencies |
+| i18n | New keys in all locales from `config.json.stack.frontend.i18n.locales[]` |
 
-## Gaps Comuns por Stack
+## Common Gaps by Stack
 
-### Geral
-- Secrets hardcoded ou em logs
-- Falhas de autorização, injeção, vazamento cross-tenant
-- Vazamento de recursos (`IDisposable`)
+### General
+- Secrets hardcoded or in logs
+- Authorization failures, injection, cross-tenant leakage
+- Resource leaks (`IDisposable`)
 
-### C# / .NET (quando detectado)
-- Defaults perigosos (`DateTime.MinValue`, `Guid.Empty` aceitos como válidos)
-- N+1 queries, materialização precoce, bloqueio async
-- Violações de invariants do projeto
+### C# / .NET (when detected)
+- Dangerous defaults (`DateTime.MinValue`, `Guid.Empty` accepted as valid)
+- N+1 queries, premature materialization, async blocking
+- Project invariant violations
 
-### TypeScript / React (quando detectado)
-- `dangerouslySetInnerHTML` sem sanitização
-- `useEffect` sem cleanup / dependências instáveis
-- `any` em props/DTOs; i18n incompleto; API calls fora dos hooks existentes
+### TypeScript / React (when detected)
+- `dangerouslySetInnerHTML` without sanitization
+- `useEffect` without cleanup / unstable dependencies
+- `any` in props/DTOs; incomplete i18n; API calls outside existing hooks
 
-## Formato do Relatório
+## Report Format
 
-Se nada a reportar: **Sem feedback**
+If nothing to report: **No feedback**
 
-Se achados:
+If findings:
 
 ```markdown
 ## Code Review
 
 **Branch:** `…`
-**Stack:** `{detectada via config.json}`
-**Arquivos:** N
+**Stack:** `{detected via config.json}`
+**Files:** N
 
 ### Critical
-- **`path:L42`**: CRITICAL — descrição (Score: 9/10)
-  Análise: (4 passos)
-  Ocorrências irmãs: `path:L88`
-  Sugestão: ```suggestion … ```
+- **`path:L42`**: CRITICAL — description (Score: 9/10)
+  Analysis: (4 steps)
+  Sibling occurrences: `path:L88`
+  Suggestion: ```suggestion … ```
 
 ### Warning
-- **`path:L80`**: WARNING — descrição (Score: 7/10)
+- **`path:L80`**: WARNING — description (Score: 7/10)
 
 ### Suggestion
-- **`path:L150`**: SUGGESTION — descrição (Score: 6/10)
+- **`path:L150`**: SUGGESTION — description (Score: 6/10)
 
 ---
-**Aplicar correções?** (SIM → `build-backend`, `test-backend`, `build-frontend`)
+**Apply fixes?** (YES → `build-backend`, `test-backend`, `build-frontend`)
 ```
 
-## Correção Automática (após SIM)
+## Automatic Fix (after YES)
 
-1. Aplicar correções cirurgicamente
-2. Rodar `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` se aplicável)
-3. Apresentar resumo
+1. Apply fixes surgically
+2. Run `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` if applicable)
+3. Present summary

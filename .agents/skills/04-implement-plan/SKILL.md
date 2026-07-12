@@ -1,62 +1,62 @@
 ---
 name: implement-plan
-description: Executa ou corrige código seguindo plano/DAG ou achados de review. Detecta stack via config.json; projeto-agnóstico. Modos build e fix.
+description: Executes or fixes code following a plan/DAG or review findings. Detects stack via config.json; stack-agnostic. Modes: build and fix.
 version: 2.0
 disable-model-invocation: true
 ---
 
 # implement-plan
 
-Implementa ou corrige código seguindo um plano de execução. Duas modalidades — declare o modo explicitamente.
+Implements or fixes code following an execution plan. Two modes — declare the mode explicitly.
 
-## Pré-leitura obrigatória
+## Mandatory pre-read
 
-Antes de iniciar, leia:
+Before starting, read:
 - `config.json` — stack, commands, invariants (`.agents/skills/us-workflow/config.json`)
 - `tools.md` — tool aliases (`.agents/skills/us-workflow/tools.md`)
-- `stack.md` — código e paths (`.agents/skills/us-workflow/stack.md`)
-- Hub: `AGENTS.md` (raiz)
+- `stack.md` — code and paths (`.agents/skills/us-workflow/stack.md`)
+- Hub: `AGENTS.md` (root)
 
-## Modos
+## Modes
 
-| Modo | Quando | Entrada |
+| Mode | When | Input |
 |------|--------|---------|
-| **build** | Implementação nova | `*.plan.exec.md` + `*.exec.dag.json` ou `*.plan.md` direto |
-| **fix** | Corrigir achados de review/testes | Lista de achados |
+| **build** | New implementation | `*.plan.exec.md` + `*.exec.dag.json` or `*.plan.md` directly |
+| **fix** | Fix review/test findings | List of findings |
 
-Se o modo não for explícito, pergunte.
+If the mode is not explicit, ask.
 
-## Modo build
+## Build mode
 
-1. Leia a tarefa do DAG (`files[]`, `acceptance`, `coderPrompt`, `dependsOn`) ou a seção "3. Plano Passo a Passo" do `*.plan.md`.
-2. **Procure feature equivalente** no repositório (mesmo padrão estrutural, camadas de `config.json.stack`).
-3. Implemente **apenas** o que está no `coderPrompt`/`files[]` — não expanda escopo.
-4. Prioridade de regras:
-   - `AGENTS.md` — roteamento; carregue skills sob demanda
-   - `config.json.rules` — guardrails do projeto
+1. Read the DAG task (`files[]`, `acceptance`, `coderPrompt`, `dependsOn`) or the "3. Step-by-Step Plan" section of `*.plan.md`.
+2. **Look for equivalent feature** in the repository (same structural pattern, layers from `config.json.stack`).
+3. Implement **only** what is in `coderPrompt`/`files[]` — do not expand scope.
+4. Rule priority:
+   - `AGENTS.md` — routing; load skills on demand
+   - `config.json.rules` — project guardrails
    - Architecture spec: `config.json.domain.architectureSpec`
-   - Skills de padrões (ex: view-patterns se UI)
-   - `karpathy-guidelines` — simplicidade, mudanças cirúrgicas
-5. Validação local antes de reportar sucesso:
-   - Backend tocado: `build-backend` + `test-backend` (tools.md)
-   - Frontend tocado: `build-frontend` (+ `test-frontend` se i18n/lógica UI)
-6. Reporte `files_touched` (created/modified/deleted).
+   - Pattern skills (e.g. view-patterns if UI)
+   - `karpathy-guidelines` — simplicity, surgical changes
+5. Local validation before reporting success:
+   - Backend touched: `build-backend` + `test-backend` (tools.md)
+   - Frontend touched: `build-frontend` (+ `test-frontend` if i18n/UI logic)
+6. Report `files_touched` (created/modified/deleted).
 
-## Modo fix
+## Fix mode
 
-1. Leia `karpathy-guidelines` — correções cirúrgicas, sem refatorar além do achado.
-2. Receba lista de achados (formato: Arquivo:Linha, severidade, análise).
-3. Para cada achado confirmado, varra **ocorrências irmãs** do mesmo padrão — corrija a **classe**, não só a instância.
-4. Cubra cada classe com **teste anti-regressão**.
-5. Rode mesma validação do modo build.
-6. Documente: problema, correção, ocorrências irmãs, teste anti-regressão.
+1. Read `karpathy-guidelines` — surgical fixes, do not refactor beyond the finding.
+2. Receive list of findings (format: File:Line, severity, analysis).
+3. For each confirmed finding, sweep **sibling occurrences** of the same pattern — fix the **class**, not just the instance.
+4. Cover each class with an **anti-regression test**.
+5. Run same validation as build mode.
+6. Document: problem, fix, sibling occurrences, anti-regression test.
 
-## Saída (ambos os modos)
+## Output (both modes)
 
-- Código + testes no working tree (não commita).
-- Resumo: arquivos tocados, testes (pass/fail), achados corrigidos (fix) ou passos implementados (build).
+- Code + tests in working tree (do not commit).
+- Summary: files touched, tests (pass/fail), findings fixed (fix) or steps implemented (build).
 
-### Formato `step-output` (dispatch workflow)
+### `step-output` format (workflow dispatch)
 
 ```yaml
 status: success | partial | failed | needs_user
@@ -69,19 +69,19 @@ verification:
   build: pass | fail | skipped
   tests: pass | fail | skipped
 summary: |
-  <texto>
+  <text>
 ```
 
-## Regras de conduta
+## Conduct rules
 
-- **Nunca commite ou faça push** — decisão de quem invoca.
-- **Escopo estrito** — não expanda além do `coderPrompt`/achados.
-- **Diff mínimo** — sem refatorações não solicitadas.
-- **Nunca escreva migrations à mão** — use `migrations-add` (tools.md).
-- Se ambíguo, **pare e pergunte** (ou `needs_user` quando subagent).
+- **Never commit or push** — decision of the invoker.
+- **Strict scope** — do not expand beyond `coderPrompt`/findings.
+- **Minimal diff** — no unsolicited refactors.
+- **Never write migrations by hand** — use `migrations-add` (tools.md).
+- If ambiguous, **stop and ask** (or `needs_user` when subagent).
 
-## Gatilhos
+## Triggers
 
-- `@[implement-plan] us-{id}.plan.md` (build standalone)
-- `@[implement-plan] "corrigir achados: ..."` (fix standalone)
+- `@[implement-plan] us-{id}.plan.md` (standalone build)
+- `@[implement-plan] "fix findings: ..."` (standalone fix)
 - Dispatch workflow — Step 5 (build), Step 10 (fix)

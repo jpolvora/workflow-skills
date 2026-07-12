@@ -6,7 +6,7 @@ description: >
   review all domains, or domain-review queue/batch with the 7-day freshness window.
 ---
 
-# Multi-domain review — Matrix
+# Multi-domain review
 
 Orchestrator only. Does **not** replace [domain-review](../domain-review/SKILL.md). Each candidate = that skill **`{slug} auto`** ([AUTO.md](../domain-review/AUTO.md)).
 

@@ -121,7 +121,8 @@
     "seniorDeveloper": ".agents/skills/senior-developer/SKILL.md",
     "karpathyGuidelines": ".agents/skills/karpathy-guidelines/SKILL.md",
     "viewPatterns": ".agents/skills/matrix-view-patterns/SKILL.md",
-    "efMigrations": ".cursor/rules/ef-migrations.mdc"
+    "efMigrations": ".cursor/rules/ef-migrations.mdc",
+    "stackFile": "STACK.md"
   },
 
   "invariants": {

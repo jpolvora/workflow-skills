@@ -7,15 +7,9 @@ version: 1.0
 
 # Step 10 — Update Plan & Implementation (Post-Workflow)
 
-**Standalone skill** — runs **after** [`us-workflow`](../us-workflow/SKILL.md) (completed or stopped before Step 12). **Not** a step inside that workflow (do not confuse with workflow Step 10 “Fixes, Second Commit and Report”).
+Runs **after** [`us-workflow`](../us-workflow/SKILL.md) completes or stops before Step 12. Packs manual QA findings, implements delta fixes, appends steps to the US plan, verifies against code, updates result.md, and certifies for the next PR.
 
-**Purpose:** When manual tests reveal gaps, pack the **last fixes / commits / prompts** into the durable US plan, verify implementation, update delivery docs, and certify readiness for the **next PR**.
-
-- **Language:** Skill in English; **user-facing messages in pt-BR**.
-- **Invocation:** On demand only (`@step-10-update-plan-implementation`, `/step-10`, etc.). Never auto-start from `us-workflow`.
-- **Out of scope:** Opening/updating PR, `fix-pr`, merge — manual after certification.
-
-Legacy alias: `us-delivery-workflow` (retired) → use `us-workflow` for conventions.
+Invoke on demand via `@step-10-update-plan-implementation` or `/step-10`. Never auto-starts from `us-workflow`.
 
 ---
 
@@ -193,7 +187,7 @@ Update §9 **Certification** table. On failure → return to phase 4.
 ### 6. Certify — Pack for next PR
 
 1. Fill §9 **Commits** table with hashes from this session (including plan/result doc commits).
-2. Update `{us-dir}/{slug}.result.md` (Matrix delivery format — English body, pt-BR summary to user):
+2. Update `{us-dir}/{slug}.result.md` (structured delivery format — English body):
    - **Done:** append new fixes/features (factual bullets)
    - **Next steps:** remove resolved items; add remaining pendências
    - Note new commits under **Done** or inline

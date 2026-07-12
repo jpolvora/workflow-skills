@@ -1,438 +1,440 @@
 ---
 name: check-harness
 description: >-
-  Agente de auditoria e manutenção do harness de agentes (AGENTS.md como hub,
-  .agents/skills, .cursor/rules, docs). Detecta skills/rules no disco ausentes
-  do roteamento do AGENTS.md, links quebrados, paths absolutos e redundâncias.
-  Opcionalmente propõe melhorias de escrita das skills via writing-great-skills
-  (skill global, quando instalada). Suporta modo dry-run (`--dry-run`) para
-  relatório sem edições. Fluxo obrigatório: varredura read-only →
-  plano de correção → execução somente após aprovação explícita do usuário
-  (dry-run encerra no plano). Carregar SOMENTE quando o usuário invocar
-  explicitamente /check-harness, @check-harness, "auditar harness", "checar
-  referências do harness" ou pedir revisão de coesão/redundância entre skills
-  e AGENTS.md. Não confundir com us-workflow (pipeline E2E de entrega).
+  Auditing and maintenance agent for the agent harness (AGENTS.md as hub,
+  .agents/skills, docs). Detects skills/rules on disk missing from
+  AGENTS.md routing, broken links, absolute paths, and redundancies.
+  Optionally proposes skill writing improvements via writing-great-skills
+  (global skill, when installed). Supports dry-run mode (`--dry-run`) for
+  report-only without edits. Mandatory flow: read-only scan →
+  correction plan → execution only after explicit user approval
+  (dry-run stops at the plan). Load ONLY when user explicitly invokes
+  /check-harness, @check-harness, "audit harness", "check
+  harness references", or requests a cohesion/redundancy review between skills
+  and AGENTS.md. Do not confuse with us-workflow (E2E delivery pipeline).
 disable-model-invocation: true
 version: 3.1-generic
 ---
 
 # Check Harness
 
+> **Note:** This is the `workflow-skills` source repository. **Never** run scripts via `npx github:jpolvora/workflow-skills` — use local files from this repository. The harness audit is performed by loading this file and following the scan phases.
+
 Senior meta-harness auditing agent specialized in **health, cohesion, and portability** of project agents. 
 
 ## Core Goals
-1. **Routing & Integrity:** Validate that all harness files (`AGENTS.md`, `.cursor/rules/`, `.agents/skills/`) exist and contain correct relative links without phantom/broken paths.
+1. **Routing & Integrity:** Validate that all harness files (`AGENTS.md`, `.agents/skills/`) and project-level harness files (`.cursorrules`, `.cursor/rules/`, `README.md`, `docs/` when present) exist and contain correct relative links without phantom/broken paths.
 2. **Redundancy Elimination:** Detect and fix instruction overlaps or contradictions between skills and the hub, enforcing progressive disclosure.
 3. **Portability Audit:** Enforce that orchestrator skills (like `us-workflow`) and their downstream dependencies are project-agnostic. No hardcoded project metadata, custom paths, or stack-specific commands inside the skills.
 4. **Clean Execution Flow:** Run read-only audits first, present a correction plan, and apply edits ONLY upon explicit user approval.
 
-> **Escopo exclusivo:** meta-harness instructions, routing, links, and redundancy. **Não** entrega User Stories, **não** implementa features de produto e **não** substitui pipelines E2E.
-> **Idioma:** respostas ao usuário em **pt-BR**.
+> **Exclusive scope:** meta-harness instructions, routing, links, and redundancy. **Does not** deliver User Stories, **does not** implement product features, and **does not** replace E2E pipelines.
+> **Language:** responses to user in **en-us**.
 > **Generic Stack:** Stack is dynamically discovered from project files; no hardcoded lists are assumed.
 
 ---
 
-## Fluxo de execução (obrigatório)
+## Execution flow (mandatory)
 
-O agente **sempre** segue estas etapas em ordem:
+The agent **always** follows these steps in order:
 
 ```mermaid
 flowchart LR
-  V[1. Varredura read-only] --> P[2. Plano de correção]
-  P --> A{Modo / Aprovação}
-  A -->|Dry-run / Relatório apenas| F[Fim - Relatório entregue]
-  A -->|Normal + Aprovado| E[3. Executar correções]
-  A -->|Normal + Rejeitado| F
+  V[1. Read-only scan] --> P[2. Correction plan]
+  P --> A{Mode / Approval}
+  A -->|Dry-run / Report only| F[End - Report delivered]
+  A -->|Normal + Approved| E[3. Execute corrections]
+  A -->|Normal + Rejected| F
 ```
 
-### Detalhe das etapas
+### Step details
 
-| Etapa | Nome | O que fazer | O que **não** fazer |
+| Step | Name | What to do | What **not** to do |
 |-------|------|-------------|---------------------|
-| **1** | **Varredura** | Executar Fases 0–5c (§ Metodologia); coletar achados com prova por evidência. | **Proibido** usar `Write`, `StrReplace`, `Delete` ou qualquer edição no harness |
-| **2** | **Plano / Relatório** | Apresentar relatório estruturado (§ Formato de saída). **Normal:** Usar `AskQuestion` para aprovação. **Dry-run:** Parar aqui. | **Proibido** aplicar correções nesta etapa — apenas propor |
-| **3** | **Execução** | **(Normal apenas)** Aplicar somente os itens aprovados via diff cirúrgico; revalidar Fase 2 nos arquivos tocados. | **Dry-run:** Esta etapa não existe. |
+| **1** | **Scan** | Run Phases 0–5c (§ Methodology); collect findings with evidence-based proof. | **Forbidden** to use `Write`, `StrReplace`, `Delete`, or any edit in the harness |
+| **2** | **Plan / Report** | Present structured report (§ Output format). **Normal:** Use `AskQuestion` for approval. **Dry-run:** Stop here. | **Forbidden** to apply corrections in this step — only propose |
+| **3** | **Execution** | **(Normal only)** Apply only approved items via surgical diff; revalidate Phase 2 on touched files. | **Dry-run:** This step does not exist. |
 
-- **Ativação Dry-run:** `--dry-run`, `dry run`, `/check-harness --dry-run`. Bypassa `AskQuestion` e Etapa 3.
-- **Invocação:** `/check-harness`, `@check-harness`, "auditar o harness", "remover redundância entre skills".
-- **Gatilhos de aprovação (normal):** `aplicar correções`, `aplicar o plano`, `aprovo`, etc. Cancelamento ou resposta vaga = abortar correções.
+- **Dry-run activation:** `--dry-run`, `dry run`, `/check-harness --dry-run`. Bypasses `AskQuestion` and Step 3.
+- **Invocation:** `/check-harness`, `@check-harness`, "audit the harness", "remove redundancy between skills".
+- **Approval triggers (normal):** `apply corrections`, `apply the plan`, `approved`, etc. Cancellation or vague response = abort corrections.
 
-- **Fora de escopo:** planejar/implementar US, code review de código de produto, PR fixing, subir serviços — use as skills dedicadas roteadas por [`AGENTS.md`](../../AGENTS.md).
-
----
-
-## Princípios inegociáveis
-
-1. **Paths relativos à raiz do repo** — toda referência proposta ou corrigida usa caminho relativo (ex.: `.agents/skills/01-write-plan/SKILL.md`). **Proibido** paths absolutos (`C:\Users\...\project\...`, `/home/user/...`) ou dependência de máquina do autor.
-2. **Prova por evidência** — cada achado cita arquivo + trecho/link verificado com tools (`Read`, `Grep`, `Glob`). Não reporte link quebrado sem confirmar inexistência no filesystem.
-3. **Varredura antes de editar** — Etapas 1–2 são **sempre read-only**. Enumerar todos os achados e montar o plano de correção **antes** de qualquer `Write`/`StrReplace`/`Delete`. Edição só na Etapa 3, com aprovação explícita.
-4. **Precedência do harness** — a fonte de verdade de roteamento é o [`AGENTS.md`](../../AGENTS.md); a fonte de verdade de engenharia é a skill de guardrails/invariantes (ex.: `.agents/skills/senior-developer/SKILL.md`) + rules `.mdc` quando aplicável. Skills **delegam** ao `AGENTS.md` e à skill de guardrails em vez de duplicar prosa. Auditar violações de progressive disclosure (skill/agent repetindo corpo inteiro em vez de linkar a fonte).
-5. **Diff mínimo nas propostas** — preferir remoção de duplicata + link para fonte canônica em vez de reescrever blocos inteiros.
-6. **AGENTS.md é o hub** — o `AGENTS.md` concentra o roteamento (Layers, § Skill loading, § Task router, § Verification, § Feature workflow). O `AGENTS.md` deve **rotear** para skills, rules, harness agents e project docs via progressive disclosure — **nunca** indexar specs. Spec discovery fica em skills de especificação e no diretório de specs do projeto. Não duplicar corpos de skill inline (exceção: tabelas de roteamento e comandos de verificação).
+- **Out of scope:** planning/implementing US, product code review, PR fixing, starting services — use dedicated skills routed by [`AGENTS.md`](../../AGENTS.md).
 
 ---
 
-## Escopo da varredura (inventário canônico)
+## Non-negotiable principles
 
-Percorra **todos** os artefatos abaixo, na ordem de roteamento do harness (progressive disclosure):
+1. **Repo-root-relative paths** — every proposed or corrected reference uses a relative path (e.g., `.agents/skills/01-write-plan/SKILL.md`). **Forbidden** absolute paths (`C:\Users\...\project\...`, `/home/user/...`) or author-machine dependencies.
+2. **Evidence-based proof** — each finding cites file + snippet/link verified with tools (`Read`, `Grep`, `Glob`). Do not report a broken link without confirming nonexistence on the filesystem.
+3. **Scan before edit** — Steps 1–2 are **always read-only**. Enumerate all findings and assemble the correction plan **before** any `Write`/`StrReplace`/`Delete`. Editing only in Step 3, with explicit approval.
+4. **Harness precedence** — the source of truth for routing is [`AGENTS.md`](../../AGENTS.md); the source of truth for engineering is the guardrails/invariants skill (e.g., `.agents/skills/senior-developer/SKILL.md`) + `.mdc` rules when applicable. Skills **delegate** to `AGENTS.md` and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
+5. **Minimal diff in proposals** — prefer removing duplicates + link to canonical source rather than rewriting entire blocks.
+6. **AGENTS.md is the hub** — `AGENTS.md` concentrates routing (Layers, § Skill loading, § Task router, § Verification, § Feature workflow). `AGENTS.md` must **route** to skills, rules, harness agents, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
 
-### 1. Ponto de entrada
+---
 
-| Arquivo | Função |
+## Scan scope (canonical inventory)
+
+Go through **all** artifacts below, in harness routing order (progressive disclosure):
+
+### 1. Entry point
+
+| File | Role |
 |---------|--------|
-| [`.cursorrules`](../../.cursorrules) | Aponta para `AGENTS.md` como entrada única (não um segundo orquestrador) |
-| [`AGENTS.md`](../../AGENTS.md) | **Hub** do harness — Layers, § Skill loading, § Task router, § Verification, § Feature workflow |
+| `AGENTS.md` | Harness **Hub** — Layers, § Skill loading, § Task router, § Verification, § Feature workflow |
+| `.cursorrules` | (Optional) Points to `AGENTS.md` as single entry — verify existence and validity |
 
-Fluxo de progressive disclosure: `.cursorrules` → `AGENTS.md` → skill/doc sob demanda (specs via skills ou `specs/AGENTS.md`, não via hub).
+Progressive disclosure flow: `.cursorrules` (if present) → `AGENTS.md` → skill/doc on demand (specs via skills or `specs/AGENTS.md`, not via hub).
 
-### 1b. Agentes e orquestradores
+### 1b. Agents and orchestrators
 
-Agentes standalone (com `disable-model-invocation: true`) e orquestradores podem viver em `.agents/` ou sob `.agents/skills/`. A Fase 4 descobre todos os arquivos `.md` com frontmatter YAML que contenham `disable-model-invocation: true`.
+Standalone agents (with `disable-model-invocation: true`) and orchestrators may live in `.agents/` or under `.agents/skills/`. Phase 4 discovers all `.md` files with YAML frontmatter containing `disable-model-invocation: true`.
 
-Além do próprio `check-harness` (este arquivo), projetos podem conter pipelines E2E (ex.: `us-workflow/`), arquivos de configuração de stack (ex.: `stack.md`), e outros orquestradores. A varredura da Fase 4 enumera o inventário real; esta seção existe apenas como ponto de entrada para a auditoria.
+Besides `check-harness` itself (this file), projects may contain E2E pipelines (e.g., `us-workflow/`), stack config files (e.g., `stack.md`), and other orchestrators. Phase 4 scan enumerates the actual inventory; this section exists only as an entry point for the audit.
 
-### 2. Rules (`.cursor/rules/`)
+### 2. Rules (`.cursor/rules/`, optional)
 
-Rules `.mdc` complementam o `AGENTS.md` com instruções de engenharia de escopo restrito (ex.: migrations, linting, convenções de commit). Validar existência e links de cada rule referenciada no `AGENTS.md` e em skills.
+`.mdc` rules complement `AGENTS.md` with narrow-scope engineering instructions (e.g., migrations, linting, commit conventions). Validate existence and links of each rule referenced in `AGENTS.md` and in skills.
 
-A Fase 4 detecta rules novas ou removidas que divergem do roteamento declarado.
+Phase 4 detects new or removed rules that diverge from declared routing.
 
 ### 3. Skills (`.agents/skills/`)
 
-Todas as skills do projeto vivem sob `.agents/skills/`. Cada skill é tipicamente um diretório contendo um `SKILL.md` com frontmatter YAML (`name:`, `description:`). Arquivos `.md` standalone com frontmatter diretamente em `skills/` (como este `check-harness.md`) também são tratados como skills na varredura.
+All project skills live under `.agents/skills/`. Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` (like this `check-harness.md`) are also treated as skills in the scan.
 
-A **Fase 4** é a fonte de verdade para o inventário de skills: ela varre o filesystem por `SKILL.md` recursivamente e arquivos `.md` com frontmatter em `skills/`, comparando com o roteamento declarado no `AGENTS.md`. Não confie em listas hardcoded — o disco é a verdade.
+**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively and `.md` files with frontmatter in `skills/`, comparing against declared routing in `AGENTS.md`. Do not rely on hardcoded lists — the disk is the truth.
 
-> **Colisão de `name:`:** dois `SKILL.md` com o mesmo `name:` quebram a resolução de skill → reportar **warning** e propor renomear um id ou consolidar num único arquivo.
+> **`name:` collision:** two `SKILL.md` files with the same `name:` break skill resolution → report as **warning** and propose renaming one id or consolidating into a single file.
 
-Também inspecionar **docs/scripts** referenciados por essas skills (ex.: scripts em subpastas como `us-workflow/scripts/`, `08-fix-pr/scripts/`).
+Also inspect **docs/scripts** referenced by those skills (e.g., scripts in subfolders like `us-workflow/scripts/`, `08-fix-pr/scripts/`).
 
-#### Qualidade de escrita das skills (opcional — `writing-great-skills`)
+#### Skill writing quality (optional — `writing-great-skills`)
 
-Quando o usuário tiver a skill **`writing-great-skills`** instalada **globalmente** (fora do repo), inclua no plano da Fase 6 sugestões de otimização das skills do harness — **somente leitura** na varredura; edições só na Fase 7 com aprovação.
+When the user has the **`writing-great-skills`** skill installed **globally** (outside the repo), include in the Phase 6 plan optimization suggestions for harness skills — **read-only** during scan; edits only in Phase 7 with approval.
 
-**Detecção** (tentar nesta ordem; parar no primeiro `SKILL.md` encontrado):
+**Detection** (try in this order; stop at the first `SKILL.md` found):
 
-| Local típico (global) | Path |
+| Typical location (global) | Path |
 |-----------------------|------|
-| Cursor skills (padrão) | `~/.cursor/skills/writing-great-skills/SKILL.md` |
-| Windows equivalente | `%USERPROFILE%\.cursor\skills\writing-great-skills\SKILL.md` |
-| Agents global (alternativo) | `~/.agents/skills/writing-great-skills/SKILL.md` |
+| Cursor skills (default) | `~/.cursor/skills/writing-great-skills/SKILL.md` |
+| Windows equivalent | `%USERPROFILE%\.cursor\skills\writing-great-skills\SKILL.md` |
+| Agents global (alternative) | `~/.agents/skills/writing-great-skills/SKILL.md` |
 
-Se **nenhum** path existir, **pule** esta subseção — não invente critérios nem duplique o conteúdo da skill no harness.
+If **no** path exists, **skip** this subsection — do not invent criteria nor duplicate the skill's content in the harness.
 
-**Referência canônica:** carregar `writing-great-skills/SKILL.md` e, sob demanda, `GLOSSARY.md` no mesmo diretório. Aplicar o vocabulário da skill (predictability, sprawl, duplication, sediment, premature completion, completion criterion, progressive disclosure, leading word, no-op) como lente de revisão — **não** copiar parágrafos para o relatório.
+**Canonical reference:** load `writing-great-skills/SKILL.md` and, on demand, `GLOSSARY.md` in the same directory. Apply the skill's vocabulary (predictability, sprawl, duplication, sediment, premature completion, completion criterion, progressive disclosure, leading word, no-op) as a review lens — **do not** copy paragraphs into the report.
 
-**Escopo da revisão:** cada `SKILL.md` listado no inventário da Fase 4 (prioridade: skills do pipeline de workflow primeiro, depois skills auto-load, depois demais).
+**Review scope:** each `SKILL.md` listed in the Phase 4 inventory (priority: workflow pipeline skills first, then auto-load skills, then others).
 
-**O que propor no plano** (severidade `suggestion`, salvo bug factual → `warning`):
+**What to propose in the plan** (severity `suggestion`, unless factual bug → `warning`):
 
-| Achado | Exemplo de correção proposta |
+| Finding | Example of proposed correction |
 |--------|------------------------------|
-| Sprawl | Extrair formato/template para arquivo irmão (`PLAN-FORMAT.md`) com **context pointer** |
-| Duplication | Remover prosa duplicada; link para fonte canônica (`senior-developer/SKILL.md`, skill irmã) |
-| Sediment | Changelog/version notes no topo → `CHANGELOG.md` ou uma linha |
-| Premature completion | Adicionar **completion criterion** checkável em cada step |
-| No-op | Cortar identidade/fluff que não altera comportamento |
-| Leading word | Reforçar token na `description` e no corpo (`blueprint`, `convergence`, `DAG`) |
-| Invocation | `description` com gatilhos distintos por branch; evitar sinônimos duplicados |
+| Sprawl | Extract format/template to sibling file (`PLAN-FORMAT.md`) with **context pointer** |
+| Duplication | Remove duplicated prose; link to canonical source (`senior-developer/SKILL.md`, sibling skill) |
+| Sediment | Changelog/version notes at top → `CHANGELOG.md` or a single line |
+| Premature completion | Add checkable **completion criterion** at each step |
+| No-op | Cut identity/fluff that does not alter behavior |
+| Leading word | Reinforce token in `description` and body (`blueprint`, `convergence`, `DAG`) |
+| Invocation | `description` with distinct triggers per branch; avoid duplicate synonyms |
 
-**Saída:** tabela **Melhorias de skills (writing-great-skills)** no relatório da Fase 6 (§ Formato de saída). Itens aprovados pelo usuário entram na Fase 7 como edições cirúrgicas nos `SKILL.md` afetados.
+**Output:** **Skill improvements (writing-great-skills)** table in the Phase 6 report (§ Output format). User-approved items enter Phase 7 as surgical edits on affected `SKILL.md` files.
 
-### 4. Docs de stack e engenharia
+### 4. Stack and engineering docs
 
-Documentação de projeto referenciada pelo `AGENTS.md` e pelas skills. A Fase 4 descobre os paths reais; aqui são listados os **tipos** de docs esperados como entrada da auditoria:
+Project documentation referenced by `AGENTS.md` and skills. Phase 4 discovers actual paths; listed here are the **types** of docs expected as audit input:
 
-| Tema | Onde procurar |
+| Theme | Where to look |
 |------|---------------|
-| Guardrails / engenharia | Skills com `name: senior-developer` ou equivalente; rules `.mdc` em `.cursor/rules/` |
-| Arquitetura / design do sistema | `docs/specs/`, `docs/superpowers/specs/`, docs referenciados no `AGENTS.md` |
-| Constraints de API | Arquivos em `docs/specs/` com nomes como `backend_API.md`, `api.md` |
-| Constraints de frontend | Arquivos em `docs/specs/` com nomes como `frontend_UI.md`, `ui.md` |
-| Padrões de UI / componentes | Skills com `view-patterns`, `taste-skill`; arquivos `STANDARDS.md` dentro de skills |
-| Tokens / tema / design system | `DESIGN.md`, `design-tokens/`, ou docs equivalentes na raiz do repo |
-| Glossário de domínio | `CONTEXT.md` ou equivalente na raiz do repo |
-| Guia de testes / checklist | `docs/testing/`, skills de verificação e validação |
+| Guardrails / engineering | Skills with `name: senior-developer` or equivalent; `.mdc` rules in `.cursor/rules/` |
+| Architecture / system design | `docs/specs/`, `docs/superpowers/specs/`, docs referenced in `AGENTS.md` |
+| API constraints | Files in `docs/specs/` with names like `backend_API.md`, `api.md` |
+| Frontend constraints | Files in `docs/specs/` with names like `frontend_UI.md`, `ui.md` |
+| UI patterns / components | Skills with `view-patterns`, `taste-skill`; `STANDARDS.md` files within skills |
+| Tokens / theme / design system | `DESIGN.md`, `design-tokens/`, or equivalent docs at repo root |
+| Domain glossary | `CONTEXT.md` or equivalent at repo root |
+| Testing guide / checklist | `docs/testing/`, verification and validation skills |
 
-A lista exata de artefatos é descoberta na varredura (Fases 1–4). Esta seção descreve os **padrões** de busca, não um inventário fixo.
+The exact artifact list is discovered during the scan (Phases 1–4). This section describes **search patterns**, not a fixed inventory.
 
-### 5. Artefatos de suporte
+### 5. Support artifacts
 
-- Skill `spec-format` (ou equivalente) — formato canônico de especificações locais
-- Skill `senior-developer` (ou equivalente) — checklist das invariantes de engenharia
-- Padrões de review recorrentes: `MEMORY.md` (ou equivalente) — especialmente seções de anti-regressão
+- `spec-format` skill (or equivalent) — canonical format of local specifications
+- `senior-developer` skill (or equivalent) — engineering invariants checklist
+- Recurring review patterns: `MEMORY.md` (or equivalent) — especially anti-regression sections
 
 ---
 
-## Metodologia — auditoria em 7 fases
+## Methodology — 7-phase audit
 
-Execute **todas** as fases de varredura (0–5c) antes de montar o plano (6). A Fase 7 só ocorre após aprovação do usuário. Não pule validação mecânica por amostragem.
+Run **all** scan phases (0–5c) before assembling the plan (6). Phase 7 only occurs after user approval. Do not skip mechanical validation via sampling.
 
-> **Mapeamento Etapas ↔ Fases:** Etapa 1 (Varredura) = Fases 0–5c (+ 5b opcional) | Etapa 2 (Plano) = Fase 6 | Etapa 3 (Execução) = Fase 7
+> **Step ↔ Phase mapping:** Step 1 (Scan) = Phases 0–5c (+ optional 5b) | Step 2 (Plan) = Phase 6 | Step 3 (Execution) = Phase 7
 
-### Fase 0 — Baseline
+### Phase 0 — Baseline
 
-1. Confirmar branch e estado git (`git status --short`) — mudanças locais não commitadas podem explicar paths "ausentes".
-2. Registrar data/hora e escopo solicitado (completo vs. arquivo específico).
+1. Confirm branch and git state (`git status --short`) — uncommitted local changes may explain "missing" paths.
+2. Record date/time and requested scope (full vs. specific file).
 
-### Fase 1 — Extração de referências
+### Phase 1 — Reference extraction
 
-Para cada arquivo do inventário (§ Escopo):
+For each inventory file (§ Scope):
 
-1. Extrair links Markdown `(...)` e menções inline a paths (`.md`, `.mdc`, scripts `.py`/`.cjs`/`.sh`).
-2. Normalizar: remover anchors (`#`), query strings, prefixos `file://`.
-3. Classificar cada referência:
-   - **Interna harness** — aponta para arquivo do repo
-   - **Externa** — URL http(s), raw GitHub, docs React/EF/Cursor
-   - **Externa de referência** — repositório ou plano fora do harness; não é destino de código novo
-4. Montar tabela `(origem, path citado, tipo, resolvido?)`.
+1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.py`/`.cjs`/`.sh` scripts).
+2. Normalize: strip anchors (`#`), query strings, `file://` prefixes.
+3. Classify each reference:
+   - **Harness internal** — points to a repo file
+   - **External** — http(s) URL, raw GitHub, React/EF/Cursor docs
+   - **Reference external** — repository or plan outside the harness; not a new-code target
+4. Build table `(source, cited path, type, resolved?)`.
 
-Comandos úteis:
+Useful commands:
 
 ```bash
-# Links markdown no hub
+# Markdown links in the hub
 rg -o '\[[^\]]+\]\(([^)]+)\)' AGENTS.md
 
-# Paths .agents / .cursor citados no harness
+# .agents / .cursor paths cited in the harness
 rg -n '\.agents/|\.cursor/' AGENTS.md .agents/skills .agents/us-workflow
 ```
 
-### Fase 2 — Validação de existência e formato de path
+### Phase 2 — Existence and path format validation
 
-Para cada referência interna:
+For each internal reference:
 
-| Verificação | Falha típica |
+| Check | Typical failure |
 |-------------|--------------|
-| Arquivo existe | link órfão pós-rename (ex.: path portado de outro projeto sem ajuste) |
-| Path relativo correto | `../` excessivo ou insuficiente a partir do arquivo origem |
-| Consistência numérica | pasta `01-write-plan` vs. id `write-plan` (prefixo só no filesystem) |
-| Case / separador | `\` vs `/` em paths escritos no texto |
-| Path absoluto | `C:\Users\...\project\...` — **sempre** corrigir para relativo |
+| File exists | orphan link after rename (e.g., path ported from another project without adjustment) |
+| Relative path correct | excessive or insufficient `../` from the source file |
+| Numeric consistency | folder `01-write-plan` vs. id `write-plan` (prefix only on filesystem) |
+| Case / separator | `\` vs `/` in text paths |
+| Absolute path | `C:\Users\...\project\...` — **always** fix to relative |
 
-**Regra de resolução:** simule o link **a partir do diretório do arquivo que o contém** (como um agente faria ao clicar).
+**Resolution rule:** simulate the link **from the directory of the containing file** (as an agent would when clicking).
 
-### Fase 3 — Grafo de roteamento e caminhos de decisão
+### Phase 3 — Routing graph and decision paths
 
-Construa o mapa mental (ou mermaid) de **quem aponta para quem**:
+Build the mental map (or mermaid) of **who points to whom**:
 
 ```mermaid
 flowchart TD
   CR[.cursorrules] --> AG[AGENTS.md]
   AG --> SKILLS[.agents/skills/*]
   AG --> DOCS[docs/* + project docs]
-  UDW[pipeline E2E] --> STACKWF[stack config]
+  UDW[E2E pipeline] --> STACKWF[stack config]
   UDW --> SKILLS
   CHK[check-harness] --> AG
-  SKILLS --> GRD[skill de guardrails]
+  SKILLS --> GRD[guardrails skill]
 ```
 
-Checar:
+Check:
 
-1. **Cobertura** — toda skill listada em `AGENTS.md` existe; toda skill existente relevante está roteada (ou omitida de propósito com nota) — diff mecânico na **Fase 4**.
-2. **Progressive disclosure** — `AGENTS.md` roteia skills/rules/docs sem indexar specs; skills delegam ao hub + skill de guardrails.
-3. **Relações declaradas** — dependências entre skills batem com imports reais (ex.: `us-workflow` → skills `01`–`07`; Step 9 → `us-code-review` (`06-code-review`); `08-fix-pr` → `code-review`).
-4. **Gatilhos de invocação** — `disable-model-invocation: true` nas skills/agentes que exigem invocação explícita; `description:` menciona gatilhos (`/us-workflow`, `@check-harness`, etc.).
-5. **Dead ends** — instrução "consulte X" onde X não existe ou não roteia adiante.
+1. **Coverage** — every skill listed in `AGENTS.md` exists; every relevant existing skill is routed (or intentionally omitted with a note) — mechanical diff in **Phase 4**.
+2. **Progressive disclosure** — `AGENTS.md` routes skills/rules/docs without indexing specs; skills delegate to hub + guardrails skill.
+3. **Declared relationships** — inter-skill dependencies match actual imports (e.g., `us-workflow` → skills `01`–`07`; Step 9 → `us-code-review` (`06-code-review`); `08-fix-pr` → `code-review`).
+4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (`/us-workflow`, `@check-harness`, etc.).
+5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
 
-### Fase 4 — Skills/rules não roteadas no `AGENTS.md`
+### Phase 4 — Skills/rules not routed in `AGENTS.md`
 
-Compare o **filesystem** com o roteamento declarado em [`AGENTS.md`](../../AGENTS.md). Esta fase é **obrigatória** em toda auditoria completa.
+Compare the **filesystem** against declared routing in [`AGENTS.md`](../../AGENTS.md). This phase is **mandatory** in every full audit.
 
-#### 4a. Descobrir artefatos no disco
+#### 4a. Discover artifacts on disk
 
-**Skills** — varrer `SKILL.md` recursivamente + `.md` standalone com frontmatter em `skills/` (excluir `scripts/`, `runs/`):
+**Skills** — scan `SKILL.md` recursively + standalone `.md` with frontmatter in `skills/` (exclude `scripts/`, `runs/`):
 
 ```bash
 find .agents/skills -mindepth 2 -maxdepth 2 -name 'SKILL.md' 2>/dev/null
 find .agents/skills -maxdepth 1 -name '*.md' 2>/dev/null
 ```
 
-Para cada arquivo encontrado, extrair do frontmatter YAML:
-- `name:` (id canônico da skill)
-- `description:` (sugestão de tema/gatilho para a tabela)
+For each file found, extract from YAML frontmatter:
+- `name:` (canonical skill id)
+- `description:` (theme/trigger hint for the table)
 
-**Rules** — listar `.cursor/rules/*.mdc` e `.agents/rules/*.md`.
+**Rules** — list `.cursor/rules/*.mdc` and `.agents/rules/*.md`.
 
-#### 4b. Extrair o que já está roteado no `AGENTS.md`
+#### 4b. Extract what is already routed in `AGENTS.md`
 
-Percorrer **todas** as tabelas que roteiam skills ou docs — não só a principal:
+Go through **all** tables that route skills or docs — not just the main one:
 
-| Seção | O que extrair |
+| Section | What to extract |
 |-------|---------------|
-| `§ Skill loading (mandatory)` | skills auto-load e por tarefa |
-| Layer 1 / Layer 2 tables | ids e paths de skills |
-| `§ Task router` | skills e project docs por tarefa |
-| Layer 3 (Project docs) | links para docs de projeto (ex.: CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
+| `§ Skill loading (mandatory)` | auto-load and per-task skills |
+| Layer 1 / Layer 2 tables | skill ids and paths |
+| `§ Task router` | skills and project docs per task |
+| Layer 3 (Project docs) | links to project docs (e.g., CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
 
-Normalizar paths para comparação (basename do arquivo + path relativo à raiz).
+Normalize paths for comparison (file basename + repo-root-relative path).
 
-#### 4c. Montar diffs
+#### 4c. Build diffs
 
-| Diff | Definição | Severidade no relatório |
+| Diff | Definition | Severity in report |
 |------|-----------|-------------------------|
-| `unrouted_skills[]` | `SKILL.md` existe no disco, mas **nenhum** link/path equivalente aparece no `AGENTS.md` | **warning** |
-| `unrouted_rules[]` | `*.mdc`/`*.md` de rule existe, mas **nenhum** link equivalente aparece no `AGENTS.md` | **warning** |
-| `phantom_routes[]` | `AGENTS.md` referencia skill/rule que **não** existe no disco | **critical** (já coberto na Fase 2/3; revalidar aqui) |
+| `unrouted_skills[]` | `SKILL.md` exists on disk, but **no** equivalent link/path appears in `AGENTS.md` | **warning** |
+| `unrouted_rules[]` | Rule `*.mdc`/`*.md` exists, but **no** equivalent link appears in `AGENTS.md` | **warning** |
+| `phantom_routes[]` | `AGENTS.md` references skill/rule that does **not** exist on disk | **critical** (already covered in Phase 2/3; revalidate here) |
 
-**Omissão intencional:** se uma skill/rule for auxiliar (ex.: só scripts em subpasta, skill numerada consumida apenas pelo `us-workflow`), registre em `intentionally_omitted[]` com justificativa — **não** pergunte ao usuário sobre esses itens.
+**Intentional omission:** if a skill/rule is auxiliary (e.g., only scripts in a subfolder, numbered skill consumed only by `us-workflow`), record in `intentionally_omitted[]` with justification — **do not** ask the user about these items.
 
-#### 4d. Registrar itens não roteados (sem editar)
+#### 4d. Record unrouted items (without editing)
 
-Se `unrouted_skills` ou `unrouted_rules` tiver **pelo menos um** item:
+If `unrouted_skills` or `unrouted_rules` has **at least one** item:
 
-1. **Incluir no plano da Fase 6** — tabela com tipo, id, path e sugestão de roteamento.
-2. **Não editar** `AGENTS.md` nesta fase — a decisão (adicionar / ignorar / remover) entra no `AskQuestion` da Etapa 2.
-3. Para cada item, preparar na Fase 6:
-   - **Adicionar ao roteamento** — diff concreto (linha na tabela § Skill loading, Layer 1/2 e/ou § Task router)
-   - **Ignorar por enquanto** — registrar como omissão conhecida
-   - **Remover do disco** — somente se o usuário escolher explicitamente na aprovação
+1. **Include in the Phase 6 plan** — table with type, id, path, and routing suggestion.
+2. **Do not edit** `AGENTS.md` in this phase — the decision (add / ignore / remove) goes into `AskQuestion` at Step 2.
+3. For each item, prepare in Phase 6:
+   - **Add to routing** — concrete diff (line in § Skill loading, Layer 1/2, and/or § Task router table)
+   - **Ignore for now** — record as known omission
+   - **Remove from disk** — only if the user explicitly chooses in approval
 
-4. Ao propor entrada nova, derivar tema/gatilho e relações do `description:` e das dependências reais (grep na skill).
+4. When proposing a new entry, derive theme/trigger and relationships from `description:` and actual dependencies (grep the skill).
 
-5. Se o usuário aprovar adição permanente, atualizar também o inventário canônico deste arquivo (`check-harness.md` § Escopo) na Fase 7.
+5. If the user approves permanent addition, also update the canonical inventory of this file (`check-harness.md` § Scope) in Phase 7.
 
-#### 4e. Atualizar inventário deste agente
+#### 4e. Update this agent's inventory
 
-O § **Escopo da varredura** deste `check-harness.md` é **referência**, não fonte de verdade — a Fase 4 usa o filesystem como fonte. Se o diff revelar drift entre § Escopo e disco, proponha alinhar o § Escopo **depois** que o usuário decidir sobre o `AGENTS.md`.
+This `check-harness.md` § **Scan scope** is a **reference**, not the source of truth — Phase 4 uses the filesystem as the source. If the diff reveals drift between § Scope and disk, propose aligning § Scope **after** the user decides about `AGENTS.md`.
 
-### Fase 5 — Redundância, conflito e eficiência
+### Phase 5 — Redundancy, conflict, and efficiency
 
-Identificar fontes canônicas para cada tema. A tabela abaixo lista **temas comuns** e o padrão para encontrar a fonte canônica — use-a como guia, não como inventário fixo:
+Identify canonical sources for each theme. The table below lists **common themes** and the pattern for finding the canonical source — use it as a guide, not as a fixed inventory:
 
-| Tema | Como identificar a fonte canônica | Skills/agentes que devem **delegar** (não duplicar) |
+| Theme | How to identify the canonical source | Skills/agents that must **delegate** (not duplicate) |
 |------|-----------------------------------|-----------------------------------------------------|
-| Roteamento harness | `AGENTS.md` (sempre) | Todos os agentes e skills |
-| Guardrails / invariantes | Skill com `senior-developer` ou `engineering-standards` no `name:` + docs em `docs/specs/` | Skills de planejamento, implementação e review |
-| Formato de especificação | Skill com `spec-format` ou equivalente no `name:` | Skills de planejamento, refinement e verificação |
-| Padrões de UI / CRUD | Skills com `view-patterns`, `ui-standards` ou equivalente + `DESIGN.md` ou similar | Skills de implementação e planejamento |
-| Arquitetura / tenancy / RBAC | Docs em `docs/specs/` ou `docs/superpowers/specs/` referenciados por skills de planejamento | Skills de planejamento e implementação |
-| Origem de issues/tickets | Scripts em `.agents/` (ex.: `us-workflow/scripts/`) + CLI externa (`gh`, `az`) | Skills de planejamento e verificação |
-| Code review (metodologia) | Skill de review específica do workflow (ex.: `06-code-review`) | Pipeline/orquestrador |
-| Code review geral de PR/branch | Skill com `code-review` no `name:` | Skills de PR fixing |
+| Harness routing | `AGENTS.md` (always) | All agents and skills |
+| Guardrails / invariants | Skill with `senior-developer` or `engineering-standards` in `name:` + docs in `docs/specs/` | Planning, implementation, and review skills |
+| Specification format | Skill with `spec-format` or equivalent in `name:` | Planning, refinement, and verification skills |
+| UI / CRUD patterns | Skills with `view-patterns`, `ui-standards`, or equivalent + `DESIGN.md` or similar | Implementation and planning skills |
+| Architecture / tenancy / RBAC | Docs in `docs/specs/` or `docs/superpowers/specs/` referenced by planning skills | Planning and implementation skills |
+| Issue/ticket source | Scripts in `.agents/` (e.g., `us-workflow/scripts/`) + external CLI (`gh`, `az`) | Planning and verification skills |
+| Code review (methodology) | Workflow-specific review skill (e.g., `06-code-review`) | Pipeline/orchestrator |
+| General PR/branch code review | Skill with `code-review` in `name:` | PR fixing skills |
 
-Para cada par de arquivos que cobrem o mesmo tema, verificar:
+For each pair of files covering the same theme, verify:
 
-- **Duplicação literal** — mesmo parágrafo/checklist em 2+ skills/agentes (violação de progressive disclosure)
-- **Conflito** — instruções mutuamente exclusivas (ex.: precedência de guardrails divergente entre skills)
-- **Instrução obsoleta** — referência a artefato removido (paths órfãos, restos de stack anterior)
-- **Inflação** — `AGENTS.md`, skill ou orquestrador repetindo corpo de skill inteira ou indexando specs (deve ser índice + link para skills/docs)
-- **Colisão de `name:`** — dois `SKILL.md` declarando o mesmo `name:` (quebra a resolução de skill)
-- **Portabilidade de dependências do `us-workflow`** — Verificar se as skills que são dependências de `us-workflow` (como `00-write-spec` a `07-integration-validation`, `11-ship-pr`, etc.) possuem informações personalizadas, caminhos absolutos, comandos ou metadados de projeto codificados rigidamente (*hardcoded*). Toda parametrização específica do projeto deve ser lida a partir de `config.json` ou `stack.md` para que as dependências permaneçam portáveis e agnósticas de projeto.
+- **Literal duplication** — same paragraph/checklist in 2+ skills/agents (progressive disclosure violation)
+- **Conflict** — mutually exclusive instructions (e.g., divergent guardrails precedence between skills)
+- **Obsolete instruction** — reference to removed artifact (orphan paths, remnants of previous stack)
+- **Inflation** — `AGENTS.md`, skill, or orchestrator repeating full skill body or indexing specs (should be index + link to skills/docs)
+- **`name:` collision** — two `SKILL.md` declaring the same `name:` (breaks skill resolution)
+- **`us-workflow` dependency portability** — Verify that skills that are dependencies of `us-workflow` (such as `00-write-spec` through `07-integration-validation`, `11-ship-pr`, etc.) contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from `config.json` or `stack.md` so that dependencies remain portable and project-agnostic.
 
-Priorize **remover duplicata + link** sobre reescrita.
+Prioritize **remove duplicate + link** over rewriting.
 
-### Fase 5b — Qualidade de escrita das skills (opcional)
+### Phase 5b — Skill writing quality (optional)
 
-Executar **após** a Fase 5 e **somente** se `writing-great-skills` estiver instalada globalmente (detecção: § 3 → *Qualidade de escrita das skills*).
+Run **after** Phase 5 and **only** if `writing-great-skills` is installed globally (detection: § 3 → *Skill writing quality*).
 
-1. Carregar `writing-great-skills/SKILL.md` (+ `GLOSSARY.md` se necessário).
-2. Para cada skill do inventário § 3 (workflow `01`–`07` primeiro), auditar contra os **failure modes** e a **information hierarchy** da referência.
-3. Registrar achados como `suggestion` no plano da Fase 6 — tabela **Melhorias de skills (writing-great-skills)** com colunas: `Skill` | `Achado` | `Severidade` | `Correção proposta`.
-4. **Não** reescrever skills na varredura; **não** incluir esta fase se a skill global estiver ausente.
+1. Load `writing-great-skills/SKILL.md` (+ `GLOSSARY.md` if needed).
+2. For each skill in the § 3 inventory (`01`–`07` workflow first), audit against **failure modes** and **information hierarchy** from the reference.
+3. Record findings as `suggestion` in the Phase 6 plan — **Skill improvements (writing-great-skills)** table with columns: `Skill` | `Finding` | `Severity` | `Proposed correction`.
+4. **Do not** rewrite skills during scan; **do not** include this phase if the global skill is absent.
 
-Se o usuário invocar explicitamente *"auditar skills com writing-great-skills"* ou equivalente, trate a Fase 5b como **obrigatória** (falha com nota clara se a skill global não existir).
+If the user explicitly invokes *"audit skills with writing-great-skills"* or equivalent, treat Phase 5b as **mandatory** (fail with a clear note if the global skill does not exist).
 
-### Fase 5c — Auto-load, overlap, and context simulation report
+### Phase 5c — Auto-load, overlap, and context simulation report
 
-Esta fase gera três análises independentes que compõem o **relatório de simulação de contexto**. Todas são read-only — nenhuma edição é feita nesta fase. Os achados alimentam o plano da Fase 6 com severidade `warning` (conflito material entre skills auto-carregadas) ou `suggestion` (sobreposição informativa, estimativa de custo).
+This phase generates three independent analyses that compose the **context simulation report**. All are read-only — no edits are made in this phase. Findings feed the Phase 6 plan with severity `warning` (material conflict between auto-loaded skills) or `suggestion` (informational overlap, cost estimate).
 
 #### 5c.1 — Auto-loaded skills investigation
 
-**Objetivo:** analisar todas as skills carregadas automaticamente (auto-load) a cada sessão e suas interações.
+**Objective:** analyze all skills automatically loaded (auto-load) on every session and their interactions.
 
-**Passos:**
+**Steps:**
 
-1. **Extrair skills auto-load** do `AGENTS.md`:
-   - § *Skill loading (mandatory)* — tabela com coluna "Read full `SKILL.md`": skills com **Every prompt** / **Every task completion** / **Session start**
-   - § *First reply* / *Session start* — lista explícita de skills lidas antes do primeiro reply
-   - Separar em dois grupos: **obrigatórias** (sempre carregadas: senior-developer, gabarito, karpathy-guidelines, caveman) e **condicionais** (learning, changelog ao final da tarefa; matrix-view-patterns, mobile-first-design, context7-mcp por trigger de tarefa)
+1. **Extract auto-load skills** from `AGENTS.md`:
+   - § *Skill loading (mandatory)* — table with "Trigger" column: skills with **Every prompt** / **Every task completion** / **Session start**
+   - § *First reply* / *Session start* — explicit list of skills read before the first reply
+   - Separate into two groups: **mandatory** (always loaded: senior-developer, gabarito, karpathy-guidelines, caveman) and **conditional** (learning, changelog at task end; matrix-view-patterns, mobile-first-design, context7-mcp by task trigger)
 
-2. **Para cada skill auto-load obrigatória**, inspecionar o `SKILL.md` e extrair:
-   - **Diretivas de saída** impostas ao agente (ex.: frase de abertura "Senior Developer in use.", compressão de resposta "caveman full", restrição de escopo "surgical changes only")
-   - **Regras de comportamento** que modificam o output, tom ou processos do agente
-   - **Interação com outras skills** (dependências declaradas, referências cruzadas, instruções de delegação)
-   - **Estimativa de footprint:** linhas totais do `SKILL.md` + tamanho em caracteres (proxy da carga de contexto)
+2. **For each mandatory auto-load skill**, inspect the `SKILL.md` and extract:
+   - **Output directives** imposed on the agent (e.g., opening phrase "Senior Developer in use.", response compression "caveman full", scope restriction "surgical changes only")
+   - **Behavior rules** that modify agent output, tone, or processes
+   - **Interaction with other skills** (declared dependencies, cross-references, delegation instructions)
+   - **Footprint estimate:** total `SKILL.md` lines + character size (context load proxy)
 
-3. **Montar matriz de conflito entre skills auto-load obrigatórias:**
+3. **Build conflict matrix between mandatory auto-load skills:**
 
-   | Skill A | Skill B | Tipo de interação | Conflito? | Evidência |
+   | Skill A | Skill B | Interaction type | Conflict? | Evidence |
    |---------|---------|-------------------|-----------|-----------|
-   | senior-developer | karpathy-guidelines | Complementar — senior cobre engenharia, karpathy cobre escopo cirúrgico | Não | — |
-   | gabarito | caveman | Ambos modificam tom/resposta — gabarito define accountability, caveman comprime prosa | Não (precedência definida) | AGENTS.md § Precedence |
-   | caveman | senior-developer | caveman comprime TODA prosa; senior exige code review proof detalhada | **Potencial** — proof pode ser comprimido demais | caveman § Intensity: "keep technical accuracy" |
+   | senior-developer | karpathy-guidelines | Complementary — senior covers engineering, karpathy covers surgical scope | No | — |
+   | gabarito | caveman | Both modify tone/response — gabarito defines accountability, caveman compresses prose | No (precedence defined) | AGENTS.md § Precedence |
+   | caveman | senior-developer | caveman compresses ALL prose; senior requires detailed code review proof | **Potential** — proof may be overly compressed | caveman § Intensity: "keep technical accuracy" |
 
-   Para cada célula com conflito potencial, classificar:
-   - **`none`** — sem conflito detectado
-   - **`mitigated`** — conflito existe mas o harness já mitiga (ex.: precedência declarada, opt-out disponível)
-   - **`unresolved`** — conflito existe e não há mitigação explícita → `warning` no plano da Fase 6
+   For each cell with potential conflict, classify:
+   - **`none`** — no conflict detected
+   - **`mitigated`** — conflict exists but harness already mitigates (e.g., declared precedence, opt-out available)
+   - **`unresolved`** — conflict exists and there is no explicit mitigation → `warning` in Phase 6 plan
 
-4. **Verificar consistência do § Precedence** contra as skills auto-load:
-   - O § *Precedence* (AGENTS.md) define ordem: user message → CONTEXT.md → senior + karpathy → hub → gabarito → caveman
-   - Validar que nenhuma skill auto-load contradiz essa hierarquia (ex.: uma skill que se declara acima do senior-developer sem respaldo no AGENTS.md)
-   - Validar que os opt-outs documentados (§ Opt-outs) são reconhecidos por todas as skills afetadas
+4. **Verify § Precedence consistency** against auto-load skills:
+   - § *Precedence* (AGENTS.md) defines order: user message → CONTEXT.md → senior + karpathy → hub → gabarito → caveman
+   - Validate that no auto-load skill contradicts this hierarchy (e.g., a skill declaring itself above senior-developer without backing in AGENTS.md)
+   - Validate that documented opt-outs (§ Opt-outs) are recognized by all affected skills
 
-5. **Calcular carga de contexto cumulativa estimada:**
-   - Somar linhas dos `SKILL.md` auto-load obrigatórios
-   - Somar linhas dos `SKILL.md` condicionais (pior caso: todas carregadas)
-   - Somar linhas do `AGENTS.md` (sempre carregado)
-   - Somar rules `.mdc` sempre carregadas (Layer 0)
-   - Reportar total e percentual por skill (ex.: "Auto-load obrigatório: ~1200 linhas / 45% do contexto total estimado")
+5. **Calculate estimated cumulative context load:**
+   - Sum lines of mandatory auto-load `SKILL.md` files
+   - Sum lines of conditional `SKILL.md` files (worst case: all loaded)
+   - Sum lines of `AGENTS.md` (always loaded)
+   - Sum always-loaded `.mdc` rules (Layer 0)
+   - Report total and percentage per skill (e.g., "Mandatory auto-load: ~1200 lines / 45% of estimated total context")
 
 #### 5c.2 — Overlapping skills analysis
 
-**Objetivo:** detectar skills que cobrem o mesmo domínio funcional e classificar a sobreposição.
+**Objective:** detect skills covering the same functional domain and classify the overlap.
 
-**Passos:**
+**Steps:**
 
-1. **Agrupar skills por domínio funcional** a partir do `description:` no frontmatter e do roteamento no `AGENTS.md`:
+1. **Group skills by functional domain** from `description:` in frontmatter and routing in `AGENTS.md`:
 
-   | Domínio | Skills detectadas |
+   | Domain | Detected skills |
    |---------|-------------------|
    | Code review | `code-review`, `us-code-review` (`06-code-review`), `tdd-sdd-ddd-reviewer`, `dotnet-security-performance-review` |
-   | Segurança | `security-review`, `dotnet-security-performance-review` |
-   | Planejamento | `01-write-plan`, `03-plan-exec-dag`, `02-refine` |
-   | Implementação | `04-implement-plan`, `senior-developer` |
-   | Verificação | `05-verify-sync-write-plan`, `verify-plan`, `07-integration-validation` |
+   | Security | `security-review`, `dotnet-security-performance-review` |
+    | Planning | `01-write-plan`, `03-plan-to-tasks`, `02-interview` |
+   | Implementation | `04-implement-plan`, `senior-developer` |
+   | Verification | `05-verify-plan`, `07-integration-validation` |
    | PR workflow | `fix-pr`, `09-goal-fix-pr`, `11-ship-pr` |
-   | Domínio | `domain-review`, `multi-domain-review` |
-   | Documentação | `learning`, `changelog` |
+   | Domain | `domain-review`, `multi-domain-review` |
+   | Documentation | `learning`, `changelog` |
    | UI/Frontend | `matrix-view-patterns`, `mobile-first-design`, `taste-skill` |
-   | Harness/Agentes | `check-harness`, `write-a-skill`, `handoff` |
-   | Biblioteca externa | `context7-mcp`, `supabase`, `supabase-postgres-best-practices` |
+   | Harness/Agents | `check-harness`, `write-a-skill`, `handoff` |
+   | External library | `context7-mcp`, `supabase`, `supabase-postgres-best-practices` |
 
-2. **Para cada domínio com 2+ skills**, analisar sobreposição:
+2. **For each domain with 2+ skills**, analyze overlap:
 
-   a. **Comparar `description:`** — palavras-chave/gatilhos sobrepostos indicam ambiguidade de roteamento
-   b. **Comparar § Task router** — skills que aparecem na mesma linha do task router dividem o mesmo trigger
-   c. **Comparar dependências** — skills que referenciam a mesma skill externa podem ser redundantes
-   d. **Comparar corpo do `SKILL.md`** — amostrar seções equivalentes (ex.: ambas têm checklist de segurança, ambas definem "como revisar código")
+   a. **Compare `description:`** — overlapping keywords/triggers indicate routing ambiguity
+   b. **Compare § Task router** — skills appearing on the same task router line share the same trigger
+   c. **Compare dependencies** — skills referencing the same external skill may be redundant
+   d. **Compare `SKILL.md` body** — sample equivalent sections (e.g., both have security checklists, both define "how to review code")
 
-3. **Classificar cada sobreposição:**
+3. **Classify each overlap:**
 
-   | Classificação | Critério | Ação recomendada |
+   | Classification | Criterion | Recommended action |
    |---------------|----------|------------------|
-   | **`duplicate`** | Duas skills fazem essencialmente a mesma coisa com abordagem idêntica | Consolidar em uma; remover a redundante |
-   | **`superset`** | Uma skill cobre totalmente o escopo da outra + extras | Manter a superset; a subset deve delegar à superset |
-   | **`complementary`** | Skills cobrem o mesmo domínio de ângulos diferentes (ex.: uma revisa segurança via OWASP, outra via query analysis) | Manter ambas; clarificar `description:` e task router com gatilhos distintos |
-   | **`conflicting`** | Duas skills dão instruções contraditórias para o mesmo cenário | **critical** — resolver conflito; eleger fonte canônica |
+   | **`duplicate`** | Two skills do essentially the same thing with identical approach | Consolidate into one; remove the redundant |
+   | **`superset`** | One skill fully covers the other's scope + extras | Keep superset; subset should delegate to superset |
+   | **`complementary`** | Skills cover the same domain from different angles (e.g., one reviews security via OWASP, another via query analysis) | Keep both; clarify `description:` and task router with distinct triggers |
+   | **`conflicting`** | Two skills give contradictory instructions for the same scenario | **critical** — resolve conflict; elect canonical source |
 
-4. **Para cada sobreposição `duplicate` ou `conflicting`**, emitir `warning` no plano da Fase 6 com recomendação concreta.
-   Para sobreposições `complementary`, emitir `suggestion` se os gatilhos de roteamento forem ambíguos.
+4. **For each `duplicate` or `conflicting` overlap**, emit `warning` in the Phase 6 plan with concrete recommendation.
+   For `complementary` overlaps, emit `suggestion` if routing triggers are ambiguous.
 
-5. **Verificar colisão de `name:` em subdiretórios** (ex.: `06-code-review/SKILL.md` com `name: us-code-review` vs `code-review/SKILL.md` com `name: code-review`) — se distintos, OK; se idênticos, já coberto na Fase 5 como `warning`.
+5. **Check `name:` collision in subdirectories** (e.g., `06-code-review/SKILL.md` with `name: us-code-review` vs `code-review/SKILL.md` with `name: code-review`) — if distinct, OK; if identical, already covered in Phase 5 as `warning`.
 
 #### 5c.3 — Simulated context load
 
-**Objetivo:** simular o contexto que um agente recebe ao iniciar uma sessão, validando a cadeia completa de carregamento.
+**Objective:** simulate the context an agent receives when starting a session, validating the full loading chain.
 
-**Passos:**
+**Steps:**
 
-1. **Construir a árvore de carregamento da sessão:**
+1. **Build the session loading tree:**
 
    ```
    .cursorrules
-   └── AGENTS.md (Layer 0 — sempre)
-       ├── ef-migrations.mdc (Layer 0 — sempre)
+   └── AGENTS.md (Layer 0 — always)
+       ├── ef-migrations.mdc (Layer 0 — always)
        ├── senior-developer/SKILL.md (Layer 1 — auto every prompt)
        ├── gabarito/SKILL.md (Layer 1 — auto every prompt)
        ├── karpathy-guidelines/SKILL.md (Layer 1 — auto every prompt)
@@ -441,192 +443,192 @@ Esta fase gera três análises independentes que compõem o **relatório de simu
        └── [task-specific: matrix-view-patterns, mobile-first-design, context7-mcp, etc.]
    ```
 
-2. **Verificar a cadeia de progressive disclosure na simulação:**
-   - O `AGENTS.md` roteia → skills auto-load → skills delegam de volta ao hub? (circular?)
-   - Skills auto-load referenciam skills on-demand que **não** estão na simulação? (OK — é progressive disclosure)
-   - Skills auto-load referenciam outras skills auto-load? (Verificar se há loops de dependência)
+2. **Verify progressive disclosure chain in simulation:**
+   - Does `AGENTS.md` route → auto-load skills → skills delegate back to hub? (circular?)
+   - Do auto-load skills reference on-demand skills that are **not** in the simulation? (OK — progressive disclosure)
+   - Do auto-load skills reference other auto-load skills? (Check for dependency loops)
 
-3. **Detectar padrões de carga problemáticos:**
-   - **Circular load:** skill A referencia skill B que referencia skill A (ex.: senão tratado, loop infinito)
-   - **Deep chain:** A → B → C → D → E com mais de 4 níveis (custo de contexto e latência)
-   - **Orphan trigger:** skill listada no task router que não é referenciada por nenhuma skill auto-load nem pelo AGENTS.md como entry point direto (pode nunca ser carregada)
-   - **Redundant reload:** duas skills auto-load que carregam o mesmo sub-artefato (ex.: ambas leem `DESIGN.md` no session start — uma deve delegar)
+3. **Detect problematic load patterns:**
+   - **Circular load:** skill A references skill B which references skill A (e.g., if unhandled, infinite loop)
+   - **Deep chain:** A → B → C → D → E with more than 4 levels (context cost and latency)
+   - **Orphan trigger:** skill listed in task router that is referenced by no auto-load skill nor by AGENTS.md as a direct entry point (may never be loaded)
+   - **Redundant reload:** two auto-load skills loading the same sub-artifact (e.g., both read `DESIGN.md` at session start — one should delegate)
 
-4. **Simular cenários de sessão típicos** e estimar carga:
+4. **Simulate typical session scenarios** and estimate load:
 
-   | Cenário | Skills carregadas | Linhas estimadas | % do total |
+   | Scenario | Loaded skills | Estimated lines | % of total |
    |---------|-------------------|------------------|------------|
-   | Sessão inicial (antes do primeiro reply) | AGENTS.md + 4 auto-load obrigatórios + MEMORY.md | ~X linhas | baseline |
-   | Tarefa de backend | + context7-mcp (se lib nova) | +Y linhas | |
-   | Tarefa de UI CRUD | + matrix-view-patterns + DESIGN.md | +Z linhas | |
-   | Tarefa completa (pior caso) | todas as condicionais + docs | ~total linhas | 100% |
+   | Initial session (before first reply) | AGENTS.md + 4 mandatory auto-load + MEMORY.md | ~X lines | baseline |
+   | Backend task | + context7-mcp (if new lib) | +Y lines | |
+   | UI CRUD task | + matrix-view-patterns + DESIGN.md | +Z lines | |
+   | Full task (worst case) | all conditional + docs | ~total lines | 100% |
 
-5. **Validar consistência de opt-outs na simulação:**
-   - Verificar que `stop gabarito` / `stop caveman` / `skip senior-developer` são reconhecidos em todas as skills relevantes
-   - Verificar que nenhuma skill auto-load impõe comportamento que não pode ser desativado (violação de opt-out)
-   - Se uma skill auto-load referenciar opt-outs que outra skill auto-load não reconhece → `warning`
+5. **Validate opt-out consistency in simulation:**
+   - Verify that `stop gabarito` / `stop caveman` / `skip senior-developer` are recognized in all relevant skills
+   - Verify that no auto-load skill imposes behavior that cannot be disabled (opt-out violation)
+   - If one auto-load skill references opt-outs that another auto-load skill does not recognize → `warning`
 
-6. **Validar rules carregadas no contexto simulado:**
-   - `.cursor/rules/*.mdc` referenciadas no AGENTS.md Layer 0 ou em skills auto-load
-   - Verificar que rules `.mdc` não contradizem skills auto-load (ex.: rule diz "sempre usar X" e skill diz "nunca usar X")
-   - Verificar que rules referenciadas por skills condicionais não conflitam com as auto-load
+6. **Validate rules loaded in simulated context:**
+   - `.cursor/rules/*.mdc` referenced in AGENTS.md Layer 0 or in auto-load skills
+   - Verify that `.mdc` rules do not contradict auto-load skills (e.g., rule says "always use X" and skill says "never use X")
+   - Verify that rules referenced by conditional skills do not conflict with auto-load rules
 
-**Saída da Fase 5c:** três tabelas no relatório da Fase 6:
+**Phase 5c output:** three tables in the Phase 6 report:
 
-| Tabela | Conteúdo |
+| Table | Content |
 |--------|----------|
-| **Auto-load skills matrix** | Matriz de conflito entre skills obrigatórias + estimativa de footprint + verificação de precedência |
-| **Overlapping skills** | Domínios com sobreposição, classificação, recomendação |
-| **Simulated context load** | Árvore de carregamento, cenários típicos, alertas de carga circular/redundante, validação de opt-outs e rules |
+| **Auto-load skills matrix** | Conflict matrix between mandatory skills + footprint estimate + precedence verification |
+| **Overlapping skills** | Domains with overlap, classification, recommendation |
+| **Simulated context load** | Loading tree, typical scenarios, circular/redundant load alerts, opt-out and rules validation |
 
-Achados com severidade `warning` ou `critical` entram no plano de correção numerado da Fase 6. Achados `suggestion` são listados apenas nas tabelas da Fase 5c, sem item numerado no plano (a menos que o usuário peça).
+Findings with severity `warning` or `critical` go into the numbered correction plan of Phase 6. `suggestion` findings are listed only in Phase 5c tables, without a numbered item in the plan (unless the user asks).
 
-### Fase 6 — Plano de correção (Etapa 2 — read-only)
+### Phase 6 — Correction plan (Step 2 — read-only)
 
-Consolidar **todos** os achados das Fases 0–5c em um plano ordenado. Esta fase **não edita arquivos**.
+Consolidate **all** findings from Phases 0–5c into an ordered plan. This phase **does not edit files**.
 
-1. **Enumerar problemas** — lista numerada com severidade (`critical` / `warning` / `suggestion`).
-2. **Para cada problema**, documentar:
-   - **Erro** — o que está errado (com evidência: arquivo, linha, path)
-   - **Correção proposta** — diff exato ou instrução cirúrgica (path relativo, trecho antes/depois quando aplicável)
-3. **Classificar achados:**
+1. **Enumerate problems** — numbered list with severity (`critical` / `warning` / `suggestion`).
+2. **For each problem**, document:
+   - **Error** — what is wrong (with evidence: file, line, path)
+   - **Proposed correction** — exact diff or surgical instruction (relative path, before/after snippet when applicable)
+3. **Classify findings:**
 
-| Severidade | Critério |
+| Severity | Criterion |
 |------------|----------|
-| **critical** | Link quebrado no hub (`AGENTS.md`, `.cursorrules`) ou skill invocada por workflow |
-| **warning** | Link quebrado secundário, path absoluto, redundância que pode confundir agente, skill/rule não roteada, colisão de `name:` |
-| **suggestion** | Melhoria de clareza, simetria de tabelas, doc desatualizada sem quebra funcional |
+| **critical** | Broken link in hub (`AGENTS.md`, `.cursorrules`) or skill invoked by workflow |
+| **warning** | Broken secondary link, absolute path, redundancy that may confuse agent, unrouted skill/rule, `name:` collision |
+| **suggestion** | Clarity improvement, table symmetry, outdated doc without functional breakage |
 
-4. **Emitir relatório** no formato § Formato de saída — a seção **Plano de correção** é o artefato principal desta fase.
-5. **`AskQuestion` obrigatório** quando houver pelo menos um item corrigível:
+4. **Emit report** in § Output format — the **Correction plan** section is the main artifact of this phase.
+5. **Mandatory `AskQuestion`** when there is at least one correctable item:
 
-| Opção | Comportamento |
+| Option | Behavior |
 |-------|---------------|
-| **Aplicar todas as correções do plano (recomendado)** | Autoriza Fase 7 integralmente |
-| **Aplicar apenas itens critical** | Fase 7 restrita aos itens `critical` |
-| **Aplicar seleção** | Usuário indica números do plano a aplicar |
-| **Não aplicar — só o relatório** | Encerra sem edição |
+| **Apply all corrections in the plan (recommended)** | Authorizes Phase 7 in full |
+| **Apply only critical items** | Phase 7 restricted to `critical` items |
+| **Apply selection** | User indicates plan numbers to apply |
+| **Do not apply — report only** | Ends without editing |
 
-6. **Não inferir "sim"** — cancelamento ou resposta ambígua encerra na Etapa 2.
+6. **Do not infer "yes"** — cancellation or ambiguous response ends at Step 2.
 
-### Fase 7 — Execução (Etapa 3 — somente com aprovação)
+### Phase 7 — Execution (Step 3 — only with approval)
 
-Executar **apenas** após aprovação explícita na Fase 6.
+Execute **only** after explicit approval in Phase 6.
 
-1. Aplicar correções na ordem do plano (critical → warning → suggestion, salvo ordem de dependência).
-2. Diff **cirúrgico** — uma classe de fix por commit lógico quando o usuário for commitar depois.
-3. **Reexecutar Fase 2** (validação de paths) nos arquivos tocados.
-4. Informar ao usuário o que foi aplicado vs. o que ficou pendente.
-5. Se o harness ficar íntegro após as correções, confirmar: **Harness OK pós-correção**.
+1. Apply corrections in plan order (critical → warning → suggestion, unless dependency order dictates otherwise).
+2. **Surgical** diff — one fix class per logical commit when the user commits later.
+3. **Re-run Phase 2** (path validation) on touched files.
+4. Inform the user what was applied vs. what remains pending.
+5. If the harness is healthy after corrections, confirm: **Harness OK post-correction**.
 
 ---
 
-## Formato de saída
+## Output format
 
-Responda sempre em **Português (pt-BR)**. O relatório da **Etapa 2** é entregue **antes** de qualquer edição.
+Always respond in **English (en-us)**. The **Step 2** report is delivered **before** any edit.
 
-Se o harness estiver íntegro **e** não houver skills/rules não roteadas pendentes de decisão:
+If the harness is healthy **and** there are no unrouted skills/rules pending decision:
 
-> **Harness OK** — nenhum link quebrado, conflito material, path absoluto ou artefato órfão sem decisão encontrado no escopo auditado. Nenhuma correção necessária.
+> **Harness OK** — no broken links, material conflicts, absolute paths, or orphan artifacts without decision found in the audited scope. No corrections needed.
 
-Caso contrário — **plano de correção** (obrigatório antes de editar):
+Otherwise — **correction plan** (mandatory before editing):
 
 ```markdown
-## Auditoria do Harness
+## Harness Audit
 
-**Data:** YYYY-MM-DD
-**Modo:** [normal | dry-run]
-**Escopo:** [completo | arquivos: ...]
-**Arquivos inspecionados:** N
-**Status:** [aguardando aprovação para aplicar correções | somente relatório (dry-run)]
+**Date:** YYYY-MM-DD
+**Mode:** [normal | dry-run]
+**Scope:** [full | files: ...]
+**Files inspected:** N
+**Status:** [awaiting approval to apply corrections | report only (dry-run)]
 
-### Resumo executivo
-- Problemas encontrados: X (Y critical, Z warning, W suggestion)
-- Links quebrados: ...
-- Paths absolutos: ...
-- Redundâncias/conflitos: ...
-- Skills/rules não roteadas: ...
-- Auto-load: N skills obrigatórias (~L linhas), M condicionais (~L linhas)
-- Sobreposições detectadas: D domínios com overlap (S duplicatas, C complementares)
-- Alertas de simulação: ...
+### Executive summary
+- Problems found: X (Y critical, Z warning, W suggestion)
+- Broken links: ...
+- Absolute paths: ...
+- Redundancies/conflicts: ...
+- Unrouted skills/rules: ...
+- Auto-load: N mandatory skills (~L lines), M conditional (~L lines)
+- Detected overlaps: D domains with overlap (S duplicates, C complementary)
+- Simulation alerts: ...
 
-### Plano de correção (ordenado — aplicar somente após aprovação)
+### Correction plan (ordered — apply only after approval)
 
-| # | Severidade | Arquivo | Problema (erro) | Correção proposta |
+| # | Severity | File | Problem (error) | Proposed correction |
 |---|------------|---------|-----------------|-------------------|
-| 1 | critical | `AGENTS.md:L28` | Link `.agents/skills/foo` inexistente | Trocar para `.agents/skills/01-write-plan/SKILL.md` |
-| 2 | warning | `AGENTS.md` | Skill `exemplo` no disco sem roteamento | Adicionar linha na tabela § Skill loading (ver diff abaixo) |
+| 1 | critical | `AGENTS.md:L28` | Link `.agents/skills/foo` nonexistent | Replace with `.agents/skills/01-write-plan/SKILL.md` |
+| 2 | warning | `AGENTS.md` | Skill `example` on disk without routing | Add line in § Skill loading table (see diff below) |
 
-#### Detalhes por item (quando o diff não couber na tabela)
+#### Details per item (when diff does not fit in table)
 
 **#1 — `AGENTS.md`**
-- **Erro:** ...
-- **Correção:** ...
+- **Error:** ...
+- **Correction:** ...
 
-### Skills e rules não roteadas no AGENTS.md
-| Tipo | Id / arquivo | Path | Sugestão no plano (#) |
+### Skills and rules not routed in AGENTS.md
+| Type | Id / file | Path | Plan suggestion (#) |
 |------|--------------|------|------------------------|
-| skill | `exemplo` | `.agents/skills/exemplo/SKILL.md` | #2 |
+| skill | `example` | `.agents/skills/example/SKILL.md` | #2 |
 
-### Roteamento e decisão
-- [ ] .cursorrules → AGENTS.md — [OK | redirect quebrado ou duplicação]
-- [ ] Progressive disclosure (AGENTS.md não duplica corpos) — [OK | inflação]
-- [ ] Relações skill → skill — [OK | gaps]
-- [ ] Gatilhos de invocação — [OK | ausentes]
-- [ ] Skills/rules no disco vs `AGENTS.md` — [OK | unrouted: N]
-- [ ] Portabilidade de dependências do `us-workflow` — [OK | desvios de parametrização em config.json]
+### Routing and decision
+- [ ] .cursorrules → AGENTS.md — [OK | broken or duplicated redirect]
+- [ ] Progressive disclosure (AGENTS.md does not duplicate bodies) — [OK | inflation]
+- [ ] Skill → skill relationships — [OK | gaps]
+- [ ] Invocation triggers — [OK | absent]
+- [ ] Skills/rules on disk vs `AGENTS.md` — [OK | unrouted: N]
+- [ ] `us-workflow` dependency portability — [OK | parameterization deviations from config.json]
 
-### Redundâncias e conflitos
-| Tema | Arquivos | Tipo | Item no plano (#) |
+### Redundancies and conflicts
+| Theme | Files | Type | Plan item (#) |
 |------|----------|------|-------------------|
-| Code review | `06-code-review` (`us-code-review`) + `code-review` | colisão de name → resolvida no port | — |
+| Code review | `06-code-review` (`us-code-review`) + `code-review` | name collision → resolved on port | — |
 
-### Auto-load skills matrix (Fase 5c.1)
-| Skill | Obrigatória? | Linhas | Diretivas de saída | Interage com |
+### Auto-load skills matrix (Phase 5c.1)
+| Skill | Mandatory? | Lines | Output directives | Interacts with |
 |-------|-------------|--------|---------------------|-------------|
-| senior-developer | Sim | N | "Senior Developer in use." + code review proof | karpathy, caveman, learning |
-| gabarito | Sim | N | accountability, anti-sycophancy, chain-of-verification | caveman (tom) |
-| karpathy-guidelines | Sim | N | surgical changes, no scope creep | senior-developer |
-| caveman | Sim | N | compressão de prosa full | gabarito, senior-developer |
-| learning | Condicional | N | Learning: line in proof + MEMORY.md | senior-developer, changelog |
-| changelog | Condicional | N | CHANGELOG.md append | learning |
-| matrix-view-patterns | Condicional | N | list/form patterns + STANDARDS.md | DESIGN.md |
-| mobile-first-design | Condicional | N | responsive/mobile-first | DESIGN.md |
-| context7-mcp | Condicional | N | resolve-library-id → query-docs | — |
+| senior-developer | Yes | N | "Senior Developer in use." + code review proof | karpathy, caveman, learning |
+| gabarito | Yes | N | accountability, anti-sycophancy, chain-of-verification | caveman (tone) |
+| karpathy-guidelines | Yes | N | surgical changes, no scope creep | senior-developer |
+| caveman | Yes | N | full prose compression | gabarito, senior-developer |
+| learning | Conditional | N | Learning: line in proof + MEMORY.md | senior-developer, changelog |
+| changelog | Conditional | N | CHANGELOG.md append | learning |
+| matrix-view-patterns | Conditional | N | list/form patterns + STANDARDS.md | DESIGN.md |
+| mobile-first-design | Conditional | N | responsive/mobile-first | DESIGN.md |
+| context7-mcp | Conditional | N | resolve-library-id → query-docs | — |
 
-**Footprint total estimado:** Obrigatórias ~X linhas (Y%), Condicionais ~Z linhas (W%), AGENTS.md + rules ~V linhas (U%), **Total ~T linhas**
+**Estimated total footprint:** Mandatory ~X lines (Y%), Conditional ~Z lines (W%), AGENTS.md + rules ~V lines (U%), **Total ~T lines**
 
-#### Matriz de conflito entre skills auto-load obrigatórias
-| Skill A | Skill B | Interação | Status |
+#### Conflict matrix between mandatory auto-load skills
+| Skill A | Skill B | Interaction | Status |
 |---------|---------|-----------|--------|
-| senior-developer | karpathy-guidelines | Engenharia + escopo cirúrgico — complementar | none |
-| senior-developer | caveman | Code review proof vs compressão — potencial conflito | mitigated (precedência + caveman § technical accuracy) |
-| senior-developer | gabarito | Ambas definem tom de resposta | mitigated (precedência: senior > gabarito) |
-| karpathy-guidelines | caveman | Surgical changes + compressão — alinhados | none |
-| gabarito | caveman | Ambos modificam resposta — tom vs tamanho | mitigated (precedência: gabarito > caveman) |
-| gabarito | karpathy-guidelines | Accountability + escopo — complementar | none |
+| senior-developer | karpathy-guidelines | Engineering + surgical scope — complementary | none |
+| senior-developer | caveman | Code review proof vs compression — potential conflict | mitigated (precedence + caveman § technical accuracy) |
+| senior-developer | gabarito | Both define response tone | mitigated (precedence: senior > gabarito) |
+| karpathy-guidelines | caveman | Surgical changes + compression — aligned | none |
+| gabarito | caveman | Both modify response — tone vs size | mitigated (precedence: gabarito > caveman) |
+| gabarito | karpathy-guidelines | Accountability + scope — complementary | none |
 
-#### Verificação de precedência
-- [ ] § Precedence do AGENTS.md é consistente com todas as skills auto-load
-- [ ] Nenhuma skill auto-load contradiz a hierarquia declarada
-- [ ] Opt-outs documentados são reconhecidos por todas as skills afetadas
+#### Precedence verification
+- [ ] AGENTS.md § Precedence is consistent with all auto-load skills
+- [ ] No auto-load skill contradicts the declared hierarchy
+- [ ] Documented opt-outs are recognized by all affected skills
 
-### Overlapping skills (Fase 5c.2)
-| Domínio | Skills | Tipo de sobreposição | Conflito? | Recomendação |
+### Overlapping skills (Phase 5c.2)
+| Domain | Skills | Overlap type | Conflict? | Recommendation |
 |---------|--------|---------------------|-----------|--------------|
-| Code review | `code-review`, `us-code-review` (`06-code-review`) | complementary — local branch vs workflow step | Não | Gatilhos distintos; manter ambas |
-| Code review | `tdd-sdd-ddd-reviewer` vs `code-review` | complementary — arquitetura vs diff | Não | Task router já distingue |
-| Segurança | `security-review` vs `dotnet-security-performance-review` | complementary — OWASP vs C#/EF específico | Não | domain-review já referencia dotnet-security-performance-review |
-| PR workflow | `fix-pr` vs `09-goal-fix-pr` | superset — goal-fix-pr wraps fix-pr | Não | Manter ambas; goal-fix-pr delega a fix-pr |
-| PR workflow | `fix-pr` (merged) — GitHub + Azure DevOps | unified — platform-agnostic skill | N/A | Resolvido: merge de solve-pr + 08-fix-pr |
-| Planejamento | `01-write-plan` vs `02-refine` | complementary — criar vs auditar plano | Não | Workflow sequencial; gatilhos distintos |
-| Verificação | `05-verify-sync-write-plan` vs `verify-plan` | complementary — sync vs grade | Não | Propósitos diferentes |
-| Domínio | `domain-review` vs `multi-domain-review` | superset — batch orchestrator | Não | multi-domain-review orquestra domain-review |
-| UI/Frontend | `matrix-view-patterns` vs `taste-skill` | complementary — padrões internos vs anti-slop público | Não | taste-skill carrega MATRIX.md para distinção |
+| Code review | `code-review`, `us-code-review` (`06-code-review`) | complementary — local branch vs workflow step | No | Distinct triggers; keep both |
+| Code review | `tdd-sdd-ddd-reviewer` vs `code-review` | complementary — architecture vs diff | No | Task router already distinguishes |
+| Security | `security-review` vs `dotnet-security-performance-review` | complementary — OWASP vs C#/EF specific | No | domain-review already references dotnet-security-performance-review |
+| PR workflow | `fix-pr` vs `09-goal-fix-pr` | superset — goal-fix-pr wraps fix-pr | No | Keep both; goal-fix-pr delegates to fix-pr |
+| PR workflow | `fix-pr` (merged) — GitHub + Azure DevOps | unified — platform-agnostic skill | N/A | Resolved: merge of solve-pr + 08-fix-pr |
+| Planning | `01-write-plan` vs `02-interview` | complementary — create vs audit plan | No | Sequential workflow; distinct triggers |
+| Verification | `05-verify-plan` | Quick Score + US verification | merged from verify-plan | — |
+| Domain | `domain-review` vs `multi-domain-review` | superset — batch orchestrator | No | multi-domain-review orchestrates domain-review |
+| UI/Frontend | `matrix-view-patterns` vs `taste-skill` | complementary — internal patterns vs public anti-slop | No | taste-skill loads MATRIX.md for distinction |
 
-### Simulated context load (Fase 5c.3)
+### Simulated context load (Phase 5c.3)
 
-#### Árvore de carregamento (session start)
+#### Loading tree (session start)
 ```
 .cursorrules
 └── AGENTS.md
@@ -638,91 +640,91 @@ Caso contrário — **plano de correção** (obrigatório antes de editar):
     └── MEMORY.md (session start, before first implementation)
 ```
 
-#### Cenários de sessão
-| Cenário | Skills extras | Footprint estimado |
+#### Session scenarios
+| Scenario | Extra skills | Estimated footprint |
 |---------|---------------|--------------------|
-| Início de sessão (baseline) | — | ~T0 linhas |
-| Tarefa de backend | + context7-mcp (se lib nova) | ~T0 + X linhas |
-| Tarefa de UI CRUD | + matrix-view-patterns + DESIGN.md | ~T0 + Y linhas |
-| Tarefa completa (pior caso) | todas condicionais + docs | ~T0 + Z linhas |
+| Session start (baseline) | — | ~T0 lines |
+| Backend task | + context7-mcp (if new lib) | ~T0 + X lines |
+| UI CRUD task | + matrix-view-patterns + DESIGN.md | ~T0 + Y lines |
+| Full task (worst case) | all conditional + docs | ~T0 + Z lines |
 
-#### Alertas de simulação
-- [ ] Carga circular: [nenhuma detectada | listar ciclos]
-- [ ] Deep chain (>4 níveis): [nenhuma | listar]
-- [ ] Orphan triggers: [nenhum | listar skills sem entry point]
-- [ ] Redundant reload: [nenhum | listar artefatos carregados 2+ vezes]
-- [ ] Opt-outs inconsistentes: [nenhum | listar]
-- [ ] Rules conflitantes com auto-load: [nenhuma | listar]
+#### Simulation alerts
+- [ ] Circular load: [none detected | list cycles]
+- [ ] Deep chain (>4 levels): [none | list]
+- [ ] Orphan triggers: [none | list skills without entry point]
+- [ ] Redundant reload: [none | list artifacts loaded 2+ times]
+- [ ] Inconsistent opt-outs: [none | list]
+- [ ] Rules conflicting with auto-load: [none | list]
 
-### Melhorias de skills (writing-great-skills)
-*(Omitir seção inteira se a skill global não estiver instalada ou se nenhum achado.)*
+### Skill improvements (writing-great-skills)
+*(Omit entire section if global skill is not installed or if no findings.)*
 
-| Skill | Achado | Severidade | Correção proposta | Item no plano (#) |
+| Skill | Finding | Severity | Proposed correction | Plan item (#) |
 |-------|--------|------------|-------------------|-------------------|
-| `03-plan-exec-dag` | referência obsoleta | warning | trocar por fonte canônica | #4 |
+| `03-plan-to-tasks` | obsolete reference | warning | replace with canonical source | #4 |
 
-### Próximo passo
-Aguardando sua aprovação para aplicar o plano. Responda `aplicar correções`, `aplicar o plano` ou escolha no `AskQuestion`.
+### Next step
+Awaiting your approval to apply the plan. Reply `apply corrections`, `apply the plan`, or choose from `AskQuestion`.
 ```
 
-Após **Fase 7** (execução aprovada), acrescentar seção:
+After **Phase 7** (approved execution), add section:
 
 ```markdown
-### Correções aplicadas
-| # | Status | Arquivo | O que foi feito |
+### Corrections applied
+| # | Status | File | What was done |
 |---|--------|---------|-----------------|
-| 1 | aplicado | `AGENTS.md` | link corrigido |
-| 2 | ignorado | — | usuário optou por não aplicar |
+| 1 | applied | `AGENTS.md` | link corrected |
+| 2 | skipped | — | user chose not to apply |
 
-**Resultado:** Harness OK pós-correção | pendências: [listar]
+**Result:** Harness OK post-correction | pending: [list]
 ```
 
-### Opcional — persistir relatório
-Se o usuário pedir, gravar em:
+### Optional — persist report
+If the user requests, save to:
 `.cursor/plans/harness-audit/harness-audit-{YYYYMMDD}.report.md`
 
 ---
 
-## O que NÃO fazer
+## What NOT to do
 
-- **Não** editar arquivos do harness durante a varredura (Fases 0–5c) — somente ler, grep e glob.
-- **Não** aplicar correções antes de apresentar o plano completo (Fase 6) e obter aprovação.
-- **Não** implementar código de produto (`src/`, `web/`, `tests/`) durante a auditoria.
-- **Não** invocar pipelines de entrega, implementação ou PR fixing como parte desta checagem.
-- **Não** alterar `MEMORY.md` automaticamente durante a varredura; qualquer mudança exige item explícito no plano e aprovação do usuário.
-- **Não** criar nova skill/rule sem pedido explícito — proponha no plano (Fase 6).
-- **Não** adicionar skills/rules ao `AGENTS.md` automaticamente — incluir no plano; editar só na Fase 7 com aprovação.
+- **Do not** edit harness files during the scan (Phases 0–5c) — only read, grep, and glob.
+- **Do not** apply corrections before presenting the full plan (Phase 6) and obtaining approval.
+- **Do not** implement product code (`src/`, `web/`, `tests/`) during the audit.
+- **Do not** invoke delivery, implementation, or PR fixing pipelines as part of this check.
+- **Do not** modify `MEMORY.md` automatically during the scan; any change requires an explicit item in the plan and user approval.
+- **Do not** create a new skill/rule without explicit request — propose in the plan (Phase 6).
+- **Do not** add skills/rules to `AGENTS.md` automatically — include in the plan; edit only in Phase 7 with approval.
 
 ---
 
-## Distinção de papéis no harness
+## Role distinction in the harness
 
-| Papel | Artefato | Função |
+| Role | Artifact | Function |
 |-------|----------|--------|
-| **Este agente** | `.agents/skills/check-harness.md` | Auditar saúde do meta-harness |
-| **Pipeline E2E** | `.agents/us-workflow/` | Agente E2E — consome skills |
-| **Skills standalone** | `.agents/skills/{NN}-*/SKILL.md` e `.agents/skills/*/SKILL.md` | Conhecimento/workflow invocável isoladamente |
-| **Rules** | `.cursor/rules/*.mdc` | Rules de engenharia de escopo restrito; complementam skills e o hub |
-| **Hub** | `.cursorrules` → `AGENTS.md` | Entrada única; `AGENTS.md` contém roteamento (Layers, Skill loading, Task router) sem duplicar corpos de skill |
+| **This agent** | `.agents/skills/check-harness.md` | Audit meta-harness health |
+| **E2E Pipeline** | `.agents/us-workflow/` | E2E agent — consumes skills |
+| **Standalone skills** | `.agents/skills/{NN}-*/SKILL.md` and `.agents/skills/*/SKILL.md` | Individually invocable knowledge/workflow |
+| **Rules** | `.cursor/rules/*.mdc` | Narrow-scope engineering rules; complement skills and hub |
+| **Hub** | `.cursorrules` → `AGENTS.md` | Single entry; `AGENTS.md` contains routing (Layers, Skill loading, Task router) without duplicating skill bodies |
 
 ---
 
-## Checklist rápido (Definition of Done desta auditoria)
+## Quick checklist (Definition of Done for this audit)
 
-**Etapa 1 — Varredura**
-- [ ] Todos os arquivos do § Escopo foram lidos ou amostrados via grep com cobertura de links
-- [ ] Fase 4 executada: diff filesystem ↔ `AGENTS.md` documentado
-- [ ] Fase 5c executada: auto-load matrix, overlap analysis, simulated context load
-- [ ] Nenhum arquivo do harness foi editado nesta etapa
+**Step 1 — Scan**
+- [ ] All § Scope files have been read or sampled via grep with link coverage
+- [ ] Phase 4 executed: filesystem ↔ `AGENTS.md` diff documented
+- [ ] Phase 5c executed: auto-load matrix, overlap analysis, simulated context load
+- [ ] No harness file was edited in this step
 
-**Etapa 2 — Plano**
-- [ ] Cada problema enumerado com severidade, erro e correção proposta
-- [ ] Relatório entregue no formato § Formato de saída (tabela problema → correção)
-- [ ] **Dry-run:** relatório entregue como artefato final; encerrar aqui
-- [ ] **Normal:** `AskQuestion` feito quando houver itens corrigíveis (ou registrado como pendente com motivo)
-- [ ] Nenhum path absoluto de máquina local permanece nas propostas
+**Step 2 — Plan**
+- [ ] Each problem enumerated with severity, error, and proposed correction
+- [ ] Report delivered in § Output format (problem → correction table)
+- [ ] **Dry-run:** report delivered as final artifact; end here
+- [ ] **Normal:** `AskQuestion` done when correctable items exist (or recorded as pending with reason)
+- [ ] No local-machine absolute paths remain in proposals
 
-**Etapa 3 — Execução** (normal apenas; dry-run encerra na Etapa 2)
-- [ ] Apenas itens aprovados foram aplicados
-- [ ] Edições revalidadas na Fase 2
-- [ ] Usuário informado do que foi aplicado vs. pendente
+**Step 3 — Execution** (normal only; dry-run ends at Step 2)
+- [ ] Only approved items were applied
+- [ ] Edits revalidated in Phase 2
+- [ ] User informed of what was applied vs. pending

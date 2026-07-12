@@ -239,12 +239,10 @@ For each thread approved for code fix:
 
 ### 6. Validate, report, resolve threads, publish
 
-1. **Build and test:**
+1. **Build and test** (use commands from `config.json.verification` or tools.md aliases):
 
 ```bash
-dotnet build                    # if backend touched
-dotnet test                     # if backend touched
-cd web && npm test && npm run build  # if frontend touched
+# Run build and test commands from config.json.verification
 ```
 
 2. **Auto-review before push (mandatory):**
