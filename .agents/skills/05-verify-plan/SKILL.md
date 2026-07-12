@@ -1,7 +1,7 @@
 ---
 name: 05-verify-plan
 description: Compares implementation quality and code deliverables against the plan and acceptance criteria.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -22,9 +22,9 @@ Responsible for auditing implementation deliverables against the specification a
 /verify-plan [spec-input] [plan-dir=<path>]
 ```
 
-### Workflow Mode (Step 6 of us-workflow)
+### Workflow Mode (Step 6 of spec-to-pr)
 
-Dispatched by `us-workflow` at Step 6. Receives `specPath` and `planDir` from the orchestrator state. Returns `step-output` YAML at completion.
+Dispatched by `spec-to-pr` at Step 6. Receives `specPath` and `planDir` from the orchestrator state. Returns `step-output` YAML at completion.
 
 ### Parameters
 
@@ -47,7 +47,7 @@ When no specification is provided, evaluate the overall code status against the 
 | **Correctness & Style** | 35% | Does the code respect project layer boundaries, multi-tenancy, and standards? |
 | **Tests** | 25% | Were tests updated and do they execute successfully? |
 
-Assign a 0-10 score to each metric. Approve the implementation if the weighted average score is `â‰¥ 7`, otherwise suggest re-implementation.
+Assign a 0-10 score to each metric. Approve the implementation if the weighted average score is `≥ 7`, otherwise suggest re-implementation.
 
 ---
 
@@ -74,7 +74,7 @@ sourcePlans: ["step-02-{slug}.plan.refined.md"]
 githubSource: gh | none
 ---
 
-# Implementation Report â€” {slug}
+# Implementation Report — {slug}
 
 **Generated on:** YYYY-MM-DD
 **Reference Plan:** step-02-{slug}.plan.refined.md (or step-01-{slug}.plan.md)

@@ -1,7 +1,7 @@
 ---
 name: 07-integration-validation
 description: Plans and executes pre-PR integration test batteries, verifying backend, database, RBAC, tenancy, and UI interfaces.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -20,9 +20,9 @@ Responsible for planning and executing a pre-PR integration test suite. It serve
 /integration-validation <plan-path> [spec=<spec-path>] [skip-browser]
 ```
 
-### Workflow Mode (Step 11 of us-workflow)
+### Workflow Mode (Step 11 of spec-to-pr)
 
-Dispatched by `us-workflow` at Step 11. Receives `planPath` and `specPath` from the orchestrator state. UI browser testing requires explicit authorization.
+Dispatched by `spec-to-pr` at Step 11. Receives `planPath` and `specPath` from the orchestrator state. UI browser testing requires explicit authorization.
 
 ### Parameters
 
@@ -37,13 +37,13 @@ Dispatched by `us-workflow` at Step 11. Receives `planPath` and `specPath` from 
 ## Prerequisites
 
 Check the following before starting the integration tests:
-- `config.json` â€” resolves local dev server URLs (e.g. `apiHost`, `devHost`), locales list, and DB seed keys.
+- `config.json` — resolves local dev server URLs (e.g. `apiHost`, `devHost`), locales list, and DB seed keys.
 - Ensure the codebase builds cleanly (backend + frontend).
 - Confirm database migrations have been successfully applied.
 
 ---
 
-## Phase 1 â€” Integration Test Plan
+## Phase 1 — Integration Test Plan
 
 Generate `step-11-{slug}.integration-test.plan.md` containing:
 1. **Target Hosts & Ports:** Resolves URLs and credentials using stack settings.
@@ -55,7 +55,7 @@ Generate `step-11-{slug}.integration-test.plan.md` containing:
 
 ---
 
-## Phase 2 â€” Execution & Reporting
+## Phase 2 — Execution & Reporting
 
 1. **Verify Base Build:** Execute build and core test commands from `config.json.verification`.
 2. **Apply Database Seeds:** Verify seed constraints and cleanups.

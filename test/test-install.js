@@ -104,26 +104,26 @@ console.log('\n[Phase 0] Self-overwrite protection...');
 console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
 {
   const required = [
-    '.agents/skills/us-workflow/ARTIFACTS.md',
-    '.agents/skills/us-workflow/config.schema.json',
-    '.agents/skills/us-workflow/config.json.example',
-    '.agents/skills/us-workflow/us-workflow-run-test.md',
-    '.agents/skills/us-workflow/SKILL.md'
+    '.agents/skills/spec-to-pr/ARTIFACTS.md',
+    '.agents/skills/spec-to-pr/config.schema.json',
+    '.agents/skills/spec-to-pr/config.json.example',
+    '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
+    '.agents/skills/spec-to-pr/SKILL.md'
   ];
   for (const rel of required) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing required file: ${rel}`);
   }
-  const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/us-workflow/ARTIFACTS.md'), 'utf8');
+  const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('07-integration-validation')) fail('ARTIFACTS.md missing Step 11 ownership');
   const goalLoop = fs.readFileSync(
-    path.join(parentDir, '.agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md'),
+    path.join(parentDir, '.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md'),
     'utf8'
   );
   if (/[>] ?\/tmp\//.test(goalLoop) || /\/tmp\/goal-loop/.test(goalLoop)) {
     fail('goal-loop must not write sentinels under /tmp');
   }
-  const skill = fs.readFileSync(path.join(parentDir, '.agents/skills/us-workflow/SKILL.md'), 'utf8');
+  const skill = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/SKILL.md'), 'utf8');
   if (/specs\/\{slug\}\.spec\.md/.test(skill) && !/mirror/i.test(skill)) {
     // brainstorm must not treat specs/ as sole canonical
     console.warn('Warning: SKILL.md still mentions specs/{slug}.spec.md — verify mirror-only wording');
@@ -134,7 +134,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('AGENTS.md still maps Step 11 to 04-implement-tasks');
   }
   const example = JSON.parse(
-    fs.readFileSync(path.join(parentDir, '.agents/skills/us-workflow/config.json.example'), 'utf8')
+    fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/config.json.example'), 'utf8')
   );
   if (!example.project?.workingBranch) fail('config.json.example missing project.workingBranch');
   if (!example.plans?.dir) fail('config.json.example missing plans.dir');
@@ -278,7 +278,7 @@ child.on('close', (code) => {
 
   // --- Phase 2: config.json preserve on update ---
   console.log('\n[Phase 2] Update preserves config.json...');
-  const usConfigDir = path.join(testSkillsDir, 'us-workflow');
+  const usConfigDir = path.join(testSkillsDir, 'spec-to-pr');
   const consumerConfig = path.join(usConfigDir, 'config.json');
   const marker = {
     project: { name: 'consumer-marker-project', baseBranch: 'main', workingBranch: 'feature/x' },
@@ -334,7 +334,7 @@ child.on('close', (code) => {
 
   // Ensure upstream skills still covered
   const installedAfter = listSkillDirs(testSkillsDir);
-  const missingPipeline = ['us-workflow', '00-write-spec', '04-implement-tasks', '07-integration-validation', '11-ship-pr']
+  const missingPipeline = ['spec-to-pr', '00-write-spec', '04-implement-tasks', '07-integration-validation', '11-ship-pr']
     .filter((s) => !installedAfter.includes(s));
   if (missingPipeline.length) {
     fail(`Pipeline skills missing after update: ${missingPipeline.join(', ')}`);
@@ -343,8 +343,8 @@ child.on('close', (code) => {
 
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
-    const schemaInTest = path.join(testSkillsDir, 'us-workflow', 'config.schema.json');
-    const artifactsInTest = path.join(testSkillsDir, 'us-workflow', 'ARTIFACTS.md');
+    const schemaInTest = path.join(testSkillsDir, 'spec-to-pr', 'config.schema.json');
+    const artifactsInTest = path.join(testSkillsDir, 'spec-to-pr', 'ARTIFACTS.md');
     if (!fs.existsSync(schemaInTest)) fail('config.schema.json not installed into consumer');
     if (!fs.existsSync(artifactsInTest)) fail('ARTIFACTS.md not installed into consumer');
     ok('schema + ARTIFACTS shipped to consumer');

@@ -1,7 +1,7 @@
 ---
 name: 08-fix-pr
 description: Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---
@@ -44,34 +44,34 @@ Orchestrated by [09-goal-fix-pr](../09-goal-fix-pr/SKILL.md). All interactive co
 ## State Machine (FSM) Flow
 
 ```
-[Sync & Check CI] â”€â”€> [Fetch Threads] â”€â”€> [Score Gaps] â”€â”€> [Confirmation Gate] â”€â”€> [Surgical Fix] â”€â”€> [Verify & Push]
+[Sync & Check CI] ──> [Fetch Threads] ──> [Score Gaps] ──> [Confirmation Gate] ──> [Surgical Fix] ──> [Verify & Push]
 ```
 
-### Phase 0 â€” Sync & CI Check
+### Phase 0 — Sync & CI Check
 - Pull remote changes using `git pull origin <sourceRefName>`. Prevent overlapping fixes on dirty worktrees.
 - Check if automated review runs are in progress. Recommend waiting if CI is active.
 
-### Phase 1 â€” Fetch Active Threads
+### Phase 1 — Fetch Active Threads
 - Fetch threads using GraphQL (`fetch_threads.cjs`) or Python REST API collectors.
 - Parse thread details: `threadId`, `filePath`, `lineNumber`, and `comments`.
 
-### Phase 2 â€” Scoring & Classification
-Score each thread on a `0â€“10` scale to categorize its urgency:
+### Phase 2 — Scoring & Classification
+Score each thread on a `0–10` scale to categorize its urgency:
 
 | Score | Urgency | Class | Action |
 |-------|---------|-------|--------|
-| **0â€“5** | Low | Non-blocking / Nit | Resolve with comment justifying why no code change is required. |
-| **6â€“10** | High | Blocking / Bug | Apply surgical fixes in code. |
+| **0–5** | Low | Non-blocking / Nit | Resolve with comment justifying why no code change is required. |
+| **6–10** | High | Blocking / Bug | Apply surgical fixes in code. |
 
-### Phase 3 â€” Confirmation Gate
+### Phase 3 — Confirmation Gate
 - Save the proposed fix checklist to `.agents/skills/08-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted).
 - Request user confirmation: `Proceed with fixes for threads [ID1, ID2]?`.
 
-### Phase 4 â€” Execution & Surgical Fix
+### Phase 4 — Execution & Surgical Fix
 - For code fixes: analyze call sites, test scopes, and verify adjacent logic.
 - Apply surgical edits (no scope creep) following Karpathy guidelines. Fix the defect class globally (check siblings in other files).
 
-### Phase 5 â€” Verification & Push
+### Phase 5 — Verification & Push
 - Run verification tests defined in `config.json.verification`.
 - Generate review report: `.cursor/codereviews/PR-<PR-ID>-round-<N>.md`.
 - Resolve threads on the platform, stage changed files + report, and commit.

@@ -1,14 +1,14 @@
 ---
 name: 06-code-review
-description: Senior code reviewer â€” two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 3.1
 disable-model-invocation: true
 ---
 
 # 06-code-review
 
-Responsible for performing a comprehensive local code review on all modified files (relative to the base branch) before a PR is raised. It is the primary quality gate in the `us-workflow` pipeline but is equally effective when called directly by a developer after making changes.
+Responsible for performing a comprehensive local code review on all modified files (relative to the base branch) before a PR is raised. It is the primary quality gate in the `spec-to-pr` pipeline but is equally effective when called directly by a developer after making changes.
 
 ---
 
@@ -22,7 +22,7 @@ Responsible for performing a comprehensive local code review on all modified fil
 
 ### Workflow Mode (Step 9)
 
-Dispatched automatically by `us-workflow` at Step 9. Receives `base` and `planPath` from the orchestrator's state file.
+Dispatched automatically by `spec-to-pr` at Step 9. Receives `base` and `planPath` from the orchestrator's state file.
 
 ### Parameters
 
@@ -35,7 +35,7 @@ Dispatched automatically by `us-workflow` at Step 9. Receives `base` and `planPa
 
 ## Execution Flow
 
-### Phase 0 â€” Stack Detection
+### Phase 0 — Stack Detection
 
 Read `config.json.stack` to determine which source layers are in scope:
 - **Backend:** layered directories (Domain, Application, Infrastructure, API)
@@ -47,14 +47,14 @@ Run the diff:
 git diff --name-status {base}...HEAD -- ':!**/bin/**' ':!**/obj/**' ':!**/node_modules/**' ':!**/dist/**'
 ```
 
-### Phase 1 â€” Triage (Hypothesis List)
+### Phase 1 — Triage (Hypothesis List)
 
 Walk each modified file within scope and flag lines with real defect potential. Discard:
 - Cosmetic formatting or naming nits
 - Pre-existing code untouched by the current diff
 - Low-risk TSX without security surface
 
-### Phase 2 â€” Investigation (4-Step Proof)
+### Phase 2 — Investigation (4-Step Proof)
 
 For each triage hypothesis, complete **all four** steps before including in the report:
 1. **Evidence Read:** list files, symbols, and callers inspected
@@ -62,26 +62,26 @@ For each triage hypothesis, complete **all four** steps before including in the 
 3. **Missing Protection:** explain why existing validations/tests do not prevent the failure
 4. **Discards:** rejected alternative explanations
 
-If all 4 steps cannot be completed â†’ discard the hypothesis.
+If all 4 steps cannot be completed → discard the hypothesis.
 
-### Phase 2.5 â€” Defect Class Generalization
+### Phase 2.5 — Defect Class Generalization
 
 For each proven finding, search for sibling occurrences of the same pattern in the full diff (not just the file where it was first spotted). Report all occurrences together under one finding.
 
-### Phase 2.6 â€” MEMORY.md Pattern Sweep
+### Phase 2.6 — MEMORY.md Pattern Sweep
 
-Run `grep` for each ID in `MEMORY.md â†’ ## Review Patterns` against the modified file set. Report confirmed violations.
+Run `grep` for each ID in `MEMORY.md → ## Review Patterns` against the modified file set. Report confirmed violations.
 
-### Phase 2.7 â€” Invariant Checklists
+### Phase 2.7 — Invariant Checklists
 
 Cross-check `config.json.invariants` and `config.json.rules`:
 
 | Checklist | What to look for |
 |-----------|------------------|
-| Tenancy | `config.json.domain.tenancyField` â€” filters and documented exceptions |
-| DB Migrations | `config.json.invariants.migrationsCliOnly` â€” no hand-written migration files |
+| Tenancy | `config.json.domain.tenancyField` — filters and documented exceptions |
+| DB Migrations | `config.json.invariants.migrationsCliOnly` — no hand-written migration files |
 | Domain Rules | Rules in `config.json.domain.model` |
-| React Hooks | `useEffect` â€” cleanup presence and stable dependency arrays |
+| React Hooks | `useEffect` — cleanup presence and stable dependency arrays |
 | i18n Keys | New translation keys present in all locales from `config.json.stack.frontend.i18n.locales[]` |
 
 ---
@@ -100,19 +100,19 @@ Cross-check `config.json.invariants` and `config.json.rules`:
 **Files:** N
 
 ### Critical
-- **`path:L42`**: CRITICAL â€” description (Score: 9/10)
+- **`path:L42`**: CRITICAL — description (Score: 9/10)
   Analysis: (4 steps completed)
   Sibling occurrences: `path:L88`
-  Suggestion: ```suggestion â€¦ ```
+  Suggestion: ```suggestion … ```
 
 ### Warning
-- **`path:L80`**: WARNING â€” description (Score: 7/10)
+- **`path:L80`**: WARNING — description (Score: 7/10)
 
 ### Suggestion
-- **`path:L150`**: SUGGESTION â€” description (Score: 6/10)
+- **`path:L150`**: SUGGESTION — description (Score: 6/10)
 
 ---
-**Apply fixes?** (YES â†’ run build and tests)
+**Apply fixes?** (YES → run build and tests)
 ```
 
 ---
@@ -128,5 +128,5 @@ Cross-check `config.json.invariants` and `config.json.rules`:
 ## Rules of Engagement
 
 - **Precision before volume:** only include findings with complete evidence. No speculative comments.
-- **Convergence goal:** a single report round covering all issues simultaneously â€” avoid review loops.
+- **Convergence goal:** a single report round covering all issues simultaneously — avoid review loops.
 - **Do not commit:** changes are staged to the working tree; the orchestrator or developer handles staging.

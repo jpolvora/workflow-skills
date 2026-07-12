@@ -27,12 +27,12 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 |------|--------|--------|
 | `read-state` | Read workflow state | `Read` `{us-dir}/{workflow-id}.state.md` |
 | `write-state` | Write/append state | `Write` / `StrReplace` (hygiene before board) |
-| `read-config` | Load project config | `Read` `.agents/skills/us-workflow/config.json` |
-| `read-artifacts-registry` | Canonical artifact names | `Read` `.agents/skills/us-workflow/ARTIFACTS.md` |
+| `read-config` | Load project config | `Read` `.agents/skills/spec-to-pr/config.json` |
+| `read-artifacts-registry` | Canonical artifact names | `Read` `.agents/skills/spec-to-pr/ARTIFACTS.md` |
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `STACK.md`) |
 | `read-memory` | Load learned knowledge | `Read` `MEMORY.md` (root; index via `Grep`) |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
-| `run-script` | Run workflow script | `Shell` `python .agents/skills/us-workflow/scripts/{name}.py` |
+| `run-script` | Run workflow script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` |
 
 ## Source control tools
 
@@ -49,7 +49,7 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `dispatch-agent` | Spawn subagent for step | `Task` — `subagent_type: generalPurpose\|shell`; `description: "US-WF step {N} — {Label}"` |
+| `dispatch-agent` | Spawn subagent for step | `Task` — `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
 | `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | `Task` — same worktree, no file overlap |
 | `user-gate` | Ask question | `AskQuestion` — ≥2 options, recommended first |
 | `user-gate-auto` | Auto-select first option | auto-gate table — no AskQuestion |

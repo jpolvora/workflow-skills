@@ -1,7 +1,7 @@
 ---
 name: 09-goal-fix-pr
-description: Convergence loop â€” runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+description: Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---
@@ -20,9 +20,9 @@ Responsible for driving PR review thread convergence to zero. It wraps the [08-f
 /goal-fix-pr <PR-NUMBER> [dry-run] [max <n>]
 ```
 
-### Workflow Mode (Step 12 of us-workflow)
+### Workflow Mode (Step 12 of spec-to-pr)
 
-Dispatched automatically by `us-workflow` when `ship-pr` triggers thread convergence monitoring. Receives `PR-NUMBER` and `max` from the orchestrator's parameters.
+Dispatched automatically by `spec-to-pr` when `ship-pr` triggers thread convergence monitoring. Receives `PR-NUMBER` and `max` from the orchestrator's parameters.
 
 ### Parameters
 
@@ -41,7 +41,7 @@ Before executing, restate the parsed parameters: **PR number**, **success criter
 **Convergence:** `len(activeThreads) == 0` after a thread collection run.
 
 - **GitHub:** `gh pr view <PR-NUMBER> --json comments --jq '[.comments[] | select(.isResolved == false)] | length'`
-- **Azure DevOps:** `fix_pr_azure_context.py collect` â†’ `activeThreads` count
+- **Azure DevOps:** `fix_pr_azure_context.py collect` → `activeThreads` count
 
 ---
 
@@ -51,10 +51,10 @@ When running inside `goal-fix-pr`, the following `fix-pr` interactive gates are 
 
 | fix-pr Gate | goal-fix-pr Behavior |
 |-------------|----------------------|
-| Confirmation gate (plan-gate.md) | **Auto-yes** â€” save gate file and proceed. |
-| Commit + resolve + push gate | **Auto** â€” execute unless `dry-run` is active. |
-| **Escalate** threads | **Stop iteration** â€” block until user resolves ambiguity. |
-| CI Auto-Fix `in_progress` | **Inform** user â€” do not auto-block. |
+| Confirmation gate (plan-gate.md) | **Auto-yes** — save gate file and proceed. |
+| Commit + resolve + push gate | **Auto** — execute unless `dry-run` is active. |
+| **Escalate** threads | **Stop iteration** — block until user resolves ambiguity. |
+| CI Auto-Fix `in_progress` | **Inform** user — do not auto-block. |
 
 ---
 
@@ -74,17 +74,17 @@ Iteration: <n>/<max>
 - [ ] wait 5min + re-collect
 ```
 
-### Phase 1 â€” Baseline (Iteration 1)
+### Phase 1 — Baseline (Iteration 1)
 - Collect active threads from the PR platform.
-- If `activeThreads == 0` on first collect â†’ final report and stop (already converged).
+- If `activeThreads == 0` on first collect → final report and stop (already converged).
 
-### Phase 2 â€” Act (fix-pr Round)
-- Execute `fix-pr` steps 0â€“7 with automation overrides for active threads.
+### Phase 2 — Act (fix-pr Round)
+- Execute `fix-pr` steps 0–7 with automation overrides for active threads.
 - Commit: `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`.
 - Resolve threads on the platform.
 - Push: `git push origin HEAD` (skip if `dry-run`).
 
-### Phase 3 â€” Verify (Mandatory after each round)
+### Phase 3 — Verify (Mandatory after each round)
 
 | Check | Required Evidence |
 |-------|------------------|
@@ -93,18 +93,18 @@ Iteration: <n>/<max>
 | Push | Commit hash + push confirmation (or dry-run log) |
 | Resolved threads | `resolve_thread` exited with code 0 |
 
-3 consecutive failures on the same check â†’ stop and escalate.
+3 consecutive failures on the same check → stop and escalate.
 
-### Phase 4 â€” Post-push Heartbeat (5 minutes)
+### Phase 4 — Post-push Heartbeat (5 minutes)
 - After each push round, wait 300 seconds for new CI/reviewer feedback to register.
 - Sentinel: `AGENT_GOAL_WAKE_fixpr_<PR-NUMBER>`.
-- Do not stack multiple sleepers â€” exactly one active at a time.
+- Do not stack multiple sleepers — exactly one active at a time.
 
-### Phase 5 â€” Re-collect
+### Phase 5 — Re-collect
 - On wake: re-count `activeThreads`.
-- `== 0` â†’ **done**.
-- `> 0` and `n < max` â†’ start iteration `n+1`.
-- `n >= max` â†’ stop, report remaining threads, request larger `max`.
+- `== 0` → **done**.
+- `> 0` and `n < max` → start iteration `n+1`.
+- `n >= max` → stop, report remaining threads, request larger `max`.
 
 ---
 
@@ -116,7 +116,7 @@ Iteration: <n>/<max>
 | User requests stop | Kill sleeper, summarize progress so far |
 | Escalate thread hit | Stop, list blocked thread IDs |
 | `n >= max` | Stop, list active threads |
-| Platform collect fails | Stop â€” do not improvise API calls |
+| Platform collect fails | Stop — do not improvise API calls |
 
 ---
 
