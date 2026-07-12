@@ -1,7 +1,7 @@
 ---
 name: 03-plan-to-tasks
 description: Breaks an implementation plan into atomic tasks with files, ACs, and coderPrompts, organized in a DAG topological order.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -20,9 +20,9 @@ Responsible for reading the finalized plan (`step-02-{slug}.plan.refined.md` or 
 /plan-to-tasks <plan-path> [thresholds=<path>]
 ```
 
-### Workflow Mode (Step 3 of spec-to-pr)
+### Workflow Mode (Step 3 of us-workflow)
 
-Dispatched by `spec-to-pr` at Step 3. Receives `planPath` (path to `step-02-*.plan.refined.md` or `step-01-*.plan.md`) from the orchestrator state.
+Dispatched by `us-workflow` at Step 3. Receives `planPath` (path to `step-02-*.plan.refined.md` or `step-01-*.plan.md`) from the orchestrator state.
 
 ### Parameters
 

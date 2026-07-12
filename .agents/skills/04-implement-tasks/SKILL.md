@@ -1,7 +1,7 @@
 ---
 name: 04-implement-tasks
 description: Executes code implementations or fixes defects following a plan, DAG, or code review findings.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -22,9 +22,9 @@ Responsible for executing the coding and testing steps defined in the plan or fi
 /implement-tasks <plan-path> [mode=build|fix] [findings=<path>]
 ```
 
-### Workflow Mode (Step 5 for build / Step 10 for fix in spec-to-pr)
+### Workflow Mode (Step 5 for build / Step 10 for fix in us-workflow)
 
-Dispatched by `spec-to-pr` at Step 5 (build mode) or Step 10 (fix mode). Receives `planPath`, `mode`, and optional `findings` path from the orchestrator state.
+Dispatched by `us-workflow` at Step 5 (build mode) or Step 10 (fix mode). Receives `planPath`, `mode`, and optional `findings` path from the orchestrator state.
 
 ### Parameters
 

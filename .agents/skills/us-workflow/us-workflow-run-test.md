@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Verify the spec-to-pr FSM executes without error in simulated mode, covering all 7 phases (F0–F6) and steps 0–13 including `fullMode` ship-pr.
+Verify the us-workflow FSM executes without error in simulated mode, covering all 7 phases (F0–F6) and steps 0–13 including `fullMode` ship-pr.
 
 ## Test Spec
 
@@ -15,7 +15,7 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering all
 
 ## Prerequisites
 
-1. **BOOTSTRAP** section in [`setup.md`](setup.md) — ensure `.agents/skills/spec-to-pr/config.json` points at this repo. If absent, create one:
+1. **BOOTSTRAP** section in [`setup.md`](setup.md) — ensure `.agents/skills/us-workflow/config.json` points at this repo. If absent, create one:
 
     ```json
     {
@@ -35,7 +35,7 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering all
         "description": "Documentation-only repo (markdown)",
         "srcDir": ".",
         "rules": {
-          "stackFile": ".agents/skills/spec-to-pr/stack.md"
+          "stackFile": ".agents/skills/us-workflow/stack.md"
         },
         "layers": [{ "name": "docs", "path": ".", "role": "skills, specs, docs" }]
       },
@@ -59,7 +59,7 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering all
 ## Invocation
 
 ```text
-/spec-to-pr auto full dry-run specs/test-workflow.spec.md
+/us-workflow auto full dry-run specs/test-workflow.spec.md
 ```
 
 ### Flag breakdown
@@ -167,7 +167,7 @@ Or reuse for the next dry-run iteration (workflow auto-detects and resumes).
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
-| `.agents/skills/spec-to-pr/config.json` not found | Config not in skill directory | Create minimal config (see prerequisites) |
+| `.agents/skills/us-workflow/config.json` not found | Config not in skill directory | Create minimal config (see prerequisites) |
 | Step 1/2 not skipped with simple spec | Dynamic Execution threshold not met | Expected — workflow still runs correctly, just slower |
 | Step 11 tries browser | `dry-run` not parsed | Confirm `dry-run` flag is before spec path |
 | Step 13 not reached | `full` flag absent | Add `full` before spec path |

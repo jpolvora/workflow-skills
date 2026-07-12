@@ -13,7 +13,7 @@ On-demand Layer 2 skill per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. 
 
 1. User message
 2. Design spec → [senior-developer](../senior-developer/SKILL.md) (EF, tenancy, tests)
-3. [karpathy-guidelines](../spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md) (surgical diffs — no drive-by rewrites)
+3. [karpathy-guidelines](../us-workflow/extra-skills/karpathy-guidelines/SKILL.md) (surgical diffs — no drive-by rewrites)
 4. This skill (layer boundaries, testability, async/DI patterns)
 5. [security-review](../security-review/SKILL.md) for OWASP / exploit paths
 

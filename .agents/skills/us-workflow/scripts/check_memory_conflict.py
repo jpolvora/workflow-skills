@@ -21,7 +21,7 @@ from pathlib import Path
 
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-REPO_ROOT = Path(__file__).resolve().parents[4]   # .agents/skills/spec-to-pr/scripts -> repo root
+REPO_ROOT = Path(__file__).resolve().parents[4]   # .agents/skills/us-workflow/scripts -> repo root
 MEMORY_PATH = REPO_ROOT / "MEMORY.md"
 
 KNOWN_MODULES = [

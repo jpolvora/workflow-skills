@@ -1,7 +1,7 @@
 ---
 name: 08-fix-pr
 description: Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---

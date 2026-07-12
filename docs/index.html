@@ -75,7 +75,7 @@
   </div>
   <!-- Layer 2 -->
   <div class="layer">
-    <h3>Layer 2 — `spec-to-pr` Pipeline (numbered, 00-11) <span class="count">(12)</span></h3>
+    <h3>Layer 2 — Workflow Pipeline (numbered, 00-11) <span class="count">(12)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md">
         <div class="name">00-write-spec</div>
@@ -179,45 +179,45 @@
   <div class="layer">
     <h3>Layer 5 — Utility & Meta <span class="count">(8)</span></h3>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md">
-        <div class="name">spec-to-pr</div>
-        <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.   Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | *.spec.md | feature description.   Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.   Legacy aliases: /us-workflow, /us-delivery-workflow.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill</a>
+      <div class="skill-card" data-path=".agents/skills/us-workflow/SKILL.md">
+        <div class="name">us-workflow</div>
+        <div class="desc">E2E US orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.   Invoke: /us-workflow | @[us-workflow]. Entry: GitHub issue | *.spec.md | feature description.   Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/extra-skills/caveman/SKILL.md">
         <div class="name">caveman</div>
         <div class="desc">Ultra-compressed communication mode. Autoloaded every prompt at full intensity per AGENTS.md   unless stop caveman or normal mode. Cuts token usage ~75% while keeping full technical accuracy.   Supports intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra.   User may invoke /caveman to change level; less tokens and be brief still apply full when autoloaded.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/extra-skills/caveman/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/extra-skills/changelog/SKILL.md">
         <div class="name">changelog</div>
         <div class="desc">Write a summarized historical record of the task into CHANGELOG.md. Use at the very end of every implementation task.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/extra-skills/changelog/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/extra-skills/gabarito/SKILL.md">
         <div class="name">gabarito</div>
         <div class="desc">Gabarito — ten operational response guidelines (accountability, anti-sycophancy,   systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification,   calibrated confidence, prompt refinement) plus style discipline. Apply on every user-facing   response in this conversation unless the user opts out. Governs tone, structure, and reasoning;   does not override design specs, repo architecture skills, or explicit user format requests.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/extra-skills/gabarito/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md">
         <div class="name">goal-loop</div>
         <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel   management, heartbeat/sleeper, re-collect -> check -> continue/done loop,   stop conditions, verify framework, and report format. Consumed by   goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/extra-skills/karpathy-guidelines/SKILL.md">
         <div class="name">karpathy-guidelines</div>
         <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/extra-skills/karpathy-guidelines/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/learning/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/extra-skills/learning/SKILL.md">
         <div class="name">learning</div>
         <div class="desc">Analyze session output and record ONLY anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into MEMORY.md, then print a summary. Use when completing a task or implementation.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/extra-skills/learning/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/extra-skills/learning/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/us-workflow/extra-skills/spec-format/SKILL.md">
         <div class="name">spec-format</div>
         <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic.   Load when the user invokes /spec-format, @spec-format, "create spec", "review spec",   "format spec" or requests validation of local specification format.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/us-workflow/extra-skills/spec-format/SKILL.md">View skill</a>
       </div>
     </div>
   </div>

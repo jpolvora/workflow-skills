@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-update_state -- Automate State Hygiene updates for spec-to-pr state.md (v7)
+update_state -- Automate State Hygiene updates for us-workflow state.md (v7)
 
 Usage:
     python update_state.py <state-path> --step <N> --status <status> --elapsed <sec> [--tokens <prompt>:<comp>] [--model <model>] [--created <file1,file2>] [--modified <file1,file2>] [--deleted <file1,file2>] [--gate-choice <choice>]
@@ -191,7 +191,7 @@ def parse_state_yaml(fm: str) -> dict:
     return data
 
 def main():
-    parser = argparse.ArgumentParser(description="Update spec-to-pr state.md frontmatter")
+    parser = argparse.ArgumentParser(description="Update us-workflow state.md frontmatter")
     parser.add_argument("state_path", type=str, help="Path to state.md file")
     parser.add_argument("--step", type=int, required=True, help="Step number that just completed")
     parser.add_argument("--status", type=str, default="completed", choices=["completed", "failed", "skipped"], help="Step status")

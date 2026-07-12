@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_state -- State Hygiene assertions for a spec-to-pr state.md (v7).
+validate_state -- State Hygiene assertions for a us-workflow state.md (v7).
 
 Usage:
     python validate_state.py <workflow-id-or-state-path>
@@ -28,12 +28,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-AGENT_ROOT = Path(__file__).resolve().parent.parent          # .../spec-to-pr
+AGENT_ROOT = Path(__file__).resolve().parent.parent          # .../us-workflow
 REPO_ROOT = Path(__file__).resolve().parents[3]              # repo root
 PLANS_DIR = None  # resolved lazily via load_plans_dir()
 
 def load_plans_dir() -> Path:
-    """Resolve plans.dir from spec-to-pr config.json (default .cursor/plans)."""
+    """Resolve plans.dir from us-workflow config.json (default .cursor/plans)."""
     cfg = AGENT_ROOT / "config.json"
     plans = Path(".cursor") / "plans"
     if cfg.exists():

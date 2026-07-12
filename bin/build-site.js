@@ -88,7 +88,7 @@ const skillFiles = entries
   .filter(e => e.isFile() && e.name.endsWith('.md'))
   .map(e => e.name.replace(/\.md$/, ''));
 
-// Also scan nested skill directories (e.g. spec-to-pr/extra-skills/*)
+// Also scan nested skill directories (e.g. us-workflow/extra-skills/*)
 for (const dir of skillDirs) {
   const nestedPath = path.join(skillsDir, dir);
   try {
@@ -117,7 +117,7 @@ function findSkillMdPath(dirSlug) {
   for (const p of candidates) {
     if (fs.existsSync(p)) return p;
   }
-  // Search nested subdirectories (e.g. spec-to-pr/extra-skills/<slug>/SKILL.md)
+  // Search nested subdirectories (e.g. us-workflow/extra-skills/<slug>/SKILL.md)
   for (const topDir of skillDirs) {
     const nestedPath = path.join(skillsDir, topDir);
     try {

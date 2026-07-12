@@ -7,7 +7,7 @@ title: US Test Workflow
 
 ## Description
 
-Add a `test-workflow` entry to the AGENTS.md catalog under **Layer 5 — Utility & Meta** to verify the full spec-to-pr pipeline end-to-end.
+Add a `test-workflow` entry to the AGENTS.md catalog under **Layer 5 — Utility & Meta** to verify the full us-workflow pipeline end-to-end.
 
 ## Acceptance Criteria
 

@@ -1,7 +1,7 @@
 {
   "name": "workflow-skills",
   "version": "0.0.1",
-  "description": "Centralized agent skills and behavioral guidelines for Cursor (spec-to-pr pipeline and related skills)",
+  "description": "Centralized agent skills and behavioral guidelines for Cursor (us-workflow pipeline and related skills)",
   "license": "MIT",
   "author": "Jone Polvora",
   "repository": {

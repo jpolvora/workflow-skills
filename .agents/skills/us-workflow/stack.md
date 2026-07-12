@@ -2,7 +2,7 @@
 
 Human-readable companion to `config.json`. Agents read config.json for machine-readable values; this doc explains the structure and conventions.
 
-> **Source of truth:** `.agents/skills/spec-to-pr/config.json` — project identity, stack, verification commands, invariants. `tools.md` — canonical tool aliases. This `stack.md` is the human-readable guide.
+> **Source of truth:** `.agents/skills/us-workflow/config.json` — project identity, stack, verification commands, invariants. `tools.md` — canonical tool aliases. This `stack.md` is the human-readable guide.
 
 ## Project Stack (from config.json)
 

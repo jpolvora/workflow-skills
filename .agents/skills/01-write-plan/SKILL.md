@@ -1,7 +1,7 @@
 ---
 name: 01-write-plan
 description: Generates the initial implementation plan (step-01-{slug}.plan.md) from the specification.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 3.2
 disable-model-invocation: true
 ---
@@ -20,9 +20,9 @@ Responsible for loading the feature specification (whether a local spec, a GitHu
 /write-plan <spec-input> [slug=<slug>] [output-dir=<path>]
 ```
 
-### Workflow Mode (Step 1 of spec-to-pr)
+### Workflow Mode (Step 1 of us-workflow)
 
-Dispatched by `spec-to-pr` at Step 1. Receives `specInput` (path or issue ID) from the orchestrator's state.
+Dispatched by `us-workflow` at Step 1. Receives `specInput` (path or issue ID) from the orchestrator's state.
 
 ### Parameters
 

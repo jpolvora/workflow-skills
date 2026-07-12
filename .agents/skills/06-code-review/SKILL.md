@@ -1,14 +1,14 @@
 ---
 name: 06-code-review
 description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 3.1
 disable-model-invocation: true
 ---
 
 # 06-code-review
 
-Responsible for performing a comprehensive local code review on all modified files (relative to the base branch) before a PR is raised. It is the primary quality gate in the `spec-to-pr` pipeline but is equally effective when called directly by a developer after making changes.
+Responsible for performing a comprehensive local code review on all modified files (relative to the base branch) before a PR is raised. It is the primary quality gate in the `us-workflow` pipeline but is equally effective when called directly by a developer after making changes.
 
 ---
 
@@ -22,7 +22,7 @@ Responsible for performing a comprehensive local code review on all modified fil
 
 ### Workflow Mode (Step 9)
 
-Dispatched automatically by `spec-to-pr` at Step 9. Receives `base` and `planPath` from the orchestrator's state file.
+Dispatched automatically by `us-workflow` at Step 9. Receives `base` and `planPath` from the orchestrator's state file.
 
 ### Parameters
 

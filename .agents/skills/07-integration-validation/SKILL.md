@@ -1,7 +1,7 @@
 ---
 name: 07-integration-validation
 description: Plans and executes pre-PR integration test batteries, verifying backend, database, RBAC, tenancy, and UI interfaces.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -20,9 +20,9 @@ Responsible for planning and executing a pre-PR integration test suite. It serve
 /integration-validation <plan-path> [spec=<spec-path>] [skip-browser]
 ```
 
-### Workflow Mode (Step 11 of spec-to-pr)
+### Workflow Mode (Step 11 of us-workflow)
 
-Dispatched by `spec-to-pr` at Step 11. Receives `planPath` and `specPath` from the orchestrator state. UI browser testing requires explicit authorization.
+Dispatched by `us-workflow` at Step 11. Receives `planPath` and `specPath` from the orchestrator state. UI browser testing requires explicit authorization.
 
 ### Parameters
 

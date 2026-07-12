@@ -1,6 +1,6 @@
-# FAQ — Spec-to-PR
+# FAQ — US Delivery Workflow
 
-> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/spec-to-pr/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
+> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/us-workflow/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
 >
 > **Audience:** developers, tech leads, and agents who need to understand **how** the end-to-end User Story delivery pipeline works.
 > **Order:** sections follow **execution sequence** (F0→F6, steps 0–12; 13 with `--full`), from invocation to closure.
@@ -38,7 +38,7 @@
 
 ## 1. Overview
 
-### What is the Spec-to-PR?
+### What is the US Delivery Workflow?
 
 An **orchestrated pipeline** for delivering a User Story (or feature described in free text) end-to-end: plan → implementation → verification → code review → integration validation → closure. The **orchestrator** (main agent) coordinates **sub-agents** dedicated per step, maintains persistent state, and enforces **authorization gates** before any side effect (commit, push, code edit).
 
@@ -103,7 +103,7 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 
 ```mermaid
 flowchart TD
-    START(["Invocation: /spec-to-pr 2416"]) --> S0["§5 Step 0 Bootstrap"]
+    START(["Invocation: /us-workflow 2416"]) --> S0["§5 Step 0 Bootstrap"]
     S0 --> S1["§6 Step 1 Plan"]
     S1 --> S2["§7 Step 2 Refinement"]
     S2 --> S3["§8 Step 3 Exec + DAG"]
@@ -142,13 +142,13 @@ flowchart TD
 ### How do I invoke the workflow?
 
 ```text
-@[spec-to-pr] 2416
-/spec-to-pr US 2416
-@[spec-to-pr] auto 2416
-@[spec-to-pr] dry-run 2416
-@[spec-to-pr] auto skip-integration 2416
-@[spec-to-pr] us-2375.plan.md
-@[spec-to-pr] soft-delete em fornecedores
+@[us-workflow] 2416
+/us-workflow US 2416
+@[us-workflow] auto 2416
+@[us-workflow] dry-run 2416
+@[us-workflow] auto skip-integration 2416
+@[us-workflow] us-2375.plan.md
+@[us-workflow] soft-delete em fornecedores
 ```
 
 ### What input does each form accept?
@@ -217,7 +217,7 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 
 **What is `workflow-id`?** Unique execution identifier (e.g., `us-2416-20260621T214006`), distinct from the US number.
 
-**Can I validate the state?** Optionally: `python .agents/skills/spec-to-pr/scripts/validate_state.py {workflow-id}`.
+**Can I validate the state?** Optionally: `python .agents/skills/us-workflow/scripts/validate_state.py {workflow-id}`.
 
 ---
 
@@ -685,7 +685,7 @@ Skips **test** commands in `stack.md` at Steps 7, 10, and Step 11 §3. **Build s
 
 ### The workflow paused mid-step — can I resume?
 
-Yes. Re-invoke with the same US number: `/spec-to-pr 2416`. The orchestrator detects `status: active` and offers to resume. In auto mode, pass `auto US 2416`.
+Yes. Re-invoke with the same US number: `/us-workflow 2416`. The orchestrator detects `status: active` and offers to resume. In auto mode, pass `auto US 2416`.
 
 ### How do I switch models mid-workflow?
 

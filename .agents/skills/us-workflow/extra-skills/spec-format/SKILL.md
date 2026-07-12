@@ -4,7 +4,7 @@ description: >-
   Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic.
   Load when the user invokes /spec-format, @spec-format, "create spec", "review spec",
   "format spec" or requests validation of local specification format.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 disable-model-invocation: true
 version: 1.0
 ---
@@ -13,7 +13,7 @@ version: 1.0
 
 Skill to **create**, **review**, or **format** local specifications (`*.spec.md`) — a single, portable artifact for a feature/US. Replaces direct GitHub reading in downstream skills; all read `*.spec.md` from the working directory.
 
-> **Canonical source of the `*.spec.md` format.** Other skills and `spec-to-pr` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../../../AGENTS.md) § Skill loading.
+> **Canonical source of the `*.spec.md` format.** Other skills and `us-workflow` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../../../AGENTS.md) § Skill loading.
 
 > **Language:** responses to user in **en-us**.
 
@@ -94,7 +94,7 @@ specDate: 2026-07-02  # generation date or last relevant update
 1. **Acceptance Criteria** must be enumerable and testable — one line per AC.
 2. When `source: local`, the author is responsible for complete ACs; there is no issue fetch.
 3. The raw `*.issue.json` snapshot (when it exists) is **audit-only** — downstream skills do **not** read `issue.json` directly; they always read `spec.md`.
-4. Local specs can be versioned in `.cursor/plans/specs/` or any path — `spec-to-pr` copies to `{us-dir}/` at Step 0 if needed.
+4. Local specs can be versioned in `.cursor/plans/specs/` or any path — `us-workflow` copies to `{us-dir}/` at Step 0 if needed.
 
 ## Flow — review mode
 
@@ -114,16 +114,16 @@ specDate: 2026-07-02  # generation date or last relevant update
 ## Flow — create mode
 
 1. Collect title, description, and ACs (free text, GitHub issue via `gh issue view {n}`, or user draft).
-2. If input is an issue number: use `gh issue view {n}` + `.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py` (see `spec-to-pr` → Specification Protocol).
+2. If input is an issue number: use `gh issue view {n}` + `.agents/skills/us-workflow/scripts/github-issue-to-spec.py` (see `us-workflow` → Specification Protocol).
 3. Generate file at the canonical path with complete frontmatter and sections.
 4. Confirm final path to user.
 
 ## Downstream consumers
 
-`spec-to-pr`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never the GitHub API directly and never `*.issue.json`. See [`ARTIFACTS.md`](../../ARTIFACTS.md).
+`us-workflow`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never the GitHub API directly and never `*.issue.json`. See [`ARTIFACTS.md`](../../ARTIFACTS.md).
 
 ## References
 
 - Harness routing: [`AGENTS.md`](../../../../../AGENTS.md)
 - Architecture: [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md)
-- Workflow protocol: [`../../spec-to-pr/SKILL.md`](../../spec-to-pr/SKILL.md) → Specification Protocol
+- Workflow protocol: [`../../us-workflow/SKILL.md`](../../us-workflow/SKILL.md) → Specification Protocol
