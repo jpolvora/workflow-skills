@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Skills — Cursor Agent Skills Hub</title>
+  <meta name="description" content="Central de diretrizes agênticas e skills para Cursor Agent">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="#" class="logo">Workflow Skills</a>
+    <a href="#catalogo">Catálogo</a>
+    <a href="#instalacao">Instalação</a>
+    <a href="https://github.com/jpolvora/workflow-skills">GitHub</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1>Workflow <span>Skills</span></h1>
+  <p>Repositório centralizado de diretrizes agênticas e comportamentais (<strong>skills</strong>) pré-configuradas para o Cursor Agent. Fonte única de verdade para instalar, atualizar e sincronizar skills em múltiplos projetos.</p>
+  <div class="badges">
+    <span class="badge">38 skills</span>
+    <span class="badge">6 layers</span>
+    <span class="badge">MIT license</span>
+    <span class="badge">npx workflow-skills</span>
+  </div>
+</header>
+
+<section id="catalogo">
+  <h2>Catálogo de Skills</h2>
+
+  <!-- Layer 0 -->
+  <div class="layer">
+    <h3>Layer 0 — Harness &amp; Agent Infrastructure <span class="count">(3)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="name">check-harness</div>
+        <div class="desc">Auditoria e manutenção do harness: AGENTS.md, skills, rules, links e redundância.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">write-a-skill</div>
+        <div class="desc">Criação de novas skills com estrutura padronizada e progressive disclosure.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">handoff</div>
+        <div class="desc">Compressão de conversa em documento de handoff para outro agente.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layer 1 -->
+  <div class="layer">
+    <h3>Layer 1 — Engineering Standards <span class="count">(5)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="name">senior-developer</div>
+        <div class="desc">Padrões .NET 10 / C# — Clean Code, SOLID, EF Core, testes, layered architecture.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">karpathy-guidelines</div>
+        <div class="desc">Redução de erros comuns de LLM — edições cirúrgicas, sem scope creep.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">matrix-view-patterns</div>
+        <div class="desc">Padrões de UI CRUD: hash routing, cursor lists, filters, breadcrumbs.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">mobile-first-design</div>
+        <div class="desc">Design responsivo mobile-first que escala para telas maiores.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">design-taste-frontend</div>
+        <div class="desc">Anti-slop frontend — landing pages, portfolios, redesigns com design system.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layer 2 -->
+  <div class="layer">
+    <h3>Layer 2 — Workflow Pipeline <span class="count">(12)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card"><div class="name">00-write-spec</div><div class="desc">Gera spec.md a partir de descrição de feature.</div></div>
+      <div class="skill-card"><div class="name">01-write-plan</div><div class="desc">Gera plano de implementação de GH issue / spec.md.</div></div>
+      <div class="skill-card"><div class="name">02-refine</div><div class="desc">Audita e interroga plano até entendimento compartilhado.</div></div>
+      <div class="skill-card"><div class="name">03-plan-exec-dag</div><div class="desc">Quebra plano em DAG de tarefas atômicas paralelizáveis.</div></div>
+      <div class="skill-card"><div class="name">04-implement-plan</div><div class="desc">Executa ou corrige código seguindo plano/DAG.</div></div>
+      <div class="skill-card"><div class="name">05-verify-sync-write-plan</div><div class="desc">Confronta critérios/plano com código atual.</div></div>
+      <div class="skill-card"><div class="name">06-us-code-review</div><div class="desc">Code review local em duas fases: triagem → investigação.</div></div>
+      <div class="skill-card"><div class="name">07-integration-validation</div><div class="desc">Bateria de testes de integração pré-PR.</div></div>
+      <div class="skill-card"><div class="name">08-fix-pr</div><div class="desc">Corretor automático de threads de code review em PRs.</div></div>
+      <div class="skill-card"><div class="name">09-goal-fix-pr</div><div class="desc">Loop de fix-pr até zerar threads abertas.</div></div>
+      <div class="skill-card"><div class="name">10-update-plan</div><div class="desc">Pós-workflow: captura QA findings e aplica deltas.</div></div>
+      <div class="skill-card"><div class="name">11-ship-pr</div><div class="desc">End-to-end delivery: PR develop→master/main, merge.</div></div>
+    </div>
+  </div>
+
+  <!-- Layer 3 -->
+  <div class="layer">
+    <h3>Layer 3 — Discovery &amp; Library Integration <span class="count">(3)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card">
+        <div class="name">context7-mcp</div>
+        <div class="desc">Documentação de libs/frameworks via Context7 MCP (React, Next.js, Prisma, etc).</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">supabase</div>
+        <div class="desc">Supabase — Database, Auth, Edge Functions, Realtime, Storage.</div>
+      </div>
+      <div class="skill-card">
+        <div class="name">supabase-postgres-best-practices</div>
+        <div class="desc">Otimização de Postgres e boas práticas do Supabase.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layer 4 -->
+  <div class="layer">
+    <h3>Layer 4 — Review &amp; Audit <span class="count">(6)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card"><div class="name">code-review</div><div class="desc">Revisão rigorosa de PR/branch local contra base.</div></div>
+      <div class="skill-card"><div class="name">security-review</div><div class="desc">Revisão de segurança OWASP: injection, XSS, auth, crypto.</div></div>
+      <div class="skill-card"><div class="name">dotnet-security-performance-review</div><div class="desc">Revisão C# de segurança e performance (login, auth, EF).</div></div>
+      <div class="skill-card"><div class="name">tdd-sdd-ddd-reviewer</div><div class="desc">Auditoria arquitetural: Clean Architecture, TDD, DDD.</div></div>
+      <div class="skill-card"><div class="name">domain-review</div><div class="desc">Revisão de domínio/bounded context (smells, SOLID, security).</div></div>
+      <div class="skill-card"><div class="name">multi-domain-review</div><div class="desc">Revisão em lote de múltiplos domínios com janela de 7 dias.</div></div>
+    </div>
+  </div>
+
+  <!-- Layer 5 -->
+  <div class="layer">
+    <h3>Layer 5 — Utility &amp; Meta <span class="count">(8)</span></h3>
+    <div class="skill-grid">
+      <div class="skill-card"><div class="name">us-workflow</div><div class="desc">Orquestrador E2E de User Story (FSM F0-F6, steps 0-12).</div></div>
+      <div class="skill-card"><div class="name">modular-orchestrator</div><div class="desc">Orquestrador stateful por steps com FSM e memória compartilhada.</div></div>
+      <div class="skill-card"><div class="name">spec-format</div><div class="desc">Cria, revisa ou formata artefatos *.spec.md.</div></div>
+      <div class="skill-card"><div class="name">verify-plan</div><div class="desc">Verifica e avalia execução do plano de implementação.</div></div>
+      <div class="skill-card"><div class="name">learning</div><div class="desc">Registro de conhecimento anti-regressão em MEMORY.md.</div></div>
+      <div class="skill-card"><div class="name">changelog</div><div class="desc">Registro histórico resumido em CHANGELOG.md.</div></div>
+      <div class="skill-card"><div class="name">grill-with-docs</div><div class="desc">Sessão de questionamento contra domínio existente + docs.</div></div>
+      <div class="skill-card"><div class="name">gabarito</div><div class="desc">Dez diretrizes operacionais de resposta (accountability, anti-sycophancy, etc).</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="instalacao">
+  <h2>Instalação</h2>
+
+  <div class="install-steps">
+    <div class="install-step">
+      <h4>Menu Interativo</h4>
+      <p>Abra o menu visual para selecionar skills:</p>
+      <pre><code>npx workflow-skills</code></pre>
+    </div>
+
+    <div class="install-step">
+      <h4>Auto-Update</h4>
+      <p>Atualize skills já instaladas silenciosamente:</p>
+      <pre><code>npx workflow-skills update</code></pre>
+    </div>
+
+    <div class="install-step">
+      <h4>cURL (alternativa)</h4>
+      <p>Execute o instalador via shell script:</p>
+      <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash</code></pre>
+    </div>
+  </div>
+</section>
+
+<section id="contribute">
+  <h2>Contribuir</h2>
+  <p style="color:var(--text-muted);margin-bottom:16px;">
+    Skills vivem em <code>.agents/skills/&lt;nome&gt;/SKILL.md</code> com frontmatter YAML (<code>name</code>, <code>description</code>, <code>version</code>).
+    Consulte <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md">AGENTS.md</a> para o roteamento completo.
+  </p>
+</section>
+
+<footer>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a></p>
+</footer>
+
+</body>
+</html>

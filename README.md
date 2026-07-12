@@ -2,6 +2,8 @@
 
 Este repositório centraliza uma coleção de diretrizes agênticas e comportamentais (**skills**) pré-configuradas para o Cursor Agent. O objetivo é servir como uma **fonte única de verdade** (source of truth) para instalar, atualizar e sincronizar essas instruções em múltiplos projetos locais de forma prática e consistente.
 
+> 📖 **Consulte o [`AGENTS.md`](AGENTS.md)** para o roteamento completo de todas as skills, layers, task router e instruções de carregamento automático (skill loading).
+
 ---
 
 ## 🛠️ Como Instalar e Atualizar Skills
@@ -64,7 +66,9 @@ Enter 'q' to quit.
 
 ## 🗂️ Catálogo de Skills Disponíveis
 
-Abaixo está o índice detalhado das diretrizes agênticas inclusas neste repositório:
+> ⚠️ Esta seção contém skills legadas. Para o **índice completo e atualizado** com todas as skills, layers, task router e auto-load, consulte o [`AGENTS.md`](AGENTS.md).
+
+Abaixo está o índice simplificado das diretrizes agênticas inclusas neste repositório:
 
 | Skill | Versão | Descrição |
 | :--- | :--- | :--- |

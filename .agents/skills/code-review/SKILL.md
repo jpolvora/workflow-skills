@@ -1,162 +1,103 @@
 ---
 name: code-review
-description: Code review local rigoroso e genérico comparando a branch atual com a principal. Análise em duas fases (triagem → investigação com tools) com prova por evidência e generalização por classe de defeito. Autodetecta a stack do repositório em execução.
-version: 2.0
+description: >
+  Rigorous local PR/branch review. Diff against master/main; detects project stack
+  via config.json. Tenancy, project patterns, tests, clean code.
+  Include markdown when reviewing docs, harness files.
 ---
 
-# 🕵️‍♂️ Code Reviewer Skill (Local & CI/CD Simulation)
+# Code review
 
-Atue como um **Revisor de Código Sênior**, replicando localmente o rigor e a metodologia de um revisor agêntico de PR (análise em duas fases, prova por evidência via tools, generalização por classe de defeito). 
+Branch vs **`master`** (or `main`). Catch bugs, tenancy leaks, pattern drift, CI failures before push.
 
-Seu objetivo é encontrar erros críticos, classificar apontamentos por severidade e permitir a resolução local de falhas antes de enviar a PR para o repositório remoto.
+## Pré-leitura
 
----
+- `config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
+- `AGENTS.md` — hub routing
+- Project guardrails: `config.json` → `rules` + `invariants`
+- `karpathy-guidelines` — surgical fixes
 
-## 🎯 Propósito Anti-Loop (Prioridade Máxima)
+## Scope
 
-Esta skill ajuda a **quebrar o ciclo infinito `fix → review → novos problemas → fix...`**. Para isso, siga a regra de **precisão por achado + completude na mesma rodada**:
+### Review unit (not diff hunks only)
 
-- **Precisão:** Publique apenas o que for **comprovável** com evidência estruturada (precisão alta; na dúvida sobre se um achado é real, mantenha silêncio).
-- **Completude:** Enumere **todos** os achados materiais **de uma só vez** — não reserve achados para "a próxima rodada". Sub-reportar é o que cria o loop.
-- **Classe, não instância:** Ao confirmar um defeito, varra ocorrências irmãs do mesmo padrão no diff e reporte todas juntas.
+1. Every **file changed in branch diff** → read entire file at branch tip.
+2. **Referenced files** (one hop): direct imports/`using`, injected interfaces, EF configs for touched entities, paired tests, list/form siblings, nav config, both locale files when strings change, locked spec when behavior changes.
+3. Do **not** expand to unrelated modules.
 
-Convergência alvo: **uma única rodada** — ou a lista completa de problemas reais, ou **"Sem feedback"**.
+**Exclude:** `bin/`, `obj/`, `*/dist/`, `node_modules/`, lockfile noise unless intentional.
 
----
+**Fixes after SIM:** still **surgical** ([karpathy-guidelines](../karpathy-guidelines/SKILL.md)).
 
-## 🔍 Fase 0 — Autodetecção de Stack e Ecossistema
+**Include:** `*.cs`, `*.csproj`, `*.ts`, `*.tsx`, app `*.json`, EF migrations, harness `*.md`.
 
-Antes de analisar o código, inspecione a estrutura do repositório na raiz para identificar a stack tecnológica e adaptar os critérios de review:
+## Project guardrails (from config)
 
-1. **Procure arquivos estruturais:**
-   - `.csproj`, `.sln` $\rightarrow$ **C# / .NET** (Verifique se há referências a `Volo.Abp` no código para suporte ao **ABP Framework**).
-   - `package.json`, `tsconfig.json`, `angular.json` $\rightarrow$ **TypeScript / Angular**.
-   - `package.json`, `tsconfig.json` (com dependências de React, Next, Vue ou Svelte) $\rightarrow$ **TypeScript / Frontend Moderno**.
-   - `requirements.txt`, `pyproject.toml`, `Pipfile`, `manage.py` $\rightarrow$ **Python**.
-   - `go.mod` $\rightarrow$ **Go**.
-   - `pom.xml`, `build.gradle` $\rightarrow$ **Java**.
-2. **Defina a lista de arquivos a revisar:**
-   - Ignore arquivos markdown (`*.md`), arquivos de configuração do repositório/CI (`.gitignore`, `.github/`, pipelines), arquivos de tradução (`*.json` de i18n) e proxies ou códigos autogerados (ex: pasta `proxy/` no Angular/ABP).
-3. **Consulte Regras Locais:**
-   - Leia `AGENTS.md` e a pasta `.cursor/rules/` (ou regras locais de agente equivalentes) para identificar regras arquiteturais ou checklists locais impostos especificamente neste repositório.
+Carregue invariants de `config.json` → `invariants` e regras de `config.json` → `rules`. Aplique ao diff:
 
----
+- **Tenancy** (se configurado): filtro de tenant, exceções documentadas
+- **Domain rules**: regras de negócio do `config.json.domain.model`
+- **EF/DB**: migrations CLI-only; entidades com padrão do projeto
+- **API**: formato de erro, secrets via env
+- **Tests**: nova funcionalidade + bug fixes exigem testes
+- **Docs**: routing no hub, glossary
 
-## 🛠️ Como Executar o Review — Análise em Duas Fases
+## Project pattern conformance
 
-Faça **a Fase 1 inteira antes de iniciar a Fase 2**. Não reporte nenhum achado sem passar por ambas.
+Compare com o **peer mais próximo** (mesma camada / página irmã).
 
-### 0. Obter o Diff Local
-- Identifique a branch atual: `git branch --show-current`
-- Liste os arquivos alterados contra a branch principal (`master` ou `main`):
-  ```bash
-  git diff --name-status master...HEAD
-  ```
-- Extraia o diff das linhas alteradas dos arquivos válidos para a stack detectada:
-  ```bash
-  git diff master...HEAD -- "caminho/do/arquivo"
-  ```
+| Area | Expect |
+|------|--------|
+| **Backend layers** | Respeitar separação de `config.json.stack.backend.layers[]` |
+| **Backend logic** | Services implementam interfaces; sem regras de negócio em controllers |
+| **EF / API** | `IEntityTypeConfiguration<>`; UTC; tenant filters; CancellationToken |
+| **Tests** | Integration para HTTP/EF; patterns em `config.json.stack.backend.testProject` |
+| **Frontend layout** | Padrões de list/form/navigation do projeto |
+| **Frontend UI** | Tokens de design; invariantes visuais |
+| **Frontend i18n/types** | Keys nos locales de `config.json.stack.frontend.i18n.locales[]`; TS alinhado com DTOs |
+| **Frontend fetch** | Hooks/auth context existentes — sem novas libs sem necessidade |
 
-### 1. Fase 1 — Triagem (Mapa de Candidatos)
-Objetivo: Gerar uma lista enxuta de **hipóteses** ancoradas em linhas alteradas — ainda sem veredito.
-- Para cada arquivo elegível, identifique linhas alteradas com potencial problema real.
-- **Descarte imediatamente:** Nits estéticos, formatação, estilo, preferências de escrita de código, alertas conceituais sem um caminho de execução plausível de falha e código pré-existente intocado.
-- Em arquivos de template/UI (ex: `*.html`, `*.tsx`, `*.vue`): Ignore estilização/layout/CSS. Candidate apenas brechas de segurança (`innerHTML`, interpolação insegura), bindings/eventos críticos, controle de formulários e permissões.
-- Saída mental: Lista de candidaturas `(arquivo, linha, hipótese breve)`.
+## Process
 
-### 2. Fase 2 — Investigação Profunda + Prova (Por Candidato)
-Use tools (`read_file`, `grep_search`, busca semântica) para **provar ou refutar** cada hipótese de candidatura. Para reportar um achado, você deve preencher os **4 passos da prova estruturada**:
-
-1. **Evidência lida:** Arquivos, símbolos, chamadores, entidades ou testes inspecionados para validar o contexto.
-2. **Cenário de falha executável:** Sequência de entradas ou estados concretos que disparam o problema.
-3. **Proteção ausente confirmada:** Por que validações, invariants ou testes existentes no repositório **não** impedem essa falha (cite o que verificou na base de código).
-4. **Descartes:** Hipóteses alternativas que foram consideradas e rejeitadas.
-
-Se não conseguir preencher os 4 passos com provas extraídas via tools $\rightarrow$ **descarte o candidato**.
-
-### 2.5 Generalização por Classe de Defeito (Obrigatório)
-Para **cada achado comprovado**, use `grep`/`glob` para procurar **ocorrências irmãs do mesmo padrão** em outros arquivos alterados no diff e reporte todas juntas.
-- Exemplo: Se faltou tratamento de valor padrão inválido (ex: `Guid.Empty` ou `DateTime.MinValue`) em um DTO alterado, verifique se outros DTOs alterados compartilham a mesma brecha.
-
----
-
-## 🎯 Brechas e Gaps Comuns por Stack
-
-### Geral (Independente de Stack)
-- **Secrets e Credenciais:** Chaves de API, tokens de acesso ou secrets hardcoded ou expostos em logs.
-- **Segurança (OWASP):** Falhas de autorização em endpoints públicos expostos, injeção de dados (SQL, comandos) e vazamento de dados cross-tenant.
-- **Vazamento de Recursos:** Conexões abertas, arquivos não fechados ou recursos `IDisposable` não descartados.
-
-### Stack C# / .NET (e ABP Framework se detectado)
-- **Defaults Perigosos:** Validações que aceitam valores padrão inválidos do C# (ex: `DateTime.MinValue`, `Guid.Empty`, `0` quando o domínio exige dados reais). O atributo `[Required]` não valida o valor padrão de tipos de valor estruturais.
-- **Performance de ORM (EF Core):** Consultas N+1 (falta de `.Include()`), materialização precoce em memória (`.ToList()` antes de filtros no banco), bloqueio assíncrono síncrono (`.Result`, `.Wait()`, `.GetAwaiter().GetResult()`).
-- **ABP Framework (Se aplicável):** Uso de exceções genéricas em vez de `BusinessException`, falta de validação de permissões com `[Authorize(Permission)]`, violação de regras DDD (Application Layer acessando ou injetando `DbContext` diretamente).
-
-### Stack JavaScript / TypeScript (Angular, React, Node.js)
-- **Segurança de UI:** Uso inseguro de manipulação direta de DOM (`innerHTML` ou bindings equivalentes que ignoram sanitização).
-- **Vazamentos de Memória:** Subscriptions RxJS não desinscritas (`takeUntil`, `Subscription.unsubscribe()`), dependências incorretas de hooks em React (ex: `useEffect` sem cleanup ou com dependências mutáveis instáveis).
-- **Angular/TypeScript (Se aplicável):** Falta de validação de payloads em base64 antes de chamadas como `atob()`, proxies autogerados modificados manualmente.
-
----
-
-## 📝 Formato do Relatório (Saída)
-
-Responda sempre em **Português do Brasil**.
-
-Se não houver problemas materiais a relatar, responda **apenas**:
-> **Sem feedback**
-
-Se houver apontamentos, utilize a estrutura abaixo. Adicione links de arquivos clicáveis no formato `[Arquivo.cs:L42](file:///caminho/do/Arquivo.cs#L42)` e use blocos de sugestão ````suggestion```` para propor a correção inline exata. 
-
-```markdown
-## 📊 Resumo do Code Review (Simulação da Pipeline)
-
-**Branch Atual:** `[Nome da Branch]`
-**Stack Identificada:** `[Stack/Ecossistema]`
-**Arquivos Revisados:** `[Quantidade]`
-
----
-
-### 🚨 Problemas Críticos (`critical`)
-- **[NomeDoArquivo.ext:L42](file:///absolute/path/to/NomeDoArquivo.ext#L42)**: 🛑 **CRITICAL:** Descrição objetiva do problema que inviabiliza o merge ou gera bug real. _(Score: 9/10)_
-
-  Análise: 
-  1. Evidência: ...
-  2. Cenário de Falha: ...
-  3. Proteção Ausente: ...
-  4. Descartes: ...
-  
-  Caminhos analisados: `/caminho/do/arquivo.ext`, `/caminho/do/teste.ext`
-  Ocorrências da mesma classe: `NomeDoArquivo.ext:L42`, `OutroArquivo.ext:L88`
-
-  Sugestão:
-  ```suggestion
-  // Código corrigido com indentação correta
-  ```
-
-### ⚠️ Avisos e Riscos Potenciais (`warning`)
-- **[NomeDoArquivo.ext:L80](file:///absolute/path/to/NomeDoArquivo.ext#L80)**: ⚠️ **WARNING:** Validação frágil ou risco de regressão sob cenários específicos. _(Score: 7/10)_
-
-  Análise: ...
-  Caminhos analisados: ...
-
-  Sugestão:
-  ```suggestion
-  // Código sugerido
-  ```
-
-### 💡 Clean Code e Recomendações (`suggestion`)
-- **[NomeDoArquivo.ext:L150](file:///absolute/path/to/NomeDoArquivo.ext#L150)**: 💡 **SUGGESTION:** Melhoria com impacto material comprovado. _(Score: 6/10)_
-
----
-**Deseja que eu faça as correções e execute os testes locais?** *(Responda SIM para eu aplicar os ajustes sugeridos e rodar os comandos de build e teste do projeto).*
+```bash
+BASE_BRANCH=$(git rev-parse --verify master >/dev/null 2>&1 && echo master || echo main)
+git branch --show-current
+git diff --name-status "$BASE_BRANCH"...HEAD
+git diff "$BASE_BRANCH"...HEAD -- path/to/file   # intent; read full file at HEAD
 ```
 
+## Response format
+
+Default: **Portuguese (Brazil)** unless user asks English.
+
+Nothing to fix → **Sem feedback**
+
+```markdown
+## Code review (branch vs ${BASE_BRANCH})
+
+**Branch:** `…`
+**Files reviewed:** N (changed + referenced)
+
+### Critical (security, tenancy, bugs)
+- **path:** issue → suggested fix
+
+### Project patterns (backend / frontend)
+- **path:** deviation → align with peer / skill
+
+### Clean code / maintainability
+- **path:** issue → suggestion
+
+### Tests / verification
+- Missing tests or commands not run → what to add/run
+
 ---
+**Apply fixes?** (Reply SIM — then `build-backend`, `test-backend`, `build-frontend` + `test-frontend` when relevant.)
+```
 
-## 🔄 Fluxo de Correção Automática
+## After SIM
 
-Se o usuário responder **SIM**, o agente deve:
-1. Aplicar cirurgicamente as correções aprovadas no código.
-2. Identificar e rodar os comandos de compilação e teste do ecossistema do projeto (ex: `dotnet test` e `dotnet build`, `npm run test` e `npm run build`, `pytest`, etc.).
-3. Apresentar o resumo das execuções de validação locais ao usuário.
+Agreed fixes → `build-backend` → `test-backend` → `build-frontend` (+ `test-frontend` if i18n). Cite fresh output.
+
+## Do not
+
+Whole-repo refactors; contradict specs/project rules; ABP, Angular, Azure DevOps assumptions; `yarn` unless project uses it.

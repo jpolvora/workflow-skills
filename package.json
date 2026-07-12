@@ -11,7 +11,7 @@
   "bugs": {
     "url": "https://github.com/jpolvora/workflow-skills/issues"
   },
-  "homepage": "https://github.com/jpolvora/workflow-skills#readme",
+  "homepage": "https://jpolvora.github.io/workflow-skills",
   "bin": {
     "workflow-skills": "bin/cli.js"
   },

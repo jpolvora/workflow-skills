@@ -1,0 +1,194 @@
+:root {
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-hover: #1c2128;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-orange: #d29922;
+  --accent-purple: #bc8cff;
+  --radius: 8px;
+  --font: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ─── Nav ─── */
+nav {
+  position: sticky; top: 0;
+  background: rgba(13,17,23,.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  z-index: 100;
+}
+nav .inner {
+  max-width: 960px; margin: 0 auto;
+  display: flex; align-items: center; gap: 24px;
+  height: 56px;
+}
+nav .logo { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+nav .logo:hover { text-decoration: none; }
+nav a:not(.logo) { font-size: .875rem; color: var(--text-muted); }
+
+/* ─── Hero ─── */
+.hero {
+  text-align: center;
+  padding: 80px 24px 56px;
+  max-width: 720px; margin: 0 auto;
+}
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-bottom: 16px;
+}
+.hero h1 span { color: var(--accent); }
+.hero p {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+}
+.hero .badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.hero .badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* ─── Sections ─── */
+section { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── Layer cards ─── */
+.layer { margin-bottom: 40px; }
+.layer h3 {
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.layer h3 .count {
+  font-size: .75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+  gap: 12px;
+}
+
+.skill-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: border-color .2s, background .2s;
+}
+.skill-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+}
+.skill-card .name {
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--accent-green);
+  margin-bottom: 4px;
+}
+.skill-card .desc {
+  font-size: .875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ─── Install / Contribute ─── */
+.install-steps { counter-reset: step; }
+.install-step {
+  counter-increment: step;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.install-step::before {
+  content: counter(step);
+  display: inline-block;
+  width: 24px; height: 24px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  font-size: .8rem;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  margin-right: 8px;
+}
+.install-step h4 { display: inline; font-size: 1rem; }
+.install-step p { margin-top: 8px; color: var(--text-muted); font-size: .875rem; }
+.install-step code {
+  font-family: var(--font-mono);
+  background: rgba(88,166,255,.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: .8rem;
+  color: var(--accent);
+}
+.install-step pre {
+  margin-top: 8px;
+  background: #010409;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  overflow-x: auto;
+}
+.install-step pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* ─── Footer ─── */
+footer {
+  text-align: center;
+  padding: 32px 24px;
+  color: var(--text-muted);
+  font-size: .85rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 1.75rem; }
+  .skill-grid { grid-template-columns: 1fr; }
+}
