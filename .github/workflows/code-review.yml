@@ -5,16 +5,28 @@ on:
     branches: [main]
 
 permissions:
-  pull-requests: write
   contents: read
+  pull-requests: write
 
 jobs:
   review:
-    name: Review (opencode)
-    uses: jpolvora/agentic-code-reviewers/.github/workflows/review-remote.yml@release
-    with:
-      engine: opencode
-      model: opencode-go/deepseek-v4-flash
-      score_min: '6'
-    secrets:
-      OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v6
+        with: { node-version: 22 }
+
+      - name: Run code reviewer
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh | bash -s -- \
+            --engine opencode \
+            --model opencode-go/deepseek-v4-flash \
+            --gh \
+            --stack Custom \
+            --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.js,**/*.ts,**/*.css,**/*.html" \
+            --source-branch "refs/heads/${{ github.head_ref }}" \
+            --target-branch "refs/heads/${{ github.event.pull_request.base.ref }}"
+        continue-on-error: true
