@@ -1,6 +1,7 @@
 ---
 name: goal-fix-pr
 description: Loop fix-pr até zerar threads abertas — auto-aprova gates, commit/push e re-checa após 5 minutos.
+version: 1.0
 disable-model-invocation: true
 ---
 

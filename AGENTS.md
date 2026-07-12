@@ -35,7 +35,7 @@ Skills carregadas automaticamente por tipo de tarefa:
 | `senior-developer` | `.agents/skills/senior-developer/SKILL.md` | Padrões .NET 10 / C# — Clean Code, SOLID, EF Core, testes |
 | `matrix-view-patterns` | `.agents/skills/matrix-view-patterns/SKILL.md` | Padrões de UI CRUD (hash routing, cursor lists, filters) |
 | `mobile-first-design` | `.agents/skills/mobile-first-design/SKILL.md` | Design responsivo mobile-first |
-| `taste-skill` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend — landing pages, portfolios, redesigns |
+| `design-taste-frontend` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend — landing pages, portfolios, redesigns |
 
 ### Layer 2 — Workflow Pipeline (numerated, 00-11)
 
@@ -79,6 +79,7 @@ Skills carregadas automaticamente por tipo de tarefa:
 |-------|------|-----------|
 | `caveman` | `.agents/skills/caveman/SKILL.md` | Compressão ultra de resposta (~75% menos tokens) |
 | `gabarito` | `.agents/skills/gabarito/SKILL.md` | Dez diretrizes operacionais de resposta (accountability, anti-sycophancy, chain-of-verification) |
+| `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
 | `us-workflow` | `.agents/skills/us-workflow/SKILL.md` | Orquestrador E2E de User Story (FSM F0-F6, steps 0-12) |
 | `modular-orchestrator` | `.agents/skills/modular-orchestrator/SKILL.md` | Orquestrador stateful por steps com FSM e memória compartilhada |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Cria, revisa ou formata artefatos *.spec.md |
