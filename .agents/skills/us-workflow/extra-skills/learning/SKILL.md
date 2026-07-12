@@ -5,7 +5,7 @@ description: Analyze session output and record ONLY anti-regression knowledge (m
 
 # Learning
 
-**Mandatory completion gate** — run after verification, code review proof, and [DOCS-SYNC](../senior-developer/DOCS-SYNC.md). Task is **not done** until this skill runs and the proof includes a **`Learning:`** line ([senior-developer](../senior-developer/SKILL.md) § Code review proof).
+**Mandatory completion gate** — run after verification, code review proof, and [DOCS-SYNC](../../../senior-developer/DOCS-SYNC.md). Task is **not done** until this skill runs and the proof includes a **`Learning:`** line ([senior-developer](../../../senior-developer/SKILL.md) § Code review proof).
 
 ## When to run
 
@@ -21,7 +21,7 @@ description: Analyze session output and record ONLY anti-regression knowledge (m
 2. **Update `MEMORY.md`** (root) — **ONLY** append new traps/pitfalls. **DO NOT** use `MEMORY.md` as a changelog or to record standard C#/React patterns that an LLM already knows.
 3. **Proof + chat** — set `**Learning:** [entry title]` or `N/A` in code review proof; one-line summary in the final reply.
 
-Read full skill before first run each session ([AGENTS.md](../../../AGENTS.md) § Skill loading).
+Read full skill before first run each session ([AGENTS.md](../../../../../AGENTS.md) § Skill loading).
 
 ## MEMORY.md Template
 

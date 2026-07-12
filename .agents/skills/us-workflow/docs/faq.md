@@ -188,7 +188,7 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 2. Check for active workflows (resume or new)
 3. Create `{us-dir}/{workflow-id}.state.md` in `.cursor/plans/{slug}/`
 4. Capture baseline: `baselineCommit`, `preExistingDirty`, tag `before-step-1`
-5. **Specification Protocol:** GitHub mode → `gh issue view {n}` + `github-issue-to-spec.py` → `{slug}.spec.md`; local mode → copy/use existing spec
+5. **Specification Protocol:** GitHub mode → `gh issue view {n}` + `github-issue-to-spec.py` → `step-00-{slug}.spec.md`; local mode → copy/register as `step-00-{slug}.spec.md` under `{us-dir}` (see [`ARTIFACTS.md`](../ARTIFACTS.md))
 6. **Memory & Decisions Consultation** (protocol): read `## Workflow memory`, `## Accumulated decisions` and `## Doc consolidation log` from `state.md` (on resume), then consult `MEMORY.md` (root) only on relevant scope
 7. Initial Progress Board + Transition Gate → Step 1 (or auto-advance in `autoMode`)
 
@@ -206,7 +206,7 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 | Artifact | Path |
 |----------|------|
 | Workflow state | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| **Canonical spec** | `.cursor/plans/{slug}/{slug}.spec.md` |
+| **Canonical spec** | `.cursor/plans/{slug}/step-00-{slug}.spec.md` |
 | GitHub issue snapshot (optional) | `.cursor/plans/{slug}/{slug}.issue.json` |
 | Git checkpoint | Local tag `uswf/{workflow-id}/before-step-1` |
 | Progress Board | Rendered in chat |
@@ -229,14 +229,14 @@ Generation of the **detailed plan** for the US: scope, technical design, impleme
 
 ### How is it done?
 
-Sub-agent `generalPurpose` (Planner model) executes the **Context Loading Protocol**: reads rules, docs, glossary, issue snapshot, and `MEMORY.md`. Produces `us-{id}.plan.md` with sections 0–8 (Summary, DoR, Design, Step-by-Step, Permissions, Tests, Constraints, Checklist, Open Questions).
+Sub-agent `generalPurpose` (Planner model) executes the **Context Loading Protocol**: reads rules, docs, glossary, issue snapshot, and `MEMORY.md`. Produces `step-01-{slug}.plan.md` with sections 0–8 (Summary, DoR, Design, Step-by-Step, Permissions, Tests, Constraints, Checklist, Open Questions).
 
 ### Input
 
 | Field | Source |
 |-------|--------|
 | `state.md` | Workflow context |
-| `us-{id}.issue.json` | Acceptance criteria, issue description |
+| `step-00-{slug}.issue.json` | Acceptance criteria, issue description |
 | Rules/docs | Via Context Loading Protocol |
 | `MEMORY.md` | Patterns and traps |
 
@@ -244,7 +244,7 @@ Sub-agent `generalPurpose` (Planner model) executes the **Context Loading Protoc
 
 | Artifact | Path |
 |----------|------|
-| Plan | `.cursor/plans/us-{id}/us-{id}.plan.md` |
+| Plan | `.cursor/plans/{slug}/step-01-{slug}.plan.md` |
 | `step-output` | Block in sub-agent return (status, summary, artifacts) |
 
 ---
@@ -279,10 +279,10 @@ Breaks the implementation plan into **atomic tasks** organized in a **DAG** (Dir
 
 ### How is it done?
 
-1. Reads `us-{id}.plan.md` and extracts all implementation steps (files, acceptance criteria, dependencies)
+1. Reads `step-01-{slug}.plan.md` and extracts all implementation steps (files, acceptance criteria, dependencies)
 2. Evaluates plan size against thresholds (files, layers, dependencies, tasks)
-3. **Small plan** → `execMode: sequential` — single file `us-{id}.plan.exec.md` with flat steps
-4. **Large plan** → `execMode: parallel` — generates `us-{id}.plan.exec.md` + `us-{id}.exec.dag.json` with `levels` and non-overlapping `files[]` per level
+3. **Small plan** → `execMode: sequential` — single file `step-03-{slug}.plan.exec.md` with flat steps
+4. **Large plan** → `execMode: parallel` — generates `step-03-{slug}.plan.exec.md` + `step-03-{slug}.exec.dag.json` with `levels` and non-overlapping `files[]` per level
 5. Runs `check_memory_conflict.py` against `MEMORY.md` to detect conflicts
 6. Runs `validate_state.py` to assert state integrity
 
@@ -290,7 +290,7 @@ Breaks the implementation plan into **atomic tasks** organized in a **DAG** (Dir
 
 | Field | Source |
 |-------|--------|
-| `us-{id}.plan.md` | Step 1 |
+| `step-01-{slug}.plan.md` | Step 1 |
 | `MEMORY.md` | Patterns and traps |
 | `config.json.stack` | Layers, paths, invariants |
 
@@ -298,8 +298,8 @@ Breaks the implementation plan into **atomic tasks** organized in a **DAG** (Dir
 
 | Artifact | Content |
 |----------|---------|
-| `us-{id}.plan.exec.md` | Implementation steps or DAG task list |
-| `us-{id}.exec.dag.json` | DAG structure (missing when `execMode: sequential`) |
+| `step-03-{slug}.plan.exec.md` | Implementation steps or DAG task list |
+| `step-03-{slug}.exec.dag.json` | DAG structure (missing when `execMode: sequential`) |
 | `execMode` | `sequential` or `parallel` (set in `state.md`) |
 
 ### Frequently asked questions
@@ -350,8 +350,8 @@ A **model readiness check** embedded in the F1→F2 transition gate (after Step 
 
 | Field | Source |
 |-------|--------|
-| `us-{id}.plan.exec.md` | Step 3 |
-| `us-{id}.exec.dag.json` | Step 3 (when parallel) |
+| `step-03-{slug}.plan.exec.md` | Step 3 |
+| `step-03-{slug}.exec.dag.json` | Step 3 (when parallel) |
 | `state.md` | Branch, manifest |
 | Anchor tag | `uswf/{id}/before-step-5` |
 
@@ -376,28 +376,28 @@ A **model readiness check** embedded in the F1→F2 transition gate (after Step 
 
 ### What is Step 6?
 
-**Read-only verification** comparing implementation against the spec and plan. Generates `us-{id}.plan.report.md` with a feature-by-feature table. Does not modify any file.
+**Read-only verification** comparing implementation against the spec and plan. Generates `step-06-{slug}.plan.report.md` with a feature-by-feature table. Does not modify any file.
 
 ### How is it done?
 
-1. Reads the spec (`us-{id}.spec.md`), plan (`us-{id}.plan.md`), and the current code
+1. Reads the spec (`step-00-{slug}.spec.md`), plan (`step-01-{slug}.plan.md`), and the current code
 2. For each acceptance criterion, checks: **Implemented** / **Not implemented** / **Implemented differently**
-3. Writes `us-{id}.plan.report.md` with the table + additional features + gaps
+3. Writes `step-06-{slug}.plan.report.md` with the table + additional features + gaps
 
 ### Input
 
 | Field | Source |
 |-------|--------|
-| Spec | `us-{id}.spec.md` |
-| Plan | `us-{id}.plan.md` |
+| Spec | `step-00-{slug}.spec.md` |
+| Plan | `step-01-{slug}.plan.md` |
 | Code | Current working tree |
-| GitHub issue | `us-{id}.issue.json` (optional) |
+| GitHub issue | `step-00-{slug}.issue.json` (optional) |
 
 ### Output
 
 | Artifact | Path |
 |----------|------|
-| Verification report | `.cursor/plans/us-{id}/us-{id}.plan.report.md` |
+| Verification report | `.cursor/plans/{slug}/step-06-{slug}.plan.report.md` |
 
 ### Frequently asked questions
 
@@ -478,7 +478,7 @@ A **model readiness check** embedded in the F3→F4 transition gate (after Step 
 
 ### What is Step 10?
 
-Fixes findings from Step 9, creates the 2nd commit, and generates `us-{id}.report.md`. The Coder sub-agent applies **surgical fixes** (no scope expansion), runs build/tests, and commits.
+Fixes findings from Step 9, creates the 2nd commit, and generates `step-10-{slug}.report.md`. The Coder sub-agent applies **surgical fixes** (no scope expansion), runs build/tests, and commits.
 
 ### Fix mode
 
@@ -495,7 +495,7 @@ Fixes findings from Step 9, creates the 2nd commit, and generates `us-{id}.repor
 | Artifact | Content |
 |----------|---------|
 | Fixed code | Working tree (committed after gate) |
-| `us-{id}.report.md` | Problem → fix → anti-regression test documentation |
+| `step-10-{slug}.report.md` | Problem → fix → anti-regression test documentation |
 
 ---
 
@@ -507,11 +507,11 @@ Fixes findings from Step 9, creates the 2nd commit, and generates `us-{id}.repor
 
 ### How is it done?
 
-1. Generate `us-{id}.integration-test.plan.md` with 8 sections (Prerequisites, Seed, Build/Tests, API, Permissions, Browser, Evidence, Exit criteria)
+1. Generate `step-11-{slug}.integration-test.plan.md` with 8 sections (Prerequisites, Seed, Build/Tests, API, Permissions, Browser, Evidence, Exit criteria)
 2. Present plan → gate: **Approve and run** / **Adjust plan** / **Skip** / **Pause**
 3. On approve: build → tests → seed → API checks → permission matrix → browser (if gated and normal mode)
 4. On failure: fix → revalidate, max 3 iterations
-5. Write `us-{id}.integration-test.report.md` — pass/fail per AC
+5. Write `step-11-{slug}.integration-test.report.md` — pass/fail per AC
 
 ### Browser tests
 
@@ -529,18 +529,18 @@ Fixes findings from Step 9, creates the 2nd commit, and generates `us-{id}.repor
 ### What is Step 12?
 
 **Delivery consolidation** and optional cleanup. The orchestrator:
-1. Generates `{slug}.result.md` (delivery summary with benchmark)
+1. Generates `step-12-{slug}.result.md` (delivery summary with benchmark)
 2. Captures LOC delta and computes benchmark (wall-clock time, tokens, LOC)
-3. Updates plan checkmarks (`{slug}.plan.md`)
+3. Updates plan checkmarks (`step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md`))
 4. **MEMORY.md sweep** — promotes generalizable learnings from `## Workflow memory` to root `MEMORY.md`
-5. **G2-delivery gate** — commits `{slug}.plan.md` + `{slug}.result.md` only
+5. **G2-delivery gate** — commits `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md`) + `step-12-{slug}.result.md` only
 6. **Cleanup gate** — delete temp artifacts (`.plan.exec.md`, `.exec.dag.json`, worktrees, tags) or keep all
 7. **Push consent** — optional; tags never pushed
 8. Sets `status: completed`
 
 ### Step 12 delivery commit
 
-Only two files are committed: `{slug}.plan.md` (with updated checkmarks) and `{slug}.result.md`.
+Only two files are committed: `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md`) (with updated checkmarks) and `step-12-{slug}.result.md`.
 
 ### Benchmark report
 
@@ -574,7 +574,7 @@ Only two files are committed: `{slug}.plan.md` (with updated checkmarks) and `{s
 | G0 | Read, RO reports | — |
 | G1 | Edit plans, state (no commit) | Transition gate |
 | G2-code | `git commit` code only (`src/`, `web/`, `tests/`) | Steps 7, 10, 11 fix |
-| G2-delivery | `git commit` `{slug}.plan.md` + `{slug}.result.md` | Step 12 |
+| G2-delivery | `git commit` `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md`) + `step-12-{slug}.result.md` | Step 12 |
 | G3 | `git push`, PR | Step 12 consent |
 
 ### Hard stops
@@ -598,22 +598,25 @@ Local tags `uswf/{workflow-id}/before-step-{N}` created after each step. Used fo
 
 ### Workflow artifacts
 
-Everything under `.cursor/plans/{slug}/` (one per feature/US). `MEMORY.md` is shared at root.
+Everything under `{plans-dir}/{slug}/` (default `.cursor/plans/{slug}/`). Canonical names: [`ARTIFACTS.md`](../ARTIFACTS.md). `MEMORY.md` is shared at repo root.
 
 | Artifact | Path |
 |----------|------|
-| State | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| Spec (canonical) | `.cursor/plans/{slug}/{slug}.spec.md` |
-| GitHub issue (optional) | `.cursor/plans/{slug}/{slug}.issue.json` |
-| Plan | `.cursor/plans/{slug}/{slug}.plan.md` |
-| Execution plan | `.cursor/plans/{slug}/{slug}.plan.exec.md` |
-| DAG | `.cursor/plans/{slug}/{slug}.exec.dag.json` |
-| Verification | `.cursor/plans/{slug}/{slug}.plan.report.md` |
-| Delivery | `.cursor/plans/{slug}/{slug}.report.md` |
-| Integration test plan | `.cursor/plans/{slug}/{slug}.integration-test.plan.md` |
-| Integration test report | `.cursor/plans/{slug}/{slug}.integration-test.report.md` |
-| Delivery result | `.cursor/plans/{slug}/{slug}.result.md` |
+| State | `{us-dir}/{workflow-id}.state.md` |
+| Spec (canonical) | `{us-dir}/step-00-{slug}.spec.md` |
+| GitHub issue (optional) | `{us-dir}/step-00-{slug}.issue.json` |
+| Plan | `{us-dir}/step-01-{slug}.plan.md` |
+| Refined plan | `{us-dir}/step-02-{slug}.plan.refined.md` |
+| Execution plan | `{us-dir}/step-03-{slug}.plan.exec.md` |
+| DAG | `{us-dir}/step-03-{slug}.exec.dag.json` |
+| Verification | `{us-dir}/step-06-{slug}.plan.report.md` |
+| Fix / review report | `{us-dir}/step-10-{slug}.report.md` |
+| Integration test plan | `{us-dir}/step-11-{slug}.integration-test.plan.md` |
+| Integration test report | `{us-dir}/step-11-{slug}.integration-test.report.md` |
+| Delivery result | `{us-dir}/step-12-{slug}.result.md` |
 | Technical memory (root) | `MEMORY.md` |
+
+> Resume / Active Resume rules: see [`setup.md`](../setup.md) § Resume / Reset (canonical). This FAQ does not redefine them.
 
 ### State file sections (`state.md`)
 
@@ -648,7 +651,7 @@ Everything under `.cursor/plans/{slug}/` (one per feature/US). `MEMORY.md` is sh
 
 | Aspect | Behavior |
 |--------|----------|
-| Code | Steps 5, 10, 11 **do not edit** source files |
+| Code | Steps 5, 10 **do not edit** source files; Step 11 validates only |
 | Commits | Simulated only |
 | Worktrees | Not created |
 | MEMORY.md | Not changed |

@@ -26,7 +26,7 @@ Layers from `config.json.stack.backend.layers[]`, frontend from `frontend.source
 | **Tests** | `{backend.testProject}` | Unit + integration |
 | **Scripts** | `scripts/` | Dev helpers, seed |
 
-**Dry-run / isolation:** Steps 5, 10, 11 mutate source paths only when implementing code.
+**Dry-run / isolation:** Steps 5 and 10 mutate source paths only when implementing code. Step 11 is integration validation (read/execute checks; no feature implementation).
 
 ## Validation Commands (from config.json)
 
@@ -101,6 +101,8 @@ git diff {base_branch}...HEAD -- \
 |---------|-----------|
 | **Base branch** | `git rev-parse --verify master >/dev/null 2>&1 && echo master \|\| echo main` |
 | **Git remote** | `config.json.project.gitRemote` (default: `origin`) |
+| **Working branch** | `config.json.project.workingBranch` (default: `develop`) — ship-pr / Step 13 head |
+| **Base branch** | `config.json.project.baseBranch` (`main` or `master`) |
 | **Frontend changed** | Any path under `frontend.sourceDir` in `files_touched` or `git diff` |
 | **API running** | Port `backend.apiPort` listen → ask user before stopping |
 | **Dev server running** | Port `frontend.devPort` listen → required for Step 11 browser |

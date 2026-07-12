@@ -11,6 +11,46 @@ This repository centralizes a collection of behavioral agent guidelines (**skill
 
 ---
 
+## ⭐ Canonical Source for `us-workflow`
+
+**This repository is the canonical, authoritative upstream source for the `us-workflow` skill and all of its pipeline dependencies.**
+
+`us-workflow` is a full end-to-end delivery orchestrator (FSM, Steps 0–13) that delegates each phase of the software lifecycle to a dedicated sub-skill. Every skill listed below is an **integral part of the `us-workflow` pipeline** — they are designed, versioned, and tested together as a cohesive system.
+
+### `us-workflow` Dependency Graph
+
+| Step(s) | Skill | Role in pipeline |
+|---------|-------|-----------------|
+| Step 0 | [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) | Draft canonical spec from free-text description |
+| Step 1 | [`01-write-plan`](.agents/skills/01-write-plan/SKILL.md) | Generate implementation plan from spec |
+| Step 2 | [`02-interview`](.agents/skills/02-interview/SKILL.md) | Refine and audit plan — resolve ambiguities |
+| Step 3 | [`03-plan-to-tasks`](.agents/skills/03-plan-to-tasks/SKILL.md) | Break plan into atomic DAG tasks |
+| Steps 5, 10 | [`04-implement-tasks`](.agents/skills/04-implement-tasks/SKILL.md) | Execute code changes (build + fix modes) |
+| Step 6 | [`05-verify-plan`](.agents/skills/05-verify-plan/SKILL.md) | Verify deliverables against acceptance criteria |
+| Step 9 | [`06-code-review`](.agents/skills/06-code-review/SKILL.md) | Two-phase code review (triage → investigation) |
+| Step 11 | [`07-integration-validation`](.agents/skills/07-integration-validation/SKILL.md) | Pre-PR integration test battery |
+| Step 13 (via ship-pr) | [`08-fix-pr`](.agents/skills/08-fix-pr/SKILL.md) | Resolve active PR review threads |
+| Step 13 (via ship-pr) | [`09-goal-fix-pr`](.agents/skills/09-goal-fix-pr/SKILL.md) | Convergence loop — fix-pr until zero open threads |
+| Post-workflow | [`10-update-plan-implementation`](.agents/skills/10-update-plan-implementation/SKILL.md) | Delta adjustments from QA findings |
+| Step 13 | [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | End-to-end PR delivery and merge |
+| Spec protocol | [`spec-format`](.agents/skills/us-workflow/extra-skills/spec-format/SKILL.md) | Canonical spec format validation |
+| Loop primitive | [`goal-loop`](.agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
+
+### ⚠️ Contribution Policy for `us-workflow` Dependencies
+
+> **All changes to `us-workflow` and its dependency skills MUST originate from this repository.**
+>
+> Consumer projects that install these skills via `npx github:jpolvora/workflow-skills` receive **read-only copies** of the pipeline. If you find a bug, want to improve a skill, or need to extend its behavior:
+>
+> 1. **Fork or clone this repository** — `https://github.com/jpolvora/workflow-skills`
+> 2. **Make your changes here** (the upstream source)
+> 3. **Open a PR** against the `develop` branch
+> 4. Once merged, **run `npx github:jpolvora/workflow-skills update`** in your consumer project to pull in the changes
+>
+> **Do not edit skill files directly inside a consumer project** — they will be overwritten on the next `update` run (except for your `config.json`, which is always preserved).
+
+---
+
 ## 🛠️ How to Install and Update Skills
 
 You can install or update the agent guidelines (**skills**) directly into the `.agents/skills` folder of your local development project in two ways:
@@ -29,19 +69,12 @@ If you already have skills installed and just want to update them to the latest 
 ```bash
 npx github:jpolvora/workflow-skills update
 ```
-*(This command automatically detects which skills are in your project's `.agents/skills/` directory and updates them silently, without requiring an interactive menu.)*
+*(Updates skills that already exist locally and preserves each skill's `config.json`. Use `update --include-new` to also install skills added upstream that are not yet in the consumer project.)*
 
 ---
 
-### Option B: Via cURL (Bash Script)
-If you prefer to run the installer directly from the public repository using the shell script:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash
-```
-
-### Interactive Menu (cURL/NPX)
-Both interactive options will open the visual console menu:
+### Interactive Menu (NPX)
+The installer opens the visual console menu:
 ```text
 ============================================================
   Workflow Skills - Skill Installer
@@ -75,7 +108,7 @@ The workflow-skills installation engine is designed to be lightweight, secure, a
 
 ### 🛡️ Safety & Security
 * **Zero Remote Shell Execution:** The NPX script runs completely locally using package files downloaded directly from Git/npm. It does not execute arbitrary scripts from remote hosts behind the scenes.
-* **No External Dependencies:** The CLI installer ([bin/cli.js](file:///l:/source/workflow-skills/bin/cli.js)) has **zero runtime dependencies** outside of native Node.js core modules. This minimizes the risk of dependency confusion or supply chain vulnerabilities.
+* **No External Dependencies:** The CLI installer ([bin/cli.js](./bin/cli.js)) has **zero runtime dependencies** outside of native Node.js core modules. This minimizes the risk of dependency confusion or supply chain vulnerabilities.
 * **Accidental Self-Overwrite Protection:** The installer checks if the target installation directory matches the source repository. Running remote installation commands inside the core `workflow-skills` source repository itself is blocked to prevent developers from accidentally overwriting local guideline changes (except inside the `test/` folder).
 * **Conservative Overwrites:** If a skill directory already exists in the target project, the installer prompts for explicit confirmation (`Overwrite? (y/n)`) before removing the old folder.
 
@@ -84,7 +117,7 @@ The workflow-skills installation engine is designed to be lightweight, secure, a
 * **Offline-Friendly Local Execution:** You can pack the repository locally (`npm pack`) and run the test consumer directly on the resulting package file.
 
 ### 🧪 Automated Test Runner
-The repository features an automated test runner ([test/test-install.js](file:///l:/source/workflow-skills/test/test-install.js)) that automatically packs the current state, installs it into a clean test project environment (`test/`), runs the interactive selection, and performs a recursive diff/verification of the installed files against the source. You can trigger it with:
+The repository features an automated test runner ([test/test-install.js](./test/test-install.js)) that automatically packs the current state, installs it into a clean test project environment (`test/`), runs the interactive selection, and performs a recursive diff/verification of the installed files against the source. You can trigger it with:
 ```bash
 # Run remote installation verification
 npm run tests

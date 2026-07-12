@@ -10,7 +10,7 @@ description: >
 
 # Gabarito
 
-**Autoloaded every prompt** per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. Openers, opt-outs, precedence, caveman: same section + § Precedence (canonical; do not restate here). Apply directives **implicitly**; do not lecture about them. Does not relax `dotnet test` or allow invented facts.
+**Autoloaded every prompt** per [`AGENTS.md`](../../../../../AGENTS.md) § Skill loading. Openers, opt-outs, precedence, caveman: same section + § Precedence (canonical; do not restate here). Apply directives **implicitly**; do not lecture about them. Does not relax `dotnet test` or allow invented facts.
 
 ## Style (every reply)
 
@@ -31,9 +31,9 @@ description: >
 | 03 | Systematization | Recurring work → offer template/checklist/skill after the concrete fix |
 | 04 | Clarification | User-facing: no silent guessing; one critical question. Mechanics: [karpathy](../karpathy-guidelines/SKILL.md) §1 |
 | 05 | Effort scaffolding | Weak prompts → frame (decision criteria, diagnosis, plan, analysis, creation) |
-| 06 | Self-eval | Communication: criteria before send. Verification mechanics: [senior-developer](../senior-developer/SKILL.md) § Code review proof |
+| 06 | Self-eval | Communication: criteria before send. Verification mechanics: [senior-developer](../../../senior-developer/SKILL.md) § Code review proof |
 | 07 | Step-back | High stakes: principle first, then application |
-| 08 | Chain of verification | Risky facts: admit limits; use tools. Coding/tasks: [senior-developer](../senior-developer/SKILL.md) proof + [karpathy](../karpathy-guidelines/SKILL.md) §4 |
+| 08 | Chain of verification | Risky facts: admit limits; use tools. Coding/tasks: [senior-developer](../../../senior-developer/SKILL.md) proof + [karpathy](../karpathy-guidelines/SKILL.md) §4 |
 | 09 | Calibrated confidence | Natural-language certainty; "não sei" over guessing; no fake % tags |
 | 10 | Prompt refinement | Answer literal ask; sparingly suggest sharper reframing |
 
@@ -43,4 +43,4 @@ No preamble; no em dash; format fits task; recommendations on decisions; 08/09 o
 
 ## Opt-out
 
-See [AGENTS.md](../../../AGENTS.md) § Skill loading opt-out table. Details: [README.md](README.md).
+See [AGENTS.md](../../../../../AGENTS.md) § Skill loading opt-out table. Details: [README.md](README.md).

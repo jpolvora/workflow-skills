@@ -4,6 +4,38 @@ This file is the **hub** of the agent harness. It contains the routing and index
 
 ---
 
+## ⭐ Canonical Upstream Source
+
+**This repository (`jpolvora/workflow-skills`) is the canonical, authoritative upstream source for `us-workflow` and all of its pipeline dependency skills.**
+
+Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` are **read-only copies** managed by this repository. The contract is:
+
+- **All bug fixes, improvements, and new features** for `us-workflow` pipeline skills must be authored here and submitted as a PR to the `develop` branch.
+- **Consumer projects must never edit pipeline skill files in-place** — changes will be overwritten on the next `update` run. The sole exception is `config.json`, which is always preserved during updates.
+- **To propagate upstream changes to a consumer project**, run: `npx github:jpolvora/workflow-skills update`
+
+### `us-workflow` Pipeline — Skills Owned by This Repository
+
+| Skill | Step(s) | Role |
+|-------|---------|------|
+| `us-workflow` | Orchestrator | FSM orchestrator — dispatches all steps |
+| `00-write-spec` | Step 0 | Draft canonical spec from feature description |
+| `01-write-plan` | Step 1 | Generate implementation plan |
+| `02-interview` | Step 2 | Audit and refine plan until shared understanding |
+| `03-plan-to-tasks` | Step 3 | Break plan into atomic DAG tasks |
+| `04-implement-tasks` | Steps 5, 10 | Execute code changes (build + fix modes) |
+| `05-verify-plan` | Step 6 | Verify deliverables against acceptance criteria |
+| `06-code-review` | Step 9 | Two-phase triage + investigation code review |
+| `07-integration-validation` | Step 11 | Pre-PR integration test battery |
+| `08-fix-pr` | Step 13 (via ship-pr) | Resolve active PR review threads |
+| `09-goal-fix-pr` | Step 13 (via ship-pr) | Convergence loop — fix-pr until zero open threads |
+| `10-update-plan-implementation` | Post-workflow | Delta adjustments from QA findings |
+| `11-ship-pr` | Step 13 | End-to-end PR delivery and merge |
+| `spec-format` | Spec protocol | Canonical spec format validation |
+| `goal-loop` | Loop primitive | Generic convergence loop (consumed by `09-goal-fix-pr`) |
+
+---
+
 ## Language (mandatory)
 
 All skill content, agent instructions, user-facing output, questions, answers, and interactions **MUST be in English (en-us)**. No Portuguese (PT-BR) in any skill body, frontmatter, gates, banners, progress boards, or documentation. This is a portable repository consumed by international teams.
@@ -16,11 +48,11 @@ Skills loaded automatically by task type:
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `caveman` | `.agents/skills/caveman/SKILL.md` | Every prompt — response compression |
-| `gabarito` | `.agents/skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
-| `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
-| `changelog` | `.agents/skills/changelog/SKILL.md` | Every prompt — summarized historical record |
-| `learning` | `.agents/skills/learning/SKILL.md` | Every prompt — anti-regression record |
+| `caveman` | `.agents/skills/us-workflow/extra-skills/caveman/SKILL.md` | Every prompt — response compression |
+| `gabarito` | `.agents/skills/us-workflow/extra-skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `karpathy-guidelines` | `.agents/skills/us-workflow/extra-skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
+| `changelog` | `.agents/skills/us-workflow/extra-skills/changelog/SKILL.md` | Every prompt — summarized historical record |
+| `learning` | `.agents/skills/us-workflow/extra-skills/learning/SKILL.md` | Every prompt — anti-regression record |
 | `using-superpowers` | `(global skill)` | Session start — skill discovery |
 
 ---
@@ -60,7 +92,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | 01 | `01-write-plan` | `.agents/skills/01-write-plan/SKILL.md` | Generates implementation plan from GH issue / spec.md |
 | 02 | `02-interview` | `.agents/skills/02-interview/SKILL.md` | Audits and interrogates a plan until shared understanding |
 | 03 | `03-plan-to-tasks` | `.agents/skills/03-plan-to-tasks/SKILL.md` | Breaks plan into atomic tasks in a DAG of parallelizable topological levels |
-| 04 | `04-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` | Executes or fixes code following plan/DAG |
+| 04 | `04-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` | Executes or fixes code following plan/DAG (Steps 5 build, 10 fix) |
 | 05 | `05-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` | Compares criteria/plan against current code (Quick Score + US verification) |
 | 06 | `06-code-review` | `.agents/skills/06-code-review/SKILL.md` | Local code review in two phases (triage → investigation) |
 | 07 | `07-integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |
@@ -88,14 +120,14 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `caveman` | `.agents/skills/caveman/SKILL.md` | Ultra-compressed response (~75% less tokens) |
-| `gabarito` | `.agents/skills/gabarito/SKILL.md` | Ten operational response guidelines (accountability, anti-sycophancy, chain-of-verification) |
-| `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
+| `caveman` | `.agents/skills/us-workflow/extra-skills/caveman/SKILL.md` | Ultra-compressed response (~75% less tokens) |
+| `gabarito` | `.agents/skills/us-workflow/extra-skills/gabarito/SKILL.md` | Ten operational response guidelines (accountability, anti-sycophancy, chain-of-verification) |
+| `karpathy-guidelines` | `.agents/skills/us-workflow/extra-skills/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
 | `us-workflow` | `.agents/skills/us-workflow/SKILL.md` | E2E US orchestrator (FSM F0-F6, steps 0-12) |
-| `spec-format` | `.agents/skills/spec-format/SKILL.md` | Creates, reviews, or formats *.spec.md artifacts |
-| `learning` | `.agents/skills/learning/SKILL.md` | Anti-regression knowledge record in MEMORY.md |
-| `changelog` | `.agents/skills/changelog/SKILL.md` | Summarized historical record in CHANGELOG.md |
-| `goal-loop` | `.agents/skills/goal-loop/SKILL.md` | Generic goal/loop convergence pattern (sentinel, heartbeat, verify) |
+| `spec-format` | `.agents/skills/us-workflow/extra-skills/spec-format/SKILL.md` | Creates, reviews, or formats *.spec.md artifacts |
+| `learning` | `.agents/skills/us-workflow/extra-skills/learning/SKILL.md` | Anti-regression knowledge record in MEMORY.md |
+| `changelog` | `.agents/skills/us-workflow/extra-skills/changelog/SKILL.md` | Summarized historical record in CHANGELOG.md |
+| `goal-loop` | `.agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md` | Generic goal/loop convergence pattern (sentinel, heartbeat, verify) |
 | `grill-with-docs` | (global skill in `~/.agents/skills/grill-with-docs/SKILL.md`) | Grilling session against existing domain + docs |
 | `find-skills` | `using-superpowers` (skill global) | Skill discovery and installation |
 

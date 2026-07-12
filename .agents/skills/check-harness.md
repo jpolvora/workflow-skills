@@ -620,9 +620,9 @@ Otherwise — **correction plan** (mandatory before editing):
 .cursorrules
 └── AGENTS.md
     ├── senior-developer/SKILL.md (auto)
-    ├── gabarito/SKILL.md (auto)
-    ├── karpathy-guidelines/SKILL.md (auto)
-    ├── caveman/SKILL.md (auto)
+    ├── us-workflow/extra-skills/gabarito/SKILL.md (auto)
+    ├── us-workflow/extra-skills/karpathy-guidelines/SKILL.md (auto)
+    ├── us-workflow/extra-skills/caveman/SKILL.md (auto)
     ├── ef-migrations.mdc (Layer 0)
     └── MEMORY.md (session start, before first implementation)
 ```

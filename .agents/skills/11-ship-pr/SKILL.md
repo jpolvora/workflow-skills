@@ -1,13 +1,14 @@
 ---
 name: 11-ship-pr
-description: End-to-end delivery — verify branch state, commit, push, create PR develop → main/master, run goal-fix-pr loops, and merge.
-version: 1.1
+description: End-to-end delivery — verify branch state, commit, push, create PR workingBranch → baseBranch, run goal-fix-pr loops, and merge.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+version: 1.2
 disable-model-invocation: true
 ---
 
 # ship-pr
 
-Responsible for shipping the completed workflow from the development branch (`develop`) to the production base branch (`main` or `master`). It automates validation, branch push, PR creation, thread convergence monitoring, and final merging.
+Responsible for shipping the completed workflow from the configured working branch (`config.project.workingBranch`, default `develop`) to the production base branch (`config.project.baseBranch`, typically `main` or `master`). It automates validation, branch push, PR creation, thread convergence monitoring, and final merging.
 
 ---
 
@@ -16,7 +17,7 @@ Responsible for shipping the completed workflow from the development branch (`de
 ### Standalone Mode
 
 ```
-/ship-pr [commit-title] [base=<branch>] [dry-run] [no-merge] [max <n>]
+/ship-pr [commit-title] [base=<branch>] [head=<branch>] [dry-run] [no-merge] [max <n>]
 ```
 
 ### Workflow Mode (Step 13 of us-workflow)
@@ -28,81 +29,78 @@ Dispatched by `us-workflow` when the `--full` flag is active. Steps 0–12 have 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `commit-title` | String | (optional) | Custom commit message for any uncommitted changes. |
-| `base=<branch>` | String | `main` or `master` | Target merge branch. Auto-detected using `detect-base-branch.sh` if omitted. |
-| `dry-run` | Flag | `false` | Run checks and simulate creation/merging without staging commits, pushing code, or triggering real PR API requests. |
-| `no-merge` | Flag | `false` | Complete branch updates and PR creation/checks, but stop before final merge. |
-| `max <n>` | Integer | `10` | Iteration limit for the underlying `goal-fix-pr` thread convergence loop. |
+| `base=<branch>` | String | `config.project.baseBranch` | Target merge branch. Auto-detect `main`/`master` if unset. |
+| `head=<branch>` | String | `config.project.workingBranch` (default `develop`) | Branch to push and use as PR head. |
+| `dry-run` | Flag | `false` | Simulate without commits, push, or real PR API requests. |
+| `no-merge` | Flag | `false` | Create PR and run checks, but stop before merge. |
+| `max <n>` | Integer | `10` | Iteration limit for the `goal-fix-pr` convergence loop. |
 
-Before executing, restate the parsed parameters: **commit title**, **target base branch**, **mode** (dry-run/no-merge), and **max iterations**.
+Before executing, restate: **commit title**, **working (head) branch**, **base branch**, **mode**, **max iterations**. Resolve branches from `.agents/skills/us-workflow/config.json` when flags omit them.
 
 ---
 
 ## us-workflow Integration (Step 13)
 
-When running as **Step 13** of the `us-workflow` orchestrator (triggered when the `--full` flag is active):
-
-1. Steps 0–12 are already completed, meaning the implementation has been locally reviewed, verified, and structured into a delivery commit.
-2. The orchestrator prompts the user for approval:
-   - **Create PR and start monitoring:** executes push, creates PR, starts convergence monitoring, and merges.
-   - **Push only (no PR):** pushes `develop` to remote, but stops there.
-   - **Skip (done):** completes the step without pushing or PR updates.
-3. The code-review and auto-fix stages within the ship-pr pipeline are **skipped** during workflow execution because Step 9 (code-review) and Step 10 (implement-tasks) have already performed them.
+1. Steps 0–12 are already completed.
+2. Orchestrator approval gate:
+   - **Create PR and start monitoring:** push, create PR, converge, merge.
+   - **Push only (no PR):** push `{workingBranch}` only.
+   - **Skip (done):** no push/PR.
+3. Skip code-review / auto-fix inside ship-pr (already done in Steps 9–10).
 
 ---
 
 ## Pipeline Execution
 
-The pipeline executes sequentially through the following phases:
-
 ```
-0. Preflight → 1. Code-Review Loop → 2. Verification → 3. Commit & Push → 4. PR Creation → 5. goal-fix-pr loop → 6. Merge
+0. Preflight ? 1. Code-Review Loop ? 2. Verification ? 3. Commit & Push ? 4. PR Creation ? 5. goal-fix-pr ? 6. Merge
 ```
 
 ### Phase 0 — Preflight Checks
-- Ensure the active branch is `develop`.
-- Perform a `git pull origin develop` to pull down remote updates.
-- Auto-detect the target base branch (`main` or `master`) using `detect-base-branch.sh`.
-- Check for port conflicts or dirty configurations in `config.json`. Stop and escalate if unexpected files are modified.
+- Resolve `workingBranch` = `config.project.workingBranch` (default `develop`), `baseBranch` = `config.project.baseBranch`, `gitRemote` = `config.project.gitRemote` (default `origin`).
+- Ensure active branch is `{workingBranch}` (checkout only with explicit user consent).
+- `git pull {gitRemote} {workingBranch}`.
+- Auto-detect `main`/`master` when `baseBranch` is unset (`scripts/detect-base-branch.sh`).
+- Stop if unexpected dirty files outside the delivery scope.
 
 ### Phase 1 — Code-Review Loop (auto-fix)
-- Load [code-review](../06-code-review/SKILL.md) to score modified files relative to the base branch.
-- If findings exist, execute surgical fixes for Critical/Warning items (up to 3 iterations).
-- Skip if already reviewed under `us-workflow`.
+- Load [code-review](../06-code-review/SKILL.md) vs base branch.
+- Fix Critical/Warning up to 3 iterations.
+- Skip when already reviewed under `us-workflow`.
 
 ### Phase 2 — Project Verification
-- Run verification tests defined in `config.json.verification`. If any test fails, attempt automated correction (up to 3 times before stopping).
+- Run `config.json.verification` commands; auto-correct up to 3 times, then stop.
 
 ### Phase 3 — Commit & Push
-- Commit any local styling, configuration, or index updates using a clean, professional description (e.g. `docs(catalog): update skills index`).
-- Push local branch commits using `git push -u origin develop`.
+- Commit remaining delivery-related changes with a professional message.
+- `git push -u {gitRemote} {workingBranch}`.
 
 ### Phase 4 — PR Creation
-- Check if a Pull Request from `develop` to the base branch is already open.
-- If not, create it: `gh pr create --head develop --base "$SHIP_PR_BASE"`.
-- Retrieve the PR number and URL.
+- If no open PR from `{workingBranch}` ? `{baseBranch}`, create: `gh pr create --head {workingBranch} --base {baseBranch}`.
+- Capture PR number and URL.
 
 ### Phase 5 — goal-fix-pr Convergence Loop
-- Wait 5 minutes (300s) post-push to allow CI checks and initial reviewer feedback to register.
-- Dispatch the [goal-fix-pr](../09-goal-fix-pr/SKILL.md) loop to continuously address, fix, and resolve feedback threads until `activeThreads == 0` (or `max` iterations are exhausted).
+- Wait 5 minutes (300s) post-push for CI/reviewer feedback.
+- Dispatch [goal-fix-pr](../09-goal-fix-pr/SKILL.md) until `activeThreads == 0` or `max` iterations.
 
 ### Phase 6 — Merge
-- Verify checks pass: `gh pr checks --watch`.
-- Merge the Pull Request: `gh pr merge --merge`.
+- `gh pr checks --watch`.
+- `gh pr merge --merge`.
 
 > [!IMPORTANT]
-> **Branch Deletion Rule:** Never delete or request deletion of the source branch (`develop`) after merging, regardless of branch name or target base. The branch must remain active for future development loops.
+> **Branch Deletion Rule:** Never delete `{workingBranch}` after merging. Keep it for future delivery loops.
 
 ---
 
 ## Final Output
 
-Every execution of `ship-pr` must output the Pull Request URL on its own line at the end of the summary:
+Print the PR URL alone on its own line at the end:
 
 ```markdown
 **PR:** https://github.com/<owner>/<repo>/pull/<PR-NUMBER>
 ```
 
-In `dry-run` or when stopped early, return `PR not created` with a detailed explanation instead of a placeholder URL.
+In `dry-run` or early stop: `PR not created` plus explanation (no placeholder URL).
 
 ---
 
@@ -112,3 +110,4 @@ In `dry-run` or when stopped early, return `PR not created` with a detailed expl
 - **Convergence:** [goal-fix-pr](../09-goal-fix-pr/SKILL.md)
 - **Fixer:** [fix-pr](../08-fix-pr/SKILL.md)
 - **Base Detection:** `scripts/detect-base-branch.sh`
+- **Artifacts:** [ARTIFACTS.md](../us-workflow/ARTIFACTS.md)

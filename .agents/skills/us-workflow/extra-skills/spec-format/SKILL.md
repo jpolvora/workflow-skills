@@ -4,6 +4,7 @@ description: >-
   Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic.
   Load when the user invokes /spec-format, @spec-format, "create spec", "review spec",
   "format spec" or requests validation of local specification format.
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 disable-model-invocation: true
 version: 1.0
 ---
@@ -12,7 +13,7 @@ version: 1.0
 
 Skill to **create**, **review**, or **format** local specifications (`*.spec.md`) — a single, portable artifact for a feature/US. Replaces direct GitHub reading in downstream skills; all read `*.spec.md` from the working directory.
 
-> **Canonical source of the `*.spec.md` format.** Other skills and `us-workflow` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../AGENTS.md) § Skill loading.
+> **Canonical source of the `*.spec.md` format.** Other skills and `us-workflow` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../../../AGENTS.md) § Skill loading.
 
 > **Language:** responses to user in **en-us**.
 
@@ -39,8 +40,8 @@ If the mode is not explicit, infer from context or ask.
 
 | Source | Pattern | Example |
 |--------|--------|---------|
-| GitHub issue `{id}` | `us-{id}.spec.md` in `.cursor/plans/us-{id}/` | `us-1474.spec.md` |
-| Local spec (slug) | `{slug}.spec.md` in `.cursor/plans/{slug}/` | `relatorios-financeiros.spec.md` |
+| GitHub issue `{id}` | `step-00-us-{id}.spec.md` in `{plans-dir}/us-{id}/` | `step-00-us-1474.spec.md` |
+| Local spec (slug) | `step-00-{slug}.spec.md` in `{plans-dir}/{slug}/` | `step-00-my-feature.spec.md` |
 
 The working directory **slug** (`{us-dir}`) is:
 - `us-{id}` when the input is a GitHub issue number;
@@ -99,7 +100,7 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 1. Read the provided `*.spec.md` (or locate in `{us-dir}/`).
 2. Validate frontmatter, required sections, and AC quality (enumerable, testable, unambiguous).
-3. Cross-reference with [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md) when there is parity with legacy.
+3. Cross-reference with [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md) when there is parity with legacy.
 4. Emit report:
 
 | Check | Status | Proposed fix |
@@ -119,10 +120,10 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 ## Downstream consumers
 
-`us-workflow`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/{slug}.spec.md`** — never the GitHub API directly and never `*.issue.json`.
+`us-workflow`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never the GitHub API directly and never `*.issue.json`. See [`ARTIFACTS.md`](../../ARTIFACTS.md).
 
 ## References
 
-- Harness routing: [`AGENTS.md`](../../../AGENTS.md)
-- Architecture: [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md)
-- Workflow protocol: [`../us-workflow/SKILL.md`](../us-workflow/SKILL.md) → Specification Protocol
+- Harness routing: [`AGENTS.md`](../../../../../AGENTS.md)
+- Architecture: [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md)
+- Workflow protocol: [`../../us-workflow/SKILL.md`](../../us-workflow/SKILL.md) → Specification Protocol

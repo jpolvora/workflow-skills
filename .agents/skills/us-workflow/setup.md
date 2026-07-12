@@ -1,6 +1,7 @@
 # Setup & Bootstrap — US Workflow
 
 Initialization, configuration bootstrap, flags, resume logic, and first-run setup. Extracted from [`SKILL.md`](SKILL.md) to keep the orchestrator lean.
+Artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md). Resume rules in this file are canonical; FAQ/DIAGRAM must link here.
 
 ---
 
@@ -65,7 +66,7 @@ Before Step 0:
 
 **Normal — workflow discovery (mandatory before any new workflow):**
 
-1. `Glob` `.cursor/plans/**/*.state.md` → list all state files.
+1. `Glob` `{config.plans.dir}/**/*.state.md` (default `.cursor/plans/**/*.state.md`) → list all state files.
 2. For each, `Read` frontmatter YAML: `status`, `workflowId`, `slug`, `us`, `currentStep`, `startedAt`, `autoMode`.
 3. Filter: `status: active` or `status: paused`.
 4. Present as **selectable list** via AskQuestion:
