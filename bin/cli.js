@@ -67,7 +67,7 @@ function runUpdate(skills) {
 
   if (!fs.existsSync(targetSkillsDir)) {
     console.log(`No skills directory found at: ${targetSkillsDir}`);
-    console.log("Run `npx workflow-skills` to choose skills to install first.");
+    console.log("Run `npx github:jpolvora/workflow-skills` to choose skills to install first.");
     process.exit(0);
   }
 
@@ -78,7 +78,7 @@ function runUpdate(skills) {
 
   if (existingSkills.length === 0) {
     console.log("No matching skills found in target directory to update.");
-    console.log("Run `npx workflow-skills` to select and install skills.");
+    console.log("Run `npx github:jpolvora/workflow-skills` to select and install skills.");
     process.exit(0);
   }
 

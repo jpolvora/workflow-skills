@@ -16,13 +16,13 @@ Se você possui Node.js instalado, você pode executar o CLI diretamente via `np
 #### 1. Menu Interativo (Instalação/Seleção)
 Para abrir o menu interativo e selecionar as skills a serem instaladas:
 ```bash
-npx workflow-skills
+npx github:jpolvora/workflow-skills
 ```
 
 #### 2. Auto-Update (Atualização Rápida)
 Se você já possui skills instaladas e deseja apenas atualizá-las para as versões mais recentes, execute:
 ```bash
-npx workflow-skills update
+npx github:jpolvora/workflow-skills update
 ```
 *(Este comando detecta automaticamente quais skills estão no diretório `.agents/skills/` do seu projeto e as atualiza de forma silenciosa, sem necessidade de menu interativo.)*
 

@@ -128,7 +128,7 @@ Before closing a task or committing, run:
 
 ```bash
 # Check harness integrity (paths, routing, redundancy)
-npx workflow-skills check-harness --dry-run
+npx github:jpolvora/workflow-skills check-harness --dry-run
 
 # Or via gh API if installed globally
 gh api repos/jpolvora/workflow-skills/pages   # verify site is building
