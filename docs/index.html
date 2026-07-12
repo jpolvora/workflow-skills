@@ -295,10 +295,11 @@
     return text.replace(/^---[\s\S]*?---\n*/, '');
   }
 
+  var rawMarkdown = '';
+
   copyBtn.addEventListener('click', function() {
-    const text = modalBody.textContent;
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(function() {
+    if (!rawMarkdown) return;
+    navigator.clipboard.writeText(rawMarkdown).then(function() {
       copyBtn.textContent = 'Copied!';
       setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
     }).catch(function() {
@@ -328,6 +329,7 @@
         })
         .then(function(text) {
           var cleaned = stripFrontmatter(text);
+          rawMarkdown = cleaned;
           var html = marked.parse(cleaned, { breaks: true, gfm: true });
           modalBody.innerHTML = html;
         })
