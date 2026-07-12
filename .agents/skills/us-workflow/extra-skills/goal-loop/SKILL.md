@@ -2,15 +2,15 @@
 name: goal-loop
 description: >-
   Generic goal/loop pattern for convergence-driven loops. Provides sentinel
-  management, heartbeat/sleeper, re-collect → check → continue/done loop,
+  management, heartbeat/sleeper, re-collect -> check -> continue/done loop,
   stop conditions, verify framework, and report format. Consumed by
   goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.0
+upstream: jpolvora/workflow-skills � this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+version: 1.1
 disable-model-invocation: true
 ---
 
-# goal-loop — Generic Goal/Loop Pattern
+# goal-loop � Generic Goal/Loop Pattern
 
 Convergence-driven loop skeleton. A **goal-orchestrator skill** loads this skill and instantiates the loop with concrete success criteria, collect action, and act action.
 
@@ -39,15 +39,24 @@ Iteration: <n>/<max>
 | `ACT_CMD` | string | Shell command or skill load to perform one fix round |
 | `VERIFY_CMD` | string | Shell command(s) to verify correctness post-act |
 | `DRY_RUN` | bool | Skip push, resolve, and destructive actions |
+| `RUNTIME_DIR` | path | Sentinel/runtime dir (default `{us-dir}/.runtime` or goal-loop runs dir) |
 
 ## Sentinel management
 
 A **sentinel** is a singleton background timer that wakes the agent after `WAIT_SECONDS` to re-evaluate convergence.
 
+**Portability:** never write sentinel files under OS temp (`TMPDIR` / Windows `%TEMP%`). Use a project-local runtime directory:
+
 ```bash
-# Register sentinel (before background task)
-echo "goal_loop_wake_<ID>" > /tmp/goal-loop-sentinel-<ID>.pid
-echo $! >> /tmp/goal-loop-sentinel-<ID>.pid
+# Prefer us-workflow runtime when available:
+#   {config.plans.dir}/{slug}/.runtime/
+# Fallback:
+#   .agents/skills/us-workflow/extra-skills/goal-loop/runs/<ID>/
+
+RUNTIME_DIR="<resolved runtime dir>"
+mkdir -p "$RUNTIME_DIR"
+echo "goal_loop_wake_<ID>" > "$RUNTIME_DIR/sentinel.pid"
+echo $! >> "$RUNTIME_DIR/sentinel.pid"
 
 # Sleep and emit wake signal
 sleep <WAIT_SECONDS> && echo 'GOAL_LOOP_WAKE_<ID> {"reason":"post-push","id":"<ID>","iteration":<N>}'
@@ -56,7 +65,7 @@ sleep <WAIT_SECONDS> && echo 'GOAL_LOOP_WAKE_<ID> {"reason":"post-push","id":"<I
 ### Rules
 
 - **One sentinel per session.** If a sentinel PID file exists, kill the old process before starting a new one.
-- **Track PID.** Store in `.agents/skills/goal-loop/runs/<ID>/sentinel.pid`.
+- **Track PID** at `$RUNTIME_DIR/sentinel.pid`.
 - **On stop/abort**, kill sentinel and remove PID file.
 - **Wake message** must match a `notify_on_output` regex: `^GOAL_LOOP_WAKE_<ID>`.
 
@@ -66,13 +75,13 @@ sleep <WAIT_SECONDS> && echo 'GOAL_LOOP_WAKE_<ID> {"reason":"post-push","id":"<I
 
 Run `COLLECT_CMD` and parse output against `SUCCESS_CRITERION`.
 
-- **Criterion met** → emit final report, kill sentinel, stop.
-- **Criterion not met** → proceed to act round.
-- **Collect failure** → stop — do not improvise API calls.
+- **Criterion met** -> emit final report, kill sentinel, stop.
+- **Criterion not met** -> proceed to act round.
+- **Collect failure** -> stop; do not improvise API calls.
 
 ### 2. Act round
 
-Execute `ACT_CMD`. One round = sync state → investigate → fix → validate → commit → resolve → push (or dry-run simulation).
+Execute `ACT_CMD`. One round = sync state -> investigate -> fix -> validate -> commit -> resolve -> push (or dry-run simulation).
 
 ### 3. Verify (mandatory)
 
@@ -85,11 +94,11 @@ No claim of progress without fresh evidence:
 | Publication | Commit hash + push confirmation (or dry-run log) |
 | Resolution | Resolve exit code 0 (or documented skip in dry-run) |
 
-**3× identical failure** on the same check → stop and escalate.
+**3x identical failure** on the same check -> stop and escalate.
 
 ### 4. Report
 
-Per-iteration report at `.agents/skills/goal-loop/runs/<ID>/round-<N>.md`:
+Per-iteration report at `$RUNTIME_DIR/round-<N>.md`:
 
 ```markdown
 # Goal Loop Round <N>
@@ -113,9 +122,9 @@ After commit/push (or resolve-only round):
 
 1. Schedule next collect after `WAIT_SECONDS` via sentinel.
 2. On wake, re-run **step 1** (collect + evaluate).
-3. **0 active** → convergence → done.
-4. **> 0** and `n < MAX_ITERATIONS` → iteration `n+1` (back to step 2).
-5. **n ≥ MAX_ITERATIONS** → stop, report remaining items, ask for human intervention.
+3. **0 active** -> convergence -> done.
+4. **> 0** and `n < MAX_ITERATIONS` -> iteration `n+1` (back to step 2).
+5. **n >= MAX_ITERATIONS** -> stop, report remaining items, ask for human intervention.
 
 ### 6. Convergence
 
@@ -135,12 +144,12 @@ The loop exits when:
 | User says stop | Kill sentinel, summarize progress |
 | Escalation | Stop, list blockers |
 | `n >= MAX_ITERATIONS` | Stop, list unconverged items |
-| Collect fails | Stop — do not improvise |
+| Collect fails | Stop; do not improvise |
 
 ## Final report
 
 ```markdown
-# Goal Loop Result — <ID>
+# Goal Loop Result � <ID>
 
 | Field | Value |
 |-------|-------|
@@ -159,11 +168,12 @@ When `DRY_RUN=true`:
 
 - **Do not** push, resolve threads, or execute destructive commands.
 - **Do** simulate: log what would be done, write reports, run verify.
-- **Do not** arm sentinel — re-collect immediately instead of waiting.
+- **Do not** arm sentinel; re-collect immediately instead of waiting.
 
 ## Dependencies
 
 | Resource | Path |
 |----------|------|
-| Run artifacts | `.agents/skills/goal-loop/runs/<ID>/` |
-| Sentinel tracking | `.agents/skills/goal-loop/runs/<ID>/sentinel.pid` |
+| Run artifacts | `$RUNTIME_DIR/` or `.agents/skills/us-workflow/extra-skills/goal-loop/runs/<ID>/` |
+| Sentinel tracking | `$RUNTIME_DIR/sentinel.pid` |
+| Artifact registry | [ARTIFACTS.md](../../ARTIFACTS.md) |

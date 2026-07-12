@@ -8,6 +8,7 @@
     "org": "<GITHUB_ORG>",
     "repoUrl": "https://github.com/<ORG>/<REPO>",
     "baseBranch": "master",
+    "workingBranch": "develop",
     "gitRemote": "origin"
   },
 

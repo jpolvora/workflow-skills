@@ -8,21 +8,18 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Paths
 const packageRoot = path.resolve(__dirname, '..');
 const srcSkillsDir = path.join(packageRoot, '.agents', 'skills');
 const targetDir = process.cwd();
 const targetSkillsDir = path.join(targetDir, '.agents', 'skills');
+const CONFIG_FILE = 'config.json';
 
-// Helper to copy directory recursively
 function copyDirSync(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   const entries = fs.readdirSync(src, { withFileTypes: true });
-
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
-
     if (entry.isDirectory()) {
       copyDirSync(srcPath, destPath);
     } else {
@@ -31,17 +28,55 @@ function copyDirSync(src, dest) {
   }
 }
 
-// Commands execution
+function copyDirPreservingConfig(src, dest, preservedFile) {
+  fs.mkdirSync(dest, { recursive: true });
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirPreservingConfig(srcPath, destPath, preservedFile);
+    } else if (entry.name === preservedFile && fs.existsSync(destPath)) {
+      console.log(`    Skipped (preserved): ${path.relative(dest, destPath) || entry.name}`);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+/** Block installing into the source package itself (except test/ consumer). */
+function assertNotSelfOverwrite() {
+  const cwd = path.resolve(targetDir);
+  const root = path.resolve(packageRoot);
+  const testDir = path.resolve(packageRoot, 'test');
+
+  const isExactRoot = cwd === root;
+  const isUnderRoot = cwd.startsWith(root + path.sep);
+  const isTestConsumer = cwd === testDir || cwd.startsWith(testDir + path.sep);
+
+  if (isExactRoot || (isUnderRoot && !isTestConsumer)) {
+    console.error('Error: Refusing to install into the workflow-skills source repository.');
+    console.error(`  Package root: ${root}`);
+    console.error(`  Current dir:  ${cwd}`);
+    console.error('Run this command from a consumer project, or from the test/ folder.');
+    process.exit(1);
+  }
+}
+
+function listSkillDirs(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter((name) => {
+    return fs.statSync(path.join(dir, name)).isDirectory();
+  });
+}
+
 async function main() {
   if (!fs.existsSync(srcSkillsDir)) {
     console.error(`Error: Source skills directory not found at ${srcSkillsDir}`);
     process.exit(1);
   }
 
-  const skills = fs.readdirSync(srcSkillsDir).filter(name => {
-    return fs.statSync(path.join(srcSkillsDir, name)).isDirectory();
-  });
-
+  const skills = listSkillDirs(srcSkillsDir);
   if (skills.length === 0) {
     console.log(`No skills found in ${srcSkillsDir}`);
     process.exit(0);
@@ -51,73 +86,67 @@ async function main() {
   const command = args[0];
 
   if (command === 'update') {
-    runUpdate(skills);
+    const includeNew = args.includes('--include-new');
+    assertNotSelfOverwrite();
+    runUpdate(skills, includeNew);
   } else {
+    assertNotSelfOverwrite();
     await runInteractive(skills);
   }
 }
 
-// 1. Auto-update command execution
-function runUpdate(skills) {
-  console.log("============================================================");
-  console.log("  Workflow Skills - Auto Updater");
-  console.log("============================================================");
+function runUpdate(skills, includeNew) {
+  console.log('============================================================');
+  console.log('  Workflow Skills - Auto Updater');
+  console.log('============================================================');
   console.log(`Target: ${targetSkillsDir}`);
-  console.log("------------------------------------------------------------");
+  console.log('------------------------------------------------------------');
 
   if (!fs.existsSync(targetSkillsDir)) {
     console.log(`No skills directory found at: ${targetSkillsDir}`);
-    console.log("Run `npx github:jpolvora/workflow-skills` to choose skills to install first.");
+    console.log('Run `npx github:jpolvora/workflow-skills` to choose skills to install first.');
     process.exit(0);
   }
 
-  const existingSkills = fs.readdirSync(targetSkillsDir).filter(name => {
-    return fs.statSync(path.join(targetSkillsDir, name)).isDirectory() &&
-           skills.includes(name);
-  });
+  const existingSkills = listSkillDirs(targetSkillsDir).filter((name) => skills.includes(name));
+  const missingNew = skills.filter((name) => !existingSkills.includes(name));
 
-  if (existingSkills.length === 0) {
-    console.log("No matching skills found in target directory to update.");
-    console.log("Run `npx github:jpolvora/workflow-skills` to select and install skills.");
+  if (existingSkills.length === 0 && !(includeNew && missingNew.length > 0)) {
+    console.log('No matching skills found in target directory to update.');
+    console.log('Run `npx github:jpolvora/workflow-skills` to select and install skills.');
     process.exit(0);
   }
 
-  const CONFIG_FILE = 'config.json';
-
-  console.log(`Updating ${existingSkills.length} skill(s)...`);
-  for (const skillName of existingSkills) {
-    const srcPath = path.join(srcSkillsDir, skillName);
-    const destPath = path.join(targetSkillsDir, skillName);
-
-    console.log(`  Updating '${skillName}'...`);
-    copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+  if (existingSkills.length > 0) {
+    console.log(`Updating ${existingSkills.length} skill(s)...`);
+    for (const skillName of existingSkills) {
+      const srcPath = path.join(srcSkillsDir, skillName);
+      const destPath = path.join(targetSkillsDir, skillName);
+      console.log(`  Updating '${skillName}'...`);
+      copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+    }
   }
 
-  console.log("\nUpdate complete!");
-  console.log(`Note: Any existing '${CONFIG_FILE}' files were preserved and NOT overwritten.`);
+  if (includeNew && missingNew.length > 0) {
+    console.log(`Installing ${missingNew.length} new upstream skill(s)...`);
+    for (const skillName of missingNew) {
+      const srcPath = path.join(srcSkillsDir, skillName);
+      const destPath = path.join(targetSkillsDir, skillName);
+      console.log(`  Installing new '${skillName}'...`);
+      copyDirSync(srcPath, destPath);
+    }
+  } else if (missingNew.length > 0) {
+    console.log(`\nNote: ${missingNew.length} upstream skill(s) not installed locally:`);
+    missingNew.slice(0, 10).forEach((n) => console.log(`  - ${n}`));
+    if (missingNew.length > 10) console.log(`  ... and ${missingNew.length - 10} more`);
+    console.log('Re-run with `update --include-new` to install them, or use the interactive installer.');
+  }
+
+  console.log('\nUpdate complete!');
+  console.log(`Note: Existing '${CONFIG_FILE}' files were preserved and NOT overwritten.`);
   process.exit(0);
 }
 
-// Copy src dir into dest, skipping preservedFile if it already exists at dest
-function copyDirPreservingConfig(src, dest, preservedFile) {
-  fs.mkdirSync(dest, { recursive: true });
-  const entries = fs.readdirSync(src, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    if (entry.isDirectory()) {
-      copyDirPreservingConfig(srcPath, destPath, preservedFile);
-    } else if (entry.name === preservedFile && fs.existsSync(destPath)) {
-      console.log(`    Skipped (preserved): ${entry.name}`);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
-}
-
-// 2. Interactive installation menu
 async function runInteractive(skills) {
   const rl = readline.createInterface({
     input: process.stdin,
@@ -128,25 +157,25 @@ async function runInteractive(skills) {
 
   while (true) {
     console.clear();
-    console.log("============================================================");
-    console.log("  Workflow Skills - Skill Installer");
-    console.log("============================================================");
+    console.log('============================================================');
+    console.log('  Workflow Skills - Skill Installer');
+    console.log('============================================================');
     console.log(`Source: ${srcSkillsDir}`);
     console.log(`Target: ${targetSkillsDir}`);
-    console.log("------------------------------------------------------------");
-    console.log("Toggle selection by entering the number.");
+    console.log('------------------------------------------------------------');
+    console.log('Toggle selection by entering the number.');
     console.log("Enter 'a' to select/deselect all.");
     console.log("Enter 'y' or 'i' to install the selected skills.");
     console.log("Enter 'q' to quit.");
-    console.log("------------------------------------------------------------\n");
+    console.log('------------------------------------------------------------\n');
 
     for (let i = 0; i < skills.length; i++) {
-      const mark = selected[i] ? "x" : " ";
+      const mark = selected[i] ? 'x' : ' ';
       console.log(`  [${mark}] ${String(i + 1).padStart(2)}) ${skills[i]}`);
     }
-    console.log("");
+    console.log('');
 
-    const answer = (await rl.question("Select action or toggle (e.g. 1, a, y, q): ")).trim().toLowerCase();
+    const answer = (await rl.question('Select action or toggle (e.g. 1, a, y, q): ')).trim().toLowerCase();
 
     if (/^\d+$/.test(answer)) {
       const idx = parseInt(answer, 10) - 1;
@@ -156,12 +185,12 @@ async function runInteractive(skills) {
         await rl.question(`Invalid number: ${answer}. Press enter to continue...`);
       }
     } else if (answer === 'a') {
-      const allSelected = selected.every(v => v);
+      const allSelected = selected.every((v) => v);
       selected.fill(!allSelected);
     } else if (answer === 'y' || answer === 'i') {
       break;
     } else if (answer === 'q') {
-      console.log("Exiting without installing.");
+      console.log('Exiting without installing.');
       rl.close();
       process.exit(0);
     } else {
@@ -169,51 +198,50 @@ async function runInteractive(skills) {
     }
   }
 
-  const selectedCount = selected.filter(v => v).length;
+  const selectedCount = selected.filter((v) => v).length;
   if (selectedCount === 0) {
-    console.log("\nNo skills selected. Exiting.");
+    console.log('\nNo skills selected. Exiting.');
     rl.close();
     process.exit(0);
   }
 
   let installedCount = 0;
-  console.log("\nStarting installation...");
+  console.log('\nStarting installation...');
 
   for (let i = 0; i < skills.length; i++) {
-    if (selected[i]) {
-      const skillName = skills[i];
-      const srcPath = path.join(srcSkillsDir, skillName);
-      const destPath = path.join(targetSkillsDir, skillName);
+    if (!selected[i]) continue;
+    const skillName = skills[i];
+    const srcPath = path.join(srcSkillsDir, skillName);
+    const destPath = path.join(targetSkillsDir, skillName);
 
-      console.log(`Installing '${skillName}'...`);
+    console.log(`Installing '${skillName}'...`);
 
-      if (fs.existsSync(destPath)) {
-        console.log(`  Warning: Destination directory '.agents/skills/${skillName}' already exists.`);
-        const confirm = (await rl.question(`  Overwrite? (y/n): `)).trim().toLowerCase();
-        if (confirm !== 'y' && confirm !== 'yes') {
-          console.log(`  Skipped: ${skillName}`);
-          continue;
-        }
-        fs.rmSync(destPath, { recursive: true, force: true });
+    if (fs.existsSync(destPath)) {
+      console.log(`  Warning: Destination directory '.agents/skills/${skillName}' already exists.`);
+      const confirm = (await rl.question('  Overwrite? (y/n): ')).trim().toLowerCase();
+      if (confirm !== 'y' && confirm !== 'yes') {
+        console.log(`  Skipped: ${skillName}`);
+        continue;
       }
-
-      copyDirSync(srcPath, destPath);
-      console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
-      installedCount++;
+      fs.rmSync(destPath, { recursive: true, force: true });
     }
+
+    copyDirSync(srcPath, destPath);
+    console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
+    installedCount++;
   }
 
-  console.log("");
+  console.log('');
   if (installedCount > 0) {
     console.log(`Successfully installed ${installedCount} skill(s) into ${targetSkillsDir}`);
   } else {
-    console.log("No skills were installed.");
+    console.log('No skills were installed.');
   }
 
   rl.close();
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

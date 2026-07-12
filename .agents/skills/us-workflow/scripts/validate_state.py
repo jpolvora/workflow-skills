@@ -30,7 +30,23 @@ from pathlib import Path
 
 AGENT_ROOT = Path(__file__).resolve().parent.parent          # .../us-workflow
 REPO_ROOT = Path(__file__).resolve().parents[3]              # repo root
-PLANS_DIR = REPO_ROOT / ".cursor" / "plans"                  # working folder: .cursor/plans/us-{id}/
+PLANS_DIR = None  # resolved lazily via load_plans_dir()
+
+def load_plans_dir() -> Path:
+    """Resolve plans.dir from us-workflow config.json (default .cursor/plans)."""
+    cfg = AGENT_ROOT / "config.json"
+    plans = Path(".cursor") / "plans"
+    if cfg.exists():
+        try:
+            import json as _json
+            data = _json.loads(cfg.read_text(encoding="utf-8"))
+            rel = (data.get("plans") or {}).get("dir") or ".cursor/plans"
+            plans = Path(rel)
+        except Exception:
+            pass
+    return (REPO_ROOT / plans).resolve() if not plans.is_absolute() else plans.resolve()
+
+
 
 REQUIRED_KEYS = ["workflowId", "us", "status", "currentStep"]
 MODEL_SUBGATE_STEPS = {4, 8}  # v7: never present in completedSteps (sub-gates)
@@ -44,9 +60,10 @@ def resolve_state_path(arg: str) -> Path:
     # Accept either a full/relative path, a bare workflow-id, or {id}.state.md
     # and search recursively under the plans dir.
     names = [arg, f"{arg}.state.md"] if not arg.endswith(".state.md") else [arg]
-    if PLANS_DIR.exists():
+    plans_dir = load_plans_dir()
+    if plans_dir.exists():
         for name in names:
-            matches = sorted(PLANS_DIR.glob(f"**/{name}"))
+            matches = sorted(plans_dir.glob(f"**/{name}"))
             if matches:
                 return matches[0]
     return p

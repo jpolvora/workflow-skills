@@ -14,7 +14,7 @@ upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline depe
 | **Orchestrator (this file)** | FSM + tool bindings + asserts |
 | **Humans** | [`README.md`](README.md), [`docs/faq.md`](docs/faq.md), [`DIAGRAM.md`](DIAGRAM.md) |
 
-**Load:** current step + linked protocols only. Setup → [`setup.md`](setup.md) (config bootstrap, flags, resume). Stack → `config.json.rules.stackFile` (auto-loaded steps 5,7,9–11). Hub → [`AGENTS.md`](../../../AGENTS.md). Step 2 → [`02-interview`](../02-interview/SKILL.md). Tools → [`tools.md`](tools.md).
+**Load:** current step + linked protocols only. Setup → [`setup.md`](setup.md) (config bootstrap, flags, resume). Artifacts → [`ARTIFACTS.md`](ARTIFACTS.md) (canonical paths). Stack → `config.json.rules.stackFile` (auto-loaded steps 5,7,9–11). Hub → [`AGENTS.md`](../../../AGENTS.md). Step 2 → [`02-interview`](../02-interview/SKILL.md). Tools → [`tools.md`](tools.md).
 
 ## Language
 
@@ -31,7 +31,7 @@ Canonical tool names from [`tools.md`](tools.md). Project params from [`config.j
 | Build/test | `build-backend`, `test-backend`, etc. | `Shell` | values from `config.json.verification` |
 | Source control | `commit-code`, `push-branch`, etc. | `Shell` | `gh`, `git`; cite real output |
 | State | `read-state` / `write-state` | `Read` + `Write`/`StrReplace` | truth source; hygiene before board |
-| Search | `search-code` | `Grep`/`Glob` | MEMORY.md index; `.cursor/plans/*/*.state.md` resume |
+| Search | `search-code` | `Grep`/`Glob` | MEMORY.md index; `{config.plans.dir}/*/*.state.md` resume |
 | Browser (step 11) | `browser-mcp` | `CallMcpTool` | normal mode only, non-dry-run, non-skip, gated |
 | State check | `run-script validate_state` | `Shell` | optional |
 | Code edits | `dispatch-agent` Coder | `Task` | orch never edits — hard stop |
@@ -82,19 +82,20 @@ Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
 | Resource | Path |
 |----------|------|
 | Orchestrator | `SKILL.md` |
+| **Artifacts** | [`ARTIFACTS.md`](ARTIFACTS.md) — canonical filenames + path resolution |
 | **Setup** | `setup.md` — initialization, config bootstrap, flags, resume, stack file generation |
 | **Config** | `.agents/skills/us-workflow/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
 | Scripts | `check_memory_conflict.py`, `validate_state.py`, `github-issue-to-spec.py` |
 | GitHub | `gh` CLI only |
-| State | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-tasks`→5 build, 10/11 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
+| State | `{config.plans.dir}/{slug}/{workflow-id}.state.md` |
+| Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-tasks`→5 build, 10 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
 | Spec | `spec-format` |
 
 Filesystem paths use numeric prefix; skill `name:` unprefixed. Post-12 PR: [`code-review`](../06-code-review/SKILL.md) / [`fix-pr`](../08-fix-pr/SKILL.md).
 
-### Work dir `{us-dir}` = `.cursor/plans/{slug}/`
+### Work dir `{us-dir}` = `{config.plans.dir}/{slug}/` (default `.cursor/plans/{slug}/`)
 
 | Entry | `slug` |
 |-------|--------|
@@ -350,14 +351,14 @@ At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.l
 
 ### Specification Protocol
 
-[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/{slug}.spec.md` — never GitHub API or `*.issue.json`.
+[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never GitHub API or `*.issue.json`.
 
 | Input | Action | Uses Step 0? |
 |-------|--------|--------------|
 | `{n}` or `US {n}` | GitHub → `slug=us-{n}`; `gh issue view` → `github-issue-to-spec.py` → spec | No — skip to Step 1 |
 | `{org}/{project}#{id}` | Azure DevOps → `slug=us-{id}`; REST API → canonical spec | No — skip to Step 1 |
 | `*.spec.md` | local-spec; register directly | No — skip to Step 1 |
-| free-text / no args | brainstorm → `00-write-spec` → `specs/{slug}.spec.md` | Yes — `Task` `00-write-spec` |
+| free-text / no args | brainstorm → `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` (optional mirror `{specs-dir}/{slug}.spec.md`) | Yes — `Task` `00-write-spec` |
 
 No authenticated source → STOP.
 
@@ -366,7 +367,7 @@ No authenticated source → STOP.
 Before Step 0, the orchestrator checks the trigger input and determines the entry flow:
 
 1. **US/issue number provided as argument** (`{n}` or `{org}/{project}#{id}`):
-   - Orchestrator fetches the issue, converts it to canonical spec, saves to `{us-dir}/{slug}.spec.md`.
+   - Orchestrator fetches the issue, converts it to canonical spec, saves to `{us-dir}/step-00-{slug}.spec.md`.
    - Registers `specPath` and `specSource`.
    - **Skips Step 0** — advances directly to the Step 1 gate.
 
@@ -377,7 +378,7 @@ Before Step 0, the orchestrator checks the trigger input and determines the entr
 3. **No arguments (or free-text description as argument):**
    - Entry Menu (AskQuestion):
      - **I have a US/issue number** (recommended) — same as case 1 above; skip Step 0 → Step 1.
-     - **I want to describe a feature to brainstorm** — `Task` `00-write-spec` → `specs/{slug}.spec.md` → Step 1 gate. **This is the only path that uses `00-write-spec`.**
+     - **I want to describe a feature to brainstorm** — `Task` `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` → Step 1 gate. **This is the only path that uses `00-write-spec`.**
 
 After the entry gate, `specPath` is stored in state `## Artifacts.specPath` and snapshotted in `## Artifacts.specSnapshot`.
 

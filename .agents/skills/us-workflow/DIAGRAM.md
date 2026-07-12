@@ -1,8 +1,8 @@
 # US Delivery Workflow v9.1 — Diagrams
 
-> **Nota de arquitetura (v9.1):** os Steps 0–11 delegam seu conteúdo funcional a skills dedicadas e standalone. O `state.md` funciona como memória local do workflow e o `MEMORY.md` como memória compartilhada/generalizável. Passo 13 opcional via `--full` para Ship & PR. Projeto-agnóstico — stack detectada via `.agents/skills/us-workflow/config.json`.
+> **Architecture note (v9.1):** Steps 0–11 delegate functional content to dedicated standalone skills. `state.md` is per-workflow memory; `MEMORY.md` is shared/generalizable memory. Step 13 is optional via `--full` (Ship & PR). Stack-agnostic — project metadata from `.agents/skills/us-workflow/config.json`. Canonical artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md).
 
-Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](README.md).
+Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](README.md). Resume rules: [`setup.md`](setup.md) (canonical).
 
 > **v8.1:** 7 phases (F0–F6); **Authorization Ladder** + hard stops HS-1..5; **Refinement FSM**; **Worktree Fallback**; **State Hygiene**; steps 4/8 → model sub-gates; `state.md` as workflow memory + `MEMORY.md` as shared memory; fresh subagent per step + checkpoint tags + Backward Navigation.
 
@@ -12,12 +12,12 @@ Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](REA
 
 ```mermaid
 flowchart LR
-  F0[F0 Bootstrap<br/>step 0] --> F1[F1 Especificação<br/>steps 1·2·3]
-  F1 --> F2[F2 Implementação<br/>step 5 + sub-gate 4]
-  F2 --> F3[F3 Verify + 1º commit<br/>steps 6·7 · G2]
+  F0[F0 Bootstrap<br/>step 0] --> F1[F1 Specification<br/>steps 1·2·3]
+  F1 --> F2[F2 Implementation<br/>step 5 + sub-gate 4]
+  F2 --> F3[F3 Verify + 1st commit<br/>steps 6·7 · G2]
   F3 --> F4[F4 Review + Fix<br/>steps 9·10 + sub-gate 8 · G2]
-  F4 --> F5[F5 Integração<br/>step 11]
-  F5 --> F6[F6 Fechamento<br/>step 12 · push consent G3]
+  F4 --> F5[F5 Integration<br/>step 11]
+  F5 --> F6[F6 Closure<br/>step 12 · push consent G3]
 ```
 
 Steps **4 e 8** são sub-gates de modelo (F1→F2, F3→F4) — não aparecem como steps do board nem em `completedSteps`.
@@ -78,10 +78,10 @@ flowchart TB
         EXEC["*.plan.exec.md"]
         DAG["*.exec.dag.json"]
         CODE["Changed code"]
-        VERIFY["us-{id}.plan.report.md"]
-        ITPA["us-{id}.integration-test.plan.md"]
-        ITR["us-{id}.integration-test.report.md"]
-        FINAL["us-{id}.report.md"]
+        VERIFY["step-06-{slug}.plan.report.md"]
+        ITPA["step-11-{slug}.integration-test.plan.md"]
+        ITR["step-11-{slug}.integration-test.report.md"]
+        FINAL["step-10-{slug}.report.md"]
     end
 
     US --> PARSE
@@ -403,11 +403,11 @@ flowchart LR
 | 3 | `generalPurpose` | exec + DAG + memory-conflict | false | Planner | `*.plan.exec.md` + `*.exec.dag.json` |
 | 4 | — | Coder readiness (orchestrator) | — | Coder swap | — |
 | 5 | `generalPurpose` | implement per DAG level | false | Coder | code |
-| 6 | `generalPurpose` | verify vs plan/US | true | Verifier | `us-{id}.plan.report.md` |
+| 6 | `generalPurpose` | verify vs plan/US | true | Verifier | `step-06-{slug}.plan.report.md` |
 | 7 | `shell` + `generalPurpose` | 1st commit + learning | false | shell | commit hash |
 | 8 | — | Review readiness (orchestrator) | — | Reviewer swap | — |
 | 9 | `generalPurpose` | code review (diff only) | false | Reviewer | Critical/Warning list |
-| 10 | `shell` + `generalPurpose` | fix + 2nd commit + report | false | Coder/shell | `us-{id}.report.md` |
+| 10 | `shell` + `generalPurpose` | fix + 2nd commit + report | false | Coder/shell | `step-10-{slug}.report.md` |
 | 11 | `generalPurpose` + browser MCP + shell | integration validation loop | false | Verifier/Coder | `integration-test.plan.md` + `.report.md` |
 | 12 | — + shell | cleanup + §Doc + push consent | — | shell | state completed |
 

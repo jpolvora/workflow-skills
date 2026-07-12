@@ -129,21 +129,24 @@ Activates Step 13 (Ship & PR): push → create PR → goal-fix-pr monitoring loo
 
 ## Steps
 
+Canonical filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
+
+
 Each step ends with **documentation consolidation** (§Doc), **git checkpoint** (`before-step-{N+1}`), and **Transition Gate** with **next / repeat / previous / pause** navigation. Steps 4 and 8 embed model switching in the gate (no separate turn). All user decisions are **option menus** (`AskQuestion`), not free text.
 
 | # | Name | Who executes | Objective |
 |---|------|--------------|-----------|
 | **0** | Bootstrap | Orchestrator | State, issue snapshot, MEMORY context |
-| **1** | Plan | Sub-agent | `us-{id}.plan.md` (Conditional — skipped if Dynamic Execution active) |
+| **1** | Plan | Sub-agent | `step-01-{slug}.plan.md` (Conditional — skipped if Dynamic Execution active) |
 | **2** | Refinement | Sub-agent | Plan grilling (Conditional — skipped if Dynamic Execution active) |
 | **3** | Exec + DAG | Sub-agent | `*.plan.exec.md` + `*.exec.dag.json` + memory-conflict |
 | **4†** | **Coder readiness** | **Sub-gate F1→F2** | Model switch embedded in gate (not a board step) |
 | **5** | Implement | Sub-agent(s) Coder | Code per DAG level (parallel up to 3) + learning |
-| **6** | Verify | Sub-agent (readonly) | `us-{id}.plan.report.md` (quality table vs plan) |
+| **6** | Verify | Sub-agent (readonly) | `step-06-{slug}.plan.report.md` (quality table vs plan) |
 | **7** | Decide + commit | Orchestrator + sub-agent + shell | G2 gate; may trigger validation/fix before commit, or return to Step 5 |
 | **8†** | **Review readiness** | **Sub-gate F3→F4** | Model switch embedded in gate (not a board step) |
 | **9** | Code review | Sub-agent | Critical / Warning (scoped diff vs base branch) |
-| **10** | Fix + close | Sub-agent + shell | 2nd commit + `us-{id}.report.md` + learning |
+| **10** | Fix + close | Sub-agent + shell | 2nd commit + `step-10-{slug}.report.md` + learning |
 | **11** | **Integration validation** | Sub-agent + browser + shell | Test battery (generate plan, review, execute/skip) |
 | **12** | Cleanup | Orchestrator + shell | Final §Doc, MEMORY.md sweep, temp cleanup, push consent, delivery commit |
 | **13** | Ship & PR | Sub-agent + shell | Push, PR, goal-fix-pr loop, merge (fullMode only) |
@@ -152,7 +155,7 @@ Each step ends with **documentation consolidation** (§Doc), **git checkpoint** 
 
 Before executing integration tests and opening a PR (manual), the workflow:
 
-1. Runs the **Integration Validation Protocol** and generates `us-{id}.integration-test.plan.md`.
+1. Runs the **Integration Validation Protocol** and generates `step-11-{slug}.integration-test.plan.md`.
 2. Shows the plan (or summary) and asks whether to continue or skip (auto mode skips browser).
 3. If **approve and execute** (normal mode): build, tests, seed, API/permissions — **browser only if not auto nor dry-run**.
 4. In **auto or dry-run:** **§6 browser always skipped** — report marks UI ACs as `⏭ skipped`; validate UI manually before PR.

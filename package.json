@@ -1,7 +1,7 @@
 {
   "name": "workflow-skills",
   "version": "0.0.1",
-  "description": "Repositório centralizado de diretrizes agênticas e comportamentais (skills) para o Cursor",
+  "description": "Centralized agent skills and behavioral guidelines for Cursor (us-workflow pipeline and related skills)",
   "license": "MIT",
   "author": "Jone Polvora",
   "repository": {
@@ -17,7 +17,9 @@
   },
   "scripts": {
     "pretests": "npm pack",
-    "tests": "node test/test-install.js"
+    "test": "npm run tests -- --local",
+    "tests": "node test/test-install.js",
+    "build-site": "node bin/build-site.js"
   },
   "files": [
     "bin/",

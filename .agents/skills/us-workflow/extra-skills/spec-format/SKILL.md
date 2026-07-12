@@ -40,8 +40,8 @@ If the mode is not explicit, infer from context or ask.
 
 | Source | Pattern | Example |
 |--------|--------|---------|
-| GitHub issue `{id}` | `us-{id}.spec.md` in `.cursor/plans/us-{id}/` | `us-1474.spec.md` |
-| Local spec (slug) | `{slug}.spec.md` in `.cursor/plans/{slug}/` | `relatorios-financeiros.spec.md` |
+| GitHub issue `{id}` | `step-00-us-{id}.spec.md` in `{plans-dir}/us-{id}/` | `step-00-us-1474.spec.md` |
+| Local spec (slug) | `step-00-{slug}.spec.md` in `{plans-dir}/{slug}/` | `step-00-my-feature.spec.md` |
 
 The working directory **slug** (`{us-dir}`) is:
 - `us-{id}` when the input is a GitHub issue number;
@@ -120,7 +120,7 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 ## Downstream consumers
 
-`us-workflow`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/{slug}.spec.md`** — never the GitHub API directly and never `*.issue.json`.
+`us-workflow`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never the GitHub API directly and never `*.issue.json`. See [`ARTIFACTS.md`](../../ARTIFACTS.md).
 
 ## References
 

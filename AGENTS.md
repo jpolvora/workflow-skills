@@ -23,7 +23,7 @@ Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` 
 | `01-write-plan` | Step 1 | Generate implementation plan |
 | `02-interview` | Step 2 | Audit and refine plan until shared understanding |
 | `03-plan-to-tasks` | Step 3 | Break plan into atomic DAG tasks |
-| `04-implement-tasks` | Steps 5, 10, 11 | Execute code changes (build + fix modes) |
+| `04-implement-tasks` | Steps 5, 10 | Execute code changes (build + fix modes) |
 | `05-verify-plan` | Step 6 | Verify deliverables against acceptance criteria |
 | `06-code-review` | Step 9 | Two-phase triage + investigation code review |
 | `07-integration-validation` | Step 11 | Pre-PR integration test battery |
@@ -92,7 +92,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | 01 | `01-write-plan` | `.agents/skills/01-write-plan/SKILL.md` | Generates implementation plan from GH issue / spec.md |
 | 02 | `02-interview` | `.agents/skills/02-interview/SKILL.md` | Audits and interrogates a plan until shared understanding |
 | 03 | `03-plan-to-tasks` | `.agents/skills/03-plan-to-tasks/SKILL.md` | Breaks plan into atomic tasks in a DAG of parallelizable topological levels |
-| 04 | `04-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` | Executes or fixes code following plan/DAG |
+| 04 | `04-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` | Executes or fixes code following plan/DAG (Steps 5 build, 10 fix) |
 | 05 | `05-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` | Compares criteria/plan against current code (Quick Score + US verification) |
 | 06 | `06-code-review` | `.agents/skills/06-code-review/SKILL.md` | Local code review in two phases (triage → investigation) |
 | 07 | `07-integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |

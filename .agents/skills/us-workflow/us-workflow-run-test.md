@@ -22,7 +22,13 @@ Verify the us-workflow FSM executes without error in simulated mode, covering al
       "project": {
         "name": "workflow-skills",
         "baseBranch": "main",
+        "workingBranch": "develop",
         "gitRemote": "origin"
+      },
+      "plans": {
+        "dir": ".cursor/plans",
+        "specsDir": "specs",
+        "worktreesDir": ".cursor/plans/{slug}/worktrees"
       },
       "stack": {
         "id": "markdown-only",
@@ -38,12 +44,18 @@ Verify the us-workflow FSM executes without error in simulated mode, covering al
     ```
 
    > **Note:** In `dry-run` mode, verification commands are never executed — an empty `verification` block suffices.
+   > Canonical artifact names: [`ARTIFACTS.md`](ARTIFACTS.md).
 
 2. **Git status clean** — no dirty files before test:
    ```bash
    git status --porcelain
    ```
 
+3. **Contract self-check** (automated, no agent run):
+   ```bash
+   npm run tests -- --local
+   ```
+   This asserts self-overwrite guard, ARTIFACTS/schema presence, Step 11 ownership in AGENTS.md, install tree match, and `update` config preserve.
 ## Invocation
 
 ```text
