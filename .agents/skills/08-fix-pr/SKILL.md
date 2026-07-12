@@ -13,9 +13,15 @@ Responsible for fetching, scoring, and systematically resolving active review th
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /fix-pr <PR-ID> [dry-run]
 ```
+
+### Workflow Mode (called by 09-goal-fix-pr)
+
+Orchestrated by [09-goal-fix-pr](../09-goal-fix-pr/SKILL.md). All interactive confirmation gates are auto-approved by the goal loop. Receives `PR-ID` and `dry-run` flag from the goal.
 
 ### Parameters
 

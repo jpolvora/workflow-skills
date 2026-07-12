@@ -15,9 +15,15 @@ Responsible for executing the coding and testing steps defined in the plan or fi
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /implement-tasks <plan-path> [mode=build|fix] [findings=<path>]
 ```
+
+### Workflow Mode (Step 5 for build / Step 10 for fix in us-workflow)
+
+Dispatched by `us-workflow` at Step 5 (build mode) or Step 10 (fix mode). Receives `planPath`, `mode`, and optional `findings` path from the orchestrator state.
 
 ### Parameters
 

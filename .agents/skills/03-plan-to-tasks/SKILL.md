@@ -13,9 +13,15 @@ Responsible for reading the finalized plan (`step-02-{slug}.plan.refined.md` or 
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /plan-to-tasks <plan-path> [thresholds=<path>]
 ```
+
+### Workflow Mode (Step 3 of us-workflow)
+
+Dispatched by `us-workflow` at Step 3. Receives `planPath` (path to `step-02-*.plan.refined.md` or `step-01-*.plan.md`) from the orchestrator state.
 
 ### Parameters
 

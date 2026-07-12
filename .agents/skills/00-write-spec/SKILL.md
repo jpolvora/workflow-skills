@@ -13,9 +13,15 @@ Responsible for taking raw, free-text feature descriptions and drafting a canoni
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /write-spec "<description>" [slug=<slug>] [output-dir=<path>]
 ```
+
+### Workflow Mode (Step 0 of us-workflow)
+
+Dispatched by `us-workflow` at Step 0 with the issue body or feature text from context. Receives `description` and optional `slug` from the orchestrator's input.
 
 ### Parameters
 

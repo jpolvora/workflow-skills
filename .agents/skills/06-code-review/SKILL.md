@@ -1,119 +1,106 @@
 ---
 name: 06-code-review
-description: Reviewer for us-workflow Step 9. Local code review in two phases (triage → investigation) + generalization by defect class. Detects stack via config.json; stack-agnostic. Invoked by path at Step 9; also standalone.
-version: 3.0
+description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.
+version: 3.1
 disable-model-invocation: true
 ---
 
-# Code Reviewer (Workflow Step 9)
+# 06-code-review
 
-Senior code reviewer — two-phase analysis, evidence-backed proof, generalization by defect class. Goal: find critical errors before the PR.
+Responsible for performing a comprehensive local code review on all modified files (relative to the base branch) before a PR is raised. It is the primary quality gate in the `us-workflow` pipeline but is equally effective when called directly by a developer after making changes.
 
-## Pre-reading (mandatory)
+---
 
-- `.agents/skills/us-workflow/config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
-- `AGENTS.md` — hub routing
-- `MEMORY.md` — Review Patterns
+## Invocation
 
-## Anti-Loop Purpose
+### Standalone Mode
 
-**Precision + completeness in the same round:**
+```
+/code-review [base=<ref>] [plan=<plan-path>]
+```
 
-- **Precision:** publish only what is provable with structured evidence
-- **Completeness:** enumerate **all** findings at once
-- **Class, not instance:** sweep sibling occurrences of the same pattern
+### Workflow Mode (Step 9)
 
-Target convergence: **a single round** — complete list or "No feedback".
+Dispatched automatically by `us-workflow` at Step 9. Receives `base` and `planPath` from the orchestrator's state file.
 
-## Phase 0 — Stack Detection
+### Parameters
 
-Read `config.json.stack` to identify:
-- Backend: layers, solution, test project
-- Frontend: framework, source dir, i18n
-- Database: type, ORM
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `base` | String | `origin/main` or `origin/master` (auto-detected) | The git ref to diff against. |
+| `plan` | String | (optional) | Path to `step-02-*.plan.refined.md` or `step-01-*.plan.md` to cross-reference the planned changes against reviewed code. |
 
-Ignore: markdown, CI configs, translations, build artifacts (`bin/`, `obj/`, `*/dist/`, `node_modules/`).
+---
 
-## How to Execute
+## Execution Flow
 
-### 0. Local Diff
+### Phase 0 — Stack Detection
 
+Read `config.json.stack` to determine which source layers are in scope:
+- **Backend:** layered directories (Domain, Application, Infrastructure, API)
+- **Frontend:** `sourceDir` for TypeScript/React
+- **Ignored:** `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations
+
+Run the diff:
 ```bash
 git diff --name-status {base}...HEAD -- ':!**/bin/**' ':!**/obj/**' ':!**/node_modules/**' ':!**/dist/**'
 ```
 
-### 1. Phase 1 — Triage
+### Phase 1 — Triage (Hypothesis List)
 
-List of hypotheses anchored to changed lines — no verdict.
+Walk each modified file within scope and flag lines with real defect potential. Discard:
+- Cosmetic formatting or naming nits
+- Pre-existing code untouched by the current diff
+- Low-risk TSX without security surface
 
-- For each eligible file, identify lines with real problem potential
-- **Discard:** cosmetic nits, formatting, style, alerts without plausible failure, pre-existing code
-- UI (`*.tsx`): only consider security (`dangerouslySetInnerHTML`), critical bindings, forms, permissions
+### Phase 2 — Investigation (4-Step Proof)
 
-### 2. Phase 2 — Investigation + Proof
+For each triage hypothesis, complete **all four** steps before including in the report:
+1. **Evidence Read:** list files, symbols, and callers inspected
+2. **Failure Scenario:** specify exact inputs or state transitions that cause the issue
+3. **Missing Protection:** explain why existing validations/tests do not prevent the failure
+4. **Discards:** rejected alternative explanations
 
-For each hypothesis, complete the **4 steps** before reporting:
+If all 4 steps cannot be completed → discard the hypothesis.
 
-1. **Evidence read:** files, symbols, callers inspected
-2. **Failure scenario:** inputs/states that trigger the issue
-3. **Missing protection:** why existing validations/tests don't prevent it
-4. **Discards:** rejected alternative hypotheses
+### Phase 2.5 — Defect Class Generalization
 
-If unable to complete the 4 steps → **discard**.
+For each proven finding, search for sibling occurrences of the same pattern in the full diff (not just the file where it was first spotted). Report all occurrences together under one finding.
 
-### 2.5 Generalization by Class
+### Phase 2.6 — MEMORY.md Pattern Sweep
 
-For each proven finding, search for sibling occurrences in the diff and report all together.
+Run `grep` for each ID in `MEMORY.md → ## Review Patterns` against the modified file set. Report confirmed violations.
 
-### 2.6 Review Patterns (MEMORY.md)
+### Phase 2.7 — Invariant Checklists
 
-Run grep for each ID in `MEMORY.md → ## Review Patterns` whose scope matches the changed files. Report violations.
-
-### 2.7 Checklists grep (completeness)
-
-Execute all applicable checklists based on `config.json.invariants` and `config.json.rules`. Generic examples:
+Cross-check `config.json.invariants` and `config.json.rules`:
 
 | Checklist | What to look for |
-|-----------|-------------|
-| Tenancy | `config.json.domain.tenancyField` — filters, documented exceptions |
-| EF migrations | `config.json.invariants.migrationsCliOnly` — no manual editing |
-| Domain rules | Rules in `config.json.domain.model` |
-| React hooks | `useEffect` — cleanup, dependencies |
-| i18n | New keys in all locales from `config.json.stack.frontend.i18n.locales[]` |
+|-----------|------------------|
+| Tenancy | `config.json.domain.tenancyField` — filters and documented exceptions |
+| DB Migrations | `config.json.invariants.migrationsCliOnly` — no hand-written migration files |
+| Domain Rules | Rules in `config.json.domain.model` |
+| React Hooks | `useEffect` — cleanup presence and stable dependency arrays |
+| i18n Keys | New translation keys present in all locales from `config.json.stack.frontend.i18n.locales[]` |
 
-## Common Gaps by Stack
-
-### General
-- Secrets hardcoded or in logs
-- Authorization failures, injection, cross-tenant leakage
-- Resource leaks (`IDisposable`)
-
-### C# / .NET (when detected)
-- Dangerous defaults (`DateTime.MinValue`, `Guid.Empty` accepted as valid)
-- N+1 queries, premature materialization, async blocking
-- Project invariant violations
-
-### TypeScript / React (when detected)
-- `dangerouslySetInnerHTML` without sanitization
-- `useEffect` without cleanup / unstable dependencies
-- `any` in props/DTOs; incomplete i18n; API calls outside existing hooks
+---
 
 ## Report Format
 
-If nothing to report: **No feedback**
+**If nothing to report:** output `No feedback` and stop.
 
-If findings:
+**If findings exist:**
 
 ```markdown
 ## Code Review
 
-**Branch:** `…`
+**Branch:** `{branch-name}`
 **Stack:** `{detected via config.json}`
 **Files:** N
 
 ### Critical
 - **`path:L42`**: CRITICAL — description (Score: 9/10)
-  Analysis: (4 steps)
+  Analysis: (4 steps completed)
   Sibling occurrences: `path:L88`
   Suggestion: ```suggestion … ```
 
@@ -124,11 +111,21 @@ If findings:
 - **`path:L150`**: SUGGESTION — description (Score: 6/10)
 
 ---
-**Apply fixes?** (YES → `build-backend`, `test-backend`, `build-frontend`)
+**Apply fixes?** (YES → run build and tests)
 ```
+
+---
 
 ## Automatic Fix (after YES)
 
-1. Apply fixes surgically
-2. Run `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` if applicable)
-3. Present summary
+1. Apply all surgical fixes to source files.
+2. Run `build-backend`, `test-backend`, and `build-frontend` (+ `test-frontend` if UI logic is touched).
+3. Report resulting files changed and test outcome.
+
+---
+
+## Rules of Engagement
+
+- **Precision before volume:** only include findings with complete evidence. No speculative comments.
+- **Convergence goal:** a single report round covering all issues simultaneously — avoid review loops.
+- **Do not commit:** changes are staged to the working tree; the orchestrator or developer handles staging.

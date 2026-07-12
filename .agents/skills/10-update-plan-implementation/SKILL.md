@@ -13,9 +13,15 @@ Responsible for capturing manual QA findings and implementing delta corrections 
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /step-10 <slug-or-plan-path> [session-name=<name>]
 ```
+
+### Workflow Mode (Post-workflow, on demand)
+
+Not part of the main `us-workflow` pipeline. Invoked by the developer explicitly after completing the main workflow when manual QA or browser testing reveals additional gaps.
 
 ### Parameters
 
