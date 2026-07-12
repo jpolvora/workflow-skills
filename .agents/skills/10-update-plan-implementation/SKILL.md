@@ -1,14 +1,14 @@
 ---
 name: 10-update-plan-implementation
 description: Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.
-upstream: jpolvora/workflow-skills � this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---
 
 # 10-update-plan-implementation (Post-Workflow Fixes)
 
-Responsible for capturing manual QA findings and implementing delta corrections after the main workflow finishes. It appends the delta plan (§9) to the finalized plan file and updates the delivery results document.
+Responsible for capturing manual QA findings and implementing delta corrections after the main workflow finishes. It appends the delta plan (Â§9) to the finalized plan file and updates the delivery results document.
 
 ---
 
@@ -44,32 +44,32 @@ Resolve the working directories and target artifacts:
 ## State Machine (FSM) Flow
 
 ```
-[Bootstrap] ──> [Intake Gaps] ──> [Delta Plan] ──> [Implement Gaps] ──> [Verify & Certify]
+[Bootstrap] â”€â”€> [Intake Gaps] â”€â”€> [Delta Plan] â”€â”€> [Implement Gaps] â”€â”€> [Verify & Certify]
 ```
 
-### Phase 1 — Bootstrap & Context Board
+### Phase 1 â€” Bootstrap & Context Board
 - Resolve the target `{slug}` and locate the plan files.
 - Query all commits since the delivery checkpoint: `git log --oneline {base}..HEAD`.
 - Display the **Context Board** in English: target slug, active branch, baseline hash, and list of commits.
 
-### Phase 2 — Intake Gaps
+### Phase 2 â€” Intake Gaps
 - Capture findings from manual QA or browser tests in a structured intake table:
 
 | Finding ID | Source | Severity | Description | Expected Behavior | Evidence |
 |------------|--------|----------|-------------|-------------------|----------|
 | `F-01` | manual QA | blocker | (Details of the gap) | (Expected output) | `path:line` |
 
-### Phase 3 — Delta Plan
-- Append **§9 Post-workflow follow-up** to the finalized plan file (`step-02-{slug}.plan.refined.md` if exists, otherwise `step-01`).
+### Phase 3 â€” Delta Plan
+- Append **Â§9 Post-workflow follow-up** to the finalized plan file (`step-02-{slug}.plan.refined.md` if exists, otherwise `step-01`).
 - Section 9 outlines: `session-id`, `triggered`, `after-workflow`, `branch`, list of `Findings` (F-01, F-02), `Delta implementation steps` (S-01, S-02), and a `Certification` checklist.
 
-### Phase 4 — Implementation & Scoped Validation
+### Phase 4 â€” Implementation & Scoped Validation
 - Apply minimal surgical fixes for each open step `S-NN`.
 - Run validation checks (e.g. backend tests, frontend builds).
 - Commit code fixes in small batches: `fix({slug}): post-workflow {F-01}`.
 
-### Phase 5 — Verification & Certification
+### Phase 5 â€” Verification & Certification
 - Verify that every blocker finding is marked as resolved.
-- Record commit hashes in the plan's §9 commits table.
+- Record commit hashes in the plan's Â§9 commits table.
 - Update `step-12-{slug}.result.md` (append new fixes to the Done section).
 - Present the **PR Readiness Summary** in English.

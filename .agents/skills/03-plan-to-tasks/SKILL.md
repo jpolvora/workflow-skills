@@ -1,7 +1,7 @@
 ---
 name: 03-plan-to-tasks
 description: Breaks an implementation plan into atomic tasks with files, ACs, and coderPrompts, organized in a DAG topological order.
-upstream: jpolvora/workflow-skills � this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -39,9 +39,9 @@ Before generating the task graph, evaluate the size of the plan using the follow
 
 | Metric | Threshold | Method of Evaluation |
 |--------|-----------|----------------------|
-| Steps | `≤ 3` | Count steps under section 3 (Step-by-Step Plan). |
-| Files | `≤ 6` | Count total files to create/modify in the file matrix. |
-| Layers | `≤ 2` | Count unique layers (e.g. Core, Infrastructure, API, Web). |
+| Steps | `â‰¤ 3` | Count steps under section 3 (Step-by-Step Plan). |
+| Files | `â‰¤ 6` | Count total files to create/modify in the file matrix. |
+| Layers | `â‰¤ 2` | Count unique layers (e.g. Core, Infrastructure, API, Web). |
 
 - **Sequential Mode:** If **all** metrics are within the thresholds, set `execMode: "sequential"` and bypass DAG generation.
 - **Parallel Mode:** If **any** metric exceeds the threshold, or if the plan's step breakdown is ambiguous, default to `execMode: "parallel"`.
@@ -56,9 +56,9 @@ When sequential execution is selected, write:
 
 #### `step-03-{slug}.plan.exec.md`
 ```markdown
-# {slug} — Execution Plan (Sequential)
-**Mode:** sequential — small plan, direct execution without DAG.
-**Reason:** {n} steps, {m} files, {k} layers — below thresholds.
+# {slug} â€” Execution Plan (Sequential)
+**Mode:** sequential â€” small plan, direct execution without DAG.
+**Reason:** {n} steps, {m} files, {k} layers â€” below thresholds.
 
 Run via `implement-tasks` build mode using the plan file directly.
 ```
@@ -67,7 +67,7 @@ Run via `implement-tasks` build mode using the plan file directly.
 ```json
 {
   "execMode": "sequential",
-  "reason": "{n} steps, {m} files, {k} layers — sequential execution is more efficient.",
+  "reason": "{n} steps, {m} files, {k} layers â€” sequential execution is more efficient.",
   "planPath": "step-02-{slug}.plan.refined.md",
   "tasks": [],
   "levels": []

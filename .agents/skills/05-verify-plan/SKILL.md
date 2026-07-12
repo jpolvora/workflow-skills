@@ -1,7 +1,7 @@
 ---
 name: 05-verify-plan
 description: Compares implementation quality and code deliverables against the plan and acceptance criteria.
-upstream: jpolvora/workflow-skills � this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -47,7 +47,7 @@ When no specification is provided, evaluate the overall code status against the 
 | **Correctness & Style** | 35% | Does the code respect project layer boundaries, multi-tenancy, and standards? |
 | **Tests** | 25% | Were tests updated and do they execute successfully? |
 
-Assign a 0-10 score to each metric. Approve the implementation if the weighted average score is `≥ 7`, otherwise suggest re-implementation.
+Assign a 0-10 score to each metric. Approve the implementation if the weighted average score is `â‰¥ 7`, otherwise suggest re-implementation.
 
 ---
 
@@ -74,7 +74,7 @@ sourcePlans: ["step-02-{slug}.plan.refined.md"]
 githubSource: gh | none
 ---
 
-# Implementation Report — {slug}
+# Implementation Report â€” {slug}
 
 **Generated on:** YYYY-MM-DD
 **Reference Plan:** step-02-{slug}.plan.refined.md (or step-01-{slug}.plan.md)

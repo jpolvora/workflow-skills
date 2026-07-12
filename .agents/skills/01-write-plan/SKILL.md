@@ -1,7 +1,7 @@
 ---
 name: 01-write-plan
 description: Generates the initial implementation plan (step-01-{slug}.plan.md) from the specification.
-upstream: jpolvora/workflow-skills � this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 3.2
 disable-model-invocation: true
 ---
@@ -37,9 +37,9 @@ Dispatched by `us-workflow` at Step 1. Receives `specInput` (path or issue ID) f
 ## Prerequisites
 
 Read the following repository metadata files before drafting:
-- `config.json` — identifies stack, backend layers, db/ORM, frontend framework, and test suites.
-- `tools.md` / `stack.md` — lists developer tool aliases and stack configurations.
-- `MEMORY.md` — outlines anti-regression rules and learned patterns.
+- `config.json` â€” identifies stack, backend layers, db/ORM, frontend framework, and test suites.
+- `tools.md` / `stack.md` â€” lists developer tool aliases and stack configurations.
+- `MEMORY.md` â€” outlines anti-regression rules and learned patterns.
 
 ---
 
@@ -73,7 +73,7 @@ Steps ordered logically by dependency:
 - Step 4: Frontend & UI (components, API integrations, page layouts).
 - Step 5: Frontend Tests (testing UI components and workflows).
 
-*For each step, specify: Action details · Affected files · Engineering checks.*
+*For each step, specify: Action details Â· Affected files Â· Engineering checks.*
 
 ## 4. Permissions, Tenancy & i18n
 - RBAC permissions, tenant data leakage isolation checks, and dynamic i18n strings.

@@ -1,7 +1,7 @@
 ---
 name: 11-ship-pr
-description: End-to-end delivery — verify branch state, commit, push, create PR workingBranch ? baseBranch, run goal-fix-pr loops, and merge.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+description: End-to-end delivery â€” verify branch state, commit, push, create PR workingBranch â†’ baseBranch, run goal-fix-pr loops, and merge.
+upstream: jpolvora/workflow-skills â€” this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.2
 disable-model-invocation: true
 ---
@@ -22,7 +22,7 @@ Responsible for shipping the completed workflow from the configured working bran
 
 ### Workflow Mode (Step 13 of us-workflow)
 
-Dispatched by `us-workflow` when the `--full` flag is active. Steps 0–12 have already completed. The code-review and auto-fix phases are **skipped** (already done in Step 9 and Step 10).
+Dispatched by `us-workflow` when the `--full` flag is active. Steps 0â€“12 have already completed. The code-review and auto-fix phases are **skipped** (already done in Step 9 and Step 10).
 
 ### Parameters
 
@@ -41,12 +41,12 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 
 ## us-workflow Integration (Step 13)
 
-1. Steps 0–12 are already completed.
+1. Steps 0â€“12 are already completed.
 2. Orchestrator approval gate:
    - **Create PR and start monitoring:** push, create PR, converge, merge.
    - **Push only (no PR):** push `{workingBranch}` only.
    - **Skip (done):** no push/PR.
-3. Skip code-review / auto-fix inside ship-pr (already done in Steps 9–10).
+3. Skip code-review / auto-fix inside ship-pr (already done in Steps 9â€“10).
 
 ---
 
@@ -56,34 +56,34 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 0. Preflight ? 1. Code-Review Loop ? 2. Verification ? 3. Commit & Push ? 4. PR Creation ? 5. goal-fix-pr ? 6. Merge
 ```
 
-### Phase 0 — Preflight Checks
+### Phase 0 â€” Preflight Checks
 - Resolve `workingBranch` = `config.project.workingBranch` (default `develop`), `baseBranch` = `config.project.baseBranch`, `gitRemote` = `config.project.gitRemote` (default `origin`).
 - Ensure active branch is `{workingBranch}` (checkout only with explicit user consent).
 - `git pull {gitRemote} {workingBranch}`.
 - Auto-detect `main`/`master` when `baseBranch` is unset (`scripts/detect-base-branch.sh`).
 - Stop if unexpected dirty files outside the delivery scope.
 
-### Phase 1 — Code-Review Loop (auto-fix)
+### Phase 1 â€” Code-Review Loop (auto-fix)
 - Load [code-review](../06-code-review/SKILL.md) vs base branch.
 - Fix Critical/Warning up to 3 iterations.
 - Skip when already reviewed under `us-workflow`.
 
-### Phase 2 — Project Verification
+### Phase 2 â€” Project Verification
 - Run `config.json.verification` commands; auto-correct up to 3 times, then stop.
 
-### Phase 3 — Commit & Push
+### Phase 3 â€” Commit & Push
 - Commit remaining delivery-related changes with a professional message.
 - `git push -u {gitRemote} {workingBranch}`.
 
-### Phase 4 — PR Creation
+### Phase 4 â€” PR Creation
 - If no open PR from `{workingBranch}` ? `{baseBranch}`, create: `gh pr create --head {workingBranch} --base {baseBranch}`.
 - Capture PR number and URL.
 
-### Phase 5 — goal-fix-pr Convergence Loop
+### Phase 5 â€” goal-fix-pr Convergence Loop
 - Wait 5 minutes (300s) post-push for CI/reviewer feedback.
 - Dispatch [goal-fix-pr](../09-goal-fix-pr/SKILL.md) until `activeThreads == 0` or `max` iterations.
 
-### Phase 6 — Merge
+### Phase 6 â€” Merge
 - `gh pr checks --watch`.
 - `gh pr merge --merge`.
 

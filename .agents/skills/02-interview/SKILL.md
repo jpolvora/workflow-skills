@@ -1,7 +1,7 @@
 ---
 name: 02-interview
 description: Audits and interrogates an implementation plan to resolve ambiguities and verify ready criteria before tasks are created.
-upstream: jpolvora/workflow-skills � this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.6
 disable-model-invocation: true
 ---
@@ -46,26 +46,26 @@ Dispatched by `us-workflow` at Step 2 (refinement). Discovers parameters via con
 ## State Machine (FSM)
 
 ```
-[Audit Plan] ──> [Resolve Gaps] ──> [Escalate / Ask] ──> [Shared Understanding]
+[Audit Plan] â”€â”€> [Resolve Gaps] â”€â”€> [Escalate / Ask] â”€â”€> [Shared Understanding]
 ```
 
-### Phase 1 — Audit (Scan & Register)
-- Audit sections 0–8 in `step-01-{slug}.plan.md`.
+### Phase 1 â€” Audit (Scan & Register)
+- Audit sections 0â€“8 in `step-01-{slug}.plan.md`.
 - Run scenario probes (e.g., Soft-deletion, concurrency, list sizing, rate limits).
 - Register findings in a `gap_registry` with fields: `id`, `class`, `section`, `gap`, `recommendation`, `status`, `dependsOn`.
 - Classify gaps as:
   - **blocking:** Prevents development or changes AC. Must be resolved or escalated.
   - **non-blocking:** Code quality, optimizations. Applied directly via defaults.
 
-### Phase 2 — Resolve (Local Gaps)
+### Phase 2 â€” Resolve (Local Gaps)
 - Resolve registered gaps by scanning code layers, specifications, and `MEMORY.md`.
 - Append resolution evidence to the registry.
 
-### Phase 3 — Escalate (Clarify Gaps)
+### Phase 3 â€” Escalate (Clarify Gaps)
 - Standalone: prompt the user via `AskQuestion`.
 - Workflow: return `status: needs_user` with details to allow the orchestrator to request feedback.
 
-### Phase 4 — Shared Understanding
+### Phase 4 â€” Shared Understanding
 - The plan cannot be finalized until `shared_understanding: confirmed` (except under `autoMode`).
 - STANDALONE: Prompt the user to confirm.
 - WORKFLOW: Orchestrator handles the gate confirmation.
