@@ -38,9 +38,15 @@ Scan existing code in `{backend.layers[].path}` and `{frontend.sourceDir}` for s
 
 ### 3. Produce plan
 
-Write structured plan to `{us-dir}/{slug}.plan.md` with sections:
+Write structured plan to `{us-dir}/step-01-{slug}.plan.md` with sections:
 
-```
+```markdown
+---
+slug: {slug}
+title: "{title}"
+status: "plan to be refined"
+---
+
 ## 0. Summary & Business Rules
 - US title/number, objective, business rules, security mitigations
 

@@ -35,8 +35,8 @@ Detect the mode from the received prompt: if it contains an instruction like "do
 
 ## Input
 
-- **Mandatory:** path to a `*.plan.md` (output format of `write-plan`).
-- **Recommended:** path to a corresponding `*.spec.md` (same `{slug}` or `{us-dir}` folder) — canonical source of ACs and description. If not provided, derive from `state.md` → `## Artifacts.specSnapshot` (workflow mode) or search for `{slug}.spec.md` in the same folder as the plan.
+- **Mandatory:** path to a `step-01-{slug}.plan.md` (output format of `write-plan`).
+- **Recommended:** path to a corresponding `step-00-{slug}.spec.md` (same `{slug}` or `{us-dir}` folder) — canonical source of ACs and description. If not provided, derive from `state.md` → `## Artifacts.specSnapshot` (workflow mode) or search for `step-00-{slug}.spec.md` in the same folder as the plan.
 - If the plan is not provided, ask.
 
 ## State machine (FSM)
@@ -77,7 +77,7 @@ Close gaps **first** with evidence from code, `docs/`, `CONTEXT.md`, `ADRs/`, `M
 
 **Grilling rule:** if the question can be answered by exploring the repository, **explore** (grep, read, search) and log evidence in `resolution` — **do not** escalate. Only escalate what has no local evidence after diligent exploration.
 
-Update `*.plan.md` **in-place** (sections §2–§5 as impacted).
+Read `step-01-{slug}.plan.md`, update impacted sections (§2–§5), change the frontmatter `status` from `"plan to be refined"` to `"plan refined ok"`, and prepare the refined content. Do not edit `step-01-{slug}.plan.md` in-place.
 
 ### 2c. Escalate
 
@@ -108,8 +108,9 @@ When 2d satisfied, return `status: success` with `shared_understanding: pending`
 
 ## Output
 
-- Plan updated in-place (`*.plan.md`).
-- Section `## Interview registry` (table `id | class | section | gap | status | resolution`) appended to the end of the plan.
+- Refined plan written to `step-02-{slug}.plan.refined.md` (leaving `step-01-{slug}.plan.md` intact as the initial draft).
+- Section `## Interview registry` (table `id | class | section | gap | status | resolution`) appended to the end of `step-02-{slug}.plan.refined.md`.
+- In standalone mode: write the output to `step-02-{slug}.plan.refined.md` in the same directory as the plan.
 - When standalone: chat summary of what was closed + what was left as `assumed-default`.
 
 ## `step-output` format (only when dispatched as a workflow subagent)

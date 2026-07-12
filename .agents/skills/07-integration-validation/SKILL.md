@@ -16,13 +16,13 @@ Final integration validation before opening a PR — last deterministic safety n
 
 ## Input
 
-- `*.plan.md` required
-- `specPath` or `*.spec.md` — canonical source of ACs
+- `step-01-*.plan.md` required
+- `specPath` or `step-00-*.spec.md` — canonical source of ACs
 - US number (optional; to resolve spec via GitHub)
 
 ## Step 1 — Test plan
 
-Read plan, ACs from `*.spec.md`, verification/delivery reports. Generate `*.integration-test.plan.md` with 8 sections:
+Read plan, ACs from `step-00-*.spec.md`, verification/delivery reports. Generate `step-11-*.integration-test.plan.md` with 8 sections:
 
 1. **Prerequisites** — URLs (from `config.json.stack.backend.apiHost` + `config.json.stack.frontend.devHost`), credentials, migrations (`migrations-apply`), seed (`seed-db`)
 2. **Data seed** — entities, seed strategy, minimum dataset per AC, cleanup between iterations
@@ -40,12 +40,12 @@ Read plan, ACs from `*.spec.md`, verification/delivery reports. Generate `*.inte
 3. Populate seed (§2); confirm prerequisites (§1)
 4. Run API checks (§4) and permissions (§5)
 5. **UI/browser (§6):** only when authorized (user confirms, or orchestrator is normal/non-auto/non-dry-run). Otherwise, skip and note.
-6. Write `*.integration-test.report.md`: pass/fail per AC
+6. Write `step-11-*.integration-test.report.md`: pass/fail per AC
 
 ## Output
 
-- `*.integration-test.plan.md`
-- `*.integration-test.report.md`
+- `step-11-*.integration-test.plan.md`
+- `step-11-*.integration-test.report.md`
 
 ## References
 
@@ -61,5 +61,5 @@ Read plan, ACs from `*.spec.md`, verification/delivery reports. Generate `*.inte
 
 ## Triggers
 
-- `@[integration-validation] us-{id}.plan.md`
+- `@[integration-validation] step-01-us-{id}.plan.md`
 - Dispatch workflow — Step 11

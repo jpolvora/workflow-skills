@@ -51,9 +51,9 @@ Output format — display in chat and suggest commit command:
 
 | Criterion | Score | Notes |
 |----------|------|-------|
-| Completude | | |
+| Completeness | | |
 | Correctness & Style | | |
-| Testes | | |
+| Tests | | |
 
 **Recommendation:** APPROVE / REIMPLEMENT
 
@@ -79,11 +79,11 @@ Accepts **one** of the following (in priority order):
 
 ## Output file (mandatory)
 
-- **Default path (flat convention):** `.cursor/plans/us-{XXXX}.plan.report.md`
-- **Alternative path (per-US folder convention):** `.cursor/plans/us-{XXXX}/us-{XXXX}.plan.report.md` — used when the chosen reference plan is under this convention (see **§2) Locate local Markdown plan → Conditional output path**).
-- **`{XXXX}`** = numeric issue id (e.g.: US `1474` → `us-1474.plan.report.md`).
-- **Double hyphen** (`--`) before `plan.report.md` is intentional, to distinguish from `us-1474-plan.md` and other `*.plan.md` files.
-- **Do not** create `us-{XXXX}-plan.md` as a substitute for the plan; the only artifact written by this skill is the **`.report.md`**.
+- **Default path (flat convention):** `.cursor/plans/step-06-us-{XXXX}.plan.report.md`
+- **Alternative path (per-US folder convention):** `.cursor/plans/us-{XXXX}/step-06-us-{XXXX}.plan.report.md` — used when the chosen reference plan is under this convention (see **§2) Locate local Markdown plan → Conditional output path**).
+- **`{XXXX}`** = numeric issue id (e.g.: US `1474` → `step-06-us-1474.plan.report.md`).
+- **Double hyphen** (`--`) before `plan.report.md` is intentional, to distinguish from `step-01-us-1474.plan.md` and other `*.plan.md` files.
+- **Do not** create `step-01-us-{XXXX}.plan.md` as a substitute for the plan; the only artifact written by this skill is the **`step-06-*.plan.report.md`**.
 - If the report already exists for this US, **replace it** with a new version (same name), dated in the document body.
 
 ## Prerequisites
@@ -128,8 +128,8 @@ If the issue does not exist or is not accessible, document the error and proceed
 
 Search under **two path conventions** (both valid — the repository uses both):
 
-1. **Per-US folder** (`write-plan`/`us-workflow` convention): `.cursor/plans/us-{XXXX}/us-{XXXX}.plan.md` — check this exact path first.
-2. **Native Cursor plan file** ("flat" convention, used by plans created outside the `write-plan` flow, e.g. via `CreatePlan`): `.cursor/plans/*{XXXX}*.plan.md` directly in the root of `.cursor/plans/` — e.g. `us1474_*.plan.md`, `us_1474_*.plan.md`, `*1474*.plan.md`.
+1. **Per-US folder** (`write-plan`/`us-workflow` convention): `.cursor/plans/us-{XXXX}/step-01-us-{XXXX}.plan.md` — check this exact path first.
+2. **Native Cursor plan file** ("flat" convention, used by plans created outside the `write-plan` flow, e.g. via `CreatePlan`): `.cursor/plans/*step-01-*{XXXX}*.plan.md` directly in the root of `.cursor/plans/` — e.g. `step-01-us1474_*.plan.md`, `step-01-us_1474_*.plan.md`, `*step-01-*{XXXX}*.plan.md`.
 
 Use `Glob` / `Grep` in the workspace with the US numeric pattern in **both** locations before deciding.
 
@@ -208,19 +208,19 @@ Optionally, after both tables: short bullets of **risks** (security, permissions
 
 Create or overwrite **exclusively** at the path determined by the **Conditional output path** (§2):
 
-- `.cursor/plans/us-{XXXX}.plan.report.md` (flat convention), **or**
-- `.cursor/plans/us-{XXXX}/us-{XXXX}.plan.report.md` (per-US folder convention)
+- `.cursor/plans/step-06-us-{XXXX}.plan.report.md` (flat convention), **or**
+- `.cursor/plans/us-{XXXX}/step-06-us-{XXXX}.plan.report.md` (per-US folder convention)
 
 **Prohibited:** editing, adding sections, or altering YAML of any `*.plan.md` used as reference in step 2.
 
-**Minimum content of `.report.md`**:
+**Minimum content of `step-06-*.plan.report.md`**:
 
 1. **YAML frontmatter** (optional but recommended):
 
 ```yaml
 ---
 us: XXXX
-reportDate: AAAA-MM-DD
+reportDate: YYYY-MM-DD
 sourcePlans: []   # list of relative paths to the .plan.md files read, or []
 githubSource: gh | none
 ---
@@ -255,10 +255,10 @@ githubSource: gh | none
 
 ## Rules of conduct
 
-- **Original plan immutability:** `*.plan.md` files identified as the US plan are **read-only**. Any structured output goes to `us-{XXXX}.plan.report.md`.
+- **Original plan immutability:** `*.plan.md` files identified as the US plan are **read-only**. Any structured output goes to `step-06-us-{XXXX}.plan.report.md`.
 - **Report:** the skill closure is always the **feature-by-feature table** (three situations) + **additional features** (or explicit absence phrase), in chat **and** in the `.report.md` file; do not substitute with narrative only.
 - **Accuracy:** do not mark **Implemented** without a supporting file path or symbol (class/method).
-- **Scope:** do not refactor the app; read code and plans; **write** only to `.cursor/plans/us-{XXXX}.plan.report.md`.
+- **Scope:** do not refactor the app; read code and plans; **write** only to `.cursor/plans/step-06-us-{XXXX}.plan.report.md`.
 - **Secrecy:** never copy authentication tokens (`gh auth token`) into Markdown.
 - **Consistency with write-plan:** where the plan cited project guardrails (layers from `config.json.stack.backend.layers[]`, tenancy, RBAC permissions, domain rules, migrations), repeat in the evidence column if the verification pertains to that.
 
@@ -269,12 +269,12 @@ githubSource: gh | none
 - **GitHub search and authentication:** `gh` CLI (`gh issue view`); script [`github-issue-to-spec.py`](../us-workflow/scripts/github-issue-to-spec.py)
 - **Expected original plan format:** [`01-write-plan`](../01-write-plan/SKILL.md)
 - **Quick Score report template:** [TEMPLATE.md](TEMPLATE.md)
-- **Local plan example:** `.cursor/plans/verificação_us_1815_e90590cc.plan.md`
+- **Local plan example:** `.cursor/plans/verification_us_1815_e90590cc.plan.md`
 
 ---
 
 ## Suggested triggers for the user
 
-- “Generate the US 1474 report (`us-1474.plan.report.md`)”
+- “Generate the US 1474 report (`step-06-us-1474.plan.report.md`)”
 - “Is US 1815 aligned with GitHub and the plan?”
 - `@[verify-plan] 1474`

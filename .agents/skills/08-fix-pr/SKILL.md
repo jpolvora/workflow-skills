@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Cooperative PR thread resolution for **GitHub** and **Azure DevOps**. Combines platform-agnostic thread analysis, scoring, and structured reporting with platform-specific fetch/resolve scripts.
 
-Runtime **IDE** complementar ao **Auto-Fix CI** (`--auto-fix` / `auto-fix.yml`). Both use the same cooperative gates and response format — same process, **no code coupling**.
+Runtime **IDE** complementary to **Auto-Fix CI** (`--auto-fix` / `auto-fix.yml`). Both use the same cooperative gates and response format — same process, **no code coupling**.
 
 | | Auto-Fix CI | fix-pr (IDE) |
 |---|-------------|--------------|
@@ -252,7 +252,7 @@ Use for **detection only** — fixes continue via fix flow. Correct new findings
 
 3. **Generate report** (when code was changed):
 
-Create `.cursor/codereviews/PR-<PR_ID>-rodada-<N>.md`:
+Create `.cursor/codereviews/PR-<PR_ID>-round-<N>.md`:
 
 ```markdown
 # Report — PR <PR_ID> Round <N>
@@ -293,19 +293,19 @@ If new defect class, consolidate learning in `MEMORY.md` (prefer via `us-workflo
 **GitHub:**
 
 ```bash
-node .agents/skills/08-fix-pr/scripts/resolve_thread.cjs <THREAD_ID> "Root cause and what was fixed. See report: .cursor/codereviews/PR-<PR_ID>-rodada-<N>.md"
+node .agents/skills/08-fix-pr/scripts/resolve_thread.cjs <THREAD_ID> "Root cause and what was fixed. See report: .cursor/codereviews/PR-<PR_ID>-round-<N>.md"
 ```
 
 Equivalent `gh` CLI alternative:
 ```bash
 REPO=$(gh repo view --json name,owner --jq '"\(.owner.login)/\(.name)"')
-gh api "repos/$REPO/pulls/$PR_ID/comments/$THREAD_ID/replies" -f body="Root cause and what was fixed. See report: .cursor/codereviews/PR-<PR_ID>-rodada-<N>.md"
+gh api "repos/$REPO/pulls/$PR_ID/comments/$THREAD_ID/replies" -f body="Root cause and what was fixed. See report: .cursor/codereviews/PR-<PR_ID>-round-<N>.md"
 ```
 
 **Azure DevOps:**
 
 ```bash
-python .agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py resolve-thread --pr-id <PR_ID> --thread-id <THREAD_ID> --model "<model-id>" --comment "Root cause and what was fixed. See report: .cursor/codereviews/PR-<PR_ID>-rodada-<N>.md"
+python .agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py resolve-thread --pr-id <PR_ID> --thread-id <THREAD_ID> --model "<model-id>" --comment "Root cause and what was fixed. See report: .cursor/codereviews/PR-<PR_ID>-round-<N>.md"
 ```
 
 **Gate:** if **any** attempted resolution fails → **do not push**. Inform user which `threadId` failed.
@@ -314,12 +314,12 @@ python .agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py resolve-thread -
 
 Detect current round by counting existing reports or run directories:
 ```bash
-ROUND=$(ls .cursor/codereviews/PR-<PR_ID>-rodada-*.md 2>/dev/null | wc -l)
+ROUND=$(ls .cursor/codereviews/PR-<PR_ID>-round-*.md 2>/dev/null | wc -l)
 ROUND=$((ROUND + 1))
 ```
 
 Surgical commit (never `git add .` indiscriminately):
-- Include modified files and report `.cursor/codereviews/PR-<PR_ID>-rodada-${ROUND}.md`.
+- Include modified files and report `.cursor/codereviews/PR-<PR_ID>-round-${ROUND}.md`.
 - Commit message:
 
 **GitHub:**

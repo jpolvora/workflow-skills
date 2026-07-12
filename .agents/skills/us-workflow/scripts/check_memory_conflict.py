@@ -25,7 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parents[4]   # .agents/skills/us-workflow/s
 MEMORY_PATH = REPO_ROOT / "MEMORY.md"
 
 KNOWN_MODULES = [
-    "Companies", "Members", "Matrix", "Placement", "Activation", "Ledger",
+    "Companies", "Members", "Placement", "Activation", "Ledger",
     "Withdraw", "Wallet", "Plans", "Sponsor", "Notifications", "Messages",
     "Audit", "Permissions", "Roles", "FeatureFlags", "Payment", "Treasury",
     "Yield", "Localization", "Users", "Auth", "Crud",
@@ -161,8 +161,9 @@ def extract_plan_keywords(path: Path) -> dict:
         if _text_contains_module(text, mod):
             keywords["modules"].add(mod)
 
-    for m in re.finditer(r'(?:src/Matrix\.|web/src/|tests/Matrix\.)\S+', text):
-        keywords["file_paths"].add(m.group())
+    for m in re.finditer(r'(?:src/|web/|tests/)\S+', text):
+        path_str = m.group().rstrip('.,;()[]{}*`"\'')
+        keywords["file_paths"].add(path_str)
 
     for m in re.finditer(
         r'\b[A-Z][a-zA-Z0-9]+(?:Service|Controller|Request|Dto|Mapper|Provider)\b',
@@ -214,40 +215,40 @@ def cross_reference(memory: dict, plan: dict) -> dict:
 def format_report(plan_path: Path, plan_keywords: dict, results: dict) -> str:
     lines = []
     lines.append("=" * 50)
-    lines.append("  check-memory-conflict -- relatorio")
+    lines.append("  check-memory-conflict -- report")
     lines.append("=" * 50)
-    lines.append(f"Plano: {plan_path}")
+    lines.append(f"Plan: {plan_path}")
     lines.append("")
 
-    lines.append("## Escopo detectado no plano")
-    lines.append(f"  Layers: {', '.join(plan_keywords['layers']) or '(nenhum)'}")
-    lines.append(f"  Modulos: {', '.join(plan_keywords['modules']) or '(nenhum)'}")
+    lines.append("## Scope detected in plan")
+    lines.append(f"  Layers: {', '.join(plan_keywords['layers']) or '(none)'}")
+    lines.append(f"  Modules: {', '.join(plan_keywords['modules']) or '(none)'}")
     entities = plan_keywords["entities"]
-    lines.append(f"  Entidades/classes: {', '.join(entities[:8]) or '(nenhum)'}")
+    lines.append(f"  Entities/classes: {', '.join(entities[:8]) or '(none)'}")
     if len(entities) > 8:
-        lines.append(f"    ... +{len(entities) - 8} mais")
+        lines.append(f"    ... +{len(entities) - 8} more")
     lines.append("")
 
     total = len(results["traps"]) + len(results["patterns"])
     if total == 0:
-        lines.append("[OK] Nenhum overlap encontrado -- nenhuma entrada em MEMORY.md")
-        lines.append("   corresponde ao escopo detectado.")
+        lines.append("[OK] No overlap found -- no entry in MEMORY.md")
+        lines.append("   corresponds to the detected scope.")
         return "\n".join(lines)
 
-    lines.append(f"## Alertas ({total} entrada(s) relacionada(s))")
+    lines.append(f"## Alerts ({total} related entry/entries)")
     lines.append("")
 
     if results["traps"]:
-        lines.append("### [TRAPS] (armadilhas conhecidas)")
+        lines.append("### [TRAPS] (known traps)")
         for t in results["traps"]:
             sev = f" [{t['severity'].upper()}]" if t.get("severity") else ""
             tags = []
             if t["matched_layers"]:
                 tags.append(f"layer={','.join(t['matched_layers'])}")
             if t["matched_modules"]:
-                tags.append(f"modulo={','.join(t['matched_modules'])}")
+                tags.append(f"module={','.join(t['matched_modules'])}")
             if t["entity_match"]:
-                tags.append("entidade")
+                tags.append("entity")
             if t["path_match"]:
                 tags.append("path")
             lines.append(f"  -> {t['title']}{sev}")
@@ -255,15 +256,15 @@ def format_report(plan_path: Path, plan_keywords: dict, results: dict) -> str:
         lines.append("")
 
     if results["patterns"]:
-        lines.append("### [PATTERNS] (solucoes reutilizaveis)")
+        lines.append("### [PATTERNS] (reusable patterns)")
         for p in results["patterns"]:
             tags = []
             if p["matched_layers"]:
                 tags.append(f"layer={','.join(p['matched_layers'])}")
             if p["matched_modules"]:
-                tags.append(f"modulo={','.join(p['matched_modules'])}")
+                tags.append(f"module={','.join(p['matched_modules'])}")
             if p["entity_match"]:
-                tags.append("entidade")
+                tags.append("entity")
             if p["path_match"]:
                 tags.append("path")
             lines.append(f"  -> {p['title']}")
@@ -288,11 +289,11 @@ def main():
 
     plan_path = Path(args[0])
     if not plan_path.exists():
-        print(f"Erro: arquivo nao encontrado: {plan_path}")
+        print(f"Error: file not found: {plan_path}")
         sys.exit(1)
 
     if not MEMORY_PATH.exists():
-        print(f"Erro: MEMORY.md nao encontrado em {MEMORY_PATH}")
+        print(f"Error: MEMORY.md not found at {MEMORY_PATH}")
         sys.exit(1)
 
     memory = parse_memory(MEMORY_PATH)

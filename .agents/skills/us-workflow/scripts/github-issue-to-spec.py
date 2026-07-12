@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Converte o JSON de `gh issue view {n} --json ...` em `*.spec.md` canônico (Matrix).
+Converts JSON from `gh issue view {n} --json ...` into canonical `*.spec.md`.
 
-Uso:
+Usage:
   gh issue view 1234 --json number,title,body,state,labels,assignees,comments,url \
-    > .cursor/plans/us-1234/us-1234.issue.json
+    > .cursor/plans/us-1234/step-00-us-1234.issue.json
   python github-issue-to-spec.py \
-    --input .cursor/plans/us-1234/us-1234.issue.json \
-    --output .cursor/plans/us-1234/us-1234.spec.md \
+    --input .cursor/plans/us-1234/step-00-us-1234.issue.json \
+    --output .cursor/plans/us-1234/step-00-us-1234.spec.md \
     --repo jpolvora/matrix
 
-O `--input` também aceita `-` para ler o JSON via stdin (pipe direto do gh).
+The `--input` option also accepts `-` to read JSON from stdin.
 """
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ def split_body(body: str) -> tuple[str, list[str]]:
 def build_spec_md(issue: dict, repo: str | None) -> str:
     number = issue.get("number")
     slug = f"us-{number}" if number else "spec"
-    title = (issue.get("title") or (f"US {number}" if number else "Especificação")).strip()
+    title = (issue.get("title") or (f"US {number}" if number else "Specification")).strip()
     state = (issue.get("state") or "").lower()
     url = issue.get("url") or (
         f"https://github.com/{repo}/issues/{number}" if repo and number else ""
@@ -100,35 +100,35 @@ def build_spec_md(issue: dict, repo: str | None) -> str:
     fm.append("---")
     fm.append("")
 
-    body: list[str] = [f"# Especificação — {title}", ""]
+    body: list[str] = [f"# Specification — {title}", ""]
     meta = []
     if state:
-        meta.append(f"**Estado:** {state}")
+        meta.append(f"**State:** {state}")
     if assignees:
-        meta.append(f"**Atribuído:** {', '.join(assignees)}")
+        meta.append(f"**Assignees:** {', '.join(assignees)}")
     if labels:
         meta.append(f"**Labels:** {', '.join(labels)}")
     if meta:
         body.extend(meta)
         body.append("")
 
-    body.append("## Descrição")
+    body.append("## Description")
     body.append("")
-    body.append(description or "_Sem descrição na issue._")
+    body.append(description or "_No description in the issue._")
     body.append("")
 
-    body.append("## Critérios de Aceite")
+    body.append("## Acceptance Criteria")
     body.append("")
     if ac_items:
         for idx, ac in enumerate(ac_items, 1):
             body.append(f"- AC{idx}: {ac}")
     else:
-        body.append("_Nenhum critério de aceite explícito na issue — extrair/validar no refinamento._")
+        body.append("_No explicit acceptance criteria in the issue — extract/validate during refinement._")
     body.append("")
 
     comments = issue.get("comments") or []
     if comments:
-        body.append("## Comentários (auditoria)")
+        body.append("## Comments (audit)")
         body.append("")
         for c in comments:
             author = (c.get("author") or {}).get("login") or "?"
@@ -137,9 +137,9 @@ def build_spec_md(issue: dict, repo: str | None) -> str:
                 body.append(f"- **{author}:** {text}")
         body.append("")
 
-    body.append("## Notas")
+    body.append("## Notes")
     body.append("")
-    body.append("_Gerado automaticamente a partir do JSON de `gh issue view` (GitHub)._")
+    body.append("_Automatically generated from gh issue view JSON (GitHub)._")
     body.append("")
 
     return "\n".join(fm + body)
@@ -149,10 +149,10 @@ def main() -> int:
     if sys.platform == "win32":
         sys.stdout.reconfigure(encoding="utf-8")
 
-    parser = argparse.ArgumentParser(description="Converte JSON de gh issue view em *.spec.md canônico")
-    parser.add_argument("--input", required=True, help="Caminho do JSON (gh issue view --json ...) ou '-' para stdin")
-    parser.add_argument("--output", required=True, help="Caminho de saída *.spec.md")
-    parser.add_argument("--repo", default="", help="owner/repo (para issueUrl quando ausente no JSON)")
+    parser = argparse.ArgumentParser(description="Converts JSON from gh issue view into canonical *.spec.md")
+    parser.add_argument("--input", required=True, help="Path to JSON file (gh issue view --json ...) or '-' for stdin")
+    parser.add_argument("--output", required=True, help="Output path for *.spec.md")
+    parser.add_argument("--repo", default="", help="owner/repo (for issueUrl when missing in JSON)")
     args = parser.parse_args()
 
     if args.input == "-":
@@ -160,14 +160,14 @@ def main() -> int:
     else:
         input_path = Path(args.input)
         if not input_path.is_file():
-            print(f"Erro: arquivo de entrada não encontrado: {input_path}", file=sys.stderr)
+            print(f"Error: input file not found: {input_path}", file=sys.stderr)
             return 1
         raw = input_path.read_text(encoding="utf-8")
 
     try:
         issue = load_issue(raw)
     except json.JSONDecodeError as exc:
-        print(f"Erro: JSON inválido — {exc}", file=sys.stderr)
+        print(f"Error: invalid JSON — {exc}", file=sys.stderr)
         return 1
 
     spec_md = build_spec_md(issue, args.repo or None)
@@ -175,7 +175,7 @@ def main() -> int:
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(spec_md, encoding="utf-8")
-    print(f"Spec gravado em: {output_path}")
+    print(f"Spec written to: {output_path}")
     return 0
 
 

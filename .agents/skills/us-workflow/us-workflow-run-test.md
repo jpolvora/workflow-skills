@@ -63,18 +63,18 @@ Verify the us-workflow FSM executes without error in simulated mode, covering al
 | Step | Label | Expected action |
 |------|-------|----------------|
 | **0** | Spec Creation | Skipped — spec file provided directly |
-| **1** | Planning | `Task` `01-write-plan` → `test-workflow.plan.md` (Bypassed if Dynamic Execution active) |
-| **2** | Refinement | `Task` `02-interview` → gap registry (Bypassed if Dynamic Execution active) |
-| **3** | Execution Plan & DAG | `Task` `03-plan-to-tasks` → `test-workflow.plan.exec.md` + `test-workflow.exec.dag.json` |
+| **1** | Planning | `Task` `01-write-plan` → `step-01-test-workflow.plan.md` (Bypassed if Dynamic Execution active) |
+| **2** | Refinement | `Task` `02-interview` → `step-02-test-workflow.plan.refined.md` (Bypassed if Dynamic Execution active) |
+| **3** | Execution Plan & DAG | `Task` `03-plan-to-tasks` → `step-03-test-workflow.plan.exec.md` + `step-03-test-workflow.exec.dag.json` |
 | **4†** | Model sub-gate F1→F2 | Auto-gate: continue with current model |
 | **5** | Implementation | `Task` `04-implement-tasks` mode build — simulates editing AGENTS.md |
-| **6** | Verification & Report | `Task` `05-verify-plan` → `test-workflow.plan.report.md` (readonly) |
+| **6** | Verification & Report | `Task` `05-verify-plan` → `step-06-test-workflow.plan.report.md` (readonly) |
 | **7** | Decision & First Commit | Auto-gate: approve → simulate build/test → simulate commit (dry-run skips real commit) |
 | **8†** | Model sub-gate F3→F4 | Auto-gate: continue with current model |
 | **9** | Code Review | `Task` `06-code-review` → score + findings |
 | **10** | Fixes & Second Commit | `Task` `04-implement-tasks` mode fix → simulate fixes + build/test → simulate commit |
 | **11** | Integration Validation | `Task` `07-integration-validation` — no browser in dry-run |
-| **12** | Consolidation & Cleanup | G2-delivery gate → simulate `test-workflow.result.md` + benchmark + MEMORY.md sweep (dry-run: log only) |
+| **12** | Consolidation & Cleanup | G2-delivery gate → simulate `step-12-test-workflow.result.md` + benchmark + MEMORY.md sweep (dry-run: log only) |
 | **13** | Ship & PR (`full`) | `Task` `11-ship-pr` — simulates push, PR creation, goal-fix-pr loop, merge |
 
 ## Verification Points
@@ -86,15 +86,16 @@ After the workflow completes (`status: completed`), confirm:
 | Artifact | Expected |
 |----------|----------|
 | `{workflow-id}.state.md` | Status: `completed`, `dryRun: true`, completed steps 0–13 |
-| `test-workflow.spec.md` | Copied from `specs/` |
-| `test-workflow.plan.md` | Present |
-| `test-workflow.plan.exec.md` | Present |
-| `test-workflow.exec.dag.json` | Present (or skipped if `execMode: sequential`) |
-| `test-workflow.plan.report.md` | Present |
-| `test-workflow.report.md` | Present |
-| `test-workflow.result.md` | Present (dry-run: simulated) |
-| `test-workflow.integration-test.plan.md` | Present |
-| `test-workflow.integration-test.report.md` | Present |
+| `step-00-test-workflow.spec.md` | Copied from `specs/` |
+| `step-01-test-workflow.plan.md` | Present |
+| `step-02-test-workflow.plan.refined.md` | Present (or skipped if Step 2 bypassed) |
+| `step-03-test-workflow.plan.exec.md` | Present |
+| `step-03-test-workflow.exec.dag.json` | Present (or skipped if `execMode: sequential`) |
+| `step-06-test-workflow.plan.report.md` | Present |
+| `step-10-test-workflow.report.md` | Present |
+| `step-12-test-workflow.result.md` | Present (dry-run: simulated) |
+| `step-11-test-workflow.integration-test.plan.md` | Present |
+| `step-11-test-workflow.integration-test.report.md` | Present |
 
 ### Files NOT modified
 
