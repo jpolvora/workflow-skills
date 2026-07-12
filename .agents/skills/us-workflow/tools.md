@@ -25,7 +25,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 |------|--------|--------|
 | `read-state` | Read workflow state | `Read` `.cursor/plans/{slug}/{workflow-id}.state.md` |
 | `write-state` | Write/append state | `Write` / `StrReplace` (hygiene before board) |
-| `read-config` | Load project config | `Read` `config.json` |
+| `read-config` | Load project config | `Read` `.agents/skills/us-workflow/config.json` |
 | `read-stack` | Load stack reference | `Read` `stack.md` |
 | `read-memory` | Load learned knowledge | `Read` `MEMORY.md` (root; index via `Grep`) |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |

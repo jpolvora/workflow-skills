@@ -1,6 +1,6 @@
 # US Delivery Workflow v9.1 — Diagrams
 
-> **Nota de arquitetura (v9.1):** os Steps 0–11 delegam seu conteúdo funcional a skills dedicadas e standalone. O `state.md` funciona como memória local do workflow e o `MEMORY.md` como memória compartilhada/generalizável. Passo 13 opcional via `--full` para Ship & PR. Projeto-agnóstico — stack detectada via `config.json`.
+> **Nota de arquitetura (v9.1):** os Steps 0–11 delegam seu conteúdo funcional a skills dedicadas e standalone. O `state.md` funciona como memória local do workflow e o `MEMORY.md` como memória compartilhada/generalizável. Passo 13 opcional via `--full` para Ship & PR. Projeto-agnóstico — stack detectada via `.agents/skills/us-workflow/config.json`.
 
 Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](README.md).
 

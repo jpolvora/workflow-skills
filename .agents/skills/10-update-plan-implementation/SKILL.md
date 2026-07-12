@@ -1,5 +1,5 @@
 ---
-name: step-10-update-plan-implementation
+name: 10-update-plan-implementation
 description: Post-workflow follow-up after us-workflow. Captures manual QA findings, implements delta fixes, appends implementation steps to the last US plan, verifies against code, updates result.md, and certifies the pack for the next PR. Use on demand when tests after workflow reveal more work — invoke explicitly; not part of us-workflow.
 disable-model-invocation: true
 version: 1.0
@@ -18,7 +18,7 @@ Invoke on demand via `@step-10-update-plan-implementation` or `/step-10`. Never 
 - This file
 - Durable US artifacts: `.cursor/plans/{slug}/{slug}.plan.md`, `{slug}.result.md`
 - Project: [`AGENTS.md`](../../../AGENTS.md), [`.cursor/rules/ef-migrations.mdc`](../../../.cursor/rules/ef-migrations.mdc), [`MEMORY.md`](../../../MEMORY.md), `docs/`
-- Skills (read-only reference): [`us-workflow`](../us-workflow/SKILL.md), [`stack.md`](../us-workflow/stack.md), [`code-review`](../code-review/SKILL.md) (optional spot-check)
+- Skills (read-only reference): [`us-workflow`](../us-workflow/SKILL.md), [`stack.md`](../us-workflow/stack.md), [`code-review`](../06-code-review/SKILL.md) (optional spot-check)
 - **No** `us-workflow` state file required (may remain after Step 12 or be deleted on cleanup)
 
 ---
@@ -180,7 +180,7 @@ Read-only validation:
 2. **Files:** Each step’s expected files exist and reflect the described action (`git diff`, read files).
 3. **AC mapping:** Updated §1/checklist items checked where applicable.
 4. **Regression:** Build green; scoped tests green (or documented skip).
-5. **Optional:** Run [`code-review`](../code-review/SKILL.md) on `master...HEAD` for delta only — do not enter fix loop unless user asks.
+5. **Optional:** Run [`code-review`](../06-code-review/SKILL.md) on `master...HEAD` for delta only — do not enter fix loop unless user asks.
 
 Update §9 **Certification** table. On failure → return to phase 4.
 

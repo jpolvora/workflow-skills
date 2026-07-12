@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # 11-ship-pr
 
-Preflight → [code-review](../code-review/SKILL.md) auto-fix → verify → commit → push `develop` → PR → [goal-fix-pr](../09-goal-fix-pr/SKILL.md) → merge.
+Preflight → [code-review](../06-code-review/SKILL.md) auto-fix → verify → commit → push `develop` → PR → [goal-fix-pr](../09-goal-fix-pr/SKILL.md) → merge.
 
 **Invocation authorizes** commit, push, PR, thread resolution, merge (unless `dry-run` / `no-merge`).
 
@@ -72,7 +72,7 @@ export SHIP_PR_BASE="$(./.agents/skills/11-ship-pr/scripts/detect-base-branch.sh
 
 ### 1. Code-review loop (auto-fix)
 
-Load [code-review](../code-review/SKILL.md); diff vs `$SHIP_PR_BASE` + uncommitted.
+Load [code-review](../06-code-review/SKILL.md); diff vs `$SHIP_PR_BASE` + uncommitted.
 
 - **No feedback** → step 2
 - Else auto-fix **Critical** + **Project patterns** (surgical); re-review
@@ -127,4 +127,4 @@ Verify 3× · code-review 3× blocked · Escalate · `max` exhausted · merge bl
 
 ## Dependencies
 
-[code-review](../code-review/SKILL.md) · [goal-fix-pr](../09-goal-fix-pr/SKILL.md) · [fix-pr](../08-fix-pr/SKILL.md)
+[code-review](../06-code-review/SKILL.md) · [goal-fix-pr](../09-goal-fix-pr/SKILL.md) · [fix-pr](../08-fix-pr/SKILL.md)

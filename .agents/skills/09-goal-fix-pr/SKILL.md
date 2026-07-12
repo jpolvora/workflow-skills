@@ -129,7 +129,7 @@ Sem claim de progresso sem evidência fresca:
 | Check | Evidência |
 |-------|-----------|
 | Build/testes | Output from build/test commands (see `config.json.verification` or tools.md aliases) |
-| Auto-revisão | Status **"No feedback"** da skill [`code-review`](../code-review/SKILL.md) |
+| Auto-revisão | Status **"No feedback"** da skill [`code-review`](../06-code-review/SKILL.md) |
 | Publicação | Hash do commit + confirmação de push (ou log dry-run) |
 | Threads resolvidas | resolve exit 0 (ou skip documentado em dry-run) |
 
@@ -196,7 +196,7 @@ Iteração 1 roda **agora** após armar o primeiro sleeper (só após push real;
 | Coleta threads (GitHub) | `gh api "repos/.../pulls/.../comments"` |
 | Resolver thread (GitHub) | `gh api "repos/.../pulls/.../comments/.../replies"` |
 | Coleta/resolve (Azure DevOps) | `.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py` |
-| Code review | [`code-review/SKILL.md`](../code-review/SKILL.md) |
+| Code review | [`code-review/SKILL.md`](../06-code-review/SKILL.md) |
 | Goal/loop pattern | [`goal-loop`](../goal-loop/SKILL.md) (sentinel + converge) |
 
 Walkthroughs: [`examples.md`](examples.md).

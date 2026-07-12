@@ -11,7 +11,7 @@ Final integration validation before opening a PR — last deterministic safety n
 
 ## Mandatory pre-reading
 
-- `config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
+- `.agents/skills/us-workflow/config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
 - `AGENTS.md` — hub routing
 
 ## Input
