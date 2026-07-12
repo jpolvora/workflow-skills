@@ -15,9 +15,15 @@ Responsible for auditing implementation deliverables against the specification a
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /verify-plan [spec-input] [plan-dir=<path>]
 ```
+
+### Workflow Mode (Step 6 of us-workflow)
+
+Dispatched by `us-workflow` at Step 6. Receives `specPath` and `planDir` from the orchestrator state. Returns `step-output` YAML at completion.
 
 ### Parameters
 

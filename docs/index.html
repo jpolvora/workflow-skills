@@ -99,7 +99,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/04-implement-tasks/SKILL.md">
         <div class="name">04-implement-tasks</div>
-        <div class="desc">Executes or fixes code following a plan/DAG or review findings. Detects stack via config.json; stack-agnostic. Modes: build and fix.</div>
+        <div class="desc">Executes code implementations or fixes defects following a plan, DAG, or code review findings.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/04-implement-tasks/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md">
@@ -109,7 +109,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md">
         <div class="name">06-code-review</div>
-        <div class="desc">Reviewer for us-workflow Step 9. Local code review in two phases (triage → investigation) + generalization by defect class. Detects stack via config.json; stack-agnostic. Invoked by path at Step 9; also standalone.</div>
+        <div class="desc">Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/06-code-review/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/07-integration-validation/SKILL.md">
@@ -124,7 +124,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/09-goal-fix-pr/SKILL.md">
         <div class="name">09-goal-fix-pr</div>
-        <div class="desc">Loop fix-pr until zero open threads — auto-approve gates, commit/push, re-check after 5 minutes.</div>
+        <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/09-goal-fix-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/10-update-plan-implementation/SKILL.md">
@@ -262,12 +262,24 @@
     <div class="modal-header">
       <span class="modal-title"></span>
       <div class="modal-actions">
-        <button class="copy-btn" title="Copy to clipboard">Copy</button>
         <button class="close-btn" title="Close">&times;</button>
       </div>
     </div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="preview">Preview</button>
+      <button class="modal-tab" data-tab="raw">Raw</button>
+    </div>
     <div class="modal-body">
-      <div class="modal-markdown"></div>
+      <div class="modal-panel" id="modal-panel-preview">
+        <div class="modal-markdown"></div>
+      </div>
+      <div class="modal-panel hidden" id="modal-panel-raw">
+        <div class="raw-toolbar">
+          <span class="raw-label">.agents/skills/&hellip;/SKILL.md</span>
+          <button class="copy-btn" title="Copy raw markdown">Copy</button>
+        </div>
+        <pre class="modal-raw"></pre>
+      </div>
     </div>
   </div>
 </div>
@@ -277,14 +289,35 @@
   const RAW_BASE = 'https://raw.githubusercontent.com/jpolvora/workflow-skills/main/';
   const modal = document.getElementById('skill-modal');
   const modalTitle = modal.querySelector('.modal-title');
-  const modalBody = modal.querySelector('.modal-markdown');
+  const modalMarkdown = modal.querySelector('.modal-markdown');
+  const modalRaw = modal.querySelector('.modal-raw');
   const closeBtn = modal.querySelector('.close-btn');
   const copyBtn = modal.querySelector('.copy-btn');
+  const tabs = modal.querySelectorAll('.modal-tab');
+  const panelPreview = document.getElementById('modal-panel-preview');
+  const panelRaw = document.getElementById('modal-panel-raw');
+
+  var rawFullText = '';
+  var rawBodyText = '';
 
   function closeModal() {
     modal.classList.remove('open');
     document.body.style.overflow = '';
   }
+
+  function switchTab(tab) {
+    tabs.forEach(function(t) {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    panelPreview.classList.toggle('hidden', tab !== 'preview');
+    panelRaw.classList.toggle('hidden', tab !== 'raw');
+  }
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      switchTab(this.dataset.tab);
+    });
+  });
 
   closeBtn.addEventListener('click', closeModal);
   modal.addEventListener('click', function(e) {
@@ -298,11 +331,9 @@
     return text.replace(/^---[\s\S]*?---\n*/, '');
   }
 
-  var rawMarkdown = '';
-
   copyBtn.addEventListener('click', function() {
-    if (!rawMarkdown) return;
-    navigator.clipboard.writeText(rawMarkdown).then(function() {
+    if (!rawFullText) return;
+    navigator.clipboard.writeText(rawFullText).then(function() {
       copyBtn.textContent = 'Copied!';
       setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
     }).catch(function() {
@@ -319,9 +350,14 @@
       const name = card.querySelector('.name').textContent;
       const url = RAW_BASE + path;
 
+      // Reset state
+      rawFullText = '';
+      rawBodyText = '';
       modalTitle.textContent = name;
-      modalBody.innerHTML = '<p style="color:var(--text-muted)">Loading...</p>';
+      modalMarkdown.innerHTML = '<p style="color:var(--text-muted)">Loading...</p>';
+      modalRaw.textContent = '';
       copyBtn.textContent = 'Copy';
+      switchTab('preview');
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
 
@@ -331,13 +367,16 @@
           return res.text();
         })
         .then(function(text) {
-          var cleaned = stripFrontmatter(text);
-          rawMarkdown = cleaned;
-          var html = marked.parse(cleaned, { breaks: true, gfm: true });
-          modalBody.innerHTML = html;
+          rawFullText = text;
+          rawBodyText = stripFrontmatter(text);
+          var html = marked.parse(rawBodyText, { breaks: true, gfm: true });
+          modalMarkdown.innerHTML = html;
+          modalRaw.textContent = text;
         })
         .catch(function(err) {
-          modalBody.innerHTML = '<p style="color:var(--text-muted)">Failed to load skill: ' + err.message + '</p><pre style="color:var(--accent-orange);margin-top:8px">' + url + '</pre>';
+          var errMsg = 'Failed to load skill: ' + err.message;
+          modalMarkdown.innerHTML = '<p style="color:var(--text-muted)">' + errMsg + '</p><pre style="color:var(--accent-orange);margin-top:8px">' + url + '</pre>';
+          modalRaw.textContent = errMsg + '\n' + url;
         });
     });
   });

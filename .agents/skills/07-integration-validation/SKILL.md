@@ -13,9 +13,15 @@ Responsible for planning and executing a pre-PR integration test suite. It serve
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /integration-validation <plan-path> [spec=<spec-path>] [skip-browser]
 ```
+
+### Workflow Mode (Step 11 of us-workflow)
+
+Dispatched by `us-workflow` at Step 11. Receives `planPath` and `specPath` from the orchestrator state. UI browser testing requires explicit authorization.
 
 ### Parameters
 

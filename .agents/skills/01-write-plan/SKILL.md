@@ -13,9 +13,15 @@ Responsible for loading the feature specification (whether a local spec, a GitHu
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /write-plan <spec-input> [slug=<slug>] [output-dir=<path>]
 ```
+
+### Workflow Mode (Step 1 of us-workflow)
+
+Dispatched by `us-workflow` at Step 1. Receives `specInput` (path or issue ID) from the orchestrator's state.
 
 ### Parameters
 

@@ -1,62 +1,66 @@
 ---
 name: 04-implement-tasks
-description: Executes or fixes code following a plan/DAG or review findings. Detects stack via config.json; stack-agnostic. Modes: build and fix.
-version: 2.0
+description: Executes code implementations or fixes defects following a plan, DAG, or code review findings.
+version: 2.1
 disable-model-invocation: true
 ---
 
-# implement-tasks
+# 04-implement-tasks
 
-Implements or fixes code following an execution plan. Two modes — declare the mode explicitly.
+Responsible for executing the coding and testing steps defined in the plan or fixing defects identified during code reviews. It operates in two modes:
+- **Build Mode:** Implements new features following `step-03-{slug}.plan.exec.md` (or the step-by-step plan in `step-02-{slug}.plan.refined.md` / `step-01-{slug}.plan.md` directly).
+- **Fix Mode:** Systematically corrects code review comments or test failures.
 
-## Mandatory pre-read
+---
 
-Before starting, read:
-- `.agents/skills/us-workflow/config.json` — stack, commands, invariants
-- `tools.md` — tool aliases (`.agents/skills/us-workflow/tools.md`)
-- `stack.md` — code and paths (`.agents/skills/us-workflow/stack.md`)
-- Hub: `AGENTS.md` (root)
+## Invocation
 
-## Modes
+### Standalone Mode
 
-| Mode | When | Input |
-|------|--------|---------|
-| **build** | New implementation | `*.plan.exec.md` + `*.exec.dag.json` or `*.plan.md` directly |
-| **fix** | Fix review/test findings | List of findings |
+```
+/implement-tasks <plan-path> [mode=build|fix] [findings=<path>]
+```
 
-If the mode is not explicit, ask.
+### Workflow Mode (Step 5 for build / Step 10 for fix in us-workflow)
 
-## Build mode
+Dispatched by `us-workflow` at Step 5 (build mode) or Step 10 (fix mode). Receives `planPath`, `mode`, and optional `findings` path from the orchestrator state.
 
-1. Read the DAG task (`files[]`, `acceptance`, `coderPrompt`, `dependsOn`) or the "3. Step-by-Step Plan" section of `*.plan.md`.
-2. **Look for equivalent feature** in the repository (same structural pattern, layers from `config.json.stack`).
-3. Implement **only** what is in `coderPrompt`/`files[]` — do not expand scope.
-4. Rule priority:
-   - `AGENTS.md` — routing; load skills on demand
-   - `config.json.rules` — project guardrails
-   - Architecture spec: `config.json.domain.architectureSpec`
-   - Pattern skills (e.g. view-patterns if UI)
-   - `karpathy-guidelines` — simplicity, surgical changes
-5. Local validation before reporting success:
-   - Backend touched: `build-backend` + `test-backend` (tools.md)
-   - Frontend touched: `build-frontend` (+ `test-frontend` if i18n/UI logic)
-6. Report `files_touched` (created/modified/deleted).
+### Parameters
 
-## Fix mode
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `<plan-path>` | String | (required) | Path to execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`). |
+| `mode` | String | `build` | Execution mode: `build` or `fix`. |
+| `findings` | String | (optional) | Path to findings report or review comments JSON. |
 
-1. Read `karpathy-guidelines` — surgical fixes, do not refactor beyond the finding.
-2. Receive list of findings (format: File:Line, severity, analysis).
-3. For each confirmed finding, sweep **sibling occurrences** of the same pattern — fix the **class**, not just the instance.
-4. Cover each class with an **anti-regression test**.
-5. Run same validation as build mode.
-6. Document: problem, fix, sibling occurrences, anti-regression test.
+---
 
-## Output (both modes)
+## 1. Build Mode Execution
 
-- Code + tests in working tree (do not commit).
-- Summary: files touched, tests (pass/fail), findings fixed (fix) or steps implemented (build).
+1. **Load Plan:** Parse the execution tasks or plan steps. Identify files to create/modify and their acceptance criteria.
+2. **Scan Codebase:** Locate similar patterns in the project layers defined in `config.json` to ensure style consistency.
+3. **Implement:** Write minimal, clean, and modular code matching the requirements. Avoid scope creep.
+4. **Validate:** Execute the build and unit tests for modified layers (backend/frontend).
+5. **Report:** Return the lists of modified/created files and test output details.
 
-### `step-output` format (workflow dispatch)
+---
+
+## 2. Fix Mode Execution
+
+1. **Intake Gaps:** Load the list of findings (e.g. `step-10-*.report.md` or review comment threads).
+2. **Surgical Corrections:** Apply minimal, targeted corrections following Karpathy guidelines.
+3. **Global Sweeping:** Search for sibling occurrences of the same defect class across modified directories. Fix them simultaneously.
+4. **Anti-Regression:** Write unit tests to cover the corrected defect scenario.
+5. **Validate:** Execute project builds and test suites to verify no regressions were introduced.
+
+---
+
+## Output (Both Modes)
+
+- **Workspace:** Modify files directly in the working tree. Do not commit or push.
+- **Summary:** List modified/created files, passing/failing tests, and fixed findings.
+
+### step-output (Workflow Mode)
 
 ```yaml
 status: success | partial | failed | needs_user
@@ -69,19 +73,13 @@ verification:
   build: pass | fail | skipped
   tests: pass | fail | skipped
 summary: |
-  <text>
+  (Summary text of changes and verifications)
 ```
 
-## Conduct rules
+---
 
-- **Never commit or push** — decision of the invoker.
-- **Strict scope** — do not expand beyond `coderPrompt`/findings.
-- **Minimal diff** — no unsolicited refactors.
-- **Never write migrations by hand** — use `migrations-add` (tools.md).
-- If ambiguous, **stop and ask** (or `needs_user` when subagent).
+## Rules of Engagement
 
-## Triggers
-
-- `@[implement-tasks] us-{id}.plan.md` (standalone build)
-- `@[implement-tasks] "fix findings: ..."` (standalone fix)
-- Dispatch workflow — Step 5 (build), Step 10 (fix)
+- **No Auto-Commits:** Never commit or push code. Let the orchestrator or user handle branch staging and commits.
+- **Strict Scope Isolation:** Do not refactor adjacent files or expand feature scopes.
+- **Migration Safety:** Never write database schema migration files by hand. Always use project CLI tools.
