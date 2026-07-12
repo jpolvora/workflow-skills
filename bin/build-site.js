@@ -33,7 +33,6 @@ function parseTableRows(block) {
 
     const cells = line.split('|').slice(1, -1).map(c => c.trim());
 
-    // Detect header row — all cells are plain (no backticks) or dashed
     if (cells.some(c => /^-+$/.test(c))) { inTable = true; continue; }
     if (!inTable && cells.length >= 3) {
       const allPlain = cells.every(c => !c.includes('`') && !/^-+$/.test(c));
@@ -42,7 +41,6 @@ function parseTableRows(block) {
 
     if (!inTable) continue;
 
-    // Find the skill cell — it's the one with backticks containing a name
     let skillName = '';
     let desc = '';
     for (let c = 0; c < cells.length; c++) {
@@ -63,56 +61,106 @@ function parseTableRows(block) {
 }
 
 const skillLayerMap = {};
+const seenNames = new Set();
 for (let i = 0; i < layerSections.length; i++) {
   const sec = layerSections[i];
-  const end = i + 1 < layerSections.length ? layerSections[i + 1].start : agentsMd.length;
+  const end = i + 1 < layerSections.length ? layerSections[i + 1].start : agentsMd.indexOf('\n---\n', sec.start);
   const block = agentsMd.slice(sec.start, end);
 
   for (const row of parseTableRows(block)) {
-    skillLayerMap[row.name] = {
-      layerNumber: sec.number,
-      layerName: sec.name,
-      description: row.description,
-    };
+    if (!seenNames.has(row.name)) {
+      seenNames.add(row.name);
+      skillLayerMap[row.name] = {
+        layerNumber: sec.number,
+        layerName: sec.name,
+        description: row.description,
+      };
+    }
   }
 }
-
-// --- 2. Scan skills directories ---
+// --- 2. Scan skills directories and flat .md files ---
 const skillsDir = path.join(root, '.agents', 'skills');
 const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
 const skillDirs = entries
   .filter(e => e.isDirectory())
   .map(e => e.name);
+const skillFiles = entries
+  .filter(e => e.isFile() && e.name.endsWith('.md'))
+  .map(e => e.name.replace(/\.md$/, ''));
+
+// Merge, keeping directories first (files overwrite dir names when both exist)
+const allSkillSlugs = [...new Set([...skillDirs, ...skillFiles])];
+
+function readFrontmatter(filePath) {
+  if (!fs.existsSync(filePath)) return { name: '', description: '', version: '' };
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!fm) return { name: '', description: '', version: '' };
+  const raw = fm[1];
+  const nameMatch = raw.match(/^name:\s*(.+)$/m);
+  const name = nameMatch ? nameMatch[1].trim() : '';
+
+  // Handle >-, >, |, |- style YAML descriptions
+  let description = '';
+  const descMatch = raw.match(/^description:\s*(?:"([^"]*)"|'([^']*)')\s*$/m);
+  if (descMatch) {
+    description = (descMatch[1] || descMatch[2] || '').trim();
+  } else {
+    // Folded/block scalar — collect subsequent indented lines
+    const lines = raw.split('\n');
+    let inDesc = false;
+    const descLines = [];
+    for (const line of lines) {
+      if (line.startsWith('description:')) {
+        inDesc = true;
+        const after = line.slice('description:'.length).trim();
+        if (after && !after.startsWith('>') && !after.startsWith('|')) {
+          descLines.push(after);
+        }
+      } else if (inDesc) {
+        if (line.startsWith(' ') || line.startsWith('\t')) {
+          descLines.push(line.trimEnd());
+        } else {
+          break;
+        }
+      }
+    }
+    description = descLines.join(' ').trim();
+  }
+
+  const v = raw.match(/^version:\s*(.+)$/m);
+  const version = v ? v[1].trim() : '';
+  return { name, description, version };
+}
 
 const skills = [];
-const noLayer = [];
 
-for (const dir of skillDirs) {
-  const skMd = path.join(skillsDir, dir, 'SKILL.md');
-  let name = dir;
-  let description = '';
-  let version = '';
-
-  if (fs.existsSync(skMd)) {
-    const content = fs.readFileSync(skMd, 'utf-8');
-    const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-    if (fm) {
-      const raw = fm[1];
-      const n = raw.match(/^name:\s*(.+)$/m);
-      if (n) name = n[1].trim();
-      const d = raw.match(/^description:\s*(?:"([^"]*)"|'([^']*)'|>\s*(.*?)$)/m);
-      if (d) description = (d[1] || d[2] || d[3] || '').trim();
-      const v = raw.match(/^version:\s*(.+)$/m);
-      if (v) version = v[1].trim();
+for (const slug of allSkillSlugs) {
+  const possiblePaths = [
+    path.join(skillsDir, slug, 'SKILL.md'),
+    path.join(skillsDir, slug + '.md'),
+  ];
+  let content = '';
+  let actualPath = '';
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      content = fs.readFileSync(p, 'utf-8');
+      actualPath = path.relative(root, p).replace(/\\/g, '/');
+      break;
     }
   }
 
-  const info = skillLayerMap[name];
+  const fm = readFrontmatter(possiblePaths.find(p => fs.existsSync(p)) || '');
+  const name = fm.name || slug;
+  const description = fm.description;
+  const version = fm.version;
+
+  // Match by frontmatter name first, fall back to slug
+  let info = skillLayerMap[name];
+  if (!info) info = skillLayerMap[slug];
+
   if (info) {
-    skills.push({ name, description: description || info.description, version, layerNumber: info.layerNumber, layerName: info.layerName });
-  } else {
-    noLayer.push(name);
-    skills.push({ name, description: description || '', version, layerNumber: '', layerName: 'Outros' });
+    skills.push({ name, description, version, layerNumber: info.layerNumber, layerName: info.layerName, path: actualPath });
   }
 }
 
@@ -120,7 +168,7 @@ for (const dir of skillDirs) {
 const layerPriority = ['Layer 0','Layer 1','Layer 2','Layer 3','Layer 4','Layer 5'];
 const groups = {};
 for (const s of skills) {
-  const key = s.layerNumber || 'outros';
+  const key = s.layerNumber;
   if (!groups[key]) groups[key] = { name: s.layerName, skills: [] };
   groups[key].skills.push(s);
 }
@@ -131,18 +179,22 @@ const sorted = Object.entries(groups).sort(([a], [b]) => {
   return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
 });
 
-// --- 4. Generate catalog HTML ---
+// --- 4. Generate catalog HTML (English) ---
 let catalogHtml = '';
 for (const [key, layer] of sorted) {
   const count = layer.skills.length;
-  catalogHtml += `  <!-- ${key || 'outros'} -->\n`;
+  catalogHtml += `  <!-- ${key} -->\n`;
   catalogHtml += `  <div class="layer">\n`;
-  catalogHtml += `    <h3>${key ? `${key} — ` : ''}${layer.name} <span class="count">(${count})</span></h3>\n`;
+  catalogHtml += `    <h3>${key} — ${layer.name} <span class="count">(${count})</span></h3>\n`;
   catalogHtml += `    <div class="skill-grid">\n`;
   for (const sk of layer.skills) {
-    catalogHtml += `      <div class="skill-card">\n`;
+    if (!sk.description) continue;
+    catalogHtml += `      <div class="skill-card" data-path="${sk.path}">\n`;
     catalogHtml += `        <div class="name">${sk.name}</div>\n`;
-    catalogHtml += `        <div class="desc">${sk.description || '(sem descrição)'}</div>\n`;
+    catalogHtml += `        <div class="desc">${sk.description}</div>\n`;
+    if (sk.path) {
+      catalogHtml += `        <a class="view-skill" href="#" data-path="${sk.path}">View skill</a>\n`;
+    }
     catalogHtml += `      </div>\n`;
   }
   catalogHtml += `    </div>\n`;
@@ -153,29 +205,42 @@ for (const [key, layer] of sorted) {
 const indexPath = path.join(root, 'docs', 'index.html');
 let html = fs.readFileSync(indexPath, 'utf-8');
 
-// Update badge count
-html = html.replace(
-  /(<span class="badge">)\d+( skills<\/span>)/,
-  `$1${skills.length}$2`
-);
+// Remove Portuguese section entirely
+const catPtStart = html.indexOf('<section id="catalogo">');
+if (catPtStart !== -1) {
+  const catPtEnd = html.indexOf('</section>', catPtStart) + '</section>'.length;
+  // Remove everything from the section to just before the next section or install section
+  // Find next section start or EOF
+  const restAfter = html.slice(catPtEnd).search(/\n<section\s/) ;
+  const endIdx = restAfter !== -1 ? catPtEnd + restAfter : catPtEnd;
+  html = html.slice(0, catPtStart) + html.slice(endIdx);
+}
 
-// Replace catalog section
-const catStart = html.indexOf('<section id="catalogo">');
+// Replace English catalog section
+const catStart = html.indexOf('<section id="catalog">');
 const catEnd = html.indexOf('</section>', catStart) + '</section>'.length;
 
+const startComment = html.slice(0, catStart).lastIndexOf('<!--') !== -1 ? html.slice(0, catStart).lastIndexOf('<!--') : catStart;
 const newSection =
-`<section id="catalogo">
-  <h2>Catálogo de Skills</h2>
+`<section id="catalog">
+  <h2>Skill Catalog</h2>
 
 ${catalogHtml}</section>`;
 
 html = html.slice(0, catStart) + newSection + html.slice(catEnd);
 
+// Update badge count
+const totalSkills = sorted
+  .filter(([k]) => layerPriority.includes(k))
+  .reduce((sum, [, layer]) => sum + layer.skills.length, 0);
+
+html = html.replace(
+  /(<span class="badge">)\d+( skills<\/span>)/,
+  `$1${totalSkills}$2`
+);
+
 fs.writeFileSync(indexPath, html);
 
 // --- 6. Report ---
-const layerCount = sorted.filter(([k]) => k && k !== 'outros').length;
-console.log(`✅ Site updated: ${skills.length} skills across ${layerCount} layers`);
-if (noLayer.length) {
-  console.log(`⚠️  Skills not mapped in AGENTS.md layer tables: ${noLayer.join(', ')}`);
-}
+const layerCount = sorted.filter(([k]) => k).length;
+console.log(`✅ Site updated: ${totalSkills} skills across ${layerCount} layers`);
