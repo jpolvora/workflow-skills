@@ -79,22 +79,22 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md">
         <div class="name">00-write-spec</div>
-        <div class="desc">Receives a high-level feature description and returns a spec.md result file,   ready for the next step (01-write-plan).</div>
+        <div class="desc">Receives a high-level feature description and drafts a canonical step-00-{slug}.spec.md specification.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/00-write-spec/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/01-write-plan/SKILL.md">
         <div class="name">01-write-plan</div>
-        <div class="desc">Generates implementation plan from GH {n}, US {n}, or {slug}.spec.md. Reads project stack from config.json — stack-agnostic.</div>
+        <div class="desc">Generates the initial implementation plan (step-01-{slug}.plan.md) from the specification.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/01-write-plan/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/02-interview/SKILL.md">
         <div class="name">02-interview</div>
-        <div class="desc">Audits and interrogates an implementation plan until shared understanding — acceptance criteria, code, MEMORY.md, and project rules; closes gaps with evidence, escalating one question at a time. Stack-agnostic.</div>
+        <div class="desc">Audits and interrogates an implementation plan to resolve ambiguities and verify ready criteria before tasks are created.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/02-interview/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">
         <div class="name">03-plan-to-tasks</div>
-        <div class="desc">Breaks an implementation plan (step-02-{slug}.plan.refined.md or fallback step-01-{slug}.plan.md) into atomic tasks with files, acceptance criteria, and coderPrompt, organized in a DAG of topological levels for safe parallel execution. Auto-detects small plans and recommends sequential execution.</div>
+        <div class="desc">Breaks an implementation plan into atomic tasks with files, ACs, and coderPrompts, organized in a DAG topological order.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/04-implement-tasks/SKILL.md">
@@ -104,7 +104,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md">
         <div class="name">05-verify-plan</div>
-        <div class="desc">Compares criteria/plan against current code. Two modes: (1) Quick Score — evaluates overall implementation with a 0-10 grade; (2) US Verification — from spec.md or issue number, generates a feature-by-feature table in `.cursor/plans/{slug}.plan.report.md`.</div>
+        <div class="desc">Compares implementation quality and code deliverables against the plan and acceptance criteria.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/05-verify-plan/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md">
@@ -114,12 +114,12 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/07-integration-validation/SKILL.md">
         <div class="name">07-integration-validation</div>
-        <div class="desc">Plans and executes a pre-PR integration test battery. Detects stack via config.json; generates pass/fail report by AC. Stack-agnostic.</div>
+        <div class="desc">Plans and executes pre-PR integration test batteries, verifying backend, database, RBAC, tenancy, and UI interfaces.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/07-integration-validation/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/08-fix-pr/SKILL.md">
         <div class="name">08-fix-pr</div>
-        <div class="desc">Cooperatively fix active code review threads on GitHub or Azure DevOps PRs. Thread scoring, confirmation gate, surgical fixes, validation, structured reports. Use when user asks to fix/review/resolve PR review threads. Also wrapped by goal-fix-pr for convergence loops.</div>
+        <div class="desc">Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/08-fix-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/09-goal-fix-pr/SKILL.md">
@@ -129,7 +129,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/10-update-plan-implementation/SKILL.md">
         <div class="name">10-update-plan-implementation</div>
-        <div class="desc">Post-workflow follow-up after us-workflow. Captures manual QA findings, implements delta fixes, appends implementation steps to the last US plan, verifies against code, updates result.md, and certifies the pack for the next PR. Use on demand when tests after workflow reveal more work — invoke explicitly; not part of us-workflow.</div>
+        <div class="desc">Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/10-update-plan-implementation/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/11-ship-pr/SKILL.md">

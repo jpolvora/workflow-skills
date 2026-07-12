@@ -1,65 +1,71 @@
 ---
 name: 07-integration-validation
-description: Plans and executes a pre-PR integration test battery. Detects stack via config.json; generates pass/fail report by AC. Stack-agnostic.
-version: 2.0
+description: Plans and executes pre-PR integration test batteries, verifying backend, database, RBAC, tenancy, and UI interfaces.
+version: 2.1
 disable-model-invocation: true
 ---
 
-# integration-validation
+# 07-integration-validation
 
-Final integration validation before opening a PR — last deterministic safety net before delivery.
+Responsible for planning and executing a pre-PR integration test suite. It serves as the final safety net to check backend endpoints, database migration status, multi-tenancy isolation rules, and user interfaces before branch updates are pushed.
 
-## Mandatory pre-reading
+---
 
-- `.agents/skills/us-workflow/config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
-- `AGENTS.md` — hub routing
+## Invocation
 
-## Input
+```
+/integration-validation <plan-path> [spec=<spec-path>] [skip-browser]
+```
 
-- `step-01-*.plan.md` required
-- `specPath` or `step-00-*.spec.md` — canonical source of ACs
-- US number (optional; to resolve spec via GitHub)
+### Parameters
 
-## Step 1 — Test plan
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `<plan-path>` | String | (required) | Path to refined plan (`step-02-*.plan.refined.md`) or draft plan (`step-01-*.plan.md`). |
+| `spec=<spec-path>` | String | (optional) | Path to `step-00-*.spec.md`. Inferred from folder if omitted. |
+| `skip-browser` | Flag | `false` | Skip browser-agent/UI testing and only run backend/API tests. |
 
-Read plan, ACs from `step-00-*.spec.md`, verification/delivery reports. Generate `step-11-*.integration-test.plan.md` with 8 sections:
+---
 
-1. **Prerequisites** — URLs (from `config.json.stack.backend.apiHost` + `config.json.stack.frontend.devHost`), credentials, migrations (`migrations-apply`), seed (`seed-db`)
-2. **Data seed** — entities, seed strategy, minimum dataset per AC, cleanup between iterations
-3. **Build & tests** — `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` if i18n/UI)
-4. **API / backend** — REST endpoints, auth headers (Bearer JWT), status codes, ProblemDetails
-5. **Permissions & security** — RBAC matrix × expected result; tenancy (`config.json.domain.tenancyField`)
-6. **UI / browser** — routes, navigation, forms, visible i18n (all locales from `config.json.stack.frontend.i18n.locales[]`)
-7. **Evidence** — screenshots, network responses, command outputs
-8. **Exit criteria** — all ACs pass; defects logged with severity
+## Prerequisites
 
-## Step 2 — Execute
+Check the following before starting the integration tests:
+- `config.json` — resolves local dev server URLs (e.g. `apiHost`, `devHost`), locales list, and DB seed keys.
+- Ensure the codebase builds cleanly (backend + frontend).
+- Confirm database migrations have been successfully applied.
 
-1. Ensure clean working tree (warn the invoker)
-2. Run build + automated tests (§3)
-3. Populate seed (§2); confirm prerequisites (§1)
-4. Run API checks (§4) and permissions (§5)
-5. **UI/browser (§6):** only when authorized (user confirms, or orchestrator is normal/non-auto/non-dry-run). Otherwise, skip and note.
-6. Write `step-11-*.integration-test.report.md`: pass/fail per AC
+---
 
-## Output
+## Phase 1 — Integration Test Plan
 
-- `step-11-*.integration-test.plan.md`
-- `step-11-*.integration-test.report.md`
+Generate `step-11-{slug}.integration-test.plan.md` containing:
+1. **Target Hosts & Ports:** Resolves URLs and credentials using stack settings.
+2. **Database State & Seeding:** Minimum seed datasets required per AC, and database rollback actions.
+3. **API Contracts:** Expected HTTP status codes, Bearer JWT authorization headers, and error shapes.
+4. **RBAC & Tenancy Isolation:** Matrix checking access control across roles, and data segregation filters.
+5. **UI & Browser Paths:** Route destinations, form fields, and translation checks.
+6. **Defect Thresholds:** Test case pass/fail metrics.
 
-## References
+---
 
-- AC format: `spec-format`
-- Guardrails: `config.json.rules` + project
-- Architecture spec: `config.json.domain.architectureSpec`
+## Phase 2 — Execution & Reporting
 
-## Code of conduct
+1. **Verify Base Build:** Execute build and core test commands from `config.json.verification`.
+2. **Apply Database Seeds:** Verify seed constraints and cleanups.
+3. **Run API Checks:** Probe endpoints using `curl` or script runners.
+4. **UI Validation:** Run browser automation or visual checks unless `skip-browser` is active.
+5. **Report Output:** Write the results to `step-11-{slug}.integration-test.report.md`.
 
-- **Never decide browser on its own** — explicit authorization
-- **Does not fix code** — report gaps; fix is `implement-tasks` (fix)
-- Maximum **3 iterations** of validation
+---
 
-## Triggers
+## Outputs
 
-- `@[integration-validation] step-01-us-{id}.plan.md`
-- Dispatch workflow — Step 11
+- **Plan:** `step-11-{slug}.integration-test.plan.md`
+- **Report:** `step-11-{slug}.integration-test.report.md`
+
+---
+
+## Rules of Engagement
+
+- **No Code Fixes:** This skill does not make code edits. If verification checks fail, report the gaps and transition back to [04-implement-tasks (fix mode)](../04-implement-tasks/SKILL.md).
+- **A11y & Contrast:** Verify form validation errors and alert indicators are visible and high-contrast.
