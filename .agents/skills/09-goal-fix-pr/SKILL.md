@@ -1,13 +1,13 @@
 ---
 name: 09-goal-fix-pr
-description: Loop fix-pr até zerar threads abertas — auto-aprova gates, commit/push e re-checa após 5 minutos.
+description: Loop fix-pr until zero open threads — auto-approve gates, commit/push, re-check after 5 minutes.
 version: 1.0
 disable-model-invocation: true
 ---
 
 # goal-fix-pr
 
-Criterion-driven loop sobre [`fix-pr`](../08-fix-pr/SKILL.md). Para quando **convergence** — zero threads abertas na PR — ou o usuário parar.
+Criterion-driven loop over [`fix-pr`](../08-fix-pr/SKILL.md). Stops on **convergence** — zero open threads on the PR — or user abort.
 
 ## Parse
 
@@ -15,46 +15,46 @@ Criterion-driven loop sobre [`fix-pr`](../08-fix-pr/SKILL.md). Para quando **con
 /goal-fix-pr <PR-NUMBER> [dry-run] [max <n>]
 ```
 
-| Token | Exemplo | Efeito |
+| Token | Example | Effect |
 |-------|---------|--------|
-| `<PR-NUMBER>` | `15` | Número da PR no GitHub/Azure DevOps |
-| `dry-run` | `/goal-fix-pr 15 dry-run` | Sem commit, push nem `resolve_thread` real |
-| `max <n>` | `max 10` | Teto de iterações (default **20**) |
+| `<PR-NUMBER>` | `15` | PR number on GitHub/Azure DevOps |
+| `dry-run` | `/goal-fix-pr 15 dry-run` | No commit, push, or real `resolve_thread` |
+| `max <n>` | `max 10` | Iteration ceiling (default **20**) |
 
-Malformed → mostrar usage acima.
+Malformed → show usage above.
 
 Restate antes de agir: **PR number**, **success criteria**, **mode** (Drive + post-push heartbeat), **max iterations**, **dry-run**.
 
 ## Success criteria
 
-**Convergence:** após `collect`, `len(activeThreads) == 0`.
+**Convergence:** after `collect`, `len(activeThreads) == 0`.
 
 - **GitHub:** `gh pr view --json comments --jq '[.comments[] | select(.isResolved == false)] | length'` → count
 - **Azure DevOps:** `fix_pr_azure_context.py collect` → `activeThreads` count
 
-## Pré-requisitos
+## Prerequisites
 
-- Repositório checkoutado; PR branch disponível.
-- **GitHub:** `gh` disponível + token `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` / `GITHUB_TOKEN` / `GH_TOKEN`.
+- Repository checked out; PR branch available.
+- **GitHub:** `gh` available + token `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` / `GITHUB_TOKEN` / `GH_TOKEN`.
 - **Azure DevOps:** `.agents/skills/azure-devops/azure-devops.config.json` + `AZURE_DEVOPS_PAT`.
-- Branch local = head da PR antes de cada rodada ([`fix-pr` passo 0](../08-fix-pr/SKILL.md)).
+- Local branch = PR head before each round ([`fix-pr` step 0](../08-fix-pr/SKILL.md)).
 
 ## Automation overrides (fix-pr)
 
-Esta skill **substitui** confirmações humanas do fluxo cooperativo. Ao executar sob `goal-fix-pr`:
+This skill **overrides** human confirmations from the cooperative flow. When running under `goal-fix-pr`:
 
-| Gate fix-pr | Comportamento |
-|-------------|---------------|
-| Confirmação de plano / "executar?" | **Auto-sim.** Grave `plan-gate.md` e `plan-exec.md` em `runs/pr-<N>/`, prossiga sem `AskQuestion`. |
-| Commit + resolve + push | **Auto** (salvo `dry-run`). Ordem: validar → commit local → resolve threads → push. |
-| Threads **Escalar** | **Pare** a iteração, reporte thread IDs e aguarde humano — não auto-aprovar ambiguidade de produto. |
-| Auto-Fix CI `in_progress` | **Informe** o usuário; não bloqueie automaticamente (mesma regra do fix-pr). |
+| fix-pr gate | Behavior |
+|-------------|----------|
+| Plan confirmation / "execute?" | **Auto-yes.** Save `plan-gate.md` and `plan-exec.md` in `runs/pr-<N>/`, proceed without `AskQuestion`. |
+| Commit + resolve + push | **Auto** (unless `dry-run`). Order: validate → local commit → resolve threads → push. |
+| **Escalate** threads | **Stop** iteration, report thread IDs and wait for human — do not auto-approve product ambiguity. |
+| CI Auto-Fix `in_progress` | **Inform** the user; do not block automatically (same rule as fix-pr). |
 
-Todo o restante permanece: branch sync, análise por thread, correção cirúrgica, guardrails [`senior-developer`](../../senior-developer/SKILL.md).
+Everything else remains: branch sync, per-thread analysis, surgical correction, guardrails [`senior-developer`](../../senior-developer/SKILL.md).
 
 ## Core loop
 
-Copie e atualize a cada iteração:
+Copy and update each iteration:
 
 ```
 Goal: fix-pr PR-<N> until convergence
@@ -91,14 +91,14 @@ python .agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py collect \
   --pr-id <PR-NUMBER> --output .agents/skills/08-fix-pr/runs/pr-<PR-NUMBER>/context.json
 ```
 
-Conte `activeThreads`. Se **0** → relatório final e **pare** (PR já convergiu).
+Count `activeThreads`. If **0** → final report and **stop** (PR already converged).
 
 Se `gh pr view` indicar PR **merged/closed**, pare e informe o usuário.
 
 ### 2. Act — rodada fix-pr
 
-1. Carregue [`fix-pr/SKILL.md`](../08-fix-pr/SKILL.md) e execute **passos 0–7** para as threads ativas atuais, aplicando **Automation overrides** acima.
-2. Uma rodada = sync branch → investigar/corrigir → validar → commit → resolve threads → push (ou simulação em dry-run).
+1. Load [`fix-pr/SKILL.md`](../08-fix-pr/SKILL.md) and execute **steps 0–7** for the current active threads, applying **Automation overrides** above.
+2. One round = sync branch → investigate/fix → validate → commit → resolve threads → push (or simulation in dry-run).
 3. Mensagem de commit: `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`.
 4. Resolução de thread:
 
@@ -107,7 +107,7 @@ Se `gh pr view` indicar PR **merged/closed**, pare e informe o usuário.
 ```bash
 REPO=$(gh repo view --json name,owner --jq '"\(.owner.login)/\(.name)"')
 gh api "repos/$REPO/pulls/$PR_NUMBER/comments/$THREAD_ID/replies" \
-  -f body="<causa raiz + fix; Modelo LLM: <identificador>>"
+  -f body="<root cause + fix; LLM Model: <identifier>>"
 ```
 
 **Azure DevOps:**
@@ -115,10 +115,10 @@ gh api "repos/$REPO/pulls/$PR_NUMBER/comments/$THREAD_ID/replies" \
 ```bash
 python .agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py resolve-thread \
   --pr-id <PR-NUMBER> --thread-id <THREAD_ID> --model "<model-id>" \
-  --comment "<causa raiz + fix>"
+  --comment "<root cause + fix>"
 ```
 
-Em **dry-run**, não invoque resolve nem `git push`; simule no log.
+In **dry-run**, do not invoke resolve or `git push`; simulate in the log.
 
 5. Se classificação resultar só em **Escalar** → pare o goal e liste threads bloqueadas.
 
@@ -133,7 +133,7 @@ Sem claim de progresso sem evidência fresca:
 | Publicação | Hash do commit + confirmação de push (ou log dry-run) |
 | Threads resolvidas | resolve exit 0 (ou skip documentado em dry-run) |
 
-Falha 3× idêntica na mesma verificação → pare e escale.
+3× identical failure on the same check → stop and escalate.
 
 ### 4. Post-push heartbeat (5 minutos)
 

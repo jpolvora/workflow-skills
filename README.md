@@ -1,47 +1,47 @@
-# 🎯 Workflow Skills — Central de Diretrizes e Skills para Cursor
+# 🎯 Workflow Skills — Agent Guidelines & Skills Hub
 
-> **Site:** [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills) — Catálogo interativo de todas as skills.
+> **Site:** [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills) — Interactive catalog of all skills.
 
 [![npx](https://img.shields.io/badge/npx-github:jpolvora/workflow--skills-blue?logo=npm)](https://github.com/jpolvora/workflow-skills)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-site-success?logo=github)](https://jpolvora.github.io/workflow-skills)
 
-Este repositório centraliza uma coleção de diretrizes agênticas e comportamentais (**skills**) pré-configuradas para o Cursor Agent. O objetivo é servir como uma **fonte única de verdade** (source of truth) para instalar, atualizar e sincronizar essas instruções em múltiplos projetos locais de forma prática e consistente.
+This repository centralizes a collection of behavioral agent guidelines (**skills**) pre-configured for AGENTic coding assistants. The goal is to serve as a **single source of truth** for installing, updating, and synchronizing these instructions across multiple local projects in a practical and consistent way.
 
-> 📖 **Consulte o [`AGENTS.md`](AGENTS.md)** para o roteamento completo de todas as skills, layers, task router e instruções de carregamento automático (skill loading).
+> 📖 **See [`AGENTS.md`](AGENTS.md)** for the complete routing of all skills, layers, task router, and auto-load instructions (skill loading).
 
 ---
 
-## 🛠️ Como Instalar e Atualizar Skills
+## 🛠️ How to Install and Update Skills
 
-Você pode instalar ou atualizar as diretrizes agênticas (**skills**) diretamente na pasta `.agents/skills` do seu projeto de desenvolvimento local de duas maneiras:
+You can install or update the agent guidelines (**skills**) directly into the `.agents/skills` folder of your local development project in two ways:
 
-### Opção A: Execução via NPX (Recomendado)
-Se você possui Node.js instalado, você pode executar o CLI diretamente via `npx` de forma nativa e multiplataforma:
+### Option A: Via NPX (Recommended)
+If you have Node.js installed, you can run the CLI directly via `npx` natively and cross-platform:
 
-#### 1. Menu Interativo (Instalação/Seleção)
-Para abrir o menu interativo e selecionar as skills a serem instaladas:
+#### 1. Interactive Menu (Installation/Selection)
+To open the interactive menu and select skills to install:
 ```bash
 npx github:jpolvora/workflow-skills
 ```
 
-#### 2. Auto-Update (Atualização Rápida)
-Se você já possui skills instaladas e deseja apenas atualizá-las para as versões mais recentes, execute:
+#### 2. Auto-Update (Quick Update)
+If you already have skills installed and just want to update them to the latest versions, run:
 ```bash
 npx github:jpolvora/workflow-skills update
 ```
-*(Este comando detecta automaticamente quais skills estão no diretório `.agents/skills/` do seu projeto e as atualiza de forma silenciosa, sem necessidade de menu interativo.)*
+*(This command automatically detects which skills are in your project's `.agents/skills/` directory and updates them silently, without requiring an interactive menu.)*
 
 ---
 
-### Opção B: Execução via cURL (Bash Script)
-Caso prefira rodar o instalador diretamente do repositório público usando o shell script:
+### Option B: Via cURL (Bash Script)
+If you prefer to run the installer directly from the public repository using the shell script:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash
 ```
 
-### Menu Interativo (cURL/NPX)
-Ambas as opções interativas abrirão o menu visual no console:
+### Interactive Menu (cURL/NPX)
+Both interactive options will open the visual console menu:
 ```text
 ============================================================
   Workflow Skills - Skill Installer
@@ -62,58 +62,58 @@ Enter 'q' to quit.
   [ ]  5) us-delivery-workflow
 ```
 
-* **Toggle de Seleção:** Digite o número correspondente à skill e pressione `Enter` para marcar/desmarcar (`[ ]` ↔ `[x]`).
-* **Selecionar Todas:** Digite `a` para alternar a seleção de todas as skills ao mesmo tempo.
-* **Confirmar Instalação:** Digite `y` ou `i` e pressione `Enter`.
-* **Sair:** Digite `q` para abortar a instalação.
+* **Selection Toggle:** Type the number corresponding to the skill and press `Enter` to toggle on/off (`[ ]` ↔ `[x]`).
+* **Select All:** Type `a` to toggle the selection of all skills at once.
+* **Confirm Installation:** Type `y` or `i` and press `Enter`.
+* **Exit:** Type `q` to abort the installation.
 
 ---
 
-## 🗂️ Catálogo de Skills Disponíveis
+## 🗂️ Available Skills Catalog
 
-> ⚠️ Esta seção contém skills legadas. Para o **índice completo e atualizado** com todas as skills, layers, task router e auto-load, consulte o [`AGENTS.md`](AGENTS.md).
+> ⚠️ This section contains legacy skills. For the **complete and updated index** with all skills, layers, task router, and auto-load, see [`AGENTS.md`](AGENTS.md).
 
-Abaixo está o índice simplificado das diretrizes agênticas inclusas neste repositório:
+Below is the simplified index of agent guidelines included in this repository:
 
-| Skill | Versão | Descrição |
+| Skill | Version | Description |
 | :--- | :--- | :--- |
-| **`code-review`** | 1.0 | **Revisor Local de Code Review:** Realiza análises profundas comparando a branch atual com a principal. Segue uma abordagem rigorosa em duas fases (triagem ➔ investigação com provas estruturadas e descarte de hipóteses). |
-| **`fix-pr`** | 1.0 | **Corretor Automático de PR:** Analisa criticamente comentários e threads de code review em PRs (ex: Azure DevOps), decide quais comentários fazem sentido e aplica correções cirúrgicas de forma segura. |
-| **`karpathy-guidelines`** | 1.0 | **Diretrizes Karpathy:** Conjunto de guardrails de comportamento para reduzir falhas comuns de LLMs (alucinações, edições incompletas, atalhos de código), inspirado na filosofia de Andrej Karpathy. |
-| **`plan-us`** | 2.0 | **Planejador de User Story:** Cria planos de implementação detalhados baseados em User Stories. Autodetecta e se adapta dinamicamente à arquitetura do ecossistema do projeto (ex: ABP/.NET/Angular, NextJS/React, etc.). |
-| **`us-delivery-workflow`** | 8.0 | **Orquestrador de Delivery Ponta a Ponta:** Gerencia o fluxo completo de entrega de uma User Story em 7 fases (F0–F6). Oferece suporte a dry-run, modo automático, isolamento por passos (worktrees) e protocolo de higiene de estado. |
+| **`code-review`** | 1.0 | **Local Code Review:** Performs deep analysis comparing the current branch with the main one. Follows a rigorous two-phase approach (triage ➔ investigation with structured evidence and hypothesis elimination). |
+| **`fix-pr`** | 1.0 | **Automatic PR Fixer:** Critically analyzes code review comments and threads on PRs (e.g., Azure DevOps), decides which comments make sense, and applies surgical corrections safely. |
+| **`karpathy-guidelines`** | 1.0 | **Karpathy Guidelines:** Set of behavioral guardrails to reduce common LLM failures (hallucinations, incomplete edits, code shortcuts), inspired by Andrej Karpathy's philosophy. |
+| **`plan-us`** | 2.0 | **User Story Planner:** Creates detailed implementation plans based on User Stories. Auto-detects and dynamically adapts to the project ecosystem architecture (e.g., ABP/.NET/Angular, NextJS/React, etc.). |
+| **`us-delivery-workflow`** | 8.0 | **End-to-End Delivery Orchestrator:** Manages the complete delivery flow of a User Story across 7 phases (F0–F6). Supports dry-run, automatic mode, step isolation (worktrees), and state hygiene protocol. |
 
 ---
 
-## 🏗️ Como Contribuir ou Adicionar Nova Skill
+## 🏗️ How to Contribute or Add a New Skill
 
-As novas skills devem ser criadas dentro do diretório `.agents/skills/` com a seguinte estrutura mínima:
+New skills should be created inside the `.agents/skills/` directory with the following minimum structure:
 
 ```text
 .agents/skills/
-└── minha-nova-skill/
-    ├── SKILL.md       # Arquivo de instruções com YAML frontmatter (obrigatório)
-    ├── scripts/       # Scripts auxiliares e ferramentas de validação (opcional)
-    └── README.md      # Instruções específicas para a skill (opcional)
+└── my-new-skill/
+    ├── SKILL.md       # Instructions file with YAML frontmatter (required)
+    ├── scripts/       # Helper scripts and validation tools (optional)
+    └── README.md      # Skill-specific instructions (optional)
 ```
 
-### Estrutura do `SKILL.md`
-O arquivo `SKILL.md` na raiz de cada skill deve conter o frontmatter YAML com o nome e a descrição corretos para detecção automatizada do Cursor:
+### `SKILL.md` Structure
+The `SKILL.md` file at the root of each skill must contain YAML frontmatter with the correct name and description for automated detection:
 
 ```markdown
 ---
-name: minha-nova-skill
-description: Resumo conciso de uma linha sobre o que a skill faz.
+name: my-new-skill
+description: Concise one-line summary of what the skill does.
 version: 1.0
 ---
 
-# Minha Nova Skill
+# My New Skill
 
-Instruções operacionais detalhadas da skill...
+Detailed operational instructions for the skill...
 ```
 
 ---
 
-## 📄 Licença
+## 📄 License
 
-Este projeto está licenciado sob a licença MIT - consulte o arquivo [LICENSE](LICENSE) para obter detalhes.
+This project is licensed under the MIT license — see the [LICENSE](LICENSE) file for details.

@@ -21,7 +21,7 @@ Skills loaded automatically by task type:
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | Every prompt — summarized historical record |
 | `learning` | `.agents/skills/learning/SKILL.md` | Every prompt — anti-regression record |
-| `using-superpowers` | `.agents/skills/using-superpowers/SKILL.md` | Session start — skill discovery |
+| `using-superpowers` | `(global skill)` | Session start — skill discovery |
 
 ---
 
@@ -43,7 +43,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 |-------|------|-------------|
 | `check-harness` | `.agents/skills/check-harness.md` | Audit harness integrity (AGENTS.md, skills, rules) |
 | `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Create new skills with structure and progressive disclosure |
-| `using-superpowers` | `.agents/skills/using-superpowers/SKILL.md` | Agent onboarding: skill discovery via Skill tool |
+| `using-superpowers` | `(global skill)` | Agent onboarding: skill discovery via Skill tool |
 
 ### Layer 1 — Engineering Standards (Auto-load by task)
 
@@ -144,8 +144,12 @@ gh api repos/jpolvora/workflow-skills/pages   # verify site is building
 
 ---
 
+## External Dependencies
+
+Some skills reference `senior-developer` (a global skill installed at `~/.agents/skills/senior-developer/SKILL.md`) and `.cursor/rules/ef-migrations.mdc`. These are **not** included in this repository — they must be installed separately in consumer projects for the referenced skills to resolve correctly.
+
 ## Custom Commands
 
 | Command | File | Description |
 |---------|------|-------------|
-| `/check-harness` | `.agents/skills/check-harness.md` | Audit harness integrity (paths, links, routing, redundancy) |
+| `/check-harness` | `.opencode/commands/check-harness.md` | Audit harness integrity (paths, links, routing, redundancy) |
