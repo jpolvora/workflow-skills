@@ -1,44 +1,44 @@
 ---
 name: 01-write-plan
-description: "Generates implementation plan from GH {n}, US {n}, or {slug}.spec.md. Reads project stack from config.json — stack-agnostic."
-version: 3.1
+description: Generates the initial implementation plan (step-01-{slug}.plan.md) from the specification.
+version: 3.2
 disable-model-invocation: true
 ---
 
-# Write Plan
+# 01-write-plan
 
-Generates implementation blueprint from `GH {n}` (GitHub), `US {n}` (Azure DevOps), or `{slug}.spec.md` (local). Detects project ecosystem via `config.json` — no hardcoded stack.
+Responsible for loading the feature specification (whether a local spec, a GitHub issue, or an Azure DevOps work item) and drafting a detailed implementation blueprint. It reads the local stack configurations to remain stack-agnostic.
 
-## Pre-read
+---
 
-- `config.json` — stack, layers, commands, invariants
-- `tools.md`, `stack.md` — tool aliases, stack overview
-- `AGENTS.md` — routing hub
-- `MEMORY.md` — learned patterns
+## Invocation
 
-## Execution
+```
+/write-plan <spec-input> [slug=<slug>] [output-dir=<path>]
+```
 
-### 1. Load spec
+### Parameters
 
-Detect platform from git remote (`dev.azure.com` → Azure DevOps, `github.com` → GitHub).
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `<spec-input>` | String | (required) | Path to a local `step-00-*.spec.md`, GitHub issue ID (e.g. `GH 42`), or Azure DevOps ID (e.g. `US 101`). |
+| `slug=<slug>` | String | (optional) | Unique url-friendly identifier. Inferred from spec if omitted. |
+| `output-dir=<path>` | String | `.cursor/plans/{slug}/` | Destination folder for the drafted plan. |
 
-- **`GH {n}`** → GitHub issue: `gh issue view {n}` → `github-issue-to-spec.py` → `*.spec.md`
-- **`US {n}`** or **`{org}/{project}#{id}`** → Azure DevOps work item: REST API → `*.spec.md`  
-- **`{slug}.spec.md`** → local spec: read directly
-- Cross-reference with glossary (`config.json.domain.glossaryFile`)
+---
 
-### 2. Load context
+## Prerequisites
 
-- `config.json.stack` — backend layers, test project, frontend framework, db/ORM
-- `config.json.rules` — engineering guardrails
-- `config.json.domain.architectureSpec` — architecture spec
-- `MEMORY.md` — anti-regression patterns
+Read the following repository metadata files before drafting:
+- `config.json` — identifies stack, backend layers, db/ORM, frontend framework, and test suites.
+- `tools.md` / `stack.md` — lists developer tool aliases and stack configurations.
+- `MEMORY.md` — outlines anti-regression rules and learned patterns.
 
-Scan existing code in `{backend.layers[].path}` and `{frontend.sourceDir}` for similar patterns.
+---
 
-### 3. Produce plan
+## Plan Template
 
-Write structured plan to `{us-dir}/step-01-{slug}.plan.md` with sections:
+Draft the structured plan and write it to `{output-dir}/step-01-{slug}.plan.md`. The plan must match the following format exactly:
 
 ```markdown
 ---
@@ -48,46 +48,51 @@ status: "plan to be refined"
 ---
 
 ## 0. Summary & Business Rules
-- US title/number, objective, business rules, security mitigations
+- Feature number/title, core objectives, target business rules, and security mitigations.
 
 ## 1. Definition of Ready & Scope
-- Resolved ambiguities, measurable ACs, in/out scope
+- Resolved assumptions, measurable Acceptance Criteria (ACs), out-of-scope boundaries.
 
 ## 2. Technical Design & Architecture
-- Per layer (from config.json): {layer.name} ({layer.path}): changes
-- Frontend: pages, routes, API calls, i18n
-- Apply config.json.invariants
+- Layer edits (per config.json layers): backend files, database schema, entity mappings.
+- Frontend edits: pages, routes, API endpoints, styling, and i18n keys.
+- Verification of invariants from `config.json.invariants`.
 
 ## 3. Step-by-Step Plan
-Steps ordered by dependency:
-- Step 1: Domain/Database (entities, migrations, mappings)
-- Step 2: Application/Business (services, controllers, DTOs, validations)
-- Step 3: Backend Tests (AC coverage)
-- Step 4: Frontend/UI (components, routes, API calls, forms)
-- Step 5: Frontend Tests (if applicable)
+Steps ordered logically by dependency:
+- Step 1: Domain & Database (migrations, schema additions, db entities).
+- Step 2: Application Core (DTOs, service controllers, logic validations).
+- Step 3: Backend Unit Tests (testing service rules and boundary validations).
+- Step 4: Frontend & UI (components, API integrations, page layouts).
+- Step 5: Frontend Tests (testing UI components and workflows).
 
-Each step: Action · Files · Guardrails · Security
+*For each step, specify: Action details · Affected files · Engineering checks.*
 
 ## 4. Permissions, Tenancy & i18n
-- New permissions, multi-tenancy impact, i18n keys
+- RBAC permissions, tenant data leakage isolation checks, and dynamic i18n strings.
 
 ## 5. Test Coverage
-- Map each AC → test cases with descriptive methods
+- Map each Acceptance Criteria (AC1, AC2, etc.) to specific test cases and method names.
 
 ## 6. Invariants (Do Not Violate)
-- From config.json.invariants
+- Reiterate strict architectural invariants from `config.json.invariants`.
 
 ## 7. Pre-PR Checklist
-- [ ] Layer separation respected · [ ] Entity encapsulation + validations
-- [ ] Migrations applied · [ ] Permissions on endpoints/screens
-- [ ] i18n added · [ ] Tests passing · [ ] No layout breaks
+- [ ] Layer boundaries respected.
+- [ ] Mappings and domain entities encapsulated.
+- [ ] Schema migrations created.
+- [ ] Authorization checks applied.
+- [ ] i18n keys declared.
+- [ ] Test cases cover all ACs.
 
 ## 8. Open Questions
-- Ambiguities, dependencies, blockers
+- Ambiguities, blocked tasks, or architectural decisions requiring reviewer input.
 ```
 
-## Rules
+---
 
-- Plan must be detailed enough for direct implementation.
-- **Do not implement code** — deliver blueprint only.
-- If stack undetectable from config.json, ask.
+## Rules of Engagement
+
+- The plan must contain sufficient detail for direct coding task generation.
+- **Do not write product code:** this skill is strictly for planning and documentation.
+- If the project stack cannot be detected from `config.json`, stop and ask for clarification.

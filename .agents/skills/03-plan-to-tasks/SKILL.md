@@ -1,88 +1,86 @@
 ---
 name: 03-plan-to-tasks
-description: Breaks an implementation plan (step-02-{slug}.plan.refined.md or fallback step-01-{slug}.plan.md) into atomic tasks with files, acceptance criteria, and coderPrompt, organized in a DAG of topological levels for safe parallel execution. Auto-detects small plans and recommends sequential execution.
-version: 2.0
+description: Breaks an implementation plan into atomic tasks with files, ACs, and coderPrompts, organized in a DAG topological order.
+version: 2.1
 disable-model-invocation: true
 ---
 
-# plan-to-tasks
+# 03-plan-to-tasks
 
-Transforms a refined plan `step-02-{slug}.plan.refined.md` (or falls back to `step-01-{slug}.plan.md` if Step 2 refinement was bypassed) into an operational execution plan: atomic tasks + dependency graph (DAG) ready for a coding agent (`implement-tasks`) to execute without ambiguity.
+Responsible for reading the finalized plan (`step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md` if Step 2 was bypassed) and decomposing it into atomic tasks. It schedules tasks into a Directed Acyclic Graph (DAG) of parallelizable levels, or auto-detects if the plan is small enough to be run sequentially.
 
-**Automatic size detection:** before generating the DAG, evaluates whether the plan is small enough for direct sequential execution — if so, returns `execMode: sequential` and skips DAG generation (see [Size Detection](#size-detection--sequential-mode)).
+---
 
-**Standalone** — useful even outside `us-workflow` for those who just want the execution checklist of a plan.
+## Invocation
 
-## Input
+```
+/plan-to-tasks <plan-path> [thresholds=<path>]
+```
 
-Path to `step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md`. If not provided, search for `step-02-*.plan.refined.md` first; if it exists, read it; otherwise, fall back to `step-01-*.plan.md`. If neither exists, ask.
+### Parameters
 
-## Size Detection & Sequential Mode
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `<plan-path>` | String | (required) | Path to the refined plan (`step-02-*.plan.refined.md`) or the draft plan (`step-01-*.plan.md`). |
+| `thresholds=<path>` | String | `config.json` | Threshold limits for sequential auto-detection. |
 
-Before breaking into atomic tasks, evaluate the plan size by reading the section "3. Step-by-Step Plan" and the file matrix. If the plan meets **all** criteria below, it is considered **small** — return `execMode: sequential` and skip DAG generation:
+---
 
-| Criterion | Limit | How to measure |
-|----------|--------|------------|
-| Implementation steps | ≤ 3 | Count numbered sub-steps in section 3 |
-| Expected files | ≤ 6 | Sum all files listed under "Files" in the steps |
-| Layers involved | ≤ 2 | Core / Infrastructure / API / web — count distinct |
+## Size Detection (Sequential Mode)
 
-**Customizable thresholds:** the [`config.json`](../us-workflow/config.json) file may override these values in the `dagThresholds` field. If the field exists, use those values. If absent, use the defaults above.
+Before generating the task graph, evaluate the size of the plan using the following thresholds (from `config.json.dagThresholds` or standard defaults):
 
-If **any** criterion exceeds the limit → generate the DAG normally (`execMode: parallel`).
+| Metric | Threshold | Method of Evaluation |
+|--------|-----------|----------------------|
+| Steps | `≤ 3` | Count steps under section 3 (Step-by-Step Plan). |
+| Files | `≤ 6` | Count total files to create/modify in the file matrix. |
+| Layers | `≤ 2` | Count unique layers (e.g. Core, Infrastructure, API, Web). |
 
-If **all** criteria are within the limit → `execMode: sequential`.
+- **Sequential Mode:** If **all** metrics are within the thresholds, set `execMode: "sequential"` and bypass DAG generation.
+- **Parallel Mode:** If **any** metric exceeds the threshold, or if the plan's step breakdown is ambiguous, default to `execMode: "parallel"`.
 
-**Fallback:** when the plan lacks a section 3 clear enough to count steps/files, assume `execMode: parallel` (do not risk skipping the DAG on ambiguous plans).
+---
 
-## Sequential Mode Output
+## Output Formats
 
-When `execMode: sequential`, the output is minimal — no DAG, no `tasks[]`, no `levels[]`:
+### 1. Sequential Mode Output
 
-### `step-03-{slug}.plan.exec.md`
+When sequential execution is selected, write:
+
+#### `step-03-{slug}.plan.exec.md`
 ```markdown
 # {slug} — Execution Plan (Sequential)
 **Mode:** sequential — small plan, direct execution without DAG.
 **Reason:** {n} steps, {m} files, {k} layers — below thresholds.
 
-Run via `implement-tasks` `build` mode with the `step-01-{slug}.plan.md` directly.
+Run via `implement-tasks` build mode using the plan file directly.
 ```
 
-### `step-03-{slug}.exec.dag.json`
+#### `step-03-{slug}.exec.dag.json`
 ```json
 {
   "execMode": "sequential",
   "reason": "{n} steps, {m} files, {k} layers — sequential execution is more efficient.",
-  "planPath": "step-01-{slug}.plan.md",
+  "planPath": "step-02-{slug}.plan.refined.md",
   "tasks": [],
   "levels": []
 }
 ```
 
-## Parallel Mode (DAG — large plan)
+---
 
-When `execMode: parallel`, follow the normal flow below.
+### 2. Parallel Mode (DAG) Output
 
-### What to do
+When parallel execution is selected, decompose steps into atomic tasks ($T_1, T_2, \dots$). Ensure that:
+- Two concurrent tasks in the same topological level **never** touch the same file.
+- There are **maximum 3 concurrent tasks** per level.
 
-1. Read the entire plan, focusing on the section "3. Step-by-Step Plan" and the AC matrix.
-2. Break each step into **atomic tasks** (`T1`, `T2`, ...), each with:
-   - `id`: `T{n}`
-   - `title`: short, imperative (e.g.: "Create DTO `WithdrawalDto` with validations")
-   - `files`: exact list of paths to create/modify (no wildcards)
-   - `dependsOn`: IDs of prerequisite tasks
-   - `acceptance`: objective, testable criterion (references plan AC when applicable)
-   - `coderPrompt`: literal, complete instruction for the implementer — namespaces, classes, DTOs, permissions; cite a real reference file from the repo (e.g.: service or controller in the project layers defined in `config.json.stack`)
-   - `parallelGroup`: filled in at step 3 below
-3. Assemble **topological levels** (`levels`): tasks with no pending dependencies go in the same level, **max. 3 concurrent tasks per level**, and **no file overlap** within the same level (two tasks at the same level must never touch the same file — if they do, force a dependency between them and move them to different levels).
-4. Do **not** define worktree per task — execution isolation is the responsibility of whoever runs the DAG (`implement-tasks`/orchestrator), not of the DAG itself.
+Write the following outputs:
 
-### Output
+#### `step-03-{slug}.plan.exec.md` (Human-readable)
+A markdown document outlining the task schedule, displaying the levels, task dependencies, target files, acceptance criteria, and coder prompts.
 
-#### `step-03-{slug}.plan.exec.md` (human-readable)
-Markdown with one section per task (`id`, `title`, `files`, `dependsOn`, `acceptance`, summary of the `coderPrompt`) and a final table with levels (`Level | Tasks`).
-
-#### `step-03-{slug}.exec.dag.json` (machine-readable)
+#### `step-03-{slug}.exec.dag.json` (Machine-readable)
 ```json
 {
   "execMode": "parallel",
@@ -93,8 +91,8 @@ Markdown with one section per task (`id`, `title`, `files`, `dependsOn`, `accept
       "parallelGroup": null,
       "dependsOn": [],
       "files": ["src/Core/Withdrawals/WithdrawalDto.cs"],
-      "acceptance": "DTO exposes mapped properties with DataAnnotations validations",
-      "coderPrompt": "Create WithdrawalDto in the Core layer following the existing DTOs pattern (record OK, persistence-agnostic).",
+      "acceptance": "DTO exposes mapped properties with DataAnnotations validations.",
+      "coderPrompt": "Create WithdrawalDto in the Core layer following the existing pattern (record, persistence-agnostic).",
       "title": "Create WithdrawalDto"
     }
   ],
@@ -102,36 +100,10 @@ Markdown with one section per task (`id`, `title`, `files`, `dependsOn`, `accept
 }
 ```
 
-**File naming convention:** same names used by `us-workflow` (`step-03-us-{id}.plan.exec.md`, `step-03-us-{id}.exec.dag.json`) when invoked by the workflow, inside `.cursor/plans/us-{id}/`. When standalone without a US, use the same basename as the input `step-01-*.plan.md` swapping the extension (`step-01-meu-plano.plan.md` → `step-03-meu-plano.plan.exec.md` / `step-03-meu-plano.exec.dag.json`), in the same folder as the plan.
+---
 
-## step-output (us-workflow)
+## Rules of Engagement
 
-```yaml
-step-output:
-  status: success
-  step: 3
-  execMode: sequential | parallel
-  artifacts:
-    planExecMd: "{path}"
-    execDagJson: "{path}"
-  files_touched:
-    - "{path}/step-03-us-{id}.plan.exec.md"
-    - "{path}/step-03-us-{id}.exec.dag.json"
-  summary: "{execMode} — {n} steps, {m} files, {k} layers"
-  decisions:
-    - "Sequential: small plan — direct execution without DAG"   # when sequential
-    - "Parallel: {n} tasks in {k} levels"                       # when parallel
-  needs_user: null
-```
-
-## Conduct rules
-
-- **Do not implement code** — only decompose the plan into tasks (or detect sequential mode).
-- **Do not invent files/symbols** the plan does not support — if the plan is too vague to generate a precise `coderPrompt`, that is a sign `interview` was skipped; report the gap instead of guessing.
-- Follow the guardrails in `config.json.invariants` + `config.json.rules` when deciding where each file should go. Layers and paths defined in `config.json.stack`.
-- References: load docs pointed to by `config.json.domain.architectureSpec` and project pattern skills (e.g.: view-patterns when UI).
-
-## Triggers
-
-- `@[plan-to-tasks] path/to/plan.md`
-- Dispatched by subagent of `us-workflow` (Step 3).
+- **Do not write product code:** Only structure the plan into tasks.
+- **Strict Isolation:** Ensure tasks in the same parallel level do not share files to prevent merge conflicts during worktree parallel execution.
+- **Reference stack:** Consult `config.json` configurations to verify layer boundaries and project paths.

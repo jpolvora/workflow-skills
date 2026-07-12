@@ -1,119 +1,83 @@
 ---
 name: 02-interview
-description: Audits and interrogates an implementation plan until shared understanding — acceptance criteria, code, MEMORY.md, and project rules; closes gaps with evidence, escalating one question at a time. Stack-agnostic.
-version: 1.5
+description: Audits and interrogates an implementation plan to resolve ambiguities and verify ready criteria before tasks are created.
+version: 1.6
 disable-model-invocation: true
 ---
 
-# interview (plan interrogation)
+# 02-interview (Plan Refinement & Grilling)
 
-Audits and **interrogates** gaps in an implementation plan **before** it becomes execution tasks — "grill-me" philosophy: interview the plan branch by branch until **shared understanding** and exact, testable success criteria are reached.
+Responsible for auditing and interrogating the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structures, multi-tenancy rules, and invariants. It operates on a "grill-me" philosophy to resolve ambiguities and secure shared understanding before task decomposition begins.
 
-This skill is **standalone** (can be called directly by the user on any `*.plan.md`) and is also invoked by `us-workflow` (Step 2) via subagent. The two invocation modes are marked below.
+---
 
-## Grilling Conduct Protocol (mandatory)
+## Invocation
 
-Canonical refinement conduct — adapted from [grilling (Matt Pocock)](https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md):
+### Standalone Mode
 
-1. **Interview without stopping** until shared understanding — every ambiguity, contradiction, and edge case in the plan must be resolved or explicitly assumed (`assumed-default`).
-2. **Walk the design tree** — order gaps by dependency (foundational decisions first: scope → entities → permissions → flows → edge cases). Resolve one branch before opening the next.
-3. **One question per round** — never stack multiple questions in a single escalation; wait for the answer before the next.
-4. **Recommendation in every question** — the recommended option comes **first** in `AskQuestion` / `needs_user`.
-5. **Codebase before escalating** — if the answer exists in code, `docs/`, `MEMORY.md`, or `*.spec.md`, **explore and close the gap** in 2b Resolve; do not ask the user.
-6. **Do not execute the plan** — this skill **does not implement code** nor authorize Step 3+; it only edits `*.plan.md`. The output requires explicit confirmation of shared understanding (state **2e**, below).
+```
+@[refine] <plan-path> [spec=<spec-path>]
+```
 
-**Prohibited:** advancing to DAG/implementation with `blocking`+`open` gaps without escalation or `assumed-default`; batching questions; inventing criteria outside the plan/AC/code.
+### Workflow Mode
 
-## Invocation modes
+Dispatched by `us-workflow` at Step 2 (refinement). Discovers parameters via context and operates on step inputs.
 
-| Mode | How it is called | Behavior on Escalation (2c) |
-|---|---|---|
-| **Standalone** | `@[refine] path/to/plan.md` | Asks the user directly via `AskQuestion` |
-| **Inside workflow** | Subagent dispatch by `us-workflow` Step 2, prompt containing explicit instruction to return `needs_user` | Returns `needs_user` in `step-output`; it is the orchestrator who asks the user |
+### Parameters
 
-Detect the mode from the received prompt: if it contains an instruction like "do not use AskQuestion, return needs_user", it is in workflow mode.
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `<plan-path>` | String | (required) | Path to `step-01-{slug}.plan.md`. |
+| `spec=<spec-path>` | String | (optional) | Path to `step-00-{slug}.spec.md`. Inferred from the plan folder if omitted. |
 
-## Input
+---
 
-- **Mandatory:** path to a `step-01-{slug}.plan.md` (output format of `write-plan`).
-- **Recommended:** path to a corresponding `step-00-{slug}.spec.md` (same `{slug}` or `{us-dir}` folder) — canonical source of ACs and description. If not provided, derive from `state.md` → `## Artifacts.specSnapshot` (workflow mode) or search for `step-00-{slug}.spec.md` in the same folder as the plan.
-- If the plan is not provided, ask.
+## Grilling Protocol (Hard Rules)
 
-## State machine (FSM)
+1. **Diligent Exploration First:** Search the codebase, ADRs, database schema, and `MEMORY.md` before asking. If the answer is discoverable, resolve the gap automatically and record the evidence.
+2. **Walk the Design Tree:** Resolve foundational gaps (scope/schema) before details (UI/i18n).
+3. **Surgical Escalation:** Ask exactly **one** question per round. Include the recommended solution as the first choice.
+4. **Escalation Cap:** Max **3 rounds** of user questions. On the 4th, apply sensible defaults and exit the loop.
+5. **No Code Edits:** Do not modify product code or write tests. Only write refined plans and metadata.
 
-**States:** Audit → Resolve → Escalate → 2e: Shared Understanding.
+---
 
-### 2a. Audit (exhaustive scan + design tree)
+## State Machine (FSM)
 
-Walk **all** sections of the plan (0–8) and **all** paths of each AC — happy path, validation, auth/tenant denial, empty/null, duplicates, soft-delete, concurrency, rollback.
+```
+[Audit Plan] ──> [Resolve Gaps] ──> [Escalate / Ask] ──> [Shared Understanding]
+```
 
-**Scenario probes** (for each AC): invent 1–2 concrete edge-case scenarios and stress-test the plan against them. Example probes:
-- *"What happens if the user submits the form twice in rapid succession?"*
-- *"What if the referenced entity was soft-deleted between page load and form submit?"*
-- *"What does the list display when there are 5000 items — pagination, search, filter behavior?"*
+### Phase 1 — Audit (Scan & Register)
+- Audit sections 0–8 in `step-01-{slug}.plan.md`.
+- Run scenario probes (e.g., Soft-deletion, concurrency, list sizing, rate limits).
+- Register findings in a `gap_registry` with fields: `id`, `class`, `section`, `gap`, `recommendation`, `status`, `dependsOn`.
+- Classify gaps as:
+  - **blocking:** Prevents development or changes AC. Must be resolved or escalated.
+  - **non-blocking:** Code quality, optimizations. Applied directly via defaults.
 
-Build a `gap_registry` (`id | class | section | gap | recommendation | status | dependsOn`).
+### Phase 2 — Resolve (Local Gaps)
+- Resolve registered gaps by scanning code layers, specifications, and `MEMORY.md`.
+- Append resolution evidence to the registry.
 
-**Design tree order** (use `dependsOn` to prioritize escalation):
+### Phase 3 — Escalate (Clarify Gaps)
+- Standalone: prompt the user via `AskQuestion`.
+- Workflow: return `status: needs_user` with details to allow the orchestrator to request feedback.
 
-| Branch | Example gaps |
-|------|------------------|
-| Scope / AC | out of scope, contradictory AC, closed/removed issue |
-| Domain / entities | aggregates, states, invariants |
-| Authorization / tenant | non-existent permissions, isolation |
-| Behavior / API / UI | HTTP, errors, i18n, screen states |
-| Edge cases | limits, null, duplicate, concurrency (probed via scenarios above) |
+### Phase 4 — Shared Understanding
+- The plan cannot be finalized until `shared_understanding: confirmed` (except under `autoMode`).
+- STANDALONE: Prompt the user to confirm.
+- WORKFLOW: Orchestrator handles the gate confirmation.
 
-Classify each gap:
+---
 
-| Class | Criterion | Action |
-|---|---|---|
-| **blocking** | Prevents objective testing OR changes scope/AC | Escalate (2c) OR explicit `assumed-default` |
-| **non-blocking** | Style, naming, optimization | `assumed-default` + log, no escalation |
+## Outputs
 
-### 2b. Resolve
+- Drafts `step-02-{slug}.plan.refined.md` (leaving `step-01-{slug}.plan.md` untouched).
+- Appends the `## Interview registry` table to the bottom of the refined plan.
+- Sets the frontmatter `status` to `"plan refined ok"`.
 
-Close gaps **first** with evidence from code, `docs/`, `CONTEXT.md`, `ADRs/`, `MEMORY.md` (repo root), or the feature's `*.spec.md`.
-
-**Grilling rule:** if the question can be answered by exploring the repository, **explore** (grep, read, search) and log evidence in `resolution` — **do not** escalate. Only escalate what has no local evidence after diligent exploration.
-
-Read `step-01-{slug}.plan.md`, update impacted sections (§2–§5), change the frontmatter `status` from `"plan to be refined"` to `"plan refined ok"`, and prepare the refined content. Do not edit `step-01-{slug}.plan.md` in-place.
-
-### 2c. Escalate
-
-- **Exactly one** question per round — highest priority in design tree.
-- Via `AskQuestion` (standalone) or `needs_user` (workflow): **recommended option first**, always including **"End interview and advance"**.
-- **Max 3 rounds** of escalation — on the 4th, only "respond" or "end" remain.
-- When ending early: apply recommended default to all remaining `blocking` gaps, log each as `assumed-default`.
-
-### 2d. Exit (technical criterion)
-
-- No `blocking`+`open` gaps in `gap_registry`.
-- §8 of plan empty; no `TBD` in §0–7.
-- AC matrix complete.
-- Early termination: every remaining `open` gap logged as `assumed-default`.
-
-When 2d satisfied, return `status: success` with `shared_understanding: pending`.
-
-### 2e. Shared Understanding Gate
-
-> *"Do not enact the plan until shared understanding is confirmed."*
-
-| Mode | Behavior |
-|------|---------------|
-| **Standalone** | `AskQuestion`: **(1) I confirm shared understanding** (recommended) · **(2) Continue — still have doubts** |
-| **Workflow** | Return `status: success` + `shared_understanding: pending`; orchestrator presents gate |
-
-**Prohibited** marking Step 2 complete without `shared_understanding: confirmed` (except `autoMode`).
-
-## Output
-
-- Refined plan written to `step-02-{slug}.plan.refined.md` (leaving `step-01-{slug}.plan.md` intact as the initial draft).
-- Section `## Interview registry` (table `id | class | section | gap | status | resolution`) appended to the end of `step-02-{slug}.plan.refined.md`.
-- In standalone mode: write the output to `step-02-{slug}.plan.refined.md` in the same directory as the plan.
-- When standalone: chat summary of what was closed + what was left as `assumed-default`.
-
-## `step-output` format (only when dispatched as a workflow subagent)
+### step-output (Workflow Mode)
 
 ```yaml
 status: success | needs_user
@@ -121,28 +85,10 @@ refine:
   registry: [{id, class, section, gap, status, resolution, dependsOn?}]
   round: number
   blocking_open: number
-  shared_understanding: pending | confirmed   # confirmed only after gate 2e
+  shared_understanding: pending | confirmed
 needs_user:
-  question: string              # ONE question — never an array
-  options: [{id, label}]        # recommended first; include "End refinement and advance"
+  question: string              # ONE question only
+  options: [{id, label}]        # recommended choice first
   context: string
-  design_branch: string         # design tree branch (e.g.: "Authorization / tenant")
+  design_branch: string         # e.g., "Authorization / tenant"
 ```
-
-## Conduct rules
-
-- Follow the **Grilling Conduct Protocol** above — it is mandatory, not optional.
-- **Do not implement code.** This skill only reads, questions, and edits `*.plan.md`.
-- **Do not invent new criteria** outside what the plan/AC/code/`MEMORY.md` already support — when in doubt, it is a gap to escalate, not an assumption.
-- **Mandatory context references:** `AGENTS.md` (root), `config.json.rules` + `config.json.domain.architectureSpec`, `spec-format` skill, `MEMORY.md` (root).
-
-## Examples of blocking gaps (retrospective)
-
-- GitHub issue in `closed` state while the branch remains active.
-- Rule described one way in the issue but divergent in the plan (e.g.: value secrecy as a field vs. column).
-- RBAC permission cited in the plan that does not exist in the repository (e.g.: legacy role/level not surfaced in `auth/me`).
-
-## Triggers
-
-- `@[refine] path/to/plan.md`
-- Subagent dispatch from `us-workflow` (Step 2) — see [`../us-workflow/SKILL.md`](../us-workflow/SKILL.md), section **Step Instructions → Step 2**.

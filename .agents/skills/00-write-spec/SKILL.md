@@ -1,60 +1,66 @@
 ---
 name: 00-write-spec
-description: >
-  Receives a high-level feature description and returns a spec.md result file,
-  ready for the next step (01-write-plan).
-version: 3.0
+description: Receives a high-level feature description and drafts a canonical step-00-{slug}.spec.md specification.
+version: 3.1
+disable-model-invocation: true
 ---
 
-# 00-write-spec — Draft spec from description
+# 00-write-spec
 
-Receives a free-text feature description from the user, drafts a structured
-`*.spec.md`, and writes it to `specs/[slug].spec.md`. The output is ready for
-handoff to step `01-write-plan`.
+Responsible for taking raw, free-text feature descriptions and drafting a canonical, structured specification document. The resulting file serves as the input specification for downstream planning steps.
 
-**Scope:** description → spec file only. No issue fetching, no iterative
-grilling, no orchestrator dispatch.
+---
 
-## Canonical format
+## Invocation
 
-Adhere to the canonical `*.spec.md` format defined by the
-[spec-format](../spec-format/SKILL.md) skill. Minimal structure:
+```
+/write-spec "<description>" [slug=<slug>] [output-dir=<path>]
+```
 
-```yaml
+### Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `<description>` | String | (required) | Raw text description of the feature or business requirement. |
+| `slug=<slug>` | String | (optional) | Unique URL-friendly identifier for the feature. Auto-generated from title/description if omitted. |
+| `output-dir=<path>` | String | `.cursor/plans/{slug}/` | Destination folder for the drafted spec. |
+
+---
+
+## Output Template
+
+Adhere to the canonical specification format defined by [spec-format](../spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
+
+```markdown
 ---
 id: null
-slug: slug-unique-da-feature
+slug: {slug}
 title: "Feature Title"
 source: local
 specDate: YYYY-MM-DD
 ---
-```
 
-```markdown
 # Specification — {title}
 
 ## Description
 
-(Detailed description of business needs and feature flows)
+(Detailed description of business needs, feature flows, and target audience)
 
 ## Acceptance Criteria
 
-- AC1: ...
-- AC2: ...
+- AC1: (Specific, testable behavior metric)
+- AC2: (Specific, testable behavior metric)
 
 ## Notes
 
-(Technical context, constraints, useful links)
+(Technical context, architecture notes, constraints, or links)
 ```
 
-## Workflow
+---
 
-1. Receive feature description from user.
-2. Infer a slug from the title/description.
-3. Draft the spec following the canonical format above.
-4. Write to `specs/[slug].spec.md`.
-5. Return the file path so `01-write-plan` can pick it up.
+## Pipeline Steps
 
-## Output
-
-Return the absolute or repo-relative path to the written spec file.
+1. **Parse & Infer:** Analyze the input text description. Infer the feature's name, title, and create a url-safe `slug`.
+2. **Draft:** Construct the specification following the structure above. Ensure acceptance criteria (ACs) are clear, testable, and have no logical gaps.
+3. **Write:** Save the resulting file to the output directory as `step-00-{slug}.spec.md`.
+4. **Handoff:** Return the path to the written file so that [01-write-plan](../01-write-plan/SKILL.md) can pick it up.
