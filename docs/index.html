@@ -49,7 +49,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/check-harness.md">
         <div class="name">check-harness</div>
-        <div class="desc">Auditing and maintenance agent for the agent harness (AGENTS.md as hub,   .agents/skills, docs). Detects skills/rules on disk missing from   AGENTS.md routing, broken links, absolute paths, and redundancies.   Optionally proposes skill writing improvements via writing-great-skills   (global skill, when installed). Supports dry-run mode (`--dry-run`) for   report-only without edits. Mandatory flow: read-only scan →   correction plan → execution only after explicit user approval   (dry-run stops at the plan). Load ONLY when user explicitly invokes   /check-harness, @check-harness, "audit harness", "check   harness references", or requests a cohesion/redundancy review between skills   and AGENTS.md. Do not confuse with us-workflow (E2E delivery pipeline).</div>
+        <div class="desc">Audit harness integrity — validates AGENTS.md routing, detects broken links, orphan skills/rules, absolute paths, redundancy, and portability issues. Read-only scan → correction plan → apply with approval.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-harness.md">View skill</a>
       </div>
     </div>

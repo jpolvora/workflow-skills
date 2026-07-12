@@ -1,24 +1,13 @@
 ---
 name: check-harness
-description: >-
-  Auditing and maintenance agent for the agent harness (AGENTS.md as hub,
-  .agents/skills, docs). Detects skills/rules on disk missing from
-  AGENTS.md routing, broken links, absolute paths, and redundancies.
-  Optionally proposes skill writing improvements via writing-great-skills
-  (global skill, when installed). Supports dry-run mode (`--dry-run`) for
-  report-only without edits. Mandatory flow: read-only scan →
-  correction plan → execution only after explicit user approval
-  (dry-run stops at the plan). Load ONLY when user explicitly invokes
-  /check-harness, @check-harness, "audit harness", "check
-  harness references", or requests a cohesion/redundancy review between skills
-  and AGENTS.md. Do not confuse with us-workflow (E2E delivery pipeline).
+description: Audit harness integrity — validates AGENTS.md routing, detects broken links, orphan skills/rules, absolute paths, redundancy, and portability issues. Read-only scan → correction plan → apply with approval.
 disable-model-invocation: true
 version: 3.1-generic
 ---
 
 # Check Harness
 
-> **Note:** This is the `workflow-skills` source repository. **Never** run scripts via `npx github:jpolvora/workflow-skills` — use local files from this repository. The harness audit is performed by loading this file and following the scan phases.
+> **Note:** The harness audit is performed by loading this file and following the scan phases below. This skill is project-agnostic — it discovers project structure dynamically.
 
 Senior meta-harness auditing agent specialized in **health, cohesion, and portability** of project agents. 
 
@@ -196,7 +185,7 @@ Useful commands:
 rg -o '\[[^\]]+\]\(([^)]+)\)' AGENTS.md
 
 # .agents / .cursor paths cited in the harness
-rg -n '\.agents/|\.cursor/' AGENTS.md .agents/skills .agents/us-workflow
+rg -n '\.agents/|\.cursor/' AGENTS.md .agents/
 ```
 
 ### Phase 2 — Existence and path format validation
@@ -232,8 +221,8 @@ Check:
 
 1. **Coverage** — every skill listed in `AGENTS.md` exists; every relevant existing skill is routed (or intentionally omitted with a note) — mechanical diff in **Phase 4**.
 2. **Progressive disclosure** — `AGENTS.md` routes skills/rules/docs without indexing specs; skills delegate to hub + guardrails skill.
-3. **Declared relationships** — inter-skill dependencies match actual imports (e.g., `us-workflow` → skills `01`–`07`; Step 9 → `us-code-review` (`06-code-review`); `08-fix-pr` → `code-review`).
-4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (`/us-workflow`, `@check-harness`, etc.).
+3. **Declared relationships** — inter-skill dependencies match actual imports (e.g., workflow orchestrator → workflow skills; review step → review skill; fix-pr → code-review skill).
+4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (e.g., `/pipeline`, `@check-harness`).
 5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
 
 ### Phase 4 — Skills/rules not routed in `AGENTS.md`
@@ -319,7 +308,7 @@ For each pair of files covering the same theme, verify:
 - **Obsolete instruction** — reference to removed artifact (orphan paths, remnants of previous stack)
 - **Inflation** — `AGENTS.md`, skill, or orchestrator repeating full skill body or indexing specs (should be index + link to skills/docs)
 - **`name:` collision** — two `SKILL.md` declaring the same `name:` (breaks skill resolution)
-- **`us-workflow` dependency portability** — Verify that skills that are dependencies of `us-workflow` (such as `00-write-spec` through `07-integration-validation`, `11-ship-pr`, etc.) contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from `config.json` or `stack.md` so that dependencies remain portable and project-agnostic.
+- **Orchestrator dependency portability** — Verify that skills that are dependencies of the project's workflow orchestrator contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from a config file or stack document so that dependencies remain portable and project-agnostic.
 
 Prioritize **remove duplicate + link** over rewriting.
 
@@ -347,7 +336,7 @@ This phase generates three independent analyses that compose the **context simul
 1. **Extract auto-load skills** from `AGENTS.md`:
    - § *Skill loading (mandatory)* — table with "Trigger" column: skills with **Every prompt** / **Every task completion** / **Session start**
    - § *First reply* / *Session start* — explicit list of skills read before the first reply
-   - Separate into two groups: **mandatory** (always loaded: senior-developer, gabarito, karpathy-guidelines, caveman) and **conditional** (learning, changelog at task end; matrix-view-patterns, mobile-first-design, context7-mcp by task trigger)
+    - Separate into two groups: **mandatory** (always loaded: guardrails, response guidelines, compression) and **conditional** (learning, changelog at task end; UI patterns, responsive design, library docs by task trigger)
 
 2. **For each mandatory auto-load skill**, inspect the `SKILL.md` and extract:
    - **Output directives** imposed on the agent (e.g., opening phrase "Senior Developer in use.", response compression "caveman full", scope restriction "surgical changes only")
@@ -357,11 +346,11 @@ This phase generates three independent analyses that compose the **context simul
 
 3. **Build conflict matrix between mandatory auto-load skills:**
 
-   | Skill A | Skill B | Interaction type | Conflict? | Evidence |
-   |---------|---------|-------------------|-----------|-----------|
-   | senior-developer | karpathy-guidelines | Complementary — senior covers engineering, karpathy covers surgical scope | No | — |
-   | gabarito | caveman | Both modify tone/response — gabarito defines accountability, caveman compresses prose | No (precedence defined) | AGENTS.md § Precedence |
-   | caveman | senior-developer | caveman compresses ALL prose; senior requires detailed code review proof | **Potential** — proof may be overly compressed | caveman § Intensity: "keep technical accuracy" |
+    | Skill A | Skill B | Interaction type | Conflict? | Evidence |
+    |---------|---------|-------------------|-----------|-----------|
+    | Guardrails skill | Surgical-scope skill | Complementary — engineering scope vs surgical changes | No | — |
+    | Response guidelines | Compression skill | Both modify tone/response — guidelines define accountability, compression reduces prose | No (precedence defined) | AGENTS.md § Precedence |
+    | Compression skill | Guardrails skill | Compression reduces ALL prose; guardrails require detailed proof | **Potential** — proof may be overly compressed | Compression skill § Intensity: "keep technical accuracy" |
 
    For each cell with potential conflict, classify:
    - **`none`** — no conflict detected
@@ -369,9 +358,9 @@ This phase generates three independent analyses that compose the **context simul
    - **`unresolved`** — conflict exists and there is no explicit mitigation → `warning` in Phase 6 plan
 
 4. **Verify § Precedence consistency** against auto-load skills:
-   - § *Precedence* (AGENTS.md) defines order: user message → CONTEXT.md → senior + karpathy → hub → gabarito → caveman
-   - Validate that no auto-load skill contradicts this hierarchy (e.g., a skill declaring itself above senior-developer without backing in AGENTS.md)
-   - Validate that documented opt-outs (§ Opt-outs) are recognized by all affected skills
+    - § *Precedence* (AGENTS.md) defines the loading order
+    - Validate that no auto-load skill contradicts this hierarchy
+    - Validate that documented opt-outs (§ Opt-outs) are recognized by all affected skills
 
 5. **Calculate estimated cumulative context load:**
    - Sum lines of mandatory auto-load `SKILL.md` files
@@ -388,19 +377,19 @@ This phase generates three independent analyses that compose the **context simul
 
 1. **Group skills by functional domain** from `description:` in frontmatter and routing in `AGENTS.md`:
 
-   | Domain | Detected skills |
-   |---------|-------------------|
-   | Code review | `code-review`, `us-code-review` (`06-code-review`), `tdd-sdd-ddd-reviewer`, `dotnet-security-performance-review` |
-   | Security | `security-review`, `dotnet-security-performance-review` |
-    | Planning | `01-write-plan`, `03-plan-to-tasks`, `02-interview` |
-    | Implementation | `04-implement-tasks`, `senior-developer` |
-   | Verification | `05-verify-plan`, `07-integration-validation` |
-   | PR workflow | `fix-pr`, `09-goal-fix-pr`, `11-ship-pr` |
-   | Domain | `domain-review`, `multi-domain-review` |
-   | Documentation | `learning`, `changelog` |
-   | UI/Frontend | `matrix-view-patterns`, `mobile-first-design`, `taste-skill` |
-   | Harness/Agents | `check-harness`, `write-a-skill`, `handoff` |
-    | External library | `context7-mcp` |
+   | Domain | Examples |
+   |---------|----------|
+   | Code review | Local review skill, architecture review skill, security review skill |
+   | Security | General security skill, language-specific security skill |
+   | Planning | Write plan, interview/refine, plan-to-tasks skills |
+   | Implementation | Implementation executor, guardrails skill |
+   | Verification | Verify-plan skill, integration validation skill |
+   | PR workflow | Fix-pr, goal-fix-pr, ship-pr skills |
+   | Domain | Single domain review, multi-domain review skills |
+   | Documentation | Learning/recording, changelog skills |
+   | UI/Frontend | UI patterns, responsive design, taste/design skills |
+   | Harness | Check harness, write-a-skill |
+   | External library | Library docs integration skill |
 
 2. **For each domain with 2+ skills**, analyze overlap:
 
@@ -432,15 +421,14 @@ This phase generates three independent analyses that compose the **context simul
 1. **Build the session loading tree:**
 
    ```
-   .cursorrules
-   └── AGENTS.md (Layer 0 — always)
-       ├── ef-migrations.mdc (Layer 0 — always)
-       ├── senior-developer/SKILL.md (Layer 1 — auto every prompt)
-       ├── gabarito/SKILL.md (Layer 1 — auto every prompt)
-       ├── karpathy-guidelines/SKILL.md (Layer 1 — auto every prompt)
-       ├── caveman/SKILL.md (Layer 1 — auto every prompt)
-       ├── MEMORY.md (Layer 3 — session start, before first implementation)
-       └── [task-specific: matrix-view-patterns, mobile-first-design, context7-mcp, etc.]
+    .cursorrules
+    └── AGENTS.md
+        ├── guardrails skill (auto every prompt)
+        ├── response guidelines skill (auto every prompt)
+        ├── surgical-scope skill (auto every prompt)
+        ├── compression skill (auto every prompt)
+        ├── MEMORY.md (session start, before first implementation)
+        └── [task-specific: UI patterns, responsive design, library docs, etc.]
    ```
 
 2. **Verify progressive disclosure chain in simulation:**
@@ -586,27 +574,27 @@ Otherwise — **correction plan** (mandatory before editing):
 ### Auto-load skills matrix (Phase 5c.1)
 | Skill | Mandatory? | Lines | Output directives | Interacts with |
 |-------|-------------|--------|---------------------|-------------|
-| senior-developer | Yes | N | "Senior Developer in use." + code review proof | karpathy, caveman, learning |
-| gabarito | Yes | N | accountability, anti-sycophancy, chain-of-verification | caveman (tone) |
-| karpathy-guidelines | Yes | N | surgical changes, no scope creep | senior-developer |
-| caveman | Yes | N | full prose compression | gabarito, senior-developer |
-| learning | Conditional | N | Learning: line in proof + MEMORY.md | senior-developer, changelog |
+| Guardrails skill | Yes | N | Engineering standards + code review proof | Surgical-scope, compression, learning |
+| Response guidelines | Yes | N | accountability, anti-sycophancy, chain-of-verification | compression (tone) |
+| Surgical-scope | Yes | N | surgical changes, no scope creep | guardrails skill |
+| Compression skill | Yes | N | full prose compression | guidelines, guardrails |
+| learning | Conditional | N | Learning: line in proof + MEMORY.md | guardrails, changelog |
 | changelog | Conditional | N | CHANGELOG.md append | learning |
-| matrix-view-patterns | Conditional | N | list/form patterns + STANDARDS.md | DESIGN.md |
-| mobile-first-design | Conditional | N | responsive/mobile-first | DESIGN.md |
-| context7-mcp | Conditional | N | resolve-library-id → query-docs | — |
+| UI patterns | Conditional | N | list/form patterns + standards docs | design docs |
+| responsive design | Conditional | N | responsive/mobile-first | design docs |
+| library docs | Conditional | N | resolve → query docs | — |
 
 **Estimated total footprint:** Mandatory ~X lines (Y%), Conditional ~Z lines (W%), AGENTS.md + rules ~V lines (U%), **Total ~T lines**
 
 #### Conflict matrix between mandatory auto-load skills
 | Skill A | Skill B | Interaction | Status |
 |---------|---------|-----------|--------|
-| senior-developer | karpathy-guidelines | Engineering + surgical scope — complementary | none |
-| senior-developer | caveman | Code review proof vs compression — potential conflict | mitigated (precedence + caveman § technical accuracy) |
-| senior-developer | gabarito | Both define response tone | mitigated (precedence: senior > gabarito) |
-| karpathy-guidelines | caveman | Surgical changes + compression — aligned | none |
-| gabarito | caveman | Both modify response — tone vs size | mitigated (precedence: gabarito > caveman) |
-| gabarito | karpathy-guidelines | Accountability + scope — complementary | none |
+| Guardrails skill | Surgical-scope skill | Engineering + surgical scope — complementary | none |
+| Guardrails skill | Compression skill | Detailed proof vs compression — potential conflict | mitigated (precedence + compression § technical accuracy) |
+| Guardrails skill | Response guidelines | Both define response tone | mitigated (precedence) |
+| Surgical-scope skill | Compression skill | Surgical changes + compression — aligned | none |
+| Response guidelines | Compression skill | Both modify response — tone vs size | mitigated (precedence) |
+| Response guidelines | Surgical-scope skill | Accountability + scope — complementary | none |
 
 #### Precedence verification
 - [ ] AGENTS.md § Precedence is consistent with all auto-load skills
@@ -616,15 +604,13 @@ Otherwise — **correction plan** (mandatory before editing):
 ### Overlapping skills (Phase 5c.2)
 | Domain | Skills | Overlap type | Conflict? | Recommendation |
 |---------|--------|---------------------|-----------|--------------|
-| Code review | `code-review`, `us-code-review` (`06-code-review`) | complementary — local branch vs workflow step | No | Distinct triggers; keep both |
-| Code review | `tdd-sdd-ddd-reviewer` vs `code-review` | complementary — architecture vs diff | No | Task router already distinguishes |
-| Security | `security-review` vs `dotnet-security-performance-review` | complementary — OWASP vs C#/EF specific | No | domain-review already references dotnet-security-performance-review |
-| PR workflow | `fix-pr` vs `09-goal-fix-pr` | superset — goal-fix-pr wraps fix-pr | No | Keep both; goal-fix-pr delegates to fix-pr |
-| PR workflow | `fix-pr` (merged) — GitHub + Azure DevOps | unified — platform-agnostic skill | N/A | Resolved: merge of solve-pr + 08-fix-pr |
-| Planning | `01-write-plan` vs `02-interview` | complementary — create vs audit plan | No | Sequential workflow; distinct triggers |
-| Verification | `05-verify-plan` | Quick Score + US verification | merged from verify-plan | — |
-| Domain | `domain-review` vs `multi-domain-review` | superset — batch orchestrator | No | multi-domain-review orchestrates domain-review |
-| UI/Frontend | `matrix-view-patterns` vs `taste-skill` | complementary — internal patterns vs public anti-slop | No | taste-skill loads MATRIX.md for distinction |
+| Code review | local review vs workflow review step | complementary — local branch vs workflow step | No | Distinct triggers; keep both |
+| Code review | architecture review vs diff review | complementary — architecture vs diff | No | Task router already distinguishes |
+| Security | general security vs language-specific | complementary — OWASP vs language-specific | No | Domain review already references security review |
+| PR workflow | fix vs goal-fix-pr | superset — goal-fix-pr wraps fix-pr | No | Keep both; goal-fix-pr delegates to fix-pr |
+| Planning | write-plan vs interview | complementary — create vs audit plan | No | Sequential workflow; distinct triggers |
+| Domain | single vs multi-domain review | superset — batch orchestrator | No | Multi-domain orchestrates single |
+| UI/Frontend | UI patterns vs taste/design | complementary — internal patterns vs anti-slop | No | Taste skill loads design doc for distinction |
 
 ### Simulated context load (Phase 5c.3)
 
@@ -641,12 +627,12 @@ Otherwise — **correction plan** (mandatory before editing):
 ```
 
 #### Session scenarios
-| Scenario | Extra skills | Estimated footprint |
-|---------|---------------|--------------------|
-| Session start (baseline) | — | ~T0 lines |
-| Backend task | + context7-mcp (if new lib) | ~T0 + X lines |
-| UI CRUD task | + matrix-view-patterns + DESIGN.md | ~T0 + Y lines |
-| Full task (worst case) | all conditional + docs | ~T0 + Z lines |
+    | Scenario | Extra skills | Estimated footprint |
+    |---------|---------------|--------------------|
+    | Session start (baseline) | — | ~T0 lines |
+    | Backend task | + library docs skill (if new lib) | ~T0 + X lines |
+    | UI CRUD task | + UI patterns + design docs | ~T0 + Y lines |
+    | Full task (worst case) | all conditional + docs | ~T0 + Z lines |
 
 #### Simulation alerts
 - [ ] Circular load: [none detected | list cycles]
@@ -656,12 +642,12 @@ Otherwise — **correction plan** (mandatory before editing):
 - [ ] Inconsistent opt-outs: [none | list]
 - [ ] Rules conflicting with auto-load: [none | list]
 
-### Skill improvements (writing-great-skills)
+### Skill improvements (optional — if global skill-writing reference is installed)
 *(Omit entire section if global skill is not installed or if no findings.)*
 
 | Skill | Finding | Severity | Proposed correction | Plan item (#) |
 |-------|--------|------------|-------------------|-------------------|
-| `03-plan-to-tasks` | obsolete reference | warning | replace with canonical source | #4 |
+| (example) | obsolete reference | warning | replace with canonical source | #4 |
 
 ### Next step
 Awaiting your approval to apply the plan. Reply `apply corrections`, `apply the plan`, or choose from `AskQuestion`.
@@ -702,9 +688,9 @@ If the user requests, save to:
 | Role | Artifact | Function |
 |-------|----------|--------|
 | **This agent** | `.agents/skills/check-harness.md` | Audit meta-harness health |
-| **E2E Pipeline** | `.agents/us-workflow/` | E2E agent — consumes skills |
-| **Standalone skills** | `.agents/skills/{NN}-*/SKILL.md` and `.agents/skills/*/SKILL.md` | Individually invocable knowledge/workflow |
-| **Rules** | `.cursor/rules/*.mdc` | Narrow-scope engineering rules; complement skills and hub |
+| **E2E Pipeline** | Project's E2E orchestrator directory | E2E agent — consumes skills |
+| **Standalone skills** | `.agents/skills/*/SKILL.md` and `.agents/skills/*.md` | Individually invocable knowledge/workflow |
+| **Rules** | `.cursor/rules/*.mdc` (when present) | Narrow-scope engineering rules; complement skills and hub |
 | **Hub** | `.cursorrules` → `AGENTS.md` | Single entry; `AGENTS.md` contains routing (Layers, Skill loading, Task router) without duplicating skill bodies |
 
 ---
