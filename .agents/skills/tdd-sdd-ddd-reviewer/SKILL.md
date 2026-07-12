@@ -1,18 +1,18 @@
 ---
 name: tdd-sdd-ddd-reviewer
 description: >
-  Architectural audit (TDD, spec-driven design, DDD) for Matrix C# .NET backends and React frontends.
+  Architectural audit (TDD, spec-driven design, DDD) for C# .NET backends and React frontends.
   Use when explicitly asked for clean-architecture, layer-boundary, or TDD/DDD review — not default PR review.
 ---
 
-# TDD / SDD / DDD Code Reviewer — Matrix
+# TDD / SDD / DDD Code Reviewer
 
 On-demand Layer 2 skill per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. **Does not replace** [code-review](../code-review/SKILL.md) or auto-loaded [senior-developer](../senior-developer/SKILL.md).
 
 ## Precedence
 
 1. User message
-2. Design spec → [senior-developer](../senior-developer/SKILL.md) (Matrix EF, tenancy, tests)
+2. Design spec → [senior-developer](../senior-developer/SKILL.md) (EF, tenancy, tests)
 3. [karpathy-guidelines](../karpathy-guidelines/SKILL.md) (surgical diffs — no drive-by rewrites)
 4. This skill (layer boundaries, testability, async/DI patterns)
 5. [security-review](../security-review/SKILL.md) for OWASP / exploit paths
@@ -28,7 +28,7 @@ On-demand Layer 2 skill per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. 
 ## Quick start
 
 1. Identify diff or files to review (`git diff master...HEAD -- path`).
-2. Apply Matrix guardrails in [REFERENCE.md](REFERENCE.md) § Matrix conventions first.
+2. Apply project guardrails in [REFERENCE.md](REFERENCE.md).
 3. Apply generic TDD/SDD/DDD checks in [REFERENCE.md](REFERENCE.md).
 4. Output findings per format below. Offer surgical snippets — **not** full-file rewrites unless user asks.
 
@@ -37,12 +37,12 @@ On-demand Layer 2 skill per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. 
 ### Architectural audit
 
 - **SDD (spec-driven design):** behavior matches locked design spec; API/domain terms align with [`CONTEXT.md`](../../../CONTEXT.md).
-- **DDD:** `Matrix.Core` has no Infrastructure/API references; business rules in services, not controllers; thin controllers.
+- **DDD:** `Core` has no Infrastructure/API references; business rules in services, not controllers; thin controllers.
 - **TDD:** logic testable without hidden globals/`DateTime.UtcNow`; frontend tests query by accessibility role.
 
 ### Checklists
 
-See [REFERENCE.md](REFERENCE.md): Matrix conventions, backend (async, DI, EF), frontend (types, hooks, fetching).
+See [REFERENCE.md](REFERENCE.md): project conventions, backend (async, DI, EF), frontend (types, hooks, fetching).
 
 ## Output format
 

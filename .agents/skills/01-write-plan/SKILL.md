@@ -1,5 +1,5 @@
 ---
-name: write-plan
+name: 01-write-plan
 description: "Generates implementation plan from GH {n}, US {n}, or {slug}.spec.md. Reads project stack from config.json — stack-agnostic."
 version: 3.1
 disable-model-invocation: true

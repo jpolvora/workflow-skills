@@ -1,65 +1,65 @@
 ---
-name: integration-validation
-description: Planeja e executa bateria de testes de integração pré-PR. Detecta stack via config.json; gera relatório pass/fail por AC. Projeto-agnóstico.
+name: 07-integration-validation
+description: Plans and executes a pre-PR integration test battery. Detects stack via config.json; generates pass/fail report by AC. Stack-agnostic.
 version: 2.0
 disable-model-invocation: true
 ---
 
 # integration-validation
 
-Validação de integração final antes de abrir PR — última rede de segurança determinística antes da entrega.
+Final integration validation before opening a PR — last deterministic safety net before delivery.
 
-## Pré-leitura obrigatória
+## Mandatory pre-reading
 
 - `config.json` + `tools.md` + `stack.md` (`.agents/skills/us-workflow/`)
 - `AGENTS.md` — hub routing
 
-## Entrada
+## Input
 
-- `*.plan.md` obrigatório
-- `specPath` ou `*.spec.md` — fonte canônica de ACs
-- Número da US (opcional; para resolver spec via GitHub)
+- `*.plan.md` required
+- `specPath` or `*.spec.md` — canonical source of ACs
+- US number (optional; to resolve spec via GitHub)
 
-## Etapa 1 — Plano de teste
+## Step 1 — Test plan
 
-Leia plano, ACs do `*.spec.md`, relatórios de verificação/entrega. Gere `*.integration-test.plan.md` com 8 seções:
+Read plan, ACs from `*.spec.md`, verification/delivery reports. Generate `*.integration-test.plan.md` with 8 sections:
 
-1. **Pré-requisitos** — URLs (de `config.json.stack.backend.apiHost` + `config.json.stack.frontend.devHost`), credenciais, migrations (`migrations-apply`), seed (`seed-db`)
-2. **Seed de dados** — entidades, estratégia de seed, dataset mínimo por AC, limpeza entre iterações
-3. **Build & testes** — `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` se i18n/UI)
-4. **API / backend** — endpoints REST, auth headers (Bearer JWT), status codes, ProblemDetails
-5. **Permissões & segurança** — matriz RBAC × resultado esperado; tenancy (`config.json.domain.tenancyField`)
-6. **UI / browser** — rotas, navegação, forms, i18n visível (todas as locales de `config.json.stack.frontend.i18n.locales[]`)
-7. **Evidências** — screenshots, respostas de rede, saídas de comando
-8. **Critério de saída** — todos ACs passam; defeitos logados com severidade
+1. **Prerequisites** — URLs (from `config.json.stack.backend.apiHost` + `config.json.stack.frontend.devHost`), credentials, migrations (`migrations-apply`), seed (`seed-db`)
+2. **Data seed** — entities, seed strategy, minimum dataset per AC, cleanup between iterations
+3. **Build & tests** — `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` if i18n/UI)
+4. **API / backend** — REST endpoints, auth headers (Bearer JWT), status codes, ProblemDetails
+5. **Permissions & security** — RBAC matrix × expected result; tenancy (`config.json.domain.tenancyField`)
+6. **UI / browser** — routes, navigation, forms, visible i18n (all locales from `config.json.stack.frontend.i18n.locales[]`)
+7. **Evidence** — screenshots, network responses, command outputs
+8. **Exit criteria** — all ACs pass; defects logged with severity
 
-## Etapa 2 — Executar
+## Step 2 — Execute
 
-1. Garantir working tree limpo (avise quem invoca)
-2. Rodar build + testes automatizados (§3)
-3. Popular seed (§2); confirmar pré-requisitos (§1)
-4. Executar checagens de API (§4) e permissões (§5)
-5. **UI/browser (§6):** apenas quando autorizado (usuário confirma, ou orquestrador normal/não-auto/não-dry-run). Senão, pule e anote.
-6. Escrever `*.integration-test.report.md`: pass/fail por AC
+1. Ensure clean working tree (warn the invoker)
+2. Run build + automated tests (§3)
+3. Populate seed (§2); confirm prerequisites (§1)
+4. Run API checks (§4) and permissions (§5)
+5. **UI/browser (§6):** only when authorized (user confirms, or orchestrator is normal/non-auto/non-dry-run). Otherwise, skip and note.
+6. Write `*.integration-test.report.md`: pass/fail per AC
 
-## Saída
+## Output
 
 - `*.integration-test.plan.md`
 - `*.integration-test.report.md`
 
-## Referências
+## References
 
-- Formato de ACs: `spec-format`
-- Guardrails: `config.json.rules` + projeto
+- AC format: `spec-format`
+- Guardrails: `config.json.rules` + project
 - Architecture spec: `config.json.domain.architectureSpec`
 
-## Regras de conduta
+## Code of conduct
 
-- **Não decide browser sozinha** — autorização explícita
-- **Não corrige código** — reporte gaps; correção é `implement-plan` (fix)
-- Máximo **3 iterações** de validação
+- **Never decide browser on its own** — explicit authorization
+- **Does not fix code** — report gaps; fix is `implement-tasks` (fix)
+- Maximum **3 iterations** of validation
 
-## Gatilhos
+## Triggers
 
 - `@[integration-validation] us-{id}.plan.md`
 - Dispatch workflow — Step 11

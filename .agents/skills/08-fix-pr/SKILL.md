@@ -1,5 +1,5 @@
 ---
-name: fix-pr
+name: 08-fix-pr
 description: Cooperatively fix active code review threads on GitHub or Azure DevOps PRs. Thread scoring, confirmation gate, surgical fixes, validation, structured reports. Use when user asks to fix/review/resolve PR review threads. Also wrapped by goal-fix-pr for convergence loops.
 version: 1.0
 disable-model-invocation: true
@@ -239,12 +239,10 @@ For each thread approved for code fix:
 
 ### 6. Validate, report, resolve threads, publish
 
-1. **Build and test:**
+1. **Build and test** (use commands from `config.json.verification` or tools.md aliases):
 
 ```bash
-dotnet build                    # if backend touched
-dotnet test                     # if backend touched
-cd web && npm test && npm run build  # if frontend touched
+# Run build and test commands from config.json.verification
 ```
 
 2. **Auto-review before push (mandatory):**
