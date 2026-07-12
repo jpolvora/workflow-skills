@@ -115,13 +115,14 @@ check_file '\.pem$' 'PEM certificate/key' medium
 check_file '\.key$' 'Private key file (.key)' medium
 check_file '\.pfx$|\.p12$' 'PKCS12 keystore' high
 check_file 'secrets\.ya?ml$' 'Secrets YAML file' high
+check_file '\.ya?ml$' 'YAML config file tracked' medium
 check_file 'credentials\.json$|credentials\.toml$' 'Credentials file' high
 check_file 'id_rsa$|id_ecdsa$|id_ed25519$' 'SSH private key file' high
 
 # ── .gitignore audit ─────────────────────────────────────────────
 
 if [ -f .gitignore ]; then
-  for entry in '.env' '.env.*' '*.pem' '*.key' '*.pfx' 'secrets.yml' 'credentials.json' '.aws/'; do
+  for entry in '.env' '.env.*' '*.pem' '*.key' '*.pfx' '*.yml' '*.yaml' 'secrets.yml' 'credentials.json' '.aws/'; do
     if ! rg -q "^${entry}$|^/${entry}$" .gitignore 2>/dev/null; then
       echo "$entry" >> "$IGNORE_FILE"
     fi

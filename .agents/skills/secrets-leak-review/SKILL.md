@@ -34,6 +34,15 @@ This checks for:
 - High-entropy strings that look like secrets
 - .env / .env.* files not in .gitignore
 - Hardcoded passwords
+- Tracked YAML configuration files (`.yml` / `.yaml`)
+- YAML files with secret keys/values
+
+Additionally, scan YAML files for common secret key names:
+
+```bash
+# YAML/yml files with secret key-value patterns
+rg -n --no-ignore -i '(api_key|api_secret|access_key|secret_key|password|passwd|token|auth_token|connection_string|private_key)' -g '*.{yml,yaml}' 2>/dev/null | head -30
+```
 
 ### Phase 2 — PII & consumer data
 
@@ -76,7 +85,7 @@ rg -l --no-ignore 'SECRET|PASSWORD|TOKEN|API_KEY|PRIVATE_KEY' --type-add 'all:*'
 
 # Check .gitignore for standard entries
 if [ -f .gitignore ]; then
-  for entry in '.env' '.env.*' '*.pem' '*.key' '*.pfx' 'secrets.yml' 'credentials.json' '.aws' 'config/credentials'; do
+  for entry in '.env' '.env.*' '*.pem' '*.key' '*.pfx' '*.yml' '*.yaml' 'secrets.yml' 'credentials.json' '.aws' 'config/credentials'; do
     if ! rg -q "^$entry$|^/$entry$" .gitignore 2>/dev/null; then
       echo "WARNING: '$entry' not in .gitignore"
     fi
