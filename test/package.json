@@ -1,0 +1,10 @@
+{
+  "name": "workflow-skills-test-consumer",
+  "version": "1.0.0",
+  "description": "Test consumer for workflow-skills",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "workflow-skills": "file:../workflow-skills-0.0.1.tgz"
+  }
+}
