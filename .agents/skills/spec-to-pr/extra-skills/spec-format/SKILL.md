@@ -4,7 +4,7 @@ description: >-
   Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic.
   Load when the user invokes /spec-format, @spec-format, "create spec", "review spec",
   "format spec" or requests validation of local specification format.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 disable-model-invocation: true
 version: 1.0
 ---
@@ -13,7 +13,7 @@ version: 1.0
 
 Skill to **create**, **review**, or **format** local specifications (`*.spec.md`) — a single, portable artifact for a feature/US. Replaces direct GitHub reading in downstream skills; all read `*.spec.md` from the working directory.
 
-> **Canonical source of the `*.spec.md` format.** Other skills and `us-workflow` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../../../AGENTS.md) § Skill loading.
+> **Canonical source of the `*.spec.md` format.** Other skills and `spec-to-pr` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../../../AGENTS.md) § Skill loading.
 
 > **Language:** responses to user in **en-us**.
 
@@ -41,22 +41,24 @@ If the mode is not explicit, infer from context or ask.
 | Source | Pattern | Example |
 |--------|--------|---------|
 | GitHub issue `{id}` | `step-00-us-{id}.spec.md` in `{plans-dir}/us-{id}/` | `step-00-us-1474.spec.md` |
-| Local spec (slug) | `step-00-{slug}.spec.md` in `{plans-dir}/{slug}/` | `step-00-my-feature.spec.md` |
+| Azure DevOps work item `{id}` | `step-00-us-{id}.spec.md` in `{plans-dir}/us-{id}/` | `step-00-us-2416.spec.md` |
+| Hand-written / local slug | `step-00-{slug}.spec.md` in `{plans-dir}/{slug}/` | `step-00-my-feature.spec.md` |
 
 The working directory **slug** (`{us-dir}`) is:
-- `us-{id}` when the input is a GitHub issue number;
-- the basename of the file (without `.spec.md`) when the input is a local spec — e.g.: `my-feature.spec.md` → folder `.cursor/plans/my-feature/`.
+- `us-{id}` when the input is a GitHub issue or Azure DevOps work item id;
+- the basename of the file (without `.spec.md`, strip optional `step-00-` prefix) when the input is a local/hand-written spec — e.g.: `my-feature.spec.md` → folder `.cursor/plans/my-feature/`.
 
 ## YAML Frontmatter (required)
 
 ```yaml
 ---
-id: 1474              # integer — GitHub issue number; null if purely local spec
+id: 1474              # integer — tracker id; null if purely local/hand-written
 slug: us-1474         # working folder identifier (us-{id} or spec name)
 title: "Feature title"
-source: github        # github | local
-issueState: open      # optional — issue state when source=github
+source: github        # github | azure-devops | local
+issueState: open      # optional — issue/work-item state when from a tracker
 issueUrl: "https://github.com/{org}/{repo}/issues/1474"  # optional
+workItemType: "User Story"  # optional — Azure DevOps System.WorkItemType
 specDate: 2026-07-02  # generation date or last relevant update
 ---
 ```
@@ -92,9 +94,9 @@ specDate: 2026-07-02  # generation date or last relevant update
 ## Validation rules
 
 1. **Acceptance Criteria** must be enumerable and testable — one line per AC.
-2. When `source: local`, the author is responsible for complete ACs; there is no issue fetch.
+2. When `source: local`, the author is responsible for complete ACs; there is no tracker fetch.
 3. The raw `*.issue.json` snapshot (when it exists) is **audit-only** — downstream skills do **not** read `issue.json` directly; they always read `spec.md`.
-4. Local specs can be versioned in `.cursor/plans/specs/` or any path — `us-workflow` copies to `{us-dir}/` at Step 0 if needed.
+4. Hand-written specs can live under `specs/`, `.cursor/plans/specs/`, or any path — `spec-to-pr` copies/normalizes to `{us-dir}/step-00-{slug}.spec.md` at entry.
 
 ## Flow — review mode
 
@@ -113,17 +115,19 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 ## Flow — create mode
 
-1. Collect title, description, and ACs (free text, GitHub issue via `gh issue view {n}`, or user draft).
-2. If input is an issue number: use `gh issue view {n}` + `.agents/skills/us-workflow/scripts/github-issue-to-spec.py` (see `us-workflow` → Specification Protocol).
-3. Generate file at the canonical path with complete frontmatter and sections.
-4. Confirm final path to user.
+1. Collect title, description, and ACs (free text, GitHub via `gh`, Azure DevOps via `ado-workitem-to-spec.py`, or user draft).
+2. If input is a GitHub issue number: `gh issue view {n}` + `.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py`.
+3. If input is an Azure DevOps work item: `.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py` (see `spec-to-pr` → Specification Protocol).
+4. If input is an existing hand-written `*.spec.md`: validate/format in place or copy to the canonical `step-00-` path — do not invent tracker fields.
+5. Generate/confirm file at the canonical path with complete frontmatter and sections.
+6. Confirm final path to user.
 
 ## Downstream consumers
 
-`us-workflow`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never the GitHub API directly and never `*.issue.json`. See [`ARTIFACTS.md`](../../ARTIFACTS.md).
+`spec-to-pr`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never live tracker APIs and never `*.issue.json`. See [`ARTIFACTS.md`](../../ARTIFACTS.md).
 
 ## References
 
 - Harness routing: [`AGENTS.md`](../../../../../AGENTS.md)
 - Architecture: [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md)
-- Workflow protocol: [`../../us-workflow/SKILL.md`](../../us-workflow/SKILL.md) → Specification Protocol
+- Workflow protocol: [`../../spec-to-pr/SKILL.md`](../../spec-to-pr/SKILL.md) → Specification Protocol

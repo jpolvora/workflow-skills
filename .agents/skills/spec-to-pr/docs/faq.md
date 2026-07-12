@@ -1,6 +1,6 @@
-# FAQ — US Delivery Workflow
+# FAQ — Spec-to-PR
 
-> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/us-workflow/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
+> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/spec-to-pr/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
 >
 > **Audience:** developers, tech leads, and agents who need to understand **how** the end-to-end User Story delivery pipeline works.
 > **Order:** sections follow **execution sequence** (F0→F6, steps 0–12; 13 with `--full`), from invocation to closure.
@@ -38,7 +38,7 @@
 
 ## 1. Overview
 
-### What is the US Delivery Workflow?
+### What is the Spec-to-PR?
 
 An **orchestrated pipeline** for delivering a User Story (or feature described in free text) end-to-end: plan → implementation → verification → code review → integration validation → closure. The **orchestrator** (main agent) coordinates **sub-agents** dedicated per step, maintains persistent state, and enforces **authorization gates** before any side effect (commit, push, code edit).
 
@@ -103,7 +103,7 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 
 ```mermaid
 flowchart TD
-    START(["Invocation: /us-workflow 2416"]) --> S0["§5 Step 0 Bootstrap"]
+    START(["Invocation: /spec-to-pr 2416"]) --> S0["§5 Step 0 Bootstrap"]
     S0 --> S1["§6 Step 1 Plan"]
     S1 --> S2["§7 Step 2 Refinement"]
     S2 --> S3["§8 Step 3 Exec + DAG"]
@@ -142,23 +142,27 @@ flowchart TD
 ### How do I invoke the workflow?
 
 ```text
-@[us-workflow] 2416
-/us-workflow US 2416
-@[us-workflow] auto 2416
-@[us-workflow] dry-run 2416
-@[us-workflow] auto skip-integration 2416
-@[us-workflow] us-2375.plan.md
-@[us-workflow] soft-delete em fornecedores
+@[spec-to-pr] 2416
+/spec-to-pr US 2416
+@[spec-to-pr] contoso/MyProject#2416
+@[spec-to-pr] ADO 2416
+@[spec-to-pr] specs/my-feature.spec.md
+@[spec-to-pr] auto 2416
+@[spec-to-pr] dry-run 2416
+@[spec-to-pr] auto skip-integration 2416
+@[spec-to-pr] soft-delete for suppliers
 ```
 
 ### What input does each form accept?
 
 | Input | What Step 0 interprets |
 |-------|------------------------|
-| Number (`2416`) | GitHub issue → folder `.cursor/plans/us-2416/` |
-| `us-2375.plan.md` | Resumes/continues from existing plan |
-| Free text (`soft-delete em fornecedores`) | Feature without US — slug as folder name |
-| `auto` / `automatico` | `autoMode: true` — no interactive menus |
+| Number (`2416`) or `US 2416` | GitHub issue (default) → `.cursor/plans/us-2416/` via `gh` + `github-issue-to-spec.py` |
+| `{org}/{project}#{id}` | Azure DevOps work item → `.cursor/plans/us-{id}/` via `ado-workitem-to-spec.py` |
+| `ADO {id}` / `WI {id}` | Azure DevOps using org/project from `config.json.issueTrackers.azureDevOps` |
+| `*.spec.md` path | Hand-written local spec → copy/normalize to `{us-dir}/step-00-{slug}.spec.md` |
+| Free text (`soft-delete for suppliers`) | Brainstorm via `00-write-spec` — slug from title |
+| `auto` | `autoMode: true` — no interactive menus |
 | `dry-run` | `dryRun: true` — simulation without side effects |
 | `skip-integration` | `skipIntegration: true` — skips Step 11 entirely |
 | `skip-tests` | `skipTests: true` — skips test suites (build still runs) |
@@ -180,15 +184,18 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 
 ### What is Step 0?
 
-**Bootstrap** of the pipeline. The orchestrator prepares the environment: parses flags, creates or resumes state, captures git baseline, **resolves specification** (`*.spec.md` — from US id (GitHub issue) or local file), and renders the initial Progress Board. **Does not dispatch a sub-agent.**
+**Bootstrap** of the pipeline. The orchestrator prepares the environment: parses flags, creates or resumes state, captures git baseline, **resolves specification** (`*.spec.md` — from GitHub issue, Azure DevOps work item, or hand-written local file), and renders the initial Progress Board. **Does not dispatch a sub-agent** except when brainstorming via `00-write-spec`.
 
 ### How is it done?
 
-1. Parse `workflow-id`, flags (`dryRun`, `autoMode`, `skipIntegration`, `skipTests`) and **entry** (US id **or** `*.spec.md`)
+1. Parse `workflow-id`, flags (`dryRun`, `autoMode`, `skipIntegration`, `skipTests`) and **entry** (GitHub id, ADO id, or `*.spec.md`)
 2. Check for active workflows (resume or new)
 3. Create `{us-dir}/{workflow-id}.state.md` in `.cursor/plans/{slug}/`
 4. Capture baseline: `baselineCommit`, `preExistingDirty`, tag `before-step-1`
-5. **Specification Protocol:** GitHub mode → `gh issue view {n}` + `github-issue-to-spec.py` → `step-00-{slug}.spec.md`; local mode → copy/register as `step-00-{slug}.spec.md` under `{us-dir}` (see [`ARTIFACTS.md`](../ARTIFACTS.md))
+5. **Specification Protocol** (see [`SKILL.md`](../SKILL.md) + [`ARTIFACTS.md`](../ARTIFACTS.md)):
+   - **GitHub:** `gh issue view {n}` + `github-issue-to-spec.py` → `step-00-{slug}.spec.md`
+   - **Azure DevOps:** `ado-workitem-to-spec.py` (PAT from env) → `step-00-{slug}.spec.md`
+   - **Hand-written:** copy/normalize local `*.spec.md` → `step-00-{slug}.spec.md` under `{us-dir}`
 6. **Memory & Decisions Consultation** (protocol): read `## Workflow memory`, `## Accumulated decisions` and `## Doc consolidation log` from `state.md` (on resume), then consult `MEMORY.md` (root) only on relevant scope
 7. Initial Progress Board + Transition Gate → Step 1 (or auto-advance in `autoMode`)
 
@@ -196,9 +203,10 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 
 | Field | Source |
 |-------|--------|
-| US id **or** `*.spec.md` | User message |
+| GitHub id **or** ADO id **or** `*.spec.md` | User message |
 | Mode flags | `auto`, `dry-run`, `skip-*` in invocation |
-| GitHub config | `gh` CLI authenticated (`gh auth status`) |
+| GitHub auth | `gh` CLI authenticated (`gh auth status`) when `issueTrackers.github.enabled` |
+| ADO auth | `ADO_PAT` / `AZURE_DEVOPS_PAT` when `issueTrackers.azureDevOps.enabled` |
 | Previous state | `{workflow-id}.state.md` (if resume) |
 
 ### Output
@@ -217,7 +225,7 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 
 **What is `workflow-id`?** Unique execution identifier (e.g., `us-2416-20260621T214006`), distinct from the US number.
 
-**Can I validate the state?** Optionally: `python .agents/skills/us-workflow/scripts/validate_state.py {workflow-id}`.
+**Can I validate the state?** Optionally: `python .agents/skills/spec-to-pr/scripts/validate_state.py {workflow-id}`.
 
 ---
 
@@ -685,7 +693,7 @@ Skips **test** commands in `stack.md` at Steps 7, 10, and Step 11 §3. **Build s
 
 ### The workflow paused mid-step — can I resume?
 
-Yes. Re-invoke with the same US number: `/us-workflow 2416`. The orchestrator detects `status: active` and offers to resume. In auto mode, pass `auto US 2416`.
+Yes. Re-invoke with the same US number: `/spec-to-pr 2416`. The orchestrator detects `status: active` and offers to resume. In auto mode, pass `auto US 2416`.
 
 ### How do I switch models mid-workflow?
 

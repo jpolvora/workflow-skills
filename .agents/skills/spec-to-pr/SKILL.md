@@ -1,10 +1,11 @@
 ---
-name: us-workflow
+name: spec-to-pr
 description: >-
-  E2E US orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.
-  Invoke: /us-workflow | @[us-workflow]. Entry: GitHub issue | *.spec.md | feature description.
+  Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.
+  Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description.
   Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+  Legacy aliases: /us-workflow, /us-delivery-workflow.
+upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
 
 ## Audience & load
@@ -22,11 +23,11 @@ upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline depe
 
 ## Native tool contract
 
-Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](.agents/skills/us-workflow/config.json). Never narrate undone work.
+Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](.agents/skills/spec-to-pr/config.json). Never narrate undone work.
 
 | Intent | Tool alias | Native | Rule |
 |--------|------------|--------|------|
-| Step work | `dispatch-agent` | `Task` | `subagent_type: generalPurpose\|shell`; `description: "US-WF step {N} — {Label}"`; `readonly: true` step 6 only; no resume across steps; step 5 DAG ≤3 parallel |
+| Step work | `dispatch-agent` | `Task` | `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"`; `readonly: true` step 6 only; no resume across steps; step 5 DAG ≤3 parallel |
 | User gate | `user-gate` / `user-gate-auto` | `AskQuestion` | ≥2 options; recommended first; cancelled → HS-1; auto → auto-gate |
 | Build/test | `build-backend`, `test-backend`, etc. | `Shell` | values from `config.json.verification` |
 | Source control | `commit-code`, `push-branch`, etc. | `Shell` | `gh`, `git`; cite real output |
@@ -42,7 +43,7 @@ User output: post-tool summaries + Progress Board + banners.
 
 ---
 
-# US Delivery Workflow — Orchestrator
+# Spec-to-PR — Orchestrator
 
 Deterministic FSM; step content delegated to skills via **`Task`**.
 
@@ -73,9 +74,11 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | **Pause** | **Pause workflow** keeps **all** artifacts on disk — no cleanup, no delete. `status: active`. |
 | `--model` | Set `currentModel` at workflow start. Overrides default. |
 | `--model-chain` | Map `{step}:{model}` pairs. Only way to switch models in auto mode. Takes precedence over `--model` at matching steps. Stored in `state.modelChain`. |
-| Portability | Keep us-workflow fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
+| Portability | Keep spec-to-pr fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
 
-Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
+**Legacy aliases** (still accepted): `/us-workflow`, `@[us-workflow]`, `/us-delivery-workflow`, `@[us-delivery-workflow]`.
+
+**Runtime tokens (unchanged):** git tags/worktrees use prefix `uswf/`; plan slugs use `us-{id}`. These are historical tokens, not the skill name.
 
 ## Allowed deps
 
@@ -84,10 +87,10 @@ Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
 | Orchestrator | `SKILL.md` |
 | **Artifacts** | [`ARTIFACTS.md`](ARTIFACTS.md) — canonical filenames + path resolution |
 | **Setup** | `setup.md` — initialization, config bootstrap, flags, resume, stack file generation |
-| **Config** | `.agents/skills/us-workflow/config.json` — project identity, stack, issue trackers, verification commands, invariants |
+| **Config** | `.agents/skills/spec-to-pr/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
-| Scripts | `check_memory_conflict.py`, `validate_state.py`, `github-issue-to-spec.py` |
+| Scripts | `check_memory_conflict.py`, `validate_state.py`, `github-issue-to-spec.py`, `ado-workitem-to-spec.py` |
 | GitHub | `gh` CLI only |
 | State | `{config.plans.dir}/{slug}/{workflow-id}.state.md` |
 | Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-tasks`→5 build, 10 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
@@ -238,7 +241,7 @@ After step N, before the progress board, the orchestrator MUST execute State Hyg
 
 **Automated State Hygiene Update:**
 ```bash
-python .agents/skills/us-workflow/scripts/update_state.py \
+python .agents/skills/spec-to-pr/scripts/update_state.py \
   .cursor/plans/{slug}/{workflow-id}.state.md \
   --step {N} \
   --status {completed|failed|skipped} \
@@ -310,7 +313,7 @@ Orch calls **`Task`** — never inline step impl.
 ```yaml
 Task:
   subagent_type: generalPurpose | shell
-  description: "US-WF step {N} — {Label}"
+  description: "STP step {N} — {Label}"
   readonly: true   # step 6 only
   run_in_background: false   # step 5 parallel (DAG): ≤3 parallel, same worktree, no file overlap
 ```
@@ -351,33 +354,76 @@ At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.l
 
 ### Specification Protocol
 
-[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never GitHub API or `*.issue.json`.
+[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Tracker config: `config.json.issueTrackers`.
 
-| Input | Action | Uses Step 0? |
-|-------|--------|--------------|
-| `{n}` or `US {n}` | GitHub → `slug=us-{n}`; `gh issue view` → `github-issue-to-spec.py` → spec | No — skip to Step 1 |
-| `{org}/{project}#{id}` | Azure DevOps → `slug=us-{id}`; REST API → canonical spec | No — skip to Step 1 |
-| `*.spec.md` | local-spec; register directly | No — skip to Step 1 |
-| free-text / no args | brainstorm → `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` (optional mirror `{specs-dir}/{slug}.spec.md`) | Yes — `Task` `00-write-spec` |
+| Input | Tracker | Action | Uses Step 0? |
+|-------|---------|--------|--------------|
+| `{n}` or `US {n}` | GitHub (default when `issueTrackers.github.enabled`) | `slug=us-{n}`; fetch → convert → `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
+| `{org}/{project}#{id}` | Azure DevOps | `slug=us-{id}`; fetch → convert → `{us-dir}/step-00-us-{id}.spec.md` | No — skip to Step 1 |
+| `ADO {id}` / `WI {id}` | Azure DevOps | Same as above; org/project from `issueTrackers.azureDevOps` | No — skip to Step 1 |
+| `*.spec.md` (any path) | Hand-written / local | Register/copy → `{us-dir}/step-00-{slug}.spec.md` | No — skip to Step 1 |
+| free-text / no args | none | brainstorm → `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` (optional mirror `{specs-dir}/{slug}.spec.md`) | Yes — `Task` `00-write-spec` |
 
-No authenticated source → STOP.
+**Bare number resolution:** if only `azureDevOps.enabled` and GitHub disabled → treat `{n}` as ADO work item. If both enabled → bare `{n}` = GitHub; require `ADO {id}` or `{org}/{project}#{id}` for ADO. If the required tracker is disabled or unauthenticated → STOP with fix instructions.
+
+#### GitHub (`gh`) — concrete steps
+
+Requires `issueTrackers.github.enabled: true` and authenticated `gh` (`gh auth status`).
+
+```bash
+mkdir -p .cursor/plans/us-{n}
+gh issue view {n} --json number,title,body,state,labels,assignees,comments,url \
+  > .cursor/plans/us-{n}/step-00-us-{n}.issue.json
+python .agents/skills/spec-to-pr/scripts/github-issue-to-spec.py \
+  --input .cursor/plans/us-{n}/step-00-us-{n}.issue.json \
+  --output .cursor/plans/us-{n}/step-00-us-{n}.spec.md \
+  --repo {owner}/{repo}
+```
+
+`owner`/`repo` from `issueTrackers.github` (or `project.org` / repo name). Script path may also come from `issueTrackers.github.issueToSpecScript`.
+
+#### Azure DevOps — concrete steps
+
+Requires `issueTrackers.azureDevOps.enabled: true`, org/project filled, and PAT in env (`ADO_PAT` or `patEnvVar` / `AZURE_DEVOPS_PAT`).
+
+```bash
+mkdir -p .cursor/plans/us-{id}
+python .agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py \
+  --org {org} --project {project} --id {id} \
+  --api-base {apiBase} --pat-env {patEnvVar} \
+  --snapshot .cursor/plans/us-{id}/step-00-us-{id}.issue.json \
+  --output .cursor/plans/us-{id}/step-00-us-{id}.spec.md
+```
+
+Values from `issueTrackers.azureDevOps`. Script path may also come from `issueTrackers.azureDevOps.workItemToSpecScript`.
+
+#### Hand-written local `*.spec.md` — concrete steps
+
+Accepts any existing markdown spec path (`specs/foo.spec.md`, `foo.spec.md`, or already `step-00-foo.spec.md`).
+
+1. Resolve `slug`: frontmatter `slug:` if present, else basename without `.spec.md` (strip leading `step-00-` if present).
+2. `mkdir -p {us-dir}` where `{us-dir}={plans-dir}/{slug}/`.
+3. Copy/normalize to `{us-dir}/step-00-{slug}.spec.md` (overwrite only if identical or user confirms).
+4. Ensure frontmatter has at least `slug`, `title`, `source: local` (add `source: local` if missing). Validate required sections per [`spec-format`](./extra-skills/spec-format/SKILL.md).
+5. Do **not** call tracker APIs. Optional: mirror to `{specs-dir}/{slug}.spec.md` for human browsing.
 
 ### Step 0 Entry Gate
 
 Before Step 0, the orchestrator checks the trigger input and determines the entry flow:
 
-1. **US/issue number provided as argument** (`{n}` or `{org}/{project}#{id}`):
-   - Orchestrator fetches the issue, converts it to canonical spec, saves to `{us-dir}/step-00-{slug}.spec.md`.
-   - Registers `specPath` and `specSource`.
+1. **Tracker id** (`{n}`, `US {n}`, `ADO {id}`, `WI {id}`, or `{org}/{project}#{id}`):
+   - Fetch + convert per Specification Protocol → `{us-dir}/step-00-{slug}.spec.md`.
+   - Registers `specPath`, `specSource` (`github` | `azure-devops`).
    - **Skips Step 0** — advances directly to the Step 1 gate.
 
 2. **Local `*.spec.md` provided as argument:**
-   - Registers `specPath` directly.
+   - Register/copy per hand-written protocol. Registers `specPath`, `specSource: local`.
    - **Skips Step 0** — advances directly to the Step 1 gate.
 
 3. **No arguments (or free-text description as argument):**
    - Entry Menu (AskQuestion):
-     - **I have a US/issue number** (recommended) — same as case 1 above; skip Step 0 → Step 1.
+     - **I have a GitHub issue / ADO work item** (recommended) — same as case 1; skip Step 0 → Step 1.
+     - **I have a local `*.spec.md`** — same as case 2.
      - **I want to describe a feature to brainstorm** — `Task` `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` → Step 1 gate. **This is the only path that uses `00-write-spec`.**
 
 After the entry gate, `specPath` is stored in state `## Artifacts.specPath` and snapshotted in `## Artifacts.specSnapshot`.
@@ -596,7 +642,7 @@ Step 5: one pair per whole step. Print **Finished** on hard stop too.
 
 ### Automatic Mode
 
-Parse: `auto` + combinable `dry-run`, `skip-integration`, `skip-tests`, US/spec entry. Accept `automatico`/`automático` as `auto` aliases.
+Parse: `auto` + combinable `dry-run`, `skip-integration`, `skip-tests`, US/spec entry. Legacy user input may pass `automatico`/`automático`; normalize to `auto` internally.
 
 Resume: active `autoMode` same US → continue `currentStep`; else new `workflow-id`.
 
@@ -850,8 +896,8 @@ Manual QA after workflow completion (or pause before Step 12) not resumed here. 
 ## Triggers
 
 ```
-@[us-workflow] [auto|dry-run|skip-integration|skip-tests|full] [--model {name}] [--model-chain step:model,...] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
-/us-workflow [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
+@[spec-to-pr] [auto|dry-run|skip-integration|skip-tests|full] [--model {name}] [--model-chain step:model,...] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
+/spec-to-pr [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /status | progress | where am I? → Progress Board only
 go back | change plan | back to step X → Backward Nav (not in auto)
 switch model | change model → mid-workflow model switch (normal mode only — every transition gate)
@@ -867,12 +913,14 @@ switch model | change model → mid-workflow model switch (normal mode only — 
 `--model-chain` is only way to switch models in **auto mode**. Normal mode: switch at any transition gate via **Switch model and advance**. Step with no mapping → current model persists.
 
 If invoked **without** US number, spec path, or description:
-> **Give me the US number (Azure DevOps or GitHub) or write your feature description to start brainstorming and write the spec.**
+> **Give me a GitHub issue id, an Azure DevOps work item (`ADO {id}` or `{org}/{project}#{id}`), a path to a hand-written `*.spec.md`, or a free-text feature description to start.**
 
 Examples:
-- `/us-workflow auto skip-tests skip-integration US 1234`
-- `/us-workflow --model sonnet-4 "Implement a product analytics dashboard with real-time charts"`
-- `/us-workflow auto contoso/project#5678`
-- `/us-workflow full US 99`
-- `/us-workflow auto --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 1234`
-- `/us-workflow --model sonnet-4 auto skip-tests US 567`
+- `/spec-to-pr auto skip-tests skip-integration US 1234`
+- `/spec-to-pr --model sonnet-4 "Implement a product analytics dashboard with real-time charts"`
+- `/spec-to-pr auto contoso/project#5678`
+- `/spec-to-pr ADO 2416`
+- `/spec-to-pr specs/my-feature.spec.md`
+- `/spec-to-pr full US 99`
+- `/spec-to-pr auto --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 1234`
+- `/spec-to-pr --model sonnet-4 auto skip-tests US 567`

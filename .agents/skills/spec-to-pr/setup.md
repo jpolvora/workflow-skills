@@ -1,4 +1,4 @@
-# Setup & Bootstrap — US Workflow
+# Setup & Bootstrap — Spec-to-PR
 
 Initialization, configuration bootstrap, flags, resume logic, and first-run setup. Extracted from [`SKILL.md`](SKILL.md) to keep the orchestrator lean.
 Artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md). Resume rules in this file are canonical; FAQ/DIAGRAM must link here.
@@ -9,8 +9,8 @@ Artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md). Resume rules in this file are ca
 
 Before Step 0:
 
-1. **Config check**: `Shell` `test -f .agents/skills/us-workflow/config.json`. If missing:
-   - `cp .agents/skills/us-workflow/config.json.example .agents/skills/us-workflow/config.json`
+1. **Config check**: `Shell` `test -f .agents/skills/spec-to-pr/config.json`. If missing:
+   - `cp .agents/skills/spec-to-pr/config.json.example .agents/skills/spec-to-pr/config.json`
    - AskQuestion: **Fill config now** / **Skip**
    - If "Fill now": present each top-level section, collect values. Skip optional sections.
 1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). `Shell` `test -f {stackFile}`. If missing:

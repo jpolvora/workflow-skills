@@ -1,6 +1,6 @@
-# US Delivery Workflow v9.1 — Diagrams
+# Spec-to-PR v9.1 — Diagrams
 
-> **Architecture note (v9.1):** Steps 0–11 delegate functional content to dedicated standalone skills. `state.md` is per-workflow memory; `MEMORY.md` is shared/generalizable memory. Step 13 is optional via `--full` (Ship & PR). Stack-agnostic — project metadata from `.agents/skills/us-workflow/config.json`. Canonical artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md).
+> **Architecture note (v9.1):** Steps 0–11 delegate functional content to dedicated standalone skills. `state.md` is per-workflow memory; `MEMORY.md` is shared/generalizable memory. Step 13 is optional via `--full` (Ship & PR). Stack-agnostic — project metadata from `.agents/skills/spec-to-pr/config.json`. Canonical artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md).
 
 Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](README.md). Resume rules: [`setup.md`](setup.md) (canonical).
 
@@ -132,7 +132,7 @@ flowchart TB
 
 ```mermaid
 flowchart TD
-    START(["Start: @[us-workflow] 1925"])
+    START(["Start: @[spec-to-pr] 1925"])
 
     BOOT["0 Bootstrap + active-state check + state.md"]
     G0{"Gate 0 menu"}
@@ -310,7 +310,7 @@ flowchart TD
 
 ```mermaid
 mindmap
-  root((US Delivery<br/>Workflow v8.1))
+  root((Spec-to-PR<br/>v8.1))
     Orchestrator
       Menu gates
       state.md em .cursor/plans/us-{id}/
@@ -483,14 +483,14 @@ flowchart TB
 
 ## Triggers
 
-- `@[us-workflow] 1925`
-- `@[us-workflow] dry-run 1925`
-- `@[us-workflow] auto 1925`
-- `@[us-workflow] automatico dry-run 1925`
-- `/us-workflow US 1925`
-- `/us-workflow auto US 1925`
-- `/us-workflow dry-run auto US 1925`
-- `/us-workflow auto skip-integration US 1925` — pula o Step 11 (integração/browser)
-- `/us-workflow auto skip-tests US 1925` — não executa suites de teste (build continua)
+- `@[spec-to-pr] 1925`
+- `@[spec-to-pr] dry-run 1925`
+- `@[spec-to-pr] auto 1925`
+- `@[spec-to-pr] auto dry-run 1925`
+- `/spec-to-pr US 1925`
+- `/spec-to-pr auto US 1925`
+- `/spec-to-pr dry-run auto US 1925`
+- `/spec-to-pr auto skip-integration US 1925` — pula o Step 11 (integração/browser)
+- `/spec-to-pr auto skip-tests US 1925` — não executa suites de teste (build continua)
 - `/status` — Progress Board only
 - "voltar" / "volta pro step X" — Backward Navigation sub-menu (disabled when `autoMode: true`)

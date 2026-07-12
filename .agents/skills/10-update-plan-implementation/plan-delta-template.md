@@ -66,7 +66,7 @@ Update `step-12-{slug}.result.md` sections **Done** and **Next steps**:
 - Open PR `develop` → `master` when ready.
 ```
 
-If stub `step-12-result.md` did not exist, create full file per [`us-workflow` Delivery Result Protocol](../../us-workflow/SKILL.md#delivery-result-protocol-step-12--before-delivery-commit).
+If stub `step-12-result.md` did not exist, create full file per [`spec-to-pr` Delivery Result Protocol](../../spec-to-pr/SKILL.md#delivery-result-protocol-step-12--before-delivery-commit).
 
 ---
 

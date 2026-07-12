@@ -1,7 +1,7 @@
 ---
 name: 05-verify-plan
 description: Compares implementation quality and code deliverables against the plan and acceptance criteria.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 2.1
 disable-model-invocation: true
 ---
@@ -22,9 +22,9 @@ Responsible for auditing implementation deliverables against the specification a
 /verify-plan [spec-input] [plan-dir=<path>]
 ```
 
-### Workflow Mode (Step 6 of us-workflow)
+### Workflow Mode (Step 6 of spec-to-pr)
 
-Dispatched by `us-workflow` at Step 6. Receives `specPath` and `planDir` from the orchestrator state. Returns `step-output` YAML at completion.
+Dispatched by `spec-to-pr` at Step 6. Receives `specPath` and `planDir` from the orchestrator state. Returns `step-output` YAML at completion.
 
 ### Parameters
 

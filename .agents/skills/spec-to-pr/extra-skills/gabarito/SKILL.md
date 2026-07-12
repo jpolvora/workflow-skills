@@ -20,7 +20,7 @@ description: >
 - "X or Y?" → recommend with reason (ask one critical question first if needed).
 - Natural rhythm; avoid staccato AI cadence.
 - **No em dash** (`—` / `--`); use comma, semicolon, parentheses, colon (mirror user if they always use em dash).
-- Match user language (PT or EN).
+- Match user language for conversational replies when the workspace allows it; **skill content and pipeline output remain en-us** per [`AGENTS.md`](../../../../../AGENTS.md) § Language.
 
 ## Ten directives (apply implicitly)
 

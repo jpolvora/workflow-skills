@@ -5,19 +5,23 @@
 [![npx](https://img.shields.io/badge/npx-github:jpolvora/workflow--skills-blue?logo=npm)](https://github.com/jpolvora/workflow-skills)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-site-success?logo=github)](https://jpolvora.github.io/workflow-skills)
 
-This repository centralizes a collection of behavioral agent guidelines (**skills**) pre-configured for AGENTic coding assistants. The goal is to serve as a **single source of truth** for installing, updating, and synchronizing these instructions across multiple local projects in a practical and consistent way.
+This repository centralizes a collection of behavioral agent guidelines (**skills**) and **end-to-end workflows** for agentic coding assistants. It is the **single source of truth** for installing, updating, and synchronizing these instructions across consumer projects.
+
+This hub is designed to host **multiple workflows** over time. Each workflow is a top-level skill consumers can install independently. Today the primary delivery workflow is `spec-to-pr`.
 
 > 📖 **See [`AGENTS.md`](AGENTS.md)** for the complete routing of all skills, layers, task router, and auto-load instructions (skill loading).
 
 ---
 
-## ⭐ Canonical Source for `us-workflow`
+## ⭐ Workflows — Canonical Source
 
-**This repository is the canonical, authoritative upstream source for the `us-workflow` skill and all of its pipeline dependencies.**
+**This repository is the canonical upstream for consumable workflows and their pipeline dependencies.**
 
-`us-workflow` is a full end-to-end delivery orchestrator (FSM, Steps 0–13) that delegates each phase of the software lifecycle to a dedicated sub-skill. Every skill listed below is an **integral part of the `us-workflow` pipeline** — they are designed, versioned, and tested together as a cohesive system.
+### `spec-to-pr` (current)
 
-### `us-workflow` Dependency Graph
+`spec-to-pr` is a full Spec → PR delivery orchestrator (FSM, Steps 0–13) that delegates each phase of the software lifecycle to a dedicated sub-skill. Every skill listed below is an **integral part of the `spec-to-pr` pipeline** — designed, versioned, and tested together as a cohesive system.
+
+### `spec-to-pr` Dependency Graph
 
 | Step(s) | Skill | Role in pipeline |
 |---------|-------|-----------------|
@@ -33,12 +37,12 @@ This repository centralizes a collection of behavioral agent guidelines (**skill
 | Step 13 (via ship-pr) | [`09-goal-fix-pr`](.agents/skills/09-goal-fix-pr/SKILL.md) | Convergence loop — fix-pr until zero open threads |
 | Post-workflow | [`10-update-plan-implementation`](.agents/skills/10-update-plan-implementation/SKILL.md) | Delta adjustments from QA findings |
 | Step 13 | [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | End-to-end PR delivery and merge |
-| Spec protocol | [`spec-format`](.agents/skills/us-workflow/extra-skills/spec-format/SKILL.md) | Canonical spec format validation |
-| Loop primitive | [`goal-loop`](.agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
+| Spec protocol | [`spec-format`](.agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md) | Canonical spec format validation |
+| Loop primitive | [`goal-loop`](.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
 
-### ⚠️ Contribution Policy for `us-workflow` Dependencies
+### ⚠️ Contribution Policy for `spec-to-pr` Dependencies
 
-> **All changes to `us-workflow` and its dependency skills MUST originate from this repository.**
+> **All changes to `spec-to-pr` and its dependency skills MUST originate from this repository.**
 >
 > Consumer projects that install these skills via `npx github:jpolvora/workflow-skills` receive **read-only copies** of the pipeline. If you find a bug, want to improve a skill, or need to extend its behavior:
 >
@@ -92,7 +96,7 @@ Enter 'q' to quit.
   [ ]  2) fix-pr
   [ ]  3) karpathy-guidelines
   [ ]  4) plan-us
-  [ ]  5) us-delivery-workflow
+  [ ]  5) spec-to-pr
 ```
 
 * **Selection Toggle:** Type the number corresponding to the skill and press `Enter` to toggle on/off (`[ ]` ↔ `[x]`).
@@ -140,7 +144,7 @@ Below is the simplified index of agent guidelines included in this repository:
 | **`fix-pr`** | 1.0 | **Automatic PR Fixer:** Critically analyzes code review comments and threads on PRs (e.g., Azure DevOps), decides which comments make sense, and applies surgical corrections safely. |
 | **`karpathy-guidelines`** | 1.0 | **Karpathy Guidelines:** Set of behavioral guardrails to reduce common LLM failures (hallucinations, incomplete edits, code shortcuts), inspired by Andrej Karpathy's philosophy. |
 | **`plan-us`** | 2.0 | **User Story Planner:** Creates detailed implementation plans based on User Stories. Auto-detects and dynamically adapts to the project ecosystem architecture (e.g., ABP/.NET/Angular, NextJS/React, etc.). |
-| **`us-delivery-workflow`** | 8.0 | **End-to-End Delivery Orchestrator:** Manages the complete delivery flow of a User Story across 7 phases (F0–F6). Supports dry-run, automatic mode, step isolation (worktrees), and state hygiene protocol. |
+| **`spec-to-pr`** | 8.0 | **End-to-End Delivery Orchestrator:** Manages the complete delivery flow of a User Story across 7 phases (F0–F6). Supports dry-run, automatic mode, step isolation (worktrees), and state hygiene protocol. |
 
 ---
 

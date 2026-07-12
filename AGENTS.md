@@ -6,19 +6,29 @@ This file is the **hub** of the agent harness. It contains the routing and index
 
 ## ⭐ Canonical Upstream Source
 
-**This repository (`jpolvora/workflow-skills`) is the canonical, authoritative upstream source for `us-workflow` and all of its pipeline dependency skills.**
+**This repository (`jpolvora/workflow-skills`) is the canonical, authoritative upstream source for consumable agent workflows and their pipeline dependency skills.**
+
+This hub may host **multiple end-to-end workflows**. Each workflow is a top-level skill under `.agents/skills/` with its own orchestrator, config, and dependency graph. Consumers install only the workflows they need.
 
 Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` are **read-only copies** managed by this repository. The contract is:
 
-- **All bug fixes, improvements, and new features** for `us-workflow` pipeline skills must be authored here and submitted as a PR to the `develop` branch.
+- **All bug fixes, improvements, and new features** for workflow pipeline skills must be authored here and submitted as a PR to the `develop` branch.
 - **Consumer projects must never edit pipeline skill files in-place** — changes will be overwritten on the next `update` run. The sole exception is `config.json`, which is always preserved during updates.
 - **To propagate upstream changes to a consumer project**, run: `npx github:jpolvora/workflow-skills update`
 
-### `us-workflow` Pipeline — Skills Owned by This Repository
+### Workflows in this repository
+
+| Workflow | Path | Role |
+|----------|------|------|
+| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec → plan → implement → verify → review → integrate → PR (FSM F0–F6, steps 0–13) |
+
+Additional workflows may be added as peer top-level skills; they do not replace `spec-to-pr`.
+
+### `spec-to-pr` Pipeline — Skills Owned by This Repository
 
 | Skill | Step(s) | Role |
 |-------|---------|------|
-| `us-workflow` | Orchestrator | FSM orchestrator — dispatches all steps |
+| `spec-to-pr` | Orchestrator | Spec-to-PR FSM orchestrator — dispatches all steps |
 | `00-write-spec` | Step 0 | Draft canonical spec from feature description |
 | `01-write-plan` | Step 1 | Generate implementation plan |
 | `02-interview` | Step 2 | Audit and refine plan until shared understanding |
@@ -48,11 +58,11 @@ Skills loaded automatically by task type:
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `caveman` | `.agents/skills/us-workflow/extra-skills/caveman/SKILL.md` | Every prompt — response compression |
-| `gabarito` | `.agents/skills/us-workflow/extra-skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
-| `karpathy-guidelines` | `.agents/skills/us-workflow/extra-skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
-| `changelog` | `.agents/skills/us-workflow/extra-skills/changelog/SKILL.md` | Every prompt — summarized historical record |
-| `learning` | `.agents/skills/us-workflow/extra-skills/learning/SKILL.md` | Every prompt — anti-regression record |
+| `caveman` | `.agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md` | Every prompt — response compression |
+| `gabarito` | `.agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `karpathy-guidelines` | `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
+| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Every prompt — summarized historical record |
+| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Every prompt — anti-regression record |
 | `using-superpowers` | `(global skill)` | Session start — skill discovery |
 
 ---
@@ -84,7 +94,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | `mobile-first-design` | `.agents/skills/mobile-first-design/SKILL.md` | Responsive mobile-first design |
 | `design-taste-frontend` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend — landing pages, portfolios, redesigns |
 
-### Layer 2 — Workflow Pipeline (numbered, 00-11)
+### Layer 2 — spec-to-pr Pipeline (numbered, 00-11)
 
 | Step | Skill | Path | Description |
 |------|-------|------|-------------|
@@ -105,6 +115,8 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 
 | Skill | Path | Description |
 |-------|------|-------------|
+| _(reserved)_ | — | Future workflow discovery skills; install via `using-superpowers` / `find-skills` until routed here |
+
 ### Layer 4 — Review & Audit
 
 | Skill | Path | Description |
@@ -120,14 +132,14 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `caveman` | `.agents/skills/us-workflow/extra-skills/caveman/SKILL.md` | Ultra-compressed response (~75% less tokens) |
-| `gabarito` | `.agents/skills/us-workflow/extra-skills/gabarito/SKILL.md` | Ten operational response guidelines (accountability, anti-sycophancy, chain-of-verification) |
-| `karpathy-guidelines` | `.agents/skills/us-workflow/extra-skills/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
-| `us-workflow` | `.agents/skills/us-workflow/SKILL.md` | E2E US orchestrator (FSM F0-F6, steps 0-12) |
-| `spec-format` | `.agents/skills/us-workflow/extra-skills/spec-format/SKILL.md` | Creates, reviews, or formats *.spec.md artifacts |
-| `learning` | `.agents/skills/us-workflow/extra-skills/learning/SKILL.md` | Anti-regression knowledge record in MEMORY.md |
-| `changelog` | `.agents/skills/us-workflow/extra-skills/changelog/SKILL.md` | Summarized historical record in CHANGELOG.md |
-| `goal-loop` | `.agents/skills/us-workflow/extra-skills/goal-loop/SKILL.md` | Generic goal/loop convergence pattern (sentinel, heartbeat, verify) |
+| `caveman` | `.agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md` | Ultra-compressed response (~75% less tokens) |
+| `gabarito` | `.agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Ten operational response guidelines (accountability, anti-sycophancy, chain-of-verification) |
+| `karpathy-guidelines` | `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
+| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec-to-PR delivery orchestrator (FSM F0-F6, steps 0-13) |
+| `spec-format` | `.agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md` | Creates, reviews, or formats *.spec.md artifacts |
+| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Anti-regression knowledge record in MEMORY.md |
+| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Summarized historical record in CHANGELOG.md |
+| `goal-loop` | `.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md` | Generic goal/loop convergence pattern (sentinel, heartbeat, verify) |
 | `grill-with-docs` | (global skill in `~/.agents/skills/grill-with-docs/SKILL.md`) | Grilling session against existing domain + docs |
 | `find-skills` | `using-superpowers` (skill global) | Skill discovery and installation |
 
@@ -149,12 +161,12 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | I want to test integration pre-PR | `07-integration-validation` |
 | I want to fix PR | `08-fix-pr` |
 | I want to ship PR | `11-ship-pr` |
-| I want E2E workflow | `us-workflow` |
+| I want Spec → PR E2E delivery | `spec-to-pr` |
 | I want to format/review spec | `spec-format` |
 | I want to create new skill | `write-a-skill` |
 | I want to audit harness | `check-harness` |
 | I want to grill plan against docs | `grill-with-docs` |
-| I want to do frontend design | `taste-skill` or `mobile-first-design` |
+| I want to do frontend design | `design-taste-frontend` or `mobile-first-design` |
 | I want to record learning | `learning` |
 | I want to record changelog | `changelog` |
 | I want to discover/install skills | `find-skills` or `using-superpowers` |
