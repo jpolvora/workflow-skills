@@ -1,7 +1,7 @@
 ---
 name: 10-update-plan-implementation
 description: Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---
@@ -22,7 +22,7 @@ Responsible for capturing manual QA findings and implementing delta corrections 
 
 ### Workflow Mode (Post-workflow, on demand)
 
-Not part of the main `us-workflow` pipeline. Invoked by the developer explicitly after completing the main workflow when manual QA or browser testing reveals additional gaps.
+Not part of the main `spec-to-pr` pipeline. Invoked by the developer explicitly after completing the main workflow when manual QA or browser testing reveals additional gaps.
 
 ### Parameters
 

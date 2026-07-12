@@ -1,10 +1,11 @@
 ---
-name: us-workflow
+name: spec-to-pr
 description: >-
-  E2E US orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.
-  Invoke: /us-workflow | @[us-workflow]. Entry: GitHub issue | *.spec.md | feature description.
+  Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.
+  Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | *.spec.md | feature description.
   Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+  Legacy aliases: /us-workflow, /us-delivery-workflow.
+upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
 
 ## Audience & load
@@ -22,11 +23,11 @@ upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline depe
 
 ## Native tool contract
 
-Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](.agents/skills/us-workflow/config.json). Never narrate undone work.
+Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](.agents/skills/spec-to-pr/config.json). Never narrate undone work.
 
 | Intent | Tool alias | Native | Rule |
 |--------|------------|--------|------|
-| Step work | `dispatch-agent` | `Task` | `subagent_type: generalPurpose\|shell`; `description: "US-WF step {N} — {Label}"`; `readonly: true` step 6 only; no resume across steps; step 5 DAG ≤3 parallel |
+| Step work | `dispatch-agent` | `Task` | `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"`; `readonly: true` step 6 only; no resume across steps; step 5 DAG ≤3 parallel |
 | User gate | `user-gate` / `user-gate-auto` | `AskQuestion` | ≥2 options; recommended first; cancelled → HS-1; auto → auto-gate |
 | Build/test | `build-backend`, `test-backend`, etc. | `Shell` | values from `config.json.verification` |
 | Source control | `commit-code`, `push-branch`, etc. | `Shell` | `gh`, `git`; cite real output |
@@ -42,7 +43,7 @@ User output: post-tool summaries + Progress Board + banners.
 
 ---
 
-# US Delivery Workflow — Orchestrator
+# Spec-to-PR — Orchestrator
 
 Deterministic FSM; step content delegated to skills via **`Task`**.
 
@@ -73,9 +74,11 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | **Pause** | **Pause workflow** keeps **all** artifacts on disk — no cleanup, no delete. `status: active`. |
 | `--model` | Set `currentModel` at workflow start. Overrides default. |
 | `--model-chain` | Map `{step}:{model}` pairs. Only way to switch models in auto mode. Takes precedence over `--model` at matching steps. Stored in `state.modelChain`. |
-| Portability | Keep us-workflow fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
+| Portability | Keep spec-to-pr fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
 
-Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
+**Legacy aliases** (still accepted): `/us-workflow`, `@[us-workflow]`, `/us-delivery-workflow`, `@[us-delivery-workflow]`.
+
+**Runtime tokens (unchanged):** git tags/worktrees use prefix `uswf/`; plan slugs use `us-{id}`. These are historical tokens, not the skill name.
 
 ## Allowed deps
 
@@ -84,7 +87,7 @@ Legacy aliases: `/us-delivery-workflow`, `@[us-delivery-workflow]`.
 | Orchestrator | `SKILL.md` |
 | **Artifacts** | [`ARTIFACTS.md`](ARTIFACTS.md) — canonical filenames + path resolution |
 | **Setup** | `setup.md` — initialization, config bootstrap, flags, resume, stack file generation |
-| **Config** | `.agents/skills/us-workflow/config.json` — project identity, stack, issue trackers, verification commands, invariants |
+| **Config** | `.agents/skills/spec-to-pr/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
 | Scripts | `check_memory_conflict.py`, `validate_state.py`, `github-issue-to-spec.py` |
@@ -238,7 +241,7 @@ After step N, before the progress board, the orchestrator MUST execute State Hyg
 
 **Automated State Hygiene Update:**
 ```bash
-python .agents/skills/us-workflow/scripts/update_state.py \
+python .agents/skills/spec-to-pr/scripts/update_state.py \
   .cursor/plans/{slug}/{workflow-id}.state.md \
   --step {N} \
   --status {completed|failed|skipped} \
@@ -310,7 +313,7 @@ Orch calls **`Task`** — never inline step impl.
 ```yaml
 Task:
   subagent_type: generalPurpose | shell
-  description: "US-WF step {N} — {Label}"
+  description: "STP step {N} — {Label}"
   readonly: true   # step 6 only
   run_in_background: false   # step 5 parallel (DAG): ≤3 parallel, same worktree, no file overlap
 ```
@@ -850,8 +853,8 @@ Manual QA after workflow completion (or pause before Step 12) not resumed here. 
 ## Triggers
 
 ```
-@[us-workflow] [auto|dry-run|skip-integration|skip-tests|full] [--model {name}] [--model-chain step:model,...] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
-/us-workflow [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
+@[spec-to-pr] [auto|dry-run|skip-integration|skip-tests|full] [--model {name}] [--model-chain step:model,...] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
+/spec-to-pr [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /status | progress | where am I? → Progress Board only
 go back | change plan | back to step X → Backward Nav (not in auto)
 switch model | change model → mid-workflow model switch (normal mode only — every transition gate)
@@ -870,9 +873,9 @@ If invoked **without** US number, spec path, or description:
 > **Give me the US number (Azure DevOps or GitHub) or write your feature description to start brainstorming and write the spec.**
 
 Examples:
-- `/us-workflow auto skip-tests skip-integration US 1234`
-- `/us-workflow --model sonnet-4 "Implement a product analytics dashboard with real-time charts"`
-- `/us-workflow auto contoso/project#5678`
-- `/us-workflow full US 99`
-- `/us-workflow auto --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 1234`
-- `/us-workflow --model sonnet-4 auto skip-tests US 567`
+- `/spec-to-pr auto skip-tests skip-integration US 1234`
+- `/spec-to-pr --model sonnet-4 "Implement a product analytics dashboard with real-time charts"`
+- `/spec-to-pr auto contoso/project#5678`
+- `/spec-to-pr full US 99`
+- `/spec-to-pr auto --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 1234`
+- `/spec-to-pr --model sonnet-4 auto skip-tests US 567`

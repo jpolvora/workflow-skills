@@ -1,12 +1,14 @@
-# US Delivery Workflow
+# Spec-to-PR
 
 > **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract; do not use it for onboarding. Use this README + FAQ + diagrams.
 >
-> **v10.0:** English-only output. Native tools (`Task`, `AskQuestion`, `Shell`, MCP). Tools via [`tools.md`](tools.md). Config via [`config.json`](.agents/skills/us-workflow/config.json). Project-agnostic — skills detect stack from config. Steps delegate skills `00`–`07`, `09`, `11`. Step 0 Spec Creation. `--full` flag activates Step 13 (Ship & PR). Per-step model recording.
+> **v10.0:** English-only output. Native tools (`Task`, `AskQuestion`, `Shell`, MCP). Tools via [`tools.md`](tools.md). Config via [`config.json`](.agents/skills/spec-to-pr/config.json). Project-agnostic — skills detect stack from config. Steps delegate skills `00`–`07`, `09`, `11`. Step 0 Spec Creation. `--full` flag activates Step 13 (Ship & PR). Per-step model recording.
+>
+> **Identity:** Primary invoke `/spec-to-pr` / `@[spec-to-pr]`. Legacy aliases: `/us-workflow`, `/us-delivery-workflow`. Runtime git tags still use `uswf/`; plan slugs still use `us-{id}`.
 
-End-to-end pipeline for delivering a User Story using **orchestrator + sub-agents** with clean context, shared state, and confirmation gates (including LLM model switching).
+End-to-end Spec → PR pipeline using **orchestrator + sub-agents** with clean context, shared state, and confirmation gates (including LLM model switching).
 
-The **`us-workflow`** coordinates execution steps through composable skills. Each step runs in isolated sub-agent contexts, consuming and updating shared state (`state.md` and `MEMORY.md`). Each step receives input and produces precise output, allowing subsequent steps to reuse acquired knowledge and accumulated decisions.
+The **`spec-to-pr`** workflow coordinates execution steps through composable skills. Each step runs in isolated sub-agent contexts, consuming and updating shared state (`state.md` and `MEMORY.md`). Each step receives input and produces precise output, allowing subsequent steps to reuse acquired knowledge and accumulated decisions.
 
 ## Core Goals
 1. **End-to-End Delivery:** Automate the complete feature/US lifecycle from specification to PR/Merge (steps 0 to 13).
@@ -43,7 +45,7 @@ The **`us-workflow`** coordinates execution steps through composable skills. Eac
 ### Happy path
 
 ```text
-/us-workflow 2416
+/spec-to-pr 2416
   → F0: bootstrap, issue fetch (gh), state, gate → F1
   → F1: plan (1) → refinement FSM if blocking (2) → DAG (3) → model sub-gate → F2
   → F2: implement DAG on branch (worktree if stable, else branch-direct) → verify files/build → gate → F3
@@ -53,23 +55,23 @@ The **`us-workflow`** coordinates execution steps through composable skills. Eac
   → F6: §Doc → cleanup → push consent (optional) → completed
 ```
 
-Pause at any gate → "Pause workflow" → state saved; resume with `/us-workflow 2416`.
+Pause at any gate → "Pause workflow" → state saved; resume with `/spec-to-pr 2416`.
 
 ---
 
 ## How to start
 
 ```text
-@[us-workflow] 2338
-@[us-workflow] dry-run 2338
-@[us-workflow] auto 2338
-@[us-workflow] auto dry-run 2338
-@[us-workflow] auto skip-integration 2338
-@[us-workflow] auto skip-tests skip-integration 2338
-@[us-workflow] us-2375.plan.md
-@[us-workflow] soft-delete em fornecedores
-@[us-workflow] --model sonnet-4 auto US 567
-@[us-workflow] --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 123
+@[spec-to-pr] 2338
+@[spec-to-pr] dry-run 2338
+@[spec-to-pr] auto 2338
+@[spec-to-pr] auto dry-run 2338
+@[spec-to-pr] auto skip-integration 2338
+@[spec-to-pr] auto skip-tests skip-integration 2338
+@[spec-to-pr] us-2375.plan.md
+@[spec-to-pr] soft-delete em fornecedores
+@[spec-to-pr] --model sonnet-4 auto US 567
+@[spec-to-pr] --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 123
 ```
 
 Persistent state: `.cursor/plans/us-{id}/{workflow-id}.state.md` (fields `dryRun`, `autoMode`, `skipIntegration`, `skipTests`, `fullMode`). **Everything** workflow lives under `.cursor/plans/us-{id}/` — nothing written to `.agents/`.
@@ -231,7 +233,7 @@ Shortcut: Step 7 **Re-implement with different Coder model** = return to Step 5.
 | **Step dispatch** | 1–11 | Dedicated sub-agent + anchor tag + step-scoped worktree (5/10/11) |
 | **Checkpoint revert** | reset / previous / repeat | Scoped revert via `## Step file log` |
 
-Local scripts: `.agents/skills/us-workflow/scripts/check_memory_conflict.py`, `.agents/skills/us-workflow/scripts/validate_state.py`
+Local scripts: `.agents/skills/spec-to-pr/scripts/check_memory_conflict.py`, `.agents/skills/spec-to-pr/scripts/validate_state.py`
 
 ---
 
@@ -293,4 +295,4 @@ Everything under `.cursor/plans/{slug}/` (one per feature/US). `MEMORY.md` is sh
 
 ## Portability
 
-The `us-workflow` skill is designed to be fully **generic and portable**. All configuration, metadata, file paths, and commands specific to a project must be defined in `config.json` or `stack.md`. Never add hardcoded paths or project-specific commands directly in the skill instructions.
+The `spec-to-pr` skill is designed to be fully **generic and portable**. All configuration, metadata, file paths, and commands specific to a project must be defined in `config.json` or `stack.md`. Never add hardcoded paths or project-specific commands directly in the skill instructions.

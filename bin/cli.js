@@ -14,6 +14,46 @@ const targetDir = process.cwd();
 const targetSkillsDir = path.join(targetDir, '.agents', 'skills');
 const CONFIG_FILE = 'config.json';
 
+/** Old consumer folder names → current upstream skill folder names */
+const SKILL_RENAMES = [{ from: 'us-workflow', to: 'spec-to-pr' }];
+
+/**
+ * Migrate renamed skills in the consumer target.
+ * Preserves config.json from the old folder, installs/updates the new folder, removes the old folder.
+ */
+function migrateRenamedSkills(skills) {
+  if (!fs.existsSync(targetSkillsDir)) return;
+
+  for (const { from, to } of SKILL_RENAMES) {
+    const oldPath = path.join(targetSkillsDir, from);
+    const newPath = path.join(targetSkillsDir, to);
+    const srcPath = path.join(srcSkillsDir, to);
+
+    if (!fs.existsSync(oldPath)) continue;
+    if (!skills.includes(to) || !fs.existsSync(srcPath)) continue;
+
+    console.log(`  Migrating '${from}' → '${to}'...`);
+    const oldConfigPath = path.join(oldPath, CONFIG_FILE);
+    const preservedConfig = fs.existsSync(oldConfigPath)
+      ? fs.readFileSync(oldConfigPath)
+      : null;
+
+    if (fs.existsSync(newPath)) {
+      copyDirPreservingConfig(srcPath, newPath, CONFIG_FILE);
+    } else {
+      copyDirSync(srcPath, newPath);
+    }
+
+    if (preservedConfig) {
+      fs.writeFileSync(path.join(newPath, CONFIG_FILE), preservedConfig);
+      console.log(`    Preserved ${CONFIG_FILE} from '${from}'`);
+    }
+
+    fs.rmSync(oldPath, { recursive: true, force: true });
+    console.log(`  Migrated '${from}' → '${to}' (${CONFIG_FILE} preserved)`);
+  }
+}
+
 function copyDirSync(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -107,6 +147,8 @@ function runUpdate(skills, includeNew) {
     console.log('Run `npx github:jpolvora/workflow-skills` to choose skills to install first.');
     process.exit(0);
   }
+
+  migrateRenamedSkills(skills);
 
   const existingSkills = listSkillDirs(targetSkillsDir).filter((name) => skills.includes(name));
   const missingNew = skills.filter((name) => !existingSkills.includes(name));
@@ -207,6 +249,7 @@ async function runInteractive(skills) {
 
   let installedCount = 0;
   console.log('\nStarting installation...');
+  migrateRenamedSkills(skills);
 
   for (let i = 0; i < skills.length; i++) {
     if (!selected[i]) continue;

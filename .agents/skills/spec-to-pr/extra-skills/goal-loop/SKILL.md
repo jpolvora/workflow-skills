@@ -5,7 +5,7 @@ description: >-
   management, heartbeat/sleeper, re-collect -> check -> continue/done loop,
   stop conditions, verify framework, and report format. Consumed by
   goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---
@@ -48,10 +48,10 @@ A **sentinel** is a singleton background timer that wakes the agent after `WAIT_
 **Portability:** never write sentinel files under OS temp (`TMPDIR` / Windows `%TEMP%`). Use a project-local runtime directory:
 
 ```bash
-# Prefer us-workflow runtime when available:
+# Prefer spec-to-pr runtime when available:
 #   {config.plans.dir}/{slug}/.runtime/
 # Fallback:
-#   .agents/skills/us-workflow/extra-skills/goal-loop/runs/<ID>/
+#   .agents/skills/spec-to-pr/extra-skills/goal-loop/runs/<ID>/
 
 RUNTIME_DIR="<resolved runtime dir>"
 mkdir -p "$RUNTIME_DIR"
@@ -174,6 +174,6 @@ When `DRY_RUN=true`:
 
 | Resource | Path |
 |----------|------|
-| Run artifacts | `$RUNTIME_DIR/` or `.agents/skills/us-workflow/extra-skills/goal-loop/runs/<ID>/` |
+| Run artifacts | `$RUNTIME_DIR/` or `.agents/skills/spec-to-pr/extra-skills/goal-loop/runs/<ID>/` |
 | Sentinel tracking | `$RUNTIME_DIR/sentinel.pid` |
 | Artifact registry | [ARTIFACTS.md](../../ARTIFACTS.md) |

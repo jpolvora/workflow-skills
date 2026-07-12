@@ -11,7 +11,7 @@ description: >-
   (dry-run stops at the plan). Load ONLY when user explicitly invokes
   /check-harness, @check-harness, "audit harness", "check
   harness references", or requests a cohesion/redundancy review between skills
-  and AGENTS.md. Do not confuse with us-workflow (E2E delivery pipeline).
+  and AGENTS.md. Do not confuse with spec-to-pr (E2E delivery pipeline).
 disable-model-invocation: true
 version: 3.1-generic
 ---
@@ -25,7 +25,7 @@ Senior meta-harness auditing agent specialized in **health, cohesion, and portab
 ## Core Goals
 1. **Routing & Integrity:** Validate that all harness files (`AGENTS.md`, `.agents/skills/`) and project-level harness files (`.cursorrules`, `.cursor/rules/`, `README.md`, `docs/` when present) exist and contain correct relative links without phantom/broken paths.
 2. **Redundancy Elimination:** Detect and fix instruction overlaps or contradictions between skills and the hub, enforcing progressive disclosure.
-3. **Portability Audit:** Enforce that orchestrator skills (like `us-workflow`) and their downstream dependencies are project-agnostic. No hardcoded project metadata, custom paths, or stack-specific commands inside the skills.
+3. **Portability Audit:** Enforce that orchestrator skills (like `spec-to-pr`) and their downstream dependencies are project-agnostic. No hardcoded project metadata, custom paths, or stack-specific commands inside the skills.
 4. **Clean Execution Flow:** Run read-only audits first, present a correction plan, and apply edits ONLY upon explicit user approval.
 
 > **Exclusive scope:** meta-harness instructions, routing, links, and redundancy. **Does not** deliver User Stories, **does not** implement product features, and **does not** replace E2E pipelines.
@@ -91,7 +91,7 @@ Progressive disclosure flow: `.cursorrules` (if present) → `AGENTS.md` → ski
 
 Standalone agents (with `disable-model-invocation: true`) and orchestrators may live in `.agents/` or under `.agents/skills/`. Phase 4 discovers all `.md` files with YAML frontmatter containing `disable-model-invocation: true`.
 
-Besides `check-harness` itself (this file), projects may contain E2E pipelines (e.g., `us-workflow/`), stack config files (e.g., `stack.md`), and other orchestrators. Phase 4 scan enumerates the actual inventory; this section exists only as an entry point for the audit.
+Besides `check-harness` itself (this file), projects may contain E2E pipelines (e.g., `spec-to-pr/`), stack config files (e.g., `stack.md`), and other orchestrators. Phase 4 scan enumerates the actual inventory; this section exists only as an entry point for the audit.
 
 ### 2. Rules (`.cursor/rules/`, optional)
 
@@ -107,7 +107,7 @@ All project skills live under `.agents/skills/`. Each skill is typically a direc
 
 > **`name:` collision:** two `SKILL.md` files with the same `name:` break skill resolution → report as **warning** and propose renaming one id or consolidating into a single file.
 
-Also inspect **docs/scripts** referenced by those skills (e.g., scripts in subfolders like `us-workflow/scripts/`, `08-fix-pr/scripts/`).
+Also inspect **docs/scripts** referenced by those skills (e.g., scripts in subfolders like `spec-to-pr/scripts/`, `08-fix-pr/scripts/`).
 
 #### Skill writing quality (optional — `writing-great-skills`)
 
@@ -196,7 +196,7 @@ Useful commands:
 rg -o '\[[^\]]+\]\(([^)]+)\)' AGENTS.md
 
 # .agents / .cursor paths cited in the harness
-rg -n '\.agents/|\.cursor/' AGENTS.md .agents/skills .agents/us-workflow
+rg -n '\.agents/|\.cursor/' AGENTS.md .agents/skills .agents/spec-to-pr
 ```
 
 ### Phase 2 — Existence and path format validation
@@ -232,8 +232,8 @@ Check:
 
 1. **Coverage** — every skill listed in `AGENTS.md` exists; every relevant existing skill is routed (or intentionally omitted with a note) — mechanical diff in **Phase 4**.
 2. **Progressive disclosure** — `AGENTS.md` routes skills/rules/docs without indexing specs; skills delegate to hub + guardrails skill.
-3. **Declared relationships** — inter-skill dependencies match actual imports (e.g., `us-workflow` → skills `01`–`07`; Step 9 → `us-code-review` (`06-code-review`); `08-fix-pr` → `code-review`).
-4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (`/us-workflow`, `@check-harness`, etc.).
+3. **Declared relationships** — inter-skill dependencies match actual imports (e.g., `spec-to-pr` → skills `01`–`07`; Step 9 → `us-code-review` (`06-code-review`); `08-fix-pr` → `code-review`).
+4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (`/spec-to-pr`, `@check-harness`, etc.).
 5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
 
 ### Phase 4 — Skills/rules not routed in `AGENTS.md`
@@ -276,7 +276,7 @@ Normalize paths for comparison (file basename + repo-root-relative path).
 | `unrouted_rules[]` | Rule `*.mdc`/`*.md` exists, but **no** equivalent link appears in `AGENTS.md` | **warning** |
 | `phantom_routes[]` | `AGENTS.md` references skill/rule that does **not** exist on disk | **critical** (already covered in Phase 2/3; revalidate here) |
 
-**Intentional omission:** if a skill/rule is auxiliary (e.g., only scripts in a subfolder, numbered skill consumed only by `us-workflow`), record in `intentionally_omitted[]` with justification — **do not** ask the user about these items.
+**Intentional omission:** if a skill/rule is auxiliary (e.g., only scripts in a subfolder, numbered skill consumed only by `spec-to-pr`), record in `intentionally_omitted[]` with justification — **do not** ask the user about these items.
 
 #### 4d. Record unrouted items (without editing)
 
@@ -308,7 +308,7 @@ Identify canonical sources for each theme. The table below lists **common themes
 | Specification format | Skill with `spec-format` or equivalent in `name:` | Planning, refinement, and verification skills |
 | UI / CRUD patterns | Skills with `view-patterns`, `ui-standards`, or equivalent + `DESIGN.md` or similar | Implementation and planning skills |
 | Architecture / tenancy / RBAC | Docs in `docs/specs/` or `docs/superpowers/specs/` referenced by planning skills | Planning and implementation skills |
-| Issue/ticket source | Scripts in `.agents/` (e.g., `us-workflow/scripts/`) + external CLI (`gh`, `az`) | Planning and verification skills |
+| Issue/ticket source | Scripts in `.agents/` (e.g., `spec-to-pr/scripts/`) + external CLI (`gh`, `az`) | Planning and verification skills |
 | Code review (methodology) | Workflow-specific review skill (e.g., `06-code-review`) | Pipeline/orchestrator |
 | General PR/branch code review | Skill with `code-review` in `name:` | PR fixing skills |
 
@@ -319,7 +319,7 @@ For each pair of files covering the same theme, verify:
 - **Obsolete instruction** — reference to removed artifact (orphan paths, remnants of previous stack)
 - **Inflation** — `AGENTS.md`, skill, or orchestrator repeating full skill body or indexing specs (should be index + link to skills/docs)
 - **`name:` collision** — two `SKILL.md` declaring the same `name:` (breaks skill resolution)
-- **`us-workflow` dependency portability** — Verify that skills that are dependencies of `us-workflow` (such as `00-write-spec` through `07-integration-validation`, `11-ship-pr`, etc.) contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from `config.json` or `stack.md` so that dependencies remain portable and project-agnostic.
+- **`spec-to-pr` dependency portability** — Verify that skills that are dependencies of `spec-to-pr` (such as `00-write-spec` through `07-integration-validation`, `11-ship-pr`, etc.) contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from `config.json` or `stack.md` so that dependencies remain portable and project-agnostic.
 
 Prioritize **remove duplicate + link** over rewriting.
 
@@ -576,7 +576,7 @@ Otherwise — **correction plan** (mandatory before editing):
 - [ ] Skill → skill relationships — [OK | gaps]
 - [ ] Invocation triggers — [OK | absent]
 - [ ] Skills/rules on disk vs `AGENTS.md` — [OK | unrouted: N]
-- [ ] `us-workflow` dependency portability — [OK | parameterization deviations from config.json]
+- [ ] `spec-to-pr` dependency portability — [OK | parameterization deviations from config.json]
 
 ### Redundancies and conflicts
 | Theme | Files | Type | Plan item (#) |
@@ -702,7 +702,7 @@ If the user requests, save to:
 | Role | Artifact | Function |
 |-------|----------|--------|
 | **This agent** | `.agents/skills/check-harness.md` | Audit meta-harness health |
-| **E2E Pipeline** | `.agents/us-workflow/` | E2E agent — consumes skills |
+| **E2E Pipeline** | `.agents/spec-to-pr/` | E2E agent — consumes skills |
 | **Standalone skills** | `.agents/skills/{NN}-*/SKILL.md` and `.agents/skills/*/SKILL.md` | Individually invocable knowledge/workflow |
 | **Rules** | `.cursor/rules/*.mdc` | Narrow-scope engineering rules; complement skills and hub |
 | **Hub** | `.cursorrules` → `AGENTS.md` | Single entry; `AGENTS.md` contains routing (Layers, Skill loading, Task router) without duplicating skill bodies |

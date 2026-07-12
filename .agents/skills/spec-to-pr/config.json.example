@@ -74,7 +74,7 @@
       "owner": "<GITHUB_ORG>",
       "repo": "<GITHUB_REPO>",
       "cli": "gh",
-      "issueToSpecScript": ".agents/skills/us-workflow/scripts/github-issue-to-spec.py"
+      "issueToSpecScript": ".agents/skills/spec-to-pr/scripts/github-issue-to-spec.py"
     },
     "azureDevOps": {
       "enabled": false,

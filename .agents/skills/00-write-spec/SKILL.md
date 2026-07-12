@@ -1,7 +1,7 @@
 ---
 name: 00-write-spec
 description: Receives a high-level feature description and drafts a canonical step-00-{slug}.spec.md specification.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 3.1
 disable-model-invocation: true
 ---
@@ -20,9 +20,9 @@ Responsible for taking raw, free-text feature descriptions and drafting a canoni
 /write-spec "<description>" [slug=<slug>] [output-dir=<path>]
 ```
 
-### Workflow Mode (Step 0 of us-workflow)
+### Workflow Mode (Step 0 of spec-to-pr)
 
-Dispatched by `us-workflow` at Step 0 with the issue body or feature text from context. Receives `description` and optional `slug` from the orchestrator's input.
+Dispatched by `spec-to-pr` at Step 0 with the issue body or feature text from context. Receives `description` and optional `slug` from the orchestrator's input.
 
 ### Parameters
 
@@ -36,7 +36,7 @@ Dispatched by `us-workflow` at Step 0 with the issue body or feature text from c
 
 ## Output Template
 
-Adhere to the canonical specification format defined by [spec-format](../us-workflow/extra-skills/spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
+Adhere to the canonical specification format defined by [spec-format](../spec-to-pr/extra-skills/spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
 
 ```markdown
 ---

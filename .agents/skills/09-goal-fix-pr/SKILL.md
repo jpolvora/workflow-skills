@@ -1,7 +1,7 @@
 ---
 name: 09-goal-fix-pr
 description: Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.
-upstream: jpolvora/workflow-skills — this skill is a us-workflow pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
+upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true
 ---
@@ -20,9 +20,9 @@ Responsible for driving PR review thread convergence to zero. It wraps the [08-f
 /goal-fix-pr <PR-NUMBER> [dry-run] [max <n>]
 ```
 
-### Workflow Mode (Step 12 of us-workflow)
+### Workflow Mode (Step 12 of spec-to-pr)
 
-Dispatched automatically by `us-workflow` when `ship-pr` triggers thread convergence monitoring. Receives `PR-NUMBER` and `max` from the orchestrator's parameters.
+Dispatched automatically by `spec-to-pr` when `ship-pr` triggers thread convergence monitoring. Receives `PR-NUMBER` and `max` from the orchestrator's parameters.
 
 ### Parameters
 
