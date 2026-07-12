@@ -13,9 +13,15 @@ Responsible for shipping the completed workflow from the development branch (`de
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /ship-pr [commit-title] [base=<branch>] [dry-run] [no-merge] [max <n>]
 ```
+
+### Workflow Mode (Step 13 of us-workflow)
+
+Dispatched by `us-workflow` when the `--full` flag is active. Steps 0–12 have already completed. The code-review and auto-fix phases are **skipped** (already done in Step 9 and Step 10).
 
 ### Parameters
 

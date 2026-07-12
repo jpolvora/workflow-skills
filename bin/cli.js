@@ -82,18 +82,39 @@ function runUpdate(skills) {
     process.exit(0);
   }
 
+  const CONFIG_FILE = 'config.json';
+
   console.log(`Updating ${existingSkills.length} skill(s)...`);
   for (const skillName of existingSkills) {
     const srcPath = path.join(srcSkillsDir, skillName);
     const destPath = path.join(targetSkillsDir, skillName);
 
     console.log(`  Updating '${skillName}'...`);
-    fs.rmSync(destPath, { recursive: true, force: true });
-    copyDirSync(srcPath, destPath);
+    copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
   }
-  
+
   console.log("\nUpdate complete!");
+  console.log(`Note: Any existing '${CONFIG_FILE}' files were preserved and NOT overwritten.`);
   process.exit(0);
+}
+
+// Copy src dir into dest, skipping preservedFile if it already exists at dest
+function copyDirPreservingConfig(src, dest, preservedFile) {
+  fs.mkdirSync(dest, { recursive: true });
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDirPreservingConfig(srcPath, destPath, preservedFile);
+    } else if (entry.name === preservedFile && fs.existsSync(destPath)) {
+      console.log(`    Skipped (preserved): ${entry.name}`);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
 }
 
 // 2. Interactive installation menu
