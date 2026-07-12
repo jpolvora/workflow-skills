@@ -154,7 +154,7 @@ curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/rel
   --engine opencode \
   --model opencode-go/deepseek-v4-flash \
   --stack Custom \
-  --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.js,**/*.ts,**/*.css,**/*.html" \
+  --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
   --target-branch refs/heads/main \
   --source-branch refs/heads/develop
 ```
