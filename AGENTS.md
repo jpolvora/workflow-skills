@@ -73,8 +73,6 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `supabase-postgres-best-practices` | `.agents/skills/supabase-postgres-best-practices/SKILL.md` | Postgres optimization and best practices |
-
 ### Layer 4 — Review & Audit
 
 | Skill | Path | Description |
@@ -84,6 +82,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | `tdd-sdd-ddd-reviewer` | `.agents/skills/tdd-sdd-ddd-reviewer/SKILL.md` | Architectural audit (Clean Architecture, TDD, DDD) |
 | `domain-review` | `.agents/skills/domain-review/SKILL.md` | Domain/bounded context review (smells, SOLID, security) |
 | `multi-domain-review` | `.agents/skills/multi-domain-review/SKILL.md` | Batch review of multiple domains |
+| `secrets-leak-review` | `.agents/skills/secrets-leak-review/SKILL.md` | Secrets/password/PII/credential leak scan (pre-public audit) |
 
 ### Layer 5 — Utility & Meta
 
@@ -112,6 +111,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | I want to verify what was done | `verify-plan` |
 | I want to review local code | `us-code-review` |
 | I want to review security | `security-review` or `dotnet-security-performance-review` |
+| I want to scan for secrets/leaks | `secrets-leak-review` |
 | I want to review architecture (DDD) | `tdd-sdd-ddd-reviewer` |
 | I want to review domain | `domain-review` or `multi-domain-review` |
 | I want to test integration pre-PR | `integration-validation` |
@@ -122,7 +122,6 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | I want to create new skill | `write-a-skill` |
 | I want to audit harness | `check-harness` |
 | I want to grill plan against docs | `grill-with-docs` |
-| I want to optimize Postgres | `supabase-postgres-best-practices` |
 | I want to do frontend design | `taste-skill` or `mobile-first-design` |
 | I want to record learning | `learning` |
 | I want to record changelog | `changelog` |
