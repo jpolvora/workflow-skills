@@ -327,7 +327,7 @@ mindmap
       GitHub issue snapshot
     Step 1
       Plan template
-      Matrix layered architecture
+      Layered architecture
     Step 2
       Refinement loop
       Decision log
