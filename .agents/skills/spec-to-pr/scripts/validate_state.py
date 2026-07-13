@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 AGENT_ROOT = Path(__file__).resolve().parent.parent          # .../spec-to-pr
-REPO_ROOT = Path(__file__).resolve().parents[3]              # repo root
+REPO_ROOT = Path(__file__).resolve().parents[4]              # repo root (.agents/skills/spec-to-pr/scripts → 4 up)
 PLANS_DIR = None  # resolved lazily via load_plans_dir()
 
 def load_plans_dir() -> Path:

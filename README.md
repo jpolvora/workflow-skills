@@ -39,6 +39,9 @@ This hub is designed to host **multiple workflows** over time. Each workflow is 
 | Step 13 | [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | End-to-end PR delivery and merge |
 | Spec protocol | [`spec-format`](.agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md) | Canonical spec format validation |
 | Loop primitive | [`goal-loop`](.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
+| Provider | [`github-provider`](.agents/skills/github-provider/SKILL.md) | GitHub issue→spec and PR create/threads/merge |
+| Provider | [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) | Azure DevOps work item→spec and PR create/threads/merge |
+| Provider | [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Local `*.spec.md` register/normalize (PR via `providers.scm`) |
 
 ### ⚠️ Contribution Policy for `spec-to-pr` Dependencies
 
@@ -73,7 +76,13 @@ If you already have skills installed and just want to update them to the latest 
 ```bash
 npx github:jpolvora/workflow-skills update
 ```
-*(Updates skills that already exist locally and preserves each skill's `config.json`. Use `update --include-new` to also install skills added upstream that are not yet in the consumer project.)*
+*(Updates skills that already exist locally and preserves each skill's `config.json`.)*
+
+To also install **new** top-level skills added upstream (for example `github-provider`, `azure-devops-provider`, `local-spec-provider`), run:
+```bash
+npx github:jpolvora/workflow-skills update --include-new
+```
+*(Plain `update` does not create folders that are not already present in the consumer project.)*
 
 ---
 

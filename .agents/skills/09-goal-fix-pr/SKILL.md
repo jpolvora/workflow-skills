@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # 09-goal-fix-pr
 
-Responsible for driving PR review thread convergence to zero. It wraps the [08-fix-pr](../08-fix-pr/SKILL.md) skill in a goal loop, auto-approving cooperative gates and re-checking threads after every push until `activeThreads == 0`.
+Responsible for driving PR review thread convergence to zero. It wraps the [08-fix-pr](../08-fix-pr/SKILL.md) skill in a goal loop, auto-approving cooperative gates and re-checking threads after every push until `activeThreads == 0`. Thread-count probes and fix rounds are **SCM-aware**: resolve `providers.scm`, then delegate platform I/O — do not hardcode GitHub-only (`gh pr view`) or ADO-only recipes in this skill’s happy path.
 
 ---
 
@@ -19,6 +19,8 @@ Responsible for driving PR review thread convergence to zero. It wraps the [08-f
 ```
 /goal-fix-pr <PR-NUMBER> [dry-run] [max <n>]
 ```
+
+Same SCM resolution and convergence loop as workflow mode; confirmation gates remain auto-approved by this skill.
 
 ### Workflow Mode (Step 12 of spec-to-pr)
 
@@ -32,16 +34,30 @@ Dispatched automatically by `spec-to-pr` when `ship-pr` triggers thread converge
 | `dry-run` | Flag | `false` | Simulate fixes and resolutions without committing, pushing, or calling platform resolve APIs. |
 | `max <n>` | Integer | `20` | Maximum iteration ceiling before stopping and escalating. |
 
-Before executing, restate the parsed parameters: **PR number**, **success criteria**, **mode**, **max iterations**, **dry-run active**.
+Before executing, restate the parsed parameters: **PR number**, **success criteria**, **mode**, **max iterations**, **dry-run active**, **`providers.scm`**.
+
+---
+
+## SCM resolution (mandatory)
+
+1. Read `.agents/skills/spec-to-pr/config.json`.
+2. Resolve SCM host = `providers.scm` (fallback: enabled tracker / `project.repoUrl` inference — same rules as provider skills).
+3. Load the matching provider skill and use its intents for thread count only; keep scoring/fix/verify in [08-fix-pr](../08-fix-pr/SKILL.md).
+
+| `providers.scm` | Provider skill | Thread-count intent |
+|-----------------|----------------|---------------------|
+| `github` | [github-provider](../github-provider/SKILL.md) | `list-threads` |
+| `azure-devops` | [azure-devops-provider](../azure-devops-provider/SKILL.md) | `list-threads` |
 
 ---
 
 ## Success Criterion
 
-**Convergence:** `len(activeThreads) == 0` after a thread collection run.
+**Convergence:** `len(activeThreads) == 0` after a `list-threads` run on the resolved SCM provider.
 
-- **GitHub:** `gh pr view <PR-NUMBER> --json comments --jq '[.comments[] | select(.isResolved == false)] | length'`
-- **Azure DevOps:** `fix_pr_azure_context.py collect` → `activeThreads` count
+- Call the provider’s `list-threads` intent with `<PR-NUMBER>` (see provider SKILL for script/CLI details).
+- `activeThreads` = unresolved / active threads from that response (provider normalizes status).
+- Do **not** embed `gh pr view … jq` or raw ADO collect commands here — those live only inside the provider skills.
 
 ---
 
@@ -63,25 +79,25 @@ When running inside `goal-fix-pr`, the following `fix-pr` interactive gates are 
 Track progress across iterations:
 
 ```
-Goal: fix-pr PR-<N> until convergence
-Success: activeThreads == 0
+Goal: fix-pr PR-<N> until convergence (scm = providers.scm)
+Success: activeThreads == 0 via scm list-threads
 Iteration: <n>/<max>
 - [ ] branch sync (PR head)
-- [ ] collect + count threads
-- [ ] fix-pr round (if > 0 threads)
+- [ ] scm list-threads → count activeThreads
+- [ ] 08-fix-pr round (if > 0 threads; scm list/resolve inside fix-pr)
 - [ ] verify build/tests + code-review auto-check
-- [ ] commit + resolve + push (if code changed)
-- [ ] wait 5min + re-collect
+- [ ] commit + resolve + push (if code changed; skip if dry-run)
+- [ ] wait 5min + scm list-threads re-collect
 ```
 
 ### Phase 1 — Baseline (Iteration 1)
-- Collect active threads from the PR platform.
+- Resolve `providers.scm` and call provider `list-threads` for `<PR-NUMBER>`.
 - If `activeThreads == 0` on first collect → final report and stop (already converged).
 
-### Phase 2 — Act (fix-pr Round)
-- Execute `fix-pr` steps 0–7 with automation overrides for active threads.
+### Phase 2 — Act (08-fix-pr Round)
+- Dispatch [08-fix-pr](../08-fix-pr/SKILL.md) for the same `<PR-NUMBER>` with automation overrides (gates auto-yes). Fix-pr owns scoring FSM and SCM list/resolve via `providers.scm`; this skill does not re-implement platform APIs.
 - Commit: `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`.
-- Resolve threads on the platform.
+- Resolve threads through the SCM provider (via fix-pr).
 - Push: `git push origin HEAD` (skip if `dry-run`).
 
 ### Phase 3 — Verify (Mandatory after each round)
@@ -91,7 +107,7 @@ Iteration: <n>/<max>
 | Build/Tests | Output from `config.json.verification` commands |
 | Auto-review | **"No feedback"** from `06-code-review` on current diff |
 | Push | Commit hash + push confirmation (or dry-run log) |
-| Resolved threads | `resolve_thread` exited with code 0 |
+| Resolved threads | SCM provider `resolve-thread` exited with code 0 (via fix-pr) |
 
 3 consecutive failures on the same check → stop and escalate.
 
@@ -101,9 +117,9 @@ Iteration: <n>/<max>
 - Do not stack multiple sleepers — exactly one active at a time.
 
 ### Phase 5 — Re-collect
-- On wake: re-count `activeThreads`.
+- On wake: re-run SCM provider `list-threads` and re-count `activeThreads`.
 - `== 0` → **done**.
-- `> 0` and `n < max` → start iteration `n+1`.
+- `> 0` and `n < max` → start iteration `n+1` (another 08-fix-pr round).
 - `n >= max` → stop, report remaining threads, request larger `max`.
 
 ---
@@ -116,7 +132,7 @@ Iteration: <n>/<max>
 | User requests stop | Kill sleeper, summarize progress so far |
 | Escalate thread hit | Stop, list blocked thread IDs |
 | `n >= max` | Stop, list active threads |
-| Platform collect fails | Stop — do not improvise API calls |
+| SCM `list-threads` fails | Stop — do not improvise platform API calls |
 
 ---
 
@@ -127,5 +143,5 @@ At the end of every run (whether converged or stopped), output:
 2. Threads handled per round (fixed / resolved / escalated).
 3. Links to generated round reports (`.cursor/codereviews/PR-<N>-round-*.md`).
 4. Commit hashes and push confirmation.
-5. Final `activeThreads` count with evidence from the last collect.
+5. Final `activeThreads` count with evidence from the last SCM `list-threads` collect (`providers.scm` + provider skill).
 6. PR URL.

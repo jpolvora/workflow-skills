@@ -41,6 +41,9 @@ Additional workflows may be added as peer top-level skills; they do not replace 
 | `09-goal-fix-pr` | Step 13 (via ship-pr) | Convergence loop — fix-pr until zero open threads |
 | `10-update-plan-implementation` | Post-workflow | Delta adjustments from QA findings |
 | `11-ship-pr` | Step 13 | End-to-end PR delivery and merge |
+| `github-provider` | Provider | GitHub issue→spec, auth, PR create/threads/merge |
+| `azure-devops-provider` | Provider | Azure DevOps work item→spec, auth, PR create/threads/merge |
+| `local-spec-provider` | Provider | Local `*.spec.md` register/normalize; PR via `providers.scm` |
 | `spec-format` | Spec protocol | Canonical spec format validation |
 | `goal-loop` | Loop primitive | Generic convergence loop (consumed by `09-goal-fix-pr`) |
 
@@ -69,9 +72,13 @@ Skills loaded automatically by task type:
 
 ## Harness integrity check
 
-Whenever skills are created, modified, or updated, or any harness file is changed (`.agents/skills/`, `AGENTS.md`, `README.md`, `docs/`), **ask the user** if they want to run the harness audit.
+Whenever skills are created, modified, or updated, or any harness file is changed (`.agents/skills/`, `AGENTS.md`, `README.md`, `docs/`), **ask the user** if they want to run the harness audit **and** whether the static site catalog and root `README.md` also need updating.
 
-To audit, load the `.agents/skills/check-harness.md` skill and execute the scan phases (Phases 0–5c) followed by the correction plan (Phase 6).
+After a harness change, always evaluate all three:
+
+1. **check-harness** — load `.agents/skills/check-harness.md` and execute the scan phases (Phases 0–5c) followed by the correction plan (Phase 6).
+2. **Site catalog** — if skills, layers, or routing tables changed, regenerate `docs/index.html` with `node bin/build-site.js` (see Verification §4).
+3. **README.md** — if the change affects install/usage, skill catalog, workflows, or consumer-facing docs, update the root `README.md` to stay in sync with `AGENTS.md`.
 
 > **Note:** This is the `workflow-skills` source repository. **Never** run scripts via `npx github:jpolvora/workflow-skills` — use local files from this repository (remote installations are permitted only within the `test/` folder for testing/verification).
 
@@ -94,7 +101,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | `mobile-first-design` | `.agents/skills/mobile-first-design/SKILL.md` | Responsive mobile-first design |
 | `design-taste-frontend` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend — landing pages, portfolios, redesigns |
 
-### Layer 2 — spec-to-pr Pipeline (numbered, 00-11)
+### Layer 2 — spec-to-pr Pipeline (numbered 00–11 + providers)
 
 | Step | Skill | Path | Description |
 |------|-------|------|-------------|
@@ -110,6 +117,9 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | 09 | `09-goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
 | 10 | `10-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` | Post-workflow: capture QA findings and apply deltas |
 | 11 | `11-ship-pr` | `.agents/skills/11-ship-pr/SKILL.md` | End-to-end delivery: PR develop→master/main, merge |
+| — | `github-provider` | `.agents/skills/github-provider/SKILL.md` | GitHub provider — issue→spec, auth, PR create/threads/merge (`gh`) |
+| — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` | Azure DevOps provider — work item→spec, PAT auth, PR create/threads/merge |
+| — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` | Local `*.spec.md` provider — specsDir detect/register; PR intents via `providers.scm` |
 
 ### Layer 3 — Discovery & Library Integration
 
@@ -162,6 +172,9 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | I want to fix PR | `08-fix-pr` |
 | I want to ship PR | `11-ship-pr` |
 | I want Spec → PR E2E delivery | `spec-to-pr` |
+| I want GitHub issue→spec or GitHub PR ops | `github-provider` |
+| I want Azure DevOps work item→spec or ADO PR ops | `azure-devops-provider` |
+| I want local `*.spec.md` register/normalize | `local-spec-provider` |
 | I want to format/review spec | `spec-format` |
 | I want to create new skill | `write-a-skill` |
 | I want to audit harness | `check-harness` |
