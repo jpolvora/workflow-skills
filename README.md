@@ -17,20 +17,11 @@ This hub is designed to host **multiple workflows** over time. Each workflow is 
 
 **This repository is the canonical upstream for consumable workflows and their pipeline dependencies.**
 
-### `spec-to-pr` (Full Workflow)
+---
 
-`spec-to-pr` is a full Spec → PR delivery orchestrator (FSM, Steps 0–13) that delegates each phase of the software lifecycle to a dedicated sub-skill. Every skill listed below is an **integral part of the pipeline** — designed, versioned, and tested together as a cohesive system.
+## 🚀 spec-to-pr (Full Workflow)
 
-### `spec-to-pr-lite` (Lite Workflow)
-
-`spec-to-pr-lite` is a fast, sequential alternative designed for existing specifications/USs. It skips specification brainstorming, grilling interviews, and parallel DAG decomposition, executing planning (`01-write-plan`), coding (`04-implement-tasks`), review (`06-code-review`), and optional shipping (`11-ship-pr`) in a direct sequential loop. Check out [spec-to-pr-lite/SKILL.md](.agents/skills/spec-to-pr-lite/SKILL.md).
-
-### Dual-Mode Execution & Compatibility
-
-Both workflows are designed to co-exist in **dual mode** within the same repository:
-- **Shared Configuration**: They can share `.agents/skills/spec-to-pr/config.json` as their single source of truth. The `spec-to-pr-lite` FSM, SCM providers, and dependency scripts automatically fall back to the standard config if their local config is missing.
-- **State Isolation**: State files are flagged with `workflowType: standard` or `workflowType: lite` in their frontmatter. Resume discovery automatically filters workflows by type, preventing cross-resuming between standard and lite modes.
-- **Shared Skills**: Both workflows leverage the same underlying pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, and `11-ship-pr`), keeping execution highly efficient, modular, and lightweight.
+`spec-to-pr` is an end-to-end multi-stage pipeline orchestrator driven by a Finite State Machine (FSM, Steps 0–13). It delegates each software development phase to a specialized sub-skill, ensuring a thorough, verified build loop.
 
 ### `spec-to-pr` Dependency Graph
 
@@ -53,6 +44,33 @@ Both workflows are designed to co-exist in **dual mode** within the same reposit
 | Provider | [`github-provider`](.agents/skills/github-provider/SKILL.md) | GitHub issue→spec and PR create/threads/merge |
 | Provider | [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) | Azure DevOps work item→spec and PR create/threads/merge |
 | Provider | [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Local `*.spec.md` register/normalize (PR via `providers.scm`) |
+
+For comprehensive FSM details, setup, and triggers, see [spec-to-pr/SKILL.md](.agents/skills/spec-to-pr/SKILL.md).
+
+---
+
+## ⚡ spec-to-pr-lite (Lite Workflow)
+
+`spec-to-pr-lite` is a fast, sequential alternative designed for rapid iteration on projects that already possess a target specification (a pre-written markdown file, GitHub issue ID, or Azure DevOps work item ID). It skips brainstorming, interviews, and DAG decomposition to run planning, implementation, review, and shipping in a rapid, direct loop.
+
+### `spec-to-pr-lite` Steps
+
+- **Step 1: Planning and Brainstorm**: Drafts `step-01-{slug}.plan.md` using `01-write-plan`.
+- **Step 2: Implementation**: Runs sequential coding using `04-implement-tasks` (build mode).
+- **Step 3: Code Review & Fix**: Runs local code reviews via `06-code-review` and automatically fixes findings.
+- **Step 4: Consolidation & Delivery**: Consolidates results and commits delivery plan.
+- **Step 5: Ship & PR (Optional)**: Opens Pull Requests and merges via SCM provider.
+
+For complete workflow instructions, resume flows, and tags, see [spec-to-pr-lite/SKILL.md](.agents/skills/spec-to-pr-lite/SKILL.md).
+
+---
+
+## 🔄 Dual-Mode Execution & Compatibility
+
+Both workflows are designed to co-exist in **dual mode** within the same repository:
+- **Shared Configuration**: They share `.agents/skills/spec-to-pr/config.json` as their single source of truth. The `spec-to-pr-lite` FSM, SCM providers, and dependency scripts automatically fall back to the standard config if their local config is missing.
+- **State Isolation**: State files are flagged with `workflowType: standard` or `workflowType: lite` in their frontmatter. Resume discovery automatically filters workflows by type, preventing cross-resuming between standard and lite modes.
+- **Shared Skills**: Both workflows leverage the same underlying pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, and `11-ship-pr`), keeping execution highly efficient, modular, and lightweight.
 
 ### ⚠️ Contribution Policy for `spec-to-pr` Dependencies
 

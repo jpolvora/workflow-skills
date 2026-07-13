@@ -16,6 +16,7 @@
 <nav>
   <div class="inner">
     <a href="#" class="logo">Workflow Skills</a>
+    <a href="#workflows">Workflows</a>
     <a href="#catalog">Catalog</a>
     <a href="#install">Install</a>
     <div class="nav-right">
@@ -37,6 +38,43 @@
     <span class="badge">npx github:jpolvora/workflow-skills</span>
   </div>
 </header>
+
+<section id="workflows" class="workflows-section">
+  <h2>Workflows</h2>
+  <p class="section-subtitle">Choose the right workflow orchestrator for your task's scope and speed requirements.</p>
+  
+  <div class="workflows-container">
+    <div class="workflow-card">
+      <div class="workflow-badge standard">Standard</div>
+      <h3>spec-to-pr</h3>
+      <p class="workflow-tagline">Full multi-stage pipeline (Steps 0–13)</p>
+      <p>A comprehensive Finite State Machine (FSM) orchestrator designed for end-to-end software lifecycle delivery. Best for complex tasks starting from feature descriptions or issues.</p>
+      <ul>
+        <li>Collaborative Spec Brainstorming (Step 0)</li>
+        <li>Architectural Review & Interview (Steps 1–2)</li>
+        <li>DAG Task Decomposition (Step 3)</li>
+        <li>Parallel or Multi-layered coding (Steps 5, 10)</li>
+        <li>Pre-PR validation & goal-fix-pr loops (Steps 11–13)</li>
+      </ul>
+      <a class="workflow-btn view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View spec-to-pr workflow</a>
+    </div>
+
+    <div class="workflow-card">
+      <div class="workflow-badge lite">Lite</div>
+      <h3>spec-to-pr-lite</h3>
+      <p class="workflow-tagline">Fast sequential pipeline (Steps 1–5)</p>
+      <p>A streamlined, fast alternative designed to run planning, sequential coding, code review, and shipping in a direct loop. Requires an existing specification.</p>
+      <ul>
+        <li>Planning and brainstorm from existing specification</li>
+        <li>Direct sequential coding (no complex DAG required)</li>
+        <li>Quick local code review & automatic fix cycles</li>
+        <li>Fast consolidation and PR shipping</li>
+        <li>Zero setup/config duplication in dual-mode</li>
+      </ul>
+      <a class="workflow-btn view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View spec-to-pr-lite workflow</a>
+    </div>
+  </div>
+</section>
 
 <section id="catalog">
   <h2>Skill Catalog</h2>
