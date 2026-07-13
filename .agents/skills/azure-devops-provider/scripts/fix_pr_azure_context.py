@@ -89,6 +89,8 @@ def resolve_azdo_legacy_paths(repo_root: Path) -> tuple[Path, Path]:
 def load_spec_to_pr_ado_config(repo_root: Path) -> dict[str, Any] | None:
     config_path = repo_root / ".agents" / "skills" / "spec-to-pr" / "config.json"
     if not config_path.exists():
+        config_path = repo_root / ".agents" / "skills" / "spec-to-pr-lite" / "config.json"
+    if not config_path.exists():
         return None
     try:
         config = json.loads(config_path.read_text(encoding="utf-8"))

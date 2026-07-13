@@ -8,9 +8,9 @@ disable-model-invocation: true
 
 # azure-devops-provider
 
-Owns all **Azure DevOps–specific** instructions and scripts for inbound work items (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `08-fix-pr`, `09-goal-fix-pr`, `11-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `azure-devops`; they must not embed raw `az` / REST happy-path recipes beyond linking here.
+Owns all **Azure DevOps–specific** instructions and scripts for inbound work items (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `08-fix-pr`, `09-goal-fix-pr`, `11-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `azure-devops`; they must not embed raw `az` / REST happy-path recipes beyond linking here.
 
-Resolve `org` / `project` from `.agents/skills/spec-to-pr/config.json` (`issueTrackers.azureDevOps`). **Never** hardcode organization or project names in this skill or its scripts.
+Resolve `org` / `project` from `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`) (`issueTrackers.azureDevOps`). **Never** hardcode organization or project names in this skill or its scripts.
 
 ---
 
@@ -52,8 +52,8 @@ Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.acti
 
 - **CLI (preferred for PR create/merge):** Azure CLI (`az`) with Azure DevOps extension when using `az repos pr` flows.
 - **Auth (`validate-auth`):** PAT from env — prefer `issueTrackers.azureDevOps.patEnvVar` (default `ADO_PAT`), then `ADO_PAT`, then `AZURE_DEVOPS_PAT`. Never commit tokens.
-- **Config:** `issueTrackers.azureDevOps.enabled` with non-empty `org` / `project` (and optional `apiBase`), and/or `providers.active` / `providers.scm` set to `azure-devops` in `spec-to-pr/config.json`.
-- **Legacy fallback only:** if `issueTrackers.azureDevOps` is missing fields, scripts may read `.agents/skills/azure-devops/azure-devops.config.json` (+ optional `.secret`) **when that path exists**. If it does not, soft-warn and use only `spec-to-pr/config.json` + env PAT — **do not** recreate a separate `azure-devops` skill layout for new consumers.
+- **Config:** `issueTrackers.azureDevOps.enabled` with non-empty `org` / `project` (and optional `apiBase`), and/or `providers.active` / `providers.scm` set to `azure-devops` in `spec-to-pr/config.json` (or `spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
+- **Legacy fallback only:** if `issueTrackers.azureDevOps` is missing fields, scripts may read `.agents/skills/azure-devops/azure-devops.config.json` (+ optional `.secret`) **when that path exists**. If it does not, soft-warn and use only `spec-to-pr/config.json` (or `spec-to-pr-lite/config.json`) + env PAT — **do not** recreate a separate `azure-devops` skill layout for new consumers.
 
 On auth or config failure: **STOP** with fix instructions from `validate-auth`. Do not silently fall back to another provider.
 
@@ -91,7 +91,7 @@ Optional override: `issueTrackers.azureDevOps.workItemToSpecScript` in config, w
 
 ### `validate-auth`
 
-1. Read `org`, `project`, `apiBase`, `patEnvVar` from `issueTrackers.azureDevOps` in `spec-to-pr/config.json`.
+1. Read `org`, `project`, `apiBase`, `patEnvVar` from `issueTrackers.azureDevOps` in `spec-to-pr/config.json` (or `spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
 2. Resolve PAT: env var named by `patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` (legacy file secret only if env empty and legacy config path exists).
 3. If org/project missing or PAT empty → print fix instructions (enable tracker, fill org/project, export PAT); **STOP**.
 4. Optional smoke: GET `{apiBase}/{org}/{project}/_apis/wit/fields/System.State?api-version=7.1` with Basic auth (empty user + PAT), or rely on `fix_pr_azure_context.py` smoke when available.

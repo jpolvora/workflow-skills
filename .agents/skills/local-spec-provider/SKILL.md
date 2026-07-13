@@ -50,7 +50,7 @@ Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.acti
 
 ## Configuration
 
-Read [`.agents/skills/spec-to-pr/config.json`](../spec-to-pr/config.json):
+Read [`.agents/skills/spec-to-pr/config.json`](../spec-to-pr/config.json) (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`):
 
 | Key | Role |
 |-----|------|

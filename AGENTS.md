@@ -22,8 +22,16 @@ Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` 
 | Workflow | Path | Role |
 |----------|------|------|
 | `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec → plan → implement → verify → review → integrate → PR (FSM F0–F6, steps 0–13) |
+| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast, sequential Plan → implement → review → ship PR (steps 1–5) |
 
-Additional workflows may be added as peer top-level skills; they do not replace `spec-to-pr`.
+Additional workflows may be added as peer top-level skills; they do not replace `spec-to-pr` or `spec-to-pr-lite`.
+
+### Dual-Mode Execution & Compatibility
+
+Both workflows are designed to co-exist in **dual mode** inside a single consumer project:
+- **Shared Configuration**: They can share `.agents/skills/spec-to-pr/config.json` as their single source of truth. The `spec-to-pr-lite` orchestrator, SCM providers, and pipeline scripts automatically fall back to the standard config if their local config is absent.
+- **State Isolation**: Each workflow run generates a state file containing a `workflowType` flag (`standard` vs `lite`). The resume logic filters state files so you can never resume a standard workflow run using the lite orchestrator (or vice versa), preventing state conflicts.
+- **Shared Skills**: Both orchestrators dispatch the same underlying, project-agnostic dependency skills (such as `01-write-plan`, `04-implement-tasks`, `06-code-review`, and `11-ship-pr`) for planning, coding, reviewing, and shipping, making the execution pipeline highly coherent and efficient.
 
 ### `spec-to-pr` Pipeline — Skills Owned by This Repository
 
@@ -169,6 +177,7 @@ After a harness change, always evaluate all three:
 | `gabarito` | `.agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Ten operational response guidelines (accountability, anti-sycophancy, chain-of-verification) |
 | `karpathy-guidelines` | `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
 | `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec-to-PR delivery orchestrator (FSM F0-F6, steps 0-13) |
+| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Spec-to-PR lite delivery orchestrator (sequential FSM, steps 1-5) |
 | `spec-format` | `.agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md` | Creates, reviews, or formats *.spec.md artifacts |
 | `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Anti-regression knowledge record in MEMORY.md |
 | `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Summarized historical record in CHANGELOG.md |
@@ -195,6 +204,7 @@ After a harness change, always evaluate all three:
 | I want to fix PR | `08-fix-pr` |
 | I want to ship PR | `11-ship-pr` |
 | I want Spec → PR E2E delivery | `spec-to-pr` |
+| I want fast, sequential Spec → PR delivery | `spec-to-pr-lite` |
 | I want GitHub issue→spec or GitHub PR ops | `github-provider` |
 | I want Azure DevOps work item→spec or ADO PR ops | `azure-devops-provider` |
 | I want local `*.spec.md` register/normalize | `local-spec-provider` |

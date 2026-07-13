@@ -63,6 +63,14 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 | Skill | Path | Role |
 |-------|------|------|
 | `spec-to-pr` | `skills/spec-to-pr/SKILL.md` | Spec → plan → implement → verify → review → integrate → PR (FSM F0–F6, steps 0–13) |
+| `spec-to-pr-lite` | `skills/spec-to-pr-lite/SKILL.md` | Fast, sequential Plan → implement → review → ship PR (steps 1–5) |
+
+### Dual-Mode Execution & Compatibility
+
+Both workflows co-exist cleanly in **dual mode** inside consumer projects:
+- **Shared Configuration**: They share `.agents/skills/spec-to-pr/config.json` as a single source of truth. If the local `spec-to-pr-lite/config.json` is missing, lite orchestrators and tools automatically fall back to standard.
+- **State Isolation**: Workflows write a `workflowType` field (`standard` / `lite`) to their state files. Resume discovery filters these to prevent cross-resuming standard/lite workflows.
+- **Pipeline Reusability**: They share the same underlying pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, `11-ship-pr`), making dual-mode execution lightweight, coherent, and efficient.
 
 ---
 
@@ -137,6 +145,7 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 | When to use | Skill to load |
 |-------------|---------------|
 | Spec → PR end-to-end | `spec-to-pr` |
+| Spec → PR lite (sequential) | `spec-to-pr-lite` |
 | Write a spec | `00-write-spec` |
 | Plan implementation | `01-write-plan` → `02-interview` → `03-plan-to-tasks` |
 | Implement / fix code | `04-implement-tasks` |
