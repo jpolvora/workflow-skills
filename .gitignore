@@ -31,3 +31,4 @@ config/credentials
 # Temporary files & Logs
 *.log
 .tmp-*/
+audit_results.txt

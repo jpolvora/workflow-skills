@@ -267,14 +267,17 @@ This reviews the diff between `develop` and `main` using the opencode engine wit
 
 ## External Dependencies
 
-Some skills reference `senior-developer` and `.cursor/rules/ef-migrations.mdc`. These are **not** shipped in this repository.
+Some skills reference `senior-developer`, `CONTEXT.md`, and `.cursor/rules/ef-migrations.mdc`. These are **not** shipped in this repository.
 
 | Dependency | Resolve (in order) | Notes |
 |------------|--------------------|-------|
-| `senior-developer` | 1) `.agents/skills/senior-developer/SKILL.md` if the consumer installed a local copy · 2) `~/.agents/skills/senior-developer/SKILL.md` (global) | Relative links inside skills that point at `../senior-developer` assume a local install; otherwise use the global path |
+| `senior-developer` | 1) path in `spec-to-pr/config.json` → `rules.seniorDeveloper` · 2) `.agents/skills/senior-developer/SKILL.md` · 3) `.cursor/rules/senior-developer.mdc` · 4) `~/.agents/skills/senior-developer/SKILL.md` (global) | Skills must **not** hardcode a single relative path. Prefer config; link to this section when documenting. |
+| `karpathy-guidelines` | 1) `rules.karpathyGuidelines` in config · 2) `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` (shipped) | Do **not** use a top-level `.agents/skills/karpathy-guidelines/` path — that layout is obsolete. |
+| `CONTEXT.md` | Consumer repo root (optional) | If absent, use consumer glossary / stack docs; do not fail the skill. |
+| `specs/domains/` | Consumer catalog for domain-review | Optional until domain-review is used. Starter: [`specs/domains/index.md.example`](specs/domains/index.md.example). |
 | `ef-migrations.mdc` | `.cursor/rules/ef-migrations.mdc` in the consumer project | Optional; only for .NET/EF consumers |
 
-Install them separately in consumer projects for the referencing skills to resolve correctly.
+Install optional dependencies separately in consumer projects. Shipped skills resolve guardrails via **config first**.
 
 ## Custom Commands
 

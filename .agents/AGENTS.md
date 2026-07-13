@@ -29,6 +29,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 4. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
 5. **No `name:` collisions** — Each `SKILL.md` frontmatter `name:` must be unique across the installed tree.
 6. **Evidence-based harness changes** — When fixing routing/links, cite verified paths; do not invent files.
+7. **Consistent skill and task folder references** — References to tasks, steps, and subagent skills in all workflow files must match the exact, prefixed skill folder names (e.g. `05-verify-plan`, `07-integration-validation`, `10-update-plan-implementation`). Unprefixed, retired, or placeholder folder references are forbidden.
 
 ### Language (mandatory)
 
@@ -163,5 +164,7 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 - Installed skill trees are **managed upstream copies**. `config.json` is preserved on update; skill files are not.
 - To refresh from upstream: `npx github:jpolvora/workflow-skills update` (add `--include-new` when new top-level skill folders appeared upstream).
 - Consumers may copy or adapt this index into their own root `AGENTS.md`; keep paths relative to the install root (typically `.agents/skills/...`).
+- **Dual hub (OK):** consumer root `AGENTS.md` may stay project-specific and delegate skill routing to `.cursor/rules/index.mdc` (or equivalent). This packaged `.agents/AGENTS.md` remains the **skill catalog** for the installed hub; keep both aligned after updates.
 - **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** above). In-place edits are overwritten on update.
 - Before upstream merge to `main`, skill changes must pass **`check-harness`** (see **Pre-merge gate** above).
+- Guardrails resolution: see root [`AGENTS.md`](../AGENTS.md) § **External Dependencies** (`rules.seniorDeveloper` / `rules.karpathyGuidelines` in config).

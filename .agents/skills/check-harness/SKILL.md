@@ -57,7 +57,7 @@ flowchart LR
 1. **Repo-root-relative paths** — every proposed or corrected reference uses a relative path (e.g., `.agents/skills/01-write-plan/SKILL.md`). **Forbidden** absolute paths (`C:\Users\...\project\...`, `/home/user/...`) or author-machine dependencies.
 2. **Evidence-based proof** — each finding cites file + snippet/link verified with tools (`Read`, `Grep`, `Glob`). Do not report a broken link without confirming nonexistence on the filesystem.
 3. **Scan before edit** — Steps 1–2 are **always read-only**. Enumerate all findings and assemble the correction plan **before** any `Write`/`StrReplace`/`Delete`. Editing only in Step 3, with explicit approval.
-4. **Harness precedence** — the source of truth for routing is [`AGENTS.md`](../../../AGENTS.md); the source of truth for engineering is the guardrails/invariants skill (e.g., `.agents/skills/senior-developer/SKILL.md`) + `.mdc` rules when applicable. Skills **delegate** to `AGENTS.md` and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
+4. **Harness precedence** — the source of truth for routing is [`AGENTS.md`](../../../AGENTS.md); the source of truth for engineering is the guardrails skill resolved per [`AGENTS.md`](../../../AGENTS.md) § External Dependencies (`config.json.rules.seniorDeveloper`, then local/global `senior-developer`, then `.cursor/rules/senior-developer.mdc`) + `.mdc` rules when applicable. Skills **delegate** to `AGENTS.md` and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
 5. **Minimal diff in proposals** — prefer removing duplicates + link to canonical source rather than rewriting entire blocks.
 6. **AGENTS.md is the hub** — `AGENTS.md` concentrates routing (Layers, § Skill loading, § Task router, § Verification, § Feature workflow). `AGENTS.md` must **route** to skills, rules, harness agents, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
 
@@ -121,7 +121,7 @@ If **no** path exists, **skip** this subsection — do not invent criteria nor d
 | Finding | Example of proposed correction |
 |--------|------------------------------|
 | Sprawl | Extract format/template to sibling file (`PLAN-FORMAT.md`) with **context pointer** |
-| Duplication | Remove duplicated prose; link to canonical source (`senior-developer/SKILL.md`, sibling skill) |
+| Duplication | Remove duplicated prose; link to canonical source (`AGENTS.md` § External Dependencies / `rules.seniorDeveloper`, sibling skill) |
 | Sediment | Changelog/version notes at top → `CHANGELOG.md` or a single line |
 | Premature completion | Add checkable **completion criterion** at each step |
 | No-op | Cut identity/fluff that does not alter behavior |
@@ -199,6 +199,7 @@ For each internal reference:
 | Numeric consistency | folder `01-write-plan` vs. id `write-plan` (prefix only on filesystem) |
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative |
+| Renamed / retired skill id | Mentions of obsolete pipeline ids (e.g. `05-verify-sync-plan-us`, `us-workflow` as skill path, top-level `karpathy-guidelines/` / `spec-format/` / `azure-devops/` skill folders) while the canonical skill lives elsewhere — **critical** if in `spec-to-pr` step dispatch; else **warning** |
 
 **Resolution rule:** simulate the link **from the directory of the containing file** (as an agent would when clicking).
 
@@ -308,6 +309,7 @@ For each pair of files covering the same theme, verify:
 - **Obsolete instruction** — reference to removed artifact (orphan paths, remnants of previous stack)
 - **Inflation** — `AGENTS.md`, skill, or orchestrator repeating full skill body or indexing specs (should be index + link to skills/docs)
 - **`name:` collision** — two `SKILL.md` declaring the same `name:` (breaks skill resolution)
+- **Strict Skill and Task Folder Reference matching** — Every reference to a subagent skill or task folder in all workflow files and specifications must match the exact prefixed directory name under `skills/` (e.g., `05-verify-plan`, `07-integration-validation`, `10-update-plan-implementation`). Unprefixed, retired, or placeholder folder name references (e.g. `verify-plan`, `integration-validation`, `step-10-update-plan-implementation`, `05-verify-sync-plan-us`) are strictly forbidden and must be reported as **critical** if found in orchestrator dispatch instructions or **warning** in other documentation files.
 - **Orchestrator dependency portability** — Verify that skills that are dependencies of the project's workflow orchestrator contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from a config file or stack document so that dependencies remain portable and project-agnostic. No hardcoded project names (e.g. `Matrix`) or stack-specific build/test files/commands (e.g. `dotnet build Matrix.slnx`) are allowed in generic skills or scripts.
 - **Language (en-us) compliance** — Verify that all skill content, script comments, prompt messages, and generated artifact structures contain no Portuguese (PT-BR) words, local date representations (e.g. `AAAA-MM-DD`), or colloquialisms. Everything must be strictly in English.
 
@@ -619,11 +621,11 @@ Otherwise — **correction plan** (mandatory before editing):
 ```
 .cursorrules
 └── AGENTS.md
-    ├── senior-developer/SKILL.md (auto)
+    ├── senior-developer (resolve via config / External Dependencies — optional)
     ├── spec-to-pr/extra-skills/gabarito/SKILL.md (auto)
     ├── spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md (auto)
     ├── spec-to-pr/extra-skills/caveman/SKILL.md (auto)
-    ├── ef-migrations.mdc (Layer 0)
+    ├── ef-migrations.mdc (Layer 0, optional)
     └── MEMORY.md (session start, before first implementation)
 ```
 
