@@ -105,11 +105,32 @@ Enter 'y' or 'i' to install the selected skills.
 Enter 'q' to quit.
 ------------------------------------------------------------
 
-  [ ]  1) code-review
-  [ ]  2) fix-pr
-  [ ]  3) karpathy-guidelines
-  [ ]  4) plan-us
-  [ ]  5) spec-to-pr
+  [ ]  1) 00-write-spec
+  [ ]  2) 01-write-plan
+  [ ]  3) 02-interview
+  [ ]  4) 03-plan-to-tasks
+  [ ]  5) 04-implement-tasks
+  [ ]  6) 05-verify-plan
+  [ ]  7) 06-code-review
+  [ ]  8) 07-integration-validation
+  [ ]  9) 08-fix-pr
+  [ ] 10) 09-goal-fix-pr
+  [ ] 11) 10-update-plan-implementation
+  [ ] 12) 11-ship-pr
+  [ ] 13) azure-devops-provider
+  [ ] 14) check-harness
+  [ ] 15) domain-review
+  [ ] 16) dotnet-security-performance-review
+  [ ] 17) github-provider
+  [ ] 18) local-spec-provider
+  [ ] 19) mobile-first-design
+  [ ] 20) multi-domain-review
+  [ ] 21) secrets-leak-review
+  [ ] 22) security-review
+  [ ] 23) spec-to-pr
+  [ ] 24) taste-skill
+  [ ] 25) tdd-sdd-ddd-reviewer
+  [ ] 26) write-a-skill
 ```
 
 * **Selection Toggle:** Type the number corresponding to the skill and press `Enter` to toggle on/off (`[ ]` ↔ `[x]`).
@@ -147,17 +168,58 @@ npm run tests -- --local
 
 ## 🗂️ Available Skills Catalog
 
-> ⚠️ This section contains legacy skills. For the **complete and updated index** with all skills, layers, task router, and auto-load, see [`AGENTS.md`](AGENTS.md).
+> 📖 For the **complete routing index** with layers, task router, auto-load rules, and skill loading precedence, see [`AGENTS.md`](AGENTS.md). The interactive catalog website is at [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills).
 
-Below is the simplified index of agent guidelines included in this repository:
+### Harness & Infrastructure
 
-| Skill | Version | Description |
+| Skill | Description |
+| :--- | :--- |
+| [`check-harness`](.agents/skills/check-harness/SKILL.md) | Audit harness integrity — routing, broken links, orphan skills, portability |
+| [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) | Create new skills with proper structure and progressive disclosure |
+
+### Engineering Standards
+
+| Skill | Description |
+| :--- | :--- |
+| [`mobile-first-design`](.agents/skills/mobile-first-design/SKILL.md) | Responsive mobile-first design guidelines |
+| [`design-taste-frontend`](.agents/skills/taste-skill/SKILL.md) | Anti-slop frontend — landing pages, portfolios, redesigns |
+
+### `spec-to-pr` Pipeline (Steps 00–11)
+
+| Skill | Step(s) | Description |
 | :--- | :--- | :--- |
-| **`code-review`** | 1.0 | **Local Code Review:** Performs deep analysis comparing the current branch with the main one. Follows a rigorous two-phase approach (triage ➔ investigation with structured evidence and hypothesis elimination). |
-| **`fix-pr`** | 1.0 | **Automatic PR Fixer:** Critically analyzes code review comments and threads on PRs (e.g., Azure DevOps), decides which comments make sense, and applies surgical corrections safely. |
-| **`karpathy-guidelines`** | 1.0 | **Karpathy Guidelines:** Set of behavioral guardrails to reduce common LLM failures (hallucinations, incomplete edits, code shortcuts), inspired by Andrej Karpathy's philosophy. |
-| **`plan-us`** | 2.0 | **User Story Planner:** Creates detailed implementation plans based on User Stories. Auto-detects and dynamically adapts to the project ecosystem architecture (e.g., ABP/.NET/Angular, NextJS/React, etc.). |
-| **`spec-to-pr`** | 8.0 | **End-to-End Delivery Orchestrator:** Manages the complete delivery flow of a User Story across 7 phases (F0–F6). Supports dry-run, automatic mode, step isolation (worktrees), and state hygiene protocol. |
+| [`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md) | Orchestrator | Full Spec → PR FSM (F0–F6, Steps 0–13) |
+| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) | 0 | Draft canonical spec from feature description |
+| [`01-write-plan`](.agents/skills/01-write-plan/SKILL.md) | 1 | Generate implementation plan from spec |
+| [`02-interview`](.agents/skills/02-interview/SKILL.md) | 2 | Audit and refine plan until shared understanding |
+| [`03-plan-to-tasks`](.agents/skills/03-plan-to-tasks/SKILL.md) | 3 | Break plan into atomic DAG tasks |
+| [`04-implement-tasks`](.agents/skills/04-implement-tasks/SKILL.md) | 5, 10 | Execute or fix code following plan/DAG |
+| [`05-verify-plan`](.agents/skills/05-verify-plan/SKILL.md) | 6 | Verify deliverables against acceptance criteria |
+| [`06-code-review`](.agents/skills/06-code-review/SKILL.md) | 9 | Two-phase code review (triage → investigation) |
+| [`07-integration-validation`](.agents/skills/07-integration-validation/SKILL.md) | 11 | Pre-PR integration test battery |
+| [`08-fix-pr`](.agents/skills/08-fix-pr/SKILL.md) | 13 (via ship-pr) | Resolve active PR review threads |
+| [`09-goal-fix-pr`](.agents/skills/09-goal-fix-pr/SKILL.md) | 13 (via ship-pr) | Loop fix-pr until zero open threads |
+| [`10-update-plan-implementation`](.agents/skills/10-update-plan-implementation/SKILL.md) | Post-workflow | Capture QA findings and apply plan deltas |
+| [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | 13 | End-to-end PR delivery and merge |
+
+### Providers
+
+| Skill | Description |
+| :--- | :--- |
+| [`github-provider`](.agents/skills/github-provider/SKILL.md) | GitHub issue→spec; auth; PR create/threads/merge |
+| [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) | Azure DevOps work item→spec; PAT auth; PR create/threads/merge |
+| [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Local `*.spec.md` detect/register; PR via configured SCM |
+
+### Review & Audit
+
+| Skill | Description |
+| :--- | :--- |
+| [`security-review`](.agents/skills/security-review/SKILL.md) | Security review (OWASP, injection, XSS, auth, crypto) |
+| [`dotnet-security-performance-review`](.agents/skills/dotnet-security-performance-review/SKILL.md) | C# security and performance review (login, auth, EF) |
+| [`tdd-sdd-ddd-reviewer`](.agents/skills/tdd-sdd-ddd-reviewer/SKILL.md) | Architectural audit (Clean Architecture, TDD, DDD) |
+| [`domain-review`](.agents/skills/domain-review/SKILL.md) | Domain/bounded-context review |
+| [`multi-domain-review`](.agents/skills/multi-domain-review/SKILL.md) | Batch review of multiple domains |
+| [`secrets-leak-review`](.agents/skills/secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan |
 
 ---
 
