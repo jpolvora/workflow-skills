@@ -168,13 +168,14 @@ function readFrontmatter(filePath) {
         }
       } else if (inDesc) {
         if (line.startsWith(' ') || line.startsWith('\t')) {
-          descLines.push(line.trimEnd());
+          const trimmed = line.trim();
+          if (trimmed) descLines.push(trimmed);
         } else {
           break;
         }
       }
     }
-    description = descLines.join(' ').trim();
+    description = descLines.join(' ').replace(/\s+/g, ' ').trim();
   }
 
   const v = raw.match(/^version:\s*(.+)$/m);
