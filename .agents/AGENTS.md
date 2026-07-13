@@ -19,7 +19,7 @@ This file is a **brief index / routing table** for skills shipped in this packag
 
 ## Rules for skills under `skills/` (`.agents/skills/*`)
 
-These rules apply to **every** skill shipped in this package (pipeline, providers, review, utility). They mirror the portability and integrity expectations enforced by [`check-harness`](skills/check-harness.md).
+These rules apply to **every** skill shipped in this package (pipeline, providers, review, utility). They mirror the portability and integrity expectations enforced by [`check-harness`](skills/check-harness/SKILL.md).
 
 ### Portability and genericity (mandatory)
 
@@ -48,7 +48,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 
 Before committing skill changes and before merging to **`main`** on `workflow-skills`:
 
-1. Load and run [`skills/check-harness.md`](skills/check-harness.md) (Phases 0–5c scan → Phase 6 correction plan → Phase 7 only with approval).
+1. Load and run [`skills/check-harness/SKILL.md`](skills/check-harness/SKILL.md) (Phases 0–5c scan → Phase 6 correction plan → Phase 7 only with approval).
 2. The audit **must** cover at least: routing vs disk inventory, broken/relative links, absolute paths, redundancy / progressive disclosure, **portability** (no hardcoded project metadata; parameterization via `config.json` / stack docs), and **en-us** compliance.
 3. Do **not** merge skill PRs to `main` while critical harness findings remain open.
 4. After harness-affecting changes, also regenerate the site catalog when applicable (`node bin/build-site.js` in the upstream repo) and keep root `AGENTS.md` + this packaged index in sync (**Drift check** above).
@@ -71,7 +71,7 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `check-harness` | `skills/check-harness.md` | Audit harness integrity (routing, links, redundancy) |
+| `check-harness` | `skills/check-harness/SKILL.md` | Audit harness integrity (routing, links, redundancy) |
 | `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create skills with structure and progressive disclosure |
 
 ### Engineering standards

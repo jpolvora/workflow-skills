@@ -23,7 +23,8 @@
   },
   "files": [
     "bin/",
-    ".agents/skills/"
+    ".agents/skills/",
+    ".agents/AGENTS.md"
   ],
   "type": "module"
 }

@@ -101,7 +101,7 @@ Phase 4 detects new or removed rules that diverge from declared routing.
 
 ### 3. Skills (`.agents/skills/`)
 
-All project skills live under `.agents/skills/`. Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` (like this `check-harness.md`) are also treated as skills in the scan.
+All project skills live under `.agents/skills/`. Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` are also treated as skills in the scan when present.
 
 **Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively and `.md` files with frontmatter in `skills/`, comparing against declared routing in `AGENTS.md`. Do not rely on hardcoded lists — the disk is the truth.
 
@@ -701,7 +701,7 @@ If the user requests, save to:
 
 | Role | Artifact | Function |
 |-------|----------|--------|
-| **This agent** | `.agents/skills/check-harness.md` | Audit meta-harness health |
+| **This agent** | `.agents/skills/check-harness/SKILL.md` | Audit meta-harness health |
 | **E2E Pipeline** | `.agents/spec-to-pr/` | E2E agent — consumes skills |
 | **Standalone skills** | `.agents/skills/{NN}-*/SKILL.md` and `.agents/skills/*/SKILL.md` | Individually invocable knowledge/workflow |
 | **Rules** | `.cursor/rules/*.mdc` | Narrow-scope engineering rules; complement skills and hub |

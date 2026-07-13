@@ -99,7 +99,7 @@ Whenever skills are created, modified, or updated, or any harness file is change
 
 After a harness change, always evaluate all three:
 
-1. **check-harness** — load `.agents/skills/check-harness.md` and execute the scan phases (Phases 0–5c) followed by the correction plan (Phase 6).
+1. **check-harness** — load `.agents/skills/check-harness/SKILL.md` and execute the scan phases (Phases 0–5c) followed by the correction plan (Phase 6).
 2. **Site catalog** — if skills, layers, or routing tables changed, regenerate `docs/index.html` with `node bin/build-site.js` (see Verification §4).
 3. **README.md** — if the change affects install/usage, skill catalog, workflows, or consumer-facing docs, update the root `README.md` to stay in sync with `AGENTS.md`.
 
@@ -113,7 +113,7 @@ After a harness change, always evaluate all three:
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `check-harness` | `.agents/skills/check-harness.md` | Audit harness integrity (AGENTS.md, skills, rules) |
+| `check-harness` | `.agents/skills/check-harness/SKILL.md` | Audit harness integrity (AGENTS.md, skills, rules) |
 | `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Create new skills with structure and progressive disclosure |
 | `using-superpowers` | `(global skill)` | Agent onboarding: skill discovery via Skill tool |
 
@@ -216,7 +216,7 @@ Before closing a task or committing, run the following verification steps:
 ### 1. Harness Integrity
 ```bash
 # Check harness integrity (paths, routing, redundancy)
-# Load .agents/skills/check-harness.md and execute Phases 0–5c
+# Load .agents/skills/check-harness/SKILL.md and execute Phases 0–5c
 ```
 
 ### 2. Automated Installation & Packaging Verification

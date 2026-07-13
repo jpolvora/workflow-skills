@@ -60,7 +60,11 @@ This hub is designed to host **multiple workflows** over time. Each workflow is 
 
 ## 🛠️ How to Install and Update Skills
 
-You can install or update the agent guidelines (**skills**) directly into the `.agents/skills` folder of your local development project in two ways:
+You can install or update the agent guidelines (**skills**) directly into the `.agents/skills` folder of your local development project.
+
+**Preferred (Node / npx):** interactive install, `update`, `update --include-new`, config.json preservation, and packaged `.agents/AGENTS.md`.
+
+**Legacy (bash):** [`install-skills.sh`](./install-skills.sh) remains available for curl-based installs, but prefer the Node CLI for updates. The bash script preserves `config.json` on overwrite and installs `.agents/AGENTS.md`, but does not implement `update --include-new` or rename migration.
 
 ### Option A: Via NPX (Recommended)
 If you have Node.js installed, you can run the CLI directly via `npx` natively and cross-platform:
