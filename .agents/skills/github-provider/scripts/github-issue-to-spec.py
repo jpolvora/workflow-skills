@@ -8,7 +8,7 @@ Usage:
   python github-issue-to-spec.py \
     --input .cursor/plans/us-1234/step-00-us-1234.issue.json \
     --output .cursor/plans/us-1234/step-00-us-1234.spec.md \
-    --repo jpolvora/matrix
+    --repo {owner}/{repo}
 
 The `--input` option also accepts `-` to read JSON from stdin.
 """

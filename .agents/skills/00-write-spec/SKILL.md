@@ -81,7 +81,7 @@ specDate: YYYY-MM-DD
      --mirror
    ```
 
-   That script normalizes `source: local` and writes `{plans.specsDir}/{slug}.spec.md` (default `specs/`). Canonical path remains the `step-00-` file under `{us-dir}`.
+   That script normalizes `source: local` (in-place when input is already the canonical `step-00-` file) and writes `{plans.specsDir}/{slug}.spec.md` (default `specs/`). Use `--force` only when overwriting an existing mirror that differs. Canonical path remains the `step-00-` file under `{us-dir}`.
 5. **Handoff:** Return the **canonical** path (`{us-dir}/step-00-{slug}.spec.md`) so that [01-write-plan](../01-write-plan/SKILL.md) can pick it up. Mention the mirror path only if one was written.
 
 ---

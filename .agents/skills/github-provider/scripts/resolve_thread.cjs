@@ -25,7 +25,7 @@ function resolveToken() {
 }
 
 function buildResolutionBody(note) {
-  const explanation = note?.trim() || 'Issue corrigida na iteração atual.';
+  const explanation = note?.trim() || 'Issue fixed in the current iteration.';
   return [RESOLUTION_MARKER, '', explanation].join('\n');
 }
 

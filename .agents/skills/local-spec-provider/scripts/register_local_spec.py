@@ -260,7 +260,10 @@ def main() -> int:
 
     us_dir = plans_dir(cfg) / slug
     dest = us_dir / f"step-00-{slug}.spec.md"
-    action = write_if_allowed(dest, normalized, force=args.force)
+    # When input is already the canonical step-00 path, allow in-place
+    # normalize rewrite so --mirror happy path works without --force.
+    same_as_dest = src.resolve() == dest.resolve()
+    action = write_if_allowed(dest, normalized, force=args.force or same_as_dest)
 
     mirror_path = None
     mirror_action = None

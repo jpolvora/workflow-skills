@@ -141,6 +141,55 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   ) {
     fail('Missing canonical ado-workitem-to-spec.py under azure-devops-provider/scripts');
   }
+  // local-spec-provider scripts (AC1)
+  for (const rel of [
+    '.agents/skills/local-spec-provider/scripts/detect_specs_dir.py',
+    '.agents/skills/local-spec-provider/scripts/register_local_spec.py'
+  ]) {
+    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
+  }
+  // 08-fix-pr → provider thread/context shims (AC9)
+  for (const rel of [
+    '.agents/skills/08-fix-pr/scripts/fetch_threads.cjs',
+    '.agents/skills/08-fix-pr/scripts/resolve_thread.cjs',
+    '.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py'
+  ]) {
+    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing 08-fix-pr shim: ${rel}`);
+  }
+  // Cheap shim --help / usage smoke: proves parents[2] / relative forward resolves
+  {
+    const py = process.platform === 'win32' ? 'python' : 'python3';
+    const shimHelps = [
+      [py, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
+      [py, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
+      [py, '.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py', '--help']
+    ];
+    for (const [bin, rel, flag] of shimHelps) {
+      const r = cp.spawnSync(bin, [path.join(parentDir, rel), flag], {
+        encoding: 'utf8',
+        cwd: parentDir
+      });
+      if (r.status !== 0) {
+        fail(`Shim --help failed (${rel}): status=${r.status}\n${r.stderr || r.stdout}`);
+      }
+    }
+    // CJS shims have no --help; missing args → Usage from canonical (exit 1) proves forward
+    for (const rel of [
+      '.agents/skills/08-fix-pr/scripts/resolve_thread.cjs',
+      '.agents/skills/08-fix-pr/scripts/fetch_threads.cjs'
+    ]) {
+      const r = cp.spawnSync(process.execPath, [path.join(parentDir, rel)], {
+        encoding: 'utf8',
+        cwd: parentDir
+      });
+      const out = `${r.stdout || ''}${r.stderr || ''}`;
+      if (r.status === 0) fail(`Expected usage exit from ${rel}, got 0`);
+      if (!/Usage:/i.test(out)) {
+        fail(`Shim forward smoke failed for ${rel} (no Usage output):\n${out}`);
+      }
+    }
+    ok('Shim --help / usage forward smoke passed');
+  }
   if (!artifacts.includes('azure-devops') && !artifacts.includes('Azure DevOps')) {
     fail('ARTIFACTS.md must document Azure DevOps entry');
   }
@@ -414,14 +463,43 @@ child.on('close', (code) => {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
     }
   }
-  // AC9 shims must ship to consumers
+  // AC9 shims + local-spec scripts must ship to consumers
   for (const rel of [
     path.join('spec-to-pr', 'scripts', 'github-issue-to-spec.py'),
-    path.join('spec-to-pr', 'scripts', 'ado-workitem-to-spec.py')
+    path.join('spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
+    path.join('local-spec-provider', 'scripts', 'detect_specs_dir.py'),
+    path.join('local-spec-provider', 'scripts', 'register_local_spec.py'),
+    path.join('08-fix-pr', 'scripts', 'fetch_threads.cjs'),
+    path.join('08-fix-pr', 'scripts', 'resolve_thread.cjs'),
+    path.join('08-fix-pr', 'scripts', 'fix_pr_azure_context.py')
   ]) {
     if (!fs.existsSync(path.join(testSkillsDir, rel))) {
-      fail(`Converter shim missing in consumer install: ${rel}`);
+      fail(`Provider/shim script missing in consumer install: ${rel}`);
     }
+  }
+  // Consumer-side cheap shim forward smoke (installed tree)
+  {
+    const py = process.platform === 'win32' ? 'python' : 'python3';
+    const helpShim = path.join(testSkillsDir, 'spec-to-pr', 'scripts', 'github-issue-to-spec.py');
+    const helpResult = cp.spawnSync(py, [helpShim, '--help'], {
+      encoding: 'utf8',
+      cwd: path.join(__dirname)
+    });
+    if (helpResult.status !== 0) {
+      fail(
+        `Consumer shim --help failed: status=${helpResult.status}\n${helpResult.stderr || helpResult.stdout}`
+      );
+    }
+    const cjsShim = path.join(testSkillsDir, '08-fix-pr', 'scripts', 'resolve_thread.cjs');
+    const cjsResult = cp.spawnSync(process.execPath, [cjsShim], {
+      encoding: 'utf8',
+      cwd: path.join(__dirname)
+    });
+    const cjsOut = `${cjsResult.stdout || ''}${cjsResult.stderr || ''}`;
+    if (cjsResult.status === 0 || !/Usage:/i.test(cjsOut)) {
+      fail(`Consumer CJS shim forward smoke failed:\n${cjsOut}`);
+    }
+    ok('Consumer shim forward smoke passed');
   }
   ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
   // --- Phase 2b: rename migration us-workflow → spec-to-pr ---
