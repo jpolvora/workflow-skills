@@ -8,6 +8,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, '..');
 
+// --- Version Bumping ---
+const pkgPath = path.join(root, 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+const currentVersion = pkg.version;
+const versionParts = currentVersion.split('.').map(Number);
+versionParts[2] += 1; // Bump patch version
+const newVersion = versionParts.join('.');
+pkg.version = newVersion;
+fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+console.log(`Bumping package.json version: ${currentVersion} -> ${newVersion}`);
+
 // --- 1. Parse AGENTS.md layer tables ---
 const agentsMd = fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf-8');
 
@@ -281,6 +292,12 @@ const totalSkills = sorted
 html = html.replace(
   /(<span class="badge">)\d+( skills<\/span>)/,
   `$1${totalSkills}$2`
+);
+
+// Replace version in footer
+html = html.replace(
+  /(<footer>\s*<p>MIT &mdash; <a href="https:\/\/github.com\/jpolvora\/workflow-skills">jpolvora\/workflow-skills<\/a>)( &mdash; v\d+\.\d+\.\d+)?(\s*<\/p>\s*<\/footer>)/,
+  `$1 &mdash; v${newVersion}$3`
 );
 
 fs.writeFileSync(indexPath, html);

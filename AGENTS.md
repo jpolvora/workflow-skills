@@ -122,6 +122,7 @@ After a harness change, always evaluate all three:
 | Skill | Path | Description |
 |-------|------|-------------|
 | `check-harness` | `.agents/skills/check-harness/SKILL.md` | Audit harness integrity (AGENTS.md, skills, rules) |
+| `check-workflows` | `.agents/skills/check-workflows/SKILL.md` | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
 | `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Create new skills with structure and progressive disclosure |
 | `using-superpowers` | `(global skill)` | Agent onboarding: skill discovery via Skill tool |
 
@@ -211,6 +212,7 @@ After a harness change, always evaluate all three:
 | I want to format/review spec | `spec-format` |
 | I want to create new skill | `write-a-skill` |
 | I want to audit harness | `check-harness` |
+| I want to validate/check workflow processes | `check-workflows` |
 | I want to grill plan against docs | `grill-with-docs` |
 | I want to do frontend design | `design-taste-frontend` or `mobile-first-design` |
 | I want to record learning | `learning` |

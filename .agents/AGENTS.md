@@ -81,6 +81,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | Skill | Path | Description |
 |-------|------|-------------|
 | `check-harness` | `skills/check-harness/SKILL.md` | Audit harness integrity (routing, links, redundancy) |
+| `check-workflows` | `skills/check-workflows/SKILL.md` | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
 | `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create skills with structure and progressive disclosure |
 
 ### Engineering standards

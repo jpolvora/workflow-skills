@@ -31,7 +31,7 @@
   <h1>Workflow <span>Skills</span></h1>
   <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
   <div class="badges">
-    <span class="badge">34 skills</span>
+    <span class="badge">35 skills</span>
     <span class="badge">6 layers</span>
     <span class="badge">MIT license</span>
     <span class="badge">npx github:jpolvora/workflow-skills</span>
@@ -43,12 +43,17 @@
 
   <!-- Layer 0 -->
   <div class="layer">
-    <h3>Layer 0 — Harness & Agent Infrastructure <span class="count">(2)</span></h3>
+    <h3>Layer 0 — Harness & Agent Infrastructure <span class="count">(3)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
         <div class="name">check-harness</div>
         <div class="desc">Audit harness integrity — validates AGENTS.md routing, detects broken links, orphan skills/rules, absolute paths, redundancy, and portability issues. Read-only scan → correction plan → apply with approval.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/check-workflows/SKILL.md">
+        <div class="name">check-workflows</div>
+        <div class="desc">Auto-check workflow processes (spec-to-pr & spec-to-pr-lite) for step continuity, config sharing, state isolation, compatibility, and provider references. Use when validating orchestrators, adding steps, or testing workflow changes.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/check-workflows/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/write-a-skill/SKILL.md">
         <div class="name">write-a-skill</div>
@@ -273,7 +278,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.2</p>
 </footer>
 
 <!-- Modal -->
