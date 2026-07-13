@@ -46,6 +46,18 @@ DEFAULT_WORK_ITEM_FIELDS = ",".join(
 )
 
 
+def ensure_utf8_stdio() -> None:
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not callable(reconfigure):
+            continue
+        try:
+            reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 def find_repo_root(start: Path) -> Path:
     current = start.resolve()
     for candidate in [current, *current.parents]:
@@ -448,7 +460,26 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def print_collect_summary(payload: dict[str, Any]) -> None:
+    """Print counts to stderr so agents need not re-open UTF-8 JSON with locale encoding."""
+    threads = payload.get("threads") or []
+    active = payload.get("activeThreads") or []
+    statuses: dict[str, int] = {}
+    for thread in threads:
+        status = thread.get("status")
+        key = str(status) if status is not None else "null"
+        statuses[key] = statuses.get(key, 0) + 1
+    summary = {
+        "threads": len(threads),
+        "activeThreads": len(active),
+        "statuses": statuses,
+        "topKeys": sorted(payload.keys()),
+    }
+    print(f"collect-summary: {json.dumps(summary, ensure_ascii=False)}", file=sys.stderr)
+
+
 def main(argv: list[str]) -> int:
+    ensure_utf8_stdio()
     args = parse_args(argv)
     repo_root = find_repo_root(Path(args.repo_root) if args.repo_root else Path.cwd())
     repository = args.repository or detect_repository(repo_root)
@@ -462,6 +493,7 @@ def main(argv: list[str]) -> int:
             output_path.write_text(text + "\n", encoding="utf-8")
         else:
             print(text)
+        print_collect_summary(payload)
         return 0
 
     if args.action == "resolve-thread":

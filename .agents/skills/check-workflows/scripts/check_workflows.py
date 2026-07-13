@@ -8,6 +8,19 @@ import sys
 import re
 from pathlib import Path
 
+
+def ensure_utf8_stdio() -> None:
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not callable(reconfigure):
+            continue
+        try:
+            reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 # Paths
 REPO_ROOT = Path(__file__).resolve().parents[4]
 SKILLS_DIR = REPO_ROOT / ".agents" / "skills"
@@ -118,8 +131,7 @@ def check_state_isolation():
     return errors
 
 def main():
-    if sys.platform == "win32":
-        sys.stdout.reconfigure(encoding="utf-8")
+    ensure_utf8_stdio()
 
     print("=" * 60)
     print("  check-workflows: Validation Scan")

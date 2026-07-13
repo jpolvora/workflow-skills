@@ -144,7 +144,9 @@ python .agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py coll
   --output .agents/skills/08-fix-pr/runs/pr-{PR_ID}/context.json
 ```
 
-Return structured threads (`threadId`, path, line, comments, status) to `08-fix-pr` / `09-goal-fix-pr`. Active-thread count for goal-loop = threads with status in active/pending (per script normalization).
+Return structured threads (`threadId`, path, line, comments, status) to `08-fix-pr` / `09-goal-fix-pr`. Active-thread count for goal-loop = `len(activeThreads)` from the payload (status in active/pending per script normalization). Collect also prints `collect-summary:` on stderr (`threads`, `activeThreads`, `statuses`).
+
+`context.json` is UTF-8. On Windows, re-reading it requires `encoding="utf-8"` — never bare `open(path)` / locale `cp1252`.
 
 ### `resolve-thread`
 

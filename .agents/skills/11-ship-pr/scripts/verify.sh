@@ -20,26 +20,34 @@ frontend_touched() {
   } | grep -q '^web/'
 }
 
-read_config() {
+# Always UTF-8 — bare open() uses Windows locale (cp1252) and can UnicodeDecodeError.
+read_verification_config() {
   python3 -c "
-import json, sys
-with open('$config_file') as f:
-    c = json.load(f)
-v = c.get('verification', {})
-s = c.get('stack', {})
-print(v.get('$1', ''))
-print(s.get('frontend', {}).get('sourceDir', 'web').split('/')[0])
+from pathlib import Path
+import json
+cfg = Path(r'''$config_file''')
+c = json.loads(cfg.read_text(encoding='utf-8'))
+v = c.get('verification', {}) or {}
+s = (c.get('stack', {}) or {}).get('frontend', {}) or {}
+print(v.get('backendBuild') or '')
+print(v.get('backendTest') or '')
+print(v.get('frontendBuild') or '')
+print(v.get('frontendTest') or '')
+print((s.get('sourceDir') or 'web').split('/')[0])
 "
 }
 
 echo "==> verify (base: $base_branch)"
 
 if [ -f "$config_file" ]; then
-  backend_build=$(python3 -c "import json;f=open('$config_file');c=json.load(f);print(c['verification']['backendBuild'])" 2>/dev/null || echo "")
-  backend_test=$(python3 -c "import json;f=open('$config_file');c=json.load(f);print(c['verification']['backendTest'])" 2>/dev/null || echo "")
-  frontend_build=$(python3 -c "import json;f=open('$config_file');c=json.load(f);print(c['verification']['frontendBuild'])" 2>/dev/null || echo "")
-  frontend_test=$(python3 -c "import json;f=open('$config_file');c=json.load(f);print(c['verification']['frontendTest'])" 2>/dev/null || echo "")
-  frontend_dir=$(python3 -c "import json;f=open('$config_file');c=json.load(f);print(c['stack']['frontend']['sourceDir'].split('/')[0])" 2>/dev/null || echo "web")
+  {
+    read -r backend_build
+    read -r backend_test
+    read -r frontend_build
+    read -r frontend_test
+    read -r frontend_dir
+  } < <(read_verification_config)
+  frontend_dir="${frontend_dir:-web}"
 else
   echo "==> No config.json found — using fallback commands"
   backend_build="dotnet build"
