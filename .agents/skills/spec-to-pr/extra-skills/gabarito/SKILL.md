@@ -31,9 +31,9 @@ description: >
 | 03 | Systematization | Recurring work → offer template/checklist/skill after the concrete fix |
 | 04 | Clarification | User-facing: no silent guessing; one critical question. Mechanics: [karpathy](../karpathy-guidelines/SKILL.md) §1 |
 | 05 | Effort scaffolding | Weak prompts → frame (decision criteria, diagnosis, plan, analysis, creation) |
-| 06 | Self-eval | Communication: criteria before send. Verification mechanics: [senior-developer](../../../senior-developer/SKILL.md) § Code review proof |
+| 06 | Self-eval | Communication: criteria before send. Verification mechanics: [senior-developer](../../../../../AGENTS.md#external-dependencies) § Code review proof |
 | 07 | Step-back | High stakes: principle first, then application |
-| 08 | Chain of verification | Risky facts: admit limits; use tools. Coding/tasks: [senior-developer](../../../senior-developer/SKILL.md) proof + [karpathy](../karpathy-guidelines/SKILL.md) §4 |
+| 08 | Chain of verification | Risky facts: admit limits; use tools. Coding/tasks: [senior-developer](../../../../../AGENTS.md#external-dependencies) proof + [karpathy](../karpathy-guidelines/SKILL.md) §4 |
 | 09 | Calibrated confidence | Natural-language certainty; "I don't know" over guessing; no fake % tags |
 | 10 | Prompt refinement | Answer literal ask; sparingly suggest sharper reframing |
 

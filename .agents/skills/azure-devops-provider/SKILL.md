@@ -53,7 +53,7 @@ Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.acti
 - **CLI (preferred for PR create/merge):** Azure CLI (`az`) with Azure DevOps extension when using `az repos pr` flows.
 - **Auth (`validate-auth`):** PAT from env — prefer `issueTrackers.azureDevOps.patEnvVar` (default `ADO_PAT`), then `ADO_PAT`, then `AZURE_DEVOPS_PAT`. Never commit tokens.
 - **Config:** `issueTrackers.azureDevOps.enabled` with non-empty `org` / `project` (and optional `apiBase`), and/or `providers.active` / `providers.scm` set to `azure-devops` in `spec-to-pr/config.json`.
-- **Legacy fallback only:** if `issueTrackers.azureDevOps` is missing fields, scripts may read `.agents/skills/azure-devops/azure-devops.config.json` (+ optional `.secret`). Prefer config.json + env PAT; do not revive a separate azure-devops skill layout for new consumers.
+- **Legacy fallback only:** if `issueTrackers.azureDevOps` is missing fields, scripts may read `.agents/skills/azure-devops/azure-devops.config.json` (+ optional `.secret`) **when that path exists**. If it does not, soft-warn and use only `spec-to-pr/config.json` + env PAT — **do not** recreate a separate `azure-devops` skill layout for new consumers.
 
 On auth or config failure: **STOP** with fix instructions from `validate-auth`. Do not silently fall back to another provider.
 

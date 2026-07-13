@@ -23,7 +23,7 @@ upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflo
 
 ## Native tool contract
 
-Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](.agents/skills/spec-to-pr/config.json). Never narrate undone work.
+Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](./config.json) (repo-root path: `.agents/skills/spec-to-pr/config.json`). Never narrate undone work.
 
 | Intent | Tool alias | Native | Rule |
 |--------|------------|--------|------|
@@ -814,6 +814,8 @@ Delegated to [`setup.md`](setup.md) § Bootstrap & Entry. Before Step 0, the orc
 
 ## Step instructions
 
+> **Consistency:** the Skill map above (`05-verify-plan` → Step 6, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
+
 | Step | Action | Artifact |
 |------|--------|----------|
 | 0 | Entry gate (AskQuestion). US/spec provided → skip to Step 1. No args → free-text description → `Task` `00-write-spec`. Register specPath. | `step-00-{slug}.spec.md` |
@@ -822,7 +824,7 @@ Delegated to [`setup.md`](setup.md) § Bootstrap & Entry. Before Step 0, the orc
 | 3 | `Task` `03-plan-to-tasks`; detect plan size → `execMode`. Sequential → skip DAG. Parallel → DAG. | `step-03-{slug}.plan.exec.md`, `step-03-{slug}.exec.dag.json` |
 | 4† | Model sub-gate F1→F2 | not in completedSteps |
 | 5 | `Task` `04-implement-tasks` mode build; worktree. `sequential` → single Task. `parallel` → DAG ≤3/level. | verification |
-| 6 | `Task` `05-verify-sync-plan-us` readonly | `step-06-{slug}.plan.report.md` |
+| 6 | `Task` `05-verify-plan` readonly | `step-06-{slug}.plan.report.md` |
 | 7 | AskQuestion G2-code → Shell build/test → `git commit` code `feat(us-{id}): US {id} implementation` | commit; no `.cursor/plans/` |
 | 8† | Model sub-gate F3→F4 | not in completedSteps |
 | 9 | `Task` `06-code-review`; scoped diff per `config.json.rules.stackFile` | score ≥6 or "No feedback" |

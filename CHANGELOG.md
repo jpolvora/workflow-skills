@@ -1,5 +1,10 @@
 # Changelog
 
+### 2026-07-13 — Consumer audit follow-ups (portability + rename residue)
+- **Prompt**: Promote generic harness fixes from FiscalWR check-harness audit into workflow-skills.
+- **Done**: Fixed `spec-to-pr` Step 6 dispatch (`05-verify-plan`); corrected relative links (`plan-delta-template`, config.json links inside skill); pointed karpathy/senior-developer refs at shipped extra-skills + `AGENTS.md` § External Dependencies; fixed UTF-8 `§`/`·`; updated `config.json.example` karpathy path; documented dual-hub consumers; soft-warn ADO legacy fallback; added `specs/domains/index.md.example`; check-harness detects retired skill ids.
+- **Result**: Pending local validation / commit by maintainer.
+
 ### 2026-07-12 — Spec entry: GitHub, Azure DevOps, hand-written
 - **Prompt**: Ensure compatibility with gh, ADO, and hand-written specs.
 - **Done**: Added `ado-workitem-to-spec.py`; expanded Specification Protocol with concrete fetch/register steps for GitHub (`gh` + `github-issue-to-spec.py`), Azure DevOps (`ADO {id}` / `{org}/{project}#{id}`), and local `*.spec.md` copy/normalize; updated ARTIFACTS, FAQ, README, spec-format, config.example.
