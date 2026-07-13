@@ -94,8 +94,9 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 - Automatic push to remote (only with explicit consent at Step 12)
 - Commit without explicit G2 gate (Steps 7, 10, 11)
 - Infer "yes" when the user cancels an `AskQuestion` (HS-1)
+- Skip native `AskQuestion` and jump straight to a markdown “reply with 1/2/3” menu in normal mode (must **probe by invoking**; fallback only after explicit tool failure — [`SKILL.md`](../SKILL.md) § AskQuestion requirement)
 
-**Evidence:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder.
+**Evidence:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder, § AskQuestion requirement.
 
 ---
 
@@ -720,6 +721,10 @@ Every **Transition Gate** (after each step) includes a **Switch model and advanc
 ### What happens if I cancel an AskQuestion?
 
 The orchestrator **never infers "yes"**. HS-1 activates: stop, re-present the gate with a warning.
+
+### AskQuestion is missing / the agent only prints 1/2/3
+
+In **normal** mode the orchestrator must **call** the native `AskQuestion` tool every gate (probe → invoke). Markdown menus are allowed **only** after an explicit invoke failure (`Tool not found: AskQuestion`, etc.), logged as `askquestion-unavailable`. If the current model never exposes the tool, switch to Claude/GPT or Plan mode for the picker UI. Consumers can also install `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` into `.cursor/rules/` (setup step 1a).
 
 ### Step 11 wants to use the browser but I'm on auto/dry-run
 

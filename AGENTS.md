@@ -243,6 +243,14 @@ node bin/build-site.js
 ```
 Commit the updated `docs/index.html` along with your source changes.
 
+### 5. Active `.cursor/rules/` in this repo
+
+| Rule | Path | Scope |
+|------|------|-------|
+| `ask-question-gates.mdc` | `.cursor/rules/ask-question-gates.mdc` | Always-apply — forces native `AskQuestion` tool at every transition gate (spec-to-pr normal mode) |
+
+Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` (setup step 1a in [`spec-to-pr/setup.md`](.agents/skills/spec-to-pr/setup.md)).
+
 ---
 
 ## Local Dry-Run: Agentic Code Reviewers
@@ -278,9 +286,3 @@ Some skills reference `senior-developer`, `CONTEXT.md`, and `.cursor/rules/ef-mi
 | `ef-migrations.mdc` | `.cursor/rules/ef-migrations.mdc` in the consumer project | Optional; only for .NET/EF consumers |
 
 Install optional dependencies separately in consumer projects. Shipped skills resolve guardrails via **config first**.
-
-## Custom Commands
-
-| Command | File | Description |
-|---------|------|-------------|
-| `/check-harness` | `.opencode/commands/check-harness.md` | Audit harness integrity (paths, links, routing, redundancy) |
