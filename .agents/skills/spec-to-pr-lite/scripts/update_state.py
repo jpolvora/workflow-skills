@@ -1,18 +1,9 @@
 #!/usr/bin/env python3
 """
-update_state -- Automate State Hygiene updates for spec-to-pr state.md (v7)
+update_state -- Automate State Hygiene updates for spec-to-pr-lite state.md (v7)
 
 Usage:
     python update_state.py <state-path> --step <N> --status <status> --elapsed <sec> [--tokens <prompt>:<comp>] [--model <model>] [--created <file1,file2>] [--modified <file1,file2>] [--deleted <file1,file2>] [--gate-choice <choice>]
-
-This script:
-  1. Parses the frontmatter of state.md.
-  2. Appends or updates the step execution telemetry, status, dispatches, models.
-  3. Merges files touched into the workflowManifest.
-  4. Advances the currentStep.
-  5. Appends to the gate history log.
-  6. Writes the updated state.md file back cleanly.
-  7. Runs validate_state.py on the result.
 """
 
 import sys
@@ -138,21 +129,21 @@ def parse_state_yaml(fm: str) -> dict:
                 if not bs:
                     continue
                 if bs.startswith("-"):
-                    is_list = True
-                    item = bs[1:].strip()
-                    if item.startswith("{") and item.endswith("}"):
-                        parsed_block.append(parse_inline_dict(item))
-                    else:
-                        val = item.strip('"').strip("'")
-                        if val.lower() == "true":
-                            val = True
-                        elif val.lower() == "false":
-                            val = False
-                        elif val.lower() == "null":
-                            val = None
-                        elif re.match(r"^\d+$", val):
-                            val = int(val)
-                        parsed_block.append(val)
+                     is_list = True
+                     item = bs[1:].strip()
+                     if item.startswith("{") and item.endswith("}"):
+                         parsed_block.append(parse_inline_dict(item))
+                     else:
+                         val = item.strip('"').strip("'")
+                         if val.lower() == "true":
+                             val = True
+                         elif val.lower() == "false":
+                             val = False
+                         elif val.lower() == "null":
+                             val = None
+                         elif re.match(r"^\d+$", val):
+                             val = int(val)
+                         parsed_block.append(val)
                 else:
                     bm = re.match(r"^([A-Za-z0-9_]+):\s*(.*)$", bs)
                     if bm:
@@ -191,7 +182,7 @@ def parse_state_yaml(fm: str) -> dict:
     return data
 
 def main():
-    parser = argparse.ArgumentParser(description="Update spec-to-pr state.md frontmatter")
+    parser = argparse.ArgumentParser(description="Update spec-to-pr-lite state.md frontmatter")
     parser.add_argument("state_path", type=str, help="Path to state.md file")
     parser.add_argument("--step", type=int, required=True, help="Step number that just completed")
     parser.add_argument("--status", type=str, default="completed", choices=["completed", "failed", "skipped"], help="Step status")
@@ -309,10 +300,11 @@ def main():
     files_count = len(created_list) + len(modified_list) + len(deleted_list)
     
     step_labels = {
-        0: "Spec Creation", 1: "Planning", 2: "Refinement", 3: "Execution Plan & DAG",
-        5: "Implementation", 6: "Verification & Report", 7: "Decision & First Commit",
-        9: "Code Review", 10: "Fixes & Second Commit", 11: "Integration Validation",
-        12: "Consolidation & Cleanup", 13: "Ship & PR"
+        1: "Planning",
+        2: "Implementation",
+        3: "Code Review",
+        4: "Consolidation & Cleanup",
+        5: "Ship & PR"
     }
     
     step_telemetry = {
@@ -350,18 +342,12 @@ def main():
     
     # 5. Set next currentStep
     next_step = step + 1
-    # Skip model sub-gates 4 and 8 in completed steps flow, but currentStep can be 4 or 8 briefly for transitions
-    if step == 3:
-        next_step = 4 # Coder readiness sub-gate
-    elif step == 7:
-        next_step = 8 # Review readiness sub-gate
         
     data["currentStep"] = next_step
-    data["workflowType"] = "standard"
+    data["workflowType"] = "lite"
     
     # 6. Append Gate History
     gate_choice = args.gate_choice or f"Advance to Step {next_step}"
-    # Gate history is in the body, but let's append it or log it
     
     # Write back YAML frontmatter + body
     serialized_fm = serialize_yaml(data)
@@ -370,7 +356,6 @@ def main():
     # Append gate history log in markdown body
     if "## Gate history" in new_content:
         gate_line = f"- auto-gate | step {step} | {gate_choice} | {iso_now}"
-        # insert right after ## Gate history
         new_content = new_content.replace("## Gate history", f"## Gate history\n{gate_line}")
         
     state_path.write_text(new_content, encoding="utf-8")

@@ -35,18 +35,18 @@ Dispatched by `spec-to-pr` when the `--full` flag is active. Steps 0–12 have a
 | `no-merge` | Flag | `false` | Create PR and run checks, but stop before merge. |
 | `max <n>` | Integer | `10` | Iteration limit for the `goal-fix-pr` convergence loop. |
 
-Before executing, restate: **commit title**, **working (head) branch**, **base branch**, **SCM provider (`providers.scm`)**, **mode**, **max iterations**. Resolve branches and provider from `.agents/skills/spec-to-pr/config.json` when flags omit them.
+Before executing, restate: **commit title**, **working (head) branch**, **base branch**, **SCM provider (`providers.scm`)**, **mode**, **max iterations**. Resolve branches and provider from `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`) when flags omit them.
 
 ---
 
 ## spec-to-pr Integration (Step 13)
 
-1. Steps 0–12 are already completed.
+1. Steps 0–12 are already completed (or Step 4 for `spec-to-pr-lite`).
 2. Orchestrator approval gate:
    - **Create PR and start monitoring:** push, create PR, converge, merge.
    - **Push only (no PR):** push `{workingBranch}` only.
    - **Skip (done):** no push/PR.
-3. Skip code-review / auto-fix inside ship-pr (already done in Steps 9–10).
+3. Skip code-review / auto-fix inside ship-pr (already done in Steps 9–10 or Step 3 for `spec-to-pr-lite`).
 
 ---
 
@@ -66,7 +66,7 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 ### Phase 1 — Code-Review Loop (auto-fix)
 - Load [code-review](../06-code-review/SKILL.md) vs base branch.
 - Fix Critical/Warning up to 3 iterations.
-- Skip when already reviewed under `spec-to-pr`.
+- Skip when already reviewed under `spec-to-pr` or `spec-to-pr-lite`.
 
 ### Phase 2 — Project Verification
 - Run `config.json.verification` commands; auto-correct up to 3 times, then stop.
@@ -78,7 +78,7 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 ### Phase 4 — PR Creation (SCM provider)
 
 1. Resolve `providers.scm` (same algorithm as [spec-to-pr](../spec-to-pr/SKILL.md) Provider resolution / [local-spec-provider](../local-spec-provider/SKILL.md)):
-   - Read `providers.active` / `providers.scm` from `.agents/skills/spec-to-pr/config.json`.
+   - Read `providers.active` / `providers.scm` from `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
    - If `providers` absent: enabled GitHub → `github`; else enabled ADO → `azure-devops`; else STOP and require explicit `providers.scm` (ship needs a remote SCM host).
    - If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP and require explicit `providers.scm`.
    - Reject `scm: "local"`.

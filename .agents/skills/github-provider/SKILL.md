@@ -8,9 +8,9 @@ disable-model-invocation: true
 
 # github-provider
 
-Owns all **GitHub-specific** instructions and scripts for inbound issues (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `08-fix-pr`, `09-goal-fix-pr`, `11-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `github`; they must not embed raw `gh` happy-path recipes beyond linking here.
+Owns all **GitHub-specific** instructions and scripts for inbound issues (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `08-fix-pr`, `09-goal-fix-pr`, `11-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `github`; they must not embed raw `gh` happy-path recipes beyond linking here.
 
-Resolve `owner` / `repo` from `.agents/skills/spec-to-pr/config.json` (`issueTrackers.github`, `project.org` / repo name, or `project.repoUrl`). **Never** hardcode org or repo names in this skill or its scripts.
+Resolve `owner` / `repo` from `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`) (`issueTrackers.github`, `project.org` / repo name, or `project.repoUrl`). **Never** hardcode org or repo names in this skill or its scripts.
 
 ---
 
@@ -35,7 +35,7 @@ Examples:
 
 ### Workflow Mode
 
-Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.active` is `github`, and by `08-fix-pr` / `09-goal-fix-pr` / `11-ship-pr` when `providers.scm` is `github`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
+Dispatched by orchestrators (`spec-to-pr`, `spec-to-pr-lite` entry / Specification Protocol) when `providers.active` is `github`, and by `08-fix-pr` / `09-goal-fix-pr` / `11-ship-pr` when `providers.scm` is `github`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
 
 ### Parameters
 
@@ -52,7 +52,7 @@ Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.acti
 - **CLI:** `gh` installed and on `PATH`.
 - **Auth (`validate-auth`):** `gh auth status` must succeed for issue/PR CLI flows.
 - **GraphQL threads:** token from `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN` (same precedence as thread scripts).
-- **Config:** `issueTrackers.github.enabled` (legacy) and/or `providers.active` / `providers.scm` set to `github` in `spec-to-pr/config.json`.
+- **Config:** `issueTrackers.github.enabled` (legacy) and/or `providers.active` / `providers.scm` set to `github` in `spec-to-pr/config.json` (or `spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
 
 On auth failure: **STOP** with fix instructions from `validate-auth`. Do not silently fall back to another provider.
 

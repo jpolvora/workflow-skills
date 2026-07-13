@@ -1,19 +1,19 @@
-# Setup & Bootstrap — Spec-to-PR
+# Setup & Bootstrap — Spec-to-PR Lite
 
 Initialization, configuration bootstrap, flags, resume logic, and first-run setup. Extracted from [`SKILL.md`](SKILL.md) to keep the orchestrator lean.
-Artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md). Resume rules in this file are canonical; FAQ/DIAGRAM must link here.
+Artifact paths: [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md). Resume rules in this file are canonical.
 
 ---
 
 ## Bootstrap & Entry
 
-Before Step 0:
+Before Step 1:
 
-1. **Config check**: `Shell` `test -f .agents/skills/spec-to-pr/config.json`. If missing:
-   - `cp .agents/skills/spec-to-pr/config.json.example .agents/skills/spec-to-pr/config.json`
+1. **Config check**: Check if `.agents/skills/spec-to-pr/config.json` exists. If not, check if `.agents/skills/spec-to-pr-lite/config.json` exists. If both are missing:
+   - `cp .agents/skills/spec-to-pr-lite/config.json.example .agents/skills/spec-to-pr-lite/config.json`
    - AskQuestion: **Fill config now** / **Skip**
    - If "Fill now": present each top-level section, collect values. Skip optional sections.
-1a. **AskQuestion gate rule (recommended)**: If `.cursor/rules/ask-question-gates.mdc` is missing and `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` exists, copy it into `.cursor/rules/` so Agent chat always forces native `AskQuestion` for selectable gates (see [`SKILL.md`](SKILL.md) § AskQuestion requirement).
+1a. **AskQuestion gate rule (recommended)**: If `.cursor/rules/ask-question-gates.mdc` is missing and `.agents/skills/spec-to-pr-lite/cursor-rules/ask-question-gates.mdc` exists, copy it into `.cursor/rules/` so Agent chat always forces native `AskQuestion` for selectable gates (see [`SKILL.md`](SKILL.md) § AskQuestion requirement).
 1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
      - **Language/Framework**: Look for `package.json` (Node/React/Next), `*.csproj`/`*.sln`/`*.slnx` (.NET), `pyproject.toml`/`requirements.txt` (Python), `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml`/`build.gradle` (Java), `Gemfile` (Ruby), etc.
@@ -53,24 +53,24 @@ Before Step 0:
    Write this block immediately after flag parsing, before auto-resume. Applies in all modes (normal, auto, dry-run). In `dryRun`, prefix with `[DRY-RUN]`.
 4. **Auto resume** or **Active Resume** (see [Resume / reset](#resume--reset)).
 5. **Identity**: `workflow-id`, `slug`, `us-dir`.
-   - Note: Inject `workflowType: standard` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
+   - Note: Inject `workflowType: lite` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
 6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit`.
 7. **LOC baseline**: `Shell` capture → `telemetry.loc.baseline`. Store ISO → `telemetry.workflowStartedAt`.
-8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-0`.
+8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-1`.
 9. **Progress Board** render.
-10. **Step 0 Entry Gate** → dispatch.
+10. **Step 1 Entry Gate** → dispatch.
 
 ---
 
 ## Resume / Reset
 
-**Auto:** skip Active Resume; use auto resume policy. If existing `active`/`paused` workflow matches same US/slug + `autoMode` + `workflowType: standard`, auto-resume.
+**Auto:** skip Active Resume; use auto resume policy. If existing `active`/`paused` workflow matches same US/slug + `autoMode` + `workflowType: lite`, auto-resume.
 
 **Normal — workflow discovery (mandatory before any new workflow):**
 
 1. `Glob` `{config.plans.dir}/**/*.state.md` (default `.cursor/plans/**/*.state.md`) → list all state files.
 2. For each, `Read` frontmatter YAML: `status`, `workflowId`, `slug`, `us`, `currentStep`, `startedAt`, `autoMode`, `workflowType`.
-3. Filter: (`status: active` or `status: paused`) and `workflowType` is either exactly `standard` or absent.
+3. Filter: (`status: active` or `status: paused`) and `workflowType` is exactly `lite`.
 4. Present as **selectable list** via AskQuestion:
 
 ```text

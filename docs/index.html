@@ -31,7 +31,7 @@
   <h1>Workflow <span>Skills</span></h1>
   <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
   <div class="badges">
-    <span class="badge">33 skills</span>
+    <span class="badge">34 skills</span>
     <span class="badge">6 layers</span>
     <span class="badge">MIT license</span>
     <span class="badge">npx github:jpolvora/workflow-skills</span>
@@ -192,12 +192,17 @@
   </div>
   <!-- Layer 5 -->
   <div class="layer">
-    <h3>Layer 5 — Utility & Meta <span class="count">(8)</span></h3>
+    <h3>Layer 5 — Utility & Meta <span class="count">(9)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md">
         <div class="name">spec-to-pr</div>
         <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool. Legacy aliases: /us-workflow, /us-delivery-workflow.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">
+        <div class="name">spec-to-pr-lite</div>
+        <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Runs a fast, sequential planning-to-review pipeline. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md. Flags: dry-run, auto, skip-tests, full, --model, --model-chain. Delegates via Task tool.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md">
         <div class="name">caveman</div>

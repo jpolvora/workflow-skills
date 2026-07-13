@@ -40,7 +40,7 @@ Before executing, restate the parsed parameters: **PR number**, **success criter
 
 ## SCM resolution (mandatory)
 
-1. Read `.agents/skills/spec-to-pr/config.json`.
+1. Read `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
 2. Resolve SCM host = `providers.scm` (fallback: enabled tracker / `project.repoUrl` inference — same rules as provider skills).
 3. Load the matching provider skill and use its intents for thread count only; keep scoring/fix/verify in [08-fix-pr](../08-fix-pr/SKILL.md).
 

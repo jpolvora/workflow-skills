@@ -7,7 +7,7 @@
 
 This repository centralizes a collection of behavioral agent guidelines (**skills**) and **end-to-end workflows** for agentic coding assistants. It is the **single source of truth** for installing, updating, and synchronizing these instructions across consumer projects.
 
-This hub is designed to host **multiple workflows** over time. Each workflow is a top-level skill consumers can install independently. Today the primary delivery workflow is `spec-to-pr`.
+This hub is designed to host **multiple workflows** over time. Each workflow is a top-level skill consumers can install independently. The repository provides two delivery workflows: `spec-to-pr` (full multi-stage pipeline) and `spec-to-pr-lite` (fast, sequential plan-to-ship loop).
 
 > 📖 **See [`AGENTS.md`](AGENTS.md)** for the complete routing of all skills, layers, task router, and auto-load instructions (skill loading).
 
@@ -17,9 +17,20 @@ This hub is designed to host **multiple workflows** over time. Each workflow is 
 
 **This repository is the canonical upstream for consumable workflows and their pipeline dependencies.**
 
-### `spec-to-pr` (current)
+### `spec-to-pr` (Full Workflow)
 
-`spec-to-pr` is a full Spec → PR delivery orchestrator (FSM, Steps 0–13) that delegates each phase of the software lifecycle to a dedicated sub-skill. Every skill listed below is an **integral part of the `spec-to-pr` pipeline** — designed, versioned, and tested together as a cohesive system.
+`spec-to-pr` is a full Spec → PR delivery orchestrator (FSM, Steps 0–13) that delegates each phase of the software lifecycle to a dedicated sub-skill. Every skill listed below is an **integral part of the pipeline** — designed, versioned, and tested together as a cohesive system.
+
+### `spec-to-pr-lite` (Lite Workflow)
+
+`spec-to-pr-lite` is a fast, sequential alternative designed for existing specifications/USs. It skips specification brainstorming, grilling interviews, and parallel DAG decomposition, executing planning (`01-write-plan`), coding (`04-implement-tasks`), review (`06-code-review`), and optional shipping (`11-ship-pr`) in a direct sequential loop. Check out [spec-to-pr-lite/SKILL.md](.agents/skills/spec-to-pr-lite/SKILL.md).
+
+### Dual-Mode Execution & Compatibility
+
+Both workflows are designed to co-exist in **dual mode** within the same repository:
+- **Shared Configuration**: They can share `.agents/skills/spec-to-pr/config.json` as their single source of truth. The `spec-to-pr-lite` FSM, SCM providers, and dependency scripts automatically fall back to the standard config if their local config is missing.
+- **State Isolation**: State files are flagged with `workflowType: standard` or `workflowType: lite` in their frontmatter. Resume discovery automatically filters workflows by type, preventing cross-resuming between standard and lite modes.
+- **Shared Skills**: Both workflows leverage the same underlying pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, and `11-ship-pr`), keeping execution highly efficient, modular, and lightweight.
 
 ### `spec-to-pr` Dependency Graph
 
