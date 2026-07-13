@@ -90,8 +90,9 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | **Config** | `.agents/skills/spec-to-pr/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
-| Scripts | `check_memory_conflict.py`, `validate_state.py`, `github-issue-to-spec.py`, `ado-workitem-to-spec.py` |
-| GitHub | `gh` CLI only |
+| Scripts | Orchestrator: `check_memory_conflict.py`, `validate_state.py` under `spec-to-pr/scripts/`. Converters + thread helpers: **canonical** under `github-provider/scripts/` and `azure-devops-provider/scripts/` (thin shims remain at `spec-to-pr/scripts/` and `08-fix-pr/scripts/` for canonicity). Local register/mirror: `local-spec-provider/scripts/`. |
+| Providers | [`github-provider`](../github-provider/SKILL.md) · [`azure-devops-provider`](../azure-devops-provider/SKILL.md) · [`local-spec-provider`](../local-spec-provider/SKILL.md) — `providers.active` owns `fetch-to-spec`; `providers.scm` owns PR/thread/merge intents |
+| SCM CLIs | Via provider skills only (`gh` / `az`); orchestrator does not embed platform CLI recipes |
 | State | `{config.plans.dir}/{slug}/{workflow-id}.state.md` |
 | Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-tasks`→5 build, 10 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
 | Spec | `spec-format` |
@@ -354,77 +355,58 @@ At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.l
 
 ### Specification Protocol
 
-[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Tracker config: `config.json.issueTrackers`.
+[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Tracker credentials/org: `config.json.issueTrackers`. Entry ownership: `config.json.providers` + provider skills below.
 
-| Input | Tracker | Action | Uses Step 0? |
-|-------|---------|--------|--------------|
-| `{n}` or `US {n}` | GitHub (default when `issueTrackers.github.enabled`) | `slug=us-{n}`; fetch → convert → `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
-| `{org}/{project}#{id}` | Azure DevOps | `slug=us-{id}`; fetch → convert → `{us-dir}/step-00-us-{id}.spec.md` | No — skip to Step 1 |
-| `ADO {id}` / `WI {id}` | Azure DevOps | Same as above; org/project from `issueTrackers.azureDevOps` | No — skip to Step 1 |
-| `*.spec.md` (any path) | Hand-written / local | Register/copy → `{us-dir}/step-00-{slug}.spec.md` | No — skip to Step 1 |
-| free-text / no args | none | brainstorm → `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` (optional mirror `{specs-dir}/{slug}.spec.md`) | Yes — `Task` `00-write-spec` |
+| Input | Tracker / provider | Action | Uses Step 0? |
+|-------|--------------------|--------|--------------|
+| `{n}` or `US {n}` | `providers.active` (legacy: GitHub when enabled) | `slug=us-{n}`; load active provider → `fetch-to-spec` → `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
+| `{org}/{project}#{id}` | `azure-devops-provider` | `slug=us-{id}`; `fetch-to-spec` → `{us-dir}/step-00-us-{id}.spec.md` | No — skip to Step 1 |
+| `ADO {id}` / `WI {id}` | `azure-devops-provider` | Same as above; org/project from `issueTrackers.azureDevOps` | No — skip to Step 1 |
+| `*.spec.md` (any path) | `local-spec-provider` | `fetch-to-spec` (register/normalize) → `{us-dir}/step-00-{slug}.spec.md` | No — skip to Step 1 |
+| free-text / no args | none | brainstorm → `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` (optional mirror via `local-spec-provider`) | Yes — `Task` `00-write-spec` |
 
-**Bare number resolution:** if only `azureDevOps.enabled` and GitHub disabled → treat `{n}` as ADO work item. If both enabled → bare `{n}` = GitHub; require `ADO {id}` or `{org}/{project}#{id}` for ADO. If the required tracker is disabled or unauthenticated → STOP with fix instructions.
+#### Provider resolution
 
-#### GitHub (`gh`) — concrete steps
+Document identically in each provider skill (no shared package):
 
-Requires `issueTrackers.github.enabled: true` and authenticated `gh` (`gh auth status`).
+1. Read `providers.active` / `providers.scm` from `config.json`.
+2. If `providers` absent: enabled GitHub → active=`github`; else enabled ADO → `azure-devops`; else `local`. Prefer GitHub if both enabled.
+3. If `scm` absent: if active is `github`\|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP and require explicit `providers.scm`.
+4. Reject `scm: "local"`.
+5. When `providers.active` is present, bare `{n}` / `US {n}` resolve against **active**, not dual-enabled tracker preference. Legacy dual-enabled bare-number rule applies only when `providers` is omitted.
 
-```bash
-mkdir -p .cursor/plans/us-{n}
-gh issue view {n} --json number,title,body,state,labels,assignees,comments,url \
-  > .cursor/plans/us-{n}/step-00-us-{n}.issue.json
-python .agents/skills/spec-to-pr/scripts/github-issue-to-spec.py \
-  --input .cursor/plans/us-{n}/step-00-us-{n}.issue.json \
-  --output .cursor/plans/us-{n}/step-00-us-{n}.spec.md \
-  --repo {owner}/{repo}
-```
+#### Dispatch — `fetch-to-spec` (entry)
 
-`owner`/`repo` from `issueTrackers.github` (or `project.org` / repo name). Script path may also come from `issueTrackers.github.issueToSpecScript`.
+| Active / entry | Skill | Intent |
+|----------------|-------|--------|
+| `github` or GitHub issue id | [`github-provider`](../github-provider/SKILL.md) | `fetch-to-spec` (+ `validate-auth` first when needed) |
+| `azure-devops` or ADO id forms | [`azure-devops-provider`](../azure-devops-provider/SKILL.md) | `fetch-to-spec` (+ `validate-auth` first when needed) |
+| `local` or `*.spec.md` path | [`local-spec-provider`](../local-spec-provider/SKILL.md) | `fetch-to-spec` |
 
-#### Azure DevOps — concrete steps
+Orchestrator **must not** embed multi-line `gh` / `az` / hand-written register recipes. Load the provider skill and run `fetch-to-spec`. Auth or config failure → STOP with that provider’s fix instructions; **no** silent fallback to another provider.
 
-Requires `issueTrackers.azureDevOps.enabled: true`, org/project filled, and PAT in env (`ADO_PAT` or `patEnvVar` / `AZURE_DEVOPS_PAT`).
+**Bare number resolution (legacy, when `providers` omitted):** if only `azureDevOps.enabled` and GitHub disabled → treat `{n}` as ADO work item. If both enabled → bare `{n}` = GitHub; require `ADO {id}` or `{org}/{project}#{id}` for ADO. If the required tracker is disabled or unauthenticated → STOP with fix instructions.
 
-```bash
-mkdir -p .cursor/plans/us-{id}
-python .agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py \
-  --org {org} --project {project} --id {id} \
-  --api-base {apiBase} --pat-env {patEnvVar} \
-  --snapshot .cursor/plans/us-{id}/step-00-us-{id}.issue.json \
-  --output .cursor/plans/us-{id}/step-00-us-{id}.spec.md
-```
-
-Values from `issueTrackers.azureDevOps`. Script path may also come from `issueTrackers.azureDevOps.workItemToSpecScript`.
-
-#### Hand-written local `*.spec.md` — concrete steps
-
-Accepts any existing markdown spec path (`specs/foo.spec.md`, `foo.spec.md`, or already `step-00-foo.spec.md`).
-
-1. Resolve `slug`: frontmatter `slug:` if present, else basename without `.spec.md` (strip leading `step-00-` if present).
-2. `mkdir -p {us-dir}` where `{us-dir}={plans-dir}/{slug}/`.
-3. Copy/normalize to `{us-dir}/step-00-{slug}.spec.md` (overwrite only if identical or user confirms).
-4. Ensure frontmatter has at least `slug`, `title`, `source: local` (add `source: local` if missing). Validate required sections per [`spec-format`](./extra-skills/spec-format/SKILL.md).
-5. Do **not** call tracker APIs. Optional: mirror to `{specs-dir}/{slug}.spec.md` for human browsing.
+**When `providers.active` is set:** bare `{n}` / `US {n}` use that provider (e.g. `active=azure-devops` → ADO work item). Explicit forms (`ADO {id}`, `{org}/{project}#{id}`, GitHub URL, `*.spec.md`) still select their matching provider.
 
 ### Step 0 Entry Gate
 
 Before Step 0, the orchestrator checks the trigger input and determines the entry flow:
 
 1. **Tracker id** (`{n}`, `US {n}`, `ADO {id}`, `WI {id}`, or `{org}/{project}#{id}`):
-   - Fetch + convert per Specification Protocol → `{us-dir}/step-00-{slug}.spec.md`.
+   - Resolve `providers.active` (algorithm above) → load that provider skill → `fetch-to-spec` → `{us-dir}/step-00-{slug}.spec.md`.
    - Registers `specPath`, `specSource` (`github` | `azure-devops`).
    - **Skips Step 0** — advances directly to the Step 1 gate.
 
 2. **Local `*.spec.md` provided as argument:**
-   - Register/copy per hand-written protocol. Registers `specPath`, `specSource: local`.
+   - Load [`local-spec-provider`](../local-spec-provider/SKILL.md) → `fetch-to-spec`. Registers `specPath`, `specSource: local`.
    - **Skips Step 0** — advances directly to the Step 1 gate.
 
 3. **No arguments (or free-text description as argument):**
    - Entry Menu (AskQuestion):
      - **I have a GitHub issue / ADO work item** (recommended) — same as case 1; skip Step 0 → Step 1.
      - **I have a local `*.spec.md`** — same as case 2.
-     - **I want to describe a feature to brainstorm** — `Task` `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` → Step 1 gate. **This is the only path that uses `00-write-spec`.**
+     - **I want to describe a feature to brainstorm** — `Task` `00-write-spec` → `{us-dir}/step-00-{slug}.spec.md` → Step 1 gate. **This is the only path that uses `00-write-spec`.** Optional post-draft mirror under `plans.specsDir`: delegate to `local-spec-provider`.
 
 After the entry gate, `specPath` is stored in state `## Artifacts.specPath` and snapshotted in `## Artifacts.specSnapshot`.
 
@@ -875,8 +857,8 @@ After Step 12, orch presents ship gate.
 
 **Pipeline (Create PR + monitor):**
 1. `git push -u origin {branch}` (skip if pushed).
-2. `gh pr create --head {branch} --base {baseBranch}`. Reuse open PR.
-3. Dispatch `11-ship-pr` ([SKILL.md](../11-ship-pr/SKILL.md)): 300s initial wait → heartbeat: fetch → fix-pr if `activeThreads>0` → commit → resolve → push → 120s wait. Max 10 iterations. Convergence → `gh pr checks --watch` → `gh pr merge --merge`. Never `--delete-branch` with head=`develop`.
+2. Resolve `providers.scm` (same algorithm as Specification Protocol) → load that provider skill ([`github-provider`](../github-provider/SKILL.md) or [`azure-devops-provider`](../azure-devops-provider/SKILL.md)).
+3. Dispatch `11-ship-pr` ([SKILL.md](../11-ship-pr/SKILL.md)): scm intents `create-pr` → goal-fix-pr loop (`list-threads` / `resolve-thread` via `08`/`09`) → checks wait → `merge-pr`. Never delete `project.workingBranch` (default `develop`) after merge.
 4. Auto: auto-selects merge, skill auto-gates per `09-goal-fix-pr`.
 
 **Output:** `step-output` with `pr: {number, url, state}`, `goalFixPr: {iterations, max, activeThreadsRemaining, merged}`.

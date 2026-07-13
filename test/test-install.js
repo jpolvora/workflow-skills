@@ -108,7 +108,11 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/spec-to-pr/config.schema.json',
     '.agents/skills/spec-to-pr/config.json.example',
     '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
-    '.agents/skills/spec-to-pr/SKILL.md'
+    '.agents/skills/spec-to-pr/SKILL.md',
+    // Spec-source / SCM provider skills (packed under .agents/skills/)
+    '.agents/skills/github-provider/SKILL.md',
+    '.agents/skills/azure-devops-provider/SKILL.md',
+    '.agents/skills/local-spec-provider/SKILL.md'
   ];
   for (const rel of required) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing required file: ${rel}`);
@@ -116,17 +120,99 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('07-integration-validation')) fail('ARTIFACTS.md missing Step 11 ownership');
+  // AC9: legacy converter paths must remain (thin shims → provider canonical scripts)
   if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py'))) {
-    fail('Missing github-issue-to-spec.py');
+    fail('Missing github-issue-to-spec.py shim under spec-to-pr/scripts');
   }
   if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py'))) {
-    fail('Missing ado-workitem-to-spec.py');
+    fail('Missing ado-workitem-to-spec.py shim under spec-to-pr/scripts');
+  }
+  if (
+    !fs.existsSync(
+      path.join(parentDir, '.agents/skills/github-provider/scripts/github-issue-to-spec.py')
+    )
+  ) {
+    fail('Missing canonical github-issue-to-spec.py under github-provider/scripts');
+  }
+  if (
+    !fs.existsSync(
+      path.join(parentDir, '.agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py')
+    )
+  ) {
+    fail('Missing canonical ado-workitem-to-spec.py under azure-devops-provider/scripts');
+  }
+  // local-spec-provider scripts (AC1)
+  for (const rel of [
+    '.agents/skills/local-spec-provider/scripts/detect_specs_dir.py',
+    '.agents/skills/local-spec-provider/scripts/register_local_spec.py'
+  ]) {
+    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
+  }
+  // 08-fix-pr → provider thread/context shims (AC9)
+  for (const rel of [
+    '.agents/skills/08-fix-pr/scripts/fetch_threads.cjs',
+    '.agents/skills/08-fix-pr/scripts/resolve_thread.cjs',
+    '.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py'
+  ]) {
+    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing 08-fix-pr shim: ${rel}`);
+  }
+  // Cheap shim --help / usage smoke: proves parents[2] / relative forward resolves
+  {
+    const py = process.platform === 'win32' ? 'python' : 'python3';
+    const shimHelps = [
+      [py, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
+      [py, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
+      [py, '.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py', '--help']
+    ];
+    for (const [bin, rel, flag] of shimHelps) {
+      const r = cp.spawnSync(bin, [path.join(parentDir, rel), flag], {
+        encoding: 'utf8',
+        cwd: parentDir
+      });
+      if (r.status !== 0) {
+        fail(`Shim --help failed (${rel}): status=${r.status}\n${r.stderr || r.stdout}`);
+      }
+    }
+    // CJS shims have no --help; missing args → Usage from canonical (exit 1) proves forward
+    for (const rel of [
+      '.agents/skills/08-fix-pr/scripts/resolve_thread.cjs',
+      '.agents/skills/08-fix-pr/scripts/fetch_threads.cjs'
+    ]) {
+      const r = cp.spawnSync(process.execPath, [path.join(parentDir, rel)], {
+        encoding: 'utf8',
+        cwd: parentDir
+      });
+      const out = `${r.stdout || ''}${r.stderr || ''}`;
+      if (r.status === 0) fail(`Expected usage exit from ${rel}, got 0`);
+      if (!/Usage:/i.test(out)) {
+        fail(`Shim forward smoke failed for ${rel} (no Usage output):\n${out}`);
+      }
+    }
+    ok('Shim --help / usage forward smoke passed');
   }
   if (!artifacts.includes('azure-devops') && !artifacts.includes('Azure DevOps')) {
     fail('ARTIFACTS.md must document Azure DevOps entry');
   }
   if (!artifacts.includes('Hand-written') && !artifacts.includes('hand-written')) {
     fail('ARTIFACTS.md must document hand-written/local spec entry');
+  }
+  // Provider SKILL.md smoke: frontmatter name + dual-mode sections
+  const providerSkills = [
+    'github-provider',
+    'azure-devops-provider',
+    'local-spec-provider'
+  ];
+  for (const name of providerSkills) {
+    const body = fs.readFileSync(
+      path.join(parentDir, `.agents/skills/${name}/SKILL.md`),
+      'utf8'
+    );
+    if (!body.includes(`name: ${name}`)) {
+      fail(`${name}/SKILL.md missing frontmatter name: ${name}`);
+    }
+    if (!/Standalone Mode/i.test(body) || !/Workflow Mode/i.test(body)) {
+      fail(`${name}/SKILL.md must document Standalone Mode and Workflow Mode`);
+    }
   }
   const goalLoop = fs.readFileSync(
     path.join(parentDir, '.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md'),
@@ -150,7 +236,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   );
   if (!example.project?.workingBranch) fail('config.json.example missing project.workingBranch');
   if (!example.plans?.dir) fail('config.json.example missing plans.dir');
-  ok('Canonicity + contract files present');
+  if (!example.providers?.active) fail('config.json.example missing providers.active');
+  if (!example.providers?.scm) fail('config.json.example missing providers.scm');
+  ok('Canonicity + contract files present (providers + converter shims)');
 }
 
 // 1. Clean test/.agents directory
@@ -300,10 +388,21 @@ child.on('close', (code) => {
   };
   fs.writeFileSync(consumerConfig, JSON.stringify(marker, null, 2), 'utf8');
 
-  // Remove one skill to validate --include-new later; pick a small non-pipeline skill if present
+  // Plain `update` only refreshes skills already present. New upstream skill folders
+  // (e.g. github-provider, azure-devops-provider, local-spec-provider) require
+  // `npx github:jpolvora/workflow-skills update --include-new` (or interactive install).
   const sourceSkills = listSkillDirs(rootSkillsDir);
   const installedBefore = listSkillDirs(testSkillsDir);
-  const removable = installedBefore.find((s) => s === 'taste-skill' || s === 'mobile-first-design' || s === 'write-a-skill');
+  // Prefer removing a provider skill so --include-new coverage matches consumer upgrades
+  const removable = installedBefore.find(
+    (s) =>
+      s === 'local-spec-provider' ||
+      s === 'github-provider' ||
+      s === 'azure-devops-provider' ||
+      s === 'taste-skill' ||
+      s === 'mobile-first-design' ||
+      s === 'write-a-skill'
+  );
   let removedForIncludeNew = null;
   if (removable) {
     fs.rmSync(path.join(testSkillsDir, removable), { recursive: true, force: true });
@@ -344,15 +443,65 @@ child.on('close', (code) => {
     console.log('⏭ Skipped include-new restore assert (no removable candidate skill)');
   }
 
-  // Ensure upstream skills still covered
+  // Ensure upstream skills still covered (pipeline + providers)
   const installedAfter = listSkillDirs(testSkillsDir);
-  const missingPipeline = ['spec-to-pr', '00-write-spec', '04-implement-tasks', '07-integration-validation', '11-ship-pr']
-    .filter((s) => !installedAfter.includes(s));
+  const missingPipeline = [
+    'spec-to-pr',
+    '00-write-spec',
+    '04-implement-tasks',
+    '07-integration-validation',
+    '11-ship-pr',
+    'github-provider',
+    'azure-devops-provider',
+    'local-spec-provider'
+  ].filter((s) => !installedAfter.includes(s));
   if (missingPipeline.length) {
-    fail(`Pipeline skills missing after update: ${missingPipeline.join(', ')}`);
+    fail(`Pipeline/provider skills missing after update: ${missingPipeline.join(', ')}`);
   }
-  ok(`Pipeline skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
-
+  for (const name of ['github-provider', 'azure-devops-provider', 'local-spec-provider']) {
+    if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
+      fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
+    }
+  }
+  // AC9 shims + local-spec scripts must ship to consumers
+  for (const rel of [
+    path.join('spec-to-pr', 'scripts', 'github-issue-to-spec.py'),
+    path.join('spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
+    path.join('local-spec-provider', 'scripts', 'detect_specs_dir.py'),
+    path.join('local-spec-provider', 'scripts', 'register_local_spec.py'),
+    path.join('08-fix-pr', 'scripts', 'fetch_threads.cjs'),
+    path.join('08-fix-pr', 'scripts', 'resolve_thread.cjs'),
+    path.join('08-fix-pr', 'scripts', 'fix_pr_azure_context.py')
+  ]) {
+    if (!fs.existsSync(path.join(testSkillsDir, rel))) {
+      fail(`Provider/shim script missing in consumer install: ${rel}`);
+    }
+  }
+  // Consumer-side cheap shim forward smoke (installed tree)
+  {
+    const py = process.platform === 'win32' ? 'python' : 'python3';
+    const helpShim = path.join(testSkillsDir, 'spec-to-pr', 'scripts', 'github-issue-to-spec.py');
+    const helpResult = cp.spawnSync(py, [helpShim, '--help'], {
+      encoding: 'utf8',
+      cwd: path.join(__dirname)
+    });
+    if (helpResult.status !== 0) {
+      fail(
+        `Consumer shim --help failed: status=${helpResult.status}\n${helpResult.stderr || helpResult.stdout}`
+      );
+    }
+    const cjsShim = path.join(testSkillsDir, '08-fix-pr', 'scripts', 'resolve_thread.cjs');
+    const cjsResult = cp.spawnSync(process.execPath, [cjsShim], {
+      encoding: 'utf8',
+      cwd: path.join(__dirname)
+    });
+    const cjsOut = `${cjsResult.stdout || ''}${cjsResult.stderr || ''}`;
+    if (cjsResult.status === 0 || !/Usage:/i.test(cjsOut)) {
+      fail(`Consumer CJS shim forward smoke failed:\n${cjsOut}`);
+    }
+    ok('Consumer shim forward smoke passed');
+  }
+  ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
   // --- Phase 2b: rename migration us-workflow → spec-to-pr ---
   console.log('\n[Phase 2b] Migrate legacy us-workflow folder on update...');
   const legacyDir = path.join(testSkillsDir, 'us-workflow');

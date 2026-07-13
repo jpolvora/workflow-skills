@@ -228,14 +228,14 @@ Shortcut: Step 7 **Re-implement with different Coder model** = return to Step 5.
 | **State Hygiene** | all | Mandatory state sync post-step + asserts (`validate_state.py`) |
 | **Learning & Memory** | all (start + end + Step 12) | Read and update state (`state.md`) and `MEMORY.md` to reuse technical learnings and avoid repeating errors |
 | **Context loading** | 1, 2, 5 | Docs, rules, domain glossary |
-| **Specification** | 0 (fetch/resolve), 1–2/6/11 (read) | Entry: **US id** or **`*.spec.md`**. GitHub: `gh issue view {n}` → `*.issue.json` → `github-issue-to-spec.py` → **`{slug}.spec.md`** (canonical). Downstream skills read **spec**, not raw issue |
+| **Specification** | 0 (fetch/resolve), 1–2/6/11 (read) | Entry: **US id**, ADO id, or **`*.spec.md`**. Resolve `providers.active` → provider skill `fetch-to-spec` → **`step-00-{slug}.spec.md`** (canonical). Downstream skills read **spec**, not raw tracker JSON |
 | **Memory-conflict** | 2, 3 | Python script vs `MEMORY.md` (root) |
 | **Integration validation** | 11 | Plan + browser/API/seed execution |
 | **Step checkpoint** | 0–12 | Git tags `uswf/{id}/before-step-{N}` |
 | **Step dispatch** | 1–11 | Dedicated sub-agent + anchor tag + step-scoped worktree (5/10/11) |
 | **Checkpoint revert** | reset / previous / repeat | Scoped revert via `## Step file log` |
 
-Local scripts: `.agents/skills/spec-to-pr/scripts/check_memory_conflict.py`, `.agents/skills/spec-to-pr/scripts/validate_state.py`
+Orchestrator scripts: `.agents/skills/spec-to-pr/scripts/check_memory_conflict.py`, `validate_state.py`. Issue/WI converters: canonical under `github-provider/scripts/` and `azure-devops-provider/scripts/` (shims under `spec-to-pr/scripts/`).
 
 ---
 
