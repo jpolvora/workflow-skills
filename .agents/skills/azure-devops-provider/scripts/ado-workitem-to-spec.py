@@ -33,6 +33,19 @@ import urllib.request
 from datetime import date
 from pathlib import Path
 
+
+def ensure_utf8_stdio() -> None:
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not callable(reconfigure):
+            continue
+        try:
+            reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 _AC_HEADING = re.compile(
     r"^(?:#{1,6}\s*)?(crit[eé]rios?\s+de\s+aceite|acceptance\s+criteria|ac[s]?)\b\.?$",
     re.IGNORECASE,
@@ -232,8 +245,7 @@ def build_spec_md(work_item: dict, org: str | None, project: str | None) -> str:
 
 
 def main() -> int:
-    if sys.platform == "win32":
-        sys.stdout.reconfigure(encoding="utf-8")
+    ensure_utf8_stdio()
 
     parser = argparse.ArgumentParser(
         description="Fetch/convert Azure DevOps work item JSON into canonical *.spec.md"

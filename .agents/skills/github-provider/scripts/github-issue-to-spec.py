@@ -22,6 +22,18 @@ from datetime import date
 from pathlib import Path
 
 
+def ensure_utf8_stdio() -> None:
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not callable(reconfigure):
+            continue
+        try:
+            reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 def load_issue(raw: str) -> dict:
     data = json.loads(raw)
     if isinstance(data, list):  # `gh issue list --json` returns an array
@@ -146,8 +158,7 @@ def build_spec_md(issue: dict, repo: str | None) -> str:
 
 
 def main() -> int:
-    if sys.platform == "win32":
-        sys.stdout.reconfigure(encoding="utf-8")
+    ensure_utf8_stdio()
 
     parser = argparse.ArgumentParser(description="Converts JSON from gh issue view into canonical *.spec.md")
     parser.add_argument("--input", required=True, help="Path to JSON file (gh issue view --json ...) or '-' for stdin")

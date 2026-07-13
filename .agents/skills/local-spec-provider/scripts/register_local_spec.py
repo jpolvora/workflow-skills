@@ -24,6 +24,19 @@ import sys
 from datetime import date
 from pathlib import Path
 
+
+def ensure_utf8_stdio() -> None:
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if not callable(reconfigure):
+            continue
+        try:
+            reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "spec-to-pr" / "config.json"
 if not CONFIG_PATH.exists():
@@ -248,6 +261,8 @@ def main() -> int:
     )
     parser.add_argument("--json", action="store_true", help="Machine-readable JSON output.")
     args = parser.parse_args()
+
+    ensure_utf8_stdio()
 
     cfg = load_config()
     if args.plans_dir:

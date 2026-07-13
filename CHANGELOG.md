@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-13 16:55] Agent: Cursor Composer
+- **Prompt**: Fix remaining UTF-8 encoding problems in Python scripts across the project; record as important learning.
+- **Done**: Hardened all skill Python entrypoints with `ensure_utf8_stdio()`; fixed `11-ship-pr/scripts/verify.sh` `python -c` config reads to `Path.read_text(encoding='utf-8')`; set `subprocess.run(..., text=True, encoding='utf-8')` in both `update_state.py` variants; appended MEMORY trap for Windows cp1252 vs UTF-8.
+- **Result**: 14 Python scripts compile clean; no remaining bare text opens in skill scripts (security-review examples excluded).
+
 ### 2026-07-13 — Consumer audit follow-ups (portability + rename residue)
 - **Prompt**: Promote generic harness fixes from FiscalWR check-harness audit into workflow-skills.
 - **Done**: Fixed `spec-to-pr` Step 6 dispatch (`05-verify-plan`); corrected relative links (`plan-delta-template`, config.json links inside skill); pointed karpathy/senior-developer refs at shipped extra-skills + `AGENTS.md` § External Dependencies; fixed UTF-8 `§`/`·`; updated `config.json.example` karpathy path; documented dual-hub consumers; soft-warn ADO legacy fallback; added `specs/domains/index.md.example`; check-harness detects retired skill ids.

@@ -75,6 +75,8 @@ Canonical scripts live under those providers. Thin forwarder shims remain at `.a
 - Resolve `providers.scm` (section above) and load the scm provider skill.
 - Call provider intent **`list-threads`** with `<PR-ID>` (provider runs its canonical collector — GitHub: `fetch_threads.cjs`; Azure DevOps: `fix_pr_azure_context.py collect`).
 - Parse thread details: `threadId`, `filePath`, `lineNumber`, and `comments`.
+- **Active count:** use the provider payload’s `activeThreads` (ADO collect also prints `collect-summary:` on stderr). Do **not** re-filter raw ADO statuses in ad-hoc Python.
+- **Windows UTF-8:** if you must read `context.json` (or any collect `--output` file), always open with UTF-8 — e.g. `Path(...).read_text(encoding="utf-8")` or `open(..., encoding="utf-8")`. Bare `open(path)` uses the Windows locale (`cp1252`) and raises `UnicodeDecodeError` on review text.
 
 ### Phase 2 — Scoring & Classification
 Score each thread on a `0–10` scale to categorize its urgency:
