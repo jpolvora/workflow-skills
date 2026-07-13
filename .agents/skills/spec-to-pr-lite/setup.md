@@ -52,8 +52,12 @@ Before Step 1:
    ```
    Write this block immediately after flag parsing, before auto-resume. Applies in all modes (normal, auto, dry-run). In `dryRun`, prefix with `[DRY-RUN]`.
 4. **Auto resume** or **Active Resume** (see [Resume / reset](#resume--reset)).
-5. **Identity**: `workflow-id`, `slug`, `us-dir`.
-   - Note: Inject `workflowType: lite` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
+5. **Identity & Specification Resolution**:
+   - Resolve `providers.active` from config (default: GitHub if enabled, else Azure DevOps, else local).
+   - Load the resolved provider skill (`github-provider`, `azure-devops-provider`, or `local-spec-provider`).
+   - Run the Specification Protocol by dispatching `fetch-to-spec` with the user's trigger input to create the canonical specification file `{us-dir}/step-00-{slug}.spec.md`.
+   - Assign `workflow-id`, `slug`, `us-dir`.
+   - Inject `workflowType: lite` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
 6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit`.
 7. **LOC baseline**: `Shell` capture → `telemetry.loc.baseline`. Store ISO → `telemetry.workflowStartedAt`.
 8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-1`.
