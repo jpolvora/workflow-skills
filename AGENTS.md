@@ -10,11 +10,12 @@ This file is the **hub** of the agent harness. It contains the routing and index
 
 This hub may host **multiple end-to-end workflows**. Each workflow is a top-level skill under `.agents/skills/` with its own orchestrator, config, and dependency graph. Consumers install only the workflows they need.
 
-Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` are **read-only copies** managed by this repository. The contract is:
+Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` are **managed copies** from this repository. The contract is:
 
-- **All bug fixes, improvements, and new features** for workflow pipeline skills must be authored here and submitted as a PR to the `develop` branch.
-- **Consumer projects must never edit pipeline skill files in-place** — changes will be overwritten on the next `update` run. The sole exception is `config.json`, which is always preserved during updates.
-- **To propagate upstream changes to a consumer project**, run: `npx github:jpolvora/workflow-skills update`
+- **All bug fixes, improvements, and new features** for workflow pipeline skills must be authored here and submitted as a PR to the `develop` branch (merge to `main` only after **`check-harness`** passes — see [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills).
+- **Consumer projects should not treat in-place skill edits as permanent** — a plain `update` overwrites skill files. The sole exception is `config.json`, which is always preserved during updates. Local experiments are allowed; lasting changes require an upstream PR.
+- **To propagate upstream changes to a consumer project**, run: `npx github:jpolvora/workflow-skills update` (use `--include-new` when new top-level skill folders were added upstream).
+- **Portability:** skills under `.agents/skills/` must stay generic and parameterized via `config.json` / stack docs; skill content is **en-us** only. Detailed rules: [`.agents/AGENTS.md`](.agents/AGENTS.md).
 
 ### Workflows in this repository
 
