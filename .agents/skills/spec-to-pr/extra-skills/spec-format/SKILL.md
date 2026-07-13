@@ -102,7 +102,7 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 1. Read the provided `*.spec.md` (or locate in `{us-dir}/`).
 2. Validate frontmatter, required sections, and AC quality (enumerable, testable, unambiguous).
-3. Cross-reference with [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md) when there is parity with legacy.
+3. Cross-reference project architecture docs when present (`CONTEXT.md`, `STACK.md`, or paths from `config.json.domain` / `rules.stackFile`) — do not assume a consumer-specific SaaS design doc.
 4. Emit report:
 
 | Check | Status | Proposed fix |
@@ -115,10 +115,10 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 ## Flow — create mode
 
-1. Collect title, description, and ACs (free text, GitHub via `gh`, Azure DevOps via `ado-workitem-to-spec.py`, or user draft).
-2. If input is a GitHub issue number: `gh issue view {n}` + `.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py`.
-3. If input is an Azure DevOps work item: `.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py` (see `spec-to-pr` → Specification Protocol).
-4. If input is an existing hand-written `*.spec.md`: validate/format in place or copy to the canonical `step-00-` path — do not invent tracker fields.
+1. Collect title, description, and ACs (free text, or via the active provider — see `spec-to-pr` → Provider resolution).
+2. If input is a GitHub issue number: dispatch `github-provider` `fetch-to-spec` (canonical script: `.agents/skills/github-provider/scripts/github-issue-to-spec.py`; legacy shim: `.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py`).
+3. If input is an Azure DevOps work item: dispatch `azure-devops-provider` `fetch-to-spec` (canonical: `.agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py`; legacy shim under `spec-to-pr/scripts/`).
+4. If input is an existing hand-written `*.spec.md`: dispatch `local-spec-provider` register/normalize to the canonical `step-00-` path — do not invent tracker fields.
 5. Generate/confirm file at the canonical path with complete frontmatter and sections.
 6. Confirm final path to user.
 
@@ -129,5 +129,6 @@ specDate: 2026-07-02  # generation date or last relevant update
 ## References
 
 - Harness routing: [`AGENTS.md`](../../../../../AGENTS.md)
-- Architecture: [`docs/superpowers/specs/2026-05-27-matrix-saas-design.md`](../../../../../docs/superpowers/specs/2026-05-27-matrix-saas-design.md)
-- Workflow protocol: [`../../spec-to-pr/SKILL.md`](../../spec-to-pr/SKILL.md) → Specification Protocol
+- Architecture: project `CONTEXT.md` / `STACK.md` / `config.json.domain` (when present)
+- Workflow protocol: [`../../SKILL.md`](../../SKILL.md) → Specification Protocol
+- Providers: [`github-provider`](../../../github-provider/SKILL.md), [`azure-devops-provider`](../../../azure-devops-provider/SKILL.md), [`local-spec-provider`](../../../local-spec-provider/SKILL.md)

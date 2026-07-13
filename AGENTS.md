@@ -64,9 +64,31 @@ Skills loaded automatically by task type:
 | `caveman` | `.agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md` | Every prompt — response compression |
 | `gabarito` | `.agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
-| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Every prompt — summarized historical record |
-| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Every prompt — anti-regression record |
+| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Every task completion — summarized historical record |
+| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Every task completion — anti-regression record |
 | `using-superpowers` | `(global skill)` | Session start — skill discovery |
+
+### Precedence (auto-load)
+
+When multiple always-on skills apply in the same turn, resolve conflicts in this order (highest wins):
+
+1. **Explicit user instructions** for the current turn
+2. **Design/spec/repo architecture** skills and hard engineering constraints
+3. **`karpathy-guidelines`** — surgical scope and anti-overengineering
+4. **`gabarito`** — tone, structure, and operational reasoning (does not override design specs)
+5. **`caveman`** — response compression only (does not drop technical accuracy)
+
+`changelog` and `learning` run at task completion gates; they do not compete with every-prompt style skills mid-turn.
+
+### Opt-out
+
+| Phrase | Effect |
+|--------|--------|
+| `stop caveman` / `normal mode` | Disable caveman compression for the session (or until re-enabled) |
+| `stop gabarito` / `sem gabarito` | Disable gabarito directives for the session |
+| `/caveman lite\|full\|ultra\|…` | Change caveman intensity (see caveman skill) |
+
+Re-enable by invoking the skill again or starting a new session without the opt-out.
 
 ---
 
@@ -244,7 +266,14 @@ This reviews the diff between `develop` and `main` using the opencode engine wit
 
 ## External Dependencies
 
-Some skills reference `senior-developer` (a global skill installed at `~/.agents/skills/senior-developer/SKILL.md`) and `.cursor/rules/ef-migrations.mdc`. These are **not** included in this repository — they must be installed separately in consumer projects for the referenced skills to resolve correctly.
+Some skills reference `senior-developer` and `.cursor/rules/ef-migrations.mdc`. These are **not** shipped in this repository.
+
+| Dependency | Resolve (in order) | Notes |
+|------------|--------------------|-------|
+| `senior-developer` | 1) `.agents/skills/senior-developer/SKILL.md` if the consumer installed a local copy · 2) `~/.agents/skills/senior-developer/SKILL.md` (global) | Relative links inside skills that point at `../senior-developer` assume a local install; otherwise use the global path |
+| `ef-migrations.mdc` | `.cursor/rules/ef-migrations.mdc` in the consumer project | Optional; only for .NET/EF consumers |
+
+Install them separately in consumer projects for the referencing skills to resolve correctly.
 
 ## Custom Commands
 

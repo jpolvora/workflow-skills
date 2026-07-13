@@ -20,7 +20,7 @@ flowchart LR
   F5 --> F6[F6 Closure<br/>step 12 · push consent G3]
 ```
 
-Steps **4 e 8** são sub-gates de modelo (F1→F2, F3→F4) — não aparecem como steps do board nem em `completedSteps`.
+Steps **4 and 8** are model sub-gates (F1→F2, F3→F4) — they do not appear as board steps or in `completedSteps`.
 
 ---
 
@@ -92,7 +92,7 @@ flowchart TB
     RESUME -->|start new| STATE
     ACTIVE -->|none active| STATE
     STATE --> GATE0
-    GATE0 -->|Continuar| PREDISP
+    GATE0 -->|Continue| PREDISP
     PREDISP -->|Pronto — disparar| PROMPT
 
     PROMPT --> DISPATCH
@@ -104,13 +104,13 @@ flowchart TB
     STATE_W --> STATE
     STATE_W --> DOC
     DOC --> GATE
-    GATE -->|Menu: Continuar after 3| READY4
-    GATE -->|Menu: Continuar after 7| READY8
-    GATE -->|Menu: Continuar after 10| ITP
-    GATE -->|Menu: Continuar other| PREDISP
-    READY4 -->|Pronto implementar| PREDISP
-    READY8 -->|Pronto revisar| PREDISP
-    ITP -->|Aprovar bateria| PREDISP
+    GATE -->|Menu: Continue after 3| READY4
+    GATE -->|Menu: Continue after 7| READY8
+    GATE -->|Menu: Continue after 10| ITP
+    GATE -->|Menu: Continue other| PREDISP
+    READY4 -->|Ready to implement| PREDISP
+    READY8 -->|Ready to review| PREDISP
+    ITP -->|Approve battery| PREDISP
     GATE -->|Menu: Stop/Cancel/Revert| ENDW["End of workflow"]
 
     DISPATCH -.-> SA1 & SA2 & SA3 & SA4 & SA5 & SA6 & SA7 & SA8 & SA9
@@ -170,22 +170,22 @@ flowchart TD
 
     E11["11 Integration validation (generate plan & review)"]
     G11{"Gate 11 — confirm test battery"}
-    LOOP{"Inconsistências?"}
-    FIX["Corrigir + commit + re-seed + revalidar"]
+    LOOP{"Inconsistencies?"}
+    FIX["Fix + commit + re-seed + revalidate"]
     E12["12 Cleanup + consolidation"]
     PR["PR / push — manual (out of scope)"]
     ENDW(["End"])
 
     START --> BOOT --> G0 --> E1 --> G1 --> E2 --> G2 --> E3 --> G3
-    G3 -->|Continuar separate turn| R4 --> G4 --> E5 --> G5 --> E6 --> G6 --> E7 --> G7
-    G7 -->|Aprovar e Commit| R8
-    G7 -->|Refazer implementação| REIMPL --> E5
+    G3 -->|Continue separate turn| R4 --> G4 --> E5 --> G5 --> E6 --> G6 --> E7 --> G7
+    G7 -->|Approve and Commit| R8
+    G7 -->|Redo implementation| REIMPL --> E5
     R8 --> G8 --> E9 --> G9 --> E10 --> G10 --> E11 --> G11
-    G11 -->|Aprovar e Executar| E11
-    G11 -->|Pular| E12
+    G11 -->|Approve and run| E11
+    G11 -->|Skip| E12
     E11 --> LOOP
-    LOOP -->|sim, iter < 3| FIX --> E11
-    LOOP -->|não ou aceitar ressalvas| E12 --> PR --> ENDW
+    LOOP -->|yes, iter < 3| FIX --> E11
+    LOOP -->|no or accept with reservations| E12 --> PR --> ENDW
 ```
 
 ---
@@ -269,7 +269,7 @@ flowchart LR
         CHECK -->|all closed| SU
         REC -->|Encerrar| SU
         SU -->|Confirmar| OUT["shared_understanding: confirmed -> Step 3"]
-        SU -->|Continuar| INV
+        SU -->|Continue| INV
     end
 
     IN["*.plan.md"] --> INV
@@ -296,12 +296,12 @@ flowchart TD
     end
 
     PLAN --> CONF
-    CONF -->|Aprovar e Executar| COMMIT --> BUILD --> SEED --> API --> UI --> REPORT --> FAIL
-    CONF -->|Ajustar plano| PLAN
-    CONF -->|Pular| SKIP["Log warning -> Step 12"]
-    FAIL -->|sim| PROP --> FIX --> BUILD
-    FAIL -->|não| OK["-> Step 12"]
-    FAIL -->|aceitar ressalvas| OK
+    CONF -->|Approve and run| COMMIT --> BUILD --> SEED --> API --> UI --> REPORT --> FAIL
+    CONF -->|Adjust plan| PLAN
+    CONF -->|Skip| SKIP["Log warning -> Step 12"]
+    FAIL -->|yes| PROP --> FIX --> BUILD
+    FAIL -->|no| OK["-> Step 12"]
+    FAIL -->|accept with reservations| OK
 ```
 
 ---
@@ -313,7 +313,7 @@ mindmap
   root((Spec-to-PR<br/>v8.1))
     Orchestrator
       Menu gates
-      state.md em .cursor/plans/us-{id}/
+      state.md under .cursor/plans/us-{id}/
       Retry 3x
       SKILL.md only
     Protocols
@@ -460,7 +460,7 @@ flowchart TB
 | Full reset | Checkpoint Revert | 1 |
 | Previous (any earlier step) | Checkpoint Revert + redispatch | chosen |
 | Repeat Step N (with partial output) | Checkpoint Revert + redispatch | N |
-| Refazer implementação (Step 7) | Backward Navigation shortcut | 5 |
+| Redo implementation (Step 7) | Backward Navigation shortcut | 5 |
 
 ---
 
@@ -490,7 +490,7 @@ flowchart TB
 - `/spec-to-pr US 1925`
 - `/spec-to-pr auto US 1925`
 - `/spec-to-pr dry-run auto US 1925`
-- `/spec-to-pr auto skip-integration US 1925` — pula o Step 11 (integração/browser)
-- `/spec-to-pr auto skip-tests US 1925` — não executa suites de teste (build continua)
+- `/spec-to-pr auto skip-integration US 1925` — skips Step 11 (integration/browser)
+- `/spec-to-pr auto skip-tests US 1925` — skips test suites (build still required)
 - `/status` — Progress Board only
-- "voltar" / "volta pro step X" — Backward Navigation sub-menu (disabled when `autoMode: true`)
+- "go back" / "back to step X" — Backward Navigation sub-menu (disabled when `autoMode: true`)
