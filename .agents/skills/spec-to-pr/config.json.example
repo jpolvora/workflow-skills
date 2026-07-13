@@ -68,13 +68,19 @@
     "architectureSpec": "<path to architecture spec doc>"
   },
 
+  "providers": {
+    "_comment": "active = work-item/spec source (github | azure-devops | local). scm = PR/thread host (github | azure-devops only; never local). Hybrid example: active=local + scm=github (local specs, GitHub PRs). If scm omitted: when active is github|azure-devops → scm=active; when active=local → infer from project.repoUrl host (github.com → github; dev.azure.com|visualstudio.com → azure-devops) or STOP and set scm explicitly. LEGACY: omit this entire providers block to infer active from issueTrackers.*.enabled (GitHub if enabled, else Azure DevOps, else local).",
+    "active": "github",
+    "scm": "github"
+  },
+
   "issueTrackers": {
     "github": {
       "enabled": true,
       "owner": "<GITHUB_ORG>",
       "repo": "<GITHUB_REPO>",
       "cli": "gh",
-      "issueToSpecScript": ".agents/skills/spec-to-pr/scripts/github-issue-to-spec.py"
+      "issueToSpecScript": ".agents/skills/github-provider/scripts/github-issue-to-spec.py"
     },
     "azureDevOps": {
       "enabled": false,
@@ -83,7 +89,7 @@
       "project": "",
       "patEnvVar": "ADO_PAT",
       "apiBase": "https://dev.azure.com",
-      "workItemToSpecScript": ".agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py"
+      "workItemToSpecScript": ".agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py"
     }
   },
 
@@ -114,6 +120,7 @@
 
   "plans": {
     "dir": ".cursor/plans",
+    "_comment_specsDir": "Default human-facing local specs dir (repo root). local-spec-provider uses this when providers.active=local; canonical copy stays under {plans.dir}/{slug}/step-00-*.spec.md.",
     "specsDir": "specs",
     "worktreesDir": ".cursor/plans/{slug}/worktrees"
   },
@@ -121,8 +128,8 @@
   "rules": {
     "harness": "AGENTS.md",
     "seniorDeveloper": ".agents/skills/senior-developer/SKILL.md",
-    "karpathyGuidelines": ".agents/skills/karpathy-guidelines/SKILL.md",
-    "viewPatterns": ".agents/skills/matrix-view-patterns/SKILL.md",
+    "karpathyGuidelines": ".agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md",
+    "viewPatterns": "",
     "efMigrations": ".cursor/rules/ef-migrations.mdc",
     "stackFile": "STACK.md"
   },

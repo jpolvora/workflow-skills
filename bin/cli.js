@@ -10,8 +10,10 @@ const __dirname = path.dirname(__filename);
 
 const packageRoot = path.resolve(__dirname, '..');
 const srcSkillsDir = path.join(packageRoot, '.agents', 'skills');
+const srcAgentsIndex = path.join(packageRoot, '.agents', 'AGENTS.md');
 const targetDir = process.cwd();
-const targetSkillsDir = path.join(targetDir, '.agents', 'skills');
+const targetAgentsDir = path.join(targetDir, '.agents');
+const targetSkillsDir = path.join(targetAgentsDir, 'skills');
 const CONFIG_FILE = 'config.json';
 
 /** Old consumer folder names → current upstream skill folder names */
@@ -84,6 +86,18 @@ function copyDirPreservingConfig(src, dest, preservedFile) {
   }
 }
 
+/** Install or refresh packaged `.agents/AGENTS.md` (consumer skill index + rules). */
+function installPackagedAgentsIndex() {
+  if (!fs.existsSync(srcAgentsIndex)) {
+    console.log('  Note: packaged .agents/AGENTS.md not present in this release; skipped.');
+    return;
+  }
+  fs.mkdirSync(targetAgentsDir, { recursive: true });
+  const dest = path.join(targetAgentsDir, 'AGENTS.md');
+  fs.copyFileSync(srcAgentsIndex, dest);
+  console.log(`  Installed packaged index: .agents/AGENTS.md`);
+}
+
 /** Block installing into the source package itself (except test/ consumer). */
 function assertNotSelfOverwrite() {
   const cwd = path.resolve(targetDir);
@@ -110,6 +124,21 @@ function listSkillDirs(dir) {
   });
 }
 
+function printHelp() {
+  console.log(`Usage:
+  npx github:jpolvora/workflow-skills              Interactive install
+  npx github:jpolvora/workflow-skills update       Update installed skills (preserves config.json)
+  npx github:jpolvora/workflow-skills update --include-new
+      Also install upstream skill folders not yet present locally
+  npx github:jpolvora/workflow-skills --help
+
+Notes:
+  - Skills under .agents/skills/ are overwritten on update; config.json is preserved.
+  - Packaged .agents/AGENTS.md (portability / upstream PR rules) is refreshed on install and update.
+  - Prefer this Node CLI over install-skills.sh for update + config preservation.
+`);
+}
+
 async function main() {
   if (!fs.existsSync(srcSkillsDir)) {
     console.error(`Error: Source skills directory not found at ${srcSkillsDir}`);
@@ -125,7 +154,16 @@ async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
 
+  if (command === '--help' || command === '-h' || command === 'help') {
+    printHelp();
+    process.exit(0);
+  }
+
   if (command === 'update') {
+    if (args.includes('--help') || args.includes('-h')) {
+      printHelp();
+      process.exit(0);
+    }
     const includeNew = args.includes('--include-new');
     assertNotSelfOverwrite();
     runUpdate(skills, includeNew);
@@ -183,6 +221,8 @@ function runUpdate(skills, includeNew) {
     if (missingNew.length > 10) console.log(`  ... and ${missingNew.length - 10} more`);
     console.log('Re-run with `update --include-new` to install them, or use the interactive installer.');
   }
+
+  installPackagedAgentsIndex();
 
   console.log('\nUpdate complete!');
   console.log(`Note: Existing '${CONFIG_FILE}' files were preserved and NOT overwritten.`);
@@ -266,13 +306,25 @@ async function runInteractive(skills) {
         console.log(`  Skipped: ${skillName}`);
         continue;
       }
-      fs.rmSync(destPath, { recursive: true, force: true });
+      // Preserve consumer config.json (same contract as `update`)
+      const configPath = path.join(destPath, CONFIG_FILE);
+      const preservedConfig = fs.existsSync(configPath) ? fs.readFileSync(configPath) : null;
+      copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+      if (preservedConfig) {
+        fs.writeFileSync(configPath, preservedConfig);
+        console.log(`    Preserved existing ${CONFIG_FILE}`);
+      }
+      console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
+      installedCount++;
+      continue;
     }
 
     copyDirSync(srcPath, destPath);
     console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
     installedCount++;
   }
+
+  installPackagedAgentsIndex();
 
   console.log('');
   if (installedCount > 0) {

@@ -6,6 +6,7 @@ set -e
 # Find script directory (source of skills)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_SKILLS_DIR="$SCRIPT_DIR/.agents/skills"
+SRC_AGENTS_INDEX="$SCRIPT_DIR/.agents/AGENTS.md"
 
 # Temporary directory for cloning if run remotely/standalone
 TEMP_CLONE_DIR=""
@@ -37,13 +38,38 @@ if [ "$IS_WORKFLOW_SKILLS_REPO" = "false" ] || [ ! -d "$SRC_SKILLS_DIR" ]; then
   REPO_BRANCH="${WORKFLOW_SKILLS_REPO_BRANCH:-main}"
   git clone --depth 1 --branch "$REPO_BRANCH" "$REPO_URL" "$TEMP_CLONE_DIR"
   SRC_SKILLS_DIR="$TEMP_CLONE_DIR/.agents/skills"
+  SRC_AGENTS_INDEX="$TEMP_CLONE_DIR/.agents/AGENTS.md"
 fi
 
 # Get current directory (target repository where script is run)
 TARGET_DIR="$(pwd)"
 
+# Refuse installing into the workflow-skills source tree (except test/)
+if [ "$IS_WORKFLOW_SKILLS_REPO" = "true" ] && [ -z "$TEMP_CLONE_DIR" ]; then
+  RESOLVED_TARGET="$(cd "$TARGET_DIR" && pwd)"
+  RESOLVED_SCRIPT="$(cd "$SCRIPT_DIR" && pwd)"
+  if [ "$RESOLVED_TARGET" = "$RESOLVED_SCRIPT" ]; then
+    echo "Error: Refusing to install into the workflow-skills source repository."
+    echo "  Package root: $RESOLVED_SCRIPT"
+    echo "  Current dir:  $RESOLVED_TARGET"
+    echo "Run from a consumer project, or from the test/ folder."
+    echo "Prefer: npx github:jpolvora/workflow-skills"
+    exit 1
+  fi
+  case "$RESOLVED_TARGET" in
+    "$RESOLVED_SCRIPT"/test|"$RESOLVED_SCRIPT"/test/*) ;;
+    "$RESOLVED_SCRIPT"/*)
+      echo "Error: Refusing to install into the workflow-skills source repository."
+      echo "  Package root: $RESOLVED_SCRIPT"
+      echo "  Current dir:  $RESOLVED_TARGET"
+      echo "Run from a consumer project, or from the test/ folder."
+      echo "Prefer: npx github:jpolvora/workflow-skills"
+      exit 1
+      ;;
+  esac
+fi
+
 # Avoid copying skills onto the source itself
-# Resolve paths to avoid mismatch in trailing slashes or symlinks
 RESOLVED_SRC_SKILLS_DIR="$(cd "$SRC_SKILLS_DIR" && pwd)"
 RESOLVED_TARGET_SKILLS_DIR="$(mkdir -p "$TARGET_DIR/.agents/skills" && cd "$TARGET_DIR/.agents/skills" && pwd)"
 
@@ -53,8 +79,14 @@ if [ "$RESOLVED_SRC_SKILLS_DIR" = "$RESOLVED_TARGET_SKILLS_DIR" ]; then
   echo "Example:"
   echo "  cd /path/to/my-project"
   echo "  bash $SCRIPT_DIR/install-skills.sh"
+  echo "Prefer: npx github:jpolvora/workflow-skills"
   exit 1
 fi
+
+echo "Note: For updates that preserve config.json and install new skills, prefer:"
+echo "  npx github:jpolvora/workflow-skills update"
+echo "  npx github:jpolvora/workflow-skills update --include-new"
+echo
 
 # Scan for skills directories
 skills=()
@@ -76,11 +108,10 @@ for ((i=0; i<${#skills[@]}; i++)); do
 done
 
 while true; do
-  # Clear screen gracefully (works in git bash / linux / macOS)
   clear 2>/dev/null || true
   
   echo "============================================================"
-  echo "  Workflow Skills - Skill Installer"
+  echo "  Workflow Skills - Skill Installer (bash)"
   echo "============================================================"
   echo "Source: $SRC_SKILLS_DIR"
   echo "Target: $TARGET_DIR/.agents/skills"
@@ -107,7 +138,6 @@ while true; do
     read -p "Select action or toggle (e.g. 1, a, y, q): " opt < /dev/tty
   fi
   
-  # Check if option is a number
   if [[ "$opt" =~ ^[0-9]+$ ]]; then
     idx=$((opt - 1))
     if [ $idx -ge 0 ] && [ $idx -lt ${#skills[@]} ]; then
@@ -125,7 +155,6 @@ while true; do
       fi
     fi
   elif [ "$opt" = "a" ] || [ "$opt" = "A" ]; then
-    # Check if all are selected, if so deselect all, else select all
     all_selected=true
     for ((i=0; i<${#skills[@]}; i++)); do
       if [ "${selected[i]}" = "false" ]; then
@@ -156,7 +185,7 @@ while true; do
   fi
 done
 
-# Perform copy
+# Perform copy (preserve config.json on overwrite — same contract as Node CLI update)
 installed_count=0
 echo
 echo "Starting installation..."
@@ -168,7 +197,7 @@ for ((i=0; i<${#skills[@]}; i++)); do
     
     echo "Installing '$skill_name'..."
     
-    # Check if target folder exists
+    preserved_config=""
     if [ -d "$dest_dir" ]; then
       echo "  Warning: Destination directory '.agents/skills/$skill_name' already exists."
       if [ -t 0 ]; then
@@ -180,18 +209,31 @@ for ((i=0; i<${#skills[@]}; i++)); do
         echo "  Skipped: $skill_name"
         continue
       fi
+      if [ -f "$dest_dir/config.json" ]; then
+        preserved_config="$(mktemp)"
+        cp "$dest_dir/config.json" "$preserved_config"
+      fi
       rm -rf "$dest_dir"
     fi
     
-    # Create the parent directory structure if not exists
     mkdir -p "$TARGET_DIR/.agents/skills"
-    
-    # Copy directory
     cp -r "$src_path" "$dest_dir"
+    if [ -n "$preserved_config" ] && [ -f "$preserved_config" ]; then
+      cp "$preserved_config" "$dest_dir/config.json"
+      rm -f "$preserved_config"
+      echo "    Preserved existing config.json"
+    fi
     echo "  Installed: $skill_name -> .agents/skills/$skill_name"
     installed_count=$((installed_count + 1))
   fi
 done
+
+# Packaged consumer index (portability / upstream PR rules)
+if [ -f "$SRC_AGENTS_INDEX" ]; then
+  mkdir -p "$TARGET_DIR/.agents"
+  cp "$SRC_AGENTS_INDEX" "$TARGET_DIR/.agents/AGENTS.md"
+  echo "  Installed packaged index: .agents/AGENTS.md"
+fi
 
 echo
 if [ $installed_count -gt 0 ]; then

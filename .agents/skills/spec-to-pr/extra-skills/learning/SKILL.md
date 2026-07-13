@@ -5,7 +5,7 @@ description: Analyze session output and record ONLY anti-regression knowledge (m
 
 # Learning
 
-**Mandatory completion gate** — run after verification, code review proof, and [DOCS-SYNC](../../../senior-developer/DOCS-SYNC.md). Task is **not done** until this skill runs and the proof includes a **`Learning:`** line ([senior-developer](../../../senior-developer/SKILL.md) § Code review proof).
+**Mandatory completion gate** — run after verification and code review proof. If the consumer has a docs-sync step (e.g. `senior-developer` DOCS-SYNC or equivalent), run it before this gate. Task is **not done** until this skill runs and the proof includes a **`Learning:`** line ([senior-developer](../../../../../AGENTS.md#external-dependencies) § Code review proof when that skill is installed).
 
 ## When to run
 

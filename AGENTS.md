@@ -10,11 +10,12 @@ This file is the **hub** of the agent harness. It contains the routing and index
 
 This hub may host **multiple end-to-end workflows**. Each workflow is a top-level skill under `.agents/skills/` with its own orchestrator, config, and dependency graph. Consumers install only the workflows they need.
 
-Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` are **read-only copies** managed by this repository. The contract is:
+Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` are **managed copies** from this repository. The contract is:
 
-- **All bug fixes, improvements, and new features** for workflow pipeline skills must be authored here and submitted as a PR to the `develop` branch.
-- **Consumer projects must never edit pipeline skill files in-place** — changes will be overwritten on the next `update` run. The sole exception is `config.json`, which is always preserved during updates.
-- **To propagate upstream changes to a consumer project**, run: `npx github:jpolvora/workflow-skills update`
+- **All bug fixes, improvements, and new features** for workflow pipeline skills must be authored here and submitted as a PR to the `develop` branch (merge to `main` only after **`check-harness`** passes — see [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills).
+- **Consumer projects should not treat in-place skill edits as permanent** — a plain `update` overwrites skill files. The sole exception is `config.json`, which is always preserved during updates. Local experiments are allowed; lasting changes require an upstream PR.
+- **To propagate upstream changes to a consumer project**, run: `npx github:jpolvora/workflow-skills update` (use `--include-new` when new top-level skill folders were added upstream).
+- **Portability:** skills under `.agents/skills/` must stay generic and parameterized via `config.json` / stack docs; skill content is **en-us** only. Detailed rules: [`.agents/AGENTS.md`](.agents/AGENTS.md).
 
 ### Workflows in this repository
 
@@ -41,6 +42,9 @@ Additional workflows may be added as peer top-level skills; they do not replace 
 | `09-goal-fix-pr` | Step 13 (via ship-pr) | Convergence loop — fix-pr until zero open threads |
 | `10-update-plan-implementation` | Post-workflow | Delta adjustments from QA findings |
 | `11-ship-pr` | Step 13 | End-to-end PR delivery and merge |
+| `github-provider` | Provider | GitHub issue→spec, auth, PR create/threads/merge |
+| `azure-devops-provider` | Provider | Azure DevOps work item→spec, auth, PR create/threads/merge |
+| `local-spec-provider` | Provider | Local `*.spec.md` register/normalize; PR via `providers.scm` |
 | `spec-format` | Spec protocol | Canonical spec format validation |
 | `goal-loop` | Loop primitive | Generic convergence loop (consumed by `09-goal-fix-pr`) |
 
@@ -61,17 +65,43 @@ Skills loaded automatically by task type:
 | `caveman` | `.agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md` | Every prompt — response compression |
 | `gabarito` | `.agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
-| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Every prompt — summarized historical record |
-| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Every prompt — anti-regression record |
+| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Every task completion — summarized historical record |
+| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Every task completion — anti-regression record |
 | `using-superpowers` | `(global skill)` | Session start — skill discovery |
+
+### Precedence (auto-load)
+
+When multiple always-on skills apply in the same turn, resolve conflicts in this order (highest wins):
+
+1. **Explicit user instructions** for the current turn
+2. **Design/spec/repo architecture** skills and hard engineering constraints
+3. **`karpathy-guidelines`** — surgical scope and anti-overengineering
+4. **`gabarito`** — tone, structure, and operational reasoning (does not override design specs)
+5. **`caveman`** — response compression only (does not drop technical accuracy)
+
+`changelog` and `learning` run at task completion gates; they do not compete with every-prompt style skills mid-turn.
+
+### Opt-out
+
+| Phrase | Effect |
+|--------|--------|
+| `stop caveman` / `normal mode` | Disable caveman compression for the session (or until re-enabled) |
+| `stop gabarito` / `sem gabarito` | Disable gabarito directives for the session |
+| `/caveman lite\|full\|ultra\|…` | Change caveman intensity (see caveman skill) |
+
+Re-enable by invoking the skill again or starting a new session without the opt-out.
 
 ---
 
 ## Harness integrity check
 
-Whenever skills are created, modified, or updated, or any harness file is changed (`.agents/skills/`, `AGENTS.md`, `README.md`, `docs/`), **ask the user** if they want to run the harness audit.
+Whenever skills are created, modified, or updated, or any harness file is changed (`.agents/skills/`, `AGENTS.md`, `README.md`, `docs/`), **ask the user** if they want to run the harness audit **and** whether the static site catalog and root `README.md` also need updating.
 
-To audit, load the `.agents/skills/check-harness.md` skill and execute the scan phases (Phases 0–5c) followed by the correction plan (Phase 6).
+After a harness change, always evaluate all three:
+
+1. **check-harness** — load `.agents/skills/check-harness/SKILL.md` and execute the scan phases (Phases 0–5c) followed by the correction plan (Phase 6).
+2. **Site catalog** — if skills, layers, or routing tables changed, regenerate `docs/index.html` with `node bin/build-site.js` (see Verification §4).
+3. **README.md** — if the change affects install/usage, skill catalog, workflows, or consumer-facing docs, update the root `README.md` to stay in sync with `AGENTS.md`.
 
 > **Note:** This is the `workflow-skills` source repository. **Never** run scripts via `npx github:jpolvora/workflow-skills` — use local files from this repository (remote installations are permitted only within the `test/` folder for testing/verification).
 
@@ -83,7 +113,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `check-harness` | `.agents/skills/check-harness.md` | Audit harness integrity (AGENTS.md, skills, rules) |
+| `check-harness` | `.agents/skills/check-harness/SKILL.md` | Audit harness integrity (AGENTS.md, skills, rules) |
 | `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Create new skills with structure and progressive disclosure |
 | `using-superpowers` | `(global skill)` | Agent onboarding: skill discovery via Skill tool |
 
@@ -94,7 +124,7 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | `mobile-first-design` | `.agents/skills/mobile-first-design/SKILL.md` | Responsive mobile-first design |
 | `design-taste-frontend` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend — landing pages, portfolios, redesigns |
 
-### Layer 2 — spec-to-pr Pipeline (numbered, 00-11)
+### Layer 2 — spec-to-pr Pipeline (numbered 00–11 + providers)
 
 | Step | Skill | Path | Description |
 |------|-------|------|-------------|
@@ -110,6 +140,9 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | 09 | `09-goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
 | 10 | `10-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` | Post-workflow: capture QA findings and apply deltas |
 | 11 | `11-ship-pr` | `.agents/skills/11-ship-pr/SKILL.md` | End-to-end delivery: PR develop→master/main, merge |
+| — | `github-provider` | `.agents/skills/github-provider/SKILL.md` | GitHub provider — issue→spec, auth, PR create/threads/merge (`gh`) |
+| — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` | Azure DevOps provider — work item→spec, PAT auth, PR create/threads/merge |
+| — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` | Local `*.spec.md` provider — specsDir detect/register; PR intents via `providers.scm` |
 
 ### Layer 3 — Discovery & Library Integration
 
@@ -162,6 +195,9 @@ To audit, load the `.agents/skills/check-harness.md` skill and execute the scan 
 | I want to fix PR | `08-fix-pr` |
 | I want to ship PR | `11-ship-pr` |
 | I want Spec → PR E2E delivery | `spec-to-pr` |
+| I want GitHub issue→spec or GitHub PR ops | `github-provider` |
+| I want Azure DevOps work item→spec or ADO PR ops | `azure-devops-provider` |
+| I want local `*.spec.md` register/normalize | `local-spec-provider` |
 | I want to format/review spec | `spec-format` |
 | I want to create new skill | `write-a-skill` |
 | I want to audit harness | `check-harness` |
@@ -180,7 +216,7 @@ Before closing a task or committing, run the following verification steps:
 ### 1. Harness Integrity
 ```bash
 # Check harness integrity (paths, routing, redundancy)
-# Load .agents/skills/check-harness.md and execute Phases 0–5c
+# Load .agents/skills/check-harness/SKILL.md and execute Phases 0–5c
 ```
 
 ### 2. Automated Installation & Packaging Verification
@@ -231,7 +267,17 @@ This reviews the diff between `develop` and `main` using the opencode engine wit
 
 ## External Dependencies
 
-Some skills reference `senior-developer` (a global skill installed at `~/.agents/skills/senior-developer/SKILL.md`) and `.cursor/rules/ef-migrations.mdc`. These are **not** included in this repository — they must be installed separately in consumer projects for the referenced skills to resolve correctly.
+Some skills reference `senior-developer`, `CONTEXT.md`, and `.cursor/rules/ef-migrations.mdc`. These are **not** shipped in this repository.
+
+| Dependency | Resolve (in order) | Notes |
+|------------|--------------------|-------|
+| `senior-developer` | 1) path in `spec-to-pr/config.json` → `rules.seniorDeveloper` · 2) `.agents/skills/senior-developer/SKILL.md` · 3) `.cursor/rules/senior-developer.mdc` · 4) `~/.agents/skills/senior-developer/SKILL.md` (global) | Skills must **not** hardcode a single relative path. Prefer config; link to this section when documenting. |
+| `karpathy-guidelines` | 1) `rules.karpathyGuidelines` in config · 2) `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` (shipped) | Do **not** use a top-level `.agents/skills/karpathy-guidelines/` path — that layout is obsolete. |
+| `CONTEXT.md` | Consumer repo root (optional) | If absent, use consumer glossary / stack docs; do not fail the skill. |
+| `specs/domains/` | Consumer catalog for domain-review | Optional until domain-review is used. Starter: [`specs/domains/index.md.example`](specs/domains/index.md.example). |
+| `ef-migrations.mdc` | `.cursor/rules/ef-migrations.mdc` in the consumer project | Optional; only for .NET/EF consumers |
+
+Install optional dependencies separately in consumer projects. Shipped skills resolve guardrails via **config first**.
 
 ## Custom Commands
 

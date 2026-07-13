@@ -1,0 +1,201 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "planPath": "step-02-spec-provider-skills.plan.refined.md",
+  "reason": "6 steps, ~28 files, 4 layers — exceeds dagThresholds (maxImplementationSteps: 3, maxExpectedFiles: 6, maxLayers: 2).",
+  "sizeEval": {
+    "steps": 6,
+    "expectedFiles": 28,
+    "layers": 4,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Scaffold github-provider",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/github-provider/SKILL.md",
+        ".agents/skills/github-provider/scripts/.gitkeep"
+      ],
+      "acceptance": "Frontmatter name/upstream/version/disable-model-invocation; Standalone+Workflow; intent table for all six GitHub intents; script paths under github-provider/scripts/; en-us; no hardcoded org/repo.",
+      "coderPrompt": "Create .agents/skills/github-provider/SKILL.md as dual-mode provider skill matching 08-fix-pr/11-ship-pr frontmatter. Document GitHub intents (fetch-to-spec, validate-auth, create-pr, list-threads, resolve-thread, merge-pr) with gh CLI + scripts. Standalone examples for fetch-to-spec, validate-auth, and ≥1 PR intent. Point scripts at github-provider/scripts/ canonical paths. English only. Do not move scripts (T4)."
+    },
+    {
+      "id": "T2",
+      "title": "Scaffold azure-devops-provider",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/azure-devops-provider/SKILL.md",
+        ".agents/skills/azure-devops-provider/scripts/.gitkeep"
+      ],
+      "acceptance": "Frontmatter convention; dual-mode; entry patterns ADO {id} and {org}/{project}#{id}; PAT via env/issueTrackers.azureDevOps; all six intents; en-us; no hardcoded org/project.",
+      "coderPrompt": "Create .agents/skills/azure-devops-provider/SKILL.md dual-mode. Document ADO fetch/auth/PR/thread intents using az and/or REST + scripts under azure-devops-provider/scripts/. Prefer config.json issueTrackers.azureDevOps + env PAT; legacy azure-devops.config.json fallback only. English only. Do not move scripts (T5)."
+    },
+    {
+      "id": "T3",
+      "title": "Scaffold local-spec-provider + scripts",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/local-spec-provider/SKILL.md",
+        ".agents/skills/local-spec-provider/scripts/detect_specs_dir.py",
+        ".agents/skills/local-spec-provider/scripts/register_local_spec.py"
+      ],
+      "acceptance": "Dual-mode + frontmatter; plans.specsDir default specs; detect/configure; flat + one-level nested; PR intents delegate to providers.scm; local validate-auth = specsDir/config check; scripts exist or documented.",
+      "coderPrompt": "Create local-spec-provider skill + minimal Python/shell scripts for detect/configure specsDir and register/normalize/mirror into {us-dir}/step-00-{slug}.spec.md with source: local. Document hybrid PR intents → load scm provider. Support flat and one-level nested. English only. No PowerShell."
+    },
+    {
+      "id": "T4",
+      "title": "Move GitHub scripts + shims",
+      "parallelGroup": "L1",
+      "dependsOn": ["T1"],
+      "files": [
+        ".agents/skills/github-provider/scripts/github-issue-to-spec.py",
+        ".agents/skills/github-provider/scripts/fetch_threads.cjs",
+        ".agents/skills/github-provider/scripts/resolve_thread.cjs",
+        ".agents/skills/spec-to-pr/scripts/github-issue-to-spec.py",
+        ".agents/skills/08-fix-pr/scripts/fetch_threads.cjs",
+        ".agents/skills/08-fix-pr/scripts/resolve_thread.cjs",
+        ".agents/skills/github-provider/SKILL.md"
+      ],
+      "acceptance": "Canonical logic only under github-provider/scripts/; thin shims at old paths forward same CLI args; SKILL refs canonical paths; canonicity still finds spec-to-pr/scripts/github-issue-to-spec.py.",
+      "coderPrompt": "Move github-issue-to-spec.py from spec-to-pr/scripts/ and fetch_threads.cjs/resolve_thread.cjs from 08-fix-pr/scripts/ into github-provider/scripts/. Leave thin forwarder shims at old paths. Update github-provider SKILL path table only. Do not edit 08-fix-pr/SKILL.md or README (T10). Prefer move+shim."
+    },
+    {
+      "id": "T5",
+      "title": "Move ADO scripts + shims + en-us",
+      "parallelGroup": "L1",
+      "dependsOn": ["T2"],
+      "files": [
+        ".agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py",
+        ".agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py",
+        ".agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py",
+        ".agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py",
+        ".agents/skills/azure-devops-provider/SKILL.md"
+      ],
+      "acceptance": "Canonical under azure-devops-provider/scripts/; shims at old paths; fix_pr_azure_context.py user-facing messages en-us; prefer issueTrackers.azureDevOps + env PAT with legacy fallback.",
+      "coderPrompt": "Move ado-workitem-to-spec.py and fix_pr_azure_context.py into azure-devops-provider/scripts/. Translate all user-facing PT-BR strings to en-us. Prefer config.json issueTrackers.azureDevOps + patEnvVar/ADO_PAT/AZURE_DEVOPS_PAT; legacy azure-devops/ paths as fallback. Thin shims at old paths. Update azure-devops-provider SKILL paths only."
+    },
+    {
+      "id": "T6",
+      "title": "Config schema + example + local providers",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/spec-to-pr/config.schema.json",
+        ".agents/skills/spec-to-pr/config.json.example",
+        ".agents/skills/spec-to-pr/config.json"
+      ],
+      "acceptance": "Schema providers.active enum github|azure-devops|local; providers.scm enum github|azure-devops; example documents omit→legacy inference; specsDir default specs; example script paths canonical; local config.json active+scm github (gitignored, do not commit).",
+      "coderPrompt": "Add additive providers block to config.schema.json and config.json.example with resolution comments. Update example *Script paths to provider canonical locations. Set local gitignored config.json providers.active/scm to github for this hub. Do not stage config.json."
+    },
+    {
+      "id": "T7",
+      "title": "Wire orchestrator entry + ARTIFACTS + FAQ",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T2", "T3", "T6"],
+      "files": [
+        ".agents/skills/spec-to-pr/SKILL.md",
+        ".agents/skills/spec-to-pr/ARTIFACTS.md",
+        ".agents/skills/spec-to-pr/docs/faq.md"
+      ],
+      "acceptance": "Entry/Spec Protocol delegates fetch-to-spec via providers.active; no multi-line gh/az/local recipe bodies; slug matrix + bare-number rules preserved (active overrides when providers set); Scripts inventory updated; ARTIFACTS/FAQ Action→provider fetch-to-spec.",
+      "coderPrompt": "Refactor spec-to-pr/SKILL.md Specification Protocol and Entry Gate to resolve providers.active and load that skill for fetch-to-spec. Replace concrete CLI recipes with dispatch table + provider links. Keep slug matrix and local source:local skip Step 0. Update Scripts table, ARTIFACTS.md, docs/faq.md. Surgical only."
+    },
+    {
+      "id": "T8",
+      "title": "Wire 00-write-spec optional mirror",
+      "parallelGroup": "L2",
+      "dependsOn": ["T3"],
+      "files": [
+        ".agents/skills/00-write-spec/SKILL.md"
+      ],
+      "acceptance": "Optional post-draft mirror via local-spec-provider under specsDir; canonical remains {us-dir}/step-00-{slug}.spec.md; 00 dual-mode preserved.",
+      "coderPrompt": "Add minimal optional mirror hook to 00-write-spec/SKILL.md: after drafting step-00, may ask local-spec-provider to mirror under plans.specsDir. Delegate; do not duplicate mirror logic. Surgical only."
+    },
+    {
+      "id": "T9",
+      "title": "Wire 11-ship-pr scm intents",
+      "parallelGroup": "L3",
+      "dependsOn": ["T1", "T2", "T6"],
+      "files": [
+        ".agents/skills/11-ship-pr/SKILL.md"
+      ],
+      "acceptance": "Phases 4–6 use providers.scm create-pr/checks/merge-pr; not GitHub-only; ADO route when scm=azure-devops; never delete workingBranch; dual-mode preserved.",
+      "coderPrompt": "Update 11-ship-pr/SKILL.md Phases 4–6 to load providers.scm skill and call create-pr/checks/merge-pr. Remove GitHub-only happy-path hardcoding. Keep phase/FSM structure. Branch deletion rule unchanged."
+    },
+    {
+      "id": "T10",
+      "title": "Wire 08-fix-pr scm intents + README",
+      "parallelGroup": "L3",
+      "dependsOn": ["T4", "T5"],
+      "files": [
+        ".agents/skills/08-fix-pr/SKILL.md",
+        ".agents/skills/08-fix-pr/README.md"
+      ],
+      "acceptance": "Phase 1/5 list/resolve via scm provider; scoring FSM intact; README platform table uses provider paths; no re-edit of shim script bodies.",
+      "coderPrompt": "Update 08-fix-pr/SKILL.md to list/resolve via providers.scm provider skills. Keep scoring FSM. Update README platform table to provider paths + shim note. Do not rewrite shim files."
+    },
+    {
+      "id": "T11",
+      "title": "Wire 09-goal-fix-pr thread count",
+      "parallelGroup": "L3",
+      "dependsOn": ["T1", "T2", "T6"],
+      "files": [
+        ".agents/skills/09-goal-fix-pr/SKILL.md"
+      ],
+      "acceptance": "Thread-count probes use scm list-threads (not only hardcoded gh pr view jq); goal-loop preserved; dual-mode preserved.",
+      "coderPrompt": "Update 09-goal-fix-pr/SKILL.md so active-thread count delegates to scm provider list-threads. Keep goal-loop convergence. Surgical only."
+    },
+    {
+      "id": "T12",
+      "title": "AGENTS.md Layer 2 + Task Router",
+      "parallelGroup": "L4",
+      "dependsOn": ["T1", "T2", "T3"],
+      "files": [
+        "AGENTS.md"
+      ],
+      "acceptance": "Layer 2 rows for three providers as unnumbered pipeline deps; Task Router entries; en-us.",
+      "coderPrompt": "Add github-provider, azure-devops-provider, local-spec-provider to AGENTS.md Layer 2 (peer to 00–11, not Layer 5) and Task Router. Match table style. No drive-by rewrites."
+    },
+    {
+      "id": "T13",
+      "title": "Extend install canonicity tests",
+      "parallelGroup": "L4",
+      "dependsOn": ["T1", "T2", "T3", "T4", "T5", "T6"],
+      "files": [
+        "test/test-install.js"
+      ],
+      "acceptance": "Asserts three provider SKILL.md exist; keeps converter shim path asserts under spec-to-pr/scripts/; optional providers keys in example; suite ready for npm run tests -- --local.",
+      "coderPrompt": "Extend test/test-install.js with provider skill existence checks. Keep AC9 shim path asserts for github-issue-to-spec.py and ado-workitem-to-spec.py. Optionally assert providers in example config. Do not weaken canonicity."
+    },
+    {
+      "id": "T14",
+      "title": "Consumer docs + regenerate site",
+      "parallelGroup": "L5",
+      "dependsOn": ["T12"],
+      "files": [
+        "README.md",
+        ".agents/skills/spec-to-pr/tools.md",
+        "docs/index.html"
+      ],
+      "acceptance": "Docs mention update --include-new for three new skills; node bin/build-site.js succeeds; catalog lists three providers.",
+      "coderPrompt": "Update README and tools.md only where they document entry/PR/install: mention providers and update --include-new. Run node bin/build-site.js to regenerate docs/index.html. No unrelated doc churn. Note harness audit offer in summary."
+    }
+  ],
+  "levels": [
+    ["T1", "T2", "T3"],
+    ["T4", "T5", "T6"],
+    ["T7", "T8"],
+    ["T9", "T10", "T11"],
+    ["T12", "T13"],
+    ["T14"]
+  ]
+}

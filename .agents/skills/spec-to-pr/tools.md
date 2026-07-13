@@ -32,7 +32,7 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `STACK.md`) |
 | `read-memory` | Load learned knowledge | `Read` `MEMORY.md` (root; index via `Grep`) |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
-| `run-script` | Run workflow script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` |
+| `run-script` | Run workflow / provider script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` (orchestrator helpers). Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `08-fix-pr/scripts/`) |
 
 ## Source control tools
 
@@ -41,9 +41,12 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 | `commit-code` | Commit src/web/tests only | `Shell` `git add src/ web/ tests/ && git commit -m "..."` |
 | `commit-delivery` | Commit plan + result (Step 12) | `Shell` stage `step-02-{slug}.plan.refined.md` **or** `step-01-{slug}.plan.md`, plus `step-12-{slug}.result.md` |
 | `push-branch` | Push working branch | `Shell` `git push {gitRemote} {workingBranch}` — from `config.project` |
-| `create-pr` | Create GitHub PR | `Shell` `gh pr create --head {workingBranch} --base {baseBranch}` |
+| `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`github-provider`](../github-provider/SKILL.md) or [`azure-devops-provider`](../azure-devops-provider/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
+| `list-threads` / `resolve-thread` / `merge-pr` | PR review + merge intents | Same SCM provider skill as `create-pr` |
 | `create-checkpoint` | Tag before step N | `Shell` `git tag uswf/{id}/before-step-{N}` |
 | `revert-to-checkpoint` | Revert to tag M | `Shell` `git reset --mixed {tag}` + per-path restore |
+
+Entry / fetch: resolve `providers.active` → [`github-provider`](../github-provider/SKILL.md) · [`azure-devops-provider`](../azure-devops-provider/SKILL.md) · [`local-spec-provider`](../local-spec-provider/SKILL.md) `fetch-to-spec`. Consumers who already installed `spec-to-pr` before these folders existed: `npx github:jpolvora/workflow-skills update --include-new`.
 
 ## Agent dispatch tools
 

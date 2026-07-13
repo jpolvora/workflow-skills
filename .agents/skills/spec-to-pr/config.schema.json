@@ -25,6 +25,23 @@
     },
     "stack": { "type": "object" },
     "domain": { "type": "object" },
+    "providers": {
+      "type": "object",
+      "description": "Work-item/spec source and SCM host. Optional: when omitted, infer active from issueTrackers.*.enabled (GitHub if enabled, else Azure DevOps, else local); scm defaults to active when active is github|azure-devops, or from project.repoUrl host when active is local.",
+      "additionalProperties": true,
+      "properties": {
+        "active": {
+          "type": "string",
+          "enum": ["github", "azure-devops", "local"],
+          "description": "Provider skill for fetch-to-spec / entry registration. When set, overrides bare-number tracker preference from issueTrackers.*.enabled."
+        },
+        "scm": {
+          "type": "string",
+          "enum": ["github", "azure-devops"],
+          "description": "Provider skill for create-pr, list-threads, resolve-thread, merge-pr, and remote validate-auth. Never local. Hybrid allowed: active=local with scm=github|azure-devops."
+        }
+      }
+    },
     "issueTrackers": { "type": "object" },
     "verification": {
       "type": "object",
@@ -68,7 +85,7 @@
         "specsDir": {
           "type": "string",
           "default": "specs",
-          "description": "Optional human-facing mirror of specs; canonical spec is always under us-dir"
+          "description": "Repo-relative directory for human-facing local specs (default: specs at repo root). Used by local-spec-provider detect/configure and optional mirrors; canonical workflow copy remains {us-dir}/step-00-{slug}.spec.md"
         },
         "worktreesDir": {
           "type": "string",
