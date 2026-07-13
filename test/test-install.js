@@ -109,6 +109,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/spec-to-pr/config.json.example',
     '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
     '.agents/skills/spec-to-pr/SKILL.md',
+    '.agents/skills/check-harness/SKILL.md',
+    '.agents/AGENTS.md',
     // Spec-source / SCM provider skills (packed under .agents/skills/)
     '.agents/skills/github-provider/SKILL.md',
     '.agents/skills/azure-devops-provider/SKILL.md',
@@ -240,6 +242,23 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!example.providers?.scm) fail('config.json.example missing providers.scm');
   ok('Canonicity + contract files present (providers + converter shims)');
 }
+
+  // --- Phase 0c: CLI help ---
+  console.log('\n[Phase 0c] CLI --help...');
+  {
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const help = cp.spawnSync(process.execPath, [cliPath, '--help'], {
+      cwd: path.join(parentDir, 'test'),
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' }
+    });
+    if (help.status !== 0) fail(`CLI --help exited ${help.status}`);
+    const out = `${help.stdout || ''}${help.stderr || ''}`;
+    if (!/update --include-new/i.test(out) || !/AGENTS\.md/i.test(out)) {
+      fail(`CLI --help missing expected usage hints.\n${out}`);
+    }
+    ok('CLI --help documents update and AGENTS.md');
+  }
 
 // 1. Clean test/.agents directory
 console.log('\nCleaning target test/.agents/ directory...');
@@ -451,6 +470,7 @@ child.on('close', (code) => {
     '04-implement-tasks',
     '07-integration-validation',
     '11-ship-pr',
+    'check-harness',
     'github-provider',
     'azure-devops-provider',
     'local-spec-provider'
@@ -458,6 +478,18 @@ child.on('close', (code) => {
   if (missingPipeline.length) {
     fail(`Pipeline/provider skills missing after update: ${missingPipeline.join(', ')}`);
   }
+  if (!fs.existsSync(path.join(testSkillsDir, 'check-harness', 'SKILL.md'))) {
+    fail('check-harness/SKILL.md missing after install/update');
+  }
+  const packagedAgents = path.join(__dirname, '.agents', 'AGENTS.md');
+  if (!fs.existsSync(packagedAgents)) {
+    fail('Packaged .agents/AGENTS.md not installed into consumer test/.agents/');
+  }
+  const packagedAgentsBody = fs.readFileSync(packagedAgents, 'utf8');
+  if (!/Pre-merge gate:\s*`?check-harness/i.test(packagedAgentsBody) && !/check-harness/i.test(packagedAgentsBody)) {
+    fail('Consumer .agents/AGENTS.md missing check-harness / portability rules');
+  }
+  ok('check-harness + packaged .agents/AGENTS.md shipped to consumer');
   for (const name of ['github-provider', 'azure-devops-provider', 'local-spec-provider']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
