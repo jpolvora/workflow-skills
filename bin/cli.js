@@ -193,6 +193,8 @@ function printHelp() {
 Notes:
   - Skills under .agents/skills/ are overwritten on update; config.json is preserved.
   - Packaged .agents/AGENTS.md (portability / upstream PR rules) is refreshed on install and update.
+  - After installing or updating, run the `check-harness` skill to validate routing, detect
+    phantom skills, fix broken links, and update indexes.
   - Prefer this Node CLI over install-skills.sh for update + config preservation.
 `);
 }
@@ -290,6 +292,9 @@ function runUpdate(skills, includeNew) {
 
   console.log('\nUpdate complete!');
   console.log(`Note: Existing '${CONFIG_FILE}' files were preserved and NOT overwritten.`);
+  console.log('\n\u26a0\ufe0f  After updating, run the `check-harness` skill to scan the harness:');
+  console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
+  console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
   process.exit(0);
 }
 
@@ -402,6 +407,9 @@ async function runInteractive(skills) {
   console.log('');
   if (installedCount > 0) {
     console.log(`Successfully installed ${installedCount} skill(s) into ${targetSkillsDir}`);
+    console.log('\n\u26a0\ufe0f  After installing, run the `check-harness` skill to validate the harness:');
+    console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
+    console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
   } else {
     console.log('No skills were installed.');
   }

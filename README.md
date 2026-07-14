@@ -117,6 +117,13 @@ npx github:jpolvora/workflow-skills update --include-new
 ```
 *(Plain `update` does not create folders that are not already present in the consumer project.)*
 
+#### 3. Post-Install: Validate the Harness
+After installing or updating skills, load the `check-harness` skill to scan for integrity issues:
+```text
+Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0–5c.
+```
+The audit detects phantom skills, broken links, stale references, and fixes routing tables and indexes.
+
 ---
 
 ### Interactive Menu (NPX)
