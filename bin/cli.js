@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import https from 'https';
 import readline from 'readline/promises';
 import { fileURLToPath } from 'url';
 
@@ -182,20 +183,60 @@ function listSkillDirs(dir) {
   });
 }
 
+function getLocalVersion() {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
+    return pkg.version || '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+}
+
+function fetchRemoteVersion() {
+  return new Promise((resolve, reject) => {
+    const url = 'https://raw.githubusercontent.com/jpolvora/workflow-skills/main/package.json';
+    https.get(url, { timeout: 10000 }, (res) => {
+      if (res.statusCode !== 200) {
+        reject(new Error(`HTTP ${res.statusCode}`));
+        return;
+      }
+      let data = '';
+      res.on('data', (chunk) => data += chunk);
+      res.on('end', () => {
+        try {
+          const pkg = JSON.parse(data);
+          resolve(pkg.version || '0.0.0');
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+function parseVersion(v) {
+  return v.split('.').map(Number);
+}
+
 function printHelp() {
   console.log(`Usage:
   npx github:jpolvora/workflow-skills              Interactive install
   npx github:jpolvora/workflow-skills update       Update installed skills (preserves config.json)
   npx github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally
+  npx github:jpolvora/workflow-skills --version    Print installed version
+  npx github:jpolvora/workflow-skills --check      Compare installed vs latest online version
   npx github:jpolvora/workflow-skills --help
+  npx github:jpolvora/workflow-skills@latest       Always fetch the latest from GitHub (bypass npx cache)
 
 Notes:
   - Skills under .agents/skills/ are overwritten on update; config.json is preserved.
   - Packaged .agents/AGENTS.md (portability / upstream PR rules) is refreshed on install and update.
-  - After installing or updating, run the `check-harness` skill to validate routing, detect
+  - After installing or updating, run the "check-harness" skill to validate routing, detect
     phantom skills, fix broken links, and update indexes.
   - Prefer this Node CLI over install-skills.sh for update + config preservation.
+  - Use @latest or @main suffix to force npx to fetch the latest online version instead of
+    using the local npx cache. Example: npx github:jpolvora/workflow-skills@latest update
 `);
 }
 
@@ -216,6 +257,34 @@ async function main() {
 
   if (command === '--help' || command === '-h' || command === 'help') {
     printHelp();
+    process.exit(0);
+  }
+
+  if (command === '--version' || command === '-v') {
+    console.log(getLocalVersion());
+    process.exit(0);
+  }
+
+  if (command === '--check' || command === 'check') {
+    const local = getLocalVersion();
+    console.log(`Installed: v${local}`);
+    try {
+      const remote = await fetchRemoteVersion();
+      const la = parseVersion(local);
+      const ra = parseVersion(remote);
+      const cmp = la[0] - ra[0] || la[1] - ra[1] || la[2] - ra[2];
+      if (cmp < 0) {
+        console.log(`Latest:    v${remote}  (newer available)`);
+        console.log('Run: npx github:jpolvora/workflow-skills@latest update');
+      } else if (cmp > 0) {
+        console.log(`Latest:    v${remote}  (you are ahead)`);
+      } else {
+        console.log(`Latest:    v${remote}  (up to date)`);
+      }
+    } catch (e) {
+      console.log(`Latest:    unreachable (${e.message})`);
+      process.exit(1);
+    }
     process.exit(0);
   }
 

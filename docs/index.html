@@ -300,6 +300,17 @@
       <pre><code>npx github:jpolvora/workflow-skills update</code></pre>
     </div>
     <div class="install-step">
+      <h4>Always Latest</h4>
+      <p>By default, <code>npx</code> caches resolutions for up to 7 days. Suffix with <code>@latest</code> or <code>@main</code> to force a fresh fetch from GitHub every time&mdash;bypassing the local npx cache.</p>
+      <pre><code>npx github:jpolvora/workflow-skills@latest update</code></pre>
+    </div>
+    <div class="install-step">
+      <h4>Version Check</h4>
+      <p>Compare your installed version against the latest online release, or just print the installed version:</p>
+      <pre><code>npx github:jpolvora/workflow-skills --check
+npx github:jpolvora/workflow-skills --version</code></pre>
+    </div>
+    <div class="install-step">
       <h4>cURL (alternative)</h4>
       <p>Run the installer via shell script:</p>
       <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash</code></pre>

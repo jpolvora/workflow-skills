@@ -117,7 +117,25 @@ npx github:jpolvora/workflow-skills update --include-new
 ```
 *(Plain `update` does not create folders that are not already present in the consumer project.)*
 
-#### 3. Post-Install: Validate the Harness
+#### 3. Always Get the Latest Version
+By default, `npx` caches package resolutions for up to 7 days. To force `npx` to fetch the latest from GitHub every time, use `@latest` or `@main`:
+```bash
+npx github:jpolvora/workflow-skills@latest update
+npx github:jpolvora/workflow-skills@main update
+```
+This bypasses the npx cache and always resolves the current HEAD of the main branch.
+
+#### 4. Version Check
+To see your installed version and compare it against the latest online release:
+```bash
+npx github:jpolvora/workflow-skills --check
+```
+Or just print the installed version:
+```bash
+npx github:jpolvora/workflow-skills --version
+```
+
+#### 5. Post-Install: Validate the Harness
 After installing or updating skills, load the `check-harness` skill to scan for integrity issues:
 ```text
 Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0–5c.
