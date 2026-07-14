@@ -794,7 +794,7 @@ Delegated to [`setup.md`](../shared/setup.md) § Resume / reset. The orchestrato
 Read state: `.cursor/plans/{slug}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
 Orch: SKILL.md § Step {STEP} · model {currentModel} · {modeFlags}
-Enhancing skills (mandatory): karpathy-guidelines, gabarito, caveman
+Enhancing skills (mandatory): karpathy-guidelines, caveman, self-learning, gabarito
 Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
 Role: fresh; no resume. files_touched required (revert). model: {currentModel}.

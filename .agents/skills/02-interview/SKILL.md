@@ -31,6 +31,14 @@ Dispatched by `spec-to-pr` at Step 2 (refinement). Discovers parameters via cont
 | `<plan-path>` | String | (required) | Path to `step-01-{slug}.plan.md`. |
 | `spec=<spec-path>` | String | (optional) | Path to `step-00-{slug}.spec.md`. Inferred from the plan folder if omitted. |
 
+## Prerequisites
+
+Read and respect the following shared skills:
+- [karpathy-guidelines](../shared/karpathy-guidelines/SKILL.md)
+- [caveman](../shared/caveman/SKILL.md)
+- [self-learning](../shared/self-learning/SKILL.md)
+- [gabarito](../shared/gabarito/SKILL.md)
+
 ---
 
 ## Grilling Protocol (Hard Rules)

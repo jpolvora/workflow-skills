@@ -31,6 +31,14 @@ Dispatched automatically by `spec-to-pr` at Step 9. Receives `base` and `planPat
 | `base` | String | `origin/main` or `origin/master` (auto-detected) | The git ref to diff against. |
 | `plan` | String | (optional) | Path to `step-02-*.plan.refined.md` or `step-01-*.plan.md` to cross-reference the planned changes against reviewed code. |
 
+## Prerequisites
+
+Read and respect the following shared skills:
+- [karpathy-guidelines](../shared/karpathy-guidelines/SKILL.md)
+- [caveman](../shared/caveman/SKILL.md)
+- [self-learning](../shared/self-learning/SKILL.md)
+- [gabarito](../shared/gabarito/SKILL.md)
+
 ---
 
 ## Execution Flow

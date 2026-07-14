@@ -91,6 +91,28 @@ In `autoMode` or when fallback menus are needed, use the following default choic
 
 ---
 
+## State & dispatch
+
+### Base Prompt Prefix (`Task` body)
+
+```markdown
+# Subagent — Step {STEP} — {Label}
+Read state: `.cursor/plans/{slug}/{workflow-id}.state.md`
+Skill: {SKILL.md path} — read full.
+Orch: SKILL.md § Step {STEP} · model {currentModel} · {modeFlags}
+Enhancing skills (mandatory): karpathy-guidelines, caveman, self-learning, gabarito
+Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
+Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
+Role: fresh; no resume. files_touched required (revert). model: {currentModel}.
+Rules: no `.cursor/plans/` in git-add except Step 4 G2-delivery; needs_user: ≥2 choices, recommended first.
+Learning: read ## Workflow memory + ## Step outputs (all prior steps) for traps/errors. Do NOT repeat broken approaches. Record own mistakes in step-output.learning.
+Telemetry required: record elapsedSec (step wall-clock seconds = (finishedAt - dispatchedAt) / 1000, integer), promptTokens + completionTokens (from LLM metadata if available, else estimate chars/3.5 with estimated: true).
+End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, model, telemetry{elapsedSec, promptTokens|null, completionTokens|null, estimated})
+```
+```
+
+---
+
 ## Triggers
 
 ```
