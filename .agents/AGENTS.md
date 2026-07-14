@@ -127,17 +127,17 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `multi-domain-review` | `skills/multi-domain-review/SKILL.md` | Batch review of multiple domains |
 | `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
 
-### Utility & meta (under `spec-to-pr/extra-skills/`)
+### Utility & meta (under `shared/`)
 
 | Skill | Path | Description |
 |-------|------|-------------|
 | `caveman` | `skills/shared/caveman/SKILL.md` | Ultra-compressed response (~75% fewer tokens) |
 | `gabarito` | `skills/shared/gabarito/SKILL.md` | Ten operational response guidelines |
 | `karpathy-guidelines` | `skills/shared/karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
-| `spec-format` | `skills/spec-to-pr/extra-skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
-| `self-learning` | `skills/spec-to-pr/extra-skills/self-learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
-| `changelog` | `skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Summarized history in `CHANGELOG.md` |
-| `goal-loop` | `skills/spec-to-pr/extra-skills/goal-loop/SKILL.md` | Generic convergence loop (used by `09-goal-fix-pr`) |
+| `spec-format` | `skills/shared/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
+| `self-learning` | `skills/shared/self-learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
+| `changelog` | `skills/shared/changelog/SKILL.md` | Summarized history in `CHANGELOG.md` |
+| `goal-loop` | `skills/shared/goal-loop/SKILL.md` | Generic convergence loop (used by `09-goal-fix-pr`) |
 
 ---
 
@@ -178,3 +178,13 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** above). In-place edits are overwritten on update.
 - Before upstream merge to `main`, skill changes must pass **`check-harness`** (see **Pre-merge gate** above).
 - Guardrails resolution: see root [`AGENTS.md`](../AGENTS.md) § **External Dependencies** (`rules.seniorDeveloper` / `rules.karpathyGuidelines` in config).
+
+---
+
+## Active `.cursor/rules/` in this repo
+
+| Rule | Path | Scope |
+|------|------|-------|
+| `ask-question-gates.mdc` | `.cursor/rules/ask-question-gates.mdc` | Always-apply — forces native `AskQuestion` tool at every transition gate (spec-to-pr normal mode) |
+
+Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc`.
