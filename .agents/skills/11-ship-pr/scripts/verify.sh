@@ -6,10 +6,7 @@ set -euo pipefail
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-config_file="$repo_root/.agents/skills/spec-to-pr/config.json"
-if [ ! -f "$config_file" ]; then
-  config_file="$repo_root/.agents/skills/spec-to-pr-lite/config.json"
-fi
+config_file="$repo_root/.agents/skills/shared/config.json"
 base_branch="${SHIP_PR_BASE:-$("$script_dir/detect-base-branch.sh")}"
 
 frontend_touched() {

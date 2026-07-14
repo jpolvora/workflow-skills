@@ -46,8 +46,8 @@ REPO_ROOT = Path(__file__).resolve().parents[4]              # repo root (.agent
 PLANS_DIR = None  # resolved lazily via load_plans_dir()
 
 def load_plans_dir() -> Path:
-    """Resolve plans.dir from spec-to-pr config.json (default .cursor/plans)."""
-    cfg = AGENT_ROOT / "config.json"
+    """Resolve plans.dir from shared config.json (default .cursor/plans)."""
+    cfg = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
     plans = Path(".cursor") / "plans"
     if cfg.exists():
         try:

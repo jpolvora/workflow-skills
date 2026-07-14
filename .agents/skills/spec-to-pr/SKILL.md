@@ -23,7 +23,7 @@ upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflo
 
 ## Native tool contract
 
-Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](./config.json) (repo-root path: `.agents/skills/spec-to-pr/config.json`). Never narrate undone work.
+Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](../shared/config.json) (repo-root path: `.agents/skills/shared/config.json`). Never narrate undone work.
 
 | Intent | Tool alias | Native | Rule |
 |--------|------------|--------|------|
@@ -133,7 +133,7 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | Orchestrator | `SKILL.md` |
 | **Artifacts** | [`ARTIFACTS.md`](ARTIFACTS.md) — canonical filenames + path resolution |
 | **Setup** | `setup.md` — initialization, config bootstrap, flags, resume, stack file generation |
-| **Config** | `.agents/skills/spec-to-pr/config.json` — project identity, stack, issue trackers, verification commands, invariants |
+| **Config** | `.agents/skills/shared/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
 | Scripts | Orchestrator: `check_memory_conflict.py`, `validate_state.py` under `spec-to-pr/scripts/`. Converters + thread helpers: **canonical** under `github-provider/scripts/` and `azure-devops-provider/scripts/` (thin shims remain at `spec-to-pr/scripts/` and `08-fix-pr/scripts/` for canonicity). Local register/mirror: `local-spec-provider/scripts/`. |
