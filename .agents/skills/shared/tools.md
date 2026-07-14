@@ -21,7 +21,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 
 ## State & workflow tools
 
-Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{us-dir}` = `{plans-dir}/{slug}/`. See [`ARTIFACTS.md`](ARTIFACTS.md).
+Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{us-dir}` = `{plans-dir}/{slug}/`. See [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
 
 | Tool | Action | Native |
 |------|--------|--------|
@@ -70,7 +70,7 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 1. **No hardcoded commands** in skills — use tool aliases. Config.json holds project-specific values.
 2. **Shell only for git/build/scripts** — never use bash where `Read`/`Write`/`Grep`/`Glob` suffice.
 3. **One worktree max** — step 5/10/11 worktrees are exclusive under `{worktrees-dir}`.
-4. **No commit of `{plans-dir}/`** — except Step 12 delivery per [`ARTIFACTS.md`](ARTIFACTS.md).
+4. **No commit of `{plans-dir}/`** — except Step 12 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
 5. **Subagents: fresh per step** — never resume Task across steps.
 6. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
 7. **Paths from config** — never hardcode `.cursor/plans`; always resolve `plans.dir` / `workingBranch` / `baseBranch`.
