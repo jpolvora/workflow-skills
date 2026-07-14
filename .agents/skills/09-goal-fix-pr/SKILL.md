@@ -77,70 +77,48 @@ When running inside `goal-fix-pr`, the following `fix-pr` interactive gates are 
 
 ## Core Loop
 
-Track progress across iterations inheriting the [`goal-loop`](../shared/goal-loop/SKILL.md) structure:
+This skill inherits the FSM execution loop directly from [`goal-loop`](../shared/goal-loop/SKILL.md):
 
 ```
 Goal: fix-pr PR-<N> until convergence (scm = providers.scm)
-Success: activeThreads == 0 via scm list-threads verified after heartbeat check
+Success: activeThreads == 0 via SCM list-threads, verified after heartbeat check
 Iteration: <n>/<max>
 - [ ] scm list-threads → count activeThreads
 - [ ] if activeThreads == 0 on first loop:
       - arm 5-minute heartbeat timer immediately
-      - wait + re-collect after 5 minutes
-      - if activeThreads remains 0 after wait → final report + DONE
-      - if activeThreads > 0 after wait → continue loop (proceed to act round)
+      - wait 300s + re-collect
+      - if activeThreads remains 0 → DONE
+      - if activeThreads > 0 → proceed to act round
 - [ ] 08-fix-pr round (if activeThreads > 0)
-- [ ] verify build/tests + code-review auto-check
-- [ ] commit + resolve + push (if code changed; skip if dry-run)
-- [ ] arm sentinel + wait 5min
-- [ ] scm list-threads re-collect
+- [ ] verify build/tests + code-review auto-check (via Phase 3 Verification)
+- [ ] commit + resolve + push (skip if dry-run)
+- [ ] wait 5min (arm sentinel) + re-collect
 ```
 
-### Phase 1 — Baseline (Iteration 1)
-- Resolve `providers.scm` and call provider `list-threads` for `<PR-NUMBER>`.
-- **Immediate Heartbeat Check (Zero Threads Case)**: If `activeThreads == 0` on initialization, **do not exit immediately**. Immediately start the 5-minute (300s) heartbeat timer to wait for CI/actions/reviewer updates. Wake up, re-run SCM provider `list-threads`, and re-evaluate:
-  - If `activeThreads == 0` still → final report, stop, and mark as completed (DONE).
-  - If `activeThreads > 0` → proceed to **Phase 2** (Act).
+### Initial Heartbeat Check (Zero Threads Case)
+If `activeThreads` counts as `0` on initialization (Iteration 1), **do not exit immediately**. Start the 5-minute (`300s`) heartbeat timer immediately via `goal-loop` sentinel. Wait for CI/Actions/Reviewer updates, re-query, and:
+- If `activeThreads` remains `0` → stop and mark completed (DONE).
+- If `activeThreads > 0` → proceed to Phase 2 (Act).
 
 ### Phase 2 — Act (08-fix-pr Round)
-- Dispatch [`08-fix-pr`](../08-fix-pr/SKILL.md) for the same `<PR-NUMBER>` with automation overrides (gates auto-yes). Fix-pr owns scoring FSM and SCM list/resolve via `providers.scm`; this skill does not re-implement platform APIs.
-- Commit: `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`.
-- Resolve threads through the SCM provider (via [`08-fix-pr`](../08-fix-pr/SKILL.md)).
-- Push: `git push origin HEAD` (skip if `dry-run`).
+Dispatch [`08-fix-pr`](../08-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active.
+- **Commit**: `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`
+- **Resolve**: mark threads resolved via [`08-fix-pr`](../08-fix-pr/SKILL.md) SCM integration.
+- **Push**: `git push origin HEAD` (skip if `dry-run`).
 
-### Phase 3 — Verify (Mandatory after each round)
-
-| Check | Required Evidence |
-|-------|------------------|
-| Build/Tests | Output from `config.json.verification` commands |
-| Auto-review | **"No feedback"** from `06-code-review` on current diff |
-| Push | Commit hash + push confirmation (or dry-run log) |
-| Resolved threads | SCM provider `resolve-thread` exited with code 0 (via fix-pr) |
-
-3 consecutive failures on the same check → stop and escalate.
-
-### Phase 4 — Post-push Heartbeat (5 minutes)
-- After each push round, wait 300 seconds for new CI/reviewer feedback to register.
-- Sentinel: `AGENT_GOAL_WAKE_fixpr_<PR-NUMBER>`.
-- Do not stack multiple sleepers — exactly one active at a time.
-
-### Phase 5 — Re-collect
-- On wake: re-run SCM provider `list-threads` and re-count `activeThreads`.
-- `== 0` → **done**.
-- `> 0` and `n < max` → start iteration `n+1` (another 08-fix-pr round).
-- `n >= max` → stop, report remaining threads, request larger `max`.
+### Phase 3 — Verification (Mandatory)
+Run `config.json.verification` commands + `06-code-review` diff check. Three consecutive failures on verification stops the loop and escalates.
 
 ---
 
 ## Stop Conditions
 
-| Condition | Action |
-|-----------|--------|
-| `activeThreads == 0` | Final report + kill heartbeat sleeper |
-| User requests stop | Kill sleeper, summarize progress so far |
-| Escalate thread hit | Stop, list blocked thread IDs |
-| `n >= max` | Stop, list active threads |
-| SCM `list-threads` fails | Stop — do not improvise platform API calls |
+Exits under the standard [`goal-loop`](../shared/goal-loop/SKILL.md) stop conditions:
+- `activeThreads == 0` (after verification check).
+- User requests abort.
+- `max` ceiling reached (default 5 loops).
+- Escalation (unresolved ambiguity or 3 consecutive verification failures).
+- SCM communication error.
 
 ---
 
