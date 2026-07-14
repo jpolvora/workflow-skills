@@ -15,6 +15,7 @@ Skills installed in consumer projects via `npx github:jpolvora/workflow-skills` 
 - **All bug fixes, improvements, and new features** for workflow pipeline skills must be authored here and submitted as a PR to the `develop` branch (merge to `main` only after **`check-harness`** passes — see [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills).
 - **Consumer projects should not treat in-place skill edits as permanent** — a plain `update` overwrites skill files. The sole exception is `config.json`, which is always preserved during updates. Local experiments are allowed; lasting changes require an upstream PR.
 - **To propagate upstream changes to a consumer project**, run: `npx github:jpolvora/workflow-skills update` (use `--include-new` when new top-level skill folders were added upstream).
+- **After every install or update**, run the `check-harness` skill on the consumer project to detect phantom skills, broken links, stale references, and fix routing tables and indexes.
 - **Portability:** skills under `.agents/skills/` must stay generic and parameterized via `config.json` / stack docs; skill content is **en-us** only. Detailed rules: [`.agents/AGENTS.md`](.agents/AGENTS.md).
 
 ### Workflows in this repository
