@@ -15,7 +15,8 @@ const ignoredPatterns = [
   /__pycache__/,
   /[\\/]runs([\\/]|$)/,
   /\.gitignore$/,
-  /config\.json$/
+  /config\.json$/,
+  /[\\/]self-learning[\\/]memory/
 ];
 
 function getFilesRecursive(dir) {

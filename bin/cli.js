@@ -62,6 +62,13 @@ function copyDirSync(src, dest) {
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
+    
+    const pathParts = srcPath.split(path.sep);
+    const isInsideMemory = pathParts.includes('memory') && !entry.isDirectory();
+    if (isInsideMemory) {
+      continue;
+    }
+
     if (entry.isDirectory()) {
       copyDirSync(srcPath, destPath);
     } else {
@@ -80,6 +87,11 @@ function copyDirPreservingConfig(src, dest, preservedFile) {
     const pathParts = srcPath.split(path.sep);
     const isMemoryFolder = pathParts.includes('memory');
     
+    const isInsideMemory = isMemoryFolder && !entry.isDirectory();
+    if (isInsideMemory) {
+      continue;
+    }
+
     let isPreserved = false;
     if (fs.existsSync(destPath)) {
       if (entry.name === preservedFile) {
@@ -124,6 +136,11 @@ function ensureSharedInstalled(mode = 'install') {
   } else {
     copyDirSync(srcShared, destShared);
   }
+
+  // Ensure the target memory directory exists (since npm pack ignores empty folders)
+  const targetMemoryDir = path.join(destShared, 'self-learning', 'memory');
+  fs.mkdirSync(targetMemoryDir, { recursive: true });
+
   console.log(`  shared/ ${mode === 'update' ? 'updated' : 'installed'} (config.json + self-learning/memory preserved)`);
 }
 
