@@ -18,7 +18,7 @@ Listed in root `AGENTS.md` § Skill loading (autoload every prompt). Works along
 
 ## Opt-out
 
-`stop gabarito`, or `normal mode` (caveman off: `stop caveman`). Canonical table: root [`AGENTS.md`](../../../../../AGENTS.md) § Opt-out.
+`stop gabarito`, or `normal mode` (caveman off: `stop caveman`). Canonical table: root [`AGENTS.md`](../../../../AGENTS.md) § Opt-out.
 
 ## Files
 

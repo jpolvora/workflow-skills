@@ -261,7 +261,7 @@ Commit the updated `docs/index.html` along with your source changes.
 |------|------|-------|
 | `ask-question-gates.mdc` | `.cursor/rules/ask-question-gates.mdc` | Always-apply — forces native `AskQuestion` tool at every transition gate (spec-to-pr normal mode) |
 
-Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` (setup step 1a in [`spec-to-pr/setup.md`](.agents/skills/spec-to-pr/setup.md)).
+Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` (setup step 1a in [`spec-to-pr/setup.md`](.agents/skills/shared/setup.md)).
 
 ---
 

@@ -15,7 +15,7 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering all
 
 ## Prerequisites
 
-1. **BOOTSTRAP** section in [`setup.md`](setup.md) — ensure `.agents/skills/shared/config.json` points at this repo. If absent, create one:
+1. **BOOTSTRAP** section in [`setup.md`](../shared/setup.md) — ensure `.agents/skills/shared/config.json` points at this repo. If absent, create one:
 
     ```json
     {

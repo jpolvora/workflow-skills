@@ -15,7 +15,7 @@ upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflo
 | **Orchestrator (this file)** | FSM + tool bindings + asserts |
 | **Humans** | [`README.md`](README.md), [`docs/faq.md`](docs/faq.md), [`DIAGRAM.md`](DIAGRAM.md) |
 
-**Load:** current step + linked protocols only. Setup → [`setup.md`](setup.md) (config bootstrap, flags, resume). Artifacts → [`ARTIFACTS.md`](ARTIFACTS.md) (canonical paths). Stack → `config.json.rules.stackFile` (auto-loaded steps 5,7,9–11). Hub → [`AGENTS.md`](../../../AGENTS.md). Step 2 → [`02-interview`](../02-interview/SKILL.md). Tools → [`tools.md`](tools.md).
+**Load:** current step + linked protocols only. Setup → [`setup.md`](../shared/setup.md) (config bootstrap, flags, resume). Artifacts → [`ARTIFACTS.md`](ARTIFACTS.md) (canonical paths). Stack → `config.json.rules.stackFile` (auto-loaded steps 5,7,9–11). Hub → [`AGENTS.md`](../../../AGENTS.md). Step 2 → [`02-interview`](../02-interview/SKILL.md). Tools → [`tools.md`](../shared/tools.md).
 
 ## Language
 
@@ -23,7 +23,7 @@ upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflo
 
 ## Native tool contract
 
-Canonical tool names from [`tools.md`](tools.md). Project params from [`config.json`](../shared/config.json) (repo-root path: `.agents/skills/shared/config.json`). Never narrate undone work.
+Canonical tool names from [`tools.md`](../shared/tools.md). Project params from [`config.json`](../shared/config.json) (repo-root path: `.agents/skills/shared/config.json`). Never narrate undone work.
 
 | Intent | Tool alias | Native | Rule |
 |--------|------------|--------|------|
@@ -783,7 +783,7 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 
 ### Resume / reset
 
-Delegated to [`setup.md`](setup.md) § Resume / reset. The orchestrator loads this section during bootstrap step 4.
+Delegated to [`setup.md`](../shared/setup.md) § Resume / reset. The orchestrator loads this section during bootstrap step 4.
 
 ---
 
@@ -855,7 +855,7 @@ Step 11: **Skip validation**. Step 2: gate 2e before Step 3.
 
 ## Bootstrap & Entry
 
-Delegated to [`setup.md`](setup.md) § Bootstrap & Entry. Before Step 0, the orchestrator loads and executes this section.
+Delegated to [`setup.md`](../shared/setup.md) § Bootstrap & Entry. Before Step 0, the orchestrator loads and executes this section.
 
 ---
 

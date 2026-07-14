@@ -643,7 +643,7 @@ Everything under `{plans-dir}/{slug}/` (default `.cursor/plans/{slug}/`). Canoni
 | Delivery result | `{us-dir}/step-12-{slug}.result.md` |
 | Technical memory (root) | `MEMORY.md` |
 
-> Resume / Active Resume rules: see [`setup.md`](../setup.md) § Resume / Reset (canonical). This FAQ does not redefine them.
+> Resume / Active Resume rules: see [`setup.md`](../../shared/setup.md) § Resume / Reset (canonical). This FAQ does not redefine them.
 
 ### State file sections (`state.md`)
 
