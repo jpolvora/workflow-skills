@@ -30,9 +30,10 @@ The validation process evaluates the following areas:
 - **Step indexes**: Asserts that all steps in the FSM tables (steps 0–13 in `spec-to-pr`, steps 1–5 in `spec-to-pr-lite`) map sequentially without duplicates or missing levels.
 - **Linked skills**: Verifies that every step maps to a valid and existing dependency skill under `.agents/skills/` (e.g. `01-write-plan`, `04-implement-tasks`).
 
-### 2. Dual-Mode Config Fallbacks
-- Ensures that the Lite orchestrator (`spec-to-pr-lite`) and SCM providers do not strictly depend on duplicate configurations and fallback gracefully to `spec-to-pr/config.json`.
-- Verifies that file references inside scripts check `spec-to-pr/config.json` before checking local fallbacks.
+### 2. Config Path Integrity
+- Ensures that both workflow orchestrators (`spec-to-pr`, `spec-to-pr-lite`) and SCM providers reference `shared/config.json` as the single canonical config location.
+- Verifies that no script or skill contains legacy references to `spec-to-pr/config.json` or `spec-to-pr-lite/config.json` as the primary config path.
+- There is no fallback — `shared/config.json` is the only valid runtime config location.
 
 ### 3. State Isolation & Schema
 - Checks that `update_state.py` and state schemas enforce the `workflowType` field (`standard` vs `lite`) to ensure runtime state isolation.

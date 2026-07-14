@@ -39,7 +39,7 @@ Dispatched by `spec-to-pr` at Step 0 with the issue body or feature text from co
 
 ## Output Template
 
-Adhere to the canonical specification format defined by [spec-format](../spec-to-pr/extra-skills/spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
+Adhere to the canonical specification format defined by [spec-format](../shared/spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
 
 ```markdown
 ---

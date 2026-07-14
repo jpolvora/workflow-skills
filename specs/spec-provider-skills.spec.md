@@ -12,7 +12,7 @@ specDate: 2026-07-13
 
 Introduce three **provider skills** that collaborate with the `spec-to-pr` orchestrator and its pipeline dependencies (`00`–`11`, especially entry, ship-pr, and fix-pr). Each provider owns **all platform-specific instructions and scripts** for:
 
-1. **Inbound work items** — pull GitHub issues, Azure DevOps work items / user stories, or hand-written local markdown specs into the canonical `{us-dir}/step-00-{slug}.spec.md` artifact ([spec-format](.agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md)).
+1. **Inbound work items** — pull GitHub issues, Azure DevOps work items / user stories, or hand-written local markdown specs into the canonical `{us-dir}/step-00-{slug}.spec.md` artifact ([spec-format](.agents/skills/shared/spec-format/SKILL.md)).
 2. **Outbound delivery** — create PRs / pull requests, monitor checks, resolve review threads, and merge using the provider’s preferred CLI and/or PowerShell scripts.
 
 ### Goals

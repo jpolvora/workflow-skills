@@ -196,4 +196,4 @@ Legacy: if `providers.*` is absent, orchestrator may select this skill when only
 - **Orchestrator:** [spec-to-pr](../spec-to-pr/SKILL.md)
 - **Ship:** [11-ship-pr](../11-ship-pr/SKILL.md)
 - **Fix / converge:** [08-fix-pr](../08-fix-pr/SKILL.md), [09-goal-fix-pr](../09-goal-fix-pr/SKILL.md)
-- **Spec format:** [spec-format](../spec-to-pr/extra-skills/spec-format/SKILL.md)
+- **Spec format:** [spec-format](../shared/spec-format/SKILL.md)

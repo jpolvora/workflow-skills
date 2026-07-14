@@ -32,9 +32,7 @@ PLANS_DIR = None
 
 def load_plans_dir() -> Path:
     """Resolve plans.dir from spec-to-pr project config."""
-    cfg = AGENT_ROOT / "config.json"
-    if not cfg.exists():
-        cfg = AGENT_ROOT.parent / "spec-to-pr" / "config.json"
+    cfg = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
     plans = Path(".cursor") / "plans"
     if cfg.exists():
         try:

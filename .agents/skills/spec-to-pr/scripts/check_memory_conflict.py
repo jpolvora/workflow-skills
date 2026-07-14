@@ -33,8 +33,7 @@ def ensure_utf8_stdio() -> None:
 
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-REPO_ROOT = Path(__file__).resolve().parents[4]   # .agents/skills/spec-to-pr/scripts -> repo root
-MEMORY_PATH = REPO_ROOT / "MEMORY.md"
+MEMORY_PATH = SKILL_ROOT / "extra-skills" / "self-learning" / "MEMORY.md"
 
 KNOWN_MODULES = [
     "Companies", "Members", "Placement", "Activation", "Ledger",

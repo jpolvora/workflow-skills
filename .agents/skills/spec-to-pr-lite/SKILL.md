@@ -68,7 +68,7 @@ Deterministic FSM for sequential plan-to-ship delivery. Reuses existing pipeline
   2. Write `{us-dir}/step-12-{slug}.result.md` summarizing the changes, files touched, and timing/token telemetry.
   3. **G2-delivery gate** (AskQuestion): **Commit plan and result** (rec) / **Skip commit** / **Pause**.
   4. If approved: stage `step-01-{slug}.plan.md` and `step-12-{slug}.result.md` and commit: `docs({slug}): delivery plan and result`.
-  5. Run MEMORY.md sweep to promote any generalizable learning pattern.
+  5. Run self-learning memory sweep: create unique markdown files in `.agents/skills/shared/self-learning/memory/` for new traps and run the compiler script: `python .agents/skills/shared/self-learning/self_learning.py --compile`.
   6. Present the optional cleanup gate (delete temporary artifacts, checkpoints, worktrees).
   7. Advance to Step 5.
 

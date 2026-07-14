@@ -99,7 +99,7 @@ const skillFiles = entries
   .filter(e => e.isFile() && e.name.endsWith('.md'))
   .map(e => e.name.replace(/\.md$/, ''));
 
-// Also scan nested skill directories (e.g. spec-to-pr/extra-skills/*)
+// Also scan nested skill directories (e.g. spec-to-pr/extra-skills/* or shared/*)
 for (const dir of skillDirs) {
   const nestedPath = path.join(skillsDir, dir);
   try {
@@ -110,11 +110,16 @@ for (const dir of skillDirs) {
         try {
           const subEntries = fs.readdirSync(subNestedPath, { withFileTypes: true });
           for (const se of subEntries) {
+            // Include nested subdirectories or direct subdirectories of shared/
             if (se.isDirectory() && !skillDirs.includes(se.name)) {
               skillDirs.push(se.name);
             }
           }
         } catch (_) {}
+        // Also if we are looking at shared/, ne itself is a first-level subdirectory (e.g. shared/caveman)
+        if (dir === 'shared' && !skillDirs.includes(ne.name)) {
+          skillDirs.push(ne.name);
+        }
       }
     }
   } catch (_) {}
@@ -124,6 +129,7 @@ function findSkillMdPath(dirSlug) {
   const candidates = [
     path.join(skillsDir, dirSlug, 'SKILL.md'),
     path.join(skillsDir, dirSlug + '.md'),
+    path.join(skillsDir, 'shared', dirSlug, 'SKILL.md'),
   ];
   for (const p of candidates) {
     if (fs.existsSync(p)) return p;

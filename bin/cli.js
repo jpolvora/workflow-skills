@@ -76,14 +76,55 @@ function copyDirPreservingConfig(src, dest, preservedFile) {
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
+    
+    const pathParts = srcPath.split(path.sep);
+    const isMemoryFolder = pathParts.includes('memory');
+    
+    let isPreserved = false;
+    if (fs.existsSync(destPath)) {
+      if (entry.name === preservedFile) {
+        isPreserved = true;
+      } else if (entry.name === 'MEMORY.md') {
+        isPreserved = true;
+      } else if (isMemoryFolder) {
+        isPreserved = true;
+      }
+    }
+
     if (entry.isDirectory()) {
       copyDirPreservingConfig(srcPath, destPath, preservedFile);
-    } else if (entry.name === preservedFile && fs.existsSync(destPath)) {
+    } else if (isPreserved) {
       console.log(`    Skipped (preserved): ${path.relative(dest, destPath) || entry.name}`);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
   }
+}
+
+function cleanLegacyLearning(destPath) {
+  // Legacy: remove old extra-skills/learning directory from pre-self-learning era
+  const oldLearningPath = path.join(destPath, 'extra-skills', 'learning');
+  if (fs.existsSync(oldLearningPath)) {
+    console.log(`  Cleaning up legacy extra-skills/learning directory...`);
+    fs.rmSync(oldLearningPath, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Auto-install or update the `shared/` skill directory alongside any workflow
+ * that depends on it (spec-to-pr or spec-to-pr-lite). Preserves config.json
+ * and self-learning/memory/ contents.
+ */
+function ensureSharedInstalled(mode = 'install') {
+  const srcShared = path.join(srcSkillsDir, 'shared');
+  const destShared = path.join(targetSkillsDir, 'shared');
+  if (!fs.existsSync(srcShared)) return;
+  if (mode === 'update' || fs.existsSync(destShared)) {
+    copyDirPreservingConfig(srcShared, destShared, CONFIG_FILE);
+  } else {
+    copyDirSync(srcShared, destShared);
+  }
+  console.log(`  shared/ ${mode === 'update' ? 'updated' : 'installed'} (config.json + self-learning/memory preserved)`);
 }
 
 /** Install or refresh packaged `.agents/AGENTS.md` (consumer skill index + rules). */
@@ -199,11 +240,17 @@ function runUpdate(skills, includeNew) {
 
   if (existingSkills.length > 0) {
     console.log(`Updating ${existingSkills.length} skill(s)...`);
+    let sharedEnsured = false;
     for (const skillName of existingSkills) {
       const srcPath = path.join(srcSkillsDir, skillName);
       const destPath = path.join(targetSkillsDir, skillName);
       console.log(`  Updating '${skillName}'...`);
       copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+      // Auto-update shared/ once when any workflow skill is updated
+      if (!sharedEnsured && (skillName === 'spec-to-pr' || skillName === 'spec-to-pr-lite')) {
+        ensureSharedInstalled('update');
+        sharedEnsured = true;
+      }
     }
   }
 
@@ -314,14 +361,23 @@ async function runInteractive(skills) {
         fs.writeFileSync(configPath, preservedConfig);
         console.log(`    Preserved existing ${CONFIG_FILE}`);
       }
+      // Auto-update shared/ when a workflow skill is re-installed
+      if (skillName === 'spec-to-pr' || skillName === 'spec-to-pr-lite') {
+        ensureSharedInstalled('update');
+      }
       console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
       installedCount++;
       continue;
     }
 
     copyDirSync(srcPath, destPath);
+    // Auto-install shared/ when a workflow skill is first installed
+    if (skillName === 'spec-to-pr' || skillName === 'spec-to-pr-lite') {
+      ensureSharedInstalled('install');
+    }
     console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
     installedCount++;
+
   }
 
   installPackagedAgentsIndex();

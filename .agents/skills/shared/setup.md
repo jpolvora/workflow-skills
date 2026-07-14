@@ -1,19 +1,22 @@
-# Setup & Bootstrap — Spec-to-PR Lite
+# Setup & Bootstrap — Shared Workflow Entry
 
-Initialization, configuration bootstrap, flags, resume logic, and first-run setup. Extracted from [`SKILL.md`](SKILL.md) to keep the orchestrator lean.
-Artifact paths: [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md). Resume rules in this file are canonical.
+Initialization, configuration bootstrap, flags, resume logic, and first-run setup.
+Shared by [`spec-to-pr`](../spec-to-pr/SKILL.md) and [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md).
+
+Artifact paths: [`../spec-to-pr/ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md). Resume rules in this file are canonical; FAQ/DIAGRAM must link here.
 
 ---
 
 ## Bootstrap & Entry
 
-Before Step 1:
+> **[spec-to-pr]** — Before Step 0.
+> **[spec-to-pr-lite]** — Before Step 1.
 
-1. **Config check**: Check if `.agents/skills/spec-to-pr/config.json` exists. If not, check if `.agents/skills/spec-to-pr-lite/config.json` exists. If both are missing:
-   - `cp .agents/skills/spec-to-pr-lite/config.json.example .agents/skills/spec-to-pr-lite/config.json`
+1. **Config check**: Check if `.agents/skills/shared/config.json` exists. If missing:
+   - `cp .agents/skills/shared/config.json.example .agents/skills/shared/config.json`
    - AskQuestion: **Fill config now** / **Skip**
    - If "Fill now": present each top-level section, collect values. Skip optional sections.
-1a. **AskQuestion gate rule (recommended)**: If `.cursor/rules/ask-question-gates.mdc` is missing and `.agents/skills/spec-to-pr-lite/cursor-rules/ask-question-gates.mdc` exists, copy it into `.cursor/rules/` so Agent chat always forces native `AskQuestion` for selectable gates (see [`SKILL.md`](SKILL.md) § AskQuestion requirement).
+1a. **AskQuestion gate rule (recommended)**: If `.cursor/rules/ask-question-gates.mdc` is missing and `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` exists, copy it into `.cursor/rules/` so Agent chat always forces native `AskQuestion` for selectable gates (see orchestrator `SKILL.md` § AskQuestion requirement).
 1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
      - **Language/Framework**: Look for `package.json` (Node/React/Next), `*.csproj`/`*.sln`/`*.slnx` (.NET), `pyproject.toml`/`requirements.txt` (Python), `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml`/`build.gradle` (Java), `Gemfile` (Ruby), etc.
@@ -52,29 +55,27 @@ Before Step 1:
    ```
    Write this block immediately after flag parsing, before auto-resume. Applies in all modes (normal, auto, dry-run). In `dryRun`, prefix with `[DRY-RUN]`.
 4. **Auto resume** or **Active Resume** (see [Resume / reset](#resume--reset)).
-5. **Identity & Specification Resolution**:
-   - Resolve `providers.active` from config (default: GitHub if enabled, else Azure DevOps, else local).
-   - Load the resolved provider skill (`github-provider`, `azure-devops-provider`, or `local-spec-provider`).
-   - Run the Specification Protocol by dispatching `fetch-to-spec` with the user's trigger input to create the canonical specification file `{us-dir}/step-00-{slug}.spec.md`.
-   - Assign `workflow-id`, `slug`, `us-dir`.
-   - Inject `workflowType: lite` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
+5. **Identity**: `workflow-id`, `slug`, `us-dir`.
+   - **[spec-to-pr]**: Inject `workflowType: standard` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
+   - **[spec-to-pr-lite]**: Inject `workflowType: lite`.
 6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit`.
 7. **LOC baseline**: `Shell` capture → `telemetry.loc.baseline`. Store ISO → `telemetry.workflowStartedAt`.
-8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-1`.
+8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-0`.
 9. **Progress Board** render.
-10. **Step 1 Entry Gate** → dispatch.
+10. **Step Entry Gate** → dispatch.
 
 ---
 
 ## Resume / Reset
 
-**Auto:** skip Active Resume; use auto resume policy. If existing `active`/`paused` workflow matches same US/slug + `autoMode` + `workflowType: lite`, auto-resume.
+**Auto:** skip Active Resume; use auto resume policy. If existing `active`/`paused` workflow matches same US/slug + `autoMode` + matching `workflowType`, auto-resume.
 
 **Normal — workflow discovery (mandatory before any new workflow):**
 
 1. `Glob` `{config.plans.dir}/**/*.state.md` (default `.cursor/plans/**/*.state.md`) → list all state files.
 2. For each, `Read` frontmatter YAML: `status`, `workflowId`, `slug`, `us`, `currentStep`, `startedAt`, `autoMode`, `workflowType`.
-3. Filter: (`status: active` or `status: paused`) and `workflowType` is exactly `lite`.
+3. **[spec-to-pr]** Filter: (`status: active` or `status: paused`) and `workflowType` is `standard` or absent.
+   **[spec-to-pr-lite]** Filter: (`status: active` or `status: paused`) and `workflowType` is exactly `lite`.
 4. Present as **selectable list** via AskQuestion:
 
 ```text
