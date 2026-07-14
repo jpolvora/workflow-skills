@@ -32,3 +32,4 @@ config/credentials
 *.log
 .tmp-*/
 audit_results.txt
+__pycache__

@@ -39,8 +39,8 @@ This hub is designed to host **multiple workflows** over time. Each workflow is 
 | Step 13 (via ship-pr) | [`09-goal-fix-pr`](.agents/skills/09-goal-fix-pr/SKILL.md) | Convergence loop — fix-pr until zero open threads |
 | Post-workflow | [`10-update-plan-implementation`](.agents/skills/10-update-plan-implementation/SKILL.md) | Delta adjustments from QA findings |
 | Step 13 | [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | End-to-end PR delivery and merge |
-| Spec protocol | [`spec-format`](.agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md) | Canonical spec format validation |
-| Loop primitive | [`goal-loop`](.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
+| Spec protocol | [`spec-format`](.agents/skills/shared/spec-format/SKILL.md) | Canonical spec format validation |
+| Loop primitive | [`goal-loop`](.agents/skills/shared/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
 | Provider | [`github-provider`](.agents/skills/github-provider/SKILL.md) | GitHub issue→spec and PR create/threads/merge |
 | Provider | [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) | Azure DevOps work item→spec and PR create/threads/merge |
 | Provider | [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Local `*.spec.md` register/normalize (PR via `providers.scm`) |

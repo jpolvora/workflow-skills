@@ -105,8 +105,11 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
 {
   const required = [
     '.agents/skills/spec-to-pr/ARTIFACTS.md',
-    '.agents/skills/spec-to-pr/config.schema.json',
-    '.agents/skills/spec-to-pr/config.json.example',
+    '.agents/skills/shared/config.schema.json',
+    '.agents/skills/shared/config.json.example',
+    '.agents/skills/shared/tools.md',
+    '.agents/skills/shared/stack.md',
+    '.agents/skills/shared/setup.md',
     '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
     '.agents/skills/spec-to-pr/SKILL.md',
     '.agents/skills/check-harness/SKILL.md',
@@ -217,7 +220,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
   }
   const goalLoop = fs.readFileSync(
-    path.join(parentDir, '.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md'),
+    path.join(parentDir, '.agents/skills/shared/goal-loop/SKILL.md'),
     'utf8'
   );
   if (/[>] ?\/tmp\//.test(goalLoop) || /\/tmp\/goal-loop/.test(goalLoop)) {
@@ -234,7 +237,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('AGENTS.md still maps Step 11 to 04-implement-tasks');
   }
   const example = JSON.parse(
-    fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/config.json.example'), 'utf8')
+    fs.readFileSync(path.join(parentDir, '.agents/skills/shared/config.json.example'), 'utf8')
   );
   if (!example.project?.workingBranch) fail('config.json.example missing project.workingBranch');
   if (!example.plans?.dir) fail('config.json.example missing plans.dir');
@@ -572,7 +575,7 @@ child.on('close', (code) => {
 
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
-    const schemaInTest = path.join(testSkillsDir, 'spec-to-pr', 'config.schema.json');
+    const schemaInTest = path.join(testSkillsDir, 'shared', 'config.schema.json');
     const artifactsInTest = path.join(testSkillsDir, 'spec-to-pr', 'ARTIFACTS.md');
     if (!fs.existsSync(schemaInTest)) fail('config.schema.json not installed into consumer');
     if (!fs.existsSync(artifactsInTest)) fail('ARTIFACTS.md not installed into consumer');

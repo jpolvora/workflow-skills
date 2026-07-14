@@ -131,11 +131,11 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `caveman` | `skills/spec-to-pr/extra-skills/caveman/SKILL.md` | Ultra-compressed response (~75% fewer tokens) |
-| `gabarito` | `skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Ten operational response guidelines |
-| `karpathy-guidelines` | `skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
+| `caveman` | `skills/shared/caveman/SKILL.md` | Ultra-compressed response (~75% fewer tokens) |
+| `gabarito` | `skills/shared/gabarito/SKILL.md` | Ten operational response guidelines |
+| `karpathy-guidelines` | `skills/shared/karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
 | `spec-format` | `skills/spec-to-pr/extra-skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
-| `learning` | `skills/spec-to-pr/extra-skills/learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
+| `self-learning` | `skills/spec-to-pr/extra-skills/self-learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
 | `changelog` | `skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Summarized history in `CHANGELOG.md` |
 | `goal-loop` | `skills/spec-to-pr/extra-skills/goal-loop/SKILL.md` | Generic convergence loop (used by `09-goal-fix-pr`) |
 

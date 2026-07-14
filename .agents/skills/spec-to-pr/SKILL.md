@@ -373,7 +373,7 @@ Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree 5/1
 
 ### Learning & Memory Protocol
 
-**Purpose:** Prevent repeating mistakes across steps and across workflow runs. `state.md` acts as the intra-workflow knowledge bus, while `MEMORY.md` (root) is the cross-session, persistent anti-regression knowledge base.
+**Purpose:** Prevent repeating mistakes across steps and across workflow runs. `state.md` acts as the intra-workflow knowledge bus, while the compiled `MEMORY.md` inside the `self-learning` extra-skill folder is the cross-session, persistent anti-regression knowledge base.
 
 #### 1. Pre-read Checklist (Memory Consultation)
 At the start of every step, the subagent MUST read the following sections:
@@ -384,24 +384,25 @@ At the start of every step, the subagent MUST read the following sections:
 | `state.md` | `## Accumulated decisions` | Design choices, assumption flags, deviations from plan |
 | `state.md` | `## Step outputs` (all `### Step N` blocks) | Prior errors, retry patterns, broken approaches |
 | `state.md` | `## Doc consolidation log` | Docs updated during workflow |
-| `MEMORY.md` | Index + scope-related sections | Generalizable anti-regression patterns from past workflows |
+| `self-learning/MEMORY.md` | Index + scope-related sections | Generalizable anti-regression patterns from past workflows |
 | `check_memory_conflict.py` | script output | Conflict detection (steps 2,3,5,9,10) |
 
 - **Intra-workflow Avoidance:** Scan `## Step outputs ### Step N` for `errors[]` and `learning` fields. Subagent MUST NOT repeat approaches that prior steps logged as broken.
 
-#### 2. Writing Back Learndings
+#### 2. Writing Back Learnings
 After step completion, the subagent records in `step-output.learning` (mistakes made, traps/constraints found). The orchestrator appends these to `state.md` `## Workflow memory`.
 
 #### 3. Inter-workflow Promotion (Step 12 Sweep)
-At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.learning` entries, promoting generalizable patterns to `MEMORY.md`.
-- **Promotion Criteria:** Technical (framework/api/pattern level, not domain-specific), generalizable, non-duplicate (grep `MEMORY.md` first), and concise (one line per trap).
-- **Target Sections:** `## Patterns`, `## Traps`, `## Review Patterns`, `## Index`.
+At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.learning` entries, promoting generalizable patterns to the file-based memory system under `self-learning`.
+- **Promotion Process:** For each promoted learning, create a new markdown file under `.agents/skills/shared/self-learning/memory/YYYY-MM-DD-[slug].md`. Then, run the compiler script: `python .agents/skills/shared/self-learning/self_learning.py --compile`.
+- **Promotion Criteria:** Technical (framework/api/pattern level, not domain-specific), generalizable, non-duplicate (query/grep memory first), and concise (one line per trap).
+- **Target Sections:** Traps, patterns, layers, modules, severity.
 - **Exclusions:** Do NOT store logs (→ `CHANGELOG.md`), domain rules (→ `CONTEXT.md` / `specs/`), narratives, or duplicates.
-- **`dryRun`:** Log proposed entries in `## Doc consolidation log` only — do not edit `MEMORY.md`.
+- **`dryRun`:** Log proposed entries in `## Doc consolidation log` only — do not write new entry files to `memory/` or run the compiler.
 
 ### Specification Protocol
 
-[`spec-format`](./extra-skills/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Tracker credentials/org: `config.json.issueTrackers`. Entry ownership: `config.json.providers` + provider skills below.
+[`spec-format`](../shared/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Tracker credentials/org: `config.json.issueTrackers`. Entry ownership: `config.json.providers` + provider skills below.
 
 | Input | Tracker / provider | Action | Uses Step 0? |
 |-------|--------------------|--------|--------------|

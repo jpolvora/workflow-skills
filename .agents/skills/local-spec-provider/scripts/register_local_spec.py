@@ -38,9 +38,7 @@ def ensure_utf8_stdio() -> None:
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "spec-to-pr" / "config.json"
-if not CONFIG_PATH.exists():
-    CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "spec-to-pr-lite" / "config.json"
+CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
 DEFAULT_PLANS_DIR = ".cursor/plans"
 DEFAULT_SPECS_DIR = "specs"
 

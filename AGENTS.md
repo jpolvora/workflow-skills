@@ -70,11 +70,11 @@ Skills loaded automatically by task type:
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `caveman` | `.agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md` | Every prompt — response compression |
-| `gabarito` | `.agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
-| `karpathy-guidelines` | `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
-| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Every task completion — summarized historical record |
-| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Every task completion — anti-regression record |
+| `caveman` | `.agents/skills/shared/caveman/SKILL.md` | Every prompt — response compression |
+| `gabarito` | `.agents/skills/shared/gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `karpathy-guidelines` | `.agents/skills/shared/karpathy-guidelines/SKILL.md` | Every prompt — behavioral guardrails |
+| `changelog` | `.agents/skills/shared/changelog/SKILL.md` | Every task completion — summarized historical record |
+| `self-learning` | `.agents/skills/shared/self-learning/SKILL.md` | Every task completion — anti-regression record |
 | `using-superpowers` | `(global skill)` | Session start — skill discovery |
 
 ### Precedence (auto-load)
@@ -174,15 +174,15 @@ After a harness change, always evaluate all three:
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `caveman` | `.agents/skills/spec-to-pr/extra-skills/caveman/SKILL.md` | Ultra-compressed response (~75% less tokens) |
-| `gabarito` | `.agents/skills/spec-to-pr/extra-skills/gabarito/SKILL.md` | Ten operational response guidelines (accountability, anti-sycophancy, chain-of-verification) |
-| `karpathy-guidelines` | `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
+| `caveman` | `.agents/skills/shared/caveman/SKILL.md` | Ultra-compressed response (~75% less tokens) |
+| `gabarito` | `.agents/skills/shared/gabarito/SKILL.md` | Ten operational response guidelines (accountability, anti-sycophancy, chain-of-verification) |
+| `karpathy-guidelines` | `.agents/skills/shared/karpathy-guidelines/SKILL.md` | Behavioral guidelines to reduce common LLM coding mistakes — surgical changes, no scope creep |
 | `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec-to-PR delivery orchestrator (FSM F0-F6, steps 0-13) |
 | `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Spec-to-PR lite delivery orchestrator (sequential FSM, steps 1-5) |
-| `spec-format` | `.agents/skills/spec-to-pr/extra-skills/spec-format/SKILL.md` | Creates, reviews, or formats *.spec.md artifacts |
-| `learning` | `.agents/skills/spec-to-pr/extra-skills/learning/SKILL.md` | Anti-regression knowledge record in MEMORY.md |
-| `changelog` | `.agents/skills/spec-to-pr/extra-skills/changelog/SKILL.md` | Summarized historical record in CHANGELOG.md |
-| `goal-loop` | `.agents/skills/spec-to-pr/extra-skills/goal-loop/SKILL.md` | Generic goal/loop convergence pattern (sentinel, heartbeat, verify) |
+| `spec-format` | `.agents/skills/shared/spec-format/SKILL.md` | Creates, reviews, or formats *.spec.md artifacts |
+| `self-learning` | `.agents/skills/shared/self-learning/SKILL.md` | Anti-regression knowledge record in MEMORY.md |
+| `changelog` | `.agents/skills/shared/changelog/SKILL.md` | Summarized historical record in CHANGELOG.md |
+| `goal-loop` | `.agents/skills/shared/goal-loop/SKILL.md` | Generic goal/loop convergence pattern (sentinel, heartbeat, verify) |
 | `grill-with-docs` | (global skill in `~/.agents/skills/grill-with-docs/SKILL.md`) | Grilling session against existing domain + docs |
 | `find-skills` | `using-superpowers` (skill global) | Skill discovery and installation |
 
@@ -215,7 +215,7 @@ After a harness change, always evaluate all three:
 | I want to validate/check workflow processes | `check-workflows` |
 | I want to grill plan against docs | `grill-with-docs` |
 | I want to do frontend design | `design-taste-frontend` or `mobile-first-design` |
-| I want to record learning | `learning` |
+| I want to record learning | `self-learning` |
 | I want to record changelog | `changelog` |
 | I want to discover/install skills | `find-skills` or `using-superpowers` |
 
@@ -292,7 +292,7 @@ Some skills reference `senior-developer`, `CONTEXT.md`, and `.cursor/rules/ef-mi
 | Dependency | Resolve (in order) | Notes |
 |------------|--------------------|-------|
 | `senior-developer` | 1) path in `spec-to-pr/config.json` → `rules.seniorDeveloper` · 2) `.agents/skills/senior-developer/SKILL.md` · 3) `.cursor/rules/senior-developer.mdc` · 4) `~/.agents/skills/senior-developer/SKILL.md` (global) | Skills must **not** hardcode a single relative path. Prefer config; link to this section when documenting. |
-| `karpathy-guidelines` | 1) `rules.karpathyGuidelines` in config · 2) `.agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md` (shipped) | Do **not** use a top-level `.agents/skills/karpathy-guidelines/` path — that layout is obsolete. |
+| `karpathy-guidelines` | 1) `rules.karpathyGuidelines` in config · 2) `.agents/skills/shared/karpathy-guidelines/SKILL.md` (shipped) | Do **not** use a top-level `.agents/skills/karpathy-guidelines/` path — that layout is obsolete. |
 | `CONTEXT.md` | Consumer repo root (optional) | If absent, use consumer glossary / stack docs; do not fail the skill. |
 | `specs/domains/` | Consumer catalog for domain-review | Optional until domain-review is used. Starter: [`specs/domains/index.md.example`](specs/domains/index.md.example). |
 | `ef-migrations.mdc` | `.cursor/rules/ef-migrations.mdc` in the consumer project | Optional; only for .NET/EF consumers |

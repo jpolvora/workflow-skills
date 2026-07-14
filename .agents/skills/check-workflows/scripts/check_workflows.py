@@ -73,7 +73,7 @@ def check_step_continuity():
     return errors
 
 def check_config_sharing_fallbacks():
-    """Verify that fallback config checks exist in scripts and providers."""
+    """Verify that configuration checks target shared/config.json."""
     errors = []
     
     # Check validate_state.py under spec-to-pr-lite
@@ -82,12 +82,12 @@ def check_config_sharing_fallbacks():
         errors.append("Lite validate_state.py script is missing.")
     else:
         code = lite_val_state.read_text(encoding="utf-8")
-        if "spec-to-pr" not in code or "config.json" not in code:
-            errors.append("Lite validate_state.py does not implement config fallback check.")
+        if "shared" not in code or "config.json" not in code:
+            errors.append("Lite validate_state.py does not target shared/config.json.")
         else:
-            print("✅ Lite validate_state.py has config fallback resolution.")
+            print("✅ Lite validate_state.py targets shared/config.json.")
 
-    # Check local-spec-provider scripts fallbacks
+    # Check local-spec-provider scripts
     lsp_scripts = ["register_local_spec.py", "detect_specs_dir.py"]
     for s_name in lsp_scripts:
         path = SKILLS_DIR / "local-spec-provider" / "scripts" / s_name
@@ -95,10 +95,10 @@ def check_config_sharing_fallbacks():
             errors.append(f"Local Spec Provider script missing: {s_name}")
         else:
             code = path.read_text(encoding="utf-8")
-            if "spec-to-pr-lite" not in code:
-                errors.append(f"Local Spec Provider script {s_name} does not fall back to lite config.")
+            if "shared" not in code or "config.json" not in code:
+                errors.append(f"Local Spec Provider script {s_name} does not reference shared/config.json.")
             else:
-                print(f"✅ Local Spec Provider {s_name} has config fallback resolution.")
+                print(f"✅ Local Spec Provider {s_name} references shared/config.json.")
                 
     return errors
 

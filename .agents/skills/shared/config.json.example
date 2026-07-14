@@ -128,7 +128,7 @@
   "rules": {
     "harness": "AGENTS.md",
     "seniorDeveloper": ".agents/skills/senior-developer/SKILL.md",
-    "karpathyGuidelines": ".agents/skills/spec-to-pr/extra-skills/karpathy-guidelines/SKILL.md",
+    "karpathyGuidelines": ".agents/skills/shared/karpathy-guidelines/SKILL.md",
     "viewPatterns": "",
     "efMigrations": ".cursor/rules/ef-migrations.mdc",
     "stackFile": "STACK.md"
