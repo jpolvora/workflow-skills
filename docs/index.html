@@ -409,8 +409,8 @@
     link.addEventListener('click', function(e) {
       e.preventDefault();
       const path = this.getAttribute('data-path');
-      const card = this.closest('.skill-card');
-      const name = card.querySelector('.name').textContent;
+      const card = this.closest('.skill-card, .workflow-card');
+      const name = card ? card.querySelector('.name, h3').textContent : 'Skill';
       const url = RAW_BASE + path;
 
       // Reset state
