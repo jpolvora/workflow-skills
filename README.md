@@ -204,6 +204,7 @@ npm run tests -- --local
 | Skill | Description |
 | :--- | :--- |
 | [`check-harness`](.agents/skills/check-harness/SKILL.md) | Audit harness integrity — routing, broken links, orphan skills, portability |
+| [`check-workflows`](.agents/skills/check-workflows/SKILL.md) | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
 | [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) | Create new skills with proper structure and progressive disclosure |
 
 ### Engineering Standards
