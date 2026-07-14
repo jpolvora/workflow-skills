@@ -20,7 +20,7 @@ Responsible for driving PR review thread convergence to zero. It wraps the [08-f
 /goal-fix-pr <PR-NUMBER> [dry-run] [max <n>]
 ```
 
-Same SCM resolution and convergence loop as workflow mode; confirmation gates remain auto-approved by this skill.
+This skill wraps the [`goal-loop`](../shared/goal-loop/SKILL.md) generic primitive as its orchestrator, executing [`08-fix-pr`](../08-fix-pr/SKILL.md) tasks for each action round.
 
 ### Workflow Mode (Step 12 of spec-to-pr)
 
@@ -32,9 +32,10 @@ Dispatched automatically by `spec-to-pr` when `ship-pr` triggers thread converge
 |-----------|------|---------|-------------|
 | `<PR-NUMBER>` | Integer | (required) | Target Pull Request number. |
 | `dry-run` | Flag | `false` | Simulate fixes and resolutions without committing, pushing, or calling platform resolve APIs. |
-| `max <n>` | Integer | `20` | Maximum iteration ceiling before stopping and escalating. |
+| `max <n>` | Integer | `5` | Maximum iteration ceiling before stopping (default 5 loops). |
+| `wait <n>` | Integer | `300` | Post-round/pre-check wait interval in seconds (default 5 minutes / 300s). |
 
-Before executing, restate the parsed parameters: **PR number**, **success criteria**, **mode**, **max iterations**, **dry-run active**, **`providers.scm`**.
+Before executing, restate the parsed parameters: **PR number**, **success criteria**, **mode**, **max iterations (default 5)**, **check interval (default 300s)**, **dry-run active**, **`providers.scm`**.
 
 ---
 
@@ -76,28 +77,35 @@ When running inside `goal-fix-pr`, the following `fix-pr` interactive gates are 
 
 ## Core Loop
 
-Track progress across iterations:
+Track progress across iterations inheriting the [`goal-loop`](../shared/goal-loop/SKILL.md) structure:
 
 ```
 Goal: fix-pr PR-<N> until convergence (scm = providers.scm)
-Success: activeThreads == 0 via scm list-threads
+Success: activeThreads == 0 via scm list-threads verified after heartbeat check
 Iteration: <n>/<max>
-- [ ] branch sync (PR head)
 - [ ] scm list-threads → count activeThreads
-- [ ] 08-fix-pr round (if > 0 threads; scm list/resolve inside fix-pr)
+- [ ] if activeThreads == 0 on first loop:
+      - arm 5-minute heartbeat timer immediately
+      - wait + re-collect after 5 minutes
+      - if activeThreads remains 0 after wait → final report + DONE
+      - if activeThreads > 0 after wait → continue loop (proceed to act round)
+- [ ] 08-fix-pr round (if activeThreads > 0)
 - [ ] verify build/tests + code-review auto-check
 - [ ] commit + resolve + push (if code changed; skip if dry-run)
-- [ ] wait 5min + scm list-threads re-collect
+- [ ] arm sentinel + wait 5min
+- [ ] scm list-threads re-collect
 ```
 
 ### Phase 1 — Baseline (Iteration 1)
 - Resolve `providers.scm` and call provider `list-threads` for `<PR-NUMBER>`.
-- If `activeThreads == 0` on first collect → final report and stop (already converged).
+- **Immediate Heartbeat Check (Zero Threads Case)**: If `activeThreads == 0` on initialization, **do not exit immediately**. Immediately start the 5-minute (300s) heartbeat timer to wait for CI/actions/reviewer updates. Wake up, re-run SCM provider `list-threads`, and re-evaluate:
+  - If `activeThreads == 0` still → final report, stop, and mark as completed (DONE).
+  - If `activeThreads > 0` → proceed to **Phase 2** (Act).
 
 ### Phase 2 — Act (08-fix-pr Round)
-- Dispatch [08-fix-pr](../08-fix-pr/SKILL.md) for the same `<PR-NUMBER>` with automation overrides (gates auto-yes). Fix-pr owns scoring FSM and SCM list/resolve via `providers.scm`; this skill does not re-implement platform APIs.
+- Dispatch [`08-fix-pr`](../08-fix-pr/SKILL.md) for the same `<PR-NUMBER>` with automation overrides (gates auto-yes). Fix-pr owns scoring FSM and SCM list/resolve via `providers.scm`; this skill does not re-implement platform APIs.
 - Commit: `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`.
-- Resolve threads through the SCM provider (via fix-pr).
+- Resolve threads through the SCM provider (via [`08-fix-pr`](../08-fix-pr/SKILL.md)).
 - Push: `git push origin HEAD` (skip if `dry-run`).
 
 ### Phase 3 — Verify (Mandatory after each round)
