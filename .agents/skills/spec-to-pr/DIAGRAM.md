@@ -1,6 +1,6 @@
 # Spec-to-PR v9.1 — Diagrams
 
-> **Architecture note (v9.1):** Steps 0–11 delegate functional content to dedicated standalone skills. `state.md` is per-workflow memory; `MEMORY.md` is shared/generalizable memory. Step 13 is optional via `--full` (Ship & PR). Stack-agnostic — project metadata from `.agents/skills/spec-to-pr/config.json`. Canonical artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md).
+> **Architecture note (v9.1):** Steps 0–11 delegate functional content to dedicated standalone skills. `state.md` is per-workflow memory; `MEMORY.md` is shared/generalizable memory. Step 13 is optional via `--full` (Ship & PR). Stack-agnostic — project metadata from `.agents/skills/shared/config.json`. Canonical artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md).
 
 Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](README.md). Resume rules: [`setup.md`](setup.md) (canonical).
 

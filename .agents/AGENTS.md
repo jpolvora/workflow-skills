@@ -68,7 +68,7 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 ### Dual-Mode Execution & Compatibility
 
 Both workflows co-exist cleanly in **dual mode** inside consumer projects:
-- **Shared Configuration**: They share `.agents/skills/spec-to-pr/config.json` as a single source of truth. If the local `spec-to-pr-lite/config.json` is missing, lite orchestrators and tools automatically fall back to standard.
+- **Shared Configuration**: They share `.agents/skills/shared/config.json` as a single source of truth. If the local `spec-to-pr-lite/config.json` is missing, lite orchestrators and tools automatically fall back to standard.
 - **State Isolation**: Workflows write a `workflowType` field (`standard` / `lite`) to their state files. Resume discovery filters these to prevent cross-resuming standard/lite workflows.
 - **Pipeline Reusability**: They share the same underlying pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, `11-ship-pr`), making dual-mode execution lightweight, coherent, and efficient.
 

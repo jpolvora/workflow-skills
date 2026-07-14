@@ -68,7 +68,7 @@ For complete workflow instructions, resume flows, and tags, see [spec-to-pr-lite
 ## 🔄 Dual-Mode Execution & Compatibility
 
 Both workflows are designed to co-exist in **dual mode** within the same repository:
-- **Shared Configuration**: They share `.agents/skills/spec-to-pr/config.json` as their single source of truth. The `spec-to-pr-lite` FSM, SCM providers, and dependency scripts automatically fall back to the standard config if their local config is missing.
+- **Shared Configuration**: They share `.agents/skills/shared/config.json` as their single source of truth. The `spec-to-pr-lite` FSM, SCM providers, and dependency scripts automatically fall back to the standard config if their local config is missing.
 - **State Isolation**: State files are flagged with `workflowType: standard` or `workflowType: lite` in their frontmatter. Resume discovery automatically filters workflows by type, preventing cross-resuming between standard and lite modes.
 - **Shared Skills**: Both workflows leverage the same underlying pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, and `11-ship-pr`), keeping execution highly efficient, modular, and lightweight.
 

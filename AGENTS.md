@@ -29,7 +29,7 @@ Additional workflows may be added as peer top-level skills; they do not replace 
 ### Dual-Mode Execution & Compatibility
 
 Both workflows are designed to co-exist in **dual mode** inside a single consumer project:
-- **Shared Configuration**: They can share `.agents/skills/spec-to-pr/config.json` as their single source of truth. The `spec-to-pr-lite` orchestrator, SCM providers, and pipeline scripts automatically fall back to the standard config if their local config is absent.
+- **Shared Configuration**: They can share `.agents/skills/shared/config.json` as their single source of truth. The `spec-to-pr-lite` orchestrator, SCM providers, and pipeline scripts automatically fall back to the standard config if their local config is absent.
 - **State Isolation**: Each workflow run generates a state file containing a `workflowType` flag (`standard` vs `lite`). The resume logic filters state files so you can never resume a standard workflow run using the lite orchestrator (or vice versa), preventing state conflicts.
 - **Shared Skills**: Both orchestrators dispatch the same underlying, project-agnostic dependency skills (such as `01-write-plan`, `04-implement-tasks`, `06-code-review`, and `11-ship-pr`) for planning, coding, reviewing, and shipping, making the execution pipeline highly coherent and efficient.
 
