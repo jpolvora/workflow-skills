@@ -278,12 +278,13 @@ curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/rel
   --engine opencode \
   --model opencode-go/deepseek-v4-flash \
   --stack Custom \
+  --custom-prompt .github/agentic-code-reviewers-prompt.md \
   --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
   --target-branch refs/heads/main \
   --source-branch refs/heads/develop
 ```
 
-This reviews the diff between `develop` and `main` using the opencode engine with a custom stack filter covering all file types in this repo. Remove `--dry-run` to publish threads on the PR. See [agentic-code-reviewers](https://github.com/jpolvora/agentic-code-reviewers) for engine options and stack configuration.
+This reviews the diff between `develop` and `main` using the opencode engine with stack `Custom` (requires `--custom-prompt`; see [`.github/agentic-code-reviewers-prompt.md`](.github/agentic-code-reviewers-prompt.md)) and include patterns covering file types in this repo. Remove `--dry-run` to publish threads on the PR. See [agentic-code-reviewers](https://github.com/jpolvora/agentic-code-reviewers) for engine options and stack configuration.
 
 ---
 
