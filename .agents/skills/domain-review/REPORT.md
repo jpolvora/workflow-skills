@@ -5,7 +5,7 @@ Default language: **English (US)**. Copy into the reply (or `.cursor/codereviews
 ```markdown
 ## Domain review — {slug}[ / {subdomain}]
 
-**Catalog:** specs/domains/index.md
+**Catalog:** specs/domains/index.md (starter: specs/domains/index.md.example)
 **Contract:** specs/domains/{slug}.md
 **Perimeter:** [1–2 lines from Front-End/Back-End scope]
 **Out of scope:** [Not included + neighbor notes]

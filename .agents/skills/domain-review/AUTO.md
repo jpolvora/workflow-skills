@@ -60,7 +60,7 @@ Port conflict (5080/5173) → ask before `npm stop`. Fail → fix or stop; do no
 ```bash
 gh pr create --title "review({slug}): domain-review fixes" --body "$(cat <<'EOF'
 ## Summary
-- Domain-review auto pass for `{slug}` (catalog: specs/domains/index.md).
+- Domain-review auto pass for `{slug}` (catalog: specs/domains/index.md; starter index.md.example).
 - Applied Critical/Warning fix plan; stamped `## Last review`.
 
 ## Test plan

@@ -36,4 +36,4 @@
 | `self-learning` | [`../self-learning/SKILL.md`](../self-learning/SKILL.md) |
 | `changelog` | [`../changelog/SKILL.md`](../changelog/SKILL.md) |
 
-Install packages and dependency map: [`../../bin/skill-dependencies.json`](../../bin/skill-dependencies.json).
+Install packages and dependency map: [`../../../bin/skill-dependencies.json`](../../../bin/skill-dependencies.json).
