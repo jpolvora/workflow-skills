@@ -18,11 +18,13 @@
 
 | File | Purpose |
 |------|---------|
-| `config.json.example` | Project config template — copy to `config.json`, fill in, never commit |
-| `config.schema.json` | JSON Schema for `config.json` validation |
-| `tools.md` | Canonical agent tool vocabulary (aliases → config keys) |
-| `stack.md` | Human-readable companion to `config.json` |
-| `setup.md` | Bootstrap & entry logic shared by `spec-to-pr` and `spec-to-pr-lite` |
+| [`config.json.example`](config.json.example) | Project config template — copy to `config.json`, fill in, never commit |
+| [`config.schema.json`](config.schema.json) | JSON Schema for `config.json` validation |
+| [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
+| [`gates.md`](gates.md) | Shared AskQuestion / delivery / ship gate contract (dual-mode) |
+| [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys) |
+| [`stack.md`](stack.md) | Human-readable companion to `config.json` |
+| [`setup.md`](setup.md) | Bootstrap & entry logic shared by `spec-to-pr` and `spec-to-pr-lite` |
 
 ---
 

@@ -1,10 +1,10 @@
 # Spec-to-PR v9.1 — Diagrams
 
-> **Architecture note (v9.1):** Steps 0–11 delegate functional content to dedicated standalone skills. `state.md` is per-workflow memory; `MEMORY.md` is shared/generalizable memory. Step 13 is optional via `--full` (Ship & PR). Stack-agnostic — project metadata from `.agents/skills/shared/config.json`. Canonical artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md).
+> **Architecture note (v9.1):** Steps 0–11 delegate functional content to dedicated standalone skills. `state.md` is per-workflow memory; `MEMORY.md` is shared/generalizable memory. Step 13 is optional via `--full` (Ship & PR). Stack-agnostic — project metadata from `.agents/skills/shared/config.json`. Canonical artifact paths: [`ARTIFACTS.md`](ARTIFACTS.md). Dual-mode gates/config: [`gates.md`](../shared/gates.md), [`config-resolution.md`](../shared/config-resolution.md).
 
 Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](README.md). Resume rules: [`setup.md`](../shared/setup.md) (canonical).
 
-> **v8.1:** 7 phases (F0–F6); **Authorization Ladder** + hard stops HS-1..5; **Refinement FSM**; **Worktree Fallback**; **State Hygiene**; steps 4/8 → model sub-gates; `state.md` as workflow memory + `MEMORY.md` as shared memory; fresh subagent per step + checkpoint tags + Backward Navigation.
+> **v8.1:** 7 phases (F0–F6); **Authorization Ladder** + hard stops HS-1..5; **Refinement FSM**; **Worktree Fallback**; **State Hygiene**; steps 4/8 → phase model hints folded into Advance ([`gates.md`](../shared/gates.md)); `state.md` as workflow memory + `MEMORY.md` as shared memory; fresh subagent per step + checkpoint tags + Backward Navigation.
 
 ---
 
@@ -13,14 +13,14 @@ Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](REA
 ```mermaid
 flowchart LR
   F0[F0 Bootstrap<br/>step 0] --> F1[F1 Specification<br/>steps 1·2·3]
-  F1 --> F2[F2 Implementation<br/>step 5 + sub-gate 4]
+  F1 --> F2[F2 Implementation<br/>step 5 + phase model hint]
   F2 --> F3[F3 Verify + 1st commit<br/>steps 6·7 · G2]
-  F3 --> F4[F4 Review + Fix<br/>steps 9·10 + sub-gate 8 · G2]
+  F3 --> F4[F4 Review + Fix<br/>steps 9·10 + phase model hint · G2]
   F4 --> F5[F5 Integration<br/>step 11]
-  F5 --> F6[F6 Closure<br/>step 12 · push consent G3]
+  F5 --> F6[F6 Closure<br/>step 12 delivery · step 13 ship]
 ```
 
-Steps **4 and 8** are model sub-gates (F1→F2, F3→F4) — they do not appear as board steps or in `completedSteps`.
+Steps **4 and 8** are internal phase model hints on Advance (not board steps).
 
 ---
 
@@ -93,7 +93,7 @@ flowchart TB
     ACTIVE -->|none active| STATE
     STATE --> GATE0
     GATE0 -->|Continue| PREDISP
-    PREDISP -->|Pronto — disparar| PROMPT
+    PREDISP -->|Ready — dispatch| PROMPT
 
     PROMPT --> DISPATCH
     DISPATCH --> WAIT
@@ -173,7 +173,7 @@ flowchart TD
     LOOP{"Inconsistencies?"}
     FIX["Fix + commit + re-seed + revalidate"]
     E12["12 Cleanup + consolidation"]
-    PR["PR / push — manual (out of scope)"]
+    PR["Step 13 Ship & PR (optional / --full)"]
     ENDW(["End"])
 
     START --> BOOT --> G0 --> E1 --> G1 --> E2 --> G2 --> E3 --> G3
@@ -186,6 +186,7 @@ flowchart TD
     E11 --> LOOP
     LOOP -->|yes, iter < 3| FIX --> E11
     LOOP -->|no or accept with reservations| E12 --> PR --> ENDW
+    E12 -->|Skip ship| ENDW
 ```
 
 ---
@@ -224,7 +225,7 @@ sequenceDiagram
         U-->>O: Answers
         O->>T: New subagent (same step + answers)
     else status = success | partial
-        O->>S: Persist output + artifacts; consolidar learning em MEMORY.md quando o gate passar
+        O->>S: Persist output + artifacts; consolidate learning into MEMORY.md when gate passes
         O->>U: Summary + standard AskQuestion gate
         U-->>O: Menu selection
     end
@@ -259,18 +260,18 @@ flowchart LR
         RES["Resolve with evidence<br/>codebase before escalate"]
         PICK["Pick 1 highest-priority gap"]
         ASK["needs_user: single question + recommendation"]
-        REC["Orchestrator: AskQuestion<br/>+ Encerrar refinamento"]
+        REC["Orchestrator: AskQuestion<br/>+ End refinement and advance"]
         APPEND["Append to state decisions"]
         CHECK{"2d Exit criteria met?"}
-        SU{"2e Shared Understanding Gate"}
+        SU{"2e Shared Understanding (only if needed)"}
 
         INV --> RES --> CHECK
         CHECK -->|blocking open| PICK --> ASK --> REC --> APPEND --> INV
         CHECK -->|all closed| SU
-        REC -->|Encerrar| SU
-        SU -->|Confirmar| OUT["shared_understanding: confirmed -> Step 3"]
+        REC -->|End refinement| OUT["shared_understanding: confirmed -> Step 3"]
+        SU -->|Confirm| OUT
         SU -->|Continue| INV
-    end
+        CHECK -->|all closed + auto| OUT    end
 
     IN["*.plan.md"] --> INV
 ```
@@ -383,7 +384,7 @@ flowchart LR
     VR --> FR["us-id.report.md"]
     FR --> ITP["integration-test.plan.md"]
     ITP --> ITR["integration-test.report.md"]
-    ITR --> PUSH["push consent / PR manual"]
+    ITR --> PUSH["Step 13 ship gate (optional / --full)"]
 
     ISSUE --> P1
     DESC --> P1
@@ -477,7 +478,7 @@ flowchart TB
 | **autoMode** | Non-interactive — recommended option at every gate |
 | **Step worktree** | `.cursor/plans/us-{id}/worktrees/step-{N}/` — code steps 5, 10, 11 only; max 1 active |
 
-**Out of scope:** Opening/updating Pull Request, `fix-pr`, merge review — manual by the developer **after Step 12** (push consent).
+**Ship:** Step 13 (or lite Step 5) — one ship gate for push / PR / merge. Step 12 is delivery only (no push). Without ship consent, PR remains a manual follow-up.
 
 ---
 

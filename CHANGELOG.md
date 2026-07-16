@@ -75,3 +75,13 @@
 - **Prompt**: Step 5 L5 / T14 — Docs polish + build-site
 - **Done**: Strengthened root README `update --include-new` for the three provider skills; updated `spec-to-pr/tools.md` SCM tools to resolve via providers; added FAQ section for provider paths + `--include-new`. Regenerated `docs/index.html` via `node bin/build-site.js` (33 skills, providers listed).
 - **Result**: T14 acceptance met; Step 5 DAG T1–T14 complete; no commit of `.cursor/plans/`.
+
+### [2026-07-15 21:45] Agent: Cursor Grok
+- **Prompt**: Apply full spec-to-pr optimization plan; keep dual-mode compatible with lite; optimize lite too.
+- **Done**: Added shared/gates.md + config-resolution.md; slimmed transitions (Advance/More); collapsed delivery+ship gates; formalized complexity/stub plan; conditional interview; quick-score verify; fixed --full/docs contradictions; deduped config/SCM to shared/config.json across 08/09/11/providers; rewrote lite orch for gate parity; updated FAQ/DIAGRAM/README/AGENTS.
+- **Result**: check-workflows PASSED; orch 957→865 lines; dual-mode contracts documented. Optional: check-harness + build-site.
+
+### [2026-07-15 22:10] Agent: Cursor Grok
+- **Prompt**: Apply all check-harness Phase 7 corrections (H1–H7 + S1–S5).
+- **Done**: Fixed shared-config primary paths in hubs; en-us DIAGRAM/TEMPLATE/tdd-reviewer; check-workflows prose + relative script link; domain-review REPORT link; shared AGENTS hyperlinks; FAQ/DIAGRAM dual-mode pointers; Task router check-workflows row; rebuilt site catalog.
+- **Result**: H1–H7 + S1–S5 applied; check-workflows PASSED; docs/index.html regenerated (package 0.0.24).

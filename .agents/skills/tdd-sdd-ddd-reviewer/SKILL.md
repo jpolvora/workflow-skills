@@ -46,11 +46,11 @@ See [REFERENCE.md](REFERENCE.md): project conventions, backend (async, DI, EF), 
 
 ## Output format
 
-Default language: **Portuguese (Brazil)** unless user asks English.
+Default language: **English (en-us)** unless the user asks otherwise.
 
 ```markdown
 ### Architectural & strategic concerns
-*(DDD/TDD/SDD layer or spec mismatches. If none: "Nenhum identificado.")*
+*(DDD/TDD/SDD layer or spec mismatches. If none: "None identified.")*
 
 ### Findings by file
 * **[path / class]**:

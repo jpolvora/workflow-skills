@@ -24,7 +24,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 ### Portability and genericity (mandatory)
 
 1. **Portable and project-agnostic** — Skills must work in any consumer repo. Do **not** hardcode org/repo names, solution filenames, API hosts, tenant fields, or stack-specific build/test commands inside skill bodies or scripts.
-2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in `skills/spec-to-pr/config.json` (gitignored; copy from `config.json.example`). Skills **read** config / `STACK.md` / `tools.md`; they do not embed consumer metadata.
+2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in `skills/shared/config.json` (gitignored; copy from `skills/shared/config.json.example`). Skills **read** config / `STACK.md` / `tools.md`; they do not embed consumer metadata. See [`config-resolution.md`](skills/shared/config-resolution.md).
 3. **Repo-root-relative paths only** — References use paths like `skills/01-write-plan/SKILL.md` or `.agents/skills/...` from the consumer root. **Forbidden:** absolute paths (`C:\Users\...`, `/home/...`) or author-machine dependencies.
 4. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
 5. **No `name:` collisions** — Each `SKILL.md` frontmatter `name:` must be unique across the installed tree.
@@ -68,9 +68,10 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 ### Dual-Mode Execution & Compatibility
 
 Both workflows co-exist cleanly in **dual mode** inside consumer projects:
-- **Shared Configuration**: They share `.agents/skills/shared/config.json` as a single source of truth. If the local `spec-to-pr-lite/config.json` is missing, lite orchestrators and tools automatically fall back to standard.
-- **State Isolation**: Workflows write a `workflowType` field (`standard` / `lite`) to their state files. Resume discovery filters these to prevent cross-resuming standard/lite workflows.
-- **Pipeline Reusability**: They share the same underlying pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, `11-ship-pr`), making dual-mode execution lightweight, coherent, and efficient.
+- **Shared Configuration**: `.agents/skills/shared/config.json` only ([`config-resolution.md`](skills/shared/config-resolution.md)).
+- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — slim transitions; one delivery; one ship; no re-ask inside `11-ship-pr` when `workflowMode: true`.
+- **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
+- **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
 
 ---
 
@@ -166,6 +167,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | Frontend design | `design-taste-frontend` or `mobile-first-design` |
 | Create a new skill | `write-a-skill` |
 | Audit harness | `check-harness` |
+| Validate / check workflow processes | `check-workflows` |
 
 ---
 

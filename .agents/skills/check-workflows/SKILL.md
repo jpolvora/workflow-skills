@@ -40,7 +40,7 @@ The validation process evaluates the following areas:
 - Verifies that the resume/reset discovery scripts filter files using this field.
 
 ### 4. Provider Reference Resolution
-- Asserts that local spec provider and SCM provider scripts resolve configuration locations cleanly from either standard or lite folders.
+- Asserts that local spec provider and SCM provider scripts resolve configuration from `.agents/skills/shared/config.json` only (no standard/lite private config paths).
 
 ---
 
@@ -48,4 +48,4 @@ The validation process evaluates the following areas:
 
 The validation logic is encoded in the Python script located at `scripts/check_workflows.py`. It reads the markdown files, parses their tables, and scans script files for potential coupling or path drift.
 
-See [scripts/check_workflows.py](file:///.agents/skills/check-workflows/scripts/check_workflows.py) for the complete linting assertions.
+See [`scripts/check_workflows.py`](scripts/check_workflows.py) for the complete linting assertions.

@@ -22,7 +22,7 @@ Responsible for auditing and interrogating the draft plan (`step-01-{slug}.plan.
 
 ### Workflow Mode
 
-Dispatched by `spec-to-pr` at Step 2 (refinement). Discovers parameters via context and operates on step inputs.
+Dispatched by `spec-to-pr` at Step 2 when the orchestrator did **not** skip interview ([`gates.md`](../shared/gates.md) conditional interview). Discovers parameters via context. Orch may skip this skill entirely for simple plans.
 
 ### Parameters
 
@@ -30,6 +30,7 @@ Dispatched by `spec-to-pr` at Step 2 (refinement). Discovers parameters via cont
 |-----------|------|---------|-------------|
 | `<plan-path>` | String | (required) | Path to `step-01-{slug}.plan.md`. |
 | `spec=<spec-path>` | String | (optional) | Path to `step-00-{slug}.spec.md`. Inferred from the plan folder if omitted. |
+| `softSkipEligible` | Bool | false | Orch hint: Open Questions empty — skill should prefer defaults and exit quickly with `shared_understanding: confirmed` if no blocking gaps. |
 
 ## Prerequisites
 
@@ -74,9 +75,11 @@ Read and respect the following shared skills:
 - Workflow: return `status: needs_user` with details to allow the orchestrator to request feedback.
 
 ### Phase 4 — Shared Understanding
-- The plan cannot be finalized until `shared_understanding: confirmed` (except under `autoMode`).
+- WORKFLOW: If orch already auto-confirmed via **End refinement and advance**, treat as confirmed — do not re-prompt.
 - STANDALONE: Prompt the user to confirm.
-- WORKFLOW: Orchestrator handles the gate confirmation.
+- Otherwise WORKFLOW: return `shared_understanding: pending` and let orch gate (2e only when needed).
+
+**Fast exit:** When `softSkipEligible` and Phase 1 finds `blocking_open == 0`, write refined plan with defaults applied, set `shared_understanding: confirmed`, and return success without escalation.
 
 ---
 

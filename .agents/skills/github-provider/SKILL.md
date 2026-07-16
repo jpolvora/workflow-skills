@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 Owns all **GitHub-specific** instructions and scripts for inbound issues (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `08-fix-pr`, `09-goal-fix-pr`, `11-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `github`; they must not embed raw `gh` happy-path recipes beyond linking here.
 
-Resolve `owner` / `repo` from `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`) (`issueTrackers.github`, `project.org` / repo name, or `project.repoUrl`). **Never** hardcode org or repo names in this skill or its scripts.
+Resolve `owner` / `repo` from `.agents/skills/shared/config.json` (`issueTrackers.github`, `project.org` / repo name, or `project.repoUrl`). See [`config-resolution.md`](../shared/config-resolution.md). **Never** hardcode org or repo names in this skill or its scripts.
 
 ---
 
@@ -52,7 +52,7 @@ Dispatched by orchestrators (`spec-to-pr`, `spec-to-pr-lite` entry / Specificati
 - **CLI:** `gh` installed and on `PATH`.
 - **Auth (`validate-auth`):** `gh auth status` must succeed for issue/PR CLI flows.
 - **GraphQL threads:** token from `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN` (same precedence as thread scripts).
-- **Config:** `issueTrackers.github.enabled` (legacy) and/or `providers.active` / `providers.scm` set to `github` in `spec-to-pr/config.json` (or `spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
+- **Config:** `issueTrackers.github.enabled` (legacy) and/or `providers.active` / `providers.scm` set to `github` in `.agents/skills/shared/config.json`.
 
 On auth failure: **STOP** with fix instructions from `validate-auth`. Do not silently fall back to another provider.
 

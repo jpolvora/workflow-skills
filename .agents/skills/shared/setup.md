@@ -30,10 +30,13 @@ Artifact paths: [`../spec-to-pr/ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md). Resu
    - Write `STACK.md` to the root of the repository.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `STACK.md created → {path}` in step output.
-2. **Parse flags**: `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `--model {name}`, `--model-chain {step:model,...}`.
+2. **Parse flags**: `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict`, `--model {name}`, `--model-chain {step:model,...}`.
    - `--model {name}` → `currentModel = {name}`
    - `--model-chain` → parse pairs; store in `state.modelChain`. At each transition, check `modelChain[N]`; if present, auto-set `currentModel`. Log `model-chain | step {N} | {old} → {new} | ISO`.
    - `--model-chain` takes precedence over `--model` at matching steps. Works in **auto mode** (only way to switch models without pausing).
+   - `strict` → full US verification at Step 6 (standard orch only).
+2a. **Gate contract**: Load [`gates.md`](gates.md) — slim transitions, one delivery gate, one ship gate. Config/SCM: [`config-resolution.md`](config-resolution.md).
+2b. **Mode hint (new workflow only):** If user did not pass density flags and invoked full `spec-to-pr` without `--full`/`auto`, optionally offer once: **Full pipeline** (rec) / **Use lite instead** (`/spec-to-pr-lite`) — see gates.md Mode selection. Skip when already on lite.
 3. **Log parsed args and switch states**: Write a banner to step output showing all switches and their resolved values:
    ```markdown
    ### Init — Parsed args

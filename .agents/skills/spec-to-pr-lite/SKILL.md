@@ -1,93 +1,116 @@
 ---
 name: spec-to-pr-lite
 description: >-
-  Spec-to-PR lite delivery orchestrator FSM. Runs a fast, sequential planning-to-review pipeline.
+  Spec-to-PR lite delivery orchestrator FSM. Fast sequential plan → implement → review → deliver → optional ship.
   Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md.
   Flags: dry-run, auto, skip-tests, full, --model, --model-chain. Delegates via Task tool.
+  Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).
 upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
 
 # Spec-to-PR Lite — Orchestrator
 
-Deterministic FSM for sequential plan-to-ship delivery. Reuses existing pipeline skills.
+Deterministic FSM for sequential plan-to-ship delivery. Reuses the **same** pipeline skills as [`spec-to-pr`](../spec-to-pr/SKILL.md). Dual-mode contract: [`gates.md`](../shared/gates.md), [`config-resolution.md`](../shared/config-resolution.md), [`setup.md`](../shared/setup.md).
 
 ## Core Goals
-1. **Faster Turnaround:** Skip specification brainstorm (Step 0), refinement/interview (Step 2), and DAG decomposition (Step 3).
-2. **Safety & Gates:** Enforce transition gates, code review validations, and optional shipping approval to maintain high quality.
-3. **Portability:** Keep the orchestrator FSM configuration-driven, resolving all metadata and verification commands dynamically from `config.json`.
+
+1. **Faster Turnaround:** Skip Step 0 brainstorm, Step 2 interview, Step 3 DAG, Step 6 verify, Step 11 integration.
+2. **Compatible gates:** Same slim AskQuestion UX, one delivery gate, one ship gate as full orch.
+3. **Portability:** Config only from `.agents/skills/shared/config.json`.
 
 ## Invariants
 
-- **Entry Requirement:** Unlike standard `spec-to-pr`, `spec-to-pr-lite` **requires** an existing specification (GitHub issue ID, ADO work item ID, or path to a local `*.spec.md`) at invocation. Free-text brainstorm entry is not supported.
-- **Workflow directory:** `{us-dir}` = `{config.plans.dir}/{slug}/` (default `.cursor/plans/{slug}/`).
-- **State hygiene:** Run `python .agents/skills/spec-to-pr-lite/scripts/update_state.py` after every step to update progress and telemetry.
-- **Workflow artifacts commit:** Stage only code during implementation/fix steps. Plan (`step-01-*.plan.md`) and result (`step-12-*.result.md`) documents are committed only at Step 4 (Consolidation) via the G2-delivery gate.
+- **Entry:** Requires existing spec (issue ID, ADO WI, or `*.spec.md`). No free-text brainstorm (use full `spec-to-pr` for that).
+- **`workflowType: lite`** in state — resume never cross-mixes with `standard`.
+- **State hygiene:** `python .agents/skills/spec-to-pr-lite/scripts/update_state.py` after every step (same fields as full; shared artifact names).
+- **Artifacts:** Plan `step-01-{slug}.plan.md`; result `step-12-{slug}.result.md` (shared naming with full — do not invent `step-04-*.result.md`).
+- **Commits:** Code only during Steps 2–3. Plan + result only at Step 4 delivery gate.
+- **Ship:** Orch asks once; `11-ship-pr` with `workflowMode: true` does not re-ask.
+- **Branch-direct** default (same worktree fallback as full).
 
 ---
 
 ## Steps 1–5 Index
 
-| Step | Label | Task? | `subagent_type` | Worktree | RO |
-|------|-------|-------|-----------------|----------|-----|
-| 1 | Planning and Brainstorm | ✓ | GP | — | — |
-| 2 | Implementation | ✓ | GP | step-2‡ | — |
-| 3 | Code Review & Fix | ✓ | GP | — | — |
-| 4 | Consolidation & Delivery | ✓ | shell | cleanup | — |
-| 5 | Ship & PR (optional ask) | ✓ | GP+shell | — | — |
+| Step | Label | Task? | Skill | Notes |
+|------|-------|-------|-------|-------|
+| 1 | Planning | ✓ | `01-write-plan` | No interview / DAG |
+| 2 | Implementation | ✓ | `04-implement-tasks` build | Verify build/tests unless `skipTests` |
+| 3 | Code Review & Fix | ✓ | `06-code-review` (+ fix loop) | Findings gate |
+| 4 | Consolidation & Delivery | ✓ | orch + shell | **One** delivery gate |
+| 5 | Ship & PR | ✓ | `11-ship-pr` | **One** ship gate |
 
-‡ Worktree fallback rules apply. GP = `generalPurpose`.
+---
+
+## Transition menu (every step boundary)
+
+Per [`gates.md`](../shared/gates.md):
+
+1. **Advance** (Recommended)
+2. **More options…** → Switch model / Repeat / Pause or cancel
+
+No 5-option primary menus. Progress Board: bootstrap, after each step summary, pause, `/status`, final.
 
 ---
 
 ## FSM Step Instructions
 
-### Step 1: Planning and Brainstorm
-- **Goal:** Draft the initial implementation plan from the existing specification.
-- **Action:** Dispatch `Task` executing `01-write-plan` with the provided spec input argument.
-- **Output:** `step-01-{slug}.plan.md`.
+### Step 1: Planning
+
+- Dispatch `Task` → `01-write-plan` with spec input.
+- Output: `step-01-{slug}.plan.md`.
+- Gate: Advance → Step 2.
 
 ### Step 2: Implementation
-- **Goal:** Sequential implementation of the plan drafted in Step 1.
-- **Action:** Dispatch `Task` executing `04-implement-tasks` in `mode=build` using `step-01-{slug}.plan.md` as the target plan.
-- **Validation:** Run backend/frontend verification commands (build and tests unless `skipTests: true`).
+
+- Dispatch `Task` → `04-implement-tasks` `mode=build` with `step-01-{slug}.plan.md`.
+- Run verification (build + tests unless `skipTests`).
+- Gate: Advance → Step 3.
 
 ### Step 3: Code Review & Fix
-- **Goal:** Local code review of changes introduced during Step 2.
-- **Action:** Dispatch `Task` executing `06-code-review` comparing current workspace against the base branch.
-- **Review Loop:**
-  - If critical or warning findings exist:
-    - Present findings to the user.
-    - Ask Question: **Apply fixes now** / **Proceed without fixing** / **Pause**.
-    - If "Apply fixes": dispatch `04-implement-tasks` in `mode=fix` with the findings, verify build/tests, and repeat Step 3.
-  - If no findings or if user chooses to proceed: advance to Step 4.
+
+- Dispatch `Task` → `06-code-review` vs base branch.
+- **Findings gate** (if Critical/Warning):
+  1. **Apply fixes now** (Recommended)
+  2. **Proceed without fixing**
+  3. **Pause**
+- Apply fixes → `04-implement-tasks` `mode=fix` → re-verify → re-review once (cap 2 fix rounds in auto).
+- No findings or Proceed → Advance → Step 4.
 
 ### Step 4: Consolidation & Delivery
-- **Goal:** Consolidate work outputs, capture telemetry, and commit delivery files.
-- **Action:**
-  1. Update checklist checkmarks in `step-01-{slug}.plan.md` to `[x]`.
-  2. Write `{us-dir}/step-12-{slug}.result.md` summarizing the changes, files touched, and timing/token telemetry.
-  3. **G2-delivery gate** (AskQuestion): **Commit plan and result** (rec) / **Skip commit** / **Pause**.
-  4. If approved: stage `step-01-{slug}.plan.md` and `step-12-{slug}.result.md` and commit: `docs({slug}): delivery plan and result`.
-  5. Run self-learning memory sweep: create unique markdown files in `.agents/skills/shared/self-learning/memory/` for new traps and run the compiler script: `python .agents/skills/shared/self-learning/self_learning.py --compile`.
-  6. Present the optional cleanup gate (delete temporary artifacts, checkpoints, worktrees).
-  7. Advance to Step 5.
 
-### Step 5: Ship & PR (Optional Ask)
-- **Goal:** Push changes, open a Pull Request on the remote repository, and merge.
-- **Action:**
-  1. Ask Question: **Create PR, monitor and merge** (rec) / **Push only** / **Skip shipping** / **Pause**.
-  2. If approved: dispatch `11-ship-pr` to run pre-PR validation, push branch, create PR via provider, resolve review threads in a loop, and complete the merge.
+1. Mark checklists in `step-01-{slug}.plan.md` `[x]` where done.
+2. Write `step-12-{slug}.result.md` (summary, files, telemetry).
+3. **One delivery gate** ([`gates.md`](../shared/gates.md)):
+   - Commit plan + result, keep artifacts (Recommended)
+   - Commit plan + result, delete temps
+   - Skip delivery commit
+   - Pause
+4. On commit: `docs({slug}): delivery plan and result`; self-learning MEMORY sweep.
+5. **No push here.** Advance → Step 5.
+
+### Step 5: Ship & PR
+
+**One ship gate** ([`gates.md`](../shared/gates.md)):
+
+1. **Create PR, monitor, and merge** (Recommended when `fullMode`)
+2. **Push only**
+3. **Skip shipping** (Recommended when not `fullMode`)
+4. **Pause**
+
+Dispatch `11-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType: lite`. Never delete `project.workingBranch` after merge.
 
 ---
 
-## AskQuestion Gate Mappings (Auto-gate Choices)
+## AskQuestion / Auto-gate defaults
 
-In `autoMode` or when fallback menus are needed, use the following default choices:
-- **Step 1 gate:** Advance to Step 2.
-- **Step 2 gate:** Advance to Step 3.
-- **Step 3 gate (review findings):** Choose **Proceed without fixing** (if errors persist) or auto-fix once.
-- **Step 4 gate (delivery):** Commit plan and result. Keep all artifacts on disk (no cleanup).
-- **Step 5 gate (ship):** Skip shipping / Do not push now (unless `fullMode` is active, in which case run full ship-pr).
+| Context | Index 0 |
+|---------|---------|
+| Transitions | Advance |
+| Step 3 findings | Apply fixes once; if still failing → Proceed without fixing |
+| Step 4 delivery | Commit plan + result, keep artifacts |
+| Step 5 ship (`fullMode`) | Create PR, monitor, merge |
+| Step 5 ship (not `fullMode`) | Skip shipping |
 
 ---
 
@@ -99,16 +122,14 @@ In `autoMode` or when fallback menus are needed, use the following default choic
 # Subagent — Step {STEP} — {Label}
 Read state: `.cursor/plans/{slug}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
-Orch: SKILL.md § Step {STEP} · model {currentModel} · {modeFlags}
+Orch: spec-to-pr-lite · model {currentModel} · {modeFlags} · workflowType: lite · workflowMode: true
 Enhancing skills (mandatory): karpathy-guidelines, caveman, self-learning, gabarito
-Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
-Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
-Role: fresh; no resume. files_touched required (revert). model: {currentModel}.
+Read: state workflow memory + decisions; MEMORY.md index; `config.json.rules.stackFile` from `.agents/skills/shared/config.json`.
+Config/SCM: `.agents/skills/shared/config-resolution.md`
+Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root}
+Role: fresh; no resume. files_touched required. model: {currentModel}.
 Rules: no `.cursor/plans/` in git-add except Step 4 G2-delivery; needs_user: ≥2 choices, recommended first.
-Learning: read ## Workflow memory + ## Step outputs (all prior steps) for traps/errors. Do NOT repeat broken approaches. Record own mistakes in step-output.learning.
-Telemetry required: record elapsedSec (step wall-clock seconds = (finishedAt - dispatchedAt) / 1000, integer), promptTokens + completionTokens (from LLM metadata if available, else estimate chars/3.5 with estimated: true).
-End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, model, telemetry{elapsedSec, promptTokens|null, completionTokens|null, estimated})
-```
+End with ```step-output(...)```
 ```
 
 ---
@@ -119,3 +140,5 @@ End with ```step-output(status, step, artifacts, files_touched, verification, re
 @[spec-to-pr-lite] [auto|dry-run|skip-tests|full] [--model {name}] [--model-chain step:model,...] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md]
 /spec-to-pr-lite [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md]
 ```
+
+For free-text brainstorm or full refine/DAG/verify/integration: use `/spec-to-pr` instead.

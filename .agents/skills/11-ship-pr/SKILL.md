@@ -35,19 +35,17 @@ Dispatched by `spec-to-pr` when the `--full` flag is active. Steps 0–12 have a
 | `no-merge` | Flag | `false` | Create PR and run checks, but stop before merge. |
 | `max <n>` | Integer | `10` | Iteration limit for the `goal-fix-pr` convergence loop. |
 
-Before executing, restate: **commit title**, **working (head) branch**, **base branch**, **SCM provider (`providers.scm`)**, **mode**, **max iterations**. Resolve branches and provider from `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`) when flags omit them.
+Before executing, restate: **commit title**, **working (head) branch**, **base branch**, **SCM provider (`providers.scm`)**, **mode**, **max iterations**, **shipAction** (if set). Resolve branches and provider from `.agents/skills/shared/config.json` only — see [`config-resolution.md`](../shared/config-resolution.md).
 
 ---
 
-## spec-to-pr Integration (Step 13)
+## Workflow integration (spec-to-pr Step 13 / lite Step 5)
 
-1. Steps 0–12 are already completed (or Step 4 for `spec-to-pr-lite`).
-2. Orchestrator approval gate:
-   - **Create PR and start monitoring:** push, create PR, converge, merge.
-   - **Push only (no PR):** push `{workingBranch}` only.
-   - **Skip (done):** no push/PR.
-3. Skip code-review / auto-fix inside ship-pr (already done in Steps 9–10 or Step 3 for `spec-to-pr-lite`).
-
+1. Prior workflow steps already completed (full 0–12 or lite 1–4).
+2. **Orchestrator owns the ship AskQuestion** and passes `shipAction: create-pr|push-only|skip` plus `workflowMode: true`.
+3. When `workflowMode: true`, **do not** present another approval gate — execute `shipAction` immediately.
+4. Standalone `/ship-pr` (no `workflowMode`): may AskQuestion Create PR / Push only / Skip.
+5. Skip code-review / auto-fix inside ship-pr when already reviewed under either orchestrator.
 ---
 
 ## Pipeline Execution
@@ -77,10 +75,10 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 
 ### Phase 4 — PR Creation (SCM provider)
 
-1. Resolve `providers.scm` (same algorithm as [spec-to-pr](../spec-to-pr/SKILL.md) Provider resolution / [local-spec-provider](../local-spec-provider/SKILL.md)):
-   - Read `providers.active` / `providers.scm` from `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
-   - If `providers` absent: enabled GitHub → `github`; else enabled ADO → `azure-devops`; else STOP and require explicit `providers.scm` (ship needs a remote SCM host).
-   - If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP and require explicit `providers.scm`.
+1. Resolve `providers.scm` per [`config-resolution.md`](../shared/config-resolution.md):
+   - Read `providers.active` / `providers.scm` from `.agents/skills/shared/config.json`.
+   - If `providers` absent: enabled GitHub → `github`; else enabled ADO → `azure-devops`; else STOP and require explicit `providers.scm`.
+   - If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host; else STOP.
    - Reject `scm: "local"`.
 2. Load the SCM provider skill:
    - `github` → [github-provider](../github-provider/SKILL.md)

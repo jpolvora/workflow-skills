@@ -24,7 +24,9 @@ Responsible for auditing implementation deliverables against the specification a
 
 ### Workflow Mode (Step 6 of spec-to-pr)
 
-Dispatched by `spec-to-pr` at Step 6. Receives `specPath` and `planDir` from the orchestrator state. Returns `step-output` YAML at completion.
+Dispatched by `spec-to-pr` at Step 6. Receives `specPath`, `planDir`, and optional `mode=quick|full` from the orchestrator.
+
+**Default under workflow:** `mode=quick` (Quick Score). Escalate to full US Verification when quick score < 7, orch passes `mode=full`, or user passed `--strict`.
 
 ### Parameters
 
@@ -32,6 +34,7 @@ Dispatched by `spec-to-pr` at Step 6. Receives `specPath` and `planDir` from the
 |-----------|------|---------|-------------|
 | `spec-input` | String | (optional) | Path to `step-00-*.spec.md`, US number (e.g. `1474`), or omitted to trigger Quick Score mode. |
 | `plan-dir=<path>` | String | `.cursor/plans/{slug}/` | Directory containing the plans and output report. |
+| `mode` | `quick` \| `full` | `quick` in workflow; `full` when standalone with spec | Verification depth. |
 
 ---
 
@@ -48,6 +51,8 @@ When no specification is provided, evaluate the overall code status against the 
 | **Tests** | 25% | Were tests updated and do they execute successfully? |
 
 Assign a 0-10 score to each metric. Approve the implementation if the weighted average score is `≥ 7`, otherwise suggest re-implementation.
+
+Optional report shape for Quick Score: [`TEMPLATE.md`](TEMPLATE.md).
 
 ---
 
