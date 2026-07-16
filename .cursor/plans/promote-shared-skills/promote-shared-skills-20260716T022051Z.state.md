@@ -5,48 +5,99 @@ us: null
 specSource: local
 specPath: .cursor/plans/promote-shared-skills/step-00-promote-shared-skills.spec.md
 startedAt: "2026-07-16T02:20:51Z"
-endedAt: null
-status: active
-currentStep: 0
+endedAt: "2026-07-16T10:05:02Z"
+status: completed
+currentStep: 13
 dryRun: false
-autoMode: false
+autoMode: true
 skipIntegration: false
 skipTests: false
-fullMode: false
-execMode: null
+fullMode: true
+execMode: parallel
 workflowType: standard
 branch: develop
 baseBranch: main
+prNumber: 55
+prUrl: https://github.com/jpolvora/workflow-skills/pull/55
+mergeCommit: 4ed6d3a32af91a819e90df9656088159808f2c8b
 baselineCommit: c80c94e0f4dcdde7e9e37727d1abb3e9fc83cc92
 preExistingDirty: []
 checkpoints:
   - uswf/promote-shared-skills-20260716T022051Z/before-step-0
   - uswf/promote-shared-skills-20260716T022051Z/before-step-1
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-2
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-3
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-5
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-6
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-7
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-9
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-12
+  - uswf/promote-shared-skills-20260716T022051Z/before-step-13
 workflowManifest:
   created:
     - .cursor/plans/promote-shared-skills/step-00-promote-shared-skills.spec.md
     - specs/promote-shared-skills.spec.md
+    - .cursor/plans/promote-shared-skills/step-01-promote-shared-skills.plan.md
+    - .cursor/plans/promote-shared-skills/step-02-promote-shared-skills.plan.refined.md
+    - .cursor/plans/promote-shared-skills/step-03-promote-shared-skills.plan.exec.md
+    - .cursor/plans/promote-shared-skills/step-03-promote-shared-skills.exec.dag.json
+    - .cursor/plans/promote-shared-skills/step-06-promote-shared-skills.plan.report.md
+    - .cursor/plans/promote-shared-skills/step-10-promote-shared-skills.report.md
+    - .cursor/plans/promote-shared-skills/step-12-promote-shared-skills.result.md
   artifacts:
     - .cursor/plans/promote-shared-skills/step-00-promote-shared-skills.spec.md
-commits: []
+    - .cursor/plans/promote-shared-skills/step-02-promote-shared-skills.plan.refined.md
+    - .cursor/plans/promote-shared-skills/step-06-promote-shared-skills.plan.report.md
+    - .cursor/plans/promote-shared-skills/step-12-promote-shared-skills.result.md
+commits:
+  - "sha: 0e0bc9c252a88e32034b3b6b45119082fc4f04ca"
+  - "sha: eb36a2a"
 completedSteps:
   - 0
+  - 1
+  - 2
+  - 3
+  - 5
+  - 6
+  - 7
+  - 9
+  - 11
+  - 12
+  - 13
 stepStatus:
   0: completed
-skippedSteps: []
-completedTasks: []
-refineRound: 0
+  1: completed
+  2: completed
+  3: completed
+  5: completed
+  6: completed
+  7: completed
+  9: completed
+  11: skipped
+  12: completed
+  13: completed
+skippedSteps:
+  - 8
+  - 11
+completedTasks:
+  - T1
+  - T2
+  - T3
+  - T4
+  - T5
+  - T6
+refineRound: 1
+sharedUnderstanding: confirmed
+verifyScore: 9.3
 currentModel: null
 recommendedModel: null
-stepModels:
-  - { step: 0, model: null, dispatched: "2026-07-16T02:21:00Z" }
+stepModels: []
 modelChain: {}
 telemetry:
   loc:
     baseline: 22448
   workflowStartedAt: "2026-07-16T02:20:51Z"
-  steps:
-    - { N: 0, label: "Spec Creation", finishedAt: "2026-07-16T02:22:58Z", filesTouched: 2 }
+  steps: []
   totalElapsedSec: 0
   totalTokens: 0
 ---
@@ -54,38 +105,30 @@ telemetry:
 
 ## Workflow baseline
 
-- Branch: `develop`
-- Base: `main`
-- Baseline commit: `c80c94e0f4dcdde7e9e37727d1abb3e9fc83cc92`
-- Entry: free-text brainstorm (switched from `/spec-to-pr-lite` → `/spec-to-pr`)
-- Checkpoint: `uswf/promote-shared-skills-20260716T022051Z/before-step-1`
+- Branch: `develop` (kept; not deleted after merge)
+- Mode: **[AUTO] [FULL]**
+- First code commit: `0e0bc9c` — promote shared skills + installer packages
+- Delivery: `eb36a2a` — step-12 result
+- **PR:** https://github.com/jpolvora/workflow-skills/pull/55 — **MERGED** `4ed6d3a` at 2026-07-16T10:05:02Z
 
 ## Artifacts
 
-- specPath: `.cursor/plans/promote-shared-skills/step-00-promote-shared-skills.spec.md`
-- mirrorPath: `specs/promote-shared-skills.spec.md`
-- specSnapshot: *(n/a — local brainstorm)*
-
-## Workflow memory
-
-- User invoked lite with free-text; chose option 1 → full `spec-to-pr` for Step 0 brainstorm.
-- Feature: promote seven `shared/` skills to top-level installables; packages Full/Workflows/Extra/Individual; dependency map + smart dep select-on; site Installation packages section; preserve `config.json` + `self-learning/memory/`.
-- AskQuestion tool unavailable this session → markdown gate fallback (`askquestion-unavailable`).
-- Step 0 complete via [00-write-spec](1b794d4c-5a0e-4812-b1e5-6c3c85f286dc).
-
-## Accumulated decisions
-
-- Orchestrator: `spec-to-pr` (`workflowType: standard`)
-- Providers: `active=local`, `scm=github`
-- `fullMode: false` (ship gate later will recommend Skip)
-- Seven skills to promote: caveman, gabarito, karpathy-guidelines, spec-format, goal-loop, self-learning, changelog
-- `shared/` remains config/docs hub only (not a selectable skill)
+- verifyReport: `.cursor/plans/promote-shared-skills/step-06-promote-shared-skills.plan.report.md` — APPROVED 9.3
+- reviewReport: `.cursor/plans/promote-shared-skills/step-10-promote-shared-skills.report.md` — no Critical/Warning
+- deliveryResult: `.cursor/plans/promote-shared-skills/step-12-promote-shared-skills.result.md`
+- All ACs PASS
 
 ## Gate history
 
-- `askquestion-unavailable | entry-gate | Tool not found: AskQuestion | 2026-07-15T22:19:00Z`
-- `entry | free-text-brainstorm | user chose full orch | 2026-07-16T02:20:51Z`
-- `step-0 | completed | 2026-07-16T02:22:58Z`
+- `auto-gate | step 5→6 | Advance | verify`
+- `step-6 | APPROVED 9.3 | all ACs PASS | 2026-07-16T10:00:25Z`
+- `auto-gate | step 6→7 | Advance | G2-code`
+- `step-7 | commit 0e0bc9c | 2026-07-16T10:01:00Z`
+- `auto-gate | step 7→9 | Advance (skip 8†) | code-review`
+- `step-9 | no Critical/Warning | 2026-07-16T10:01:30Z`
+- `auto-gate | skip 11 (no API/UI) | Advance | delivery`
+- `step-12 | push + PR #55 | 2026-07-16T10:02:00Z`
+- `step-13 | checks SUCCESS | merge 4ed6d3a | COMPLETED | 2026-07-16T10:05:02Z`
 
 ## Doc consolidation log
 

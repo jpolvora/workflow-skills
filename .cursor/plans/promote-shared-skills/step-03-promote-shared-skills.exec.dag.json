@@ -1,0 +1,108 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "planPath": "step-02-promote-shared-skills.plan.refined.md",
+  "reason": "6 steps, ~45+ files, 4 layers — exceeds dagThresholds (maxImplementationSteps: 3, maxExpectedFiles: 6, maxLayers: 2).",
+  "sizeEval": {
+    "steps": 6,
+    "expectedFiles": 45,
+    "layers": 4,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Dependency map + promote seven skills",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        "bin/skill-dependencies.json",
+        ".agents/skills/caveman/",
+        ".agents/skills/gabarito/",
+        ".agents/skills/karpathy-guidelines/",
+        ".agents/skills/spec-format/",
+        ".agents/skills/goal-loop/",
+        ".agents/skills/self-learning/",
+        ".agents/skills/changelog/",
+        ".agents/skills/shared/AGENTS.md",
+        ".agents/skills/shared/"
+      ],
+      "acceptance": "AC1 AC2 AC8: bin/skill-dependencies.json with packages (full/workflows/extra) and install deps; seven skills at top-level only; shared/ hub-only (no skill subdirs); promoted SKILL.md internal ../shared/ links fixed to sibling paths.",
+      "coderPrompt": "Author bin/skill-dependencies.json (version 1) with hub config, packages.full/workflows/extra using finalized 35/26/9 skill lists from refined plan, and dependencies map for install-time edges. git mv seven skill folders from shared/ to .agents/skills/<name>/. Prune shared/ to hub files only. Rewrite shared/AGENTS.md as hub-only index linking top-level promoted skills. Fix relative links inside moved skills (../shared/X → ../X or top-level paths). English only. No commits."
+    },
+    {
+      "id": "T2",
+      "title": "Installer CLI packages + migration",
+      "parallelGroup": "L1",
+      "dependsOn": ["T1"],
+      "files": [
+        "bin/cli.js"
+      ],
+      "acceptance": "AC3–AC7 AC9–AC11: listInstallableSkills excludes shared; f/w/e package shortcuts; transitive dep select-on; ensureSharedHubInstalled whitelist hub only; migratePromotedSkills for nested→top-level + memory path; config.json preserved; printHelp documents packages.",
+      "coderPrompt": "Refactor bin/cli.js: loadSkillGraph from bin/skill-dependencies.json; listInstallableSkills (dirs with SKILL.md, exclude shared); ensureSharedHubInstalled (hub whitelist, no shared/self-learning/memory mkdir); migratePromotedSkills for legacy nested layout; runInteractive f/w/e + dep select-on (off does not cascade); wire runUpdate/install. Surgical to cli.js only."
+    },
+    {
+      "id": "T3",
+      "title": "Harness indexes + link sweep",
+      "parallelGroup": "L1",
+      "dependsOn": ["T1"],
+      "files": [
+        "AGENTS.md",
+        ".agents/AGENTS.md",
+        ".agents/skills/shared/config.json.example",
+        ".agents/skills/shared/config.schema.json",
+        ".agents/skills/shared/tools.md",
+        ".agents/skills/shared/setup.md",
+        ".agents/skills/check-harness/SKILL.md",
+        ".agents/skills/self-learning/self_learning.py"
+      ],
+      "acceptance": "AC12 AC15: root and packaged AGENTS.md show top-level promoted paths; remove obsolete no-top-level-karpathy guidance; config example/schema karpathy path updated; bulk replace ../shared/<promoted>/ in pipeline/review skills (~30 files via grep); check-harness phantom rules updated; self_learning.py paths updated.",
+      "coderPrompt": "Update AGENTS.md Layer 5/autoload/External Dependencies and .agents/AGENTS.md Utility section for top-level promoted skills. Update shared/config.json.example, config.schema.json, tools.md, setup.md path refs. Grep and replace ../shared/caveman|gabarito|karpathy-guidelines|spec-format|goal-loop|self-learning|changelog/ → ../<skill>/ across .agents/skills (exclude shared/ hub). Update check-harness/SKILL.md and self-learning/self_learning.py paths. Do not edit bin/cli.js or build-site.js."
+    },
+    {
+      "id": "T4",
+      "title": "Site catalog + Installation packages section",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T3"],
+      "files": [
+        "bin/build-site.js",
+        "docs/index.html"
+      ],
+      "acceptance": "AC13: build-site.js scans top-level skills only; findSkillMdPath uses top-level paths; new #install-packages section from skill-dependencies.json; node bin/build-site.js regenerates docs/index.html with promoted skill cards and package docs.",
+      "coderPrompt": "Update bin/build-site.js: remove nested shared/* catalog promotion; top-level SKILL.md resolution; add Installation packages section (Full/Workflows/Extra/Individual) generated from bin/skill-dependencies.json. Run node bin/build-site.js to regenerate docs/index.html. English only."
+    },
+    {
+      "id": "T5",
+      "title": "Install test suite expansion",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T2"],
+      "files": [
+        "test/test-install.js"
+      ],
+      "acceptance": "AC14: phases for promoted top-level paths, shared/caveman absent, memory migration preserve, Workflows package smoke, dependency auto-select for 09-goal-fix-pr→goal-loop; existing preserve tests still pass.",
+      "coderPrompt": "Extend test/test-install.js: update tree compare for promoted layout; Phase 4 top-level caveman + no shared/caveman; Phase 5 memory migration; Phase 6 Workflows package without Extra-only skill; Phase 7 dep auto-select. Fix hardcoded shared/goal-loop paths. Do not weaken existing phases."
+    },
+    {
+      "id": "T6",
+      "title": "README + install-skills.sh + harness pass",
+      "parallelGroup": "L3",
+      "dependsOn": ["T4", "T5"],
+      "files": [
+        "README.md",
+        "install-skills.sh"
+      ],
+      "acceptance": "AC15: README install section documents f/w/e packages; install-skills.sh minimal banner pointing to Node CLI for packages; fix any broken links surfaced by grep after T3–T5.",
+      "coderPrompt": "Update README.md install section for Full/Workflows/Extra/Individual packages and skill-dependencies.json. Add minimal banner to install-skills.sh: packages/deps require Node CLI (bin/cli.js). Fix any remaining broken promoted-skill links found in README only. Note check-harness should run before merge."
+    }
+  ],
+  "levels": [
+    ["T1"],
+    ["T2", "T3"],
+    ["T4", "T5"],
+    ["T6"]
+  ]
+}
