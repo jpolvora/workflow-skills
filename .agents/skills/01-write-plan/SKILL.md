@@ -40,7 +40,7 @@ Read the following repository metadata files before drafting:
 - `config.json` — identifies stack, backend layers, db/ORM, frontend framework, and test suites.
 - `tools.md` / `stack.md` — lists developer tool aliases and stack configurations.
 - `MEMORY.md` — outlines anti-regression rules and learned patterns.
-- Shared workflow skills: [karpathy-guidelines](../shared/karpathy-guidelines/SKILL.md), [caveman](../shared/caveman/SKILL.md), [self-learning](../shared/self-learning/SKILL.md), and [gabarito](../shared/gabarito/SKILL.md).
+- Shared workflow skills: [karpathy-guidelines](../karpathy-guidelines/SKILL.md), [caveman](../caveman/SKILL.md), [self-learning](../self-learning/SKILL.md), and [gabarito](../gabarito/SKILL.md).
 
 ---
 

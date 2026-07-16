@@ -237,6 +237,41 @@
   <div class="layer">
     <h3>Layer 5 — Utility & Meta <span class="count">(9)</span></h3>
     <div class="skill-grid">
+      <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md">
+        <div class="name">caveman</div>
+        <div class="desc">Ultra-compressed communication mode. Autoloaded every prompt at full intensity per AGENTS.md unless stop caveman or normal mode. Cuts token usage ~75% while keeping full technical accuracy. Supports intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. User may invoke /caveman to change level; less tokens and be brief still apply full when autoloaded.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/caveman/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/changelog/SKILL.md">
+        <div class="name">changelog</div>
+        <div class="desc">Write a summarized historical record of the task into CHANGELOG.md. Use at the very end of every implementation task.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/changelog/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/gabarito/SKILL.md">
+        <div class="name">gabarito</div>
+        <div class="desc">Gabarito — ten operational response guidelines (accountability, anti-sycophancy, systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification, calibrated confidence, prompt refinement) plus style discipline. Apply on every user-facing response in this conversation unless the user opts out. Governs tone, structure, and reasoning; does not override design specs, repo architecture skills, or explicit user format requests.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/gabarito/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md">
+        <div class="name">goal-loop</div>
+        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md">
+        <div class="name">karpathy-guidelines</div>
+        <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/karpathy-guidelines/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/self-learning/SKILL.md">
+        <div class="name">self-learning</div>
+        <div class="desc">Analyze session output and record anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into conflict-free memory files, then compile MEMORY.md. Use when completing a task or implementation.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/self-learning/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md">
+        <div class="name">spec-format</div>
+        <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic. Load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill</a>
+      </div>
       <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md">
         <div class="name">spec-to-pr</div>
         <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool. Legacy aliases: /us-workflow, /us-delivery-workflow.</div>
@@ -247,41 +282,35 @@
         <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Fast sequential plan → implement → review → deliver → optional ship. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md. Flags: dry-run, auto, skip-tests, full, --model, --model-chain. Delegates via Task tool. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/shared/caveman/SKILL.md">
-        <div class="name">caveman</div>
-        <div class="desc">Ultra-compressed communication mode. Autoloaded every prompt at full intensity per AGENTS.md unless stop caveman or normal mode. Cuts token usage ~75% while keeping full technical accuracy. Supports intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. User may invoke /caveman to change level; less tokens and be brief still apply full when autoloaded.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/shared/caveman/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/shared/changelog/SKILL.md">
-        <div class="name">changelog</div>
-        <div class="desc">Write a summarized historical record of the task into CHANGELOG.md. Use at the very end of every implementation task.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/shared/changelog/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/shared/gabarito/SKILL.md">
-        <div class="name">gabarito</div>
-        <div class="desc">Gabarito — ten operational response guidelines (accountability, anti-sycophancy, systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification, calibrated confidence, prompt refinement) plus style discipline. Apply on every user-facing response in this conversation unless the user opts out. Governs tone, structure, and reasoning; does not override design specs, repo architecture skills, or explicit user format requests.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/shared/gabarito/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/shared/goal-loop/SKILL.md">
-        <div class="name">goal-loop</div>
-        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/shared/goal-loop/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/shared/karpathy-guidelines/SKILL.md">
-        <div class="name">karpathy-guidelines</div>
-        <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/shared/karpathy-guidelines/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/shared/self-learning/SKILL.md">
-        <div class="name">self-learning</div>
-        <div class="desc">Analyze session output and record anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into conflict-free memory files, then compile MEMORY.md. Use when completing a task or implementation.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/shared/self-learning/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/shared/spec-format/SKILL.md">
-        <div class="name">spec-format</div>
-        <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic. Load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/shared/spec-format/SKILL.md">View skill</a>
-      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install-packages">
+  <h2>Installation packages</h2>
+  <p>
+    The interactive installer (<code>npx github:jpolvora/workflow-skills</code>) supports package shortcuts
+    and skill-by-skill selection. Membership and install-time dependencies are defined in
+    <code>bin/skill-dependencies.json</code> (update the map whenever the installer graph changes).
+  </p>
+  <div class="install-steps">
+    <div class="install-step">
+      <h4>Full package (<code>f</code>)</h4>
+      <p>Full package — selects every installable top-level skill and installs the <code>shared/</code> config/docs hub.</p>
+    </div>
+    <div class="install-step">
+      <h4>Workflows package (<code>w</code>)</h4>
+      <p>Workflows package — 26 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub. Does not force Extra-only skills.</p>
+      <p>Includes: <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+18)</p>
+    </div>
+    <div class="install-step">
+      <h4>Extra package (<code>e</code>)</h4>
+      <p>Extra package — 9 standalone review/design/meta skills. Does not install workflow orchestrators or the hub by default.</p>
+      <p>Includes: <code>security-review</code>, <code>dotnet-security-performance-review</code>, <code>tdd-sdd-ddd-reviewer</code>, <code>domain-review</code>, <code>multi-domain-review</code>, <code>secrets-leak-review</code>, <code>mobile-first-design</code>, <code>taste-skill</code>, <code>write-a-skill</code></p>
+    </div>
+    <div class="install-step">
+      <h4>Individual selection</h4>
+      <p>Toggle skills by number. Selecting a skill also selects its transitive install dependencies from the map. Deselecting a skill does <strong>not</strong> cascade-deselect dependencies.</p>
     </div>
   </div>
 </section>

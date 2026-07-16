@@ -89,70 +89,23 @@ for (let i = 0; i < layerSections.length; i++) {
     }
   }
 }
-// --- 2. Scan skills directories (top-level + one level deep) ---
+// --- 2. Scan skills directories (top-level only; shared/ is config hub, not skills) ---
 const skillsDir = path.join(root, '.agents', 'skills');
 const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
 const skillDirs = entries
-  .filter(e => e.isDirectory())
+  .filter(e => e.isDirectory() && e.name !== 'shared')
   .map(e => e.name);
 const skillFiles = entries
   .filter(e => e.isFile() && e.name.endsWith('.md'))
   .map(e => e.name.replace(/\.md$/, ''));
 
-// Also scan nested skill directories (e.g. spec-to-pr/extra-skills/* or shared/*)
-for (const dir of skillDirs) {
-  const nestedPath = path.join(skillsDir, dir);
-  try {
-    const nestedEntries = fs.readdirSync(nestedPath, { withFileTypes: true });
-    for (const ne of nestedEntries) {
-      if (ne.isDirectory()) {
-        const subNestedPath = path.join(nestedPath, ne.name);
-        try {
-          const subEntries = fs.readdirSync(subNestedPath, { withFileTypes: true });
-          for (const se of subEntries) {
-            // Include nested subdirectories or direct subdirectories of shared/
-            if (se.isDirectory() && !skillDirs.includes(se.name)) {
-              skillDirs.push(se.name);
-            }
-          }
-        } catch (_) {}
-        // Also if we are looking at shared/, ne itself is a first-level subdirectory (e.g. shared/caveman)
-        if (dir === 'shared' && !skillDirs.includes(ne.name)) {
-          skillDirs.push(ne.name);
-        }
-      }
-    }
-  } catch (_) {}
-}
-
 function findSkillMdPath(dirSlug) {
   const candidates = [
     path.join(skillsDir, dirSlug, 'SKILL.md'),
     path.join(skillsDir, dirSlug + '.md'),
-    path.join(skillsDir, 'shared', dirSlug, 'SKILL.md'),
   ];
   for (const p of candidates) {
     if (fs.existsSync(p)) return p;
-  }
-  // Search nested subdirectories (e.g. spec-to-pr/extra-skills/<slug>/SKILL.md)
-  for (const topDir of skillDirs) {
-    const nestedPath = path.join(skillsDir, topDir);
-    try {
-      const nestedEntries = fs.readdirSync(nestedPath, { withFileTypes: true });
-      for (const ne of nestedEntries) {
-        if (!ne.isDirectory()) continue;
-        const subNestedPath = path.join(nestedPath, ne.name);
-        try {
-          const subEntries = fs.readdirSync(subNestedPath, { withFileTypes: true });
-          for (const se of subEntries) {
-            if (se.name === dirSlug) {
-              const candidate = path.join(subNestedPath, dirSlug, 'SKILL.md');
-              if (fs.existsSync(candidate)) return candidate;
-            }
-          }
-        } catch (_) {}
-      }
-    } catch (_) {}
   }
   return '';
 }
@@ -289,6 +242,69 @@ const newSection =
 ${catalogHtml}</section>`;
 
 html = html.slice(0, catStart) + newSection + html.slice(catEnd);
+
+// --- Installation packages section (from skill-dependencies.json) ---
+const depMapPath = path.join(root, 'bin', 'skill-dependencies.json');
+let packagesHtml = '';
+if (fs.existsSync(depMapPath)) {
+  const depMap = JSON.parse(fs.readFileSync(depMapPath, 'utf-8'));
+  const pkgs = depMap.packages || {};
+  const full = pkgs.full || {};
+  const workflows = pkgs.workflows || {};
+  const extra = pkgs.extra || {};
+  const wfCount = Array.isArray(workflows.skills) ? workflows.skills.length : 0;
+  const exCount = Array.isArray(extra.skills) ? extra.skills.length : 0;
+  const wfPreview = Array.isArray(workflows.skills)
+    ? workflows.skills.slice(0, 8).map((s) => `<code>${s}</code>`).join(', ') +
+      (workflows.skills.length > 8 ? `, … (+${workflows.skills.length - 8})` : '')
+    : '';
+  const exPreview = Array.isArray(extra.skills)
+    ? extra.skills.map((s) => `<code>${s}</code>`).join(', ')
+    : '';
+
+  packagesHtml = `<section id="install-packages">
+  <h2>Installation packages</h2>
+  <p>
+    The interactive installer (<code>npx github:jpolvora/workflow-skills</code>) supports package shortcuts
+    and skill-by-skill selection. Membership and install-time dependencies are defined in
+    <code>bin/skill-dependencies.json</code> (update the map whenever the installer graph changes).
+  </p>
+  <div class="install-steps">
+    <div class="install-step">
+      <h4>Full package (<code>${full.shortcut || 'f'}</code>)</h4>
+      <p>${full.label || 'Full package'} — selects every installable top-level skill and installs the <code>shared/</code> config/docs hub.</p>
+    </div>
+    <div class="install-step">
+      <h4>Workflows package (<code>${workflows.shortcut || 'w'}</code>)</h4>
+      <p>${workflows.label || 'Workflows package'} — ${wfCount} skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub. Does not force Extra-only skills.</p>
+      <p>Includes: ${wfPreview}</p>
+    </div>
+    <div class="install-step">
+      <h4>Extra package (<code>${extra.shortcut || 'e'}</code>)</h4>
+      <p>${extra.label || 'Extra package'} — ${exCount} standalone review/design/meta skills. Does not install workflow orchestrators or the hub by default.</p>
+      <p>Includes: ${exPreview}</p>
+    </div>
+    <div class="install-step">
+      <h4>Individual selection</h4>
+      <p>Toggle skills by number. Selecting a skill also selects its transitive install dependencies from the map. Deselecting a skill does <strong>not</strong> cascade-deselect dependencies.</p>
+    </div>
+  </div>
+</section>
+
+`;
+}
+
+const installStart = html.indexOf('<section id="install">');
+if (installStart !== -1) {
+  // Replace existing install-packages section if present, else insert before #install
+  const existingPkgs = html.indexOf('<section id="install-packages">');
+  if (existingPkgs !== -1) {
+    const existingEnd = html.indexOf('</section>', existingPkgs) + '</section>'.length;
+    html = html.slice(0, existingPkgs) + packagesHtml + html.slice(existingEnd);
+  } else {
+    html = html.slice(0, installStart) + packagesHtml + html.slice(installStart);
+  }
+}
 
 // Update badge count
 const totalSkills = sorted

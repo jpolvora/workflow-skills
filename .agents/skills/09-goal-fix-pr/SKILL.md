@@ -20,7 +20,7 @@ Responsible for driving PR review thread convergence to zero. It wraps the [08-f
 /goal-fix-pr <PR-NUMBER> [dry-run] [max <n>]
 ```
 
-This skill wraps the [`goal-loop`](../shared/goal-loop/SKILL.md) generic primitive as its orchestrator, executing [`08-fix-pr`](../08-fix-pr/SKILL.md) tasks for each action round.
+This skill wraps the [`goal-loop`](../goal-loop/SKILL.md) generic primitive as its orchestrator, executing [`08-fix-pr`](../08-fix-pr/SKILL.md) tasks for each action round.
 
 ### Workflow Mode (Step 12 of spec-to-pr)
 
@@ -79,7 +79,7 @@ When running inside `goal-fix-pr`, the following `fix-pr` interactive gates are 
 
 ## Core Loop
 
-This skill inherits the FSM execution loop directly from [`goal-loop`](../shared/goal-loop/SKILL.md):
+This skill inherits the FSM execution loop directly from [`goal-loop`](../goal-loop/SKILL.md):
 
 ```
 Goal: fix-pr PR-<N> until convergence (scm = providers.scm)
@@ -115,7 +115,7 @@ Run `config.json.verification` commands + `06-code-review` diff check. Three con
 
 ## Stop Conditions
 
-Exits under the standard [`goal-loop`](../shared/goal-loop/SKILL.md) stop conditions:
+Exits under the standard [`goal-loop`](../goal-loop/SKILL.md) stop conditions:
 - `activeThreads == 0` (after verification check).
 - User requests abort.
 - `max` ceiling reached (default 5 loops).

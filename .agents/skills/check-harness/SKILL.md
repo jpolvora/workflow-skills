@@ -199,7 +199,7 @@ For each internal reference:
 | Numeric consistency | folder `01-write-plan` vs. id `write-plan` (prefix only on filesystem) |
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative |
-| Renamed / retired skill id | Mentions of obsolete pipeline ids (e.g. `05-verify-sync-plan-us`, `us-workflow` as skill path, top-level `karpathy-guidelines/` / `spec-format/` / `azure-devops/` skill folders, `spec-to-pr/extra-skills/` path prefix) while the canonical skill lives elsewhere — **critical** if in `spec-to-pr` step dispatch; else **warning** |
+| Renamed / retired skill id | Mentions of obsolete pipeline ids (e.g. `05-verify-sync-plan-us`, `us-workflow` as skill path, nested `shared/caveman/` / `shared/karpathy-guidelines/` / `shared/spec-format/` skill folders, `spec-to-pr/extra-skills/` path prefix) while the canonical skill lives at top-level `.agents/skills/<skill>/` — **critical** if in `spec-to-pr` step dispatch; else **warning** |
 
 **Resolution rule:** simulate the link **from the directory of the containing file** (as an agent would when clicking).
 
@@ -622,9 +622,9 @@ Otherwise — **correction plan** (mandatory before editing):
 .cursorrules
 └── AGENTS.md
     ├── senior-developer (resolve via config / External Dependencies — optional)
-    ├── shared/gabarito/SKILL.md (auto)
-    ├── shared/karpathy-guidelines/SKILL.md (auto)
-    ├── shared/caveman/SKILL.md (auto)
+    ├── gabarito/SKILL.md (auto)
+    ├── karpathy-guidelines/SKILL.md (auto)
+    ├── caveman/SKILL.md (auto)
     ├── ef-migrations.mdc (Layer 0, optional)
     └── MEMORY.md (session start, before first implementation)
 ```

@@ -18,25 +18,25 @@ description: Analyze session output and record anti-regression knowledge (mistak
 ## Process
 
 1. **Analyze context** — What did we try that failed? What non-obvious constraint or pitfall did we hit?
-2. **Write to `memory/`** — Write a new file under `.agents/skills/shared/self-learning/memory/YYYY-MM-DD-[slug].md`. **ONLY** record traps/pitfalls. **DO NOT** use it as a changelog or to record standard patterns that an LLM already knows.
+2. **Write to `memory/`** — Write a new file under `.agents/skills/self-learning/memory/YYYY-MM-DD-[slug].md`. **ONLY** record traps/pitfalls. **DO NOT** use it as a changelog or to record standard patterns that an LLM already knows.
 3. **Compile `MEMORY.md`** — Run the compilation command:
    ```bash
-   python .agents/skills/shared/self-learning/self_learning.py --compile
+   python .agents/skills/self-learning/self_learning.py --compile
    ```
-   This will regenerate the `.agents/skills/shared/self-learning/MEMORY.md` file from all files in `memory/` directory.
+   This will regenerate the `.agents/skills/self-learning/MEMORY.md` file from all files in `memory/` directory.
 4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` in the final code review proof; provide a one-line summary in the final reply.
 
 ## Conflict Resolution
 
 If a merge conflict occurs in `MEMORY.md` when pulling/merging from other branches/developers, **do not resolve it manually**. Run:
 ```bash
-python .agents/skills/shared/self-learning/self_learning.py --compile
+python .agents/skills/self-learning/self_learning.py --compile
 ```
 This will automatically recompile a clean, unified `MEMORY.md` from the individual memory files under `memory/` (which never conflict because they are stored as separate files).
 
 ## Individual Memory File Template
 
-Create your entry as a markdown file under `.agents/skills/shared/self-learning/memory/` using the following format:
+Create your entry as a markdown file under `.agents/skills/self-learning/memory/` using the following format:
 
 ```markdown
 ### [YYYY-MM-DD] [Topic/Component]

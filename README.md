@@ -39,8 +39,8 @@ This hub is designed to host **multiple workflows** over time. Each workflow is 
 | Step 13 (via ship-pr) | [`09-goal-fix-pr`](.agents/skills/09-goal-fix-pr/SKILL.md) | Convergence loop — fix-pr until zero open threads |
 | Post-workflow | [`10-update-plan-implementation`](.agents/skills/10-update-plan-implementation/SKILL.md) | Delta adjustments from QA findings |
 | Step 13 | [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | End-to-end PR delivery and merge |
-| Spec protocol | [`spec-format`](.agents/skills/shared/spec-format/SKILL.md) | Canonical spec format validation |
-| Loop primitive | [`goal-loop`](.agents/skills/shared/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
+| Spec protocol | [`spec-format`](.agents/skills/spec-format/SKILL.md) | Canonical spec format validation |
+| Loop primitive | [`goal-loop`](.agents/skills/goal-loop/SKILL.md) | Generic convergence loop (used by `09-goal-fix-pr`) |
 | Provider | [`github-provider`](.agents/skills/github-provider/SKILL.md) | GitHub issue→spec and PR create/threads/merge |
 | Provider | [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) | Azure DevOps work item→spec and PR create/threads/merge |
 | Provider | [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Local `*.spec.md` register/normalize (PR via `providers.scm`) |
@@ -91,19 +91,27 @@ Both workflows are designed to co-exist in **dual mode** within the same reposit
 
 You can install or update the agent guidelines (**skills**) directly into the `.agents/skills` folder of your local development project.
 
-**Preferred (Node / npx):** interactive install, `update`, `update --include-new`, config.json preservation, and packaged `.agents/AGENTS.md`.
+**Preferred (Node / npx):** interactive install with package shortcuts (`f` Full · `w` Workflows · `e` Extra), individual skill toggles with transitive dependency auto-select, `update`, `update --include-new`, `config.json` / `self-learning/memory/` preservation, and packaged `.agents/AGENTS.md`. Dependency membership lives in [`bin/skill-dependencies.json`](./bin/skill-dependencies.json).
 
-**Legacy (bash):** [`install-skills.sh`](./install-skills.sh) remains available for curl-based installs, but prefer the Node CLI for updates. The bash script preserves `config.json` on overwrite and installs `.agents/AGENTS.md`, but does not implement `update --include-new` or rename migration.
+**Legacy (bash):** [`install-skills.sh`](./install-skills.sh) remains available for curl-based flat installs, but prefer the Node CLI for packages, dependency selection, and updates. The bash script preserves `config.json` on overwrite and installs `.agents/AGENTS.md`, but does not implement package shortcuts or `update --include-new`.
 
 ### Option A: Via NPX (Recommended)
 If you have Node.js installed, you can run the CLI directly via `npx` natively and cross-platform:
 
 #### 1. Interactive Menu (Installation/Selection)
-To open the interactive menu and select skills to install:
+To open the interactive menu and select skills (or packages) to install:
 ```bash
 npx github:jpolvora/workflow-skills
 ```
 
+Package shortcuts in the menu:
+- `f` — **Full** (all installable skills + `shared/` config hub)
+- `w` — **Workflows** (orchestrators + pipeline/provider/harness deps + hub)
+- `e` — **Extra** (standalone review/design/meta skills; no orchestrators)
+- number — toggle one skill (also selects its install dependencies)
+- `a` — select/deselect all · `y` — install · `q` — quit
+
+See the site catalog section **Installation packages** for membership details.
 #### 2. Auto-Update (Quick Update)
 If you already have skills installed and just want to update them to the latest versions, run:
 ```bash
@@ -153,45 +161,28 @@ The installer opens the visual console menu:
 Source: /path/to/workflow-skills/.agents/skills
 Target: /path/to/my-project/.agents/skills
 ------------------------------------------------------------
-Toggle selection by entering the number.
-Enter 'a' to select/deselect all.
-Enter 'y' or 'i' to install the selected skills.
-Enter 'q' to quit.
+Packages: 'f' Full · 'w' Workflows · 'e' Extra
+Toggle: number · 'a' all · Selecting a skill also selects its deps.
+Deselect does not cascade (deps stay selected).
+Enter 'y' or 'i' to install · 'q' to quit.
 ------------------------------------------------------------
 
   [ ]  1) 00-write-spec
-  [ ]  2) 01-write-plan
-  [ ]  3) 02-interview
-  [ ]  4) 03-plan-to-tasks
-  [ ]  5) 04-implement-tasks
-  [ ]  6) 05-verify-plan
-  [ ]  7) 06-code-review
-  [ ]  8) 07-integration-validation
-  [ ]  9) 08-fix-pr
-  [ ] 10) 09-goal-fix-pr
-  [ ] 11) 10-update-plan-implementation
-  [ ] 12) 11-ship-pr
-  [ ] 13) azure-devops-provider
-  [ ] 14) check-harness
-  [ ] 15) domain-review
-  [ ] 16) dotnet-security-performance-review
-  [ ] 17) github-provider
-  [ ] 18) local-spec-provider
-  [ ] 19) mobile-first-design
-  [ ] 20) multi-domain-review
-  [ ] 21) secrets-leak-review
-  [ ] 22) security-review
-  [ ] 23) spec-to-pr
-  [ ] 24) taste-skill
-  [ ] 25) tdd-sdd-ddd-reviewer
-  [ ] 26) write-a-skill
+  ...
+  [ ] 14) caveman
+  ...
+  [ ] 35) write-a-skill
+
+Selected: 0 / 35
 ```
 
-* **Selection Toggle:** Type the number corresponding to the skill and press `Enter` to toggle on/off (`[ ]` ↔ `[x]`).
-* **Select All:** Type `a` to toggle the selection of all skills at once.
+* **Packages:** `f` Full · `w` Workflows · `e` Extra (see [`bin/skill-dependencies.json`](./bin/skill-dependencies.json)).
+* **Selection Toggle:** Type the skill number and press `Enter` to toggle on/off. Turning a skill **on** also selects its transitive install dependencies. Turning **off** does not cascade-deselect dependencies.
+* **Select All:** Type `a` to toggle all skills.
 * **Confirm Installation:** Type `y` or `i` and press `Enter`.
-* **Exit:** Type `q` to abort the installation.
+* **Exit:** Type `q` to abort.
 
+`shared/` is a config/docs hub (not a selectable skill). It is installed/updated automatically with Full or Workflows (and when workflow skills are selected).
 ---
 
 ## 🔒 Safety, Reliability & How it Works
