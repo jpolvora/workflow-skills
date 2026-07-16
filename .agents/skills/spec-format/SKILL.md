@@ -124,11 +124,11 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 ## Downstream consumers
 
-`spec-to-pr`, `write-plan`, `interview`, `verify-plan`, `integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never live tracker APIs and never `*.issue.json`. See [`ARTIFACTS.md`](../../spec-to-pr/ARTIFACTS.md).
+`spec-to-pr`, `01-write-plan`, `02-interview`, `05-verify-plan`, `07-integration-validation` read **`{us-dir}/step-00-{slug}.spec.md`** — never live tracker APIs and never `*.issue.json`. See [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
 
 ## References
 
 - Harness routing: [`AGENTS.md`](../../../AGENTS.md)
 - Architecture: project `CONTEXT.md` / `STACK.md` / `config.json.domain` (when present)
-- Workflow protocol: [`../../spec-to-pr/SKILL.md`](../../spec-to-pr/SKILL.md) → Specification Protocol
-- Providers: [`github-provider`](../../github-provider/SKILL.md), [`azure-devops-provider`](../../azure-devops-provider/SKILL.md), [`local-spec-provider`](../../local-spec-provider/SKILL.md)
+- Workflow protocol: [`../spec-to-pr/SKILL.md`](../spec-to-pr/SKILL.md) → Specification Protocol
+- Providers: [`github-provider`](../github-provider/SKILL.md), [`azure-devops-provider`](../azure-devops-provider/SKILL.md), [`local-spec-provider`](../local-spec-provider/SKILL.md)

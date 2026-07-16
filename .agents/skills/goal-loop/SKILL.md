@@ -176,4 +176,4 @@ When `DRY_RUN=true`:
 |----------|------|
 | Run artifacts | `$RUNTIME_DIR/` or `.agents/skills/goal-loop/runs/<ID>/` |
 | Sentinel tracking | `$RUNTIME_DIR/sentinel.pid` |
-| Artifact registry | [ARTIFACTS.md](../../spec-to-pr/ARTIFACTS.md) |
+| Artifact registry | [ARTIFACTS.md](../spec-to-pr/ARTIFACTS.md) |
