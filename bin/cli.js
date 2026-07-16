@@ -386,14 +386,21 @@ function parseVersion(v) {
 
 function printHelp() {
   console.log(`Usage:
-  npx github:jpolvora/workflow-skills              Interactive install
-  npx github:jpolvora/workflow-skills update       Update installed skills (preserves config.json)
-  npx github:jpolvora/workflow-skills update --include-new
+  npx --yes github:jpolvora/workflow-skills              Interactive install
+  npx --yes github:jpolvora/workflow-skills install --full --yes
+  npx --yes github:jpolvora/workflow-skills install --package workflows --yes
+  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes
+  npx --yes github:jpolvora/workflow-skills update       Update installed skills (preserves config.json)
+  npx --yes github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally
-  npx github:jpolvora/workflow-skills --version    Print installed version
-  npx github:jpolvora/workflow-skills --check      Compare installed vs latest online version
-  npx github:jpolvora/workflow-skills --help
-  npx github:jpolvora/workflow-skills@latest       Always fetch the latest from GitHub (bypass npx cache)
+  npx --yes github:jpolvora/workflow-skills --version    Print installed version
+  npx --yes github:jpolvora/workflow-skills --check      Compare installed vs latest online version
+  npx --yes github:jpolvora/workflow-skills --help
+
+Non-interactive install:
+  install --full|--package <full|workflows|extra>|--skills <csv> [--yes]
+  --yes  Overwrite existing skill dirs without prompts; always preserves config.json
+  Non-TTY (CI/agents): --yes is required
 
 Interactive package shortcuts:
   f  Full package (all installable skills + shared/ hub)
@@ -404,7 +411,9 @@ Interactive package shortcuts:
   y  Install selected skills
 
 Notes:
-  - Skills under .agents/skills/ are overwritten on update; config.json is preserved.
+  - Prefer: npx --yes github:jpolvora/workflow-skills (do NOT use github:…@latest or @main — npm exit 128).
+  - Cache bust: clear the npx cache, then re-run with npx --yes (no @latest suffix on github:).
+  - Skills under .agents/skills/ are overwritten on update/install --yes; config.json is preserved.
   - shared/ is a config/docs hub (not a selectable skill); installed with workflows/full.
   - self-learning/memory/ and MEMORY.md are preserved on update.
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
@@ -412,6 +421,218 @@ Notes:
   - After installing or updating, run the "check-harness" skill to validate the harness.
   - Prefer this Node CLI over install-skills.sh for packages, deps, and update.
 `);
+}
+
+/**
+ * Parse `install` argv. Exactly one of --full / --package / --skills required.
+ * --yes required when stdin is not a TTY.
+ */
+function parseInstallArgs(args) {
+  const rest = args.slice(1);
+  let yes = false;
+  let full = false;
+  let packageKey = null;
+  let skillCsv = null;
+
+  for (let i = 0; i < rest.length; i++) {
+    const a = rest[i];
+    if (a === '--yes' || a === '-y') {
+      yes = true;
+    } else if (a === '--full') {
+      full = true;
+    } else if (a === '--package') {
+      packageKey = rest[++i];
+      if (!packageKey || packageKey.startsWith('-')) {
+        console.error('Error: --package requires a value (full|workflows|extra).');
+        process.exit(1);
+      }
+    } else if (a === '--skills') {
+      skillCsv = rest[++i];
+      if (!skillCsv || skillCsv.startsWith('-')) {
+        console.error('Error: --skills requires a comma-separated list of skill names.');
+        process.exit(1);
+      }
+    } else if (a === '--help' || a === '-h') {
+      printHelp();
+      process.exit(0);
+    } else {
+      console.error(`Error: Unknown install argument: ${a}`);
+      console.error('Use: install --full|--package <key>|--skills <csv> [--yes]');
+      process.exit(1);
+    }
+  }
+
+  const modeCount = [full, packageKey != null, skillCsv != null].filter(Boolean).length;
+  if (modeCount !== 1) {
+    console.error('Error: install requires exactly one of --full, --package <key>, or --skills <csv>.');
+    console.error('Example: npx --yes github:jpolvora/workflow-skills install --full --yes');
+    process.exit(1);
+  }
+
+  if (!process.stdin.isTTY && !yes) {
+    console.error('Error: Non-interactive install (non-TTY stdin) requires --yes.');
+    console.error('Example: npx --yes github:jpolvora/workflow-skills install --full --yes');
+    process.exit(1);
+  }
+
+  const validPackages = new Set(['full', 'workflows', 'extra']);
+  if (packageKey != null && !validPackages.has(packageKey)) {
+    console.error(`Error: Unknown package '${packageKey}'. Use full|workflows|extra.`);
+    process.exit(1);
+  }
+
+  let skillNames = null;
+  if (skillCsv != null) {
+    skillNames = skillCsv
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (skillNames.length === 0) {
+      console.error('Error: --skills list is empty.');
+      process.exit(1);
+    }
+  }
+
+  return { yes, full, packageKey, skillNames };
+}
+
+function buildSelectedFromInstallOpts(skills, opts) {
+  const selected = new Array(skills.length).fill(false);
+  if (opts.full || opts.packageKey === 'full') {
+    applyPackageSelection('full', skills, selected);
+  } else if (opts.packageKey) {
+    applyPackageSelection(opts.packageKey, skills, selected);
+  } else if (opts.skillNames) {
+    for (const name of opts.skillNames) {
+      const idx = skills.indexOf(name);
+      if (idx < 0) {
+        console.error(`Error: Unknown skill '${name}'.`);
+        process.exit(1);
+      }
+      selected[idx] = true;
+    }
+    applyTransitiveDeps(skills, selected);
+  }
+  return selected;
+}
+
+/** Shared post-selection install: copy skills, hub, packaged AGENTS.md. */
+function installSelectedSkills(skills, selectedNames, { overwrite }) {
+  let installedCount = 0;
+  let hubEnsured = false;
+
+  for (const skillName of selectedNames) {
+    const srcPath = path.join(srcSkillsDir, skillName);
+    const destPath = path.join(targetSkillsDir, skillName);
+    if (!fs.existsSync(srcPath)) continue;
+
+    console.log(`Installing '${skillName}'...`);
+
+    if (fs.existsSync(destPath)) {
+      if (!overwrite) {
+        console.log(`  Skipped: ${skillName}`);
+        continue;
+      }
+      copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+      console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
+      installedCount++;
+      continue;
+    }
+
+    copyDirSync(srcPath, destPath);
+    console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
+    installedCount++;
+  }
+
+  if (shouldEnsureHub(selectedNames)) {
+    ensureSharedHubInstalled(
+      fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? 'update' : 'install'
+    );
+    hubEnsured = true;
+  }
+
+  if (!hubEnsured && fs.existsSync(path.join(targetSkillsDir, HUB_DIR))) {
+    ensureSharedHubInstalled('update');
+  }
+
+  installPackagedAgentsIndex();
+  return installedCount;
+}
+
+async function confirmOverwriteExisting(existingNames) {
+  if (existingNames.length === 0) return true;
+  if (!process.stdin.isTTY) {
+    console.error(
+      `Error: ${existingNames.length} existing skill(s) would be overwritten, but stdin is not a TTY.`
+    );
+    console.error(
+      'Re-run with non-interactive flags, e.g. install --full --yes (config.json is always preserved).'
+    );
+    process.exit(1);
+  }
+
+  const preview =
+    existingNames.length <= 8
+      ? existingNames.join(', ')
+      : `${existingNames.slice(0, 8).join(', ')}, … (+${existingNames.length - 8} more)`;
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  const confirm = (
+    await rl.question(
+      `Overwrite ${existingNames.length} existing skill(s)? (y/n): ${preview}\n> `
+    )
+  )
+    .trim()
+    .toLowerCase();
+  rl.close();
+  return confirm === 'y' || confirm === 'yes';
+}
+
+async function runInstall(skills, opts) {
+  console.log('============================================================');
+  console.log('  Workflow Skills - Non-interactive Install');
+  console.log('============================================================');
+  console.log(`Target: ${targetSkillsDir}`);
+  console.log('------------------------------------------------------------');
+
+  const selected = buildSelectedFromInstallOpts(skills, opts);
+  const selectedNames = skills.filter((_, i) => selected[i]);
+  if (selectedNames.length === 0) {
+    console.log('No skills selected. Exiting.');
+    process.exit(0);
+  }
+
+  console.log(`Installing ${selectedNames.length} skill(s): ${selectedNames.join(', ')}`);
+  migrateRenamedSkills(skills);
+  migratePromotedSkills();
+
+  const existingNames = selectedNames.filter((n) =>
+    fs.existsSync(path.join(targetSkillsDir, n))
+  );
+
+  let overwrite = !!opts.yes;
+  if (existingNames.length > 0 && !overwrite) {
+    overwrite = await confirmOverwriteExisting(existingNames);
+    if (!overwrite) {
+      console.log('Overwrite declined. Installing only new skill folders.');
+    }
+  }
+
+  const installedCount = installSelectedSkills(skills, selectedNames, { overwrite });
+
+  console.log('');
+  if (installedCount > 0) {
+    console.log(`Successfully installed ${installedCount} skill(s) into ${targetSkillsDir}`);
+    console.log(`Note: Existing '${CONFIG_FILE}' files were preserved and NOT overwritten.`);
+    console.log('\n\u26a0\ufe0f  After installing, run the `check-harness` skill to validate the harness:');
+    console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
+  } else {
+    console.log('No skills were installed.');
+  }
+  process.exit(0);
 }
 
 async function main() {
@@ -450,7 +671,7 @@ async function main() {
       const cmp = la[0] - ra[0] || la[1] - ra[1] || la[2] - ra[2];
       if (cmp < 0) {
         console.log(`Latest:    v${remote}  (newer available)`);
-        console.log('Run: npx github:jpolvora/workflow-skills@latest update');
+        console.log('Run: npx --yes github:jpolvora/workflow-skills update');
       } else if (cmp > 0) {
         console.log(`Latest:    v${remote}  (you are ahead)`);
       } else {
@@ -461,6 +682,13 @@ async function main() {
       process.exit(1);
     }
     process.exit(0);
+  }
+
+  if (command === 'install') {
+    const installOpts = parseInstallArgs(args);
+    assertNotSelfOverwrite();
+    await runInstall(skills, installOpts);
+    return;
   }
 
   if (command === 'update') {
@@ -558,7 +786,7 @@ async function runInteractive(skills) {
   const selected = new Array(skills.length).fill(false);
 
   while (true) {
-    console.clear();
+    if (process.stdout.isTTY) console.clear();
     console.log('============================================================');
     console.log('  Workflow Skills - Skill Installer');
     console.log('============================================================');
@@ -629,52 +857,22 @@ async function runInteractive(skills) {
   migrateRenamedSkills(skills);
   migratePromotedSkills();
 
-  let installedCount = 0;
-  let hubEnsured = false;
+  const existingNames = selectedNames.filter((n) =>
+    fs.existsSync(path.join(targetSkillsDir, n))
+  );
 
-  for (let i = 0; i < skills.length; i++) {
-    if (!selected[i]) continue;
-    const skillName = skills[i];
-    const srcPath = path.join(srcSkillsDir, skillName);
-    const destPath = path.join(targetSkillsDir, skillName);
+  // Close menu readline before optional overwrite prompt / install
+  rl.close();
 
-    console.log(`Installing '${skillName}'...`);
-
-    if (fs.existsSync(destPath)) {
-      console.log(`  Warning: Destination directory '.agents/skills/${skillName}' already exists.`);
-      const confirm = (await rl.question('  Overwrite? (y/n): ')).trim().toLowerCase();
-      if (confirm !== 'y' && confirm !== 'yes') {
-        console.log(`  Skipped: ${skillName}`);
-        continue;
-      }
-      const configPath = path.join(destPath, CONFIG_FILE);
-      const preservedConfig = fs.existsSync(configPath) ? fs.readFileSync(configPath) : null;
-      copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
-      if (preservedConfig) {
-        fs.writeFileSync(configPath, preservedConfig);
-        console.log(`    Preserved existing ${CONFIG_FILE}`);
-      }
-      console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
-      installedCount++;
-      continue;
+  let overwrite = false;
+  if (existingNames.length > 0) {
+    overwrite = await confirmOverwriteExisting(existingNames);
+    if (!overwrite) {
+      console.log('Overwrite declined. Installing only new skill folders.');
     }
-
-    copyDirSync(srcPath, destPath);
-    console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
-    installedCount++;
   }
 
-  if (shouldEnsureHub(selectedNames)) {
-    ensureSharedHubInstalled(fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? 'update' : 'install');
-    hubEnsured = true;
-  }
-
-  // Preserve existing hub config on any install that already has shared/
-  if (!hubEnsured && fs.existsSync(path.join(targetSkillsDir, HUB_DIR))) {
-    ensureSharedHubInstalled('update');
-  }
-
-  installPackagedAgentsIndex();
+  const installedCount = installSelectedSkills(skills, selectedNames, { overwrite });
 
   console.log('');
   if (installedCount > 0) {
@@ -685,8 +883,6 @@ async function runInteractive(skills) {
   } else {
     console.log('No skills were installed.');
   }
-
-  rl.close();
 }
 
 main().catch((err) => {

@@ -101,7 +101,7 @@ If you have Node.js installed, you can run the CLI directly via `npx` natively a
 #### 1. Interactive Menu (Installation/Selection)
 To open the interactive menu and select skills (or packages) to install:
 ```bash
-npx github:jpolvora/workflow-skills
+npx --yes github:jpolvora/workflow-skills
 ```
 
 Package shortcuts in the menu:
@@ -115,35 +115,51 @@ See the site catalog section **Installation packages** for membership details.
 #### 2. Auto-Update (Quick Update)
 If you already have skills installed and just want to update them to the latest versions, run:
 ```bash
-npx github:jpolvora/workflow-skills update
+npx --yes github:jpolvora/workflow-skills update
 ```
 *(Updates skills that already exist locally and preserves each skill's `config.json`.)*
 
 To also install **new** top-level skills added upstream (for example `github-provider`, `azure-devops-provider`, `local-spec-provider`), run:
 ```bash
-npx github:jpolvora/workflow-skills update --include-new
+npx --yes github:jpolvora/workflow-skills update --include-new
 ```
 *(Plain `update` does not create folders that are not already present in the consumer project.)*
 
-#### 3. Always Get the Latest Version
-By default, `npx` caches package resolutions for up to 7 days. To force `npx` to fetch the latest from GitHub every time, use `@latest` or `@main`:
+#### 3. Non-interactive install (agents / CI)
+Install without the interactive menu. `--yes` overwrites existing skill directories and always preserves `config.json` (same contract as `update`). Non-TTY stdin requires `--yes`.
 ```bash
-npx github:jpolvora/workflow-skills@latest update
-npx github:jpolvora/workflow-skills@main update
+npx --yes github:jpolvora/workflow-skills install --full --yes
+npx --yes github:jpolvora/workflow-skills install --package workflows --yes
+npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes
 ```
-This bypasses the npx cache and always resolves the current HEAD of the main branch.
+Exactly one of `--full`, `--package <full|workflows|extra>`, or `--skills <csv>` is required.
 
-#### 4. Version Check
+#### 4. Fresh fetch / cache guidance
+Canonical form (do **not** append `@latest` or `@main` to the `github:` specifier):
+```bash
+npx --yes github:jpolvora/workflow-skills
+npx --yes github:jpolvora/workflow-skills update
+```
+`npx` may cache resolutions for several days. To bust cache: clear the npx cache, then re-run with `npx --yes` (still **without** `@latest` on `github:`).
+
+#### 5. Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|--------|-----|
+| Exit **128**, empty or near-empty output; git may mention `ssh://git@github.com/null/latest.git` or `Permission denied (publickey)` | npm misparses `github:jpolvora/workflow-skills@latest` (and similar `@main` suffixes) | Drop `@latest` / `@main`. Use `npx --yes github:jpolvora/workflow-skills` |
+| Interactive install hangs or stops after first overwrite prompt under a pipe | Per-skill overwrite prompts need a TTY (or `--yes`) | Use `install --full --yes` (or `--package` / `--skills`) |
+
+#### 6. Version Check
 To see your installed version and compare it against the latest online release:
 ```bash
-npx github:jpolvora/workflow-skills --check
+npx --yes github:jpolvora/workflow-skills --check
 ```
 Or just print the installed version:
 ```bash
-npx github:jpolvora/workflow-skills --version
+npx --yes github:jpolvora/workflow-skills --version
 ```
 
-#### 5. Post-Install: Validate the Harness
+#### 7. Post-Install: Validate the Harness
 After installing or updating skills, load the `check-harness` skill to scan for integrity issues:
 ```text
 Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0–5c.
@@ -193,7 +209,7 @@ The workflow-skills installation engine is designed to be lightweight, secure, a
 * **Zero Remote Shell Execution:** The NPX script runs completely locally using package files downloaded directly from Git/npm. It does not execute arbitrary scripts from remote hosts behind the scenes.
 * **No External Dependencies:** The CLI installer ([bin/cli.js](./bin/cli.js)) has **zero runtime dependencies** outside of native Node.js core modules. This minimizes the risk of dependency confusion or supply chain vulnerabilities.
 * **Accidental Self-Overwrite Protection:** The installer checks if the target installation directory matches the source repository. Running remote installation commands inside the core `workflow-skills` source repository itself is blocked to prevent developers from accidentally overwriting local guideline changes (except inside the `test/` folder).
-* **Conservative Overwrites:** If a skill directory already exists in the target project, the installer prompts for explicit confirmation (`Overwrite? (y/n)`) before removing the old folder.
+* **Conservative Overwrites:** Interactive install asks **once** before overwriting N existing skill folders (`Overwrite N existing skill(s)? (y/n)`). Non-interactive `install … --yes` and `update` overwrite skill files while always preserving `config.json`. Non-TTY without `--yes` exits with a clear error (no hang).
 
 ### ⚙️ Reliability & Portability
 * **Native Node.js API:** The CLI tool uses built-in filesystem APIs (`fs.copyFileSync`, `fs.mkdirSync`, `fs.rmSync`) instead of spawning OS shell commands (`cp`, `mkdir`, `rm`). This makes the installer **100% cross-platform compatible**, working seamlessly on Windows (PowerShell/CMD), macOS, and Linux.
