@@ -8,7 +8,7 @@ Goals:
 - Avoid each fix-pr run inventing a different REST call.
 
 Config preference:
-  1. `.agents/skills/spec-to-pr/config.json` → `issueTrackers.azureDevOps` + env PAT
+  1. `.agents/skills/shared/config.json` → `issueTrackers.azureDevOps` + env PAT
   2. Legacy `.agents/skills/azure-devops/azure-devops.config.json` (+ optional `.secret`)
 
 Usage:
@@ -136,7 +136,7 @@ def load_azdo_config(repo_root: Path) -> tuple[str, str, str]:
     if not config_path.exists():
         raise SystemExit(
             "Configure issueTrackers.azureDevOps (org, project) in "
-            ".agents/skills/spec-to-pr/config.json, or create legacy "
+            ".agents/skills/shared/config.json, or create legacy "
             ".agents/skills/azure-devops/azure-devops.config.json."
         )
 

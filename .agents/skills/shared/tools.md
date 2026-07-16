@@ -27,7 +27,7 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 |------|--------|--------|
 | `read-state` | Read workflow state | `Read` `{us-dir}/{workflow-id}.state.md` |
 | `write-state` | Write/append state | `Write` / `StrReplace` (hygiene before board) |
-| `read-config` | Load project config | `Read` `.agents/skills/spec-to-pr/config.json` |
+| `read-config` | Load project config | `Read` `.agents/skills/shared/config.json` |
 | `read-artifacts-registry` | Canonical artifact names | `Read` `.agents/skills/spec-to-pr/ARTIFACTS.md` |
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `STACK.md`) |
 | `read-memory` | Load learned knowledge | `Read` `.agents/skills/shared/self-learning/MEMORY.md` (index via `Grep`) |

@@ -38,7 +38,7 @@ Orchestrated by [09-goal-fix-pr](../09-goal-fix-pr/SKILL.md). All interactive co
 ## Prerequisites
 
 - **Branch checkout:** The local branch must match the PR source branch.
-- **Config:** `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`) with resolvable `providers.scm` (`github` | `azure-devops`; never `local`).
+- **Config:** `.agents/skills/shared/config.json` with resolvable `providers.scm` (`github` | `azure-devops`; never `local`). See [`config-resolution.md`](../shared/config-resolution.md).
 - **SCM provider skill:** Load [github-provider](../github-provider/SKILL.md) or [azure-devops-provider](../azure-devops-provider/SKILL.md) per resolution below; run that skill’s `validate-auth` before mutating remote threads.
 - **Git client / tokens:** As required by the selected scm provider (`gh` + GraphQL token for GitHub; PAT / `az` for Azure DevOps).
 
@@ -46,11 +46,13 @@ Orchestrated by [09-goal-fix-pr](../09-goal-fix-pr/SKILL.md). All interactive co
 
 ## SCM provider resolution (`providers.scm`)
 
-1. Read `providers.active` / `providers.scm` from `spec-to-pr/config.json` (or `spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
-2. If `providers` absent: enabled GitHub tracker → scm=`github`; else enabled Azure DevOps → scm=`azure-devops`; else STOP (require explicit `providers.scm`). Prefer GitHub if both enabled.
-3. If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP and require explicit `providers.scm`.
+Follow [`config-resolution.md`](../shared/config-resolution.md):
+
+1. Read `providers.active` / `providers.scm` from `.agents/skills/shared/config.json`.
+2. If `providers` absent: enabled GitHub tracker → scm=`github`; else enabled Azure DevOps → scm=`azure-devops`; else STOP. Prefer GitHub if both enabled.
+3. If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host; else STOP.
 4. Reject `scm: "local"`.
-5. Load the matching provider skill and call intents by name — do not embed host CLI recipes in Phases 1/5 beyond the intent names.
+5. Load the matching provider skill and call intents by name.
 
 | `providers.scm` | Skill | Intents used here |
 |-----------------|-------|-------------------|

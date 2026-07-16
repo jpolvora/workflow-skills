@@ -1,7 +1,9 @@
 # Plan Implementation Audit Report
 
-Template para o **Modo Quick Score** do `verify-plan`.
-Usado quando nao ha spec.md nem numero de US.
+Template for **Quick Score Mode** of `05-verify-plan`.
+Used when there is no `spec.md` and no US number, or when the orchestrator passes `mode=quick`.
+
+Canonical skill: [`SKILL.md`](SKILL.md).
 
 - **Target Plan**: [Plan Name/Path]
 - **Date/Time**: [Timestamp]

@@ -29,10 +29,11 @@ Additional workflows may be added as peer top-level skills; they do not replace 
 
 ### Dual-Mode Execution & Compatibility
 
-Both workflows are designed to co-exist in **dual mode** inside a single consumer project:
-- **Shared Configuration**: They can share `.agents/skills/shared/config.json` as their single source of truth. The `spec-to-pr-lite` orchestrator, SCM providers, and pipeline scripts automatically fall back to the standard config if their local config is absent.
-- **State Isolation**: Each workflow run generates a state file containing a `workflowType` flag (`standard` vs `lite`). The resume logic filters state files so you can never resume a standard workflow run using the lite orchestrator (or vice versa), preventing state conflicts.
-- **Shared Skills**: Both orchestrators dispatch the same underlying, project-agnostic dependency skills (such as `01-write-plan`, `04-implement-tasks`, `06-code-review`, and `11-ship-pr`) for planning, coding, reviewing, and shipping, making the execution pipeline highly coherent and efficient.
+Both workflows co-exist in **dual mode**:
+- **Shared Configuration**: `.agents/skills/shared/config.json` only — see [`config-resolution.md`](.agents/skills/shared/config-resolution.md).
+- **Shared Gates**: [`gates.md`](.agents/skills/shared/gates.md) — slim transitions, one delivery gate, one ship gate; `11-ship-pr` does not re-ask when `workflowMode: true`.
+- **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resume.
+- **Shared Skills**: Same pipeline skills (`01-write-plan`, `04-implement-tasks`, `06-code-review`, `11-ship-pr`, …) — orch-agnostic; interchangeable between full and lite.
 
 ### `spec-to-pr` Pipeline — Skills Owned by This Repository
 
@@ -262,7 +263,7 @@ Commit the updated `docs/index.html` along with your source changes.
 |------|------|-------|
 | `ask-question-gates.mdc` | `.cursor/rules/ask-question-gates.mdc` | Always-apply — forces native `AskQuestion` tool at every transition gate (spec-to-pr normal mode) |
 
-Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` (setup step 1a in [`spec-to-pr/setup.md`](.agents/skills/shared/setup.md)).
+Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` (setup step 1a in [`shared/setup.md`](.agents/skills/shared/setup.md)).
 
 ---
 
@@ -292,7 +293,7 @@ Some skills reference `senior-developer`, `CONTEXT.md`, and `.cursor/rules/ef-mi
 
 | Dependency | Resolve (in order) | Notes |
 |------------|--------------------|-------|
-| `senior-developer` | 1) path in `spec-to-pr/config.json` → `rules.seniorDeveloper` · 2) `.agents/skills/senior-developer/SKILL.md` · 3) `.cursor/rules/senior-developer.mdc` · 4) `~/.agents/skills/senior-developer/SKILL.md` (global) | Skills must **not** hardcode a single relative path. Prefer config; link to this section when documenting. |
+| `senior-developer` | 1) path in `.agents/skills/shared/config.json` → `rules.seniorDeveloper` · 2) `.agents/skills/senior-developer/SKILL.md` · 3) `.cursor/rules/senior-developer.mdc` · 4) `~/.agents/skills/senior-developer/SKILL.md` (global) | Skills must **not** hardcode a single relative path. Prefer config; link to this section when documenting. |
 | `karpathy-guidelines` | 1) `rules.karpathyGuidelines` in config · 2) `.agents/skills/shared/karpathy-guidelines/SKILL.md` (shipped) | Do **not** use a top-level `.agents/skills/karpathy-guidelines/` path — that layout is obsolete. |
 | `CONTEXT.md` | Consumer repo root (optional) | If absent, use consumer glossary / stack docs; do not fail the skill. |
 | `specs/domains/` | Consumer catalog for domain-review | Optional until domain-review is used. Starter: [`specs/domains/index.md.example`](specs/domains/index.md.example). |

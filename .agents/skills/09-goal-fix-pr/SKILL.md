@@ -32,18 +32,20 @@ Dispatched automatically by `spec-to-pr` when `ship-pr` triggers thread converge
 |-----------|------|---------|-------------|
 | `<PR-NUMBER>` | Integer | (required) | Target Pull Request number. |
 | `dry-run` | Flag | `false` | Simulate fixes and resolutions without committing, pushing, or calling platform resolve APIs. |
-| `max <n>` | Integer | `5` | Maximum iteration ceiling before stopping (default 5 loops). |
+| `max <n>` | Integer | `10` | Maximum iteration ceiling (align with `11-ship-pr` default 10). |
 | `wait <n>` | Integer | `300` | Post-round/pre-check wait interval in seconds (default 5 minutes / 300s). |
 
-Before executing, restate the parsed parameters: **PR number**, **success criteria**, **mode**, **max iterations (default 5)**, **check interval (default 300s)**, **dry-run active**, **`providers.scm`**.
+Before executing, restate the parsed parameters: **PR number**, **success criteria**, **mode**, **max iterations (default 10)**, **check interval (default 300s)**, **dry-run active**, **`providers.scm`**.
 
 ---
 
 ## SCM resolution (mandatory)
 
-1. Read `.agents/skills/spec-to-pr/config.json` (or `.agents/skills/spec-to-pr-lite/config.json` if running `spec-to-pr-lite`).
-2. Resolve SCM host = `providers.scm` (fallback: enabled tracker / `project.repoUrl` inference — same rules as provider skills).
-3. Load the matching provider skill and use its intents for thread count only; keep scoring/fix/verify in [08-fix-pr](../08-fix-pr/SKILL.md).
+Follow [`config-resolution.md`](../shared/config-resolution.md):
+
+1. Read `.agents/skills/shared/config.json`.
+2. Resolve SCM host = `providers.scm` (fallback rules in config-resolution).
+3. Load the matching provider skill; use `list-threads` for counts; keep fix/verify in [08-fix-pr](../08-fix-pr/SKILL.md).
 
 | `providers.scm` | Provider skill | Thread-count intent |
 |-----------------|----------------|---------------------|

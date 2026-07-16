@@ -75,19 +75,19 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering all
 | Step | Label | Expected action |
 |------|-------|----------------|
 | **0** | Spec Creation | Skipped — spec file provided directly |
-| **1** | Planning | `Task` `01-write-plan` → `step-01-test-workflow.plan.md` (Bypassed if Dynamic Execution active) |
-| **2** | Refinement | `Task` `02-interview` → `step-02-test-workflow.plan.refined.md` (Bypassed if Dynamic Execution active) |
-| **3** | Execution Plan & DAG | `Task` `03-plan-to-tasks` → `step-03-test-workflow.plan.exec.md` + `step-03-test-workflow.exec.dag.json` |
-| **4†** | Model sub-gate F1→F2 | Auto-gate: continue with current model |
-| **5** | Implementation | `Task` `04-implement-tasks` mode build — simulates editing AGENTS.md |
-| **6** | Verification & Report | `Task` `05-verify-plan` → `step-06-test-workflow.plan.report.md` (readonly) |
-| **7** | Decision & First Commit | Auto-gate: approve → simulate build/test → simulate commit (dry-run skips real commit) |
-| **8†** | Model sub-gate F3→F4 | Auto-gate: continue with current model |
-| **9** | Code Review | `Task` `06-code-review` → score + findings |
-| **10** | Fixes & Second Commit | `Task` `04-implement-tasks` mode fix → simulate fixes + build/test → simulate commit |
-| **11** | Integration Validation | `Task` `07-integration-validation` — no browser in dry-run |
-| **12** | Consolidation & Cleanup | G2-delivery gate → simulate `step-12-test-workflow.result.md` + benchmark + MEMORY.md sweep (dry-run: log only) |
-| **13** | Ship & PR (`full`) | `Task` `11-ship-pr` — simulates push, PR creation, goal-fix-pr loop, merge |
+| **1** | Planning | Complexity gate; if simple → stub plan + skip to 5; else `01-write-plan` |
+| **2** | Refinement | Conditional skip or `02-interview` (End refinement auto-confirms 2e) |
+| **3** | Execution Plan & DAG | `03-plan-to-tasks` — sequential skips empty DAG artifacts |
+| **4†** | Phase hint | Folded into Advance (no dedicated menu) |
+| **5** | Implementation | `04-implement-tasks` mode build |
+| **6** | Verification | `05-verify-plan` quick-score default |
+| **7** | Decision & First Commit | Auto-gate: approve → simulate commit |
+| **8†** | Phase hint | Folded into Advance |
+| **9** | Code Review | `06-code-review` |
+| **10** | Fixes & Second Commit | `04-implement-tasks` mode fix |
+| **11** | Integration | May auto-skip; else `07-integration-validation` |
+| **12** | Delivery | **One** delivery gate → simulate plan+result commit |
+| **13** | Ship (`full`) | **One** ship gate → simulate `11-ship-pr` (`workflowMode`) |
 
 ## Verification Points
 

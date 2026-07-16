@@ -1,6 +1,6 @@
 # FAQ — Spec-to-PR
 
-> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/shared/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
+> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/shared/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. Dual-mode gate UX: [`gates.md`](../../shared/gates.md); config/SCM: [`config-resolution.md`](../../shared/config-resolution.md). The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
 >
 > **Audience:** developers, tech leads, and agents who need to understand **how** the end-to-end User Story delivery pipeline works.
 > **Order:** sections follow **execution sequence** (F0→F6, steps 0–12; 13 with `--full`), from invocation to closure.
@@ -90,8 +90,8 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 
 ### What it does **not** do
 
-- Open or update Pull Request ([`fix-pr`](../../08-fix-pr/SKILL.md) is **manual**, after Step 12)
-- Automatic push to remote (only with explicit consent at Step 12)
+- Open or update Pull Request — **optional Step 13** via `--full` / ship gate (or `/spec-to-pr-lite` Step 5). Without ship consent, PR remains manual after delivery.
+- Automatic push to remote — only via Step 13 / lite Step 5 ship gate (never at Step 12 delivery)
 - Commit without explicit G2 gate (Steps 7, 10, 11)
 - Infer "yes" when the user cancels an `AskQuestion` (HS-1)
 - Skip native `AskQuestion` and jump straight to a markdown “reply with 1/2/3” menu in normal mode (must **probe by invoking**; fallback only after explicit tool failure — [`SKILL.md`](../SKILL.md) § AskQuestion requirement)
@@ -117,7 +117,9 @@ flowchart TD
     S9 --> S10["§15 Step 10 Fix + 2nd commit"]
     S10 --> S11["§16 Step 11 Integration"]
     S11 --> S12["§17 Step 12 Cleanup"]
-    S12 --> END(["Manual PR / optional push"])
+    S12 --> S13["§ Step 13 Ship (optional / --full)"]
+    S13 --> END(["Done"])
+    S12 --> END
 ```
 
 | Step | FAQ Section | Executor | Gate after |
@@ -134,7 +136,8 @@ flowchart TD
 | 9 | [§14](#14-f4--step-9-code-review) | Reviewer sub-agent | Transition → Step 10 |
 | 10 | [§15](#15-f4--step-10-fixes-2nd-commit-and-report) | Coder sub-agent + shell | G2 → Step 11 |
 | 11 | [§16](#16-f5--step-11-integration-validation-and-pre-pr) | Sub-agent + browser + shell | Transition → Step 12 |
-| 12 | [§17](#17-f6--step-12-consolidation-and-final-cleanup) | Orchestrator + shell | G3 push consent |
+| 12 | [§17](#17-f6--step-12-consolidation-and-final-cleanup) | Orchestrator + shell | One delivery gate (no push) |
+| 13 | Ship | `11-ship-pr` | One ship gate |
 
 ---
 
@@ -195,7 +198,7 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 - Code committed on the working branch (`state.branch`)
 - Artifacts in `.cursor/plans/us-{id}/` (plan, reports)
 - `state.md` with `status: completed`
-- Optionally: push (Step 12 consent) — PR manually by developer
+- Optionally: Step 13 ship gate (push / PR / merge) when `--full` or user chooses Create PR; otherwise stop after delivery
 
 ---
 
@@ -602,7 +605,7 @@ Only two files are committed: `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.
 | G1 | Edit plans, state (no commit) | Transition gate |
 | G2-code | `git commit` code only (`src/`, `web/`, `tests/`) | Steps 7, 10, 11 fix |
 | G2-delivery | `git commit` `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md`) + `step-12-{slug}.result.md` | Step 12 |
-| G3 | `git push`, PR | Step 12 consent |
+| G3 | `git push`, PR create/merge | Step 13 ship gate only |
 
 ### Hard stops
 
@@ -724,7 +727,7 @@ The orchestrator **never infers "yes"**. HS-1 activates: stop, re-present the ga
 
 ### AskQuestion is missing / the agent only prints 1/2/3
 
-In **normal** mode the orchestrator must **call** the native `AskQuestion` tool every gate (probe → invoke). Markdown menus are allowed **only** after an explicit invoke failure (`Tool not found: AskQuestion`, etc.), logged as `askquestion-unavailable`. If the current model never exposes the tool, switch to Claude/GPT or Plan mode for the picker UI. Consumers can also install `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` into `.cursor/rules/` (setup step 1a).
+In **normal** mode the orchestrator must **call** the native `AskQuestion` tool every gate (probe → invoke). Markdown menus are allowed **only** after an explicit invoke failure (`Tool not found: AskQuestion`, etc.), logged as `askquestion-unavailable`. Slim menu shape (Advance / More…, one delivery, one ship): [`gates.md`](../../shared/gates.md). If the current model never exposes the tool, switch to Claude/GPT or Plan mode for the picker UI. Consumers can also install `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` into `.cursor/rules/` (setup step 1a).
 
 ### Step 11 wants to use the browser but I'm on auto/dry-run
 

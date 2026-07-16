@@ -52,7 +52,7 @@ The **`spec-to-pr`** workflow coordinates execution steps through composable ski
   → F3: readonly report (6) → explicit G2 commit gate (7) → model sub-gate → F4
   → F4: scoped diff review (9) → gate → fix sub-agent Coder (10) → G2 commit gate → F5
   → F5: integration plan → gate → test battery (+ browser if approved) → F6
-  → F6: §Doc → cleanup → push consent (optional) → completed
+  → F6: one delivery gate → optional Step 13 ship gate → completed
 ```
 
 Pause at any gate → "Pause workflow" → state saved; resume with `/spec-to-pr 2416`.
@@ -136,7 +136,7 @@ Activates Step 13 (Ship & PR): push → create PR → goal-fix-pr monitoring loo
 Canonical filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
 
 
-Each step ends with **documentation consolidation** (§Doc), **git checkpoint** (`before-step-{N+1}`), and **Transition Gate** with **next / repeat / previous / pause** navigation. Steps 4 and 8 embed model switching in the gate (no separate turn). All user decisions are **option menus** (`AskQuestion`), not free text.
+Each step ends with a **git checkpoint** and a **slim Transition Gate** (Advance / More…). Phase model hints fold into Advance at F1→F2 and F3→F4. Shared gate contract: [`gates.md`](../shared/gates.md). Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md).
 
 | # | Name | Who executes | Objective |
 |---|------|--------------|-----------|
@@ -144,16 +144,16 @@ Each step ends with **documentation consolidation** (§Doc), **git checkpoint** 
 | **1** | Plan | Sub-agent | `step-01-{slug}.plan.md` (Conditional — skipped if Dynamic Execution active) |
 | **2** | Refinement | Sub-agent | Plan grilling (Conditional — skipped if Dynamic Execution active) |
 | **3** | Exec + DAG | Sub-agent | `*.plan.exec.md` + `*.exec.dag.json` + memory-conflict |
-| **4†** | **Coder readiness** | **Sub-gate F1→F2** | Model switch embedded in gate (not a board step) |
+| **4†** | (internal) Coder phase hint | On Advance 3→5 | No dedicated menu |
 | **5** | Implement | Sub-agent(s) Coder | Code per DAG level (parallel up to 3) + learning |
-| **6** | Verify | Sub-agent (readonly) | `step-06-{slug}.plan.report.md` (quality table vs plan) |
+| **6** | Verify | Sub-agent (readonly) | Quick-score default; full matrix if score < 7 or `--strict` |
 | **7** | Decide + commit | Orchestrator + sub-agent + shell | G2 gate; may trigger validation/fix before commit, or return to Step 5 |
-| **8†** | **Review readiness** | **Sub-gate F3→F4** | Model switch embedded in gate (not a board step) |
+| **8†** | (internal) Reviewer phase hint | On Advance 7→9 | No dedicated menu |
 | **9** | Code review | Sub-agent | Critical / Warning (scoped diff vs base branch) |
 | **10** | Fix + close | Sub-agent + shell | 2nd commit + `step-10-{slug}.report.md` + learning |
-| **11** | **Integration validation** | Sub-agent + browser + shell | Test battery (generate plan, review, execute/skip) |
-| **12** | Cleanup | Orchestrator + shell | Final §Doc, MEMORY.md sweep, temp cleanup, push consent, delivery commit |
-| **13** | Ship & PR | Sub-agent + shell | Push, PR, goal-fix-pr loop, merge (fullMode only) |
+| **11** | **Integration validation** | Sub-agent + browser + shell | Skip when no API/UI + tests green, or `skip-integration` |
+| **12** | Consolidation & Delivery | Orchestrator + shell | **One** delivery gate (plan + result); no push |
+| **13** | Ship & PR | Sub-agent + shell | **One** ship gate → push, PR, goal-fix-pr, merge |
 
 ### Step 11 — integration validation (summary)
 
@@ -241,7 +241,7 @@ Orchestrator scripts: `.agents/skills/spec-to-pr/scripts/check_memory_conflict.p
 
 ## Documentation consolidation (§Doc)
 
-At the **end of each** step (0–11), the orchestrator runs the §Doc checklist before the post-step gate. Recorded in `state.md` → `## Workflow memory` and `## Doc consolidation log`, with incremental consolidation in `MEMORY.md` when learning passes the write gate. Step 12 performs the final sweep and cleanup.
+§Doc runs as a **silent log** during steps (no per-step AskQuestion). Step 12 delivery commit triggers the final MEMORY.md / self-learning sweep automatically.
 
 ---
 
