@@ -305,7 +305,19 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     if (!/skill-dependencies\.json/i.test(out)) {
       fail(`CLI --help missing skill-dependencies.json note.\n${out}`);
     }
-    ok('CLI --help documents update, packages, and AGENTS.md');
+    if (!/npx --yes github:jpolvora\/workflow-skills/i.test(out)) {
+      fail(`CLI --help missing canonical npx --yes github: form.\n${out}`);
+    }
+    if (!/\binstall\b/i.test(out) || !/--yes/i.test(out)) {
+      fail(`CLI --help missing install / --yes usage.\n${out}`);
+    }
+    if (/workflow-skills@latest/i.test(out) || /workflow-skills@main/i.test(out)) {
+      fail(`CLI --help must not recommend github:…@latest or @main.\n${out}`);
+    }
+    if (!/128/i.test(out)) {
+      fail(`CLI --help missing exit-128 / @latest troubleshooting note.\n${out}`);
+    }
+    ok('CLI --help documents update, install --yes, packages, and AGENTS.md (no @latest)');
   }
 
 // 1. Clean test/.agents directory
@@ -799,6 +811,119 @@ child.on('close', async (code) => {
     ok('Selecting 09-goal-fix-pr auto-selects goal-loop + 08-fix-pr');
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, and deps all passed.');
+  // --- Phase 8: non-interactive install --yes (config preserve, no overwrite prompts) ---
+  console.log('\n[Phase 8] Non-interactive install --full/--package/--skills --yes...');
+  {
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const niDir = path.join(__dirname, '.pkg-noninteractive');
+    fs.rmSync(niDir, { recursive: true, force: true });
+    fs.mkdirSync(niDir, { recursive: true });
+
+    // Seed an existing skill + custom config.json to overwrite
+    const seedSkill = path.join(niDir, '.agents', 'skills', 'spec-to-pr');
+    fs.mkdirSync(seedSkill, { recursive: true });
+    fs.writeFileSync(path.join(seedSkill, 'SKILL.md'), '# stale seed\n', 'utf8');
+    const seedConfig = {
+      _testMarker: 'install-yes-preserve-me',
+      project: { name: 'ni-consumer' }
+    };
+    fs.writeFileSync(path.join(seedSkill, 'config.json'), JSON.stringify(seedConfig, null, 2), 'utf8');
+
+    // Also seed shared hub config
+    const seedShared = path.join(niDir, '.agents', 'skills', 'shared');
+    fs.mkdirSync(seedShared, { recursive: true });
+    const hubMarker = { _hubMarker: 'shared-config-preserve', project: { name: 'hub-ni' } };
+    fs.writeFileSync(path.join(seedShared, 'config.json'), JSON.stringify(hubMarker, null, 2), 'utf8');
+
+    const fullInstall = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--package', 'workflows', '--yes'],
+      {
+        cwd: niDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000
+      }
+    );
+    const fullOut = `${fullInstall.stdout || ''}${fullInstall.stderr || ''}`;
+    if (fullInstall.status !== 0) {
+      console.error(fullOut);
+      fail(`install --package workflows --yes exited ${fullInstall.status}`);
+    }
+    if (/Overwrite\?/i.test(fullOut) || /Overwrite \d+ existing/i.test(fullOut)) {
+      fail(`Non-interactive install must not prompt for overwrite.\n${fullOut}`);
+    }
+    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'spec-to-pr', 'SKILL.md'))) {
+      fail('install --package workflows --yes did not refresh spec-to-pr');
+    }
+    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'caveman', 'SKILL.md'))) {
+      fail('install --package workflows --yes missing promoted caveman');
+    }
+    const afterSkillCfg = JSON.parse(
+      fs.readFileSync(path.join(niDir, '.agents', 'skills', 'spec-to-pr', 'config.json'), 'utf8')
+    );
+    if (afterSkillCfg._testMarker !== 'install-yes-preserve-me') {
+      fail('skill config.json not preserved on install --yes');
+    }
+    const afterHubCfg = JSON.parse(
+      fs.readFileSync(path.join(niDir, '.agents', 'skills', 'shared', 'config.json'), 'utf8')
+    );
+    if (afterHubCfg._hubMarker !== 'shared-config-preserve') {
+      fail('shared/config.json not preserved on install --yes');
+    }
+    ok('install --package workflows --yes refreshes skills and preserves config.json');
+
+    // --skills + transitive deps
+    const skillsDir2 = path.join(__dirname, '.pkg-ni-skills');
+    fs.rmSync(skillsDir2, { recursive: true, force: true });
+    fs.mkdirSync(skillsDir2, { recursive: true });
+    const skillsInstall = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', '09-goal-fix-pr', '--yes'],
+      {
+        cwd: skillsDir2,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000
+      }
+    );
+    const skillsOut = `${skillsInstall.stdout || ''}${skillsInstall.stderr || ''}`;
+    if (skillsInstall.status !== 0) {
+      console.error(skillsOut);
+      fail(`install --skills 09-goal-fix-pr --yes exited ${skillsInstall.status}`);
+    }
+    const sRoot = path.join(skillsDir2, '.agents', 'skills');
+    if (!fs.existsSync(path.join(sRoot, '09-goal-fix-pr', 'SKILL.md'))) {
+      fail('--skills install missing 09-goal-fix-pr');
+    }
+    if (!fs.existsSync(path.join(sRoot, 'goal-loop', 'SKILL.md'))) {
+      fail('--skills install missing transitive goal-loop');
+    }
+    if (!fs.existsSync(path.join(sRoot, '08-fix-pr', 'SKILL.md'))) {
+      fail('--skills install missing transitive 08-fix-pr');
+    }
+    fs.rmSync(skillsDir2, { recursive: true, force: true });
+    ok('install --skills applies transitive deps without prompts');
+
+    // Non-TTY without --yes must fail fast
+    const noYes = cp.spawnSync(process.execPath, [cliPath, 'install', '--full'], {
+      cwd: niDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 30000
+    });
+    if (noYes.status === 0) {
+      fail('install --full without --yes on non-TTY must exit non-zero');
+    }
+    const noYesOut = `${noYes.stdout || ''}${noYes.stderr || ''}`;
+    if (!/--yes/i.test(noYesOut)) {
+      fail(`install without --yes error should mention --yes.\n${noYesOut}`);
+    }
+    ok('install without --yes on non-TTY exits with guidance');
+
+    fs.rmSync(niDir, { recursive: true, force: true });
+  }
+
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, deps, and non-interactive --yes all passed.');
   process.exit(0);
 });
