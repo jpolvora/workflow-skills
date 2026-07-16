@@ -16,7 +16,7 @@ const ignoredPatterns = [
   /[\\/]runs([\\/]|$)/,
   /\.gitignore$/,
   /config\.json$/,
-  /[\\/]self-learning[\\/]memory/
+  /(^|[\\/])self-learning[\\/]memory([\\/]|$)/
 ];
 
 function getFilesRecursive(dir) {
@@ -118,10 +118,42 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     // Spec-source / SCM provider skills (packed under .agents/skills/)
     '.agents/skills/github-provider/SKILL.md',
     '.agents/skills/azure-devops-provider/SKILL.md',
-    '.agents/skills/local-spec-provider/SKILL.md'
+    '.agents/skills/local-spec-provider/SKILL.md',
+    // Promoted top-level skills + dependency map
+    'bin/skill-dependencies.json',
+    '.agents/skills/caveman/SKILL.md',
+    '.agents/skills/gabarito/SKILL.md',
+    '.agents/skills/karpathy-guidelines/SKILL.md',
+    '.agents/skills/spec-format/SKILL.md',
+    '.agents/skills/goal-loop/SKILL.md',
+    '.agents/skills/self-learning/SKILL.md',
+    '.agents/skills/changelog/SKILL.md'
   ];
   for (const rel of required) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing required file: ${rel}`);
+  }
+  // Promoted skills must not remain nested under shared/
+  for (const slug of [
+    'caveman',
+    'gabarito',
+    'karpathy-guidelines',
+    'spec-format',
+    'goal-loop',
+    'self-learning',
+    'changelog'
+  ]) {
+    if (fs.existsSync(path.join(parentDir, '.agents/skills/shared', slug))) {
+      fail(`Promoted skill still nested under shared/: ${slug}`);
+    }
+  }
+  const depMap = JSON.parse(
+    fs.readFileSync(path.join(parentDir, 'bin/skill-dependencies.json'), 'utf8')
+  );
+  if (!depMap.packages?.workflows?.skills?.includes('spec-to-pr')) {
+    fail('skill-dependencies.json workflows package missing spec-to-pr');
+  }
+  if (depMap.packages?.extra?.skills?.includes('spec-to-pr')) {
+    fail('skill-dependencies.json Extra must not include workflow orchestrators');
   }
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
@@ -221,7 +253,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
   }
   const goalLoop = fs.readFileSync(
-    path.join(parentDir, '.agents/skills/shared/goal-loop/SKILL.md'),
+    path.join(parentDir, '.agents/skills/goal-loop/SKILL.md'),
     'utf8'
   );
   if (/[>] ?\/tmp\//.test(goalLoop) || /\/tmp\/goal-loop/.test(goalLoop)) {
@@ -244,6 +276,12 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!example.plans?.dir) fail('config.json.example missing plans.dir');
   if (!example.providers?.active) fail('config.json.example missing providers.active');
   if (!example.providers?.scm) fail('config.json.example missing providers.scm');
+  if (
+    example.rules?.karpathyGuidelines &&
+    example.rules.karpathyGuidelines.includes('shared/karpathy')
+  ) {
+    fail('config.json.example karpathyGuidelines still points at shared/ path');
+  }
   ok('Canonicity + contract files present (providers + converter shims)');
 }
 
@@ -261,7 +299,13 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     if (!/update --include-new/i.test(out) || !/AGENTS\.md/i.test(out)) {
       fail(`CLI --help missing expected usage hints.\n${out}`);
     }
-    ok('CLI --help documents update and AGENTS.md');
+    if (!/\bf\b.*Full/i.test(out) || !/\bw\b.*Workflows/i.test(out) || !/\be\b.*Extra/i.test(out)) {
+      fail(`CLI --help missing package shortcuts f/w/e.\n${out}`);
+    }
+    if (!/skill-dependencies\.json/i.test(out)) {
+      fail(`CLI --help missing skill-dependencies.json note.\n${out}`);
+    }
+    ok('CLI --help documents update, packages, and AGENTS.md');
   }
 
 // 1. Clean test/.agents directory
@@ -317,7 +361,7 @@ child.stdout.on('data', (data) => {
   }
 });
 
-child.on('close', (code) => {
+child.on('close', async (code) => {
   if (tgzPath && fs.existsSync(tgzPath)) {
     console.log(`Cleaning up local pack file: ${tgzPath}`);
     try {
@@ -583,6 +627,178 @@ child.on('close', (code) => {
     ok('schema + ARTIFACTS shipped to consumer');
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration all passed.');
+  // --- Phase 4: promoted skills top-level layout ---
+  console.log('\n[Phase 4] Promoted skills install as top-level folders...');
+  {
+    for (const slug of [
+      'caveman',
+      'gabarito',
+      'karpathy-guidelines',
+      'spec-format',
+      'goal-loop',
+      'self-learning',
+      'changelog'
+    ]) {
+      if (!fs.existsSync(path.join(testSkillsDir, slug, 'SKILL.md'))) {
+        fail(`Promoted skill missing at top-level: ${slug}/SKILL.md`);
+      }
+      if (fs.existsSync(path.join(testSkillsDir, 'shared', slug))) {
+        fail(`Promoted skill still nested under shared/ in consumer: ${slug}`);
+      }
+    }
+    if (!fs.existsSync(path.join(testSkillsDir, 'shared', 'config.json.example'))) {
+      fail('shared/ hub missing config.json.example after install');
+    }
+    if (fs.existsSync(path.join(testSkillsDir, 'shared', 'self-learning'))) {
+      fail('shared/self-learning should not exist after promotion');
+    }
+    ok('Promoted skills top-level; shared/ is hub-only');
+  }
+
+  // --- Phase 5: legacy nested memory migration on update ---
+  console.log('\n[Phase 5] Migrate legacy shared/self-learning/memory on update...');
+  {
+    const legacyMemDir = path.join(testSkillsDir, 'shared', 'self-learning', 'memory');
+    const topMemDir = path.join(testSkillsDir, 'self-learning', 'memory');
+    fs.mkdirSync(legacyMemDir, { recursive: true });
+    const legacyFile = path.join(legacyMemDir, '2026-07-16-migrate-test.md');
+    fs.writeFileSync(legacyFile, '# migrate-test\n', 'utf8');
+    // Ensure top memory does not already have this file
+    const topFile = path.join(topMemDir, '2026-07-16-migrate-test.md');
+    if (fs.existsSync(topFile)) fs.rmSync(topFile, { force: true });
+
+    const memUpdate = cp.spawnSync(
+      'npx',
+      useLocal ? ['workflow-skills', 'update'] : ['-y', 'github:jpolvora/workflow-skills', 'update'],
+      { cwd: __dirname, shell: true, encoding: 'utf8' }
+    );
+    if (memUpdate.status !== 0) {
+      console.error(memUpdate.stdout);
+      console.error(memUpdate.stderr);
+      fail(`memory migration update failed with code ${memUpdate.status}`);
+    }
+    if (!fs.existsSync(topFile)) {
+      fail('Legacy memory file was not migrated to self-learning/memory/');
+    }
+    if (fs.existsSync(path.join(testSkillsDir, 'shared', 'self-learning'))) {
+      fail('legacy shared/self-learning/ still present after migration');
+    }
+    ok('Legacy shared/self-learning/memory migrated to top-level');
+  }
+
+  // --- Phase 6: Workflows package membership (no Extra-only) ---
+  console.log('\n[Phase 6] Workflows package install membership...');
+  {
+    const pkgDir = path.join(__dirname, '.pkg-workflows');
+    fs.rmSync(pkgDir, { recursive: true, force: true });
+    fs.mkdirSync(pkgDir, { recursive: true });
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const pkgInstall = await new Promise((resolve) => {
+      const child = cp.spawn(process.execPath, [cliPath], {
+        cwd: pkgDir,
+        stdio: ['pipe', 'pipe', 'pipe'],
+        env: { ...process.env, FORCE_COLOR: '0' }
+      });
+      let stdout = '';
+      let stderr = '';
+      let packageSent = false;
+      let installSent = false;
+      child.stdout.on('data', (data) => {
+        const chunk = data.toString();
+        stdout += chunk;
+        if (chunk.includes('Select action or toggle') && !packageSent) {
+          packageSent = true;
+          child.stdin.write('w\n');
+        } else if (chunk.includes('Select action or toggle') && packageSent && !installSent) {
+          installSent = true;
+          child.stdin.write('y\n');
+        }
+      });
+      child.stderr.on('data', (d) => {
+        stderr += d.toString();
+      });
+      child.on('close', (status) => resolve({ status, stdout, stderr }));
+    });
+    if (pkgInstall.status !== 0) {
+      console.error(pkgInstall.stdout);
+      console.error(pkgInstall.stderr);
+      fail(`Workflows package install exited ${pkgInstall.status}`);
+    }
+    const pkgSkills = path.join(pkgDir, '.agents', 'skills');
+    if (!fs.existsSync(path.join(pkgSkills, 'spec-to-pr', 'SKILL.md'))) {
+      fail('Workflows package did not install spec-to-pr');
+    }
+    if (!fs.existsSync(path.join(pkgSkills, 'caveman', 'SKILL.md'))) {
+      fail('Workflows package did not install promoted caveman');
+    }
+    if (!fs.existsSync(path.join(pkgSkills, 'shared', 'config.json.example'))) {
+      fail('Workflows package did not install shared/ hub');
+    }
+    if (fs.existsSync(path.join(pkgSkills, 'security-review'))) {
+      fail('Workflows package must not install Extra-only security-review');
+    }
+    fs.rmSync(pkgDir, { recursive: true, force: true });
+    ok('Workflows package installs workflows+hub without Extra-only skills');
+  }
+
+  // --- Phase 7: dependency auto-select (09-goal-fix-pr → goal-loop) ---
+  console.log('\n[Phase 7] Dependency auto-select on individual toggle...');
+  {
+    const depDir = path.join(__dirname, '.pkg-deps');
+    fs.rmSync(depDir, { recursive: true, force: true });
+    fs.mkdirSync(depDir, { recursive: true });
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const installable = listSkillDirs(rootSkillsDir)
+      .filter((n) => n !== 'shared' && fs.existsSync(path.join(rootSkillsDir, n, 'SKILL.md')))
+      .sort((a, b) => a.localeCompare(b));
+    const idx = installable.indexOf('09-goal-fix-pr');
+    if (idx < 0) fail('09-goal-fix-pr not in installable skill list');
+    const num = String(idx + 1);
+    const depInstall = await new Promise((resolve) => {
+      const child = cp.spawn(process.execPath, [cliPath], {
+        cwd: depDir,
+        stdio: ['pipe', 'pipe', 'pipe'],
+        env: { ...process.env, FORCE_COLOR: '0' }
+      });
+      let stdout = '';
+      let stderr = '';
+      let toggleSent = false;
+      let installSent = false;
+      child.stdout.on('data', (data) => {
+        const chunk = data.toString();
+        stdout += chunk;
+        if (chunk.includes('Select action or toggle') && !toggleSent) {
+          toggleSent = true;
+          child.stdin.write(`${num}\n`);
+        } else if (chunk.includes('Select action or toggle') && toggleSent && !installSent) {
+          installSent = true;
+          child.stdin.write('y\n');
+        }
+      });
+      child.stderr.on('data', (d) => {
+        stderr += d.toString();
+      });
+      child.on('close', (status) => resolve({ status, stdout, stderr }));
+    });
+    if (depInstall.status !== 0) {
+      console.error(depInstall.stdout);
+      console.error(depInstall.stderr);
+      fail(`Dep auto-select install exited ${depInstall.status}`);
+    }
+    const depSkills = path.join(depDir, '.agents', 'skills');
+    if (!fs.existsSync(path.join(depSkills, '09-goal-fix-pr', 'SKILL.md'))) {
+      fail('09-goal-fix-pr not installed after toggle');
+    }
+    if (!fs.existsSync(path.join(depSkills, 'goal-loop', 'SKILL.md'))) {
+      fail('goal-loop not auto-selected as dependency of 09-goal-fix-pr');
+    }
+    if (!fs.existsSync(path.join(depSkills, '08-fix-pr', 'SKILL.md'))) {
+      fail('08-fix-pr not auto-selected as dependency of 09-goal-fix-pr');
+    }
+    fs.rmSync(depDir, { recursive: true, force: true });
+    ok('Selecting 09-goal-fix-pr auto-selects goal-loop + 08-fix-pr');
+  }
+
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, and deps all passed.');
   process.exit(0);
 });

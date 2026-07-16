@@ -133,7 +133,7 @@ Slug resolution: frontmatter `slug:` if present; else basename without `.spec.md
 
 Normalization always sets `source: local` and ensures `slug` + `title` (+ `specDate` if missing). Overwrite existing canonical file only if identical or `--force` / user confirms.
 
-Do **not** call tracker APIs. Validate required sections per [`spec-format`](../shared/spec-format/SKILL.md) after registration when running as an agent.
+Do **not** call tracker APIs. Validate required sections per [`spec-format`](../spec-format/SKILL.md) after registration when running as an agent.
 
 ### PR intents → scm provider
 

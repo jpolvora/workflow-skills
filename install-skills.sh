@@ -3,6 +3,17 @@
 # Stop on errors
 set -e
 
+echo "============================================================"
+echo "  workflow-skills — legacy bash installer"
+echo "============================================================"
+echo "  Note: Package shortcuts (Full / Workflows / Extra) and"
+echo "  transitive skill dependency selection are implemented in"
+echo "  the Node CLI only:"
+echo "    npx github:jpolvora/workflow-skills"
+echo "  Prefer the Node CLI for updates and package installs."
+echo "============================================================"
+echo ""
+
 # Find script directory (source of skills)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_SKILLS_DIR="$SCRIPT_DIR/.agents/skills"

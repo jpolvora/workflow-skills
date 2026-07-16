@@ -35,10 +35,10 @@ Dispatched by `spec-to-pr` at Step 2 when the orchestrator did **not** skip inte
 ## Prerequisites
 
 Read and respect the following shared skills:
-- [karpathy-guidelines](../shared/karpathy-guidelines/SKILL.md)
-- [caveman](../shared/caveman/SKILL.md)
-- [self-learning](../shared/self-learning/SKILL.md)
-- [gabarito](../shared/gabarito/SKILL.md)
+- [karpathy-guidelines](../karpathy-guidelines/SKILL.md)
+- [caveman](../caveman/SKILL.md)
+- [self-learning](../self-learning/SKILL.md)
+- [gabarito](../gabarito/SKILL.md)
 
 ---
 

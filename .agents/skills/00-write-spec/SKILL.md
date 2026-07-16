@@ -40,16 +40,16 @@ Dispatched by `spec-to-pr` at Step 0 with the issue body or feature text from co
 ## Prerequisites
 
 Read and respect the following shared skills:
-- [karpathy-guidelines](../shared/karpathy-guidelines/SKILL.md)
-- [caveman](../shared/caveman/SKILL.md)
-- [self-learning](../shared/self-learning/SKILL.md)
-- [gabarito](../shared/gabarito/SKILL.md)
+- [karpathy-guidelines](../karpathy-guidelines/SKILL.md)
+- [caveman](../caveman/SKILL.md)
+- [self-learning](../self-learning/SKILL.md)
+- [gabarito](../gabarito/SKILL.md)
 
 ---
 
 ## Output Template
 
-Adhere to the canonical specification format defined by [spec-format](../shared/spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
+Adhere to the canonical specification format defined by [spec-format](../spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
 
 ```markdown
 ---

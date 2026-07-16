@@ -333,7 +333,7 @@ After step completion, the subagent records in `step-output.learning` (mistakes 
 
 #### 3. Inter-workflow Promotion (Step 12 Sweep)
 At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.learning` entries, promoting generalizable patterns to the file-based memory system under `self-learning`.
-- **Promotion Process:** For each promoted learning, create a new markdown file under `.agents/skills/shared/self-learning/memory/YYYY-MM-DD-[slug].md`. Then, run the compiler script: `python .agents/skills/shared/self-learning/self_learning.py --compile`.
+- **Promotion Process:** For each promoted learning, create a new markdown file under `.agents/skills/self-learning/memory/YYYY-MM-DD-[slug].md`. Then, run the compiler script: `python .agents/skills/self-learning/self_learning.py --compile`.
 - **Promotion Criteria:** Technical (framework/api/pattern level, not domain-specific), generalizable, non-duplicate (query/grep memory first), and concise (one line per trap).
 - **Target Sections:** Traps, patterns, layers, modules, severity.
 - **Exclusions:** Do NOT store logs (→ `CHANGELOG.md`), domain rules (→ `CONTEXT.md` / `specs/`), narratives, or duplicates.
@@ -341,7 +341,7 @@ At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.l
 
 ### Specification Protocol
 
-[`spec-format`](../shared/spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Tracker credentials/org: `config.json.issueTrackers`. Entry ownership: `config.json.providers` + provider skills below.
+[`spec-format`](../spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Tracker credentials/org: `config.json.issueTrackers`. Entry ownership: `config.json.providers` + provider skills below.
 
 | Input | Tracker / provider | Action | Uses Step 0? |
 |-------|--------------------|--------|--------------|

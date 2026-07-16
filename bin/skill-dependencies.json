@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "hub": {
+    "dir": "shared",
+    "ensureWhen": ["full", "workflows", "workflow-skill-selected"]
+  },
+  "packages": {
+    "full": {
+      "select": "all-skills",
+      "ensureHub": true,
+      "shortcut": "f",
+      "label": "Full package"
+    },
+    "workflows": {
+      "skills": [
+        "spec-to-pr",
+        "spec-to-pr-lite",
+        "00-write-spec",
+        "01-write-plan",
+        "02-interview",
+        "03-plan-to-tasks",
+        "04-implement-tasks",
+        "05-verify-plan",
+        "06-code-review",
+        "07-integration-validation",
+        "08-fix-pr",
+        "09-goal-fix-pr",
+        "10-update-plan-implementation",
+        "11-ship-pr",
+        "github-provider",
+        "azure-devops-provider",
+        "local-spec-provider",
+        "check-harness",
+        "check-workflows",
+        "caveman",
+        "gabarito",
+        "karpathy-guidelines",
+        "spec-format",
+        "goal-loop",
+        "self-learning",
+        "changelog"
+      ],
+      "ensureHub": true,
+      "shortcut": "w",
+      "label": "Workflows package"
+    },
+    "extra": {
+      "skills": [
+        "security-review",
+        "dotnet-security-performance-review",
+        "tdd-sdd-ddd-reviewer",
+        "domain-review",
+        "multi-domain-review",
+        "secrets-leak-review",
+        "mobile-first-design",
+        "taste-skill",
+        "write-a-skill"
+      ],
+      "ensureHub": false,
+      "shortcut": "e",
+      "label": "Extra package"
+    }
+  },
+  "dependencies": {
+    "spec-to-pr": [
+      "00-write-spec",
+      "01-write-plan",
+      "02-interview",
+      "03-plan-to-tasks",
+      "04-implement-tasks",
+      "05-verify-plan",
+      "06-code-review",
+      "07-integration-validation",
+      "08-fix-pr",
+      "09-goal-fix-pr",
+      "10-update-plan-implementation",
+      "11-ship-pr",
+      "github-provider",
+      "azure-devops-provider",
+      "local-spec-provider",
+      "check-harness",
+      "check-workflows",
+      "caveman",
+      "gabarito",
+      "karpathy-guidelines",
+      "spec-format",
+      "goal-loop",
+      "self-learning",
+      "changelog"
+    ],
+    "spec-to-pr-lite": [
+      "01-write-plan",
+      "04-implement-tasks",
+      "06-code-review",
+      "11-ship-pr",
+      "caveman",
+      "gabarito",
+      "karpathy-guidelines",
+      "spec-format",
+      "self-learning",
+      "changelog"
+    ],
+    "00-write-spec": ["spec-format"],
+    "github-provider": ["spec-format"],
+    "azure-devops-provider": ["spec-format"],
+    "local-spec-provider": ["spec-format"],
+    "09-goal-fix-pr": ["08-fix-pr", "goal-loop"],
+    "06-code-review": ["karpathy-guidelines", "caveman", "gabarito", "self-learning"],
+    "tdd-sdd-ddd-reviewer": ["karpathy-guidelines"],
+    "domain-review": ["karpathy-guidelines"]
+  },
+  "autoloadOnly": [],
+  "selectOffRule": "no-cascade-deselect"
+}

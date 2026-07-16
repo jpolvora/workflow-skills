@@ -13,7 +13,7 @@ version: 1.0
 
 Skill to **create**, **review**, or **format** local specifications (`*.spec.md`) — a single, portable artifact for a feature/US. Replaces direct GitHub reading in downstream skills; all read `*.spec.md` from the working directory.
 
-> **Canonical source of the `*.spec.md` format.** Other skills and `spec-to-pr` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../../AGENTS.md) § Skill loading.
+> **Canonical source of the `*.spec.md` format.** Other skills and `spec-to-pr` **reference** this skill — they do not duplicate frontmatter, sections, or validation rules. See also [`AGENTS.md`](../../../AGENTS.md) § Skill loading.
 
 > **Language:** responses to user in **en-us**.
 
@@ -128,7 +128,7 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 ## References
 
-- Harness routing: [`AGENTS.md`](../../../../AGENTS.md)
+- Harness routing: [`AGENTS.md`](../../../AGENTS.md)
 - Architecture: project `CONTEXT.md` / `STACK.md` / `config.json.domain` (when present)
 - Workflow protocol: [`../../spec-to-pr/SKILL.md`](../../spec-to-pr/SKILL.md) → Specification Protocol
 - Providers: [`github-provider`](../../github-provider/SKILL.md), [`azure-devops-provider`](../../azure-devops-provider/SKILL.md), [`local-spec-provider`](../../local-spec-provider/SKILL.md)
