@@ -23,8 +23,13 @@
   },
   "files": [
     "bin/",
+    ".agents/AGENTS.md",
     ".agents/skills/",
-    ".agents/AGENTS.md"
+    "!.agents/skills/shared/config.json",
+    "!.agents/skills/shared/config.local.json",
+    "!.agents/skills/shared/stack.md",
+    "!.agents/skills/shared/MEMORY.md",
+    "!.agents/skills/shared/memory/**"
   ],
   "type": "module"
 }

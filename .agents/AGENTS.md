@@ -1,19 +1,19 @@
 # AGENTS.md — Packaged Skills Index
 
-This folder contains skills developed for consumers. Clients install them via the installer (`npx github:jpolvora/workflow-skills` or the local CLI script).
+**Audience: agents** (consumer skill index + portability rules).  
+**Humans:** install and contribute via the upstream root [`README.md`](../README.md). Upstream agent hub: root [`AGENTS.md`](../AGENTS.md).
 
-Skills under `.agents/skills/` are used by:
+This folder ships skills for consumers (`npx --yes github:jpolvora/workflow-skills` or local CLI). Skills under `.agents/skills/` support project workflows (`spec-to-pr` / lite + pipeline) and the `test/` install dry-run tree.
 
-- **Project workflows** — especially `spec-to-pr` and its pipeline dependencies (`00`–`11`, providers)
-- **Local verification** — the `test/` consumer tree (install/pack dry-runs)
+This file is the **packaged routing index** after install — not a human install guide.
 
-This file is a **brief index / routing table** for skills shipped in this package. It can also serve as a **template** for an `AGENTS.md` (or `.agents/AGENTS.md`) skill index in consumer projects after install.
+> **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Source hub:** The canonical harness hub for *this* repository (layers, skill loading, verification, site catalog) remains the root [`AGENTS.md`](../AGENTS.md). Prefer that file when editing the upstream harness. Prefer *this* file when documenting what ships under `.agents/skills/` for consumers.
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change).
 
-> **Drift check:** After adding/removing/renaming skills under `.agents/skills/`, update **both** root `AGENTS.md` (hub + site catalog) and this packaged index so consumer-facing tables stay aligned.
+> **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
-**Language:** All skill content and pipeline output remain **en-us**.
+**Language:** Skill content and pipeline output = **en-us**.
 
 ---
 
@@ -41,8 +41,8 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | Role | Rule |
 |------|------|
 | **Canonical upstream** | [`jpolvora/workflow-skills`](https://github.com/jpolvora/workflow-skills) is the authoritative source for pipeline and dependency skills. |
-| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files (except preserved `config.json`). |
-| **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx github:jpolvora/workflow-skills update` (or `update --include-new`). |
+| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`. |
+| **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx --yes github:jpolvora/workflow-skills update` (or `update --include-new`). |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
 ### Pre-merge gate: `check-harness` (mandatory for upstream)
@@ -168,12 +168,13 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | Create a new skill | `write-a-skill` |
 | Audit harness | `check-harness` |
 | Validate / check workflow processes | `check-workflows` |
+| Generic convergence loop | `goal-loop` |
 
 ---
 
 ## Consumer notes
 
-- Installed skill trees are **managed upstream copies**. `config.json` is preserved on update; skill files are not.
+- Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/` — preserved on update; skill files are overwritten.
 - To refresh from upstream: `npx github:jpolvora/workflow-skills update` (add `--include-new` when new top-level skill folders appeared upstream).
 - Consumers may copy or adapt this index into their own root `AGENTS.md`; keep paths relative to the install root (typically `.agents/skills/...`).
 - **Dual hub (OK):** consumer root `AGENTS.md` may stay project-specific and delegate skill routing to `.cursor/rules/index.mdc` (or equivalent). This packaged `.agents/AGENTS.md` remains the **skill catalog** for the installed hub; keep both aligned after updates.

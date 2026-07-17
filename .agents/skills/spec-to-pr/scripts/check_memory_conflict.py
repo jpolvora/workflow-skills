@@ -33,14 +33,11 @@ def ensure_utf8_stdio() -> None:
 
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-MEMORY_PATH = SKILL_ROOT / "extra-skills" / "self-learning" / "MEMORY.md"
+MEMORY_PATH = SKILL_ROOT.parent / "shared" / "MEMORY.md"
 
-KNOWN_MODULES = [
-    "Companies", "Members", "Placement", "Activation", "Ledger",
-    "Withdraw", "Wallet", "Plans", "Sponsor", "Notifications", "Messages",
-    "Audit", "Permissions", "Roles", "FeatureFlags", "Payment", "Treasury",
-    "Yield", "Localization", "Users", "Auth", "Crud",
-]
+# Portable default: no project-specific domain vocabulary.
+# Consumers may extend matching via MEMORY.md content; do not hardcode org modules here.
+KNOWN_MODULES = []
 
 KNOWN_LAYERS = [
     "Core", "Infrastructure", "Api", "Web", "Tests",

@@ -322,6 +322,12 @@ section h2 {
   gap: 16px;
 }
 
+/* Install commands: one card per row (full width) */
+#install .install-steps {
+  grid-template-columns: 1fr;
+  max-width: 920px;
+}
+
 .install-step {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -352,12 +358,14 @@ section h2 {
 }
 
 .install-step pre {
-  margin-top: auto;
+  margin-top: 0;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   padding: 14px;
   overflow-x: auto;
+  flex: 1;
+  margin: 0;
 }
 
 .install-step pre code {
@@ -366,8 +374,52 @@ section h2 {
   color: var(--accent);
   background: none;
   padding: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
+.cmd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.cmd-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.cmd-row pre {
+  flex: 1;
+  min-width: 0;
+}
+
+.cmd-copy {
+  flex-shrink: 0;
+  align-self: stretch;
+  min-width: 4.5rem;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.cmd-copy:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cmd-copy.copied {
+  color: var(--accent);
+  border-color: rgba(52, 211, 153, 0.35);
+}
 #contribute p {
   font-size: 1rem;
   color: var(--text-muted);

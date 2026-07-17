@@ -59,7 +59,7 @@ flowchart LR
 3. **Scan before edit** — Steps 1–2 are **always read-only**. Enumerate all findings and assemble the correction plan **before** any `Write`/`StrReplace`/`Delete`. Editing only in Step 3, with explicit approval.
 4. **Harness precedence** — the source of truth for routing is [`AGENTS.md`](../../../AGENTS.md); the source of truth for engineering is the guardrails skill resolved per [`AGENTS.md`](../../../AGENTS.md) § External Dependencies (`config.json.rules.seniorDeveloper`, then local/global `senior-developer`, then `.cursor/rules/senior-developer.mdc`) + `.mdc` rules when applicable. Skills **delegate** to `AGENTS.md` and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
 5. **Minimal diff in proposals** — prefer removing duplicates + link to canonical source rather than rewriting entire blocks.
-6. **AGENTS.md is the hub** — `AGENTS.md` concentrates routing (Layers, § Skill loading, § Task router, § Verification, § Feature workflow). `AGENTS.md` must **route** to skills, rules, harness agents, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
+6. **AGENTS.md is the agent hub** — `AGENTS.md` concentrates routing (Layers, skill loading, task router, verification). `README.md` is for humans (install/contribute) and must **not** replace the router. `AGENTS.md` must **route** to skills, rules, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
 
 ---
 
@@ -71,10 +71,11 @@ Go through **all** artifacts below, in harness routing order (progressive disclo
 
 | File | Role |
 |---------|--------|
-| `AGENTS.md` | Harness **Hub** — Layers, § Skill loading, § Task router, § Verification, § Feature workflow |
+| `AGENTS.md` | Agent **hub** — Layers, skill loading, task router, verification (not human install docs) |
+| `README.md` | Human **README** — install, overview, contribute (not the skill router) |
 | `.cursorrules` | (Optional) Points to `AGENTS.md` as single entry — verify existence and validity |
 
-Progressive disclosure flow: `.cursorrules` (if present) → `AGENTS.md` → skill/doc on demand (specs via skills or `specs/AGENTS.md`, not via hub).
+Progressive disclosure flow: `.cursorrules` (if present) → `AGENTS.md` → skill/doc on demand (specs via skills or `specs/AGENTS.md`, not via hub). Do not treat `README.md` as routing authority.
 
 ### 1b. Agents and orchestrators
 

@@ -26,7 +26,7 @@ Artifact paths: [`../spec-to-pr/ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md). Resu
      - **Project structure**: List top-level directories (`src/`, `web/`, `tests/`, `app/`, `lib/`, `cmd/`, etc.) and infer conventional layers.
      - **Tool versions**: `node --version`, `dotnet --version`, `python --version`, `go version` (if installed).
      - **Build/test commands**: Check `package.json` `scripts` (`build`, `test`, `lint`, `dev`), `Makefile` targets, existing CI configs (`.github/workflows/`, `.gitlab-ci.yml`).
-   - Generate `STACK.md` from the detected information using the template structure at [`stack.md`](stack.md) as format reference.
+   - Generate `stack.md` from the detected information using the template structure at [`stack.md.example`](stack.md.example) as format reference.
    - Write `STACK.md` to the root of the repository.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `STACK.md created → {path}` in step output.

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-17] Agent: Cursor Grok
+- **Prompt**: Enforce AGENTS.md = agent README, README.md = human README; rewrite both as needed.
+- **Done**: Rewrote root `AGENTS.md` (audience banner, doc-roles table, agent contracts) and `README.md` (human install/overview/contribute); aligned `.agents/AGENTS.md`, `shared/AGENTS.md`, `check-harness` hub table, and site footer with the same split.
+- **Result**: Clear audience separation; facts (install commands, preserved `shared/` files) stay aligned across both docs.
+
 ### [2026-07-13 16:55] Agent: Cursor Composer
 - **Prompt**: Fix remaining UTF-8 encoding problems in Python scripts across the project; record as important learning.
 - **Done**: Hardened all skill Python entrypoints with `ensure_utf8_stdio()`; fixed `11-ship-pr/scripts/verify.sh` `python -c` config reads to `Path.read_text(encoding='utf-8')`; set `subprocess.run(..., text=True, encoding='utf-8')` in both `update_state.py` variants; appended MEMORY trap for Windows cp1252 vs UTF-8.
@@ -90,3 +95,23 @@
 - **Prompt**: Promote shared skills to top-level installables; packages Full/Workflows/Extra; dep map + site section; ship via full auto spec-to-pr.
 - **Done**: Moved 7 skills to `.agents/skills/<name>/`; `skill-dependencies.json` + CLI packages/migration; harness/site/README/tests; PR #55 develop→main.
 - **Result**: Merged https://github.com/jpolvora/workflow-skills/pull/55 (merge `4ed6d3a`); Agentic Code Review passed; workflow complete.
+
+### [2026-07-17 11:15] Agent: Cursor Composer
+- **Prompt**: Update obsolete bash curl install; pair with npx install.
+- **Done**: Replaced flat-copy `install-skills.sh` with thin shim → local `bin/cli.js` or `npx --yes github:jpolvora/workflow-skills`; updated README, `docs/index.html` curl section, and CLI help note.
+- **Result**: `bash install-skills.sh --help` delegates to Node CLI; curl path shares same argv (`bash -s -- install --full --yes`).
+
+### [2026-07-17 11:25] Agent: Cursor Composer
+- **Prompt**: Never leak upstream MEMORY.md / project-specific artifacts to consumer installs; seed fresh or preserve existing.
+- **Done**: Installer never copies `MEMORY.md`/`memory/`/`config.json` from upstream; seeds empty `MEMORY.md` from template; npm pack excludes compiled memory + `shared/config.json`; fixed `check_memory_conflict.py` MEMORY path; Phase 9 install tests.
+- **Result**: `npm run tests -- --local` passed including MEMORY isolation; pack dry-run has no leaked memory/config.json.
+
+### [2026-07-17 11:35] Agent: Cursor Composer
+- **Prompt**: check-harness apply all — shared hub owns consumer data (MEMORY, stack, config).
+- **Done**: Moved MEMORY to `shared/`; `stack.md.example` + preserve/seed `stack.md`; installer migration from legacy self-learning paths; docs/task routers/`self_learning.py`/tests updated.
+- **Result**: Harness OK post-correction; `npm run tests -- --local` passed (Phases 5+9 cover shared memory/stack).
+
+### [2026-07-17 11:40] Agent: Cursor Composer
+- **Prompt**: Update README/AGENTS, website install cards (wide, one cmd/row, copy), npx + bash installers.
+- **Done**: Synced consumer-owned `shared/` docs; `#install` full-width cards with per-command Copy; CLI help + curl shim banners; `verify.sh` PYTHONUTF8 for python -c.
+- **Result**: Docs/installers/site aligned on `npx --yes` and shared consumer data contract.
