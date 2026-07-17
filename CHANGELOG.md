@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-17 13:55] Agent: Cursor Grok
+- **Prompt**: US 60 AC6 — CLI create-if-missing seeds for root `.cursorrules` and `CHANGELOG.md` plus install tests
+- **Done**: Added `ensureRootConsumerSeeds()` in `bin/cli.js` (hooked after hub consumer artifacts); documented in CLI help and README; Phase 10 in `test/test-install.js` asserts create-once and no-clobber
+- **Result**: `npm run tests -- --local` pass; existing root files never overwritten
+
 ### [2026-07-17] Agent: Cursor Grok
 - **Prompt**: Enforce AGENTS.md = agent README, README.md = human README; rewrite both as needed.
 - **Done**: Rewrote root `AGENTS.md` (audience banner, doc-roles table, agent contracts) and `README.md` (human install/overview/contribute); aligned `.agents/AGENTS.md`, `shared/AGENTS.md`, `check-harness` hub table, and site footer with the same split.

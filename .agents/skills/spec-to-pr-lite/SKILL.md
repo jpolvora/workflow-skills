@@ -10,7 +10,7 @@ upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflo
 
 # Spec-to-PR Lite — Orchestrator
 
-Deterministic FSM for sequential plan-to-ship delivery. Reuses the **same** pipeline skills as [`spec-to-pr`](../spec-to-pr/SKILL.md). Dual-mode contract: [`gates.md`](../shared/gates.md), [`config-resolution.md`](../shared/config-resolution.md), [`setup.md`](../shared/setup.md).
+Deterministic FSM for sequential plan-to-ship delivery. Reuses the **same** pipeline skills as [`spec-to-pr`](../spec-to-pr/SKILL.md). Dual-mode contract: [`gates.md`](../shared/gates.md), [`config-resolution.md`](../shared/config-resolution.md), [`setup.md`](../shared/setup.md). Do **not** load [`spec-to-pr/STEP-DISPATCH.md`](../spec-to-pr/STEP-DISPATCH.md) for lite step numbers — that file is standard-orch only (0–13).
 
 ## Core Goals
 

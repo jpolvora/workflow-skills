@@ -52,7 +52,7 @@ Apply fixes? Reply with `YES` (all) or `YES C1 W2` (subset).
 
 ## Stamp on domain file (mandatory)
 
-After the chat report, replace or insert this section on `specs/domains/{slug}.md` — place **after** `## Specs & ADRs` and **before** `## Dependências` (create Specs & ADRs first if missing).
+After the chat report, replace or insert this section on `specs/domains/{slug}.md` — place **after** `## Specs & ADRs` and **before** `## Dependencies` (create Specs & ADRs first if missing; accept Portuguese alias `## Dependências` if the consumer map still uses it).
 
 ```markdown
 ## Last review

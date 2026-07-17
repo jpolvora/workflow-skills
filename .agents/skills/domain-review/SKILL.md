@@ -15,6 +15,8 @@ On-demand Layer 2. **Not** PR/branch review ([code-review](../06-code-review/SKI
 
 **Catalog:** `specs/domains/index.md` when present (starter: [`index.md.example`](../../../specs/domains/index.md.example)). If the catalog is missing, **STOP** and ask the consumer to add `specs/domains/` (copy from the example) or pass an explicit slug + contract path. **`auto` pipeline:** [AUTO.md](AUTO.md).
 
+**Heading aliases:** Consumer domain maps may still use Portuguese headings (`Índice`, `Ordem sugerida`, `Dependências`, `Pai / Sub`). Instructional text here is en-us (`Index`, `Suggested order`, `Dependencies`, `Parent / Sub`); parsers must accept either.
+
 ## Parse
 
 ```
@@ -32,8 +34,8 @@ Combine: `/domain-review next auto`. Restate: slug|next-pick, auto?, dry-run?.
 
 ## Iron rules
 
-1. **Select before investigate.** Catalog + wait — unless message has valid slug/`Pai / Sub`, or **`next`**.
-2. **One perimeter.** Domain map + listed fat-page spillover only. Neighbors = Dependências notes unless multi-select.
+1. **Select before investigate.** Catalog + wait — unless message has valid slug/`Parent / Sub`, or **`next`**.
+2. **One perimeter.** Domain map + listed fat-page spillover only. Neighbors = Dependencies notes unless multi-select.
 3. **Read domain `.md` first.** Then code.
 4. **Report:** Critical + Warning table, explanations, fix plan for every finding ([REPORT.md](REPORT.md)).
 5. **No implement** until user asks — **except `auto`** (= apply all C/W).
@@ -41,9 +43,9 @@ Combine: `/domain-review next auto`. Restate: slug|next-pick, auto?, dry-run?.
 
 ## next — auto-pick
 
-1. Slugs from index § Índice (main table; not subdomains).
+1. Slugs from index § Index (main table; not subdomains).
 2. Per slug: parse `## Last review` → **Date** (`YYYY-MM-DD`). Missing = never reviewed.
-3. Order = index § **Ordem sugerida** (flatten); others append A–Z.
+3. Order = index § **Suggested order** (flatten); others append A–Z.
 4. Pick: first never-reviewed in that order; else oldest Date (tie → suggested order).
 5. Announce `next → {slug} (never | Date YYYY-MM-DD)`; continue. No subdomain auto-pick.
 
@@ -81,6 +83,6 @@ catalog | next → select → domain.md → investigate → report → stamp →
 | `next` = favorite | Algorithm only (never → oldest Date → suggested order). |
 | Critical-only / no plan / skip stamp | Table + plan + stamp mandatory. |
 | Skip BE sub-skill | Any `src/` path → load it; fold into REPORT. |
-| `auto` still ask SIM / skip goal-fix-pr / 2m wait | `auto` = all C/W; [AUTO.md](AUTO.md) always goal-fix-pr + **5m** (incl. first). |
+| `auto` still ask YES / skip goal-fix-pr / 2m wait | `auto` = all C/W; [AUTO.md](AUTO.md) always goal-fix-pr + **5m** (incl. first). |
 
 **STOP:** grep before select; multi-domain without multi-select; code-review as primary; BE without sub-skill; missing Warnings/plan/stamp; implement without ask and without `auto`; `auto` without ship when there are changes (unless dry-run).

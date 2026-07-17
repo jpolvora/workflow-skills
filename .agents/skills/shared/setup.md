@@ -7,6 +7,21 @@ Artifact paths: [`../spec-to-pr/ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md). Resu
 
 ---
 
+## External dependencies (guardrails)
+
+Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Full portable contract (same meaning): packaged [`../../AGENTS.md`](../../AGENTS.md) § External dependencies · upstream root [`../../../AGENTS.md`](../../../AGENTS.md)#external-dependencies.
+
+| Key | Role | Resolve (first match) |
+|-----|------|------------------------|
+| `rules.seniorDeveloper` | Engineering guardrails; **Code review proof** source | config path → local `senior-developer` skill → `.cursor/rules/senior-developer.mdc` (or config equivalent) → global skill |
+| `rules.karpathyGuidelines` | Surgical-change guidelines | config path → shipped `../karpathy-guidelines/SKILL.md` → global skill |
+| `rules.stackFile` | Human-readable stack companion | config path (default `STACK.md` / `stack.md`); bootstrap may create if missing (see 1b below) |
+| Other `rules.*` | Optional consumer rules (e.g. `efMigrations`, `viewPatterns`) | Use path from config when set; do not invent filenames |
+
+**Code review proof:** When pipeline / utility skills ask for proof, load the checklist from the **resolved** `rules.seniorDeveloper` skill. Do not paste that checklist into hub docs.
+
+---
+
 ## Bootstrap & Entry
 
 > **[spec-to-pr]** — Before Step 0.

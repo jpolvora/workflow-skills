@@ -108,6 +108,17 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
 
+### Optional root seeds (create-if-missing)
+
+On Full / workflow installs (when the `shared/` hub is ensured), the CLI also seeds at the **project root** if missing — existing files are never overwritten:
+
+| File | Role |
+|------|------|
+| `.cursorrules` | Minimal English pointer so agents follow `AGENTS.md` |
+| `CHANGELOG.md` | Stub compatible with the `changelog` skill (append-only history) |
+
+These are optional accompaniment only. They do **not** seed or overwrite consumer-owned `shared/` files (`config.json`, `stack.md`, `MEMORY.md`, `memory/*`).
+
 ---
 
 ## Safety and how it works
@@ -115,7 +126,7 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 - **Local CLI:** [`bin/cli.js`](./bin/cli.js) — zero runtime npm dependencies; copies from the downloaded package.
 - **No remote shell install path:** curl only downloads the shim; work is done by Node/`npx`.
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
-- **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
+- **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files (and never clobber existing root `.cursorrules` / `CHANGELOG.md`).
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux).
 
 ### Verify the package
