@@ -1,6 +1,11 @@
-# Do not commit project-specific config — it may contain paths, org names, and local settings.
-# Copy config.json.example to config.json and fill in your project details.
-config.json
+# Do not commit project-specific / consumer-owned hub data.
+# Copy *.example / MEMORY.md.template, fill in locally; never pack these into the npm tarball.
 
-# Never commit local overrides
+config.json
 config.local.json
+stack.md
+MEMORY.md
+memory/**
+!MEMORY.md.template
+!stack.md.example
+!config.json.example

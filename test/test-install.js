@@ -15,7 +15,13 @@ const ignoredPatterns = [
   /__pycache__/,
   /[\\/]runs([\\/]|$)/,
   /\.gitignore$/,
+  /\.npmignore$/,
   /config\.json$/,
+  /(^|[\\/])shared[\\/]stack\.md$/,
+  /(^|[\\/])shared[\\/]MEMORY\.md$/,
+  /(^|[\\/])shared[\\/]memory([\\/]|$)/,
+  /(^|[\\/])shared[\\/]MEMORY\.md\.template$/,
+  /(^|[\\/])self-learning[\\/]MEMORY\.md$/,
   /(^|[\\/])self-learning[\\/]memory([\\/]|$)/
 ];
 
@@ -109,7 +115,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/shared/config.schema.json',
     '.agents/skills/shared/config.json.example',
     '.agents/skills/shared/tools.md',
-    '.agents/skills/shared/stack.md',
+    '.agents/skills/shared/stack.md.example',
+    '.agents/skills/shared/MEMORY.md.template',
     '.agents/skills/shared/setup.md',
     '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
     '.agents/skills/spec-to-pr/SKILL.md',
@@ -667,17 +674,16 @@ child.on('close', async (code) => {
     ok('Promoted skills top-level; shared/ is hub-only');
   }
 
-  // --- Phase 5: legacy nested memory migration on update ---
-  console.log('\n[Phase 5] Migrate legacy shared/self-learning/memory on update...');
+  // --- Phase 5: legacy nested memory migration on update → shared/memory ---
+  console.log('\n[Phase 5] Migrate legacy memory into shared/memory on update...');
   {
     const legacyMemDir = path.join(testSkillsDir, 'shared', 'self-learning', 'memory');
-    const topMemDir = path.join(testSkillsDir, 'self-learning', 'memory');
+    const sharedMemDir = path.join(testSkillsDir, 'shared', 'memory');
     fs.mkdirSync(legacyMemDir, { recursive: true });
     const legacyFile = path.join(legacyMemDir, '2026-07-16-migrate-test.md');
     fs.writeFileSync(legacyFile, '# migrate-test\n', 'utf8');
-    // Ensure top memory does not already have this file
-    const topFile = path.join(topMemDir, '2026-07-16-migrate-test.md');
-    if (fs.existsSync(topFile)) fs.rmSync(topFile, { force: true });
+    const sharedFile = path.join(sharedMemDir, '2026-07-16-migrate-test.md');
+    if (fs.existsSync(sharedFile)) fs.rmSync(sharedFile, { force: true });
 
     const memUpdate = cp.spawnSync(
       'npx',
@@ -689,13 +695,13 @@ child.on('close', async (code) => {
       console.error(memUpdate.stderr);
       fail(`memory migration update failed with code ${memUpdate.status}`);
     }
-    if (!fs.existsSync(topFile)) {
-      fail('Legacy memory file was not migrated to self-learning/memory/');
+    if (!fs.existsSync(sharedFile)) {
+      fail('Legacy memory file was not migrated to shared/memory/');
     }
     if (fs.existsSync(path.join(testSkillsDir, 'shared', 'self-learning'))) {
       fail('legacy shared/self-learning/ still present after migration');
     }
-    ok('Legacy shared/self-learning/memory migrated to top-level');
+    ok('Legacy memory migrated to shared/memory/');
   }
 
   // --- Phase 6: Workflows package membership (no Extra-only) ---
@@ -924,6 +930,79 @@ child.on('close', async (code) => {
     fs.rmSync(niDir, { recursive: true, force: true });
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, deps, and non-interactive --yes all passed.');
+  // --- Phase 9: consumer MEMORY isolation under shared/ ---
+  console.log('\n[Phase 9] Consumer shared/MEMORY.md isolation...');
+  {
+    const memDir = path.join(__dirname, '.pkg-memory');
+    fs.rmSync(memDir, { recursive: true, force: true });
+    fs.mkdirSync(memDir, { recursive: true });
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+
+    const fresh = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'self-learning', '--yes'],
+      {
+        cwd: memDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000
+      }
+    );
+    if (fresh.status !== 0) {
+      console.error(`${fresh.stdout || ''}${fresh.stderr || ''}`);
+      fail(`self-learning install for MEMORY isolation exited ${fresh.status}`);
+    }
+    const destMem = path.join(memDir, '.agents', 'skills', 'shared', 'MEMORY.md');
+    const destStack = path.join(memDir, '.agents', 'skills', 'shared', 'stack.md');
+    if (!fs.existsSync(destMem)) fail('Fresh install must seed shared/MEMORY.md');
+    if (!fs.existsSync(destStack)) fail('Fresh install must seed shared/stack.md');
+    const seeded = fs.readFileSync(destMem, 'utf8');
+    if (/Trap Avoided|Promote Shared Installer|Curl install-skills/i.test(seeded)) {
+      fail('Upstream hub MEMORY.md content leaked into consumer install');
+    }
+    if (!/# Memory - Anti-Regression Knowledge/.test(seeded)) {
+      fail('Seeded MEMORY.md missing expected empty template header');
+    }
+    const memEntries = path.join(memDir, '.agents', 'skills', 'shared', 'memory');
+    if (fs.existsSync(memEntries)) {
+      const leaked = fs.readdirSync(memEntries).filter((n) => n.endsWith('.md'));
+      if (leaked.length > 0) {
+        fail(`Upstream memory/*.md leaked to consumer: ${leaked.join(', ')}`);
+      }
+    }
+    ok('Fresh install seeds empty shared/MEMORY.md + stack.md without upstream traps');
+
+    const marker = '### [2099-01-01] Consumer local trap\n- **Trap Avoided**: keep me\n';
+    fs.writeFileSync(destMem, `# Memory - Anti-Regression Knowledge\n\n---\n\n${marker}`);
+    fs.mkdirSync(memEntries, { recursive: true });
+    const consumerEntry = path.join(memEntries, '2099-01-01-consumer-local.md');
+    fs.writeFileSync(consumerEntry, '### [2099-01-01] Consumer local trap\n');
+    fs.writeFileSync(destStack, '# Consumer stack\nkeep-me\n');
+
+    const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+      cwd: memDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 120000
+    });
+    if (upd.status !== 0) {
+      console.error(`${upd.stdout || ''}${upd.stderr || ''}`);
+      fail(`update after MEMORY seed exited ${upd.status}`);
+    }
+    const after = fs.readFileSync(destMem, 'utf8');
+    if (!after.includes('Consumer local trap')) {
+      fail('Consumer shared/MEMORY.md was overwritten on update');
+    }
+    if (!fs.existsSync(consumerEntry)) {
+      fail('Consumer shared/memory/*.md entry was removed on update');
+    }
+    if (!fs.readFileSync(destStack, 'utf8').includes('keep-me')) {
+      fail('Consumer shared/stack.md was overwritten on update');
+    }
+    fs.rmSync(memDir, { recursive: true, force: true });
+    ok('Update preserves consumer shared/MEMORY.md, memory/, and stack.md');
+  }
+
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
   process.exit(0);
 });

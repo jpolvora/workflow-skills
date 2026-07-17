@@ -30,7 +30,7 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 | `read-config` | Load project config | `Read` `.agents/skills/shared/config.json` |
 | `read-artifacts-registry` | Canonical artifact names | `Read` `.agents/skills/spec-to-pr/ARTIFACTS.md` |
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `STACK.md`) |
-| `read-memory` | Load learned knowledge | `Read` `.agents/skills/self-learning/MEMORY.md` (index via `Grep`) |
+| `read-memory` | Load learned knowledge | `Read` `.agents/skills/shared/MEMORY.md` (index via `Grep`) |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
 | `run-script` | Run workflow / provider script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` (orchestrator helpers). Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `08-fix-pr/scripts/`) |
 
@@ -62,7 +62,7 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `update-memory` | Write learned pattern | Create unique file in `self-learning/memory/` and run `python .agents/skills/self-learning/self_learning.py --compile` |
+| `update-memory` | Write learned pattern | Create unique file in `shared/memory/` and run `python .agents/skills/self-learning/self_learning.py --compile` |
 | `update-changelog` | Append historical log | `Write`/`StrReplace` `CHANGELOG.md` |
 
 ## Rules

@@ -1,0 +1,11 @@
+# Never pack upstream consumer-owned / local project artifacts into the npm tarball.
+# Installer seeds fresh empty MEMORY.md + stack.md for new consumers and preserves existing ones.
+
+.agents/skills/shared/config.json
+.agents/skills/shared/config.local.json
+.agents/skills/shared/stack.md
+.agents/skills/shared/MEMORY.md
+.agents/skills/shared/memory/**
+!.agents/skills/shared/MEMORY.md.template
+!.agents/skills/shared/stack.md.example
+!.agents/skills/shared/config.json.example

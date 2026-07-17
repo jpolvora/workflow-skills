@@ -312,7 +312,7 @@ Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree 5/1
 
 ### Learning & Memory Protocol
 
-**Purpose:** Prevent repeating mistakes across steps and across workflow runs. `state.md` acts as the intra-workflow knowledge bus, while the compiled `MEMORY.md` inside the `self-learning` extra-skill folder is the cross-session, persistent anti-regression knowledge base.
+**Purpose:** Prevent repeating mistakes across steps and across workflow runs. `state.md` acts as the intra-workflow knowledge bus, while the compiled `MEMORY.md` inside `.agents/skills/shared/` is the cross-session, persistent anti-regression knowledge base (consumer-owned; installer never copies upstream hub memory).
 
 #### 1. Pre-read Checklist (Memory Consultation)
 At the start of every step, the subagent MUST read the following sections:
@@ -323,7 +323,7 @@ At the start of every step, the subagent MUST read the following sections:
 | `state.md` | `## Accumulated decisions` | Design choices, assumption flags, deviations from plan |
 | `state.md` | `## Step outputs` (all `### Step N` blocks) | Prior errors, retry patterns, broken approaches |
 | `state.md` | `## Doc consolidation log` | Docs updated during workflow |
-| `self-learning/MEMORY.md` | Index + scope-related sections | Generalizable anti-regression patterns from past workflows |
+| `self-learning/MEMORY.md` → **`.agents/skills/shared/MEMORY.md`** | Index + scope-related sections | Generalizable anti-regression patterns from past workflows |
 | `check_memory_conflict.py` | script output | Conflict detection (steps 2,3,5,9,10) |
 
 - **Intra-workflow Avoidance:** Scan `## Step outputs ### Step N` for `errors[]` and `learning` fields. Subagent MUST NOT repeat approaches that prior steps logged as broken.
@@ -333,7 +333,7 @@ After step completion, the subagent records in `step-output.learning` (mistakes 
 
 #### 3. Inter-workflow Promotion (Step 12 Sweep)
 At Step 12, the orchestrator reviews all `## Workflow memory` and `step-output.learning` entries, promoting generalizable patterns to the file-based memory system under `self-learning`.
-- **Promotion Process:** For each promoted learning, create a new markdown file under `.agents/skills/self-learning/memory/YYYY-MM-DD-[slug].md`. Then, run the compiler script: `python .agents/skills/self-learning/self_learning.py --compile`.
+- **Promotion Process:** For each promoted learning, create a new markdown file under `.agents/skills/shared/memory/YYYY-MM-DD-[slug].md`. Then, run the compiler script: `python .agents/skills/self-learning/self_learning.py --compile`.
 - **Promotion Criteria:** Technical (framework/api/pattern level, not domain-specific), generalizable, non-duplicate (query/grep memory first), and concise (one line per trap).
 - **Target Sections:** Traps, patterns, layers, modules, severity.
 - **Exclusions:** Do NOT store logs (→ `CHANGELOG.md`), domain rules (→ `CONTEXT.md` / `specs/`), narratives, or duplicates.

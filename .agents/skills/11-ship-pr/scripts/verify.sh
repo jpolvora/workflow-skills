@@ -19,7 +19,7 @@ frontend_touched() {
 
 # Always UTF-8 — bare open() uses Windows locale (cp1252) and can UnicodeDecodeError.
 read_verification_config() {
-  python3 -c "
+  PYTHONUTF8=1 PYTHONIOENCODING=utf-8 python3 -c "
 from pathlib import Path
 import json
 cfg = Path(r'''$config_file''')

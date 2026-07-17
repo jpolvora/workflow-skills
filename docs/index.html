@@ -81,7 +81,7 @@
 
   <!-- Layer 0 -->
   <div class="layer">
-    <h3>Layer 0 — Harness & Agent Infrastructure <span class="count">(3)</span></h3>
+    <h3>Layer 0 — Harness <span class="count">(3)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
         <div class="name">check-harness</div>
@@ -102,7 +102,7 @@
   </div>
   <!-- Layer 1 -->
   <div class="layer">
-    <h3>Layer 1 — Engineering Standards (Auto-load by task) <span class="count">(2)</span></h3>
+    <h3>Layer 1 — Engineering standards <span class="count">(2)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/mobile-first-design/SKILL.md">
         <div class="name">mobile-first-design</div>
@@ -118,7 +118,7 @@
   </div>
   <!-- Layer 2 -->
   <div class="layer">
-    <h3>Layer 2 — spec-to-pr Pipeline (numbered 00–11 + providers) <span class="count">(15)</span></h3>
+    <h3>Layer 2 — Pipeline + providers <span class="count">(15)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md">
         <div class="name">00-write-spec</div>
@@ -199,7 +199,7 @@
   </div>
   <!-- Layer 4 -->
   <div class="layer">
-    <h3>Layer 4 — Review & Audit <span class="count">(6)</span></h3>
+    <h3>Layer 4 — Review & audit <span class="count">(6)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/domain-review/SKILL.md">
         <div class="name">domain-review</div>
@@ -235,7 +235,7 @@
   </div>
   <!-- Layer 5 -->
   <div class="layer">
-    <h3>Layer 5 — Utility & Meta <span class="count">(9)</span></h3>
+    <h3>Layer 5 — Utility & meta <span class="count">(9)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md">
         <div class="name">caveman</div>
@@ -264,7 +264,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/self-learning/SKILL.md">
         <div class="name">self-learning</div>
-        <div class="desc">Analyze session output and record anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into conflict-free memory files, then compile MEMORY.md. Use when completing a task or implementation.</div>
+        <div class="desc">Analyze session output and record anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into conflict-free memory files under shared/, then compile MEMORY.md. Use when completing a task or implementation.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/self-learning/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md">
@@ -325,40 +325,98 @@
 
 <section id="install">
   <h2>Install</h2>
+  <p style="color:var(--text-muted);max-width:70ch;margin-bottom:20px;line-height:1.5">
+    Canonical form: <code>npx --yes github:jpolvora/workflow-skills</code> (never <code>@latest</code> / <code>@main</code> on <code>github:</code>).
+    Consumer-owned under <code>.agents/skills/shared/</code>: <code>config.json</code>, <code>stack.md</code>, <code>MEMORY.md</code>, <code>memory/</code> — preserved on update.
+  </p>
   <div class="install-steps">
     <div class="install-step">
       <h4>Interactive Menu</h4>
-      <p>Open the visual menu to select skills:</p>
-      <pre><code>npx --yes github:jpolvora/workflow-skills</code></pre>
+      <p>Open the visual menu to select packages or skills.</p>
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+      </div>
     </div>
     <div class="install-step">
       <h4>Auto-Update</h4>
-      <p>Silently update already installed skills. Your customized <code>config.json</code> files are preserved and never overwritten.</p>
-      <pre><code>npx --yes github:jpolvora/workflow-skills update
-npx --yes github:jpolvora/workflow-skills update --include-new</code></pre>
+      <p>Update installed skills. Preserves <code>shared/config.json</code>, <code>stack.md</code>, <code>MEMORY.md</code>, and <code>memory/</code>.</p>
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills update</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills update --include-new</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+      </div>
     </div>
     <div class="install-step">
       <h4>Non-interactive install</h4>
-      <p>For agents/CI: install Full, a package, or a skill list with <code>--yes</code> (overwrites skills; always preserves <code>config.json</code>). Non-TTY requires <code>--yes</code>.</p>
-      <pre><code>npx --yes github:jpolvora/workflow-skills install --full --yes
-npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes</code></pre>
+      <p>For agents/CI. Overwrites skills; always preserves consumer-owned <code>shared/</code> files. Non-TTY requires <code>--yes</code>.</p>
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills install --full --yes</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills install --package workflows --yes</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+      </div>
     </div>
     <div class="install-step">
       <h4>Fresh fetch / cache</h4>
-      <p>Use <code>npx --yes github:jpolvora/workflow-skills</code> (never <code>github:&hellip;@latest</code> or <code>@main</code> &mdash; that form exits 128). To bust npx cache, clear the cache and re-run with <code>npx --yes</code>.</p>
-      <pre><code>npx --yes github:jpolvora/workflow-skills update</code></pre>
+      <p>Never append <code>@latest</code> or <code>@main</code> to the <code>github:</code> specifier (exits 128). Bust cache by clearing npx cache, then re-run with <code>npx --yes</code>.</p>
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills update</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+      </div>
     </div>
     <div class="install-step">
       <h4>Version Check</h4>
-      <p>Compare your installed version against the latest online release, or just print the installed version:</p>
-      <pre><code>npx --yes github:jpolvora/workflow-skills --check
-npx --yes github:jpolvora/workflow-skills --version</code></pre>
+      <p>Compare installed vs latest online, or print the local version.</p>
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills --check</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <pre><code>npx --yes github:jpolvora/workflow-skills --version</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+      </div>
     </div>
     <div class="install-step">
-      <h4>cURL (alternative)</h4>
-      <p>Run the installer via shell script:</p>
-      <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash</code></pre>
+      <h4>cURL (shim → npx)</h4>
+      <p>Same CLI as npx. Requires Node.js. Pass args after <code>bash -s --</code>.</p>
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s --</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- install --full --yes</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- update</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- update --include-new</code></pre>
+          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -367,7 +425,8 @@ npx --yes github:jpolvora/workflow-skills --version</code></pre>
   <h2>Contribute</h2>
   <p>
     Skills live in <code>.agents/skills/&lt;name&gt;/SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>).
-    See <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md">AGENTS.md</a> for the full routing table.
+    Agents: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md">AGENTS.md</a> for the full routing table.
+    Humans: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/README.md">README.md</a> for install and contribute.
   </p>
 </section>
 
@@ -458,6 +517,27 @@ npx --yes github:jpolvora/workflow-skills --version</code></pre>
     }).catch(function() {
       copyBtn.textContent = 'Failed';
       setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+    });
+  });
+
+  // Install section: one-command rows with copy buttons
+  document.querySelectorAll('#install .cmd-copy').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var row = btn.closest('.cmd-row');
+      var code = row && row.querySelector('code');
+      if (!code) return;
+      var text = code.textContent.trim();
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(function() {
+        btn.textContent = 'Failed';
+        setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+      });
     });
   });
 
