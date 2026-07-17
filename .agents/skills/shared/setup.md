@@ -31,7 +31,6 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
    - `cp .agents/skills/shared/config.json.example .agents/skills/shared/config.json`
    - AskQuestion: **Fill config now** / **Skip**
    - If "Fill now": present each top-level section, collect values. Skip optional sections.
-1a. **AskQuestion gate rule (recommended)**: If `.cursor/rules/ask-question-gates.mdc` is missing and `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` exists, copy it into `.cursor/rules/` so Agent chat always forces native `AskQuestion` for selectable gates (see orchestrator `SKILL.md` § AskQuestion requirement).
 1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
      - **Language/Framework**: Look for `package.json` (Node/React/Next), `*.csproj`/`*.sln`/`*.slnx` (.NET), `pyproject.toml`/`requirements.txt` (Python), `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml`/`build.gradle` (Java), `Gemfile` (Ruby), etc.

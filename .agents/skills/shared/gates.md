@@ -17,17 +17,16 @@ Config: [`.agents/skills/shared/config.json`](config.json) only — see [`config
 | **One ship ask** | Orchestrator presents the ship gate once. [`11-ship-pr`](../11-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-AskQuestion. Standalone `/ship-pr` may ask. |
 | **Artifact names** | Delivery result stays `step-12-{slug}.result.md` for **both** workflows (lite Step 4 writes the same filename). Plan is `step-01-{slug}.plan.md`. |
 | **Config** | Only `.agents/skills/shared/config.json`. No `spec-to-pr/config.json` / `spec-to-pr-lite/config.json`. |
-| **AskQuestion** | Native tool when available; HS-1 on cancel. Probe exposure **once per session**, not every gate. |
+| **AskQuestion** | Prefer native tool when available; markdown fallback when not; HS-1 on cancel. |
 
 ---
 
 ## AskQuestion (compact)
 
-1. Session start (or first gate): log `askquestion-exposed | true|false | session | ISO`.
-2. Every gate: call `AskQuestion` with ≥2 options; recommended first.
+1. Every normal-mode gate: **prefer** `AskQuestion` with ≥2 options; recommended first.
+2. If AskQuestion is unavailable or returns tool-not-found → present the **same options** as a short markdown list; wait for user reply. Optional log: `askquestion-fallback | {gate} | ISO`.
 3. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-4. Fallback markdown **only** after explicit `Tool not found: AskQuestion` (or equivalent) + log `askquestion-unavailable | {gate} | {error} | ISO`.
-5. `autoMode` → no AskQuestion; use orch auto-gate table (index 0).
+4. `autoMode` → no AskQuestion; use orch auto-gate table (index 0).
 
 ---
 

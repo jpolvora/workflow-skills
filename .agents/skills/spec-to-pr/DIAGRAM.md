@@ -357,7 +357,7 @@ mindmap
       Browser validation
       Fix loop + re-seed
     Step 12
-      Cleanup + push consent
+      Delivery result + one delivery gate (no push)
 ```
 
 ---
@@ -402,15 +402,15 @@ flowchart LR
 | 1 | `generalPurpose` | plan generation | false | Planner | `*.plan.md` |
 | 2 | `generalPurpose` | refinement loop | false | Planner | `*.plan.md` (updated) |
 | 3 | `generalPurpose` | exec + DAG + memory-conflict | false | Planner | `*.plan.exec.md` + `*.exec.dag.json` |
-| 4 | — | Coder readiness (orchestrator) | — | Coder swap | — |
+| 4 | — | (internal) Coder phase hint on Advance | — | — | not in completedSteps |
 | 5 | `generalPurpose` | implement per DAG level | false | Coder | code |
 | 6 | `generalPurpose` | verify vs plan/US | true | Verifier | `step-06-{slug}.plan.report.md` |
 | 7 | `shell` + `generalPurpose` | 1st commit + learning | false | shell | commit hash |
-| 8 | — | Review readiness (orchestrator) | — | Reviewer swap | — |
+| 8 | — | (internal) Reviewer phase hint on Advance | — | — | not in completedSteps |
 | 9 | `generalPurpose` | code review (diff only) | false | Reviewer | Critical/Warning list |
 | 10 | `shell` + `generalPurpose` | fix + 2nd commit + report | false | Coder/shell | `step-10-{slug}.report.md` |
 | 11 | `generalPurpose` + browser MCP + shell | integration validation loop | false | Verifier/Coder | `integration-test.plan.md` + `.report.md` |
-| 12 | — + shell | cleanup + §Doc + push consent | — | shell | state completed |
+| 12 | — + shell | delivery result + one delivery gate | — | shell | `step-12-{slug}.result.md` |
 
 ---
 

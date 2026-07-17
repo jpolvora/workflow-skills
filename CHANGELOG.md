@@ -1,5 +1,14 @@
 # Changelog
 
+### [2026-07-17 15:05] Agent: Cursor Composer
+- **Prompt**: Apply check-harness follow-ups; review README/AGENTS/site/package; prepare ship-pr
+- **Done**: Linked `STEP-DISPATCH`/`ARTIFACTS`/`README`/`DIAGRAM` to `protocols/*`; updated hub dual-mode gate wording; removed empty `cursor-rules/`; bumped package to 0.0.31; rebuilt site
+- **Result**: Tests + check-workflows pass; ready for PR
+
+- **Prompt**: Simplify AskQuestion + slim dual-mode workflows (spec-to-pr / lite)
+- **Done**: Made AskQuestion preferred-with-markdown-fallback in `gates.md`, `tools.md`, both orchs; removed `ask-question-gates.mdc`, setup step 1a, packaged Active rules section; extracted `spec-to-pr/protocols/*`; cut `spec-to-pr/SKILL.md` to 483 lines; updated FAQ
+- **Result**: No session probe / FORCE ceremony; gates still require explicit user choice in normal mode
+
 ### [2026-07-17 14:20] Agent: Cursor Grok
 - **Prompt**: Sync README/AGENTS/site/installers/packs/UI after US 60; test and ship-pr
 - **Done**: Documented STEP-DISPATCH dual-mode + root seeds across hubs/README/FAQ/site/bash shim/package files/agentic prompt; enhanced install-packages site copy; nav Packages link

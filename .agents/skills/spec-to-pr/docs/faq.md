@@ -94,9 +94,9 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 - Automatic push to remote — only via Step 13 / lite Step 5 ship gate (never at Step 12 delivery)
 - Commit without explicit G2 gate (Steps 7, 10, 11)
 - Infer "yes" when the user cancels an `AskQuestion` (HS-1)
-- Skip native `AskQuestion` and jump straight to a markdown “reply with 1/2/3” menu in normal mode (must **probe by invoking**; fallback only after explicit tool failure — [`SKILL.md`](../SKILL.md) § AskQuestion requirement)
+- Prefer `AskQuestion` at gates; use markdown menu with same options when the tool is unavailable ([`gates.md`](../../shared/gates.md))
 
-**Evidence:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder, § AskQuestion requirement.
+**Evidence:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder, § User gates (AskQuestion).
 
 ---
 
@@ -727,7 +727,7 @@ The orchestrator **never infers "yes"**. HS-1 activates: stop, re-present the ga
 
 ### AskQuestion is missing / the agent only prints 1/2/3
 
-In **normal** mode the orchestrator must **call** the native `AskQuestion` tool every gate (probe → invoke). Markdown menus are allowed **only** after an explicit invoke failure (`Tool not found: AskQuestion`, etc.), logged as `askquestion-unavailable`. Slim menu shape (Advance / More…, one delivery, one ship): [`gates.md`](../../shared/gates.md). If the current model never exposes the tool, switch to Claude/GPT or Plan mode for the picker UI. Consumers can also install `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc` into `.cursor/rules/` (setup step 1a).
+Prefer native `AskQuestion` when available. If the runtime does not expose it, the orchestrator presents the **same gate options** as a short markdown list (Recommended first) and waits for your reply. Slim menu shape (Advance / More…, one delivery, one ship): [`gates.md`](../../shared/gates.md). Optional log: `askquestion-fallback | {gate} | ISO`.
 
 ### Step 11 wants to use the browser but I'm on auto/dry-run
 
