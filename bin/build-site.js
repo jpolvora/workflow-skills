@@ -265,9 +265,15 @@ if (fs.existsSync(depMapPath)) {
   packagesHtml = `<section id="install-packages">
   <h2>Installation packages</h2>
   <p>
-    The interactive installer (<code>npx github:jpolvora/workflow-skills</code>) supports package shortcuts
+    The interactive installer (<code>npx --yes github:jpolvora/workflow-skills</code>) supports package shortcuts
     and skill-by-skill selection. Membership and install-time dependencies are defined in
     <code>bin/skill-dependencies.json</code> (update the map whenever the installer graph changes).
+  </p>
+  <p>
+    Full / Workflows installs also ensure the <code>shared/</code> hub and <strong>create-if-missing</strong> root seeds
+    (<code>.cursorrules</code> → <code>AGENTS.md</code>, <code>CHANGELOG.md</code> stub) — never overwrite existing files.
+    Packaged <code>.agents/AGENTS.md</code> includes portable <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/AGENTS.md#external-dependencies">External dependencies</a>
+    so consumers are not dead-ended when the root hub omits that section.
   </p>
   <div class="install-steps">
     <div class="install-step">

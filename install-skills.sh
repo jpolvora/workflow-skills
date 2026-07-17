@@ -20,6 +20,8 @@ echo "  Same argv as npx (install --full --yes, update, …)."
 echo "  Consumer-owned under .agents/skills/shared/:"
 echo "    config.json · stack.md · MEMORY.md · memory/"
 echo "  (seeded empty on first install; never overwritten by upstream)"
+echo "  Root create-if-missing (never overwrite):"
+echo "    .cursorrules → AGENTS.md · CHANGELOG.md stub"
 echo "============================================================"
 echo ""
 

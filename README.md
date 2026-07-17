@@ -15,6 +15,7 @@ Portable **agent skills** and **end-to-end workflows** for coding assistants. Th
 | **`README.md`** (this file) | Humans | Install, update, safety, contribute, high-level catalog |
 | **[`AGENTS.md`](AGENTS.md)** | Agents | Routing, auto-load, task router, harness verification |
 | **[`.agents/AGENTS.md`](.agents/AGENTS.md)** | Agents (after install) | Packaged skill index + portability rules shipped to consumers |
+| **[`.cursorrules`](.cursorrules)** (optional) | Agents | One-line pointer to `AGENTS.md` (seeded create-if-missing on install) |
 
 ---
 
@@ -27,7 +28,7 @@ Two delivery workflows (install independently; both share `.agents/skills/shared
 | **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → tasks → implement → verify → review → integrate → PR (FSM steps 0–13) |
 | **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration with an existing spec | Plan → implement → review → deliver → optional ship (steps 1–5) |
 
-They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). Details for agents: [`AGENTS.md`](AGENTS.md).
+They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). Details for agents: [`AGENTS.md`](AGENTS.md). Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Shared gates: [`gates.md`](.agents/skills/shared/gates.md).
 
 ### Contribution policy
 

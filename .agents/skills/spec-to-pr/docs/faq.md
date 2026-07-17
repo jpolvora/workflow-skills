@@ -1,6 +1,6 @@
 # FAQ — Spec-to-PR
 
-> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/shared/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. Dual-mode gate UX: [`gates.md`](../../shared/gates.md); config/SCM: [`config-resolution.md`](../../shared/config-resolution.md). The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
+> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/shared/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. Dual-mode gate UX: [`gates.md`](../../shared/gates.md); config/SCM: [`config-resolution.md`](../../shared/config-resolution.md). Step dispatch table + Step 12/13 protocols for **standard** orch: [`STEP-DISPATCH.md`](../STEP-DISPATCH.md) (load when advancing; **not** the lite Steps 1–5 index). The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
 >
 > **Audience:** developers, tech leads, and agents who need to understand **how** the end-to-end User Story delivery pipeline works.
 > **Order:** sections follow **execution sequence** (F0→F6, steps 0–12; 13 with `--full`), from invocation to closure.

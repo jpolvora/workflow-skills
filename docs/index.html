@@ -18,6 +18,7 @@
     <a href="#" class="logo">Workflow Skills</a>
     <a href="#workflows">Workflows</a>
     <a href="#catalog">Catalog</a>
+    <a href="#install-packages">Packages</a>
     <a href="#install">Install</a>
     <div class="nav-right">
       <a href="https://github.com/jpolvora/workflow-skills" class="star-btn" target="_blank" rel="noopener">
@@ -32,7 +33,7 @@
   <h1>Workflow <span>Skills</span></h1>
   <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
   <div class="badges">
-    <span class="badge">33 skills</span>
+    <span class="badge">35 skills</span>
     <span class="badge">6 layers</span>
     <span class="badge">MIT license</span>
     <span class="badge">npx github:jpolvora/workflow-skills</span>
@@ -41,7 +42,7 @@
 
 <section id="workflows" class="workflows-section">
   <h2>Workflows</h2>
-  <p class="section-subtitle">Choose the right workflow orchestrator for your task's scope and speed requirements.</p>
+  <p class="section-subtitle">Choose the right workflow orchestrator for your task's scope and speed requirements. Both share <code>shared/config.json</code> and <code>gates.md</code> (dual-mode). Standard step dispatch: <code>STEP-DISPATCH.md</code> (not used as lite step numbers).</p>
   
   <div class="workflows-container">
     <div class="workflow-card">
@@ -235,7 +236,7 @@
   </div>
   <!-- Layer 5 -->
   <div class="layer">
-    <h3>Layer 5 — Utility & meta <span class="count">(7)</span></h3>
+    <h3>Layer 5 — Utility & meta <span class="count">(9)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md">
         <div class="name">caveman</div>
@@ -272,6 +273,16 @@
         <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic. Load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill</a>
       </div>
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md">
+        <div class="name">spec-to-pr</div>
+        <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool. Legacy aliases: /us-workflow, /us-delivery-workflow.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">
+        <div class="name">spec-to-pr-lite</div>
+        <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Fast sequential plan → implement → review → deliver → optional ship. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md. Flags: dry-run, auto, skip-tests, full, --model, --model-chain. Delegates via Task tool. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill</a>
+      </div>
     </div>
   </div>
 </section>
@@ -279,9 +290,15 @@
 <section id="install-packages">
   <h2>Installation packages</h2>
   <p>
-    The interactive installer (<code>npx github:jpolvora/workflow-skills</code>) supports package shortcuts
+    The interactive installer (<code>npx --yes github:jpolvora/workflow-skills</code>) supports package shortcuts
     and skill-by-skill selection. Membership and install-time dependencies are defined in
     <code>bin/skill-dependencies.json</code> (update the map whenever the installer graph changes).
+  </p>
+  <p>
+    Full / Workflows installs also ensure the <code>shared/</code> hub and <strong>create-if-missing</strong> root seeds
+    (<code>.cursorrules</code> → <code>AGENTS.md</code>, <code>CHANGELOG.md</code> stub) — never overwrite existing files.
+    Packaged <code>.agents/AGENTS.md</code> includes portable <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/AGENTS.md#external-dependencies">External dependencies</a>
+    so consumers are not dead-ended when the root hub omits that section.
   </p>
   <div class="install-steps">
     <div class="install-step">
@@ -319,11 +336,14 @@
 
 
 
+
+
 <section id="install">
   <h2>Install</h2>
   <p style="color:var(--text-muted);max-width:70ch;margin-bottom:20px;line-height:1.5">
     Canonical form: <code>npx --yes github:jpolvora/workflow-skills</code> (never <code>@latest</code> / <code>@main</code> on <code>github:</code>).
     Consumer-owned under <code>.agents/skills/shared/</code>: <code>config.json</code>, <code>stack.md</code>, <code>MEMORY.md</code>, <code>memory/</code> — preserved on update.
+    Full / Workflows also seed create-if-missing root <code>.cursorrules</code> and <code>CHANGELOG.md</code> (never overwrite).
   </p>
   <div class="install-steps">
     <div class="install-step">

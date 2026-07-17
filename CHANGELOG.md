@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-17 14:20] Agent: Cursor Grok
+- **Prompt**: Sync README/AGENTS/site/installers/packs/UI after US 60; test and ship-pr
+- **Done**: Documented STEP-DISPATCH dual-mode + root seeds across hubs/README/FAQ/site/bash shim/package files/agentic prompt; enhanced install-packages site copy; nav Packages link
+- **Result**: Pending build-site + local tests + ship
+
 ### [2026-07-17 14:11] Agent: Cursor Grok
 - **Prompt**: `/check-harness` apply all corrections (#1–#4)
 - **Done**: Added MIT `LICENSE`; root `.cursorrules` → AGENTS.md; ARTIFACTS pointer to STEP-DISPATCH; DIAGRAM build node uses stackFile/config wording
