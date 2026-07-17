@@ -164,3 +164,8 @@
 - **Prompt**: Update README/AGENTS, website install cards (wide, one cmd/row, copy), npx + bash installers.
 - **Done**: Synced consumer-owned `shared/` docs; `#install` full-width cards with per-command Copy; CLI help + curl shim banners; `verify.sh` PYTHONUTF8 for python -c.
 - **Result**: Docs/installers/site aligned on `npx --yes` and shared consumer data contract.
+
+### [2026-07-17 23:26] Agent: Cursor Grok 4.5
+- **Prompt**: Step 13 ship-pr — create PR develop→main for US #65+#66 harness fixes, goal-fix-pr, merge.
+- **Done**: Pushed develop (incl. remote merge), opened PR #68, waited Agentic Code Review (pass), zero review threads, merged without deleting develop; closed #65 and #66.
+- **Result**: MERGED — https://github.com/jpolvora/workflow-skills/pull/68 — merge `e98a298`.
