@@ -3,7 +3,7 @@ name: spec-to-pr-lite
 description: >-
   Spec-to-PR lite delivery orchestrator FSM. Fast sequential plan → implement → review → deliver → optional ship.
   Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md.
-  Flags: dry-run, auto, skip-tests, full, --model, --model-chain. Delegates via Task tool.
+  Flags: dry-run, auto, skip-tests, full. Delegates via Task tool.
   Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).
 upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
@@ -46,10 +46,12 @@ Deterministic FSM for sequential plan-to-ship delivery. Reuses the **same** pipe
 
 Per [`gates.md`](../shared/gates.md):
 
-1. **Advance** (Recommended)
-2. **More options…** → Switch model / Repeat / Pause or cancel
+**Banner:** Current model + Pause → switch in Cursor → resume.
 
-No 5-option primary menus. Progress Board: bootstrap, after each step summary, pause, `/status`, final.
+1. **Advance** (Recommended)
+2. **More options…** → Repeat / Pause or cancel (no Switch model)
+
+No 5-option primary menus. No phase soft tips (full-orch only). Progress Board: bootstrap, after each step summary, pause, `/status`, final.
 
 ---
 
@@ -139,7 +141,7 @@ End with ```step-output(...)```
 ## Triggers
 
 ```
-@[spec-to-pr-lite] [auto|dry-run|skip-tests|full] [--model {name}] [--model-chain step:model,...] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md]
+@[spec-to-pr-lite] [auto|dry-run|skip-tests|full] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md]
 /spec-to-pr-lite [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md]
 ```
 

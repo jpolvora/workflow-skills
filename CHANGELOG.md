@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-07-17 15:57] Agent: Cursor Grok
+- **Prompt**: Align residual phase soft-tip wording; commit
+- **Done**: `DIAGRAM.md` + `SKILL.md` phase soft tip / `model-hint` log rename
+- **Result**: Wording aligned; commit pending
+
+### [2026-07-17 15:55] Agent: Cursor Grok
+- **Prompt**: Apply check-harness corrections #1–#3 (phase soft-tip wording)
+- **Done**: FAQ †4/8, STEP-DISPATCH, validate/update_state comments+`PHASE_SOFT_TIP_STEPS` rename
+- **Result**: Revalidate clean on touched files
+
+### [2026-07-17 15:50] Agent: Cursor Grok
+- **Prompt**: Simplify model selection at step transitions (session model; Pause → Cursor → Resume)
+- **Done**: Updated `gates.md` / `setup.md` / state hygiene / progress board / both orchs / FAQ / README — drop in-gate Switch model and `--model`/`--model-chain`; soft tips at F1→F2 and F3→F4 only
+- **Result**: Session-derived `currentModel`; switch path clarified every gate; design+plan under `docs/superpowers/`
+
 ### [2026-07-17 15:05] Agent: Cursor Composer
 - **Prompt**: Apply check-harness follow-ups; review README/AGENTS/site/package; prepare ship-pr
 - **Done**: Linked `STEP-DISPATCH`/`ARTIFACTS`/`README`/`DIAGRAM` to `protocols/*`; updated hub dual-mode gate wording; removed empty `cursor-rules/`; bumped package to 0.0.31; rebuilt site

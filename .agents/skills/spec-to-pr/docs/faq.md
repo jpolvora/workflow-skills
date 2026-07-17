@@ -66,7 +66,7 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 | F5 | Pre-PR integration | 11 |
 | F6 | Closure | 12 |
 
-† Steps **4 and 8** are **model sub-gates** — never in `completedSteps`.
+† Steps **4 and 8** are **phase soft tips** (Coder/Reviewer) — never in `completedSteps`.
 
 ---
 
@@ -338,19 +338,21 @@ Breaks the implementation plan into **atomic tasks** organized in a **DAG** (Dir
 
 ---
 
-## 9. Sub-gate 4: Coder Readiness
+## 9. Soft tip: Coder readiness (F1→F2)
 
-### What is the sub-gate?
+### What is it?
 
-A **model readiness check** embedded in the F1→F2 transition gate (after Step 3). Not a board step — never in `completedSteps`. The orchestrator recommends switching to a Coder-class model for implementation (Steps 5, 10).
+A **phase soft tip** embedded in the F1→F2 transition banner (after Step 3). Not a board step — never in `completedSteps`. Suggests considering a Coder-class model for implementation (Steps 5, 10).
 
-### Options (normal mode)
+### How to switch
 
-- **Switch to recommended Coder model** (Suggested)
-- **Keep current model**
-- **Choose a different model**
-- **Repeat Step 3**
-- **Go back / Pause**
+There is **no** in-gate model picker. To change model:
+
+1. **Pause** at the transition gate
+2. Switch model in the Cursor UI
+3. **Resume** the workflow
+
+Banner always shows `Current model` and the Pause → Cursor → Resume path ([`gates.md`](../../shared/gates.md)).
 
 ---
 
@@ -457,19 +459,15 @@ Only files under `src/`, `web/`, `tests/`. **Never** `.cursor/plans/` files (for
 
 ---
 
-## 13. Sub-gate 8: Review Readiness
+## 13. Soft tip: Review readiness (F3→F4)
 
-### What is the sub-gate?
+### What is it?
 
-A **model readiness check** embedded in the F3→F4 transition gate (after Step 7). Not a board step. The orchestrator recommends switching to a Thinking/Reviewer-class model for review (Steps 9, 10).
+A **phase soft tip** embedded in the F3→F4 transition banner (after Step 7). Not a board step. Suggests considering a Thinking/Reviewer-class model for review (Steps 9, 10).
 
-### Options (normal mode)
+### How to switch
 
-- **Switch to recommended Reviewer model** (Suggested)
-- **Keep current model**
-- **Choose a different model**
-- **Repeat Step 7**
-- **Go back / Pause**
+No in-gate picker. **Pause** → switch model in Cursor → **Resume**. Same banner contract as §9 ([`gates.md`](../../shared/gates.md)).
 
 ---
 
@@ -652,7 +650,7 @@ Everything under `{plans-dir}/{slug}/` (default `.cursor/plans/{slug}/`). Canoni
 
 - Workflow baseline (`workflowId`, `slug`, `branch`, `baselineCommit`)
 - Manifest (`completedSteps`, `stepStatus`, `skippedSteps`, `execMode`)
-- Context (`currentModel`, `modelChain`, `refineRound`)
+- Context (`currentModel` session-derived; `modelChain` removed / ignored if leftover; `refineRound`)
 - Artifacts (`specPath`, `specSnapshot`, `resultSnapshot`)
 - Step outputs (all `### Step N` blocks)
 - Workflow memory (learnings, traps within this workflow)
@@ -719,7 +717,11 @@ Yes. Re-invoke with the same US number: `/spec-to-pr 2416`. The orchestrator det
 
 ### How do I switch models mid-workflow?
 
-Every **Transition Gate** (after each step) includes a **Switch model and advance** option. In **auto mode**, use `--model-chain` at invocation to pre-specify per-step models: `--model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4`.
+1. Choose **Pause workflow** at any transition gate (or hard-stop pause).
+2. Switch the model in the Cursor UI.
+3. Resume with the same US/spec (`/spec-to-pr 2416` or lite equivalent).
+
+The orchestrator re-reads the session model into `currentModel` and logs `model-change` when it differs. There is no in-gate model picker and no `--model-chain` flag.
 
 ### What happens if I cancel an AskQuestion?
 

@@ -3,7 +3,7 @@ name: spec-to-pr
 description: >-
   Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs.
   Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description.
-  Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool.
+  Flags: dry-run, auto, skip-integration, skip-tests, full, strict. Delegates via Task tool.
   Legacy aliases: /us-workflow, /us-delivery-workflow.
 upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
@@ -43,7 +43,7 @@ User output: post-tool summaries + Progress Board + banners.
 
 ### User gates (AskQuestion)
 
-Prefer native `AskQuestion` for normal-mode decisions; if unavailable, same options as markdown list (Recommended first). Full contract: [`gates.md`](../shared/gates.md) — slim transitions, one delivery, one ship. Applies to transitions, entry/resume/config, refinement 2c (2e only if needed), G2-code, delivery, ship. **No separate 4†/8† menus** — phase model hints fold into Advance at F1→F2 / F3→F4. Cancelled → **HS-1**. `autoMode` → auto-gate index 0.
+Prefer native `AskQuestion` for normal-mode decisions; if unavailable, same options as markdown list (Recommended first). Full contract: [`gates.md`](../shared/gates.md) — slim transitions, one delivery, one ship. Applies to transitions, entry/resume/config, refinement 2c (2e only if needed), G2-code, delivery, ship. **No separate 4†/8† menus** — phase soft tips at F1→F2 / F3→F4 (Pause → Cursor → Resume to switch). Cancelled → **HS-1**. `autoMode` → auto-gate index 0.
 
 ---
 
@@ -77,8 +77,7 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | Checkpoints | Local tag `uswf/{workflow-id}/before-step-{N}` every boundary. |
 | **Workflow artifacts** | **Never `git commit` `.cursor/plans/` files during Steps 0–11.** Code commits (7/10/11 fix) stage `src/`/`web/`/`tests/` only. Delivery commit at Step 12: `step-01-{slug}.plan.md` + `step-12-{slug}.result.md` only. |
 | **Pause** | **Pause workflow** keeps **all** artifacts on disk — no cleanup, no delete. `status: active`. |
-| `--model` | Set `currentModel` at workflow start. Overrides default. |
-| `--model-chain` | Map `{step}:{model}` pairs. Only way to switch models in auto mode. Takes precedence over `--model` at matching steps. Stored in `state.modelChain`. |
+| Session model | `currentModel` = executing session model. Switch via Pause → Cursor → Resume ([`gates.md`](../shared/gates.md)). |
 | Portability | Keep spec-to-pr fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
 
 **Legacy aliases** (still accepted): `/us-workflow`, `@[us-workflow]`, `/us-delivery-workflow`, `@[us-delivery-workflow]`.
@@ -143,7 +142,7 @@ flowchart LR
 | F5 | 11 | Verifier + optional browser |
 | F6 | 12, 13 | Orchestrator + shell (+ ship subagent when fullMode) |
 
-† Steps **4,8** = internal phase model hints on Advance (no dedicated menus) — never in `completedSteps`; log `model-gate` in `## Gate history`.
+† Steps **4,8** = internal phase soft tips on Advance (no dedicated menus) — never in `completedSteps`; log `model-hint` in `## Gate history`.
 
 | `completedSteps` | Phase done |
 |------------------|------------|
@@ -245,11 +244,11 @@ branch-direct: edits on `state.branch`; subagent `wip(us-{id}): step-{N}` or dir
 
 ### Model readiness (no separate 4†/8† menus)
 
-When Advance crosses **F1→F2** (after Step 3, before Step 5) or **F3→F4** (after Step 7, before Step 9), the Advance option label includes the recommended model class and concrete model name. User can pick **More… → Switch model** instead. Log `model-gate | F1→F2|F3→F4 | current | recommended | choice | ISO`. Tags `before-step-5`, `before-step-9` still apply.
+No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → Cursor → Resume).
+
+When Advance crosses **F1→F2** (after Step 3, before Step 5) or **F3→F4** (after Step 7, before Step 9), add the soft hint from [`gates.md`](../shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-5`, `before-step-9` remain for telemetry only.
 
 Steps **4 and 8** are **not** user-facing menus and stay out of `completedSteps` / Progress Board.
-
-`--model-chain` remains the only auto-mode mid-flow switch.
 
 ### Step Dispatch & Isolation
 
@@ -342,8 +341,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 0 entry gate | **I have a US/issue number** (user must provide in invocation) |
 | Complexity ambiguous | **Standard path** |
 | Transition 1–6, 9–11 | **Advance to Step N+1** |
-| Transition model (auto) | **Advance** (keep current; use `--model-chain` or pause to switch) |
-| Phase model hint (F1→F2 / F3→F4) | Keep current model and advance (or apply `modelChain` if set) |
+| Transition / phase model | **Advance** with session `currentModel` (no `--model-chain`) |
 | Step 2 needs_user | first option; early → **End refinement and advance** (auto-confirms 2e) |
 | Step 2e (only if shown) | **I confirm shared understanding — advance to Step 3** |
 | Step 7 | **Approve, validate build/tests and commit code** |
@@ -382,9 +380,9 @@ execMode: sequential|parallel|null  # set after Step 3
 branch, baselineCommit, preExistingDirty: []
 checkpoints, workflowManifest, commits: [{sha, step, message}]
 completedSteps, stepStatus, skippedSteps, completedTasks, stepDispatches
-refineRound, currentModel, recommendedModel
+refineRound, currentModel  # session-derived; refresh on resume
 stepModels: [{step: N, model: "name", dispatched: ISO}]
-modelChain: {stepNumber: "modelName"}  # from --model-chain flag
+# modelChain removed — ignore if present in old state files
 telemetry:
   workflowStartedAt: ISO
   workflowEndedAt: null
@@ -427,7 +425,7 @@ Post-step: hygiene → checkpoint (`Shell` tag) → short summary → gate. Boar
 | auto | auto-gate table → immediate `Task`/`Shell` |
 | normal | Prefer `AskQuestion`; slim menu per [`gates.md`](../shared/gates.md) |
 
-Shows `**Current model:** {currentModel}` and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…**. `--model-chain` auto-applies at matching steps.
+Shows gates.md banner (`Current model` + Pause → Cursor → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…**. Soft tips at F1→F2 / F3→F4 only.
 
 ---
 
@@ -450,22 +448,14 @@ Manual QA after workflow completion (or pause before Step 12) not resumed here. 
 ## Triggers
 
 ```
-@[spec-to-pr] [auto|dry-run|skip-integration|skip-tests|full|strict] [--model {name}] [--model-chain step:model,...] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
+@[spec-to-pr] [auto|dry-run|skip-integration|skip-tests|full|strict] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /spec-to-pr [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /status | progress | where am I? → Progress Board only
 go back | change plan | back to step X → Backward Nav (not in auto)
-switch model | change model → More options… on any transition (normal mode)
+switch model | change model → Pause workflow, switch in Cursor, resume (no in-gate picker)
 ```
 
-**Model flags:**
-
-| Flag | Argument | Effect |
-|------|----------|--------|
-| `--model` | `{name}` | Set `currentModel` at start. Overrides default. |
-| `--model-chain` | `{step}:{model},...` | Pre-specify per-step models. Overrides `--model`. |
-| `--strict` | — | Force full US verification matrix at Step 6 |
-
-`--model-chain` is only way to switch models in **auto mode**. Normal: More… → Switch model. Dual-mode Fast path: use [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) or complexity **simple**.
+**Flags:** `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict` (full US verification at Step 6). Model = session; switch via Pause → Cursor → Resume ([`gates.md`](../shared/gates.md)).
 
 Gates: [`gates.md`](../shared/gates.md). Config: [`config-resolution.md`](../shared/config-resolution.md).
 
@@ -474,10 +464,9 @@ If invoked **without** US number, spec path, or description:
 
 Examples:
 - `/spec-to-pr auto skip-tests skip-integration US 1234`
-- `/spec-to-pr --model sonnet-4 "Implement a product analytics dashboard with real-time charts"`
+- `/spec-to-pr "Implement a product analytics dashboard with real-time charts"`
 - `/spec-to-pr auto contoso/project#5678`
 - `/spec-to-pr ADO 2416`
 - `/spec-to-pr specs/my-feature.spec.md`
 - `/spec-to-pr full US 99`
-- `/spec-to-pr auto --model-chain 5:sonnet-4,9:gemini-3-pro,10:sonnet-4 US 1234`
-- `/spec-to-pr --model sonnet-4 auto skip-tests US 567`
+- `/spec-to-pr auto skip-tests US 567`

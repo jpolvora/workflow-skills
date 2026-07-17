@@ -4,7 +4,7 @@
 
 Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](README.md). Resume rules: [`setup.md`](../shared/setup.md) (canonical).
 
-> **v8.1:** 7 phases (F0–F6); **Authorization Ladder** + hard stops HS-1..5; **Refinement FSM**; **Worktree Fallback**; **State Hygiene**; steps 4/8 → phase model hints folded into Advance ([`gates.md`](../shared/gates.md)); `state.md` as workflow memory + `MEMORY.md` as shared memory; fresh subagent per step + checkpoint tags + Backward Navigation.
+> **v8.1:** 7 phases (F0–F6); **Authorization Ladder** + hard stops HS-1..5; **Refinement FSM**; **Worktree Fallback**; **State Hygiene**; steps 4/8 → phase soft tips folded into Advance ([`gates.md`](../shared/gates.md)); `state.md` as workflow memory + `MEMORY.md` as shared memory; fresh subagent per step + checkpoint tags + Backward Navigation.
 
 ---
 
@@ -13,14 +13,14 @@ Visual docs for the [`SKILL.md`](SKILL.md) agent. Human guide: [`README.md`](REA
 ```mermaid
 flowchart LR
   F0[F0 Bootstrap<br/>step 0] --> F1[F1 Specification<br/>steps 1·2·3]
-  F1 --> F2[F2 Implementation<br/>step 5 + phase model hint]
+  F1 --> F2[F2 Implementation<br/>step 5 + phase soft tip]
   F2 --> F3[F3 Verify + 1st commit<br/>steps 6·7 · G2]
-  F3 --> F4[F4 Review + Fix<br/>steps 9·10 + phase model hint · G2]
+  F3 --> F4[F4 Review + Fix<br/>steps 9·10 + phase soft tip · G2]
   F4 --> F5[F5 Integration<br/>step 11]
   F5 --> F6[F6 Closure<br/>step 12 delivery · step 13 ship]
 ```
 
-Steps **4 and 8** are internal phase model hints on Advance (not board steps).
+Steps **4 and 8** are internal phase soft tips on Advance (not board steps).
 
 ---
 
