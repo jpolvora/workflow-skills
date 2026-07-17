@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-17 14:11] Agent: Cursor Grok
+- **Prompt**: `/check-harness` apply all corrections (#1–#4)
+- **Done**: Added MIT `LICENSE`; root `.cursorrules` → AGENTS.md; ARTIFACTS pointer to STEP-DISPATCH; DIAGRAM build node uses stackFile/config wording
+- **Result**: Phase 2 revalidate clean on touched files
+
 ### [2026-07-17 14:07] Agent: Cursor Grok
 - **Prompt**: `/spec-to-pr 60` — portable harness improvements from consumer check-harness (External Dependencies, STEP-DISPATCH, en-us, CLI seeds)
 - **Done**: AC1–AC6 on disk; dual-mode STEP-DISPATCH scoping; `test/package.json` 0.0.29 sync; delivery plan+result committed; MEMORY traps for dual-mode / version sync / retired-id vs artifacts

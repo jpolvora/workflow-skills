@@ -286,7 +286,7 @@ flowchart TD
         PLAN["Draft integration-test.plan.md"]
         CONF{"User confirms battery?"}
         COMMIT["Ensure committed / 3rd commit if fixes"]
-        BUILD["stack.md: dotnet build + dotnet test + npm run build"]
+        BUILD["stackFile: build/test commands from config / stack companion"]
         SEED["Seed / reset test data"]
         API["Validate API + permissions + security"]
         UI["Browser flows + visual AC check"]
