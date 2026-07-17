@@ -9,7 +9,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 > **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change).
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (26 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
 
 > **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
@@ -77,7 +77,38 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 ---
 
+## Skill loading (mandatory)
+
+| Skill | Path | Trigger |
+|-------|------|---------|
+| `caveman` | `skills/caveman/SKILL.md` | Every prompt — compression |
+| `gabarito` | `skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
+| `changelog` | `skills/changelog/SKILL.md` | Every task completion |
+| `self-learning` | `skills/self-learning/SKILL.md` | Every task completion → `skills/shared/MEMORY.md` |
+| `using-superpowers` | `(global — not shipped)` | Session start — skill discovery |
+
+### Precedence (highest first)
+
+1. Explicit user instructions (current turn)
+2. Design / spec / architecture constraints
+3. `karpathy-guidelines`
+4. `gabarito`
+5. `caveman` (compression only; keep technical accuracy)
+
+### Opt-out
+
+| Phrase | Effect |
+|--------|--------|
+| `stop caveman` / `normal mode` | Disable caveman |
+| `stop gabarito` / `sem gabarito` | Disable gabarito |
+| `/caveman lite\|full\|ultra\|…` | Intensity |
+
+---
+
 ## Skill index
+
+Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 26 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
 
 ### Harness & infrastructure
 
@@ -85,14 +116,6 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 |-------|------|-------------|
 | `check-harness` | `skills/check-harness/SKILL.md` | Audit harness integrity (routing, links, redundancy) |
 | `check-workflows` | `skills/check-workflows/SKILL.md` | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
-| `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create skills with structure and progressive disclosure |
-
-### Engineering standards
-
-| Skill | Path | Description |
-|-------|------|-------------|
-| `mobile-first-design` | `skills/mobile-first-design/SKILL.md` | Responsive mobile-first design |
-| `design-taste-frontend` | `skills/taste-skill/SKILL.md` | Anti-slop frontend (landing pages, portfolios, redesigns) |
 
 ### `spec-to-pr` pipeline (`00`–`11`)
 
@@ -119,18 +142,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `azure-devops-provider` | `skills/azure-devops-provider/SKILL.md` | ADO work item→spec; PAT auth; PR create/threads/merge |
 | `local-spec-provider` | `skills/local-spec-provider/SKILL.md` | Local `*.spec.md` detect/register; PR via configured SCM |
 
-### Review & audit
-
-| Skill | Path | Description |
-|-------|------|-------------|
-| `security-review` | `skills/security-review/SKILL.md` | Security review (OWASP, injection, XSS, auth, crypto) |
-| `dotnet-security-performance-review` | `skills/dotnet-security-performance-review/SKILL.md` | C# security and performance review (login, auth, EF) |
-| `tdd-sdd-ddd-reviewer` | `skills/tdd-sdd-ddd-reviewer/SKILL.md` | Architectural audit (Clean Architecture, TDD, DDD) |
-| `domain-review` | `skills/domain-review/SKILL.md` | Domain / bounded-context review |
-| `multi-domain-review` | `skills/multi-domain-review/SKILL.md` | Batch review of multiple domains |
-| `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
-
-### Utility & meta (top-level installable)
+### Utility & meta (promoted — Workflows package)
 
 | Skill | Path | Description |
 |-------|------|-------------|
@@ -142,9 +154,39 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history in `CHANGELOG.md` |
 | `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `09-goal-fix-pr`) |
 
+### Extra package (optional)
+
+Not on disk after a **Workflows-only** install. Add via installer shortcut **`e`** (Extra package) or **`f`** (Full package). Source of truth: upstream `bin/skill-dependencies.json` → `packages.extra.skills` (9 ids).
+
+#### Harness & authoring
+
+| Skill | Path | Description |
+|-------|------|-------------|
+| `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create skills with structure and progressive disclosure |
+
+#### Engineering standards
+
+| Skill | Path | Description |
+|-------|------|-------------|
+| `mobile-first-design` | `skills/mobile-first-design/SKILL.md` | Responsive mobile-first design |
+| `design-taste-frontend` | `skills/taste-skill/SKILL.md` | Anti-slop frontend (landing pages, portfolios, redesigns) |
+
+#### Review & audit
+
+| Skill | Path | Description |
+|-------|------|-------------|
+| `security-review` | `skills/security-review/SKILL.md` | Security review (OWASP, injection, XSS, auth, crypto) |
+| `dotnet-security-performance-review` | `skills/dotnet-security-performance-review/SKILL.md` | C# security and performance review (login, auth, EF) |
+| `tdd-sdd-ddd-reviewer` | `skills/tdd-sdd-ddd-reviewer/SKILL.md` | Architectural audit (Clean Architecture, TDD, DDD) |
+| `domain-review` | `skills/domain-review/SKILL.md` | Domain / bounded-context review |
+| `multi-domain-review` | `skills/multi-domain-review/SKILL.md` | Batch review of multiple domains |
+| `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+
 ---
 
 ## Task router
+
+Primary table: **Workflows-package** install only (matches Skill index above).
 
 | When to use | Skill to load |
 |-------------|---------------|
@@ -162,15 +204,22 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | Azure DevOps work item→spec or ADO PR ops | `azure-devops-provider` |
 | Local `*.spec.md` register / normalize | `local-spec-provider` |
 | Format / review a spec | `spec-format` |
+| Audit harness | `check-harness` |
+| Validate / check workflow processes | `check-workflows` |
+| Generic convergence loop | `goal-loop` |
+
+### Extra package (optional)
+
+Requires Extra or Full install — skills not on Workflows-only disk.
+
+| When to use | Skill to load |
+|-------------|---------------|
 | Security review | `security-review` or `dotnet-security-performance-review` |
 | Secrets / leak scan | `secrets-leak-review` |
 | Architecture (TDD/DDD) | `tdd-sdd-ddd-reviewer` |
 | Domain review | `domain-review` or `multi-domain-review` |
 | Frontend design | `design-taste-frontend` or `mobile-first-design` |
 | Create a new skill | `write-a-skill` |
-| Audit harness | `check-harness` |
-| Validate / check workflow processes | `check-workflows` |
-| Generic convergence loop | `goal-loop` |
 
 ---
 

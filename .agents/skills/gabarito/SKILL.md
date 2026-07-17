@@ -10,7 +10,7 @@ description: >
 
 # Gabarito
 
-**Autoloaded every prompt** per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. Openers, opt-outs, precedence, caveman: same section + § Precedence (canonical; do not restate here). Apply directives **implicitly**; do not lecture about them. Does not relax `dotnet test` or allow invented facts.
+**Autoloaded every prompt** per [`AGENTS.md`](../../AGENTS.md) § Skill loading. Openers, opt-outs, precedence, caveman: same section + § Precedence (canonical; do not restate here). Apply directives **implicitly**; do not lecture about them. Does not relax `dotnet test` or allow invented facts.
 
 ## Style (every reply)
 
@@ -43,4 +43,4 @@ No preamble; no em dash; format fits task; recommendations on decisions; 08/09 o
 
 ## Opt-out
 
-See [AGENTS.md](../../../AGENTS.md) § Skill loading opt-out table. Details: [README.md](README.md).
+See [AGENTS.md](../../AGENTS.md) § Skill loading opt-out table. Details: [README.md](README.md).

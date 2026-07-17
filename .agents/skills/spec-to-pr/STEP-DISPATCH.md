@@ -21,7 +21,7 @@
 | 8† | (internal) phase soft tip on Advance to 9 — no menu | not in completedSteps |
 | 9 | `Task` `06-code-review`; findings gate if Critical/Warning | score |
 | 10 | `Task` `04-implement-tasks` mode fix; G2-code only | `step-10-{slug}.report.md` |
-| 11 | Auto-skip if `skipIntegration` or (no API/UI surface + unit tests green); else integration-validation | reports |
+| 11 | Auto-skip if `skipIntegration` or (no API/UI surface + unit tests green); else `Task` `07-integration-validation` | reports |
 | 12 | Delivery Result + **one delivery gate** ([`gates.md`](../shared/gates.md)). MEMORY sweep after commit. No push. `status: completed` unless advancing to 13. | `step-12-{slug}.result.md` |
 | 13 | **One ship gate** → pass `shipAction` to `11-ship-pr` (`workflowMode: true`). Always offered; `fullMode` changes Recommended. | PR URL, merge |
 
@@ -48,7 +48,7 @@ After Step 12, orch presents the **single ship gate** ([`gates.md`](../shared/ga
 1. `git push -u origin {branch}` (skip if pushed).
 2. Resolve `providers.scm` via [`config-resolution.md`](../shared/config-resolution.md).
 3. Dispatch `11-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType` from state (`standard` here; lite orch passes `lite`) — **no re-AskQuestion inside skill**.
-4. goal-fix-pr loop (heartbeat configurable; default 5m, max 10) → merge.
+4. `09-goal-fix-pr` loop (heartbeat configurable; default 5m, max 10) → merge.
 
 **`shipAction: push-only`:** push only. **`skip`:** done.
 
