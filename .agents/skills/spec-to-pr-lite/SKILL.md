@@ -15,7 +15,7 @@ Deterministic FSM for sequential plan-to-ship delivery. Reuses the **same** pipe
 ## Core Goals
 
 1. **Faster Turnaround:** Skip Step 0 brainstorm, Step 2 interview, Step 3 DAG, Step 6 verify, Step 11 integration.
-2. **Compatible gates:** Same slim AskQuestion UX, one delivery gate, one ship gate as full orch.
+2. **Compatible gates:** Same slim AskQuestion UX (prefer tool; markdown fallback), one delivery gate, one ship gate as full orch.
 3. **Portability:** Config only from `.agents/skills/shared/config.json`.
 
 ## Invariants
@@ -103,6 +103,8 @@ Dispatch `11-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType: li
 ---
 
 ## AskQuestion / Auto-gate defaults
+
+Prefer `AskQuestion` when available; markdown fallback per [`gates.md`](../shared/gates.md). `autoMode` uses index 0 below.
 
 | Context | Index 0 |
 |---------|---------|

@@ -69,7 +69,7 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 
 Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Shared Configuration**: `.agents/skills/shared/config.json` only ([`config-resolution.md`](skills/shared/config-resolution.md)).
-- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — slim transitions; one delivery; one ship; no re-ask inside `11-ship-pr` when `workflowMode: true`.
+- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — prefer `AskQuestion`; markdown fallback when unavailable; slim transitions; one delivery; one ship; no re-ask inside `11-ship-pr` when `workflowMode: true`.
 - **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
 - **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
 - **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5; do not treat STEP-DISPATCH as lite step numbers.
@@ -203,17 +203,3 @@ When skills ask for **Code review proof**, use the checklist / verification obli
 - **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** above). In-place edits are overwritten on update.
 - Before upstream merge to `main`, skill changes must pass **`check-harness`** (see **Pre-merge gate** above).
 - Guardrails / External Dependencies: use **this file** § [External dependencies](#external-dependencies) (`rules.seniorDeveloper` / `rules.karpathyGuidelines` / `rules.stackFile` in config). Do not require a consumer root `AGENTS.md` section; if the root hub also documents the contract, keep both aligned.
-
----
-
-## Active `.cursor/rules/` in this repo
-
-Packaged inventory (workflow-skills only). This table is **not** exhaustive for consumer repos.
-
-| Rule | Path | Scope |
-|------|------|-------|
-| `ask-question-gates.mdc` | `.cursor/rules/ask-question-gates.mdc` | Always-apply — forces native `AskQuestion` tool at every transition gate (spec-to-pr normal mode) |
-
-Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc`.
-
-**Progressive disclosure:** Full always-apply / glob rule inventory lives in the **consumer** product router (e.g. `.cursor/rules/index.mdc` when present). Do not treat this packaged list as complete; do not embed stack-specific or product rule filenames here.

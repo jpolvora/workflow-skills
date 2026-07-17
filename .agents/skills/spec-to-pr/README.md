@@ -40,7 +40,7 @@ The **`spec-to-pr`** workflow coordinates execution steps through composable ski
 | **F5** | Pre-PR integration | 11 | Sub-agent (Verifier) + optional browser |
 | **F6** | Closure | 12, 13 | Orchestrator + shell (+ ship sub-agent when `--full`) |
 
-† Steps **4 and 8** are **model sub-gates** (F1→F2 and F3→F4), never in `completedSteps`.
+† Steps **4 and 8** are **internal phase model hints** on Advance (F1→F2 and F3→F4), never in `completedSteps`. Prefer `AskQuestion` at gates; markdown fallback when the tool is unavailable ([`gates.md`](../shared/gates.md)).
 
 ### Happy path
 
@@ -225,7 +225,10 @@ Shortcut: Step 7 **Re-implement with different Coder model** = return to Step 5.
 | **Refinement FSM** | 2 | Audit → Resolve → Escalate → Exit; registry persisted; blocking/non-blocking |
 | **Dynamic Execution (Simplicity First)** | 1, 2 | Orchestrator evaluates complexity — bypasses planning/refinement for surgical changes |
 | **Worktree Fallback** | 5, 10, 11 | branch-direct on Windows/long path + post-step verification |
-| **State Hygiene** | all | Mandatory state sync post-step + asserts (`validate_state.py`) |
+| **State Hygiene** | all | [`protocols/state-hygiene.md`](protocols/state-hygiene.md) — `update_state.py` + manual fallback |
+| **Delivery result & benchmark** | 12 | [`protocols/delivery-result.md`](protocols/delivery-result.md) |
+| **Artifact cleanup** | 12 | [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) (optional) |
+| **Progress board** | all | [`protocols/progress-board.md`](protocols/progress-board.md) |
 | **Learning & Memory** | all (start + end + Step 12) | Read and update state (`state.md`) and `MEMORY.md` to reuse technical learnings and avoid repeating errors |
 | **Context loading** | 1, 2, 5 | Docs, rules, domain glossary |
 | **Specification** | 0 (fetch/resolve), 1–2/6/11 (read) | Entry: **US id**, ADO id, or **`*.spec.md`**. Resolve `providers.active` → provider skill `fetch-to-spec` → **`step-00-{slug}.spec.md`** (canonical). Downstream skills read **spec**, not raw tracker JSON |

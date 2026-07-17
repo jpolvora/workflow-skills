@@ -29,7 +29,7 @@ Post-mutating: merge files_touched → Step file log; backup preExistingDirty; c
 
 ### Step 12 — Delivery (one gate)
 
-**Order:** Delivery Result Protocol → LOC/benchmark → **one delivery AskQuestion** → on commit: MEMORY sweep → optional temp delete if user chose delete-temps.
+**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) → **one delivery AskQuestion** → on commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
 
 **Delivery AskQuestion** ([`gates.md`](../shared/gates.md)):
 

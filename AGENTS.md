@@ -49,7 +49,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 ### Dual-mode
 
 - Config: `.agents/skills/shared/config.json` only — [`config-resolution.md`](.agents/skills/shared/config-resolution.md)
-- Gates: [`gates.md`](.agents/skills/shared/gates.md)
+- Gates: [`gates.md`](.agents/skills/shared/gates.md) — prefer `AskQuestion`; markdown fallback when unavailable
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
 - **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5 table; do not use STEP-DISPATCH as lite step numbers.
@@ -227,8 +227,6 @@ Install via `using-superpowers` / `find-skills` until routed here.
 2. **Install tests:** `npm run tests` · `npm run tests -- --local`
 3. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
 4. **Catalog:** if layers/routing changed → `node bin/build-site.js`
-5. **Rules:** `.cursor/rules/ask-question-gates.mdc` (from `spec-to-pr/cursor-rules/`)
-
 ---
 
 ## Local dry-run: agentic code reviewers
