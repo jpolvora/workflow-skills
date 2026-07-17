@@ -32,7 +32,7 @@
   <h1>Workflow <span>Skills</span></h1>
   <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
   <div class="badges">
-    <span class="badge">35 skills</span>
+    <span class="badge">33 skills</span>
     <span class="badge">6 layers</span>
     <span class="badge">MIT license</span>
     <span class="badge">npx github:jpolvora/workflow-skills</span>
@@ -235,7 +235,7 @@
   </div>
   <!-- Layer 5 -->
   <div class="layer">
-    <h3>Layer 5 — Utility & meta <span class="count">(9)</span></h3>
+    <h3>Layer 5 — Utility & meta <span class="count">(7)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md">
         <div class="name">caveman</div>
@@ -272,16 +272,6 @@
         <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic. Load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md">
-        <div class="name">spec-to-pr</div>
-        <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–12; 13 with `--full`). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-integration, skip-tests, full, --model, --model-chain. Delegates via Task tool. Legacy aliases: /us-workflow, /us-delivery-workflow.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">
-        <div class="name">spec-to-pr-lite</div>
-        <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Fast sequential plan → implement → review → deliver → optional ship. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md. Flags: dry-run, auto, skip-tests, full, --model, --model-chain. Delegates via Task tool. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill</a>
-      </div>
     </div>
   </div>
 </section>
@@ -314,6 +304,8 @@
     </div>
   </div>
 </section>
+
+
 
 
 
@@ -431,7 +423,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.28</p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.29</p>
 </footer>
 
 <!-- Modal -->
