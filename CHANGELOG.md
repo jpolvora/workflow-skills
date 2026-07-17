@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-17 14:07] Agent: Cursor Grok
+- **Prompt**: `/spec-to-pr 60` — portable harness improvements from consumer check-harness (External Dependencies, STEP-DISPATCH, en-us, CLI seeds)
+- **Done**: AC1–AC6 on disk; dual-mode STEP-DISPATCH scoping; `test/package.json` 0.0.29 sync; delivery plan+result committed; MEMORY traps for dual-mode / version sync / retired-id vs artifacts
+- **Result**: develop @ `cfe256f`; AC7 full check-harness still open before main; ship gate pending
+
 ### [2026-07-17 13:55] Agent: Cursor Grok
 - **Prompt**: US 60 AC6 — CLI create-if-missing seeds for root `.cursorrules` and `CHANGELOG.md` plus install tests
 - **Done**: Added `ensureRootConsumerSeeds()` in `bin/cli.js` (hooked after hub consumer artifacts); documented in CLI help and README; Phase 10 in `test/test-install.js` asserts create-once and no-clobber
