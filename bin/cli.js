@@ -579,6 +579,7 @@ Notes:
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Packaged .agents/AGENTS.md is refreshed on install and update.
   - After installing or updating, run the "check-harness" skill to validate the harness.
+  - Workflows use the Cursor session model at gates; switch via Pause → Cursor UI → Resume (no --model/--model-chain).
   - install-skills.sh is a curl/bash shim that execs this CLI (or npx); prefer calling npx directly.
 `);
 }

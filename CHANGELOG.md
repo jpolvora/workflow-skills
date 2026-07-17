@@ -1,5 +1,34 @@
 # Changelog
 
+### [2026-07-17 16:05] Agent: Cursor Grok
+- **Prompt**: Sync website, FAQ, README, AGENTS, installer, package deps after session-model gates
+- **Done**: Root/packaged hubs + README + FAQ TOC/arch note; site workflows copy; CLI/`install-skills.sh` notes; `0.0.31`→`0.0.32`; `build-site` now updates layers badge; `test/package.json` synced; install tests pass
+- **Result**: Docs/site/installer aligned; package `0.0.32`
+
+### [2026-07-17 15:57] Agent: Cursor Grok
+- **Prompt**: Align residual phase soft-tip wording; commit
+- **Done**: `DIAGRAM.md` + `SKILL.md` phase soft tip / `model-hint` log rename
+- **Result**: Wording aligned; commit pending
+
+### [2026-07-17 15:55] Agent: Cursor Grok
+- **Prompt**: Apply check-harness corrections #1–#3 (phase soft-tip wording)
+- **Done**: FAQ †4/8, STEP-DISPATCH, validate/update_state comments+`PHASE_SOFT_TIP_STEPS` rename
+- **Result**: Revalidate clean on touched files
+
+### [2026-07-17 15:50] Agent: Cursor Grok
+- **Prompt**: Simplify model selection at step transitions (session model; Pause → Cursor → Resume)
+- **Done**: Updated `gates.md` / `setup.md` / state hygiene / progress board / both orchs / FAQ / README — drop in-gate Switch model and `--model`/`--model-chain`; soft tips at F1→F2 and F3→F4 only
+- **Result**: Session-derived `currentModel`; switch path clarified every gate; design+plan under `docs/superpowers/`
+
+### [2026-07-17 15:05] Agent: Cursor Composer
+- **Prompt**: Apply check-harness follow-ups; review README/AGENTS/site/package; prepare ship-pr
+- **Done**: Linked `STEP-DISPATCH`/`ARTIFACTS`/`README`/`DIAGRAM` to `protocols/*`; updated hub dual-mode gate wording; removed empty `cursor-rules/`; bumped package to 0.0.31; rebuilt site
+- **Result**: Tests + check-workflows pass; ready for PR
+
+- **Prompt**: Simplify AskQuestion + slim dual-mode workflows (spec-to-pr / lite)
+- **Done**: Made AskQuestion preferred-with-markdown-fallback in `gates.md`, `tools.md`, both orchs; removed `ask-question-gates.mdc`, setup step 1a, packaged Active rules section; extracted `spec-to-pr/protocols/*`; cut `spec-to-pr/SKILL.md` to 483 lines; updated FAQ
+- **Result**: No session probe / FORCE ceremony; gates still require explicit user choice in normal mode
+
 ### [2026-07-17 14:20] Agent: Cursor Grok
 - **Prompt**: Sync README/AGENTS/site/installers/packs/UI after US 60; test and ship-pr
 - **Done**: Documented STEP-DISPATCH dual-mode + root seeds across hubs/README/FAQ/site/bash shim/package files/agentic prompt; enhanced install-packages site copy; nav Packages link

@@ -322,6 +322,12 @@ html = html.replace(
   `$1${totalSkills}$2`
 );
 
+const layerCount = sorted.filter(([k]) => k).length;
+html = html.replace(
+  /(<span class="badge">)\d+( layers<\/span>)/,
+  `$1${layerCount}$2`
+);
+
 // Replace version in footer
 html = html.replace(
   /(<footer>\s*<p>MIT &mdash; <a href="https:\/\/github.com\/jpolvora\/workflow-skills">jpolvora\/workflow-skills<\/a>)( &mdash; v\d+\.\d+\.\d+)?(\s*<\/p>\s*<\/footer>)/,
@@ -331,5 +337,4 @@ html = html.replace(
 fs.writeFileSync(indexPath, html);
 
 // --- 6. Report ---
-const layerCount = sorted.filter(([k]) => k).length;
 console.log(`✅ Site updated: ${totalSkills} skills across ${layerCount} layers`);
