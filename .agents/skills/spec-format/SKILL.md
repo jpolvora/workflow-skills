@@ -128,7 +128,7 @@ specDate: 2026-07-02  # generation date or last relevant update
 
 ## References
 
-- Harness routing: [`AGENTS.md`](../../../AGENTS.md)
+- Harness routing: [`AGENTS.md`](../../AGENTS.md)
 - Architecture: project `CONTEXT.md` / `STACK.md` / `config.json.domain` (when present)
 - Workflow protocol: [`../spec-to-pr/SKILL.md`](../spec-to-pr/SKILL.md) → Specification Protocol
 - Providers: [`github-provider`](../github-provider/SKILL.md), [`azure-devops-provider`](../azure-devops-provider/SKILL.md), [`local-spec-provider`](../local-spec-provider/SKILL.md)
