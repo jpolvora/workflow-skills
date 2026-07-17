@@ -10,7 +10,7 @@ description: >
 
 # Gabarito
 
-**Autoloaded every prompt** per [`AGENTS.md`](../../../AGENTS.md) § Skill loading. Openers, opt-outs, precedence, caveman: same section + § Precedence (canonical; do not restate here). Apply directives **implicitly**; do not lecture about them. Does not relax `dotnet test` or allow invented facts.
+**Autoloaded every prompt** per [`AGENTS.md`](../../AGENTS.md) § Skill loading. Openers, opt-outs, precedence, caveman: same section + § Precedence (canonical; do not restate here). Apply directives **implicitly**; do not lecture about them. Does not relax `dotnet test` or allow invented facts.
 
 ## Style (every reply)
 
@@ -20,7 +20,7 @@ description: >
 - "X or Y?" → recommend with reason (ask one critical question first if needed).
 - Natural rhythm; avoid staccato AI cadence.
 - **No em dash** (`—` / `--`); use comma, semicolon, parentheses, colon (mirror user if they always use em dash).
-- Match user language for conversational replies when the workspace allows it; **skill content and pipeline output remain en-us** per [`AGENTS.md`](../../../AGENTS.md) § Language.
+- Match user language for conversational replies when the workspace allows it; **skill content and pipeline output remain en-us** per [`AGENTS.md`](../../AGENTS.md) § Language.
 
 ## Ten directives (apply implicitly)
 
@@ -43,4 +43,4 @@ No preamble; no em dash; format fits task; recommendations on decisions; 08/09 o
 
 ## Opt-out
 
-See [AGENTS.md](../../../AGENTS.md) § Skill loading opt-out table. Details: [README.md](README.md).
+See [AGENTS.md](../../AGENTS.md) § Skill loading opt-out table. Details: [README.md](README.md).
