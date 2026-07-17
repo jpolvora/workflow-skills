@@ -22,6 +22,7 @@ echo "    config.json · stack.md · MEMORY.md · memory/"
 echo "  (seeded empty on first install; never overwritten by upstream)"
 echo "  Root create-if-missing (never overwrite):"
 echo "    .cursorrules → AGENTS.md · CHANGELOG.md stub"
+echo "  Workflows: session model at gates; Pause → Cursor → Resume to switch"
 echo "============================================================"
 echo ""
 

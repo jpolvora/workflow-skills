@@ -1,6 +1,6 @@
 # FAQ — Spec-to-PR
 
-> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/shared/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. Dual-mode gate UX: [`gates.md`](../../shared/gates.md); config/SCM: [`config-resolution.md`](../../shared/config-resolution.md). Step dispatch table + Step 12/13 protocols for **standard** orch: [`STEP-DISPATCH.md`](../STEP-DISPATCH.md) (load when advancing; **not** the lite Steps 1–5 index). The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
+> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/shared/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. Dual-mode gate UX: [`gates.md`](../../shared/gates.md); config/SCM: [`config-resolution.md`](../../shared/config-resolution.md). **Session model** on every transition; switch via Pause → Cursor → Resume (no `--model` / `--model-chain`). Step dispatch table + Step 12/13 protocols for **standard** orch: [`STEP-DISPATCH.md`](../STEP-DISPATCH.md) (load when advancing; **not** the lite Steps 1–5 index). The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
 >
 > **Audience:** developers, tech leads, and agents who need to understand **how** the end-to-end User Story delivery pipeline works.
 > **Order:** sections follow **execution sequence** (F0→F6, steps 0–12; 13 with `--full`), from invocation to closure.
@@ -20,11 +20,11 @@
 | 6 | [**F1 — Step 1: Planning**](#6-f1--step-1-planning-and-brainstorm) | Specification |
 | 7 | [**F1 — Step 2: Refinement**](#7-f1--step-2-refinement) | Specification |
 | 8 | [**F1 — Step 3: Execution Plan + DAG**](#8-f1--step-3-execution-plan-and-dag) | Specification |
-| 9 | [**Sub-gate 4: Coder readiness**](#9-sub-gate-4-coder-readiness) | F1→F2 |
+| 9 | [**Soft tip: Coder readiness**](#9-soft-tip-coder-readiness-f1f2) | F1→F2 |
 | 10 | [**F2 — Step 5: Implementation**](#10-f2--step-5-implementation-dag) | Implementation |
 | 11 | [**F3 — Step 6: Verification**](#11-f3--step-6-verification-and-report) | Verify |
 | 12 | [**F3 — Step 7: 1st commit**](#12-f3--step-7-decision-and-1st-commit) | Verify + G2 |
-| 13 | [**Sub-gate 8: Review readiness**](#13-sub-gate-8-review-readiness) | F3→F4 |
+| 13 | [**Soft tip: Review readiness**](#13-soft-tip-review-readiness-f3f4) | F3→F4 |
 | 14 | [**F4 — Step 9: Code review**](#14-f4--step-9-code-review) | Review |
 | 15 | [**F4 — Step 10: Fix + 2nd commit**](#15-f4--step-10-fixes-2nd-commit-and-report) | Review + G2 |
 | 16 | [**F5 — Step 11: Integration**](#16-f5--step-11-integration-validation-and-pre-pr) | Pre-PR |
@@ -108,11 +108,11 @@ flowchart TD
     S0 --> S1["§6 Step 1 Plan"]
     S1 --> S2["§7 Step 2 Refinement"]
     S2 --> S3["§8 Step 3 Exec + DAG"]
-    S3 --> SG4["§9 Sub-gate 4 Coder"]
+    S3 --> SG4["§9 Soft tip Coder"]
     SG4 --> S5["§10 Step 5 Implement"]
     S5 --> S6["§11 Step 6 Verify"]
     S6 --> S7["§12 Step 7 1st commit"]
-    S7 --> SG8["§13 Sub-gate 8 Review"]
+    S7 --> SG8["§13 Soft tip Review"]
     SG8 --> S9["§14 Step 9 Code review"]
     S9 --> S10["§15 Step 10 Fix + 2nd commit"]
     S10 --> S11["§16 Step 11 Integration"]

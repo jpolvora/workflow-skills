@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-17 16:05] Agent: Cursor Grok
+- **Prompt**: Sync website, FAQ, README, AGENTS, installer, package deps after session-model gates
+- **Done**: Root/packaged hubs + README + FAQ TOC/arch note; site workflows copy; CLI/`install-skills.sh` notes; `0.0.31`→`0.0.32`; `build-site` now updates layers badge; `test/package.json` synced; install tests pass
+- **Result**: Docs/site/installer aligned; package `0.0.32`
+
 ### [2026-07-17 15:57] Agent: Cursor Grok
 - **Prompt**: Align residual phase soft-tip wording; commit
 - **Done**: `DIAGRAM.md` + `SKILL.md` phase soft tip / `model-hint` log rename
