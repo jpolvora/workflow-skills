@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "description": "Centralized agent skills and multi-workflow hub for Cursor (spec-to-pr and related pipeline skills)",
   "license": "MIT",
   "author": "Jone Polvora",
@@ -23,6 +23,11 @@
   },
   "files": [
     "bin/",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE",
+    "install-skills.sh",
+    ".cursorrules",
     ".agents/AGENTS.md",
     ".agents/skills/",
     "!.agents/skills/shared/config.json",

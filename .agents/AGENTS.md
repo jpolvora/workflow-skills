@@ -72,6 +72,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Shared Gates**: [`gates.md`](skills/shared/gates.md) — slim transitions; one delivery; one ship; no re-ask inside `11-ship-pr` when `workflowMode: true`.
 - **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
 - **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
+- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5; do not treat STEP-DISPATCH as lite step numbers.
 
 ---
 

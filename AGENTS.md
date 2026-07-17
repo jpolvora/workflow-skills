@@ -13,6 +13,7 @@ This file is the **routing and operating contract** for the agent harness in thi
 
 | File | Audience | Purpose |
 |------|----------|---------|
+| **`.cursorrules`** (optional) | Agents | Thin pointer to this hub — create-if-missing on consumer install |
 | **`AGENTS.md`** (this file) | Agents | Skill loading, task router, layers, verification, harness rules |
 | **`README.md`** | Humans | What this repo is, how to install/update, contribute, safety |
 | **`.agents/AGENTS.md`** | Agents (packaged) | Consumer-facing skill index shipped with installs |
@@ -28,9 +29,11 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files.
 - **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*` (consumer-owned; never overwrite from upstream).
+- **Root seeds (create-if-missing, never overwrite):** `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root seeds.
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
+- Guardrails resolution: § [External dependencies](#external-dependencies) (and packaged mirror in [`.agents/AGENTS.md`](.agents/AGENTS.md)).
 
 **This source repo:** do not run remote `npx github:jpolvora/workflow-skills` against the package root (except under `test/`). Prefer local `node bin/cli.js` / `./install-skills.sh`.
 
@@ -49,6 +52,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 - Gates: [`gates.md`](.agents/skills/shared/gates.md)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
+- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
 
