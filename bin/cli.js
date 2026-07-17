@@ -67,6 +67,15 @@ To add new learnings, create a separate markdown file under \`shared/memory/\` a
 ---
 `;
 
+/** Root create-if-missing seed: single-entry pointer so agents follow AGENTS.md. */
+const FRESH_CURSORRULES = `Always follow AGENTS.md for agent routing, skill loading, and harness rules.
+`;
+
+/** Root create-if-missing stub compatible with the changelog skill template. */
+const FRESH_CHANGELOG_MD = `# Changelog
+
+`;
+
 let skillGraph = null;
 
 function loadSkillGraph() {
@@ -320,6 +329,29 @@ function ensureSharedConsumerArtifacts() {
   }
 }
 
+/**
+ * Create-if-missing root stubs at consumer project root (targetDir).
+ * Never overwrites existing .cursorrules or CHANGELOG.md.
+ * Does not touch shared/ MEMORY, config, or stack.
+ */
+function ensureRootConsumerSeeds() {
+  const cursorrulesPath = path.join(targetDir, '.cursorrules');
+  if (fs.existsSync(cursorrulesPath)) {
+    console.log(`    Preserved existing .cursorrules (skipped seed)`);
+  } else {
+    fs.writeFileSync(cursorrulesPath, FRESH_CURSORRULES);
+    console.log(`    Seeded .cursorrules → AGENTS.md pointer`);
+  }
+
+  const changelogPath = path.join(targetDir, 'CHANGELOG.md');
+  if (fs.existsSync(changelogPath)) {
+    console.log(`    Preserved existing CHANGELOG.md (skipped seed)`);
+  } else {
+    fs.writeFileSync(changelogPath, FRESH_CHANGELOG_MD);
+    console.log(`    Seeded CHANGELOG.md stub`);
+  }
+}
+
 function afterSkillCopy(skillName, destPath) {
   // Hub consumer artifacts are seeded when the hub is ensured (workflows / full).
   // Also seed when installing self-learning alone so memory works without a workflow.
@@ -431,6 +463,8 @@ function ensureSharedHubInstalled(mode = 'install') {
 
   // Never overwrite consumer config.json / stack.md / MEMORY.md from upstream
   ensureSharedConsumerArtifacts();
+  // Optional root stubs (create-if-missing only; never clobber)
+  ensureRootConsumerSeeds();
 
   console.log(
     `  shared/ hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack preserved)`
@@ -541,6 +575,7 @@ Notes:
   - shared/ hub is installed with workflows/full (and when self-learning is installed).
   - Consumer-owned under shared/ (never copied from upstream): config.json, MEMORY.md, memory/*, stack.md.
     Fresh install seeds empty MEMORY.md + stack.md from templates; existing files are always preserved.
+  - Create-if-missing at project root (never overwrite): .cursorrules → AGENTS.md pointer; CHANGELOG.md stub.
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Packaged .agents/AGENTS.md is refreshed on install and update.
   - After installing or updating, run the "check-harness" skill to validate the harness.

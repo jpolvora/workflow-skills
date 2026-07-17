@@ -324,14 +324,21 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     if (!/128/i.test(out)) {
       fail(`CLI --help missing exit-128 / @latest troubleshooting note.\n${out}`);
     }
-    ok('CLI --help documents update, install --yes, packages, and AGENTS.md (no @latest)');
+    if (!/\.cursorrules/i.test(out) || !/CHANGELOG\.md/i.test(out)) {
+      fail(`CLI --help missing create-if-missing root seed notes (.cursorrules / CHANGELOG.md).\n${out}`);
+    }
+    ok('CLI --help documents update, install --yes, packages, AGENTS.md, and root seeds (no @latest)');
   }
 
-// 1. Clean test/.agents directory
+// 1. Clean test/.agents directory and prior root seed leftovers
 console.log('\nCleaning target test/.agents/ directory...');
 const targetAgentsDir = path.resolve(__dirname, '.agents');
 if (fs.existsSync(targetAgentsDir)) {
   fs.rmSync(targetAgentsDir, { recursive: true, force: true });
+}
+for (const seed of ['.cursorrules', 'CHANGELOG.md']) {
+  const p = path.join(__dirname, seed);
+  if (fs.existsSync(p)) fs.rmSync(p, { force: true });
 }
 
 const tgzPath = resolveTarball();
@@ -1003,6 +1010,103 @@ child.on('close', async (code) => {
     ok('Update preserves consumer shared/MEMORY.md, memory/, and stack.md');
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
+  // --- Phase 10: root .cursorrules / CHANGELOG.md create-if-missing ---
+  console.log('\n[Phase 10] Root .cursorrules + CHANGELOG.md create-if-missing...');
+  {
+    const seedDir = path.join(__dirname, '.pkg-root-seeds');
+    fs.rmSync(seedDir, { recursive: true, force: true });
+    fs.mkdirSync(seedDir, { recursive: true });
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+
+    const fresh = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'self-learning', '--yes'],
+      {
+        cwd: seedDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000
+      }
+    );
+    if (fresh.status !== 0) {
+      console.error(`${fresh.stdout || ''}${fresh.stderr || ''}`);
+      fail(`self-learning install for root seeds exited ${fresh.status}`);
+    }
+
+    const cursorrulesPath = path.join(seedDir, '.cursorrules');
+    const changelogPath = path.join(seedDir, 'CHANGELOG.md');
+    if (!fs.existsSync(cursorrulesPath)) fail('Fresh install must seed .cursorrules');
+    if (!fs.existsSync(changelogPath)) fail('Fresh install must seed CHANGELOG.md');
+
+    const cursorrules = fs.readFileSync(cursorrulesPath, 'utf8');
+    if (!/AGENTS\.md/.test(cursorrules)) {
+      fail('Seeded .cursorrules must point agents at AGENTS.md');
+    }
+    if (/api[_-]?key|secret|token|password/i.test(cursorrules)) {
+      fail('Seeded .cursorrules must not contain secrets');
+    }
+
+    const changelog = fs.readFileSync(changelogPath, 'utf8');
+    if (!/^# Changelog/m.test(changelog)) {
+      fail('Seeded CHANGELOG.md missing expected stub header');
+    }
+    ok('Fresh install seeds .cursorrules + CHANGELOG.md stubs');
+
+    const markerRules = '# KEEP-CURSORRULES-MARKER\ncustom consumer rules\n';
+    const markerLog =
+      '# Changelog\n\n### [2099-01-01] Agent: Test\n- **Prompt**: keep me\n- **Done**: marker\n- **Result**: preserved\n';
+    fs.writeFileSync(cursorrulesPath, markerRules);
+    fs.writeFileSync(changelogPath, markerLog);
+
+    const second = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'self-learning', '--yes'],
+      {
+        cwd: seedDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000
+      }
+    );
+    if (second.status !== 0) {
+      console.error(`${second.stdout || ''}${second.stderr || ''}`);
+      fail(`second install for root seed preserve exited ${second.status}`);
+    }
+
+    if (fs.readFileSync(cursorrulesPath, 'utf8') !== markerRules) {
+      fail('Second install clobbered existing .cursorrules');
+    }
+    if (fs.readFileSync(changelogPath, 'utf8') !== markerLog) {
+      fail('Second install clobbered existing CHANGELOG.md');
+    }
+
+    const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+      cwd: seedDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 120000
+    });
+    if (upd.status !== 0) {
+      console.error(`${upd.stdout || ''}${upd.stderr || ''}`);
+      fail(`update after root seed markers exited ${upd.status}`);
+    }
+    if (fs.readFileSync(cursorrulesPath, 'utf8') !== markerRules) {
+      fail('Update clobbered existing .cursorrules');
+    }
+    if (fs.readFileSync(changelogPath, 'utf8') !== markerLog) {
+      fail('Update clobbered existing CHANGELOG.md');
+    }
+
+    fs.rmSync(seedDir, { recursive: true, force: true });
+    ok('Second install + update preserve existing .cursorrules and CHANGELOG.md');
+  }
+
+  // Drop root seeds left by the main interactive install into test/
+  for (const seed of ['.cursorrules', 'CHANGELOG.md']) {
+    const p = path.join(__dirname, seed);
+    if (fs.existsSync(p)) fs.rmSync(p, { force: true });
+  }
+
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, deps, non-interactive --yes, MEMORY isolation, and root seed create-if-missing all passed.');
   process.exit(0);
 });

@@ -17,7 +17,7 @@ Responsible for capturing manual QA findings and implementing delta corrections 
 ### Standalone Mode
 
 ```
-/step-10 <slug-or-plan-path> [session-name=<name>]
+/10-update-plan-implementation <slug-or-plan-path> [session-name=<name>]
 ```
 
 ### Workflow Mode (Post-workflow, on demand)

@@ -248,12 +248,19 @@ curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/rel
 
 ## External dependencies
 
-Not shipped here. Resolve in order:
+Not shipped in the hub package (except where noted). Resolve each dependency in **order** (first match wins). Paths are project-agnostic; read values from `.agents/skills/shared/config.json` when present.
 
-| Dependency | Resolve |
-|------------|---------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` · local skill · `.cursor/rules/senior-developer.mdc` · global skill |
-| `karpathy-guidelines` | config · `.agents/skills/karpathy-guidelines/SKILL.md` (shipped) |
-| `CONTEXT.md` | consumer root (optional) |
-| `specs/domains/` | consumer; starter [`specs/domains/index.md.example`](specs/domains/index.md.example) |
-| `ef-migrations.mdc` | consumer `.cursor/rules/` (optional) |
+| Dependency | Resolve (first match) |
+|------------|------------------------|
+| `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → `.cursor/rules/senior-developer.mdc` (or equivalent path from config) → global/user skill |
+| `karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/karpathy-guidelines/SKILL.md` → global skill |
+| Stack companion | `config.json` → `rules.stackFile` (default `STACK.md` / `stack.md`) — consumer-owned |
+| Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
+| Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames |
+| Domain catalog | `specs/domains/` — consumer; starter [`specs/domains/index.md.example`](specs/domains/index.md.example) |
+
+Packaged install mirror (consumers without this root section): [`.agents/AGENTS.md`](.agents/AGENTS.md) § External dependencies · bootstrap notes in [`shared/setup.md`](.agents/skills/shared/setup.md).
+
+### Code review proof
+
+When skills ask for **Code review proof**, use the checklist / verification obligations from the **resolved** `rules.seniorDeveloper` skill (local/global `senior-developer` equivalent after the table above). Do **not** paste or duplicate that checklist here.

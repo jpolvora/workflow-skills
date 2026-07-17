@@ -172,6 +172,27 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 ---
 
+## External dependencies
+
+Portable guardrails contract for **installed** consumers (this file ships under `.agents/`). Prefer this section when the consumer root `AGENTS.md` omits `#external-dependencies`. Upstream hub copy (same contract): root [`AGENTS.md`](../AGENTS.md) § External dependencies. Bootstrap notes: [`skills/shared/setup.md`](skills/shared/setup.md).
+
+Not shipped in the skill package (except where noted). Resolve each dependency in **order** (first match wins). Read paths from `skills/shared/config.json` when present.
+
+| Dependency | Resolve (first match) |
+|------------|------------------------|
+| `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → `.cursor/rules/senior-developer.mdc` (or equivalent path from config) → global/user skill |
+| `karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `skills/karpathy-guidelines/SKILL.md` → global skill |
+| Stack companion | `config.json` → `rules.stackFile` (default `STACK.md` / `stack.md`) — consumer-owned |
+| Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
+| Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames |
+| Domain catalog | `specs/domains/` — consumer-owned |
+
+### Code review proof
+
+When skills ask for **Code review proof**, use the checklist / verification obligations from the **resolved** `rules.seniorDeveloper` skill (local/global `senior-developer` equivalent after the table above). Do **not** paste or duplicate that checklist here.
+
+---
+
 ## Consumer notes
 
 - Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/` — preserved on update; skill files are overwritten.
@@ -180,14 +201,18 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Dual hub (OK):** consumer root `AGENTS.md` may stay project-specific and delegate skill routing to `.cursor/rules/index.mdc` (or equivalent). This packaged `.agents/AGENTS.md` remains the **skill catalog** for the installed hub; keep both aligned after updates.
 - **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** above). In-place edits are overwritten on update.
 - Before upstream merge to `main`, skill changes must pass **`check-harness`** (see **Pre-merge gate** above).
-- Guardrails resolution: see root [`AGENTS.md`](../AGENTS.md) § **External Dependencies** (`rules.seniorDeveloper` / `rules.karpathyGuidelines` in config).
+- Guardrails / External Dependencies: use **this file** § [External dependencies](#external-dependencies) (`rules.seniorDeveloper` / `rules.karpathyGuidelines` / `rules.stackFile` in config). Do not require a consumer root `AGENTS.md` section; if the root hub also documents the contract, keep both aligned.
 
 ---
 
 ## Active `.cursor/rules/` in this repo
+
+Packaged inventory (workflow-skills only). This table is **not** exhaustive for consumer repos.
 
 | Rule | Path | Scope |
 |------|------|-------|
 | `ask-question-gates.mdc` | `.cursor/rules/ask-question-gates.mdc` | Always-apply — forces native `AskQuestion` tool at every transition gate (spec-to-pr normal mode) |
 
 Consumers: copy from `.agents/skills/spec-to-pr/cursor-rules/ask-question-gates.mdc`.
+
+**Progressive disclosure:** Full always-apply / glob rule inventory lives in the **consumer** product router (e.g. `.cursor/rules/index.mdc` when present). Do not treat this packaged list as complete; do not embed stack-specific or product rule filenames here.
