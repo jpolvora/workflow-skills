@@ -236,7 +236,7 @@ EOF
 - [ ] **Step 2: Invariants table** — delete the `--model` and `--model-chain` rows (currently ~L80–81). Add one row:
 
 ```markdown
-| Session model | `currentModel` = executing session model. Switch via Pause → Cursor → Resume ([`gates.md`](../../../../.agents/skills/shared/gates.md)). |
+| Session model | `currentModel` = executing session model. Switch via Pause → Cursor → Resume ([`gates.md`](../shared/gates.md)). |
 ```
 
 - [ ] **Step 3: Replace § Model readiness** (currently ~L246–252) with:
@@ -246,7 +246,7 @@ EOF
 
 No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → Cursor → Resume).
 
-When Advance crosses **F1→F2** (after Step 3, before Step 5) or **F3→F4** (after Step 7, before Step 9), add the soft hint from [`gates.md`](../../../../.agents/skills/shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-5`, `before-step-9` remain for telemetry only.
+When Advance crosses **F1→F2** (after Step 3, before Step 5) or **F3→F4** (after Step 7, before Step 9), add the soft hint from [`gates.md`](../shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-5`, `before-step-9` remain for telemetry only.
 
 Steps **4 and 8** are **not** user-facing menus and stay out of `completedSteps` / Progress Board.
 ```
@@ -284,7 +284,7 @@ switch model | change model → Pause workflow, switch in Cursor, resume (no in-
 Delete the **Model flags** table rows for `--model` / `--model-chain`. Keep `--strict` in a small **Other flags** note or leave `--strict` in the remaining flags prose:
 
 ```markdown
-**Flags:** `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict` (full US verification at Step 6). Model = session; switch via Pause → Cursor → Resume ([`gates.md`](../../../../.agents/skills/shared/gates.md)).
+**Flags:** `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict` (full US verification at Step 6). Model = session; switch via Pause → Cursor → Resume ([`gates.md`](../shared/gates.md)).
 ```
 
 - [ ] **Step 8: Examples** — delete examples that use `--model` or `--model-chain`. Keep:
@@ -340,7 +340,7 @@ EOF
 ```markdown
 ## Transition menu (every step boundary)
 
-Per [`gates.md`](../../../../.agents/skills/shared/gates.md):
+Per [`gates.md`](../shared/gates.md):
 
 **Banner:** Current model + Pause → switch in Cursor → resume.
 
