@@ -20,7 +20,7 @@ Run at the end of every implementation task to maintain a historical record of w
 
 ## CHANGELOG.md Template
 
-Append the following exact format to the bottom of the file:
+Insert the following exact format at the top of the file, directly under the main '# Changelog' header:
 
 ```markdown
 ### [YYYY-MM-DD HH:MM] Agent: [Agent Type, e.g., Antigravity]
@@ -28,3 +28,4 @@ Append the following exact format to the bottom of the file:
 - **Done**: [What was actually implemented, changed, or fixed]
 - **Result**: [Final outcome, status, or any immediate next steps]
 ```
+

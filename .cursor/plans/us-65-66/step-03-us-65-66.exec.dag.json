@@ -1,0 +1,81 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "planPath": ".cursor/plans/us-65-66/step-01-us-65-66.plan.md",
+  "reason": "6 steps, 8 files, 4 harness edit layers — exceeds dagThresholds (maxImplementationSteps=3, maxExpectedFiles=6, maxLayers=2).",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Packaged hub inventory + phantoms",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/AGENTS.md",
+        "AGENTS.md"
+      ],
+      "acceptance": "Packaged Skill index + Task router list only Workflows-package skills (26) in primary tables; Extra package (9) in labeled subsection not mixed into primary router. Root AGENTS.md Drift check footnote if packaged scope differs. Zero Extra-only ids in primary router.",
+      "coderPrompt": "Load bin/skill-dependencies.json packages.workflows.skills (26 ids). Edit .agents/AGENTS.md: restructure Skill index (Harness, Pipeline 00–11, Providers, Promoted utilities); add ### Extra package (optional) for 9 skills; relocate Extra-only Task router rows. Add Drift check callout. Edit AGENTS.md only if needed — brief Drift footnote. Do not remove root Layer 4 rows."
+    },
+    {
+      "id": "T3",
+      "title": "STEP-DISPATCH prefixed ids",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/spec-to-pr/STEP-DISPATCH.md"
+      ],
+      "acceptance": "Step 11 uses `Task` `07-integration-validation`; Step 13 pipeline uses `09-goal-fix-pr`. No bare unprefixed integration-validation or goal-fix-pr in dispatch contexts.",
+      "coderPrompt": "STEP-DISPATCH.md: Step 11 replace bare integration-validation with else `Task` `07-integration-validation` (match Step 9 `06-code-review` pattern). Step 13 pipeline bullet 4: goal-fix-pr loop → `09-goal-fix-pr` loop. rg verify no unprefixed bare ids."
+    },
+    {
+      "id": "T4",
+      "title": "Consumer-safe shared hub link",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/shared/AGENTS.md"
+      ],
+      "acceptance": "Dependency-map line is prose + upstream GitHub URL; no href to ../../../bin/skill-dependencies.json.",
+      "coderPrompt": "Replace L53 in shared/AGENTS.md with consumer-safe prose: Install packages and dependency map: upstream bin/skill-dependencies.json in workflow-skills GitHub repo (not vendored in consumer clones). No relative bin/ link."
+    },
+    {
+      "id": "T2",
+      "title": "§ Skill loading + utility retarget",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1"],
+      "files": [
+        ".agents/AGENTS.md",
+        ".agents/skills/caveman/SKILL.md",
+        ".agents/skills/gabarito/SKILL.md",
+        ".agents/skills/spec-format/SKILL.md"
+      ],
+      "acceptance": "Packaged hub has ## Skill loading, ## Precedence, opt-out table (mirror root L83–108; paths skills/...). using-superpowers omitted or marked global-not-shipped. Utility skills link ../../AGENTS.md § Skill loading.",
+      "coderPrompt": "Copy § Skill loading, Precedence, opt-out from root AGENTS.md L83–108 into .agents/AGENTS.md (paths skills/...). Omit or mark (global — not shipped) using-superpowers. Update caveman L14, gabarito L13+L46, spec-format L16+L131 to ../../AGENTS.md § Skill loading. No consumer root hub links."
+    },
+    {
+      "id": "T5",
+      "title": "Dual-hub pointer + Post-12 labels",
+      "parallelGroup": "L2",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/spec-to-pr/SKILL.md"
+      ],
+      "acceptance": "Hub line points to ../../AGENTS.md with dual-hub note. Post-12 labels are 06-code-review / 08-fix-pr (targets unchanged).",
+      "coderPrompt": "spec-to-pr/SKILL.md L18: Hub ../../../AGENTS.md → ../../AGENTS.md + dual-hub parenthetical. L104: link labels code-review/fix-pr → 06-code-review/08-fix-pr only."
+    },
+    {
+      "id": "T6",
+      "title": "Harness verification",
+      "parallelGroup": "L3",
+      "dependsOn": ["T1", "T2", "T3", "T4", "T5"],
+      "files": [],
+      "acceptance": "check-harness dry-run clean for phantoms, dead Skill-loading refs, unprefixed dispatch on touched paths. No npm tests unless unexpected files touched.",
+      "coderPrompt": "Load check-harness/SKILL.md; run Phases 0–5c dry-run on touched paths. Grep packaged index for Extra in primary router. Resolve utility ../../AGENTS.md#skill-loading links. Skip site regen unless routing tables changed."
+    }
+  ],
+  "levels": [
+    ["T1", "T3", "T4"],
+    ["T2", "T5"],
+    ["T6"]
+  ]
+}
