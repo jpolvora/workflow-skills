@@ -2,7 +2,8 @@
 # Thin wrapper around the canonical Node CLI installer.
 # Prefer: npx --yes github:jpolvora/workflow-skills
 # Curl (same flags as npx): curl -fsSL …/install-skills.sh | bash -s -- install --full --yes
-set -euo pipefail
+set -eu
+set -o pipefail
 
 # Prefer UTF-8 for any tool output nested under this shim (Windows Git Bash / Cygwin).
 export PYTHONUTF8="${PYTHONUTF8:-1}"

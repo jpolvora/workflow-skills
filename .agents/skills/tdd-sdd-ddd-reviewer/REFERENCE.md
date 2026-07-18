@@ -28,7 +28,7 @@ Load authoritative conventions from [senior-developer](../../../AGENTS.md#extern
 ### SDD (spec-driven design)
 
 - Changed behavior must match the relevant spec under `docs/superpowers/specs/`.
-- Domain terms in code/comments match [`CONTEXT.md`](../../../CONTEXT.md) (glossary only — do not duplicate product rules there).
+- Domain terms in code/comments match the glossary file CONTEXT.md at the repository root (glossary only — do not duplicate product rules there).
 
 ### DDD (project-aligned)
 
