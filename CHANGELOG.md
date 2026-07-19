@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-07-19 14:11] Agent: Cursor Grok
+- **Prompt**: Apply check-harness plan #1–#3 with #2A (promote secrets-leak-review into workflows)
+- **Done**: Fixed MEMORY prepare-checklist path; moved secrets into workflows (27) / Extra=2; `08-ship-pr`→secrets dep; hubs/CLI/site v0.0.51; trimmed PREPARE-CHECKLIST
+- **Result**: Harness OK post-correction; Workflows installs include leak scan for ship prepare gate
+
+### [2026-07-19 14:02] Agent: Cursor Grok
+- **Prompt**: Add prepare-to-PR checklist to ship-pr (coverage, build, tests, security, consumer ship steps, visible board); gate push/PR; monitor reviews → goal-fix-pr
+- **Done**: Added `08-ship-pr/PREPARE-CHECKLIST.md`; rewrote `SKILL.md` v1.9 (Steps 1–7 with prepare goal gate); aligned GOAL-OVERRIDES/examples + STEP-DISPATCH settle step ref
+- **Result**: ship-pr drives prepare board before commit/push/PR; green + SCM → create-pr; then monitor/`goal-fix-pr`
+
 ### [2026-07-19 17:56] Agent: Cursor Grok
 - **Prompt**: check-harness, fix needed items, prepare PR, ship-pr for consumer testing
 - **Done**: Full harness audit (Phases 0–5c); synced site Extra catalog + package `0.0.50`; aligned `test/package.json` tarball; removed orphan `skills-lock.json`; retargeted promote-shared spec example; install tests `--local` green (29 skills)

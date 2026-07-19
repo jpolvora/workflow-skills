@@ -397,7 +397,7 @@ Non-interactive install:
 Interactive package shortcuts:
   f  Full package (all installable skills + shared/ hub)
   w  Workflows package (orchestrators + pipeline deps + hub)
-  e  Extra package (secrets-leak-review, write-a-skill, show-harness)
+  e  Extra package (write-a-skill, show-harness)
   a  Select/deselect all
   #  Toggle individual skill (also selects transitive dependencies)
   y  Install selected skills

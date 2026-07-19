@@ -9,7 +9,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 > **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (26 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (27 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
 
 > **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
@@ -108,7 +108,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 ## Skill index
 
-Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 26 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
+Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 27 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
 
 ### Harness & infrastructure
 
@@ -154,9 +154,15 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history in `CHANGELOG.md` |
 | `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `goal-fix-pr`) |
 
+### Review & audit (Workflows package)
+
+| Skill | Path | Description |
+|-------|------|-------------|
+| `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+
 ### Extra package (optional)
 
-Not on disk after a **Workflows-only** install. Add via installer shortcut **`e`** (Extra package) or **`f`** (Full package). Source of truth: upstream `bin/skill-dependencies.json` → `packages.extra.skills` (3 ids).
+Not on disk after a **Workflows-only** install. Add via installer shortcut **`e`** (Extra package) or **`f`** (Full package). Source of truth: upstream `bin/skill-dependencies.json` → `packages.extra.skills` (2 ids).
 
 #### Harness & authoring
 
@@ -164,12 +170,6 @@ Not on disk after a **Workflows-only** install. Add via installer shortcut **`e`
 |-------|------|-------------|
 | `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create, edit, and optimize predictable skills |
 | `show-harness` | `skills/show-harness/SKILL.md` | Snapshot skills/rules/instructions active in this session |
-
-#### Review & audit
-
-| Skill | Path | Description |
-|-------|------|-------------|
-| `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
 
 ---
 
@@ -187,6 +187,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Verify against plan | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Testing pre-PR | `ws-testing` |
+| Secrets / leak scan | `secrets-leak-review` |
 | Fix PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship / merge PR | `ws-ship-pr` |
 | GitHub issue→spec or GitHub PR ops | `github-provider` |
@@ -203,7 +204,6 @@ Requires Extra or Full install — skills not on Workflows-only disk.
 
 | When to use | Skill to load |
 |-------------|---------------|
-| Secrets / leak scan | `secrets-leak-review` |
 | Create / rewrite a skill | `write-a-skill` |
 | Show active harness snapshot | `show-harness` |
 

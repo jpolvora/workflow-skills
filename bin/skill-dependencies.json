@@ -42,7 +42,8 @@
         "spec-format",
         "goal-loop",
         "self-learning",
-        "changelog"
+        "changelog",
+        "secrets-leak-review"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -50,7 +51,6 @@
     },
     "extra": {
       "skills": [
-        "secrets-leak-review",
         "write-a-skill",
         "show-harness"
       ],
@@ -113,6 +113,9 @@
     "goal-fix-pr": [
       "09-fix-pr",
       "goal-loop"
+    ],
+    "08-ship-pr": [
+      "secrets-leak-review"
     ],
     "06-code-review": [
       "karpathy-guidelines",

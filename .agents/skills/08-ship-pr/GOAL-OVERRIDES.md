@@ -1,10 +1,10 @@
 # ship-pr — goal-fix-pr timing overrides
 
-Load with [SKILL.md](SKILL.md) Phase 5. Parent loop: [goal-fix-pr](../goal-fix-pr/SKILL.md).
+Load with [SKILL.md](SKILL.md) Step 6 (monitor reviews & converge). Parent loop: [goal-fix-pr](../goal-fix-pr/SKILL.md). Prepare-to-PR gate (before push): [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md).
 
 ## Why wait for code-review (5 minutes+)
 
-Agentic Code Review, CI, and human reviewers often comment **after** the first push. ship-pr **must wait** for that feedback before treating the PR as merge-ready, then run `goal-fix-pr` until there are **no open issues to fix**, and only then merge (Phase 6).
+Agentic Code Review, CI, and human reviewers often comment **after** the first push. ship-pr **must wait** for that feedback before treating the PR as merge-ready, then run `goal-fix-pr` until there are **no open issues to fix**, and only then merge (Step 7).
 
 ## Overrides
 
@@ -30,5 +30,6 @@ Everything else unchanged: branch sync, fix-pr steps 0–7, auto gates, commit m
 | "No comments yet — skip 5m" | First 5m is mandatory for review Action / CI. |
 | "Use goal-fix-pr 2m" | ship-pr always **300s**. |
 | "Merge with open threads" | Merge only when `activeThreads == 0` after goal-fix-pr. |
-| "Checks still red — merge anyway" | Phase 6 requires green required checks. |
+| "Checks still red — merge anyway" | Step 7 requires green required checks. |
+| "Skip prepare checklist — CI will catch it" | [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) is mandatory before push/PR. |
 | "Squash without asking" | Use `--merge` (merge commit), matching repo history. |
