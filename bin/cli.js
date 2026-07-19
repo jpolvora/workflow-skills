@@ -33,29 +33,6 @@ const HUB_WHITELIST = [
   'MEMORY.md.template',
 ];
 
-/** Skills promoted out of shared/ — used for consumer migration. */
-const PROMOTED_SKILLS = [
-  'caveman',
-  'gabarito',
-  'karpathy-guidelines',
-  'spec-format',
-  'goal-loop',
-  'self-learning',
-  'changelog',
-];
-
-/**
- * Old consumer folder names → current upstream skill folder names.
- * Pipeline renumbers form a cycle (11↔08↔09↔10); migrateRenamedSkills uses a temp stage.
- */
-const SKILL_RENAMES = [
-  { from: 'us-workflow', to: 'spec-to-pr' },
-  { from: '07-integration-validation', to: '07-testing' },
-  { from: '11-ship-pr', to: '08-ship-pr' },
-  { from: '08-fix-pr', to: '09-fix-pr' },
-  { from: '09-goal-fix-pr', to: '10-goal-fix-pr' },
-  { from: '10-update-plan-implementation', to: '11-update-plan-implementation' },
-];
 
 /**
  * Consumer-owned artifacts under shared/ — never copy upstream content into consumers.
@@ -160,162 +137,6 @@ function shouldEnsureHub(selectedNames) {
   return selectedNames.some(
     (n) => n === 'spec-to-pr' || n === 'spec-to-pr-lite' || workflows.has(n)
   );
-}
-
-/**
- * Migrate renamed skills in the consumer target.
- * Preserves config.json from the old folder, installs/updates the new folder, removes the old folder.
- * Uses a temp stage so pipeline renumber cycles (e.g. 11-ship-pr ↔ 08-ship-pr) do not clobber peers.
- */
-function migrateRenamedSkills(skills) {
-  if (!fs.existsSync(targetSkillsDir)) return;
-
-  const planned = [];
-  for (const { from, to } of SKILL_RENAMES) {
-    const oldPath = path.join(targetSkillsDir, from);
-    const srcPath = path.join(srcSkillsDir, to);
-    if (!fs.existsSync(oldPath)) continue;
-    if (!skills.includes(to) || !fs.existsSync(srcPath)) continue;
-    planned.push({ from, to, oldPath, srcPath });
-  }
-  if (planned.length === 0) return;
-
-  const tmpRoot = path.join(targetSkillsDir, '.migrate-tmp');
-  fs.mkdirSync(tmpRoot, { recursive: true });
-
-  for (const p of planned) {
-    const tmpPath = path.join(tmpRoot, p.to);
-    console.log(`  Migrating '${p.from}' → '${p.to}'...`);
-    if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { recursive: true, force: true });
-    fs.renameSync(p.oldPath, tmpPath);
-  }
-
-  for (const p of planned) {
-    const tmpPath = path.join(tmpRoot, p.to);
-    const newPath = path.join(targetSkillsDir, p.to);
-    const oldConfigPath = path.join(tmpPath, CONFIG_FILE);
-    const preservedConfig = fs.existsSync(oldConfigPath)
-      ? fs.readFileSync(oldConfigPath)
-      : null;
-
-    if (fs.existsSync(newPath)) {
-      copyDirPreservingConfig(p.srcPath, newPath, CONFIG_FILE);
-    } else {
-      copyDirSync(p.srcPath, newPath);
-    }
-    afterSkillCopy(p.to, newPath);
-
-    if (preservedConfig) {
-      fs.writeFileSync(path.join(newPath, CONFIG_FILE), preservedConfig);
-      console.log(`    Preserved ${CONFIG_FILE} from '${p.from}'`);
-    }
-
-    fs.rmSync(tmpPath, { recursive: true, force: true });
-    console.log(`  Migrated '${p.from}' → '${p.to}' (${CONFIG_FILE} preserved)`);
-  }
-
-  try {
-    fs.rmSync(tmpRoot, { recursive: true, force: true });
-  } catch {
-    /* ignore */
-  }
-}
-
-/**
- * Migrate nested shared/<promoted>/ skills to top-level consumer paths.
- * Migrates legacy memory locations into shared/MEMORY.md + shared/memory/.
- */
-function migratePromotedSkills() {
-  if (!fs.existsSync(targetSkillsDir)) return;
-
-  const destShared = path.join(targetSkillsDir, HUB_DIR);
-
-  for (const slug of PROMOTED_SKILLS) {
-    const nested = path.join(destShared, slug);
-    const top = path.join(targetSkillsDir, slug);
-    if (!fs.existsSync(nested)) continue;
-
-    console.log(`  Migrating shared/${slug}/ → ${slug}/...`);
-
-    if (!fs.existsSync(top)) {
-      fs.renameSync(nested, top);
-      console.log(`    Moved shared/${slug}/ → ${slug}/`);
-    } else {
-      // Both exist: preserve consumer memory into shared hub, then remove nested skill
-      const nestedMemory = path.join(nested, 'memory');
-      if (fs.existsSync(nestedMemory)) {
-        migrateMemoryFilesIntoShared(nestedMemory);
-      }
-      const nestedMemMd = path.join(nested, 'MEMORY.md');
-      if (fs.existsSync(nestedMemMd)) {
-        migrateMemoryMdIntoShared(nestedMemMd);
-      }
-      fs.rmSync(nested, { recursive: true, force: true });
-      console.log(`    Removed nested shared/${slug}/`);
-    }
-  }
-
-  // Legacy: shared/self-learning/memory → shared/memory
-  const legacyNestedMemory = path.join(destShared, 'self-learning', 'memory');
-  if (fs.existsSync(legacyNestedMemory)) {
-    migrateMemoryFilesIntoShared(legacyNestedMemory);
-    const legacySelf = path.join(destShared, 'self-learning');
-    if (fs.existsSync(legacySelf)) {
-      fs.rmSync(legacySelf, { recursive: true, force: true });
-      console.log(`    Removed legacy shared/self-learning/`);
-    }
-  }
-
-  // Legacy: top-level self-learning/MEMORY.md + memory/ → shared/
-  const topSelfMem = path.join(targetSkillsDir, 'self-learning', 'memory');
-  if (fs.existsSync(topSelfMem)) {
-    migrateMemoryFilesIntoShared(topSelfMem);
-    // Remove migrated files left empty
-    try {
-      const left = fs.readdirSync(topSelfMem);
-      if (left.length === 0) fs.rmSync(topSelfMem, { recursive: true, force: true });
-    } catch {
-      /* ignore */
-    }
-  }
-  const topSelfMemMd = path.join(targetSkillsDir, 'self-learning', 'MEMORY.md');
-  if (fs.existsSync(topSelfMemMd)) {
-    migrateMemoryMdIntoShared(topSelfMemMd);
-    try {
-      fs.rmSync(topSelfMemMd, { force: true });
-    } catch {
-      /* ignore */
-    }
-  }
-}
-
-function migrateMemoryFilesIntoShared(srcMemoryDir) {
-  const destShared = path.join(targetSkillsDir, HUB_DIR);
-  const destMemory = path.join(destShared, 'memory');
-  fs.mkdirSync(destMemory, { recursive: true });
-  for (const entry of fs.readdirSync(srcMemoryDir, { withFileTypes: true })) {
-    if (!entry.isFile()) continue;
-    const srcFile = path.join(srcMemoryDir, entry.name);
-    const destFile = path.join(destMemory, entry.name);
-    if (!fs.existsSync(destFile)) {
-      fs.copyFileSync(srcFile, destFile);
-      console.log(`    Migrated memory file → shared/memory/${entry.name}`);
-    }
-    fs.rmSync(srcFile, { force: true });
-  }
-}
-
-function migrateMemoryMdIntoShared(srcMemMd) {
-  const destShared = path.join(targetSkillsDir, HUB_DIR);
-  fs.mkdirSync(destShared, { recursive: true });
-  const destMemMd = path.join(destShared, 'MEMORY.md');
-  if (!fs.existsSync(destMemMd)) {
-    fs.copyFileSync(srcMemMd, destMemMd);
-    console.log(`    Migrated MEMORY.md → shared/MEMORY.md`);
-  } else {
-    console.log(`    Preserved existing shared/MEMORY.md (skipped legacy copy)`);
-  }
-  fs.rmSync(srcMemMd, { force: true });
 }
 
 /** True when this entry must never be copied from upstream (consumer-owned). */
@@ -555,7 +376,7 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills              Interactive install
   npx --yes github:jpolvora/workflow-skills install --full --yes
   npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,09-fix-pr --yes
+  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes
   npx --yes github:jpolvora/workflow-skills update       Update installed skills
   npx --yes github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally
@@ -576,7 +397,7 @@ Non-interactive install:
 Interactive package shortcuts:
   f  Full package (all installable skills + shared/ hub)
   w  Workflows package (orchestrators + pipeline deps + hub)
-  e  Extra package (standalone review/design/meta skills)
+  e  Extra package (write-a-skill, show-harness)
   a  Select/deselect all
   #  Toggle individual skill (also selects transitive dependencies)
   y  Install selected skills
@@ -592,7 +413,6 @@ Notes:
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Packaged .agents/AGENTS.md is refreshed on install and update.
   - After installing or updating, run the "check-harness" skill to validate the harness.
-  - On update, retired pipeline folders migrate automatically (e.g. 07-integration-validation→07-testing, 11-ship-pr→08-ship-pr, 08-fix-pr→09-fix-pr, …).
   - Install copies skip __pycache__ / *.pyc (not part of the skill surface).
   - Workflows use the Cursor session model at gates; switch via Pause → Cursor UI → Resume (no --model/--model-chain).
   - install-skills.sh is a curl/bash shim that execs this CLI (or npx); prefer calling npx directly.
@@ -784,8 +604,6 @@ async function runInstall(skills, opts) {
   }
 
   console.log(`Installing ${selectedNames.length} skill(s): ${selectedNames.join(', ')}`);
-  migrateRenamedSkills(skills);
-  migratePromotedSkills();
 
   const existingNames = selectedNames.filter((n) =>
     fs.existsSync(path.join(targetSkillsDir, n))
@@ -896,8 +714,6 @@ function runUpdate(skills, includeNew) {
     process.exit(0);
   }
 
-  migrateRenamedSkills(skills);
-  migratePromotedSkills();
 
   const existingDirs = listSkillDirs(targetSkillsDir).filter((name) => name !== HUB_DIR);
   const existingSkills = existingDirs.filter((name) => skills.includes(name));
@@ -1035,8 +851,6 @@ async function runInteractive(skills) {
   const selectedNames = skills.filter((_, i) => selected[i]);
   console.log(`\nInstalling ${selectedNames.length} skill(s): ${selectedNames.join(', ')}`);
   console.log('Starting installation...');
-  migrateRenamedSkills(skills);
-  migratePromotedSkills();
 
   const existingNames = selectedNames.filter((n) =>
     fs.existsSync(path.join(targetSkillsDir, n))

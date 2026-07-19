@@ -9,7 +9,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 > **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (26 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (27 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
 
 > **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
@@ -29,7 +29,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 4. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
 5. **No `name:` collisions** — Each `SKILL.md` frontmatter `name:` must be unique across the installed tree.
 6. **Evidence-based harness changes** — When fixing routing/links, cite verified paths; do not invent files.
-7. **Consistent skill and task folder references** — References to tasks, steps, and subagent skills in all workflow files must match the exact, prefixed skill folder names (e.g. `05-verify-plan`, `07-testing`, `11-update-plan-implementation`). Unprefixed, retired, or placeholder folder references are forbidden.
+7. **Consistent skill and task folder references** — FSM steps `00`–`09` use prefixed folder names (e.g. `05-verify-plan`, `07-testing`, `09-fix-pr`). Convergence / post skills use unprefixed folders `goal-fix-pr` and `update-plan-implementation`. Retired or placeholder folder references are forbidden.
 
 ### Language (mandatory)
 
@@ -41,7 +41,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | Role | Rule |
 |------|------|
 | **Canonical upstream** | [`jpolvora/workflow-skills`](https://github.com/jpolvora/workflow-skills) is the authoritative source for pipeline and dependency skills. |
-| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`. On update, retired pipeline folders migrate to canonical `00`–`11` ids (see upstream README § Safety). |
+| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`. Latest layout only — no older-folder migration (see upstream README § Safety). |
 | **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx --yes github:jpolvora/workflow-skills update` (or `update --include-new`). |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
@@ -108,7 +108,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 ## Skill index
 
-Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 26 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
+Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 27 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
 
 ### Harness & infrastructure
 
@@ -117,7 +117,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `check-harness` | `skills/check-harness/SKILL.md` | Audit harness integrity (routing, links, redundancy) |
 | `check-workflows` | `skills/check-workflows/SKILL.md` | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
 
-### `spec-to-pr` pipeline (`00`–`11`)
+### `spec-to-pr` pipeline (`00`–`09` + goal-fix / update-plan)
 
 | Skill | Step(s) | Path | Description |
 |-------|---------|------|-------------|
@@ -131,8 +131,8 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-testing` | 7 | `skills/07-testing/SKILL.md` | Testing gate (unit, integration, coverage) |
 | `ws-ship-pr` | 8 | `skills/08-ship-pr/SKILL.md` | Delivery commit + push + create PR |
 | `ws-fix-pr` | 9 | `skills/09-fix-pr/SKILL.md` | Resolve active PR review threads |
-| `ws-goal-fix-pr` | 9 | `skills/10-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
-| `ws-update-plan-implementation` | Post-workflow | `skills/11-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
+| `ws-goal-fix-pr` | 9 | `skills/goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
+| `ws-update-plan-implementation` | Post-workflow | `skills/update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
 
 ### Providers (platform-specific entry + PR ops)
 
@@ -152,35 +152,24 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `spec-format` | `skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
 | `self-learning` | `skills/self-learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history in `CHANGELOG.md` |
-| `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `10-goal-fix-pr`) |
+| `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `goal-fix-pr`) |
+
+### Review & audit (Workflows package)
+
+| Skill | Path | Description |
+|-------|------|-------------|
+| `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
 
 ### Extra package (optional)
 
-Not on disk after a **Workflows-only** install. Add via installer shortcut **`e`** (Extra package) or **`f`** (Full package). Source of truth: upstream `bin/skill-dependencies.json` → `packages.extra.skills` (9 ids).
+Not on disk after a **Workflows-only** install. Add via installer shortcut **`e`** (Extra package) or **`f`** (Full package). Source of truth: upstream `bin/skill-dependencies.json` → `packages.extra.skills` (2 ids).
 
 #### Harness & authoring
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create skills with structure and progressive disclosure |
-
-#### Engineering standards
-
-| Skill | Path | Description |
-|-------|------|-------------|
-| `mobile-first-design` | `skills/mobile-first-design/SKILL.md` | Responsive mobile-first design |
-| `design-taste-frontend` | `skills/taste-skill/SKILL.md` | Anti-slop frontend (landing pages, portfolios, redesigns) |
-
-#### Review & audit
-
-| Skill | Path | Description |
-|-------|------|-------------|
-| `security-review` | `skills/security-review/SKILL.md` | Security review (OWASP, injection, XSS, auth, crypto) |
-| `dotnet-security-performance-review` | `skills/dotnet-security-performance-review/SKILL.md` | C# security and performance review (login, auth, EF) |
-| `tdd-sdd-ddd-reviewer` | `skills/tdd-sdd-ddd-reviewer/SKILL.md` | Architectural audit (Clean Architecture, TDD, DDD) |
-| `domain-review` | `skills/domain-review/SKILL.md` | Domain / bounded-context review |
-| `multi-domain-review` | `skills/multi-domain-review/SKILL.md` | Batch review of multiple domains |
-| `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+| `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create, edit, and optimize predictable skills |
+| `show-harness` | `skills/show-harness/SKILL.md` | Snapshot skills/rules/instructions active in this session |
 
 ---
 
@@ -198,6 +187,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Verify against plan | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Testing pre-PR | `ws-testing` |
+| Secrets / leak scan | `secrets-leak-review` |
 | Fix PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship / merge PR | `ws-ship-pr` |
 | GitHub issue→spec or GitHub PR ops | `github-provider` |
@@ -214,12 +204,8 @@ Requires Extra or Full install — skills not on Workflows-only disk.
 
 | When to use | Skill to load |
 |-------------|---------------|
-| Security review | `security-review` or `dotnet-security-performance-review` |
-| Secrets / leak scan | `secrets-leak-review` |
-| Architecture (TDD/DDD) | `tdd-sdd-ddd-reviewer` |
-| Domain review | `domain-review` or `multi-domain-review` |
-| Frontend design | `design-taste-frontend` or `mobile-first-design` |
-| Create a new skill | `write-a-skill` |
+| Create / rewrite a skill | `write-a-skill` |
+| Show active harness snapshot | `show-harness` |
 
 ---
 

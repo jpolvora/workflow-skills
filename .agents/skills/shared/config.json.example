@@ -114,8 +114,6 @@
     "autoMode": false,
     "dryRun": false,
     "skipTesting": false,
-    "skipIntegration": false,
-    "_comment_skipIntegration": "Deprecated alias for skipTesting — kept for backward compatibility.",
     "skipTests": false,
     "fullMode": false
   },

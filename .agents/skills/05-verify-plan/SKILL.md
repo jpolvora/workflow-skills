@@ -2,7 +2,7 @@
 name: ws-verify-plan
 description: Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.3
+version: 2.4
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -12,140 +12,79 @@ invocation_names:
 
 # 05-verify-plan
 
-Responsible for auditing implementation deliverables against the specification and design blueprints. It runs in two modes:
-- **Quick Score Mode:** Evaluates overall code quality, conventions, and test coverage on a 0–10 scale.
-- **US Verification Mode:** Audits precise adherence between the primary evaluation source (refined spec when present, else `step-00-{slug}.spec.md`), the plan (`step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md`), and the actual code, generating a feature-by-feature report.
+Audit implementation deliverables against the specification and plan. Act as a **Senior QA Engineer / SDET** who checks acceptance criteria, code quality, and test coverage, then publishes a **0–10 score**.
 
-## Persona
+Runs in two modes: **Quick Score** (code quality vs plan, no spec required) or **US Verification** (feature-by-feature match between spec, plan, and code).
 
-Act as a **Senior QA Engineer / SDET** who meticulously evaluates code deliverables against acceptance criteria, checks overall code quality, reviews test coverage, and ensures functional correctness.
-
----
+**Canonical output:** `{plan-dir}/step-05-{slug}.plan.report.md`. Optional Quick Score report shape: [`TEMPLATE.md`](TEMPLATE.md).
 
 ## Invocation
 
-### Standalone Mode
+Standalone:
 
 ```
 /verify-plan [spec-input] [plan-dir=<path>]
 ```
 
-### Workflow Mode (Step 5 of spec-to-pr)
+Workflow (spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optional `mode=quick|full`. Default `mode=quick`; escalate to `full` when quick score < 7, orchestrator passes `mode=full`, or user passed `--strict`.
 
-Dispatched by `spec-to-pr` at Step 5. Receives `specPath`, `planDir`, and optional `mode=quick|full` from the orchestrator.
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `spec-input` | (optional) | Path to `step-00-*.spec.md`, US number, or omit for Quick Score |
+| `plan-dir` | `.cursor/plans/{slug}/` | Directory holding plans and output report |
+| `mode` | `quick` (workflow) / `full` (standalone with spec) | Verification depth |
 
-**Default under workflow:** `mode=quick` (Quick Score). Escalate to full US Verification when quick score < 7, orch passes `mode=full`, or user passed `--strict`.
+## Steps
 
-### Parameters
+1. **Resolve source**: search `plan-dir` in order for `step-02-{slug}.plan.refined.md` (refined, primary), then `step-01-{slug}.plan.md` (fallback). In full mode, also resolve the primary evaluation source: the refined plan when present, else `step-00-{slug}.spec.md`.
+   - Done when: the resolved plan (and, in full mode, spec) path is known.
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `spec-input` | String | (optional) | Path to `step-00-*.spec.md`, US number (e.g. `1474`), or omitted to trigger Quick Score mode. |
-| `plan-dir=<path>` | String | `.cursor/plans/{slug}/` | Directory containing the plans and output report. |
-| `mode` | `quick` \| `full` | `quick` in workflow; `full` when standalone with spec | Verification depth. |
+2. **Evaluate**: Quick Score scores Completeness (40%), Correctness & Style (35%), Tests (25%), each 0-10. US Verification maps every plan feature and acceptance criterion to **Implemented**, **Not implemented**, or **Implemented differently**, each with file:line evidence.
+   - Done when: every planned feature/AC has a situation and evidence, and Quick Score's three metrics are each scored.
 
----
+3. **Score**: compute the integer **0-10** score (weighted average for Quick Score; overall adherence for US Verification).
+   - Done when: an integer score 0-10 is set.
 
-## Primary evaluation source (workflow)
+4. **Write report**: save `{plan-dir}/step-05-{slug}.plan.report.md` matching this format exactly:
 
-Score implementation **0–10** against:
+   ```markdown
+   ---
+   us: "{slug}"
+   reportDate: YYYY-MM-DD
+   score: N
+   sourcePlans: ["step-02-{slug}.plan.refined.md"]
+   evalSource: step-02-{slug}.plan.refined.md | step-00-{slug}.spec.md
+   githubSource: gh | none
+   ---
 
-1. **`step-02-{slug}.plan.refined.md`** when present (refined spec / shared-understanding plan — primary)
-2. Else **`step-00-{slug}.spec.md`** (canonical spec fallback)
+   # Implementation Report - {slug}
 
-Cross-reference the active plan (`step-02-*` or `step-01-*`) for feature matrix and AC mapping. Publish the integer **score 0–10** in the report and Progress Board summary.
+   **Generated on:** YYYY-MM-DD
+   **Score:** N/10
+   **Evaluation source:** step-02-{slug}.plan.refined.md (or step-00-{slug}.spec.md)
+   **Reference Plan:** step-02-{slug}.plan.refined.md (or step-01-{slug}.plan.md)
 
----
+   ## Result by Feature (Plan & ACs)
 
-## Orchestrator-owned score gate (< 7)
+   | Feature | Situation | Detail / Evidence |
+   |---------|-----------|-------------------|
+   | CRUD Accounts | **Implemented** | `AccountService.cs:L20-L45` |
 
-When dispatched under workflow, **this skill does not** present the below-7 menu — the orchestrator owns it after reading `step-05-{slug}.plan.report.md`.
+   ## Additional Features Beyond Original Plan
 
-| Score | Orchestrator behavior |
-|-------|----------------------|
-| ≥ 7 | Complete Step 5; Advance to Step 6 |
-| < 7 | AskQuestion: **Refine** (replay implement + re-check) / **Replan** (back to Step 1) / **Respec** (back to Step 0) / **Approve and continue** (log `check-approve-below-7`) |
+   | Feature / Extra Behavior | Location in Code | Note |
+   |--------------------------|------------------|------|
 
-`autoMode`: orchestrator must **not** auto-approve below 7 — Pause with score (fail closed).
+   ## Gaps and Next Steps
+   - (List missing or incomplete tasks to resolve before PR approval)
+   ```
 
-Standalone `/verify-plan`: apply the same ≥ 7 / < 7 threshold; recommend re-implementation or full matrix when below 7.
+   Do not edit the reference plan/spec files. Write only the canonical `step-05-{slug}.plan.report.md` name.
+   - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
----
+5. **Handoff**: return the score and report path.
+   - Workflow: the orchestrator owns the gate after reading the report: score `>= 7` advances to Step 6; score `< 7` triggers AskQuestion (Refine / Replan / Respec / Approve-and-continue) and must not auto-approve below 7.
+   - Standalone: apply the same `>= 7` / `< 7` threshold; recommend re-implementation or a full matrix when below 7.
+   - Done when: the caller has the score and report path.
 
-## 1. Quick Score Mode (Without Spec)
-
-When no specification is provided, evaluate the overall code status against the local plan and modified files:
-
-### Evaluation Metrics
-
-| Metric | Weight | Check Details |
-|--------|--------|---------------|
-| **Completeness** | 40% | Were all planned files and deliverables implemented? |
-| **Correctness & Style** | 35% | Does the code respect project layer boundaries, multi-tenancy, and standards? |
-| **Tests** | 25% | Were tests updated and do they execute successfully? |
-
-Assign a 0-10 score to each metric. Approve the implementation if the weighted average score is `≥ 7`, otherwise suggest re-implementation.
-
-Optional report shape for Quick Score: [`TEMPLATE.md`](TEMPLATE.md).
-
----
-
-## 2. US Verification Mode (Full Workflow)
-
-Audits adherence between the primary evaluation source (`step-02-*.plan.refined.md` when present, else `step-00-*.spec.md`), the plan (`step-02-*.plan.refined.md` or `step-01-*.plan.md`), and the modified code.
-
-### Plan Resolution Order
-Search the plan directory (`.cursor/plans/{slug}/`) in the following order:
-1. `step-02-{slug}.plan.refined.md` (refined plan, primary)
-2. `step-01-{slug}.plan.md` (initial plan, fallback)
-
----
-
-## Output Report Format
-
-Write the validation report to `{plan-dir}/step-05-{slug}.plan.report.md`. Include **`Score: N/10`** near the top (after frontmatter). The report must match the following format exactly:
-
-```markdown
----
-us: "{slug}"
-reportDate: YYYY-MM-DD
-score: N
-sourcePlans: ["step-02-{slug}.plan.refined.md"]
-evalSource: step-02-{slug}.plan.refined.md | step-00-{slug}.spec.md
-githubSource: gh | none
----
-
-# Implementation Report — {slug}
-
-**Generated on:** YYYY-MM-DD
-**Score:** N/10
-**Evaluation source:** step-02-{slug}.plan.refined.md (or step-00-{slug}.spec.md)
-**Reference Plan:** step-02-{slug}.plan.refined.md (or step-01-{slug}.plan.md)
-
-## Result by Feature (Plan & ACs)
-
-| Feature | Situation | Detail / Evidence |
-|---------|-----------|-------------------|
-| CRUD Accounts | **Implemented** | `AccountService.cs:L20-L45` |
-| Tenancy Check | **Implemented differently** | Plan asked for filter X, implemented via ORM global filter Y. |
-| List Sorting | **Not implemented** | Column headers are static; missing sorting logic. |
-
-*Situation must be strictly one of: **Implemented**, **Not implemented**, or **Implemented differently**.*
-
-## Additional Features Beyond Original Plan
-
-| Feature / Extra Behavior | Location in Code | Note |
-|--------------------------|------------------|------|
-| (Optional extra) | `path:line` | (Contextual notes) |
-
-## Gaps and Next Steps
-- (List missing or incomplete tasks to resolve before PR approval)
-```
-
----
-
-## Rules of Engagement
-
-- **Plan Immutability:** Do not edit the reference `*.plan.md` files. Write findings exclusively to the `step-05-{slug}.plan.report.md` file.
-- **Accurate Evidence:** Always cite specific file paths and line numbers for implemented features.
-- **Legacy artifact:** Do not write `step-06-{slug}.plan.report.md` on new runs (orchestrator may read for resume compatibility only).
+Language: en-us only.

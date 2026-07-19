@@ -2,6 +2,8 @@
 
 After step N, before the progress board, the orchestrator MUST execute State Hygiene.
 
+**Applies in `autoMode` / `fullMode` / `dryRun` the same as normal.** Skipping hygiene or omitting `--elapsed` → **HS-5**.
+
 ## Automated update
 
 ```bash
@@ -17,6 +19,21 @@ python .agents/skills/spec-to-pr/scripts/update_state.py \
   --deleted "{comma_separated_deleted_files}" \
   --gate-choice "{gateChoice}"
 ```
+
+### `--elapsed` (mandatory)
+
+| Status | Rule |
+|--------|------|
+| `completed` / `failed` | `--elapsed` **required** (integer ≥ 0). Measure agent wall-clock for the step (dispatch → step-output). **Do not omit** (script rejects missing flag). **Do not invent 0** unless the step truly finished in under 1s. |
+| `skipped` | `--elapsed 0` allowed (script defaults to 0 when status is skipped). |
+
+Source: `step-output.telemetry.elapsedSec`. Missing telemetry on a completed/failed step → **HS-5** before Progress Board.
+
+Script also:
+
+- Writes `telemetry.steps[]` + recomputes `totalElapsedSec` / `totalTokens` (null `elapsedSec` treated as 0)
+- Upserts `## Telemetry log` table row in the state body
+- Appends `## Gate history` line
 
 ## Manual fallback (if Python unavailable)
 

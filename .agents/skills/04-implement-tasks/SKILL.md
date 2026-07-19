@@ -1,8 +1,8 @@
 ---
 name: ws-implement-tasks
-description: Executes code implementations or fixes defects following a plan, DAG, or code review findings.
+description: Executes code implementations or fixes defects following a plan, DAG, or review findings.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.3
+version: 2.4
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -12,64 +12,65 @@ invocation_names:
 
 # 04-implement-tasks
 
-Responsible for executing the coding and testing steps defined in the plan or fixing defects identified during code reviews. It operates in two modes:
-- **Build Mode:** Implements new features following `step-03-{slug}.plan.exec.md` (or the step-by-step plan in `step-02-{slug}.plan.refined.md` / `step-01-{slug}.plan.md` directly).
-- **Fix Mode:** Systematically corrects code review comments or test failures.
+Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Act as a Senior Software Developer: clean code, SOLID, surgical edits, stack-consistent, no duplication.
 
-## Persona
-
-Act as a **Senior Software Developer** who is focused on clean code, SOLID principles, surgical edits, strict adherence to the technology stack, avoidance of code duplication, and robust unit test implementation.
-
----
+**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns.
 
 ## Invocation
 
-### Standalone Mode
+Standalone:
 
 ```
 /implement-tasks <plan-path> [mode=build|fix] [findings=<path>]
 ```
 
-### Workflow Mode (Step 4 build / Step 6–7 fix substeps in spec-to-pr)
+Workflow (spec-to-pr Step 4 build; conditional fix substep under Step 6 review findings / Step 7 test failures; lite Step 2 build / Step 3 review-fix): orchestrator passes `planPath`, `mode`, and optional `findings` path.
 
-Dispatched by `spec-to-pr` at **Step 4** (`mode=build`) or as the **conditional fix substep** under Step 6 (review findings) / Step 7 (test failures) (`mode=fix`). Receives `planPath`, `mode`, and optional `findings` path from the orchestrator state. Lite: Step 2 build / Step 3 review-fix.
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `<plan-path>` | required | Execution, refined, or draft plan path |
+| `mode` | `build` | `build` or `fix` |
+| `findings` | (optional) | Findings report or review comments path |
 
-### Parameters
+## Build mode
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `<plan-path>` | String | (required) | Path to execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`). |
-| `mode` | String | `build` | Execution mode: `build` or `fix`. |
-| `findings` | String | (optional) | Path to findings report or review comments JSON. |
+1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria.
+   - Done when: every task/step has an identified file list and AC.
 
----
+2. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
+   - Done when: a matching pattern is found, or none exists and this is noted.
 
-## 1. Build Mode Execution
+3. **Implement** — Write minimal, clean, modular code matching the requirements without scope creep.
+   - Done when: every planned file is created or modified per its AC.
 
-1. **Load Plan:** Parse the execution tasks or plan steps. Identify files to create/modify and their acceptance criteria.
-2. **Scan Codebase:** Locate similar patterns in the project layers defined in `config.json` to ensure style consistency.
-3. **Implement:** Write minimal, clean, and modular code matching the requirements. Avoid scope creep.
-4. **Validate:** Execute the build and unit tests for modified layers (backend/frontend).
-5. **Report:** Return the lists of modified/created files and test output details.
+4. **Validate** — Run the build and unit tests for modified layers (backend/frontend).
+   - Done when: build/test results are captured (pass or fail).
 
----
+5. **Report** — Return the modified/created file lists and test output details.
+   - Done when: the step-output below is populated.
 
-## 2. Fix Mode Execution
+## Fix mode
 
-1. **Intake Gaps:** Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
-2. **Surgical Corrections:** Apply minimal, targeted corrections following Karpathy guidelines.
-3. **Global Sweeping:** Search for sibling occurrences of the same defect class across modified directories. Fix them simultaneously.
-4. **Anti-Regression:** Write unit tests to cover the corrected defect scenario.
-5. **Validate:** Execute project builds and test suites to verify no regressions were introduced.
+1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
+   - Done when: every finding is enumerated.
 
----
+2. **Correct** — Apply minimal, targeted fixes per [karpathy-guidelines](../karpathy-guidelines/SKILL.md).
+   - Done when: every enumerated finding has a corresponding edit.
 
-## Output (Both Modes)
+3. **Sweep siblings** — Search modified directories for the same defect class and fix simultaneously.
+   - Done when: no sibling occurrence of the fixed defect class remains in modified directories.
 
-- **Workspace:** Modify files directly in the working tree. Do not commit or push.
-- **Summary:** List modified/created files, passing/failing tests, and fixed findings.
+4. **Anti-regression test** — Write a unit test covering the corrected defect scenario.
+   - Done when: each fixed finding has a covering test.
 
-### step-output (Workflow Mode)
+5. **Validate** — Run the project build and test suites to confirm no regressions were introduced.
+   - Done when: build/test results are captured (pass or fail).
+
+## Output (both modes)
+
+Modify the working tree directly; never commit or push.
+
+### step-output (workflow mode)
 
 ```yaml
 status: success | partial | failed | needs_user
@@ -85,10 +86,10 @@ summary: |
   (Summary text of changes and verifications)
 ```
 
----
-
 ## Rules of Engagement
 
-- **No Auto-Commits:** Never commit or push code. Let the orchestrator or user handle branch staging and commits.
-- **Strict Scope Isolation:** Do not refactor adjacent files or expand feature scopes.
-- **Migration Safety:** Never write database schema migration files by hand. Always use project CLI tools.
+- No auto-commits: never commit or push code; let the orchestrator or user handle branch staging and commits.
+- Strict scope isolation: do not refactor adjacent files or expand feature scope.
+- Migration safety: never hand-write schema migration files; always use project CLI tools.
+
+Language: en-us only.

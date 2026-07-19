@@ -33,8 +33,8 @@
   <h1>Workflow <span>Skills</span></h1>
   <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
   <div class="badges">
-    <span class="badge">33 skills</span>
-    <span class="badge">5 layers</span>
+    <span class="badge">27 skills</span>
+    <span class="badge">4 layers</span>
     <span class="badge">MIT license</span>
     <span class="badge">npx github:jpolvora/workflow-skills</span>
   </div>
@@ -54,9 +54,9 @@
         <li>Collaborative Spec Brainstorming (Step 0)</li>
         <li>Architectural Review & Interview (Steps 1–2)</li>
         <li>DAG Task Decomposition (Step 3)</li>
-        <li>Parallel or Multi-layered coding (Steps 5, 10)</li>
-        <li>Pre-PR validation & goal-fix-pr loops (Steps 11–13)</li>
-        <li>Session model + phase soft tips (Coder/Reviewer); Pause to switch</li>
+        <li>Implement, verify, local review (Steps 4–6)</li>
+        <li>Testing, ship, goal-fix-pr / fix-pr (Steps 7–9)</li>
+        <li>Session model + phase soft tips; Pause to switch</li>
       </ul>
       <a class="workflow-btn view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View spec-to-pr workflow</a>
     </div>
@@ -64,7 +64,7 @@
     <div class="workflow-card">
       <div class="workflow-badge lite">Lite</div>
       <h3>spec-to-pr-lite</h3>
-      <p class="workflow-tagline">Fast sequential pipeline (Steps 1–5)</p>
+      <p class="workflow-tagline">Fast sequential pipeline (Steps 0–5)</p>
       <p>A streamlined, fast alternative designed to run planning, sequential coding, code review, and shipping in a direct loop. Requires an existing specification.</p>
       <ul>
         <li>Planning and brainstorm from existing specification</li>
@@ -84,7 +84,7 @@
 
   <!-- Layer 0 -->
   <div class="layer">
-    <h3>Layer 0 — Harness <span class="count">(3)</span></h3>
+    <h3>Layer 0 — Harness <span class="count">(4)</span></h3>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
         <div class="name">check-harness</div>
@@ -96,26 +96,15 @@
         <div class="desc">Auto-check workflow processes (spec-to-pr & spec-to-pr-lite) for step continuity, config sharing, state isolation, compatibility, and provider references. Use when validating orchestrators, adding steps, or testing workflow changes.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-workflows/SKILL.md">View skill</a>
       </div>
+      <div class="skill-card" data-path=".agents/skills/show-harness/SKILL.md">
+        <div class="name">show-harness</div>
+        <div class="desc">Snapshot the harness active in this session — skills, rules, instructions, precedence, and can/cannot — as short bullets. Invoke anytime with /show-harness or @show-harness.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/show-harness/SKILL.md">View skill</a>
+      </div>
       <div class="skill-card" data-path=".agents/skills/write-a-skill/SKILL.md">
         <div class="name">write-a-skill</div>
-        <div class="desc">Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, or build a new skill.</div>
+        <div class="desc">Creates, edits, or audits agent skills for predictability — structure, progressive disclosure, descriptions, and pruning. Use when the user wants to create, write, build, rewrite, or optimize a skill, or mentions skill authoring.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/write-a-skill/SKILL.md">View skill</a>
-      </div>
-    </div>
-  </div>
-  <!-- Layer 1 -->
-  <div class="layer">
-    <h3>Layer 1 — Engineering standards <span class="count">(2)</span></h3>
-    <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/mobile-first-design/SKILL.md">
-        <div class="name">mobile-first-design</div>
-        <div class="desc">Design for mobile devices first, then scale up to larger screens. Create responsive interfaces that work seamlessly across all device sizes.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/mobile-first-design/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/taste-skill/SKILL.md">
-        <div class="name">design-taste-frontend</div>
-        <div class="desc">Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/taste-skill/SKILL.md">View skill</a>
       </div>
     </div>
   </div>
@@ -125,27 +114,27 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md">
         <div class="name">ws-write-spec</div>
-        <div class="desc">Receives a high-level feature description and drafts a canonical step-00-{slug}.spec.md specification.</div>
+        <div class="desc">Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr Step 0 brainstorm).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/00-write-spec/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/01-write-plan/SKILL.md">
         <div class="name">ws-write-plan</div>
-        <div class="desc">Generates the initial implementation plan (step-01-{slug}.plan.md) from the specification.</div>
+        <div class="desc">Generates the implementation plan (step-01-{slug}.plan.md) from the specification.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/01-write-plan/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/02-interview/SKILL.md">
         <div class="name">ws-interview</div>
-        <div class="desc">Audits and interrogates an implementation plan to resolve ambiguities and verify ready criteria before tasks are created.</div>
+        <div class="desc">Audits and interrogates an implementation plan to resolve ambiguities before task creation.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/02-interview/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">
         <div class="name">ws-plan-to-tasks</div>
-        <div class="desc">Breaks an implementation plan into atomic tasks with files, ACs, and coderPrompts, organized in a DAG topological order.</div>
+        <div class="desc">Breaks an implementation plan into atomic tasks organized in a DAG, or sequential when small.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/04-implement-tasks/SKILL.md">
         <div class="name">ws-implement-tasks</div>
-        <div class="desc">Executes code implementations or fixes defects following a plan, DAG, or code review findings.</div>
+        <div class="desc">Executes code implementations or fixes defects following a plan, DAG, or review findings.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/04-implement-tasks/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md">
@@ -165,23 +154,13 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/08-ship-pr/SKILL.md">
         <div class="name">ws-ship-pr</div>
-        <div class="desc">End-to-end delivery — push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
+        <div class="desc">End-to-end delivery — prepare-to-PR checklist, push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/08-ship-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/09-fix-pr/SKILL.md">
         <div class="name">ws-fix-pr</div>
         <div class="desc">Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/09-fix-pr/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/10-goal-fix-pr/SKILL.md">
-        <div class="name">ws-goal-fix-pr</div>
-        <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/10-goal-fix-pr/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/11-update-plan-implementation/SKILL.md">
-        <div class="name">ws-update-plan-implementation</div>
-        <div class="desc">Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/11-update-plan-implementation/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/azure-devops-provider/SKILL.md">
         <div class="name">azure-devops-provider</div>
@@ -193,46 +172,31 @@
         <div class="desc">GitHub provider for spec-to-pr — issue→spec, auth checks, PR create/threads/merge via gh CLI and provider scripts. Use when providers.active or providers.scm is github, or when invoking /github-provider standalone.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/github-provider/SKILL.md">View skill</a>
       </div>
+      <div class="skill-card" data-path=".agents/skills/goal-fix-pr/SKILL.md">
+        <div class="name">ws-goal-fix-pr</div>
+        <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/goal-fix-pr/SKILL.md">View skill</a>
+      </div>
       <div class="skill-card" data-path=".agents/skills/local-spec-provider/SKILL.md">
         <div class="name">local-spec-provider</div>
         <div class="desc">Local markdown spec provider for spec-to-pr — detect/configure specsDir, register/normalize/mirror hand-written *.spec.md into canonical step-00 artifacts (source: local). PR intents delegate to providers.scm. Use when /local-spec-provider, active provider is local, or registering a local *.spec.md path.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/local-spec-provider/SKILL.md">View skill</a>
       </div>
+      <div class="skill-card" data-path=".agents/skills/update-plan-implementation/SKILL.md">
+        <div class="name">ws-update-plan-implementation</div>
+        <div class="desc">Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/update-plan-implementation/SKILL.md">View skill</a>
+      </div>
     </div>
   </div>
   <!-- Layer 4 -->
   <div class="layer">
-    <h3>Layer 4 — Review & audit <span class="count">(6)</span></h3>
+    <h3>Layer 4 — Review & audit <span class="count">(1)</span></h3>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/domain-review/SKILL.md">
-        <div class="name">domain-review</div>
-        <div class="desc">Use when the user asks for domain review, bounded-context review, code-review by domain, subdomain audit, or to pick a domain from specs/domains for smells/security/SOLID/perf. Also when they say /domain-review, /domain-review next, /domain-review auto, or /domain-review next auto (auto-pick + optional full fix/PR/goal-fix-pr cycle).</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/domain-review/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/dotnet-security-performance-review/SKILL.md">
-        <div class="name">dotnet-security-performance-review</div>
-        <div class="desc">Perform C# security and performance code reviews for login, authorization, and database access. Use when auditing backend auth, checking EF transactions, database queries, roles, impersonation safety, or optimizing API endpoints.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/dotnet-security-performance-review/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/multi-domain-review/SKILL.md">
-        <div class="name">multi-domain-review</div>
-        <div class="desc">Use when the user asks to review multiple domains, batch domain-review, rotate all stale/never-reviewed domains, or says /multi-domain-review, multi-domain review, review all domains, or domain-review queue/batch with the 7-day freshness window.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/multi-domain-review/SKILL.md">View skill</a>
-      </div>
       <div class="skill-card" data-path=".agents/skills/secrets-leak-review/SKILL.md">
         <div class="name">secrets-leak-review</div>
-        <div class="desc">Scans repository for hardcoded secrets, passwords, API keys, PII, private keys, connection strings, .env files, and client-confidential data before commit. Use when asked to "check for secrets", "leak check", "secrets scan", "pre-commit security check", "check for hardcoded passwords", "PII scan", "repo leak audit", or before pushing to a public repository.</div>
+        <div class="desc">Use when asked to check for secrets, leak check, secrets scan, pre-commit security check, hardcoded passwords, PII scan, repo leak audit, or before pushing to a public repository.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/secrets-leak-review/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/security-review/SKILL.md">
-        <div class="name">security-review</div>
-        <div class="desc">Security code review for vulnerabilities. Use when asked to "security review", "find vulnerabilities", "check for security issues", "audit security", "OWASP review", or review code for injection, XSS, authentication, authorization, cryptography issues. Provides systematic review with confidence-based reporting.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/security-review/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/tdd-sdd-ddd-reviewer/SKILL.md">
-        <div class="name">tdd-sdd-ddd-reviewer</div>
-        <div class="desc">Architectural audit (TDD, spec-driven design, DDD) for C# .NET backends and React frontends. Use when explicitly asked for clean-architecture, layer-boundary, or TDD/DDD review — not default PR review.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/tdd-sdd-ddd-reviewer/SKILL.md">View skill</a>
       </div>
     </div>
   </div>
@@ -257,7 +221,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md">
         <div class="name">goal-loop</div>
-        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., 10-goal-fix-pr). Not invocable standalone.</div>
+        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., goal-fix-pr). Not invocable standalone.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md">
@@ -299,13 +263,13 @@
     </div>
     <div class="install-step">
       <h4>Workflows package (<code>w</code>)</h4>
-      <p>Workflows package — 26 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub. Does not force Extra-only skills.</p>
-      <p>Includes: <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+18)</p>
+      <p>Workflows package — 27 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub. Does not force Extra-only skills.</p>
+      <p>Includes: <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+19)</p>
     </div>
     <div class="install-step">
       <h4>Extra package (<code>e</code>)</h4>
-      <p>Extra package — 9 standalone review/design/meta skills. Does not install workflow orchestrators or the hub by default.</p>
-      <p>Includes: <code>security-review</code>, <code>dotnet-security-performance-review</code>, <code>tdd-sdd-ddd-reviewer</code>, <code>domain-review</code>, <code>multi-domain-review</code>, <code>secrets-leak-review</code>, <code>mobile-first-design</code>, <code>taste-skill</code>, <code>write-a-skill</code></p>
+      <p>Extra package — 2 optional authoring/review skills. Does not install workflow orchestrators or the hub by default.</p>
+      <p>Includes: <code>write-a-skill</code>, <code>show-harness</code></p>
     </div>
     <div class="install-step">
       <h4>Individual selection</h4>
@@ -313,6 +277,22 @@
     </div>
   </div>
 </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -477,7 +457,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.46</p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.54</p>
 </footer>
 
 <!-- Modal -->

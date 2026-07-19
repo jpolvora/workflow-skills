@@ -3,9 +3,8 @@ name: spec-to-pr
 description: >-
   Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs.
   Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description.
-  Flags: dry-run, auto, skip-testing (alias skip-integration), skip-tests, full, strict.
+  Flags: dry-run, auto, skip-testing, skip-tests, full, strict.
   Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via Task tool.
-  Legacy aliases: /us-workflow, /us-delivery-workflow.
 upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
 
@@ -69,8 +68,8 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | Memory | `state.md` short-term (`## Workflow memory`, `## Accumulated decisions`, `## Doc consolidation log`). Root `MEMORY.md` = generalizable patterns. |
 | Dual-mode | Shared skills interchangeable with `spec-to-pr-lite`. Config/gates: [`config-resolution.md`](../shared/config-resolution.md), [`gates.md`](../shared/gates.md). `workflowType: standard`. |
 | `dryRun` | No `Write` `src/`/`web/`, no commit/push/worktree/browser/MEMORY `Shell`/`Write`. Prefix `[DRY-RUN]`. |
-| `autoMode` | No AskQuestion; auto-gate option 0. Prefix `[AUTO]`. HS-3/4/5 pause. No browser MCP. |
-| `skipTesting` | Skip Step 7 → `skippedSteps`+`completedSteps`, log, Step 8. **Alias:** `skipIntegration` (legacy flag name). Prefer when no API/UI surface and unit tests green. |
+| `autoMode` | No AskQuestion; auto-gate option 0. Prefix `[AUTO]`. HS-3/4/5 pause. No browser MCP. Telemetry/`--elapsed` + Step 8 Benchmark/final-board Total time still mandatory. |
+| `skipTesting` | Skip Step 7 → `skippedSteps`+`completedSteps`, log, Step 8. Prefer when no API/UI surface and unit tests green. |
 | `skipTests` | Skip test suites in stack.md; build required. `verification.tests: skipped`. |
 | `fullMode` | Step 8 combined gate Recommended = commit plan+result then create PR. Default: off (Recommended = commit + skip PR). |
 | Banners | `autoMode` or `dryRun` → Step Output Banner every step. |
@@ -81,9 +80,7 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | Session model | `currentModel` = executing session model. Switch via Pause → IDE/agent host → Resume ([`gates.md`](../shared/gates.md)). |
 | Portability | Keep spec-to-pr fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
 
-**Legacy aliases** (still accepted): `/us-workflow`, `@[us-workflow]`, `/us-delivery-workflow`, `@[us-delivery-workflow]`.
-
-**Runtime tokens (unchanged):** git tags/worktrees use prefix `uswf/`; plan slugs use `us-{id}`. These are historical tokens, not the skill name.
+**Runtime tokens:** git tags/worktrees use prefix `uswf/`; plan slugs use `us-{id}`.
 
 ## Allowed deps
 
@@ -101,7 +98,7 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | State | `{config.plans.dir}/{slug}/{workflow-id}.state.md` |
 | Skills | `ws-write-spec`→0 · `ws-write-plan`→1 · `ws-interview`→2 · `ws-plan-to-tasks`→3 · `ws-implement-tasks`→4 build, 6 fix · `ws-verify-plan`→5 · `ws-code-review`→6 · `ws-testing`→7 · `ws-ship-pr`→8 · `ws-fix-pr`/`ws-goal-fix-pr`→9 · `spec-format` |
 
-Filesystem paths use numeric prefix; skill `name:` has `ws-` prefix. Post-8 PR threads: [`ws-fix-pr`](../09-fix-pr/SKILL.md) / [`ws-goal-fix-pr`](../10-goal-fix-pr/SKILL.md).
+Filesystem paths: FSM steps `00`–`09` use numeric prefixes; `goal-fix-pr` / `update-plan-implementation` are unprefixed. Skill `name:` uses `ws-` prefix. Post-8 PR threads: [`ws-fix-pr`](../09-fix-pr/SKILL.md) / [`ws-goal-fix-pr`](../goal-fix-pr/SKILL.md).
 
 ### Work dir `{us-dir}` = `{config.plans.dir}/{slug}/` (default `.cursor/plans/{slug}/`)
 
@@ -253,6 +250,8 @@ Any step **may** use a worktree when `useWorktrees=true`. **Preferred** for code
 
 → [`protocols/state-hygiene.md`](protocols/state-hygiene.md)
 
+Every completed/failed step: pass measured `--elapsed` into `update_state.py` (required; script rejects omit). Upserts `## Telemetry log`. Missing step-output telemetry or hygiene fail → **HS-5**.
+
 ### Model readiness
 
 No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → IDE/agent host → Resume).
@@ -331,7 +330,7 @@ Before G2-code commit: `config.json.rules.stackFile` → build (+ tests unless `
 
 ### Testing (Step 7)
 
-`07-testing` via **`Task`** (label **Testing** — broader than integration-only). `skipTesting` (alias `skipIntegration`) → skip to Step 8. `autoMode`/`dryRun` → Task without browser.
+`07-testing` via **`Task`** (label **Testing** — broader than integration-only). `skipTesting` → skip to Step 8. `autoMode`/`dryRun` → Task without browser.
 
 Gates (normal): **Approve and run test battery** (rec) / **Run without browser** / **Adjust test plan** / **Skip validation** / **Pause workflow**.
 
@@ -380,7 +379,7 @@ Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · ch
 
 ### Automatic Mode
 
-Parse: `auto` + combinable `dry-run`, `skip-testing`/`skip-integration`, `skip-tests`, US/spec entry. Normalize legacy `automatico`/`automático` → `auto` internally.
+Parse: `auto` + combinable `dry-run`, `skip-testing`, `skip-tests`, US/spec entry.
 
 Resume: active `autoMode` same US → continue `currentStep`; else new `workflow-id`.
 
@@ -423,7 +422,7 @@ Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `b
 ```yaml
 workflowId, slug, us, specSource, specPath
 startedAt, endedAt, status: active|completed|cancelled|failed
-currentStep, dryRun, autoMode, skipTesting, skipIntegration, skipTests, fullMode
+currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode
 execMode: sequential|parallel|null  # set after Step 3
 branch, baselineCommit, preExistingDirty: []
 checkpoints, workflowManifest, commits: [{sha, step, message}]
@@ -440,7 +439,7 @@ telemetry:
   steps: [{ N, label, dispatchedAt, finishedAt, elapsedSec, promptTokens, completionTokens, estimated, model, filesTouched }]
 ```
 
-`skipIntegration` retained for resume compatibility; normalize new runs to `skipTesting`. Sections: Workflow baseline, manifest, Step file log, Refinement registry, Context, Artifacts, Step outputs, Step model log, Workflow memory, Accumulated decisions, Doc consolidation log, Open items, Gate history.
+Sections: Workflow baseline, manifest, Step file log, Refinement registry, Context, Artifacts, Step outputs, Step model log, Workflow memory, Accumulated decisions, Doc consolidation log, Open items, Gate history.
 
 ### Resume / reset
 
@@ -491,19 +490,19 @@ Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct
 
 ## Post-workflow (outside this agent)
 
-Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`11-update-plan-implementation`](../11-update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix substep (in-pipeline review fixes).
+Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`update-plan-implementation`](../update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix substep (in-pipeline review fixes).
 
 ## Triggers
 
 ```
-@[spec-to-pr] [auto|dry-run|skip-testing|skip-integration|skip-tests|full|strict] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
+@[spec-to-pr] [auto|dry-run|skip-testing|skip-tests|full|strict] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /spec-to-pr [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /status | progress | where am I? → Progress Board only
 go back | change plan | back to step X → Backward Nav (not in auto)
 switch model | change model → Pause workflow, switch in IDE/agent host, resume (no in-gate picker)
 ```
 
-**Flags:** `auto`, `dry-run`, `skip-testing` (alias `skip-integration`), `skip-tests`, `full`, `strict` (full US verification at Step 5). Model = session; switch via Pause → IDE/agent host → Resume ([`gates.md`](../shared/gates.md)).
+**Flags:** `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict` (full US verification at Step 5). Model = session; switch via Pause → IDE/agent host → Resume ([`gates.md`](../shared/gates.md)).
 
 Gates: [`gates.md`](../shared/gates.md). Config: [`config-resolution.md`](../shared/config-resolution.md).
 

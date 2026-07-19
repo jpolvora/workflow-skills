@@ -4,7 +4,7 @@ description: >-
   Generic goal/loop pattern for convergence-driven loops. Provides sentinel
   management, heartbeat/sleeper, re-collect -> check -> continue/done loop,
   stop conditions, verify framework, and report format. Consumed by
-  goal-orchestrator skills (e.g., 10-goal-fix-pr). Not invocable standalone.
+  goal-orchestrator skills (e.g., goal-fix-pr). Not invocable standalone.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.1
 disable-model-invocation: true

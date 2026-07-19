@@ -2,7 +2,7 @@
 name: ws-fix-pr
 description: Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.2
+version: 1.3
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -12,101 +12,65 @@ invocation_names:
 
 # 09-fix-pr
 
-Responsible for fetching, scoring, and systematically resolving active review threads on GitHub or Azure DevOps Pull Requests. It orchestrates local code corrections, test validations, thread resolutions, and pushes changes back to the remote branch.
+Fetch, score, and systematically resolve active PR review threads on GitHub or Azure DevOps: local fixes, test validation, thread resolution, and push back to the remote branch.
 
-Platform I/O (`list-threads`, `resolve-thread`) is **delegated** to the skill selected by `config.providers.scm` — never hardcode a single-host happy path here. Scoring and the fix FSM stay generic in this skill.
+Act as a **Senior Software Developer**: parse threads, run regression tests, and apply minimal surgical fixes that satisfy reviewers.
 
-## Persona
-
-Act as a **Senior Software Developer** tasked with cooperative defect resolution, parsing review threads, executing regression tests, and preparing minimal, surgical updates to satisfy reviewers.
-
----
+Platform I/O (`list-threads`, `resolve-thread`) is **delegated** to the skill selected by `providers.scm`: never hardcode a single-host happy path here. See [README.md](README.md) for platform support, flow summary, and fix checklist.
 
 ## Invocation
 
-### Standalone Mode
+Standalone:
 
 ```
 /fix-pr <PR-ID> [dry-run]
 ```
 
-### Workflow Mode (called by 10-goal-fix-pr)
+Workflow (called by [goal-fix-pr](../goal-fix-pr/SKILL.md)): all interactive gates are auto-approved by the goal loop; receives `PR-ID` and `dry-run` from the goal.
 
-Orchestrated by [10-goal-fix-pr](../10-goal-fix-pr/SKILL.md). All interactive confirmation gates are auto-approved by the goal loop. Receives `PR-ID` and `dry-run` flag from the goal.
-
-### Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `<PR-ID>` | Integer | (required) | Target Pull Request number. |
-| `dry-run` | Flag | `false` | Run checks and simulate fixes/resolutions without pushing commits or resolving remote API threads. |
-
----
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `<PR-ID>` | required | Target Pull Request number |
+| `dry-run` | false | Simulate fixes/resolutions; no commits, pushes, or remote thread mutations |
 
 ## Prerequisites
 
-- **Branch checkout:** The local branch must match the PR source branch.
-- **Config:** `.agents/skills/shared/config.json` with resolvable `providers.scm` (`github` | `azure-devops`; never `local`). See [`config-resolution.md`](../shared/config-resolution.md).
-- **SCM provider skill:** Load [github-provider](../github-provider/SKILL.md) or [azure-devops-provider](../azure-devops-provider/SKILL.md) per resolution below; run that skill’s `validate-auth` before mutating remote threads.
-- **Git client / tokens:** As required by the selected scm provider (`gh` + GraphQL token for GitHub; PAT / `az` for Azure DevOps).
+- Local branch checked out matches the PR source branch.
+- `.agents/skills/shared/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../shared/config-resolution.md).
+- Provider skill's `validate-auth` passes before mutating remote threads.
 
----
+## SCM provider resolution
 
-## SCM provider resolution (`providers.scm`)
-
-Follow [`config-resolution.md`](../shared/config-resolution.md):
-
-1. Read `providers.active` / `providers.scm` from `.agents/skills/shared/config.json`.
-2. If `providers` absent: enabled GitHub tracker → scm=`github`; else enabled Azure DevOps → scm=`azure-devops`; else STOP. Prefer GitHub if both enabled.
-3. If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host; else STOP.
-4. Reject `scm: "local"`.
-5. Load the matching provider skill and call intents by name.
+Resolve per [config-resolution.md](../shared/config-resolution.md): read `providers.active` / `providers.scm`; if absent, prefer an enabled GitHub tracker, else Azure DevOps; reject `scm: "local"`.
 
 | `providers.scm` | Skill | Intents used here |
 |-----------------|-------|-------------------|
 | `github` | [github-provider](../github-provider/SKILL.md) | `list-threads`, `resolve-thread` |
 | `azure-devops` | [azure-devops-provider](../azure-devops-provider/SKILL.md) | `list-threads`, `resolve-thread` |
 
-Canonical scripts live under those providers. Thin forwarder shims remain at `.agents/skills/09-fix-pr/scripts/` for mid-migration callers — prefer provider paths / intents.
+## Steps
 
----
+1. **Sync & CI check**: `git pull origin <sourceRefName>`; refuse dirty worktrees; recommend waiting if CI is active.
+   - Done when: worktree is clean and current with the source branch.
 
-## State Machine (FSM) Flow
+2. **Fetch active threads**: resolve `providers.scm` and call `list-threads` for `<PR-ID>`. Parse `threadId`, `filePath`, `lineNumber`, `comments`. Use the payload's `activeThreads` count directly; do not re-filter raw statuses. If reading any collect `--output` file, open with UTF-8 explicitly (bare `open(path)` on Windows raises `UnicodeDecodeError` on review text).
+   - Done when: every active thread has parsed file/line/comment context.
 
-```
-[Sync & Check CI] ──> [Fetch Threads] ──> [Score Gaps] ──> [Confirmation Gate] ──> [Surgical Fix] ──> [Verify & Push]
-```
+3. **Score & classify**: rate each thread 0–10.
+   - Done when: every thread has a score and an action:
 
-### Phase 0 — Sync & CI Check
-- Pull remote changes using `git pull origin <sourceRefName>`. Prevent overlapping fixes on dirty worktrees.
-- Check if automated review runs are in progress. Recommend waiting if CI is active.
+   | Score | Action |
+   |-------|--------|
+   | 0–5 | Resolve with a comment justifying no code change |
+   | 6–10 | Apply a surgical code fix |
 
-### Phase 1 — Fetch Active Threads
-- Resolve `providers.scm` (section above) and load the scm provider skill.
-- Call provider intent **`list-threads`** with `<PR-ID>` (provider runs its canonical collector — GitHub: `fetch_threads.cjs`; Azure DevOps: `fix_pr_azure_context.py collect`).
-- Parse thread details: `threadId`, `filePath`, `lineNumber`, and `comments`.
-- **Active count:** use the provider payload’s `activeThreads` (ADO collect also prints `collect-summary:` on stderr). Do **not** re-filter raw ADO statuses in ad-hoc Python.
-- **Windows UTF-8:** if you must read `context.json` (or any collect `--output` file), always open with UTF-8 — e.g. `Path(...).read_text(encoding="utf-8")` or `open(..., encoding="utf-8")`. Bare `open(path)` uses the Windows locale (`cp1252`) and raises `UnicodeDecodeError` on review text.
+4. **Confirmation gate**: save the proposed fix checklist to `.agents/skills/09-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted) and ask: "Proceed with fixes for threads [ID1, ID2]?" Under [goal-fix-pr](../goal-fix-pr/SKILL.md), auto-yes (save gate file and proceed).
+   - Done when: checklist confirmed by user, or auto-approved by the goal loop.
 
-### Phase 2 — Scoring & Classification
-Score each thread on a `0–10` scale to categorize its urgency:
+5. **Surgical fix**: for each blocking thread, analyze call sites and adjacent logic, then apply minimal edits (Karpathy guidelines) that fix the defect class, not just the reported instance.
+   - Done when: all approved threads have code changes or a resolution comment drafted.
 
-| Score | Urgency | Class | Action |
-|-------|---------|-------|--------|
-| **0–5** | Low | Non-blocking / Nit | Resolve with comment justifying why no code change is required. |
-| **6–10** | High | Blocking / Bug | Apply surgical fixes in code. |
+6. **Verify & push**: run `config.json.verification` commands; write the review report to `.cursor/codereviews/PR-<PR-ID>-round-<N>.md`; resolve each handled thread via `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
+   - Done when: verification passed, report exists, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).
 
-### Phase 3 — Confirmation Gate
-- Save the proposed fix checklist to `.agents/skills/09-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted).
-- Request user confirmation: `Proceed with fixes for threads [ID1, ID2]?`.
-
-### Phase 4 — Execution & Surgical Fix
-- For code fixes: analyze call sites, test scopes, and verify adjacent logic.
-- Apply surgical edits (no scope creep) following Karpathy guidelines. Fix the defect class globally (check siblings in other files).
-
-### Phase 5 — Verification & Push
-- Run verification tests defined in `config.json.verification`.
-- Generate review report: `.cursor/codereviews/PR-<PR-ID>-round-<N>.md`.
-- Resolve each handled thread via scm provider intent **`resolve-thread`** (skip remote mutation when `dry-run`). Include the `<!-- resolution-reply -->` marker in the resolution comment body.
-- Stage changed files + report, and commit.
-- Push changes using `git push origin HEAD` (skip push if `dry-run`).
+Language: en-us only.

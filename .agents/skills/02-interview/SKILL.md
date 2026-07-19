@@ -1,8 +1,8 @@
 ---
 name: ws-interview
-description: Audits and interrogates an implementation plan to resolve ambiguities and verify ready criteria before tasks are created.
+description: Audits and interrogates an implementation plan to resolve ambiguities before task creation.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.7
+version: 1.8
 disable-model-invocation: true
 invocation_names:
   - interview
@@ -10,94 +10,57 @@ invocation_names:
   - 02-interview
 ---
 
-# 02-interview (Plan Refinement & Grilling)
+# 02-interview
 
-Responsible for auditing and interrogating the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structures, multi-tenancy rules, and invariants. It operates on a "grill-me" philosophy to resolve ambiguities and secure shared understanding before task decomposition begins.
+Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants. Act as a Technical Lead / Senior Architect on a "grill-me" philosophy: resolve ambiguities and secure shared understanding before task decomposition.
 
-## Persona
-
-Act as a **Technical Lead / Senior Architect** whose goal is to scrutinize plans, challenge assumptions, ensure robustness, address edge cases, guarantee security mitigations, and confirm readiness criteria before any code is written.
-
----
+**Canonical path:** writes `{plan-dir}/step-02-{slug}.plan.refined.md`, leaving `step-01-{slug}.plan.md` untouched.
 
 ## Invocation
 
-### Standalone Mode
+Standalone:
 
 ```
 @[refine] <plan-path> [spec=<spec-path>]
 ```
 
-### Workflow Mode
+Workflow (spec-to-pr Step 2): dispatched when the orchestrator does not skip interview (see [gates.md](../shared/gates.md) conditional interview). May be skipped entirely for simple plans.
 
-Dispatched by `spec-to-pr` at Step 2 when the orchestrator did **not** skip interview ([`gates.md`](../shared/gates.md) conditional interview). Discovers parameters via context. Orch may skip this skill entirely for simple plans.
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `<plan-path>` | required | Path to `step-01-{slug}.plan.md` |
+| `spec` | inferred | Path to `step-00-{slug}.spec.md`, inferred from plan folder |
+| `softSkipEligible` | false | Orch hint: Open Questions empty; prefer defaults and exit fast if no blocking gaps |
 
-### Parameters
+## Grilling Protocol (hard rules)
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `<plan-path>` | String | (required) | Path to `step-01-{slug}.plan.md`. |
-| `spec=<spec-path>` | String | (optional) | Path to `step-00-{slug}.spec.md`. Inferred from the plan folder if omitted. |
-| `softSkipEligible` | Bool | false | Orch hint: Open Questions empty — skill should prefer defaults and exit quickly with `shared_understanding: confirmed` if no blocking gaps. |
+1. **Diligent exploration first** — search the codebase, ADRs, database schema, and `MEMORY.md` before asking. Resolve discoverable gaps automatically and record the evidence.
+2. **Walk the design tree** — resolve foundational gaps (scope/schema) before details (UI/i18n).
+3. **Surgical escalation** — ask exactly one question per round; include the recommended solution as the first choice.
+4. **Escalation cap** — max 3 rounds of user questions; on the 4th, apply sensible defaults and exit.
+5. **No code edits** — write only refined plans and metadata.
 
-## Prerequisites
+## Steps
 
-Read and respect the following shared skills:
-- [karpathy-guidelines](../karpathy-guidelines/SKILL.md)
-- [caveman](../caveman/SKILL.md)
-- [self-learning](../self-learning/SKILL.md)
-- [gabarito](../gabarito/SKILL.md)
+1. **Audit** — Scan sections 0-8 of the plan, run scenario probes (soft-deletion, concurrency, list sizing, rate limits), and register each finding in a `gap_registry` (`id`, `class`, `section`, `gap`, `recommendation`, `status`, `dependsOn`). Classify each gap `blocking` (prevents development or changes AC) or `non-blocking` (quality/optimization, apply via defaults).
+   - Done when: every section 0-8 has been scanned and every finding is registered.
 
----
+2. **Resolve** — Resolve registered gaps by scanning code layers, specs, and `MEMORY.md`; append resolution evidence to the registry.
+   - Done when: every non-blocking gap and every locally resolvable blocking gap has a resolution.
 
-## Grilling Protocol (Hard Rules)
+3. **Escalate** — For remaining blocking gaps: standalone, prompt via `AskQuestion`; workflow, return `status: needs_user` per the Grilling Protocol.
+   - Done when: no blocking gap remains unresolved and unescalated, or the escalation cap was reached and defaults were applied.
 
-1. **Diligent Exploration First:** Search the codebase, ADRs, database schema, and `MEMORY.md` before asking. If the answer is discoverable, resolve the gap automatically and record the evidence.
-2. **Walk the Design Tree:** Resolve foundational gaps (scope/schema) before details (UI/i18n).
-3. **Surgical Escalation:** Ask exactly **one** question per round. Include the recommended solution as the first choice.
-4. **Escalation Cap:** Max **3 rounds** of user questions. On the 4th, apply sensible defaults and exit the loop.
-5. **No Code Edits:** Do not modify product code or write tests. Only write refined plans and metadata.
+4. **Confirm shared understanding** — Workflow: treat as confirmed when the orchestrator already auto-confirmed via "End refinement and advance" (do not re-prompt); otherwise return `shared_understanding: pending`. Standalone: prompt the user to confirm.
+   - Done when: `shared_understanding` is `confirmed`, or `pending` was returned to the orchestrator.
 
----
-
-## State Machine (FSM)
-
-```
-[Audit Plan] ──> [Resolve Gaps] ──> [Escalate / Ask] ──> [Shared Understanding]
-```
-
-### Phase 1 — Audit (Scan & Register)
-- Audit sections 0–8 in `step-01-{slug}.plan.md`.
-- Run scenario probes (e.g., Soft-deletion, concurrency, list sizing, rate limits).
-- Register findings in a `gap_registry` with fields: `id`, `class`, `section`, `gap`, `recommendation`, `status`, `dependsOn`.
-- Classify gaps as:
-  - **blocking:** Prevents development or changes AC. Must be resolved or escalated.
-  - **non-blocking:** Code quality, optimizations. Applied directly via defaults.
-
-### Phase 2 — Resolve (Local Gaps)
-- Resolve registered gaps by scanning code layers, specifications, and `MEMORY.md`.
-- Append resolution evidence to the registry.
-
-### Phase 3 — Escalate (Clarify Gaps)
-- Standalone: prompt the user via `AskQuestion`.
-- Workflow: return `status: needs_user` with details to allow the orchestrator to request feedback.
-
-### Phase 4 — Shared Understanding
-- WORKFLOW: If orch already auto-confirmed via **End refinement and advance**, treat as confirmed — do not re-prompt.
-- STANDALONE: Prompt the user to confirm.
-- Otherwise WORKFLOW: return `shared_understanding: pending` and let orch gate (2e only when needed).
-
-**Fast exit:** When `softSkipEligible` and Phase 1 finds `blocking_open == 0`, write refined plan with defaults applied, set `shared_understanding: confirmed`, and return success without escalation.
-
----
+**Fast exit:** when `softSkipEligible` and Step 1 finds `blocking_open == 0`, write the refined plan with defaults applied, set `shared_understanding: confirmed`, and return success without escalation.
 
 ## Outputs
 
-- Drafts `step-02-{slug}.plan.refined.md` (leaving `step-01-{slug}.plan.md` untouched).
-- Appends the `## Interview registry` table to the bottom of the refined plan.
-- Sets the frontmatter `status` to `"plan refined ok"`.
+- `step-02-{slug}.plan.refined.md` with frontmatter `status: "plan refined ok"` and an appended `## Interview registry` table.
 
-### step-output (Workflow Mode)
+### step-output (workflow mode)
 
 ```yaml
 status: success | needs_user
@@ -112,3 +75,5 @@ needs_user:
   context: string
   design_branch: string         # e.g., "Authorization / tenant"
 ```
+
+Language: en-us only.

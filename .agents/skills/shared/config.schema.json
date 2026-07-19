@@ -70,11 +70,7 @@
         "dryRun": { "type": "boolean" },
         "skipTesting": {
           "type": "boolean",
-          "description": "Skip Step 7 integration testing (standard orch). Preferred flag name."
-        },
-        "skipIntegration": {
-          "type": "boolean",
-          "description": "Deprecated alias for skipTesting — parse both; prefer skipTesting in logs."
+          "description": "Skip Step 7 Testing (standard orch)."
         },
         "skipTests": { "type": "boolean" },
         "fullMode": { "type": "boolean" }

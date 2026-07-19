@@ -287,7 +287,7 @@ if (fs.existsSync(depMapPath)) {
     </div>
     <div class="install-step">
       <h4>Extra package (<code>${extra.shortcut || 'e'}</code>)</h4>
-      <p>${extra.label || 'Extra package'} — ${exCount} standalone review/design/meta skills. Does not install workflow orchestrators or the hub by default.</p>
+      <p>${extra.label || 'Extra package'} — ${exCount} optional authoring/review skills. Does not install workflow orchestrators or the hub by default.</p>
       <p>Includes: ${exPreview}</p>
     </div>
     <div class="install-step">

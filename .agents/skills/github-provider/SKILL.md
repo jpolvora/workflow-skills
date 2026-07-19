@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # github-provider
 
-Owns all **GitHub-specific** instructions and scripts for inbound issues (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `09-fix-pr`, `10-goal-fix-pr`, `08-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `github`; they must not embed raw `gh` happy-path recipes beyond linking here.
+Owns all **GitHub-specific** instructions and scripts for inbound issues (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `09-fix-pr`, `goal-fix-pr`, `08-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `github`; they must not embed raw `gh` happy-path recipes beyond linking here.
 
 Resolve `owner` / `repo` from `.agents/skills/shared/config.json` (`issueTrackers.github`, `project.org` / repo name, or `project.repoUrl`). See [`config-resolution.md`](../shared/config-resolution.md). **Never** hardcode org or repo names in this skill or its scripts.
 
@@ -35,7 +35,7 @@ Examples:
 
 ### Workflow Mode
 
-Dispatched by orchestrators (`spec-to-pr`, `spec-to-pr-lite` entry / Specification Protocol) when `providers.active` is `github`, and by `09-fix-pr` / `10-goal-fix-pr` / `08-ship-pr` when `providers.scm` is `github`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
+Dispatched by orchestrators (`spec-to-pr`, `spec-to-pr-lite` entry / Specification Protocol) when `providers.active` is `github`, and by `09-fix-pr` / `goal-fix-pr` / `08-ship-pr` when `providers.scm` is `github`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
 
 ### Parameters
 
@@ -131,7 +131,7 @@ Reuse an existing open PR for the same head→base when present (`gh pr list` / 
 node .agents/skills/github-provider/scripts/fetch_threads.cjs {PR_ID} [--json]
 ```
 
-Return structured threads (`threadId`, path, line, comments) to `09-fix-pr` / `10-goal-fix-pr`.
+Return structured threads (`threadId`, path, line, comments) to `09-fix-pr` / `goal-fix-pr`.
 
 ### `resolve-thread`
 
@@ -170,5 +170,5 @@ Legacy: if `providers.*` is absent, GitHub remains the default when `issueTracke
 
 - **Orchestrator:** [spec-to-pr](../spec-to-pr/SKILL.md)
 - **Ship:** [08-ship-pr](../08-ship-pr/SKILL.md)
-- **Fix / converge:** [09-fix-pr](../09-fix-pr/SKILL.md), [10-goal-fix-pr](../10-goal-fix-pr/SKILL.md)
+- **Fix / converge:** [09-fix-pr](../09-fix-pr/SKILL.md), [goal-fix-pr](../goal-fix-pr/SKILL.md)
 - **Spec format:** [spec-format](../spec-format/SKILL.md)
