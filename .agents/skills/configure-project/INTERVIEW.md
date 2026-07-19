@@ -43,7 +43,7 @@ Scan consumer **repo root** (not this skill package alone):
 5. `stack` summary (id, description, key paths) — or defer to stack.md generation
 6. `domain` / `rules` / `defaults` — optional
 
-Each user-gate: **Accept suggestion (Recommended)** / **Edit…** / **Skip**.
+Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.
 
 ## Write rules
 

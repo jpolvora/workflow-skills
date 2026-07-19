@@ -179,7 +179,7 @@ Project documentation referenced by `AGENTS.md` and skills. Phase 4 discovers ac
 | Theme | Where to look |
 |------|---------------|
 | Guardrails / engineering | Skills with `name: senior-developer` or equivalent; paths from `config.json.rules.*` when set |
-| Architecture / system design | `docs/specs/`, `docs/superpowers/specs/`, docs referenced in `AGENTS.md` |
+| Architecture / system design | `docs/specs/` (when present), docs referenced in `AGENTS.md` |
 | API constraints | Files in `docs/specs/` with names like `backend_API.md`, `api.md` |
 | Frontend constraints | Files in `docs/specs/` with names like `frontend_UI.md`, `ui.md` |
 | UI patterns / components | Skills with `view-patterns`, `taste-skill`; `STANDARDS.md` files within skills |
@@ -366,7 +366,7 @@ Identify canonical sources for each theme. The table below lists **common themes
 | Guardrails / invariants | Skill with `senior-developer` or `engineering-standards` in `name:` + docs in `docs/specs/` | Planning, implementation, and review skills |
 | Specification format | Skill with `spec-format` or equivalent in `name:` | Planning, refinement, and verification skills |
 | UI / CRUD patterns | Skills with `view-patterns`, `ui-standards`, or equivalent + `DESIGN.md` or similar | Implementation and planning skills |
-| Architecture / tenancy / RBAC | Docs in `docs/specs/` or `docs/superpowers/specs/` referenced by planning skills | Planning and implementation skills |
+| Architecture / tenancy / RBAC | Docs in `docs/specs/` (when present) or other docs referenced by planning skills | Planning and implementation skills |
 | Issue/ticket source | Scripts in `.agents/` (e.g., `spec-to-pr/scripts/`) + external CLI (`gh`, `az`) | Planning and verification skills |
 | Code review (methodology) | Workflow-specific review skill (e.g., `06-code-review` / `ws-code-review`) | Pipeline/orchestrator |
 | Testing (pre-PR) | `07-testing` / `ws-testing` | Orchestrator Step 7 (standard) |

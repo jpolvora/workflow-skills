@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-19 17:45] Agent: Cursor Grok
+- **Prompt**: `/check-harness` clear `docs/superpowers` refs; remove missing-file / old-skill / dead-dir references
+- **Done**: Removed dead `docs/superpowers` tree + stale `.cursor/plans` artifacts; scrubbed `docs/superpowers/specs/` from check-harness scan patterns; aligned `configure-project` INTERVIEW gate labels; restored CLI `--help` `.agents/plans` note (tests); site/package **0.0.58**
+- **Result**: Harness OK post-correction; `npm run tests -- --local` green; ready to ship
+
 ### [2026-07-19 17:35] Agent: Cursor Grok
 - **Prompt**: `/write-a-skill` create skill to interview/detect/suggest filling `config.json` anytime; callable during install; work with setup
 - **Done**: Added `configure-project` (SKILL + INTERVIEW); wired `setup.md`, Workflows deps (28), hubs/task router, CLI post-install hints, README; site `0.0.56`

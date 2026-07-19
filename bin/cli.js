@@ -402,7 +402,7 @@ Notes:
   - shared/ hub is installed with workflows/full (and when self-learning is installed).
   - Consumer-owned under shared/ (never copied from upstream): config.json, MEMORY.md, memory/*, stack.md.
     Fresh install seeds empty MEMORY.md + stack.md from templates; existing files are always preserved.
-  - Artifact paths (plans/reviews) come from consumer config.json defaults under .agents/ — not host-private folders.
+  - Artifact paths (plans/reviews) come from consumer config.json (defaults: .agents/plans, .agents/codereviews) — not host-private folders.
   - Optional host pointer files and CHANGELOG.md are consumer-owned (skills do not require them).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Packaged .agents/AGENTS.md is refreshed on install and update.
