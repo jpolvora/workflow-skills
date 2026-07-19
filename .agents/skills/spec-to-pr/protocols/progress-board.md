@@ -1,6 +1,6 @@
 # Progress Board
 
-Render: bootstrap/resume; **phase boundaries** (F0→F1 … F5→F6); after failed steps; pause; `/status`; Step 12 final. Skip board on routine Advance when summary already shown.
+Render: bootstrap/resume; **phase boundaries** (F0→F1 … F5→F6); after failed steps; pause; `/status`; Step 8 final. Skip board on routine Advance when summary already shown.
 
 ```markdown
 ## Progress — US {us} (`{workflowId}`)
@@ -11,7 +11,7 @@ _Model switch: Pause → change model in Cursor → resume._
 ### Pipeline — Phases
 - [x] F0 Bootstrap · [ ] F2 Implementation ← **next** …
 
-### Steps (0–12; +13 when fullMode, omit 4/8)
+### Steps (0–9; omit internal substeps)
 - [x] 0 [{model}] · [x] 1 [{model}] · … · [ ] 5 ← **next** [{currentModel}]
 
 ### Refinement _(Step 2 active only)_
@@ -26,7 +26,7 @@ Round {r}/3 · blocking: {n}
 
 Suffixes: `← next` · `⏭ skipped` · `↻ repeating` · `⏮ reopened`.
 
-## Step 12 final board (after benchmark)
+## Step 8 final board (after benchmark)
 
 ```markdown
 ### Telemetry

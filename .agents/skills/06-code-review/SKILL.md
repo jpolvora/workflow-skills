@@ -1,8 +1,8 @@
 ---
 name: ws-code-review
-description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.
+description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.2
+version: 3.3
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -28,9 +28,11 @@ Act as a **Senior Code Reviewer** who conducts thorough static and logical analy
 /code-review [base=<ref>] [plan=<plan-path>]
 ```
 
-### Workflow Mode (Step 9)
+### Workflow Mode (Step 6)
 
-Dispatched automatically by `spec-to-pr` at Step 9. Receives `base` and `planPath` from the orchestrator's state file.
+Dispatched automatically by `spec-to-pr` at Step 6. Receives `base` and `planPath` from the orchestrator's state file.
+
+**Output artifact:** `{plan-dir}/step-06-{slug}.review.md` (write the report to the plan directory when `planDir` / slug is provided).
 
 ### Parameters
 
@@ -46,6 +48,24 @@ Read and respect the following shared skills:
 - [caveman](../caveman/SKILL.md)
 - [self-learning](../self-learning/SKILL.md)
 - [gabarito](../gabarito/SKILL.md)
+
+---
+
+## Workflow — conditional fix substep (not a separate step)
+
+When dispatched under `spec-to-pr` or `spec-to-pr-lite`, **fix is not its own workflow step**. The orchestrator handles the substep after this skill returns:
+
+| Case | Behavior |
+|------|----------|
+| Clean (no Critical/Warning) | Orchestrator completes Step 6; Advance to Step 7 |
+| Critical or Warning findings | Orchestrator dispatches [04-implement-tasks](../04-implement-tasks/SKILL.md) `mode=fix` (fix substep), optional targeted re-review, then completes Step 6 |
+| User declines fix | Orchestrator logs skip; Advance with findings (or Pause) |
+
+Log `review-fix` in gate history — do **not** add a separate `completedSteps` entry for the fix substep.
+
+**Optional fix artifact:** `{plan-dir}/step-06-{slug}.fix.report.md` — summary of fixes applied, tests run, and residual findings (write when fix substep runs).
+
+Standalone `/code-review`: the developer or agent may apply fixes inline after user confirms (see [Automatic Fix](#automatic-fix-after-yes) below).
 
 ---
 
@@ -104,7 +124,9 @@ Cross-check `config.json.invariants` and `config.json.rules`:
 
 ## Report Format
 
-**If nothing to report:** output `No feedback` and stop.
+Write workflow output to `{plan-dir}/step-06-{slug}.review.md`.
+
+**If nothing to report:** write `No feedback` to the artifact (or output `No feedback` in standalone mode) and stop.
 
 **If findings exist:**
 
@@ -135,9 +157,11 @@ Cross-check `config.json.invariants` and `config.json.rules`:
 
 ## Automatic Fix (after YES)
 
+**Standalone only** — under workflow, the orchestrator owns the fix substep via `04-implement-tasks`.
+
 1. Apply all surgical fixes to source files.
 2. Run `build-backend`, `test-backend`, and `build-frontend` (+ `test-frontend` if UI logic is touched).
-3. Report resulting files changed and test outcome.
+3. Report resulting files changed and test outcome in `step-06-{slug}.fix.report.md` when in workflow mode with a plan directory.
 
 ---
 

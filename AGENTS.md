@@ -43,17 +43,17 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 | Workflow | Path | Role |
 |----------|------|------|
-| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec → plan → implement → verify → review → integrate → PR (FSM F0–F6, steps 0–13) |
-| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential plan → implement → review → ship (steps 1–5) |
+| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
+| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 ### Dual-mode
 
 - Config: `.agents/skills/shared/config.json` only — [`config-resolution.md`](.agents/skills/shared/config-resolution.md)
 - Gates: [`gates.md`](.agents/skills/shared/gates.md) — prefer `AskQuestion`; markdown fallback when unavailable
-- **Session model:** `currentModel` = executing session model; switch via Pause → Cursor UI → Resume (no `--model` / `--model-chain`). Soft tips at F1→F2 / F3→F4 (full orch only)
+- **Session model:** `currentModel` = executing session model; switch via Pause → Cursor UI → Resume (no `--model` / `--model-chain`). Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
-- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5 table; do not use STEP-DISPATCH as lite step numbers.
+- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
 
@@ -64,14 +64,14 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 | `ws-write-plan` | 1 | Implementation plan |
 | `ws-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
-| `ws-implement-tasks` | 5, 10 | Build / fix |
-| `ws-verify-plan` | 6 | Acceptance verify |
-| `ws-code-review` | 9 | Local review |
-| `ws-integration-validation` | 11 | Pre-PR tests |
-| `ws-fix-pr` | 13 (via ship) | PR thread fix |
-| `ws-goal-fix-pr` | 13 (via ship) | Fix until zero threads |
+| `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
+| `ws-verify-plan` | 5 | Check-implementation (spec score) |
+| `ws-code-review` | 6 | Local review (+ conditional fix) |
+| `ws-integration-validation` | 7 | Testing (unit/integration/coverage) |
+| `ws-ship-pr` | 8 | Delivery commit + push/PR |
+| `ws-fix-pr` | 9 | PR thread fix |
+| `ws-goal-fix-pr` | 9 | Fix until zero threads |
 | `ws-update-plan-implementation` | Post | Plan deltas |
-| `ws-ship-pr` | 13 | PR deliver / merge |
 | `github-provider` | Provider | GitHub issue→spec + PR ops |
 | `azure-devops-provider` | Provider | ADO WI→spec + PR ops |
 | `local-spec-provider` | Provider | Local `*.spec.md` |

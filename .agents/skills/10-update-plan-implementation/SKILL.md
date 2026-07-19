@@ -45,7 +45,7 @@ Not part of the main `spec-to-pr` pipeline. Invoked by the developer explicitly 
 
 Resolve the working directories and target artifacts:
 - **Finalized Plan:** `step-02-{slug}.plan.refined.md` (if exists) or fallback `step-01-{slug}.plan.md`.
-- **Delivery Result:** `step-12-{slug}.result.md`.
+- **Delivery Result:** `step-08-{slug}.result.md`.
 
 ---
 
@@ -79,5 +79,5 @@ Resolve the working directories and target artifacts:
 ### Phase 5 — Verification & Certification
 - Verify that every blocker finding is marked as resolved.
 - Record commit hashes in the plan's §9 commits table.
-- Update `step-12-{slug}.result.md` (append new fixes to the Done section).
+- Update `step-08-{slug}.result.md` (append new fixes to the Done section).
 - Present the **PR Readiness Summary** in English.

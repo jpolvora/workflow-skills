@@ -62,8 +62,8 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 
 | Skill | Path | Role |
 |-------|------|------|
-| `spec-to-pr` | `skills/spec-to-pr/SKILL.md` | Spec → plan → implement → verify → review → integrate → PR (FSM F0–F6, steps 0–13) |
-| `spec-to-pr-lite` | `skills/spec-to-pr-lite/SKILL.md` | Fast, sequential Plan → implement → review → ship PR (steps 1–5) |
+| `spec-to-pr` | `skills/spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
+| `spec-to-pr-lite` | `skills/spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 ### Dual-Mode Execution & Compatibility
 
@@ -73,7 +73,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Session model**: `currentModel` from the executing session; switch via Pause → Cursor UI → Resume (no `--model` / `--model-chain`). Soft tips at F1→F2 / F3→F4 (full orch only).
 - **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
 - **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
-- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5; do not treat STEP-DISPATCH as lite step numbers.
+- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5; do not treat STEP-DISPATCH as lite step numbers.
 
 ---
 
@@ -125,14 +125,14 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-write-plan` | 1 | `skills/01-write-plan/SKILL.md` | Generate implementation plan from issue / spec |
 | `ws-interview` | 2 | `skills/02-interview/SKILL.md` | Audit and refine plan until shared understanding |
 | `ws-plan-to-tasks` | 3 | `skills/03-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
-| `ws-implement-tasks` | 5, 10 | `skills/04-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
-| `ws-verify-plan` | 6 | `skills/05-verify-plan/SKILL.md` | Verify deliverables against acceptance criteria |
-| `ws-code-review` | 9 | `skills/06-code-review/SKILL.md` | Two-phase triage + investigation local review |
-| `ws-integration-validation` | 11 | `skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |
-| `ws-fix-pr` | 13 (via ship-pr) | `skills/08-fix-pr/SKILL.md` | Resolve active PR review threads |
-| `ws-goal-fix-pr` | 13 (via ship-pr) | `skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
+| `ws-implement-tasks` | 4, 6 (fix substep) | `skills/04-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
+| `ws-verify-plan` | 5 | `skills/05-verify-plan/SKILL.md` | Check-implementation vs spec (score 0–10) |
+| `ws-code-review` | 6 | `skills/06-code-review/SKILL.md` | Two-phase triage + investigation local review |
+| `ws-integration-validation` | 7 | `skills/07-integration-validation/SKILL.md` | Testing gate (unit, integration, coverage) |
+| `ws-ship-pr` | 8 | `skills/11-ship-pr/SKILL.md` | Delivery commit + push + create PR |
+| `ws-fix-pr` | 9 | `skills/08-fix-pr/SKILL.md` | Resolve active PR review threads |
+| `ws-goal-fix-pr` | 9 | `skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
 | `ws-update-plan-implementation` | Post-workflow | `skills/10-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
-| `ws-ship-pr` | 13 | `skills/11-ship-pr/SKILL.md` | End-to-end PR delivery and merge |
 
 ### Providers (platform-specific entry + PR ops)
 

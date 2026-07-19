@@ -25,7 +25,21 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 ## Bootstrap & Entry
 
 > **[spec-to-pr]** — Before Step 0.
-> **[spec-to-pr-lite]** — Before Step 1.
+> **[spec-to-pr-lite]** — Before Step 0.
+
+### Entry matrix (both orchestrators)
+
+Same entry paths for **standard** and **lite**. Resolve provider from `config.json` `providers.active` (or legacy `issueTrackers.*.enabled` inference). Canonical spec write: `{us-dir}/step-00-{slug}.spec.md`.
+
+| Input | Provider / skill | Step 0 action |
+|-------|------------------|---------------|
+| GitHub `{n}` / `US {n}` | [`github-provider`](../github-provider/SKILL.md) `fetch-to-spec` | Fetch issue → spec; `slug: us-{n}` |
+| ADO `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | [`azure-devops-provider`](../azure-devops-provider/SKILL.md) `fetch-to-spec` | Fetch WI → spec |
+| Hand-written `*.spec.md` (any path) | [`local-spec-provider`](../local-spec-provider/SKILL.md) `fetch-to-spec` | Register / normalize → canonical spec |
+| Free-text feature description (no spec) | `ws-write-spec` (standard or lite) | Brainstorm → `step-00-{slug}.spec.md` |
+| Plain text in invocation (no issue id, no `*.spec.md` path) | `ws-write-spec` | Same as free-text row |
+
+Optional mirror: `{config.plans.specsDir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `step-00-{slug}.spec.md` under `{us-dir}`.
 
 1. **Config check**: Check if `.agents/skills/shared/config.json` exists. If missing:
    - `cp .agents/skills/shared/config.json.example .agents/skills/shared/config.json`
@@ -44,12 +58,14 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
    - Write `STACK.md` to the root of the repository.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `STACK.md created → {path}` in step output.
-2. **Parse flags**: `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict`.
+2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-integration` (deprecated alias → `skipTesting`), `skip-tests`, `full`, `strict`.
+   - **Combined Switches:** These switches can be used individually or combined in any configuration (e.g. `full` + `auto` + `dry-run` to run a fully automated dry-run simulation of the entire workflow for testing).
+   - Normalize: `skip-integration` / `skip-tests` → set `skipTesting: true` (log alias when `skip-integration` used).
    - Set `currentModel` from the **executing session model** (agent identity / runtime). If unknown → `unknown`.
    - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch model in IDE/agent host → Resume`.
    - Do **not** store or apply `modelChain`.
-   - `strict` → full US verification at Step 6 (standard orch only).
-2a. **Gate contract**: Load [`gates.md`](gates.md) — slim transitions, one delivery gate, one ship gate. Config/SCM: [`config-resolution.md`](config-resolution.md).
+   - `strict` → full US verification at Step 5 (standard orch only).
+2a. **Gate contract**: Load [`gates.md`](gates.md) — universal step controls, combined delivery + ship gate at standard Step 8 / lite Step 4, separate fix-PR at standard Step 9 / lite Step 5. Config/SCM: [`config-resolution.md`](config-resolution.md).
 2b. **Mode hint (new workflow only):** If user did not pass density flags and invoked full `spec-to-pr` without `--full`/`auto`, optionally offer once: **Full pipeline** (rec) / **Use lite instead** (`/spec-to-pr-lite`) — see gates.md Mode selection. Skip when already on lite.
 3. **Log parsed args and switch states**: Write a banner to step output showing all switches and their resolved values:
    ```markdown
@@ -61,7 +77,7 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
    | `autoMode` | `{true/false}` |
    | `dryRun` | `{true/false}` |
    | `fullMode` | `{true/false}` |
-   | `skipIntegration` | `{true/false}` |
+   | `skipTesting` | `{true/false}` |
    | `skipTests` | `{true/false}` |
    | `currentModel` | `{session model}` |
    | `slug` | `{slug}` |

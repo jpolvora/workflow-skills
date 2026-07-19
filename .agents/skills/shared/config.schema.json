@@ -18,7 +18,7 @@
         "workingBranch": {
           "type": "string",
           "default": "develop",
-          "description": "Active delivery branch used by ship-pr / Step 13"
+          "description": "Active delivery branch used by ship-pr / Step 8–9"
         },
         "gitRemote": { "type": "string", "default": "origin" }
       }
@@ -68,7 +68,14 @@
       "properties": {
         "autoMode": { "type": "boolean" },
         "dryRun": { "type": "boolean" },
-        "skipIntegration": { "type": "boolean" },
+        "skipTesting": {
+          "type": "boolean",
+          "description": "Skip Step 7 integration testing (standard orch). Preferred flag name."
+        },
+        "skipIntegration": {
+          "type": "boolean",
+          "description": "Deprecated alias for skipTesting — parse both; prefer skipTesting in logs."
+        },
         "skipTests": { "type": "boolean" },
         "fullMode": { "type": "boolean" }
       }
@@ -90,6 +97,11 @@
         "worktreesDir": {
           "type": "string",
           "default": ".cursor/plans/{slug}/worktrees"
+        },
+        "useWorktrees": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, prefer git worktree isolation for Step 4 implement (non-win32, path length ≤180, git worktree add succeeds)."
         }
       }
     },

@@ -25,8 +25,8 @@ Two delivery workflows (install independently; both share `.agents/skills/shared
 
 | Workflow | Best for | Summary |
 |----------|----------|---------|
-| **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → tasks → implement → verify → review → integrate → PR (FSM steps 0–13) |
-| **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration with an existing spec | Plan → implement → review → deliver → optional ship (steps 1–5) |
+| **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM steps 0–9) |
+| **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer native `AskQuestion` when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the Cursor session model (`Current model` on every transition). To change model for the next step: Pause → switch in Cursor → resume (no `--model` / `--model-chain` flags). Details for agents: [`AGENTS.md`](AGENTS.md). Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
 

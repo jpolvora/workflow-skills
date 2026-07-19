@@ -1,8 +1,8 @@
 ---
 name: ws-verify-plan
-description: Compares implementation quality and code deliverables against the plan and acceptance criteria.
+description: Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.2
+version: 2.3
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -13,8 +13,8 @@ invocation_names:
 # 05-verify-plan
 
 Responsible for auditing implementation deliverables against the specification and design blueprints. It runs in two modes:
-- **Quick Score Mode:** Evaluates overall code quality, conventions, and test coverage on a 0-10 scale.
-- **US Verification Mode:** Audits precise adherence between the spec (`step-00-{slug}.spec.md`), the plan (`step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md`), and the actual code, generating a feature-by-feature report.
+- **Quick Score Mode:** Evaluates overall code quality, conventions, and test coverage on a 0–10 scale.
+- **US Verification Mode:** Audits precise adherence between the primary evaluation source (refined spec when present, else `step-00-{slug}.spec.md`), the plan (`step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md`), and the actual code, generating a feature-by-feature report.
 
 ## Persona
 
@@ -30,9 +30,9 @@ Act as a **Senior QA Engineer / SDET** who meticulously evaluates code deliverab
 /verify-plan [spec-input] [plan-dir=<path>]
 ```
 
-### Workflow Mode (Step 6 of spec-to-pr)
+### Workflow Mode (Step 5 of spec-to-pr)
 
-Dispatched by `spec-to-pr` at Step 6. Receives `specPath`, `planDir`, and optional `mode=quick|full` from the orchestrator.
+Dispatched by `spec-to-pr` at Step 5. Receives `specPath`, `planDir`, and optional `mode=quick|full` from the orchestrator.
 
 **Default under workflow:** `mode=quick` (Quick Score). Escalate to full US Verification when quick score < 7, orch passes `mode=full`, or user passed `--strict`.
 
@@ -43,6 +43,32 @@ Dispatched by `spec-to-pr` at Step 6. Receives `specPath`, `planDir`, and option
 | `spec-input` | String | (optional) | Path to `step-00-*.spec.md`, US number (e.g. `1474`), or omitted to trigger Quick Score mode. |
 | `plan-dir=<path>` | String | `.cursor/plans/{slug}/` | Directory containing the plans and output report. |
 | `mode` | `quick` \| `full` | `quick` in workflow; `full` when standalone with spec | Verification depth. |
+
+---
+
+## Primary evaluation source (workflow)
+
+Score implementation **0–10** against:
+
+1. **`step-02-{slug}.plan.refined.md`** when present (refined spec / shared-understanding plan — primary)
+2. Else **`step-00-{slug}.spec.md`** (canonical spec fallback)
+
+Cross-reference the active plan (`step-02-*` or `step-01-*`) for feature matrix and AC mapping. Publish the integer **score 0–10** in the report and Progress Board summary.
+
+---
+
+## Orchestrator-owned score gate (< 7)
+
+When dispatched under workflow, **this skill does not** present the below-7 menu — the orchestrator owns it after reading `step-05-{slug}.plan.report.md`.
+
+| Score | Orchestrator behavior |
+|-------|----------------------|
+| ≥ 7 | Complete Step 5; Advance to Step 6 |
+| < 7 | AskQuestion: **Refine** (replay implement + re-check) / **Replan** (back to Step 1) / **Respec** (back to Step 0) / **Approve and continue** (log `check-approve-below-7`) |
+
+`autoMode`: orchestrator must **not** auto-approve below 7 — Pause with score (fail closed).
+
+Standalone `/verify-plan`: apply the same ≥ 7 / < 7 threshold; recommend re-implementation or full matrix when below 7.
 
 ---
 
@@ -66,7 +92,7 @@ Optional report shape for Quick Score: [`TEMPLATE.md`](TEMPLATE.md).
 
 ## 2. US Verification Mode (Full Workflow)
 
-Audits adherence between the canonical spec (`step-00-*.spec.md`), the plan (`step-02-*.plan.refined.md` or `step-01-*.plan.md`), and the modified code.
+Audits adherence between the primary evaluation source (`step-02-*.plan.refined.md` when present, else `step-00-*.spec.md`), the plan (`step-02-*.plan.refined.md` or `step-01-*.plan.md`), and the modified code.
 
 ### Plan Resolution Order
 Search the plan directory (`.cursor/plans/{slug}/`) in the following order:
@@ -77,19 +103,23 @@ Search the plan directory (`.cursor/plans/{slug}/`) in the following order:
 
 ## Output Report Format
 
-Write the validation report to `{plan-dir}/step-06-{slug}.plan.report.md`. The report must match the following format exactly:
+Write the validation report to `{plan-dir}/step-05-{slug}.plan.report.md`. Include **`Score: N/10`** near the top (after frontmatter). The report must match the following format exactly:
 
 ```markdown
 ---
 us: "{slug}"
 reportDate: YYYY-MM-DD
+score: N
 sourcePlans: ["step-02-{slug}.plan.refined.md"]
+evalSource: step-02-{slug}.plan.refined.md | step-00-{slug}.spec.md
 githubSource: gh | none
 ---
 
 # Implementation Report — {slug}
 
 **Generated on:** YYYY-MM-DD
+**Score:** N/10
+**Evaluation source:** step-02-{slug}.plan.refined.md (or step-00-{slug}.spec.md)
 **Reference Plan:** step-02-{slug}.plan.refined.md (or step-01-{slug}.plan.md)
 
 ## Result by Feature (Plan & ACs)
@@ -116,5 +146,6 @@ githubSource: gh | none
 
 ## Rules of Engagement
 
-- **Plan Immutability:** Do not edit the reference `*.plan.md` files. Write findings exclusively to the `step-06-{slug}.plan.report.md` file.
+- **Plan Immutability:** Do not edit the reference `*.plan.md` files. Write findings exclusively to the `step-05-{slug}.plan.report.md` file.
 - **Accurate Evidence:** Always cite specific file paths and line numbers for implemented features.
+- **Legacy artifact:** Do not write `step-06-{slug}.plan.report.md` on new runs (orchestrator may read for resume compatibility only).

@@ -27,7 +27,7 @@ python .agents/skills/check-workflows/scripts/check_workflows.py
 The validation process evaluates the following areas:
 
 ### 1. FSM Step Continuity
-- **Step indexes**: Asserts that all steps in the FSM tables (steps 0–13 in `spec-to-pr`, steps 1–5 in `spec-to-pr-lite`) map sequentially without duplicates or missing levels.
+- **Step indexes**: Asserts that all steps in the FSM tables (steps 0–9 in `spec-to-pr`, steps 0–5 in `spec-to-pr-lite`) map sequentially without duplicates or missing levels.
 - **Linked skills**: Verifies that every step maps to a valid and existing dependency skill under `.agents/skills/` (e.g. `01-write-plan`, `04-implement-tasks`).
 
 ### 2. Config Path Integrity

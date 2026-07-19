@@ -39,7 +39,7 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 | Tool | Action | Native |
 |------|--------|--------|
 | `commit-code` | Commit src/web/tests only | `Shell` `git add src/ web/ tests/ && git commit -m "..."` |
-| `commit-delivery` | Commit plan + result (Step 12) | `Shell` stage `step-02-{slug}.plan.refined.md` **or** `step-01-{slug}.plan.md`, plus `step-12-{slug}.result.md` |
+| `commit-delivery` | Commit plan + result (Step 8) | `Shell` stage `step-02-{slug}.plan.refined.md` **or** `step-01-{slug}.plan.md`, plus `step-08-{slug}.result.md` |
 | `push-branch` | Push working branch | `Shell` `git push {gitRemote} {workingBranch}` — from `config.project` |
 | `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`github-provider`](../github-provider/SKILL.md) or [`azure-devops-provider`](../azure-devops-provider/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
 | `list-threads` / `resolve-thread` / `merge-pr` | PR review + merge intents | Same SCM provider skill as `create-pr` |
@@ -69,8 +69,8 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 
 1. **No hardcoded commands** in skills — use tool aliases. Config.json holds project-specific values.
 2. **Shell only for git/build/scripts** — never use bash where `Read`/`Write`/`Grep`/`Glob` suffice.
-3. **One worktree max** — step 5/10/11 worktrees are exclusive under `{worktrees-dir}`.
-4. **No commit of `{plans-dir}/`** — except Step 12 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
+3. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
+4. **No commit of `{plans-dir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
 5. **Subagents: fresh per step** — never resume Task across steps.
 6. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
 7. **Paths from config** — never hardcode `.cursor/plans`; always resolve `plans.dir` / `workingBranch` / `baseBranch`.

@@ -30,9 +30,9 @@ Act as a **Principal Engineer** who coordinates thread-fixing iterations, monito
 
 This skill wraps the [`goal-loop`](../goal-loop/SKILL.md) generic primitive as its orchestrator, executing [`08-fix-pr`](../08-fix-pr/SKILL.md) tasks for each action round.
 
-### Workflow Mode (Step 12 of spec-to-pr)
+### Workflow Mode (Step 9 of spec-to-pr / Step 5 of spec-to-pr-lite)
 
-Dispatched automatically by `spec-to-pr` when `ship-pr` triggers thread convergence monitoring. Receives `PR-NUMBER` and `max` from the orchestrator's parameters.
+Dispatched by the orchestrator after Step 8 / lite Step 4 ship creates a PR (`stopBeforeFixPr: true`). Receives `PR-NUMBER` and `max` from orchestrator state.
 
 ### Parameters
 

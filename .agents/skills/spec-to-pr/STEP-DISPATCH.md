@@ -1,55 +1,70 @@
 # Step dispatch (canonical)
 
-**Sole source of truth** for **`spec-to-pr` (standard)** step 0–13 dispatch actions, post-mutating merge notes, and Step 12/13 gate protocols. Load from `SKILL.md` only when advancing or dispatching a step. FSM, invariants, and gates overview stay in `SKILL.md`.
+**Sole source of truth** for **`spec-to-pr` (standard)** step 0–9 dispatch actions, post-mutating merge notes, and Step 8/9 gate protocols. Load from `SKILL.md` only when advancing or dispatching a step. FSM, invariants, and gates overview stay in `SKILL.md`.
 
-**Dual-mode (mandatory):** This file is **not** the lite step index. [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) keeps its own Steps 1–5 table. Shared gate/delivery/ship UX and artifact names stay in [`gates.md`](../shared/gates.md) / [`config-resolution.md`](../shared/config-resolution.md). Pipeline skills `00`–`11` stay orch-agnostic: never assume full vs lite step numbers; orch passes `workflowType`, paths, and flags.
+**Dual-mode (mandatory):** This file is **not** the lite step index. [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) keeps its own Steps 0–5 table. Shared gate/ship UX and artifact names stay in [`gates.md`](../shared/gates.md) / [`config-resolution.md`](../shared/config-resolution.md). Pipeline skills `00`–`11` stay orch-agnostic: never assume full vs lite step numbers; orch passes `workflowType`, paths, and flags.
 
 ## Step instructions
 
-> **Consistency:** the Skill map in `SKILL.md` (`05-verify-plan` → Step 6, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
+> **Consistency:** the Skill map in `SKILL.md` (`05-verify-plan` → Step 5, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (AskQuestion). US/spec provided → skip to Step 1. No args → free-text → `Task` `ws-write-spec`. | `step-00-{slug}.spec.md` |
-| 1 | Complexity gate → if simple: stub plan + skip to 5. Else `Task` `ws-write-plan`. | `step-01-{slug}.plan.md` |
+| 0 | Entry gate (AskQuestion). US/spec provided → provider or skip to write. No args → free-text → `Task` `ws-write-spec`. Optional soft clarify if AC empty. | `step-00-{slug}.spec.md` |
+| 1 | Complexity gate → if simple: stub plan + skip to 4. Else `Task` `ws-write-plan`. | `step-01-{slug}.plan.md` |
 | 2 | Conditional: skip if eligible; else `Task` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
 | 3 | `Task` `ws-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |
-| 4† | (internal) phase soft tip on Advance to 5 — no menu | not in completedSteps |
-| 5 | `Task` `ws-implement-tasks` mode build; branch-direct default | verification |
-| 6 | `Task` `ws-verify-plan` **quick-score default**; full US matrix if score < 7 or `--strict` | `step-06-{slug}.plan.report.md` |
-| 7 | AskQuestion G2-code → Shell build/test → `git commit` code | commit; no `.cursor/plans/` |
-| 8† | (internal) phase soft tip on Advance to 9 — no menu | not in completedSteps |
-| 9 | `Task` `ws-code-review`; findings gate if Critical/Warning | score |
-| 10 | `Task` `ws-implement-tasks` mode fix; G2-code only | `step-10-{slug}.report.md` |
-| 11 | Auto-skip if `skipIntegration` or (no API/UI surface + unit tests green); else `Task` `ws-integration-validation` | reports |
-| 12 | Delivery Result + **one delivery gate** ([`gates.md`](../shared/gates.md)). MEMORY sweep after commit. No push. `status: completed` unless advancing to 13. | `step-12-{slug}.result.md` |
-| 13 | **One ship gate** → pass `shipAction` to `ws-ship-pr` (`workflowMode: true`). Always offered; `fullMode` changes Recommended. | PR URL, merge |
+| 4 | `Task` `ws-implement-tasks` mode build; branch-direct default | verification |
+| 5 | `Task` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve) | `step-05-{slug}.plan.report.md` |
+| 6 | `Task` `ws-code-review`; findings → **fix substep** `ws-implement-tasks` fix (not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
+| 7 | Auto-skip if `skipTesting` / `skipIntegration` or (no test surface + unit tests green); else `Task` `ws-integration-validation` (Testing) | `step-07-{slug}.testing.*` |
+| 8 | Delivery result + **combined ship gate** ([`gates.md`](../shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
+| 9 | `Task` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists | PR threads / merge |
 
 Post-mutating: merge files_touched → Step file log; backup preExistingDirty; checkpoint `before-step-{N+1}`.
 
-### Step 12 — Delivery (one gate)
+### Step 5 — Check-implementation (score gate)
 
-**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) → **one delivery AskQuestion** → on commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.md`**. Publish integer **score 0–10** in Progress Board + report.
 
-**Delivery AskQuestion** ([`gates.md`](../shared/gates.md)):
+| Score | Behavior |
+|-------|----------|
+| ≥ 7 | Complete step 5; Advance to 6 |
+| &lt; 7 | AskQuestion: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`) |
 
-1. **Commit plan and result, keep artifacts** (Recommended)
-2. **Commit plan and result, delete temps**
-3. **Skip delivery commit**
-4. **Pause**
+`autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
 
-G2-delivery stages `step-01-{slug}.plan.md` (or refined) + `step-12-{slug}.result.md` only. **No push consent at Step 12.**
+### Step 6 — Code-review + conditional fix (substep)
 
-### Step 13 — Ship & PR
+| Case | Behavior |
+|------|----------|
+| Clean (no Critical/Warning) | Complete step 6; Advance to 7 |
+| Fixable findings | Substep: `ws-implement-tasks` mode fix → optional re-review slice → complete step 6 |
+| User declines fix | Log skip; Advance with findings (or Pause) |
 
-After Step 12, orch presents the **single ship gate** ([`gates.md`](../shared/gates.md)). Recommended = Create PR… when `fullMode`, else Skip.
+Fix is **not** its own `completedSteps` entry — log `review-fix` in gate history.
 
-**Pipeline (`shipAction: create-pr`):**
-1. `git push -u origin {branch}` (skip if pushed).
-2. Resolve `providers.scm` via [`config-resolution.md`](../shared/config-resolution.md).
-3. Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType` from state (`standard` here; lite orch passes `lite`) — **no re-AskQuestion inside skill**.
-4. `ws-goal-fix-pr` loop (heartbeat configurable; default 5m, max 10) → merge.
+### Step 8 — Ship (delivery + push/PR)
 
-**`shipAction: push-only`:** push only. **`skip`:** done.
+**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md`) → **combined delivery + ship AskQuestion** → on delivery commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+
+**Combined gate** ([`gates.md`](../shared/gates.md)):
+
+1. **Commit plan + result, then create PR** (Recommended when `fullMode`)
+2. **Commit plan + result, push only**
+3. **Commit plan + result, skip PR**
+4. **Skip delivery commit and skip shipping**
+5. **Pause**
+
+G2-delivery stages plan (refined if present) + `step-08-{slug}.result.md` only.
+
+Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no goal-fix loop inside ship**; orch Advance to 9 when PR created.
+
+### Step 9 — Fix-PR
+
+After Step 8 when `shipAction: create-pr` and PR exists:
+
+1. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot).
+2. Merge policy per goal-fix / provider helpers.
 
 Stop: max exhausted · merge blocked · cancelled · PR closed.

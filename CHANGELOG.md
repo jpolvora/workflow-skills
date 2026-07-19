@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-07-19 03:50] Agent: Composer
+- **Prompt**: Implement Spec-to-PR reduced FSM redesign (standard 0–9, lite 0–5): plan→interview, check score gate, review fix substep, Testing step, combined ship, first-class fix-pr, shared entry, universal step controls
+- **Done**: Rewrote `spec-to-pr` and `spec-to-pr-lite` orchestrators, `STEP-DISPATCH.md`, `ARTIFACTS.md`, protocols, `shared/gates.md`, `shared/setup.md`, pipeline skills `05`–`07`/`09`/`11`, `check_workflows.py`, dual `AGENTS.md`, README, site catalog tagline
+- **Result**: `check-workflows` and `npm run tests -- --local` passed
+
+### [2026-07-19 00:36] Agent: Antigravity
+- **Prompt**: ensure ship-pr skill will run check commit status, pull, push, create pr for current scm config, monitor pr with goal-fix-pr and merge at the end; ensure spec-to-pr (subagents) and spec-to-pr-lite (inline) run independently sharing the same steps
+- **Done**: Updated `ws-ship-pr` in `.agents/skills/11-ship-pr/SKILL.md` to explicitly specify checking commit status, pulling remote updates, pushing local changes, creating a PR using the SCM configuration, monitoring PR review threads using `goal-fix-pr`, and merging. Documented independent execution and state isolation between `spec-to-pr` (standard) and `spec-to-pr-lite` (lite) using `workflowType`. Updated `spec-to-pr-lite/SKILL.md` to explicitly instruct inline execution for all step tasks within the main session, in contrast to the standard orchestrator's subagent task dispatching. Updated root `AGENTS.md` and packaged `.agents/AGENTS.md`.
+- **Result**: Re-compiled site (bumped package to `0.0.40`). Validated E2E installation test suites and workflow FSM step continuity checks successfully.
+
 ### [2026-07-18 19:59] Agent: Antigravity
 - **Prompt**: update README.md and AGENTS.md, website for self-Contained and Non-Intrusive Installation Process
 - **Done**: Updated `README.md` and `AGENTS.md` to document the optional consumer-configured root files (`.cursorrules` pointer and `CHANGELOG.md` history) instead of describing them as automatic installer seeds, matching the new clean and non-intrusive installer behavior. Re-compiled the website catalog to version `0.0.39`.
