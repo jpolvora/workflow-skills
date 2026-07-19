@@ -8,7 +8,7 @@ After step N, before the progress board, the orchestrator MUST execute State Hyg
 
 ```bash
 python .agents/skills/spec-to-pr/scripts/update_state.py \
-  .cursor/plans/{slug}/{workflow-id}.state.md \
+  {plansDir}/{slug}/{workflow-id}.state.md \
   --step {N} \
   --status {completed|failed|skipped} \
   --elapsed {elapsedSec} \

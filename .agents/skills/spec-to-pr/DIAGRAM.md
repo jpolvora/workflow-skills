@@ -79,8 +79,8 @@ flowchart TD
 flowchart LR
   Gate[Post-step gate] --> Advance[Next / Advance]
   Advance --> Tip[Optional soft tip]
-  Tip --> Task[Task / inline dispatch]
-  Task --> Ingest[Ingest step-output]
+  Tip --> Disp[dispatch-agent / inline]
+  Disp --> Ingest[Ingest step-output]
   Ingest --> State[Update state.md]
   State --> Gate
 ```
@@ -123,9 +123,9 @@ flowchart LR
 
 | Symbol | Meaning |
 |--------|---------|
-| Task | Subagent via Task tool (standard) |
+| Dispatch | Subagent via `dispatch-agent` (host-provided) |
 | Inline | Same session (lite) |
-| Gate | AskQuestion / markdown fallback |
+| Gate | user-gate / markdown fallback |
 
 ## Triggers
 

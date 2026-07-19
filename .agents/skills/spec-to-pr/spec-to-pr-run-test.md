@@ -26,9 +26,9 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering pha
         "gitRemote": "origin"
       },
       "plans": {
-        "dir": ".cursor/plans",
+        "dir": ".agents/plans",
         "specsDir": "specs",
-        "worktreesDir": ".cursor/plans/{slug}/worktrees"
+        "worktreesDir": ".agents/plans/{slug}/worktrees"
       },
       "stack": {
         "id": "markdown-only",
@@ -90,7 +90,7 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering pha
 
 After the workflow completes (`status: completed`), confirm:
 
-### Artifacts created (under `.cursor/plans/test-workflow/`)
+### Artifacts created (under `{plansDir}/test-workflow/`)
 
 | Artifact | Expected |
 |----------|----------|
@@ -154,7 +154,7 @@ git tag -l "uswf/*"
 After test, remove test artifacts:
 
 ```bash
-rm -rf .cursor/plans/test-workflow/
+rm -rf {plansDir}/test-workflow/
 git tag -l "uswf/test-workflow*" | xargs git tag -d
 ```
 

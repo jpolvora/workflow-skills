@@ -82,7 +82,7 @@
       "properties": {
         "dir": {
           "type": "string",
-          "default": ".cursor/plans",
+          "default": ".agents/plans",
           "description": "Root for {us-dir} = {dir}/{slug}/"
         },
         "specsDir": {
@@ -92,12 +92,23 @@
         },
         "worktreesDir": {
           "type": "string",
-          "default": ".cursor/plans/{slug}/worktrees"
+          "default": ".agents/plans/{slug}/worktrees",
+          "description": "Worktree root template; {slug} substituted at runtime. Prefer nesting under plans.dir (e.g. .agents/plans/{slug}/worktrees)."
         },
         "useWorktrees": {
           "type": "boolean",
           "default": false,
           "description": "When true, prefer git worktree isolation for Step 4 implement (non-win32, path length ≤180, git worktree add succeeds)."
+        }
+      }
+    },
+    "reviews": {
+      "type": "object",
+      "properties": {
+        "dir": {
+          "type": "string",
+          "default": ".agents/codereviews",
+          "description": "Root for local PR review round reports (fix-pr / goal-fix-pr)"
         }
       }
     },

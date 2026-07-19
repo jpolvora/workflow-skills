@@ -6,13 +6,13 @@ Fetch (live API):
   set ADO_PAT=...   # or AZURE_DEVOPS_PAT
   python ado-workitem-to-spec.py \\
     --org contoso --project MyProject --id 2416 \\
-    --output .cursor/plans/us-2416/step-00-us-2416.spec.md \\
-    --snapshot .cursor/plans/us-2416/step-00-us-2416.issue.json
+    --output {plansDir}/us-2416/step-00-us-2416.spec.md \\
+    --snapshot {plansDir}/us-2416/step-00-us-2416.issue.json
 
 Convert (offline JSON from WIT API):
   python ado-workitem-to-spec.py \\
     --input workitem.json \\
-    --output .cursor/plans/us-2416/step-00-us-2416.spec.md \\
+    --output {plansDir}/us-2416/step-00-us-2416.spec.md \\
     --org contoso --project MyProject
 
 API shape expected for --input: Azure DevOps WIT work item JSON

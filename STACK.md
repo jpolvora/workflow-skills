@@ -21,7 +21,7 @@ Human-readable companion to `.agents/skills/shared/config.json`.
 | **docs site** | `docs` | Generated catalog (`index.html`) |
 | **hub** | `AGENTS.md`, `README.md` | Skill routing and human docs |
 
-**Note:** This repo has no traditional `src/` / `web/` app. Mutating steps stage skill paths under `.agents/skills/`, `bin/`, `test/`, `docs/`, and hub markdown as needed. Workflow plan artifacts under `.cursor/plans/` remain uncommitted until Step 8 delivery.
+**Note:** This repo has no traditional `src/` / `web/` app. Mutating steps stage skill paths under `.agents/skills/`, `bin/`, `test/`, `docs/`, and hub markdown as needed. This upstream may keep local authoring plans under `.cursor/plans/`; shipped skill defaults use `config.plans.dir` (`.agents/plans`) and do not require host-private folders.
 
 **Dry-run / isolation:** Steps **4**, **6-fix**, and **7-fix** mutate skill/source paths only when implementing. Step **7** Testing is validation (read/execute checks).
 

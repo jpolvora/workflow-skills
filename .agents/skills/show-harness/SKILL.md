@@ -19,7 +19,7 @@ Read-only. Emit one report, then **stop**. For integrity/routing audits use [`ch
 ## Steps
 
 1. **Collect** — From this turn's context only, list what is loaded:
-   - Entry: `.cursorrules` → root / packaged `AGENTS.md` if present in context
+   - Entry: root / packaged `AGENTS.md` if present in context (optional host entry pointer when the consumer uses one)
    - Autoload / always-on skills and opt-outs (caveman, gabarito, karpathy, hooks, etc.)
    - Session-loaded skills (attached, routed, or already Read this turn)
    - Workspace rules + user rules that bind this agent

@@ -14,7 +14,7 @@ invocation_names:
 
 Draft an implementation blueprint from the spec. Act as a Senior Software Engineer / Technical Architect: stack-aware, modular, testable, with mapped database and API layers.
 
-**Canonical path:** `{output-dir}/step-01-{slug}.plan.md` (`output-dir` default `.cursor/plans/{slug}/`).
+**Canonical path:** `{us-dir}/step-01-{slug}.plan.md` (`{us-dir}` = `{plansDir}/{slug}/`).
 
 **Reads:** `config.json` (stack, layers, invariants), `tools.md` / `stack.md`, `MEMORY.md`.
 
@@ -32,14 +32,14 @@ Workflow (spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-00-
 |-----------|---------|-------|
 | `<spec-input>` | required | Local spec path, `GH <id>`, or `US <id>` |
 | `slug` | inferred | From spec when omitted |
-| `output-dir` | `.cursor/plans/{slug}/` | Destination folder |
+| `output-dir` | `{us-dir}` | Optional override for destination (`{plansDir}/{slug}/`) |
 
 ## Steps
 
 1. **Load spec and stack context** — Read the spec input and `config.json` layers/invariants.
    - Done when: stack (layers, db/ORM, frontend framework) is identified, or the step stops to ask for clarification when undetectable.
 
-2. **Draft plan** — Write `{output-dir}/step-01-{slug}.plan.md` following the template below.
+2. **Draft plan** — Write `{us-dir}/step-01-{slug}.plan.md` following the template below.
    - Done when: every section 0-8 is filled, each stated requirement maps to an entry in the Step-by-Step Plan, and every AC maps to a test case in section 5.
 
 3. **Handoff** — Return the plan path for [02-interview](../02-interview/SKILL.md) (or [03-plan-to-tasks](../03-plan-to-tasks/SKILL.md) when interview is skipped).

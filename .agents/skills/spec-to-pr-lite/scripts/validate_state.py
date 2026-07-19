@@ -36,12 +36,12 @@ PLANS_DIR = None
 def load_plans_dir() -> Path:
     """Resolve plans.dir from spec-to-pr project config."""
     cfg = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
-    plans = Path(".cursor") / "plans"
+    plans = Path(".agents") / "plans"
     if cfg.exists():
         try:
             import json as _json
             data = _json.loads(cfg.read_text(encoding="utf-8"))
-            rel = (data.get("plans") or {}).get("dir") or ".cursor/plans"
+            rel = (data.get("plans") or {}).get("dir") or ".agents/plans"
             plans = Path(rel)
         except Exception:
             pass

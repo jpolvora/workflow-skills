@@ -40,13 +40,13 @@ If the mode is not explicit, infer from context or ask.
 
 | Source | Pattern | Example |
 |--------|--------|---------|
-| GitHub issue `{id}` | `step-00-us-{id}.spec.md` in `{plans-dir}/us-{id}/` | `step-00-us-1474.spec.md` |
-| Azure DevOps work item `{id}` | `step-00-us-{id}.spec.md` in `{plans-dir}/us-{id}/` | `step-00-us-2416.spec.md` |
-| Hand-written / local slug | `step-00-{slug}.spec.md` in `{plans-dir}/{slug}/` | `step-00-my-feature.spec.md` |
+| GitHub issue `{id}` | `step-00-us-{id}.spec.md` in `{plansDir}/us-{id}/` | `step-00-us-1474.spec.md` |
+| Azure DevOps work item `{id}` | `step-00-us-{id}.spec.md` in `{plansDir}/us-{id}/` | `step-00-us-2416.spec.md` |
+| Hand-written / local slug | `step-00-{slug}.spec.md` in `{plansDir}/{slug}/` | `step-00-my-feature.spec.md` |
 
 The working directory **slug** (`{us-dir}`) is:
 - `us-{id}` when the input is a GitHub issue or Azure DevOps work item id;
-- the basename of the file (without `.spec.md`, strip optional `step-00-` prefix) when the input is a local/hand-written spec — e.g.: `my-feature.spec.md` → folder `.cursor/plans/my-feature/`.
+- the basename of the file (without `.spec.md`, strip optional `step-00-` prefix) when the input is a local/hand-written spec — e.g.: `my-feature.spec.md` → folder `{plansDir}/my-feature/`.
 
 ## YAML Frontmatter (required)
 
@@ -96,7 +96,7 @@ specDate: 2026-07-02  # generation date or last relevant update
 1. **Acceptance Criteria** must be enumerable and testable — one line per AC.
 2. When `source: local`, the author is responsible for complete ACs; there is no tracker fetch.
 3. The raw `*.issue.json` snapshot (when it exists) is **audit-only** — downstream skills do **not** read `issue.json` directly; they always read `spec.md`.
-4. Hand-written specs can live under `specs/`, `.cursor/plans/specs/`, or any path — `spec-to-pr` copies/normalizes to `{us-dir}/step-00-{slug}.spec.md` at entry.
+4. Hand-written specs can live under `specs/`, `{plansDir}/specs/`, or any path — `spec-to-pr` copies/normalizes to `{us-dir}/step-00-{slug}.spec.md` at entry.
 
 ## Flow — review mode
 

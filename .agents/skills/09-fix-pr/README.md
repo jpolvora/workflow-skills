@@ -39,7 +39,7 @@ Shims under `09-fix-pr/scripts/` re-exec the provider scripts; new work should c
 5. Execution plan (`plan-exec.md`)
 6. Fix code (Score > 5) or resolve with comment (Score ≤ 5)
 7. Validate (build + test + auto-review)
-8. Report (`.cursor/codereviews/PR-XXX-round-N.md`)
+8. Report (`{reviewsDir}/PR-XXX-round-N.md`)
 9. Resolve threads via scm provider (`resolve-thread`) + commit + push
 
 ## Thread scoring
@@ -57,5 +57,5 @@ Shims under `09-fix-pr/scripts/` re-exec the provider scripts; new work should c
 - Fix defect class, not just instance
 - Validate with `dotnet test` / `npm test` / `npm run build`
 - Auto-review with `code-review` skill before push
-- Report in `.cursor/codereviews/`
+- Report under `{reviewsDir}/` (`{reviewsDir}` ← `config.reviews.dir`)
 - Resolution comment with `<!-- resolution-reply -->` marker

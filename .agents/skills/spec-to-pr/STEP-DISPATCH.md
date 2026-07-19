@@ -10,16 +10,16 @@
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (AskQuestion). US/spec provided → provider or skip to write. No args → free-text → `Task` `ws-write-spec`. Optional soft clarify if AC empty. | `step-00-{slug}.spec.md` |
-| 1 | Complexity gate → if simple: stub plan + skip to 4. Else `Task` `ws-write-plan`. | `step-01-{slug}.plan.md` |
-| 2 | Conditional: skip if eligible; else `Task` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
-| 3 | `Task` `ws-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |
-| 4 | `Task` `ws-implement-tasks` mode build; branch-direct default | verification |
-| 5 | `Task` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve) | `step-05-{slug}.plan.report.md` |
-| 6 | `Task` `ws-code-review`; findings → **fix substep** `ws-implement-tasks` fix (not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
-| 7 | Auto-skip if `skipTesting` or (no test surface + unit tests green); else `Task` `ws-testing` (Testing) | `step-07-{slug}.testing.*` |
+| 0 | Entry gate (user-gate). US/spec provided → provider or skip to write. No args → free-text → `dispatch-agent` `ws-write-spec`. Optional soft clarify if AC empty. | `step-00-{slug}.spec.md` |
+| 1 | Complexity gate → if simple: stub plan + skip to 4. Else `dispatch-agent` `ws-write-plan`. | `step-01-{slug}.plan.md` |
+| 2 | Conditional: skip if eligible; else `dispatch-agent` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
+| 3 | `dispatch-agent` `ws-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |
+| 4 | `dispatch-agent` `ws-implement-tasks` mode build; branch-direct default | verification |
+| 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve) | `step-05-{slug}.plan.report.md` |
+| 6 | `dispatch-agent` `ws-code-review`; findings → **fix substep** `ws-implement-tasks` fix (not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
+| 7 | Auto-skip if `skipTesting` or (no test surface + unit tests green); else `dispatch-agent` `ws-testing` (Testing) | `step-07-{slug}.testing.*` |
 | 8 | Delivery result + **combined ship gate** ([`gates.md`](../shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
-| 9 | `Task` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists | PR threads / merge |
+| 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists | PR threads / merge |
 
 Post-mutating: merge files_touched → Step file log; backup preExistingDirty; checkpoint `before-step-{N+1}`.
 
@@ -30,7 +30,7 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 | Score | Behavior |
 |-------|----------|
 | ≥ 7 | Complete step 5; Advance to 6 |
-| &lt; 7 | AskQuestion: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`) |
+| &lt; 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`) |
 
 `autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
 
@@ -46,7 +46,7 @@ Fix is **not** its own `completedSteps` entry — log `review-fix` in gate histo
 
 ### Step 8 — Ship (delivery + push/PR)
 
-**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**) → render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)) → **combined delivery + ship AskQuestion** → on delivery commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**) → render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)) → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
 
 Telemetry/`--elapsed` still required under `autoMode`/`fullMode` (State Hygiene → HS-5 if missing).
 

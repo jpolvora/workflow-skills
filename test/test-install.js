@@ -324,19 +324,19 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     if (!/128/i.test(out)) {
       fail(`CLI --help missing exit-128 / @latest troubleshooting note.\n${out}`);
     }
-    if (!/\.cursorrules/i.test(out) || !/CHANGELOG\.md/i.test(out)) {
-      fail(`CLI --help missing create-if-missing root seed notes (.cursorrules / CHANGELOG.md).\n${out}`);
+    if (!/config\.json/i.test(out) || !/\.agents\/plans/i.test(out)) {
+      fail(`CLI --help missing consumer config / .agents/plans artifact-path notes.\n${out}`);
     }
-    ok('CLI --help documents update, install --yes, packages, AGENTS.md, and root seeds (no @latest)');
+    ok('CLI --help documents update, install --yes, packages, AGENTS.md, and portable artifact paths (no @latest)');
   }
 
-// 1. Clean test/.agents directory and prior root seed leftovers
+// 1. Clean test/.agents directory and prior root leftovers
 console.log('\nCleaning target test/.agents/ directory...');
 const targetAgentsDir = path.resolve(__dirname, '.agents');
 if (fs.existsSync(targetAgentsDir)) {
   fs.rmSync(targetAgentsDir, { recursive: true, force: true });
 }
-for (const seed of ['.cursorrules', 'CHANGELOG.md']) {
+for (const seed of ['CHANGELOG.md']) {
   const p = path.join(__dirname, seed);
   if (fs.existsSync(p)) fs.rmSync(p, { force: true });
 }
@@ -475,7 +475,7 @@ child.on('close', async (code) => {
   const consumerConfig = path.join(usConfigDir, 'config.json');
   const marker = {
     project: { name: 'consumer-marker-project', baseBranch: 'main', workingBranch: 'feature/x' },
-    plans: { dir: '.cursor/plans' },
+    plans: { dir: '.agents/plans' },
     verification: { backendBuild: 'echo consumer-config-preserved' },
     _testMarker: 'preserve-me-do-not-overwrite'
   };

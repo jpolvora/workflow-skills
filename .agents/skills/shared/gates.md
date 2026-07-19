@@ -14,21 +14,21 @@ Config: [`.agents/skills/shared/config.json`](config.json) only — see [`config
 |------|--------|
 | **Shared skills are workflow-agnostic** | Skills `00`–`11`, providers, `goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
-| **One combined delivery + ship ask** | Orchestrator presents the combined gate once at standard Step 8 / lite Step 4. [`08-ship-pr`](../08-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-AskQuestion. Standalone `/ship-pr` may ask. |
+| **One combined delivery + ship ask** | Orchestrator presents the combined gate once at standard Step 8 / lite Step 4. [`08-ship-pr`](../08-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-ask at user-gate. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
 | **Config** | Only `.agents/skills/shared/config.json`. No `spec-to-pr/config.json` / `spec-to-pr-lite/config.json`. |
-| **AskQuestion** | Prefer native tool when available; markdown fallback when not; HS-1 on cancel. |
+| **User gates** | Prefer native structured choice UI when available; markdown fallback when not; HS-1 on cancel. |
 
 ---
 
-## AskQuestion (compact)
+## User gates (`user-gate`)
 
-1. Every normal-mode gate: **prefer** `AskQuestion` with ≥2 options; recommended first.
-2. If AskQuestion is unavailable or returns tool-not-found → present the **same options** as a short markdown list; wait for user reply. Optional log: `askquestion-fallback | {gate} | ISO`.
+1. Every normal-mode gate: **prefer** native structured choice UI (`user-gate`) with ≥2 options; recommended first.
+2. If the structured choice UI is unavailable or returns tool-not-found → present the **same options** as a short markdown list; wait for user reply. Optional log: `user-gate-fallback | {gate} | ISO`.
 3. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-4. `autoMode` → no AskQuestion; use orch auto-gate table (index 0).
+4. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
 
 ---
 
@@ -50,7 +50,7 @@ Resolve `{currentModel}` from the **executing session model** (agent identity / 
 1. **Next** — Advance to Step N+1 (Recommended)
 2. **More options…**
 
-**Under More options…** (second AskQuestion only if user picked More):
+**Under More options…** (second user-gate only if user picked More):
 
 | Control | Action |
 |---------|--------|
@@ -121,13 +121,13 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 | Score | Behavior |
 |-------|----------|
 | ≥ 7 | Complete Step 5; **Next** → Step 6 |
-| < 7 | AskQuestion: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`) |
+| < 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`) |
 
 `autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
 
 ---
 
-## Combined delivery + ship gate (one AskQuestion)
+## Combined delivery + ship gate (one user-gate)
 
 Replaces the old separate delivery (Step 12) and ship (Step 13) gates. Presented by the orchestrator at **standard Step 8** / **lite Step 4**:
 

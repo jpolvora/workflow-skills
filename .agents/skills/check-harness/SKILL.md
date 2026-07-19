@@ -12,7 +12,7 @@ version: 3.2-generic
 Senior meta-harness auditing agent specialized in **health, cohesion, and portability** of project agents. 
 
 ## Core Goals
-1. **Routing & Integrity:** Validate that all harness files (`AGENTS.md`, `.agents/skills/`) and project-level harness files (`.cursorrules`, `.cursor/rules/`, `README.md`, `docs/` when present) exist and contain correct relative links without phantom/broken paths. When `spec-to-pr` is present, also validate pipeline folder/`ws-*`/`FSM` alignment per § 3b (including retired path detection).
+1. **Routing & Integrity:** Validate that all harness files (`AGENTS.md`, `.agents/skills/`) and optional project docs (`README.md`, `docs/` when present) exist and contain correct relative links without phantom/broken paths. Optional host entry pointers (e.g. a thin rules file pointing at `AGENTS.md`) are informational only — **not** required harness. When `spec-to-pr` is present, also validate pipeline folder/`ws-*`/`FSM` alignment per § 3b (including retired path detection).
 2. **Redundancy Elimination:** Detect and fix instruction overlaps or contradictions between skills and the hub, enforcing progressive disclosure.
 3. **Portability Audit:** Enforce that orchestrator skills (like `spec-to-pr`) and their downstream dependencies are project-agnostic. No hardcoded project metadata, custom paths, or stack-specific commands inside the skills.
 4. **Clean Execution Flow:** Run read-only audits first, present a correction plan, and apply edits ONLY upon explicit user approval.
@@ -41,10 +41,10 @@ flowchart LR
 | Step | Name | What to do | What **not** to do |
 |-------|------|-------------|---------------------|
 | **1** | **Scan** | Run Phases 0–5c (§ Methodology); collect findings with evidence-based proof. | **Forbidden** to use `Write`, `StrReplace`, `Delete`, or any edit in the harness |
-| **2** | **Plan / Report** | Present structured report (§ Output format). **Normal:** Use `AskQuestion` for approval. **Dry-run:** Stop here. | **Forbidden** to apply corrections in this step — only propose |
+| **2** | **Plan / Report** | Present structured report (§ Output format). **Normal:** Use `user-gate` for approval. **Dry-run:** Stop here. | **Forbidden** to apply corrections in this step — only propose |
 | **3** | **Execution** | **(Normal only)** Apply only approved items via surgical diff; revalidate Phase 2 on touched files. | **Dry-run:** This step does not exist. |
 
-- **Dry-run activation:** `--dry-run`, `dry run`, `/check-harness --dry-run`. Bypasses `AskQuestion` and Step 3.
+- **Dry-run activation:** `--dry-run`, `dry run`, `/check-harness --dry-run`. Bypasses `user-gate` and Step 3.
 - **Invocation:** `/check-harness`, `@check-harness`, "audit the harness", "remove redundancy between skills".
 - **Approval triggers (normal):** `apply corrections`, `apply the plan`, `approved`, etc. Cancellation or vague response = abort corrections.
 
@@ -57,7 +57,7 @@ flowchart LR
 1. **Repo-root-relative paths** — every proposed or corrected reference uses a relative path (e.g., `.agents/skills/01-write-plan/SKILL.md`). **Forbidden** absolute paths (`C:\Users\...\project\...`, `/home/user/...`) or author-machine dependencies.
 2. **Evidence-based proof** — each finding cites file + snippet/link verified with tools (`Read`, `Grep`, `Glob`). Do not report a broken link without confirming nonexistence on the filesystem.
 3. **Scan before edit** — Steps 1–2 are **always read-only**. Enumerate all findings and assemble the correction plan **before** any `Write`/`StrReplace`/`Delete`. Editing only in Step 3, with explicit approval.
-4. **Harness precedence** — the source of truth for routing is [`AGENTS.md`](../../../AGENTS.md); the source of truth for engineering is the guardrails skill resolved per [`AGENTS.md`](../../../AGENTS.md) § External Dependencies (`config.json.rules.seniorDeveloper`, then local/global `senior-developer`, then `.cursor/rules/senior-developer.mdc`) + `.mdc` rules when applicable. Skills **delegate** to `AGENTS.md` and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
+4. **Harness precedence** — the source of truth for routing is [`AGENTS.md`](../../../AGENTS.md); the source of truth for engineering is the guardrails skill resolved per [`AGENTS.md`](../../../AGENTS.md) § External Dependencies (`config.json.rules.seniorDeveloper`, then local/global `senior-developer`). Optional project rules are audited only when `config.json.rules.*` points at them. Skills **delegate** to `AGENTS.md` and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
 5. **Minimal diff in proposals** — prefer removing duplicates + link to canonical source rather than rewriting entire blocks.
 6. **AGENTS.md is the agent hub** — `AGENTS.md` concentrates routing (Layers, skill loading, task router, verification). `README.md` is for humans (install/contribute) and must **not** replace the router. `AGENTS.md` must **route** to skills, rules, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
 
@@ -73,9 +73,9 @@ Go through **all** artifacts below, in harness routing order (progressive disclo
 |---------|--------|
 | `AGENTS.md` | Agent **hub** — Layers, skill loading, task router, verification (not human install docs) |
 | `README.md` | Human **README** — install, overview, contribute (not the skill router) |
-| `.cursorrules` | (Optional) Points to `AGENTS.md` as single entry — verify existence and validity |
+| Optional host entry pointer | Thin file pointing at `AGENTS.md` when the consumer/host uses one — verify if present; **not required** |
 
-Progressive disclosure flow: `.cursorrules` (if present) → `AGENTS.md` → skill/doc on demand (specs via skills or `specs/AGENTS.md`, not via hub). Do not treat `README.md` as routing authority.
+Progressive disclosure flow: optional host entry → `AGENTS.md` → skill/doc on demand (specs via skills or `specs/AGENTS.md`, not via hub). Do not treat `README.md` as routing authority.
 
 ### 1b. Agents and orchestrators
 
@@ -83,11 +83,11 @@ Standalone agents (with `disable-model-invocation: true`) and orchestrators may 
 
 Besides `check-harness` itself (this file), projects may contain E2E pipelines (e.g., `spec-to-pr/`), stack config files (e.g., `stack.md`), and other orchestrators. Phase 4 scan enumerates the actual inventory; this section exists only as an entry point for the audit.
 
-### 2. Rules (`.cursor/rules/`, optional)
+### 2. Optional project rules (`config.json.rules.*`)
 
-`.mdc` rules complement `AGENTS.md` with narrow-scope engineering instructions (e.g., migrations, linting, commit conventions). Validate existence and links of each rule referenced in `AGENTS.md` and in skills.
+Optional consumer rule paths are declared in `config.json` under `rules.*` (e.g. `efMigrations`, `viewPatterns`, `seniorDeveloper`). Audit only paths that are set and non-empty. Do **not** require a host-specific rules directory. Validate existence and links of each referenced path in `AGENTS.md` and in skills.
 
-Phase 4 detects new or removed rules that diverge from declared routing.
+Phase 4 detects new or removed skills that diverge from declared routing; treat missing optional rule files as **warning** when the config key is set.
 
 ### 3. Skills (`.agents/skills/`)
 
@@ -149,8 +149,7 @@ When **`write-a-skill`** is installed (shipped Extra or global), include in the 
 | Typical location | Path |
 |------------------|------|
 | Packaged Extra (this repo / consumer) | `.agents/skills/write-a-skill/SKILL.md` |
-| Cursor skills (global) | `~/.cursor/skills/write-a-skill/SKILL.md` |
-| Windows equivalent | `%USERPROFILE%\.cursor\skills\write-a-skill\SKILL.md` |
+| User-level skills directory for the host | host-specific user skills path containing `write-a-skill/SKILL.md` |
 | Agents global (alternative) | `~/.agents/skills/write-a-skill/SKILL.md` |
 
 If **no** path exists, **skip** this subsection — do not invent criteria nor duplicate the skill's content in the harness.
@@ -179,8 +178,8 @@ Project documentation referenced by `AGENTS.md` and skills. Phase 4 discovers ac
 
 | Theme | Where to look |
 |------|---------------|
-| Guardrails / engineering | Skills with `name: senior-developer` or equivalent; `.mdc` rules in `.cursor/rules/` |
-| Architecture / system design | `docs/specs/`, `docs/superpowers/specs/`, docs referenced in `AGENTS.md` |
+| Guardrails / engineering | Skills with `name: senior-developer` or equivalent; paths from `config.json.rules.*` when set |
+| Architecture / system design | `docs/specs/` (when present), docs referenced in `AGENTS.md` |
 | API constraints | Files in `docs/specs/` with names like `backend_API.md`, `api.md` |
 | Frontend constraints | Files in `docs/specs/` with names like `frontend_UI.md`, `ui.md` |
 | UI patterns / components | Skills with `view-patterns`, `taste-skill`; `STANDARDS.md` files within skills |
@@ -229,7 +228,7 @@ For each inventory file (§ Scope):
 2. Normalize: strip anchors (`#`), query strings, `file://` prefixes.
 3. Classify each reference:
    - **Harness internal** — points to a repo file
-   - **External** — http(s) URL, raw GitHub, React/EF/Cursor docs
+   - **External** — http(s) URL, raw GitHub, framework docs
    - **Reference external** — repository or plan outside the harness; not a new-code target
 4. Build table `(source, cited path, type, resolved?)`.
 
@@ -239,7 +238,7 @@ Useful commands:
 # Markdown links in the hub
 rg -o '\[[^\]]+\]\(([^)]+)\)' AGENTS.md
 
-# .agents / .cursor paths cited in the harness
+# .agents paths cited in the harness (also flag leftover host-specific dirs if present)
 rg -n '\.agents/|\.cursor/' AGENTS.md .agents/
 ```
 
@@ -278,8 +277,7 @@ Build the mental map (or mermaid) of **who points to whom**:
 
 ```mermaid
 flowchart TD
-  CR[.cursorrules] --> AG[AGENTS.md]
-  AG --> SKILLS[.agents/skills/*]
+  AG[AGENTS.md] --> SKILLS[.agents/skills/*]
   AG --> DOCS[docs/* + project docs]
   UDW[E2E pipeline] --> STACKWF[stack config]
   UDW --> SKILLS
@@ -312,7 +310,7 @@ For each file found, extract from YAML frontmatter:
 - `name:` (canonical skill id)
 - `description:` (theme/trigger hint for the table)
 
-**Rules** — list `.cursor/rules/*.mdc` and `.agents/rules/*.md`.
+**Optional project rules** — for each non-empty `config.json.rules.*` path, verify the file exists. Also list `.agents/rules/*.md` when present.
 
 #### 4b. Extract what is already routed in `AGENTS.md`
 
@@ -344,7 +342,7 @@ Normalize paths for comparison (file basename + repo-root-relative path).
 If `unrouted_skills` or `unrouted_rules` has **at least one** item:
 
 1. **Include in the Phase 6 plan** — table with type, id, path, and routing suggestion.
-2. **Do not edit** `AGENTS.md` in this phase — the decision (add / ignore / remove) goes into `AskQuestion` at Step 2.
+2. **Do not edit** `AGENTS.md` in this phase — the decision (add / ignore / remove) goes into `user-gate` at Step 2.
 3. For each item, prepare in Phase 6:
    - **Add to routing** — concrete diff (line in § Skill loading, Layer 1/2, and/or § Task router table)
    - **Ignore for now** — record as known omission
@@ -368,7 +366,7 @@ Identify canonical sources for each theme. The table below lists **common themes
 | Guardrails / invariants | Skill with `senior-developer` or `engineering-standards` in `name:` + docs in `docs/specs/` | Planning, implementation, and review skills |
 | Specification format | Skill with `spec-format` or equivalent in `name:` | Planning, refinement, and verification skills |
 | UI / CRUD patterns | Skills with `view-patterns`, `ui-standards`, or equivalent + `DESIGN.md` or similar | Implementation and planning skills |
-| Architecture / tenancy / RBAC | Docs in `docs/specs/` or `docs/superpowers/specs/` referenced by planning skills | Planning and implementation skills |
+| Architecture / tenancy / RBAC | Docs in `docs/specs/` (when present) or other docs referenced by planning skills | Planning and implementation skills |
 | Issue/ticket source | Scripts in `.agents/` (e.g., `spec-to-pr/scripts/`) + external CLI (`gh`, `az`) | Planning and verification skills |
 | Code review (methodology) | Workflow-specific review skill (e.g., `06-code-review` / `ws-code-review`) | Pipeline/orchestrator |
 | Testing (pre-PR) | `07-testing` / `ws-testing` | Orchestrator Step 7 (standard) |
@@ -497,8 +495,7 @@ This phase generates three independent analyses that compose the **context simul
 1. **Build the session loading tree:**
 
    ```
-    .cursorrules
-    └── AGENTS.md
+    AGENTS.md
         ├── guardrails skill (auto every prompt)
         ├── response guidelines skill (auto every prompt)
         ├── surgical-scope skill (auto every prompt)
@@ -532,9 +529,9 @@ This phase generates three independent analyses that compose the **context simul
    - Verify that no auto-load skill imposes behavior that cannot be disabled (opt-out violation)
    - If one auto-load skill references opt-outs that another auto-load skill does not recognize → `warning`
 
-6. **Validate rules loaded in simulated context:**
-   - `.cursor/rules/*.mdc` referenced in AGENTS.md Layer 0 or in auto-load skills
-   - Verify that `.mdc` rules do not contradict auto-load skills (e.g., rule says "always use X" and skill says "never use X")
+6. **Validate optional project rules loaded in simulated context:**
+   - Paths from non-empty `config.json.rules.*` referenced in AGENTS.md or auto-load skills
+   - Verify that optional rule files do not contradict auto-load skills
    - Verify that rules referenced by conditional skills do not conflict with auto-load rules
 
 **Phase 5c output:** three tables in the Phase 6 report:
@@ -559,12 +556,12 @@ Consolidate **all** findings from Phases 0–5c into an ordered plan. This phase
 
 | Severity | Criterion |
 |------------|----------|
-| **critical** | Broken link in hub (`AGENTS.md`, `.cursorrules`) or skill invoked by workflow |
+| **critical** | Broken link in hub (`AGENTS.md`) or skill invoked by workflow |
 | **warning** | Broken secondary link, absolute path, redundancy that may confuse agent, unrouted skill/rule, `name:` collision |
 | **suggestion** | Clarity improvement, table symmetry, outdated doc without functional breakage |
 
 4. **Emit report** in § Output format — the **Correction plan** section is the main artifact of this phase.
-5. **Mandatory `AskQuestion`** when there is at least one correctable item:
+5. **Mandatory `user-gate`** when there is at least one correctable item:
 
 | Option | Behavior |
 |-------|---------------|
@@ -635,7 +632,7 @@ Otherwise — **correction plan** (mandatory before editing):
 | skill | `example` | `.agents/skills/example/SKILL.md` | #2 |
 
 ### Routing and decision
-- [ ] .cursorrules → AGENTS.md — [OK | broken or duplicated redirect]
+- [ ] Optional host entry → AGENTS.md — [OK | absent (OK) | broken redirect]
 - [ ] Progressive disclosure (AGENTS.md does not duplicate bodies) — [OK | inflation]
 - [ ] Skill → skill relationships — [OK | gaps]
 - [ ] Invocation triggers — [OK | absent]
@@ -692,13 +689,12 @@ Otherwise — **correction plan** (mandatory before editing):
 
 #### Loading tree (session start)
 ```
-.cursorrules
-└── AGENTS.md
+AGENTS.md
     ├── senior-developer (resolve via config / External Dependencies — optional)
     ├── gabarito/SKILL.md (auto)
     ├── karpathy-guidelines/SKILL.md (auto)
     ├── caveman/SKILL.md (auto)
-    ├── ef-migrations.mdc (Layer 0, optional)
+    ├── optional rules from config.json.rules.* (when set)
     └── MEMORY.md (session start, before first implementation)
 ```
 
@@ -726,7 +722,7 @@ Otherwise — **correction plan** (mandatory before editing):
 | (example) | obsolete reference | warning | replace with canonical source | #4 |
 
 ### Next step
-Awaiting your approval to apply the plan. Reply `apply corrections`, `apply the plan`, or choose from `AskQuestion`.
+Awaiting your approval to apply the plan. Reply `apply corrections`, `apply the plan`, or choose from `user-gate`.
 ```
 
 After **Phase 7** (approved execution), add section:
@@ -743,7 +739,7 @@ After **Phase 7** (approved execution), add section:
 
 ### Optional — persist report
 If the user requests, save to:
-`.cursor/plans/harness-audit/harness-audit-{YYYYMMDD}.report.md`
+`{plansDir}/harness-audit/harness-audit-{YYYYMMDD}.report.md` (default `{plansDir}` = `.agents/plans`)
 
 ---
 
@@ -766,8 +762,8 @@ If the user requests, save to:
 | **This agent** | `.agents/skills/check-harness/SKILL.md` | Audit meta-harness health |
 | **E2E Pipeline** | Project's E2E orchestrator directory | E2E agent — consumes skills |
 | **Standalone skills** | `.agents/skills/*/SKILL.md` and `.agents/skills/*.md` | Individually invocable knowledge/workflow |
-| **Rules** | `.cursor/rules/*.mdc` (when present) | Narrow-scope engineering rules; complement skills and hub |
-| **Hub** | `.cursorrules` → `AGENTS.md` | Single entry; `AGENTS.md` contains routing (Layers, Skill loading, Task router) without duplicating skill bodies |
+| **Optional project rules** | Paths from `config.json.rules.*` when set | Narrow-scope engineering rules; complement skills and hub |
+| **Hub** | `AGENTS.md` (+ optional host entry pointer) | Single entry; `AGENTS.md` contains routing (Layers, Skill loading, Task router) without duplicating skill bodies |
 
 ---
 
@@ -784,7 +780,7 @@ If the user requests, save to:
 - [ ] Each problem enumerated with severity, error, and proposed correction
 - [ ] Report delivered in § Output format (problem → correction table)
 - [ ] **Dry-run:** report delivered as final artifact; end here
-- [ ] **Normal:** `AskQuestion` done when correctable items exist (or recorded as pending with reason)
+- [ ] **Normal:** `user-gate` done when correctable items exist (or recorded as pending with reason)
 - [ ] No local-machine absolute paths remain in proposals
 
 **Step 3 — Execution** (normal only; dry-run ends at Step 2)

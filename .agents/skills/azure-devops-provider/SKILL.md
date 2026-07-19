@@ -107,17 +107,17 @@ Entry patterns:
 | ADO work-item URL | parsed from URL | `us-{id}` |
 
 ```bash
-mkdir -p .cursor/plans/us-{id}
+mkdir -p {plansDir}/us-{id}
 python .agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py \
   --org {org} --project {project} --id {id} \
   --api-base {apiBase} --pat-env {patEnvVar} \
-  --snapshot .cursor/plans/us-{id}/step-00-us-{id}.issue.json \
-  --output .cursor/plans/us-{id}/step-00-us-{id}.spec.md
+  --snapshot {plansDir}/us-{id}/step-00-us-{id}.issue.json \
+  --output {plansDir}/us-{id}/step-00-us-{id}.spec.md
 ```
 
 `{org}`, `{project}`, `{apiBase}`, `{patEnvVar}` from config — never consumer-specific literals in skill text.
 
-Plans dir may follow `config.plans.dir` (default `.cursor/plans`).
+Plans dir may follow `config.plans.dir` (default `.agents/plans`).
 
 ### `create-pr`
 

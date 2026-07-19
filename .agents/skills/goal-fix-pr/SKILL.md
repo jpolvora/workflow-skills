@@ -71,7 +71,7 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call, using t
 5. **Re-check & loop**: wait `<wait>` seconds, re-collect `activeThreads`, and repeat from step 3 until `activeThreads == 0`, `max` is reached, escalation occurs, or the user aborts.
    - Done when: one of the stop conditions above is met.
 
-6. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`.cursor/codereviews/PR-<N>-round-*.md`); commit hashes and push confirmation; final `activeThreads` count with evidence; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
+6. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
    - Done when: the report is presented to the user.
 
 Language: en-us only.

@@ -8,12 +8,12 @@ Usage:
   python register_local_spec.py --input specs/foo/README.spec.md --force
 
 Writes: {plansDir}/{slug}/step-00-{slug}.spec.md with source: local.
-Optional mirror: {specsDir}/{slug}.spec.md (flat human-browsable copy).
+Optional mirror: {specs-dir}/{slug}.spec.md (flat human-browsable copy).
 
 Supported input layouts under specsDir:
-  Flat:    {specsDir}/{slug}.spec.md
-  Nested:  {specsDir}/{slug}/README.spec.md
-           {specsDir}/{slug}/{slug}.spec.md
+  Flat:    {specs-dir}/{slug}.spec.md
+  Nested:  {specs-dir}/{slug}/README.spec.md
+           {specs-dir}/{slug}/{slug}.spec.md
 """
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ def ensure_utf8_stdio() -> None:
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
-DEFAULT_PLANS_DIR = ".cursor/plans"
+DEFAULT_PLANS_DIR = ".agents/plans"
 DEFAULT_SPECS_DIR = "specs"
 
 _FM_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
@@ -244,7 +244,7 @@ def main() -> int:
     parser.add_argument("--slug", help="Override slug (default: frontmatter or path inference).")
     parser.add_argument(
         "--plans-dir",
-        help="Override plans.dir (default from config.json or .cursor/plans).",
+        help="Override plans.dir (default from config.json or .agents/plans).",
     )
     parser.add_argument(
         "--specs-dir",
@@ -253,7 +253,7 @@ def main() -> int:
     parser.add_argument(
         "--mirror",
         action="store_true",
-        help="Also write flat mirror {specsDir}/{slug}.spec.md.",
+        help="Also write flat mirror {specs-dir}/{slug}.spec.md.",
     )
     parser.add_argument(
         "--force",

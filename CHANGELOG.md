@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-07-19 17:45] Agent: Cursor Grok
+- **Prompt**: `/check-harness` clear `docs/superpowers` refs; remove missing-file / old-skill / dead-dir references
+- **Done**: Removed dead `docs/superpowers` tree + stale `.cursor/plans` artifacts; scrubbed `docs/superpowers/specs/` from check-harness scan patterns; aligned `configure-project` INTERVIEW gate labels; restored CLI `--help` `.agents/plans` note (tests); site/package **0.0.58**
+- **Result**: Harness OK post-correction; `npm run tests -- --local` green; ready to ship
+
+### [2026-07-19 17:35] Agent: Cursor Grok
+- **Prompt**: `/write-a-skill` create skill to interview/detect/suggest filling `config.json` anytime; callable during install; work with setup
+- **Done**: Added `configure-project` (SKILL + INTERVIEW); wired `setup.md`, Workflows deps (28), hubs/task router, CLI post-install hints, README; site `0.0.56`
+- **Result**: Ready for user review (write-a-skill Step 5); optional check-harness pending
+
+### [2026-07-19 17:30] Agent: {agent/runtime}
+- **Prompt**: Audit skill placeholders/config tokens; fix invalid vars
+- **Done**: Canonicalized `{plan-dir}`/`{output-dir}`→`{us-dir}`, `{reviews-dir}`→`{reviewsDir}`, `{specsDir}`→`{specs-dir}`, `{plans.dir}`→`{plansDir}`, `{workflowId}`→`{workflow-id}`; added `{reviewsDir}` to ARTIFACTS; fixed FAQ obsolete step-10/11/12 paths
+- **Result**: Path/config token vocabulary consistent; no remaining invalid path tokens
+
+### [2026-07-19 17:10] Agent: {agent/runtime}
+- **Prompt**: Replace `.agents/plans/{slug}` with `{plansDir}/{slug}` (config check)
+- **Done**: Confirmed no `plansDir` config key — token `{plansDir}` ← `plans.dir`; scrubbed skill prose/examples; schema/example keep literal defaults; hubs document the mapping
+- **Result**: Skills use `{plansDir}/{slug}/`; config still `plans.dir`
+
+### [2026-07-19 16:52] Agent: {agent/runtime}
+- **Prompt**: check-harness apply all (#1–#4)
+- **Done**: Restored+rewrote `.agents/AGENTS.md` (harness-neutral parity); cleared phantom `seniorDeveloper` paths in config example + local config; deleted `workflow-skills-0.0.55.tgz`
+- **Result**: Harness OK post-correction for critical packaged-hub gap
+
+### [2026-07-19 15:55] Agent: {agent/runtime}
+- **Prompt**: Portability rule in AGENTS.md; no compat; consumers choose asset paths; keep `.cursor` for upstream dogfood only
+- **Done**: Added root § Portability & harness neutrality; neutralized shipped defaults (`.agents/plans` / `.agents/codereviews`); `user-gate` / `dispatch-agent`; scrubbed host brands from skills + hubs + README; `shared/config.json` stays `.cursor/plans` for this repo only
+- **Result**: Portable skill contract; no legacy path shims; host pointer files optional and out of skill contract
+
 ### [2026-07-19 14:23] Agent: Cursor Grok
 - **Prompt**: `/08-ship-pr` create-pr (option 1)
 - **Done**: Prepare board green; merged `main` into `develop` (regen `docs/index.html`); pushed; reused/updated PR #72; 300s settle; threads 0 + review check pass; merged with merge commit; `develop` kept

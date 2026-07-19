@@ -49,14 +49,14 @@ REPO_ROOT = Path(__file__).resolve().parents[4]              # repo root (.agent
 PLANS_DIR = None  # resolved lazily via load_plans_dir()
 
 def load_plans_dir() -> Path:
-    """Resolve plans.dir from shared config.json (default .cursor/plans)."""
+    """Resolve plans.dir from shared config.json (default .agents/plans)."""
     cfg = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
-    plans = Path(".cursor") / "plans"
+    plans = Path(".agents") / "plans"
     if cfg.exists():
         try:
             import json as _json
             data = _json.loads(cfg.read_text(encoding="utf-8"))
-            rel = (data.get("plans") or {}).get("dir") or ".cursor/plans"
+            rel = (data.get("plans") or {}).get("dir") or ".agents/plans"
             plans = Path(rel)
         except Exception:
             pass
@@ -72,7 +72,7 @@ def resolve_state_path(arg: str) -> Path:
     p = Path(arg)
     if p.exists():
         return p
-    # State files live under .cursor/plans/us-{id}/{workflow-id}.state.md.
+    # State files live under {plansDir}/us-{id}/{workflow-id}.state.md.
     # Accept either a full/relative path, a bare workflow-id, or {id}.state.md
     # and search recursively under the plans dir.
     names = [arg, f"{arg}.state.md"] if not arg.endswith(".state.md") else [arg]
