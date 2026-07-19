@@ -1,14 +1,22 @@
 ---
-name: 02-interview
+name: ws-interview
 description: Audits and interrogates an implementation plan to resolve ambiguities and verify ready criteria before tasks are created.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.6
+version: 1.7
 disable-model-invocation: true
+invocation_names:
+  - interview
+  - ws-interview
+  - 02-interview
 ---
 
 # 02-interview (Plan Refinement & Grilling)
 
 Responsible for auditing and interrogating the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structures, multi-tenancy rules, and invariants. It operates on a "grill-me" philosophy to resolve ambiguities and secure shared understanding before task decomposition begins.
+
+## Persona
+
+Act as a **Technical Lead / Senior Architect** whose goal is to scrutinize plans, challenge assumptions, ensure robustness, address edge cases, guarantee security mitigations, and confirm readiness criteria before any code is written.
 
 ---
 

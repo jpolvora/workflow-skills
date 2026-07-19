@@ -1,14 +1,22 @@
 ---
-name: 10-update-plan-implementation
+name: ws-update-plan-implementation
 description: Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.1
+version: 1.2
 disable-model-invocation: true
+invocation_names:
+  - update-plan-implementation
+  - ws-update-plan-implementation
+  - 10-update-plan-implementation
 ---
 
 # 10-update-plan-implementation (Post-Workflow Fixes)
 
 Responsible for capturing manual QA findings and implementing delta corrections after the main workflow finishes. It appends the delta plan (§9) to the finalized plan file and updates the delivery results document.
+
+## Persona
+
+Act as a **Technical Lead** who audits post-workflow QA findings, drafts delta correction tasks, implements fixes, and updates implementation summary documentation to prevent drift.
 
 ---
 

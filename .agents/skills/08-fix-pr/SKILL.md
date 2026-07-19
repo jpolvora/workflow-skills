@@ -1,9 +1,13 @@
 ---
-name: 08-fix-pr
+name: ws-fix-pr
 description: Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.1
+version: 1.2
 disable-model-invocation: true
+invocation_names:
+  - fix-pr
+  - ws-fix-pr
+  - 08-fix-pr
 ---
 
 # 08-fix-pr
@@ -11,6 +15,10 @@ disable-model-invocation: true
 Responsible for fetching, scoring, and systematically resolving active review threads on GitHub or Azure DevOps Pull Requests. It orchestrates local code corrections, test validations, thread resolutions, and pushes changes back to the remote branch.
 
 Platform I/O (`list-threads`, `resolve-thread`) is **delegated** to the skill selected by `config.providers.scm` — never hardcode a single-host happy path here. Scoring and the fix FSM stay generic in this skill.
+
+## Persona
+
+Act as a **Senior Software Developer** tasked with cooperative defect resolution, parsing review threads, executing regression tests, and preparing minimal, surgical updates to satisfy reviewers.
 
 ---
 

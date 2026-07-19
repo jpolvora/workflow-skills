@@ -56,7 +56,7 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 | `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | `Task` — same worktree, no file overlap |
 | `user-gate` | Ask question | **Prefer `AskQuestion`** when available; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback with same options when tool unavailable (see [`gates.md`](gates.md)) |
 | `user-gate-auto` | Auto-select first option | auto-gate table — no AskQuestion |
-| `browser-mcp` | Browser integration test | `CallMcpTool` `cursor-ide-browser` (only normal mode, non-dry-run, gated) |
+| `browser-mcp` | Browser integration test | `CallMcpTool` `ide-browser` (only normal mode, non-dry-run, gated) |
 
 ## Knowledge tools
 

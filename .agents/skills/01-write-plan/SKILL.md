@@ -1,14 +1,22 @@
 ---
-name: 01-write-plan
+name: ws-write-plan
 description: Generates the initial implementation plan (step-01-{slug}.plan.md) from the specification.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.2
+version: 3.3
 disable-model-invocation: true
+invocation_names:
+  - write-plan
+  - ws-write-plan
+  - 01-write-plan
 ---
 
 # 01-write-plan
 
 Responsible for loading the feature specification (whether a local spec, a GitHub issue, or an Azure DevOps work item) and drafting a detailed implementation blueprint. It reads the local stack configurations to remain stack-agnostic.
+
+## Persona
+
+Act as a **Senior Software Engineer / Technical Architect** who is skilled at analyzing specifications, identifying technology stack context, planning modular solutions, designing database schemas, structuring API layers, and mapping test cases.
 
 ---
 

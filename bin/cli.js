@@ -329,28 +329,7 @@ function ensureSharedConsumerArtifacts() {
   }
 }
 
-/**
- * Create-if-missing root stubs at consumer project root (targetDir).
- * Never overwrites existing .cursorrules or CHANGELOG.md.
- * Does not touch shared/ MEMORY, config, or stack.
- */
-function ensureRootConsumerSeeds() {
-  const cursorrulesPath = path.join(targetDir, '.cursorrules');
-  if (fs.existsSync(cursorrulesPath)) {
-    console.log(`    Preserved existing .cursorrules (skipped seed)`);
-  } else {
-    fs.writeFileSync(cursorrulesPath, FRESH_CURSORRULES);
-    console.log(`    Seeded .cursorrules → AGENTS.md pointer`);
-  }
 
-  const changelogPath = path.join(targetDir, 'CHANGELOG.md');
-  if (fs.existsSync(changelogPath)) {
-    console.log(`    Preserved existing CHANGELOG.md (skipped seed)`);
-  } else {
-    fs.writeFileSync(changelogPath, FRESH_CHANGELOG_MD);
-    console.log(`    Seeded CHANGELOG.md stub`);
-  }
-}
 
 function afterSkillCopy(skillName, destPath) {
   // Hub consumer artifacts are seeded when the hub is ensured (workflows / full).
@@ -463,8 +442,6 @@ function ensureSharedHubInstalled(mode = 'install') {
 
   // Never overwrite consumer config.json / stack.md / MEMORY.md from upstream
   ensureSharedConsumerArtifacts();
-  // Optional root stubs (create-if-missing only; never clobber)
-  ensureRootConsumerSeeds();
 
   console.log(
     `  shared/ hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack preserved)`

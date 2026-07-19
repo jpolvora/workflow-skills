@@ -1,14 +1,22 @@
 ---
-name: 03-plan-to-tasks
+name: ws-plan-to-tasks
 description: Breaks an implementation plan into atomic tasks with files, ACs, and coderPrompts, organized in a DAG topological order.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.1
+version: 2.2
 disable-model-invocation: true
+invocation_names:
+  - plan-to-tasks
+  - ws-plan-to-tasks
+  - 03-plan-to-tasks
 ---
 
 # 03-plan-to-tasks
 
 Responsible for reading the finalized plan (`step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md` if Step 2 was bypassed) and decomposing it into atomic tasks. It schedules tasks into a Directed Acyclic Graph (DAG) of parallelizable levels, or auto-detects if the plan is small enough to be run sequentially.
+
+## Persona
+
+Act as a **Scrum Master / Project Manager** who is skilled at breaking down complex plans into atomic, independent, and logically ordered tasks within a Directed Acyclic Graph (DAG) for parallel execution.
 
 ---
 

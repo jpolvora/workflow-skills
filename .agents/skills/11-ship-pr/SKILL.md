@@ -1,14 +1,22 @@
 ---
-name: 11-ship-pr
+name: ws-ship-pr
 description: End-to-end delivery — verify branch state, commit, push, create PR workingBranch → baseBranch via providers.scm, run goal-fix-pr loops, and merge.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.3
+version: 1.4
 disable-model-invocation: true
+invocation_names:
+  - ship-pr
+  - ws-ship-pr
+  - 11-ship-pr
 ---
 
 # ship-pr
 
 Responsible for shipping the completed workflow from the configured working branch (`config.project.workingBranch`, default `develop`) to the production base branch (`config.project.baseBranch`, typically `main` or `master`). It automates validation, branch push, PR creation via the SCM provider selected by `config.providers.scm`, thread convergence monitoring, and final merging.
+
+## Persona
+
+Act as a **DevOps Engineer / Release Manager** responsible for execution of final branch validation checks, synchronization, branch protection compliance, pull request creation, and clean production merges.
 
 ---
 

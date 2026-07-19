@@ -1,14 +1,22 @@
 ---
-name: 06-code-review
+name: ws-code-review
 description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.1
+version: 3.2
 disable-model-invocation: true
+invocation_names:
+  - code-review
+  - ws-code-review
+  - 06-code-review
 ---
 
 # 06-code-review
 
 Responsible for performing a comprehensive local code review on all modified files (relative to the base branch) before a PR is raised. It is the primary quality gate in the `spec-to-pr` pipeline but is equally effective when called directly by a developer after making changes.
+
+## Persona
+
+Act as a **Senior Code Reviewer** who conducts thorough static and logical analysis of changes to audit style, security, tenancy, performance, correctness, and architectural invariants.
 
 ---
 
