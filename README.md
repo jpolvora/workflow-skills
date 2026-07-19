@@ -12,7 +12,7 @@ Portable **agent skills** and **end-to-end workflows** for coding assistants. Th
 
 | Doc | Who reads it | What it covers |
 |-----|--------------|----------------|
-| **`README.md`** (this file) | Humans | Install, update, safety, contribute, high-level catalog |
+| **`README.md`** (this file) | Humans | Install, update, uninstall, safety, contribute, high-level catalog |
 | **[`AGENTS.md`](AGENTS.md)** | Agents | Routing, auto-load, task router, harness verification, portability |
 | **[`.agents/AGENTS.md`](.agents/AGENTS.md)** | Agents (after install) | Packaged skill index + portability rules shipped to consumers |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to `AGENTS.md` if your IDE needs one — not required by skills |
@@ -37,13 +37,15 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 1. Change this repo → PR to `develop`
 2. After merge, in the consumer: `npx --yes github:jpolvora/workflow-skills update`
 
-**Always preserved** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`. Do not treat in-place skill edits in a consumer as permanent.
+**Always preserved** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`. Do not treat in-place skill edits in a consumer as permanent.
 
 ---
 
-## Install and update
+## Install, update, and uninstall
 
 Skills land in your project’s `.agents/skills/`. Prefer **Node / npx**. A bash script exists only as a thin shim to the same CLI.
+
+The CLI tracks managed skills in `.agents/skills/shared/installed-skills.json` (`skills` = all folders; `selected` = install roots). `update` refreshes tracked skills; `uninstall` removes named skills and cascades unused deps. Consumer data under `shared/` is never deleted by uninstall.
 
 Packages in the interactive menu: `f` Full · `w` Workflows · `e` Extra (membership: [`bin/skill-dependencies.json`](./bin/skill-dependencies.json)).
 
@@ -53,22 +55,20 @@ Packages in the interactive menu: `f` Full · `w` Workflows · `e` Extra (member
 # Interactive install
 npx --yes github:jpolvora/workflow-skills
 
-# Update existing skills (preserves shared/ consumer data)
+# Non-interactive install (exactly one mode; Non-TTY requires --yes)
+npx --yes github:jpolvora/workflow-skills install --full --yes
+npx --yes github:jpolvora/workflow-skills install --package workflows --yes
+npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes
+
+# Update tracked skills (bootstraps installed-skills.json from disk if missing)
 npx --yes github:jpolvora/workflow-skills update
 
 # Also install new top-level skills added upstream
 npx --yes github:jpolvora/workflow-skills update --include-new
+
+# Uninstall (cascades dependents + unused deps; preserves shared/ consumer data)
+npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes
 ```
-
-Non-interactive (CI / agents — still use human docs here for the commands):
-
-```bash
-npx --yes github:jpolvora/workflow-skills install --full --yes
-npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes
-```
-
-Exactly one of `--full`, `--package <full|workflows|extra>`, or `--skills <csv>` is required. Non-TTY stdin requires `--yes`.
 
 **Canonical form:** do **not** append `@latest` or `@main` to `github:jpolvora/workflow-skills`.
 
@@ -76,8 +76,9 @@ Exactly one of `--full`, `--package <full|workflows|extra>`, or `--skills <csv>`
 |-------|---------|
 | Compare to latest | `npx --yes github:jpolvora/workflow-skills --check` |
 | Installed version | `npx --yes github:jpolvora/workflow-skills --version` |
+| Help | `npx --yes github:jpolvora/workflow-skills --help` |
 
-**After install/update:** ask your agent to run `check-harness` (load `.agents/skills/check-harness/SKILL.md`, Phases 0–5c).
+**After install/update:** ask your agent to run `check-harness` (load `.agents/skills/check-harness/SKILL.md`, Phases 0–5c). Optional: `/configure-project` to fill `shared/config.json`.
 
 #### Troubleshooting
 
@@ -85,6 +86,7 @@ Exactly one of `--full`, `--package <full|workflows|extra>`, or `--skills <csv>`
 |---------|-----|
 | Exit 128 / `ssh://git@github.com/null/latest.git` | Drop `@latest` / `@main`; use `npx --yes github:jpolvora/workflow-skills` |
 | Interactive hang under a pipe | Use `install … --yes` |
+| Uninstall on CI/agent | Pass `--yes` (required when stdin is not a TTY) |
 
 ### Option B — cURL (shim → npx)
 
@@ -94,6 +96,7 @@ Requires Node/`npx`. Flags after `bash -s --` match Option A:
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s --
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- install --full --yes
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- update
+curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- uninstall --skills goal-fix-pr --yes
 ```
 
 From a **local clone** of this repo: `./install-skills.sh` → `node bin/cli.js` (includes uncommitted changes).
@@ -108,6 +111,7 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 | `stack.md` | Human stack notes (seeded from `stack.md.example`) |
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
+| `installed-skills.json` | Managed skill list for `update` / `uninstall` |
 
 ### Optional root configuration
 

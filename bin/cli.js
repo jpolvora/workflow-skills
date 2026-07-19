@@ -38,7 +38,13 @@ const HUB_WHITELIST = [
  * Consumer-owned artifacts under shared/ — never copy upstream content into consumers.
  * Fresh install seeds empty templates; existing consumer files are preserved.
  */
-const CONSUMER_OWNED_HUB_FILES = new Set(['config.json', 'MEMORY.md', 'stack.md']);
+const INSTALLED_SKILLS_FILE = 'installed-skills.json';
+const CONSUMER_OWNED_HUB_FILES = new Set([
+  'config.json',
+  'MEMORY.md',
+  'stack.md',
+  INSTALLED_SKILLS_FILE,
+]);
 const CONSUMER_OWNED_HUB_DIRS = new Set(['memory']);
 /** Pack / VCS metadata / bytecode — never install into consumer skill trees. */
 const SKIP_INSTALL_FILES = new Set(['.npmignore', '.gitignore', '__pycache__']);
@@ -91,6 +97,141 @@ function resolveTransitiveDeps(skillName, graph = loadSkillGraph(), seen = new S
     resolveTransitiveDeps(dep, graph, seen);
   }
   return seen;
+}
+
+function installedSkillsManifestPath() {
+  return path.join(targetSkillsDir, HUB_DIR, INSTALLED_SKILLS_FILE);
+}
+
+/** Disk scan: top-level skill folders with SKILL.md (excludes shared/). */
+function scanInstalledSkillsOnDisk() {
+  if (!fs.existsSync(targetSkillsDir)) return [];
+  return listInstallableSkills(targetSkillsDir);
+}
+
+function readInstalledSkillsManifest() {
+  const p = installedSkillsManifestPath();
+  if (!fs.existsSync(p)) return null;
+  try {
+    const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const skills = Array.isArray(data.skills)
+      ? [...new Set(data.skills.filter((s) => typeof s === 'string' && s && s !== HUB_DIR))].sort()
+      : [];
+    let selected = Array.isArray(data.selected)
+      ? [...new Set(data.selected.filter((s) => typeof s === 'string' && s && s !== HUB_DIR))]
+      : null;
+    // Legacy / bootstrap: if selected missing, treat all skills as roots.
+    if (!selected) selected = [...skills];
+    selected = selected.filter((s) => skills.includes(s)).sort((a, b) => a.localeCompare(b));
+    return { version: data.version || 1, updatedAt: data.updatedAt || null, skills, selected };
+  } catch {
+    console.warn(`Warning: could not parse ${INSTALLED_SKILLS_FILE}; will rebootstrap.`);
+    return null;
+  }
+}
+
+function writeInstalledSkillsManifest(skillNames, selectedNames = null) {
+  const destShared = path.join(targetSkillsDir, HUB_DIR);
+  fs.mkdirSync(destShared, { recursive: true });
+  const skills = [...new Set(skillNames.filter((s) => s && s !== HUB_DIR))].sort((a, b) =>
+    a.localeCompare(b)
+  );
+  const selectedSource = selectedNames == null ? skills : selectedNames;
+  const selected = [...new Set(selectedSource.filter((s) => skills.includes(s)))].sort((a, b) =>
+    a.localeCompare(b)
+  );
+  const payload = {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    skills,
+    selected,
+  };
+  fs.writeFileSync(installedSkillsManifestPath(), `${JSON.stringify(payload, null, 2)}\n`);
+  return { skills, selected };
+}
+
+/**
+ * Load or bootstrap manifest. `extraSkills` merges into skills; `extraSelected` merges into selected roots.
+ * `replaceWith` / `replaceSelected` replace entirely when provided.
+ */
+function syncInstalledSkillsManifest({
+  extraSkills = [],
+  extraSelected = [],
+  replaceWith = null,
+  replaceSelected = null,
+} = {}) {
+  const existing = readInstalledSkillsManifest();
+  let skills;
+  let selected;
+  if (Array.isArray(replaceWith)) {
+    skills = replaceWith;
+    selected = Array.isArray(replaceSelected) ? replaceSelected : replaceWith;
+  } else {
+    const baseSkills = existing ? existing.skills : scanInstalledSkillsOnDisk();
+    // Do not treat a disk scan as selected roots — callers pass extraSelected / replaceSelected.
+    const baseSelected = existing ? existing.selected : [];
+    skills = [...baseSkills, ...extraSkills];
+    selected = [...baseSelected, ...extraSelected];
+  }
+  return writeInstalledSkillsManifest(skills, selected);
+}
+
+/**
+ * Compute uninstall set using selected roots:
+ * reverse-cascade dependents of named skills, then keep = closure(remaining selected).
+ */
+function computeUninstallSet(installed, selected, named) {
+  const installedSet = new Set(installed);
+  const selectedSet = new Set(selected.filter((s) => installedSet.has(s)));
+  const toRemove = new Set(named.filter((n) => installedSet.has(n)));
+
+  // Reverse cascade: remove anything that transitively depends on a removed skill.
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const skill of installedSet) {
+      if (toRemove.has(skill)) continue;
+      const deps = resolveTransitiveDeps(skill);
+      for (const d of deps) {
+        if (d !== skill && toRemove.has(d)) {
+          toRemove.add(skill);
+          changed = true;
+          break;
+        }
+      }
+    }
+  }
+
+  const remainingSelected = [...selectedSet].filter((s) => !toRemove.has(s));
+  const keep = new Set();
+  for (const r of remainingSelected) {
+    for (const d of resolveTransitiveDeps(r)) {
+      if (installedSet.has(d)) keep.add(d);
+    }
+  }
+
+  const remove = [...installedSet].filter((s) => !keep.has(s)).sort((a, b) => a.localeCompare(b));
+  const keepList = [...keep].sort((a, b) => a.localeCompare(b));
+  const keepSelected = remainingSelected.sort((a, b) => a.localeCompare(b));
+  return { remove, keep: keepList, keepSelected };
+}
+
+function rmSkillDir(skillName) {
+  const destPath = path.join(targetSkillsDir, skillName);
+  if (!fs.existsSync(destPath)) return false;
+  fs.rmSync(destPath, { recursive: true, force: true });
+  return true;
+}
+
+/** Skills in `selectedNames` that are not dependencies of another selected skill. */
+function inferSelectedRoots(selectedNames) {
+  return selectedNames.filter((s) => {
+    return !selectedNames.some((other) => {
+      if (other === s) return false;
+      const deps = resolveTransitiveDeps(other);
+      return deps.has(s);
+    });
+  });
 }
 
 function applyPackageSelection(packageKey, skills, selected) {
@@ -370,9 +511,11 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills install --full --yes
   npx --yes github:jpolvora/workflow-skills install --package workflows --yes
   npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes
-  npx --yes github:jpolvora/workflow-skills update       Update installed skills
+  npx --yes github:jpolvora/workflow-skills update       Update installed skills (from shared/installed-skills.json)
   npx --yes github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally
+  npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> [--yes]
+      Remove skills (+ cascade unused deps); never deletes shared/ consumer data
   npx --yes github:jpolvora/workflow-skills --version    Print installed version
   npx --yes github:jpolvora/workflow-skills --check      Compare installed vs latest online version
   npx --yes github:jpolvora/workflow-skills --help
@@ -383,9 +526,14 @@ Curl shim (same argv; requires Node.js):
   curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- update
 
 Non-interactive install:
-  install --full|--package <full|workflows|extra>|--skills <csv> [--yes]
+  install --full|--package <key>|--skills <csv> [--yes]
   --yes  Overwrite existing skill dirs without prompts; always preserves shared/ consumer data
   Non-TTY (CI/agents): --yes is required
+
+Non-interactive uninstall:
+  uninstall --skills <csv> [--yes]
+  Removes named skills and any deps no longer required by remaining installed skills.
+  Always preserves shared/ (config.json, MEMORY.md, stack.md, installed-skills.json).
 
 Interactive package shortcuts:
   f  Full package (all installable skills + shared/ hub)
@@ -400,8 +548,9 @@ Notes:
   - Cache bust: clear the npx cache, then re-run with npx --yes (no @latest suffix on github:).
   - Skills under .agents/skills/ are overwritten on update/install --yes.
   - shared/ hub is installed with workflows/full (and when self-learning is installed).
-  - Consumer-owned under shared/ (never copied from upstream): config.json, MEMORY.md, memory/*, stack.md.
+  - Consumer-owned under shared/ (never copied from upstream): config.json, MEMORY.md, memory/*, stack.md, installed-skills.json.
     Fresh install seeds empty MEMORY.md + stack.md from templates; existing files are always preserved.
+    installed-skills.json tracks managed skills for update/uninstall (bootstrapped from disk when missing).
   - Artifact paths (plans/reviews) come from consumer config.json (defaults: .agents/plans, .agents/codereviews) — not host-private folders.
   - Optional host pointer files and CHANGELOG.md are consumer-owned (skills do not require them).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
@@ -549,6 +698,11 @@ function installSelectedSkills(skills, selectedNames, { overwrite }) {
   }
 
   installPackagedAgentsIndex();
+  const roots = inferSelectedRoots(selectedNames);
+  syncInstalledSkillsManifest({
+    extraSkills: selectedNames,
+    extraSelected: roots,
+  });
   return installedCount;
 }
 
@@ -683,6 +837,12 @@ async function main() {
     return;
   }
 
+  if (command === 'uninstall') {
+    assertNotSelfOverwrite();
+    await runUninstall(skills, args.slice(1));
+    return;
+  }
+
   if (command === 'update') {
     if (args.includes('--help') || args.includes('-h')) {
       printHelp();
@@ -695,6 +855,144 @@ async function main() {
     assertNotSelfOverwrite();
     await runInteractive(skills);
   }
+}
+
+function parseUninstallArgs(args) {
+  let skillsCsv = null;
+  let yes = false;
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === '--yes' || a === '-y') {
+      yes = true;
+      continue;
+    }
+    if (a === '--skills') {
+      skillsCsv = args[++i];
+      if (!skillsCsv) {
+        console.error('Error: --skills requires a comma-separated list');
+        process.exit(1);
+      }
+      continue;
+    }
+    if (a === '--help' || a === '-h') {
+      printHelp();
+      process.exit(0);
+    }
+    console.error(`Error: Unknown uninstall argument: ${a}`);
+    console.error('Use: uninstall --skills <csv> [--yes]');
+    process.exit(1);
+  }
+  if (!skillsCsv) {
+    console.error('Error: uninstall requires --skills <csv>');
+    process.exit(1);
+  }
+  const named = skillsCsv
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (named.length === 0) {
+    console.error('Error: --skills list is empty');
+    process.exit(1);
+  }
+  return { named, yes };
+}
+
+async function runUninstall(_upstreamSkills, argv) {
+  const opts = parseUninstallArgs(argv);
+
+  console.log('============================================================');
+  console.log('  Workflow Skills - Uninstall');
+  console.log('============================================================');
+  console.log(`Target: ${targetSkillsDir}`);
+  console.log('------------------------------------------------------------');
+
+  if (!fs.existsSync(targetSkillsDir)) {
+    console.log(`No skills directory found at: ${targetSkillsDir}`);
+    process.exit(0);
+  }
+
+  // Bootstrap manifest if missing, then use it as source of truth (+ disk extras).
+  let manifest = readInstalledSkillsManifest();
+  const fromDisk = scanInstalledSkillsOnDisk();
+  if (!manifest) {
+    manifest = {
+      skills: fromDisk,
+      selected: inferSelectedRoots(fromDisk),
+    };
+  }
+  const installed = [
+    ...new Set([...(manifest.skills || []), ...fromDisk]),
+  ].sort((a, b) => a.localeCompare(b));
+  const selected =
+    manifest.selected && manifest.selected.length > 0
+      ? manifest.selected.filter((s) => installed.includes(s))
+      : inferSelectedRoots(installed);
+
+  if (installed.length === 0) {
+    console.log('No installed skills found.');
+    process.exit(0);
+  }
+
+  const unknown = opts.named.filter((n) => !installed.includes(n));
+  if (unknown.length > 0) {
+    console.error(`Error: skill(s) not installed: ${unknown.join(', ')}`);
+    process.exit(1);
+  }
+
+  const { remove, keep, keepSelected } = computeUninstallSet(installed, selected, opts.named);
+  if (remove.length === 0) {
+    console.log('Nothing to uninstall.');
+    process.exit(0);
+  }
+
+  const cascaded = remove.filter((n) => !opts.named.includes(n));
+  console.log(`Will remove ${remove.length} skill(s):`);
+  for (const n of remove) {
+    const tag = opts.named.includes(n) ? '' : ' (cascade)';
+    console.log(`  - ${n}${tag}`);
+  }
+  if (cascaded.length > 0) {
+    console.log(`(includes ${cascaded.length} cascaded dependent/orphan skill(s))`);
+  }
+  console.log(`Remaining: ${keep.length}`);
+  console.log('shared/ consumer data will be preserved.');
+
+  let confirmed = !!opts.yes;
+  if (!confirmed) {
+    if (!process.stdin.isTTY) {
+      console.error('Error: uninstall on non-TTY requires --yes');
+      process.exit(1);
+    }
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    const answer = (await rl.question('Proceed with uninstall? (y/n): ')).trim().toLowerCase();
+    rl.close();
+    confirmed = answer === 'y' || answer === 'yes';
+  }
+  if (!confirmed) {
+    console.log('Uninstall cancelled.');
+    process.exit(0);
+  }
+
+  let removedCount = 0;
+  for (const skillName of remove) {
+    if (rmSkillDir(skillName)) {
+      console.log(`  Removed: ${skillName}`);
+      removedCount++;
+    } else {
+      console.log(`  Missing on disk (manifest only): ${skillName}`);
+    }
+  }
+
+  writeInstalledSkillsManifest(keep, keepSelected);
+
+  if (fs.existsSync(targetAgentsDir)) {
+    installPackagedAgentsIndex();
+  }
+
+  console.log('');
+  console.log(`Uninstalled ${removedCount} skill folder(s). Manifest now lists ${keep.length} skill(s).`);
+  console.log(`Note: shared/ (${CONFIG_FILE}, MEMORY.md, stack.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
+  process.exit(0);
 }
 
 function runUpdate(skills, includeNew) {
@@ -710,15 +1008,38 @@ function runUpdate(skills, includeNew) {
     process.exit(0);
   }
 
+  // Prefer manifest; bootstrap from disk when missing.
+  const existing = readInstalledSkillsManifest();
+  let tracked;
+  let trackedSelected;
+  if (existing) {
+    tracked = existing.skills;
+    trackedSelected = existing.selected;
+  } else {
+    tracked = scanInstalledSkillsOnDisk();
+    trackedSelected = inferSelectedRoots(tracked);
+    writeInstalledSkillsManifest(tracked, trackedSelected);
+    console.log(
+      `Bootstrapped ${INSTALLED_SKILLS_FILE} from disk (${tracked.length} skill(s)).`
+    );
+  }
 
-  const existingDirs = listSkillDirs(targetSkillsDir).filter((name) => name !== HUB_DIR);
-  const existingSkills = existingDirs.filter((name) => skills.includes(name));
-  const missingNew = skills.filter((name) => !existingSkills.includes(name));
+  const upstreamSet = new Set(skills);
+  const existingSkills = tracked.filter((name) => upstreamSet.has(name));
+  const staleLocal = tracked.filter((name) => !upstreamSet.has(name));
+  const missingNew = skills.filter((name) => !tracked.includes(name));
 
   if (existingSkills.length === 0 && !(includeNew && missingNew.length > 0)) {
     console.log('No matching skills found in target directory to update.');
     console.log('Run `npx --yes github:jpolvora/workflow-skills` to select and install skills.');
     process.exit(0);
+  }
+
+  if (staleLocal.length > 0) {
+    console.log(
+      `Note: ${staleLocal.length} tracked skill(s) not in this upstream package (left as-is):`
+    );
+    staleLocal.slice(0, 10).forEach((n) => console.log(`  - ${n}`));
   }
 
   let hubEnsured = false;
@@ -729,7 +1050,11 @@ function runUpdate(skills, includeNew) {
       const destPath = path.join(targetSkillsDir, skillName);
       if (!fs.existsSync(srcPath)) continue;
       console.log(`  Updating '${skillName}'...`);
-      copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+      if (fs.existsSync(destPath)) {
+        copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+      } else {
+        copyDirSync(srcPath, destPath);
+      }
       afterSkillCopy(skillName, destPath);
     }
     if (shouldEnsureHub(existingSkills)) {
@@ -743,6 +1068,7 @@ function runUpdate(skills, includeNew) {
     ensureSharedHubInstalled('update');
   }
 
+  let newlyInstalled = [];
   if (includeNew && missingNew.length > 0) {
     console.log(`Installing ${missingNew.length} new upstream skill(s)...`);
     for (const skillName of missingNew) {
@@ -752,6 +1078,7 @@ function runUpdate(skills, includeNew) {
       copyDirSync(srcPath, destPath);
       afterSkillCopy(skillName, destPath);
     }
+    newlyInstalled = missingNew;
   } else if (missingNew.length > 0) {
     console.log(`\nNote: ${missingNew.length} upstream skill(s) not installed locally:`);
     missingNew.slice(0, 10).forEach((n) => console.log(`  - ${n}`));
@@ -760,10 +1087,16 @@ function runUpdate(skills, includeNew) {
   }
 
   installPackagedAgentsIndex();
+  syncInstalledSkillsManifest({
+    extraSkills: newlyInstalled,
+    extraSelected: newlyInstalled,
+  });
 
   console.log('\nUpdate complete!');
   console.log(`Note: Existing '${CONFIG_FILE}' and shared/ consumer files were preserved and NOT overwritten.`);
-  console.log('Note: Consumer shared/MEMORY.md, memory/, stack.md, and config.json are never overwritten by upstream.');
+  console.log(
+    `Note: Consumer shared/MEMORY.md, memory/, stack.md, config.json, and ${INSTALLED_SKILLS_FILE} are never overwritten by upstream.`
+  );
   console.log('\n\u26a0\ufe0f  After updating, run the `check-harness` skill to scan the harness:');
   console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
   console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');

@@ -31,7 +31,7 @@ Mirror for packaged installs: [`.agents/AGENTS.md`](.agents/AGENTS.md) § Portab
 | File | Audience | Purpose |
 |------|----------|---------|
 | **`AGENTS.md`** (this file) | Agents | Skill loading, task router, layers, verification, harness rules |
-| **`README.md`** | Humans | What this repo is, how to install/update, contribute, safety |
+| **`README.md`** | Humans | What this repo is, how to install/update/uninstall, contribute, safety |
 | **`.agents/AGENTS.md`** | Agents (packaged) | Consumer-facing skill index shipped with installs |
 | **`.agents/skills/*/SKILL.md`** | Agents | Progressive disclosure — load on demand via router |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to this hub if the consumer’s IDE needs one — not required by skills; not a portable dependency |
@@ -44,14 +44,28 @@ When editing harness docs: put **agent obligations** here; put **human install/U
 
 Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and pipeline skills.
 
-- Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files.
-- **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*` (consumer-owned; never overwrite from upstream).
+- Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files; `uninstall` removes skill folders (cascades unused deps) and never deletes `shared/` consumer data.
+- **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json` (consumer-owned; never overwrite from upstream).
 - **Latest layout only:** installer does not migrate older folder names or legacy host paths — consumers get the current skill tree and neutral defaults on install/update. See [`README.md`](README.md) § Safety and § [Portability & harness neutrality](#portability--harness-neutrality-mandatory).
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding; no IDE/agent product coupling. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
 - Guardrails resolution: § [External dependencies](#external-dependencies) (and packaged mirror in [`.agents/AGENTS.md`](.agents/AGENTS.md)).
 - **This upstream’s local `.cursor/`:** authoring/plans only for this repo — never the shipped default for consumers.
+
+### Consumer CLI (install / update / uninstall)
+
+Human narrative: [`README.md`](README.md) § Install, update, and uninstall. Agents in a **consumer** project (not this package root):
+
+```bash
+npx --yes github:jpolvora/workflow-skills              # interactive install
+npx --yes github:jpolvora/workflow-skills install --package workflows --yes
+npx --yes github:jpolvora/workflow-skills update       # uses shared/installed-skills.json
+npx --yes github:jpolvora/workflow-skills update --include-new
+npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
+```
+
+Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` roots). Missing on first update → bootstrap from disk. Uninstall preserves `shared/` (config, MEMORY, stack, manifest rewrite).
 
 **This source repo:** do not run remote `npx github:jpolvora/workflow-skills` against the package root (except under `test/`). Prefer local `node bin/cli.js` / `./install-skills.sh`.
 

@@ -9,8 +9,8 @@
 > Promoted utility skills (`caveman`, `gabarito`, `karpathy-guidelines`, `spec-format`, `goal-loop`, `self-learning`, `changelog`, `configure-project`) live as **top-level** installable skills under `.agents/skills/<skill>/`.
 >
 > **Consumer-owned** (preserved on update; never overwritten by upstream):
-> `config.json`, `stack.md`, `MEMORY.md`, and `memory/*`.
-> Fresh install seeds empty `MEMORY.md` from `MEMORY.md.template` and `stack.md` from `stack.md.example`. Upstream hub memory/stack/config are **not** copied to consumers. Prefer [`configure-project`](../configure-project/SKILL.md) to interview/detect and fill `config.json`.
+> `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, and `installed-skills.json`.
+> Fresh install seeds empty `MEMORY.md` from `MEMORY.md.template` and `stack.md` from `stack.md.example`. Upstream hub memory/stack/config are **not** copied to consumers. Prefer [`configure-project`](../configure-project/SKILL.md) to interview/detect and fill `config.json`. The installer writes `installed-skills.json` for update/uninstall tracking.
 
 ---
 
@@ -35,6 +35,7 @@
 | `stack.md` | Human-readable companion to `config.json` (edit freely) |
 | `MEMORY.md` | Compiled anti-regression index (`self-learning` skill) |
 | `memory/*.md` | Individual memory entries (compile into `MEMORY.md`) |
+| `installed-skills.json` | Managed skill list for `update` / `uninstall` (installer-written) |
 
 ---
 

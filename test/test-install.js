@@ -19,6 +19,7 @@ const ignoredPatterns = [
   /config\.json$/,
   /(^|[\\/])shared[\\/]stack\.md$/,
   /(^|[\\/])shared[\\/]MEMORY\.md$/,
+  /(^|[\\/])shared[\\/]installed-skills\.json$/,
   /(^|[\\/])shared[\\/]memory([\\/]|$)/,
   /(^|[\\/])shared[\\/]MEMORY\.md\.template$/,
   /(^|[\\/])self-learning[\\/]MEMORY\.md$/,
@@ -326,6 +327,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
     if (!/config\.json/i.test(out) || !/\.agents\/plans/i.test(out)) {
       fail(`CLI --help missing consumer config / .agents/plans artifact-path notes.\n${out}`);
+    }
+    if (!/uninstall/i.test(out) || !/installed-skills\.json/i.test(out)) {
+      fail(`CLI --help missing uninstall / installed-skills.json notes.\n${out}`);
     }
     ok('CLI --help documents update, install --yes, packages, AGENTS.md, and portable artifact paths (no @latest)');
   }
@@ -944,6 +948,104 @@ child.on('close', async (code) => {
     ok('Update preserves consumer shared/MEMORY.md, memory/, and stack.md');
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
+  // --- Phase 10: installed-skills.json + uninstall cascade ---
+  console.log('\n[Phase 10] installed-skills.json + uninstall cascade...');
+  {
+    const uDir = path.join(__dirname, '.pkg-uninstall');
+    fs.rmSync(uDir, { recursive: true, force: true });
+    fs.mkdirSync(uDir, { recursive: true });
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+
+    const inst = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
+      {
+        cwd: uDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000,
+      }
+    );
+    if (inst.status !== 0) {
+      console.error(`${inst.stdout || ''}${inst.stderr || ''}`);
+      fail(`goal-fix-pr install for uninstall test exited ${inst.status}`);
+    }
+
+    const manifestPath = path.join(
+      uDir,
+      '.agents',
+      'skills',
+      'shared',
+      'installed-skills.json'
+    );
+    if (!fs.existsSync(manifestPath)) {
+      fail('install must write shared/installed-skills.json');
+    }
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    for (const need of ['goal-fix-pr', '09-fix-pr', 'goal-loop']) {
+      if (!manifest.skills.includes(need)) {
+        fail(`installed-skills.json missing ${need}: ${manifest.skills.join(',')}`);
+      }
+    }
+    if (!manifest.selected || !manifest.selected.includes('goal-fix-pr')) {
+      fail(`installed-skills.json selected roots should include goal-fix-pr: ${JSON.stringify(manifest.selected)}`);
+    }
+    if (manifest.selected.includes('09-fix-pr') || manifest.selected.includes('goal-loop')) {
+      fail(`deps should not be selected roots: ${JSON.stringify(manifest.selected)}`);
+    }
+    ok('install writes installed-skills.json with transitive deps');
+
+    const markerCfg = path.join(uDir, '.agents', 'skills', 'shared', 'config.json');
+    fs.writeFileSync(
+      markerCfg,
+      JSON.stringify({ project: { name: 'uninstall-preserve-me' } }, null, 2)
+    );
+
+    const un = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'uninstall', '--skills', 'goal-loop', '--yes'],
+      {
+        cwd: uDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000,
+      }
+    );
+    if (un.status !== 0) {
+      console.error(`${un.stdout || ''}${un.stderr || ''}`);
+      fail(`uninstall goal-loop exited ${un.status}`);
+    }
+
+    const skillsRoot = path.join(uDir, '.agents', 'skills');
+    if (fs.existsSync(path.join(skillsRoot, 'goal-loop'))) {
+      fail('uninstall did not remove goal-loop');
+    }
+    if (fs.existsSync(path.join(skillsRoot, 'goal-fix-pr'))) {
+      fail('uninstall goal-loop must cascade-remove goal-fix-pr');
+    }
+    // 09-fix-pr may remain if nothing else needed it — goal-fix-pr cascade should leave
+    // 09-fix-pr as orphan unless keep set still needs it. After removing goal-fix-pr+goal-loop,
+    // 09-fix-pr is orphan → should be removed by forward orphan pass.
+    if (fs.existsSync(path.join(skillsRoot, '09-fix-pr'))) {
+      fail('uninstall cascade should remove orphan 09-fix-pr');
+    }
+
+    const afterManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (afterManifest.skills.includes('goal-loop') || afterManifest.skills.includes('goal-fix-pr')) {
+      fail(`manifest still lists removed skills: ${afterManifest.skills.join(',')}`);
+    }
+    if (!fs.existsSync(markerCfg)) {
+      fail('uninstall must preserve shared/config.json');
+    }
+    const cfg = JSON.parse(fs.readFileSync(markerCfg, 'utf8'));
+    if (cfg.project?.name !== 'uninstall-preserve-me') {
+      fail('uninstall overwrote shared/config.json');
+    }
+    ok('uninstall cascades dependents/orphans and preserves shared/config.json');
+
+    fs.rmSync(uDir, { recursive: true, force: true });
+  }
+
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, and uninstall all passed.');
   process.exit(0);
 });

@@ -42,7 +42,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | Role | Rule |
 |------|------|
 | **Canonical upstream** | [`jpolvora/workflow-skills`](https://github.com/jpolvora/workflow-skills) is the authoritative source for pipeline and dependency skills. |
-| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`. Latest layout only — no older-folder migration and no legacy host-path shims (see upstream README § Safety; root [`AGENTS.md`](../AGENTS.md) § Portability). |
+| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`, `shared/installed-skills.json`. Latest layout only — no older-folder migration and no legacy host-path shims (see upstream README § Safety; root [`AGENTS.md`](../AGENTS.md) § Portability). |
 | **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx --yes github:jpolvora/workflow-skills update` (or `update --include-new`). |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
@@ -236,8 +236,18 @@ When skills ask for **Code review proof**, use the checklist / verification obli
 
 ## Consumer notes
 
-- Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/` — preserved on update; skill files are overwritten.
-- To refresh from upstream: `npx github:jpolvora/workflow-skills update` (add `--include-new` when new top-level skill folders appeared upstream).
+- Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/`, `installed-skills.json` — preserved on update; skill files are overwritten.
+- **Install / update / uninstall** (consumer project cwd; never `@latest` / `@main`):
+
+```bash
+npx --yes github:jpolvora/workflow-skills
+npx --yes github:jpolvora/workflow-skills install --package workflows --yes
+npx --yes github:jpolvora/workflow-skills update
+npx --yes github:jpolvora/workflow-skills update --include-new
+npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
+```
+
+- `shared/installed-skills.json` tracks managed skills (`skills` + `selected` roots). `update` bootstraps it from disk when missing. `uninstall` cascades unused deps and never deletes `shared/` consumer data.
 - Consumers may copy or adapt this index into their own root `AGENTS.md`; keep paths relative to the install root (typically `.agents/skills/...`).
 - **Dual hub (OK):** consumer root `AGENTS.md` may stay project-specific and delegate skill routing to a local rules/index file **when the host provides one** — not required. This packaged `.agents/AGENTS.md` remains the **skill catalog** for the installed hub; keep both aligned after updates. Do **not** require host-specific rules files for dual-mode workflows.
 - **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** above). In-place edits are overwritten on update.
