@@ -116,7 +116,7 @@ activeThreads == 0 → approve+merge PR → checkout master → pull → (if mor
 |-----|-------|
 | One domain / `next` / single `auto` | [domain-review](../domain-review/SKILL.md) |
 | All stale/never (7-day window) batch | **This** |
-| PR threads only | [goal-fix-pr](../09-goal-fix-pr/SKILL.md) |
+| PR threads only | [goal-fix-pr](../10-goal-fix-pr/SKILL.md) |
 
 ## Rationalizations / red flags
 

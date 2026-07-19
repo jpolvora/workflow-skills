@@ -7,7 +7,7 @@ disable-model-invocation: true
 invocation_names:
   - ship-pr
   - ws-ship-pr
-  - 11-ship-pr
+  - 08-ship-pr
 ---
 
 # ship-pr
@@ -110,9 +110,9 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 6. When `stopBeforeFixPr: true` and `shipAction: create-pr`: print PR URL and **STOP** (success) — orchestrator Step 9 owns monitoring and merge.
 
 ### Phase 5 — goal-fix-pr Convergence Loop (Monitor PR)
-- **Skip when `stopBeforeFixPr: true`** — orchestrator dispatches [goal-fix-pr](../09-goal-fix-pr/SKILL.md) at Step 9 instead.
+- **Skip when `stopBeforeFixPr: true`** — orchestrator dispatches [goal-fix-pr](../10-goal-fix-pr/SKILL.md) at Step 9 instead.
 - Wait 5 minutes (300s) post-push for CI/reviewer feedback.
-- **Monitor PR:** Dispatch [goal-fix-pr](../09-goal-fix-pr/SKILL.md) until `activeThreads == 0` or `max` iterations (thread list/resolve via `providers.scm` inside `08`/`09`).
+- **Monitor PR:** Dispatch [goal-fix-pr](../10-goal-fix-pr/SKILL.md) until `activeThreads == 0` or `max` iterations (thread list/resolve via `providers.scm` inside `08`/`09`).
 
 ### Phase 6 — Merge (SCM provider)
 
@@ -142,7 +142,7 @@ In `dry-run`, `push-only`, `skip`, or `stopBeforeFixPr` early stop: state outcom
 
 - **SCM providers:** [github-provider](../github-provider/SKILL.md) · [azure-devops-provider](../azure-devops-provider/SKILL.md) — selected by `providers.scm`
 - **Reviewer:** [code-review](../06-code-review/SKILL.md)
-- **Convergence:** [goal-fix-pr](../09-goal-fix-pr/SKILL.md)
-- **Fixer:** [fix-pr](../08-fix-pr/SKILL.md)
+- **Convergence:** [goal-fix-pr](../10-goal-fix-pr/SKILL.md)
+- **Fixer:** [fix-pr](../09-fix-pr/SKILL.md)
 - **Base Detection:** `scripts/detect-base-branch.sh`
 - **Artifacts:** [ARTIFACTS.md](../spec-to-pr/ARTIFACTS.md)

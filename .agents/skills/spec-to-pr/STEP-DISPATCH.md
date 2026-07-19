@@ -17,7 +17,7 @@
 | 4 | `Task` `ws-implement-tasks` mode build; branch-direct default | verification |
 | 5 | `Task` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve) | `step-05-{slug}.plan.report.md` |
 | 6 | `Task` `ws-code-review`; findings → **fix substep** `ws-implement-tasks` fix (not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
-| 7 | Auto-skip if `skipTesting` / `skipIntegration` or (no test surface + unit tests green); else `Task` `ws-integration-validation` (Testing) | `step-07-{slug}.testing.*` |
+| 7 | Auto-skip if `skipTesting` / `skipIntegration` or (no test surface + unit tests green); else `Task` `ws-testing` (Testing) | `step-07-{slug}.testing.*` |
 | 8 | Delivery result + **combined ship gate** ([`gates.md`](../shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
 | 9 | `Task` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists | PR threads / merge |
 

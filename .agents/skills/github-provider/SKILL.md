@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # github-provider
 
-Owns all **GitHub-specific** instructions and scripts for inbound issues (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `08-fix-pr`, `09-goal-fix-pr`, `11-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `github`; they must not embed raw `gh` happy-path recipes beyond linking here.
+Owns all **GitHub-specific** instructions and scripts for inbound issues (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `09-fix-pr`, `10-goal-fix-pr`, `08-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `github`; they must not embed raw `gh` happy-path recipes beyond linking here.
 
 Resolve `owner` / `repo` from `.agents/skills/shared/config.json` (`issueTrackers.github`, `project.org` / repo name, or `project.repoUrl`). See [`config-resolution.md`](../shared/config-resolution.md). **Never** hardcode org or repo names in this skill or its scripts.
 
@@ -35,7 +35,7 @@ Examples:
 
 ### Workflow Mode
 
-Dispatched by orchestrators (`spec-to-pr`, `spec-to-pr-lite` entry / Specification Protocol) when `providers.active` is `github`, and by `08-fix-pr` / `09-goal-fix-pr` / `11-ship-pr` when `providers.scm` is `github`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
+Dispatched by orchestrators (`spec-to-pr`, `spec-to-pr-lite` entry / Specification Protocol) when `providers.active` is `github`, and by `09-fix-pr` / `10-goal-fix-pr` / `08-ship-pr` when `providers.scm` is `github`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
 
 ### Parameters
 
@@ -75,7 +75,7 @@ On auth failure: **STOP** with fix instructions from `validate-auth`. Do not sil
 
 ## Canonical scripts
 
-Logic lives under this skill. Legacy callers may still hit thin forwarder shims under `spec-to-pr/scripts/` and `08-fix-pr/scripts/`. **Prefer these canonical paths:**
+Logic lives under this skill. Legacy callers may still hit thin forwarder shims under `spec-to-pr/scripts/` and `09-fix-pr/scripts/`. **Prefer these canonical paths:**
 
 | Script | Path | Used by |
 |--------|------|---------|
@@ -123,7 +123,7 @@ Plans dir may follow `config.plans.dir` (default `.cursor/plans`).
 gh pr create --head {head} --base {base} --title "{title}" --body "{body}"
 ```
 
-Reuse an existing open PR for the same head→base when present (`gh pr list` / `gh pr view`). Capture PR number and URL for the caller (`11-ship-pr`).
+Reuse an existing open PR for the same head→base when present (`gh pr list` / `gh pr view`). Capture PR number and URL for the caller (`08-ship-pr`).
 
 ### `list-threads`
 
@@ -131,7 +131,7 @@ Reuse an existing open PR for the same head→base when present (`gh pr list` / 
 node .agents/skills/github-provider/scripts/fetch_threads.cjs {PR_ID} [--json]
 ```
 
-Return structured threads (`threadId`, path, line, comments) to `08-fix-pr` / `09-goal-fix-pr`.
+Return structured threads (`threadId`, path, line, comments) to `09-fix-pr` / `10-goal-fix-pr`.
 
 ### `resolve-thread`
 
@@ -169,6 +169,6 @@ Legacy: if `providers.*` is absent, GitHub remains the default when `issueTracke
 ## Dependencies
 
 - **Orchestrator:** [spec-to-pr](../spec-to-pr/SKILL.md)
-- **Ship:** [11-ship-pr](../11-ship-pr/SKILL.md)
-- **Fix / converge:** [08-fix-pr](../08-fix-pr/SKILL.md), [09-goal-fix-pr](../09-goal-fix-pr/SKILL.md)
+- **Ship:** [08-ship-pr](../08-ship-pr/SKILL.md)
+- **Fix / converge:** [09-fix-pr](../09-fix-pr/SKILL.md), [10-goal-fix-pr](../10-goal-fix-pr/SKILL.md)
 - **Spec format:** [spec-format](../spec-format/SKILL.md)

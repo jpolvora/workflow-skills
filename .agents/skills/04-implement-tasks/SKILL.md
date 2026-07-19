@@ -2,7 +2,7 @@
 name: ws-implement-tasks
 description: Executes code implementations or fixes defects following a plan, DAG, or code review findings.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.2
+version: 2.3
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -30,9 +30,9 @@ Act as a **Senior Software Developer** who is focused on clean code, SOLID princ
 /implement-tasks <plan-path> [mode=build|fix] [findings=<path>]
 ```
 
-### Workflow Mode (Step 5 for build / Step 10 for fix in spec-to-pr)
+### Workflow Mode (Step 4 build / Step 6–7 fix substeps in spec-to-pr)
 
-Dispatched by `spec-to-pr` at Step 5 (build mode) or Step 10 (fix mode). Receives `planPath`, `mode`, and optional `findings` path from the orchestrator state.
+Dispatched by `spec-to-pr` at **Step 4** (`mode=build`) or as the **conditional fix substep** under Step 6 (review findings) / Step 7 (test failures) (`mode=fix`). Receives `planPath`, `mode`, and optional `findings` path from the orchestrator state. Lite: Step 2 build / Step 3 review-fix.
 
 ### Parameters
 
@@ -56,7 +56,7 @@ Dispatched by `spec-to-pr` at Step 5 (build mode) or Step 10 (fix mode). Receive
 
 ## 2. Fix Mode Execution
 
-1. **Intake Gaps:** Load the list of findings (e.g. `step-10-*.report.md` or review comment threads).
+1. **Intake Gaps:** Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
 2. **Surgical Corrections:** Apply minimal, targeted corrections following Karpathy guidelines.
 3. **Global Sweeping:** Search for sibling occurrences of the same defect class across modified directories. Fix them simultaneously.
 4. **Anti-Regression:** Write unit tests to cover the corrected defect scenario.

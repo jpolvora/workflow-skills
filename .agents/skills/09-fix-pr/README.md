@@ -2,7 +2,7 @@
 
 Cooperative PR thread resolution skill for **GitHub** and **Azure DevOps**.
 
-Merged from the former `solve-pr` (GitHub) and `08-fix-pr` (Azure DevOps) skills.
+Merged from the former `solve-pr` (GitHub) and `09-fix-pr` (Azure DevOps) skills.
 
 Thread list/resolve I/O goes through `config.providers.scm` → [github-provider](../github-provider/SKILL.md) or [azure-devops-provider](../azure-devops-provider/SKILL.md). Prefer those skills’ intents and canonical scripts; do not treat a single host CLI as the only happy path.
 
@@ -10,8 +10,8 @@ Thread list/resolve I/O goes through `config.providers.scm` → [github-provider
 
 | Resource | Path |
 |----------|------|
-| Main skill | `.agents/skills/08-fix-pr/SKILL.md` |
-| Convergence loop | `.agents/skills/09-goal-fix-pr/SKILL.md` — `/goal-fix-pr <PR-ID>` |
+| Main skill | `.agents/skills/09-fix-pr/SKILL.md` |
+| Convergence loop | `.agents/skills/10-goal-fix-pr/SKILL.md` — `/goal-fix-pr <PR-ID>` |
 | Code review (pre-push) | `.agents/skills/06-code-review/SKILL.md` |
 | SCM config | `providers.scm` in `.agents/skills/shared/config.json` (`github` \| `azure-devops`) |
 | GitHub provider | `.agents/skills/github-provider/SKILL.md` — `list-threads` / `resolve-thread` |
@@ -19,7 +19,7 @@ Thread list/resolve I/O goes through `config.providers.scm` → [github-provider
 | GitHub list (canonical) | `.agents/skills/github-provider/scripts/fetch_threads.cjs` |
 | GitHub resolve (canonical) | `.agents/skills/github-provider/scripts/resolve_thread.cjs` |
 | Azure DevOps collect/resolve (canonical) | `.agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py` |
-| Legacy shims (forward only) | `.agents/skills/08-fix-pr/scripts/fetch_threads.cjs`, `resolve_thread.cjs`, `fix_pr_azure_context.py` |
+| Legacy shims (forward only) | `.agents/skills/09-fix-pr/scripts/fetch_threads.cjs`, `resolve_thread.cjs`, `fix_pr_azure_context.py` |
 
 ## Platform support
 
@@ -28,7 +28,7 @@ Thread list/resolve I/O goes through `config.providers.scm` → [github-provider
 | **GitHub** (`scm: github`) | Provider intents `list-threads` / `resolve-thread` → canonical `fetch_threads.cjs` / `resolve_thread.cjs` | `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` / `GITHUB_TOKEN` / `GH_TOKEN` (+ `gh` for CLI flows) |
 | **Azure DevOps** (`scm: azure-devops`) | Provider intents `list-threads` / `resolve-thread` → canonical `fix_pr_azure_context.py` collect / resolve-thread | PAT via `issueTrackers.azureDevOps.patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` |
 
-Shims under `08-fix-pr/scripts/` re-exec the provider scripts; new work should call the provider skill or canonical paths.
+Shims under `09-fix-pr/scripts/` re-exec the provider scripts; new work should call the provider skill or canonical paths.
 
 ## Flow summary
 

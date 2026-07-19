@@ -1,16 +1,21 @@
 ---
-name: ws-integration-validation
+name: ws-testing
 description: Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.3
+version: 2.4
 disable-model-invocation: true
 invocation_names:
+  - testing
+  - ws-testing
+  - 07-testing
   - integration-validation
   - ws-integration-validation
   - 07-integration-validation
 ---
 
-# 07-integration-validation (Testing)
+# 07-testing
+
+> **Aliases (deprecated):** `integration-validation`, `ws-integration-validation`, `07-integration-validation` — prefer `testing` / `ws-testing` / `07-testing`.
 
 Responsible for planning and executing the pre-PR **testing** battery. Scope includes unit tests, integration and E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), and feature quality against acceptance criteria. It serves as the final safety net before branch updates are pushed.
 
@@ -25,7 +30,7 @@ Act as a **Release Engineer / QA Lead** who plans and executes a comprehensive t
 ### Standalone Mode
 
 ```
-/integration-validation <plan-path> [spec=<spec-path>] [skip-browser]
+/testing <plan-path> [spec=<spec-path>] [skip-browser]
 ```
 
 ### Workflow Mode (Step 7 of spec-to-pr)

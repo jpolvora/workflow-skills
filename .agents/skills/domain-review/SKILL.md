@@ -27,7 +27,7 @@ On-demand Layer 2. **Not** PR/branch review ([code-review](../06-code-review/SKI
 |-------|--------|
 | `<slug>` | Select domain (index). Optional if `next`. |
 | `next` | Auto-pick: never reviewed first, else oldest `## Last review` **Date** ([§ next](#next--auto-pick)). No catalog wait. |
-| `auto` | After report: apply all C/W → verify → commit → push → PR → [goal-fix-pr](../09-goal-fix-pr/SKILL.md) `max 10`, **5 min** waits ([AUTO.md](AUTO.md)). |
+| `auto` | After report: apply all C/W → verify → commit → push → PR → [goal-fix-pr](../10-goal-fix-pr/SKILL.md) `max 10`, **5 min** waits ([AUTO.md](AUTO.md)). |
 | `dry-run` | With `auto`: simulate git/gh/resolve; no writes. |
 
 Combine: `/domain-review next auto`. Restate: slug|next-pick, auto?, dry-run?.

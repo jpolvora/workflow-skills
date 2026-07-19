@@ -144,6 +144,6 @@
     "tenancyViaGlobalQueryFilters": true,
     "efOnlyInInfrastructure": true,
     "noInlineHandWrittenMigrations": true,
-    "commitPlanFilesOnlyAtStep12": true
+    "commitPlanFilesOnlyAtStep8": true
   }
 }

@@ -14,7 +14,7 @@ Config: [`.agents/skills/shared/config.json`](config.json) only — see [`config
 |------|--------|
 | **Shared skills are workflow-agnostic** | Skills `00`–`11`, providers, `goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
-| **One combined delivery + ship ask** | Orchestrator presents the combined gate once at standard Step 8 / lite Step 4. [`11-ship-pr`](../11-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-AskQuestion. Standalone `/ship-pr` may ask. |
+| **One combined delivery + ship ask** | Orchestrator presents the combined gate once at standard Step 8 / lite Step 4. [`08-ship-pr`](../08-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-AskQuestion. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
@@ -143,7 +143,7 @@ G2-delivery stages `step-02-{slug}.plan.refined.md` if present, else `step-01-{s
 
 MEMORY.md / self-learning sweep runs automatically after a successful delivery commit (no separate §Doc gate).
 
-Pass the selected ship intent into `11-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`.
+Pass the selected ship intent into `08-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`.
 
 ---
 
@@ -179,7 +179,7 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 | Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
 | Check-implementation < 7 | Pause (no auto-approve) |
 | Review findings (lite) | Apply fixes once, else Proceed without fixing |
-| Integration plan (full Step 7) | Approve without browser (or skip if `skipTesting`) |
+| Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`) |
 
 ---
 
@@ -187,5 +187,5 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 
 | Flag | Meaning |
 |------|---------|
-| `skipTesting` | Skip Step 7 integration testing (auto-skip when no test surface + unit tests green) |
+| `skipTesting` | Skip Step 7 Testing (auto-skip when no test surface + unit tests green) |
 | `skipIntegration` | **Deprecated alias** for `skipTesting` — parse both; prefer `skipTesting` in logs and banners |

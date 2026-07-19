@@ -26,11 +26,11 @@ Layers from `config.json.stack.backend.layers[]`, frontend from `frontend.source
 | **Tests** | `{backend.testProject}` | Unit + integration |
 | **Scripts** | `scripts/` | Dev helpers, seed |
 
-**Dry-run / isolation:** Steps 5 and 10 mutate source paths only when implementing code. Step 11 is integration validation (read/execute checks; no feature implementation).
+**Dry-run / isolation:** Steps **4**, **6-fix**, and **7-fix** mutate source paths only when implementing code. Step **7** Testing is validation (read/execute checks; no feature implementation unless fix loop).
 
 ## Validation Commands (from config.json)
 
-Used by orchestrator and subagents for build/test validation (Steps 7, 10, 11 §3).
+Used by orchestrator and subagents for build/test validation (Steps **4**, **6-fix**, **7**).
 
 Tool aliases defined in `tools.md`. Actual commands in `config.json.verification`:
 
@@ -65,7 +65,7 @@ Paths to guidelines that subagents must follow. Read from `config.json.rules`:
 | **Glossary** | `domain.glossaryFile` | Domain terms |
 | **Design tokens** | `domain.designTokens` | UI tokens, colors |
 
-Delegated workflow skills (Steps 1–11) live under `.agents/skills/` — see `SKILL.md` § Allowed dependencies.
+Delegated workflow skills (pipeline `00`–`11`) live under `.agents/skills/` — see `AGENTS.md` and orchestrator `SKILL.md` § Allowed deps.
 
 ## Project Invariants (from config.json)
 
@@ -78,11 +78,11 @@ Enforced by code review and validation. Read from `config.json.invariants`:
 | `tenancyViaGlobalQueryFilters` | Tenant isolation via query filters |
 | `efOnlyInInfrastructure` | EF references only in infrastructure layer |
 | `noInlineHandWrittenMigrations` | No manual migration file edits |
-| `commitPlanFilesOnlyAtStep12` | Plan files committed only at Step 12 delivery |
+| `commitPlanFilesOnlyAtStep8` | Plan files committed only at Step 8 delivery |
 
 Add project-specific invariants as needed.
 
-## Code Review Diff Scope (Step 9)
+## Code Review Diff Scope (Step 6)
 
 Scoped diff vs base branch — exclude generated/cache paths:
 
@@ -101,8 +101,8 @@ git diff {base_branch}...HEAD -- \
 |---------|-----------|
 | **Base branch** | `git rev-parse --verify master >/dev/null 2>&1 && echo master \|\| echo main` |
 | **Git remote** | `config.json.project.gitRemote` (default: `origin`) |
-| **Working branch** | `config.json.project.workingBranch` (default: `develop`) — ship-pr / Step 13 head |
+| **Working branch** | `config.json.project.workingBranch` (default: `develop`) — ship-pr / Step 8 head |
 | **Base branch** | `config.json.project.baseBranch` (`main` or `master`) |
 | **Frontend changed** | Any path under `frontend.sourceDir` in `files_touched` or `git diff` |
 | **API running** | Port `backend.apiPort` listen → ask user before stopping |
-| **Dev server running** | Port `frontend.devPort` listen → required for Step 11 browser |
+| **Dev server running** | Port `frontend.devPort` listen → required for Step 7 browser |

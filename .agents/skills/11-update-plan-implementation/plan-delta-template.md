@@ -9,9 +9,9 @@ Plans typically use sections **0–8** from [`01-write-plan`](../01-write-plan/S
 ## Minimal example (slug `job-run-observability`)
 
 ```markdown
-## §9 Post-workflow follow-up (Step-10)
+## §9 Post-workflow follow-up
 
-**session-id:** `step10-20260710120000`
+**session-id:** `post-20260710120000`
 **triggered:** 2026-07-10
 **after-workflow:** `job-run-observability-20260709T211800Z`
 **branch:** `develop`
@@ -34,7 +34,7 @@ Plans typically use sections **0–8** from [`01-write-plan`](../01-write-plan/S
 | Hash | Message | Steps |
 |------|---------|-------|
 | `a1b2c3d` | fix(job-run-observability): stale badge on schedule list | S-01 |
-| `e4f5g6h` | docs(job-run-observability): step-10 follow-up plan and result | — |
+| `e4f5g6h` | docs(job-run-observability): post-workflow follow-up plan and result | — |
 
 ### Certification
 
@@ -43,19 +43,19 @@ Plans typically use sections **0–8** from [`01-write-plan`](../01-write-plan/S
 | Build | pass |
 | Tests (scoped) | pass — Vitest + integration |
 | Plan ↔ code | pass |
-| step-12-result.md updated | done |
+| step-08-result.md updated | done |
 ```
 
 ---
 
-## step-12-result.md patch pattern
+## step-08-result.md patch pattern
 
-Update `step-12-{slug}.result.md` sections **Done** and **Next steps**:
+Update `step-08-{slug}.result.md` sections **Done** and **Next steps**:
 
 **Done** — append bullets:
 
 ```markdown
-- **Post-workflow (step-10):** Stale badge on schedule list (`a1b2c3d`).
+- **Post-workflow:** Stale badge on schedule list (`a1b2c3d`).
 ```
 
 **Next steps** — remove resolved manual items; keep PR push if still pending:
@@ -66,7 +66,7 @@ Update `step-12-{slug}.result.md` sections **Done** and **Next steps**:
 - Open PR `develop` → `master` when ready.
 ```
 
-If stub `step-12-result.md` did not exist, create full file per [`spec-to-pr` Delivery Result Protocol](../spec-to-pr/SKILL.md#delivery-result-protocol-step-12--before-delivery-commit).
+If stub `step-08-{slug}.result.md` did not exist, create full file per [`protocols/delivery-result.md`](../spec-to-pr/protocols/delivery-result.md).
 
 ---
 

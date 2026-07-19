@@ -210,7 +210,7 @@ def validate(state_path: Path) -> dict:
 
     dry_run = str(data.get("dryRun", "false")).lower() == "true"
     status = str(data.get("status", "")).strip().lower()
-    # Step 12 cleanup legitimately deletes temp artifacts; missing files on a
+    # Step 8 cleanup legitimately deletes temp artifacts; missing files on a
     # closed workflow are warnings, not hygiene violations.
     closed = status in ("completed", "cancelled", "failed")
     completed = _as_int_list(data.get("completedSteps", []))

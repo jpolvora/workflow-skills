@@ -67,7 +67,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
 | `ws-verify-plan` | 5 | Check-implementation (spec score) |
 | `ws-code-review` | 6 | Local review (+ conditional fix) |
-| `ws-integration-validation` | 7 | Testing (unit/integration/coverage) |
+| `ws-testing` | 7 | Testing (unit/integration/coverage) |
 | `ws-ship-pr` | 8 | Delivery commit + push/PR |
 | `ws-fix-pr` | 9 | PR thread fix |
 | `ws-goal-fix-pr` | 9 | Fix until zero threads |
@@ -149,11 +149,11 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 | 04 | `ws-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` |
 | 05 | `ws-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` |
 | 06 | `ws-code-review` | `.agents/skills/06-code-review/SKILL.md` |
-| 07 | `ws-integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` |
-| 08 | `ws-fix-pr` | `.agents/skills/08-fix-pr/SKILL.md` |
-| 09 | `ws-goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` |
-| 10 | `ws-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` |
-| 11 | `ws-ship-pr` | `.agents/skills/11-ship-pr/SKILL.md` |
+| 07 | `ws-testing` | `.agents/skills/07-testing/SKILL.md` |
+| 08 | `ws-ship-pr` | `.agents/skills/08-ship-pr/SKILL.md` |
+| 09 | `ws-fix-pr` | `.agents/skills/09-fix-pr/SKILL.md` |
+| 10 | `ws-goal-fix-pr` | `.agents/skills/10-goal-fix-pr/SKILL.md` |
+| 11 | `ws-update-plan-implementation` | `.agents/skills/11-update-plan-implementation/SKILL.md` |
 | — | `github-provider` | `.agents/skills/github-provider/SKILL.md` |
 | — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` |
 | — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` |
@@ -203,7 +203,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Secrets / leaks | `secrets-leak-review` |
 | Architecture (DDD) | `tdd-sdd-ddd-reviewer` |
 | Domain review | `domain-review` or `multi-domain-review` |
-| Integration pre-PR | `ws-integration-validation` |
+| Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship PR | `ws-ship-pr` |
 | Spec → PR E2E | `spec-to-pr` |

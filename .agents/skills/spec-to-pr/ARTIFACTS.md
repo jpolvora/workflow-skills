@@ -88,6 +88,6 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 | 4 | `ws-implement-tasks` (build) |
 | 5 | `ws-verify-plan` |
 | 6 | `ws-code-review` (+ conditional `ws-implement-tasks` fix substep) |
-| 7 | `ws-integration-validation` (Testing) |
+| 7 | `ws-testing` (Testing) |
 | 8 | `ws-ship-pr` (delivery + push/PR; no terminal goal-fix) |
 | 9 | `ws-fix-pr` / `ws-goal-fix-pr` |

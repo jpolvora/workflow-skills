@@ -32,7 +32,7 @@ Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `STACK.md`) |
 | `read-memory` | Load learned knowledge | `Read` `.agents/skills/shared/MEMORY.md` (index via `Grep`) |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
-| `run-script` | Run workflow / provider script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` (orchestrator helpers). Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `08-fix-pr/scripts/`) |
+| `run-script` | Run workflow / provider script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` (orchestrator helpers). Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `09-fix-pr/scripts/`) |
 
 ## Source control tools
 

@@ -65,7 +65,7 @@ Non-interactive (CI / agents — still use human docs here for the commands):
 ```bash
 npx --yes github:jpolvora/workflow-skills install --full --yes
 npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,09-fix-pr --yes
 ```
 
 Exactly one of `--full`, `--package <full|workflows|extra>`, or `--skills <csv>` is required. Non-TTY stdin requires `--yes`.
@@ -163,7 +163,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Role |
 |-------|------|
 | [`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md) / [`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md) | Orchestrators |
-| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | Pipeline steps |
+| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`08-ship-pr`](.agents/skills/08-ship-pr/SKILL.md) | Pipeline steps |
 | [`github-provider`](.agents/skills/github-provider/SKILL.md) · [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) · [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
 
 ### Review & audit

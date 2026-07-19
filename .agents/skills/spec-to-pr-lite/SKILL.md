@@ -3,8 +3,8 @@ name: spec-to-pr-lite
 description: >-
   Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr.
   Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text.
-  Flags: dry-run, auto, skip-tests, full. Inline execution in main session.
-  Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).
+  Flags: dry-run, auto, skip-tests, full. Flags combine freely (e.g. full + auto + dry-run).
+  Inline execution in main session. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).
 upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
 
@@ -27,7 +27,7 @@ Deterministic FSM for sequential spec-to-ship delivery. Reuses the **same** pipe
 - **State hygiene:** `python .agents/skills/spec-to-pr-lite/scripts/update_state.py` after every step.
 - **Artifacts:** Spec `step-00-{slug}.spec.md`; plan `step-01-{slug}.plan.md`; result `step-08-{slug}.result.md` (shared with standard).
 - **Commits:** Code during implement/review fix substep. Plan + result at Step 4 combined ship gate (G2-delivery).
-- **Ship:** Combined delivery+ship gate at Step 4; `11-ship-pr` with `workflowMode: true`, `stopBeforeFixPr: true`.
+- **Ship:** Combined delivery+ship gate at Step 4; `08-ship-pr` with `workflowMode: true`, `stopBeforeFixPr: true`.
 - **Fix-PR:** Step 5 first-class (`ws-goal-fix-pr` / `ws-fix-pr`).
 - **Branch-direct** default; worktree when `plans.useWorktrees=true`.
 

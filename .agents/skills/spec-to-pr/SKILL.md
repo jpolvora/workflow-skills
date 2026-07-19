@@ -3,7 +3,8 @@ name: spec-to-pr
 description: >-
   Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs.
   Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description.
-  Flags: dry-run, auto, skip-testing (alias skip-integration), skip-tests, full, strict. Delegates via Task tool.
+  Flags: dry-run, auto, skip-testing (alias skip-integration), skip-tests, full, strict.
+  Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via Task tool.
   Legacy aliases: /us-workflow, /us-delivery-workflow.
 upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflow-skills. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 ---
@@ -94,13 +95,13 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | **Config** | `.agents/skills/shared/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
-| Scripts | Orchestrator: `check_memory_conflict.py`, `validate_state.py` under `spec-to-pr/scripts/`. Converters + thread helpers: **canonical** under `github-provider/scripts/` and `azure-devops-provider/scripts/` (thin shims remain at `spec-to-pr/scripts/` and `08-fix-pr/scripts/` for canonicity). Local register/mirror: `local-spec-provider/scripts/`. |
+| Scripts | Orchestrator: `check_memory_conflict.py`, `validate_state.py` under `spec-to-pr/scripts/`. Converters + thread helpers: **canonical** under `github-provider/scripts/` and `azure-devops-provider/scripts/` (thin shims remain at `spec-to-pr/scripts/` and `09-fix-pr/scripts/` for canonicity). Local register/mirror: `local-spec-provider/scripts/`. |
 | Providers | [`github-provider`](../github-provider/SKILL.md) · [`azure-devops-provider`](../azure-devops-provider/SKILL.md) · [`local-spec-provider`](../local-spec-provider/SKILL.md) — `providers.active` owns `fetch-to-spec`; `providers.scm` owns PR/thread/merge intents |
 | SCM CLIs | Via provider skills only (`gh` / `az`); orchestrator does not embed platform CLI recipes |
 | State | `{config.plans.dir}/{slug}/{workflow-id}.state.md` |
-| Skills | `ws-write-spec`→0 · `ws-write-plan`→1 · `ws-interview`→2 · `ws-plan-to-tasks`→3 · `ws-implement-tasks`→4 build, 6 fix · `ws-verify-plan`→5 · `ws-code-review`→6 · `ws-integration-validation`→7 · `ws-ship-pr`→8 · `ws-fix-pr`/`ws-goal-fix-pr`→9 · `spec-format` |
+| Skills | `ws-write-spec`→0 · `ws-write-plan`→1 · `ws-interview`→2 · `ws-plan-to-tasks`→3 · `ws-implement-tasks`→4 build, 6 fix · `ws-verify-plan`→5 · `ws-code-review`→6 · `ws-testing`→7 · `ws-ship-pr`→8 · `ws-fix-pr`/`ws-goal-fix-pr`→9 · `spec-format` |
 
-Filesystem paths use numeric prefix; skill `name:` has `ws-` prefix. Post-8 PR threads: [`ws-fix-pr`](../08-fix-pr/SKILL.md) / [`ws-goal-fix-pr`](../09-goal-fix-pr/SKILL.md).
+Filesystem paths use numeric prefix; skill `name:` has `ws-` prefix. Post-8 PR threads: [`ws-fix-pr`](../09-fix-pr/SKILL.md) / [`ws-goal-fix-pr`](../10-goal-fix-pr/SKILL.md).
 
 ### Work dir `{us-dir}` = `{config.plans.dir}/{slug}/` (default `.cursor/plans/{slug}/`)
 
@@ -330,7 +331,7 @@ Before G2-code commit: `config.json.rules.stackFile` → build (+ tests unless `
 
 ### Testing (Step 7)
 
-`07-integration-validation` via **`Task`** (label **Testing** — broader than integration-only). `skipTesting` (alias `skipIntegration`) → skip to Step 8. `autoMode`/`dryRun` → Task without browser.
+`07-testing` via **`Task`** (label **Testing** — broader than integration-only). `skipTesting` (alias `skipIntegration`) → skip to Step 8. `autoMode`/`dryRun` → Task without browser.
 
 Gates (normal): **Approve and run test battery** (rec) / **Run without browser** / **Adjust test plan** / **Skip validation** / **Pause workflow**.
 
@@ -489,7 +490,7 @@ Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct
 
 ## Post-workflow (outside this agent)
 
-Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`10-update-plan-implementation`](../10-update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix substep (in-pipeline review fixes).
+Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`11-update-plan-implementation`](../11-update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix substep (in-pipeline review fixes).
 
 ## Triggers
 

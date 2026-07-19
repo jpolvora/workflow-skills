@@ -519,7 +519,7 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills              Interactive install
   npx --yes github:jpolvora/workflow-skills install --full --yes
   npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes
+  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,09-fix-pr --yes
   npx --yes github:jpolvora/workflow-skills update       Update installed skills
   npx --yes github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally

@@ -107,7 +107,7 @@ Exact membership lists belong in the dependency/package map implemented with the
 ### Dependency edges (illustrative; finalize in map)
 
 - `spec-to-pr` / `spec-to-pr-lite` → pipeline skills they dispatch + promoted utilities they auto-load + `shared/` hub (hub is not a skill entry).
-- `09-goal-fix-pr` → `goal-loop`, `08-fix-pr`.
+- `10-goal-fix-pr` → `goal-loop`, `09-fix-pr`.
 - `00-write-spec` / providers → `spec-format`.
 - Review skills referencing `karpathy-guidelines` → `karpathy-guidelines` when those edges are declared.
 - Prefer declaring **required install deps** (must be on disk) separately from **autoload behavioral refs** if that keeps Extra lean; document the distinction in the map format.

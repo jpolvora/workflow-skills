@@ -7,12 +7,12 @@ disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
   - ws-goal-fix-pr
-  - 09-goal-fix-pr
+  - 10-goal-fix-pr
 ---
 
-# 09-goal-fix-pr
+# 10-goal-fix-pr
 
-Responsible for driving PR review thread convergence to zero. It wraps the [08-fix-pr](../08-fix-pr/SKILL.md) skill in a goal loop, auto-approving cooperative gates and re-checking threads after every push until `activeThreads == 0`. Thread-count probes and fix rounds are **SCM-aware**: resolve `providers.scm`, then delegate platform I/O — do not hardcode GitHub-only (`gh pr view`) or ADO-only recipes in this skill’s happy path.
+Responsible for driving PR review thread convergence to zero. It wraps the [09-fix-pr](../09-fix-pr/SKILL.md) skill in a goal loop, auto-approving cooperative gates and re-checking threads after every push until `activeThreads == 0`. Thread-count probes and fix rounds are **SCM-aware**: resolve `providers.scm`, then delegate platform I/O — do not hardcode GitHub-only (`gh pr view`) or ADO-only recipes in this skill’s happy path.
 
 ## Persona
 
@@ -28,7 +28,7 @@ Act as a **Principal Engineer** who coordinates thread-fixing iterations, monito
 /goal-fix-pr <PR-NUMBER> [dry-run] [max <n>]
 ```
 
-This skill wraps the [`goal-loop`](../goal-loop/SKILL.md) generic primitive as its orchestrator, executing [`08-fix-pr`](../08-fix-pr/SKILL.md) tasks for each action round.
+This skill wraps the [`goal-loop`](../goal-loop/SKILL.md) generic primitive as its orchestrator, executing [`09-fix-pr`](../09-fix-pr/SKILL.md) tasks for each action round.
 
 ### Workflow Mode (Step 9 of spec-to-pr / Step 5 of spec-to-pr-lite)
 
@@ -40,7 +40,7 @@ Dispatched by the orchestrator after Step 8 / lite Step 4 ship creates a PR (`st
 |-----------|------|---------|-------------|
 | `<PR-NUMBER>` | Integer | (required) | Target Pull Request number. |
 | `dry-run` | Flag | `false` | Simulate fixes and resolutions without committing, pushing, or calling platform resolve APIs. |
-| `max <n>` | Integer | `10` | Maximum iteration ceiling (align with `11-ship-pr` default 10). |
+| `max <n>` | Integer | `10` | Maximum iteration ceiling (align with `08-ship-pr` default 10). |
 | `wait <n>` | Integer | `300` | Post-round/pre-check wait interval in seconds (default 5 minutes / 300s). |
 
 Before executing, restate the parsed parameters: **PR number**, **success criteria**, **mode**, **max iterations (default 10)**, **check interval (default 300s)**, **dry-run active**, **`providers.scm`**.
@@ -53,7 +53,7 @@ Follow [`config-resolution.md`](../shared/config-resolution.md):
 
 1. Read `.agents/skills/shared/config.json`.
 2. Resolve SCM host = `providers.scm` (fallback rules in config-resolution).
-3. Load the matching provider skill; use `list-threads` for counts; keep fix/verify in [08-fix-pr](../08-fix-pr/SKILL.md).
+3. Load the matching provider skill; use `list-threads` for counts; keep fix/verify in [09-fix-pr](../09-fix-pr/SKILL.md).
 
 | `providers.scm` | Provider skill | Thread-count intent |
 |-----------------|----------------|---------------------|
@@ -99,7 +99,7 @@ Iteration: <n>/<max>
       - wait 300s + re-collect
       - if activeThreads remains 0 → DONE
       - if activeThreads > 0 → proceed to act round
-- [ ] 08-fix-pr round (if activeThreads > 0)
+- [ ] 09-fix-pr round (if activeThreads > 0)
 - [ ] verify build/tests + code-review auto-check (via Phase 3 Verification)
 - [ ] commit + resolve + push (skip if dry-run)
 - [ ] wait 5min (arm sentinel) + re-collect
@@ -110,10 +110,10 @@ If `activeThreads` counts as `0` on initialization (Iteration 1), **do not exit 
 - If `activeThreads` remains `0` → stop and mark completed (DONE).
 - If `activeThreads > 0` → proceed to Phase 2 (Act).
 
-### Phase 2 — Act (08-fix-pr Round)
-Dispatch [`08-fix-pr`](../08-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active.
+### Phase 2 — Act (09-fix-pr Round)
+Dispatch [`09-fix-pr`](../09-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active.
 - **Commit**: `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`
-- **Resolve**: mark threads resolved via [`08-fix-pr`](../08-fix-pr/SKILL.md) SCM integration.
+- **Resolve**: mark threads resolved via [`09-fix-pr`](../09-fix-pr/SKILL.md) SCM integration.
 - **Push**: `git push origin HEAD` (skip if `dry-run`).
 
 ### Phase 3 — Verification (Mandatory)
