@@ -35,7 +35,7 @@ Never write workflow state under `.agents/`.
 | Testing report | `step-07-{slug}.testing.report.md` | Step 7 | No |
 | Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** |
 
-**Legacy names (do not write on new runs):** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md` — orch may read for resume compatibility.
+**Do not write obsolete names:** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md`.
 
 ## Step 8 delivery commit
 

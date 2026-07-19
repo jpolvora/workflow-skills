@@ -65,7 +65,7 @@ Non-interactive (CI / agents — still use human docs here for the commands):
 ```bash
 npx --yes github:jpolvora/workflow-skills install --full --yes
 npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,09-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes
 ```
 
 Exactly one of `--full`, `--package <full|workflows|extra>`, or `--skills <csv>` is required. Non-TTY stdin requires `--yes`.
@@ -128,7 +128,7 @@ These files are **create-if-missing** at install/update (never overwritten if th
 - **No remote shell install path:** curl only downloads the shim; work is done by Node/`npx`.
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
-- **Folder migrations on update:** retired pipeline folders are renamed automatically (`07-integration-validation`→`07-testing`, `11-ship-pr`→`08-ship-pr`, `08-fix-pr`→`09-fix-pr`, `09-goal-fix-pr`→`10-goal-fix-pr`, `10-update-plan-implementation`→`11-update-plan-implementation`, plus legacy `us-workflow`→`spec-to-pr`).
+- **Latest layout only:** no folder renames or older-layout migration on update — install/update always copies the current skill tree.
 - **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
 
@@ -151,26 +151,20 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 |-------|-------------|
 | [`check-harness`](.agents/skills/check-harness/SKILL.md) | Audit routing, links, portability |
 | [`check-workflows`](.agents/skills/check-workflows/SKILL.md) | Validate workflow FSM / dual-mode |
-| [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) | Author new skills |
-
-### Engineering standards
-
-| Skill | Description |
-|-------|-------------|
-| [`mobile-first-design`](.agents/skills/mobile-first-design/SKILL.md) | Mobile-first UI |
-| [`design-taste-frontend`](.agents/skills/taste-skill/SKILL.md) | Anti-slop frontend |
+| [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
+| [`show-harness`](.agents/skills/show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 
 ### Pipeline & providers
 
 | Skill | Role |
 |-------|------|
 | [`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md) / [`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md) | Orchestrators |
-| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`11-update-plan-implementation`](.agents/skills/11-update-plan-implementation/SKILL.md) | Pipeline `00`–`11` (`ws-*`; FSM steps 0–9 + post) |
+| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`update-plan-implementation`](.agents/skills/update-plan-implementation/SKILL.md) | Pipeline `00`–`09` + `goal-fix-pr` / `update-plan-implementation` (`ws-*`; FSM steps 0–9 + post) |
 | [`github-provider`](.agents/skills/github-provider/SKILL.md) · [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) · [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
 
-### Review & audit
+### Review & audit (Extra)
 
-[`security-review`](.agents/skills/security-review/SKILL.md) · [`dotnet-security-performance-review`](.agents/skills/dotnet-security-performance-review/SKILL.md) · [`tdd-sdd-ddd-reviewer`](.agents/skills/tdd-sdd-ddd-reviewer/SKILL.md) · [`domain-review`](.agents/skills/domain-review/SKILL.md) · [`multi-domain-review`](.agents/skills/multi-domain-review/SKILL.md) · [`secrets-leak-review`](.agents/skills/secrets-leak-review/SKILL.md)
+[`secrets-leak-review`](.agents/skills/secrets-leak-review/SKILL.md)
 
 ---
 

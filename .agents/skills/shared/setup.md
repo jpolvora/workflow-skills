@@ -58,9 +58,9 @@ Optional mirror: `{config.plans.specsDir}/{slug}.spec.md` for human browsing. Do
    - Write `STACK.md` to the root of the repository.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `STACK.md created → {path}` in step output.
-2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-integration` (deprecated alias → `skipTesting`), `skip-tests`, `full`, `strict`.
+2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict`.
    - **Combined Switches:** These switches can be used individually or combined in any configuration (e.g. `full` + `auto` + `dry-run` to run a fully automated dry-run simulation of the entire workflow for testing).
-   - Normalize: `skip-integration` / `skip-tests` → set `skipTesting: true` (log alias when `skip-integration` used).
+   - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`.
    - Set `currentModel` from the **executing session model** (agent identity / runtime). If unknown → `unknown`.
    - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch model in IDE/agent host → Resume`.
    - Do **not** store or apply `modelChain`.

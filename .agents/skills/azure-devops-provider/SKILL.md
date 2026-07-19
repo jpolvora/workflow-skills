@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # azure-devops-provider
 
-Owns all **Azure DevOps–specific** instructions and scripts for inbound work items (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `09-fix-pr`, `10-goal-fix-pr`, `08-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `azure-devops`; they must not embed raw `az` / REST happy-path recipes beyond linking here.
+Owns all **Azure DevOps–specific** instructions and scripts for inbound work items (`fetch-to-spec`) and outbound SCM (`create-pr`, threads, merge). Pipeline skills (`spec-to-pr`, `spec-to-pr-lite`, `09-fix-pr`, `goal-fix-pr`, `08-ship-pr`) load this skill when `config.providers.active` or `config.providers.scm` is `azure-devops`; they must not embed raw `az` / REST happy-path recipes beyond linking here.
 
 Resolve `org` / `project` from `.agents/skills/shared/config.json` (`issueTrackers.azureDevOps`). See [`config-resolution.md`](../shared/config-resolution.md). **Never** hardcode organization or project names in this skill or its scripts.
 
@@ -36,7 +36,7 @@ Examples:
 
 ### Workflow Mode
 
-Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.active` is `azure-devops`, and by `09-fix-pr` / `10-goal-fix-pr` / `08-ship-pr` when `providers.scm` is `azure-devops`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
+Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.active` is `azure-devops`, and by `09-fix-pr` / `goal-fix-pr` / `08-ship-pr` when `providers.scm` is `azure-devops`. Receives intent name plus args from the caller; confirmation gates follow the parent skill.
 
 ### Parameters
 
@@ -76,7 +76,7 @@ On auth or config failure: **STOP** with fix instructions from `validate-auth`. 
 
 ## Canonical scripts
 
-Logic lives under this skill. Thin shims at legacy paths (`spec-to-pr/scripts/ado-workitem-to-spec.py`, `09-fix-pr/scripts/fix_pr_azure_context.py`) forward the same CLI args here for mid-migration consumers and install canonicity checks.
+Logic lives under this skill. Thin shims at orch paths (`spec-to-pr/scripts/ado-workitem-to-spec.py`, `09-fix-pr/scripts/fix_pr_azure_context.py`) forward the same CLI args here for install canonicity checks.
 
 | Script | Path | Used by |
 |--------|------|---------|
@@ -144,7 +144,7 @@ python .agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py coll
   --output .agents/skills/09-fix-pr/runs/pr-{PR_ID}/context.json
 ```
 
-Return structured threads (`threadId`, path, line, comments, status) to `09-fix-pr` / `10-goal-fix-pr`. Active-thread count for goal-loop = `len(activeThreads)` from the payload (status in active/pending per script normalization). Collect also prints `collect-summary:` on stderr (`threads`, `activeThreads`, `statuses`).
+Return structured threads (`threadId`, path, line, comments, status) to `09-fix-pr` / `goal-fix-pr`. Active-thread count for goal-loop = `len(activeThreads)` from the payload (status in active/pending per script normalization). Collect also prints `collect-summary:` on stderr (`threads`, `activeThreads`, `statuses`).
 
 `context.json` is UTF-8. On Windows, re-reading it requires `encoding="utf-8"` — never bare `open(path)` / locale `cp1252`.
 
@@ -195,5 +195,5 @@ Legacy: if `providers.*` is absent, orchestrator may select this skill when only
 
 - **Orchestrator:** [spec-to-pr](../spec-to-pr/SKILL.md)
 - **Ship:** [08-ship-pr](../08-ship-pr/SKILL.md)
-- **Fix / converge:** [09-fix-pr](../09-fix-pr/SKILL.md), [10-goal-fix-pr](../10-goal-fix-pr/SKILL.md)
+- **Fix / converge:** [09-fix-pr](../09-fix-pr/SKILL.md), [goal-fix-pr](../goal-fix-pr/SKILL.md)
 - **Spec format:** [spec-format](../spec-format/SKILL.md)

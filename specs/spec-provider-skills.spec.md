@@ -19,7 +19,7 @@ Introduce three **provider skills** that collaborate with the `spec-to-pr` orche
 
 - **Single active provider per project** (config-driven): when GitHub is enabled, entry + PR/fix-pr use GitHub; when Azure DevOps is enabled, use ADO; when the user works with local markdown, use the local-spec provider and a configured specs folder (default `specs/` at repo root).
 - **Dual mode** for every provider and every updated pipeline skill:
-  - **Workflow mode:** dispatched by `spec-to-pr` (and by `09-fix-pr` / `10-goal-fix-pr` / `08-ship-pr` as needed).
+  - **Workflow mode:** dispatched by `spec-to-pr` (and by `09-fix-pr` / `goal-fix-pr` / `08-ship-pr` as needed).
   - **Standalone mode:** invocable alone (`/github-provider`, `/azure-devops-provider`, `/local-spec-provider`, plus existing `/fix-pr`, `/ship-pr`, etc.) without running the full FSM.
 - **Progressive disclosure:** orchestrator and generic pipeline skills **delegate** to the active provider instead of embedding `gh` / `az` / filesystem details.
 - **Portability:** no hardcoded org/repo/project names; resolve from `config.json` (and env for secrets).
@@ -108,7 +108,7 @@ Resolution rules:
 |------|--------|
 | `spec-to-pr` Specification Protocol / Entry Gate | Delegate fetch/register to active provider skill; remove duplicated CLI recipes from orchestrator body (link only). |
 | `08-ship-pr` | Delegate `create-pr`, checks, merge to `providers.scm` skill. |
-| `09-fix-pr` / `10-goal-fix-pr` | Delegate list/resolve threads to `providers.scm` skill; keep scoring/fix FSM generic. |
+| `09-fix-pr` / `goal-fix-pr` | Delegate list/resolve threads to `providers.scm` skill; keep scoring/fix FSM generic. |
 | `00-write-spec` | After draft, optionally ask local-spec-provider to mirror under `specsDir`. |
 | `ARTIFACTS.md` / FAQ / README / tools.md | Document provider delegation and intents. |
 | `AGENTS.md` | Route three provider skills (Layer 2 or Layer 5); Task router entries. |

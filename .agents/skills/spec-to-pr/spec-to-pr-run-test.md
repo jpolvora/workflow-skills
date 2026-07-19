@@ -84,7 +84,7 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering pha
 | **6** | Code Review (+ fix) | `06-code-review`; fix substep only if Critical/Warning |
 | **7** | Testing | May auto-skip (`skipTesting` / no surface); else `07-testing` without browser |
 | **8** | Ship | Delivery result + combined gate → simulate plan+result commit + PR (`08-ship-pr`) |
-| **9** | Fix-PR | `10-goal-fix-pr` / `09-fix-pr` when PR created (`full`) |
+| **9** | Fix-PR | `goal-fix-pr` / `09-fix-pr` when PR created (`full`) |
 
 ## Verification Points
 

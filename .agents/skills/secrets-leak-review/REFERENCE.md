@@ -6,7 +6,7 @@
 
 | Pattern | Example | Risk |
 |---------|---------|------|
-| `AKIA[0-9A-Z]{16}` | AWS Access Key | HIGH |
+| `AKIA[0-9A-Z]{16}` | AWS Access Key | HIGH (staged scan: added lines only; ignores AWS docs EXAMPLE keys) |
 | `sk-[a-zA-Z0-9]{32,}` | OpenAI/Stripe key | HIGH |
 | `pk-[a-zA-Z0-9]{32,}` | Stripe publishable | MEDIUM |
 | `gh[ps]_[a-zA-Z0-9]{36,}` | GitHub PAT | HIGH |
@@ -62,23 +62,18 @@ GCP_SERVICE_ACCOUNT
 | `id_rsa`, `id_ecdsa`, `id_ed25519` | SSH private keys |
 | `config/credentials` | Generic creds |
 
-## Tool installation
+## Interactive vs scripts
+
+- **Interactive skill run:** use Grep/Glob only (see `SKILL.md`). Do not run full-tree `rg --no-ignore` or `-t all`.
+- **Optional script:** `scripts/secrets_scanner.sh` is for pre-commit / manual CLI. It uses ignore-aware globs and caps hits (`SECRETS_SCAN_MAX_HITS`, default 50).
+
+## Optional external tools
 
 ```bash
-# gitleaks (recommended — fast, low false-positives)
+# gitleaks (fast, low false-positives) — optional, not required by the skill
 winget install gitleaks          # Windows
 brew install gitleaks             # macOS
-# or
-go install github.com/gitleaks/gitleaks/v8@latest
-
-# trufflehog (alternative, more thorough but slower)
-winget install trufflehog        # Windows
-brew install trufflehog           # macOS
-
-# Basic scan with gitleaks
 gitleaks detect --source . -v
-
-# Scan staged changes only
 gitleaks detect --source . --staged -v
 ```
 

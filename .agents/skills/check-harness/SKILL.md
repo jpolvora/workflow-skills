@@ -115,45 +115,47 @@ Phase 4 still **discovers** inventory from disk. When this hub ships `spec-to-pr
 | `07-testing` | `ws-testing` | 7 | Testing (standard only; lite skips) |
 | `08-ship-pr` | `ws-ship-pr` | 8 | Delivery + push/PR |
 | `09-fix-pr` | `ws-fix-pr` | 9 | One-shot PR threads |
-| `10-goal-fix-pr` | `ws-goal-fix-pr` | 9 | Thread convergence loop |
-| `11-update-plan-implementation` | `ws-update-plan-implementation` | Post | Plan deltas after workflow |
+| `goal-fix-pr` | `ws-goal-fix-pr` | 9 | Thread convergence loop |
+| `update-plan-implementation` | `ws-update-plan-implementation` | Post | Plan deltas after workflow |
 
 **Rules:**
 
-1. **Folder number = Layer 2 “Step” column** in root `AGENTS.md` (and packaged `.agents/AGENTS.md` path ids). Exception: `10-goal-fix-pr` shares FSM step **9** with `09-fix-pr`; `11-update-plan-implementation` is **Post**, not an FSM step index.
-2. **`name:` = `ws-` + folder suffix** (strip `NN-` prefix). Example: `07-testing` → `ws-testing`.
-3. **`invocation_names`** should include bare id, `ws-*`, and prefixed folder id. Deprecated aliases may appear **only** under `invocation_names` / explicit deprecated notes — not as live filesystem paths in dispatch tables.
-4. **Orchestrator dispatch** (`spec-to-pr/STEP-DISPATCH.md`, orch `SKILL.md`): use `ws-*` and/or prefixed folders (`07-testing`, `08-ship-pr`, …). STEP-DISPATCH is **standard-only** (0–9); lite keeps its own 0–5 table.
+1. **Folder number = Layer 2 “Step” column** in root `AGENTS.md` for FSM `00`–`09` only. Exception: `goal-fix-pr` shares FSM step **9** with `09-fix-pr` and is **unprefixed**; `update-plan-implementation` is **Post** and **unprefixed**.
+2. **`name:` = `ws-` + folder suffix** (strip `NN-` prefix when present). Example: `07-testing` → `ws-testing`; `goal-fix-pr` → `ws-goal-fix-pr`.
+3. **`invocation_names`** should include bare id and `ws-*` only — no retired folder aliases.
+4. **Orchestrator dispatch** (`spec-to-pr/STEP-DISPATCH.md`, orch `SKILL.md`): use `ws-*` and/or current folder ids (`07-testing`, `08-ship-pr`, `goal-fix-pr`, …). STEP-DISPATCH is **standard-only** (0–9); lite keeps its own 0–5 table.
 5. **Upstream `bin/skill-dependencies.json`:** workflow package skill ids must match folder names on disk.
 
-**Retired folder / path ids** (**critical** in orch dispatch / Layer 2 / `skill-dependencies.json`; **warning** elsewhere in live skills/docs). Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner; deprecated `invocation_names` only:
+**Forbidden folder / path ids** (**critical** in orch dispatch / Layer 2 / `skill-dependencies.json` / live skill bodies; **warning** in human FAQ with an explicit LEGACY banner). Exempt: `CHANGELOG.md` history only:
 
-| Retired (do not use as path) | Canonical replacement |
-|------------------------------|------------------------|
+| Forbidden (do not use as path or invoke alias) | Canonical |
+|------------------------------------------------|-----------|
 | `07-integration-validation` | `07-testing` (`ws-testing`) |
 | `08-fix-pr` | `09-fix-pr` (`ws-fix-pr`) |
-| `09-goal-fix-pr` | `10-goal-fix-pr` (`ws-goal-fix-pr`) |
-| `10-update-plan-implementation` | `11-update-plan-implementation` |
+| `09-goal-fix-pr` / `10-goal-fix-pr` | `goal-fix-pr` (`ws-goal-fix-pr`) |
+| `10-update-plan-implementation` / `11-update-plan-implementation` | `update-plan-implementation` |
 | `11-ship-pr` | `08-ship-pr` (`ws-ship-pr`) |
-| `ws-integration-validation` (as live skill id / path) | `ws-testing` |
-| Nested `shared/<promoted-skill>/` as skill folders | Top-level `.agents/skills/<skill>/` |
-| `us-workflow` as skill **path** | `spec-to-pr` (legacy invoke aliases OK) |
+| `ws-integration-validation` (as skill id / path) | `ws-testing` |
+| Nested `shared/<utility-skill>/` as skill folders | Top-level `.agents/skills/<skill>/` |
+| `us-workflow` | `spec-to-pr` |
+| `writing-great-skills` | `write-a-skill` |
 
-#### Skill writing quality (optional — `writing-great-skills`)
+#### Skill writing quality (optional — `write-a-skill`)
 
-When the user has the **`writing-great-skills`** skill installed **globally** (outside the repo), include in the Phase 6 plan optimization suggestions for harness skills — **read-only** during scan; edits only in Phase 7 with approval.
+When **`write-a-skill`** is installed (shipped Extra or global), include in the Phase 6 plan optimization suggestions for harness skills — **read-only** during scan; edits only in Phase 7 with approval.
 
 **Detection** (try in this order; stop at the first `SKILL.md` found):
 
-| Typical location (global) | Path |
-|-----------------------|------|
-| Cursor skills (default) | `~/.cursor/skills/writing-great-skills/SKILL.md` |
-| Windows equivalent | `%USERPROFILE%\.cursor\skills\writing-great-skills\SKILL.md` |
-| Agents global (alternative) | `~/.agents/skills/writing-great-skills/SKILL.md` |
+| Typical location | Path |
+|------------------|------|
+| Packaged Extra (this repo / consumer) | `.agents/skills/write-a-skill/SKILL.md` |
+| Cursor skills (global) | `~/.cursor/skills/write-a-skill/SKILL.md` |
+| Windows equivalent | `%USERPROFILE%\.cursor\skills\write-a-skill\SKILL.md` |
+| Agents global (alternative) | `~/.agents/skills/write-a-skill/SKILL.md` |
 
 If **no** path exists, **skip** this subsection — do not invent criteria nor duplicate the skill's content in the harness.
 
-**Canonical reference:** load `writing-great-skills/SKILL.md` and, on demand, `GLOSSARY.md` in the same directory. Apply the skill's vocabulary (predictability, sprawl, duplication, sediment, premature completion, completion criterion, progressive disclosure, leading word, no-op) as a review lens — **do not** copy paragraphs into the report.
+**Canonical reference:** load `write-a-skill/SKILL.md` and, on demand, `GLOSSARY.md` in the same directory. Apply the skill's vocabulary (predictability, sprawl, duplication, sediment, premature completion, completion criterion, progressive disclosure, leading word, no-op) as a review lens — **do not** copy paragraphs into the report.
 
 **Review scope:** each `SKILL.md` listed in the Phase 4 inventory (priority: workflow pipeline skills first, then auto-load skills, then others).
 
@@ -169,7 +171,7 @@ If **no** path exists, **skip** this subsection — do not invent criteria nor d
 | Leading word | Reinforce token in `description` and body (`blueprint`, `convergence`, `DAG`) |
 | Invocation | `description` with distinct triggers per branch; avoid duplicate synonyms |
 
-**Output:** **Skill improvements (writing-great-skills)** table in the Phase 6 report (§ Output format). User-approved items enter Phase 7 as surgical edits on affected `SKILL.md` files.
+**Output:** **Skill improvements (write-a-skill)** table in the Phase 6 report (§ Output format). User-approved items enter Phase 7 as surgical edits on affected `SKILL.md` files.
 
 ### 4. Stack and engineering docs
 
@@ -217,6 +219,8 @@ export PYTHONIOENCODING=utf-8
 # sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 ```
 
+4. **Python heredoc string escapes (Windows / bash):** never write `replace('\', '/')` inside `python - <<'PY'` — the `\'` ends the string early → `SyntaxError: unterminated string literal`. Prefer `Path.as_posix()`, or write a temp `.py` file, or use `replace(chr(92), "/")` / `replace("\\", "/")` with a double-quoted Python string. Prefer compiling skill scripts with `python -m py_compile` over ad-hoc one-liners when validating syntax.
+
 ### Phase 1 — Reference extraction
 
 For each inventory file (§ Scope):
@@ -250,7 +254,7 @@ For each internal reference:
 | Numeric consistency | folder `01-write-plan` vs. `name: ws-write-plan` (numeric prefix on filesystem only; `ws-` on `name:`) |
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow` as skill path, nested `shared/caveman/` skill folders) while the canonical skill lives at the § 3b path — **critical** if in `spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner; deprecated entries **only** inside `invocation_names:` |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `shared/caveman/` skill folders) while the canonical skill lives at the § 3b path — **critical** if in `spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / packaged `AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `08-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and packaged `.agents/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 
@@ -260,7 +264,7 @@ For each internal reference:
 
 ```bash
 # Expected folders present
-ls -d .agents/skills/0{0,1,2,3,4,5,6,7,8,9}-* .agents/skills/1{0,1}-* 2>/dev/null
+ls -d .agents/skills/0{0,1,2,3,4,5,6,7,8,9}-* .agents/skills/goal-fix-pr .agents/skills/update-plan-implementation 2>/dev/null
 
 # Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ)
 rg -n '07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
@@ -377,7 +381,7 @@ For each pair of files covering the same theme, verify:
 - **Obsolete instruction** — reference to removed artifact (orphan paths, remnants of previous stack)
 - **Inflation** — `AGENTS.md`, skill, or orchestrator repeating full skill body or indexing specs (should be index + link to skills/docs)
 - **`name:` collision** — two `SKILL.md` declaring the same `name:` (breaks skill resolution)
-- **Strict Skill and Task Folder Reference matching** — Every reference to a subagent skill or task **folder** in workflow files must match the exact prefixed directory name under `skills/` per § 3b (e.g. `05-verify-plan`, `07-testing`, `08-ship-pr`, `09-fix-pr`, `10-goal-fix-pr`, `11-update-plan-implementation`). Unprefixed, retired, or placeholder folder references (e.g. bare `verify-plan`, bare `testing` as a **path**, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `step-11-update-plan-implementation`, `05-verify-sync-plan-us`) are **critical** in orchestrator dispatch / hubs / `skill-dependencies.json`, else **warning**. Prose labels (“Testing”, step titles) and `ws-*` skill `name:` ids are fine; folder paths must stay prefixed.
+- **Strict Skill and Task Folder Reference matching** — Every reference to a subagent skill or task **folder** in workflow files must match the § 3b directory name on disk (e.g. `05-verify-plan`, `07-testing`, `08-ship-pr`, `09-fix-pr`, `goal-fix-pr`, `update-plan-implementation`). Retired or placeholder folder references (e.g. bare `verify-plan`, bare `testing` as a **path**, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `10-goal-fix-pr`, `11-update-plan-implementation`, `05-verify-sync-plan-us`) are **critical** in orchestrator dispatch / hubs / `skill-dependencies.json`, else **warning**. Prose labels (“Testing”, step titles) and `ws-*` skill `name:` ids are fine. FSM steps `00`–`09` stay numeric-prefixed; `goal-fix-pr` and `update-plan-implementation` are intentionally unprefixed.
 - **FSM step ↔ skill map** — Standard orch steps 0–9 must resolve to § 3b skills (`ws-testing`→7, `ws-ship-pr`→8, `ws-fix-pr`/`ws-goal-fix-pr`→9). Lite steps 0–5 must not require `07-testing`. Mismatches in `STEP-DISPATCH.md` or orch skill tables → **critical**.
 - **Orchestrator dependency portability** — Verify that skills that are dependencies of the project's workflow orchestrator contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from a config file or stack document so that dependencies remain portable and project-agnostic. No hardcoded project names (e.g. `Matrix`) or stack-specific build/test files/commands (e.g. `dotnet build Matrix.slnx`) are allowed in generic skills or scripts.
 - **Language (en-us) compliance** — Verify that all skill content, script comments, prompt messages, and generated artifact structures contain no Portuguese (PT-BR) words, local date representations (e.g. `AAAA-MM-DD`), or colloquialisms. Everything must be strictly in English.
@@ -386,14 +390,14 @@ Prioritize **remove duplicate + link** over rewriting.
 
 ### Phase 5b — Skill writing quality (optional)
 
-Run **after** Phase 5 and **only** if `writing-great-skills` is installed globally (detection: § 3 → *Skill writing quality*).
+Run **after** Phase 5 and **only** if `write-a-skill` is installed (detection: § 3 → *Skill writing quality*).
 
-1. Load `writing-great-skills/SKILL.md` (+ `GLOSSARY.md` if needed).
-2. For each skill in the § 3 / Phase 4 inventory (pipeline `00`–`11` first), audit against **failure modes** and **information hierarchy** from the reference.
-3. Record findings as `suggestion` in the Phase 6 plan — **Skill improvements (writing-great-skills)** table with columns: `Skill` | `Finding` | `Severity` | `Proposed correction`.
-4. **Do not** rewrite skills during scan; **do not** include this phase if the global skill is absent.
+1. Load `write-a-skill/SKILL.md` (+ `GLOSSARY.md` if needed).
+2. For each skill in the § 3 / Phase 4 inventory (pipeline `00`–`09` + `goal-fix-pr` / `update-plan-implementation` first), audit against **failure modes** and **information hierarchy** from the reference.
+3. Record findings as `suggestion` in the Phase 6 plan — **Skill improvements (write-a-skill)** table with columns: `Skill` | `Finding` | `Severity` | `Proposed correction`.
+4. **Do not** rewrite skills during scan; **do not** include this phase if the skill is absent.
 
-If the user explicitly invokes *"audit skills with writing-great-skills"* or equivalent, treat Phase 5b as **mandatory** (fail with a clear note if the global skill does not exist).
+If the user explicitly invokes *"audit skills with write-a-skill"* or equivalent, treat Phase 5b as **mandatory** (fail with a clear note if the skill does not exist).
 
 ### Phase 5c — Auto-load, overlap, and context simulation report
 
@@ -456,7 +460,7 @@ This phase generates three independent analyses that compose the **context simul
    | Planning | Write plan, interview/refine, plan-to-tasks skills |
    | Implementation | Implementation executor, guardrails skill |
    | Verification | `ws-verify-plan` (`05-verify-plan`), `ws-testing` (`07-testing`) |
-   | PR workflow | `ws-fix-pr` (`09-fix-pr`), `ws-goal-fix-pr` (`10-goal-fix-pr`), `ws-ship-pr` (`08-ship-pr`) |
+   | PR workflow | `ws-fix-pr` (`09-fix-pr`), `ws-goal-fix-pr` (`goal-fix-pr`), `ws-ship-pr` (`08-ship-pr`) |
    | Domain | Single domain review, multi-domain review skills |
    | Documentation | Learning/recording, changelog skills |
    | UI/Frontend | UI patterns, responsive design, taste/design skills |
@@ -714,8 +718,8 @@ Otherwise — **correction plan** (mandatory before editing):
 - [ ] Inconsistent opt-outs: [none | list]
 - [ ] Rules conflicting with auto-load: [none | list]
 
-### Skill improvements (optional — if global skill-writing reference is installed)
-*(Omit entire section if global skill is not installed or if no findings.)*
+### Skill improvements (optional — if write-a-skill is installed)
+*(Omit entire section if write-a-skill is not installed or if no findings.)*
 
 | Skill | Finding | Severity | Proposed correction | Plan item (#) |
 |-------|--------|------------|-------------------|-------------------|

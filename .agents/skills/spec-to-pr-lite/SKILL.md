@@ -24,7 +24,7 @@ Deterministic FSM for sequential spec-to-ship delivery. Reuses the **same** pipe
 - **Entry:** Same matrix as standard — GitHub, ADO, local-spec, free-text (`setup.md`). No “existing spec only” restriction.
 - **`workflowType: lite`** in state — resume never cross-mixes with `standard`.
 - **Inline execution:** Orchestrator executes steps inline in the main session (no `Task` subagents).
-- **State hygiene:** `python .agents/skills/spec-to-pr-lite/scripts/update_state.py` after every step.
+- **State hygiene:** `python .agents/skills/spec-to-pr-lite/scripts/update_state.py` after every step. Pass measured `--elapsed` (required for completed/failed). Upserts `## Telemetry log`. Missing telemetry → treat as hygiene fail.
 - **Artifacts:** Spec `step-00-{slug}.spec.md`; plan `step-01-{slug}.plan.md`; result `step-08-{slug}.result.md` (shared with standard).
 - **Commits:** Code during implement/review fix substep. Plan + result at Step 4 combined ship gate (G2-delivery).
 - **Ship:** Combined delivery+ship gate at Step 4; `08-ship-pr` with `workflowMode: true`, `stopBeforeFixPr: true`.
@@ -93,7 +93,7 @@ Resolve input via [`setup.md`](../shared/setup.md) § Shared entry (GitHub / ADO
 ### Step 4: Ship (delivery + push/PR)
 
 1. Mark checklists in `step-01-{slug}.plan.md` `[x]` where done.
-2. Write `step-08-{slug}.result.md` (summary, files, telemetry).
+2. Write `step-08-{slug}.result.md` (summary, files, **Benchmark with Total wall-clock time** from `telemetry.totalElapsedSec`). Show final-board Telemetry (Total time) even in `autoMode`/`fullMode`.
 3. **Combined delivery + ship gate** ([`gates.md`](../shared/gates.md)):
    - Commit plan + result, then create PR (Recommended when `fullMode`)
    - Commit plan + result, push only

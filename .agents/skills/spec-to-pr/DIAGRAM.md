@@ -68,8 +68,8 @@ flowchart TD
 | 6 | `ws-code-review` | `06-code-review` |
 | 7 | `ws-testing` | `07-testing` |
 | 8 | `ws-ship-pr` | `08-ship-pr` |
-| 9 | `ws-fix-pr` / `ws-goal-fix-pr` | `09-fix-pr` / `10-goal-fix-pr` |
-| Post | `ws-update-plan-implementation` | `11-update-plan-implementation` |
+| 9 | `ws-fix-pr` / `ws-goal-fix-pr` | `09-fix-pr` / `goal-fix-pr` |
+| Post | `ws-update-plan-implementation` | `update-plan-implementation` |
 
 ---
 
@@ -129,4 +129,4 @@ flowchart LR
 
 ## Triggers
 
-`/spec-to-pr` · `@[spec-to-pr]` · legacy `/us-workflow` aliases.
+`/spec-to-pr` · `@[spec-to-pr]`.

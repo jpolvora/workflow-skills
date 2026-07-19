@@ -154,7 +154,7 @@ flowchart TD
 @[spec-to-pr] specs/my-feature.spec.md
 @[spec-to-pr] auto 2416
 @[spec-to-pr] dry-run 2416
-@[spec-to-pr] auto skip-integration 2416
+@[spec-to-pr] auto skip-testing 2416
 @[spec-to-pr] soft-delete for suppliers
 ```
 
@@ -169,7 +169,7 @@ flowchart TD
 | Free text (`soft-delete for suppliers`) | Brainstorm via `00-write-spec` — slug from title |
 | `auto` | `autoMode: true` — no interactive menus |
 | `dry-run` | `dryRun: true` — simulation without side effects |
-| `skip-integration` | `skipIntegration: true` — skips Step 11 entirely |
+| `skip-testing` | `skipTesting: true` — skips Step 11 entirely |
 | `skip-tests` | `skipTests: true` — skips test suites (build still runs) |
 
 ### Where do provider skills live, and how do I get them?
@@ -211,7 +211,7 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 
 ### How is it done?
 
-1. Parse `workflow-id`, flags (`dryRun`, `autoMode`, `skipIntegration`, `skipTests`) and **entry** (GitHub id, ADO id, or `*.spec.md`)
+1. Parse `workflow-id`, flags (`dryRun`, `autoMode`, `skipTesting`, `skipTests`) and **entry** (GitHub id, ADO id, or `*.spec.md`)
 2. Check for active workflows (resume or new)
 3. Create `{us-dir}/{workflow-id}.state.md` in `.cursor/plans/{slug}/`
 4. Capture baseline: `baselineCommit`, `preExistingDirty`, tag `before-step-1`
@@ -549,7 +549,7 @@ Fixes findings from Step 9, creates the 2nd commit, and generates `step-10-{slug
 | Normal + gated | `CallMcpTool` cursor-ide-browser |
 | Auto | Skipped (auto-gate: **Approve without browser**) |
 | Dry-run | Skipped |
-| `skipIntegration` | Step 11 skipped entirely |
+| `skipTesting` | Step 11 skipped entirely |
 
 ---
 
@@ -687,7 +687,7 @@ Everything under `{plans-dir}/{slug}/` (default `.cursor/plans/{slug}/`). Canoni
 | Browser | Never |
 | Prefix | `[DRY-RUN]` |
 
-### `skip-integration`
+### `skip-testing`
 
 Skips **Step 11 entirely** — no plan, no battery, no browser. Goes directly to Step 12.
 
@@ -734,7 +734,7 @@ Prefer native `AskQuestion` when available. If the runtime does not expose it, t
 
 ### Step 11 wants to use the browser but I'm on auto/dry-run
 
-Browser is skipped automatically in auto, dry-run, and `skipIntegration` modes. If you're in normal mode and don't want browser, choose **Run without browser** at the test plan gate.
+Browser is skipped automatically in auto, dry-run, and `skipTesting` modes. If you're in normal mode and don't want browser, choose **Run without browser** at the test plan gate.
 
 ### Build/tests fail and I'm stuck in a fix loop
 

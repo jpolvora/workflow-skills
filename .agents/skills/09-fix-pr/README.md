@@ -11,7 +11,7 @@ Thread list/resolve I/O goes through `config.providers.scm` → [github-provider
 | Resource | Path |
 |----------|------|
 | Main skill | `.agents/skills/09-fix-pr/SKILL.md` |
-| Convergence loop | `.agents/skills/10-goal-fix-pr/SKILL.md` — `/goal-fix-pr <PR-ID>` |
+| Convergence loop | `.agents/skills/goal-fix-pr/SKILL.md` — `/goal-fix-pr <PR-ID>` |
 | Code review (pre-push) | `.agents/skills/06-code-review/SKILL.md` |
 | SCM config | `providers.scm` in `.agents/skills/shared/config.json` (`github` \| `azure-devops`) |
 | GitHub provider | `.agents/skills/github-provider/SKILL.md` — `list-threads` / `resolve-thread` |

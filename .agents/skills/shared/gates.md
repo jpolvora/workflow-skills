@@ -188,4 +188,3 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 | Flag | Meaning |
 |------|---------|
 | `skipTesting` | Skip Step 7 Testing (auto-skip when no test surface + unit tests green) |
-| `skipIntegration` | **Deprecated alias** for `skipTesting` — parse both; prefer `skipTesting` in logs and banners |

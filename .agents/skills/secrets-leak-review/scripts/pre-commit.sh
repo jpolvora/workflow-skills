@@ -25,10 +25,11 @@ if [ ! -f "$SCANNER" ]; then
   exit 0
 fi
 
-# Run scanner in staged-only mode — override rg to check only staged content
+# Staged-only + hard cap so the hook always finishes
 export GIT_STAGED_ONLY=1
+export SECRETS_SCAN_MAX_HITS="${SECRETS_SCAN_MAX_HITS:-30}"
 
-# Capture scanner output
+# Capture scanner output (scanner exits 0; never block forever on full-tree rg)
 SCAN_OUTPUT=$(bash "$SCANNER" 2>&1 || true)
 
 # Check for HIGH findings

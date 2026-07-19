@@ -30,7 +30,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files.
 - **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*` (consumer-owned; never overwrite from upstream).
 - **Root configuration (consumer-configured):** optional `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root configuration. Installer **create-if-missing** only (never overwrite).
-- **Update migrations:** `bin/cli.js` renames retired pipeline folders to canonical `00`–`11` ids (and `us-workflow`→`spec-to-pr`). See [`README.md`](README.md) § Safety.
+- **Latest layout only:** installer does not migrate older folder names — consumers get the current skill tree on install/update. See [`README.md`](README.md) § Safety.
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
@@ -129,15 +129,13 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 |-------|------|-------------|
 | `check-harness` | `.agents/skills/check-harness/SKILL.md` | Harness integrity audit |
 | `check-workflows` | `.agents/skills/check-workflows/SKILL.md` | Workflow FSM / dual-mode checks |
-| `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Author new skills |
+| `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
+| `show-harness` | `.agents/skills/show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |
 
 ### Layer 1 — Engineering standards
 
-| Skill | Path | Description |
-|-------|------|-------------|
-| `mobile-first-design` | `.agents/skills/mobile-first-design/SKILL.md` | Mobile-first UI |
-| `design-taste-frontend` | `.agents/skills/taste-skill/SKILL.md` | Anti-slop frontend |
+*(None on disk in this upstream tree. Former Extra UI skills were removed; restore via PR if needed.)*
 
 ### Layer 2 — Pipeline + providers
 
@@ -153,8 +151,8 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 | 07 | `ws-testing` | `.agents/skills/07-testing/SKILL.md` |
 | 08 | `ws-ship-pr` | `.agents/skills/08-ship-pr/SKILL.md` |
 | 09 | `ws-fix-pr` | `.agents/skills/09-fix-pr/SKILL.md` |
-| 10 | `ws-goal-fix-pr` | `.agents/skills/10-goal-fix-pr/SKILL.md` |
-| 11 | `ws-update-plan-implementation` | `.agents/skills/11-update-plan-implementation/SKILL.md` |
+| — | `ws-goal-fix-pr` | `.agents/skills/goal-fix-pr/SKILL.md` |
+| Post | `ws-update-plan-implementation` | `.agents/skills/update-plan-implementation/SKILL.md` |
 | — | `github-provider` | `.agents/skills/github-provider/SKILL.md` |
 | — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` |
 | — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` |
@@ -167,11 +165,6 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path |
 |-------|------|
-| `security-review` | `.agents/skills/security-review/SKILL.md` |
-| `dotnet-security-performance-review` | `.agents/skills/dotnet-security-performance-review/SKILL.md` |
-| `tdd-sdd-ddd-reviewer` | `.agents/skills/tdd-sdd-ddd-reviewer/SKILL.md` |
-| `domain-review` | `.agents/skills/domain-review/SKILL.md` |
-| `multi-domain-review` | `.agents/skills/multi-domain-review/SKILL.md` |
 | `secrets-leak-review` | `.agents/skills/secrets-leak-review/SKILL.md` |
 
 ### Layer 5 — Utility & meta
@@ -200,10 +193,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Implement | `ws-implement-tasks` |
 | Verify | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
-| Security | `security-review` or `dotnet-security-performance-review` |
 | Secrets / leaks | `secrets-leak-review` |
-| Architecture (DDD) | `tdd-sdd-ddd-reviewer` |
-| Domain review | `domain-review` or `multi-domain-review` |
 | Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship PR | `ws-ship-pr` |
@@ -213,11 +203,11 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | ADO WI/PR ops | `azure-devops-provider` |
 | Local `*.spec.md` | `local-spec-provider` |
 | Format/review spec | `spec-format` |
-| New skill | `write-a-skill` |
+| New skill / skill rewrite | `write-a-skill` |
+| Show active harness | `show-harness` |
 | Audit harness | `check-harness` |
 | Check workflows | `check-workflows` |
 | Grill plan vs docs | `grill-with-docs` |
-| Frontend design | `design-taste-frontend` or `mobile-first-design` |
 | Record learning | `self-learning` |
 | Convergence loop | `goal-loop` |
 | Record changelog | `changelog` |

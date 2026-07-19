@@ -165,7 +165,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('ws-testing')) fail('ARTIFACTS.md missing Step 7 Testing ownership');
-  // AC9: legacy converter paths must remain (thin shims → provider canonical scripts)
+  // AC9: converter shims under orch paths forward to provider canonical scripts
   if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py'))) {
     fail('Missing github-issue-to-spec.py shim under spec-to-pr/scripts');
   }
@@ -492,9 +492,9 @@ child.on('close', async (code) => {
       s === 'local-spec-provider' ||
       s === 'github-provider' ||
       s === 'azure-devops-provider' ||
-      s === 'taste-skill' ||
-      s === 'mobile-first-design' ||
-      s === 'write-a-skill'
+      s === 'secrets-leak-review' ||
+      s === 'write-a-skill' ||
+      s === 'show-harness'
   );
   let removedForIncludeNew = null;
   if (removable) {
@@ -608,94 +608,6 @@ child.on('close', async (code) => {
     ok('Consumer shim forward smoke passed');
   }
   ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
-  // --- Phase 2b: rename migration us-workflow → spec-to-pr ---
-  console.log('\n[Phase 2b] Migrate legacy us-workflow folder on update...');
-  const legacyDir = path.join(testSkillsDir, 'us-workflow');
-  const modernDir = path.join(testSkillsDir, 'spec-to-pr');
-  const legacyMarker = {
-    project: { name: 'legacy-migrated-project', baseBranch: 'main' },
-    plans: { dir: '.cursor/plans' },
-    verification: { backendBuild: 'echo legacy' },
-    _legacyMarker: 'from-us-workflow'
-  };
-  if (fs.existsSync(modernDir)) {
-    fs.rmSync(legacyDir, { recursive: true, force: true });
-    fs.renameSync(modernDir, legacyDir);
-    fs.writeFileSync(path.join(legacyDir, 'config.json'), JSON.stringify(legacyMarker, null, 2), 'utf8');
-  } else {
-    fail('spec-to-pr missing before rename-migration test');
-  }
-
-  const migrateUpdate = cp.spawnSync(
-    'npx',
-    useLocal ? ['workflow-skills', 'update'] : ['-y', 'github:jpolvora/workflow-skills', 'update'],
-    { cwd: __dirname, shell: true, encoding: 'utf8' }
-  );
-  if (migrateUpdate.status !== 0) {
-    console.error(migrateUpdate.stdout);
-    console.error(migrateUpdate.stderr);
-    fail(`rename migration update failed with code ${migrateUpdate.status}`);
-  }
-  if (fs.existsSync(legacyDir)) fail('legacy us-workflow folder still present after migration');
-  if (!fs.existsSync(modernDir)) fail('spec-to-pr not created by migration');
-  const migratedCfg = JSON.parse(fs.readFileSync(path.join(modernDir, 'config.json'), 'utf8'));
-  if (migratedCfg._legacyMarker !== 'from-us-workflow') {
-    fail('config.json from us-workflow was not preserved during migration');
-  }
-  ok('us-workflow → spec-to-pr migration preserves config.json');
-
-  // --- Phase 2c: pipeline folder renumber cycle on update ---
-  console.log('\n[Phase 2c] Migrate retired pipeline folders on update...');
-  {
-    const cycle = [
-      ['07-testing', '07-integration-validation'],
-      ['08-ship-pr', '11-ship-pr'],
-      ['09-fix-pr', '08-fix-pr'],
-      ['10-goal-fix-pr', '09-goal-fix-pr'],
-      ['11-update-plan-implementation', '10-update-plan-implementation'],
-    ];
-    for (const [modern, legacy] of cycle) {
-      const modernPath = path.join(testSkillsDir, modern);
-      const legacyPath = path.join(testSkillsDir, legacy);
-      if (!fs.existsSync(modernPath)) fail(`${modern} missing before pipeline rename test`);
-      fs.rmSync(legacyPath, { recursive: true, force: true });
-      fs.renameSync(modernPath, legacyPath);
-      fs.writeFileSync(
-        path.join(legacyPath, 'config.json'),
-        JSON.stringify({ _legacyMarker: `from-${legacy}` }, null, 2),
-        'utf8'
-      );
-    }
-
-    const pipeMigrate = cp.spawnSync(
-      'npx',
-      useLocal ? ['workflow-skills', 'update'] : ['-y', 'github:jpolvora/workflow-skills', 'update'],
-      { cwd: __dirname, shell: true, encoding: 'utf8' }
-    );
-    if (pipeMigrate.status !== 0) {
-      console.error(pipeMigrate.stdout);
-      console.error(pipeMigrate.stderr);
-      fail(`pipeline rename migration update failed with code ${pipeMigrate.status}`);
-    }
-
-    for (const [modern, legacy] of cycle) {
-      const modernPath = path.join(testSkillsDir, modern);
-      const legacyPath = path.join(testSkillsDir, legacy);
-      if (fs.existsSync(legacyPath)) fail(`legacy ${legacy} still present after migration`);
-      if (!fs.existsSync(path.join(modernPath, 'SKILL.md'))) {
-        fail(`${modern}/SKILL.md missing after migration`);
-      }
-      const cfg = JSON.parse(fs.readFileSync(path.join(modernPath, 'config.json'), 'utf8'));
-      if (cfg._legacyMarker !== `from-${legacy}`) {
-        fail(`config.json marker not preserved for ${legacy} → ${modern}`);
-      }
-    }
-    if (fs.existsSync(path.join(testSkillsDir, '.migrate-tmp'))) {
-      fail('.migrate-tmp left behind after pipeline migration');
-    }
-    ok('pipeline folder renumber cycle migrates and preserves config.json');
-  }
-
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
     const schemaInTest = path.join(testSkillsDir, 'shared', 'config.schema.json');
@@ -731,36 +643,6 @@ child.on('close', async (code) => {
       fail('shared/self-learning should not exist after promotion');
     }
     ok('Promoted skills top-level; shared/ is hub-only');
-  }
-
-  // --- Phase 5: legacy nested memory migration on update → shared/memory ---
-  console.log('\n[Phase 5] Migrate legacy memory into shared/memory on update...');
-  {
-    const legacyMemDir = path.join(testSkillsDir, 'shared', 'self-learning', 'memory');
-    const sharedMemDir = path.join(testSkillsDir, 'shared', 'memory');
-    fs.mkdirSync(legacyMemDir, { recursive: true });
-    const legacyFile = path.join(legacyMemDir, '2026-07-16-migrate-test.md');
-    fs.writeFileSync(legacyFile, '# migrate-test\n', 'utf8');
-    const sharedFile = path.join(sharedMemDir, '2026-07-16-migrate-test.md');
-    if (fs.existsSync(sharedFile)) fs.rmSync(sharedFile, { force: true });
-
-    const memUpdate = cp.spawnSync(
-      'npx',
-      useLocal ? ['workflow-skills', 'update'] : ['-y', 'github:jpolvora/workflow-skills', 'update'],
-      { cwd: __dirname, shell: true, encoding: 'utf8' }
-    );
-    if (memUpdate.status !== 0) {
-      console.error(memUpdate.stdout);
-      console.error(memUpdate.stderr);
-      fail(`memory migration update failed with code ${memUpdate.status}`);
-    }
-    if (!fs.existsSync(sharedFile)) {
-      fail('Legacy memory file was not migrated to shared/memory/');
-    }
-    if (fs.existsSync(path.join(testSkillsDir, 'shared', 'self-learning'))) {
-      fail('legacy shared/self-learning/ still present after migration');
-    }
-    ok('Legacy memory migrated to shared/memory/');
   }
 
   // --- Phase 6: Workflows package membership (no Extra-only) ---
@@ -818,7 +700,7 @@ child.on('close', async (code) => {
     ok('Workflows package installs workflows+hub without Extra-only skills');
   }
 
-  // --- Phase 7: dependency auto-select (10-goal-fix-pr → goal-loop) ---
+  // --- Phase 7: dependency auto-select (goal-fix-pr → goal-loop) ---
   console.log('\n[Phase 7] Dependency auto-select on individual toggle...');
   {
     const depDir = path.join(__dirname, '.pkg-deps');
@@ -828,8 +710,8 @@ child.on('close', async (code) => {
     const installable = listSkillDirs(rootSkillsDir)
       .filter((n) => n !== 'shared' && fs.existsSync(path.join(rootSkillsDir, n, 'SKILL.md')))
       .sort((a, b) => a.localeCompare(b));
-    const idx = installable.indexOf('10-goal-fix-pr');
-    if (idx < 0) fail('10-goal-fix-pr not in installable skill list');
+    const idx = installable.indexOf('goal-fix-pr');
+    if (idx < 0) fail('goal-fix-pr not in installable skill list');
     const num = String(idx + 1);
     const depInstall = await new Promise((resolve) => {
       const child = cp.spawn(process.execPath, [cliPath], {
@@ -863,17 +745,17 @@ child.on('close', async (code) => {
       fail(`Dep auto-select install exited ${depInstall.status}`);
     }
     const depSkills = path.join(depDir, '.agents', 'skills');
-    if (!fs.existsSync(path.join(depSkills, '10-goal-fix-pr', 'SKILL.md'))) {
-      fail('10-goal-fix-pr not installed after toggle');
+    if (!fs.existsSync(path.join(depSkills, 'goal-fix-pr', 'SKILL.md'))) {
+      fail('goal-fix-pr not installed after toggle');
     }
     if (!fs.existsSync(path.join(depSkills, 'goal-loop', 'SKILL.md'))) {
-      fail('goal-loop not auto-selected as dependency of 10-goal-fix-pr');
+      fail('goal-loop not auto-selected as dependency of goal-fix-pr');
     }
     if (!fs.existsSync(path.join(depSkills, '09-fix-pr', 'SKILL.md'))) {
-      fail('09-fix-pr not auto-selected as dependency of 10-goal-fix-pr');
+      fail('09-fix-pr not auto-selected as dependency of goal-fix-pr');
     }
     fs.rmSync(depDir, { recursive: true, force: true });
-    ok('Selecting 10-goal-fix-pr auto-selects goal-loop + 09-fix-pr');
+    ok('Selecting goal-fix-pr auto-selects goal-loop + 09-fix-pr');
   }
 
   // --- Phase 8: non-interactive install --yes (config preserve, no overwrite prompts) ---
@@ -944,7 +826,7 @@ child.on('close', async (code) => {
     fs.mkdirSync(skillsDir2, { recursive: true });
     const skillsInstall = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', '10-goal-fix-pr', '--yes'],
+      [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
       {
         cwd: skillsDir2,
         encoding: 'utf8',
@@ -955,11 +837,11 @@ child.on('close', async (code) => {
     const skillsOut = `${skillsInstall.stdout || ''}${skillsInstall.stderr || ''}`;
     if (skillsInstall.status !== 0) {
       console.error(skillsOut);
-      fail(`install --skills 10-goal-fix-pr --yes exited ${skillsInstall.status}`);
+      fail(`install --skills goal-fix-pr --yes exited ${skillsInstall.status}`);
     }
     const sRoot = path.join(skillsDir2, '.agents', 'skills');
-    if (!fs.existsSync(path.join(sRoot, '10-goal-fix-pr', 'SKILL.md'))) {
-      fail('--skills install missing 10-goal-fix-pr');
+    if (!fs.existsSync(path.join(sRoot, 'goal-fix-pr', 'SKILL.md'))) {
+      fail('--skills install missing goal-fix-pr');
     }
     if (!fs.existsSync(path.join(sRoot, 'goal-loop', 'SKILL.md'))) {
       fail('--skills install missing transitive goal-loop');
@@ -1062,6 +944,6 @@ child.on('close', async (code) => {
     ok('Update preserves consumer shared/MEMORY.md, memory/, and stack.md');
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration (us-workflow + pipeline), packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
   process.exit(0);
 });

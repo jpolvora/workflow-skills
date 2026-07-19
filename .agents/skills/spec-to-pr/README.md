@@ -4,7 +4,7 @@
 >
 > **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skills `00`–`11`. Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../shared/tools.md). Config: `.agents/skills/shared/config.json`.
 >
-> **Identity:** `/spec-to-pr` / `@[spec-to-pr]`. Legacy aliases: `/us-workflow`, `/us-delivery-workflow`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
+> **Identity:** `/spec-to-pr` / `@[spec-to-pr]`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
 End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared state, and confirmation gates (session model on each transition; switch via Pause → IDE/agent host → Resume).
 
@@ -70,7 +70,7 @@ Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../shared/setup.
 @[spec-to-pr] soft-delete for suppliers
 ```
 
-State: `.cursor/plans/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipIntegration` alias, `skipTests`, `fullMode`).
+State: `.cursor/plans/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`).
 
 ### Flags
 
@@ -78,7 +78,7 @@ State: `.cursor/plans/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `sk
 |------|--------|
 | `auto` | Recommended option at every gate; no interactive menus |
 | `dry-run` | Simulate; no commits/push/code edits/browser/`MEMORY` writes |
-| `skip-testing` | Skip Step 7 Testing (`skip-integration` = deprecated alias) |
+| `skip-testing` | Skip Step 7 Testing |
 | `skip-tests` | Skip implement-time test suite runs (build still runs) |
 | `full` | Step 8 Recommended = commit plan+result then create PR |
 | `strict` | Full verification matrix at Step 5 |
@@ -106,7 +106,7 @@ Session model only. Pause → switch in IDE/agent host → Resume. No `--model` 
 | **8** | Ship | `ws-ship-pr` | Delivery + push/PR → `step-08-{slug}.result.md` |
 | **9** | Fix-PR | `ws-fix-pr` / `ws-goal-fix-pr` | Threads → merge policy |
 
-Post-workflow QA deltas: `ws-update-plan-implementation` (`11-update-plan-implementation`).
+Post-workflow QA deltas: `ws-update-plan-implementation` (`update-plan-implementation`).
 
 ### Step 7 — Testing (summary)
 

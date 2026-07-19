@@ -1,8 +1,8 @@
 ---
 name: ws-write-plan
-description: Generates the initial implementation plan (step-01-{slug}.plan.md) from the specification.
+description: Generates the implementation plan (step-01-{slug}.plan.md) from the specification.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.3
+version: 3.4
 disable-model-invocation: true
 invocation_names:
   - write-plan
@@ -12,49 +12,40 @@ invocation_names:
 
 # 01-write-plan
 
-Responsible for loading the feature specification (whether a local spec, a GitHub issue, or an Azure DevOps work item) and drafting a detailed implementation blueprint. It reads the local stack configurations to remain stack-agnostic.
+Draft an implementation blueprint from the spec. Act as a Senior Software Engineer / Technical Architect: stack-aware, modular, testable, with mapped database and API layers.
 
-## Persona
+**Canonical path:** `{output-dir}/step-01-{slug}.plan.md` (`output-dir` default `.cursor/plans/{slug}/`).
 
-Act as a **Senior Software Engineer / Technical Architect** who is skilled at analyzing specifications, identifying technology stack context, planning modular solutions, designing database schemas, structuring API layers, and mapping test cases.
-
----
+**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `stack.md`, `MEMORY.md`.
 
 ## Invocation
 
-### Standalone Mode
+Standalone:
 
 ```
 /write-plan <spec-input> [slug=<slug>] [output-dir=<path>]
 ```
 
-### Workflow Mode (Step 1 of spec-to-pr)
+Workflow (spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-00-*.spec.md`, GitHub issue id, or Azure DevOps id) from state.
 
-Dispatched by `spec-to-pr` at Step 1. Receives `specInput` (path or issue ID) from the orchestrator's state.
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `<spec-input>` | required | Local spec path, `GH <id>`, or `US <id>` |
+| `slug` | inferred | From spec when omitted |
+| `output-dir` | `.cursor/plans/{slug}/` | Destination folder |
 
-### Parameters
+## Steps
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `<spec-input>` | String | (required) | Path to a local `step-00-*.spec.md`, GitHub issue ID (e.g. `GH 42`), or Azure DevOps ID (e.g. `US 101`). |
-| `slug=<slug>` | String | (optional) | Unique url-friendly identifier. Inferred from spec if omitted. |
-| `output-dir=<path>` | String | `.cursor/plans/{slug}/` | Destination folder for the drafted plan. |
+1. **Load spec and stack context** — Read the spec input and `config.json` layers/invariants.
+   - Done when: stack (layers, db/ORM, frontend framework) is identified, or the step stops to ask for clarification when undetectable.
 
----
+2. **Draft plan** — Write `{output-dir}/step-01-{slug}.plan.md` following the template below.
+   - Done when: every section 0-8 is filled, each stated requirement maps to an entry in the Step-by-Step Plan, and every AC maps to a test case in section 5.
 
-## Prerequisites
-
-Read the following repository metadata files before drafting:
-- `config.json` — identifies stack, backend layers, db/ORM, frontend framework, and test suites.
-- `tools.md` / `stack.md` — lists developer tool aliases and stack configurations.
-- `MEMORY.md` — outlines anti-regression rules and learned patterns.
-- Shared workflow skills: [karpathy-guidelines](../karpathy-guidelines/SKILL.md), [caveman](../caveman/SKILL.md), [self-learning](../self-learning/SKILL.md), and [gabarito](../gabarito/SKILL.md).
-
----
+3. **Handoff** — Return the plan path for [02-interview](../02-interview/SKILL.md) (or [03-plan-to-tasks](../03-plan-to-tasks/SKILL.md) when interview is skipped).
+   - Done when: caller has the `step-01-` path.
 
 ## Plan Template
-
-Draft the structured plan and write it to `{output-dir}/step-01-{slug}.plan.md`. The plan must match the following format exactly:
 
 ```markdown
 ---
@@ -64,51 +55,42 @@ status: "plan to be refined"
 ---
 
 ## 0. Summary & Business Rules
-- Feature number/title, core objectives, target business rules, and security mitigations.
+Feature objectives, target business rules, security mitigations.
 
 ## 1. Definition of Ready & Scope
-- Resolved assumptions, measurable Acceptance Criteria (ACs), out-of-scope boundaries.
+Resolved assumptions, measurable Acceptance Criteria (ACs), out-of-scope boundaries.
 
 ## 2. Technical Design & Architecture
-- Layer edits (per config.json layers): backend files, database schema, entity mappings.
-- Frontend edits: pages, routes, API endpoints, styling, and i18n keys.
-- Verification of invariants from `config.json.invariants`.
+Layer edits (per config.json layers): backend files, db schema, entity mappings. Frontend edits: pages, routes, API endpoints, styling, i18n keys. Invariant checks from config.json.invariants.
 
 ## 3. Step-by-Step Plan
-Steps ordered logically by dependency:
-- Step 1: Domain & Database (migrations, schema additions, db entities).
-- Step 2: Application Core (DTOs, service controllers, logic validations).
-- Step 3: Backend Unit Tests (testing service rules and boundary validations).
-- Step 4: Frontend & UI (components, API integrations, page layouts).
-- Step 5: Frontend Tests (testing UI components and workflows).
-
-*For each step, specify: Action details · Affected files · Engineering checks.*
+Steps ordered by dependency, e.g.: Domain & Database → Application Core → Backend Unit Tests → Frontend & UI → Frontend Tests. For each step: action details, affected files, engineering checks.
 
 ## 4. Permissions, Tenancy & i18n
-- RBAC permissions, tenant data leakage isolation checks, and dynamic i18n strings.
+RBAC permissions, tenant data leakage isolation checks, dynamic i18n strings.
 
 ## 5. Test Coverage
-- Map each Acceptance Criteria (AC1, AC2, etc.) to specific test cases and method names.
+Map each AC (AC1, AC2, ...) to specific test cases and method names.
 
 ## 6. Invariants (Do Not Violate)
-- Reiterate strict architectural invariants from `config.json.invariants`.
+Reiterate strict architectural invariants from config.json.invariants.
 
 ## 7. Pre-PR Checklist
 - [ ] Layer boundaries respected.
-- [ ] Mappings and domain entities encapsulated.
+- [ ] Domain entities and mappings encapsulated.
 - [ ] Schema migrations created.
 - [ ] Authorization checks applied.
 - [ ] i18n keys declared.
 - [ ] Test cases cover all ACs.
 
 ## 8. Open Questions
-- Ambiguities, blocked tasks, or architectural decisions requiring reviewer input.
+Ambiguities, blocked tasks, or architectural decisions requiring reviewer input.
 ```
-
----
 
 ## Rules of Engagement
 
 - The plan must contain sufficient detail for direct coding task generation.
-- **Do not write product code:** this skill is strictly for planning and documentation.
+- Do not write product code: this skill is strictly for planning and documentation.
 - If the project stack cannot be detected from `config.json`, stop and ask for clarification.
+
+Language: en-us only.

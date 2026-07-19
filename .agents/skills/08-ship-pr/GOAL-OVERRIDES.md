@@ -1,6 +1,6 @@
 # ship-pr — goal-fix-pr timing overrides
 
-Load with [SKILL.md](SKILL.md) Phase 5. Parent loop: [goal-fix-pr](../10-goal-fix-pr/SKILL.md).
+Load with [SKILL.md](SKILL.md) Phase 5. Parent loop: [goal-fix-pr](../goal-fix-pr/SKILL.md).
 
 ## Why wait for code-review (5 minutes+)
 

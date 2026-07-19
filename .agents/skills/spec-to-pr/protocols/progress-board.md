@@ -28,6 +28,8 @@ Suffixes: `← next` · `⏭ skipped` · `↻ repeating` · `⏮ reopened`.
 
 ## Step 8 final board (after benchmark)
 
+**Mandatory** after Step 8 benchmark — including `autoMode` / `fullMode` / `dryRun`. Source: state `telemetry` (sum of step `elapsedSec`; null → 0). Missing Total time → **HS-5**.
+
 ```markdown
 ### Telemetry
 | Metric | Value |

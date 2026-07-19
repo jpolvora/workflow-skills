@@ -29,8 +29,8 @@
         "07-testing",
         "08-ship-pr",
         "09-fix-pr",
-        "10-goal-fix-pr",
-        "11-update-plan-implementation",
+        "goal-fix-pr",
+        "update-plan-implementation",
         "github-provider",
         "azure-devops-provider",
         "local-spec-provider",
@@ -50,15 +50,9 @@
     },
     "extra": {
       "skills": [
-        "security-review",
-        "dotnet-security-performance-review",
-        "tdd-sdd-ddd-reviewer",
-        "domain-review",
-        "multi-domain-review",
         "secrets-leak-review",
-        "mobile-first-design",
-        "taste-skill",
-        "write-a-skill"
+        "write-a-skill",
+        "show-harness"
       ],
       "ensureHub": false,
       "shortcut": "e",
@@ -77,8 +71,8 @@
       "07-testing",
       "08-ship-pr",
       "09-fix-pr",
-      "10-goal-fix-pr",
-      "11-update-plan-implementation",
+      "goal-fix-pr",
+      "update-plan-implementation",
       "github-provider",
       "azure-devops-provider",
       "local-spec-provider",
@@ -116,7 +110,7 @@
     "local-spec-provider": [
       "spec-format"
     ],
-    "10-goal-fix-pr": [
+    "goal-fix-pr": [
       "09-fix-pr",
       "goal-loop"
     ],
@@ -125,12 +119,6 @@
       "caveman",
       "gabarito",
       "self-learning"
-    ],
-    "tdd-sdd-ddd-reviewer": [
-      "karpathy-guidelines"
-    ],
-    "domain-review": [
-      "karpathy-guidelines"
     ]
   },
   "autoloadOnly": [],

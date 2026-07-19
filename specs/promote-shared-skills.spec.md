@@ -12,7 +12,7 @@ specDate: 2026-07-16
 
 Today, several workflow-agnostic skills live only under `.agents/skills/shared/` (`caveman`, `gabarito`, `karpathy-guidelines`, `spec-format`, `goal-loop`, `self-learning`, `changelog`). They are shipped as nested content inside the `shared/` folder. The interactive installer (`bin/cli.js`) lists top-level directories only, so those nested skills are not first-class installable units. When a consumer installs `spec-to-pr` or `spec-to-pr-lite`, the CLI bulk-copies all of `shared/` (skills plus config/docs) via `ensureSharedInstalled`. Consumers cannot install a single promoted utility (for example `caveman` alone) without taking the whole shared tree.
 
-This feature promotes those seven skill folders out of `shared/` into sibling top-level skill directories under `.agents/skills/` (same level as `spec-to-pr`, `00-write-spec`, `security-review`, etc.). After promotion they appear in the install menu and can be selected individually or via install packages.
+This feature promotes those seven skill folders out of `shared/` into sibling top-level skill directories under `.agents/skills/` (same level as `spec-to-pr`, `00-write-spec`, `secrets-leak-review`, etc.). After promotion they appear in the install menu and can be selected individually or via install packages.
 
 **What moves (skill folders):**
 
@@ -107,7 +107,7 @@ Exact membership lists belong in the dependency/package map implemented with the
 ### Dependency edges (illustrative; finalize in map)
 
 - `spec-to-pr` / `spec-to-pr-lite` → pipeline skills they dispatch + promoted utilities they auto-load + `shared/` hub (hub is not a skill entry).
-- `10-goal-fix-pr` → `goal-loop`, `09-fix-pr`.
+- `goal-fix-pr` → `goal-loop`, `09-fix-pr`.
 - `00-write-spec` / providers → `spec-format`.
 - Review skills referencing `karpathy-guidelines` → `karpathy-guidelines` when those edges are declared.
 - Prefer declaring **required install deps** (must be on disk) separately from **autoload behavioral refs** if that keeps Extra lean; document the distinction in the map format.

@@ -1,8 +1,8 @@
 ---
 name: ws-write-spec
-description: Receives a high-level feature description and drafts a canonical step-00-{slug}.spec.md specification.
+description: Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr Step 0 brainstorm).
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.3
+version: 3.4
 disable-model-invocation: true
 invocation_names:
   - write-spec
@@ -12,86 +12,41 @@ invocation_names:
 
 # 00-write-spec
 
-Responsible for taking raw, free-text feature descriptions and drafting a canonical, structured specification document. The resulting file serves as the input specification for downstream planning steps.
+Draft a **canonical** local spec from free-text. Act as a Product Manager: clear scope, testable acceptance criteria.
 
-Canonical path is always `{us-dir}/step-00-{slug}.spec.md` (`us-dir` = `{plans.dir}/{slug}/`). Optional human-browsable mirrors under `plans.specsDir` are owned by [local-spec-provider](../local-spec-provider/SKILL.md) — do not duplicate mirror logic here.
+**Canonical path:** `{us-dir}/step-00-{slug}.spec.md` (`{us-dir}` = `{plans.dir}/{slug}/`, usually `output-dir`). Human-browsable mirrors under `plans.specsDir` are owned by [local-spec-provider](../local-spec-provider/SKILL.md) — never copy them yourself.
 
-## Persona
-
-Act as a **Product Manager** who specializes in writing clear, detailed, and unambiguous specifications. Your goal is to translate user requirements into a structured format with clear scope boundaries and testable acceptance criteria.
-
----
+**Format:** load [spec-format](../spec-format/SKILL.md) and follow it. Set `source: local` and `id: null`.
 
 ## Invocation
 
-### Standalone Mode
+Standalone:
 
 ```
 /write-spec "<description>" [slug=<slug>] [output-dir=<path>] [--mirror]
 ```
 
-### Workflow Mode (Step 0 of spec-to-pr)
+Workflow (spec-to-pr / lite Step 0): orchestrator passes `description` and optional `slug`; optional mirror when requested or when mirroring is policy for local brainstorms.
 
-Dispatched by `spec-to-pr` at Step 0 with the issue body or feature text from context. Receives `description` and optional `slug` from the orchestrator's input. Optional post-draft mirror when the caller requests it or when mirroring is policy for local brainstorms.
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `<description>` | required | Raw feature / business text |
+| `slug` | inferred | URL-safe id from title/description |
+| `output-dir` | `.cursor/plans/{slug}/` | Destination `{us-dir}` |
+| `--mirror` | false | After write, register via local-spec-provider |
 
-### Parameters
+## Steps
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `<description>` | String | (required) | Raw text description of the feature or business requirement. |
-| `slug=<slug>` | String | (optional) | Unique URL-friendly identifier for the feature. Auto-generated from title/description if omitted. |
-| `output-dir=<path>` | String | `.cursor/plans/{slug}/` | Destination folder for the drafted canonical spec (`{us-dir}`). |
-| `--mirror` | Flag | `false` | After write, ask [local-spec-provider](../local-spec-provider/SKILL.md) to also write `{specsDir}/{slug}.spec.md`. |
+1. **Parse** — Infer title and url-safe `slug` from the description (or use provided `slug`).
+   - Done when: title and `slug` are set.
 
----
+2. **Draft** — Build the spec per [spec-format](../spec-format/SKILL.md).
+   - Done when: frontmatter has `source: local`, `id: null`, `slug`, `title`, `specDate`; body has Description, Acceptance Criteria (each AC specific and testable), and Notes as needed; every stated requirement maps to ≥1 AC or an explicit out-of-scope note in Notes.
 
-## Prerequisites
+3. **Write** — Save `{output-dir}/step-00-{slug}.spec.md`.
+   - Done when: that file exists on disk.
 
-Read and respect the following shared skills:
-- [karpathy-guidelines](../karpathy-guidelines/SKILL.md)
-- [caveman](../caveman/SKILL.md)
-- [self-learning](../self-learning/SKILL.md)
-- [gabarito](../gabarito/SKILL.md)
-
----
-
-## Output Template
-
-Adhere to the canonical specification format defined by [spec-format](../spec-format/SKILL.md). The generated file must be named `step-00-{slug}.spec.md` and start with the following frontmatter:
-
-```markdown
----
-id: null
-slug: {slug}
-title: "Feature Title"
-source: local
-specDate: YYYY-MM-DD
----
-
-# Specification — {title}
-
-## Description
-
-(Detailed description of business needs, feature flows, and target audience)
-
-## Acceptance Criteria
-
-- AC1: (Specific, testable behavior metric)
-- AC2: (Specific, testable behavior metric)
-
-## Notes
-
-(Technical context, architecture notes, constraints, or links)
-```
-
----
-
-## Pipeline Steps
-
-1. **Parse & Infer:** Analyze the input text description. Infer the feature's name, title, and create a url-safe `slug`.
-2. **Draft:** Construct the specification following the structure above. Ensure acceptance criteria (ACs) are clear, testable, and have no logical gaps.
-3. **Write:** Save the resulting file to `{output-dir}/step-00-{slug}.spec.md` (canonical `{us-dir}` copy). Ensure `source: local`.
-4. **Optional mirror:** If `--mirror` (or orchestrator requests a human-browsable copy), delegate to [local-spec-provider](../local-spec-provider/SKILL.md) — do **not** copy files yourself:
+4. **Optional mirror** — Only if `--mirror` or the orchestrator requests a human-browsable copy. Delegate; do not copy files yourself:
 
    ```bash
    python .agents/skills/local-spec-provider/scripts/register_local_spec.py \
@@ -99,13 +54,10 @@ specDate: YYYY-MM-DD
      --mirror
    ```
 
-   That script normalizes `source: local` (in-place when input is already the canonical `step-00-` file) and writes `{plans.specsDir}/{slug}.spec.md` (default `specs/`). Use `--force` only when overwriting an existing mirror that differs. Canonical path remains the `step-00-` file under `{us-dir}`.
-5. **Handoff:** Return the **canonical** path (`{us-dir}/step-00-{slug}.spec.md`) so that [01-write-plan](../01-write-plan/SKILL.md) can pick it up. Mention the mirror path only if one was written.
+   That script normalizes `source: local` (in-place when input is already the canonical `step-00-` file) and writes `{plans.specsDir}/{slug}.spec.md` (default `specs/`). Use `--force` only when overwriting an existing mirror that differs.
+   - Done when: command succeeded, or this step was skipped.
 
----
+5. **Handoff** — Return the canonical `{us-dir}/step-00-{slug}.spec.md` path for [01-write-plan](../01-write-plan/SKILL.md). Mention the mirror path only if one was written. In workflow mode the orchestrator records `specPath` at that file and `specSource: local`.
+   - Done when: caller has the canonical `step-00-` path.
 
-## Dual-mode notes
-
-- **Standalone:** write canonical under `output-dir`; with `--mirror`, run the local-spec-provider register command above and print both paths.
-- **Workflow:** write canonical; optional mirror when requested; orchestrator records `specPath` at the `step-00-` file and `specSource: local`.
-- **Language:** en-us only.
+Language: en-us only.

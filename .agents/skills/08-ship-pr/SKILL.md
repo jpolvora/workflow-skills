@@ -2,7 +2,7 @@
 name: ws-ship-pr
 description: End-to-end delivery — push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.7
+version: 1.8
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -12,146 +12,71 @@ invocation_names:
 
 # ship-pr
 
-Responsible for shipping the completed workflow from the configured working branch (`config.project.workingBranch`, default `develop`) to the production base branch (`config.project.baseBranch`, typically `main` or `master`). It automates validation, branch push, PR creation via the SCM provider selected by `config.providers.scm`, **waiting for code-review / CI feedback**, thread convergence via `goal-fix-pr`, and **merge only when there are no open issues to fix**.
+Ship the completed workflow from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch` (typically `main`/`master`). Act as a **DevOps Engineer / Release Manager**: validate, push, create the PR via the configured SCM provider, wait for code-review/CI feedback, converge threads via `goal-fix-pr`, and merge only when there are no open issues.
 
-## Persona
-
-Act as a **DevOps Engineer / Release Manager** responsible for execution of final branch validation checks, synchronization, branch protection compliance, pull request creation, and clean production merges.
-
----
+Timing overrides for the wait/converge phase: [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md). Usage examples: [examples.md](examples.md).
 
 ## Invocation
 
-### Standalone Mode
+Standalone:
 
 ```
 /ship-pr [commit-title] [base=<branch>] [head=<branch>] [dry-run] [no-merge] [max <n>]
 ```
 
-### Workflow Mode
+Workflow: `spec-to-pr` Step 8 (delivery commit, code review, and testing already done in Steps 6–7) or `spec-to-pr-lite` Step 4 (review already done in Step 3). Dispatched with `workflowMode: true`, `shipAction`, and typically `stopBeforeFixPr: true` (standard Step 8): create/push the PR and STOP; orchestrator Step 9 runs `goal-fix-pr`/`fix-pr`.
 
-| Orchestrator | Step | Notes |
-|--------------|------|-------|
-| `spec-to-pr` (standard) | **Step 8** | Delivery commit already done (plan + `step-08-{slug}.result.md`). Code review and testing already completed in Steps 6–7. |
-| `spec-to-pr-lite` | **Step 4** | Delivery commit already done (plan + result). Code review completed in Step 3. |
+| Parameter | Default | Notes |
+|-----------|---------|-------|
+| `commit-title` | (optional) | Message for any uncommitted changes |
+| `base` | `config.project.baseBranch` | Auto-detect `main`/`master` if unset |
+| `head` | `config.project.workingBranch` (`develop`) | Branch to push and use as PR head |
+| `dry-run` | `false` | Simulate, no commits/push/real PR API calls |
+| `no-merge` | `false` | Create PR and run checks, stop before merge |
+| `max <n>` | `10` | `goal-fix-pr` iteration cap (ignored when `stopBeforeFixPr`) |
+| `workflowMode` | `false` | Orchestrator-set: execute `shipAction` without re-asking |
+| `shipAction` | (orchestrator-selected) | `create-pr` \| `push-only` \| `skip` |
+| `stopBeforeFixPr` | `false` | Skip Step 6; orchestrator owns fix-PR at Step 9 |
 
-Dispatched with `workflowMode: true`, `shipAction`, and typically `stopBeforeFixPr: true` (standard Step 8). When `stopBeforeFixPr: true`, create/push PR and **STOP** — orchestrator Step 9 runs `goal-fix-pr` / `fix-pr`.
+Before executing, restate commit title, head/base branches, SCM provider, mode, `stopBeforeFixPr`, max iterations, and `shipAction`. Resolve branches and provider from `.agents/skills/shared/config.json` only.
 
-### Parameters
+## Steps
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `commit-title` | String | (optional) | Custom commit message for any uncommitted changes. |
-| `base=<branch>` | String | `config.project.baseBranch` | Target merge branch. Auto-detect `main`/`master` if unset. |
-| `head=<branch>` | String | `config.project.workingBranch` (default `develop`) | Branch to push and use as PR head. |
-| `dry-run` | Flag | `false` | Simulate without commits, push, or real PR API requests. |
-| `no-merge` | Flag | `false` | Create PR and run checks, but stop before merge. |
-| `max <n>` | Integer | `10` | Iteration limit for the `goal-fix-pr` convergence loop (ignored when `stopBeforeFixPr: true`). |
-| `workflowMode` | Boolean | `false` | Set by orchestrator — execute `shipAction` without re-AskQuestion. |
-| `shipAction` | `create-pr` \| `push-only` \| `skip` | — | Orchestrator-selected ship option. |
-| `stopBeforeFixPr` | Boolean | `false` | When `true` with `workflowMode`, skip Phase 5 (`goal-fix-pr`); orchestrator owns fix-PR at Step 9. |
+1. **Preflight**: resolve `workingBranch`/`baseBranch`/`gitRemote`; confirm active branch is `workingBranch`; check `git status` and tracking-branch drift; `git pull {gitRemote} {workingBranch}`; auto-detect base via `scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
+   - Done when: branches are resolved and the working tree is clean and pulled.
 
-Before executing, restate: **commit title**, **working (head) branch**, **base branch**, **SCM provider (`providers.scm`)**, **mode**, **`stopBeforeFixPr`**, **max iterations** (if applicable), **shipAction** (if set). Resolve branches and provider from `.agents/skills/shared/config.json` only — see [`config-resolution.md`](../shared/config-resolution.md).
+2. **Code-review loop**: skip entirely if already reviewed under `spec-to-pr` Step 6 or `spec-to-pr-lite` Step 3. Otherwise load [06-code-review](../06-code-review/SKILL.md) against `base` and auto-fix Critical/Warning findings, up to 3 iterations.
+   - Done when: review is clean, the 3-iteration cap is reached, or the step was skipped.
 
----
+3. **Verify**: run `config.json.verification` commands; auto-correct up to 3 times, then stop.
+   - Done when: verification passes or the retry cap is reached.
 
-## Workflow integration (spec-to-pr Step 8 / lite Step 4)
+4. **Commit & push**: commit any remaining ship-scope changes (the delivery commit should already exist under `workflowMode`); `git push -u {gitRemote} {workingBranch}`.
+   - Done when: the branch is pushed with no uncommitted ship-scope changes left.
 
-1. Prior workflow steps already completed (standard 0–7 or lite 1–3).
-2. **Delivery commit is orchestrator-owned** before dispatch: stages refined plan (when present) + `step-08-{slug}.result.md` (standard) or lite result artifact per [`gates.md`](../shared/gates.md). This skill does **not** re-run the delivery gate.
-3. **Orchestrator owns the ship AskQuestion** and passes `shipAction: create-pr|push-only|skip` plus `workflowMode: true`.
-4. When `workflowMode: true`, **do not** present another approval gate — execute `shipAction` immediately.
-5. Standalone `/ship-pr` (no `workflowMode`): may AskQuestion Create PR / Push only / Skip.
-6. **Skip Phase 1 (code-review loop)** when already reviewed under either orchestrator (Steps 6 / lite Step 3).
-7. When `stopBeforeFixPr: true`: run through PR creation (Phase 4), then **STOP** — do not run Phase 5 (`goal-fix-pr`). Orchestrator advances to Step 9 for thread convergence.
+5. **Create PR**: resolve `providers.scm` per [`config-resolution.md`](../shared/config-resolution.md) (reject `local`; STOP if unresolved). Load the matching provider skill ([github-provider](../github-provider/SKILL.md) or [azure-devops-provider](../azure-devops-provider/SKILL.md)), run `validate-auth` (STOP on failure, no silent fallback to another provider), then dispatch intent `create-pr --head {workingBranch} --base {baseBranch}` (reuses an existing open PR for the same head to base when present). Capture the PR id and URL.
+   - Done when: a PR id and URL are captured or an existing PR was reused. If `stopBeforeFixPr` and `shipAction: create-pr`: print the URL and STOP here (success).
 
----
+6. **Wait and converge**: skip if `stopBeforeFixPr` (orchestrator dispatches [goal-fix-pr](../goal-fix-pr/SKILL.md) at Step 9 instead). Otherwise apply the mandatory post-push settle window (default **300s**, timing per [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks and `list-threads`, and dispatch `goal-fix-pr` until `activeThreads == 0` or `max` iterations. Never proceed to merge while threads remain, checks are red, or on an escalate-stop.
+   - Done when: `activeThreads == 0` and required checks are green, or the run stopped with the PR URL reported.
 
-## Pipeline Execution
+7. **Merge**: only when Step 6 converged and checks are green. Dispatch provider intent `merge-pr` with the captured PR id; the provider waits for checks/policies before completing. Skip when `no-merge` is set, or when `stopBeforeFixPr` (merge happens after orchestrator Step 9 converges). Never delete `{workingBranch}` after merging, and never pass provider flags that would.
+   - Done when: the PR is merged, or explicitly skipped per `no-merge`/`stopBeforeFixPr`, with `{workingBranch}` intact.
 
-```
-0. Preflight → 1. Code-Review Loop (skip if reviewed) → 2. Verification → 3. Commit & Push → 4. PR Creation → 5. Wait code-review + goal-fix-pr (skip if stopBeforeFixPr) → 6. Merge (only if no open issues)
-```
+## Output
 
-**Merge gate (non-negotiable):** Never merge while unresolved review threads / open fixable issues remain, or while required CI checks are failing. Phase 6 runs only after Phase 5 reports convergence (`activeThreads == 0`) — or after orchestrator Step 9 when `stopBeforeFixPr: true`.
-
-### Phase 0 — Preflight Checks
-- Resolve `workingBranch` = `config.project.workingBranch` (default `develop`), `baseBranch` = `config.project.baseBranch`, `gitRemote` = `config.project.gitRemote` (default `origin`).
-- Ensure active branch is `{workingBranch}` (checkout only with explicit user consent).
-- **Check Commit Status:** Run `git status` to verify commit status and check for uncommitted changes, and check tracking branch status to see if the local branch is ahead or behind the remote branch. If the commit has already been pushed, check the remote commit status (CI checks) using the SCM provider.
-- **Pull:** Pull the latest changes from the remote tracking branch via `git pull {gitRemote} {workingBranch}`.
-- Auto-detect `main`/`master` when `baseBranch` is unset (`scripts/detect-base-branch.sh`).
-- Stop if unexpected dirty files outside the delivery scope.
-
-### Phase 1 — Code-Review Loop (auto-fix)
-- Load [code-review](../06-code-review/SKILL.md) vs base branch.
-- Fix Critical/Warning up to 3 iterations.
-- **Skip entirely** when already reviewed under `spec-to-pr` (Step 6) or `spec-to-pr-lite` (Step 3).
-
-### Phase 2 — Project Verification
-- Run `config.json.verification` commands; auto-correct up to 3 times, then stop.
-
-### Phase 3 — Commit & Push
-- Under `workflowMode`, delivery commit (plan + result) should already exist — commit only **remaining** ship-scope changes if any.
-- Commit with a professional message when needed.
-- **Push:** Push local commits to the remote branch via `git push -u {gitRemote} {workingBranch}`.
-
-### Phase 4 — PR Creation (SCM provider)
-
-1. Resolve `providers.scm` per [`config-resolution.md`](../shared/config-resolution.md) from the SCM configuration:
-   - Read `providers.active` / `providers.scm` from `.agents/skills/shared/config.json`.
-   - If `providers` absent: enabled GitHub → `github`; else enabled ADO → `azure-devops`; else STOP and require explicit `providers.scm`.
-   - If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host; else STOP.
-   - Reject `scm: "local"`.
-2. Load the SCM provider skill:
-   - `github` → [github-provider](../github-provider/SKILL.md)
-   - `azure-devops` → [azure-devops-provider](../azure-devops-provider/SKILL.md)
-3. Run provider `validate-auth` when needed; **STOP** on failure (no silent fallback to another provider).
-4. **Create PR:** Dispatch provider intent `create-pr` with `--head {workingBranch}` `--base {baseBranch}` (title/body from commit context or flags). Provider reuses an existing open PR for the same head→base when present.
-5. Capture PR id and URL from the provider. Do **not** embed raw `gh pr create` / `az repos pr create` recipes here — follow the loaded provider skill.
-6. When `stopBeforeFixPr: true` and `shipAction: create-pr`: print PR URL and **STOP** (success) — orchestrator Step 9 owns monitoring and merge.
-
-### Phase 5 — Wait for code-review + goal-fix-pr (Monitor PR)
-
-- **Skip when `stopBeforeFixPr: true`** — orchestrator dispatches [goal-fix-pr](../10-goal-fix-pr/SKILL.md) at Step 9 (same wait → converge → merge order); this skill stops after Phase 4.
-- **Wait for code-review feedback first** (do not merge yet):
-  1. Mandatory post-push settle window: **300s** (see [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)) so Agentic Code Review / CI / humans can comment.
-  2. Poll SCM: required checks status + `list-threads` (via `providers.scm`). If checks still running, keep watching (provider `merge-pr` / checks watch helpers — do not hardcode platform CLIs here).
-  3. If `activeThreads > 0` **or** new review comments arrived: proceed to convergence. If still zero threads after the settle window + one re-collect, still run the goal-fix-pr heartbeat (see goal-fix-pr initial zero-thread case) before treating the PR as clean.
-- **Converge:** Dispatch [goal-fix-pr](../10-goal-fix-pr/SKILL.md) until `activeThreads == 0` or `max` iterations (thread list/resolve via `providers.scm` inside `09`/`10`). Timing overrides: [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md).
-- **Do not enter Phase 6** while `activeThreads > 0`, escalate stops, or required checks are red. Cap/`escalate` → STOP and report PR URL (no merge).
-
-### Phase 6 — Merge (SCM provider)
-
-1. **Preconditions:** Phase 5 converged (`activeThreads == 0`) **and** required checks are green (or policy allows). If either fails, STOP — do not merge.
-2. **Merge at the End:** Using the same loaded SCM provider from Phase 4, dispatch intent `merge-pr` with the captured PR id.
-3. The provider waits for checks/policies (GitHub: checks watch; Azure DevOps: policy/status wait) then completes the merge. Do **not** hardcode `gh pr checks` / `gh pr merge` / `az repos pr update` in this skill’s happy path.
-4. Skip this phase when `no-merge` is set (PR created and checks/threads handled; stop before merge).
-5. Skip when `stopBeforeFixPr: true` (merge handled after orchestrator Step 9 completes goal-fix-pr with zero open issues).
-
-> [!IMPORTANT]
-> **Branch Deletion Rule:** Never delete `{workingBranch}` after merging. Keep it for future delivery loops. Do not pass provider flags that delete the configured working branch (e.g. `gh pr merge --delete-branch`).
-> **Open-issues rule:** Merge only after code-review wait + `goal-fix-pr` reports no open threads/issues to fix.
-
----
-
-## Final Output
-
-Print the PR URL returned by the SCM provider (GitHub or Azure DevOps) alone on its own line at the end:
+Print the PR URL alone on its own line:
 
 ```markdown
 **PR:** {provider-returned-url}
 ```
 
-In `dry-run`, `push-only`, `skip`, or `stopBeforeFixPr` early stop: state outcome clearly (`PR not created` / `PR created — fix-PR deferred to orchestrator`) plus explanation (no placeholder URL).
-
----
+In `dry-run`, `push-only`, `skip`, or an early `stopBeforeFixPr` stop, state the outcome clearly (e.g. `PR not created` or `PR created, fix-PR deferred to orchestrator`) instead of a placeholder URL.
 
 ## Dependencies
 
-- **SCM providers:** [github-provider](../github-provider/SKILL.md) · [azure-devops-provider](../azure-devops-provider/SKILL.md) — selected by `providers.scm`
-- **Reviewer:** [code-review](../06-code-review/SKILL.md)
-- **Convergence:** [goal-fix-pr](../10-goal-fix-pr/SKILL.md)
-- **Fixer:** [fix-pr](../09-fix-pr/SKILL.md)
-- **Base Detection:** `scripts/detect-base-branch.sh`
-- **Artifacts:** [ARTIFACTS.md](../spec-to-pr/ARTIFACTS.md)
+- SCM providers: [github-provider](../github-provider/SKILL.md) · [azure-devops-provider](../azure-devops-provider/SKILL.md) (selected by `providers.scm`)
+- Reviewer: [06-code-review](../06-code-review/SKILL.md) · Convergence: [goal-fix-pr](../goal-fix-pr/SKILL.md) · Fixer: [fix-pr](../09-fix-pr/SKILL.md)
+- Base detection: `scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../spec-to-pr/ARTIFACTS.md)
+
+Language: en-us only.

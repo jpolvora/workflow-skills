@@ -116,8 +116,8 @@ specDate: 2026-07-02  # generation date or last relevant update
 ## Flow — create mode
 
 1. Collect title, description, and ACs (free text, or via the active provider — see `spec-to-pr` → Provider resolution).
-2. If input is a GitHub issue number: dispatch `github-provider` `fetch-to-spec` (canonical script: `.agents/skills/github-provider/scripts/github-issue-to-spec.py`; legacy shim: `.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py`).
-3. If input is an Azure DevOps work item: dispatch `azure-devops-provider` `fetch-to-spec` (canonical: `.agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py`; legacy shim under `spec-to-pr/scripts/`).
+2. If input is a GitHub issue number: dispatch `github-provider` `fetch-to-spec` (canonical script: `.agents/skills/github-provider/scripts/github-issue-to-spec.py`; orch shim: `.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py`).
+3. If input is an Azure DevOps work item: dispatch `azure-devops-provider` `fetch-to-spec` (canonical: `.agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py`; orch shim under `spec-to-pr/scripts/`).
 4. If input is an existing hand-written `*.spec.md`: dispatch `local-spec-provider` register/normalize to the canonical `step-00-` path — do not invent tracker fields.
 5. Generate/confirm file at the canonical path with complete frontmatter and sections.
 6. Confirm final path to user.

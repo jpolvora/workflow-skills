@@ -30,12 +30,15 @@ Before combined delivery+ship gate. `dryRun`: simulate result + plan edits + ben
    - Baseline: `git ls-files src/ web/ tests/ | xargs git show {baselineCommit}: 2>/dev/null | wc -l`
    - Final: `git ls-files src/ web/ tests/ | xargs wc -l 2>/dev/null | tail -1 | awk '{print $1}'`
    - Diff: `git diff --stat {baselineCommit} -- src/ web/ tests/ | tail -1` → parse added/removed → `telemetry.loc`
-4. **Compute benchmark:** sum `telemetry.steps[].elapsedSec` → `totalElapsedSec`; sum tokens → `totalTokens`; `netDelta = added - removed`.
-5. **Append Benchmark** (template below) to `step-08-{slug}.result.md`.
-6. **Update plan checkmarks:** `[x]` per verify report + `completedTasks` + `completedSteps` ≥4.
-7. Register `resultSnapshot` + `telemetry.workflowEndedAt` in state `## Artifacts`.
-8. **G2-delivery** (inside combined Step 8 gate) → stage plan + result → `git commit -m "docs({slug}): delivery plan and result"`.
-9. Log `step-8-delivery-commit | {sha}` in `## Gate history` and `commits[]`.
+4. **Compute benchmark:** sum `telemetry.steps[].elapsedSec` (treat `null` as 0) → `totalElapsedSec`; sum tokens → `totalTokens`; `netDelta = added - removed`. Persist into state `telemetry`.
+5. **Append Benchmark** (template below) to `step-08-{slug}.result.md`. **Mandatory** in `autoMode` / `fullMode` — do not replace with a Mode/Commits-only table.
+6. **Render Step 8 final board** Telemetry block from [`progress-board.md`](progress-board.md) (Total time + tokens + LOC). Same for auto.
+7. **Update plan checkmarks:** `[x]` per verify report + `completedTasks` + `completedSteps` ≥4.
+8. Register `resultSnapshot` + `telemetry.workflowEndedAt` in state `## Artifacts`.
+9. **G2-delivery** (inside combined Step 8 gate) → stage plan + result → `git commit -m "docs({slug}): delivery plan and result"`.
+10. Log `step-8-delivery-commit | {sha}` in `## Gate history` and `commits[]`.
+
+**HS-5:** If any non-skipped completed step lacks a numeric `elapsedSec` in `telemetry.steps[]`, or Benchmark omits **Total wall-clock time**, STOP before final board / ship gate.
 
 ## Telemetry & benchmark
 
@@ -74,6 +77,8 @@ Missing telemetry → **HS-5**.
 
 ### Benchmark template (append to result)
 
+**Required rows:** Total wall-clock time, Steps executed, Total tokens, LOC lines. Optional Mode/Commits rows may follow; they must not replace Total wall-clock time.
+
 ```markdown
 ## Benchmark
 
@@ -95,4 +100,4 @@ Missing telemetry → **HS-5**.
 | 0 | Spec | {model} | {elapsedSec}s | {tokens} | {n} |
 ```
 
-Token efficiency: `tokens/loc`. Velocity: `loc/min`.
+Token efficiency: `tokens/loc`. Velocity: `loc/min`. Format `{h}h {m}m {s}s` from `totalElapsedSec` (omit zero units OK, e.g. `12m 5s`).

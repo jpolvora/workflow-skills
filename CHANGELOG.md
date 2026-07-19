@@ -1,5 +1,50 @@
 # Changelog
 
+### [2026-07-19 17:56] Agent: Cursor Grok
+- **Prompt**: check-harness, fix needed items, prepare PR, ship-pr for consumer testing
+- **Done**: Full harness audit (Phases 0–5c); synced site Extra catalog + package `0.0.50`; aligned `test/package.json` tarball; removed orphan `skills-lock.json`; retargeted promote-shared spec example; install tests `--local` green (29 skills)
+- **Result**: Harness OK post-correction; ready to ship develop→main PR (`no-merge` for consumer test)
+
+### [2026-07-19 13:55] Agent: Cursor Grok
+- **Prompt**: No migration steps or older-version compatibility — always latest (package not in production)
+- **Done**: Removed CLI `SKILL_RENAMES` / migrate* paths and install-test Phases 2b/2c/5; docs/help say latest layout only; dropped `skipIntegration`/`us-workflow`/deprecated `invocation_names` + related orch/gates/setup/schema aliases
+- **Result**: Install/update copies current tree only; no older-folder rename path
+
+### [2026-07-19 13:50] Agent: Cursor Grok
+- **Prompt**: Update README, AGENTS, website, installer/bash, dependencies graph
+- **Done**: Trimmed Extra package to on-disk skills; retargeted hubs/README/CLI help/bash shim; `skill-dependencies.json` graph (goal-fix-pr deps + write-a-skill→writing-great-skills); site v0.0.48 + FSM 0–9 workflow cards
+- **Result**: Disk ↔ hubs ↔ installer map aligned (26 workflows + 3 extra); no phantom Extra routes
+
+### [2026-07-19 13:45] Agent: Cursor Grok
+- **Prompt**: Scan workflow/skill scripts for SyntaxError like `replace('\\', '/')` unterminated string
+- **Done**: Compiled all skill/bin/test `.py` (0 errors); `bash -n` on skill `.sh` (clean); no fragile pattern in repo. Documented trap in check-harness Phase 0 + MEMORY
+- **Result**: Repo scripts healthy; error was agent heredoc-only. Prefer `Path.as_posix()` / temp `.py` / `py_compile` in scans
+
+### [2026-07-19 13:42] Agent: Cursor Grok
+- **Prompt**: Fix secrets-leak-review hang/crash; graceful finish; reduce scripts; LLM-led findings
+- **Done**: Rewrote `SKILL.md` to Grep/Glob-only flow with hard tool budget + Done-when stop; demoted `secrets_scanner.sh` to optional pre-commit; removed `--no-ignore`/`-t all`/process-substitution hang path; capped hits; updated REFERENCE + pre-commit env
+- **Result**: Interactive skill no longer runs scanner; optional script exits ~2s on this repo (was unbounded hang)
+
+### [2026-07-19 13:40] Agent: Cursor Grok
+- **Prompt**: check-harness Phase 7 — adapt to unprefixed `goal-fix-pr` / `update-plan-implementation` (do not restore `10`/`11` folders)
+- **Done**: Retargeted hubs, deps, CLI renames, check-harness §3b, orch/providers/ship/fix links, tests/fixtures, README; rebuilt site (0.0.46); synced `test/package.json`
+- **Result**: Canonical folders are unprefixed; legacy `09`/`10`/`11` ids migrate via CLI; deprecated aliases only in `invocation_names`
+
+### [2026-07-19 13:25] Agent: Cursor Grok
+- **Prompt**: Rewrite/compose pipeline skills 01–11 with writing-great-skills + write-a-skill (same behavior)
+- **Done**: Pruned all eleven `SKILL.md` files to lead/invocation/steps+Done-when pattern; disclosed long templates to existing siblings (`TEMPLATE.md`, `GOAL-OVERRIDES.md`, `examples.md`, `README.md`, `plan-delta-template.md`, `config-resolution.md`); dropped autoload Prerequisites; patch-bumped versions; restored 300s settle + goal-loop auto-yes clarity on ship/fix
+- **Result**: ~895 lines removed net across 01–11; all ≤100 lines; contracts/artifacts/FSM steps preserved
+
+### [2026-07-19 13:20] Agent: Cursor Grok
+- **Prompt**: Rewrite `00-write-spec` using write-a-skill + writing-great-skills
+- **Done**: Pruned duplication; disclosed format to `spec-format`; sharpened step Done-when criteria; dropped autoload prerequisites; bumped version to 3.4
+- **Result**: Leaner `ws-write-spec` contract (~65 lines); behavior preserved (canonical path, optional mirror, handoff)
+
+### [2026-07-19 17:16] Agent: Cursor Grok
+- **Prompt**: Fix measuring time in full auto workflows (state/logs/final board)
+- **Done**: Required `--elapsed` in `update_state.py` (standard+lite); null-safe totals; nested `telemetry.steps` round-trip; upsert `## Telemetry log`; contracts for auto/full Benchmark + Step 8 final-board Total time (state-hygiene, delivery-result, progress-board, STEP-DISPATCH, SKILL)
+- **Result**: Smoke test: omit `--elapsed` → exit 1; multi-step sum 95+0+40 → `totalElapsedSec: 135` + Telemetry log rows
+
 ### [2026-07-19 17:00] Agent: Cursor Grok
 - **Prompt**: ship-pr should wait for code-review and merge after no open issues (goal-fix-pr)
 - **Done**: Clarified `08-ship-pr` Phase 5–6 + GOAL-OVERRIDES; Step 9 / lite Step 5 wait→goal-fix→merge; goal-fix-pr merge handoff note; merged main into develop for PR #71
@@ -22,7 +67,7 @@
 
 ### [2026-07-19 04:25] Agent: Cursor Grok
 - **Prompt**: Fix contract drift after FSM redesign
-- **Done**: Aligned agent-facing contracts to steps 0–9: `04-implement-tasks` (Step 4 build / 6–7 fix; `step-06`/`step-07` findings), `11-update-plan-implementation` plan-delta (`step-08` result), `spec-to-pr-run-test.md`, `validate_state.py` comment, `stack.md.example` + `config.json.example` invariant key, root `STACK.md`; MEMORY entry compiled
+- **Done**: Aligned agent-facing contracts to steps 0–9: `04-implement-tasks` (Step 4 build / 6–7 fix; `step-06`/`step-07` findings), `update-plan-implementation` plan-delta (`step-08` result), `spec-to-pr-run-test.md`, `validate_state.py` comment, `stack.md.example` + `config.json.example` invariant key, root `STACK.md`; MEMORY entry compiled
 - **Result**: Pipeline skill step/artifact refs match orch FSM. FAQ body still LEGACY-bannered (intentional). Ask before check-harness / site.
 
 ### [2026-07-19 04:15] Agent: Cursor Grok
@@ -37,7 +82,7 @@
 
 ### [2026-07-19 03:55] Agent: Cursor Grok
 - **Prompt**: Rename skill folders according to step order and skill names
-- **Done**: Renumbered pipeline folders to match FSM steps: `11-ship-pr`→`08-ship-pr`, `08-fix-pr`→`09-fix-pr`, `09-goal-fix-pr`→`10-goal-fix-pr`, `10-update-plan-implementation`→`11-update-plan-implementation`; updated hubs, deps JSON, live refs, `test/` fixture, site catalog (`0.0.43`)
+- **Done**: Renumbered pipeline folders to match FSM steps: `11-ship-pr`→`08-ship-pr`, `08-fix-pr`→`09-fix-pr`, `09-goal-fix-pr`→`goal-fix-pr`, `10-update-plan-implementation`→`update-plan-implementation`; updated hubs, deps JSON, live refs, `test/` fixture, site catalog (`0.0.43`)
 - **Result**: `check-workflows` and `npm run tests -- --local` passed
 
 ### [2026-07-19 03:50] Agent: Composer
