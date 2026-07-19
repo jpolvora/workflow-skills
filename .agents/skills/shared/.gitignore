@@ -5,6 +5,7 @@ config.json
 config.local.json
 stack.md
 MEMORY.md
+installed-skills.json
 memory/**
 !MEMORY.md.template
 !stack.md.example

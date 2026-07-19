@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-07-19 18:35] Agent: Cursor Grok
+- **Prompt**: Update README/AGENTS/site for install/update/uninstall; check-harness; ship-pr full auto
+- **Done**: Documented uninstall + `installed-skills.json` in README, root/packaged AGENTS, site `#install`; CLI uninstall+manifest already in tree; harness link scan clean; package **0.0.59**
+- **Result**: Ready to ship develop → main
+
+### [2026-07-19 18:30] Agent: Cursor Grok
+- **Prompt**: Add uninstall to installer/updater; track installed skills in shared/
+- **Done**: `uninstall --skills` with reverse+orphan cascade; consumer-owned `shared/installed-skills.json` (`skills` + `selected` roots); install/update write/bootstrap manifest; help/README/shared docs + Phase 10 tests
+- **Result**: `npm run tests -- --local` green
+
 ### [2026-07-19 17:45] Agent: Cursor Grok
 - **Prompt**: `/check-harness` clear `docs/superpowers` refs; remove missing-file / old-skill / dead-dir references
 - **Done**: Removed dead `docs/superpowers` tree + stale `.cursor/plans` artifacts; scrubbed `docs/superpowers/specs/` from check-harness scan patterns; aligned `configure-project` INTERVIEW gate labels; restored CLI `--help` `.agents/plans` note (tests); site/package **0.0.58**
