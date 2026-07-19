@@ -165,7 +165,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/08-ship-pr/SKILL.md">
         <div class="name">ws-ship-pr</div>
-        <div class="desc">End-to-end delivery — check commit status, pull, push, create PR for current SCM config; optional goal-fix-pr when not stopBeforeFixPr; merge at the end.</div>
+        <div class="desc">End-to-end delivery — push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/08-ship-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/09-fix-pr/SKILL.md">
@@ -366,6 +366,8 @@
 
 
 
+
+
 <section id="install">
   <h2>Install</h2>
   <p style="color:var(--text-muted);max-width:70ch;margin-bottom:20px;line-height:1.5">
@@ -475,7 +477,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.45</p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.46</p>
 </footer>
 
 <!-- Modal -->
