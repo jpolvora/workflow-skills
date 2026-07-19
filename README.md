@@ -118,7 +118,7 @@ To maximize compatibility and routing efficiency, the consumer can optionally ad
 | `.cursorrules` | Minimal pointer so agents follow `AGENTS.md` (e.g., pointing to `.agents/AGENTS.md`) |
 | `CHANGELOG.md` | Header compatible with the `changelog` skill (append-only history) |
 
-These files are completely controlled and configured by the consumer; the installation process never writes to or modifies them.
+These files are **create-if-missing** at install/update (never overwritten if they already exist). Consumers own the content after the first seed.
 
 ---
 
@@ -128,7 +128,9 @@ These files are completely controlled and configured by the consumer; the instal
 - **No remote shell install path:** curl only downloads the shim; work is done by Node/`npx`.
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
-- **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux).
+- **Folder migrations on update:** retired pipeline folders are renamed automatically (`07-integration-validation`→`07-testing`, `11-ship-pr`→`08-ship-pr`, `08-fix-pr`→`09-fix-pr`, `09-goal-fix-pr`→`10-goal-fix-pr`, `10-update-plan-implementation`→`11-update-plan-implementation`, plus legacy `us-workflow`→`spec-to-pr`).
+- **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
+- **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
 
 ### Verify the package
 
@@ -163,7 +165,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Role |
 |-------|------|
 | [`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md) / [`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md) | Orchestrators |
-| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`08-ship-pr`](.agents/skills/08-ship-pr/SKILL.md) | Pipeline steps |
+| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`11-update-plan-implementation`](.agents/skills/11-update-plan-implementation/SKILL.md) | Pipeline `00`–`11` (`ws-*`; FSM steps 0–9 + post) |
 | [`github-provider`](.agents/skills/github-provider/SKILL.md) · [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) · [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
 
 ### Review & audit

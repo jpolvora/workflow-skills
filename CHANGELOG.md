@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-07-19 04:35] Agent: Cursor Grok
+- **Prompt**: Update website, AGENTS.md, README.md, npx installer, bash installer
+- **Done**: `bin/cli.js` pipeline `SKILL_RENAMES` (temp-stage cycle) + skip `__pycache__`/`*.pyc` on copy + help notes; README/AGENTS/packaged hub/install-skills.sh synced; site rebuilt; package `0.0.45`; Phase 2c install test for pipeline renames
+- **Result**: `npm run tests -- --local` PASSED (incl. us-workflow + pipeline migration). Site footer v0.0.45.
+
+### [2026-07-19 04:30] Agent: Cursor Grok
+- **Prompt**: Fix UnicodeEncodeError cp1252 / U+2192 (→) on Windows
+- **Done**: Hardened `ensure_utf8_stdio()` in 12 skill scripts (`encoding=utf-8`, `errors=replace` + fallback); documented Windows stdio rule in check-harness Phase 0
+- **Result**: Reproduced crash without reconfigure; scripts + UTF-8 reconfigure print `→` cleanly; `check_workflows` PASSED
+
+### [2026-07-19 04:28] Agent: Cursor Grok
+- **Prompt**: Remove missing/junk files from packages
+- **Done**: Excluded `**/__pycache__/` and `*.py[cod]` from npm pack (`.npmignore` + `package.json` `files` negations); tightened root `.gitignore`; deleted on-disk `__pycache__` under `.agents/skills`
+- **Result**: `npm pack --dry-run` no longer includes Python bytecode (`.npmignore` was overriding `.gitignore`)
+
 ### [2026-07-19 04:25] Agent: Cursor Grok
 - **Prompt**: Fix contract drift after FSM redesign
 - **Done**: Aligned agent-facing contracts to steps 0–9: `04-implement-tasks` (Step 4 build / 6–7 fix; `step-06`/`step-07` findings), `11-update-plan-implementation` plan-delta (`step-08` result), `spec-to-pr-run-test.md`, `validate_state.py` comment, `stack.md.example` + `config.json.example` invariant key, root `STACK.md`; MEMORY entry compiled

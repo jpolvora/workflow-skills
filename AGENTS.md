@@ -29,7 +29,8 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files.
 - **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*` (consumer-owned; never overwrite from upstream).
-- **Root configuration (consumer-configured):** optional `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root configuration.
+- **Root configuration (consumer-configured):** optional `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root configuration. Installer **create-if-missing** only (never overwrite).
+- **Update migrations:** `bin/cli.js` renames retired pipeline folders to canonical `00`–`11` ids (and `us-workflow`→`spec-to-pr`). See [`README.md`](README.md) § Safety.
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).

@@ -644,6 +644,58 @@ child.on('close', async (code) => {
   }
   ok('us-workflow → spec-to-pr migration preserves config.json');
 
+  // --- Phase 2c: pipeline folder renumber cycle on update ---
+  console.log('\n[Phase 2c] Migrate retired pipeline folders on update...');
+  {
+    const cycle = [
+      ['07-testing', '07-integration-validation'],
+      ['08-ship-pr', '11-ship-pr'],
+      ['09-fix-pr', '08-fix-pr'],
+      ['10-goal-fix-pr', '09-goal-fix-pr'],
+      ['11-update-plan-implementation', '10-update-plan-implementation'],
+    ];
+    for (const [modern, legacy] of cycle) {
+      const modernPath = path.join(testSkillsDir, modern);
+      const legacyPath = path.join(testSkillsDir, legacy);
+      if (!fs.existsSync(modernPath)) fail(`${modern} missing before pipeline rename test`);
+      fs.rmSync(legacyPath, { recursive: true, force: true });
+      fs.renameSync(modernPath, legacyPath);
+      fs.writeFileSync(
+        path.join(legacyPath, 'config.json'),
+        JSON.stringify({ _legacyMarker: `from-${legacy}` }, null, 2),
+        'utf8'
+      );
+    }
+
+    const pipeMigrate = cp.spawnSync(
+      'npx',
+      useLocal ? ['workflow-skills', 'update'] : ['-y', 'github:jpolvora/workflow-skills', 'update'],
+      { cwd: __dirname, shell: true, encoding: 'utf8' }
+    );
+    if (pipeMigrate.status !== 0) {
+      console.error(pipeMigrate.stdout);
+      console.error(pipeMigrate.stderr);
+      fail(`pipeline rename migration update failed with code ${pipeMigrate.status}`);
+    }
+
+    for (const [modern, legacy] of cycle) {
+      const modernPath = path.join(testSkillsDir, modern);
+      const legacyPath = path.join(testSkillsDir, legacy);
+      if (fs.existsSync(legacyPath)) fail(`legacy ${legacy} still present after migration`);
+      if (!fs.existsSync(path.join(modernPath, 'SKILL.md'))) {
+        fail(`${modern}/SKILL.md missing after migration`);
+      }
+      const cfg = JSON.parse(fs.readFileSync(path.join(modernPath, 'config.json'), 'utf8'));
+      if (cfg._legacyMarker !== `from-${legacy}`) {
+        fail(`config.json marker not preserved for ${legacy} → ${modern}`);
+      }
+    }
+    if (fs.existsSync(path.join(testSkillsDir, '.migrate-tmp'))) {
+      fail('.migrate-tmp left behind after pipeline migration');
+    }
+    ok('pipeline folder renumber cycle migrates and preserves config.json');
+  }
+
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
     const schemaInTest = path.join(testSkillsDir, 'shared', 'config.schema.json');
@@ -1010,6 +1062,6 @@ child.on('close', async (code) => {
     ok('Update preserves consumer shared/MEMORY.md, memory/, and stack.md');
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration (us-workflow + pipeline), packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
   process.exit(0);
 });

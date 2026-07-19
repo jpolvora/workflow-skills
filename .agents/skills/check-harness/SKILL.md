@@ -206,6 +206,16 @@ Run **all** scan phases (0–5c) before assembling the plan (6). Phase 7 only oc
 
 1. Confirm branch and git state (`git status --short`) — uncommitted local changes may explain "missing" paths.
 2. Record date/time and requested scope (full vs. specific file).
+3. **Windows stdio (mandatory when using Python print scans):** skill/hub markdown contains `→` (U+2192) and other non-cp1252 glyphs. Before any Python one-liner that **prints** file contents, force UTF-8 or set `PYTHONIOENCODING=utf-8`. Otherwise Windows consoles raise `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`.
+
+```bash
+# Prefer env for the whole scan shell:
+export PYTHONIOENCODING=utf-8
+# Or at the top of each python - <<'PY' block:
+# import sys
+# sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+# sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+```
 
 ### Phase 1 — Reference extraction
 

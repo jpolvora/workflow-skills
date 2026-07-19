@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "description": "Centralized agent skills and multi-workflow hub for Cursor (spec-to-pr and related pipeline skills)",
   "license": "MIT",
   "author": "Jone Polvora",
@@ -34,7 +34,10 @@
     "!.agents/skills/shared/config.local.json",
     "!.agents/skills/shared/stack.md",
     "!.agents/skills/shared/MEMORY.md",
-    "!.agents/skills/shared/memory/**"
+    "!.agents/skills/shared/memory/**",
+    "!.agents/skills/**/__pycache__/**",
+    "!.agents/skills/**/*.py[cod]",
+    "!.agents/skills/**/*.pyo"
   ],
   "type": "module"
 }
