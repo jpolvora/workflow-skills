@@ -34,11 +34,11 @@ Deterministic FSM for sequential plan-to-ship delivery. Reuses the **same** pipe
 
 | Step | Label | Task? | Skill | Notes |
 |------|-------|-------|-------|-------|
-| 1 | Planning | ✓ | `01-write-plan` | No interview / DAG |
-| 2 | Implementation | ✓ | `04-implement-tasks` build | Verify build/tests unless `skipTests` |
-| 3 | Code Review & Fix | ✓ | `06-code-review` (+ fix loop) | Findings gate |
+| 1 | Planning | ✓ | `ws-write-plan` | No interview / DAG |
+| 2 | Implementation | ✓ | `ws-implement-tasks` build | Verify build/tests unless `skipTests` |
+| 3 | Code Review & Fix | ✓ | `ws-code-review` (+ fix loop) | Findings gate |
 | 4 | Consolidation & Delivery | ✓ | orch + shell | **One** delivery gate |
-| 5 | Ship & PR | ✓ | `11-ship-pr` | **One** ship gate |
+| 5 | Ship & PR | ✓ | `ws-ship-pr` | **One** ship gate |
 
 ---
 
@@ -46,7 +46,7 @@ Deterministic FSM for sequential plan-to-ship delivery. Reuses the **same** pipe
 
 Per [`gates.md`](../shared/gates.md):
 
-**Banner:** Current model + Pause → switch in Cursor → resume.
+**Banner:** Current model + Pause → switch in IDE/agent host → resume.
 
 1. **Advance** (Recommended)
 2. **More options…** → Repeat / Pause or cancel (no Switch model)
@@ -59,24 +59,24 @@ No 5-option primary menus. No phase soft tips (full-orch only). Progress Board: 
 
 ### Step 1: Planning
 
-- Dispatch `Task` → `01-write-plan` with spec input.
+- Dispatch `Task` → `ws-write-plan` with spec input.
 - Output: `step-01-{slug}.plan.md`.
 - Gate: Advance → Step 2.
 
 ### Step 2: Implementation
 
-- Dispatch `Task` → `04-implement-tasks` `mode=build` with `step-01-{slug}.plan.md`.
+- Dispatch `Task` → `ws-implement-tasks` `mode=build` with `step-01-{slug}.plan.md`.
 - Run verification (build + tests unless `skipTests`).
 - Gate: Advance → Step 3.
 
 ### Step 3: Code Review & Fix
 
-- Dispatch `Task` → `06-code-review` vs base branch.
+- Dispatch `Task` → `ws-code-review` vs base branch.
 - **Findings gate** (if Critical/Warning):
   1. **Apply fixes now** (Recommended)
   2. **Proceed without fixing**
   3. **Pause**
-- Apply fixes → `04-implement-tasks` `mode=fix` → re-verify → re-review once (cap 2 fix rounds in auto).
+- Apply fixes → `ws-implement-tasks` `mode=fix` → re-verify → re-review once (cap 2 fix rounds in auto).
 - No findings or Proceed → Advance → Step 4.
 
 ### Step 4: Consolidation & Delivery
@@ -100,7 +100,7 @@ No 5-option primary menus. No phase soft tips (full-orch only). Progress Board: 
 3. **Skip shipping** (Recommended when not `fullMode`)
 4. **Pause**
 
-Dispatch `11-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType: lite`. Never delete `project.workingBranch` after merge.
+Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType: lite`. Never delete `project.workingBranch` after merge.
 
 ---
 

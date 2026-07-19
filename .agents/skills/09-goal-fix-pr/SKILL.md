@@ -1,14 +1,22 @@
 ---
-name: 09-goal-fix-pr
+name: ws-goal-fix-pr
 description: Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.1
+version: 1.2
 disable-model-invocation: true
+invocation_names:
+  - goal-fix-pr
+  - ws-goal-fix-pr
+  - 09-goal-fix-pr
 ---
 
 # 09-goal-fix-pr
 
 Responsible for driving PR review thread convergence to zero. It wraps the [08-fix-pr](../08-fix-pr/SKILL.md) skill in a goal loop, auto-approving cooperative gates and re-checking threads after every push until `activeThreads == 0`. Thread-count probes and fix rounds are **SCM-aware**: resolve `providers.scm`, then delegate platform I/O — do not hardcode GitHub-only (`gh pr view`) or ADO-only recipes in this skill’s happy path.
+
+## Persona
+
+Act as a **Principal Engineer** who coordinates thread-fixing iterations, monitors code review state metrics, and drives open pull request review threads systematically to zero.
 
 ---
 

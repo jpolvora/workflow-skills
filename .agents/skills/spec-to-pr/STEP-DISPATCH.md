@@ -10,20 +10,20 @@
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (AskQuestion). US/spec provided → skip to Step 1. No args → free-text → `Task` `00-write-spec`. | `step-00-{slug}.spec.md` |
-| 1 | Complexity gate → if simple: stub plan + skip to 5. Else `Task` `01-write-plan`. | `step-01-{slug}.plan.md` |
-| 2 | Conditional: skip if eligible; else `Task` `02-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
-| 3 | `Task` `03-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |
+| 0 | Entry gate (AskQuestion). US/spec provided → skip to Step 1. No args → free-text → `Task` `ws-write-spec`. | `step-00-{slug}.spec.md` |
+| 1 | Complexity gate → if simple: stub plan + skip to 5. Else `Task` `ws-write-plan`. | `step-01-{slug}.plan.md` |
+| 2 | Conditional: skip if eligible; else `Task` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
+| 3 | `Task` `ws-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |
 | 4† | (internal) phase soft tip on Advance to 5 — no menu | not in completedSteps |
-| 5 | `Task` `04-implement-tasks` mode build; branch-direct default | verification |
-| 6 | `Task` `05-verify-plan` **quick-score default**; full US matrix if score < 7 or `--strict` | `step-06-{slug}.plan.report.md` |
+| 5 | `Task` `ws-implement-tasks` mode build; branch-direct default | verification |
+| 6 | `Task` `ws-verify-plan` **quick-score default**; full US matrix if score < 7 or `--strict` | `step-06-{slug}.plan.report.md` |
 | 7 | AskQuestion G2-code → Shell build/test → `git commit` code | commit; no `.cursor/plans/` |
 | 8† | (internal) phase soft tip on Advance to 9 — no menu | not in completedSteps |
-| 9 | `Task` `06-code-review`; findings gate if Critical/Warning | score |
-| 10 | `Task` `04-implement-tasks` mode fix; G2-code only | `step-10-{slug}.report.md` |
-| 11 | Auto-skip if `skipIntegration` or (no API/UI surface + unit tests green); else `Task` `07-integration-validation` | reports |
+| 9 | `Task` `ws-code-review`; findings gate if Critical/Warning | score |
+| 10 | `Task` `ws-implement-tasks` mode fix; G2-code only | `step-10-{slug}.report.md` |
+| 11 | Auto-skip if `skipIntegration` or (no API/UI surface + unit tests green); else `Task` `ws-integration-validation` | reports |
 | 12 | Delivery Result + **one delivery gate** ([`gates.md`](../shared/gates.md)). MEMORY sweep after commit. No push. `status: completed` unless advancing to 13. | `step-12-{slug}.result.md` |
-| 13 | **One ship gate** → pass `shipAction` to `11-ship-pr` (`workflowMode: true`). Always offered; `fullMode` changes Recommended. | PR URL, merge |
+| 13 | **One ship gate** → pass `shipAction` to `ws-ship-pr` (`workflowMode: true`). Always offered; `fullMode` changes Recommended. | PR URL, merge |
 
 Post-mutating: merge files_touched → Step file log; backup preExistingDirty; checkpoint `before-step-{N+1}`.
 
@@ -47,8 +47,8 @@ After Step 12, orch presents the **single ship gate** ([`gates.md`](../shared/ga
 **Pipeline (`shipAction: create-pr`):**
 1. `git push -u origin {branch}` (skip if pushed).
 2. Resolve `providers.scm` via [`config-resolution.md`](../shared/config-resolution.md).
-3. Dispatch `11-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType` from state (`standard` here; lite orch passes `lite`) — **no re-AskQuestion inside skill**.
-4. `09-goal-fix-pr` loop (heartbeat configurable; default 5m, max 10) → merge.
+3. Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `workflowType` from state (`standard` here; lite orch passes `lite`) — **no re-AskQuestion inside skill**.
+4. `ws-goal-fix-pr` loop (heartbeat configurable; default 5m, max 10) → merge.
 
 **`shipAction: push-only`:** push only. **`skip`:** done.
 

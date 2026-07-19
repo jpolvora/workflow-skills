@@ -36,7 +36,7 @@ Config: [`.agents/skills/shared/config.json`](config.json) only — see [`config
 
 ````text
 Current model: {currentModel}
-To use a different model for the next step: Pause → switch model in Cursor → resume workflow.
+To use a different model for the next step: Pause → switch model in IDE/agent host → resume workflow.
 ````
 
 Resolve `{currentModel}` from the **executing session model** (agent identity / runtime). If unknown, use `unknown` and still show the Pause path. Log `model | step {N} | {name} | ISO`. On change vs prior state value, also log `model-change | step {N} | {old} → {new} | ISO`.
@@ -50,15 +50,15 @@ Resolve `{currentModel}` from the **executing session model** (agent identity / 
 
 - Repeat current step
 - Go back to earlier step (full FSM only; lite: Pause instead if no backward nav)
-- **Pause workflow** (keeps all artifacts) — after pause, switch model in Cursor, then resume the workflow; orch re-reads the session model
+- **Pause workflow** (keeps all artifacts) — after pause, switch model in IDE/agent host, then resume the workflow; orch re-reads the session model
 - Cancel without revert / Cancel and revert
 
-Do **not** offer Switch model / Choose model / concrete model-name menus. Model changes happen only via Pause → Cursor model picker → Resume.
+Do **not** offer Switch model / Choose model / concrete model-name menus. Model changes happen only via Pause → IDE/agent host model picker → Resume.
 
 **Phase soft tips (full orch only):** When the next step crosses F1→F2 (after Step 3, before Step 5) or F3→F4 (after Step 7, before Step 9), add one hint line under the banner (no picker):
 
-- F1→F2: `Hint: implementation ahead — consider a Coder-class model (Pause → switch → Resume).`
-- F3→F4: `Hint: review ahead — consider a Reviewer/Thinking-class model (Pause → switch → Resume).`
+- F1→F2: `Hint: implementation ahead — consider a Coder-class model (Pause → switch model in IDE/agent host → Resume).`
+- F3→F4: `Hint: review ahead — consider a Reviewer/Thinking-class model (Pause → switch model in IDE/agent host → Resume).`
 
 Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Lite: banner only (no phase soft tips). See full orch Model readiness for tags `before-step-5` / `before-step-9` (telemetry only; not user menus).
 
@@ -113,7 +113,7 @@ Replaces multi-gate Step 12 / lite Step 4 cluster:
 1. **Commit plan + result, keep artifacts** (Recommended)
 2. **Commit plan + result, delete temps**
 3. **Skip delivery commit**
-4. **Pause** (to change model: switch in Cursor, then resume)
+4. **Pause** (to change model: switch in IDE/agent host, then resume)
 
 MEMORY.md / self-learning sweep runs automatically after a successful delivery commit (no separate §Doc gate). Push is **not** asked here when the next step is Ship.
 
@@ -126,7 +126,7 @@ Presented by the orchestrator only (full Step 13 / lite Step 5):
 1. **Create PR, monitor, and merge** (Recommended when `fullMode`)
 2. **Push only**
 3. **Skip shipping**
-4. **Pause** (to change model: switch in Cursor, then resume)
+4. **Pause** (to change model: switch in IDE/agent host, then resume)
 
 When `fullMode` is false, Recommended = **Skip shipping**. When `fullMode` is true, Recommended = **Create PR…**. Never ask push at delivery if Ship is next.
 

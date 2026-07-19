@@ -46,7 +46,7 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
    - Log: `STACK.md created → {path}` in step output.
 2. **Parse flags**: `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict`.
    - Set `currentModel` from the **executing session model** (agent identity / runtime). If unknown → `unknown`.
-   - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch in Cursor → Resume`.
+   - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch model in IDE/agent host → Resume`.
    - Do **not** store or apply `modelChain`.
    - `strict` → full US verification at Step 6 (standard orch only).
 2a. **Gate contract**: Load [`gates.md`](gates.md) — slim transitions, one delivery gate, one ship gate. Config/SCM: [`config-resolution.md`](config-resolution.md).

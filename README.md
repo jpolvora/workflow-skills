@@ -15,7 +15,7 @@ Portable **agent skills** and **end-to-end workflows** for coding assistants. Th
 | **`README.md`** (this file) | Humans | Install, update, safety, contribute, high-level catalog |
 | **[`AGENTS.md`](AGENTS.md)** | Agents | Routing, auto-load, task router, harness verification |
 | **[`.agents/AGENTS.md`](.agents/AGENTS.md)** | Agents (after install) | Packaged skill index + portability rules shipped to consumers |
-| **[`.cursorrules`](.cursorrules)** (optional) | Agents | One-line pointer to `AGENTS.md` (seeded create-if-missing on install) |
+| **[`.cursorrules`](.cursorrules)** (optional) | Agents | One-line pointer to `AGENTS.md` (can be manually configured to route agents) |
 
 ---
 
@@ -109,16 +109,16 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
 
-### Optional root seeds (create-if-missing)
+### Optional root configuration
 
-On Full / workflow installs (when the `shared/` hub is ensured), the CLI also seeds at the **project root** if missing — existing files are never overwritten:
+To maximize compatibility and routing efficiency, the consumer can optionally add these files at their project root:
 
 | File | Role |
 |------|------|
-| `.cursorrules` | Minimal English pointer so agents follow `AGENTS.md` |
-| `CHANGELOG.md` | Stub compatible with the `changelog` skill (append-only history) |
+| `.cursorrules` | Minimal pointer so agents follow `AGENTS.md` (e.g., pointing to `.agents/AGENTS.md`) |
+| `CHANGELOG.md` | Header compatible with the `changelog` skill (append-only history) |
 
-These are optional accompaniment only. They do **not** seed or overwrite consumer-owned `shared/` files (`config.json`, `stack.md`, `MEMORY.md`, `memory/*`).
+These files are completely controlled and configured by the consumer; the installation process never writes to or modifies them.
 
 ---
 
@@ -127,7 +127,7 @@ These are optional accompaniment only. They do **not** seed or overwrite consume
 - **Local CLI:** [`bin/cli.js`](./bin/cli.js) — zero runtime npm dependencies; copies from the downloaded package.
 - **No remote shell install path:** curl only downloads the shim; work is done by Node/`npx`.
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
-- **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files (and never clobber existing root `.cursorrules` / `CHANGELOG.md`).
+- **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux).
 
 ### Verify the package

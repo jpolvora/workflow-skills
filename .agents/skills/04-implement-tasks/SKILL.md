@@ -1,9 +1,13 @@
 ---
-name: 04-implement-tasks
+name: ws-implement-tasks
 description: Executes code implementations or fixes defects following a plan, DAG, or code review findings.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.1
+version: 2.2
 disable-model-invocation: true
+invocation_names:
+  - implement-tasks
+  - ws-implement-tasks
+  - 04-implement-tasks
 ---
 
 # 04-implement-tasks
@@ -11,6 +15,10 @@ disable-model-invocation: true
 Responsible for executing the coding and testing steps defined in the plan or fixing defects identified during code reviews. It operates in two modes:
 - **Build Mode:** Implements new features following `step-03-{slug}.plan.exec.md` (or the step-by-step plan in `step-02-{slug}.plan.refined.md` / `step-01-{slug}.plan.md` directly).
 - **Fix Mode:** Systematically corrects code review comments or test failures.
+
+## Persona
+
+Act as a **Senior Software Developer** who is focused on clean code, SOLID principles, surgical edits, strict adherence to the technology stack, avoidance of code duplication, and robust unit test implementation.
 
 ---
 

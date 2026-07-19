@@ -48,7 +48,7 @@ Stage **only**:
 | GitHub `{n}` / `US {n}` | [`github-provider`](../github-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `github` |
 | ADO `{org}/{project}#{id}` or `ADO {id}` / `WI {id}` | [`azure-devops-provider`](../azure-devops-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `azure-devops` |
 | Hand-written `*.spec.md` (any path) | [`local-spec-provider`](../local-spec-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `local` |
-| Free-text brainstorm | `00-write-spec` (optional mirror via `local-spec-provider`) | `{us-dir}/step-00-{slug}.spec.md` | `local` |
+| Free-text brainstorm | `ws-write-spec` (optional mirror via `local-spec-provider`) | `{us-dir}/step-00-{slug}.spec.md` | `local` |
 
 Optional: copy a read-only mirror to `{specs-dir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `## Artifacts.specPath` (must point at the `step-00-` file under `{us-dir}`).
 
@@ -78,12 +78,12 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 
 | Step | Skill |
 |------|-------|
-| 0 | `00-write-spec` (brainstorm only) |
-| 1 | `01-write-plan` |
-| 2 | `02-interview` |
-| 3 | `03-plan-to-tasks` |
-| 5, 10 | `04-implement-tasks` (build / fix) |
-| 6 | `05-verify-plan` |
-| 9 | `06-code-review` |
-| 11 | `07-integration-validation` |
-| 13 | `11-ship-pr` (+ `08-fix-pr`, `09-goal-fix-pr`) |
+| 0 | `ws-write-spec` (brainstorm only) |
+| 1 | `ws-write-plan` |
+| 2 | `ws-interview` |
+| 3 | `ws-plan-to-tasks` |
+| 5, 10 | `ws-implement-tasks` (build / fix) |
+| 6 | `ws-verify-plan` |
+| 9 | `ws-code-review` |
+| 11 | `ws-integration-validation` |
+| 13 | `ws-ship-pr` (+ `ws-fix-pr`, `ws-goal-fix-pr`) |

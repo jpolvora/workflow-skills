@@ -43,7 +43,7 @@ User output: post-tool summaries + Progress Board + banners.
 
 ### User gates (AskQuestion)
 
-Prefer native `AskQuestion` for normal-mode decisions; if unavailable, same options as markdown list (Recommended first). Full contract: [`gates.md`](../shared/gates.md) — slim transitions, one delivery, one ship. Applies to transitions, entry/resume/config, refinement 2c (2e only if needed), G2-code, delivery, ship. **No separate 4†/8† menus** — phase soft tips at F1→F2 / F3→F4 (Pause → Cursor → Resume to switch). Cancelled → **HS-1**. `autoMode` → auto-gate index 0.
+Prefer native `AskQuestion` for normal-mode decisions; if unavailable, same options as markdown list (Recommended first). Full contract: [`gates.md`](../shared/gates.md) — slim transitions, one delivery, one ship. Applies to transitions, entry/resume/config, refinement 2c (2e only if needed), G2-code, delivery, ship. **No separate 4†/8† menus** — phase soft tips at F1→F2 / F3→F4 (Pause → IDE/agent host → Resume to switch). Cancelled → **HS-1**. `autoMode` → auto-gate index 0.
 
 ---
 
@@ -77,7 +77,7 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | Checkpoints | Local tag `uswf/{workflow-id}/before-step-{N}` every boundary. |
 | **Workflow artifacts** | **Never `git commit` `.cursor/plans/` files during Steps 0–11.** Code commits (7/10/11 fix) stage `src/`/`web/`/`tests/` only. Delivery commit at Step 12: `step-01-{slug}.plan.md` + `step-12-{slug}.result.md` only. |
 | **Pause** | **Pause workflow** keeps **all** artifacts on disk — no cleanup, no delete. `status: active`. |
-| Session model | `currentModel` = executing session model. Switch via Pause → Cursor → Resume ([`gates.md`](../shared/gates.md)). |
+| Session model | `currentModel` = executing session model. Switch via Pause → IDE/agent host → Resume ([`gates.md`](../shared/gates.md)). |
 | Portability | Keep spec-to-pr fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
 
 **Legacy aliases** (still accepted): `/us-workflow`, `@[us-workflow]`, `/us-delivery-workflow`, `@[us-delivery-workflow]`.
@@ -98,10 +98,10 @@ Deterministic FSM; step content delegated to skills via **`Task`**.
 | Providers | [`github-provider`](../github-provider/SKILL.md) · [`azure-devops-provider`](../azure-devops-provider/SKILL.md) · [`local-spec-provider`](../local-spec-provider/SKILL.md) — `providers.active` owns `fetch-to-spec`; `providers.scm` owns PR/thread/merge intents |
 | SCM CLIs | Via provider skills only (`gh` / `az`); orchestrator does not embed platform CLI recipes |
 | State | `{config.plans.dir}/{slug}/{workflow-id}.state.md` |
-| Skills | `00-write-spec`→0 · `01-write-plan`→1 · `02-interview`→2 · `03-plan-to-tasks`→3 · `04-implement-tasks`→5 build, 10 fix · `05-verify-plan`→6 · `06-code-review`→9 · `07-integration-validation`→11 · `11-ship-pr`→13 |
-| Spec | `spec-format` |
+| Skills | `ws-write-spec`→0 · `ws-write-plan`→1 · `ws-interview`→2 · `ws-plan-to-tasks`→3 · `ws-implement-tasks`→5 build, 10 fix · `ws-verify-plan`→6 · `ws-code-review`→9 · `ws-integration-validation`→11 · `ws-ship-pr`→13 |
+`spec-format` |
 
-Filesystem paths use numeric prefix; skill `name:` unprefixed. Post-12 PR: [`06-code-review`](../06-code-review/SKILL.md) / [`08-fix-pr`](../08-fix-pr/SKILL.md).
+Filesystem paths use numeric prefix; skill `name:` has `ws-` prefix. Post-12 PR: [`ws-code-review`](../06-code-review/SKILL.md) / [`ws-fix-pr`](../08-fix-pr/SKILL.md).
 
 ### Work dir `{us-dir}` = `{config.plans.dir}/{slug}/` (default `.cursor/plans/{slug}/`)
 
@@ -244,7 +244,7 @@ branch-direct: edits on `state.branch`; subagent `wip(us-{id}): step-{N}` or dir
 
 ### Model readiness (no separate 4†/8† menus)
 
-No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → Cursor → Resume).
+No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → IDE/agent host → Resume).
 
 When Advance crosses **F1→F2** (after Step 3, before Step 5) or **F3→F4** (after Step 7, before Step 9), add the soft hint from [`gates.md`](../shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-5`, `before-step-9` remain for telemetry only.
 
@@ -425,7 +425,7 @@ Post-step: hygiene → checkpoint (`Shell` tag) → short summary → gate. Boar
 | auto | auto-gate table → immediate `Task`/`Shell` |
 | normal | Prefer `AskQuestion`; slim menu per [`gates.md`](../shared/gates.md) |
 
-Shows gates.md banner (`Current model` + Pause → Cursor → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…**. Soft tips at F1→F2 / F3→F4 only.
+Shows gates.md banner (`Current model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…**. Soft tips at F1→F2 / F3→F4 only.
 
 ---
 
@@ -452,10 +452,10 @@ Manual QA after workflow completion (or pause before Step 12) not resumed here. 
 /spec-to-pr [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /status | progress | where am I? → Progress Board only
 go back | change plan | back to step X → Backward Nav (not in auto)
-switch model | change model → Pause workflow, switch in Cursor, resume (no in-gate picker)
+switch model | change model → Pause workflow, switch in IDE/agent host, resume (no in-gate picker)
 ```
 
-**Flags:** `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict` (full US verification at Step 6). Model = session; switch via Pause → Cursor → Resume ([`gates.md`](../shared/gates.md)).
+**Flags:** `auto`, `dry-run`, `skip-integration`, `skip-tests`, `full`, `strict` (full US verification at Step 6). Model = session; switch via Pause → IDE/agent host → Resume ([`gates.md`](../shared/gates.md)).
 
 Gates: [`gates.md`](../shared/gates.md). Config: [`config-resolution.md`](../shared/config-resolution.md).
 

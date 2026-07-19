@@ -1,14 +1,22 @@
 ---
-name: 07-integration-validation
+name: ws-integration-validation
 description: Plans and executes pre-PR integration test batteries, verifying backend, database, RBAC, tenancy, and UI interfaces.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.1
+version: 2.2
 disable-model-invocation: true
+invocation_names:
+  - integration-validation
+  - ws-integration-validation
+  - 07-integration-validation
 ---
 
 # 07-integration-validation
 
 Responsible for planning and executing a pre-PR integration test suite. It serves as the final safety net to check backend endpoints, database migration status, multi-tenancy isolation rules, and user interfaces before branch updates are pushed.
+
+## Persona
+
+Act as a **Release Engineer / QA Lead** who plans and executes a comprehensive integration battery, verifies end-to-end user flows, checks RBAC permissions, and guarantees database schema stability.
 
 ---
 

@@ -13,7 +13,7 @@ This file is the **routing and operating contract** for the agent harness in thi
 
 | File | Audience | Purpose |
 |------|----------|---------|
-| **`.cursorrules`** (optional) | Agents | Thin pointer to this hub — create-if-missing on consumer install |
+| **`.cursorrules`** (optional) | Agents | Thin pointer to this hub — manually configured by the consumer |
 | **`AGENTS.md`** (this file) | Agents | Skill loading, task router, layers, verification, harness rules |
 | **`README.md`** | Humans | What this repo is, how to install/update, contribute, safety |
 | **`.agents/AGENTS.md`** | Agents (packaged) | Consumer-facing skill index shipped with installs |
@@ -29,7 +29,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files.
 - **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*` (consumer-owned; never overwrite from upstream).
-- **Root seeds (create-if-missing, never overwrite):** `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root seeds.
+- **Root configuration (consumer-configured):** optional `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root configuration.
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
@@ -60,18 +60,18 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 | Skill | Step(s) | Role |
 |-------|---------|------|
 | `spec-to-pr` | Orchestrator | FSM dispatcher |
-| `00-write-spec` | 0 | Spec from description |
-| `01-write-plan` | 1 | Implementation plan |
-| `02-interview` | 2 | Plan audit |
-| `03-plan-to-tasks` | 3 | DAG tasks |
-| `04-implement-tasks` | 5, 10 | Build / fix |
-| `05-verify-plan` | 6 | Acceptance verify |
-| `06-code-review` | 9 | Local review |
-| `07-integration-validation` | 11 | Pre-PR tests |
-| `08-fix-pr` | 13 (via ship) | PR thread fix |
-| `09-goal-fix-pr` | 13 (via ship) | Fix until zero threads |
-| `10-update-plan-implementation` | Post | Plan deltas |
-| `11-ship-pr` | 13 | PR deliver / merge |
+| `ws-write-spec` | 0 | Spec from description |
+| `ws-write-plan` | 1 | Implementation plan |
+| `ws-interview` | 2 | Plan audit |
+| `ws-plan-to-tasks` | 3 | DAG tasks |
+| `ws-implement-tasks` | 5, 10 | Build / fix |
+| `ws-verify-plan` | 6 | Acceptance verify |
+| `ws-code-review` | 9 | Local review |
+| `ws-integration-validation` | 11 | Pre-PR tests |
+| `ws-fix-pr` | 13 (via ship) | PR thread fix |
+| `ws-goal-fix-pr` | 13 (via ship) | Fix until zero threads |
+| `ws-update-plan-implementation` | Post | Plan deltas |
+| `ws-ship-pr` | 13 | PR deliver / merge |
 | `github-provider` | Provider | GitHub issue→spec + PR ops |
 | `azure-devops-provider` | Provider | ADO WI→spec + PR ops |
 | `local-spec-provider` | Provider | Local `*.spec.md` |
@@ -142,18 +142,18 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 | Step | Skill | Path |
 |------|-------|------|
-| 00 | `00-write-spec` | `.agents/skills/00-write-spec/SKILL.md` |
-| 01 | `01-write-plan` | `.agents/skills/01-write-plan/SKILL.md` |
-| 02 | `02-interview` | `.agents/skills/02-interview/SKILL.md` |
-| 03 | `03-plan-to-tasks` | `.agents/skills/03-plan-to-tasks/SKILL.md` |
-| 04 | `04-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` |
-| 05 | `05-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` |
-| 06 | `06-code-review` | `.agents/skills/06-code-review/SKILL.md` |
-| 07 | `07-integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` |
-| 08 | `08-fix-pr` | `.agents/skills/08-fix-pr/SKILL.md` |
-| 09 | `09-goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` |
-| 10 | `10-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` |
-| 11 | `11-ship-pr` | `.agents/skills/11-ship-pr/SKILL.md` |
+| 00 | `ws-write-spec` | `.agents/skills/00-write-spec/SKILL.md` |
+| 01 | `ws-write-plan` | `.agents/skills/01-write-plan/SKILL.md` |
+| 02 | `ws-interview` | `.agents/skills/02-interview/SKILL.md` |
+| 03 | `ws-plan-to-tasks` | `.agents/skills/03-plan-to-tasks/SKILL.md` |
+| 04 | `ws-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` |
+| 05 | `ws-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` |
+| 06 | `ws-code-review` | `.agents/skills/06-code-review/SKILL.md` |
+| 07 | `ws-integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` |
+| 08 | `ws-fix-pr` | `.agents/skills/08-fix-pr/SKILL.md` |
+| 09 | `ws-goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` |
+| 10 | `ws-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` |
+| 11 | `ws-ship-pr` | `.agents/skills/11-ship-pr/SKILL.md` |
 | — | `github-provider` | `.agents/skills/github-provider/SKILL.md` |
 | — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` |
 | — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` |
@@ -194,18 +194,18 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Intent | Load |
 |--------|------|
-| Write a spec | `00-write-spec` |
-| Plan implementation | `01-write-plan` → `02-interview` → `03-plan-to-tasks` |
-| Implement | `04-implement-tasks` |
-| Verify | `05-verify-plan` |
-| Local code review | `06-code-review` |
+| Write a spec | `ws-write-spec` |
+| Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
+| Implement | `ws-implement-tasks` |
+| Verify | `ws-verify-plan` |
+| Local code review | `ws-code-review` |
 | Security | `security-review` or `dotnet-security-performance-review` |
 | Secrets / leaks | `secrets-leak-review` |
 | Architecture (DDD) | `tdd-sdd-ddd-reviewer` |
 | Domain review | `domain-review` or `multi-domain-review` |
-| Integration pre-PR | `07-integration-validation` |
-| Fix PR threads | `08-fix-pr` |
-| Ship PR | `11-ship-pr` |
+| Integration pre-PR | `ws-integration-validation` |
+| Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
+| Ship PR | `ws-ship-pr` |
 | Spec → PR E2E | `spec-to-pr` |
 | Spec → PR lite | `spec-to-pr-lite` |
 | GitHub issue/PR ops | `github-provider` |

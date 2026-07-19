@@ -1,9 +1,13 @@
 ---
-name: 05-verify-plan
+name: ws-verify-plan
 description: Compares implementation quality and code deliverables against the plan and acceptance criteria.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.1
+version: 2.2
 disable-model-invocation: true
+invocation_names:
+  - verify-plan
+  - ws-verify-plan
+  - 05-verify-plan
 ---
 
 # 05-verify-plan
@@ -11,6 +15,10 @@ disable-model-invocation: true
 Responsible for auditing implementation deliverables against the specification and design blueprints. It runs in two modes:
 - **Quick Score Mode:** Evaluates overall code quality, conventions, and test coverage on a 0-10 scale.
 - **US Verification Mode:** Audits precise adherence between the spec (`step-00-{slug}.spec.md`), the plan (`step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md`), and the actual code, generating a feature-by-feature report.
+
+## Persona
+
+Act as a **Senior QA Engineer / SDET** who meticulously evaluates code deliverables against acceptance criteria, checks overall code quality, reviews test coverage, and ensures functional correctness.
 
 ---
 

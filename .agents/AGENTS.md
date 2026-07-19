@@ -121,18 +121,18 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 
 | Skill | Step(s) | Path | Description |
 |-------|---------|------|-------------|
-| `00-write-spec` | 0 | `skills/00-write-spec/SKILL.md` | Draft canonical spec from feature description |
-| `01-write-plan` | 1 | `skills/01-write-plan/SKILL.md` | Generate implementation plan from issue / spec |
-| `02-interview` | 2 | `skills/02-interview/SKILL.md` | Audit and refine plan until shared understanding |
-| `03-plan-to-tasks` | 3 | `skills/03-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
-| `04-implement-tasks` | 5, 10 | `skills/04-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
-| `05-verify-plan` | 6 | `skills/05-verify-plan/SKILL.md` | Verify deliverables against acceptance criteria |
-| `06-code-review` | 9 | `skills/06-code-review/SKILL.md` | Two-phase triage + investigation local review |
-| `07-integration-validation` | 11 | `skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |
-| `08-fix-pr` | 13 (via ship-pr) | `skills/08-fix-pr/SKILL.md` | Resolve active PR review threads |
-| `09-goal-fix-pr` | 13 (via ship-pr) | `skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
-| `10-update-plan-implementation` | Post-workflow | `skills/10-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
-| `11-ship-pr` | 13 | `skills/11-ship-pr/SKILL.md` | End-to-end PR delivery and merge |
+| `ws-write-spec` | 0 | `skills/00-write-spec/SKILL.md` | Draft canonical spec from feature description |
+| `ws-write-plan` | 1 | `skills/01-write-plan/SKILL.md` | Generate implementation plan from issue / spec |
+| `ws-interview` | 2 | `skills/02-interview/SKILL.md` | Audit and refine plan until shared understanding |
+| `ws-plan-to-tasks` | 3 | `skills/03-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
+| `ws-implement-tasks` | 5, 10 | `skills/04-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
+| `ws-verify-plan` | 6 | `skills/05-verify-plan/SKILL.md` | Verify deliverables against acceptance criteria |
+| `ws-code-review` | 9 | `skills/06-code-review/SKILL.md` | Two-phase triage + investigation local review |
+| `ws-integration-validation` | 11 | `skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |
+| `ws-fix-pr` | 13 (via ship-pr) | `skills/08-fix-pr/SKILL.md` | Resolve active PR review threads |
+| `ws-goal-fix-pr` | 13 (via ship-pr) | `skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
+| `ws-update-plan-implementation` | Post-workflow | `skills/10-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
+| `ws-ship-pr` | 13 | `skills/11-ship-pr/SKILL.md` | End-to-end PR delivery and merge |
 
 ### Providers (platform-specific entry + PR ops)
 
@@ -192,14 +192,14 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 |-------------|---------------|
 | Spec → PR end-to-end | `spec-to-pr` |
 | Spec → PR lite (sequential) | `spec-to-pr-lite` |
-| Write a spec | `00-write-spec` |
-| Plan implementation | `01-write-plan` → `02-interview` → `03-plan-to-tasks` |
-| Implement / fix code | `04-implement-tasks` |
-| Verify against plan | `05-verify-plan` |
-| Local code review | `06-code-review` |
-| Integration tests pre-PR | `07-integration-validation` |
-| Fix PR review threads | `08-fix-pr` / `09-goal-fix-pr` |
-| Ship / merge PR | `11-ship-pr` |
+| Write a spec | `ws-write-spec` |
+| Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
+| Implement / fix code | `ws-implement-tasks` |
+| Verify against plan | `ws-verify-plan` |
+| Local code review | `ws-code-review` |
+| Integration tests pre-PR | `ws-integration-validation` |
+| Fix PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
+| Ship / merge PR | `ws-ship-pr` |
 | GitHub issue→spec or GitHub PR ops | `github-provider` |
 | Azure DevOps work item→spec or ADO PR ops | `azure-devops-provider` |
 | Local `*.spec.md` register / normalize | `local-spec-provider` |

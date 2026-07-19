@@ -6,7 +6,7 @@
 >
 > **Identity:** Primary invoke `/spec-to-pr` / `@[spec-to-pr]`. Legacy aliases: `/us-workflow`, `/us-delivery-workflow`. Runtime git tags still use `uswf/`; plan slugs still use `us-{id}`.
 
-End-to-end Spec → PR pipeline using **orchestrator + sub-agents** with clean context, shared state, and confirmation gates (session model shown at each transition; switch via Pause → Cursor → Resume).
+End-to-end Spec → PR pipeline using **orchestrator + sub-agents** with clean context, shared state, and confirmation gates (session model shown at each transition; switch via Pause → IDE/agent host → Resume).
 
 The **`spec-to-pr`** workflow coordinates execution steps through composable skills. Each step runs in isolated sub-agent contexts, consuming and updating shared state (`state.md` and `MEMORY.md`). Each step receives input and produces precise output, allowing subsequent steps to reuse acquired knowledge and accumulated decisions.
 
@@ -122,9 +122,9 @@ Activates Step 13 (Ship & PR): push → create PR → goal-fix-pr monitoring loo
 
 ### Model selection
 
-The workflow uses the **session model** currently selected in Cursor. Shown as `Current model` on every transition.
+The workflow uses the **session model** currently selected in the IDE/agent host. Shown as `Current model` on every transition.
 
-To change model for the next step: **Pause** → switch model in the Cursor UI → **resume** the workflow (`/spec-to-pr …` or `/spec-to-pr-lite …`). Each step can run on a different model this way.
+To change model for the next step: **Pause** → switch model in the IDE/agent host UI → **resume** the workflow (`/spec-to-pr …` or `/spec-to-pr-lite …`). Each step can run on a different model this way.
 
 `--model` and `--model-chain` flags are removed.
 
@@ -135,7 +135,7 @@ To change model for the next step: **Pause** → switch model in the Cursor UI �
 Canonical filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
 
 
-Each step ends with a **git checkpoint** and a **slim Transition Gate** (Advance / More…). Phase soft tips (Coder/Reviewer) appear at F1→F2 and F3→F4 — Pause → Cursor → Resume to switch. Shared gate contract: [`gates.md`](../shared/gates.md). Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md).
+Each step ends with a **git checkpoint** and a **slim Transition Gate** (Advance / More…). Phase soft tips (Coder/Reviewer) appear at F1→F2 and F3→F4 — Pause → IDE/agent host → Resume to switch. Shared gate contract: [`gates.md`](../shared/gates.md). Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md).
 
 | # | Name | Who executes | Objective |
 |---|------|--------------|-----------|
@@ -197,7 +197,7 @@ uswf/{workflow-id}/before-step-13  # after Step 12
 | **Next** | Advance to Step N+1 |
 | **Repeat** | Repeat Step N (partial revert if `files_touched` exists) |
 | **Previous** | Go back to earlier step — sub-menu by phase (Planning / Implementation / Review / Validation) |
-| **Pause** | Pause (to change model: switch in Cursor, then resume) / cancel without revert / cancel and revert all |
+| **Pause** | Pause (to change model: switch in IDE/agent host, then resume) / cancel without revert / cancel and revert all |
 
 **Step 11 — skip:** **Skip validation** in the test plan confirmation gate (advances directly to Step 12).
 
@@ -211,7 +211,7 @@ Returns to **any completed step** (1–3, 5–7, 9–11), not just the current o
 2. Preview: *Will be undone* (Steps M–N) vs *Will be preserved*
 3. Confirm → Checkpoint Revert + immediate redispatch of Step M
 
-Shortcut: Step 7 **Re-implement** = return to Step 5 (switch model via Pause → Cursor → Resume if desired).
+Shortcut: Step 7 **Re-implement** = return to Step 5 (switch model via Pause → IDE/agent host → Resume if desired).
 
 ---
 

@@ -1,9 +1,13 @@
 ---
-name: 00-write-spec
+name: ws-write-spec
 description: Receives a high-level feature description and drafts a canonical step-00-{slug}.spec.md specification.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.2
+version: 3.3
 disable-model-invocation: true
+invocation_names:
+  - write-spec
+  - ws-write-spec
+  - 00-write-spec
 ---
 
 # 00-write-spec
@@ -11,6 +15,10 @@ disable-model-invocation: true
 Responsible for taking raw, free-text feature descriptions and drafting a canonical, structured specification document. The resulting file serves as the input specification for downstream planning steps.
 
 Canonical path is always `{us-dir}/step-00-{slug}.spec.md` (`us-dir` = `{plans.dir}/{slug}/`). Optional human-browsable mirrors under `plans.specsDir` are owned by [local-spec-provider](../local-spec-provider/SKILL.md) — do not duplicate mirror logic here.
+
+## Persona
+
+Act as a **Product Manager** who specializes in writing clear, detailed, and unambiguous specifications. Your goal is to translate user requirements into a structured format with clear scope boundaries and testable acceptance criteria.
 
 ---
 

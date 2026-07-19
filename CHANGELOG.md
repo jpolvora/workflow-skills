@@ -1,5 +1,30 @@
 # Changelog
 
+### [2026-07-18 19:59] Agent: Antigravity
+- **Prompt**: update README.md and AGENTS.md, website for self-Contained and Non-Intrusive Installation Process
+- **Done**: Updated `README.md` and `AGENTS.md` to document the optional consumer-configured root files (`.cursorrules` pointer and `CHANGELOG.md` history) instead of describing them as automatic installer seeds, matching the new clean and non-intrusive installer behavior. Re-compiled the website catalog to version `0.0.39`.
+- **Result**: Validated E2E installation test suite and checked documentation alignment.
+
+### [2026-07-18 19:57] Agent: Antigravity
+- **Prompt**: inspect deeply the installation process (npx, bash) and remove changes to consumers when installing/consuming workflow skills. Make workflows compatible, generic, portalble, self-contained, focused on its tasks and do not force/require that the consumer should make modifications in his harness.
+- **Done**: Removed consumer root-level side effects (seeding `.cursorrules` and `CHANGELOG.md`) from `bin/cli.js` to ensure the installation is completely self-contained under `.agents/` and does not write files outside `.agents/` in the consumer's repository. Updated E2E test assertions in `test/test-install.js` to reflect the clean installer behavior and bumped package version to `0.0.38`.
+- **Result**: Checked and confirmed E2E install tree verification tests PASSED successfully.
+
+### [2026-07-18 19:55] Agent: Antigravity
+- **Prompt**: scan contents of worfklow skills and remove / replace Cursor text in skills or any other references to specific ides/harnesses. Use IDE/generic keywords.. Make skills contents compact, generic, portable.
+- **Done**: Removed specific IDE references to "Cursor" (such as "switch in Cursor" and "Cursor model picker") from the instructional texts in `spec-to-pr-lite/SKILL.md`, `spec-to-pr/SKILL.md`, `spec-to-pr/README.md`, `shared/gates.md`, and `shared/setup.md`, replacing them with generic terminology (`IDE`, `IDE/agent host`, `IDE/agent host model picker`). Replaced MCP tool name `cursor-ide-browser` with `ide-browser` in `shared/tools.md`. Bumped package version to `0.0.37`.
+- **Result**: Re-verified E2E integration test suites and check-workflows continuity scans successfully.
+
+### [2026-07-18 19:48] Agent: Antigravity
+- **Prompt**: add invocation names (keep prefixed folders untouched), prefix skill internal names to ws-{skill-name} for each 00-nn skills. The skill internal names is ws-write-spec, ws-write-plan, etc). the skills can be invoked with write-spec or ws-write-spec, 00-write-spec.
+- **Done**: Prefixed the internal `name:` field in frontmatter of the 12 step skills (`00-write-spec` to `11-ship-pr`) to `ws-{skill-name}`, and added an `invocation_names` list to each containing the three invocation variations. Updated skill loading triggers, FSM tables, task routers, and step dispatch references in `AGENTS.md`, `.agents/AGENTS.md`, `spec-to-pr/SKILL.md`, `spec-to-pr-lite/SKILL.md`, `spec-to-pr/STEP-DISPATCH.md`, and `spec-to-pr/ARTIFACTS.md`. Updated E2E tests in `test-install.js` and regenerated the site catalog to version `0.0.36`.
+- **Result**: All E2E install tests and check-workflows continuity validation tests PASSED successfully.
+
+### [2026-07-18 19:38] Agent: Antigravity
+- **Prompt**: Add personas for each step skill (00-nn) according to the skill goal (as a senior developer, as a code reviewer, as a product manager, as a senior qa tester, etc).
+- **Done**: Added role-specific persona sections to each of the 12 step skills (`00-write-spec` to `11-ship-pr`) defining their respective roles (Product Manager, Technical Architect, Tech Lead, Scrum Master, Developer, QA, Code Reviewer, Release Manager, DevOps, etc.) directly under the introductory paragraph of their `SKILL.md` files.
+- **Result**: Checked file structure consistency, ran meta-harness validation and E2E install tree verification tests successfully.
+
 ### [2026-07-18 14:03] Agent: Antigravity
 - **Prompt**: fix it all, check install npx and bash, update readme.md and agents.md, update website (put a theme more light, not so dark)
 - **Done**: Fixed broken link in `REFERENCE.md`, corrected plan link targets in `2026-07-17-session-model-gates.md`, sorted `CHANGELOG.md` in reverse-chronological order and updated the `changelog` skill template rules to insert at the top. Patched shell options syntax in `install-skills.sh` and created `.gitattributes` to enforce LF endings on script checkouts. Redesigned the website catalog style to a modern Light Slate theme, verified with local server + browser subagent screenshots, and bumped the package version to `0.0.34`.
