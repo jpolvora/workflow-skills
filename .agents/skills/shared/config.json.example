@@ -119,20 +119,26 @@
   },
 
   "plans": {
-    "dir": ".cursor/plans",
-    "_comment_specsDir": "Default human-facing local specs dir (repo root). local-spec-provider uses this when providers.active=local; canonical copy stays under {plans.dir}/{slug}/step-00-*.spec.md.",
+    "dir": ".agents/plans",
+    "_comment_plansDir": "Resolve skill token {plansDir} from plans.dir (there is no separate plansDir key).",
+    "_comment_specsDir": "Default human-facing local specs dir (repo root). local-spec-provider uses this when providers.active=local; canonical copy stays under {plansDir}/{slug}/step-00-*.spec.md.",
     "specsDir": "specs",
-    "worktreesDir": ".cursor/plans/{slug}/worktrees",
+    "worktreesDir": ".agents/plans/{slug}/worktrees",
     "useWorktrees": false
+  },
+
+  "reviews": {
+    "_comment": "Optional local review artifact root (fix-pr / goal-fix-pr round reports).",
+    "dir": ".agents/codereviews"
   },
 
   "rules": {
     "_comment": "Guardrails paths. Resolve per AGENTS.md#external-dependencies (first match). seniorDeveloper = Code review proof checklist source; karpathyGuidelines = surgical-change skill; stackFile = stack companion; other keys optional consumer rule paths — leave empty when unused.",
     "harness": "AGENTS.md",
-    "seniorDeveloper": ".agents/skills/senior-developer/SKILL.md",
+    "seniorDeveloper": "",
     "karpathyGuidelines": ".agents/skills/karpathy-guidelines/SKILL.md",
     "viewPatterns": "",
-    "efMigrations": ".cursor/rules/ef-migrations.mdc",
+    "efMigrations": "",
     "stackFile": "STACK.md"
   },
 

@@ -14,7 +14,7 @@ invocation_names:
 
 Draft a **canonical** local spec from free-text. Act as a Product Manager: clear scope, testable acceptance criteria.
 
-**Canonical path:** `{us-dir}/step-00-{slug}.spec.md` (`{us-dir}` = `{plans.dir}/{slug}/`, usually `output-dir`). Human-browsable mirrors under `plans.specsDir` are owned by [local-spec-provider](../local-spec-provider/SKILL.md) — never copy them yourself.
+**Canonical path:** `{us-dir}/step-00-{slug}.spec.md` (`{us-dir}` = `{plansDir}/{slug}/`). Human-browsable mirrors under `plans.specsDir` are owned by [local-spec-provider](../local-spec-provider/SKILL.md) — never copy them yourself.
 
 **Format:** load [spec-format](../spec-format/SKILL.md) and follow it. Set `source: local` and `id: null`.
 
@@ -32,7 +32,7 @@ Workflow (spec-to-pr / lite Step 0): orchestrator passes `description` and optio
 |-----------|---------|-------|
 | `<description>` | required | Raw feature / business text |
 | `slug` | inferred | URL-safe id from title/description |
-| `output-dir` | `.cursor/plans/{slug}/` | Destination `{us-dir}` |
+| `output-dir` | `{us-dir}` | Optional override for destination `{us-dir}` (`{plansDir}/{slug}/`) |
 | `--mirror` | false | After write, register via local-spec-provider |
 
 ## Steps
@@ -43,7 +43,7 @@ Workflow (spec-to-pr / lite Step 0): orchestrator passes `description` and optio
 2. **Draft** — Build the spec per [spec-format](../spec-format/SKILL.md).
    - Done when: frontmatter has `source: local`, `id: null`, `slug`, `title`, `specDate`; body has Description, Acceptance Criteria (each AC specific and testable), and Notes as needed; every stated requirement maps to ≥1 AC or an explicit out-of-scope note in Notes.
 
-3. **Write** — Save `{output-dir}/step-00-{slug}.spec.md`.
+3. **Write** — Save `{us-dir}/step-00-{slug}.spec.md`.
    - Done when: that file exists on disk.
 
 4. **Optional mirror** — Only if `--mirror` or the orchestrator requests a human-browsable copy. Delegate; do not copy files yourself:

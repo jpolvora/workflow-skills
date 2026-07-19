@@ -16,7 +16,7 @@ Audit implementation deliverables against the specification and plan. Act as a *
 
 Runs in two modes: **Quick Score** (code quality vs plan, no spec required) or **US Verification** (feature-by-feature match between spec, plan, and code).
 
-**Canonical output:** `{plan-dir}/step-05-{slug}.plan.report.md`. Optional Quick Score report shape: [`TEMPLATE.md`](TEMPLATE.md).
+**Canonical output:** `{us-dir}/step-05-{slug}.plan.report.md`. Optional Quick Score report shape: [`TEMPLATE.md`](TEMPLATE.md).
 
 ## Invocation
 
@@ -31,12 +31,12 @@ Workflow (spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optiona
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `spec-input` | (optional) | Path to `step-00-*.spec.md`, US number, or omit for Quick Score |
-| `plan-dir` | `.cursor/plans/{slug}/` | Directory holding plans and output report |
+| `plan-dir` | `{us-dir}` | Optional override for `{us-dir}` (`{plansDir}/{slug}/`) |
 | `mode` | `quick` (workflow) / `full` (standalone with spec) | Verification depth |
 
 ## Steps
 
-1. **Resolve source**: search `plan-dir` in order for `step-02-{slug}.plan.refined.md` (refined, primary), then `step-01-{slug}.plan.md` (fallback). In full mode, also resolve the primary evaluation source: the refined plan when present, else `step-00-{slug}.spec.md`.
+1. **Resolve source**: search `{us-dir}` in order for `step-02-{slug}.plan.refined.md` (refined, primary), then `step-01-{slug}.plan.md` (fallback). In full mode, also resolve the primary evaluation source: the refined plan when present, else `step-00-{slug}.spec.md`.
    - Done when: the resolved plan (and, in full mode, spec) path is known.
 
 2. **Evaluate**: Quick Score scores Completeness (40%), Correctness & Style (35%), Tests (25%), each 0-10. US Verification maps every plan feature and acceptance criterion to **Implemented**, **Not implemented**, or **Implemented differently**, each with file:line evidence.
@@ -45,7 +45,7 @@ Workflow (spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optiona
 3. **Score**: compute the integer **0-10** score (weighted average for Quick Score; overall adherence for US Verification).
    - Done when: an integer score 0-10 is set.
 
-4. **Write report**: save `{plan-dir}/step-05-{slug}.plan.report.md` matching this format exactly:
+4. **Write report**: save `{us-dir}/step-05-{slug}.plan.report.md` matching this format exactly:
 
    ```markdown
    ---
@@ -83,7 +83,7 @@ Workflow (spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optiona
    - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
 5. **Handoff**: return the score and report path.
-   - Workflow: the orchestrator owns the gate after reading the report: score `>= 7` advances to Step 6; score `< 7` triggers AskQuestion (Refine / Replan / Respec / Approve-and-continue) and must not auto-approve below 7.
+   - Workflow: the orchestrator owns the gate after reading the report: score `>= 7` advances to Step 6; score `< 7` triggers user-gate (Refine / Replan / Respec / Approve-and-continue) and must not auto-approve below 7.
    - Standalone: apply the same `>= 7` / `< 7` threshold; recommend re-implementation or a full matrix when below 7.
    - Done when: the caller has the score and report path.
 

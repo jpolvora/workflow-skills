@@ -13,7 +13,7 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 
 | Key | Role | Resolve (first match) |
 |-----|------|------------------------|
-| `rules.seniorDeveloper` | Engineering guardrails; **Code review proof** source | config path → local `senior-developer` skill → `.cursor/rules/senior-developer.mdc` (or config equivalent) → global skill |
+| `rules.seniorDeveloper` | Engineering guardrails; **Code review proof** source | config path → local `senior-developer` skill → global/user skill |
 | `rules.karpathyGuidelines` | Surgical-change guidelines | config path → shipped `../karpathy-guidelines/SKILL.md` → global skill |
 | `rules.stackFile` | Human-readable stack companion | config path (default `STACK.md` / `stack.md`); bootstrap may create if missing (see 1b below) |
 | Other `rules.*` | Optional consumer rules (e.g. `efMigrations`, `viewPatterns`) | Use path from config when set; do not invent filenames |
@@ -39,13 +39,14 @@ Same entry paths for **standard** and **lite**. Resolve provider from `config.js
 | Free-text feature description (no spec) | `ws-write-spec` (standard or lite) | Brainstorm → `step-00-{slug}.spec.md` |
 | Plain text in invocation (no issue id, no `*.spec.md` path) | `ws-write-spec` | Same as free-text row |
 
-Optional mirror: `{config.plans.specsDir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `step-00-{slug}.spec.md` under `{us-dir}`.
+Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `step-00-{slug}.spec.md` under `{us-dir}`.
 
-1. **Config check**: Check if `.agents/skills/shared/config.json` exists. If missing:
-   - `cp .agents/skills/shared/config.json.example .agents/skills/shared/config.json`
-   - AskQuestion: **Fill config now** / **Skip**
-   - If "Fill now": present each top-level section, collect values. Skip optional sections.
-1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). `Shell` `test -f {stackFile}`. If missing:
+1. **Config check**: Check if `.agents/skills/shared/config.json` exists.
+   - If missing: `cp .agents/skills/shared/config.json.example .agents/skills/shared/config.json`.
+   - User-gate: **Configure now (Recommended)** / **Skip**.
+   - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`configure-project`](../configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
+   - If **Skip**: continue with example defaults; warn that providers/verification may be wrong until configure-project runs.
+1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). Prefer configure-project step 5 when that skill just ran. Else `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
      - **Language/Framework**: Look for `package.json` (Node/React/Next), `*.csproj`/`*.sln`/`*.slnx` (.NET), `pyproject.toml`/`requirements.txt` (Python), `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml`/`build.gradle` (Java), `Gemfile` (Ruby), etc.
      - **Frontend framework**: Check `package.json` `dependencies` for `next`, `react`, `vue`, `angular`, `svelte`, `vite`, `tailwindcss`, etc.
@@ -104,11 +105,11 @@ Optional mirror: `{config.plans.specsDir}/{slug}.spec.md` for human browsing. Do
 
 **Normal — workflow discovery (mandatory before any new workflow):**
 
-1. `Glob` `{config.plans.dir}/**/*.state.md` (default `.cursor/plans/**/*.state.md`) → list all state files.
+1. `Glob` `{plansDir}/**/*.state.md` (`{plansDir}` ← `config.plans.dir`) → list all state files.
 2. For each, `Read` frontmatter YAML: `status`, `workflowId`, `slug`, `us`, `currentStep`, `startedAt`, `autoMode`, `workflowType`.
 3. **[spec-to-pr]** Filter: (`status: active` or `status: paused`) and `workflowType` is `standard` or absent.
    **[spec-to-pr-lite]** Filter: (`status: active` or `status: paused`) and `workflowType` is exactly `lite`.
-4. Present as **selectable list** via AskQuestion:
+4. Present as **selectable list** via user-gate:
 
 ```text
 Found {N} unfinished workflow(s):

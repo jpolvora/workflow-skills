@@ -1,6 +1,6 @@
 # Gabarito
 
-Operational communication skill for Cursor agents: ten directives plus style discipline.
+Operational communication skill for agents: ten directives plus style discipline.
 
 ## What it does
 

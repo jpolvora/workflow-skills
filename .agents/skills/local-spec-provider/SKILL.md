@@ -44,7 +44,7 @@ Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.acti
 |-----------|------|---------|-------------|
 | `<intent>` | String | (required) | One of the intents in the contract table below. |
 | path / slug | String | (intent-dependent) | Local `*.spec.md` path or slug under `specsDir`. |
-| `--mirror` | Flag | `false` | Also write flat mirror `{specsDir}/{slug}.spec.md`. |
+| `--mirror` | Flag | `false` | Also write flat mirror `{specs-dir}/{slug}.spec.md`. |
 
 ---
 
@@ -55,7 +55,7 @@ Read [`.agents/skills/shared/config.json`](../shared/config.json):
 | Key | Role |
 |-----|------|
 | `plans.specsDir` | Local specs root (default **`specs`**, repo-relative). |
-| `plans.dir` | Plans root; `{us-dir}` = `{plans.dir}/{slug}/`. |
+| `plans.dir` | Plans root; `{us-dir}` = `{plansDir}/{slug}/`. |
 | `providers.active` | When `local`, entry uses this skill for `fetch-to-spec`. |
 | `providers.scm` | Host for PR intents (`github` \| `azure-devops`). Required when shipping from local specs. **Never** `local`. |
 
@@ -65,11 +65,11 @@ If `plans.specsDir` is missing: prefer repo-root `specs/`; create it and write `
 
 | Layout | Path |
 |--------|------|
-| Flat | `{specsDir}/{slug}.spec.md` |
-| Nested | `{specsDir}/{slug}/README.spec.md` |
-| Nested | `{specsDir}/{slug}/{slug}.spec.md` |
+| Flat | `{specs-dir}/{slug}.spec.md` |
+| Nested | `{specs-dir}/{slug}/README.spec.md` |
+| Nested | `{specs-dir}/{slug}/{slug}.spec.md` |
 
-Canonical workflow copy is always `{us-dir}/step-00-{slug}.spec.md`. `{specsDir}` is a human mirror / intake root only.
+Canonical workflow copy is always `{us-dir}/step-00-{slug}.spec.md`. `{specs-dir}` is a human mirror / intake root only.
 
 ---
 
@@ -121,7 +121,7 @@ python .agents/skills/local-spec-provider/scripts/detect_specs_dir.py --configur
 ### `fetch-to-spec` (register / normalize / mirror)
 
 ```bash
-mkdir -p "{plans-dir}/{slug}"   # script also creates us-dir
+mkdir -p "{plansDir}/{slug}"   # script also creates us-dir
 python .agents/skills/local-spec-provider/scripts/register_local_spec.py \
   --input path/to/feature.spec.md \
   [--slug feature] \

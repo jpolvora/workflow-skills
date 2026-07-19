@@ -49,7 +49,7 @@ A **sentinel** is a singleton background timer that wakes the agent after `WAIT_
 
 ```bash
 # Prefer spec-to-pr runtime when available:
-#   {config.plans.dir}/{slug}/.runtime/
+#   {plansDir}/{slug}/.runtime/
 # Fallback:
 #   .agents/skills/goal-loop/runs/<ID>/
 

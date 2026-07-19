@@ -23,7 +23,7 @@ Deterministic FSM for sequential spec-to-ship delivery. Reuses the **same** pipe
 
 - **Entry:** Same matrix as standard — GitHub, ADO, local-spec, free-text (`setup.md`). No “existing spec only” restriction.
 - **`workflowType: lite`** in state — resume never cross-mixes with `standard`.
-- **Inline execution:** Orchestrator executes steps inline in the main session (no `Task` subagents).
+- **Inline execution:** Orchestrator executes steps inline in the main session (no subagent dispatch).
 - **State hygiene:** `python .agents/skills/spec-to-pr-lite/scripts/update_state.py` after every step. Pass measured `--elapsed` (required for completed/failed). Upserts `## Telemetry log`. Missing telemetry → treat as hygiene fail.
 - **Artifacts:** Spec `step-00-{slug}.spec.md`; plan `step-01-{slug}.plan.md`; result `step-08-{slug}.result.md` (shared with standard).
 - **Commits:** Code during implement/review fix substep. Plan + result at Step 4 combined ship gate (G2-delivery).
@@ -113,9 +113,9 @@ Resolve input via [`setup.md`](../shared/setup.md) § Shared entry (GitHub / ADO
 
 ---
 
-## AskQuestion / Auto-gate defaults
+## user-gate / Auto-gate defaults
 
-Prefer `AskQuestion` when available; markdown fallback per [`gates.md`](../shared/gates.md). `autoMode` uses index 0 below.
+Prefer `user-gate` when available; markdown fallback per [`gates.md`](../shared/gates.md). `autoMode` uses index 0 below.
 
 | Context | Index 0 |
 |---------|---------|
@@ -133,7 +133,7 @@ Prefer `AskQuestion` when available; markdown fallback per [`gates.md`](../share
 
 ```markdown
 # Inline — Step {STEP} — {Label}
-Read state: `.cursor/plans/{slug}/{workflow-id}.state.md`
+Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
 Orch: spec-to-pr-lite · model {currentModel} · {modeFlags} · workflowType: lite · workflowMode: true
 Enhancing skills (mandatory): karpathy-guidelines, caveman, self-learning, gabarito
@@ -141,7 +141,7 @@ Read: state workflow memory + decisions; MEMORY.md index; `config.json.rules.sta
 Config/SCM: `.agents/skills/shared/config-resolution.md`
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root}
 Role: fresh; no resume. files_touched required. model: {currentModel}.
-Rules: no `.cursor/plans/` in git-add except Step 4 G2-delivery; needs_user: ≥2 choices, recommended first.
+Rules: no `{plansDir}/` in git-add except Step 4 G2-delivery; needs_user: ≥2 choices, recommended first.
 End with ```step-output(...)```
 ```
 

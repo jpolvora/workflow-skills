@@ -11,7 +11,7 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 ## Core Goals
 
 1. **End-to-End Delivery:** Spec → plan → interview → implement → check → review → testing → ship → fix-pr (steps **0–9**).
-2. **Context Isolation:** Fresh Task per step where practical; shared `state.md` + `MEMORY.md`.
+2. **Context Isolation:** Fresh `dispatch-agent` per step where practical; shared `state.md` + `MEMORY.md`.
 3. **Safety & Gates:** Explicit transitions; combined delivery+ship at Step 8; Fix-PR at Step 9.
 4. **Portability:** Stack-agnostic; metadata from `config.json` / `stack.md`.
 
@@ -70,7 +70,7 @@ Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../shared/setup.
 @[spec-to-pr] soft-delete for suppliers
 ```
 
-State: `.cursor/plans/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`).
+State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`).
 
 ### Flags
 

@@ -90,9 +90,9 @@ Extend `.agents/skills/spec-to-pr/config.json` (+ schema + example):
 },
 "issueTrackers": { "...existing github / azureDevOps blocks..." },
 "plans": {
-  "dir": ".cursor/plans",
+  "dir": ".agents/plans",
   "specsDir": "specs",
-  "worktreesDir": ".cursor/plans/{slug}/worktrees"
+  "worktreesDir": ".agents/plans/{slug}/worktrees"
 }
 ```
 

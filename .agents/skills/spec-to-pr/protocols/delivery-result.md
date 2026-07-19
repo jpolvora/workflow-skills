@@ -42,7 +42,7 @@ Before combined delivery+ship gate. `dryRun`: simulate result + plan edits + ben
 
 ## Telemetry & benchmark
 
-Gate time (AskQuestion waiting) excluded — agent execution time only.
+Gate time (user-gate waiting) excluded — agent execution time only.
 
 | Event | Field |
 |-------|-------|

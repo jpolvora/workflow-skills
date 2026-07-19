@@ -8,12 +8,13 @@
 
 | Token | Resolution |
 |-------|------------|
-| `{plans-dir}` | `config.json.plans.dir` (default: `.cursor/plans`) |
-| `{specs-dir}` | `config.json.plans.specsDir` (default: `specs`) — optional mirror only |
-| `{us-dir}` | `{plans-dir}/{slug}/` |
+| `{plansDir}` | **Token** (not a config key). Resolve from `config.json` → `plans.dir` (default value: `.agents/plans`) |
+| `{specs-dir}` | **Token**. Resolve from `config.json` → `plans.specsDir` (default: `specs`) — optional mirror only |
+| `{us-dir}` | `{plansDir}/{slug}/` |
 | `{slug}` | `us-{id}` for issues; basename or frontmatter `slug:` for local specs |
 | `{workflow-id}` | Unique run id; state file basename without `.state.md`. **Format:** `{slug}-{YYYYMMDDTHHMMSSZ}[-{suffix}]` (issue runs: `us-{id}-{YYYYMMDDTHHMMSSZ}`). Examples: `us-2416-20260621T214006`, `spec-provider-skills-20260713T142006Z-7cdbef`. **Not** `step-*` (reserved for step artifacts below) and **not** invented abbreviations (`stp-`, `uswf-` as basename). |
-| `{worktrees-dir}` | `config.json.plans.worktreesDir` with `{slug}` substituted (default: `{us-dir}/worktrees`) |
+| `{worktrees-dir}` | **Token**. Resolve from `config.json` → `plans.worktreesDir` with `{slug}` substituted (default: `{us-dir}/worktrees`) |
+| `{reviewsDir}` | **Token** (not a config key). Resolve from `config.json` → `reviews.dir` (default value: `.agents/codereviews`) |
 
 Never write workflow state under `.agents/`.
 

@@ -43,7 +43,8 @@
         "goal-loop",
         "self-learning",
         "changelog",
-        "secrets-leak-review"
+        "secrets-leak-review",
+        "configure-project"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -84,7 +85,8 @@
       "spec-format",
       "goal-loop",
       "self-learning",
-      "changelog"
+      "changelog",
+      "configure-project"
     ],
     "spec-to-pr-lite": [
       "01-write-plan",
@@ -96,7 +98,8 @@
       "karpathy-guidelines",
       "spec-format",
       "self-learning",
-      "changelog"
+      "changelog",
+      "configure-project"
     ],
     "00-write-spec": [
       "spec-format"

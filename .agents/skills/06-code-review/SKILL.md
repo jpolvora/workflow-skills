@@ -14,7 +14,7 @@ invocation_names:
 
 Perform a comprehensive local code review of all modified files, relative to the base branch, before a PR is raised. Act as a **Senior Code Reviewer** conducting static and logical analysis for style, security, tenancy, performance, correctness, and architectural invariants.
 
-**Canonical output:** `{plan-dir}/step-06-{slug}.review.md`. Optional fix summary: `{plan-dir}/step-06-{slug}.fix.report.md`.
+**Canonical output:** `{us-dir}/step-06-{slug}.review.md`. Optional fix summary: `{us-dir}/step-06-{slug}.fix.report.md`.
 
 ## Invocation
 

@@ -21,7 +21,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 
 ## State & workflow tools
 
-Resolve `{plans-dir}` from `config.json.plans.dir` (default `.cursor/plans`). `{us-dir}` = `{plans-dir}/{slug}/`. See [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
+Resolve `{plansDir}` from `config.json` → `plans.dir` (there is **no** `plansDir` key). Default value of `plans.dir`: `.agents/plans`. `{us-dir}` = `{plansDir}/{slug}/`. Resolve `{reviewsDir}` from `config.json` → `reviews.dir` (default `.agents/codereviews`). See [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
 
 | Tool | Action | Native |
 |------|--------|--------|
@@ -52,11 +52,11 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `dispatch-agent` | Spawn subagent for step | `Task` — `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
-| `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | `Task` — same worktree, no file overlap |
-| `user-gate` | Ask question | **Prefer `AskQuestion`** when available; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback with same options when tool unavailable (see [`gates.md`](gates.md)) |
-| `user-gate-auto` | Auto-select first option | auto-gate table — no AskQuestion |
-| `browser-mcp` | Browser integration test | `CallMcpTool` `ide-browser` (only normal mode, non-dry-run, gated) |
+| `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
+| `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | Subagent dispatch (host-provided) — same worktree, no file overlap |
+| `user-gate` | Ask question | Prefer native structured choice UI when available; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback with same options when unavailable (see [`gates.md`](gates.md)); log `user-gate-fallback` |
+| `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
+| `browser-mcp` | Browser integration test | Host browser MCP when available (only normal mode, non-dry-run, gated) |
 
 ## Knowledge tools
 
@@ -70,7 +70,7 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 1. **No hardcoded commands** in skills — use tool aliases. Config.json holds project-specific values.
 2. **Shell only for git/build/scripts** — never use bash where `Read`/`Write`/`Grep`/`Glob` suffice.
 3. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
-4. **No commit of `{plans-dir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
-5. **Subagents: fresh per step** — never resume Task across steps.
+4. **No commit of `{plansDir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
+5. **Subagents: fresh per step** — never resume a subagent across steps.
 6. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
-7. **Paths from config** — never hardcode `.cursor/plans`; always resolve `plans.dir` / `workingBranch` / `baseBranch`.
+7. **Paths from config** — never hardcode plans or review dirs; always resolve `plans.dir` / `reviews.dir` / `workingBranch` / `baseBranch` into tokens `{plansDir}` / `{reviewsDir}` / etc.

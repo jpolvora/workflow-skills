@@ -44,7 +44,7 @@ def parse_memory_file(file_path: Path) -> dict:
     content = file_path.read_text(encoding="utf-8")
     
     # Try to parse date and title from the first header
-    # e.g., ### [2026-07-12] AskQuestion must be FORCE-invoked at gates
+    # e.g., ### [2026-07-12] user-gate must be FORCE-invoked at gates
     header_match = re.search(r"^###\s+\[(\d{4}-\d{2}-\d{2})\]\s*(.*)$", content, re.MULTILINE)
     
     if header_match:

@@ -4,10 +4,10 @@ Converts JSON from `gh issue view {n} --json ...` into canonical `*.spec.md`.
 
 Usage:
   gh issue view 1234 --json number,title,body,state,labels,assignees,comments,url \
-    > .cursor/plans/us-1234/step-00-us-1234.issue.json
+    > {plansDir}/us-1234/step-00-us-1234.issue.json
   python github-issue-to-spec.py \
-    --input .cursor/plans/us-1234/step-00-us-1234.issue.json \
-    --output .cursor/plans/us-1234/step-00-us-1234.spec.md \
+    --input {plansDir}/us-1234/step-00-us-1234.issue.json \
+    --output {plansDir}/us-1234/step-00-us-1234.spec.md \
     --repo {owner}/{repo}
 
 The `--input` option also accepts `-` to read JSON from stdin.

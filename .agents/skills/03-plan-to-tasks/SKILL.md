@@ -14,7 +14,7 @@ invocation_names:
 
 Read the finalized plan (`step-02-{slug}.plan.refined.md`, or `step-01-{slug}.plan.md` if Step 2 was bypassed) and decompose it into atomic tasks. Act as a Scrum Master / Project Manager: schedule tasks into parallelizable DAG levels, or auto-detect sequential execution for small plans.
 
-**Canonical paths:** `{plan-dir}/step-03-{slug}.plan.exec.md` (human-readable) and `{plan-dir}/step-03-{slug}.exec.dag.json` (machine-readable).
+**Canonical paths:** `{us-dir}/step-03-{slug}.plan.exec.md` (human-readable) and `{us-dir}/step-03-{slug}.exec.dag.json` (machine-readable).
 
 ## Invocation
 

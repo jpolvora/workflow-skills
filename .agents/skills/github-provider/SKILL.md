@@ -104,18 +104,18 @@ gh auth status
 Entry patterns: `{n}`, `US {n}`, GitHub issue URL → slug `us-{n}`.
 
 ```bash
-mkdir -p .cursor/plans/us-{n}
+mkdir -p {plansDir}/us-{n}
 gh issue view {n} --json number,title,body,state,labels,assignees,comments,url \
-  > .cursor/plans/us-{n}/step-00-us-{n}.issue.json
+  > {plansDir}/us-{n}/step-00-us-{n}.issue.json
 python .agents/skills/github-provider/scripts/github-issue-to-spec.py \
-  --input .cursor/plans/us-{n}/step-00-us-{n}.issue.json \
-  --output .cursor/plans/us-{n}/step-00-us-{n}.spec.md \
+  --input {plansDir}/us-{n}/step-00-us-{n}.issue.json \
+  --output {plansDir}/us-{n}/step-00-us-{n}.spec.md \
   --repo {owner}/{repo}
 ```
 
 `{owner}/{repo}` from config (`issueTrackers.github` or `project`), never literals in skill text for a specific consumer.
 
-Plans dir may follow `config.plans.dir` (default `.cursor/plans`).
+Plans dir may follow `config.plans.dir` (default `.agents/plans`).
 
 ### `create-pr`
 

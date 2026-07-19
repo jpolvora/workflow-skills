@@ -23,7 +23,7 @@ Run at the end of every implementation task to maintain a historical record of w
 Insert the following exact format at the top of the file, directly under the main '# Changelog' header:
 
 ```markdown
-### [YYYY-MM-DD HH:MM] Agent: [Agent Type, e.g., Antigravity]
+### [YYYY-MM-DD HH:MM] Agent: {agent/runtime}
 - **Prompt**: [Brief summarized intent of the user's request]
 - **Done**: [What was actually implemented, changed, or fixed]
 - **Result**: [Final outcome, status, or any immediate next steps]

@@ -50,8 +50,8 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 | Role | Responsibility |
 |------|----------------|
 | **Orchestrator** | State, gates, sub-agent dispatch, git checkpoints, Progress Board — **does not implement code** |
-| **Sub-agent** | Executes an isolated step (clean context via `Task`, never `resume` between steps) |
-| **User** | Decides at gates (`AskQuestion`) — except in `auto` mode |
+| **Sub-agent** | Executes an isolated step (clean context via `dispatch-agent`, never `resume` between steps) |
+| **User** | Decides at gates (`user-gate`) — except in `auto` mode |
 
 ### What are the 7 phases (F0–F6)?
 
@@ -94,10 +94,10 @@ An **orchestrated pipeline** for delivering a User Story (or feature described i
 - Open or update Pull Request — **optional Step 13** via `--full` / ship gate (or `/spec-to-pr-lite` Step 5). Without ship consent, PR remains manual after delivery.
 - Automatic push to remote — only via Step 13 / lite Step 5 ship gate (never at Step 12 delivery)
 - Commit without explicit G2 gate (Steps 7, 10, 11)
-- Infer "yes" when the user cancels an `AskQuestion` (HS-1)
-- Prefer `AskQuestion` at gates; use markdown menu with same options when the tool is unavailable ([`gates.md`](../../shared/gates.md))
+- Infer "yes" when the user cancels a user-gate (HS-1)
+- Prefer `user-gate` at gates; use markdown menu with same options when the tool is unavailable ([`gates.md`](../../shared/gates.md))
 
-**Evidence:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder, § User gates (AskQuestion).
+**Evidence:** [`SKILL.md`](../SKILL.md) § Allowed dependencies, § Authorization Ladder, § User gates (user-gate).
 
 ---
 
@@ -162,8 +162,8 @@ flowchart TD
 
 | Input | What Step 0 interprets |
 |-------|------------------------|
-| Number (`2416`) or `US 2416` | Active provider `fetch-to-spec` (default GitHub when `providers` omitted / `active=github`) → `.cursor/plans/us-2416/` via [`github-provider`](../../github-provider/SKILL.md) |
-| `{org}/{project}#{id}` | Azure DevOps work item → `.cursor/plans/us-{id}/` via [`azure-devops-provider`](../../azure-devops-provider/SKILL.md) `fetch-to-spec` |
+| Number (`2416`) or `US 2416` | Active provider `fetch-to-spec` (default GitHub when `providers` omitted / `active=github`) → `{plansDir}/us-2416/` via [`github-provider`](../../github-provider/SKILL.md) |
+| `{org}/{project}#{id}` | Azure DevOps work item → `{plansDir}/us-{id}/` via [`azure-devops-provider`](../../azure-devops-provider/SKILL.md) `fetch-to-spec` |
 | `ADO {id}` / `WI {id}` | Same; org/project from `config.json.issueTrackers.azureDevOps` |
 | `*.spec.md` path | Local spec → [`local-spec-provider`](../../local-spec-provider/SKILL.md) `fetch-to-spec` → `{us-dir}/step-00-{slug}.spec.md` |
 | Free text (`soft-delete for suppliers`) | Brainstorm via `00-write-spec` — slug from title |
@@ -192,12 +192,12 @@ npx github:jpolvora/workflow-skills update --include-new
 
 ### What happens if an active workflow already exists?
 
-In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu: resume, restart from scratch, or start a new workflow. In **auto mode**, resumes only `autoMode: true` workflow **for the same US**; ignores other active ones.
+In **normal mode**, Step 0 checks `{plansDir}/*/*.state.md` and offers a menu: resume, restart from scratch, or start a new workflow. In **auto mode**, resumes only `autoMode: true` workflow **for the same US**; ignores other active ones.
 
 ### What is the final global output?
 
 - Code committed on the working branch (`state.branch`)
-- Artifacts in `.cursor/plans/us-{id}/` (plan, reports)
+- Artifacts in `{plansDir}/us-{id}/` (plan, reports)
 - `state.md` with `status: completed`
 - Optionally: Step 13 ship gate (push / PR / merge) when `--full` or user chooses Create PR; otherwise stop after delivery
 
@@ -213,7 +213,7 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 
 1. Parse `workflow-id`, flags (`dryRun`, `autoMode`, `skipTesting`, `skipTests`) and **entry** (GitHub id, ADO id, or `*.spec.md`)
 2. Check for active workflows (resume or new)
-3. Create `{us-dir}/{workflow-id}.state.md` in `.cursor/plans/{slug}/`
+3. Create `{us-dir}/{workflow-id}.state.md` in `{plansDir}/{slug}/`
 4. Capture baseline: `baselineCommit`, `preExistingDirty`, tag `before-step-1`
 5. **Specification Protocol** (see [`SKILL.md`](../SKILL.md) + [`ARTIFACTS.md`](../ARTIFACTS.md)): resolve `providers.active` → load provider skill → `fetch-to-spec`:
    - **GitHub:** [`github-provider`](../../github-provider/SKILL.md) owns fetch/convert → `step-00-{slug}.spec.md`
@@ -236,9 +236,9 @@ In **normal mode**, Step 0 checks `.cursor/plans/*/*.state.md` and offers a menu
 
 | Artifact | Path |
 |----------|------|
-| Workflow state | `.cursor/plans/{slug}/{workflow-id}.state.md` |
-| **Canonical spec** | `.cursor/plans/{slug}/step-00-{slug}.spec.md` |
-| GitHub issue snapshot (optional) | `.cursor/plans/{slug}/{slug}.issue.json` |
+| Workflow state | `{plansDir}/{slug}/{workflow-id}.state.md` |
+| **Canonical spec** | `{plansDir}/{slug}/step-00-{slug}.spec.md` |
+| GitHub issue snapshot (optional) | `{plansDir}/{slug}/{slug}.issue.json` |
 | Git checkpoint | Local tag `uswf/{workflow-id}/before-step-1` |
 | Progress Board | Rendered in chat |
 
@@ -275,7 +275,7 @@ Sub-agent `generalPurpose` (Planner model) executes the **Context Loading Protoc
 
 | Artifact | Path |
 |----------|------|
-| Plan | `.cursor/plans/{slug}/step-01-{slug}.plan.md` |
+| Plan | `{plansDir}/{slug}/step-01-{slug}.plan.md` |
 | `step-output` | Block in sub-agent return (status, summary, artifacts) |
 
 ---
@@ -350,10 +350,10 @@ A **phase soft tip** embedded in the F1→F2 transition banner (after Step 3). N
 There is **no** in-gate model picker. To change model:
 
 1. **Pause** at the transition gate
-2. Switch model in the Cursor UI
+2. Switch model in the IDE/agent host
 3. **Resume** the workflow
 
-Banner always shows `Current model` and the Pause → Cursor → Resume path ([`gates.md`](../../shared/gates.md)).
+Banner always shows `Current model` and the Pause → IDE/agent host → Resume path ([`gates.md`](../../shared/gates.md)).
 
 ---
 
@@ -430,7 +430,7 @@ Banner always shows `Current model` and the Pause → Cursor → Resume path ([`
 
 | Artifact | Path |
 |----------|------|
-| Verification report | `.cursor/plans/{slug}/step-06-{slug}.plan.report.md` |
+| Verification report | `{plansDir}/{slug}/step-06-{slug}.plan.report.md` |
 
 ### Frequently asked questions
 
@@ -456,7 +456,7 @@ Banner always shows `Current model` and the Pause → Cursor → Resume path ([`
 
 ### Commit scope
 
-Only files under `src/`, `web/`, `tests/`. **Never** `.cursor/plans/` files (forbidden until Step 12 delivery commit).
+Only files under `src/`, `web/`, `tests/`. **Never** `{plansDir}/` files (forbidden until Step 12 delivery commit).
 
 ---
 
@@ -468,7 +468,7 @@ A **phase soft tip** embedded in the F3→F4 transition banner (after Step 7). N
 
 ### How to switch
 
-No in-gate picker. **Pause** → switch model in Cursor → **Resume**. Same banner contract as §9 ([`gates.md`](../../shared/gates.md)).
+No in-gate picker. **Pause** → switch model in IDE/agent host → **Resume**. Same banner contract as §9 ([`gates.md`](../../shared/gates.md)).
 
 ---
 
@@ -546,7 +546,7 @@ Fixes findings from Step 9, creates the 2nd commit, and generates `step-10-{slug
 
 | Mode | Browser |
 |------|---------|
-| Normal + gated | `CallMcpTool` cursor-ide-browser |
+| Normal + gated | host browser MCP (when available) |
 | Auto | Skipped (auto-gate: **Approve without browser**) |
 | Dry-run | Skipped |
 | `skipTesting` | Step 11 skipped entirely |
@@ -610,9 +610,9 @@ Only two files are committed: `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.
 
 | Code | Condition |
 |------|-----------|
-| HS-1 | AskQuestion cancelled → stop; never infer "yes" |
+| HS-1 | user-gate cancelled → stop; never infer "yes" |
 | HS-2 | Commit without explicit gate → stop |
-| HS-2a | `git add` `.cursor/plans/` during Steps 0–11 → stop |
+| HS-2a | `git add` `{plansDir}/` during Steps 0–11 → stop |
 | HS-3 | Mutating step success + empty `files_touched` → failed |
 | HS-4 | Step 5/10/11 success without expected files on branch → failed |
 | HS-5 | State hygiene failed → stop before Progress Board |
@@ -627,22 +627,24 @@ Local tags `uswf/{workflow-id}/before-step-{N}` created after each step. Used fo
 
 ### Workflow artifacts
 
-Everything under `{plans-dir}/{slug}/` (default `.cursor/plans/{slug}/`). Canonical names: [`ARTIFACTS.md`](../ARTIFACTS.md). `MEMORY.md` is shared at repo root.
+Everything under `{us-dir}` (`{plansDir}/{slug}/`; `{plansDir}` ← `config.plans.dir`). Canonical names: [`ARTIFACTS.md`](../ARTIFACTS.md). `MEMORY.md` is shared at repo root.
 
 | Artifact | Path |
 |----------|------|
 | State | `{us-dir}/{workflow-id}.state.md` |
 | Spec (canonical) | `{us-dir}/step-00-{slug}.spec.md` |
-| GitHub issue (optional) | `{us-dir}/step-00-{slug}.issue.json` |
+| Issue snapshot (optional) | `{us-dir}/step-00-{slug}.issue.json` |
 | Plan | `{us-dir}/step-01-{slug}.plan.md` |
 | Refined plan | `{us-dir}/step-02-{slug}.plan.refined.md` |
 | Execution plan | `{us-dir}/step-03-{slug}.plan.exec.md` |
 | DAG | `{us-dir}/step-03-{slug}.exec.dag.json` |
-| Verification | `{us-dir}/step-06-{slug}.plan.report.md` |
-| Fix / review report | `{us-dir}/step-10-{slug}.report.md` |
-| Integration test plan | `{us-dir}/step-11-{slug}.integration-test.plan.md` |
-| Integration test report | `{us-dir}/step-11-{slug}.integration-test.report.md` |
-| Delivery result | `{us-dir}/step-12-{slug}.result.md` |
+| Check-implementation | `{us-dir}/step-05-{slug}.plan.report.md` |
+| Code review | `{us-dir}/step-06-{slug}.review.md` |
+| Review fix report | `{us-dir}/step-06-{slug}.fix.report.md` |
+| Testing plan | `{us-dir}/step-07-{slug}.testing.plan.md` |
+| Testing report | `{us-dir}/step-07-{slug}.testing.report.md` |
+| Delivery result | `{us-dir}/step-08-{slug}.result.md` |
+| PR review rounds | `{reviewsDir}/PR-<id>-round-*.md` |
 | Technical memory (root) | `MEMORY.md` |
 
 > Resume / Active Resume rules: see [`setup.md`](../../shared/setup.md) § Resume / Reset (canonical). This FAQ does not redefine them.
@@ -719,18 +721,18 @@ Yes. Re-invoke with the same US number: `/spec-to-pr 2416`. The orchestrator det
 ### How do I switch models mid-workflow?
 
 1. Choose **Pause workflow** at any transition gate (or hard-stop pause).
-2. Switch the model in the Cursor UI.
+2. Switch the model in the IDE/agent host.
 3. Resume with the same US/spec (`/spec-to-pr 2416` or lite equivalent).
 
 The orchestrator re-reads the session model into `currentModel` and logs `model-change` when it differs. There is no in-gate model picker and no `--model-chain` flag.
 
-### What happens if I cancel an AskQuestion?
+### What happens if I cancel a user-gate?
 
 The orchestrator **never infers "yes"**. HS-1 activates: stop, re-present the gate with a warning.
 
-### AskQuestion is missing / the agent only prints 1/2/3
+### User gates is missing / the agent only prints 1/2/3
 
-Prefer native `AskQuestion` when available. If the runtime does not expose it, the orchestrator presents the **same gate options** as a short markdown list (Recommended first) and waits for your reply. Slim menu shape (Advance / More…, one delivery, one ship): [`gates.md`](../../shared/gates.md). Optional log: `askquestion-fallback | {gate} | ISO`.
+Prefer native structured choice UI (`user-gate`) when available. If the runtime does not expose it, the orchestrator presents the **same gate options** as a short markdown list (Recommended first) and waits for your reply. Slim menu shape (Advance / More…, one delivery, one ship): [`gates.md`](../../shared/gates.md). Optional log: `user-gate-fallback | {gate} | ISO`.
 
 ### Step 11 wants to use the browser but I'm on auto/dry-run
 

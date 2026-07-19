@@ -13,9 +13,9 @@ Portable **agent skills** and **end-to-end workflows** for coding assistants. Th
 | Doc | Who reads it | What it covers |
 |-----|--------------|----------------|
 | **`README.md`** (this file) | Humans | Install, update, safety, contribute, high-level catalog |
-| **[`AGENTS.md`](AGENTS.md)** | Agents | Routing, auto-load, task router, harness verification |
+| **[`AGENTS.md`](AGENTS.md)** | Agents | Routing, auto-load, task router, harness verification, portability |
 | **[`.agents/AGENTS.md`](.agents/AGENTS.md)** | Agents (after install) | Packaged skill index + portability rules shipped to consumers |
-| **[`.cursorrules`](.cursorrules)** (optional) | Agents | One-line pointer to `AGENTS.md` (can be manually configured to route agents) |
+| **Optional host pointer** | Agents (host-specific) | Thin pointer to `AGENTS.md` if your IDE needs one — not required by skills |
 
 ---
 
@@ -28,7 +28,7 @@ Two delivery workflows (install independently; both share `.agents/skills/shared
 | **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM steps 0–9) |
 | **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
-They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer native `AskQuestion` when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the Cursor session model (`Current model` on every transition). To change model for the next step: Pause → switch in Cursor → resume (no `--model` / `--model-chain` flags). Details for agents: [`AGENTS.md`](AGENTS.md). Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
+They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer a native structured choice UI when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the executing session model (`Current model` on every transition). To change model for the next step: Pause → switch in your IDE/agent host → resume (no `--model` / `--model-chain` flags). Skills stay **host-neutral** — artifact dirs come from `config.json` (`plans.dir` default `.agents/plans`; optional `reviews.dir` default `.agents/codereviews`). Details for agents: [`AGENTS.md`](AGENTS.md) § Portability. Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
 
 ### Contribution policy
 
@@ -104,21 +104,21 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers (from `config.json.example`) |
+| `config.json` | Project identity, stack, verification, providers (from `config.json.example`). Fill anytime via `/configure-project` (also offered during workflow setup and suggested after install) |
 | `stack.md` | Human stack notes (seeded from `stack.md.example`) |
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
 
 ### Optional root configuration
 
-To maximize compatibility and routing efficiency, the consumer can optionally add these files at their project root:
+Consumers may add a thin root pointer so their IDE loads `AGENTS.md`, plus a `CHANGELOG.md` stub for the `changelog` skill. These are **optional** and host-specific — skills do not require them. Prefer putting lasting guidance in skills / `AGENTS.md`, not host-private rule files.
 
 | File | Role |
 |------|------|
-| `.cursorrules` | Minimal pointer so agents follow `AGENTS.md` (e.g., pointing to `.agents/AGENTS.md`) |
+| Host pointer (name varies by IDE) | Minimal pointer so agents follow `AGENTS.md` / `.agents/AGENTS.md` |
 | `CHANGELOG.md` | Header compatible with the `changelog` skill (append-only history) |
 
-These files are **create-if-missing** at install/update (never overwritten if they already exist). Consumers own the content after the first seed.
+Set `plans.dir` / `reviews.dir` in `.agents/skills/shared/config.json` to wherever your project wants workflow artifacts (defaults: `.agents/plans`, `.agents/codereviews`).
 
 ---
 

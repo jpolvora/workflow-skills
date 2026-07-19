@@ -17,7 +17,7 @@ Find hardcoded secrets, credentials, PII, private keys, connection strings, and 
 - Max **6** Grep calls and **2** Glob calls total. Batch patterns; do not re-scan.
 - Prefer repo defaults (respect `.gitignore`). Never use `--no-ignore` / `-t all` / unbounded shell `rg` loops.
 - Cap each Grep with `head_limit` ≤ 40. Do not page past the first page.
-- No Task / Bash / parallel agent scans.
+- No subagent / Bash / parallel agent scans.
 - After the report (or "No leaks detected."), **finish**. Do not install hooks unless the user asked.
 
 ## What to find

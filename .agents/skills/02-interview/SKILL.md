@@ -14,7 +14,7 @@ invocation_names:
 
 Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants. Act as a Technical Lead / Senior Architect on a "grill-me" philosophy: resolve ambiguities and secure shared understanding before task decomposition.
 
-**Canonical path:** writes `{plan-dir}/step-02-{slug}.plan.refined.md`, leaving `step-01-{slug}.plan.md` untouched.
+**Canonical path:** writes `{us-dir}/step-02-{slug}.plan.refined.md`, leaving `step-01-{slug}.plan.md` untouched.
 
 ## Invocation
 
@@ -48,7 +48,7 @@ Workflow (spec-to-pr Step 2): dispatched when the orchestrator does not skip int
 2. **Resolve** — Resolve registered gaps by scanning code layers, specs, and `MEMORY.md`; append resolution evidence to the registry.
    - Done when: every non-blocking gap and every locally resolvable blocking gap has a resolution.
 
-3. **Escalate** — For remaining blocking gaps: standalone, prompt via `AskQuestion`; workflow, return `status: needs_user` per the Grilling Protocol.
+3. **Escalate** — For remaining blocking gaps: standalone, prompt via `user-gate`; workflow, return `status: needs_user` per the Grilling Protocol.
    - Done when: no blocking gap remains unresolved and unescalated, or the escalation cap was reached and defaults were applied.
 
 4. **Confirm shared understanding** — Workflow: treat as confirmed when the orchestrator already auto-confirmed via "End refinement and advance" (do not re-prompt); otherwise return `shared_understanding: pending`. Standalone: prompt the user to confirm.

@@ -39,12 +39,12 @@ Scripts and skills that still mention those paths are **bugs** — fix to `share
 
 ## Workflow mode flag
 
-When dispatched from an orchestrator, skills receive (via Task prompt / state):
+When dispatched from an orchestrator, skills receive (via subagent / `dispatch-agent` prompt / state):
 
 | Field | Values | Meaning |
 |-------|--------|---------|
 | `workflowType` | `standard` \| `lite` | Which orch owns the run |
-| `workflowMode` | `true` when under orch | Suppress re-AskQuestion for ship / commit when orch already gated |
+| `workflowMode` | `true` when under orch | Suppress re-ask at user-gate for ship / commit when orch already gated |
 | `shipAction` | `create-pr` \| `push-only` \| `skip` | From orch ship gate |
 
 Standalone invokes omit these; skills may present their own gates.

@@ -54,14 +54,7 @@ To add new learnings, create a separate markdown file under \`shared/memory/\` a
 ---
 `;
 
-/** Root create-if-missing seed: single-entry pointer so agents follow AGENTS.md. */
-const FRESH_CURSORRULES = `Always follow AGENTS.md for agent routing, skill loading, and harness rules.
-`;
-
-/** Root create-if-missing stub compatible with the changelog skill template. */
-const FRESH_CHANGELOG_MD = `# Changelog
-
-`;
+/** Unused legacy stubs removed — root host pointers are consumer/host-owned, not installer seeds. */
 
 let skillGraph = null;
 
@@ -409,12 +402,14 @@ Notes:
   - shared/ hub is installed with workflows/full (and when self-learning is installed).
   - Consumer-owned under shared/ (never copied from upstream): config.json, MEMORY.md, memory/*, stack.md.
     Fresh install seeds empty MEMORY.md + stack.md from templates; existing files are always preserved.
-  - Create-if-missing at project root (never overwrite): .cursorrules → AGENTS.md pointer; CHANGELOG.md stub.
+  - Artifact paths (plans/reviews) come from consumer config.json defaults under .agents/ — not host-private folders.
+  - Optional host pointer files and CHANGELOG.md are consumer-owned (skills do not require them).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Packaged .agents/AGENTS.md is refreshed on install and update.
   - After installing or updating, run the "check-harness" skill to validate the harness.
+  - Optional: run the "configure-project" skill to interview/detect and fill shared/config.json.
   - Install copies skip __pycache__ / *.pyc (not part of the skill surface).
-  - Workflows use the Cursor session model at gates; switch via Pause → Cursor UI → Resume (no --model/--model-chain).
+  - Workflows use the executing session model at gates; switch via Pause → IDE/agent host → Resume (no --model/--model-chain).
   - install-skills.sh is a curl/bash shim that execs this CLI (or npx); prefer calling npx directly.
 `);
 }
@@ -625,6 +620,7 @@ async function runInstall(skills, opts) {
     console.log(`Note: Existing '${CONFIG_FILE}' and shared/ consumer files were preserved and NOT overwritten.`);
     console.log('\n\u26a0\ufe0f  After installing, run the `check-harness` skill to validate the harness:');
     console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
+    console.log('   Optional: run `configure-project` to interview/detect and fill `.agents/skills/shared/config.json`.');
   } else {
     console.log('No skills were installed.');
   }
@@ -771,6 +767,7 @@ function runUpdate(skills, includeNew) {
   console.log('\n\u26a0\ufe0f  After updating, run the `check-harness` skill to scan the harness:');
   console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
   console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
+  console.log('   Optional: run `configure-project` if shared/config.json still has placeholders.');
   process.exit(0);
 }
 
@@ -876,6 +873,7 @@ async function runInteractive(skills) {
     console.log('\n\u26a0\ufe0f  After installing, run the `check-harness` skill to validate the harness:');
     console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
+    console.log('   Optional: run `configure-project` to interview/detect and fill `.agents/skills/shared/config.json`.');
   } else {
     console.log('No skills were installed.');
   }

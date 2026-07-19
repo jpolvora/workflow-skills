@@ -6,11 +6,11 @@
 >
 > This folder is **not** an installable skill package. The interactive installer copies hub templates here when a workflow or Full package is selected.
 >
-> Promoted utility skills (`caveman`, `gabarito`, `karpathy-guidelines`, `spec-format`, `goal-loop`, `self-learning`, `changelog`) live as **top-level** installable skills under `.agents/skills/<skill>/`.
+> Promoted utility skills (`caveman`, `gabarito`, `karpathy-guidelines`, `spec-format`, `goal-loop`, `self-learning`, `changelog`, `configure-project`) live as **top-level** installable skills under `.agents/skills/<skill>/`.
 >
 > **Consumer-owned** (preserved on update; never overwritten by upstream):
 > `config.json`, `stack.md`, `MEMORY.md`, and `memory/*`.
-> Fresh install seeds empty `MEMORY.md` from `MEMORY.md.template` and `stack.md` from `stack.md.example`. Upstream hub memory/stack/config are **not** copied to consumers.
+> Fresh install seeds empty `MEMORY.md` from `MEMORY.md.template` and `stack.md` from `stack.md.example`. Upstream hub memory/stack/config are **not** copied to consumers. Prefer [`configure-project`](../configure-project/SKILL.md) to interview/detect and fill `config.json`.
 
 ---
 
@@ -18,10 +18,10 @@
 
 | File | Purpose |
 |------|---------|
-| [`config.json.example`](config.json.example) | Project config template — copy to `config.json`, fill in, never commit |
+| [`config.json.example`](config.json.example) | Project config template — copy to `config.json`, fill via [`configure-project`](../configure-project/SKILL.md), never commit |
 | [`config.schema.json`](config.schema.json) | JSON Schema for `config.json` validation |
 | [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
-| [`gates.md`](gates.md) | Shared AskQuestion / delivery / ship / session-model banner (dual-mode) |
+| [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
 | [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys) |
 | [`stack.md.example`](stack.md.example) | Template for human-readable stack companion — seeds `stack.md` |
 | [`setup.md`](setup.md) | Bootstrap & entry logic shared by `spec-to-pr` and `spec-to-pr-lite` |
@@ -46,6 +46,7 @@
 | `gabarito` | [`../gabarito/SKILL.md`](../gabarito/SKILL.md) |
 | `karpathy-guidelines` | [`../karpathy-guidelines/SKILL.md`](../karpathy-guidelines/SKILL.md) |
 | `spec-format` | [`../spec-format/SKILL.md`](../spec-format/SKILL.md) |
+| `configure-project` | [`../configure-project/SKILL.md`](../configure-project/SKILL.md) |
 | `goal-loop` | [`../goal-loop/SKILL.md`](../goal-loop/SKILL.md) |
 | `self-learning` | [`../self-learning/SKILL.md`](../self-learning/SKILL.md) |
 | `changelog` | [`../changelog/SKILL.md`](../changelog/SKILL.md) |

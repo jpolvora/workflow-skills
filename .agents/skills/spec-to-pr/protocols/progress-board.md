@@ -3,10 +3,10 @@
 Render: bootstrap/resume; **phase boundaries** (F0→F1 … F5→F6); after failed steps; pause; `/status`; Step 8 final. Skip board on routine Advance when summary already shown.
 
 ```markdown
-## Progress — US {us} (`{workflowId}`)
+## Progress — US {us} (`{workflow-id}`)
 **Status:** … | **Phase:** {Fx} | **Step:** {N} — {label} | **Branch:** `{branch}` | **Mode:** {autoMode→[AUTO] / dryRun→[DRY-RUN] / fullMode→[FULL] / normal}
 **Current model:** {currentModel} | **Step models:** {list}
-_Model switch: Pause → change model in Cursor → resume._
+_Model switch: Pause → change model in IDE/agent host → resume._
 
 ### Pipeline — Phases
 - [x] F0 Bootstrap · [ ] F2 Implementation ← **next** …
