@@ -2,7 +2,7 @@
 
 Runs after the domain report when invocation includes **`auto`**. Interactive domain-review stops at "Apply fixes?"; **`auto` skips that gate**.
 
-Load this file only when `auto` is set. Parent: [SKILL.md](SKILL.md). Convergence: [goal-fix-pr](../09-goal-fix-pr/SKILL.md) + [fix-pr](../08-fix-pr/SKILL.md).
+Load this file only when `auto` is set. Parent: [SKILL.md](SKILL.md). Convergence: [goal-fix-pr](../10-goal-fix-pr/SKILL.md) + [fix-pr](../09-fix-pr/SKILL.md).
 
 ## Preconditions
 
@@ -77,7 +77,7 @@ Capture **PR number** from URL/`gh pr view --json number`. If PR already exists 
 
 ### 6. goal-fix-pr (max 10, 5 minute waits)
 
-Overrides vs stock [goal-fix-pr](../09-goal-fix-pr/SKILL.md):
+Overrides vs stock [goal-fix-pr](../10-goal-fix-pr/SKILL.md):
 
 | Stock goal-fix-pr | Under domain-review `auto` |
 |--------------------|----------------------------|
@@ -95,7 +95,7 @@ Loop:
    echo 'AGENT_DOMAIN_REVIEW_AUTO_WAKE_pr_<PR> {"reason":"pre-review-wait","prompt":"Start goal-fix-pr <PR> max 10 under domain-review auto"}'
    ```
 
-3. Load [goal-fix-pr](../09-goal-fix-pr/SKILL.md) with `/goal-fix-pr <PR> max 10`. Apply its automation overrides (auto plan gate, auto commit/resolve/push).
+3. Load [goal-fix-pr](../10-goal-fix-pr/SKILL.md) with `/goal-fix-pr <PR> max 10`. Apply its automation overrides (auto plan gate, auto commit/resolve/push).
 4. Replace that skill's **120s** heartbeat with **300s** for every post-push / between-round wait in this auto session. Same single-sleeper rule; sentinel prefix:
 
    `AGENT_DOMAIN_REVIEW_AUTO_WAKE_pr_<PR>`

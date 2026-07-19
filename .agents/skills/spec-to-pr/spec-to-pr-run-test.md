@@ -1,8 +1,8 @@
-# US Workflow — Dry-Run Test
+# Spec-to-PR — Dry-Run Test
 
 ## Purpose
 
-Verify the spec-to-pr FSM executes without error in simulated mode, covering all 7 phases (F0–F6) and steps 0–13 including `fullMode` ship-pr.
+Verify the spec-to-pr FSM executes without error in simulated mode, covering phases F0–F6 and steps **0–9** including `fullMode` ship + fix-pr.
 
 ## Test Spec
 
@@ -55,7 +55,8 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering all
    ```bash
    npm run tests -- --local
    ```
-   This asserts self-overwrite guard, ARTIFACTS/schema presence, Step 11 ownership in AGENTS.md, install tree match, and `update` config preserve.
+   This asserts self-overwrite guard, ARTIFACTS/schema presence, Layer 2 routing in AGENTS.md, install tree match, and `update` config preserve.
+
 ## Invocation
 
 ```text
@@ -67,27 +68,23 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering all
 | Flag | Effect |
 |------|--------|
 | `auto` | Auto-selects every gate (no interactive menus) |
-| `full` | Enables Step 13 (Ship & PR simulation) |
+| `full` | Combined Step 8 ship Recommended = commit + create PR; Step 9 fix-pr may run |
 | `dry-run` | Simulates all steps; no code edits, no commits, no push, no worktrees, no MEMORY.md writes |
 
 ## Expected Flow
 
 | Step | Label | Expected action |
-|------|-------|----------------|
+|------|-------|-----------------|
 | **0** | Spec Creation | Skipped — spec file provided directly |
-| **1** | Planning | Complexity gate; if simple → stub plan + skip to 5; else `01-write-plan` |
-| **2** | Refinement | Conditional skip or `02-interview` (End refinement auto-confirms 2e) |
-| **3** | Execution Plan & DAG | `03-plan-to-tasks` — sequential skips empty DAG artifacts |
-| **4†** | Phase hint | Folded into Advance (no dedicated menu) |
-| **5** | Implementation | `04-implement-tasks` mode build |
-| **6** | Verification | `05-verify-plan` quick-score default |
-| **7** | Decision & First Commit | Auto-gate: approve → simulate commit |
-| **8†** | Phase hint | Folded into Advance |
-| **9** | Code Review | `06-code-review` |
-| **10** | Fixes & Second Commit | `04-implement-tasks` mode fix |
-| **11** | Integration | May auto-skip; else `07-integration-validation` |
-| **12** | Delivery | **One** delivery gate → simulate plan+result commit |
-| **13** | Ship (`full`) | **One** ship gate → simulate `11-ship-pr` (`workflowMode`) |
+| **1** | Planning | Complexity gate; if simple → stub plan + jump to 4; else `01-write-plan` |
+| **2** | Plan Refinement | Conditional skip or `02-interview` (End refinement auto-confirms 2e) |
+| **3** | Execution Plan & DAG | `03-plan-to-tasks` — sequential may skip empty DAG artifacts |
+| **4** | Implementation | `04-implement-tasks` mode build |
+| **5** | Check-implementation | `05-verify-plan` quick-score; auto pauses if score &lt; 7 |
+| **6** | Code Review (+ fix) | `06-code-review`; fix substep only if Critical/Warning |
+| **7** | Testing | May auto-skip (`skipTesting` / no surface); else `07-testing` without browser |
+| **8** | Ship | Delivery result + combined gate → simulate plan+result commit + PR (`08-ship-pr`) |
+| **9** | Fix-PR | `10-goal-fix-pr` / `09-fix-pr` when PR created (`full`) |
 
 ## Verification Points
 
@@ -97,17 +94,18 @@ After the workflow completes (`status: completed`), confirm:
 
 | Artifact | Expected |
 |----------|----------|
-| `{workflow-id}.state.md` | Status: `completed`, `dryRun: true`, completed steps 0–13 |
+| `{workflow-id}.state.md` | Status: `completed`, `dryRun: true`, completed steps through 8 (and 9 if PR simulated) |
 | `step-00-test-workflow.spec.md` | Copied from `specs/` |
 | `step-01-test-workflow.plan.md` | Present |
 | `step-02-test-workflow.plan.refined.md` | Present (or skipped if Step 2 bypassed) |
-| `step-03-test-workflow.plan.exec.md` | Present |
+| `step-03-test-workflow.plan.exec.md` | Present (unless Simple path) |
 | `step-03-test-workflow.exec.dag.json` | Present (or skipped if `execMode: sequential`) |
-| `step-06-test-workflow.plan.report.md` | Present |
-| `step-10-test-workflow.report.md` | Present |
-| `step-12-test-workflow.result.md` | Present (dry-run: simulated) |
-| `step-11-test-workflow.integration-test.plan.md` | Present |
-| `step-11-test-workflow.integration-test.report.md` | Present |
+| `step-05-test-workflow.plan.report.md` | Present |
+| `step-06-test-workflow.review.md` | Present |
+| `step-06-test-workflow.fix.report.md` | Present only if fix substep ran |
+| `step-07-test-workflow.testing.plan.md` | Present if Step 7 ran |
+| `step-07-test-workflow.testing.report.md` | Present if Step 7 ran |
+| `step-08-test-workflow.result.md` | Present (dry-run: simulated) |
 
 ### Files NOT modified
 
@@ -124,9 +122,8 @@ dryRun: true
 autoMode: true
 fullMode: true
 status: completed
-completedSteps: [0, 1, 2, 3, 5, 6, 7, 9, 10, 11, 12, 13]
-stepStatus:
-  13: completed            # fullMode
+completedSteps: [0, 1, 2, 3, 4, 5, 6, 7, 8]  # + 9 when fix-pr completes
+# Simple path / skipTesting may omit 1–3 and/or 7
 telemetry:
   totalElapsedSec: <int>  # non-null
   loc:
@@ -149,8 +146,8 @@ git tag -l "uswf/*"
 - All banners prefixed with `[DRY-RUN]`
 - No writes to `src/`, `web/`, or any source paths
 - `MEMORY.md` changes logged in `## Doc consolidation log` only
-- Step 12 benchmark: `final LOC: null`
-- Step 13 PR: simulated, no real `gh pr create`
+- Step 8 benchmark: `final LOC: null`
+- Step 8/9 PR: simulated, no real `gh pr create`
 
 ## Cleanup
 
@@ -169,6 +166,6 @@ Or reuse for the next dry-run iteration (workflow auto-detects and resumes).
 |---------|-------------|-----|
 | `.agents/skills/shared/config.json` not found | Config not in skill directory | Create minimal config (see prerequisites) |
 | Step 1/2 not skipped with simple spec | Dynamic Execution threshold not met | Expected — workflow still runs correctly, just slower |
-| Step 11 tries browser | `dry-run` not parsed | Confirm `dry-run` flag is before spec path |
-| Step 13 not reached | `full` flag absent | Add `full` before spec path |
+| Step 7 tries browser | `dry-run` / `auto` not parsed | Confirm flags precede spec path |
+| Step 8 PR not reached | `full` flag absent | Add `full` before spec path |
 | Files written to disk despite dry-run | Dry-run assertion failed | Check `## Gate history` for `dryRun: true` — report as bug |

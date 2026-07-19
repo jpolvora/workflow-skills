@@ -1,9 +1,10 @@
 # FAQ — Spec-to-PR
 
-> **Architecture note (v10.0):** Steps 0–11 delegate their functional content to dedicated skills (`00`–`07`). Stack detected via `.agents/skills/shared/config.json`; tools via `tools.md`. Project-agnostic. Step 13 optional via `--full`. Dual-mode gate UX: [`gates.md`](../../shared/gates.md); config/SCM: [`config-resolution.md`](../../shared/config-resolution.md). **Session model** on every transition; switch via Pause → Cursor → Resume (no `--model` / `--model-chain`). Step dispatch table + Step 12/13 protocols for **standard** orch: [`STEP-DISPATCH.md`](../STEP-DISPATCH.md) (load when advancing; **not** the lite Steps 1–5 index). The orchestration mechanics (phases, gates, worktrees, banners, state.md) remain valid.
+> **LEGACY NUMBERING:** Body sections below still describe the **pre-redesign** FSM (steps through 13 / “Step 11 Integration”). **Canonical current FSM is steps 0–9** — use [`SKILL.md`](../SKILL.md), [`README.md`](../README.md), [`DIAGRAM.md`](../DIAGRAM.md), and [`STEP-DISPATCH.md`](../STEP-DISPATCH.md). Mapping: old Step 11 Integration → **Step 7 Testing** (`ws-testing` / `07-testing`); old delivery/ship 12–13 → **Step 8 Ship** + **Step 9 Fix-PR**. Prefer those files until this FAQ is fully rewritten.
 >
-> **Audience:** developers, tech leads, and agents who need to understand **how** the end-to-end User Story delivery pipeline works.
-> **Order:** sections follow **execution sequence** (F0→F6, steps 0–12; 13 with `--full`), from invocation to closure.
+> **Architecture:** Dual-mode gates [`gates.md`](../../shared/gates.md); config [`config-resolution.md`](../../shared/config-resolution.md). Session model on transitions; Pause → IDE/agent host → Resume.
+>
+> **Audience:** developers, tech leads, and agents.
 > **Complements:** [`README.md`](../README.md) · [`SKILL.md`](../SKILL.md) · [`DIAGRAM.md`](../DIAGRAM.md)
 
 ---
@@ -27,7 +28,7 @@
 | 13 | [**Soft tip: Review readiness**](#13-soft-tip-review-readiness-f3f4) | F3→F4 |
 | 14 | [**F4 — Step 9: Code review**](#14-f4--step-9-code-review) | Review |
 | 15 | [**F4 — Step 10: Fix + 2nd commit**](#15-f4--step-10-fixes-2nd-commit-and-report) | Review + G2 |
-| 16 | [**F5 — Step 11: Integration**](#16-f5--step-11-integration-validation-and-pre-pr) | Pre-PR |
+| 16 | [**F5 — Step 11: Integration**](#16-f5--step-11-testing-and-pre-pr) | Pre-PR |
 | 17 | [**F6 — Step 12: Closure**](#17-f6--step-12-consolidation-and-final-cleanup) | Cleanup + G3 |
 | 18 | [Gates and navigation](#18-gates-navigation-and-checkpoints) | Cross-cutting |
 | 19 | [Artifacts and state](#19-artifacts-and-shared-state) | Cross-cutting |
@@ -135,9 +136,9 @@ flowchart TD
 | 8† | [§13](#13-sub-gate-8-review-readiness) | Orchestrator | Embedded in F3→F4 gate |
 | 9 | [§14](#14-f4--step-9-code-review) | Reviewer sub-agent | Transition → Step 10 |
 | 10 | [§15](#15-f4--step-10-fixes-2nd-commit-and-report) | Coder sub-agent + shell | G2 → Step 11 |
-| 11 | [§16](#16-f5--step-11-integration-validation-and-pre-pr) | Sub-agent + browser + shell | Transition → Step 12 |
+| 11 | [§16](#16-f5--step-11-testing-and-pre-pr) | Sub-agent + browser + shell | Transition → Step 12 |
 | 12 | [§17](#17-f6--step-12-consolidation-and-final-cleanup) | Orchestrator + shell | One delivery gate (no push) |
-| 13 | Ship | `11-ship-pr` | One ship gate |
+| 13 | Ship | `08-ship-pr` | One ship gate |
 
 ---
 

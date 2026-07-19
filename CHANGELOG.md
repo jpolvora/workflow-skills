@@ -1,5 +1,55 @@
 # Changelog
 
+### [2026-07-19 17:00] Agent: Cursor Grok
+- **Prompt**: ship-pr should wait for code-review and merge after no open issues (goal-fix-pr)
+- **Done**: Clarified `08-ship-pr` Phase 5–6 + GOAL-OVERRIDES; Step 9 / lite Step 5 wait→goal-fix→merge; goal-fix-pr merge handoff note; merged main into develop for PR #71
+- **Result**: Contract: never merge with open threads or red required checks
+
+### [2026-07-19 04:35] Agent: Cursor Grok
+- **Prompt**: Update website, AGENTS.md, README.md, npx installer, bash installer
+- **Done**: `bin/cli.js` pipeline `SKILL_RENAMES` (temp-stage cycle) + skip `__pycache__`/`*.pyc` on copy + help notes; README/AGENTS/packaged hub/install-skills.sh synced; site rebuilt; package `0.0.45`; Phase 2c install test for pipeline renames
+- **Result**: `npm run tests -- --local` PASSED (incl. us-workflow + pipeline migration). Site footer v0.0.45.
+
+### [2026-07-19 04:30] Agent: Cursor Grok
+- **Prompt**: Fix UnicodeEncodeError cp1252 / U+2192 (→) on Windows
+- **Done**: Hardened `ensure_utf8_stdio()` in 12 skill scripts (`encoding=utf-8`, `errors=replace` + fallback); documented Windows stdio rule in check-harness Phase 0
+- **Result**: Reproduced crash without reconfigure; scripts + UTF-8 reconfigure print `→` cleanly; `check_workflows` PASSED
+
+### [2026-07-19 04:28] Agent: Cursor Grok
+- **Prompt**: Remove missing/junk files from packages
+- **Done**: Excluded `**/__pycache__/` and `*.py[cod]` from npm pack (`.npmignore` + `package.json` `files` negations); tightened root `.gitignore`; deleted on-disk `__pycache__` under `.agents/skills`
+- **Result**: `npm pack --dry-run` no longer includes Python bytecode (`.npmignore` was overriding `.gitignore`)
+
+### [2026-07-19 04:25] Agent: Cursor Grok
+- **Prompt**: Fix contract drift after FSM redesign
+- **Done**: Aligned agent-facing contracts to steps 0–9: `04-implement-tasks` (Step 4 build / 6–7 fix; `step-06`/`step-07` findings), `11-update-plan-implementation` plan-delta (`step-08` result), `spec-to-pr-run-test.md`, `validate_state.py` comment, `stack.md.example` + `config.json.example` invariant key, root `STACK.md`; MEMORY entry compiled
+- **Result**: Pipeline skill step/artifact refs match orch FSM. FAQ body still LEGACY-bannered (intentional). Ask before check-harness / site.
+
+### [2026-07-19 04:15] Agent: Cursor Grok
+- **Prompt**: Update check-harness skill to notice the new structure of skills and paths
+- **Done**: Added § 3b canonical pipeline map (`00`–`11`, `ws-*`, FSM steps); retired-id table (`07-integration-validation`→`07-testing`, ship/fix renumbers); Phase 2 spot-check + Step↔folder / dual-hub checks; Phase 5 FSM map + folder matching; Phase 4b `skill-dependencies.json`; version `3.2-generic`
+- **Result**: check-harness aligned with post-rename pipeline layout
+
+### [2026-07-19 04:05] Agent: Cursor Grok
+- **Prompt**: Rename integration-validation to testing; check FSM redesign plan for missed items
+- **Done**: Renamed `07-integration-validation` → `07-testing` (`ws-testing`, deprecated aliases kept); fixed hubs/deps/site; rewrote stale `DIAGRAM.md` + `spec-to-pr/README.md` for FSM 0–9; FAQ legacy banner; gates Testing wording; orch frontmatter flag-combine notes; package `0.0.44`
+- **Result**: `check-workflows` and `npm run tests -- --local` passed. FAQ body still legacy-numbered (bannered).
+
+### [2026-07-19 03:55] Agent: Cursor Grok
+- **Prompt**: Rename skill folders according to step order and skill names
+- **Done**: Renumbered pipeline folders to match FSM steps: `11-ship-pr`→`08-ship-pr`, `08-fix-pr`→`09-fix-pr`, `09-goal-fix-pr`→`10-goal-fix-pr`, `10-update-plan-implementation`→`11-update-plan-implementation`; updated hubs, deps JSON, live refs, `test/` fixture, site catalog (`0.0.43`)
+- **Result**: `check-workflows` and `npm run tests -- --local` passed
+
+### [2026-07-19 03:50] Agent: Composer
+- **Prompt**: Implement Spec-to-PR reduced FSM redesign (standard 0–9, lite 0–5): plan→interview, check score gate, review fix substep, Testing step, combined ship, first-class fix-pr, shared entry, universal step controls
+- **Done**: Rewrote `spec-to-pr` and `spec-to-pr-lite` orchestrators, `STEP-DISPATCH.md`, `ARTIFACTS.md`, protocols, `shared/gates.md`, `shared/setup.md`, pipeline skills `05`–`07`/`09`/`11`, `check_workflows.py`, dual `AGENTS.md`, README, site catalog tagline
+- **Result**: `check-workflows` and `npm run tests -- --local` passed
+
+### [2026-07-19 00:36] Agent: Antigravity
+- **Prompt**: ensure ship-pr skill will run check commit status, pull, push, create pr for current scm config, monitor pr with goal-fix-pr and merge at the end; ensure spec-to-pr (subagents) and spec-to-pr-lite (inline) run independently sharing the same steps
+- **Done**: Updated `ws-ship-pr` in `.agents/skills/11-ship-pr/SKILL.md` to explicitly specify checking commit status, pulling remote updates, pushing local changes, creating a PR using the SCM configuration, monitoring PR review threads using `goal-fix-pr`, and merging. Documented independent execution and state isolation between `spec-to-pr` (standard) and `spec-to-pr-lite` (lite) using `workflowType`. Updated `spec-to-pr-lite/SKILL.md` to explicitly instruct inline execution for all step tasks within the main session, in contrast to the standard orchestrator's subagent task dispatching. Updated root `AGENTS.md` and packaged `.agents/AGENTS.md`.
+- **Result**: Re-compiled site (bumped package to `0.0.40`). Validated E2E installation test suites and workflow FSM step continuity checks successfully.
+
 ### [2026-07-18 19:59] Agent: Antigravity
 - **Prompt**: update README.md and AGENTS.md, website for self-Contained and Non-Intrusive Installation Process
 - **Done**: Updated `README.md` and `AGENTS.md` to document the optional consumer-configured root files (`.cursorrules` pointer and `CHANGELOG.md` history) instead of describing them as automatic installer seeds, matching the new clean and non-intrusive installer behavior. Re-compiled the website catalog to version `0.0.39`.

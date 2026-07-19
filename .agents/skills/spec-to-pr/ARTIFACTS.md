@@ -2,7 +2,7 @@
 
 **Sole source of truth** for workflow artifact names and paths. `SKILL.md`, FAQ, DIAGRAM, and pipeline skills must reference this file; do not invent alternate names.
 
-**Related (not plan-dir artifacts):** Step 0–13 dispatch actions and Step 12/13 gate protocols for **standard** orch live in [`STEP-DISPATCH.md`](STEP-DISPATCH.md) — load only when advancing/dispatching. Step 12 delivery templates: [`protocols/delivery-result.md`](protocols/delivery-result.md), optional cleanup [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Lite orch keeps its own Steps 1–5 table; shared gates stay in [`../shared/gates.md`](../shared/gates.md).
+**Related (not plan-dir artifacts):** Step 0–9 dispatch actions and Step 8/9 gate protocols for **standard** orch live in [`STEP-DISPATCH.md`](STEP-DISPATCH.md) — load only when advancing/dispatching. Step 8 delivery templates: [`protocols/delivery-result.md`](protocols/delivery-result.md), optional cleanup [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Lite orch keeps its own Steps 0–5 table; shared gates stay in [`../shared/gates.md`](../shared/gates.md).
 
 ## Path resolution
 
@@ -24,22 +24,25 @@ Never write workflow state under `.agents/`.
 | State | `{workflow-id}.state.md` | Orchestrator | No |
 | Issue snapshot | `step-00-{slug}.issue.json` | Step 0 / issue fetch | No |
 | **Spec (canonical)** | `step-00-{slug}.spec.md` | Step 0 / issue→spec / local register | No |
-| Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 12)** if no refined plan |
-| Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 12)** if present (replaces plan) |
+| Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 8)** if no refined plan |
+| Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 8)** if present (replaces plan) |
 | Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 | No |
 | DAG | `step-03-{slug}.exec.dag.json` | Step 3 | No |
-| Verification report | `step-06-{slug}.plan.report.md` | Step 6 | No |
-| Review / fix report | `step-10-{slug}.report.md` | Step 10 | No |
-| Integration plan | `step-11-{slug}.integration-test.plan.md` | Step 11 | No |
-| Integration report | `step-11-{slug}.integration-test.report.md` | Step 11 | No |
-| Delivery result | `step-12-{slug}.result.md` | Step 12 | **Yes (Step 12)** |
+| Check-implementation report | `step-05-{slug}.plan.report.md` | Step 5 | No |
+| Code review | `step-06-{slug}.review.md` | Step 6 | No |
+| Review fix report | `step-06-{slug}.fix.report.md` | Step 6 fix substep | No |
+| Testing plan | `step-07-{slug}.testing.plan.md` | Step 7 | No |
+| Testing report | `step-07-{slug}.testing.report.md` | Step 7 | No |
+| Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** |
 
-## Step 12 delivery commit
+**Legacy names (do not write on new runs):** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md` — orch may read for resume compatibility.
+
+## Step 8 delivery commit
 
 Stage **only**:
 
 1. `step-02-{slug}.plan.refined.md` if it exists, else `step-01-{slug}.plan.md`
-2. `step-12-{slug}.result.md`
+2. `step-08-{slug}.result.md`
 
 ## Spec entry rules
 
@@ -61,7 +64,7 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 - `{us-dir}/{slug}.spec.md`
 - `{us-dir}/{slug}.plan.md`
 - `{specs-dir}/{slug}.spec.md` as the only copy (mirror OK)
-- Bare `{slug}.result.md` without `step-12-` prefix
+- Bare `{slug}.result.md` without `step-08-` prefix
 - `stp-*.state.md` or any invented prefix for state (use `{workflow-id}.state.md` with `{slug}-{ISO}` form)
 - `step-*.state.md` — `step-NN-` is **only** for step deliverables in the table above, never for state/archive/baseline
 
@@ -70,11 +73,11 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 | Path | Purpose |
 |------|---------|
 | `{us-dir}/.runtime/` | Sentinels, PIDs, temp wake signals (not `/tmp`) |
-| `{worktrees-dir}/step-{N}/` | Code step isolation |
+| `{worktrees-dir}/step-{N}/` | Step isolation (code steps preferred) |
 | `{us-dir}/{workflow-id}.archive/` | Archived stale workflows |
 | `{us-dir}/{workflow-id}.baseline/` | Baseline snapshots |
 
-## Skill → step ownership
+## Skill → step ownership (standard FSM)
 
 | Step | Skill |
 |------|-------|
@@ -82,8 +85,9 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 | 1 | `ws-write-plan` |
 | 2 | `ws-interview` |
 | 3 | `ws-plan-to-tasks` |
-| 5, 10 | `ws-implement-tasks` (build / fix) |
-| 6 | `ws-verify-plan` |
-| 9 | `ws-code-review` |
-| 11 | `ws-integration-validation` |
-| 13 | `ws-ship-pr` (+ `ws-fix-pr`, `ws-goal-fix-pr`) |
+| 4 | `ws-implement-tasks` (build) |
+| 5 | `ws-verify-plan` |
+| 6 | `ws-code-review` (+ conditional `ws-implement-tasks` fix substep) |
+| 7 | `ws-testing` (Testing) |
+| 8 | `ws-ship-pr` (delivery + push/PR; no terminal goal-fix) |
+| 9 | `ws-fix-pr` / `ws-goal-fix-pr` |

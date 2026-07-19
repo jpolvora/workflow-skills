@@ -12,7 +12,7 @@ Config preference:
   2. Legacy `.agents/skills/azure-devops/azure-devops.config.json` (+ optional `.secret`)
 
 Usage:
-  python .agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py collect --pr-id 592 --output .agents/skills/08-fix-pr/runs/pr-592/context.json
+  python .agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py collect --pr-id 592 --output .agents/skills/09-fix-pr/runs/pr-592/context.json
   python .agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py resolve-thread --pr-id 592 --thread-id 4001 --model composer-2.5 --comment "Justification..."
   python .agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py resolve-thread --dry-run --pr-id 592 --thread-id 4001 --model composer-2.5 --comment "Justification..."
 """
@@ -47,15 +47,18 @@ DEFAULT_WORK_ITEM_FIELDS = ",".join(
 
 
 def ensure_utf8_stdio() -> None:
-    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
     for stream in (sys.stdin, sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if not callable(reconfigure):
             continue
         try:
-            reconfigure(encoding="utf-8")
+            reconfigure(encoding="utf-8", errors="replace")
         except Exception:
-            pass
+            try:
+                reconfigure(errors="replace")
+            except Exception:
+                pass
 
 
 def find_repo_root(start: Path) -> Path:

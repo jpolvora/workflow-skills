@@ -164,7 +164,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
-  if (!artifacts.includes('ws-integration-validation')) fail('ARTIFACTS.md missing Step 11 ownership');
+  if (!artifacts.includes('ws-testing')) fail('ARTIFACTS.md missing Step 7 Testing ownership');
   // AC9: legacy converter paths must remain (thin shims → provider canonical scripts)
   if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py'))) {
     fail('Missing github-issue-to-spec.py shim under spec-to-pr/scripts');
@@ -193,13 +193,13 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
   }
-  // 08-fix-pr → provider thread/context shims (AC9)
+  // 09-fix-pr → provider thread/context shims (AC9)
   for (const rel of [
-    '.agents/skills/08-fix-pr/scripts/fetch_threads.cjs',
-    '.agents/skills/08-fix-pr/scripts/resolve_thread.cjs',
-    '.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py'
+    '.agents/skills/09-fix-pr/scripts/fetch_threads.cjs',
+    '.agents/skills/09-fix-pr/scripts/resolve_thread.cjs',
+    '.agents/skills/09-fix-pr/scripts/fix_pr_azure_context.py'
   ]) {
-    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing 08-fix-pr shim: ${rel}`);
+    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing 09-fix-pr shim: ${rel}`);
   }
   // Cheap shim --help / usage smoke: proves parents[2] / relative forward resolves
   {
@@ -207,7 +207,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     const shimHelps = [
       [py, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
       [py, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
-      [py, '.agents/skills/08-fix-pr/scripts/fix_pr_azure_context.py', '--help']
+      [py, '.agents/skills/09-fix-pr/scripts/fix_pr_azure_context.py', '--help']
     ];
     for (const [bin, rel, flag] of shimHelps) {
       const r = cp.spawnSync(bin, [path.join(parentDir, rel), flag], {
@@ -220,8 +220,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
     // CJS shims have no --help; missing args → Usage from canonical (exit 1) proves forward
     for (const rel of [
-      '.agents/skills/08-fix-pr/scripts/resolve_thread.cjs',
-      '.agents/skills/08-fix-pr/scripts/fetch_threads.cjs'
+      '.agents/skills/09-fix-pr/scripts/resolve_thread.cjs',
+      '.agents/skills/09-fix-pr/scripts/fetch_threads.cjs'
     ]) {
       const r = cp.spawnSync(process.execPath, [path.join(parentDir, rel)], {
         encoding: 'utf8',
@@ -542,8 +542,8 @@ child.on('close', async (code) => {
     'spec-to-pr',
     '00-write-spec',
     '04-implement-tasks',
-    '07-integration-validation',
-    '11-ship-pr',
+    '07-testing',
+    '08-ship-pr',
     'check-harness',
     'github-provider',
     'azure-devops-provider',
@@ -575,9 +575,9 @@ child.on('close', async (code) => {
     path.join('spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
     path.join('local-spec-provider', 'scripts', 'detect_specs_dir.py'),
     path.join('local-spec-provider', 'scripts', 'register_local_spec.py'),
-    path.join('08-fix-pr', 'scripts', 'fetch_threads.cjs'),
-    path.join('08-fix-pr', 'scripts', 'resolve_thread.cjs'),
-    path.join('08-fix-pr', 'scripts', 'fix_pr_azure_context.py')
+    path.join('09-fix-pr', 'scripts', 'fetch_threads.cjs'),
+    path.join('09-fix-pr', 'scripts', 'resolve_thread.cjs'),
+    path.join('09-fix-pr', 'scripts', 'fix_pr_azure_context.py')
   ]) {
     if (!fs.existsSync(path.join(testSkillsDir, rel))) {
       fail(`Provider/shim script missing in consumer install: ${rel}`);
@@ -596,7 +596,7 @@ child.on('close', async (code) => {
         `Consumer shim --help failed: status=${helpResult.status}\n${helpResult.stderr || helpResult.stdout}`
       );
     }
-    const cjsShim = path.join(testSkillsDir, '08-fix-pr', 'scripts', 'resolve_thread.cjs');
+    const cjsShim = path.join(testSkillsDir, '09-fix-pr', 'scripts', 'resolve_thread.cjs');
     const cjsResult = cp.spawnSync(process.execPath, [cjsShim], {
       encoding: 'utf8',
       cwd: path.join(__dirname)
@@ -643,6 +643,58 @@ child.on('close', async (code) => {
     fail('config.json from us-workflow was not preserved during migration');
   }
   ok('us-workflow → spec-to-pr migration preserves config.json');
+
+  // --- Phase 2c: pipeline folder renumber cycle on update ---
+  console.log('\n[Phase 2c] Migrate retired pipeline folders on update...');
+  {
+    const cycle = [
+      ['07-testing', '07-integration-validation'],
+      ['08-ship-pr', '11-ship-pr'],
+      ['09-fix-pr', '08-fix-pr'],
+      ['10-goal-fix-pr', '09-goal-fix-pr'],
+      ['11-update-plan-implementation', '10-update-plan-implementation'],
+    ];
+    for (const [modern, legacy] of cycle) {
+      const modernPath = path.join(testSkillsDir, modern);
+      const legacyPath = path.join(testSkillsDir, legacy);
+      if (!fs.existsSync(modernPath)) fail(`${modern} missing before pipeline rename test`);
+      fs.rmSync(legacyPath, { recursive: true, force: true });
+      fs.renameSync(modernPath, legacyPath);
+      fs.writeFileSync(
+        path.join(legacyPath, 'config.json'),
+        JSON.stringify({ _legacyMarker: `from-${legacy}` }, null, 2),
+        'utf8'
+      );
+    }
+
+    const pipeMigrate = cp.spawnSync(
+      'npx',
+      useLocal ? ['workflow-skills', 'update'] : ['-y', 'github:jpolvora/workflow-skills', 'update'],
+      { cwd: __dirname, shell: true, encoding: 'utf8' }
+    );
+    if (pipeMigrate.status !== 0) {
+      console.error(pipeMigrate.stdout);
+      console.error(pipeMigrate.stderr);
+      fail(`pipeline rename migration update failed with code ${pipeMigrate.status}`);
+    }
+
+    for (const [modern, legacy] of cycle) {
+      const modernPath = path.join(testSkillsDir, modern);
+      const legacyPath = path.join(testSkillsDir, legacy);
+      if (fs.existsSync(legacyPath)) fail(`legacy ${legacy} still present after migration`);
+      if (!fs.existsSync(path.join(modernPath, 'SKILL.md'))) {
+        fail(`${modern}/SKILL.md missing after migration`);
+      }
+      const cfg = JSON.parse(fs.readFileSync(path.join(modernPath, 'config.json'), 'utf8'));
+      if (cfg._legacyMarker !== `from-${legacy}`) {
+        fail(`config.json marker not preserved for ${legacy} → ${modern}`);
+      }
+    }
+    if (fs.existsSync(path.join(testSkillsDir, '.migrate-tmp'))) {
+      fail('.migrate-tmp left behind after pipeline migration');
+    }
+    ok('pipeline folder renumber cycle migrates and preserves config.json');
+  }
 
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
@@ -766,7 +818,7 @@ child.on('close', async (code) => {
     ok('Workflows package installs workflows+hub without Extra-only skills');
   }
 
-  // --- Phase 7: dependency auto-select (09-goal-fix-pr → goal-loop) ---
+  // --- Phase 7: dependency auto-select (10-goal-fix-pr → goal-loop) ---
   console.log('\n[Phase 7] Dependency auto-select on individual toggle...');
   {
     const depDir = path.join(__dirname, '.pkg-deps');
@@ -776,8 +828,8 @@ child.on('close', async (code) => {
     const installable = listSkillDirs(rootSkillsDir)
       .filter((n) => n !== 'shared' && fs.existsSync(path.join(rootSkillsDir, n, 'SKILL.md')))
       .sort((a, b) => a.localeCompare(b));
-    const idx = installable.indexOf('09-goal-fix-pr');
-    if (idx < 0) fail('09-goal-fix-pr not in installable skill list');
+    const idx = installable.indexOf('10-goal-fix-pr');
+    if (idx < 0) fail('10-goal-fix-pr not in installable skill list');
     const num = String(idx + 1);
     const depInstall = await new Promise((resolve) => {
       const child = cp.spawn(process.execPath, [cliPath], {
@@ -811,17 +863,17 @@ child.on('close', async (code) => {
       fail(`Dep auto-select install exited ${depInstall.status}`);
     }
     const depSkills = path.join(depDir, '.agents', 'skills');
-    if (!fs.existsSync(path.join(depSkills, '09-goal-fix-pr', 'SKILL.md'))) {
-      fail('09-goal-fix-pr not installed after toggle');
+    if (!fs.existsSync(path.join(depSkills, '10-goal-fix-pr', 'SKILL.md'))) {
+      fail('10-goal-fix-pr not installed after toggle');
     }
     if (!fs.existsSync(path.join(depSkills, 'goal-loop', 'SKILL.md'))) {
-      fail('goal-loop not auto-selected as dependency of 09-goal-fix-pr');
+      fail('goal-loop not auto-selected as dependency of 10-goal-fix-pr');
     }
-    if (!fs.existsSync(path.join(depSkills, '08-fix-pr', 'SKILL.md'))) {
-      fail('08-fix-pr not auto-selected as dependency of 09-goal-fix-pr');
+    if (!fs.existsSync(path.join(depSkills, '09-fix-pr', 'SKILL.md'))) {
+      fail('09-fix-pr not auto-selected as dependency of 10-goal-fix-pr');
     }
     fs.rmSync(depDir, { recursive: true, force: true });
-    ok('Selecting 09-goal-fix-pr auto-selects goal-loop + 08-fix-pr');
+    ok('Selecting 10-goal-fix-pr auto-selects goal-loop + 09-fix-pr');
   }
 
   // --- Phase 8: non-interactive install --yes (config preserve, no overwrite prompts) ---
@@ -892,7 +944,7 @@ child.on('close', async (code) => {
     fs.mkdirSync(skillsDir2, { recursive: true });
     const skillsInstall = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', '09-goal-fix-pr', '--yes'],
+      [cliPath, 'install', '--skills', '10-goal-fix-pr', '--yes'],
       {
         cwd: skillsDir2,
         encoding: 'utf8',
@@ -903,17 +955,17 @@ child.on('close', async (code) => {
     const skillsOut = `${skillsInstall.stdout || ''}${skillsInstall.stderr || ''}`;
     if (skillsInstall.status !== 0) {
       console.error(skillsOut);
-      fail(`install --skills 09-goal-fix-pr --yes exited ${skillsInstall.status}`);
+      fail(`install --skills 10-goal-fix-pr --yes exited ${skillsInstall.status}`);
     }
     const sRoot = path.join(skillsDir2, '.agents', 'skills');
-    if (!fs.existsSync(path.join(sRoot, '09-goal-fix-pr', 'SKILL.md'))) {
-      fail('--skills install missing 09-goal-fix-pr');
+    if (!fs.existsSync(path.join(sRoot, '10-goal-fix-pr', 'SKILL.md'))) {
+      fail('--skills install missing 10-goal-fix-pr');
     }
     if (!fs.existsSync(path.join(sRoot, 'goal-loop', 'SKILL.md'))) {
       fail('--skills install missing transitive goal-loop');
     }
-    if (!fs.existsSync(path.join(sRoot, '08-fix-pr', 'SKILL.md'))) {
-      fail('--skills install missing transitive 08-fix-pr');
+    if (!fs.existsSync(path.join(sRoot, '09-fix-pr', 'SKILL.md'))) {
+      fail('--skills install missing transitive 09-fix-pr');
     }
     fs.rmSync(skillsDir2, { recursive: true, force: true });
     ok('install --skills applies transitive deps without prompts');
@@ -1010,6 +1062,6 @@ child.on('close', async (code) => {
     ok('Update preserves consumer shared/MEMORY.md, memory/, and stack.md');
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration, packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, rename migration (us-workflow + pipeline), packages, deps, non-interactive --yes, and MEMORY isolation all passed.');
   process.exit(0);
 });

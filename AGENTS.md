@@ -29,7 +29,8 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files.
 - **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*` (consumer-owned; never overwrite from upstream).
-- **Root configuration (consumer-configured):** optional `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root configuration.
+- **Root configuration (consumer-configured):** optional `.cursorrules` → `AGENTS.md` pointer; `CHANGELOG.md` stub — see [`README.md`](README.md) § Optional root configuration. Installer **create-if-missing** only (never overwrite).
+- **Update migrations:** `bin/cli.js` renames retired pipeline folders to canonical `00`–`11` ids (and `us-workflow`→`spec-to-pr`). See [`README.md`](README.md) § Safety.
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
@@ -43,17 +44,17 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 | Workflow | Path | Role |
 |----------|------|------|
-| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec → plan → implement → verify → review → integrate → PR (FSM F0–F6, steps 0–13) |
-| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential plan → implement → review → ship (steps 1–5) |
+| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
+| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 ### Dual-mode
 
 - Config: `.agents/skills/shared/config.json` only — [`config-resolution.md`](.agents/skills/shared/config-resolution.md)
 - Gates: [`gates.md`](.agents/skills/shared/gates.md) — prefer `AskQuestion`; markdown fallback when unavailable
-- **Session model:** `currentModel` = executing session model; switch via Pause → Cursor UI → Resume (no `--model` / `--model-chain`). Soft tips at F1→F2 / F3→F4 (full orch only)
+- **Session model:** `currentModel` = executing session model; switch via Pause → Cursor UI → Resume (no `--model` / `--model-chain`). Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
-- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5 table; do not use STEP-DISPATCH as lite step numbers.
+- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
 
@@ -64,14 +65,14 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 | `ws-write-plan` | 1 | Implementation plan |
 | `ws-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
-| `ws-implement-tasks` | 5, 10 | Build / fix |
-| `ws-verify-plan` | 6 | Acceptance verify |
-| `ws-code-review` | 9 | Local review |
-| `ws-integration-validation` | 11 | Pre-PR tests |
-| `ws-fix-pr` | 13 (via ship) | PR thread fix |
-| `ws-goal-fix-pr` | 13 (via ship) | Fix until zero threads |
+| `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
+| `ws-verify-plan` | 5 | Check-implementation (spec score) |
+| `ws-code-review` | 6 | Local review (+ conditional fix) |
+| `ws-testing` | 7 | Testing (unit/integration/coverage) |
+| `ws-ship-pr` | 8 | Delivery commit + push/PR |
+| `ws-fix-pr` | 9 | PR thread fix |
+| `ws-goal-fix-pr` | 9 | Fix until zero threads |
 | `ws-update-plan-implementation` | Post | Plan deltas |
-| `ws-ship-pr` | 13 | PR deliver / merge |
 | `github-provider` | Provider | GitHub issue→spec + PR ops |
 | `azure-devops-provider` | Provider | ADO WI→spec + PR ops |
 | `local-spec-provider` | Provider | Local `*.spec.md` |
@@ -149,11 +150,11 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 | 04 | `ws-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` |
 | 05 | `ws-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` |
 | 06 | `ws-code-review` | `.agents/skills/06-code-review/SKILL.md` |
-| 07 | `ws-integration-validation` | `.agents/skills/07-integration-validation/SKILL.md` |
-| 08 | `ws-fix-pr` | `.agents/skills/08-fix-pr/SKILL.md` |
-| 09 | `ws-goal-fix-pr` | `.agents/skills/09-goal-fix-pr/SKILL.md` |
-| 10 | `ws-update-plan-implementation` | `.agents/skills/10-update-plan-implementation/SKILL.md` |
-| 11 | `ws-ship-pr` | `.agents/skills/11-ship-pr/SKILL.md` |
+| 07 | `ws-testing` | `.agents/skills/07-testing/SKILL.md` |
+| 08 | `ws-ship-pr` | `.agents/skills/08-ship-pr/SKILL.md` |
+| 09 | `ws-fix-pr` | `.agents/skills/09-fix-pr/SKILL.md` |
+| 10 | `ws-goal-fix-pr` | `.agents/skills/10-goal-fix-pr/SKILL.md` |
+| 11 | `ws-update-plan-implementation` | `.agents/skills/11-update-plan-implementation/SKILL.md` |
 | — | `github-provider` | `.agents/skills/github-provider/SKILL.md` |
 | — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` |
 | — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` |
@@ -203,7 +204,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Secrets / leaks | `secrets-leak-review` |
 | Architecture (DDD) | `tdd-sdd-ddd-reviewer` |
 | Domain review | `domain-review` or `multi-domain-review` |
-| Integration pre-PR | `ws-integration-validation` |
+| Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship PR | `ws-ship-pr` |
 | Spec → PR E2E | `spec-to-pr` |

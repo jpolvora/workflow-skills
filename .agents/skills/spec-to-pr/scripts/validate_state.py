@@ -30,15 +30,18 @@ from pathlib import Path
 
 
 def ensure_utf8_stdio() -> None:
-    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
     for stream in (sys.stdin, sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if not callable(reconfigure):
             continue
         try:
-            reconfigure(encoding="utf-8")
+            reconfigure(encoding="utf-8", errors="replace")
         except Exception:
-            pass
+            try:
+                reconfigure(errors="replace")
+            except Exception:
+                pass
 
 
 AGENT_ROOT = Path(__file__).resolve().parent.parent          # .../spec-to-pr
@@ -210,7 +213,7 @@ def validate(state_path: Path) -> dict:
 
     dry_run = str(data.get("dryRun", "false")).lower() == "true"
     status = str(data.get("status", "")).strip().lower()
-    # Step 12 cleanup legitimately deletes temp artifacts; missing files on a
+    # Step 8 cleanup legitimately deletes temp artifacts; missing files on a
     # closed workflow are warnings, not hygiene violations.
     closed = status in ("completed", "cancelled", "failed")
     completed = _as_int_list(data.get("completedSteps", []))

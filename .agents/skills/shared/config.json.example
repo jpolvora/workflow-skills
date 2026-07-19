@@ -113,7 +113,9 @@
   "defaults": {
     "autoMode": false,
     "dryRun": false,
+    "skipTesting": false,
     "skipIntegration": false,
+    "_comment_skipIntegration": "Deprecated alias for skipTesting — kept for backward compatibility.",
     "skipTests": false,
     "fullMode": false
   },
@@ -122,7 +124,8 @@
     "dir": ".cursor/plans",
     "_comment_specsDir": "Default human-facing local specs dir (repo root). local-spec-provider uses this when providers.active=local; canonical copy stays under {plans.dir}/{slug}/step-00-*.spec.md.",
     "specsDir": "specs",
-    "worktreesDir": ".cursor/plans/{slug}/worktrees"
+    "worktreesDir": ".cursor/plans/{slug}/worktrees",
+    "useWorktrees": false
   },
 
   "rules": {
@@ -141,6 +144,6 @@
     "tenancyViaGlobalQueryFilters": true,
     "efOnlyInInfrastructure": true,
     "noInlineHandWrittenMigrations": true,
-    "commitPlanFilesOnlyAtStep12": true
+    "commitPlanFilesOnlyAtStep8": true
   }
 }

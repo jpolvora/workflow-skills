@@ -29,7 +29,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 4. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
 5. **No `name:` collisions** — Each `SKILL.md` frontmatter `name:` must be unique across the installed tree.
 6. **Evidence-based harness changes** — When fixing routing/links, cite verified paths; do not invent files.
-7. **Consistent skill and task folder references** — References to tasks, steps, and subagent skills in all workflow files must match the exact, prefixed skill folder names (e.g. `05-verify-plan`, `07-integration-validation`, `10-update-plan-implementation`). Unprefixed, retired, or placeholder folder references are forbidden.
+7. **Consistent skill and task folder references** — References to tasks, steps, and subagent skills in all workflow files must match the exact, prefixed skill folder names (e.g. `05-verify-plan`, `07-testing`, `11-update-plan-implementation`). Unprefixed, retired, or placeholder folder references are forbidden.
 
 ### Language (mandatory)
 
@@ -41,7 +41,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | Role | Rule |
 |------|------|
 | **Canonical upstream** | [`jpolvora/workflow-skills`](https://github.com/jpolvora/workflow-skills) is the authoritative source for pipeline and dependency skills. |
-| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`. |
+| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`. On update, retired pipeline folders migrate to canonical `00`–`11` ids (see upstream README § Safety). |
 | **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx --yes github:jpolvora/workflow-skills update` (or `update --include-new`). |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
@@ -62,18 +62,18 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 
 | Skill | Path | Role |
 |-------|------|------|
-| `spec-to-pr` | `skills/spec-to-pr/SKILL.md` | Spec → plan → implement → verify → review → integrate → PR (FSM F0–F6, steps 0–13) |
-| `spec-to-pr-lite` | `skills/spec-to-pr-lite/SKILL.md` | Fast, sequential Plan → implement → review → ship PR (steps 1–5) |
+| `spec-to-pr` | `skills/spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
+| `spec-to-pr-lite` | `skills/spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 ### Dual-Mode Execution & Compatibility
 
 Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Shared Configuration**: `.agents/skills/shared/config.json` only ([`config-resolution.md`](skills/shared/config-resolution.md)).
-- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — prefer `AskQuestion`; markdown fallback when unavailable; slim transitions; one delivery; one ship; no re-ask inside `11-ship-pr` when `workflowMode: true`.
+- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — prefer `AskQuestion`; markdown fallback when unavailable; slim transitions; one delivery; one ship; no re-ask inside `08-ship-pr` when `workflowMode: true`.
 - **Session model**: `currentModel` from the executing session; switch via Pause → Cursor UI → Resume (no `--model` / `--model-chain`). Soft tips at F1→F2 / F3→F4 (full orch only).
 - **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
 - **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
-- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–13). Lite keeps its own Steps 1–5; do not treat STEP-DISPATCH as lite step numbers.
+- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5; do not treat STEP-DISPATCH as lite step numbers.
 
 ---
 
@@ -125,14 +125,14 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-write-plan` | 1 | `skills/01-write-plan/SKILL.md` | Generate implementation plan from issue / spec |
 | `ws-interview` | 2 | `skills/02-interview/SKILL.md` | Audit and refine plan until shared understanding |
 | `ws-plan-to-tasks` | 3 | `skills/03-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
-| `ws-implement-tasks` | 5, 10 | `skills/04-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
-| `ws-verify-plan` | 6 | `skills/05-verify-plan/SKILL.md` | Verify deliverables against acceptance criteria |
-| `ws-code-review` | 9 | `skills/06-code-review/SKILL.md` | Two-phase triage + investigation local review |
-| `ws-integration-validation` | 11 | `skills/07-integration-validation/SKILL.md` | Pre-PR integration test battery |
-| `ws-fix-pr` | 13 (via ship-pr) | `skills/08-fix-pr/SKILL.md` | Resolve active PR review threads |
-| `ws-goal-fix-pr` | 13 (via ship-pr) | `skills/09-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
-| `ws-update-plan-implementation` | Post-workflow | `skills/10-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
-| `ws-ship-pr` | 13 | `skills/11-ship-pr/SKILL.md` | End-to-end PR delivery and merge |
+| `ws-implement-tasks` | 4, 6 (fix substep) | `skills/04-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
+| `ws-verify-plan` | 5 | `skills/05-verify-plan/SKILL.md` | Check-implementation vs spec (score 0–10) |
+| `ws-code-review` | 6 | `skills/06-code-review/SKILL.md` | Two-phase triage + investigation local review |
+| `ws-testing` | 7 | `skills/07-testing/SKILL.md` | Testing gate (unit, integration, coverage) |
+| `ws-ship-pr` | 8 | `skills/08-ship-pr/SKILL.md` | Delivery commit + push + create PR |
+| `ws-fix-pr` | 9 | `skills/09-fix-pr/SKILL.md` | Resolve active PR review threads |
+| `ws-goal-fix-pr` | 9 | `skills/10-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
+| `ws-update-plan-implementation` | Post-workflow | `skills/11-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
 
 ### Providers (platform-specific entry + PR ops)
 
@@ -152,7 +152,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `spec-format` | `skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
 | `self-learning` | `skills/self-learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history in `CHANGELOG.md` |
-| `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `09-goal-fix-pr`) |
+| `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `10-goal-fix-pr`) |
 
 ### Extra package (optional)
 
@@ -197,7 +197,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Implement / fix code | `ws-implement-tasks` |
 | Verify against plan | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
-| Integration tests pre-PR | `ws-integration-validation` |
+| Testing pre-PR | `ws-testing` |
 | Fix PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship / merge PR | `ws-ship-pr` |
 | GitHub issue→spec or GitHub PR ops | `github-provider` |

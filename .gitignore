@@ -32,4 +32,7 @@ config/credentials
 *.log
 .tmp-*/
 audit_results.txt
-__pycache__
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo

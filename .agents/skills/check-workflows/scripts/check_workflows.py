@@ -10,15 +10,18 @@ from pathlib import Path
 
 
 def ensure_utf8_stdio() -> None:
-    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
     for stream in (sys.stdin, sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if not callable(reconfigure):
             continue
         try:
-            reconfigure(encoding="utf-8")
+            reconfigure(encoding="utf-8", errors="replace")
         except Exception:
-            pass
+            try:
+                reconfigure(errors="replace")
+            except Exception:
+                pass
 
 
 # Paths
@@ -42,8 +45,8 @@ def check_step_continuity():
             step_num = int(m[0])
             steps_found.add(step_num)
         
-        # Verify standard has all steps 0-13 (4 and 8 are sub-gates but present in index)
-        expected_steps = set(range(14))
+        # Verify standard has all steps 0-9
+        expected_steps = set(range(10))
         missing = expected_steps - steps_found
         if missing:
             errors.append(f"Standard spec-to-pr FSM is missing steps: {sorted(missing)}")
@@ -57,13 +60,13 @@ def check_step_continuity():
     else:
         text = lite_skill_path.read_text(encoding="utf-8")
         steps_found = set()
-        # Look for steps 1-5 index table
-        matches = re.findall(r"^\s*\|\s*([1-5])\s*\|\s*([^|]+)\s*\|", text, re.MULTILINE)
+        # Look for steps 0-5 index table
+        matches = re.findall(r"^\s*\|\s*([0-5])\s*\|\s*([^|]+)\s*\|", text, re.MULTILINE)
         for m in matches:
             step_num = int(m[0])
             steps_found.add(step_num)
             
-        expected_steps = {1, 2, 3, 4, 5}
+        expected_steps = set(range(6))
         missing = expected_steps - steps_found
         if missing:
             errors.append(f"Lite spec-to-pr-lite FSM is missing steps: {sorted(missing)}")

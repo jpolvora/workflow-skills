@@ -25,8 +25,8 @@ Two delivery workflows (install independently; both share `.agents/skills/shared
 
 | Workflow | Best for | Summary |
 |----------|----------|---------|
-| **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → tasks → implement → verify → review → integrate → PR (FSM steps 0–13) |
-| **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration with an existing spec | Plan → implement → review → deliver → optional ship (steps 1–5) |
+| **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM steps 0–9) |
+| **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer native `AskQuestion` when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the Cursor session model (`Current model` on every transition). To change model for the next step: Pause → switch in Cursor → resume (no `--model` / `--model-chain` flags). Details for agents: [`AGENTS.md`](AGENTS.md). Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
 
@@ -65,7 +65,7 @@ Non-interactive (CI / agents — still use human docs here for the commands):
 ```bash
 npx --yes github:jpolvora/workflow-skills install --full --yes
 npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,09-fix-pr --yes
 ```
 
 Exactly one of `--full`, `--package <full|workflows|extra>`, or `--skills <csv>` is required. Non-TTY stdin requires `--yes`.
@@ -118,7 +118,7 @@ To maximize compatibility and routing efficiency, the consumer can optionally ad
 | `.cursorrules` | Minimal pointer so agents follow `AGENTS.md` (e.g., pointing to `.agents/AGENTS.md`) |
 | `CHANGELOG.md` | Header compatible with the `changelog` skill (append-only history) |
 
-These files are completely controlled and configured by the consumer; the installation process never writes to or modifies them.
+These files are **create-if-missing** at install/update (never overwritten if they already exist). Consumers own the content after the first seed.
 
 ---
 
@@ -128,7 +128,9 @@ These files are completely controlled and configured by the consumer; the instal
 - **No remote shell install path:** curl only downloads the shim; work is done by Node/`npx`.
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
-- **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux).
+- **Folder migrations on update:** retired pipeline folders are renamed automatically (`07-integration-validation`→`07-testing`, `11-ship-pr`→`08-ship-pr`, `08-fix-pr`→`09-fix-pr`, `09-goal-fix-pr`→`10-goal-fix-pr`, `10-update-plan-implementation`→`11-update-plan-implementation`, plus legacy `us-workflow`→`spec-to-pr`).
+- **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
+- **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
 
 ### Verify the package
 
@@ -163,7 +165,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Role |
 |-------|------|
 | [`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md) / [`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md) | Orchestrators |
-| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`11-ship-pr`](.agents/skills/11-ship-pr/SKILL.md) | Pipeline steps |
+| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`11-update-plan-implementation`](.agents/skills/11-update-plan-implementation/SKILL.md) | Pipeline `00`–`11` (`ws-*`; FSM steps 0–9 + post) |
 | [`github-provider`](.agents/skills/github-provider/SKILL.md) · [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) · [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
 
 ### Review & audit

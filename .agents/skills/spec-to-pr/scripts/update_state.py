@@ -24,15 +24,18 @@ import subprocess
 
 
 def ensure_utf8_stdio() -> None:
-    """Force UTF-8 on stdio so Windows locale (cp1252) does not break text I/O."""
+    """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
     for stream in (sys.stdin, sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if not callable(reconfigure):
             continue
         try:
-            reconfigure(encoding="utf-8")
+            reconfigure(encoding="utf-8", errors="replace")
         except Exception:
-            pass
+            try:
+                reconfigure(errors="replace")
+            except Exception:
+                pass
 
 
 # Simple YAML serializer for our specific flat/nested state structure

@@ -48,7 +48,7 @@
     <div class="workflow-card">
       <div class="workflow-badge standard">Standard</div>
       <h3>spec-to-pr</h3>
-      <p class="workflow-tagline">Full multi-stage pipeline (Steps 0–13)</p>
+      <p class="workflow-tagline">Full multi-stage pipeline (Steps 0–9)</p>
       <p>A comprehensive Finite State Machine (FSM) orchestrator designed for end-to-end software lifecycle delivery. Best for complex tasks starting from feature descriptions or issues.</p>
       <ul>
         <li>Collaborative Spec Brainstorming (Step 0)</li>
@@ -88,7 +88,7 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
         <div class="name">check-harness</div>
-        <div class="desc">Audit harness integrity — validates AGENTS.md routing, detects broken links, orphan skills/rules, absolute paths, redundancy, and portability issues. Read-only scan → correction plan → apply with approval.</div>
+        <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–11 / ws-*), retired path ids, broken links, orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/check-workflows/SKILL.md">
@@ -150,38 +150,38 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md">
         <div class="name">ws-verify-plan</div>
-        <div class="desc">Compares implementation quality and code deliverables against the plan and acceptance criteria.</div>
+        <div class="desc">Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/05-verify-plan/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md">
         <div class="name">ws-code-review</div>
-        <div class="desc">Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 9.</div>
+        <div class="desc">Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/06-code-review/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/07-integration-validation/SKILL.md">
-        <div class="name">ws-integration-validation</div>
-        <div class="desc">Plans and executes pre-PR integration test batteries, verifying backend, database, RBAC, tenancy, and UI interfaces.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/07-integration-validation/SKILL.md">View skill</a>
+      <div class="skill-card" data-path=".agents/skills/07-testing/SKILL.md">
+        <div class="name">ws-testing</div>
+        <div class="desc">Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/07-testing/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/08-fix-pr/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/08-ship-pr/SKILL.md">
+        <div class="name">ws-ship-pr</div>
+        <div class="desc">End-to-end delivery — check commit status, pull, push, create PR for current SCM config; optional goal-fix-pr when not stopBeforeFixPr; merge at the end.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/08-ship-pr/SKILL.md">View skill</a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/09-fix-pr/SKILL.md">
         <div class="name">ws-fix-pr</div>
         <div class="desc">Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/08-fix-pr/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/09-fix-pr/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/09-goal-fix-pr/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/10-goal-fix-pr/SKILL.md">
         <div class="name">ws-goal-fix-pr</div>
         <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/09-goal-fix-pr/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/10-goal-fix-pr/SKILL.md">View skill</a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/10-update-plan-implementation/SKILL.md">
+      <div class="skill-card" data-path=".agents/skills/11-update-plan-implementation/SKILL.md">
         <div class="name">ws-update-plan-implementation</div>
         <div class="desc">Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/10-update-plan-implementation/SKILL.md">View skill</a>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/11-ship-pr/SKILL.md">
-        <div class="name">ws-ship-pr</div>
-        <div class="desc">End-to-end delivery — verify branch state, commit, push, create PR workingBranch → baseBranch via providers.scm, run goal-fix-pr loops, and merge.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/11-ship-pr/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/11-update-plan-implementation/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/azure-devops-provider/SKILL.md">
         <div class="name">azure-devops-provider</div>
@@ -257,7 +257,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md">
         <div class="name">goal-loop</div>
-        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., 09-goal-fix-pr). Not invocable standalone.</div>
+        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., 10-goal-fix-pr). Not invocable standalone.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md">
@@ -356,6 +356,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 <section id="install">
   <h2>Install</h2>
   <p style="color:var(--text-muted);max-width:70ch;margin-bottom:20px;line-height:1.5">
@@ -401,7 +411,7 @@
           <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes</code></pre>
+          <pre><code>npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,09-fix-pr --yes</code></pre>
           <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
         </div>
       </div>
@@ -465,7 +475,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.40</p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.45</p>
 </footer>
 
 <!-- Modal -->

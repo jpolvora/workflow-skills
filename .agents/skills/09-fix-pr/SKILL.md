@@ -7,10 +7,10 @@ disable-model-invocation: true
 invocation_names:
   - fix-pr
   - ws-fix-pr
-  - 08-fix-pr
+  - 09-fix-pr
 ---
 
-# 08-fix-pr
+# 09-fix-pr
 
 Responsible for fetching, scoring, and systematically resolving active review threads on GitHub or Azure DevOps Pull Requests. It orchestrates local code corrections, test validations, thread resolutions, and pushes changes back to the remote branch.
 
@@ -30,9 +30,9 @@ Act as a **Senior Software Developer** tasked with cooperative defect resolution
 /fix-pr <PR-ID> [dry-run]
 ```
 
-### Workflow Mode (called by 09-goal-fix-pr)
+### Workflow Mode (called by 10-goal-fix-pr)
 
-Orchestrated by [09-goal-fix-pr](../09-goal-fix-pr/SKILL.md). All interactive confirmation gates are auto-approved by the goal loop. Receives `PR-ID` and `dry-run` flag from the goal.
+Orchestrated by [10-goal-fix-pr](../10-goal-fix-pr/SKILL.md). All interactive confirmation gates are auto-approved by the goal loop. Receives `PR-ID` and `dry-run` flag from the goal.
 
 ### Parameters
 
@@ -67,7 +67,7 @@ Follow [`config-resolution.md`](../shared/config-resolution.md):
 | `github` | [github-provider](../github-provider/SKILL.md) | `list-threads`, `resolve-thread` |
 | `azure-devops` | [azure-devops-provider](../azure-devops-provider/SKILL.md) | `list-threads`, `resolve-thread` |
 
-Canonical scripts live under those providers. Thin forwarder shims remain at `.agents/skills/08-fix-pr/scripts/` for mid-migration callers — prefer provider paths / intents.
+Canonical scripts live under those providers. Thin forwarder shims remain at `.agents/skills/09-fix-pr/scripts/` for mid-migration callers — prefer provider paths / intents.
 
 ---
 
@@ -97,7 +97,7 @@ Score each thread on a `0–10` scale to categorize its urgency:
 | **6–10** | High | Blocking / Bug | Apply surgical fixes in code. |
 
 ### Phase 3 — Confirmation Gate
-- Save the proposed fix checklist to `.agents/skills/08-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted).
+- Save the proposed fix checklist to `.agents/skills/09-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted).
 - Request user confirmation: `Proceed with fixes for threads [ID1, ID2]?`.
 
 ### Phase 4 — Execution & Surgical Fix

@@ -44,8 +44,18 @@ const PROMOTED_SKILLS = [
   'changelog',
 ];
 
-/** Old consumer folder names → current upstream skill folder names */
-const SKILL_RENAMES = [{ from: 'us-workflow', to: 'spec-to-pr' }];
+/**
+ * Old consumer folder names → current upstream skill folder names.
+ * Pipeline renumbers form a cycle (11↔08↔09↔10); migrateRenamedSkills uses a temp stage.
+ */
+const SKILL_RENAMES = [
+  { from: 'us-workflow', to: 'spec-to-pr' },
+  { from: '07-integration-validation', to: '07-testing' },
+  { from: '11-ship-pr', to: '08-ship-pr' },
+  { from: '08-fix-pr', to: '09-fix-pr' },
+  { from: '09-goal-fix-pr', to: '10-goal-fix-pr' },
+  { from: '10-update-plan-implementation', to: '11-update-plan-implementation' },
+];
 
 /**
  * Consumer-owned artifacts under shared/ — never copy upstream content into consumers.
@@ -53,8 +63,8 @@ const SKILL_RENAMES = [{ from: 'us-workflow', to: 'spec-to-pr' }];
  */
 const CONSUMER_OWNED_HUB_FILES = new Set(['config.json', 'MEMORY.md', 'stack.md']);
 const CONSUMER_OWNED_HUB_DIRS = new Set(['memory']);
-/** Pack / VCS metadata — never install into consumer skill trees. */
-const SKIP_INSTALL_FILES = new Set(['.npmignore', '.gitignore']);
+/** Pack / VCS metadata / bytecode — never install into consumer skill trees. */
+const SKIP_INSTALL_FILES = new Set(['.npmignore', '.gitignore', '__pycache__']);
 /** Legacy: never copy MEMORY.md / memory/ from skill folders into consumers. */
 const CONSUMER_OWNED_FILES = new Set(['config.json', 'MEMORY.md']);
 const CONSUMER_OWNED_DIRS = new Set(['memory']);
@@ -155,38 +165,59 @@ function shouldEnsureHub(selectedNames) {
 /**
  * Migrate renamed skills in the consumer target.
  * Preserves config.json from the old folder, installs/updates the new folder, removes the old folder.
+ * Uses a temp stage so pipeline renumber cycles (e.g. 11-ship-pr ↔ 08-ship-pr) do not clobber peers.
  */
 function migrateRenamedSkills(skills) {
   if (!fs.existsSync(targetSkillsDir)) return;
 
+  const planned = [];
   for (const { from, to } of SKILL_RENAMES) {
     const oldPath = path.join(targetSkillsDir, from);
-    const newPath = path.join(targetSkillsDir, to);
     const srcPath = path.join(srcSkillsDir, to);
-
     if (!fs.existsSync(oldPath)) continue;
     if (!skills.includes(to) || !fs.existsSync(srcPath)) continue;
+    planned.push({ from, to, oldPath, srcPath });
+  }
+  if (planned.length === 0) return;
 
-    console.log(`  Migrating '${from}' → '${to}'...`);
-    const oldConfigPath = path.join(oldPath, CONFIG_FILE);
+  const tmpRoot = path.join(targetSkillsDir, '.migrate-tmp');
+  fs.mkdirSync(tmpRoot, { recursive: true });
+
+  for (const p of planned) {
+    const tmpPath = path.join(tmpRoot, p.to);
+    console.log(`  Migrating '${p.from}' → '${p.to}'...`);
+    if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { recursive: true, force: true });
+    fs.renameSync(p.oldPath, tmpPath);
+  }
+
+  for (const p of planned) {
+    const tmpPath = path.join(tmpRoot, p.to);
+    const newPath = path.join(targetSkillsDir, p.to);
+    const oldConfigPath = path.join(tmpPath, CONFIG_FILE);
     const preservedConfig = fs.existsSync(oldConfigPath)
       ? fs.readFileSync(oldConfigPath)
       : null;
 
     if (fs.existsSync(newPath)) {
-      copyDirPreservingConfig(srcPath, newPath, CONFIG_FILE);
+      copyDirPreservingConfig(p.srcPath, newPath, CONFIG_FILE);
     } else {
-      copyDirSync(srcPath, newPath);
+      copyDirSync(p.srcPath, newPath);
     }
-    afterSkillCopy(to, newPath);
+    afterSkillCopy(p.to, newPath);
 
     if (preservedConfig) {
       fs.writeFileSync(path.join(newPath, CONFIG_FILE), preservedConfig);
-      console.log(`    Preserved ${CONFIG_FILE} from '${from}'`);
+      console.log(`    Preserved ${CONFIG_FILE} from '${p.from}'`);
     }
 
-    fs.rmSync(oldPath, { recursive: true, force: true });
-    console.log(`  Migrated '${from}' → '${to}' (${CONFIG_FILE} preserved)`);
+    fs.rmSync(tmpPath, { recursive: true, force: true });
+    console.log(`  Migrated '${p.from}' → '${p.to}' (${CONFIG_FILE} preserved)`);
+  }
+
+  try {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+  } catch {
+    /* ignore */
   }
 }
 
@@ -349,7 +380,7 @@ function copyDirSync(src, dest) {
     const destPath = path.join(dest, entry.name);
 
     // Never copy consumer-owned files/dirs from upstream (MEMORY.md, memory/, config.json).
-    if (SKIP_INSTALL_FILES.has(entry.name)) {
+    if (SKIP_INSTALL_FILES.has(entry.name) || shouldSkipInstallEntry(entry.name)) {
       continue;
     }
     if (isConsumerOwnedEntry(entry.name, entry.isDirectory())) {
@@ -372,6 +403,11 @@ function copyDirSync(src, dest) {
   }
 }
 
+/** Skip bytecode and other non-skill artifacts during install/update copies. */
+function shouldSkipInstallEntry(name) {
+  return name === '__pycache__' || name.endsWith('.pyc') || name.endsWith('.pyo');
+}
+
 function copyDirPreservingConfig(src, dest, preservedFile) {
   fs.mkdirSync(dest, { recursive: true });
   const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -380,7 +416,7 @@ function copyDirPreservingConfig(src, dest, preservedFile) {
     const destPath = path.join(dest, entry.name);
 
     // Never copy upstream consumer-owned artifacts; preserve existing or seed later.
-    if (SKIP_INSTALL_FILES.has(entry.name)) {
+    if (SKIP_INSTALL_FILES.has(entry.name) || shouldSkipInstallEntry(entry.name)) {
       continue;
     }
     if (isConsumerOwnedEntry(entry.name, entry.isDirectory())) {
@@ -519,7 +555,7 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills              Interactive install
   npx --yes github:jpolvora/workflow-skills install --full --yes
   npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,08-fix-pr --yes
+  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,09-fix-pr --yes
   npx --yes github:jpolvora/workflow-skills update       Update installed skills
   npx --yes github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally
@@ -556,6 +592,8 @@ Notes:
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Packaged .agents/AGENTS.md is refreshed on install and update.
   - After installing or updating, run the "check-harness" skill to validate the harness.
+  - On update, retired pipeline folders migrate automatically (e.g. 07-integration-validation→07-testing, 11-ship-pr→08-ship-pr, 08-fix-pr→09-fix-pr, …).
+  - Install copies skip __pycache__ / *.pyc (not part of the skill surface).
   - Workflows use the Cursor session model at gates; switch via Pause → Cursor UI → Resume (no --model/--model-chain).
   - install-skills.sh is a curl/bash shim that execs this CLI (or npx); prefer calling npx directly.
 `);

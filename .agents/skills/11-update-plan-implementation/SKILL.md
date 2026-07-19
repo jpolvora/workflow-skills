@@ -2,15 +2,15 @@
 name: ws-update-plan-implementation
 description: Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.2
+version: 1.3
 disable-model-invocation: true
 invocation_names:
   - update-plan-implementation
   - ws-update-plan-implementation
-  - 10-update-plan-implementation
+  - 11-update-plan-implementation
 ---
 
-# 10-update-plan-implementation (Post-Workflow Fixes)
+# 11-update-plan-implementation (Post-Workflow Fixes)
 
 Responsible for capturing manual QA findings and implementing delta corrections after the main workflow finishes. It appends the delta plan (§9) to the finalized plan file and updates the delivery results document.
 
@@ -25,7 +25,7 @@ Act as a **Technical Lead** who audits post-workflow QA findings, drafts delta c
 ### Standalone Mode
 
 ```
-/10-update-plan-implementation <slug-or-plan-path> [session-name=<name>]
+/11-update-plan-implementation <slug-or-plan-path> [session-name=<name>]
 ```
 
 ### Workflow Mode (Post-workflow, on demand)
@@ -37,7 +37,7 @@ Not part of the main `spec-to-pr` pipeline. Invoked by the developer explicitly 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `<slug-or-plan-path>` | String | (required) | Feature identifier (e.g. `us-1234`) or relative path to the plan. |
-| `session-name=<name>` | String | `step10-{timestamp}` | Unique session identifier for the transient log. |
+| `session-name=<name>` | String | `post-{timestamp}` | Unique session identifier for the transient log. |
 
 ---
 
@@ -45,7 +45,7 @@ Not part of the main `spec-to-pr` pipeline. Invoked by the developer explicitly 
 
 Resolve the working directories and target artifacts:
 - **Finalized Plan:** `step-02-{slug}.plan.refined.md` (if exists) or fallback `step-01-{slug}.plan.md`.
-- **Delivery Result:** `step-12-{slug}.result.md`.
+- **Delivery Result:** `step-08-{slug}.result.md`.
 
 ---
 
@@ -79,5 +79,5 @@ Resolve the working directories and target artifacts:
 ### Phase 5 — Verification & Certification
 - Verify that every blocker finding is marked as resolved.
 - Record commit hashes in the plan's §9 commits table.
-- Update `step-12-{slug}.result.md` (append new fixes to the Done section).
+- Update `step-08-{slug}.result.md` (append new fixes to the Done section).
 - Present the **PR Readiness Summary** in English.
