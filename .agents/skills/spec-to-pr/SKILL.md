@@ -366,12 +366,13 @@ Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr:
 
 ### Fix-PR (Step 9)
 
-First-class step after Step 8 when `shipAction: create-pr` and PR exists:
+First-class step after Step 8 when `shipAction: create-pr` and PR exists (canonical detail: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 9):
 
-1. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot).
-2. Merge policy per goal-fix / provider helpers.
+1. **Wait for code-review / CI** (≥300s settle + poll checks/threads) — do not merge yet.
+2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot) until **no open issues** (`activeThreads == 0`).
+3. **Merge** via SCM `merge-pr` only after convergence and required checks are green.
 
-Stop: max exhausted · merge blocked · cancelled · PR closed.
+Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · checks red.
 
 ### Progress Board & banners
 

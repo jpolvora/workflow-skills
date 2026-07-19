@@ -106,7 +106,9 @@ Resolve input via [`setup.md`](../shared/setup.md) § Shared entry (GitHub / ADO
 
 ### Step 5: Fix-PR
 
-- Dispatch `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) for open PR threads / CI.
+- **Wait for code-review / CI** (≥300s settle + poll checks/threads) — do not merge yet.
+- Dispatch `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) until **no open issues** (`activeThreads == 0`).
+- **Merge** via SCM `merge-pr` only after convergence and required checks are green.
 - Never delete `project.workingBranch` after merge.
 
 ---

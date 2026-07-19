@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-19 17:00] Agent: Cursor Grok
+- **Prompt**: ship-pr should wait for code-review and merge after no open issues (goal-fix-pr)
+- **Done**: Clarified `08-ship-pr` Phase 5–6 + GOAL-OVERRIDES; Step 9 / lite Step 5 wait→goal-fix→merge; goal-fix-pr merge handoff note; merged main into develop for PR #71
+- **Result**: Contract: never merge with open threads or red required checks
+
 ### [2026-07-19 04:35] Agent: Cursor Grok
 - **Prompt**: Update website, AGENTS.md, README.md, npx installer, bash installer
 - **Done**: `bin/cli.js` pipeline `SKILL_RENAMES` (temp-stage cycle) + skip `__pycache__`/`*.pyc` on copy + help notes; README/AGENTS/packaged hub/install-skills.sh synced; site rebuilt; package `0.0.45`; Phase 2c install test for pipeline renames

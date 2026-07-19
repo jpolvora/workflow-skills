@@ -1,8 +1,8 @@
 ---
 name: ws-ship-pr
-description: End-to-end delivery — check commit status, pull, push, create PR for current SCM config; optional goal-fix-pr when not stopBeforeFixPr; merge at the end.
+description: End-to-end delivery — push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.6
+version: 1.7
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 # ship-pr
 
-Responsible for shipping the completed workflow from the configured working branch (`config.project.workingBranch`, default `develop`) to the production base branch (`config.project.baseBranch`, typically `main` or `master`). It automates validation, branch push, PR creation via the SCM provider selected by `config.providers.scm`, optional thread convergence monitoring, and final merging.
+Responsible for shipping the completed workflow from the configured working branch (`config.project.workingBranch`, default `develop`) to the production base branch (`config.project.baseBranch`, typically `main` or `master`). It automates validation, branch push, PR creation via the SCM provider selected by `config.providers.scm`, **waiting for code-review / CI feedback**, thread convergence via `goal-fix-pr`, and **merge only when there are no open issues to fix**.
 
 ## Persona
 
@@ -70,8 +70,10 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 ## Pipeline Execution
 
 ```
-0. Preflight → 1. Code-Review Loop (skip if reviewed) → 2. Verification → 3. Commit & Push → 4. PR Creation → 5. goal-fix-pr (skip if stopBeforeFixPr) → 6. Merge
+0. Preflight → 1. Code-Review Loop (skip if reviewed) → 2. Verification → 3. Commit & Push → 4. PR Creation → 5. Wait code-review + goal-fix-pr (skip if stopBeforeFixPr) → 6. Merge (only if no open issues)
 ```
+
+**Merge gate (non-negotiable):** Never merge while unresolved review threads / open fixable issues remain, or while required CI checks are failing. Phase 6 runs only after Phase 5 reports convergence (`activeThreads == 0`) — or after orchestrator Step 9 when `stopBeforeFixPr: true`.
 
 ### Phase 0 — Preflight Checks
 - Resolve `workingBranch` = `config.project.workingBranch` (default `develop`), `baseBranch` = `config.project.baseBranch`, `gitRemote` = `config.project.gitRemote` (default `origin`).
@@ -109,20 +111,27 @@ Before executing, restate: **commit title**, **working (head) branch**, **base b
 5. Capture PR id and URL from the provider. Do **not** embed raw `gh pr create` / `az repos pr create` recipes here — follow the loaded provider skill.
 6. When `stopBeforeFixPr: true` and `shipAction: create-pr`: print PR URL and **STOP** (success) — orchestrator Step 9 owns monitoring and merge.
 
-### Phase 5 — goal-fix-pr Convergence Loop (Monitor PR)
-- **Skip when `stopBeforeFixPr: true`** — orchestrator dispatches [goal-fix-pr](../10-goal-fix-pr/SKILL.md) at Step 9 instead.
-- Wait 5 minutes (300s) post-push for CI/reviewer feedback.
-- **Monitor PR:** Dispatch [goal-fix-pr](../10-goal-fix-pr/SKILL.md) until `activeThreads == 0` or `max` iterations (thread list/resolve via `providers.scm` inside `08`/`09`).
+### Phase 5 — Wait for code-review + goal-fix-pr (Monitor PR)
+
+- **Skip when `stopBeforeFixPr: true`** — orchestrator dispatches [goal-fix-pr](../10-goal-fix-pr/SKILL.md) at Step 9 (same wait → converge → merge order); this skill stops after Phase 4.
+- **Wait for code-review feedback first** (do not merge yet):
+  1. Mandatory post-push settle window: **300s** (see [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)) so Agentic Code Review / CI / humans can comment.
+  2. Poll SCM: required checks status + `list-threads` (via `providers.scm`). If checks still running, keep watching (provider `merge-pr` / checks watch helpers — do not hardcode platform CLIs here).
+  3. If `activeThreads > 0` **or** new review comments arrived: proceed to convergence. If still zero threads after the settle window + one re-collect, still run the goal-fix-pr heartbeat (see goal-fix-pr initial zero-thread case) before treating the PR as clean.
+- **Converge:** Dispatch [goal-fix-pr](../10-goal-fix-pr/SKILL.md) until `activeThreads == 0` or `max` iterations (thread list/resolve via `providers.scm` inside `09`/`10`). Timing overrides: [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md).
+- **Do not enter Phase 6** while `activeThreads > 0`, escalate stops, or required checks are red. Cap/`escalate` → STOP and report PR URL (no merge).
 
 ### Phase 6 — Merge (SCM provider)
 
-1. **Merge at the End:** Using the same loaded SCM provider from Phase 4, dispatch intent `merge-pr` with the captured PR id.
-2. The provider waits for checks/policies (GitHub: checks watch; Azure DevOps: policy/status wait) then completes the merge. Do **not** hardcode `gh pr checks` / `gh pr merge` / `az repos pr update` in this skill’s happy path.
-3. Skip this phase when `no-merge` is set (PR created and checks/threads handled; stop before merge).
-4. Skip when `stopBeforeFixPr: true` (merge handled after orchestrator Step 9).
+1. **Preconditions:** Phase 5 converged (`activeThreads == 0`) **and** required checks are green (or policy allows). If either fails, STOP — do not merge.
+2. **Merge at the End:** Using the same loaded SCM provider from Phase 4, dispatch intent `merge-pr` with the captured PR id.
+3. The provider waits for checks/policies (GitHub: checks watch; Azure DevOps: policy/status wait) then completes the merge. Do **not** hardcode `gh pr checks` / `gh pr merge` / `az repos pr update` in this skill’s happy path.
+4. Skip this phase when `no-merge` is set (PR created and checks/threads handled; stop before merge).
+5. Skip when `stopBeforeFixPr: true` (merge handled after orchestrator Step 9 completes goal-fix-pr with zero open issues).
 
 > [!IMPORTANT]
 > **Branch Deletion Rule:** Never delete `{workingBranch}` after merging. Keep it for future delivery loops. Do not pass provider flags that delete the configured working branch (e.g. `gh pr merge --delete-branch`).
+> **Open-issues rule:** Merge only after code-review wait + `goal-fix-pr` reports no open threads/issues to fix.
 
 ---
 

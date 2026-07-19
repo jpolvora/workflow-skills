@@ -141,3 +141,4 @@ At the end of every run (whether converged or stopped), output:
 4. Commit hashes and push confirmation.
 5. Final `activeThreads` count with evidence from the last SCM `list-threads` collect (`providers.scm` + provider skill).
 6. PR URL.
+7. **Merge handoff:** This skill does **not** merge. Caller (`ws-ship-pr` Phase 6, or orchestrator Step 9 / lite Step 5) merges only after this report shows `activeThreads == 0` and required checks are green.
