@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-19 14:23] Agent: Cursor Grok
+- **Prompt**: `/08-ship-pr` create-pr (option 1)
+- **Done**: Prepare board green; merged `main` into `develop` (regen `docs/index.html`); pushed; reused/updated PR #72; 300s settle; threads 0 + review check pass; merged with merge commit; `develop` kept
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/72 merged (`0423b62`); package **0.0.54** on `main`
+
 ### [2026-07-19 14:11] Agent: Cursor Grok
 - **Prompt**: Apply check-harness plan #1–#3 with #2A (promote secrets-leak-review into workflows)
 - **Done**: Fixed MEMORY prepare-checklist path; moved secrets into workflows (27) / Extra=2; `08-ship-pr`→secrets dep; hubs/CLI/site v0.0.51; trimmed PREPARE-CHECKLIST

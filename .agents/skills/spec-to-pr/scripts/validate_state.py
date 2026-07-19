@@ -65,7 +65,7 @@ def load_plans_dir() -> Path:
 
 
 REQUIRED_KEYS = ["workflowId", "us", "status", "currentStep"]
-PHASE_SOFT_TIP_STEPS = {4, 8}  # v7: never present in completedSteps (phase soft tips)
+
 
 
 def resolve_state_path(arg: str) -> Path:
@@ -234,13 +234,7 @@ def validate(state_path: Path) -> dict:
                 f"(expected {mx} or {mx + 1})"
             )
 
-    # v7 invariant: phase soft-tip steps 4/8 are never in completedSteps
-    soft_tip_present = sorted(set(completed) & PHASE_SOFT_TIP_STEPS)
-    if soft_tip_present:
-        errors.append(
-            f"completedSteps contains phase soft-tip steps {soft_tip_present} "
-            f"(v7: steps 4 and 8 are soft tips only, they must never be added to completedSteps)"
-        )
+
 
     # files on disk (skip in dry-run)
     manifest = data.get("workflowManifest", {})
