@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 20:56] Agent: Antigravity (Gemini 3.5 Flash)
+- **Prompt**: design idea: in website skill cards, add badges into each skill card showing <full> or <lite> flaging that skill is dependency of one or both workflows. Update website and ship.
+- **Done**: Added recursive standard/lite dependency resolution to `build-site.js`; stored skill slug; generated dynamic HTML badge tags (`full` and `lite`) on skill cards; styled badges in `style.css` using theme Sky Blue and Emerald Green; bumped package version (0.0.66 -> 0.0.67); ran integrity checks and full test suite; committed and pushed to `develop`.
+- **Result**: Website updated and changes pushed to origin/develop.
+
 ### [2026-07-20 19:40] Agent: Cursor Grok 4.5
 - **Prompt**: `/spec-to-pr gh 90 full auto` — fix skill integrity digest-mismatch on consumer install
 - **Done**: LF-canonical hashing in `skill-integrity-lib.js`; regen manifest v0.0.65; EOL parity test; PR #91 merged; issue #90 closed; MEMORY trap recorded
