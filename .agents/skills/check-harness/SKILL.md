@@ -360,6 +360,7 @@ Check:
 4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (e.g., `/pipeline`, `@check-harness`).
 5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
 6. **Orchestrator dependency closure** (when upstream `bin/skill-dependencies.json` present) — for each orchestrator (e.g. `spec-to-pr`, `spec-to-pr-lite`), extract every dispatched skill id (step-table `ws-*` ids, providers from the shared entry matrix, fix-pr loop skills) and assert each appears in `dependencies["<orch>"]`, directly or transitively via another listed dep. Missing id → **critical** (selective install of that orchestrator yields a broken workflow).
+7. **Skill integrity manifest** (upstream only) — when `bin/skill-integrity.json` is expected in this repo, confirm it is present and `node bin/generate-skill-integrity.js --check` exits 0 (committed digests match the current tree and `package.json` version). Stale/missing → **critical** for release hygiene.
 
 ### Phase 4 — Skills/rules not routed in `AGENTS.md`
 

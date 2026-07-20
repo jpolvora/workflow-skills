@@ -22,6 +22,7 @@ const ignoredPatterns = [
   /(^|[\\/])shared[\\/]MEMORY\.md$/,
   /(^|[\\/])shared[\\/]CHANGELOG\.md$/,
   /(^|[\\/])shared[\\/]installed-skills\.json$/,
+  /(^|[\\/])shared[\\/]skill-integrity-local\.json$/,
   /(^|[\\/])shared[\\/]memory([\\/]|$)/,
   /(^|[\\/])shared[\\/]MEMORY\.md\.template$/,
   /(^|[\\/])shared[\\/]CHANGELOG\.md\.template$/,
@@ -205,6 +206,24 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/09-fix-pr/scripts/fix_pr_azure_context.py'
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing 09-fix-pr shim: ${rel}`);
+  }
+  // AC11: committed integrity manifest must match current tree + package.json version
+  {
+    const gen = cp.spawnSync(
+      process.execPath,
+      [path.join(parentDir, 'bin', 'generate-skill-integrity.js'), '--check'],
+      {
+        cwd: parentDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000,
+      }
+    );
+    if (gen.status !== 0) {
+      console.error(`${gen.stdout || ''}${gen.stderr || ''}`);
+      fail(`bin/skill-integrity.json stale or packageVersion mismatch (generate-skill-integrity.js --check exited ${gen.status})`);
+    }
+    ok('skill-integrity.json matches tree (generate --check)');
   }
   // Cheap shim --help / usage smoke: proves parents[2] / relative forward resolves
   {
@@ -1085,6 +1104,356 @@ child.on('close', async (code) => {
     fs.rmSync(uDir, { recursive: true, force: true });
   }
 
-  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, and uninstall all passed.');
+  // --- Phase 11: skill integrity (checksums) ---
+  console.log('\n[Phase 11] Skill integrity checksums...');
+  {
+    const { pathToFileURL } = await import('url');
+    const {
+      listInstallableSkills,
+      loadJson,
+      buildUpstreamManifest,
+      stableStringify,
+      evaluateVersionAndDigestCheck,
+    } = await import(pathToFileURL(path.join(parentDir, 'bin', 'skill-integrity-lib.js')).href);
+    const { HUB_WHITELIST, CONSUMER_OWNED_HUB_FILES } = await import(
+      pathToFileURL(path.join(parentDir, 'bin', 'install-rules.js')).href
+    );
+
+    const manifestPath = path.join(parentDir, 'bin', 'skill-integrity.json');
+    const manifest = loadJson(manifestPath);
+    const pkgVersion = JSON.parse(
+      fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8')
+    ).version;
+    const skillIds = listInstallableSkills(path.join(parentDir, '.agents', 'skills'));
+
+    // AC1: covers all installable skills; hub whitelist; no consumer-owned
+    if (skillIds.length !== Object.keys(manifest.skills).length) {
+      fail(`Manifest skill count ${Object.keys(manifest.skills).length} != installable ${skillIds.length}`);
+    }
+    for (const id of skillIds) {
+      if (!manifest.skills[id]) fail(`Manifest missing skill ${id}`);
+    }
+    for (const rel of Object.keys(manifest.hub?.files || {})) {
+      const top = rel.split('/')[0];
+      if (!HUB_WHITELIST.includes(top) && !HUB_WHITELIST.includes(rel)) {
+        fail(`Hub file not on whitelist: ${rel}`);
+      }
+      if (CONSUMER_OWNED_HUB_FILES.has(rel) || CONSUMER_OWNED_HUB_FILES.has(top)) {
+        fail(`Consumer-owned path hashed in hub: ${rel}`);
+      }
+    }
+    if (!manifest.hub?.files?.['hub.gitignore']) {
+      fail('Hub manifest must include hub.gitignore (packable stand-in for consumer .gitignore)');
+    }
+    ok('integrity manifest covers installable skills + hub whitelist');
+
+    // AC2 / AC3: digests + idempotent regenerate
+    for (const id of skillIds) {
+      const entry = manifest.skills[id];
+      if (!entry.files || !entry.skillDigest) fail(`Skill ${id} missing files/skillDigest`);
+      if (!/^[0-9a-f]{64}$/.test(entry.skillDigest)) fail(`skillDigest not lowercase hex: ${id}`);
+    }
+    if (!/^[0-9a-f]{64}$/.test(manifest.fullPackageDigest)) {
+      fail('fullPackageDigest not lowercase hex');
+    }
+    if (manifest.packageVersion !== pkgVersion) {
+      fail(`packageVersion ${manifest.packageVersion} != package.json ${pkgVersion}`);
+    }
+    const regenerated = buildUpstreamManifest(parentDir, pkgVersion);
+    if (stableStringify(regenerated) !== fs.readFileSync(manifestPath, 'utf8')) {
+      fail('Generator not idempotent vs committed skill-integrity.json');
+    }
+    ok('skill/full digests present; generator idempotent');
+
+    // AC10: digest changes when an included file changes (compute without writing)
+    const tamperSkill = 'caveman';
+    const skillMd = path.join(parentDir, '.agents', 'skills', tamperSkill, 'SKILL.md');
+    const original = fs.readFileSync(skillMd);
+    try {
+      fs.writeFileSync(skillMd, Buffer.concat([original, Buffer.from('\n# integrity-tamper\n')]));
+      const changed = buildUpstreamManifest(parentDir, pkgVersion);
+      if (changed.fullPackageDigest === manifest.fullPackageDigest) {
+        fail('fullPackageDigest did not change after editing included file');
+      }
+      if (changed.skills[tamperSkill].skillDigest === manifest.skills[tamperSkill].skillDigest) {
+        fail('skillDigest did not change after editing included file');
+      }
+    } finally {
+      fs.writeFileSync(skillMd, original);
+    }
+    ok('fullPackageDigest changes when included file changes');
+
+    // AC9: evaluateVersionAndDigestCheck labels mismatch
+    {
+      const mismatch = evaluateVersionAndDigestCheck({
+        localVersion: '1.0.0',
+        remoteVersion: '1.0.0',
+        localDigest: 'a'.repeat(64),
+        remoteDigest: 'b'.repeat(64),
+        remoteDigestAvailable: true,
+      });
+      if (mismatch.exitCode !== 1) fail('digest mismatch with equal version should exit 1');
+      if (!mismatch.lines.some((l) => /fullPackageDigest:\s*mismatch/.test(l))) {
+        fail(`missing fullPackageDigest: mismatch label\n${mismatch.lines.join('\n')}`);
+      }
+      const match = evaluateVersionAndDigestCheck({
+        localVersion: '1.0.0',
+        remoteVersion: '1.0.0',
+        localDigest: 'a'.repeat(64),
+        remoteDigest: 'a'.repeat(64),
+        remoteDigestAvailable: true,
+      });
+      if (match.exitCode !== 0) fail('matching digests should exit 0');
+      if (!match.lines.some((l) => /fullPackageDigest:\s*match/.test(l))) {
+        fail('missing fullPackageDigest match line');
+      }
+      const unreachable = evaluateVersionAndDigestCheck({
+        localVersion: '1.0.0',
+        remoteVersion: '1.0.0',
+        localDigest: 'a'.repeat(64),
+        remoteDigest: null,
+        remoteDigestAvailable: false,
+      });
+      if (unreachable.exitCode !== 0) {
+        fail('unreachable remote digest alone must not fail');
+      }
+    }
+    ok('--check digest evaluation labels match/mismatch');
+
+    // AC12: help + README mention integrity
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const help = cp.spawnSync(process.execPath, [cliPath, '--help'], {
+      cwd: parentDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+    });
+    const helpOut = `${help.stdout || ''}${help.stderr || ''}`;
+    if (!/integrity/i.test(helpOut) || !/--force-integrity/.test(helpOut)) {
+      fail(`--help missing integrity / --force-integrity\n${helpOut}`);
+    }
+    const readme = fs.readFileSync(path.join(parentDir, 'README.md'), 'utf8');
+    if (!/integrity/i.test(readme) || !/trust/i.test(readme)) {
+      fail('README Safety/install must document integrity and trust boundary');
+    }
+    ok('help and README mention integrity');
+
+    // AC4–AC8: install abort, force, local record, audit, selective, consumer-owned
+    const iDir = path.join(__dirname, '.pkg-integrity');
+    fs.rmSync(iDir, { recursive: true, force: true });
+    fs.mkdirSync(iDir, { recursive: true });
+
+    // AC4: source mismatch aborts without copy (tamper a file in the selected closure)
+    const closureSkillMd = path.join(parentDir, '.agents', 'skills', 'goal-loop', 'SKILL.md');
+    const closureBackup = fs.readFileSync(closureSkillMd);
+    try {
+      fs.writeFileSync(
+        closureSkillMd,
+        Buffer.concat([closureBackup, Buffer.from('\n# source-mismatch\n')])
+      );
+      const bad = cp.spawnSync(
+        process.execPath,
+        [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
+        {
+          cwd: iDir,
+          encoding: 'utf8',
+          env: { ...process.env, FORCE_COLOR: '0' },
+          timeout: 120000,
+        }
+      );
+      if (bad.status === 0) fail('install should fail on source mismatch');
+      if (fs.existsSync(path.join(iDir, '.agents', 'skills', 'goal-fix-pr'))) {
+        fail('source mismatch must not copy skill dirs');
+      }
+      if (!/source package mismatch/i.test(`${bad.stdout || ''}${bad.stderr || ''}`)) {
+        fail(`expected source mismatch message\n${bad.stdout || ''}${bad.stderr || ''}`);
+      }
+      ok('install aborts on source mismatch without copy');
+
+      const forced = cp.spawnSync(
+        process.execPath,
+        [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes', '--force-integrity'],
+        {
+          cwd: iDir,
+          encoding: 'utf8',
+          env: { ...process.env, FORCE_COLOR: '0' },
+          timeout: 120000,
+        }
+      );
+      if (forced.status !== 0) {
+        console.error(`${forced.stdout || ''}${forced.stderr || ''}`);
+        fail(`--force-integrity install exited ${forced.status}`);
+      }
+      if (!fs.existsSync(path.join(iDir, '.agents', 'skills', 'goal-fix-pr'))) {
+        fail('--force-integrity should install despite source mismatch');
+      }
+      ok('--force-integrity overrides source mismatch');
+    } finally {
+      fs.writeFileSync(closureSkillMd, closureBackup);
+    }
+
+    // Clean reinstall for remaining scenarios
+    fs.rmSync(iDir, { recursive: true, force: true });
+    fs.mkdirSync(iDir, { recursive: true });
+    const clean = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--package', 'workflows', '--yes'],
+      {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 180000,
+      }
+    );
+    if (clean.status !== 0) {
+      console.error(`${clean.stdout || ''}${clean.stderr || ''}`);
+      fail(`workflows install for integrity tests exited ${clean.status}`);
+    }
+    const localRecord = path.join(
+      iDir,
+      '.agents',
+      'skills',
+      'shared',
+      'skill-integrity-local.json'
+    );
+    if (!fs.existsSync(localRecord)) fail('post-install must write skill-integrity-local.json');
+    const local = JSON.parse(fs.readFileSync(localRecord, 'utf8'));
+    if (!local.verifiedAt || !local.installedClosureDigest || !local.skills) {
+      fail('local integrity record missing required fields');
+    }
+    const memPath = path.join(iDir, '.agents', 'skills', 'shared', 'MEMORY.md');
+    const cfgPath = path.join(iDir, '.agents', 'skills', 'shared', 'config.json');
+    const cfgBefore = fs.readFileSync(cfgPath, 'utf8');
+    ok('post-install writes local integrity record');
+
+    // Post-verify must not bless a failed tree: extra unmanaged file → update fails,
+    // prior skill-integrity-local.json must stay unchanged (so audit still fails).
+    {
+      const priorLocal = fs.readFileSync(localRecord, 'utf8');
+      const extraPath = path.join(iDir, '.agents', 'skills', 'caveman', 'integrity-extra.txt');
+      fs.writeFileSync(extraPath, 'not-in-manifest\n');
+      const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 180000,
+      });
+      if (upd.status === 0) {
+        fail('update should fail post-verify when unmanaged extra file remains in skill tree');
+      }
+      if (!/consumer tree mismatch/i.test(`${upd.stdout || ''}${upd.stderr || ''}`)) {
+        fail(
+          `expected consumer mismatch on extra file\n${upd.stdout || ''}${upd.stderr || ''}`
+        );
+      }
+      const afterFail = fs.readFileSync(localRecord, 'utf8');
+      if (afterFail !== priorLocal) {
+        fail('post-verify failure must not rewrite skill-integrity-local.json from actual digests');
+      }
+      const auditExtra = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 60000,
+      });
+      if (auditExtra.status === 0) {
+        fail('integrity audit must still fail while extra unmanaged file remains');
+      }
+      fs.unlinkSync(extraPath);
+      const restore = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 180000,
+      });
+      if (restore.status !== 0) {
+        console.error(`${restore.stdout || ''}${restore.stderr || ''}`);
+        fail('failed to restore clean tree after extra-file post-verify test');
+      }
+    }
+    ok('post-verify failure does not bless bad local integrity record');
+
+    // AC6: mutate managed skill → integrity fails
+    const managedSkill = path.join(iDir, '.agents', 'skills', 'caveman', 'SKILL.md');
+    fs.appendFileSync(managedSkill, '\n# mutated-after-install\n');
+    const auditFail = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
+      cwd: iDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 60000,
+    });
+    if (auditFail.status === 0) fail('integrity should fail after managed file mutation');
+    if (!/caveman\/SKILL\.md/i.test(`${auditFail.stdout || ''}${auditFail.stderr || ''}`)) {
+      fail(`integrity should report mutated path\n${auditFail.stdout || ''}${auditFail.stderr || ''}`);
+    }
+    // restore for further checks
+    const srcSkill = fs.readFileSync(
+      path.join(parentDir, '.agents', 'skills', 'caveman', 'SKILL.md')
+    );
+    fs.writeFileSync(managedSkill, srcSkill);
+    ok('integrity audit fails on managed file mutation');
+
+    // AC8: consumer-owned edits do not fail integrity
+    fs.appendFileSync(memPath, '\n# consumer memory edit\n');
+    fs.writeFileSync(
+      cfgPath,
+      JSON.stringify({ ...JSON.parse(cfgBefore), project: { name: 'integrity-consumer' } }, null, 2)
+    );
+    const auditOk = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
+      cwd: iDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 60000,
+    });
+    if (auditOk.status !== 0) {
+      console.error(`${auditOk.stdout || ''}${auditOk.stderr || ''}`);
+      fail('integrity must ignore consumer-owned MEMORY.md/config.json edits');
+    }
+    if (!fs.readFileSync(memPath, 'utf8').includes('consumer memory edit')) {
+      fail('test setup failed to edit MEMORY.md');
+    }
+    ok('consumer-owned edits ignored by integrity');
+
+    // AC7: selective install — Extra-only skill absence is not a failure
+    const sDir = path.join(__dirname, '.pkg-integrity-sel');
+    fs.rmSync(sDir, { recursive: true, force: true });
+    fs.mkdirSync(sDir, { recursive: true });
+    const sel = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
+      {
+        cwd: sDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000,
+      }
+    );
+    if (sel.status !== 0) {
+      console.error(`${sel.stdout || ''}${sel.stderr || ''}`);
+      fail(`selective goal-fix-pr install exited ${sel.status}`);
+    }
+    if (fs.existsSync(path.join(sDir, '.agents', 'skills', 'write-a-skill'))) {
+      fail('selective install should not include write-a-skill');
+    }
+    const selAudit = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
+      cwd: sDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 60000,
+    });
+    if (selAudit.status !== 0) {
+      console.error(`${selAudit.stdout || ''}${selAudit.stderr || ''}`);
+      fail('selective integrity audit should pass without Extra-only skills');
+    }
+    const selOut = `${selAudit.stdout || ''}${selAudit.stderr || ''}`;
+    if (/write-a-skill/.test(selOut)) {
+      fail('selective audit must not report missing write-a-skill');
+    }
+    ok('selective closure integrity ignores non-installed skills');
+
+    fs.rmSync(iDir, { recursive: true, force: true });
+    fs.rmSync(sDir, { recursive: true, force: true });
+  }
+
+  console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, uninstall, and integrity all passed.');
   process.exit(0);
 });

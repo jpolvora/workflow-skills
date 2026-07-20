@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.0.62",
+  "version": "0.0.63",
   "description": "Centralized agent skills and multi-workflow hub for Cursor (spec-to-pr and related pipeline skills)",
   "license": "MIT",
   "author": "Jone Polvora",
@@ -20,7 +20,8 @@
     "test": "npm run tests -- --local",
     "tests": "node test/test-install.js",
     "build-site": "node bin/build-site.js",
-    "build-site:bump": "node bin/build-site.js --bump"
+    "build-site:bump": "node bin/build-site.js --bump",
+    "generate-integrity": "node bin/generate-skill-integrity.js"
   },
   "files": [
     "bin/",
@@ -35,6 +36,7 @@
     "!.agents/skills/shared/STACK.md",
     "!.agents/skills/shared/MEMORY.md",
     "!.agents/skills/shared/memory/**",
+    "!.agents/skills/shared/skill-integrity-local.json",
     "!.agents/skills/**/__pycache__/**",
     "!.agents/skills/**/*.py[cod]",
     "!.agents/skills/**/*.pyo"

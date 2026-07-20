@@ -12,7 +12,7 @@
 | 2 | Build (consumer verification) | ✅ / ❌ / ⏭ | … |
 | 3 | Tests run | ✅ / ❌ / ⏭ | … |
 | 4 | Security / leak scan | ✅ / ❌ / ⏭ | … |
-| 5 | Consumer prepare-to-ship steps | ✅ / ❌ / ⏭ | … |
+| 5 | Consumer prepare / before-push steps | ✅ / ❌ / ⏭ | … |
 | 6 | Board shown; ready to ship | ✅ / ❌ | … |
 ```
 
@@ -26,11 +26,11 @@ Resolve from the **consumer project** only — never invent stack commands:
 |--------|---------|
 | `config.json` → `verification.*` | Build / test / format |
 | `config.json` → `rules.*` + [`AGENTS.md` External dependencies](../../../AGENTS.md#external-dependencies) | Guardrails / optional rule paths |
-| `STACK.md` (`rules.stackFile`, default `.agents/skills/shared/STACK.md`) | Ship/verify notes |
-| Consumer `AGENTS.md`, `CONTRIBUTING.md`, ship/release docs | Prepare-to-ship steps |
+| `STACK.md` (`rules.stackFile`, default `{sharedDir}/STACK.md`) | Ship/verify notes |
+| Consumer hubs + ship docs (see §5 scan list) | Prepare / before-push / before-publish steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
 
-Prefer `bash .agents/skills/08-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../shared/tools.md) (run config strings unchanged).
+Prefer `bash .agents/skills/08-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../shared/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../shared/tools.md) § Path tokens).
 
 ## Checklist items
 
@@ -58,10 +58,34 @@ Prefer `bash .agents/skills/08-ship-pr/scripts/verify.sh` when it covers configu
 **⏭:** clean scan evidence for current ship-scope tree.  
 **Done when:** scan clean, or HIGH findings listed and push blocked.
 
-### 5. Consumer prepare-to-ship steps
-**When:** always, before commit/push.  
-**Do:** follow consumer prepare/ship steps from sources table; N/A → ⏭ + reason.  
-**Done when:** applicable steps completed or justified ⏭.
+### 5. Consumer prepare / before-push steps (discover + wait)
+
+**When:** always, before commit/push/create-PR.  
+**Gate:** do **not** proceed to ship-pr Steps 4–5 until this row is ✅ or justified ⏭. Discovered steps are **blocking** unless the cited section marks them optional.
+
+#### Discover (mandatory scan)
+
+1. **Build the scan set** (skip missing paths; do not invent host-private folders):
+   - Repo-root `AGENTS.md` (consumer or upstream local hub)
+   - `{sharedDir}/AGENTS.md`
+   - Every existing path listed under `config.json` → `rules.*`
+   - `rules.stackFile` / `STACK.md`
+   - `CONTRIBUTING.md`, `RELEASE.md`, `PUBLISH.md` at repo root when present
+   - Any other **consumer-owned** markdown the hubs above link as ship/release/prepare guidance
+2. **Grep / Read** those files for sections whose headings or lead-in match (case-insensitive), including near-synonyms:
+   - `prepare`, `prepare-to-ship`, `prepare to PR`, `prepare to ship`
+   - `before push`, `before publish`, `before deliver`, `before delivery`, `before shipping`, `before merge`
+   - `ship`, `release`, `publish`, `deliver` when the section lists **agent obligations** before push/PR
+   - `local project rule` / `local harness` when tied to shipping or PR creation
+3. **List hits** in board evidence for row 5 (file + heading + one-line obligation). Zero hits → ⏭ with `no prepare/before-push steps found in scanned sources` and list what was scanned.
+
+#### Wait / execute
+
+1. For each discovered required step: run it (or credit with evidence for the **current** tree).
+2. Re-show the board after the set completes. Incomplete or failed → ❌ and **STOP** (no commit/push/PR).
+3. Do not re-ask the user to invent steps; only enforce what local hubs/rules already document.
+
+**Done when:** all discovered required steps ✅, or ⏭ with scan evidence.
 
 ### 6. Show board & gate
 Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resolves (`providers.scm` per [config-resolution.md](../shared/config-resolution.md)). Unresolved SCM or `shipAction: skip` → stop after board.  
@@ -75,3 +99,5 @@ Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resol
 | "Docs-only — skip security" | Scan ship-scope; ⏭ only if no secret-bearing paths. |
 | "CI will build/test" | Local build/tests required unless waived on board. |
 | "No SCM — invent gh" | STOP; resolve `providers.scm` or skip ship. |
+| "No consumer prepare — skip scan" | Always scan hubs/rules; ⏭ only after an empty scan with sources listed. |
+| "Local AGENTS bump/rule is optional" | If discovery found a before-push/ship obligation, it blocks until done. |

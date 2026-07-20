@@ -54,6 +54,18 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 - Guardrails resolution: § [External dependencies](#external-dependencies) (consumer install mirror: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md)).
 - **This upstream’s local `.cursor/`:** authoring/plans only for this repo — never the shipped default for consumers.
 
+### Upstream PR version bump (this repo only)
+
+**Local project rule** for agents working in `workflow-skills`. Not part of the portable skill contract; do **not** put this in `08-ship-pr` / `ws-ship-pr`.
+
+When **creating or shipping a PR** that changes installable package content (skills, CLI, installer, shared hub templates, site catalog tied to release):
+
+1. **Bump locally first:** `npm run build-site:bump` (or `node bin/build-site.js --bump`) so `package.json` patch-increments and the site footer stamps to the same version.
+2. Sync `test/package.json`’s `file:../workflow-skills-<version>.tgz` reference when the pack path must match.
+3. **Then** commit, push, and open/update the PR with the bump included.
+
+Consumers rely on `main/package.json` for `--check` / update signals. CI deploy never bumps; every upstream PR that ships package changes must bump in-repo before push.
+
 ### Consumer CLI (install / update / uninstall)
 
 Human narrative: [`README.md`](README.md) § Install, update, and uninstall. Agents in a **consumer** project (not this package root):
@@ -147,7 +159,7 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 1. Ask the user whether to run **check-harness** and whether **site** / **README** need updates.
-2. Evaluate: check-harness (Phases 0–5c → plan) · `node bin/build-site.js` if catalog/routing changed (stamps footer from `package.json`; use `--bump` only for intentional releases) · `README.md` if install/usage/human docs changed.
+2. Evaluate: check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, bump via § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only) (`npm run build-site:bump`); plain `node bin/build-site.js` only stamps the footer from the current `package.json` (CI deploy never bumps).
 
 ---
 
@@ -254,7 +266,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 1. **Harness:** load `.agents/skills/check-harness/SKILL.md` → Phases 0–5c
 2. **Install tests:** `npm run tests` · `npm run tests -- --local`
 3. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
-4. **Catalog:** if layers/routing changed → `node bin/build-site.js` (no CI bump; `package.json` ↔ footer must match)
+4. **Catalog / version:** if shipping package changes → § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only); else if only regenerating catalog → `node bin/build-site.js` (no bump). `package.json` ↔ footer must match; CI deploy never bumps.
 ---
 
 ## Local dry-run: agentic code reviewers

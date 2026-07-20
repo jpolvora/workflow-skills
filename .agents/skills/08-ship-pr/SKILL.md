@@ -1,8 +1,8 @@
 ---
 name: ws-ship-pr
-description: End-to-end delivery — prepare-to-PR checklist, push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).
+description: End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.9
+version: 1.10
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 # ship-pr
 
-Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (consumer rules + verify), then push/create PR via configured SCM, wait for code-review/CI, converge via `goal-fix-pr`, and merge only when clean.
+Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (verify + **discover and wait** for local consumer prepare / before-push / before-publish harness steps), then push/create PR via configured SCM, wait for code-review/CI, converge via `goal-fix-pr`, and merge only when clean.
 
 Prepare board (mandatory): [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Wait/converge timing: [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md). Examples: [examples.md](examples.md).
 
@@ -45,8 +45,8 @@ Before executing, restate commit title, head/base, SCM provider, mode, `stopBefo
 1. **Preflight**: resolve `workingBranch`/`baseBranch`/`gitRemote`; confirm active branch is `workingBranch`; check `git status` and tracking drift; `git pull {gitRemote} {workingBranch}`; auto-detect base via `bash .agents/skills/08-ship-pr/scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
    - Done when: branches resolved; working tree clean enough to ship and pulled.
 
-2. **Prepare to PR (goal)**: load [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Drive coverage → build → tests → security → consumer prepare-to-ship until every required row is ✅/⏭. Show the board to the user after each item and before shipping. Credit orch Steps 6–7 only with cited evidence for the **current** tree. STOP on any ❌.
-   - Done when: board shown; all required rows ✅/⏭.
+2. **Prepare to PR (goal)**: load [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Drive coverage → build → tests → security → **consumer prepare discovery** (scan local `AGENTS.md` / `{sharedDir}/AGENTS.md` / `rules.*` / ship docs for prepare or before-push/publish/deliver steps; **wait** until those obligations complete) until every required row is ✅/⏭. Show the board to the user after each item and before shipping. Credit orch Steps 6–7 only with cited evidence for the **current** tree. STOP on any ❌ — including unfinished discovered local prepare steps.
+   - Done when: board shown; scan evidence recorded for row 5; all required rows ✅/⏭.
 
 3. **Code-review loop**: skip if already reviewed under `spec-to-pr` Step 6 or `spec-to-pr-lite` Step 3 (record on board). Otherwise load [06-code-review](../06-code-review/SKILL.md) against `base` and auto-fix Critical/Warning findings, up to 3 iterations.
    - Done when: review clean, 3-iteration cap reached, or skipped with evidence.
