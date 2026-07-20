@@ -1,6 +1,6 @@
 ---
 name: check-harness
-description: Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links, orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.
+description: Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.
 disable-model-invocation: true
 version: 3.2-generic
 ---
@@ -54,12 +54,35 @@ flowchart LR
 
 ## Non-negotiable principles
 
-1. **Repo-root-relative paths** — every proposed or corrected reference uses a relative path (e.g., `.agents/skills/01-write-plan/SKILL.md`). **Forbidden** absolute paths (`C:\Users\...\project\...`, `/home/user/...`) or author-machine dependencies.
-2. **Evidence-based proof** — each finding cites file + snippet/link verified with tools (`Read`, `Grep`, `Glob`). Do not report a broken link without confirming nonexistence on the filesystem.
+1. **Repo-root-relative paths** — every proposed or corrected **filesystem** reference uses a relative path (e.g., `.agents/skills/01-write-plan/SKILL.md`) or a declared **path token** that expands to one (e.g., `{sharedDir}/MEMORY.md`). **Forbidden** absolute paths (`C:\Users\...\project\...`, `/home/user/...`) or author-machine dependencies. Load and expand tokens per § Path token map **before** judging broken links or rewriting relatives.
+2. **Evidence-based proof** — each finding cites file + snippet/link verified with tools (`Read`, `Grep`, `Glob`). Do not report a broken link without confirming nonexistence on the filesystem **after** token expansion (when applicable).
 3. **Scan before edit** — Steps 1–2 are **always read-only**. Enumerate all findings and assemble the correction plan **before** any `Write`/`StrReplace`/`Delete`. Editing only in Step 3, with explicit approval.
 4. **Harness precedence** — routing source of truth is the **resolved agent hub** (§ Hub resolution below). Engineering guardrails resolve per hub § External Dependencies (`config.json.rules.seniorDeveloper`, then local/global `senior-developer`). Optional project rules are audited only when `config.json.rules.*` points at them. Skills **delegate** to the hub and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
-5. **Minimal diff in proposals** — prefer removing duplicates + link to canonical source rather than rewriting entire blocks.
+5. **Minimal diff in proposals** — prefer removing duplicates + link to canonical source rather than rewriting entire blocks. **Do not** “fix” healthy `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` prose into `../` relatives or full literals unless the citation is a Markdown link target (links cannot carry braces).
 6. **Resolved hub is the agent hub** — the resolved hub concentrates routing (skill loading, task router, verification). `README.md` is for humans (install/contribute) and must **not** replace the router. The hub must **route** to skills, rules, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
+
+### Path token map (mandatory — before Phase 1/2 path checks)
+
+Canonical contract: [`tools.md`](../shared/tools.md) § Path tokens · [`config-resolution.md`](../shared/config-resolution.md).
+
+**Load once in Phase 0**, then reuse for every existence / relative-path / correction decision:
+
+| Token | Resolve from (first match) | Default |
+|-------|----------------------------|---------|
+| `{skillsRoot}` | `config.json` → `pathTokens.skillsRoot` | `.agents/skills` |
+| `{sharedDir}` | `config.json` → `pathTokens.sharedDir` | `.agents/skills/shared` |
+| `{plansDir}` | `config.json` → `plans.dir` | `.agents/plans` |
+| `{reviewsDir}` | `config.json` → `reviews.dir` | `.agents/codereviews` |
+| `{us-dir}` | `{plansDir}/{slug}/` | (slug from context; skip existence if slug unknown) |
+
+**Expand algorithm (before any broken-link claim or relative rewrite):**
+
+1. If the cited string contains `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` / `{us-dir}`, substitute from the map (nested: expand `{sharedDir}` after `{skillsRoot}` if needed).
+2. Result is **repo-root-relative** (e.g. `.agents/skills/shared/MEMORY.md`). Check existence from **repo root**, not from the citing file’s directory.
+3. If braces remain after known-token substitution (`{slug}`, `{Name}`, unknown `{foo}`), treat as **template** — do **not** flag broken; do **not** invent a relative path.
+4. Undeclared shorthand `shared/MEMORY.md` (no braces, not repo-root `.agents/...`) → **warning** (prefer `{sharedDir}/MEMORY.md`); do not “fix” by guessing `../shared/` from a random skill folder unless it is a real Markdown link that already uses `../`.
+
+**Markdown link targets** `(...)`: must be real relative or repo-root paths (no brace tokens). Token-only prose outside links is healthy when expansion exists.
 
 ### Hub resolution (mandatory — Phase 0)
 
@@ -243,18 +266,21 @@ export PYTHONIOENCODING=utf-8
 ```
 
 5. **Python heredoc string escapes (Windows / bash):** never write `replace('\', '/')` inside `python - <<'PY'` — the `\'` ends the string early → `SyntaxError: unterminated string literal`. Prefer `Path.as_posix()`, or write a temp `.py` file, or use `replace(chr(92), "/")` / `replace("\\", "/")` with a double-quoted Python string. Prefer compiling skill scripts with `python -m py_compile` over ad-hoc one-liners when validating syntax.
+6. **Load path token map** (§ Path token map) from `{sharedDir}/config.json` when present (else `config.json.example` defaults) + [`tools.md`](../shared/tools.md) § Path tokens. Record the resolved map in the Phase 0 notes / report. **Do not** run Phase 1/2 path existence or relative rewrites until this map is loaded.
 
 ### Phase 1 — Reference extraction
 
 For each inventory file (§ Scope):
 
-1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.py`/`.cjs`/`.sh` scripts).
+1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.py`/`.cjs`/`.sh` scripts), including brace tokens (`{skillsRoot}`, `{sharedDir}`, `{plansDir}`, `{reviewsDir}`, `{us-dir}`).
 2. Normalize: strip anchors (`#`), query strings, `file://` prefixes.
 3. Classify each reference:
-   - **Harness internal** — points to a repo file
+   - **Path token** — contains a declared brace token → expand via § Path token map (repo-root existence later)
+   - **Harness internal** — points to a repo file (relative or `.agents/...` from root)
    - **External** — http(s) URL, raw GitHub, framework docs
    - **Reference external** — repository or plan outside the harness; not a new-code target
-4. Build table `(source, cited path, type, resolved?)`.
+   - **Template** — braces left after known-token expand (`{slug}`, etc.) → skip existence
+4. Build table `(source, cited path, class, expanded path?, type, resolved?)`.
 
 Useful commands:
 
@@ -262,28 +288,43 @@ Useful commands:
 # Markdown links in the hub
 rg -o '\[[^\]]+\]\(([^)]+)\)' AGENTS.md
 
+# Path tokens in skills/hubs (must expand before broken-link claims)
+rg -n '\{skillsRoot\}|\{sharedDir\}|\{plansDir\}|\{reviewsDir\}' AGENTS.md .agents/skills/ --glob '*.md'
+
 # .agents paths cited in the harness (also flag leftover host-specific dirs if present)
 rg -n '\.agents/|\.cursor/' AGENTS.md .agents/
 ```
 
 ### Phase 2 — Existence and path format validation
 
-For each internal reference:
+**Before each check:** if the citation is a path token or mixed token path, **expand** per § Path token map. Never treat `{sharedDir}/MEMORY.md` as a filesystem-relative path from the citing file (that produces false `../` “fixes”).
+
+For each internal reference (post-expansion when applicable):
 
 | Check | Typical failure |
 |-------------|--------------|
 | File exists | orphan link after rename (e.g., path ported from another project without adjustment) |
-| Relative path correct | excessive or insufficient `../` from the source file |
+| Relative path correct | excessive or insufficient `../` from the source file (**Markdown links only**; token prose uses repo-root expand) |
+| Token in Markdown link target | `(...{sharedDir}...)` — GitHub cannot expand braces → **warning**: rewrite link target to a real relative/repo-root path; keep token form in surrounding prose if desired |
 | Numeric consistency | folder `01-write-plan` vs. `name: ws-write-plan` (numeric prefix on filesystem only; `ws-` on `name:`) |
 | Case / separator | `\` vs `/` in text paths |
-| Absolute path | `C:\Users\...\project\...` — **always** fix to relative |
+| Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
+| Undeclared shorthand | bare `shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../shared/` from an arbitrary skill) |
 | Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `shared/caveman/` skill folders) while the canonical skill lives at the § 3b path — **critical** if in `spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / packaged `AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `08-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and packaged `.agents/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
 | Consumer `config.json` | Missing while `config.json.example` exists → **warning** (seed/copy); placeholders after seed → **suggestion** (`configure-project`), not a broken-link warning |
 
-**Resolution rule:** simulate the link **from the directory of the containing file** (as an agent would when clicking).
+**Resolution rule:**
+
+| Citation form | Resolve from |
+|---------------|--------------|
+| Markdown link `(relative/path)` | Directory of the **containing file** (click simulation) |
+| Declared path token / expanded token | **Repo root** after § Path token map expand |
+| Hub routing table literal `.agents/skills/...` | **Repo root** |
+
+**Do not propose** rewriting healthy token prose to `../…` “to make it relative.” That is a false fix.
 
 **Pipeline structure spot-check (when `spec-to-pr` is present):**
 
@@ -580,14 +621,14 @@ Consolidate **all** findings from Phases 0–5c into an ordered plan. This phase
 
 1. **Enumerate problems** — numbered list with severity (`critical` / `warning` / `suggestion`).
 2. **For each problem**, document:
-   - **Error** — what is wrong (with evidence: file, line, path)
-   - **Proposed correction** — exact diff or surgical instruction (relative path, before/after snippet when applicable)
+   - **Error** — what is wrong (with evidence: file, line, path; include **expanded** path when the citation used tokens)
+   - **Proposed correction** — exact diff or surgical instruction (relative path, before/after snippet when applicable). Preserve declared path tokens in prose; only rewrite Markdown link targets to real relatives. Never “normalize” `{sharedDir}/…` into `../shared/…` as a default fix.
 3. **Classify findings:**
 
 | Severity | Criterion |
 |------------|----------|
-| **critical** | Broken link in hub (`AGENTS.md`) or skill invoked by workflow |
-| **warning** | Broken secondary link, absolute path, redundancy that may confuse agent, unrouted skill/rule, `name:` collision |
+| **critical** | Broken link in hub (`AGENTS.md`) or skill invoked by workflow (after token expand) |
+| **warning** | Broken secondary link, absolute path, token-in-link-target, undeclared `shared/` shorthand, redundancy that may confuse agent, unrouted skill/rule, `name:` collision |
 | **suggestion** | Clarity improvement, table symmetry, outdated doc without functional breakage |
 
 4. **Emit report** in § Output format — the **Correction plan** section is the main artifact of this phase.
@@ -608,7 +649,7 @@ Execute **only** after explicit approval in Phase 6.
 
 1. Apply corrections in plan order (critical → warning → suggestion, unless dependency order dictates otherwise).
 2. **Surgical** diff — one fix class per logical commit when the user commits later.
-3. **Re-run Phase 2** (path validation) on touched files.
+3. **Re-run Phase 2** (path validation **with path token map**) on touched files.
 4. Inform the user what was applied vs. what remains pending.
 5. If the harness is healthy after corrections, confirm: **Harness OK post-correction**.
 
@@ -671,19 +712,20 @@ If the user requests, save to:
 ## Quick checklist (Definition of Done for this audit)
 
 **Step 1 — Scan**
+- [ ] Phase 0 path token map loaded (`pathTokens` / `plans.dir` / defaults) before Phase 1/2 path checks
 - [ ] All § Scope files have been read or sampled via grep with link coverage
-- [ ] Phase 2: pipeline § 3b structure + retired folder ids checked (when `spec-to-pr` present)
+- [ ] Phase 2: token expand before existence; no false `../` rewrites of healthy tokens; pipeline § 3b structure + retired folder ids checked (when `spec-to-pr` present)
 - [ ] Phase 3: orchestrator dependency closure checked vs `bin/skill-dependencies.json` (when present)
 - [ ] Phase 4 executed: filesystem ↔ `AGENTS.md` (+ packaged hub / `skill-dependencies.json` when present) diff documented
 - [ ] Phase 5c executed: auto-load matrix, overlap analysis, simulated context load
 - [ ] No harness file was edited in this step
 
 **Step 2 — Plan**
-- [ ] Each problem enumerated with severity, error, and proposed correction
+- [ ] Each problem enumerated with severity, error, and proposed correction (token-aware)
 - [ ] Report delivered in § Output format (problem → correction table)
 - [ ] **Dry-run:** report delivered as final artifact; end here
 - [ ] **Normal:** `user-gate` done when correctable items exist (or recorded as pending with reason)
-- [ ] No local-machine absolute paths remain in proposals
+- [ ] No local-machine absolute paths remain in proposals; no token→`../` false fixes
 
 **Step 3 — Execution** (normal only; dry-run ends at Step 2)
 - [ ] Only approved items were applied

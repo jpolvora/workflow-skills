@@ -43,6 +43,7 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
 
 1. **Config check**: Check if `.agents/skills/shared/config.json` exists (fresh install normally seeds it from `config.json.example`).
    - If missing: `cp .agents/skills/shared/config.json.example .agents/skills/shared/config.json`.
+   - Load path tokens early ([`tools.md`](tools.md) § Path tokens): `pathTokens.skillsRoot` / `sharedDir` (defaults `.agents/skills` / `.agents/skills/shared`) plus `{plansDir}` ← `plans.dir`. Expand braces before Read/Grep/Shell.
    - User-gate: **Configure now (Recommended)** / **Skip**.
    - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`configure-project`](../configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
    - If **Skip**: continue with example defaults; warn that providers/verification may be wrong until configure-project runs.

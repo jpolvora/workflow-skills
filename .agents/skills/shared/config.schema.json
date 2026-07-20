@@ -7,6 +7,23 @@
   "required": ["project", "verification", "plans"],
   "properties": {
     "toolsFile": { "type": "string", "default": "tools.md" },
+    "pathTokens": {
+      "type": "object",
+      "description": "Fixed install-layout hints for brace tokens {skillsRoot} / {sharedDir}. Not relocatable; defaults match the installer. Agents expand before tool calls. See tools.md § Path tokens.",
+      "additionalProperties": true,
+      "properties": {
+        "skillsRoot": {
+          "type": "string",
+          "default": ".agents/skills",
+          "description": "Expand {skillsRoot}. Install contract; do not relocate."
+        },
+        "sharedDir": {
+          "type": "string",
+          "default": ".agents/skills/shared",
+          "description": "Expand {sharedDir}. Usually {skillsRoot}/shared."
+        }
+      }
+    },
     "project": {
       "type": "object",
       "required": ["name", "baseBranch"],

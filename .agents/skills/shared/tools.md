@@ -2,6 +2,28 @@
 
 Canonical tool names every agent uses. Project-specific parameters from `config.json`. Do not hardcode build/test commands in skills — use these aliases.
 
+## Path tokens (load first)
+
+**Before** any `Read` / `Grep` / `Glob` / `Shell` that uses a brace path, expand tokens from this table (same idea as `{plansDir}` ← `plans.dir`). Prefer `config.json` → `pathTokens.*` when present; otherwise use the **Default** column.
+
+| Token | Resolve | Default (install contract) |
+|-------|---------|----------------------------|
+| `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
+| `{sharedDir}` | `pathTokens.sharedDir` | `{skillsRoot}/shared` → `.agents/skills/shared` |
+| `{plansDir}` | `plans.dir` | `.agents/plans` |
+| `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
+| `{us-dir}` | `{plansDir}/{slug}/` | (slug from workflow) |
+
+**Agent contract:**
+
+1. Load `config.json` (`read-config`) then this file (`toolsFile`, default `tools.md`) early in the session.
+2. Expand tokens **before** tool calls. Example: `{sharedDir}/MEMORY.md` → `.agents/skills/shared/MEMORY.md`.
+3. **Forbidden:** bare `shared/MEMORY.md` or other undeclared shorthands (do not Grep those literals).
+4. **Shell recipes:** expand tokens before paste, or write the Default path literally (copy-paste safe).
+5. **Markdown links** in skill files: use real relative paths (`../shared/…`), never brace tokens (GitHub/check-harness cannot expand them).
+6. **Hub routing tables** that inventory disk paths: keep full `.agents/skills/…` literals so audits stay filesystem-true.
+7. `{skillsRoot}` / `{sharedDir}` are **fixed install layout**, not relocatable consumer knobs (unlike `plans.dir`).
+
 ## Core tools
 
 | Tool | Action | Native | Source from config |
@@ -21,18 +43,18 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 
 ## State & workflow tools
 
-Resolve `{plansDir}` from `config.json` → `plans.dir` (there is **no** `plansDir` key). Default value of `plans.dir`: `.agents/plans`. `{us-dir}` = `{plansDir}/{slug}/`. Resolve `{reviewsDir}` from `config.json` → `reviews.dir` (default `.agents/codereviews`). See [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
+Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names: [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
 
 | Tool | Action | Native |
 |------|--------|--------|
 | `read-state` | Read workflow state | `Read` `{us-dir}/{workflow-id}.state.md` |
 | `write-state` | Write/append state | `Write` / `StrReplace` (hygiene before board) |
-| `read-config` | Load project config | `Read` `.agents/skills/shared/config.json` |
-| `read-artifacts-registry` | Canonical artifact names | `Read` `.agents/skills/spec-to-pr/ARTIFACTS.md` |
-| `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `.agents/skills/shared/STACK.md`) |
-| `read-memory` | Load learned knowledge **before** plan/code/fix | `Grep` / `Read` `.agents/skills/shared/MEMORY.md` (keywords from the task). Mandatory for mutating work — see [`self-learning`](../self-learning/SKILL.md) § Pre-work consult |
+| `read-config` | Load project config | `Read` `{sharedDir}/config.json` |
+| `read-artifacts-registry` | Canonical artifact names | `Read` `{skillsRoot}/spec-to-pr/ARTIFACTS.md` |
+| `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `{sharedDir}/STACK.md`) |
+| `read-memory` | Load learned knowledge **before** plan/code/fix | `Grep` / `Read` `{sharedDir}/MEMORY.md` (keywords from the task). Mandatory for mutating work — see [`self-learning`](../self-learning/SKILL.md) § Pre-work consult |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
-| `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `python .agents/skills/spec-to-pr/scripts/{name}.py`. Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `09-fix-pr/scripts/`) |
+| `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `python {skillsRoot}/spec-to-pr/scripts/{name}.py`. Converters/thread helpers: prefer `{skillsRoot}/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `09-fix-pr/scripts/`) |
 
 ## Source control tools
 
@@ -62,8 +84,8 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `update-memory` | Write learned pattern | Create unique file in `shared/memory/` and run `python .agents/skills/self-learning/self_learning.py --compile` |
-| `update-changelog` | Append historical log | `Write`/`StrReplace` `config.json.rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
+| `update-memory` | Write learned pattern | Create unique file in `{sharedDir}/memory/` and run `python {skillsRoot}/self-learning/self_learning.py --compile` |
+| `update-changelog` | Append historical log | `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
 ## Script launchers
 
@@ -71,9 +93,9 @@ Managed skill scripts are upstream-owned. Invoke with an **explicit launcher**; 
 
 | Extension | Launcher | Example |
 |-----------|----------|---------|
-| `*.py` | `python` | `python .agents/skills/.../scripts/foo.py` |
-| `*.cjs` / `*.js` | `node` | `node .agents/skills/.../scripts/foo.cjs` |
-| `*.sh` | `bash` | `bash .agents/skills/.../scripts/foo.sh` |
+| `*.py` | `python` | `python {skillsRoot}/.../scripts/foo.py` (expand token first) |
+| `*.cjs` / `*.js` | `node` | `node {skillsRoot}/.../scripts/foo.cjs` (expand token first) |
+| `*.sh` | `bash` | `bash {skillsRoot}/.../scripts/foo.sh` (expand token first) |
 
 **Contract (agents):**
 
@@ -89,9 +111,9 @@ Skill `.sh` dialect: Git Bash–compatible bash. Prefer Node/Python for new logi
 1. **No hardcoded commands** in skills — use tool aliases. Config.json holds project-specific values.
 2. **Shell only for git/build/scripts** — never use bash where `Read`/`Write`/`Grep`/`Glob` suffice.
 3. **Explicit launchers** — every managed script call uses `python` / `node` / `bash` per [Script launchers](#script-launchers).
-4. **Consult MEMORY before mutating** — `read-memory` (`Grep` `MEMORY.md`) before plan, code, skill edits, or script fixes; apply known Solutions. Write new traps via `update-memory` after.
+4. **Consult MEMORY before mutating** — `read-memory` (`Grep` / `Read` `{sharedDir}/MEMORY.md`) before plan, code, skill edits, or script fixes; apply known Solutions. Write new traps via `update-memory` after.
 5. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
 6. **No commit of `{plansDir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
 7. **Subagents: fresh per step** — never resume a subagent across steps.
 8. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
-9. **Paths from config** — never hardcode plans or review dirs; always resolve `plans.dir` / `reviews.dir` / `workingBranch` / `baseBranch` into tokens `{plansDir}` / `{reviewsDir}` / etc.
+9. **Paths via tokens** — expand [Path tokens](#path-tokens-load-first) before tool calls; never invent undeclared shorthands. `{plansDir}` / `{reviewsDir}` / `workingBranch` / `baseBranch` come from config; `{skillsRoot}` / `{sharedDir}` from `pathTokens` or defaults.

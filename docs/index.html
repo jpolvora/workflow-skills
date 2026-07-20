@@ -88,7 +88,7 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
         <div class="name">check-harness</div>
-        <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links, orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
+        <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/check-workflows/SKILL.md">
@@ -236,7 +236,7 @@
       </div>
       <div class="skill-card" data-path=".agents/skills/self-learning/SKILL.md">
         <div class="name">self-learning</div>
-        <div class="desc">Consult anti-regression MEMORY before planning or writing code, and record new traps into shared/memory after implementation. Use at session/task start (read) and task completion (write + compile). Prevents repeating known mistakes.</div>
+        <div class="desc">Consult anti-regression MEMORY before planning or writing code, and record new traps into the shared memory hub after implementation. Use at session/task start (read) and task completion (write + compile). Prevents repeating known mistakes.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/self-learning/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md">
@@ -269,7 +269,10 @@
     Full / Workflows installs also ensure the <code>shared/</code> hub (templates + preserved consumer data).
     Managed skills are tracked in <code>shared/installed-skills.json</code> for <code>update</code> / <code>uninstall</code>.
     Workflow artifact paths come from consumer <code>config.json</code> (defaults under <code>.agents/plans</code> /
-    <code>.agents/codereviews</code>). Optional host pointer files are consumer-owned — not required by skills.
+    <code>.agents/codereviews</code>). Fixed skill-layout hints use <code>pathTokens</code>
+    (<code>{skillsRoot}</code> / <code>{sharedDir}</code>; see
+    <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/skills/shared/tools.md">tools.md</a> § Path tokens).
+    Optional host pointer files are consumer-owned — not required by skills.
     Consumer agent contract: <code>skills/shared/AGENTS.md</code> (installed with the hub; includes portable
     <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/skills/shared/AGENTS.md#external-dependencies">External dependencies</a>).
   </p>
@@ -294,6 +297,10 @@
     </div>
   </div>
 </section>
+
+
+
+
 
 
 
