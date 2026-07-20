@@ -26,7 +26,7 @@
 | [`config.schema.json`](config.schema.json) | JSON Schema for `config.json` validation |
 | [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
 | [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
-| [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys) |
+| [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys) + script launchers (`python` / `node` / `bash`) |
 | [`STACK.md.example`](STACK.md.example) | Template for human-readable stack companion — seeds `STACK.md` |
 | [`setup.md`](setup.md) | Bootstrap & entry logic shared by `spec-to-pr` and `spec-to-pr-lite` |
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
@@ -53,7 +53,7 @@
 | `gabarito` | [`../gabarito/SKILL.md`](../gabarito/SKILL.md) | Every prompt — operational guidelines |
 | `karpathy-guidelines` | [`../karpathy-guidelines/SKILL.md`](../karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
 | `changelog` | [`../changelog/SKILL.md`](../changelog/SKILL.md) | Every task completion |
-| `self-learning` | [`../self-learning/SKILL.md`](../self-learning/SKILL.md) | Every task completion → `MEMORY.md` |
+| `self-learning` | [`../self-learning/SKILL.md`](../self-learning/SKILL.md) | Before plan/code/fix: consult `MEMORY.md`; on completion: write traps → compile |
 
 ### Precedence (highest first)
 
@@ -130,6 +130,20 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Show active harness | `show-harness` (Extra) |
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
+
+---
+
+## Managed skills — no silent local refactors
+
+Skills under `.agents/skills/` (except consumer-owned `shared/` data) are **managed upstream copies**. `update` overwrites them.
+
+| Context | Do | Do not |
+|---------|----|--------|
+| **Consumer repo / CI / Actions** | Verify a real runtime bug with evidence. If a lasting skill/script fix is needed, **tell the user to fix upstream** ([workflow-skills](https://github.com/jpolvora/workflow-skills) PR) or open that PR; local experiments are temporary only. | Autonomously reorder, “hygiene-refactor,” or rewrite managed skill scripts from a false positive (e.g. Python same-module call-before-`def` is not a `NameError`). |
+| **Managed script calls** | Invoke with explicit launchers (`python` / `node` / `bash`) per [`tools.md`](tools.md) § Script launchers. On failure: report and stop. | Rewrite managed scripts for shell quirks, or invent temp scanners/bridges when a recipe fails. |
+| **Agent shell scans** | Prefer `python -m py_compile` on real `*.py` paths, or a short **uncommitted** temp script if a one-liner heredoc breaks on quoting. Delete temps when done. | Commit throwaway scanners into the consumer tree, or treat shell `SyntaxError` in an embedded heredoc as a skill-script bug. |
+
+False positives that look like “forward reference” bugs are almost always safe at Python call time. Prefer reporting + upstream suggestion over silent local churn.
 
 ---
 

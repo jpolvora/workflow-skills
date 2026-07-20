@@ -87,7 +87,7 @@ Zero findings → `No leaks detected.`
 bash .agents/skills/secrets-leak-review/scripts/install-hook.sh
 ```
 
-Hook runs `scripts/pre-commit.sh` on staged files. Override: `git commit --no-verify`.
+Hook runs `bash .agents/skills/secrets-leak-review/scripts/pre-commit.sh` on staged files (which calls `bash …/secrets_scanner.sh`). Override: `git commit --no-verify`.
 
 ## Rules
 

@@ -30,7 +30,7 @@ Resolve from the **consumer project** only — never invent stack commands:
 | Consumer `AGENTS.md`, `CONTRIBUTING.md`, ship/release docs | Prepare-to-ship steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
 
-Prefer `scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../shared/tools.md).
+Prefer `bash .agents/skills/08-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../shared/tools.md) (run config strings unchanged).
 
 ## Checklist items
 
@@ -42,13 +42,13 @@ Prefer `scripts/verify.sh` when it covers configured build+test; else `verificat
 
 ### 2. Build
 **When:** no green build yet for the current tree.  
-**Do:** `verification.backendBuild` (+ `frontendBuild` if frontend touched), or `scripts/verify.sh` build portion.  
+**Do:** `verification.backendBuild` (+ `frontendBuild` if frontend touched), or `bash .agents/skills/08-ship-pr/scripts/verify.sh` build portion.  
 **⏭:** green build evidence for current tree.  
 **Done when:** build green or ❌ with summarized output.
 
 ### 3. Tests
 **When:** no green tests yet for the current tree.  
-**Do:** `verification.backendTest` (+ `frontendTest` if frontend touched), or full `scripts/verify.sh`.  
+**Do:** `verification.backendTest` (+ `frontendTest` if frontend touched), or full `bash .agents/skills/08-ship-pr/scripts/verify.sh`.  
 **⏭:** green evidence, or `skipTests` / orch `skipTesting` with waiver on board.  
 **Done when:** tests green, waived with evidence, or ❌.
 

@@ -48,6 +48,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 - **Preserve** under `.agents/skills/shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Installer does **not** copy `.agents/AGENTS.md` — consumer hub is `shared/AGENTS.md`. Fresh install seeds `config.json` (from example), `MEMORY.md`, `CHANGELOG.md`, and `STACK.md` under `shared/` when missing. Installer never writes consumer repo-root files.
 - **Latest layout only:** installer does not migrate older folder names or legacy host paths — consumers get the current skill tree and neutral defaults on install/update. See [`README.md`](README.md) § Safety and § [Portability & harness neutrality](#portability--harness-neutrality-mandatory).
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
+- **Consumers / CI / Actions:** agents must not silently hygiene-refactor managed skill scripts; lasting fixes → suggest or open an **upstream** PR. See [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) § Managed skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding; no IDE/agent product coupling. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
 - Guardrails resolution: § [External dependencies](#external-dependencies) (consumer install mirror: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md)).
@@ -120,7 +121,7 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 | `gabarito` | `.agents/skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Every task completion → `shared/MEMORY.md` |
+| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Before plan/code/fix: consult `shared/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
 ### Precedence (highest first)
@@ -207,7 +208,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Autoload |
 | `spec-to-pr` / `spec-to-pr-lite` | `.agents/skills/.../SKILL.md` | Orchestrators |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Writes `shared/MEMORY.md` |
+| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `shared/MEMORY.md` |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
 | `configure-project` | `.agents/skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `.agents/skills/goal-loop/SKILL.md` | Convergence |

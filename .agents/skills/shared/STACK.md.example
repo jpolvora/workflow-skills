@@ -50,6 +50,8 @@ Tool aliases in `tools.md`. Commands in `config.json.verification`:
 
 Leave unused rows empty in `config.json`. **When frontend not modified:** skip frontend build/test. **When `skipTests: true`:** skip test rows; build still runs.
 
+> **Script launchers:** managed skill scripts use explicit `python` / `node` / `bash` (see [`tools.md`](tools.md) § Script launchers). Run `verification.*` strings unchanged; do not rewrite managed `.sh`/`.py`/`.cjs` for host shell quirks.
+
 > **Running dev stack:** if build/test fails with **address already in use**, the stack may already be running. **Ask the user** before stopping.
 
 ## Project Rules & Skills (from config.json)

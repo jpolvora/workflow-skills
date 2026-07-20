@@ -44,6 +44,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | **Canonical upstream** | [`jpolvora/workflow-skills`](https://github.com/jpolvora/workflow-skills) is the authoritative source for pipeline and dependency skills. |
 | **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/STACK.md`, `shared/MEMORY.md`, `shared/memory/*`, `shared/installed-skills.json`, and optional `shared/CHANGELOG.md` when configured there. Latest layout only — no older-folder migration and no legacy host-path shims (see upstream README § Safety; root [`AGENTS.md`](../AGENTS.md) § Portability). |
 | **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx --yes github:jpolvora/workflow-skills update` (or `update --include-new`). |
+| **No silent LLM refactors** | In **consumer** checkouts and **CI/Actions**, agents must **not** autonomously hygiene-refactor managed skill scripts (reorder helpers, “fix” false forward refs, rewrite scanners) without user approval. If a real fix belongs in skills, **suggest or open an upstream PR** — do not treat the consumer copy as the source of truth. Consumer hub copy: [`skills/shared/AGENTS.md`](skills/shared/AGENTS.md) § Managed skills. |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
 ### Pre-merge gate: `check-harness` (mandatory for upstream)
@@ -86,7 +87,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `gabarito` | `skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `changelog` | `skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `skills/self-learning/SKILL.md` | Every task completion → `skills/shared/MEMORY.md` |
+| `self-learning` | `skills/self-learning/SKILL.md` | Before plan/code/fix: consult `skills/shared/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global — not shipped)` | Session start — skill discovery |
 
 ### Precedence (highest first)
@@ -151,7 +152,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `gabarito` | `skills/gabarito/SKILL.md` | Ten operational response guidelines |
 | `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
 | `spec-format` | `skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
-| `self-learning` | `skills/self-learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
+| `self-learning` | `skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
 | `configure-project` | `skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `goal-fix-pr`) |
@@ -252,6 +253,6 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
 - Consumers may copy or adapt routing into their own root `AGENTS.md`; keep paths relative to the install root (typically `.agents/skills/...`).
 - **Consumer hub:** `.agents/skills/shared/AGENTS.md` is installed with the shared hub and documents config, gates, and external dependencies. The installer does **not** copy `.agents/AGENTS.md` into consumer projects.
 - **Dual hub (upstream only):** root `AGENTS.md` and packaged `.agents/AGENTS.md` stay aligned for check-harness drift checks in this source repo.
-- **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** above). In-place edits are overwritten on update.
+- **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** / **No silent LLM refactors** above). In-place edits are overwritten on update.
 - Before upstream merge to `main`, skill changes must pass **`check-harness`** (see **Pre-merge gate** above).
 - Guardrails / External Dependencies: use **this file** § [External dependencies](#external-dependencies) (`rules.seniorDeveloper` / `rules.karpathyGuidelines` / `rules.stackFile` in config). Do not require a consumer root `AGENTS.md` section; if the root hub also documents the contract, keep both aligned.

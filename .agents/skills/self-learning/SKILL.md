@@ -1,11 +1,14 @@
 ---
 name: self-learning
-description: Analyze session output and record anti-regression knowledge (mistakes, traps, and pitfalls to avoid) into conflict-free memory files under shared/, then compile MEMORY.md. Use when completing a task or implementation.
+description: >
+  Consult anti-regression MEMORY before planning or writing code, and record new traps
+  into shared/memory after implementation. Use at session/task start (read) and task
+  completion (write + compile). Prevents repeating known mistakes.
 ---
 
 # Self-Learning
 
-**Mandatory completion gate** — run after verification and code review proof. Task is **not done** until this skill runs and the proof includes a **`Learning:`** line.
+**Bidirectional gate** — MEMORY is both input (avoid known traps) and output (record new ones).
 
 Consumer-owned memory lives in the shared hub (never overwritten by install/update):
 
@@ -14,34 +17,41 @@ Consumer-owned memory lives in the shared hub (never overwritten by install/upda
 
 ## When to run
 
-| Task type | Action |
-|-----------|--------|
-| Implementation hit a trap/pitfall/race condition | Create a new file in `shared/memory/`, then run `self_learning.py --compile` |
-| Standard feature/bug fix without non-obvious traps | Proof line: `Learning: N/A (standard implementation)` |
-| Pure Q&A, no code or durable insight | Proof line: `Learning: N/A (no new project knowledge)` |
+| Moment | Action |
+|--------|--------|
+| **Before plan / before code / before fix** | **Consult:** `Grep` / `Read` `.agents/skills/shared/MEMORY.md` for keywords of the task (shell, script, encoding, skill path, module). Apply matching **Solution** lines. Skip only for pure Q&A with no repo edits. |
+| Implementation hit a trap/pitfall/race | **Write:** new file in `shared/memory/`, then `python .agents/skills/self-learning/self_learning.py --compile` |
+| Standard feature/bug fix, no new trap | Proof line: `Learning: N/A (standard implementation)` after confirming no new pitfall |
+| Pure Q&A, no durable insight | Proof line: `Learning: N/A (no new project knowledge)` |
 
-## Process
+Task is **not done** until the completion side runs (write or explicit `Learning: N/A`) and proof includes a **`Learning:`** line. Prefer consulting MEMORY **before** inventing a new approach when the domain already has High/Critical entries.
+
+## Pre-work consult (mandatory for mutating work)
+
+1. Identify 3–8 keywords from the task (e.g. `bash`, `CRLF`, `launcher`, `verify.sh`, `managed skill`, `encoding`).
+2. `Grep` those terms in `.agents/skills/shared/MEMORY.md` (tool alias `read-memory`).
+3. If a hit is Severity Medium+, fold its **Solution** into the plan or first edit. Do not re-discover the same failure mode.
+4. For scripts/skills specifically, also apply the preflight in memory entry **Script/skill authoring preflight** (launchers, LF, Windows Python `\r\n`, no shell bridges).
+
+## Process (write after)
 
 1. **Analyze context** — What did we try that failed? What non-obvious constraint or pitfall did we hit?
-2. **Write to `shared/memory/`** — Write a new file under `.agents/skills/shared/memory/YYYY-MM-DD-[slug].md`. **ONLY** record traps/pitfalls. **DO NOT** use it as a changelog or to record standard patterns that an LLM already knows.
-3. **Compile `MEMORY.md`** — Run the compilation command:
+2. **Write to `shared/memory/`** — New file `.agents/skills/shared/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a changelog or to record patterns an LLM already knows.
+3. **Compile `MEMORY.md`** — Run:
    ```bash
    python .agents/skills/self-learning/self_learning.py --compile
    ```
-   This regenerates `.agents/skills/shared/MEMORY.md` from all files in `shared/memory/`.
-4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` in the final code review proof; provide a one-line summary in the final reply.
+4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` in the final proof; one-line summary in the reply.
 
 ## Conflict Resolution
 
-If a merge conflict occurs in `MEMORY.md` when pulling/merging from other branches/developers, **do not resolve it manually**. Run:
+If `MEMORY.md` merge-conflicts on pull/merge, **do not** resolve by hand. Run:
 ```bash
 python .agents/skills/self-learning/self_learning.py --compile
 ```
-This recompiles a clean, unified `MEMORY.md` from the individual memory files under `shared/memory/` (which never conflict because they are stored as separate files).
+This rebuilds a clean index from `shared/memory/` (per-file entries do not conflict).
 
 ## Individual Memory File Template
-
-Create your entry as a markdown file under `.agents/skills/shared/memory/` using the following format:
 
 ```markdown
 ### [YYYY-MM-DD] [Topic/Component]

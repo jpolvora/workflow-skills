@@ -65,7 +65,7 @@ GCP_SERVICE_ACCOUNT
 ## Interactive vs scripts
 
 - **Interactive skill run:** use Grep/Glob only (see `SKILL.md`). Do not run full-tree `rg --no-ignore` or `-t all`.
-- **Optional script:** `scripts/secrets_scanner.sh` is for pre-commit / manual CLI. It uses ignore-aware globs and caps hits (`SECRETS_SCAN_MAX_HITS`, default 50).
+- **Optional script:** `bash .agents/skills/secrets-leak-review/scripts/secrets_scanner.sh` is for pre-commit / manual CLI. It uses ignore-aware globs and caps hits (`SECRETS_SCAN_MAX_HITS`, default 50).
 
 ## Optional external tools
 
