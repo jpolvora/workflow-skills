@@ -5,6 +5,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "workflow-skills": "file:../workflow-skills-0.0.60.tgz"
+    "workflow-skills": "file:../workflow-skills-0.0.61.tgz"
   }
 }

@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 
+/**
+ * Regenerate docs/index.html from AGENTS.md + skills.
+ *
+ * Version contract (single source of truth = package.json):
+ * - Default: stamp footer from package.json.version (no bump). Safe for CI.
+ * - --bump: patch-bump package.json, then stamp footer. Use only for intentional releases.
+ * Never bump in GitHub Actions site deploy — that used to write footer+1 while
+ * only committing docs/, leaving install/--version/--check one patch behind the site.
+ */
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -8,16 +18,29 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, '..');
 
-// --- Version Bumping ---
+const args = process.argv.slice(2);
+const shouldBump = args.includes('--bump');
+
+// --- Version (package.json is canonical) ---
 const pkgPath = path.join(root, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
 const currentVersion = pkg.version;
-const versionParts = currentVersion.split('.').map(Number);
-versionParts[2] += 1; // Bump patch version
-const newVersion = versionParts.join('.');
-pkg.version = newVersion;
-fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-console.log(`Bumping package.json version: ${currentVersion} -> ${newVersion}`);
+let siteVersion = currentVersion;
+
+if (shouldBump) {
+  const versionParts = currentVersion.split('.').map(Number);
+  if (versionParts.length !== 3 || versionParts.some((n) => Number.isNaN(n))) {
+    console.error(`Invalid package.json version "${currentVersion}" (expected x.y.z)`);
+    process.exit(1);
+  }
+  versionParts[2] += 1;
+  siteVersion = versionParts.join('.');
+  pkg.version = siteVersion;
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+  console.log(`Bumping package.json version: ${currentVersion} -> ${siteVersion}`);
+} else {
+  console.log(`Using package.json version: ${siteVersion} (pass --bump to patch-bump)`);
+}
 
 // --- 1. Parse AGENTS.md layer tables ---
 const agentsMd = fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf-8');
@@ -330,10 +353,10 @@ html = html.replace(
   `$1${layerCount}$2`
 );
 
-// Replace version in footer
+// Stamp footer from package.json (same version consumers see via --version / --check)
 html = html.replace(
   /(<footer>\s*<p>MIT &mdash; <a href="https:\/\/github.com\/jpolvora\/workflow-skills">jpolvora\/workflow-skills<\/a>)( &mdash; v\d+\.\d+\.\d+)?(\s*<\/p>\s*<\/footer>)/,
-  `$1 &mdash; v${newVersion}$3`
+  `$1 &mdash; v${siteVersion}$3`
 );
 
 fs.writeFileSync(indexPath, html);
