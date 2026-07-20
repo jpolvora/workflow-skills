@@ -53,7 +53,7 @@
 | `gabarito` | [`../gabarito/SKILL.md`](../gabarito/SKILL.md) | Every prompt — operational guidelines |
 | `karpathy-guidelines` | [`../karpathy-guidelines/SKILL.md`](../karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
 | `changelog` | [`../changelog/SKILL.md`](../changelog/SKILL.md) | Every task completion |
-| `self-learning` | [`../self-learning/SKILL.md`](../self-learning/SKILL.md) | Every task completion → `MEMORY.md` |
+| `self-learning` | [`../self-learning/SKILL.md`](../self-learning/SKILL.md) | Before plan/code/fix: consult `MEMORY.md`; on completion: write traps → compile |
 
 ### Precedence (highest first)
 

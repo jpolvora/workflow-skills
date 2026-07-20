@@ -1,11 +1,11 @@
 # Gabarito
 
-Operational communication skill for agents: ten directives plus style discipline.
+Operational communication skill for agents: eleven directives plus style discipline.
 
 ## What it does
 
 - Runs **every turn** (always-on) unless opted out
-- Improves accountability, anti-sycophancy, clarification, verification, and prose quality
+- Improves accountability, anti-sycophancy, clarification, verification, anti-regression memory consult, and prose quality
 - First reply only: short signal line (*"Gabarito in use."*)
 
 ## Consumer projects

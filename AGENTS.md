@@ -121,7 +121,7 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 | `gabarito` | `.agents/skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Every task completion → `shared/MEMORY.md` |
+| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Before plan/code/fix: consult `shared/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
 ### Precedence (highest first)
@@ -208,7 +208,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Autoload |
 | `spec-to-pr` / `spec-to-pr-lite` | `.agents/skills/.../SKILL.md` | Orchestrators |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Writes `shared/MEMORY.md` |
+| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `shared/MEMORY.md` |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
 | `configure-project` | `.agents/skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `.agents/skills/goal-loop/SKILL.md` | Convergence |

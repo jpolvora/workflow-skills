@@ -30,7 +30,7 @@ Resolve `{plansDir}` from `config.json` → `plans.dir` (there is **no** `plansD
 | `read-config` | Load project config | `Read` `.agents/skills/shared/config.json` |
 | `read-artifacts-registry` | Canonical artifact names | `Read` `.agents/skills/spec-to-pr/ARTIFACTS.md` |
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `.agents/skills/shared/STACK.md`) |
-| `read-memory` | Load learned knowledge | `Read` `.agents/skills/shared/MEMORY.md` (index via `Grep`) |
+| `read-memory` | Load learned knowledge **before** plan/code/fix | `Grep` / `Read` `.agents/skills/shared/MEMORY.md` (keywords from the task). Mandatory for mutating work — see [`self-learning`](../self-learning/SKILL.md) § Pre-work consult |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
 | `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `python .agents/skills/spec-to-pr/scripts/{name}.py`. Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `09-fix-pr/scripts/`) |
 
@@ -89,8 +89,9 @@ Skill `.sh` dialect: Git Bash–compatible bash. Prefer Node/Python for new logi
 1. **No hardcoded commands** in skills — use tool aliases. Config.json holds project-specific values.
 2. **Shell only for git/build/scripts** — never use bash where `Read`/`Write`/`Grep`/`Glob` suffice.
 3. **Explicit launchers** — every managed script call uses `python` / `node` / `bash` per [Script launchers](#script-launchers).
-4. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
-5. **No commit of `{plansDir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
-6. **Subagents: fresh per step** — never resume a subagent across steps.
-7. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
-8. **Paths from config** — never hardcode plans or review dirs; always resolve `plans.dir` / `reviews.dir` / `workingBranch` / `baseBranch` into tokens `{plansDir}` / `{reviewsDir}` / etc.
+4. **Consult MEMORY before mutating** — `read-memory` (`Grep` `MEMORY.md`) before plan, code, skill edits, or script fixes; apply known Solutions. Write new traps via `update-memory` after.
+5. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
+6. **No commit of `{plansDir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
+7. **Subagents: fresh per step** — never resume a subagent across steps.
+8. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
+9. **Paths from config** — never hardcode plans or review dirs; always resolve `plans.dir` / `reviews.dir` / `workingBranch` / `baseBranch` into tokens `{plansDir}` / `{reviewsDir}` / etc.

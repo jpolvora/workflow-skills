@@ -17,11 +17,25 @@ frontend_touched() {
   } | grep -q '^web/'
 }
 
+# Prefer documented launcher `python`, fall back to `python3` (Linux images).
+if command -v python >/dev/null 2>&1; then
+  _py=python
+elif command -v python3 >/dev/null 2>&1; then
+  _py=python3
+else
+  echo "verify.sh: python (or python3) is required" >&2
+  exit 1
+fi
+
 # Always UTF-8 — bare open() uses Windows locale (cp1252) and can UnicodeDecodeError.
+# Force Unix newlines: Windows Python prints \r\n; bash `read` keeps trailing \r and breaks eval.
 read_verification_config() {
-  PYTHONUTF8=1 PYTHONIOENCODING=utf-8 python3 -c "
+  PYTHONUTF8=1 PYTHONIOENCODING=utf-8 "$_py" -c "
+import sys
 from pathlib import Path
 import json
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', newline='\n')
 cfg = Path(r'''$config_file''')
 c = json.loads(cfg.read_text(encoding='utf-8'))
 v = c.get('verification', {}) or {}
@@ -44,6 +58,12 @@ if [ -f "$config_file" ]; then
     read -r frontend_test
     read -r frontend_dir
   } < <(read_verification_config)
+  # Defense in depth if a host still emits CR
+  backend_build="${backend_build//$'\r'/}"
+  backend_test="${backend_test//$'\r'/}"
+  frontend_build="${frontend_build//$'\r'/}"
+  frontend_test="${frontend_test//$'\r'/}"
+  frontend_dir="${frontend_dir//$'\r'/}"
   frontend_dir="${frontend_dir:-web}"
 else
   echo "==> No config.json found — using fallback commands"

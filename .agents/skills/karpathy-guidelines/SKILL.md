@@ -19,6 +19,7 @@ Before implementing:
 - If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
+- **Consult project MEMORY** — `Grep` / `Read` `.agents/skills/shared/MEMORY.md` for task keywords (scripts, encoding, shell, skill paths, modules). Apply matching Solutions before inventing a new approach. See [`self-learning`](../self-learning/SKILL.md) § Pre-work consult.
 
 ## 2. Simplicity First
 

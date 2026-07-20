@@ -14,7 +14,7 @@ invocation_names:
 
 Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Act as a Senior Software Developer: clean code, SOLID, surgical edits, stack-consistent, no duplication.
 
-**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns.
+**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `.agents/skills/shared/MEMORY.md` (Grep task keywords before coding — [`self-learning`](../self-learning/SKILL.md) § Pre-work consult).
 
 ## Invocation
 
@@ -37,16 +37,19 @@ Workflow (spec-to-pr Step 4 build; conditional fix substep under Step 6 review f
 1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria.
    - Done when: every task/step has an identified file list and AC.
 
-2. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
+2. **Consult MEMORY** — Grep `.agents/skills/shared/MEMORY.md` for modules/paths/keywords in the plan; apply Medium+ Solutions before editing.
+   - Done when: relevant entries noted or none found.
+
+3. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
    - Done when: a matching pattern is found, or none exists and this is noted.
 
-3. **Implement** — Write minimal, clean, modular code matching the requirements without scope creep.
+4. **Implement** — Write minimal, clean, modular code matching the requirements without scope creep.
    - Done when: every planned file is created or modified per its AC.
 
-4. **Validate** — Run the build and unit tests for modified layers (backend/frontend).
+5. **Validate** — Run the build and unit tests for modified layers (backend/frontend).
    - Done when: build/test results are captured (pass or fail).
 
-5. **Report** — Return the modified/created file lists and test output details.
+6. **Report** — Return the modified/created file lists and test output details.
    - Done when: the step-output below is populated.
 
 ## Fix mode
@@ -54,16 +57,19 @@ Workflow (spec-to-pr Step 4 build; conditional fix substep under Step 6 review f
 1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
    - Done when: every finding is enumerated.
 
-2. **Correct** — Apply minimal, targeted fixes per [karpathy-guidelines](../karpathy-guidelines/SKILL.md).
+2. **Consult MEMORY** — Grep `MEMORY.md` for the defect class / paths; reuse known Solutions before inventing fixes.
+   - Done when: relevant entries noted or none found.
+
+3. **Correct** — Apply minimal, targeted fixes per [karpathy-guidelines](../karpathy-guidelines/SKILL.md).
    - Done when: every enumerated finding has a corresponding edit.
 
-3. **Sweep siblings** — Search modified directories for the same defect class and fix simultaneously.
+4. **Sweep siblings** — Search modified directories for the same defect class and fix simultaneously.
    - Done when: no sibling occurrence of the fixed defect class remains in modified directories.
 
-4. **Anti-regression test** — Write a unit test covering the corrected defect scenario.
+5. **Anti-regression test** — Write a unit test covering the corrected defect scenario.
    - Done when: each fixed finding has a covering test.
 
-5. **Validate** — Run the project build and test suites to confirm no regressions were introduced.
+6. **Validate** — Run the project build and test suites to confirm no regressions were introduced.
    - Done when: build/test results are captured (pass or fail).
 
 ## Output (both modes)

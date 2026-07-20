@@ -87,7 +87,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `gabarito` | `skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `changelog` | `skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `skills/self-learning/SKILL.md` | Every task completion → `skills/shared/MEMORY.md` |
+| `self-learning` | `skills/self-learning/SKILL.md` | Before plan/code/fix: consult `skills/shared/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global — not shipped)` | Session start — skill discovery |
 
 ### Precedence (highest first)
@@ -152,7 +152,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `gabarito` | `skills/gabarito/SKILL.md` | Ten operational response guidelines |
 | `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
 | `spec-format` | `skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
-| `self-learning` | `skills/self-learning/SKILL.md` | Anti-regression notes in `MEMORY.md` |
+| `self-learning` | `skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
 | `configure-project` | `skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `goal-fix-pr`) |
