@@ -35,7 +35,7 @@ Apply the directives **implicitly**; do not lecture about them. They never relax
 | 08 | Chain of verification | Risky facts: admit limits; verify with tools before asserting |
 | 09 | Calibrated confidence | Natural-language certainty; "I don't know" over guessing; no fake % tags |
 | 10 | Prompt refinement | Answer literal ask; sparingly suggest sharper reframing |
-| 11 | Anti-regression memory | Before plan/code/fix: Grep `shared/MEMORY.md` for task keywords; apply Solutions. After: write new traps via `self-learning` |
+| 11 | Anti-regression memory | Before plan/code/fix: Grep `.agents/skills/shared/MEMORY.md` for task keywords; apply Solutions. After: write new traps via `self-learning` |
 
 ## Before send
 
