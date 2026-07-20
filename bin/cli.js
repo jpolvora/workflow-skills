@@ -695,7 +695,7 @@ function rewriteLocalIntegrityForRemaining(remainingSkillIds) {
 
 function fetchRemoteJson(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, { timeout: 10000 }, (res) => {
+    const req = https.get(url, { timeout: 10000 }, (res) => {
       if (res.statusCode !== 200) {
         reject(new Error(`HTTP ${res.statusCode}`));
         return;
@@ -709,7 +709,9 @@ function fetchRemoteJson(url) {
           reject(e);
         }
       });
-    }).on('error', reject);
+    });
+    req.on('timeout', () => { req.destroy(new Error('Request timeout')); });
+    req.on('error', reject);
   });
 }
 
@@ -782,7 +784,7 @@ function runIntegrityAudit() {
 function fetchRemoteVersion() {
   return new Promise((resolve, reject) => {
     const url = 'https://raw.githubusercontent.com/jpolvora/workflow-skills/main/package.json';
-    https.get(url, { timeout: 10000 }, (res) => {
+    const req = https.get(url, { timeout: 10000 }, (res) => {
       if (res.statusCode !== 200) {
         reject(new Error(`HTTP ${res.statusCode}`));
         return;
@@ -797,7 +799,9 @@ function fetchRemoteVersion() {
           reject(e);
         }
       });
-    }).on('error', reject);
+    });
+    req.on('timeout', () => { req.destroy(new Error('Request timeout')); });
+    req.on('error', reject);
   });
 }
 
