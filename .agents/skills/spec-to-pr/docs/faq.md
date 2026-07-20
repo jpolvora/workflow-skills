@@ -3,9 +3,9 @@
 This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0–9) and **Spec-to-PR Lite** (Steps 0–5) orchestrated workflows.
 
 > **Architecture:**
-> - Shared config: [`.agents/skills/shared/config.json`](file:///.agents/skills/shared/config.json) (see [`config-resolution.md`](file:///.agents/skills/shared/config-resolution.md))
-> - Shared gates: [`gates.md`](file:///.agents/skills/shared/gates.md)
-> - Dynamic paths: [Path tokens](file:///.agents/skills/shared/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
+> - Shared config: [`.agents/skills/shared/config.json`](../../shared/config.json) (see [`config-resolution.md`](../../shared/config-resolution.md))
+> - Shared gates: [`gates.md`](../../shared/gates.md)
+> - Dynamic paths: [Path tokens](../../shared/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
 > - Model Selection: Switch model only via **Pause → IDE/Agent model picker → Resume** (no in-gate model picker or CLI flags).
 
 ---
@@ -107,9 +107,9 @@ flowchart TD
 ### Step 0: Spec Creation
 *   **Executor**: Orchestrator (dispatches provider skill or `00-write-spec`).
 *   **Role**: Resolves the input description or ticket ID into a canonical spec:
-    *   **GitHub ID**: Dispatches [`github-provider`](file:///.agents/skills/github-provider/SKILL.md) to fetch issue and write `step-00-{slug}.spec.md`.
-    *   **Azure DevOps ID**: Dispatches [`azure-devops-provider`](file:///.agents/skills/azure-devops-provider/SKILL.md) to fetch work item and write `step-00-{slug}.spec.md`.
-    *   **Local Spec**: Normalizes spec format using [`local-spec-provider`](file:///.agents/skills/local-spec-provider/SKILL.md).
+    *   **GitHub ID**: Dispatches [`github-provider`](../../github-provider/SKILL.md) to fetch issue and write `step-00-{slug}.spec.md`.
+    *   **Azure DevOps ID**: Dispatches [`azure-devops-provider`](../../azure-devops-provider/SKILL.md) to fetch work item and write `step-00-{slug}.spec.md`.
+    *   **Local Spec**: Normalizes spec format using [`local-spec-provider`](../../local-spec-provider/SKILL.md).
     *   **Free-text**: Invokes `00-write-spec` to brainstorm and draft the spec.
 
 ### Step 1: Planning and Brainstorm

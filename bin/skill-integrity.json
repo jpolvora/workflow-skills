@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cabe65580beec2c4730e09bde01d1d0dc9b04227f44a0a4d0fb27eb979aace44",
+  "fullPackageDigest": "0320b431a1eb1da61fb1f10bc8ba472d9acdb9bb454d9ca630523173d06131c0",
   "hub": {
     "files": {
       "AGENTS.md": "4d31418ffc234571ff066705aeef6c56581aad02c4ef7a24feb6904966a015bf",
@@ -22,7 +22,7 @@
     },
     "skillDigest": "f35e0bfb75409dbf530509cb7006ddbaba11ea38ccd49b8e2a3250a6720eb39d"
   },
-  "packageVersion": "0.0.63",
+  "packageVersion": "0.0.64",
   "skills": {
     "00-write-spec": {
       "files": {
@@ -141,9 +141,9 @@
     "gabarito": {
       "files": {
         "README.md": "4b89eb2dbcc6ee9d037487edd11c94a2e84876802d760b6159f298dc300b6ed8",
-        "SKILL.md": "38869458970260603504989d8a6a23764a8d16259872d8ae9d0542ed72cad1af"
+        "SKILL.md": "efcea8a8a5dc6b29ff8881bfc4884625898601e4e9fb9d470ce1eee1ff60e89b"
       },
-      "skillDigest": "fe08d6df37b6ef8333d589b3eac9e3d51601ae4882dd238b6ca3ea8ca22126d9"
+      "skillDigest": "011e86e80f94f23654bc75c6ecc9bf8507c7e1ee2a26fbab188fb9d06cb87c47"
     },
     "github-provider": {
       "files": {
@@ -214,7 +214,7 @@
       "files": {
         "ARTIFACTS.md": "dfd0e3d9ccfc90a3b0a091ca8c9f060c7e958ddbbfc3212ef6c88d25d03534b1",
         "DIAGRAM.md": "883adc3008799db624464dc506b773abda69149f3bcc0dc07716a4f4531f92ce",
-        "docs/faq.md": "48066121160860350f449d2f7e45521c55f13c802eda6ca2039526c4a096d039",
+        "docs/faq.md": "5f375171c8f02c6c3a7f949e5fb4c704cb70c51d91877e33ce8ba695fc54c724",
         "protocols/artifact-cleanup.md": "85b86cd8cdaf00ccdc9abae3666b24cae976396a19938ff55fa8095788f4a319",
         "protocols/delivery-result.md": "f9e20e05ba06ba1b3f105efd14b55642b8f3cc726c8af098ea314518f5e9731b",
         "protocols/progress-board.md": "1a7ba5468a6209108858fec6511b06705df0454fa7032549261a8012db2f7c35",
@@ -229,7 +229,7 @@
         "spec-to-pr-run-test.md": "35c3dfa9081b46c3ae1002365e7c0181e1134a756883677e6617b4556a8e4e28",
         "STEP-DISPATCH.md": "8169380e2cb97317eaadfa8c38745b77d8488fbd9572272dd41556d8e988f06f"
       },
-      "skillDigest": "969c898edf64c6ed8c277e0f6c0141e90f7f2864ea4b563b23d0d6d3dd81b8f1"
+      "skillDigest": "185c5884b42a6f511f5c79d055833273ebb587beff5eeb77ab847bb8194183e8"
     },
     "spec-to-pr-lite": {
       "files": {

@@ -37,6 +37,12 @@ Apply the directives **implicitly**; do not lecture about them. They never relax
 | 10 | Prompt refinement | Answer literal ask; sparingly suggest sharper reframing |
 | 11 | Anti-regression memory | Before plan/code/fix: Grep `{sharedDir}/MEMORY.md` (expand per `tools.md` Path tokens); apply Solutions. After: write new traps via `self-learning` |
 
+## Opt-out
+
+| Phrase | Effect |
+|--------|--------|
+| `stop gabarito` / `sem gabarito` | Disable gabarito for this session (hub § Opt-out) |
+
 ## Before send
 
 No preamble; no em dash; format fits task; recommendations on decisions; 08/09 on risky facts; repo verification when coding; MEMORY consulted when mutating work.
