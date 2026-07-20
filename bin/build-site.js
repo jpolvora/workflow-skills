@@ -56,11 +56,24 @@ while ((m = layerHeaderRe.exec(agentsMd)) !== null) {
   });
 }
 
+/** Skill ids from a table cell (`foo` or `foo` / `bar`); skip paths and non-id tokens. */
+function extractSkillIdsFromCell(cell) {
+  const ids = [];
+  const re = /`([^`]+)`/g;
+  let m;
+  while ((m = re.exec(cell)) !== null) {
+    const token = m[1].trim();
+    if (/^[\w][\w.-]*$/.test(token) && !token.startsWith('.')) {
+      ids.push(token);
+    }
+  }
+  return ids;
+}
+
 function parseTableRows(block) {
   const lines = block.split('\n');
   const rows = [];
   let inTable = false;
-  let headerCols = 0;
 
   for (const line of lines) {
     if (!line.startsWith('|')) { inTable = false; continue; }
@@ -70,25 +83,22 @@ function parseTableRows(block) {
     if (cells.some(c => /^-+$/.test(c))) { inTable = true; continue; }
     if (!inTable && cells.length >= 3) {
       const allPlain = cells.every(c => !c.includes('`') && !/^-+$/.test(c));
-      if (allPlain) { headerCols = cells.length; inTable = true; continue; }
+      if (allPlain) { inTable = true; continue; }
     }
 
     if (!inTable) continue;
 
-    let skillName = '';
-    let desc = '';
-    for (let c = 0; c < cells.length; c++) {
-      const cell = cells[c];
-      const m = cell.match(/^`([^`]+)`$/);
-      if (m && /^[\w.-]+$/.test(m[1]) && !m[1].startsWith('.')) {
-        skillName = m[1];
-        desc = cells[cells.length - 1];
-        break;
-      }
-    }
+    const desc = cells[cells.length - 1].replace(/^["']|["']$/g, '').trim();
+    let rowAdded = false;
 
-    if (skillName) {
-      rows.push({ name: skillName, description: desc.replace(/^["']|["']$/g, '').trim() });
+    for (let c = 0; c < cells.length - 1; c++) {
+      const ids = extractSkillIdsFromCell(cells[c]);
+      if (ids.length === 0) continue;
+      for (const skillName of ids) {
+        rows.push({ name: skillName, description: desc });
+        rowAdded = true;
+      }
+      if (rowAdded) break;
     }
   }
   return rows;
