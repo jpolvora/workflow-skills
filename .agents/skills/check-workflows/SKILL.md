@@ -42,6 +42,10 @@ The validation process evaluates the following areas:
 ### 4. Provider Reference Resolution
 - Asserts that local spec provider and SCM provider scripts resolve configuration from `.agents/skills/shared/config.json` only (no standard/lite private config paths).
 
+### 5. Orchestrator Dependency Closure (manual checklist — not yet automated in `check_workflows.py`)
+- Extract every skill id each orchestrator dispatches (`ws-*` steps, providers at Step 0 entry, fix-pr loop skills) from `SKILL.md` step tables and [`shared/setup.md`](../shared/setup.md) § Shared entry.
+- Assert each id appears in upstream `bin/skill-dependencies.json` → `dependencies["spec-to-pr"]` / `dependencies["spec-to-pr-lite"]` (direct or transitive). A missing id means a selective install of that orchestrator produces a broken workflow — treat as **critical**.
+
 ---
 
 ## Verification Automation

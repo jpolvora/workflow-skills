@@ -35,7 +35,7 @@ Verify the spec-to-pr FSM executes without error in simulated mode, covering pha
         "description": "Documentation-only repo (markdown)",
         "srcDir": ".",
         "rules": {
-          "stackFile": ".agents/skills/spec-to-pr/stack.md"
+          "stackFile": ".agents/skills/shared/stack.md"
         },
         "layers": [{ "name": "docs", "path": ".", "role": "skills, specs, docs" }]
       },

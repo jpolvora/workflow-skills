@@ -292,6 +292,7 @@ Check:
 3. **Declared relationships** — inter-skill dependencies match actual imports (e.g., workflow orchestrator → workflow skills; review step → review skill; fix-pr → code-review skill).
 4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (e.g., `/pipeline`, `@check-harness`).
 5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
+6. **Orchestrator dependency closure** (when upstream `bin/skill-dependencies.json` present) — for each orchestrator (e.g. `spec-to-pr`, `spec-to-pr-lite`), extract every dispatched skill id (step-table `ws-*` ids, providers from the shared entry matrix, fix-pr loop skills) and assert each appears in `dependencies["<orch>"]`, directly or transitively via another listed dep. Missing id → **critical** (selective install of that orchestrator yields a broken workflow).
 
 ### Phase 4 — Skills/rules not routed in `AGENTS.md`
 
@@ -592,150 +593,21 @@ If the harness is healthy **and** there are no unrouted skills/rules pending dec
 
 > **Harness OK** — no broken links, material conflicts, absolute paths, or orphan artifacts without decision found in the audited scope. No corrections needed.
 
-Otherwise — **correction plan** (mandatory before editing):
+Otherwise — **correction plan** (mandatory before editing): load [`REPORT-FORMAT.md`](REPORT-FORMAT.md) and emit the **Harness Audit** report exactly in that structure (full markdown template + worked examples live there). Required sections, in order:
 
-```markdown
-## Harness Audit
+1. Header (date, mode, scope, files inspected, status)
+2. Executive summary
+3. Correction plan table (`#` | severity | file | problem | proposed correction) + per-item details
+4. Skills and rules not routed in `AGENTS.md`
+5. Routing and decision checklist
+6. Redundancies and conflicts
+7. Auto-load skills matrix (Phase 5c.1) + conflict matrix + precedence verification
+8. Overlapping skills (Phase 5c.2)
+9. Simulated context load (Phase 5c.3): loading tree, scenarios, alerts
+10. Skill improvements (Phase 5b — omit when `write-a-skill` absent or no findings)
+11. Next step (approval request)
 
-**Date:** YYYY-MM-DD
-**Mode:** [normal | dry-run]
-**Scope:** [full | files: ...]
-**Files inspected:** N
-**Status:** [awaiting approval to apply corrections | report only (dry-run)]
-
-### Executive summary
-- Problems found: X (Y critical, Z warning, W suggestion)
-- Broken links: ...
-- Absolute paths: ...
-- Redundancies/conflicts: ...
-- Unrouted skills/rules: ...
-- Auto-load: N mandatory skills (~L lines), M conditional (~L lines)
-- Detected overlaps: D domains with overlap (S duplicates, C complementary)
-- Simulation alerts: ...
-
-### Correction plan (ordered — apply only after approval)
-
-| # | Severity | File | Problem (error) | Proposed correction |
-|---|------------|---------|-----------------|-------------------|
-| 1 | critical | `AGENTS.md:L28` | Link `.agents/skills/foo` nonexistent | Replace with `.agents/skills/01-write-plan/SKILL.md` |
-| 2 | warning | `AGENTS.md` | Skill `example` on disk without routing | Add line in § Skill loading table (see diff below) |
-
-#### Details per item (when diff does not fit in table)
-
-**#1 — `AGENTS.md`**
-- **Error:** ...
-- **Correction:** ...
-
-### Skills and rules not routed in AGENTS.md
-| Type | Id / file | Path | Plan suggestion (#) |
-|------|--------------|------|------------------------|
-| skill | `example` | `.agents/skills/example/SKILL.md` | #2 |
-
-### Routing and decision
-- [ ] Optional host entry → AGENTS.md — [OK | absent (OK) | broken redirect]
-- [ ] Progressive disclosure (AGENTS.md does not duplicate bodies) — [OK | inflation]
-- [ ] Skill → skill relationships — [OK | gaps]
-- [ ] Invocation triggers — [OK | absent]
-- [ ] Skills/rules on disk vs `AGENTS.md` — [OK | unrouted: N]
-- [ ] `spec-to-pr` dependency portability — [OK | parameterization deviations from config.json]
-
-### Redundancies and conflicts
-| Theme | Files | Type | Plan item (#) |
-|------|----------|------|-------------------|
-| Code review | `06-code-review` (`us-code-review`) + `code-review` | name collision → resolved on port | — |
-
-### Auto-load skills matrix (Phase 5c.1)
-| Skill | Mandatory? | Lines | Output directives | Interacts with |
-|-------|-------------|--------|---------------------|-------------|
-| Guardrails skill | Yes | N | Engineering standards + code review proof | Surgical-scope, compression, learning |
-| Response guidelines | Yes | N | accountability, anti-sycophancy, chain-of-verification | compression (tone) |
-| Surgical-scope | Yes | N | surgical changes, no scope creep | guardrails skill |
-| Compression skill | Yes | N | full prose compression | guidelines, guardrails |
-| learning | Conditional | N | Learning: line in proof + MEMORY.md | guardrails, changelog |
-| changelog | Conditional | N | CHANGELOG.md append | learning |
-| UI patterns | Conditional | N | list/form patterns + standards docs | design docs |
-| responsive design | Conditional | N | responsive/mobile-first | design docs |
-| library docs | Conditional | N | resolve → query docs | — |
-
-**Estimated total footprint:** Mandatory ~X lines (Y%), Conditional ~Z lines (W%), AGENTS.md + rules ~V lines (U%), **Total ~T lines**
-
-#### Conflict matrix between mandatory auto-load skills
-| Skill A | Skill B | Interaction | Status |
-|---------|---------|-----------|--------|
-| Guardrails skill | Surgical-scope skill | Engineering + surgical scope — complementary | none |
-| Guardrails skill | Compression skill | Detailed proof vs compression — potential conflict | mitigated (precedence + compression § technical accuracy) |
-| Guardrails skill | Response guidelines | Both define response tone | mitigated (precedence) |
-| Surgical-scope skill | Compression skill | Surgical changes + compression — aligned | none |
-| Response guidelines | Compression skill | Both modify response — tone vs size | mitigated (precedence) |
-| Response guidelines | Surgical-scope skill | Accountability + scope — complementary | none |
-
-#### Precedence verification
-- [ ] AGENTS.md § Precedence is consistent with all auto-load skills
-- [ ] No auto-load skill contradicts the declared hierarchy
-- [ ] Documented opt-outs are recognized by all affected skills
-
-### Overlapping skills (Phase 5c.2)
-| Domain | Skills | Overlap type | Conflict? | Recommendation |
-|---------|--------|---------------------|-----------|--------------|
-| Code review | local review vs workflow review step | complementary — local branch vs workflow step | No | Distinct triggers; keep both |
-| Code review | architecture review vs diff review | complementary — architecture vs diff | No | Task router already distinguishes |
-| Security | general security vs language-specific | complementary — OWASP vs language-specific | No | Domain review already references security review |
-| PR workflow | fix vs goal-fix-pr | superset — goal-fix-pr wraps fix-pr | No | Keep both; goal-fix-pr delegates to fix-pr |
-| Planning | write-plan vs interview | complementary — create vs audit plan | No | Sequential workflow; distinct triggers |
-| Domain | single vs multi-domain review | superset — batch orchestrator | No | Multi-domain orchestrates single |
-| UI/Frontend | UI patterns vs taste/design | complementary — internal patterns vs anti-slop | No | Taste skill loads design doc for distinction |
-
-### Simulated context load (Phase 5c.3)
-
-#### Loading tree (session start)
-```
-AGENTS.md
-    ├── senior-developer (resolve via config / External Dependencies — optional)
-    ├── gabarito/SKILL.md (auto)
-    ├── karpathy-guidelines/SKILL.md (auto)
-    ├── caveman/SKILL.md (auto)
-    ├── optional rules from config.json.rules.* (when set)
-    └── MEMORY.md (session start, before first implementation)
-```
-
-#### Session scenarios
-    | Scenario | Extra skills | Estimated footprint |
-    |---------|---------------|--------------------|
-    | Session start (baseline) | — | ~T0 lines |
-    | Backend task | + library docs skill (if new lib) | ~T0 + X lines |
-    | UI CRUD task | + UI patterns + design docs | ~T0 + Y lines |
-    | Full task (worst case) | all conditional + docs | ~T0 + Z lines |
-
-#### Simulation alerts
-- [ ] Circular load: [none detected | list cycles]
-- [ ] Deep chain (>4 levels): [none | list]
-- [ ] Orphan triggers: [none | list skills without entry point]
-- [ ] Redundant reload: [none | list artifacts loaded 2+ times]
-- [ ] Inconsistent opt-outs: [none | list]
-- [ ] Rules conflicting with auto-load: [none | list]
-
-### Skill improvements (optional — if write-a-skill is installed)
-*(Omit entire section if write-a-skill is not installed or if no findings.)*
-
-| Skill | Finding | Severity | Proposed correction | Plan item (#) |
-|-------|--------|------------|-------------------|-------------------|
-| (example) | obsolete reference | warning | replace with canonical source | #4 |
-
-### Next step
-Awaiting your approval to apply the plan. Reply `apply corrections`, `apply the plan`, or choose from `user-gate`.
-```
-
-After **Phase 7** (approved execution), add section:
-
-```markdown
-### Corrections applied
-| # | Status | File | What was done |
-|---|--------|---------|-----------------|
-| 1 | applied | `AGENTS.md` | link corrected |
-| 2 | skipped | — | user chose not to apply |
-
-**Result:** Harness OK post-correction | pending: [list]
-```
+After **Phase 7** (approved execution), append the **Corrections applied** table + result line per [`REPORT-FORMAT.md`](REPORT-FORMAT.md).
 
 ### Optional — persist report
 If the user requests, save to:
@@ -772,6 +644,7 @@ If the user requests, save to:
 **Step 1 — Scan**
 - [ ] All § Scope files have been read or sampled via grep with link coverage
 - [ ] Phase 2: pipeline § 3b structure + retired folder ids checked (when `spec-to-pr` present)
+- [ ] Phase 3: orchestrator dependency closure checked vs `bin/skill-dependencies.json` (when present)
 - [ ] Phase 4 executed: filesystem ↔ `AGENTS.md` (+ packaged hub / `skill-dependencies.json` when present) diff documented
 - [ ] Phase 5c executed: auto-load matrix, overlap analysis, simulated context load
 - [ ] No harness file was edited in this step

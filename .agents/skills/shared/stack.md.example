@@ -1,4 +1,4 @@
-# Stack Definition — US Workflow
+# Stack Definition
 
 Human-readable companion to `config.json`. Agents read config.json for machine-readable values; this doc explains the structure and conventions.
 
