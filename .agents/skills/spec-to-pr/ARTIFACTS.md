@@ -9,7 +9,7 @@
 | Token | Resolution |
 |-------|------------|
 | `{plansDir}` | **Token** (not a config key). Resolve from `config.json` → `plans.dir` (default value: `.agents/plans`) |
-| `{specs-dir}` | **Token**. Resolve from `config.json` → `plans.specsDir` (default: `specs`) — optional mirror only |
+| `{specs-dir}` | **Token**. Resolve from `config.json` → `plans.specsDir` (default: `.agents/plans/specs`; prefer existing repo-root `specs/` when present) — optional mirror only |
 | `{us-dir}` | `{plansDir}/{slug}/` |
 | `{slug}` | `us-{id}` for issues; basename or frontmatter `slug:` for local specs |
 | `{workflow-id}` | Unique run id; state file basename without `.state.md`. **Format:** `{slug}-{YYYYMMDDTHHMMSSZ}[-{suffix}]` (issue runs: `us-{id}-{YYYYMMDDTHHMMSSZ}`). Examples: `us-2416-20260621T214006`, `spec-provider-skills-20260713T142006Z-7cdbef`. **Not** `step-*` (reserved for step artifacts below) and **not** invented abbreviations (`stp-`, `uswf-` as basename). |

@@ -122,7 +122,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
     '.agents/skills/spec-to-pr/SKILL.md',
     '.agents/skills/check-harness/SKILL.md',
-    '.agents/AGENTS.md',
+    '.agents/skills/shared/AGENTS.md',
     // Spec-source / SCM provider skills (packed under .agents/skills/)
     '.agents/skills/github-provider/SKILL.md',
     '.agents/skills/azure-devops-provider/SKILL.md',
@@ -560,14 +560,18 @@ child.on('close', async (code) => {
     fail('check-harness/SKILL.md missing after install/update');
   }
   const packagedAgents = path.join(__dirname, '.agents', 'AGENTS.md');
-  if (!fs.existsSync(packagedAgents)) {
-    fail('Packaged .agents/AGENTS.md not installed into consumer test/.agents/');
+  if (fs.existsSync(packagedAgents)) {
+    fail('Installer must not copy .agents/AGENTS.md into consumer projects');
   }
-  const packagedAgentsBody = fs.readFileSync(packagedAgents, 'utf8');
-  if (!/Pre-merge gate:\s*`?check-harness/i.test(packagedAgentsBody) && !/check-harness/i.test(packagedAgentsBody)) {
-    fail('Consumer .agents/AGENTS.md missing check-harness / portability rules');
+  const sharedAgents = path.join(testSkillsDir, 'shared', 'AGENTS.md');
+  if (!fs.existsSync(sharedAgents)) {
+    fail('shared/AGENTS.md not installed into consumer test/.agents/skills/shared/');
   }
-  ok('check-harness + packaged .agents/AGENTS.md shipped to consumer');
+  const sharedAgentsBody = fs.readFileSync(sharedAgents, 'utf8');
+  if (!/External dependencies/i.test(sharedAgentsBody)) {
+    fail('Consumer shared/AGENTS.md missing External dependencies section');
+  }
+  ok('check-harness + shared/AGENTS.md hub shipped to consumer (no .agents/AGENTS.md)');
   for (const name of ['github-provider', 'azure-devops-provider', 'local-spec-provider']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);

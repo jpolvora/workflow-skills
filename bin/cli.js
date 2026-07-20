@@ -11,7 +11,6 @@ const __dirname = path.dirname(__filename);
 
 const packageRoot = path.resolve(__dirname, '..');
 const srcSkillsDir = path.join(packageRoot, '.agents', 'skills');
-const srcAgentsIndex = path.join(packageRoot, '.agents', 'AGENTS.md');
 const skillGraphPath = path.join(packageRoot, 'bin', 'skill-dependencies.json');
 const targetDir = process.cwd();
 const targetAgentsDir = path.join(targetDir, '.agents');
@@ -439,18 +438,6 @@ function ensureSharedHubInstalled(mode = 'install') {
   );
 }
 
-/** Install or refresh packaged `.agents/AGENTS.md` (consumer skill index + rules). */
-function installPackagedAgentsIndex() {
-  if (!fs.existsSync(srcAgentsIndex)) {
-    console.log('  Note: packaged .agents/AGENTS.md not present in this release; skipped.');
-    return;
-  }
-  fs.mkdirSync(targetAgentsDir, { recursive: true });
-  const dest = path.join(targetAgentsDir, 'AGENTS.md');
-  fs.copyFileSync(srcAgentsIndex, dest);
-  console.log(`  Installed packaged index: .agents/AGENTS.md`);
-}
-
 /** Block installing into the source package itself (except test/ consumer). */
 function assertNotSelfOverwrite() {
   const cwd = path.resolve(targetDir);
@@ -552,9 +539,9 @@ Notes:
     Fresh install seeds empty MEMORY.md + stack.md from templates; existing files are always preserved.
     installed-skills.json tracks managed skills for update/uninstall (bootstrapped from disk when missing).
   - Artifact paths (plans/reviews) come from consumer config.json (defaults: .agents/plans, .agents/codereviews) — not host-private folders.
-  - Optional host pointer files and CHANGELOG.md are consumer-owned (skills do not require them).
+  - Optional host pointer files are consumer-owned. Changelog defaults to rules.changelogFile under shared/ (not repo root).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
-  - Packaged .agents/AGENTS.md is refreshed on install and update.
+  - Consumer agent contract: skills/shared/AGENTS.md (installed with the shared hub; no .agents/AGENTS.md copy).
   - After installing or updating, run the "check-harness" skill to validate the harness.
   - Optional: run the "configure-project" skill to interview/detect and fill shared/config.json.
   - Install copies skip __pycache__ / *.pyc (not part of the skill surface).
@@ -656,7 +643,7 @@ function buildSelectedFromInstallOpts(skills, opts) {
   return selected;
 }
 
-/** Shared post-selection install: copy skills, hub, packaged AGENTS.md. */
+/** Shared post-selection install: copy skills and shared hub. */
 function installSelectedSkills(skills, selectedNames, { overwrite }) {
   let installedCount = 0;
   let hubEnsured = false;
@@ -697,7 +684,6 @@ function installSelectedSkills(skills, selectedNames, { overwrite }) {
     ensureSharedHubInstalled('update');
   }
 
-  installPackagedAgentsIndex();
   const roots = inferSelectedRoots(selectedNames);
   syncInstalledSkillsManifest({
     extraSkills: selectedNames,
@@ -985,10 +971,6 @@ async function runUninstall(_upstreamSkills, argv) {
 
   writeInstalledSkillsManifest(keep, keepSelected);
 
-  if (fs.existsSync(targetAgentsDir)) {
-    installPackagedAgentsIndex();
-  }
-
   console.log('');
   console.log(`Uninstalled ${removedCount} skill folder(s). Manifest now lists ${keep.length} skill(s).`);
   console.log(`Note: shared/ (${CONFIG_FILE}, MEMORY.md, stack.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
@@ -1086,7 +1068,6 @@ function runUpdate(skills, includeNew) {
     console.log('Re-run with `update --include-new` to install them, or use the interactive installer.');
   }
 
-  installPackagedAgentsIndex();
   syncInstalledSkillsManifest({
     extraSkills: newlyInstalled,
     extraSelected: newlyInstalled,

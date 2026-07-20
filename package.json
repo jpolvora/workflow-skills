@@ -29,7 +29,6 @@
     "LICENSE",
     "install-skills.sh",
     ".cursorrules",
-    ".agents/AGENTS.md",
     ".agents/skills/",
     "!.agents/skills/shared/config.json",
     "!.agents/skills/shared/config.local.json",
