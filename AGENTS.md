@@ -53,6 +53,75 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding; no IDE/agent product coupling. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
 - Guardrails resolution: § [External dependencies](#external-dependencies) (consumer install mirror: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md)).
 - **This upstream’s local `.cursor/`:** authoring/plans only for this repo — never the shipped default for consumers.
+- **Upstream developer loop:** § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) (this package root only — not the portable consumer contract).
+
+### Upstream developer workflow (this repo only)
+
+**Local project rule** for agents in `jpolvora/workflow-skills`. Consumers dogfood the same skills via install but follow [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) — not this section.
+
+#### Skill tree (authoritative source)
+
+- **Develop and test** under `.agents/skills/*` — pipeline, providers, utilities, and shared hub templates.
+- **Package and publish** via the installer/CLI (`bin/cli.js`, `bin/skill-dependencies.json`, `bin/skill-integrity.json`) into consumer projects (`npx github:jpolvora/workflow-skills`).
+- **Lasting changes** belong in upstream PRs (`develop` → `main`); consumer copies are managed and overwritten on `update`.
+
+#### Skill authoring contract
+
+| Topic | Canonical doc |
+|-------|----------------|
+| Portability, language, folder naming | [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills |
+| Script launchers (`python` / `node` / `bash`) | [`shared/tools.md`](.agents/skills/shared/tools.md) § Script launchers |
+| New or rewritten skills (markdown + scripts) | [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) |
+| Spec shape / review | [`spec-format`](.agents/skills/spec-format/SKILL.md) |
+
+Managed script calls use explicit launchers; do not rewrite skill scripts for shell quirks in consumer trees — fix upstream.
+
+#### Recommended DX autoload (upstream dogfood)
+
+In **this repo**, load every session for authoring quality:
+
+| Skill | Why |
+|-------|-----|
+| `karpathy-guidelines` | Surgical scope; no drive-by refactors |
+| `gabarito` | Operational rigor and verification discipline |
+| `caveman` | Compression (opt out via `stop caveman` / `normal mode`) |
+
+These ship to consumers but are **not required** on consumer projects — consumer hubs may treat them as optional recommendations.
+
+#### Start work
+
+| Intent | Load |
+|--------|------|
+| Draft a spec | `ws-write-spec` (`00-write-spec`) or local `specs/**/*.spec.md` + `spec-format` |
+| Spec → PR (full) | `spec-to-pr` |
+| Spec → PR (fast) | `spec-to-pr-lite` |
+| GitHub issue → spec / fix | `github-provider` or orchestrator with issue URL |
+| Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
+
+Workflow artifacts: prefer repo-root `specs/` (this upstream dogfoods `specs/`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
+
+#### After changes (recommend / gate)
+
+After edits under `.agents/skills/`, hubs, `docs/`, `bin/`, or installer inputs:
+
+1. Run **`check-harness`** (Phases 0–5c) — see also § [Harness change protocol](#harness-change-protocol).
+2. Resolve **critical** findings before claim complete / merge.
+
+#### Before ship PR (package-shipping changes)
+
+When installable package content changes (skills, CLI, installer, shared hub templates, site catalog, dependency graph):
+
+| # | Step | Command / skill |
+|---|------|-----------------|
+| 1 | Tests | `npm run tests` · `npm run tests -- --local` when installer/graph touched |
+| 2 | Code review | `ws-code-review` or § [Local dry-run: agentic code reviewers](#local-dry-run-agentic-code-reviewers) |
+| 3 | Dependency graph | Update [`bin/skill-dependencies.json`](bin/skill-dependencies.json) when adding/removing/renaming skills or changing orchestrator dispatch; `check-harness` Phase 3/4b validates closure |
+| 4 | Integrity digests | § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only) |
+| 5 | Site + catalog + version | § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only) when routing/layers/catalog change; else `node bin/build-site.js` (footer stamp only) |
+| 6 | Hub drift | Sync root `AGENTS.md` + [`.agents/AGENTS.md`](.agents/AGENTS.md) (and [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) when shared hub templates ship) |
+| 7 | Ship | Commit → push → open/update PR (`develop` → `main`) |
+
+`08-ship-pr` / `ws-ship-pr` PREPARE-CHECKLIST discovers consumer-local before-push rules; upstream rows above are **additive** for this repo.
 
 ### Upstream PR version bump (this repo only)
 
@@ -68,7 +137,7 @@ Consumers rely on `main/package.json` for `--check` / update signals. CI deploy 
 
 ### Upstream skill integrity regenerate (this repo only)
 
-**Local project rule** for agents in `workflow-skills`. Prevents consumers from failing install/update when published skill bytes no longer match `bin/skill-integrity.json`.
+**Local project rule** for agents in `workflow-skills`. Prevents consumers from failing install/update when published skill bytes no longer match `bin/skill-integrity.json`. Integrity digests are LF-canonical (EOL-stable) so Windows CRLF working trees and LF packages share the same hashes.
 
 When **any** of these change in a commit / PR / push that ships package content:
 
@@ -154,6 +223,8 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 | `self-learning` | `.agents/skills/self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
+**Upstream dogfood (this repo):** The `karpathy-guidelines` / `gabarito` / `caveman` trio is **recommended every session** when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers receive these skills on install but need not autoload them; [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) documents the consumer contract.
+
 ### Precedence (highest first)
 
 1. Explicit user instructions (current turn)
@@ -177,7 +248,7 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 1. Ask the user whether to run **check-harness** and whether **site** / **README** need updates.
-2. Evaluate: check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, bump via § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only) (`npm run build-site:bump`); plain `node bin/build-site.js` only stamps the footer from the current `package.json` (CI deploy never bumps).
+2. Evaluate: check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR (dependency graph, integrity, version/catalog, hub drift).
 3. If the change affects hashed install content, run § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only) in the same commit (`npm run generate-integrity` + `npm run verify-integrity`).
 
 ---
@@ -282,11 +353,14 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 ## Verification (before claim complete / commit)
 
+Upstream package root: full ordered checklist in § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR. Summary:
+
 1. **Harness:** load `.agents/skills/check-harness/SKILL.md` → Phases 0–5c
 2. **Install tests:** `npm run tests` · `npm run tests -- --local`
-3. **Skill integrity:** if package-hashed content changed → § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only); always `npm run verify-integrity` (must exit 0) before claim complete / PR. Testing Step approval requires this green.
-4. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
-5. **Catalog / version:** if shipping package changes → § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only); else if only regenerating catalog → `node bin/build-site.js` (no bump). `package.json` ↔ footer must match; CI deploy never bumps.
+3. **Dependency graph:** if skills added/removed/renamed or orch dispatch changed → update `bin/skill-dependencies.json`; `check-harness` Phase 3/4b must pass
+4. **Skill integrity:** if package-hashed content changed → § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only); always `npm run verify-integrity` (must exit 0) before claim complete / PR. Testing Step approval requires this green.
+5. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
+6. **Catalog / version:** if shipping package changes → § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only); else if only regenerating catalog → `node bin/build-site.js` (no bump). `package.json` ↔ footer must match; CI deploy never bumps.
 ---
 
 ## Local dry-run: agentic code reviewers

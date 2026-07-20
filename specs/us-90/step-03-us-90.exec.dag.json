@@ -1,0 +1,81 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "reason": "Thresholds exceeded (5 plan steps, 7 files, 4 layers vs max 3/6/2). Critical path serializes on hasher + manifest; only T3||T4 parallelize.",
+  "planPath": "specs/us-90/step-02-us-90.plan.refined.md",
+  "metrics": {
+    "implementationSteps": 5,
+    "expectedFiles": 7,
+    "layers": 4,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Hash canonicalize",
+      "parallelGroup": null,
+      "dependsOn": [],
+      "files": [
+        "bin/skill-integrity-lib.js"
+      ],
+      "acceptance": "AC1, AC3. Export canonicalizeForHash(buf) and hashFileBytes(buf)=sha256Hex(canonicalizeForHash(buf)). Algorithm: replace \\r\\n→\\n then remaining \\r→\\n; operate on Buffer; do not rewrite disk. Route enumerateSkillFiles and enumerateHubFiles file-hash sites through hashFileBytes only. Leave sha256Hex raw for digestFromFilesMap / aggregateDigest. Update module header: digests are LF-canonical / EOL-stable. node --check passes; CRLF vs LF vs lone-CR content → identical hex.",
+      "coderPrompt": "From refined plan Step A + §2 locked design: edit bin/skill-integrity-lib.js only. Add canonicalizeForHash + hashFileBytes; switch the two file-read hash call sites (enumerateSkillFiles ~L142, enumerateHubFiles ~L178) to hashFileBytes. Do not change include/skip/hub whitelist rules. Do not wrap aggregate digest helpers. Replace header comment that says no EOL rewrite. Validate: node --check bin/skill-integrity-lib.js; assert hashFileBytes(CRLF)==hashFileBytes(LF)==hashFileBytes(lone-CR) for same logical text. MEMORY: Node integrity path; surgical edit; regenerate comes in T2 — do not regenerate yet if you want clean T1 review, or leave regen for T2."
+    },
+    {
+      "id": "T2",
+      "title": "Regenerate manifest",
+      "parallelGroup": null,
+      "dependsOn": ["T1"],
+      "files": [
+        "bin/skill-integrity.json"
+      ],
+      "acceptance": "AC1, AC3, AC5. npm run generate-integrity then npm run verify-integrity exit 0. Committed/staged skill-integrity.json matches LF-canonical digests for the tree. packageVersion aligned with package.json (pre-bump). Do not invent skill-integrity-local.json or bless failed verify.",
+      "coderPrompt": "From refined plan Step B: after T1 hasher change, run npm run generate-integrity then npm run verify-integrity (must exit 0). Stage bin/skill-integrity.json with the hasher change. Expect all per-file digests to change vs CRLF-poisoned baseline — that is correct. Do not edit generator logic (generate-skill-integrity.js only calls buildUpstreamManifest). MEMORY: never write actual digests into a local record on failed post-verify; fail closed if --check red."
+    },
+    {
+      "id": "T3",
+      "title": "Regression tests",
+      "parallelGroup": "verify-docs",
+      "dependsOn": ["T2"],
+      "files": [
+        "test/test-install.js"
+      ],
+      "acceptance": "AC1–AC4. Add EOL canonicalization regression (hashFileBytes / canonicalize parity for CRLF, LF, lone CR). Existing Phase 0b --check and Phase 11 integrity scenarios remain green and fail-closed on drift/tamper. npm run tests -- --local green (or targeted phase).",
+      "coderPrompt": "From refined plan Step C + §5: extend test/test-install.js Phase 11 (or adjacent) with testEolCanonicalDigestParity — identical content as CRLF vs LF vs lone-CR buffers yield same hex via lib hashFileBytes/canonicalizeForHash. Keep existing AC11 / Phase 0b --check coverage. Optional smoke: LF fixture tree verifies against regenerated manifest. Minimal edit only. Validate: npm run tests -- --local. MEMORY: after integrity edits prefer full local test run; no bash CRLF integrity path."
+    },
+    {
+      "id": "T4",
+      "title": "Docs LF-canonical note",
+      "parallelGroup": "verify-docs",
+      "dependsOn": ["T2"],
+      "files": [
+        "AGENTS.md"
+      ],
+      "acceptance": "AC4 (documentation). One sentence in root AGENTS.md § Upstream skill integrity regenerate stating digests are LF-canonical / EOL-stable. Phase 0b marker strings remain (Upstream skill integrity regenerate, npm run generate-integrity, npm run verify-integrity, bin/skill-integrity.json). No README edit. No gate removal.",
+      "coderPrompt": "From refined plan Step D + interview G7: add one sentence to root AGENTS.md under Upstream skill integrity regenerate that integrity digests are LF-canonical (EOL-stable) so Windows CRLF working trees and LF packages share digests. Do not edit README. Do not weaken check-harness / verify.sh / Phase 0b requirements. Grep markers must still be present. Surgical docs only."
+    },
+    {
+      "id": "T5",
+      "title": "Package bump ship prep",
+      "parallelGroup": null,
+      "dependsOn": ["T3", "T4"],
+      "files": [
+        "package.json",
+        "docs/index.html",
+        "test/package.json"
+      ],
+      "acceptance": "AC5. npm run build-site:bump; sync test/package.json file:../workflow-skills-<ver>.tgz; docs/index.html footer version matches package.json; after bump run generate-integrity + verify-integrity so manifest packageVersion matches. May be applied at Step 8 commit with the fix set.",
+      "coderPrompt": "From refined plan Step E + AGENTS.md Upstream PR version bump: because hashed install content + lib change ship together, run npm run build-site:bump, sync test/package.json tarball path to new version, confirm footer stamp matches package.json. Re-run npm run generate-integrity && npm run verify-integrity after bump. Do not commit specs/. MEMORY: package.json is canonical for site footer; keep integrity packageVersion aligned."
+    }
+  ],
+  "levels": [
+    ["T1"],
+    ["T2"],
+    ["T3", "T4"],
+    ["T5"]
+  ]
+}
