@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 19:40] Agent: Cursor Grok 4.5
+- **Prompt**: `/spec-to-pr gh 90 full auto` — fix skill integrity digest-mismatch on consumer install
+- **Done**: LF-canonical hashing in `skill-integrity-lib.js`; regen manifest v0.0.65; EOL parity test; PR #91 merged; issue #90 closed; MEMORY trap recorded
+- **Result**: MERGED `c85b0ed`; https://github.com/jpolvora/workflow-skills/pull/91 ; Learning: hash LF-canonical (CRLF WT vs GitHub LF)
+
 ### [2026-07-20 19:26] Agent: Cursor Grok 4.5
 - **Prompt**: Step 8 ship create-pr for us-90 (LF-canonical integrity)
 - **Done**: Prepare board green; pushed develop (58479c1 + 12a776c); opened PR #91 develop→main with Closes #90
