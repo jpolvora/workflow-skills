@@ -26,10 +26,22 @@ jobs:
         with:
           node-version: 20
 
+      # Rebuild catalog only — do NOT pass --bump here.
+      # package.json is the canonical version; footer must match install/--version/--check.
       - name: Regenerate catalog from skills
         run: node bin/build-site.js
 
-      - name: Commit changes (if any)
+      - name: Verify site footer matches package.json
+        run: |
+          PKG_VER=$(node -p "require('./package.json').version")
+          FOOTER_VER=$(grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' docs/index.html | tail -1 | tr -d 'v')
+          echo "package.json=$PKG_VER footer=$FOOTER_VER"
+          if [ "$PKG_VER" != "$FOOTER_VER" ]; then
+            echo "::error::Site footer version ($FOOTER_VER) != package.json ($PKG_VER)"
+            exit 1
+          fi
+
+      - name: Commit catalog changes (if any)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

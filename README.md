@@ -195,7 +195,7 @@ version: 1.0
 
 Agent obligations (portability, check-harness before `main`, dual indexes): see [`.agents/AGENTS.md`](.agents/AGENTS.md) and root [`AGENTS.md`](AGENTS.md).
 
-After harness or catalog changes: regenerate the site with `node bin/build-site.js` when layers/routing change.
+After harness or catalog changes: regenerate the site with `node bin/build-site.js` when layers/routing change. That stamps the footer from `package.json` (no auto-bump). For an intentional release bump + site rebuild: `npm run build-site:bump` (or `node bin/build-site.js --bump`), then sync `test/package.json`’s `file:../workflow-skills-<version>.tgz` reference. CI site deploy never bumps — install/`--version`/`--check` stay aligned with the footer.
 
 ---
 

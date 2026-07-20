@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 08:12] Agent: Cursor Composer
+- **Prompt**: Fix version bump so package version matches website footer; sync GH Actions/local build; explain install vs site drift
+- **Done**: Made `package.json` canonical — `build-site.js` stamps footer without bumping by default (`--bump` / `npm run build-site:bump` for releases); deploy-site CI asserts footer==package.json and never bumps; aligned repo to **0.0.61** (package + footer + test tarball ref); documented contract in README/AGENTS
+- **Result**: `--version`/`--check`/install and site footer share one version; CI can no longer leave footer one patch ahead
+
 ### [2026-07-20 12:00] Agent: OpenCode kimi-k3
 - **Prompt**: Decouple gabarito/caveman/karpathy-guidelines into independent skills; apply write-a-skill filter to reduce lines
 - **Done**: Removed all cross-skill and hub (AGENTS.md) references from the three autoload skills — composition now owned solely by hubs/consumers; caveman 71→63 lines (dropped Persistence section + duplicate example), gabarito 46→43 (dropped Opt-out section + karpathy/senior-developer pointers + PT-BR filler example), karpathy 66 lines (deduped intro); link scan 0 broken / 344

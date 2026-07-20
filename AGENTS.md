@@ -146,7 +146,7 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 1. Ask the user whether to run **check-harness** and whether **site** / **README** need updates.
-2. Evaluate: check-harness (Phases 0–5c → plan) · `node bin/build-site.js` if catalog/routing changed · `README.md` if install/usage/human docs changed.
+2. Evaluate: check-harness (Phases 0–5c → plan) · `node bin/build-site.js` if catalog/routing changed (stamps footer from `package.json`; use `--bump` only for intentional releases) · `README.md` if install/usage/human docs changed.
 
 ---
 
@@ -253,7 +253,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 1. **Harness:** load `.agents/skills/check-harness/SKILL.md` → Phases 0–5c
 2. **Install tests:** `npm run tests` · `npm run tests -- --local`
 3. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
-4. **Catalog:** if layers/routing changed → `node bin/build-site.js`
+4. **Catalog:** if layers/routing changed → `node bin/build-site.js` (no CI bump; `package.json` ↔ footer must match)
 ---
 
 ## Local dry-run: agentic code reviewers
