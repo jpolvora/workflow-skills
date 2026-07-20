@@ -88,11 +88,17 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
         <div class="name">check-harness</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/check-workflows/SKILL.md">
         <div class="name">check-workflows</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Auto-check workflow processes (spec-to-pr & spec-to-pr-lite) for step continuity, config sharing, state isolation, compatibility, and provider references. Use when validating orchestrators, adding steps, or testing workflow changes.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-workflows/SKILL.md">View skill</a>
       </div>
@@ -114,76 +120,131 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md">
         <div class="name">ws-write-spec</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr Step 0 brainstorm).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/00-write-spec/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/01-write-plan/SKILL.md">
         <div class="name">ws-write-plan</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Generates the implementation plan (step-01-{slug}.plan.md) from the specification.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/01-write-plan/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/02-interview/SKILL.md">
         <div class="name">ws-interview</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Audits and interrogates an implementation plan to resolve ambiguities before task creation.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/02-interview/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">
         <div class="name">ws-plan-to-tasks</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Breaks an implementation plan into atomic tasks organized in a DAG, or sequential when small.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/04-implement-tasks/SKILL.md">
         <div class="name">ws-implement-tasks</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Executes code implementations or fixes defects following a plan, DAG, or review findings.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/04-implement-tasks/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md">
         <div class="name">ws-verify-plan</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/05-verify-plan/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md">
         <div class="name">ws-code-review</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/06-code-review/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/07-testing/SKILL.md">
         <div class="name">ws-testing</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/07-testing/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/08-ship-pr/SKILL.md">
         <div class="name">ws-ship-pr</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/08-ship-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/09-fix-pr/SKILL.md">
         <div class="name">ws-fix-pr</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/09-fix-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/azure-devops-provider/SKILL.md">
         <div class="name">azure-devops-provider</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Azure DevOps provider for spec-to-pr — work item→spec, PAT auth, PR create/threads/merge via az CLI and/or REST plus provider scripts. Use when providers.active or providers.scm is azure-devops, or when invoking /azure-devops-provider standalone.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/azure-devops-provider/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/github-provider/SKILL.md">
         <div class="name">github-provider</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">GitHub provider for spec-to-pr — issue→spec, auth checks, PR create/threads/merge via gh CLI and provider scripts. Use when providers.active or providers.scm is github, or when invoking /github-provider standalone.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/github-provider/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/goal-fix-pr/SKILL.md">
         <div class="name">ws-goal-fix-pr</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/goal-fix-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/local-spec-provider/SKILL.md">
         <div class="name">local-spec-provider</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Local markdown spec provider for spec-to-pr — detect/configure specsDir, register/normalize/mirror hand-written *.spec.md into canonical step-00 artifacts (source: local). PR intents delegate to providers.scm. Use when /local-spec-provider, active provider is local, or registering a local *.spec.md path.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/local-spec-provider/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/update-plan-implementation/SKILL.md">
         <div class="name">ws-update-plan-implementation</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/update-plan-implementation/SKILL.md">View skill</a>
       </div>
@@ -195,6 +256,10 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/secrets-leak-review/SKILL.md">
         <div class="name">secrets-leak-review</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Use when asked to check for secrets, leak check, secrets scan, pre-commit security check, hardcoded passwords, PII scan, repo leak audit, or before pushing to a public repository.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/secrets-leak-review/SKILL.md">View skill</a>
       </div>
@@ -206,51 +271,89 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md">
         <div class="name">caveman</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Ultra-compressed communication mode. Cuts output token usage ~75% while keeping full technical accuracy. Intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. Use when the user invokes /caveman or asks for briefer, lower-token responses.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/caveman/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/changelog/SKILL.md">
         <div class="name">changelog</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Write a summarized historical record of the task into the configured changelog file (default `.agents/skills/shared/CHANGELOG.md`). Use at the very end of every implementation task.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/changelog/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/configure-project/SKILL.md">
         <div class="name">configure-project</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Interview and detect project settings to fill or update `.agents/skills/shared/config.json` with suggested values. Use when config.json is missing or incomplete, after install when the user wants to configure, before spec-to-pr bootstrap, or when the user asks to set up / reconfigure workflow config, providers, stack, or verification commands.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/configure-project/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/gabarito/SKILL.md">
         <div class="name">gabarito</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Gabarito — operational response guidelines (accountability, anti-sycophancy, systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification, calibrated confidence, prompt refinement, anti-regression memory) plus style discipline. Apply on every user-facing response unless the user opts out.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/gabarito/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md">
         <div class="name">goal-loop</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., goal-fix-pr). Not invocable standalone.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md">
         <div class="name">karpathy-guidelines</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/karpathy-guidelines/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/self-learning/SKILL.md">
         <div class="name">self-learning</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Consult anti-regression MEMORY before planning or writing code, and record new traps into the shared memory hub after implementation. Use at session/task start (read) and task completion (write + compile). Prevents repeating known mistakes.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/self-learning/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md">
         <div class="name">spec-format</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic. Load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md">
         <div class="name">spec-to-pr</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
         <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-testing, skip-tests, full, strict. Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via `dispatch-agent` (host subagent dispatch).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">
         <div class="name">spec-to-pr-lite</div>
+        <div class="skill-badges">
+          <span class="skill-badge lite">lite</span>
+        </div>
         <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text. Flags: dry-run, auto, skip-tests, full. Flags combine freely (e.g. full + auto + dry-run). Inline execution in main session. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).</div>
         <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill</a>
       </div>
@@ -297,6 +400,8 @@
     </div>
   </div>
 </section>
+
+
 
 
 
@@ -559,7 +664,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.66</p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.67</p>
 </footer>
 
 <!-- Modal -->

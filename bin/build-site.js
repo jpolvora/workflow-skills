@@ -122,6 +122,40 @@ for (let i = 0; i < layerSections.length; i++) {
     }
   }
 }
+
+// --- 1.5. Parse skill dependencies to identify standard vs lite workflows ---
+const depMapPath = path.join(root, 'bin', 'skill-dependencies.json');
+let standardDeps = new Set();
+let liteDeps = new Set();
+
+if (fs.existsSync(depMapPath)) {
+  try {
+    const depMap = JSON.parse(fs.readFileSync(depMapPath, 'utf-8'));
+    const deps = depMap.dependencies || {};
+
+    function getTransitiveDeps(rootSkill) {
+      const result = new Set([rootSkill]);
+      const queue = [rootSkill];
+      while (queue.length > 0) {
+        const current = queue.shift();
+        const currentDeps = deps[current] || [];
+        for (const d of currentDeps) {
+          if (!result.has(d)) {
+            result.add(d);
+            queue.push(d);
+          }
+        }
+      }
+      return result;
+    }
+
+    standardDeps = getTransitiveDeps('spec-to-pr');
+    liteDeps = getTransitiveDeps('spec-to-pr-lite');
+  } catch (err) {
+    console.error(`Warning: Failed to parse skill-dependencies.json: ${err.message}`);
+  }
+}
+
 // --- 2. Scan skills directories (top-level only; shared/ is config hub, not skills) ---
 const skillsDir = path.join(root, '.agents', 'skills');
 const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
@@ -207,7 +241,7 @@ for (const slug of allSkillSlugs) {
   if (!info) info = skillLayerMap[slug];
 
   if (info) {
-    skills.push({ name, description, version, layerNumber: info.layerNumber, layerName: info.layerName, path: relPath });
+    skills.push({ name, slug, description, version, layerNumber: info.layerNumber, layerName: info.layerName, path: relPath });
   }
 }
 
@@ -236,8 +270,24 @@ for (const [key, layer] of sorted) {
   catalogHtml += `    <div class="skill-grid">\n`;
   for (const sk of layer.skills) {
     if (!sk.description) continue;
+    
+    let badgesHtml = '';
+    const isFull = standardDeps.has(sk.slug);
+    const isLite = liteDeps.has(sk.slug);
+    if (isFull || isLite) {
+      badgesHtml += `        <div class="skill-badges">\n`;
+      if (isFull) {
+        badgesHtml += `          <span class="skill-badge full">full</span>\n`;
+      }
+      if (isLite) {
+        badgesHtml += `          <span class="skill-badge lite">lite</span>\n`;
+      }
+      badgesHtml += `        </div>\n`;
+    }
+
     catalogHtml += `      <div class="skill-card" data-path="${sk.path}">\n`;
     catalogHtml += `        <div class="name">${sk.name}</div>\n`;
+    catalogHtml += badgesHtml;
     catalogHtml += `        <div class="desc">${sk.description}</div>\n`;
     if (sk.path) {
       catalogHtml += `        <a class="view-skill" href="#" data-path="${sk.path}">View skill</a>\n`;
@@ -277,7 +327,6 @@ ${catalogHtml}</section>`;
 html = html.slice(0, catStart) + newSection + html.slice(catEnd);
 
 // --- Installation packages section (from skill-dependencies.json) ---
-const depMapPath = path.join(root, 'bin', 'skill-dependencies.json');
 let packagesHtml = '';
 if (fs.existsSync(depMapPath)) {
   const depMap = JSON.parse(fs.readFileSync(depMapPath, 'utf-8'));

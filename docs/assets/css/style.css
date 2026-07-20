@@ -317,6 +317,37 @@ section h2 {
   margin-top: 8px;
 }
 
+.skill-card .skill-badges {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.skill-card .skill-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  border: 1px solid transparent;
+}
+
+.skill-card .skill-badge.full {
+  color: var(--accent);
+  background: rgba(2, 132, 199, 0.06);
+  border-color: rgba(2, 132, 199, 0.15);
+}
+
+.skill-card .skill-badge.lite {
+  color: var(--accent-green);
+  background: rgba(5, 150, 105, 0.06);
+  border-color: rgba(5, 150, 105, 0.15);
+}
+
+
 /* ─── Install / Contribute ─── */
 .install-steps {
   display: grid;
