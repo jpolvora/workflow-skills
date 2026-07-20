@@ -76,6 +76,7 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes
 | Check | Command |
 |-------|---------|
 | Compare to latest | `npx --yes github:jpolvora/workflow-skills --check` |
+| Audit installed digests | `npx --yes github:jpolvora/workflow-skills integrity` |
 | Installed version | `npx --yes github:jpolvora/workflow-skills --version` |
 | Help | `npx --yes github:jpolvora/workflow-skills --help` |
 
@@ -88,6 +89,7 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes
 | Exit 128 / `ssh://git@github.com/null/latest.git` | Drop `@latest` / `@main`; use `npx --yes github:jpolvora/workflow-skills` |
 | Interactive hang under a pipe | Use `install … --yes` |
 | Uninstall on CI/agent | Pass `--yes` (required when stdin is not a TTY) |
+| Integrity source/consumer mismatch | Fix the tree or regenerate `bin/skill-integrity.json` upstream; `--force-integrity` is an unsafe override only |
 
 ### Option B — cURL (shim → npx)
 
@@ -113,6 +115,7 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` |
+| `skill-integrity-local.json` | Local digest record after install/update (gitignored; never overwritten from upstream) |
 | `AGENTS.md` | Consumer hub: skill loading, config, gates, external dependencies (installed with `shared/`) |
 | `CHANGELOG.md` | Append-only history (seeded empty; `rules.changelogFile` defaults here) |
 
@@ -136,13 +139,20 @@ Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/con
 - **No remote shell install path:** curl only downloads the shim; work is done by Node/`npx`.
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
+- **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `shared/` hub templates. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `shared/skill-integrity-local.json` from actual digests).
+- **Audit:** `integrity` recomputes digests for skills listed in `installed-skills.json` and compares to `skill-integrity-local.json` (selective installs only require their closure). `--check` compares semver **and** `fullPackageDigest` when the remote integrity manifest is reachable.
+- **Consumer-owned exclusions:** `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `CHANGELOG.md`, and `skill-integrity-local.json` are never hashed and never fail integrity when edited.
+- **Trust limit:** the integrity manifest is **unsigned**. Fetching it shares the same trust boundary as today’s remote `package.json` / raw GitHub fetch (no publisher signing in this release).
 - **Latest layout only:** no folder renames or older-layout migration on update — install/update always copies the current skill tree.
 - **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
+- **Script runtimes:** **Node** is required for install/CLI. **New** managed skill scripts are Node `.cjs` only. Existing `.py` helpers stay until a tracked migration; consumers still need Python to run those leftovers. See [`tools.md`](.agents/skills/shared/tools.md) § Script launchers.
 
 ### Verify the package
 
 ```bash
+npm run generate-integrity      # rebuild bin/skill-integrity.json
+node bin/generate-skill-integrity.js --check   # fail if stale vs tree / package.json
 npm run tests              # remote-style install check
 npm run tests -- --local   # pack current tree into test/
 ```

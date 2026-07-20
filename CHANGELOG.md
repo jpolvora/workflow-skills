@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-07-20 18:55] Agent: Cursor Grok 4.5
+- **Prompt**: Step 7 testing for skill-install-checksums (AUTO, no browser)
+- **Done**: Wrote `step-07-*.testing.plan.md` + `testing.report.md`; ran `node --check` on touched bin files, `generate-skill-integrity.js --check`, `npm run tests -- --local`
+- **Result**: PASS (0 fix loops); Phase 0b + Phase 11 green; all ACs 1–12 mapped PASS; Learning: N/A (standard testing)
+
+### [2026-07-20 18:50] Agent: Cursor Grok 4.5
+- **Prompt**: Step 6 code review for skill-install-checksums (AUTO fix Critical/Warning)
+- **Done**: Reviewed integrity scope; fixed W1 (no bless local record on post-verify fail), W2 (abs-path `memory` skip), S1 (mismatch printer); added Phase 11 regression; wrote `step-06-*.review.md` + `fix.report.md`
+- **Result**: 2 Warning + 1 Suggestion fixed; `npm run tests -- --local` PASS; Learning: Integrity — never bless failed post-verify with actual digests
+
+### [2026-07-20 14:30] Agent: Cursor Grok 4.5
+- **Prompt**: Set agentic-code-reviewers publish min score to 4 (default is 6)
+- **Done**: Added `--score-min 4` to `.github/workflows/code-review.yml` and AGENTS.md dry-run curl
+- **Result**: CI + local dry-run publish findings with score ≥ 4
+
+### [2026-07-20 18:45] Agent: Cursor Grok 4.5
+- **Prompt**: Step 4 implement skill-install-checksums DAG T1–T8 (integrity digests for install/update/audit)
+- **Done**: Added `bin/install-rules.js`, `skill-integrity-lib.js`, `generate-skill-integrity.js`, committed `skill-integrity.json`; wired pre/post verify + `integrity` + `--check` digest into `cli.js`; hub ships `hub.gitignore` (npm cannot pack `.gitignore`); skip `runs/`; Phase 0b/11 tests; README + check-harness docs
+- **Result**: `npm run tests -- --local` green; `generate-skill-integrity.js --check` OK; version unchanged (0.0.63); Learning: Integrity — npm never packs .gitignore; skip runs/
+
+### [2026-07-20 14:25] Agent: Cursor Grok
+- **Prompt**: Policy-only decision — migrate Python→Node? Chose option 1 (no big-bang)
+- **Done**: Documented runtime policy: Node required; new skill scripts = `.cjs`; existing `.py` frozen except bugfixes (`tools.md`, README, `write-a-skill`); MEMORY trap compiled
+- **Result**: Policy locked; no script rewrites
+
+### [2026-07-20 14:05] Agent: Cursor Grok
+- **Prompt**: `/00-write-spec` skill install checksums; set `plans.dir` to `specs/`
+- **Done**: `config.json` `plans.dir` → `specs`; wrote `specs/skill-install-checksums/step-00-skill-install-checksums.spec.md`
+- **Result**: Canonical spec ready for `01-write-plan`; Learning: N/A (spec only)
+
 ### [2026-07-20 13:35] Agent: Composer
 - **Prompt**: Update docs/README/site/installers for path tokens, then ship-pr
 - **Done**: README + setup + build-site blurb; CLI help/post-install tips; `ensurePathTokensInConfig` on hub seed/preserve; install-skills.sh banner; self-learning site description de-braced
