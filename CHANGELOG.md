@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-07-20 12:00] Agent: OpenCode kimi-k3
+- **Prompt**: Decouple gabarito/caveman/karpathy-guidelines into independent skills; apply write-a-skill filter to reduce lines
+- **Done**: Removed all cross-skill and hub (AGENTS.md) references from the three autoload skills — composition now owned solely by hubs/consumers; caveman 71→63 lines (dropped Persistence section + duplicate example), gabarito 46→43 (dropped Opt-out section + karpathy/senior-developer pointers + PT-BR filler example), karpathy 66 lines (deduped intro); link scan 0 broken / 344
+- **Result**: Skills self-contained; hub § Skill loading / Precedence / Opt-out remains the single composition point
+
+### [2026-07-20 11:00] Agent: OpenCode kimi-k3
+- **Prompt**: Run check-harness audit; fix references, links, semantics, workflow usage; improve portability/multi-agent
+- **Done**: Full audit (Phases 0–5c, 348 links clean) + 9 approved corrections: fixed critical `spec-to-pr-lite` dependency closure in `bin/skill-dependencies.json`; packaged hub 27→28 ids; untracked consumer-owned `shared/stack.md` (+ de-sedimented retired 13-step refs); retitled `stack.md.example`; fixed run-test.md `stackFile` path + linked from spec-to-pr README (also fixed stale `00–11`); cleaned local config.json (glossaryFile, Step12→Step8 invariant key); added orchestrator dependency-closure check to check-harness Phase 3 + check-workflows; extracted check-harness report template to `REPORT-FORMAT.md` (586→~530 lines)
+- **Result**: Harness OK post-correction; `npm run tests -- --local` green
+
 ### [2026-07-19 18:35] Agent: Cursor Grok
 - **Prompt**: Update README/AGENTS/site for install/update/uninstall; check-harness; ship-pr full auto
 - **Done**: Documented uninstall + `installed-skills.json` in README, root/packaged AGENTS, site `#install`; CLI uninstall+manifest already in tree; harness link scan clean; package **0.0.59**

@@ -89,10 +89,16 @@
       "configure-project"
     ],
     "spec-to-pr-lite": [
+      "00-write-spec",
       "01-write-plan",
       "04-implement-tasks",
       "06-code-review",
       "08-ship-pr",
+      "09-fix-pr",
+      "goal-fix-pr",
+      "github-provider",
+      "azure-devops-provider",
+      "local-spec-provider",
       "caveman",
       "gabarito",
       "karpathy-guidelines",

@@ -2,7 +2,7 @@
 
 > **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract. Use this README + [`DIAGRAM.md`](DIAGRAM.md) for onboarding. FAQ sections that still mention steps 11–13 are **legacy**; trust [`SKILL.md`](SKILL.md) / this README for steps **0–9**.
 >
-> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skills `00`–`11`. Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../shared/tools.md). Config: `.agents/skills/shared/config.json`.
+> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `00`–`09` (+ unprefixed `goal-fix-pr`, `update-plan-implementation`). Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../shared/tools.md). Config: `.agents/skills/shared/config.json`.
 >
 > **Identity:** `/spec-to-pr` / `@[spec-to-pr]`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
@@ -135,3 +135,4 @@ Same skills, `shared/config.json`, `gates.md`. `workflowType`: `standard` | `lit
 - Lite orchestrator: [`spec-to-pr-lite/SKILL.md`](../spec-to-pr-lite/SKILL.md)
 - Shared bootstrap: [`setup.md`](../shared/setup.md)
 - Step dispatch (standard only): [`STEP-DISPATCH.md`](STEP-DISPATCH.md)
+- Dry-run FSM test runbook: [`spec-to-pr-run-test.md`](spec-to-pr-run-test.md)
