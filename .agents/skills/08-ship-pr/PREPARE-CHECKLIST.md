@@ -26,7 +26,7 @@ Resolve from the **consumer project** only — never invent stack commands:
 |--------|---------|
 | `config.json` → `verification.*` | Build / test / format |
 | `config.json` → `rules.*` + [`AGENTS.md` External dependencies](../../../AGENTS.md#external-dependencies) | Guardrails / optional rule paths |
-| `stack.md` / `STACK.md` (`rules.stackFile`) | Ship/verify notes |
+| `stack.md` / `STACK.md` (`rules.stackFile`, default `.agents/skills/shared/stack.md`) | Ship/verify notes |
 | Consumer `AGENTS.md`, `CONTRIBUTING.md`, ship/release docs | Prepare-to-ship steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
 

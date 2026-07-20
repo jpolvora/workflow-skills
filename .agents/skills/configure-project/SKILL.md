@@ -41,8 +41,10 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (or batch if user prefers). Never commit `config.json`.
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
-5. **Stack companion** — If `rules.stackFile` target missing, offer: **Generate stack.md** (setup 1b heuristics) / **Skip**.
-   - Done when: stack file exists or user skipped.
+5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/shared/stack.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create repo-root `STACK.md` / `stack.md`.
+   - If shared `stack.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/shared/stack.md` (**Recommended**) / Keep current / Skip.
+   - If the resolved target is missing: offer **Generate** into `.agents/skills/shared/stack.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/shared/` unless the user explicitly chose another path.
+   - Done when: config points at an existing companion, or user skipped.
 
 6. **Validate & handoff** — Confirm JSON parses; required fields non-placeholder; print summary table (`key` → `value`). Tell caller: resume setup / run `/spec-to-pr` or `/spec-to-pr-lite`.
    - Done when: summary shown; `--detect-only` ends after step 2 with no write.
@@ -52,5 +54,5 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Prefer detect + suggest over blank prompts.
 - Do not invent org/repo secrets; leave PAT/env keys as env-var names only.
 - `providers.scm` never `local`; hybrid `active=local` + `scm=github|azure-devops` allowed.
-- Artifact defaults: `plans.dir` → `.agents/plans`, `reviews.dir` → `.agents/codereviews` unless user picks otherwise.
+- Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/plans/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/shared/CHANGELOG.md` unless user picks otherwise.
 - Language: en-us.

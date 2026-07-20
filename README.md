@@ -13,8 +13,9 @@ Portable **agent skills** and **end-to-end workflows** for coding assistants. Th
 | Doc | Who reads it | What it covers |
 |-----|--------------|----------------|
 | **`README.md`** (this file) | Humans | Install, update, uninstall, safety, contribute, high-level catalog |
-| **[`AGENTS.md`](AGENTS.md)** | Agents | Routing, auto-load, task router, harness verification, portability |
-| **[`.agents/AGENTS.md`](.agents/AGENTS.md)** | Agents (after install) | Packaged skill index + portability rules shipped to consumers |
+| **[`AGENTS.md`](AGENTS.md)** | Agents (upstream) | Full skill router, layers, verification, portability |
+| **[`.agents/skills/shared/AGENTS.md`](.agents/skills/shared/AGENTS.md)** | Agents (after install) | Consumer hub: config, gates, external dependencies (installed with `shared/`) |
+| **[`.agents/AGENTS.md`](.agents/AGENTS.md)** | Agents (upstream authoring) | Workflows-package index for dual-hub drift checks — **not** copied to consumers |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to `AGENTS.md` if your IDE needs one — not required by skills |
 
 ---
@@ -37,7 +38,7 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 1. Change this repo → PR to `develop`
 2. After merge, in the consumer: `npx --yes github:jpolvora/workflow-skills update`
 
-**Always preserved** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`. Do not treat in-place skill edits in a consumer as permanent.
+**Always preserved** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). The installer does **not** copy `.agents/AGENTS.md`; consumer agent contract is [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md). Do not treat in-place skill edits in a consumer as permanent.
 
 ---
 
@@ -112,17 +113,19 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` |
+| `AGENTS.md` | Consumer hub: config, gates, external dependencies (installed with `shared/`) |
+| `CHANGELOG.md` | Optional append-only history when `rules.changelogFile` defaults here |
 
-### Optional root configuration
+### Optional root / host configuration
 
-Consumers may add a thin root pointer so their IDE loads `AGENTS.md`, plus a `CHANGELOG.md` stub for the `changelog` skill. These are **optional** and host-specific — skills do not require them. Prefer putting lasting guidance in skills / `AGENTS.md`, not host-private rule files.
+Consumers may add a thin root pointer so their IDE loads `AGENTS.md`. Host pointers are **optional**. Workflow history defaults to `.agents/skills/shared/CHANGELOG.md` via `rules.changelogFile` (set to `CHANGELOG.md` only if you want a repo-root file). Prefer putting lasting guidance in skills / `AGENTS.md`, not host-private rule files.
 
 | File | Role |
 |------|------|
-| Host pointer (name varies by IDE) | Minimal pointer so agents follow `AGENTS.md` / `.agents/AGENTS.md` |
-| `CHANGELOG.md` | Header compatible with the `changelog` skill (append-only history) |
+| Host pointer (name varies by IDE) | Minimal pointer so agents follow project `AGENTS.md` or load skills from `.agents/skills/` |
+| `rules.changelogFile` target | Append-only history (default under `shared/`; optional root `CHANGELOG.md` when configured) |
 
-Set `plans.dir` / `reviews.dir` in `.agents/skills/shared/config.json` to wherever your project wants workflow artifacts (defaults: `.agents/plans`, `.agents/codereviews`).
+Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/config.json` (defaults: `.agents/plans`, `.agents/plans/specs`, `.agents/codereviews`). Existing repo-root `specs/` is kept when already present.
 
 ---
 
@@ -193,7 +196,7 @@ version: 1.0
 ---
 ```
 
-Agent obligations (portability, check-harness before `main`, dual indexes): see [`.agents/AGENTS.md`](.agents/AGENTS.md) and root [`AGENTS.md`](AGENTS.md).
+Agent obligations (portability, check-harness before `main`): see [`.agents/skills/shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) after install and root [`AGENTS.md`](AGENTS.md) when contributing upstream.
 
 After harness or catalog changes: regenerate the site with `node bin/build-site.js` when layers/routing change. That stamps the footer from `package.json` (no auto-bump). For an intentional release bump + site rebuild: `npm run build-site:bump` (or `node bin/build-site.js --bump`), then sync `test/package.json`’s `file:../workflow-skills-<version>.tgz` reference. CI site deploy never bumps — install/`--version`/`--check` stay aligned with the footer.
 

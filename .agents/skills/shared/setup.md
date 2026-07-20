@@ -9,13 +9,13 @@ Artifact paths: [`../spec-to-pr/ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md). Resu
 
 ## External dependencies (guardrails)
 
-Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Full portable contract (same meaning): packaged [`../../AGENTS.md`](../../AGENTS.md) § External dependencies · upstream root [`../../../AGENTS.md`](../../../AGENTS.md)#external-dependencies.
+Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Full portable contract (same meaning): [`AGENTS.md`](AGENTS.md) § External dependencies in this folder · upstream root [`../../../AGENTS.md`](../../../AGENTS.md)#external-dependencies when authoring against the source repo.
 
 | Key | Role | Resolve (first match) |
 |-----|------|------------------------|
 | `rules.seniorDeveloper` | Engineering guardrails; **Code review proof** source | config path → local `senior-developer` skill → global/user skill |
 | `rules.karpathyGuidelines` | Surgical-change guidelines | config path → shipped `../karpathy-guidelines/SKILL.md` → global skill |
-| `rules.stackFile` | Human-readable stack companion | config path (default `STACK.md` / `stack.md`); bootstrap may create if missing (see 1b below) |
+| `rules.stackFile` | Human-readable stack companion | config path (default `.agents/skills/shared/stack.md`); bootstrap may create under `shared/` if missing (see 1b below) — never require repo-root files |
 | Other `rules.*` | Optional consumer rules (e.g. `efMigrations`, `viewPatterns`) | Use path from config when set; do not invent filenames |
 
 **Code review proof:** When pipeline / utility skills ask for proof, load the checklist from the **resolved** `rules.seniorDeveloper` skill. Do not paste that checklist into hub docs.
@@ -46,7 +46,7 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
    - User-gate: **Configure now (Recommended)** / **Skip**.
    - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`configure-project`](../configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
    - If **Skip**: continue with example defaults; warn that providers/verification may be wrong until configure-project runs.
-1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `STACK.md`). Prefer configure-project step 5 when that skill just ran. Else `Shell` `test -f {stackFile}`. If missing:
+1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `.agents/skills/shared/stack.md`). Prefer configure-project step 5 when that skill just ran. If config still points at missing root `STACK.md`/`stack.md` while `.agents/skills/shared/stack.md` exists, set `rules.stackFile` to the shared path (no root file required). Else `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
      - **Language/Framework**: Look for `package.json` (Node/React/Next), `*.csproj`/`*.sln`/`*.slnx` (.NET), `pyproject.toml`/`requirements.txt` (Python), `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml`/`build.gradle` (Java), `Gemfile` (Ruby), etc.
      - **Frontend framework**: Check `package.json` `dependencies` for `next`, `react`, `vue`, `angular`, `svelte`, `vite`, `tailwindcss`, etc.
@@ -55,10 +55,10 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
      - **Project structure**: List top-level directories (`src/`, `web/`, `tests/`, `app/`, `lib/`, `cmd/`, etc.) and infer conventional layers.
      - **Tool versions**: `node --version`, `dotnet --version`, `python --version`, `go version` (if installed).
      - **Build/test commands**: Check `package.json` `scripts` (`build`, `test`, `lint`, `dev`), `Makefile` targets, existing CI configs (`.github/workflows/`, `.gitlab-ci.yml`).
-   - Generate `stack.md` from the detected information using the template structure at [`stack.md.example`](stack.md.example) as format reference.
-   - Write `STACK.md` to the root of the repository.
+   - Generate companion from the detected information using [`stack.md.example`](stack.md.example) as format reference.
+   - Write to `.agents/skills/shared/stack.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/shared/`). Do **not** create repo-root `STACK.md` / `stack.md`.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
-   - Log: `STACK.md created → {path}` in step output.
+   - Log: `stack companion created → {path}` in step output.
 2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict`.
    - **Combined Switches:** These switches can be used individually or combined in any configuration (e.g. `full` + `auto` + `dry-run` to run a fully automated dry-run simulation of the entire workflow for testing).
    - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`.

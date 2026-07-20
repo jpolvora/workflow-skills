@@ -219,7 +219,7 @@ In **normal mode**, Step 0 checks `{plansDir}/*/*.state.md` and offers a menu: r
    - **GitHub:** [`github-provider`](../../github-provider/SKILL.md) owns fetch/convert → `step-00-{slug}.spec.md`
    - **Azure DevOps:** [`azure-devops-provider`](../../azure-devops-provider/SKILL.md) owns fetch/convert → `step-00-{slug}.spec.md`
    - **Hand-written:** [`local-spec-provider`](../../local-spec-provider/SKILL.md) owns register/normalize → `step-00-{slug}.spec.md` under `{us-dir}`
-6. **Memory & Decisions Consultation** (protocol): read `## Workflow memory`, `## Accumulated decisions` and `## Doc consolidation log` from `state.md` (on resume), then consult `MEMORY.md` (root) only on relevant scope
+6. **Memory & Decisions Consultation** (protocol): read `## Workflow memory`, `## Accumulated decisions` and `## Doc consolidation log` from `state.md` (on resume), then consult `.agents/skills/shared/MEMORY.md` only on relevant scope
 7. Initial Progress Board + Transition Gate → Step 1 (or auto-advance in `autoMode`)
 
 ### Input
@@ -269,7 +269,7 @@ Sub-agent `generalPurpose` (Planner model) executes the **Context Loading Protoc
 | `state.md` | Workflow context |
 | `step-00-{slug}.issue.json` | Acceptance criteria, issue description |
 | Rules/docs | Via Context Loading Protocol |
-| `MEMORY.md` | Patterns and traps |
+| `MEMORY.md` | Patterns and traps (`.agents/skills/shared/MEMORY.md`) |
 
 ### Output
 
@@ -322,7 +322,7 @@ Breaks the implementation plan into **atomic tasks** organized in a **DAG** (Dir
 | Field | Source |
 |-------|--------|
 | `step-01-{slug}.plan.md` | Step 1 |
-| `MEMORY.md` | Patterns and traps |
+| `MEMORY.md` | Patterns and traps (`.agents/skills/shared/MEMORY.md`) |
 | `config.json.stack` | Layers, paths, invariants |
 
 ### Output
@@ -561,7 +561,7 @@ Fixes findings from Step 9, creates the 2nd commit, and generates `step-10-{slug
 1. Generates `step-12-{slug}.result.md` (delivery summary with benchmark)
 2. Captures LOC delta and computes benchmark (wall-clock time, tokens, LOC)
 3. Updates plan checkmarks (`step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md`))
-4. **MEMORY.md sweep** — promotes generalizable learnings from `## Workflow memory` to root `MEMORY.md`
+4. **MEMORY.md sweep** — promotes generalizable learnings from `## Workflow memory` to `.agents/skills/shared/MEMORY.md`
 5. **G2-delivery gate** — commits `step-01-{slug}.plan.md` (or `step-02-{slug}.plan.refined.md`) + `step-12-{slug}.result.md` only
 6. **Cleanup gate** — delete temp artifacts (`.plan.exec.md`, `.exec.dag.json`, worktrees, tags) or keep all
 7. **Push consent** — optional; tags never pushed
@@ -627,7 +627,7 @@ Local tags `uswf/{workflow-id}/before-step-{N}` created after each step. Used fo
 
 ### Workflow artifacts
 
-Everything under `{us-dir}` (`{plansDir}/{slug}/`; `{plansDir}` ← `config.plans.dir`). Canonical names: [`ARTIFACTS.md`](../ARTIFACTS.md). `MEMORY.md` is shared at repo root.
+Everything under `{us-dir}` (`{plansDir}/{slug}/`; `{plansDir}` ← `config.plans.dir`). Canonical names: [`ARTIFACTS.md`](../ARTIFACTS.md). `MEMORY.md` lives under `.agents/skills/shared/MEMORY.md`.
 
 | Artifact | Path |
 |----------|------|
@@ -645,7 +645,7 @@ Everything under `{us-dir}` (`{plansDir}/{slug}/`; `{plansDir}` ← `config.plan
 | Testing report | `{us-dir}/step-07-{slug}.testing.report.md` |
 | Delivery result | `{us-dir}/step-08-{slug}.result.md` |
 | PR review rounds | `{reviewsDir}/PR-<id>-round-*.md` |
-| Technical memory (root) | `MEMORY.md` |
+| Technical memory | `.agents/skills/shared/MEMORY.md` |
 
 > Resume / Active Resume rules: see [`setup.md`](../../shared/setup.md) § Resume / Reset (canonical). This FAQ does not redefine them.
 

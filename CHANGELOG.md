@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-07-20 08:45] Agent: Cursor Composer
+- **Prompt**: Stop installing `.agents/AGENTS.md` into consumer projects
+- **Done**: Removed `installPackagedAgentsIndex` from CLI (install/update/uninstall); dropped `.agents/AGENTS.md` from npm package `files`; expanded `shared/AGENTS.md` with External dependencies + skill discovery; retargeted spec-to-pr/spec-format/setup links; updated README/hubs/site copy; install tests assert no `.agents/AGENTS.md` copy
+- **Result**: Consumer agent contract is `skills/shared/AGENTS.md` only; upstream packaged hub remains for authoring/check-harness drift
+
+### [2026-07-20 08:38] Agent: Cursor Composer
+- **Prompt**: Stop workflows from requiring/creating consumer files outside shared (changelog + specsDir)
+- **Done**: `rules.changelogFile` default → `.agents/skills/shared/CHANGELOG.md`; `plans.specsDir` default → `.agents/plans/specs` (prefer existing root `specs/`); updated changelog skill, local-spec detect script, schema/example, hubs, README, tools
+- **Result**: Fresh consumers get no forced root `CHANGELOG.md` / `specs/`; root paths only when explicitly configured or already present
+
+### [2026-07-20 08:34] Agent: Cursor Composer
+- **Prompt**: configure-project warns shared/stack.md exists but root STACK.md missing; avoid forcing files outside shared/
+- **Done**: Default `rules.stackFile` → `.agents/skills/shared/stack.md`; configure-project/setup retarget to shared companion instead of creating root `STACK.md`; updated example, AGENTS, tools, PREPARE-CHECKLIST
+- **Result**: Stack companion stays under consumer-owned `shared/`; root STACK.md optional legacy only
+
 ### [2026-07-20 08:12] Agent: Cursor Composer
 - **Prompt**: Fix version bump so package version matches website footer; sync GH Actions/local build; explain install vs site drift
 - **Done**: Made `package.json` canonical — `build-site.js` stamps footer without bumping by default (`--bump` / `npm run build-site:bump` for releases); deploy-site CI asserts footer==package.json and never bumps; aligned repo to **0.0.61** (package + footer + test tarball ref); documented contract in README/AGENTS

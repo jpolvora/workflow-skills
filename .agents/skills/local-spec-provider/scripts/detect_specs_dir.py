@@ -7,7 +7,8 @@ Usage:
   python detect_specs_dir.py --configure <relative-or-absolute-dir> [--json]
   python detect_specs_dir.py --validate [--json]
 
-Defaults: plans.specsDir = "specs" (repo-root relative).
+Defaults: plans.specsDir = ".agents/plans/specs" (under .agents/).
+If repo-root "specs/" already exists and config omits specsDir, prefer "specs" (legacy).
 Never commits config.json (gitignored in consumers).
 """
 from __future__ import annotations
@@ -35,7 +36,15 @@ def ensure_utf8_stdio() -> None:
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
-DEFAULT_SPECS_DIR = "specs"
+DEFAULT_SPECS_DIR = ".agents/plans/specs"
+LEGACY_SPECS_DIR = "specs"
+
+
+def default_specs_dir_rel() -> str:
+    """Prefer existing repo-root specs/; otherwise default under .agents/plans/specs."""
+    if (REPO_ROOT / LEGACY_SPECS_DIR).is_dir():
+        return LEGACY_SPECS_DIR
+    return DEFAULT_SPECS_DIR
 
 
 def load_config() -> dict:
@@ -56,9 +65,9 @@ def save_config(data: dict) -> None:
 
 
 def resolve_specs_dir(cfg: dict | None = None) -> Path:
-    """Return absolute specsDir from config or default 'specs'."""
+    """Return absolute specsDir from config or portable default under .agents/."""
     cfg = cfg if cfg is not None else load_config()
-    rel = ((cfg.get("plans") or {}).get("specsDir") or DEFAULT_SPECS_DIR).strip()
+    rel = ((cfg.get("plans") or {}).get("specsDir") or default_specs_dir_rel()).strip()
     path = Path(rel)
     if not path.is_absolute():
         path = REPO_ROOT / path
@@ -76,7 +85,7 @@ def ensure_specs_dir(create_config: bool = True) -> tuple[Path, bool, bool]:
     wrote_config = False
 
     if not plans.get("specsDir"):
-        plans["specsDir"] = DEFAULT_SPECS_DIR
+        plans["specsDir"] = default_specs_dir_rel()
         if create_config:
             if not CONFIG_PATH.exists():
                 # Minimal stub so detect/configure still works without full bootstrap.
@@ -188,13 +197,13 @@ def emit(payload: dict, as_json: bool) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Detect/configure local specsDir (plans.specsDir, default specs/)."
+        description="Detect/configure local specsDir (plans.specsDir, default .agents/plans/specs)."
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "--detect",
         action="store_true",
-        help="Print resolved specsDir (from config or default specs).",
+        help="Print resolved specsDir (from config or default .agents/plans/specs).",
     )
     group.add_argument(
         "--configure",

@@ -31,7 +31,12 @@ Scan consumer **repo root** (not this skill package alone):
 | No tracker remote / `specs/**/*.spec.md` | Suggest `active=local` + set `scm` from remote host or ask |
 | `prisma/` / `drizzle` / `Migrations/` / compose DB services | `stack.database.*` hints |
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
-| Existing `STACK.md` / `stack.md` | `rules.stackFile` |
+| `.agents/skills/shared/stack.md` (preferred) | `rules.stackFile` → that path |
+| Root `STACK.md` / `stack.md` (legacy optional) | Keep only if user already uses it; do not create or require |
+| `.agents/skills/shared/CHANGELOG.md` (preferred) | `rules.changelogFile` → that path |
+| Repo-root `CHANGELOG.md` | Only if user sets `rules.changelogFile: "CHANGELOG.md"` |
+| Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
+| No specs dir yet | Suggest `plans.specsDir: ".agents/plans/specs"` |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
 ## Interview order

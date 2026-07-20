@@ -7,7 +7,7 @@ Usage:
     python check_memory_conflict.py <plan_file> --json    (JSON output)
 
 Given a *.plan.md or *.exec.md, extracts layers, modules, entities and file paths
-from the plan, then compares against structured entries in the repo-root MEMORY.md.
+from the plan, then compares against structured entries in `.agents/skills/shared/MEMORY.md`.
 
 Returns:
   - Exit 0: no overlaps found

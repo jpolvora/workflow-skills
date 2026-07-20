@@ -22,7 +22,7 @@ Shipped skills are **agent- and IDE-neutral**. They must run in any consumer hos
 | **Host adapters stay out of skills** | Optional host pointer files, marketplace manifests, and this upstream repo’s local `.cursor/` tree are **not** part of the portable skill contract. Put lasting guidance in skills / `AGENTS.md`, not host-private rule files. |
 | **Upstream dogfood exception** | This source repo may keep a local `.cursor/` for authoring/plans. That layout must **not** leak into shipped skill defaults or required consumer paths. |
 
-Mirror for packaged installs: [`.agents/AGENTS.md`](.agents/AGENTS.md) § Portability and genericity.
+Mirror for packaged authoring: [`.agents/AGENTS.md`](.agents/AGENTS.md) § Portability and genericity (upstream only; consumers use [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md)).
 
 ---
 
@@ -32,7 +32,7 @@ Mirror for packaged installs: [`.agents/AGENTS.md`](.agents/AGENTS.md) § Portab
 |------|----------|---------|
 | **`AGENTS.md`** (this file) | Agents | Skill loading, task router, layers, verification, harness rules |
 | **`README.md`** | Humans | What this repo is, how to install/update/uninstall, contribute, safety |
-| **`.agents/AGENTS.md`** | Agents (packaged) | Consumer-facing skill index shipped with installs |
+| **`.agents/AGENTS.md`** | Agents (upstream authoring) | Workflows-package index for dual-hub drift checks in this repo — **not** installed into consumers |
 | **`.agents/skills/*/SKILL.md`** | Agents | Progressive disclosure — load on demand via router |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to this hub if the consumer’s IDE needs one — not required by skills; not a portable dependency |
 
@@ -45,12 +45,12 @@ When editing harness docs: put **agent obligations** here; put **human install/U
 Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and pipeline skills.
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files; `uninstall` removes skill folders (cascades unused deps) and never deletes `shared/` consumer data.
-- **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json` (consumer-owned; never overwrite from upstream).
+- **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Installer does **not** copy `.agents/AGENTS.md` — consumer hub is `shared/AGENTS.md`.
 - **Latest layout only:** installer does not migrate older folder names or legacy host paths — consumers get the current skill tree and neutral defaults on install/update. See [`README.md`](README.md) § Safety and § [Portability & harness neutrality](#portability--harness-neutrality-mandatory).
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding; no IDE/agent product coupling. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
-- Guardrails resolution: § [External dependencies](#external-dependencies) (and packaged mirror in [`.agents/AGENTS.md`](.agents/AGENTS.md)).
+- Guardrails resolution: § [External dependencies](#external-dependencies) (consumer install mirror: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md)).
 - **This upstream’s local `.cursor/`:** authoring/plans only for this repo — never the shipped default for consumers.
 
 ### Consumer CLI (install / update / uninstall)
@@ -208,7 +208,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `spec-to-pr` / `spec-to-pr-lite` | `.agents/skills/.../SKILL.md` | Orchestrators |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
 | `self-learning` | `.agents/skills/self-learning/SKILL.md` | Writes `shared/MEMORY.md` |
-| `changelog` | `.agents/skills/changelog/SKILL.md` | `CHANGELOG.md` |
+| `changelog` | `.agents/skills/changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
 | `configure-project` | `.agents/skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `.agents/skills/goal-loop/SKILL.md` | Convergence |
 | `grill-with-docs` | `(global)` | Docs grill |
@@ -283,13 +283,14 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 |------------|------------------------|
 | `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → global/user skill |
 | `karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/karpathy-guidelines/SKILL.md` → global skill |
-| Stack companion | `config.json` → `rules.stackFile` (default `STACK.md` / `stack.md`) — consumer-owned |
+| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/stack.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
+| Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root `CHANGELOG.md` only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames; prefer skills over host-private rule files |
 | Domain catalog | `specs/domains/` — consumer; starter [`specs/domains/index.md.example`](specs/domains/index.md.example) |
-| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · optional `reviews.dir` (default `.agents/codereviews`) |
+| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/plans/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (default `.agents/codereviews`) |
 
-Packaged install mirror (consumers without this root section): [`.agents/AGENTS.md`](.agents/AGENTS.md) § External dependencies · bootstrap notes in [`shared/setup.md`](.agents/skills/shared/setup.md).
+Packaged consumer mirror: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) § External dependencies · bootstrap notes in [`shared/setup.md`](.agents/skills/shared/setup.md).
 
 ### Code review proof
 

@@ -297,8 +297,8 @@ if (fs.existsSync(depMapPath)) {
     Managed skills are tracked in <code>shared/installed-skills.json</code> for <code>update</code> / <code>uninstall</code>.
     Workflow artifact paths come from consumer <code>config.json</code> (defaults under <code>.agents/plans</code> /
     <code>.agents/codereviews</code>). Optional host pointer files are consumer-owned — not required by skills.
-    Packaged <code>.agents/AGENTS.md</code> includes portable <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/AGENTS.md#external-dependencies">External dependencies</a>
-    so consumers are not dead-ended when the root hub omits that section.
+    Consumer agent contract: <code>skills/shared/AGENTS.md</code> (installed with the hub; includes portable
+    <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/skills/shared/AGENTS.md#external-dependencies">External dependencies</a>).
   </p>
   <div class="install-steps">
     <div class="install-step">
