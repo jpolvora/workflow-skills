@@ -55,7 +55,7 @@ Deterministic FSM; step content delegated to skills via **`dispatch-agent`**.
 1. **End-to-End Delivery:** Automate the entire feature/US lifecycle from specification bootstrap through PR creation and thread resolution (steps 0 to 9).
 2. **Context Isolation & State Hygiene:** Run each step in a clean, isolated subagent (`dispatch-agent`) with optional step worktrees, while keeping state sync (`state.md` + `MEMORY.md`) strictly valid.
 3. **Safety & Gates:** Enforce transition gates and explicit authorization before coding, review fixes, testing, and shipping.
-4. **Portability:** Keep the orchestrator FSM stack-agnostic and configuration-driven, resolving all project metadata and commands dynamically from `config.json` and `stack.md`.
+4. **Portability:** Keep the orchestrator FSM stack-agnostic and configuration-driven, resolving all project metadata and commands dynamically from `config.json` and `STACK.md`.
 
 ## Invariants
 
@@ -70,7 +70,7 @@ Deterministic FSM; step content delegated to skills via **`dispatch-agent`**.
 | `dryRun` | No `Write` `src/`/`web/`, no commit/push/worktree/browser/MEMORY `Shell`/`Write`. Prefix `[DRY-RUN]`. |
 | `autoMode` | No user-gate; auto-gate option 0. Prefix `[AUTO]`. HS-3/4/5 pause. No browser MCP. Telemetry/`--elapsed` + Step 8 Benchmark/final-board Total time still mandatory. |
 | `skipTesting` | Skip Step 7 → `skippedSteps`+`completedSteps`, log, Step 8. Prefer when no API/UI surface and unit tests green. |
-| `skipTests` | Skip test suites in stack.md; build required. `verification.tests: skipped`. |
+| `skipTests` | Skip test suites in STACK.md; build required. `verification.tests: skipped`. |
 | `fullMode` | Step 8 combined gate Recommended = commit plan+result then create PR. Default: off (Recommended = commit + skip PR). |
 | Banners | `autoMode` or `dryRun` → Step Output Banner every step. |
 | Revert | Workflow manifest + checkpoint only — no global `reset --hard` / `restore .`. |
@@ -78,7 +78,7 @@ Deterministic FSM; step content delegated to skills via **`dispatch-agent`**.
 | **Workflow artifacts** | **Never `git commit` `{plansDir}/` files during Steps 0–7.** Code commits (4 / 6-fix / 7 fix) stage `src/`/`web/`/`tests/` only. Delivery commit at Step 8: plan + `step-08-{slug}.result.md` only. |
 | **Pause** | **Pause workflow** keeps **all** artifacts on disk — no cleanup, no delete. `status: active`. |
 | Session model | `currentModel` = executing session model. Switch via Pause → IDE/agent host → Resume ([`gates.md`](../shared/gates.md)). |
-| Portability | Keep spec-to-pr fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `stack.md`. |
+| Portability | Keep spec-to-pr fully generic and portable. No hardcoded project-specific metadata, paths, solution names, or commands. All dynamic options and metadata must be resolved from `config.json` or `STACK.md`. |
 
 **Runtime tokens:** git tags/worktrees use prefix `uswf/`; plan slugs use `us-{id}`.
 
@@ -244,7 +244,7 @@ default → branch-direct (preferred on win32 and most consumers)
 worktree when config.plans.useWorktrees=true AND path≤180 AND git worktree add succeeds
 ```
 
-Any step **may** use a worktree when `useWorktrees=true`. **Preferred** for code-mutating steps 4, 6-fix, 7. branch-direct: edits on `state.branch`; subagent `wip(us-{id}): step-{N}` or dirty WT. Post-step: files exist, expected diff, build/tests per stack.md.
+Any step **may** use a worktree when `useWorktrees=true`. **Preferred** for code-mutating steps 4, 6-fix, 7. branch-direct: edits on `state.branch`; subagent `wip(us-{id}): step-{N}` or dirty WT. Post-step: files exist, expected diff, build/tests per STACK.md.
 
 ### State Hygiene
 

@@ -42,7 +42,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | Role | Rule |
 |------|------|
 | **Canonical upstream** | [`jpolvora/workflow-skills`](https://github.com/jpolvora/workflow-skills) is the authoritative source for pipeline and dependency skills. |
-| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/stack.md`, `shared/MEMORY.md`, `shared/memory/*`, `shared/installed-skills.json`, and optional `shared/CHANGELOG.md` when configured there. Latest layout only — no older-folder migration and no legacy host-path shims (see upstream README § Safety; root [`AGENTS.md`](../AGENTS.md) § Portability). |
+| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/STACK.md`, `shared/MEMORY.md`, `shared/memory/*`, `shared/installed-skills.json`, and optional `shared/CHANGELOG.md` when configured there. Latest layout only — no older-folder migration and no legacy host-path shims (see upstream README § Safety; root [`AGENTS.md`](../AGENTS.md) § Portability). |
 | **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx --yes github:jpolvora/workflow-skills update` (or `update --include-new`). |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
@@ -222,7 +222,7 @@ Not shipped in the skill package (except where noted). Resolve each dependency i
 |------------|------------------------|
 | `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → global/user skill |
 | `karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `skills/karpathy-guidelines/SKILL.md` → global skill |
-| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/stack.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
+| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames; prefer skills over host-private rule files |
@@ -237,7 +237,7 @@ When skills ask for **Code review proof**, use the checklist / verification obli
 
 ## Consumer notes
 
-- Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/`, `installed-skills.json`, optional `CHANGELOG.md` — preserved on update; skill files are overwritten.
+- Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/`, `installed-skills.json`, optional `CHANGELOG.md` — preserved on update; skill files are overwritten. Fresh install seeds `config.json` (from example), empty `MEMORY`/`CHANGELOG`, and `STACK.md` under `shared/` when missing. Installer never writes consumer repo-root files.
 - **Install / update / uninstall** (consumer project cwd; never `@latest` / `@main`):
 
 ```bash

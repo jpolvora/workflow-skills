@@ -32,7 +32,7 @@
     ".agents/skills/",
     "!.agents/skills/shared/config.json",
     "!.agents/skills/shared/config.local.json",
-    "!.agents/skills/shared/stack.md",
+    "!.agents/skills/shared/STACK.md",
     "!.agents/skills/shared/MEMORY.md",
     "!.agents/skills/shared/memory/**",
     "!.agents/skills/**/__pycache__/**",

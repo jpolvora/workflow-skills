@@ -41,9 +41,9 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (or batch if user prefers). Never commit `config.json`.
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
-5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/shared/stack.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create repo-root `STACK.md` / `stack.md`.
-   - If shared `stack.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/shared/stack.md` (**Recommended**) / Keep current / Skip.
-   - If the resolved target is missing: offer **Generate** into `.agents/skills/shared/stack.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/shared/` unless the user explicitly chose another path.
+5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file.
+   - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/shared/STACK.md` (**Recommended**) / Keep current / Skip.
+   - If the resolved target is missing: offer **Generate** into `.agents/skills/shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/shared/` unless the user explicitly chose another path.
    - Done when: config points at an existing companion, or user skipped.
 
 6. **Validate & handoff** — Confirm JSON parses; required fields non-placeholder; print summary table (`key` → `value`). Tell caller: resume setup / run `/spec-to-pr` or `/spec-to-pr-lite`.

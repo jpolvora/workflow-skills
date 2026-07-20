@@ -45,7 +45,7 @@ When editing harness docs: put **agent obligations** here; put **human install/U
 Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and pipeline skills.
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files; `uninstall` removes skill folders (cascades unused deps) and never deletes `shared/` consumer data.
-- **Preserve** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Installer does **not** copy `.agents/AGENTS.md` — consumer hub is `shared/AGENTS.md`.
+- **Preserve** under `.agents/skills/shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Installer does **not** copy `.agents/AGENTS.md` — consumer hub is `shared/AGENTS.md`. Fresh install seeds `config.json` (from example), `MEMORY.md`, `CHANGELOG.md`, and `STACK.md` under `shared/` when missing. Installer never writes consumer repo-root files.
 - **Latest layout only:** installer does not migrate older folder names or legacy host paths — consumers get the current skill tree and neutral defaults on install/update. See [`README.md`](README.md) § Safety and § [Portability & harness neutrality](#portability--harness-neutrality-mandatory).
 - Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - After install/update in a consumer: run `check-harness`.
@@ -283,7 +283,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 |------------|------------------------|
 | `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → global/user skill |
 | `karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/karpathy-guidelines/SKILL.md` → global skill |
-| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/stack.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
+| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root `CHANGELOG.md` only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames; prefer skills over host-private rule files |

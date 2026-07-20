@@ -1,6 +1,6 @@
 ---
 name: check-harness
-description: Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–11 / ws-*), retired path ids, broken links, orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.
+description: Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links, orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.
 disable-model-invocation: true
 version: 3.2-generic
 ---
@@ -57,9 +57,30 @@ flowchart LR
 1. **Repo-root-relative paths** — every proposed or corrected reference uses a relative path (e.g., `.agents/skills/01-write-plan/SKILL.md`). **Forbidden** absolute paths (`C:\Users\...\project\...`, `/home/user/...`) or author-machine dependencies.
 2. **Evidence-based proof** — each finding cites file + snippet/link verified with tools (`Read`, `Grep`, `Glob`). Do not report a broken link without confirming nonexistence on the filesystem.
 3. **Scan before edit** — Steps 1–2 are **always read-only**. Enumerate all findings and assemble the correction plan **before** any `Write`/`StrReplace`/`Delete`. Editing only in Step 3, with explicit approval.
-4. **Harness precedence** — the source of truth for routing is [`AGENTS.md`](../../../AGENTS.md); the source of truth for engineering is the guardrails skill resolved per [`AGENTS.md`](../../../AGENTS.md) § External Dependencies (`config.json.rules.seniorDeveloper`, then local/global `senior-developer`). Optional project rules are audited only when `config.json.rules.*` points at them. Skills **delegate** to `AGENTS.md` and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
+4. **Harness precedence** — routing source of truth is the **resolved agent hub** (§ Hub resolution below). Engineering guardrails resolve per hub § External Dependencies (`config.json.rules.seniorDeveloper`, then local/global `senior-developer`). Optional project rules are audited only when `config.json.rules.*` points at them. Skills **delegate** to the hub and the guardrails skill instead of duplicating prose. Audit progressive disclosure violations (skill/agent repeating the entire body instead of linking to the source).
 5. **Minimal diff in proposals** — prefer removing duplicates + link to canonical source rather than rewriting entire blocks.
-6. **AGENTS.md is the agent hub** — `AGENTS.md` concentrates routing (Layers, skill loading, task router, verification). `README.md` is for humans (install/contribute) and must **not** replace the router. `AGENTS.md` must **route** to skills, rules, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
+6. **Resolved hub is the agent hub** — the resolved hub concentrates routing (skill loading, task router, verification). `README.md` is for humans (install/contribute) and must **not** replace the router. The hub must **route** to skills, rules, and project docs via progressive disclosure — **never** index specs. Spec discovery lives in specification skills and the project's specs directory. Do not duplicate skill bodies inline (exception: routing tables and verification commands).
+
+### Hub resolution (mandatory — Phase 0)
+
+Detect **install mode** before routing audits:
+
+| Mode | Detection (first match) | Primary hub |
+|------|-------------------------|-------------|
+| **Upstream** | `bin/skill-dependencies.json` exists at repo root **and** `.agents/AGENTS.md` exists | Root `AGENTS.md` (+ dual-hub drift vs `.agents/AGENTS.md`) |
+| **Consumer** | `.agents/skills/shared/AGENTS.md` exists and upstream markers above are absent (typical `npx` install) | `.agents/skills/shared/AGENTS.md` |
+
+**Consumer rules:**
+
+- Primary hub is always `.agents/skills/shared/AGENTS.md` when present. Missing root `AGENTS.md` is **OK** (not a warning). A thin root pointer the consumer added is **OK**.
+- Do **not** warn that root lacks skill loading when the shared hub has it.
+- Route Phase 4 skill/rule inventory against **shared/AGENTS.md** (and root only if it also lists skills).
+- If root `AGENTS.md` is absent or does not point at the shared hub: optional **suggestion** that the consumer add a thin pointer (do **not** treat as a shipped-skill defect; installer must never write consumer root files).
+- Links to `shared/config.json` are healthy when the file exists (fresh install seeds it from `config.json.example`). Placeholder values → **suggestion** to run `configure-project`, **not** a warning for “missing config”.
+- Missing `config.json` when `config.json.example` exists → **warning** (installer should have seeded; propose copy + configure-project).
+- Pipeline / orch / provider skills may be intentionally omitted from the promoted table when the hub marks them orch-only.
+- Sections titled **Extra package (optional)**: missing Extra skill paths are **intentional omission**, not phantom/critical broken links. When Extra skills **are** on disk, they must appear in that section (else unrouted warning).
+- Phase 5b sprawl on managed upstream skills (`spec-to-pr`, providers, `check-harness`, …) → record under **Upstream debt (informational)**; do **not** count toward consumer “Problems found” unless the user asked to optimize those skills.
 
 ---
 
@@ -71,17 +92,19 @@ Go through **all** artifacts below, in harness routing order (progressive disclo
 
 | File | Role |
 |---------|--------|
-| `AGENTS.md` | Agent **hub** — Layers, skill loading, task router, verification (not human install docs) |
+| Resolved hub (§ Hub resolution) | Agent **hub** — skill loading, task router, verification (not human install docs) |
+| Root `AGENTS.md` | Upstream: full hub. Consumer: optional thin pointer to `shared/AGENTS.md` (absent is OK; never required by shipped skills) |
+| `.agents/skills/shared/AGENTS.md` | Consumer primary hub (always installed with workflows/full) |
 | `README.md` | Human **README** — install, overview, contribute (not the skill router) |
 | Optional host entry pointer | Thin file pointing at `AGENTS.md` when the consumer/host uses one — verify if present; **not required** |
 
-Progressive disclosure flow: optional host entry → `AGENTS.md` → skill/doc on demand (specs via skills or `specs/AGENTS.md`, not via hub). Do not treat `README.md` as routing authority.
+Progressive disclosure flow: optional host entry → resolved hub → skill/doc on demand (specs via skills or `specs/AGENTS.md`, not via hub). Do not treat `README.md` as routing authority.
 
 ### 1b. Agents and orchestrators
 
 Standalone agents (with `disable-model-invocation: true`) and orchestrators may live in `.agents/` or under `.agents/skills/`. Phase 4 discovers all `.md` files with YAML frontmatter containing `disable-model-invocation: true`.
 
-Besides `check-harness` itself (this file), projects may contain E2E pipelines (e.g., `spec-to-pr/`), stack config files (e.g., `stack.md`), and other orchestrators. Phase 4 scan enumerates the actual inventory; this section exists only as an entry point for the audit.
+Besides `check-harness` itself (this file), projects may contain E2E pipelines (e.g., `spec-to-pr/`), stack config files (e.g., `STACK.md`), and other orchestrators. Phase 4 scan enumerates the actual inventory; this section exists only as an entry point for the audit.
 
 ### 2. Optional project rules (`config.json.rules.*`)
 
@@ -207,7 +230,8 @@ Run **all** scan phases (0–5c) before assembling the plan (6). Phase 7 only oc
 
 1. Confirm branch and git state (`git status --short`) — uncommitted local changes may explain "missing" paths.
 2. Record date/time and requested scope (full vs. specific file).
-3. **Windows stdio (mandatory when using Python print scans):** skill/hub markdown contains `→` (U+2192) and other non-cp1252 glyphs. Before any Python one-liner that **prints** file contents, force UTF-8 or set `PYTHONIOENCODING=utf-8`. Otherwise Windows consoles raise `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`.
+3. **Resolve install mode + primary hub** per § Hub resolution (Upstream vs Consumer). Record which file(s) will be used for Phase 4 routing.
+4. **Windows stdio (mandatory when using Python print scans):** skill/hub markdown contains `→` (U+2192) and other non-cp1252 glyphs. Before any Python one-liner that **prints** file contents, force UTF-8 or set `PYTHONIOENCODING=utf-8`. Otherwise Windows consoles raise `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`.
 
 ```bash
 # Prefer env for the whole scan shell:
@@ -218,7 +242,7 @@ export PYTHONIOENCODING=utf-8
 # sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 ```
 
-4. **Python heredoc string escapes (Windows / bash):** never write `replace('\', '/')` inside `python - <<'PY'` — the `\'` ends the string early → `SyntaxError: unterminated string literal`. Prefer `Path.as_posix()`, or write a temp `.py` file, or use `replace(chr(92), "/")` / `replace("\\", "/")` with a double-quoted Python string. Prefer compiling skill scripts with `python -m py_compile` over ad-hoc one-liners when validating syntax.
+5. **Python heredoc string escapes (Windows / bash):** never write `replace('\', '/')` inside `python - <<'PY'` — the `\'` ends the string early → `SyntaxError: unterminated string literal`. Prefer `Path.as_posix()`, or write a temp `.py` file, or use `replace(chr(92), "/")` / `replace("\\", "/")` with a double-quoted Python string. Prefer compiling skill scripts with `python -m py_compile` over ad-hoc one-liners when validating syntax.
 
 ### Phase 1 — Reference extraction
 
@@ -256,6 +280,8 @@ For each internal reference:
 | Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `shared/caveman/` skill folders) while the canonical skill lives at the § 3b path — **critical** if in `spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / packaged `AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `08-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and packaged `.agents/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
+| Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
+| Consumer `config.json` | Missing while `config.json.example` exists → **warning** (seed/copy); placeholders after seed → **suggestion** (`configure-project`), not a broken-link warning |
 
 **Resolution rule:** simulate the link **from the directory of the containing file** (as an agent would when clicking).
 
@@ -313,17 +339,18 @@ For each file found, extract from YAML frontmatter:
 
 **Optional project rules** — for each non-empty `config.json.rules.*` path, verify the file exists. Also list `.agents/rules/*.md` when present.
 
-#### 4b. Extract what is already routed in `AGENTS.md`
+#### 4b. Extract what is already routed in the resolved hub
 
-Go through **all** tables that route skills or docs — not just the main one:
+Go through **all** tables that route skills or docs in the **primary hub** (§ Hub resolution) — not just the main one:
 
 | Section | What to extract |
 |-------|---------------|
 | `§ Skill loading (mandatory)` | auto-load and per-task skills |
-| Layer 1 / Layer 2 tables | skill ids and paths |
-| Packaged `.agents/AGENTS.md` Skill index | same — compare to root hub when both exist (dual-hub drift) |
+| Layer / Skill index / Promoted tables | skill ids and paths |
+| Packaged `.agents/AGENTS.md` Skill index (upstream only) | same — compare to root hub when both exist (dual-hub drift) |
+| Consumer `.agents/skills/shared/AGENTS.md` | always extract when present (consumer primary hub) |
 | `§ Task router` | skills and project docs per task |
-| Layer 3 (Project docs) | links to project docs (e.g., CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
+| Layer 3 / External deps / project docs | links to project docs (e.g., CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
 | Upstream `bin/skill-dependencies.json` (when present) | workflow package skill **folder** ids must exist under `.agents/skills/` |
 
 Normalize paths for comparison (file basename + repo-root-relative path).
@@ -332,11 +359,11 @@ Normalize paths for comparison (file basename + repo-root-relative path).
 
 | Diff | Definition | Severity in report |
 |------|-----------|-------------------------|
-| `unrouted_skills[]` | `SKILL.md` exists on disk, but **no** equivalent link/path appears in `AGENTS.md` | **warning** |
-| `unrouted_rules[]` | Rule `*.mdc`/`*.md` exists, but **no** equivalent link appears in `AGENTS.md` | **warning** |
-| `phantom_routes[]` | `AGENTS.md` references skill/rule that does **not** exist on disk | **critical** (already covered in Phase 2/3; revalidate here) |
+| `unrouted_skills[]` | `SKILL.md` exists on disk, but **no** equivalent link/path appears in the **resolved hub** | **warning** |
+| `unrouted_rules[]` | Rule `*.mdc`/`*.md` exists, but **no** equivalent link appears in the resolved hub | **warning** |
+| `phantom_routes[]` | Hub references skill/rule that does **not** exist on disk | **critical** (already covered in Phase 2/3; revalidate here) — **except** Extra-package optional paths when missing (intentional omission) |
 
-**Intentional omission:** if a skill/rule is auxiliary (e.g., only scripts in a subfolder, numbered skill consumed only by `spec-to-pr`), record in `intentionally_omitted[]` with justification — **do not** ask the user about these items.
+**Intentional omission:** if a skill/rule is auxiliary (e.g., only scripts in a subfolder, numbered skill consumed only by `spec-to-pr`, Extra package when not installed, hub marks “orch-only”), record in `intentionally_omitted[]` with justification — **do not** ask the user about these items.
 
 #### 4d. Record unrouted items (without editing)
 
@@ -393,10 +420,12 @@ Run **after** Phase 5 and **only** if `write-a-skill` is installed (detection: �
 
 1. Load `write-a-skill/SKILL.md` (+ `GLOSSARY.md` if needed).
 2. For each skill in the § 3 / Phase 4 inventory (pipeline `00`–`09` + `goal-fix-pr` / `update-plan-implementation` first), audit against **failure modes** and **information hierarchy** from the reference.
-3. Record findings as `suggestion` in the Phase 6 plan — **Skill improvements (write-a-skill)** table with columns: `Skill` | `Finding` | `Severity` | `Proposed correction`.
+3. Record findings:
+   - **Upstream / Consumer managed skills** (orch, providers, pipeline, shipped harness): severity `suggestion` under **Upstream debt (informational)** — do **not** add to consumer correction-plan problem count unless the user asked to optimize those skills.
+   - **Consumer-authored** skills only: include in Phase 6 plan **Skill improvements (write-a-skill)** as actionable suggestions.
 4. **Do not** rewrite skills during scan; **do not** include this phase if the skill is absent.
 
-If the user explicitly invokes *"audit skills with write-a-skill"* or equivalent, treat Phase 5b as **mandatory** (fail with a clear note if the skill does not exist).
+If the user explicitly invokes *"audit skills with write-a-skill"* or equivalent, treat Phase 5b as **mandatory** (fail with a clear note if the skill does not exist) and include sprawl findings in the correction plan even for managed skills.
 
 ### Phase 5c — Auto-load, overlap, and context simulation report
 

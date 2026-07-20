@@ -38,7 +38,7 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 1. Change this repo → PR to `develop`
 2. After merge, in the consumer: `npx --yes github:jpolvora/workflow-skills update`
 
-**Always preserved** under `.agents/skills/shared/`: `config.json`, `stack.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). The installer does **not** copy `.agents/AGENTS.md`; consumer agent contract is [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md). Do not treat in-place skill edits in a consumer as permanent.
+**Always preserved** under `.agents/skills/shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). The installer does **not** copy `.agents/AGENTS.md`; consumer agent contract is [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md). Do not treat in-place skill edits in a consumer as permanent.
 
 ---
 
@@ -108,20 +108,21 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers (from `config.json.example`). Fill anytime via `/configure-project` (also offered during workflow setup and suggested after install) |
-| `stack.md` | Human stack notes (seeded from `stack.md.example`) |
+| `config.json` | Project identity, stack, verification, providers. **Fresh install seeds** from `config.json.example`. Fill via `/configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit |
+| `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` |
-| `AGENTS.md` | Consumer hub: config, gates, external dependencies (installed with `shared/`) |
-| `CHANGELOG.md` | Optional append-only history when `rules.changelogFile` defaults here |
+| `AGENTS.md` | Consumer hub: skill loading, config, gates, external dependencies (installed with `shared/`) |
+| `CHANGELOG.md` | Append-only history (seeded empty; `rules.changelogFile` defaults here) |
 
 ### Optional root / host configuration
 
-Consumers may add a thin root pointer so their IDE loads `AGENTS.md`. Host pointers are **optional**. Workflow history defaults to `.agents/skills/shared/CHANGELOG.md` via `rules.changelogFile` (set to `CHANGELOG.md` only if you want a repo-root file). Prefer putting lasting guidance in skills / `AGENTS.md`, not host-private rule files.
+Installer **never** writes consumer repo-root files. Consumers may add a thin root `AGENTS.md` pointing at `.agents/skills/shared/AGENTS.md` so their IDE discovers the hub; check-harness may suggest this. Host pointers are **optional**. Workflow history defaults to `.agents/skills/shared/CHANGELOG.md` via `rules.changelogFile` (set to `CHANGELOG.md` only if you want a repo-root file). Prefer putting lasting guidance in skills / the shared hub, not host-private rule files.
 
 | File | Role |
 |------|------|
+| Root `AGENTS.md` (optional) | Consumer-owned thin pointer to `shared/AGENTS.md`, or project-specific hub that links there |
 | Host pointer (name varies by IDE) | Minimal pointer so agents follow project `AGENTS.md` or load skills from `.agents/skills/` |
 | `rules.changelogFile` target | Append-only history (default under `shared/`; optional root `CHANGELOG.md` when configured) |
 

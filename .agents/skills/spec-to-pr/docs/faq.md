@@ -256,7 +256,7 @@ In **normal mode**, Step 0 checks `{plansDir}/*/*.state.md` and offers a menu: r
 
 ### What is Step 1?
 
-Generation of the **detailed plan** for the US: scope, technical design, implementation steps, permissions, tests, and checklist. Stack-agnostic — all project-specific parameters read from `config.json` and `stack.md`.
+Generation of the **detailed plan** for the US: scope, technical design, implementation steps, permissions, tests, and checklist. Stack-agnostic — all project-specific parameters read from `config.json` and `STACK.md`.
 
 ### How is it done?
 
@@ -695,7 +695,7 @@ Skips **Step 11 entirely** — no plan, no battery, no browser. Goes directly to
 
 ### `skip-tests`
 
-Skips **test** commands in `stack.md` at Steps 7, 10, and Step 11 §3. **Build still runs** — commit never with broken build.
+Skips **test** commands in `STACK.md` at Steps 7, 10, and Step 11 §3. **Build still runs** — commit never with broken build.
 
 ---
 

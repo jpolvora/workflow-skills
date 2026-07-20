@@ -16,7 +16,7 @@ Draft an implementation blueprint from the spec. Act as a Senior Software Engine
 
 **Canonical path:** `{us-dir}/step-01-{slug}.plan.md` (`{us-dir}` = `{plansDir}/{slug}/`).
 
-**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `stack.md`, `MEMORY.md`.
+**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`, `MEMORY.md`.
 
 ## Invocation
 

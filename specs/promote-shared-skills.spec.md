@@ -29,7 +29,7 @@ This feature promotes those seven skill folders out of `shared/` into sibling to
 **What stays under `.agents/skills/shared/` (not skills; shared config/docs hub):**
 
 - `config.json` / `config.json.example` / `config.schema.json`
-- `tools.md`, `stack.md`, `setup.md`
+- `tools.md`, `STACK.md`, `setup.md`
 - `gates.md`, `config-resolution.md`
 - `AGENTS.md` (shared hub docs), `.gitignore`
 
@@ -70,7 +70,7 @@ Update root `AGENTS.md`, packaged `.agents/AGENTS.md`, and any routing tables so
 ## Acceptance Criteria
 
 - AC1: The seven skills listed above exist as top-level folders under `.agents/skills/<skill>/SKILL.md` and no longer exist as `.agents/skills/shared/<skill>/SKILL.md`.
-- AC2: `.agents/skills/shared/` still contains the config/docs hub files (`config.json.example`, `config.schema.json`, `tools.md`, `stack.md`, `setup.md`, `gates.md`, `config-resolution.md`, and related non-skill docs) and does not contain the seven promoted skill folders.
+- AC2: `.agents/skills/shared/` still contains the config/docs hub files (`config.json.example`, `config.schema.json`, `tools.md`, `STACK.md.example`, `setup.md`, `gates.md`, `config-resolution.md`, and related non-skill docs) and does not contain the seven promoted skill folders.
 - AC3: The interactive installer (`bin/cli.js`) lists each promoted skill as its own selectable entry (same level as other top-level skills). `shared/` is not presented as a selectable skill package.
 - AC4: The installer exposes package actions for **Full**, **Workflows**, **Extra**, and continues to support **Individual** per-skill toggles. Selecting a package marks the correct membership set before install.
 - AC5: **Full** selects all installable top-level skills and ensures the `shared/` config/docs hub is installed/updated.

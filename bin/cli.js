@@ -23,25 +23,28 @@ const HUB_WHITELIST = [
   'config.json.example',
   'config.schema.json',
   'tools.md',
-  'stack.md.example',
+  'STACK.md.example',
   'setup.md',
   'gates.md',
   'config-resolution.md',
   'AGENTS.md',
   '.gitignore',
   'MEMORY.md.template',
+  'CHANGELOG.md.template',
 ];
 
 
 /**
  * Consumer-owned artifacts under shared/ — never copy upstream content into consumers.
  * Fresh install seeds empty templates; existing consumer files are preserved.
+ * Installer never writes consumer repo-root files (e.g. root AGENTS.md) — host/consumer-owned only.
  */
 const INSTALLED_SKILLS_FILE = 'installed-skills.json';
 const CONSUMER_OWNED_HUB_FILES = new Set([
   'config.json',
   'MEMORY.md',
-  'stack.md',
+  'STACK.md',
+  'CHANGELOG.md',
   INSTALLED_SKILLS_FILE,
 ]);
 const CONSUMER_OWNED_HUB_DIRS = new Set(['memory']);
@@ -58,8 +61,14 @@ To add new learnings, create a separate markdown file under \`shared/memory/\` a
 
 ---
 `;
+const FRESH_CHANGELOG_MD = `# Changelog
 
-/** Unused legacy stubs removed — root host pointers are consumer/host-owned, not installer seeds. */
+Append-only history written by the \`changelog\` skill. Do not use this file for anti-regression context (use \`MEMORY.md\`).
+
+---
+`;
+
+/** Root host pointers are consumer/host-owned — installer never seeds or overwrites them. */
 
 let skillGraph = null;
 
@@ -281,7 +290,8 @@ function isConsumerOwnedEntry(entryName, isDirectory) {
 
 /**
  * Seed/preserve consumer-owned hub artifacts under shared/:
- * config.json (never auto-created), MEMORY.md, memory/, stack.md
+ * config.json, MEMORY.md, memory/, STACK.md, CHANGELOG.md
+ * Never writes consumer repo-root files (root AGENTS.md stays host/consumer-owned).
  */
 function ensureSharedConsumerArtifacts() {
   const destShared = path.join(targetSkillsDir, HUB_DIR);
@@ -289,6 +299,17 @@ function ensureSharedConsumerArtifacts() {
 
   const memoryDir = path.join(destShared, 'memory');
   fs.mkdirSync(memoryDir, { recursive: true });
+
+  const configPath = path.join(destShared, CONFIG_FILE);
+  if (fs.existsSync(configPath)) {
+    console.log(`    Preserved existing shared/config.json`);
+  } else {
+    const example = path.join(srcSkillsDir, HUB_DIR, 'config.json.example');
+    if (fs.existsSync(example)) {
+      fs.copyFileSync(example, configPath);
+      console.log(`    Seeded shared/config.json from config.json.example (run configure-project to fill)`);
+    }
+  }
 
   const memMd = path.join(destShared, 'MEMORY.md');
   if (fs.existsSync(memMd)) {
@@ -302,15 +323,38 @@ function ensureSharedConsumerArtifacts() {
     console.log(`    Seeded fresh shared/MEMORY.md (upstream memory not copied)`);
   }
 
-  const stackPath = path.join(destShared, 'stack.md');
+  const stackPath = path.join(destShared, 'STACK.md');
+  // Latest layout: STACK.md. Rename legacy shared/stack.md when that exact casing is present.
+  {
+    const names = fs.readdirSync(destShared);
+    if (names.includes('stack.md') && !names.includes('STACK.md')) {
+      fs.renameSync(path.join(destShared, 'stack.md'), stackPath);
+      console.log(`    Renamed shared/stack.md → shared/STACK.md`);
+    } else if (names.includes('stack.md') && names.includes('STACK.md')) {
+      fs.unlinkSync(path.join(destShared, 'stack.md'));
+      console.log(`    Removed obsolete shared/stack.md`);
+    }
+  }
   if (fs.existsSync(stackPath)) {
-    console.log(`    Preserved existing shared/stack.md`);
+    console.log(`    Preserved existing shared/STACK.md`);
   } else {
-    const example = path.join(srcSkillsDir, HUB_DIR, 'stack.md.example');
+    const example = path.join(srcSkillsDir, HUB_DIR, 'STACK.md.example');
     if (fs.existsSync(example)) {
       fs.copyFileSync(example, stackPath);
-      console.log(`    Seeded shared/stack.md from stack.md.example`);
+      console.log(`    Seeded shared/STACK.md from STACK.md.example`);
     }
+  }
+
+  const changelogPath = path.join(destShared, 'CHANGELOG.md');
+  if (fs.existsSync(changelogPath)) {
+    console.log(`    Preserved existing shared/CHANGELOG.md`);
+  } else {
+    const templatePath = path.join(srcSkillsDir, HUB_DIR, 'CHANGELOG.md.template');
+    const content = fs.existsSync(templatePath)
+      ? fs.readFileSync(templatePath, 'utf8')
+      : FRESH_CHANGELOG_MD;
+    fs.writeFileSync(changelogPath, content);
+    console.log(`    Seeded fresh shared/CHANGELOG.md`);
   }
 }
 
@@ -408,7 +452,9 @@ function copyDirPreservingConfig(src, dest, preservedFile) {
 
 /**
  * Install/update shared/ hub (templates/docs). Preserves consumer-owned hub files.
- * Seeds MEMORY.md + stack.md when missing. Never copies upstream MEMORY/memory/stack.md/config.json.
+ * Seeds config.json + MEMORY.md + STACK.md + CHANGELOG.md when missing.
+ * Never overwrites existing consumer config/MEMORY/STACK/CHANGELOG.
+ * Never writes outside `.agents/skills/` (no consumer root AGENTS.md / host pointers).
  */
 function ensureSharedHubInstalled(mode = 'install') {
   const srcShared = path.join(srcSkillsDir, HUB_DIR);
@@ -430,11 +476,21 @@ function ensureSharedHubInstalled(mode = 'install') {
     }
   }
 
-  // Never overwrite consumer config.json / stack.md / MEMORY.md from upstream
+  // Drop obsolete lowercase template only when it is a distinct file (case-sensitive FS).
+  // On Windows / case-insensitive volumes, stack.md.example === STACK.md.example — never unlink.
+  {
+    const names = fs.readdirSync(destShared);
+    if (names.includes('stack.md.example') && names.includes('STACK.md.example')) {
+      fs.unlinkSync(path.join(destShared, 'stack.md.example'));
+      console.log(`    Removed obsolete shared/stack.md.example`);
+    }
+  }
+
+  // Never overwrite consumer config.json / STACK.md / MEMORY.md / CHANGELOG.md from upstream
   ensureSharedConsumerArtifacts();
 
   console.log(
-    `  shared/ hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack preserved)`
+    `  shared/ hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack/CHANGELOG preserved)`
   );
 }
 
@@ -520,7 +576,7 @@ Non-interactive install:
 Non-interactive uninstall:
   uninstall --skills <csv> [--yes]
   Removes named skills and any deps no longer required by remaining installed skills.
-  Always preserves shared/ (config.json, MEMORY.md, stack.md, installed-skills.json).
+  Always preserves shared/ (config.json, MEMORY.md, STACK.md, CHANGELOG.md, installed-skills.json).
 
 Interactive package shortcuts:
   f  Full package (all installable skills + shared/ hub)
@@ -535,15 +591,16 @@ Notes:
   - Cache bust: clear the npx cache, then re-run with npx --yes (no @latest suffix on github:).
   - Skills under .agents/skills/ are overwritten on update/install --yes.
   - shared/ hub is installed with workflows/full (and when self-learning is installed).
-  - Consumer-owned under shared/ (never copied from upstream): config.json, MEMORY.md, memory/*, stack.md, installed-skills.json.
-    Fresh install seeds empty MEMORY.md + stack.md from templates; existing files are always preserved.
+  - Consumer-owned under shared/ (never copied from upstream): config.json, MEMORY.md, memory/*, STACK.md, CHANGELOG.md, installed-skills.json.
+    Fresh install seeds config.json (from example), empty MEMORY.md + CHANGELOG.md, and STACK.md when missing; existing files are always preserved.
     installed-skills.json tracks managed skills for update/uninstall (bootstrapped from disk when missing).
+  - Installer only writes under .agents/skills/ (skills + shared hub). Never creates/overwrites consumer repo-root files (root AGENTS.md, host pointers).
   - Artifact paths (plans/reviews) come from consumer config.json (defaults: .agents/plans, .agents/codereviews) — not host-private folders.
   - Optional host pointer files are consumer-owned. Changelog defaults to rules.changelogFile under shared/ (not repo root).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Consumer agent contract: skills/shared/AGENTS.md (installed with the shared hub; no .agents/AGENTS.md copy).
   - After installing or updating, run the "check-harness" skill to validate the harness.
-  - Optional: run the "configure-project" skill to interview/detect and fill shared/config.json.
+  - Optional: run the "configure-project" skill to interview/detect and fill shared/config.json placeholders.
   - Install copies skip __pycache__ / *.pyc (not part of the skill surface).
   - Workflows use the executing session model at gates; switch via Pause → IDE/agent host → Resume (no --model/--model-chain).
   - install-skills.sh is a curl/bash shim that execs this CLI (or npx); prefer calling npx directly.
@@ -973,7 +1030,7 @@ async function runUninstall(_upstreamSkills, argv) {
 
   console.log('');
   console.log(`Uninstalled ${removedCount} skill folder(s). Manifest now lists ${keep.length} skill(s).`);
-  console.log(`Note: shared/ (${CONFIG_FILE}, MEMORY.md, stack.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
+  console.log(`Note: shared/ (${CONFIG_FILE}, MEMORY.md, STACK.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
   process.exit(0);
 }
 
@@ -1076,7 +1133,7 @@ function runUpdate(skills, includeNew) {
   console.log('\nUpdate complete!');
   console.log(`Note: Existing '${CONFIG_FILE}' and shared/ consumer files were preserved and NOT overwritten.`);
   console.log(
-    `Note: Consumer shared/MEMORY.md, memory/, stack.md, config.json, and ${INSTALLED_SKILLS_FILE} are never overwritten by upstream.`
+    `Note: Consumer shared/MEMORY.md, memory/, STACK.md, config.json, and ${INSTALLED_SKILLS_FILE} are never overwritten by upstream.`
   );
   console.log('\n\u26a0\ufe0f  After updating, run the `check-harness` skill to scan the harness:');
   console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');

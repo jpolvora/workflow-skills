@@ -17,11 +17,14 @@ const ignoredPatterns = [
   /\.gitignore$/,
   /\.npmignore$/,
   /config\.json$/,
+  /(^|[\\/])shared[\\/]STACK\.md$/,
   /(^|[\\/])shared[\\/]stack\.md$/,
   /(^|[\\/])shared[\\/]MEMORY\.md$/,
+  /(^|[\\/])shared[\\/]CHANGELOG\.md$/,
   /(^|[\\/])shared[\\/]installed-skills\.json$/,
   /(^|[\\/])shared[\\/]memory([\\/]|$)/,
   /(^|[\\/])shared[\\/]MEMORY\.md\.template$/,
+  /(^|[\\/])shared[\\/]CHANGELOG\.md\.template$/,
   /(^|[\\/])self-learning[\\/]MEMORY\.md$/,
   /(^|[\\/])self-learning[\\/]memory([\\/]|$)/
 ];
@@ -116,8 +119,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/shared/config.schema.json',
     '.agents/skills/shared/config.json.example',
     '.agents/skills/shared/tools.md',
-    '.agents/skills/shared/stack.md.example',
+    '.agents/skills/shared/STACK.md.example',
     '.agents/skills/shared/MEMORY.md.template',
+    '.agents/skills/shared/CHANGELOG.md.template',
     '.agents/skills/shared/setup.md',
     '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
     '.agents/skills/spec-to-pr/SKILL.md',
@@ -571,6 +575,12 @@ child.on('close', async (code) => {
   if (!/External dependencies/i.test(sharedAgentsBody)) {
     fail('Consumer shared/AGENTS.md missing External dependencies section');
   }
+  if (!/Skill loading \(mandatory\)/i.test(sharedAgentsBody)) {
+    fail('Consumer shared/AGENTS.md missing Skill loading section');
+  }
+  if (!/check-harness/i.test(sharedAgentsBody) || !/check-workflows/i.test(sharedAgentsBody)) {
+    fail('Consumer shared/AGENTS.md must route check-harness and check-workflows');
+  }
   ok('check-harness + shared/AGENTS.md hub shipped to consumer (no .agents/AGENTS.md)');
   for (const name of ['github-provider', 'azure-devops-provider', 'local-spec-provider']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
@@ -902,15 +912,27 @@ child.on('close', async (code) => {
       fail(`self-learning install for MEMORY isolation exited ${fresh.status}`);
     }
     const destMem = path.join(memDir, '.agents', 'skills', 'shared', 'MEMORY.md');
-    const destStack = path.join(memDir, '.agents', 'skills', 'shared', 'stack.md');
+    const destStack = path.join(memDir, '.agents', 'skills', 'shared', 'STACK.md');
+    const destConfig = path.join(memDir, '.agents', 'skills', 'shared', 'config.json');
+    const destChangelog = path.join(memDir, '.agents', 'skills', 'shared', 'CHANGELOG.md');
+    const destRootAgents = path.join(memDir, 'AGENTS.md');
     if (!fs.existsSync(destMem)) fail('Fresh install must seed shared/MEMORY.md');
-    if (!fs.existsSync(destStack)) fail('Fresh install must seed shared/stack.md');
+    if (!fs.existsSync(destStack)) fail('Fresh install must seed shared/STACK.md');
+    if (!fs.existsSync(destConfig)) fail('Fresh install must seed shared/config.json');
+    if (!fs.existsSync(destChangelog)) fail('Fresh install must seed shared/CHANGELOG.md');
+    if (fs.existsSync(destRootAgents)) {
+      fail('Installer must not write consumer root AGENTS.md');
+    }
     const seeded = fs.readFileSync(destMem, 'utf8');
     if (/Trap Avoided|Promote Shared Installer|Curl install-skills/i.test(seeded)) {
       fail('Upstream hub MEMORY.md content leaked into consumer install');
     }
     if (!/# Memory - Anti-Regression Knowledge/.test(seeded)) {
       fail('Seeded MEMORY.md missing expected empty template header');
+    }
+    const seededConfig = fs.readFileSync(destConfig, 'utf8');
+    if (!/"\$schema"/.test(seededConfig) || !/"providers"/.test(seededConfig)) {
+      fail('Seeded config.json missing expected schema/providers from example');
     }
     const memEntries = path.join(memDir, '.agents', 'skills', 'shared', 'memory');
     if (fs.existsSync(memEntries)) {
@@ -919,14 +941,18 @@ child.on('close', async (code) => {
         fail(`Upstream memory/*.md leaked to consumer: ${leaked.join(', ')}`);
       }
     }
-    ok('Fresh install seeds empty shared/MEMORY.md + stack.md without upstream traps');
+    ok('Fresh install seeds config.json, MEMORY.md, CHANGELOG.md, STACK.md under shared/ only (no root AGENTS.md)');
 
     const marker = '### [2099-01-01] Consumer local trap\n- **Trap Avoided**: keep me\n';
     fs.writeFileSync(destMem, `# Memory - Anti-Regression Knowledge\n\n---\n\n${marker}`);
     fs.mkdirSync(memEntries, { recursive: true });
     const consumerEntry = path.join(memEntries, '2099-01-01-consumer-local.md');
     fs.writeFileSync(consumerEntry, '### [2099-01-01] Consumer local trap\n');
-    fs.writeFileSync(destStack, '# Consumer stack\nkeep-me\n');
+    fs.writeFileSync(destStack, '# Consumer STACK\nkeep-me\n');
+    fs.writeFileSync(destConfig, '{\n  "project": { "name": "consumer-preserve-me" }\n}\n');
+    fs.writeFileSync(destChangelog, '# Changelog\n\nkeep-changelog\n');
+    // Consumer-owned root file must remain untouched by update
+    fs.writeFileSync(destRootAgents, '# AGENTS.md\n\nkeep-root-pointer\n');
 
     const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
       cwd: memDir,
@@ -946,10 +972,19 @@ child.on('close', async (code) => {
       fail('Consumer shared/memory/*.md entry was removed on update');
     }
     if (!fs.readFileSync(destStack, 'utf8').includes('keep-me')) {
-      fail('Consumer shared/stack.md was overwritten on update');
+      fail('Consumer shared/STACK.md was overwritten on update');
+    }
+    if (!fs.readFileSync(destConfig, 'utf8').includes('consumer-preserve-me')) {
+      fail('Consumer shared/config.json was overwritten on update');
+    }
+    if (!fs.readFileSync(destChangelog, 'utf8').includes('keep-changelog')) {
+      fail('Consumer shared/CHANGELOG.md was overwritten on update');
+    }
+    if (!fs.readFileSync(destRootAgents, 'utf8').includes('keep-root-pointer')) {
+      fail('Installer must not overwrite consumer root AGENTS.md on update');
     }
     fs.rmSync(memDir, { recursive: true, force: true });
-    ok('Update preserves consumer shared/MEMORY.md, memory/, and stack.md');
+    ok('Update preserves shared consumer data and never rewrites root AGENTS.md');
   }
 
   // --- Phase 10: installed-skills.json + uninstall cascade ---

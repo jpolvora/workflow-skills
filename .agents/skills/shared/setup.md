@@ -15,7 +15,7 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 |-----|------|------------------------|
 | `rules.seniorDeveloper` | Engineering guardrails; **Code review proof** source | config path → local `senior-developer` skill → global/user skill |
 | `rules.karpathyGuidelines` | Surgical-change guidelines | config path → shipped `../karpathy-guidelines/SKILL.md` → global skill |
-| `rules.stackFile` | Human-readable stack companion | config path (default `.agents/skills/shared/stack.md`); bootstrap may create under `shared/` if missing (see 1b below) — never require repo-root files |
+| `rules.stackFile` | Human-readable stack companion | config path (default `.agents/skills/shared/STACK.md`); bootstrap may create under `shared/` if missing (see 1b below) — never require repo-root files |
 | Other `rules.*` | Optional consumer rules (e.g. `efMigrations`, `viewPatterns`) | Use path from config when set; do not invent filenames |
 
 **Code review proof:** When pipeline / utility skills ask for proof, load the checklist from the **resolved** `rules.seniorDeveloper` skill. Do not paste that checklist into hub docs.
@@ -41,12 +41,12 @@ Same entry paths for **standard** and **lite**. Resolve provider from `config.js
 
 Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `step-00-{slug}.spec.md` under `{us-dir}`.
 
-1. **Config check**: Check if `.agents/skills/shared/config.json` exists.
+1. **Config check**: Check if `.agents/skills/shared/config.json` exists (fresh install normally seeds it from `config.json.example`).
    - If missing: `cp .agents/skills/shared/config.json.example .agents/skills/shared/config.json`.
    - User-gate: **Configure now (Recommended)** / **Skip**.
    - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`configure-project`](../configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
    - If **Skip**: continue with example defaults; warn that providers/verification may be wrong until configure-project runs.
-1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `.agents/skills/shared/stack.md`). Prefer configure-project step 5 when that skill just ran. If config still points at missing root `STACK.md`/`stack.md` while `.agents/skills/shared/stack.md` exists, set `rules.stackFile` to the shared path (no root file required). Else `Shell` `test -f {stackFile}`. If missing:
+1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `.agents/skills/shared/STACK.md`). Prefer configure-project step 5 when that skill just ran. If config still points at a missing root `STACK.md`/`stack.md` while `.agents/skills/shared/STACK.md` exists, set `rules.stackFile` to the shared path (no root file required). Else `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
      - **Language/Framework**: Look for `package.json` (Node/React/Next), `*.csproj`/`*.sln`/`*.slnx` (.NET), `pyproject.toml`/`requirements.txt` (Python), `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml`/`build.gradle` (Java), `Gemfile` (Ruby), etc.
      - **Frontend framework**: Check `package.json` `dependencies` for `next`, `react`, `vue`, `angular`, `svelte`, `vite`, `tailwindcss`, etc.
@@ -55,8 +55,8 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
      - **Project structure**: List top-level directories (`src/`, `web/`, `tests/`, `app/`, `lib/`, `cmd/`, etc.) and infer conventional layers.
      - **Tool versions**: `node --version`, `dotnet --version`, `python --version`, `go version` (if installed).
      - **Build/test commands**: Check `package.json` `scripts` (`build`, `test`, `lint`, `dev`), `Makefile` targets, existing CI configs (`.github/workflows/`, `.gitlab-ci.yml`).
-   - Generate companion from the detected information using [`stack.md.example`](stack.md.example) as format reference.
-   - Write to `.agents/skills/shared/stack.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/shared/`). Do **not** create repo-root `STACK.md` / `stack.md`.
+   - Generate companion from the detected information using [`STACK.md.example`](STACK.md.example) as format reference.
+   - Write to `.agents/skills/shared/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/shared/`). Do **not** create a repo-root stack file.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `stack companion created → {path}` in step output.
 2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict`.
