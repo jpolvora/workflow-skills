@@ -156,20 +156,15 @@ def load_azdo_config(repo_root: Path) -> tuple[str, str, str]:
     return organization, project, pat
 
 
-def run_azure_devops_smoke_check(organization: str, project: str, pat: str) -> dict[str, Any]:
-    """Validate authentication and config against the Azure DevOps API."""
-    url = f"{base_url(organization, project)}/_apis/wit/fields/System.State?api-version=7.1"
-    try:
-        azdo_request("GET", url, pat)
-        return {
-            "status": "success",
-            "message": "Azure DevOps authentication and connectivity validated successfully.",
-        }
-    except Exception as exc:
-        raise SystemExit(
-            "Failed to validate Azure DevOps connection/authentication.\n"
-            f"Error: {exc}"
-        )
+def base_url(organization: str, project: str) -> str:
+    return f"https://dev.azure.com/{organization}/{urllib.parse.quote(project)}"
+
+
+def git_url(organization: str, project: str, repository: str, suffix: str) -> str:
+    return (
+        f"{base_url(organization, project)}/_apis/git/repositories/"
+        f"{urllib.parse.quote(repository)}/{suffix}"
+    )
 
 
 def auth_headers(pat: str, content_type: str = "application/json") -> dict[str, str]:
@@ -210,6 +205,21 @@ def azdo_request(
     return json.loads(raw.decode("utf-8"))
 
 
+def run_azure_devops_smoke_check(organization: str, project: str, pat: str) -> dict[str, Any]:
+    """Validate authentication and config against the Azure DevOps API."""
+    url = f"{base_url(organization, project)}/_apis/wit/fields/System.State?api-version=7.1"
+    try:
+        azdo_request("GET", url, pat)
+        return {
+            "status": "success",
+            "message": "Azure DevOps authentication and connectivity validated successfully.",
+        }
+    except Exception as exc:
+        raise SystemExit(
+            "Failed to validate Azure DevOps connection/authentication.\n"
+            f"Error: {exc}"
+        )
+
 def clean_html(value: str | None) -> str:
     if not value:
         return ""
@@ -238,15 +248,46 @@ def detect_repository(repo_root: Path) -> str:
     raise SystemExit("Pass --repository; Azure DevOps remote not found in .git/config.")
 
 
-def base_url(organization: str, project: str) -> str:
-    return f"https://dev.azure.com/{organization}/{urllib.parse.quote(project)}"
+def normalize_thread(thread: dict[str, Any], include_system: bool) -> dict[str, Any] | None:
+    comments = []
+    for comment in thread.get("comments") or []:
+        if comment.get("isDeleted"):
+            continue
+        comment_type = comment.get("commentType")
+        if not include_system and comment_type == "system":
+            continue
+        content = clean_html(comment.get("content"))
+        if not content:
+            continue
+        comments.append(
+            {
+                "id": comment.get("id"),
+                "type": comment_type,
+                "author": (comment.get("author") or {}).get("displayName"),
+                "content": content,
+                "publishedDate": comment.get("publishedDate"),
+            }
+        )
 
+    if not comments:
+        return None
 
-def git_url(organization: str, project: str, repository: str, suffix: str) -> str:
-    return (
-        f"{base_url(organization, project)}/_apis/git/repositories/"
-        f"{urllib.parse.quote(repository)}/{suffix}"
-    )
+    context = thread.get("threadContext") or {}
+    pr_context = thread.get("pullRequestThreadContext") or {}
+    right_start = context.get("rightFileStart") or {}
+    right_end = context.get("rightFileEnd") or {}
+    left_start = context.get("leftFileStart") or {}
+    left_end = context.get("leftFileEnd") or {}
+
+    return {
+        "threadId": thread.get("id"),
+        "status": thread.get("status"),
+        "path": pr_context.get("filePath") or context.get("filePath"),
+        "rightLine": right_start.get("line") or right_end.get("line"),
+        "leftLine": left_start.get("line") or left_end.get("line"),
+        "isDeleted": thread.get("isDeleted"),
+        "comments": comments,
+    }
 
 
 def get_pr_context(repo_root: Path, pr_id: int, repository: str, include_system: bool) -> dict[str, Any]:
@@ -322,48 +363,6 @@ def get_pr_context(repo_root: Path, pr_id: int, repository: str, include_system:
         "workItems": work_items,
         "threads": threads,
         "activeThreads": active_threads,
-    }
-
-
-def normalize_thread(thread: dict[str, Any], include_system: bool) -> dict[str, Any] | None:
-    comments = []
-    for comment in thread.get("comments") or []:
-        if comment.get("isDeleted"):
-            continue
-        comment_type = comment.get("commentType")
-        if not include_system and comment_type == "system":
-            continue
-        content = clean_html(comment.get("content"))
-        if not content:
-            continue
-        comments.append(
-            {
-                "id": comment.get("id"),
-                "type": comment_type,
-                "author": (comment.get("author") or {}).get("displayName"),
-                "content": content,
-                "publishedDate": comment.get("publishedDate"),
-            }
-        )
-
-    if not comments:
-        return None
-
-    context = thread.get("threadContext") or {}
-    pr_context = thread.get("pullRequestThreadContext") or {}
-    right_start = context.get("rightFileStart") or {}
-    right_end = context.get("rightFileEnd") or {}
-    left_start = context.get("leftFileStart") or {}
-    left_end = context.get("leftFileEnd") or {}
-
-    return {
-        "threadId": thread.get("id"),
-        "status": thread.get("status"),
-        "path": pr_context.get("filePath") or context.get("filePath"),
-        "rightLine": right_start.get("line") or right_end.get("line"),
-        "leftLine": left_start.get("line") or left_end.get("line"),
-        "isDeleted": thread.get("isDeleted"),
-        "comments": comments,
     }
 
 

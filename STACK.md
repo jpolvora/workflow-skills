@@ -38,6 +38,7 @@ Human-readable companion to `.agents/skills/shared/config.json`.
 - `config.json` is gitignored; commit `config.json.example` only.
 - Consumers install via `npx github:jpolvora/workflow-skills`; this repo is the canonical upstream.
 - Runtime tokens: git tags/worktrees use prefix `uswf/`; plan slugs use `us-{id}` or feature slug.
+- **Script launchers:** invoke managed skill scripts with `python` / `node` / `bash` (see `.agents/skills/shared/tools.md` § Script launchers). Do not rewrite managed scripts for shell quirks; run `verification.*` unchanged.
 
 ## Issue trackers
 

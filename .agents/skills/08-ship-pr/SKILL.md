@@ -42,7 +42,7 @@ Before executing, restate commit title, head/base, SCM provider, mode, `stopBefo
 
 ## Steps
 
-1. **Preflight**: resolve `workingBranch`/`baseBranch`/`gitRemote`; confirm active branch is `workingBranch`; check `git status` and tracking drift; `git pull {gitRemote} {workingBranch}`; auto-detect base via `scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
+1. **Preflight**: resolve `workingBranch`/`baseBranch`/`gitRemote`; confirm active branch is `workingBranch`; check `git status` and tracking drift; `git pull {gitRemote} {workingBranch}`; auto-detect base via `bash .agents/skills/08-ship-pr/scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
    - Done when: branches resolved; working tree clean enough to ship and pulled.
 
 2. **Prepare to PR (goal)**: load [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Drive coverage → build → tests → security → consumer prepare-to-ship until every required row is ✅/⏭. Show the board to the user after each item and before shipping. Credit orch Steps 6–7 only with cited evidence for the **current** tree. STOP on any ❌.
@@ -73,10 +73,10 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 
 ## Dependencies
 
-- Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `scripts/verify.sh`
+- Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `bash .agents/skills/08-ship-pr/scripts/verify.sh`
 - SCM: [github-provider](../github-provider/SKILL.md) · [azure-devops-provider](../azure-devops-provider/SKILL.md)
 - Security: [secrets-leak-review](../secrets-leak-review/SKILL.md)
 - Review: [06-code-review](../06-code-review/SKILL.md) · Convergence: [goal-fix-pr](../goal-fix-pr/SKILL.md) · Fixer: [09-fix-pr](../09-fix-pr/SKILL.md)
-- Base detection: `scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../spec-to-pr/ARTIFACTS.md)
+- Base detection: `bash .agents/skills/08-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../spec-to-pr/ARTIFACTS.md)
 
 Language: en-us only.

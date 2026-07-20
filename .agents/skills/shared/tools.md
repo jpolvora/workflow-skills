@@ -32,7 +32,7 @@ Resolve `{plansDir}` from `config.json` → `plans.dir` (there is **no** `plansD
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `.agents/skills/shared/STACK.md`) |
 | `read-memory` | Load learned knowledge | `Read` `.agents/skills/shared/MEMORY.md` (index via `Grep`) |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
-| `run-script` | Run workflow / provider script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` (orchestrator helpers). Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `09-fix-pr/scripts/`) |
+| `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `python .agents/skills/spec-to-pr/scripts/{name}.py`. Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `09-fix-pr/scripts/`) |
 
 ## Source control tools
 
@@ -65,12 +65,32 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 | `update-memory` | Write learned pattern | Create unique file in `shared/memory/` and run `python .agents/skills/self-learning/self_learning.py --compile` |
 | `update-changelog` | Append historical log | `Write`/`StrReplace` `config.json.rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
 
+## Script launchers
+
+Managed skill scripts are upstream-owned. Invoke with an **explicit launcher**; never rely on shebang alone or the host default shell.
+
+| Extension | Launcher | Example |
+|-----------|----------|---------|
+| `*.py` | `python` | `python .agents/skills/.../scripts/foo.py` |
+| `*.cjs` / `*.js` | `node` | `node .agents/skills/.../scripts/foo.cjs` |
+| `*.sh` | `bash` | `bash .agents/skills/.../scripts/foo.sh` |
+
+**Contract (agents):**
+
+1. Prefix every recipe/script call with the launcher above (`python …`, `node …`, `bash …`).
+2. Do **not** rewrite managed scripts for shell quirks (no pwsh/cmd translations, no in-place dialect patches).
+3. Do **not** invent temp scanners/bridges when a recipe fails — report the failure (missing launcher, non-zero exit) and stop; lasting fixes go upstream.
+4. Consumer `verification.*` (and other config command strings): run **unchanged**. If they assume `pwsh` and the host is bash (or the reverse), that is a **consumer config** problem, not a skill-script problem.
+
+Skill `.sh` dialect: Git Bash–compatible bash. Prefer Node/Python for new logic; keep shell as thin glue.
+
 ## Rules
 
 1. **No hardcoded commands** in skills — use tool aliases. Config.json holds project-specific values.
 2. **Shell only for git/build/scripts** — never use bash where `Read`/`Write`/`Grep`/`Glob` suffice.
-3. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
-4. **No commit of `{plansDir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
-5. **Subagents: fresh per step** — never resume a subagent across steps.
-6. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
-7. **Paths from config** — never hardcode plans or review dirs; always resolve `plans.dir` / `reviews.dir` / `workingBranch` / `baseBranch` into tokens `{plansDir}` / `{reviewsDir}` / etc.
+3. **Explicit launchers** — every managed script call uses `python` / `node` / `bash` per [Script launchers](#script-launchers).
+4. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
+5. **No commit of `{plansDir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../spec-to-pr/ARTIFACTS.md).
+6. **Subagents: fresh per step** — never resume a subagent across steps.
+7. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
+8. **Paths from config** — never hardcode plans or review dirs; always resolve `plans.dir` / `reviews.dir` / `workingBranch` / `baseBranch` into tokens `{plansDir}` / `{reviewsDir}` / etc.
