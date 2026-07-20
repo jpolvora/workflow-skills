@@ -66,6 +66,24 @@ When **creating or shipping a PR** that changes installable package content (ski
 
 Consumers rely on `main/package.json` for `--check` / update signals. CI deploy never bumps; every upstream PR that ships package changes must bump in-repo before push.
 
+### Upstream skill integrity regenerate (this repo only)
+
+**Local project rule** for agents in `workflow-skills`. Prevents consumers from failing install/update when published skill bytes no longer match `bin/skill-integrity.json`.
+
+When **any** of these change in a commit / PR / push that ships package content:
+
+- `.agents/skills/**` managed skill files (not consumer-owned `shared/` data)
+- Managed hub templates under `.agents/skills/shared/` that the installer copies (whitelist / `hub.gitignore`, examples, schemas, docs shipped to consumers)
+- `bin/install-rules.js`, `bin/skill-integrity-lib.js`, `bin/skill-dependencies.json`, or other install/hash inputs
+
+**Do this in the same change set (before claim complete / commit / push / PR):**
+
+1. `npm run generate-integrity` (writes `bin/skill-integrity.json`; keeps `packageVersion` aligned with `package.json`)
+2. `npm run verify-integrity` (alias: `node bin/generate-skill-integrity.js --check`) — must exit 0
+3. Stage and commit the updated `bin/skill-integrity.json` with the skill/package edits
+
+**Fail closed:** do not open or merge a package-shipping PR while `--check` is red. `check-harness` Phase 3 and `npm run tests` treat a stale/missing manifest as **critical**. Prefer regenerate + commit over `--force-integrity` (unsafe; consumers only).
+
 ### Consumer CLI (install / update / uninstall)
 
 Human narrative: [`README.md`](README.md) § Install, update, and uninstall. Agents in a **consumer** project (not this package root):
@@ -160,6 +178,7 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 1. Ask the user whether to run **check-harness** and whether **site** / **README** need updates.
 2. Evaluate: check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, bump via § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only) (`npm run build-site:bump`); plain `node bin/build-site.js` only stamps the footer from the current `package.json` (CI deploy never bumps).
+3. If the change affects hashed install content, run § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only) in the same commit (`npm run generate-integrity` + `npm run verify-integrity`).
 
 ---
 
@@ -265,8 +284,9 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 1. **Harness:** load `.agents/skills/check-harness/SKILL.md` → Phases 0–5c
 2. **Install tests:** `npm run tests` · `npm run tests -- --local`
-3. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
-4. **Catalog / version:** if shipping package changes → § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only); else if only regenerating catalog → `node bin/build-site.js` (no bump). `package.json` ↔ footer must match; CI deploy never bumps.
+3. **Skill integrity:** if package-hashed content changed → § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only); always `npm run verify-integrity` (must exit 0) before claim complete / PR. Testing Step approval requires this green.
+4. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
+5. **Catalog / version:** if shipping package changes → § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only); else if only regenerating catalog → `node bin/build-site.js` (no bump). `package.json` ↔ footer must match; CI deploy never bumps.
 ---
 
 ## Local dry-run: agentic code reviewers

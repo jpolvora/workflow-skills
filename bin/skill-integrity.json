@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "9d0591833f4c415ed3787b145d21fbcd154ed82d2ef2afb0efb5140c4a291c50",
+  "fullPackageDigest": "cabe65580beec2c4730e09bde01d1d0dc9b04227f44a0a4d0fb27eb979aace44",
   "hub": {
     "files": {
       "AGENTS.md": "4d31418ffc234571ff066705aeef6c56581aad02c4ef7a24feb6904966a015bf",
@@ -18,9 +18,9 @@
       "MEMORY.md.template": "758b29d6fe99c4382add6a7ea76a79a9d4cfcbc78fb54dc13273e39d215c3080",
       "setup.md": "88cb4412c98a5c9abafad289ed7212747677a46c15adc203205054e29d44d66f",
       "STACK.md.example": "39d5d4fd70884f48937d9c312ce8e999bb15916bef9dd64810589041423d5810",
-      "tools.md": "8b383230ca65043367914289b4fed8de6ce715824b5f1133276205d66126412d"
+      "tools.md": "f23dc434be0481eedb3d83cd75a95d09a6d5f9f5960ddd5de0ab09c51482e1f6"
     },
-    "skillDigest": "f09a0f15bcb2eb7fc6d07ed4cad7f3d14ac1f329e335cf99d4c5ad668824ce0d"
+    "skillDigest": "f35e0bfb75409dbf530509cb7006ddbaba11ea38ccd49b8e2a3250a6720eb39d"
   },
   "packageVersion": "0.0.63",
   "skills": {
@@ -77,12 +77,12 @@
       "files": {
         "examples.md": "f08e3355cd253d552f4fdc8ffc7a65e520fd1ce9b00ed315fab5ce3583e73088",
         "GOAL-OVERRIDES.md": "121d85bc86e0b877323b54d819c123172a681ad787d1688522cf6b325daabe47",
-        "PREPARE-CHECKLIST.md": "70ae69c6b85690499ef3e5d6381b168cd205ee59f1ae02b647224c6964573b7b",
+        "PREPARE-CHECKLIST.md": "34cab35daa3f4ba4315effeb22da1355e2ac8959b01fe6f84541b519f27ba2bd",
         "scripts/detect-base-branch.sh": "8435a94884d1ce3653159f2ffdee12829b758c8eb69cb9481d51ff8916c756fd",
-        "scripts/verify.sh": "f1d42d7fbce11ce9415673b8f085e15971aae7659acc92394cbe231f2f038328",
+        "scripts/verify.sh": "5b7816e0035edddb74098c769dc220304d9fb62abb71313bb68742e61ffe6264",
         "SKILL.md": "1f764440e096ee3171c8a3cee91a979fdd5e70d6c3542ab21fcbe9898aefa131"
       },
-      "skillDigest": "671dc5e3b6a63b1f67a4c8874321607a2d12166fb0c31458a6ce7f0f63b3ddfc"
+      "skillDigest": "50c6f2a14d719e4dbb3d2889249c32a2ffb2954824fe81292ead22ef868a1513"
     },
     "09-fix-pr": {
       "files": {
@@ -120,9 +120,9 @@
     "check-harness": {
       "files": {
         "REPORT-FORMAT.md": "58e66c3cd20f1d2750a86df69c67419c6d0e03980fc29c9020e3ee7f2f5b830a",
-        "SKILL.md": "933877a68d2486b95bf57fc506ce0acd291066f0c2cd0db8254b1857dc890515"
+        "SKILL.md": "dcbbc7b69c2e4931a0467b9b650145758ddb367a294fc17c0cbae430d5720b2f"
       },
-      "skillDigest": "87982175645e77dfd0b6acec0d53b346834f42cc10a297075c0b2e5b89b72d71"
+      "skillDigest": "9f2eff1fd21b3999227ee60c392b40e504ef251554f6c7cf64067d9c8a1aa483"
     },
     "check-workflows": {
       "files": {
@@ -214,7 +214,7 @@
       "files": {
         "ARTIFACTS.md": "dfd0e3d9ccfc90a3b0a091ca8c9f060c7e958ddbbfc3212ef6c88d25d03534b1",
         "DIAGRAM.md": "883adc3008799db624464dc506b773abda69149f3bcc0dc07716a4f4531f92ce",
-        "docs/faq.md": "605f95dbb1a2c410c9d01b226fc168c8b1d1fb82191f8db40bb42007c123e2ac",
+        "docs/faq.md": "48066121160860350f449d2f7e45521c55f13c802eda6ca2039526c4a096d039",
         "protocols/artifact-cleanup.md": "85b86cd8cdaf00ccdc9abae3666b24cae976396a19938ff55fa8095788f4a319",
         "protocols/delivery-result.md": "f9e20e05ba06ba1b3f105efd14b55642b8f3cc726c8af098ea314518f5e9731b",
         "protocols/progress-board.md": "1a7ba5468a6209108858fec6511b06705df0454fa7032549261a8012db2f7c35",
@@ -229,7 +229,7 @@
         "spec-to-pr-run-test.md": "35c3dfa9081b46c3ae1002365e7c0181e1134a756883677e6617b4556a8e4e28",
         "STEP-DISPATCH.md": "8169380e2cb97317eaadfa8c38745b77d8488fbd9572272dd41556d8e988f06f"
       },
-      "skillDigest": "d8744a4f463b8b8f02e89ce895d75152d3fd02ac95f6dff4e2ec4d1afffc660f"
+      "skillDigest": "969c898edf64c6ed8c277e0f6c0141e90f7f2864ea4b563b23d0d6d3dd81b8f1"
     },
     "spec-to-pr-lite": {
       "files": {
@@ -250,9 +250,9 @@
       "files": {
         "agents/openai.yaml": "e70096221d27a4b032eb703f3d5c2164e4b2058a64f130568a8b485ce0e4805b",
         "GLOSSARY.md": "6471bb23379cbc6a8600c9ededd4a950f6be9e0101fa824d2a13cb6615d05a54",
-        "SKILL.md": "27d7934d794cc4040deb3085b5aa50c670072eaa9096f8abe1e03c00a824d3d2"
+        "SKILL.md": "92aaaca562204ab30a47910fafa1d7ec44b8d0a00f40969d8f27a814b499b414"
       },
-      "skillDigest": "2c515abe0719b2cb3f5324190825243f4d0925d670a5c1035ffcc7b7eba14669"
+      "skillDigest": "690f38f8178c92406e98132697fce9cfa706d39e086565512a9369cf42bfb88e"
     }
   }
 }

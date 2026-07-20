@@ -1,0 +1,122 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "reason": "Thresholds exceeded (7 plan steps, 11 files, 5 layers vs max 3/6/2). Critical path serializes on bin/cli.js + integrity lib; only T6||T7 parallelize.",
+  "planPath": "specs/skill-install-checksums/step-02-skill-install-checksums.plan.refined.md",
+  "metrics": {
+    "implementationSteps": 7,
+    "expectedFiles": 11,
+    "layers": 5,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Extract shared install-rules",
+      "parallelGroup": null,
+      "dependsOn": [],
+      "files": [
+        "bin/install-rules.js",
+        "bin/cli.js"
+      ],
+      "acceptance": "AC1 (skip/whitelist parity), AC8 (consumer-owned exclusions exported). install-rules.js exports HUB_WHITELIST, CONSUMER_OWNED_*, SKIP_INSTALL_FILES, shouldSkipInstallEntry, isConsumerOwnedEntry (minimal move from cli.js). cli.js imports from install-rules; no copy/behavior change. node --check passes on both.",
+      "coderPrompt": "From refined plan Step A (partial): extract shared install skip/whitelist constants and helpers from bin/cli.js into new bin/install-rules.js (ESM). Export: HUB_WHITELIST, CONSUMER_OWNED_FILES, CONSUMER_OWNED_DIRS, CONSUMER_OWNED_HUB_FILES (or equivalent), SKIP_INSTALL_FILES, shouldSkipInstallEntry, isConsumerOwnedEntry. Update bin/cli.js to import these; keep behavior identical. Do not add integrity hashing yet. Validate: node --check bin/install-rules.js && node --check bin/cli.js. Consult MEMORY: Node launchers; surgical edits only; no drive-by cli refactors."
+    },
+    {
+      "id": "T2",
+      "title": "Implement skill-integrity-lib",
+      "parallelGroup": null,
+      "dependsOn": ["T1"],
+      "files": [
+        "bin/skill-integrity-lib.js"
+      ],
+      "acceptance": "AC1, AC2, AC8. Lib enumerates skill trees (copyDirSync-equivalent skips) and hub (whitelist only, including shared/.gitignore asymmetry). Implements sha256 lowercase hex, skillDigest (sorted relPath+NUL+digest lines), fullPackageDigest (sorted skill ids then hub after-skills), installedClosureDigest, load/save JSON with stable sorted keys. Never hashes consumer-owned paths or skill-integrity-local.json.",
+      "coderPrompt": "From refined plan Step A (lib) + §2 canonical digest rules: create bin/skill-integrity-lib.js using bin/install-rules.js. Implement file enumeration mirroring installer (skill recursive skips vs hub whitelist asymmetry). Hash file bytes as stored (no EOL rewrite). skillDigest / fullPackageDigest / installedClosureDigest per locked NUL+newline format; hubPlacement after-skills. Load/write manifests with stable key ordering. Exclude all consumer-owned hub names including skill-integrity-local.json. Validate: node --check bin/skill-integrity-lib.js. No CLI wiring yet."
+    },
+    {
+      "id": "T3",
+      "title": "Generator + committed manifest",
+      "parallelGroup": null,
+      "dependsOn": ["T2"],
+      "files": [
+        "bin/generate-skill-integrity.js",
+        "bin/skill-integrity.json",
+        "package.json"
+      ],
+      "acceptance": "AC1–AC3, AC11. Generator writes bin/skill-integrity.json from package root; --check exits ≠0 on drift or packageVersion≠package.json.version. npm script generate-integrity added. Two consecutive generate runs → identical bytes. Manifest covers all listInstallableSkills + hub whitelist files.",
+      "coderPrompt": "From refined plan Step B: implement bin/generate-skill-integrity.js (walk package root via skill-integrity-lib; write bin/skill-integrity.json; support --check no-write drift gate). Add package.json script \"generate-integrity\": \"node bin/generate-skill-integrity.js\". Run generator once and commit-ready write skill-integrity.json (schemas §2). packageVersion must match package.json. Validate: node bin/generate-skill-integrity.js && node bin/generate-skill-integrity.js --check; two generate runs byte-identical. MEMORY: keep packageVersion aligned with package.json."
+    },
+    {
+      "id": "T4",
+      "title": "Wire install/update verify + local record",
+      "parallelGroup": null,
+      "dependsOn": ["T3"],
+      "files": [
+        "bin/cli.js",
+        ".agents/skills/shared/.gitignore"
+      ],
+      "acceptance": "AC4, AC5, AC7, AC8. Parse --force-integrity. Pre-verify entire closure before first skill copy; on mismatch exit ≠0 without overwriting (unless force). Post-copy+hub: verify consumer closure; write skill-integrity-local.json. Add skill-integrity-local.json to CONSUMER_OWNED_HUB_FILES and shared/.gitignore. Uninstall success rewrites local record for remaining set. Shared hook covers install/update/interactive.",
+      "coderPrompt": "From refined plan Step C + §2 CLI flows: wire integrity into shared install path (installSelectedSkills / update equivalent) so install, update, and interactive all get pre+post verify. Pre-verify full closure before first copy. After copy + hub ensure/refresh: recompute + compare; write .agents/skills/shared/skill-integrity-local.json. --force-integrity skips gates but still writes local record from actual digests. Add skill-integrity-local.json to consumer-owned list and .agents/skills/shared/.gitignore. On uninstall success rewrite local record. Document fail-closed no rollback in code comments only if needed. Validate: node --check bin/cli.js. MEMORY: after CLI edits will need npm run tests -- --local in T6."
+    },
+    {
+      "id": "T5",
+      "title": "integrity audit + --check digest",
+      "parallelGroup": null,
+      "dependsOn": ["T4"],
+      "files": [
+        "bin/cli.js"
+      ],
+      "acceptance": "AC6, AC9. integrity subcommand: require local record; compare installed set from installed-skills.json; print mismatched/missing/extra managed paths; skip record-only absent skills (AC7); exit ≠0 on failure; v1 local-only. --check fetches remote bin/skill-integrity.json; compares packageRoot fullPackageDigest; exit 1 + labeled fullPackageDigest: mismatch when versions equal but digests differ; unreachable remote digest warns without failing solely on missing digest. Help lists integrity and --force-integrity.",
+      "coderPrompt": "From refined plan Step D + §2 table: add integrity command and extend --check/--check path for fullPackageDigest. Local digest source = packageRoot/bin/skill-integrity.json (mirrors getLocalVersion). Never compare selective installedClosureDigest to remote fullPackageDigest. Distinct messaging for version vs digest. Exit 1 with line containing fullPackageDigest: mismatch on digest fail. Update printHelp. Validate: node --check bin/cli.js; node bin/cli.js --help mentions integrity and --force-integrity."
+    },
+    {
+      "id": "T6",
+      "title": "Automated integrity tests",
+      "parallelGroup": "verify-docs",
+      "dependsOn": ["T5"],
+      "files": [
+        "test/test-install.js"
+      ],
+      "acceptance": "AC10, AC11. Phase 0b runs generate-skill-integrity.js --check. Phase 11 covers AC4–AC8 scenarios + fullPackageDigest change on file edit (§5 table). npm run tests -- --local green after re-pack.",
+      "coderPrompt": "From refined plan Step E + §5 AC map: extend test/test-install.js — add generator --check to Phase 0b; add Phase 11 with proposed tests (testIntegrityManifestCoversInstallableSkills, digest determinism, generator idempotent, install aborts on source mismatch + force override, post-install local record, integrity audit on mutation, selective closure, consumer-owned ignored, --check digest mismatch, digest changes on edit, help/readme mention). Prefer fixtures over flaky network where possible for AC9. Run npm run tests -- --local (repack after CLI edits — MEMORY). Do not invent bash bridges."
+    },
+    {
+      "id": "T7",
+      "title": "Docs + check-harness stale note",
+      "parallelGroup": "verify-docs",
+      "dependsOn": ["T5"],
+      "files": [
+        "README.md",
+        ".agents/skills/check-harness/SKILL.md"
+      ],
+      "acceptance": "AC12, AC11. README Safety/install documents integrity commands, fail-closed, consumer exclusions, unsigned-manifest trust limit, post-copy no rollback. check-harness Phase 3 gets one bullet: manifest present + generate-skill-integrity.js --check clean (upstream). No host product names in skill prose. Help/README strings aligned.",
+      "coderPrompt": "From refined plan Step F: update README.md Safety / install sections for integrity UX and trust boundary. Add minimal Phase 3 bullet to .agents/skills/check-harness/SKILL.md for stale integrity gate (upstream only). Align command names with cli help (integrity, --force-integrity, --check digest). Harness-neutral: no IDE/agent product names. Surgical docs only."
+    },
+    {
+      "id": "T8",
+      "title": "Release hygiene if version bumps",
+      "parallelGroup": null,
+      "dependsOn": ["T6", "T7"],
+      "files": [
+        "package.json",
+        "test/package.json",
+        "bin/skill-integrity.json"
+      ],
+      "acceptance": "If this PR bumps package.json version: regenerate integrity, sync test/package.json file:../workflow-skills-<ver>.tgz, site footer matches package.json if docs regenerated. If no version bump: no-op / skip with note.",
+      "coderPrompt": "From refined plan Step G (conditional): only if package.json version changed in this PR. Regenerate bin/skill-integrity.json; sync test/package.json tarball path; if site touched use plain node bin/build-site.js (no accidental --bump dual bump). MEMORY: package.json canonical; sync test tarball after bump. If version unchanged, leave files alone and report skipped."
+    }
+  ],
+  "levels": [
+    ["T1"],
+    ["T2"],
+    ["T3"],
+    ["T4"],
+    ["T5"],
+    ["T6", "T7"],
+    ["T8"]
+  ]
+}

@@ -208,6 +208,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing 09-fix-pr shim: ${rel}`);
   }
   // AC11: committed integrity manifest must match current tree + package.json version
+  // Testing-step / ship gate: verify-integrity must pass to approve
   {
     const gen = cp.spawnSync(
       process.execPath,
@@ -224,6 +225,49 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
       fail(`bin/skill-integrity.json stale or packageVersion mismatch (generate-skill-integrity.js --check exited ${gen.status})`);
     }
     ok('skill-integrity.json matches tree (generate --check)');
+
+    const pkg = JSON.parse(fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8'));
+    if (!pkg.scripts || pkg.scripts['verify-integrity'] !== 'node bin/generate-skill-integrity.js --check') {
+      fail('package.json scripts.verify-integrity must be node bin/generate-skill-integrity.js --check');
+    }
+    if (!pkg.scripts['generate-integrity']) {
+      fail('package.json scripts.generate-integrity missing');
+    }
+    ok('package.json verify-integrity + generate-integrity scripts present');
+
+    const agentsMd = fs.readFileSync(path.join(parentDir, 'AGENTS.md'), 'utf8');
+    for (const needle of [
+      'Upstream skill integrity regenerate',
+      'npm run generate-integrity',
+      'npm run verify-integrity',
+      'bin/skill-integrity.json',
+    ]) {
+      if (!agentsMd.includes(needle)) {
+        fail(`AGENTS.md missing integrity regenerate obligation marker: ${needle}`);
+      }
+    }
+    ok('AGENTS.md documents upstream skill integrity regenerate obligation');
+
+    const verifySh = fs.readFileSync(
+      path.join(parentDir, '.agents', 'skills', '08-ship-pr', 'scripts', 'verify.sh'),
+      'utf8'
+    );
+    if (!verifySh.includes('generate-skill-integrity.js') || !verifySh.includes('--check')) {
+      fail('08-ship-pr/scripts/verify.sh must run generate-skill-integrity.js --check when present');
+    }
+    ok('verify.sh gates on integrity --check');
+
+    const harness = fs.readFileSync(
+      path.join(parentDir, '.agents', 'skills', 'check-harness', 'SKILL.md'),
+      'utf8'
+    );
+    if (!/Skill integrity manifest/i.test(harness) || !/generate-skill-integrity\.js --check/.test(harness)) {
+      fail('check-harness must require skill-integrity --check (Phase 3)');
+    }
+    if (!/generate-integrity/i.test(harness)) {
+      fail('check-harness integrity finding must point to npm run generate-integrity correction');
+    }
+    ok('check-harness Phase 3 integrity detect + regenerate guidance present');
   }
   // Cheap shim --help / usage smoke: proves parents[2] / relative forward resolves
   {

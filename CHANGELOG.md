@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 14:55] Agent: Cursor Grok
+- **Prompt**: Require checksum regenerate on skill commit/PR; tests for testing-step approve
+- **Done**: AGENTS.md § Upstream skill integrity regenerate + Verification item; `verify-integrity` script; verify.sh + PREPARE-CHECKLIST; check-harness correction; Phase 0b asserts; README; regenerated `bin/skill-integrity.json`
+- **Result**: `npm run verify-integrity` + Phase 0b/11 PASS; Learning: N/A
+
 ### [2026-07-20 18:55] Agent: Cursor Grok 4.5
 - **Prompt**: Step 7 testing for skill-install-checksums (AUTO, no browser)
 - **Done**: Wrote `step-07-*.testing.plan.md` + `testing.report.md`; ran `node --check` on touched bin files, `generate-skill-integrity.js --check`, `npm run tests -- --local`

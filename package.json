@@ -21,7 +21,8 @@
     "tests": "node test/test-install.js",
     "build-site": "node bin/build-site.js",
     "build-site:bump": "node bin/build-site.js --bump",
-    "generate-integrity": "node bin/generate-skill-integrity.js"
+    "generate-integrity": "node bin/generate-skill-integrity.js",
+    "verify-integrity": "node bin/generate-skill-integrity.js --check"
   },
   "files": [
     "bin/",
