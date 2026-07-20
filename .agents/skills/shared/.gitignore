@@ -3,10 +3,13 @@
 
 config.json
 config.local.json
+STACK.md
 stack.md
 MEMORY.md
+CHANGELOG.md
 installed-skills.json
 memory/**
 !MEMORY.md.template
-!stack.md.example
+!CHANGELOG.md.template
+!STACK.md.example
 !config.json.example

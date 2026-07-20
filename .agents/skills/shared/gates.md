@@ -12,7 +12,7 @@ Config: [`.agents/skills/shared/config.json`](config.json) only — see [`config
 
 | Rule | Detail |
 |------|--------|
-| **Shared skills are workflow-agnostic** | Skills `00`–`11`, providers, `goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. |
+| **Shared skills are workflow-agnostic** | Skills `00`–`09` (+ unprefixed `goal-fix-pr`, `update-plan-implementation`), providers, `goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
 | **One combined delivery + ship ask** | Orchestrator presents the combined gate once at standard Step 8 / lite Step 4. [`08-ship-pr`](../08-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-ask at user-gate. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |

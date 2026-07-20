@@ -29,7 +29,7 @@ Resolve `{plansDir}` from `config.json` → `plans.dir` (there is **no** `plansD
 | `write-state` | Write/append state | `Write` / `StrReplace` (hygiene before board) |
 | `read-config` | Load project config | `Read` `.agents/skills/shared/config.json` |
 | `read-artifacts-registry` | Canonical artifact names | `Read` `.agents/skills/spec-to-pr/ARTIFACTS.md` |
-| `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `.agents/skills/shared/stack.md`) |
+| `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `.agents/skills/shared/STACK.md`) |
 | `read-memory` | Load learned knowledge | `Read` `.agents/skills/shared/MEMORY.md` (index via `Grep`) |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
 | `run-script` | Run workflow / provider script | `Shell` `python .agents/skills/spec-to-pr/scripts/{name}.py` (orchestrator helpers). Converters/thread helpers: prefer `.agents/skills/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `spec-to-pr/scripts/` / `09-fix-pr/scripts/`) |

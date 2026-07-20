@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-07-20 09:35] Agent: Cursor Grok
+- **Prompt**: Rename shared stack companion to STACK.md and update references
+- **Done**: `stack.md.example` → `STACK.md.example`; default seed/path `shared/STACK.md`; installer renames legacy `shared/stack.md` once; refs across hubs/skills/CLI/tests/docs updated
+- **Result**: Canonical consumer stack companion is `.agents/skills/shared/STACK.md`
+
+### [2026-07-20 09:30] Agent: Cursor Grok
+- **Prompt**: Fresh consumer install check-harness noise; ship-ready skills without touching consumer root files
+- **Done**: Fixed stale `00`–`11` prose; installer seeds only under `shared/` (`config.json`, `CHANGELOG.md`, `stack.md`, `MEMORY.md`); expanded consumer `shared/AGENTS.md`; check-harness consumer hub = shared (root AGENTS optional suggestion only); never write consumer root/host files; README/tests updated
+- **Result**: Install scope limited to `.agents/skills/`; near-zero findings from shipped hub/skills
+
 ### [2026-07-20 09:06] Agent: Cursor Composer
 - **Prompt**: Fix Node.js 20 deprecation annotation on Deploy site Actions
 - **Done**: Bumped `checkout@v5`, `setup-node@v6` (Node 22), `upload-pages-artifact@v5`, `deploy-pages@v5`; merged #82

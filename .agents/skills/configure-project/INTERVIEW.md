@@ -31,7 +31,7 @@ Scan consumer **repo root** (not this skill package alone):
 | No tracker remote / `specs/**/*.spec.md` | Suggest `active=local` + set `scm` from remote host or ask |
 | `prisma/` / `drizzle` / `Migrations/` / compose DB services | `stack.database.*` hints |
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
-| `.agents/skills/shared/stack.md` (preferred) | `rules.stackFile` → that path |
+| `.agents/skills/shared/STACK.md` (preferred) | `rules.stackFile` → that path |
 | Root `STACK.md` / `stack.md` (legacy optional) | Keep only if user already uses it; do not create or require |
 | `.agents/skills/shared/CHANGELOG.md` (preferred) | `rules.changelogFile` → that path |
 | Repo-root `CHANGELOG.md` | Only if user sets `rules.changelogFile: "CHANGELOG.md"` |
@@ -45,7 +45,7 @@ Scan consumer **repo root** (not this skill package alone):
 2. `providers` + matching `issueTrackers` slice
 3. `plans.dir` / `plans.specsDir` / optional `reviews.dir`
 4. `verification` (+ `orchestration` if detected)
-5. `stack` summary (id, description, key paths) — or defer to stack.md generation
+5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `domain` / `rules` / `defaults` — optional
 
 Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.

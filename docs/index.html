@@ -88,7 +88,7 @@
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
         <div class="name">check-harness</div>
-        <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–11 / ws-*), retired path ids, broken links, orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
+        <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links, orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill</a>
       </div>
       <div class="skill-card" data-path=".agents/skills/check-workflows/SKILL.md">
@@ -392,7 +392,7 @@
   <h2>Install, update, and uninstall</h2>
   <p style="color:var(--text-muted);max-width:70ch;margin-bottom:20px;line-height:1.5">
     Canonical form: <code>npx --yes github:jpolvora/workflow-skills</code> (never <code>@latest</code> / <code>@main</code> on <code>github:</code>).
-    Consumer-owned under <code>.agents/skills/shared/</code>: <code>config.json</code>, <code>stack.md</code>, <code>MEMORY.md</code>, <code>memory/</code>, <code>installed-skills.json</code> — preserved on update/uninstall.
+    Consumer-owned under <code>.agents/skills/shared/</code>: <code>config.json</code>, <code>STACK.md</code>, <code>MEMORY.md</code>, <code>memory/</code>, <code>installed-skills.json</code> — preserved on update/uninstall.
     The CLI tracks managed skills in <code>installed-skills.json</code> for <code>update</code> / <code>uninstall</code>.
     Artifact paths come from consumer <code>config.json</code> (defaults <code>.agents/plans</code> / <code>.agents/codereviews</code>). Optional host pointer files are not required by skills.
   </p>

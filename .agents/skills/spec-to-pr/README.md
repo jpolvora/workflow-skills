@@ -13,7 +13,7 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 1. **End-to-End Delivery:** Spec → plan → interview → implement → check → review → testing → ship → fix-pr (steps **0–9**).
 2. **Context Isolation:** Fresh `dispatch-agent` per step where practical; shared `state.md` + `MEMORY.md`.
 3. **Safety & Gates:** Explicit transitions; combined delivery+ship at Step 8; Fix-PR at Step 9.
-4. **Portability:** Stack-agnostic; metadata from `config.json` / `stack.md`.
+4. **Portability:** Stack-agnostic; metadata from `config.json` / `STACK.md`.
 
 | Document | Audience | Content |
 |----------|----------|---------|

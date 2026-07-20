@@ -1,6 +1,6 @@
 # Spec-to-PR — Diagrams (FSM 0–9)
 
-> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/00`–`11`. Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../shared/gates.md), [`config-resolution.md`](../shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
+> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/00`–`09` (+ unprefixed `goal-fix-pr`, `update-plan-implementation`). Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../shared/gates.md), [`config-resolution.md`](../shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
 
 ---
 
