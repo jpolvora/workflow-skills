@@ -3,6 +3,12 @@
   "_comment": "Fresh install seeds this file as config.json (gitignored — never commit). Fill via configure-project. toolsFile points to the tool vocabulary all agents use.",
   "toolsFile": "tools.md",
 
+  "pathTokens": {
+    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
+    "skillsRoot": ".agents/skills",
+    "sharedDir": ".agents/skills/shared"
+  },
+
   "project": {
     "name": "<PROJECT_NAME>",
     "org": "<GITHUB_ORG>",

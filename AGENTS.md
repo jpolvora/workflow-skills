@@ -16,7 +16,7 @@ Shipped skills are **agent- and IDE-neutral**. They must run in any consumer hos
 | Rule | Detail |
 |------|--------|
 | **No host product names** | Skill bodies, gates, banners, templates, and scripts must **not** name or require specific IDEs/agents (examples of forbidden coupling: product-branded UIs, host-only tool IDs as the contract, host-only folder layouts as required defaults). |
-| **Capability vocabulary** | Use portable aliases from [`shared/tools.md`](.agents/skills/shared/tools.md): `user-gate`, `dispatch-agent`, `{plansDir}` (← `plans.dir`), etc. Prefer a host structured-choice UI when available; markdown fallback when not. |
+| **Capability vocabulary** | Use portable aliases from [`shared/tools.md`](.agents/skills/shared/tools.md): `user-gate`, `dispatch-agent`, path tokens `{skillsRoot}` / `{sharedDir}` / `{plansDir}` (← `plans.dir`), etc. Load `config.json` + `tools.md` Path tokens before tool calls; expand braces first. Prefer a host structured-choice UI when available; markdown fallback when not. |
 | **Consumer-owned asset paths** | Workflow artifacts, reviews, and optional project rules live where **the consumer configures** them (`config.json` → `plans.dir`, `reviews.dir`, `rules.*`). Skill prose uses `{plansDir}/{slug}/` — never hardcode the default path. Shipped default for `plans.dir` is `.agents/plans`. |
 | **No compatibility maintenance** | Do **not** keep legacy path aliases, migration shims, or dual defaults for old host-specific folders. Latest layout only on install/update. |
 | **Host adapters stay out of skills** | Optional host pointer files, marketplace manifests, and this upstream repo’s local `.cursor/` tree are **not** part of the portable skill contract. Put lasting guidance in skills / `AGENTS.md`, not host-private rule files. |
@@ -121,7 +121,7 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 | `gabarito` | `.agents/skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Before plan/code/fix: consult `shared/MEMORY.md`; on completion: write traps → compile |
+| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
 ### Precedence (highest first)
@@ -208,7 +208,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Autoload |
 | `spec-to-pr` / `spec-to-pr-lite` | `.agents/skills/.../SKILL.md` | Orchestrators |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `shared/MEMORY.md` |
+| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
 | `configure-project` | `.agents/skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `.agents/skills/goal-loop/SKILL.md` | Convergence |

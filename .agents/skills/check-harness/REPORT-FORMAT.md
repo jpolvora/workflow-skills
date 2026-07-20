@@ -17,12 +17,14 @@ Otherwise — **correction plan** (mandatory before editing):
 **Mode:** [normal | dry-run]
 **Scope:** [full | files: ...]
 **Files inspected:** N
+**Path token map:** `{skillsRoot}=…` `{sharedDir}=…` `{plansDir}=…` `{reviewsDir}=…` (from config `pathTokens` / `plans.dir` / defaults)
 **Status:** [awaiting approval to apply corrections | report only (dry-run)]
 
 ### Executive summary
 - Problems found: X (Y critical, Z warning, W suggestion)
 - Broken links: ...
 - Absolute paths: ...
+- Path-token notes: [healthy tokens expanded | token-in-link-target: N | undeclared shared/ shorthand: N]
 - Redundancies/conflicts: ...
 - Unrouted skills/rules: ...
 - Auto-load: N mandatory skills (~L lines), M conditional (~L lines)

@@ -1,5 +1,25 @@
 # Changelog
 
+### [2026-07-20 13:35] Agent: Composer
+- **Prompt**: Update docs/README/site/installers for path tokens, then ship-pr
+- **Done**: README + setup + build-site blurb; CLI help/post-install tips; `ensurePathTokensInConfig` on hub seed/preserve; install-skills.sh banner; self-learning site description de-braced
+- **Result**: Humans and installers surface pathTokens; ready to ship
+
+### [2026-07-20 13:30] Agent: Composer
+- **Prompt**: Update check-harness to know hint/path tokens before fixing relative paths
+- **Done**: Added § Path token map; Phase 0 load; Phase 1/2 expand-before-existence; forbid token→`../` false fixes; report + checklist token-aware
+- **Result**: check-harness expands `{skillsRoot}`/`{sharedDir}`/`{plansDir}`/`{reviewsDir}` before broken-link or relative rewrites
+
+### [2026-07-20 13:25] Agent: Composer
+- **Prompt**: Reliable path-token tip for agents (`{skillsRoot}` / `{sharedDir}`) like config placeholders
+- **Done**: Added `tools.md` § Path tokens + agent expand contract; `pathTokens` in config example/schema/local config; config-resolution + hub/autoload/self-learning/implement-tasks wired to braces; MEMORY traps updated
+- **Result**: Agents load `config.json` + `tools.md` first, expand braces before Read/Grep/Shell; no undeclared `shared/` shorthands
+
+### [2026-07-20 13:15] Agent: Composer
+- **Prompt**: `/08-ship-pr` with create-PR + check-harness (1A)
+- **Done**: Prepare board green; check-harness PASS_WITH_WARNINGS; pushed develop; opened/merged PR #86; fixed gabarito MEMORY path from review thread; synced site catalog after main merge
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/86 MERGED (`4cf92fb`); `develop` intact
+
 ### [2026-07-20 09:43] Agent: Cursor Grok
 - **Prompt**: bump
 - **Done**: Patch-bumped `0.0.61` → `0.0.62`; regenerated site footer; synced `test/package.json` tarball ref

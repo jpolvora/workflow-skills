@@ -14,7 +14,7 @@ invocation_names:
 
 Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Act as a Senior Software Developer: clean code, SOLID, surgical edits, stack-consistent, no duplication.
 
-**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `.agents/skills/shared/MEMORY.md` (Grep task keywords before coding — [`self-learning`](../self-learning/SKILL.md) § Pre-work consult).
+**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `{sharedDir}/MEMORY.md` (Grep task keywords before coding — expand per [`tools.md`](../shared/tools.md) § Path tokens; [`self-learning`](../self-learning/SKILL.md) § Pre-work consult).
 
 ## Invocation
 
@@ -37,7 +37,7 @@ Workflow (spec-to-pr Step 4 build; conditional fix substep under Step 6 review f
 1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria.
    - Done when: every task/step has an identified file list and AC.
 
-2. **Consult MEMORY** — Grep `.agents/skills/shared/MEMORY.md` for modules/paths/keywords in the plan; apply Medium+ Solutions before editing.
+2. **Consult MEMORY** — Grep `{sharedDir}/MEMORY.md` for modules/paths/keywords in the plan; apply Medium+ Solutions before editing.
    - Done when: relevant entries noted or none found.
 
 3. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
@@ -57,7 +57,7 @@ Workflow (spec-to-pr Step 4 build; conditional fix substep under Step 6 review f
 1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
    - Done when: every finding is enumerated.
 
-2. **Consult MEMORY** — Grep `MEMORY.md` for the defect class / paths; reuse known Solutions before inventing fixes.
+2. **Consult MEMORY** — Grep `{sharedDir}/MEMORY.md` for the defect class / paths; reuse known Solutions before inventing fixes.
    - Done when: relevant entries noted or none found.
 
 3. **Correct** — Apply minimal, targeted fixes per [karpathy-guidelines](../karpathy-guidelines/SKILL.md).

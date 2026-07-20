@@ -18,7 +18,22 @@ Template: [`config.json.example`](config.json.example). Schema: [`config.schema.
 - `.agents/skills/spec-to-pr/config.json`
 - `.agents/skills/spec-to-pr-lite/config.json`
 
-Scripts and skills that still mention those paths are **bugs** — fix to `shared/config.json`. Lite and full always share this file (dual-mode).
+Scripts and skills that still mention those paths are **bugs** — fix to `{sharedDir}/config.json` (expand per [tools.md](tools.md) § Path tokens; default `.agents/skills/shared/config.json`). Lite and full always share this file (dual-mode).
+
+---
+
+## Path tokens (fixed + configurable)
+
+Load early with `toolsFile` (default `tools.md` § Path tokens).
+
+| Token | Source | Default |
+|-------|--------|---------|
+| `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
+| `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/shared` |
+| `{plansDir}` | `plans.dir` | `.agents/plans` |
+| `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
+
+Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{plansDir}` / `{reviewsDir}` remain consumer-configurable.
 
 ---
 

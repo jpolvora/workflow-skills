@@ -26,7 +26,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 1. **Portable and project-agnostic** — Skills must work in any consumer repo. Do **not** hardcode org/repo names, solution filenames, API hosts, tenant fields, or stack-specific build/test commands inside skill bodies or scripts.
 2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in `skills/shared/config.json` (gitignored; copy from `skills/shared/config.json.example`). Skills **read** config / `rules.stackFile` companion / `tools.md`; they do not embed consumer metadata. See [`config-resolution.md`](skills/shared/config-resolution.md).
 3. **Repo-root-relative paths only** — References use paths like `skills/01-write-plan/SKILL.md` or `.agents/skills/...` from the consumer root. **Forbidden:** absolute paths (`C:\Users\...`, `/home/...`) or author-machine dependencies.
-4. **Harness-neutral** — Skill bodies must not name IDE or agent-product brands. Artifact roots come **only** from config: `plans.dir` (skill token `{plansDir}`), optional `reviews.dir`. Documented default for `plans.dir` is `.agents/plans`. Skill prose uses `{plansDir}/{slug}/` — no hardcoded plans roots. No back-compat path aliases. Gates use `user-gate`; model switches via Pause → IDE/agent host → Resume; step work via `dispatch-agent` / host subagent dispatch. Mirror: root [`AGENTS.md`](../AGENTS.md) § Portability & harness neutrality.
+4. **Harness-neutral** — Skill bodies must not name IDE or agent-product brands. Artifact roots come **only** from config: `plans.dir` (skill token `{plansDir}`), optional `reviews.dir`. Skills layout tokens `{skillsRoot}` / `{sharedDir}` come from `pathTokens` (fixed install defaults; see `tools.md` § Path tokens). Documented default for `plans.dir` is `.agents/plans`. Skill prose uses `{plansDir}/{slug}/` — no hardcoded plans roots. No undeclared path shorthands. Gates use `user-gate`; model switches via Pause → IDE/agent host → Resume; step work via `dispatch-agent` / host subagent dispatch. Mirror: root [`AGENTS.md`](../AGENTS.md) § Portability & harness neutrality.
 5. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
 6. **No `name:` collisions** — Each `SKILL.md` frontmatter `name:` must be unique across the installed tree.
 7. **Evidence-based harness changes** — When fixing routing/links, cite verified paths; do not invent files.
@@ -87,7 +87,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `gabarito` | `skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
 | `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `changelog` | `skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `skills/self-learning/SKILL.md` | Before plan/code/fix: consult `skills/shared/MEMORY.md`; on completion: write traps → compile |
+| `self-learning` | `skills/self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global — not shipped)` | Session start — skill discovery |
 
 ### Precedence (highest first)

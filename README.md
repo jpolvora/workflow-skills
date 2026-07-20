@@ -29,7 +29,7 @@ Two delivery workflows (install independently; both share `.agents/skills/shared
 | **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM steps 0–9) |
 | **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
-They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer a native structured choice UI when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the executing session model (`Current model` on every transition). To change model for the next step: Pause → switch in your IDE/agent host → resume (no `--model` / `--model-chain` flags). Skills stay **host-neutral** — artifact dirs come from `config.json` (`plans.dir` default `.agents/plans`; optional `reviews.dir` default `.agents/codereviews`). Details for agents: [`AGENTS.md`](AGENTS.md) § Portability. Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
+They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer a native structured choice UI when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the executing session model (`Current model` on every transition). To change model for the next step: Pause → switch in your IDE/agent host → resume (no `--model` / `--model-chain` flags). Skills stay **host-neutral** — artifact dirs come from `config.json` (`plans.dir` default `.agents/plans`; optional `reviews.dir` default `.agents/codereviews`). Agents also expand fixed **path tokens** (`pathTokens.skillsRoot` / `sharedDir`, defaults `.agents/skills` and `.agents/skills/shared`) per [`tools.md`](.agents/skills/shared/tools.md) § Path tokens. Details for agents: [`AGENTS.md`](AGENTS.md) § Portability. Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
 
 ### Contribution policy
 
@@ -108,7 +108,7 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers. **Fresh install seeds** from `config.json.example`. Fill via `/configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit |
+| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit |
 | `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
 | `MEMORY.md` | Anti-regression index (`self-learning`) |
 | `memory/*.md` | Individual memory entries |
@@ -126,7 +126,7 @@ Installer **never** writes consumer repo-root files. Consumers may add a thin ro
 | Host pointer (name varies by IDE) | Minimal pointer so agents follow project `AGENTS.md` or load skills from `.agents/skills/` |
 | `rules.changelogFile` target | Append-only history (default under `shared/`; optional root `CHANGELOG.md` when configured) |
 
-Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/config.json` (defaults: `.agents/plans`, `.agents/plans/specs`, `.agents/codereviews`). Existing repo-root `specs/` is kept when already present.
+Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/config.json` (defaults: `.agents/plans`, `.agents/plans/specs`, `.agents/codereviews`). Existing repo-root `specs/` is kept when already present. Optional `pathTokens` documents fixed install roots for agents (`{skillsRoot}` / `{sharedDir}`); see [`tools.md`](.agents/skills/shared/tools.md) § Path tokens — not relocatable like `plans.dir`.
 
 ---
 

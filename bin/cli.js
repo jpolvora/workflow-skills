@@ -289,6 +289,38 @@ function isConsumerOwnedEntry(entryName, isDirectory) {
 }
 
 /**
+ * Ensure config.json has pathTokens.skillsRoot / sharedDir (non-destructive merge).
+ * Existing keys win; missing block or keys get install defaults.
+ */
+function ensurePathTokensInConfig(configPath) {
+  if (!fs.existsSync(configPath)) return;
+  let cfg;
+  try {
+    cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  } catch {
+    return;
+  }
+  const defaults = {
+    _comment:
+      'Fixed install layout — expand brace tokens before tool calls. See tools.md § Path tokens.',
+    skillsRoot: '.agents/skills',
+    sharedDir: '.agents/skills/shared',
+  };
+  const prev = cfg.pathTokens && typeof cfg.pathTokens === 'object' ? cfg.pathTokens : null;
+  if (prev && typeof prev.skillsRoot === 'string' && prev.skillsRoot && typeof prev.sharedDir === 'string' && prev.sharedDir) {
+    return;
+  }
+  cfg.pathTokens = {
+    ...defaults,
+    ...(prev || {}),
+    skillsRoot: (prev && prev.skillsRoot) || defaults.skillsRoot,
+    sharedDir: (prev && prev.sharedDir) || defaults.sharedDir,
+  };
+  fs.writeFileSync(configPath, `${JSON.stringify(cfg, null, 2)}\n`);
+  console.log(`    Ensured shared/config.json pathTokens ({skillsRoot}, {sharedDir})`);
+}
+
+/**
  * Seed/preserve consumer-owned hub artifacts under shared/:
  * config.json, MEMORY.md, memory/, STACK.md, CHANGELOG.md
  * Never writes consumer repo-root files (root AGENTS.md stays host/consumer-owned).
@@ -303,11 +335,13 @@ function ensureSharedConsumerArtifacts() {
   const configPath = path.join(destShared, CONFIG_FILE);
   if (fs.existsSync(configPath)) {
     console.log(`    Preserved existing shared/config.json`);
+    ensurePathTokensInConfig(configPath);
   } else {
     const example = path.join(srcSkillsDir, HUB_DIR, 'config.json.example');
     if (fs.existsSync(example)) {
       fs.copyFileSync(example, configPath);
       console.log(`    Seeded shared/config.json from config.json.example (run configure-project to fill)`);
+      ensurePathTokensInConfig(configPath);
     }
   }
 
@@ -596,6 +630,7 @@ Notes:
     installed-skills.json tracks managed skills for update/uninstall (bootstrapped from disk when missing).
   - Installer only writes under .agents/skills/ (skills + shared hub). Never creates/overwrites consumer repo-root files (root AGENTS.md, host pointers).
   - Artifact paths (plans/reviews) come from consumer config.json (defaults: .agents/plans, .agents/codereviews) — not host-private folders.
+  - Path tokens: config.json pathTokens.skillsRoot / sharedDir (defaults .agents/skills, .agents/skills/shared). Agents expand {skillsRoot}/{sharedDir}/{plansDir} per shared/tools.md before Read/Grep/Shell. Not relocatable.
   - Optional host pointer files are consumer-owned. Changelog defaults to rules.changelogFile under shared/ (not repo root).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
   - Consumer agent contract: skills/shared/AGENTS.md (installed with the shared hub; no .agents/AGENTS.md copy).
@@ -818,6 +853,7 @@ async function runInstall(skills, opts) {
     console.log('\n\u26a0\ufe0f  After installing, run the `check-harness` skill to validate the harness:');
     console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   Optional: run `configure-project` to interview/detect and fill `.agents/skills/shared/config.json`.');
+    console.log('   Path tokens: `.agents/skills/shared/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }
@@ -1139,6 +1175,7 @@ function runUpdate(skills, includeNew) {
   console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
   console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
   console.log('   Optional: run `configure-project` if shared/config.json still has placeholders.');
+  console.log('   Path tokens: `.agents/skills/shared/tools.md` § Path tokens (`pathTokens` in config.json).');
   process.exit(0);
 }
 
@@ -1245,6 +1282,7 @@ async function runInteractive(skills) {
     console.log('   Load `.agents/skills/check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
     console.log('   Optional: run `configure-project` to interview/detect and fill `.agents/skills/shared/config.json`.');
+    console.log('   Path tokens: `.agents/skills/shared/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }
