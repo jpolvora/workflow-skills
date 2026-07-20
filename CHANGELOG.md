@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 09:06] Agent: Cursor Composer
+- **Prompt**: Fix Node.js 20 deprecation annotation on Deploy site Actions
+- **Done**: Bumped `checkout@v5`, `setup-node@v6` (Node 22), `upload-pages-artifact@v5`, `deploy-pages@v5`; merged #82
+- **Result**: Deploy run annotations empty (no Node 20 warning)
+
 ### [2026-07-20 09:05] Agent: Cursor Composer
 - **Prompt**: Fix typical main-push race between Deploy site and legacy pages-build-deployment
 - **Done**: Deploy site uploads `docs/` + `deploy-pages`; repo Pages `build_type` → `workflow`; kept docs sync commit with `[skip ci]`; removed invalid `include-hidden-files` input; merged #80/#81
