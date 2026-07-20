@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 19:26] Agent: Cursor Grok 4.5
+- **Prompt**: Step 8 ship create-pr for us-90 (LF-canonical integrity)
+- **Done**: Prepare board green; pushed develop (58479c1 + 12a776c); opened PR #91 develop→main with Closes #90
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/91 ; stopBeforeFixPr STOP (no merge / no goal-fix)
+
 ### [2026-07-20 15:00] Agent: Cursor Grok 4.5
 - **Prompt**: Prepare to PR (site bump, checksums), commit, ship-pr
 - **Done**: Bumped 0.0.63→0.0.64; rebuilt site; regenerated integrity; synced test pack path; harness FAQ/gabarito fixes included
