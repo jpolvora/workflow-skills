@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-07-20 15:00] Agent: Cursor Grok 4.5
+- **Prompt**: Prepare to PR (site bump, checksums), commit, ship-pr
+- **Done**: Bumped 0.0.63→0.0.64; rebuilt site; regenerated integrity; synced test pack path; harness FAQ/gabarito fixes included
+- **Result**: verify.sh VERIFY_OK; ready to push develop→main
+
+### [2026-07-20 14:55] Agent: Cursor Grok 4.5
+- **Prompt**: Fix check-harness findings; add learnings to MEMORY
+- **Done**: Replaced `file://` FAQ links with relatives; gabarito opt-out phrases; seeded local STACK.md; 4 memory entries + compile; regenerated `bin/skill-integrity.json`
+- **Result**: faq links resolve; integrity `--check` OK; Learning: packaged `skills/` link resolve + no `file://` skill links
+
+### [2026-07-20 14:55] Agent: Cursor Grok
+- **Prompt**: Require checksum regenerate on skill commit/PR; tests for testing-step approve
+- **Done**: AGENTS.md § Upstream skill integrity regenerate + Verification item; `verify-integrity` script; verify.sh + PREPARE-CHECKLIST; check-harness correction; Phase 0b asserts; README; regenerated `bin/skill-integrity.json`
+- **Result**: `npm run verify-integrity` + Phase 0b/11 PASS; Learning: N/A
+
 ### [2026-07-20 18:55] Agent: Cursor Grok 4.5
 - **Prompt**: Step 7 testing for skill-install-checksums (AUTO, no browser)
 - **Done**: Wrote `step-07-*.testing.plan.md` + `testing.report.md`; ran `node --check` on touched bin files, `generate-skill-integrity.js --check`, `npm run tests -- --local`

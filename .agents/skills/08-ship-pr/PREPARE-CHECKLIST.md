@@ -49,8 +49,9 @@ Prefer `bash .agents/skills/08-ship-pr/scripts/verify.sh` when it covers configu
 ### 3. Tests
 **When:** no green tests yet for the current tree.  
 **Do:** `verification.backendTest` (+ `frontendTest` if frontend touched), or full `bash .agents/skills/08-ship-pr/scripts/verify.sh`.  
+**Upstream `workflow-skills`:** `verify.sh` also runs `node bin/generate-skill-integrity.js --check` when that script exists. Testing / ship approval requires it green; if red → `npm run generate-integrity`, commit `bin/skill-integrity.json`, re-run (see root `AGENTS.md` § Upstream skill integrity regenerate).  
 **⏭:** green evidence, or `skipTests` / orch `skipTesting` with waiver on board.  
-**Done when:** tests green, waived with evidence, or ❌.
+**Done when:** tests green (including integrity `--check` when applicable), waived with evidence, or ❌.
 
 ### 4. Security / leak scan
 **When:** no security check yet on ship-scope diff (or full tree if scope unclear).  
@@ -77,6 +78,7 @@ Prefer `bash .agents/skills/08-ship-pr/scripts/verify.sh` when it covers configu
    - `before push`, `before publish`, `before deliver`, `before delivery`, `before shipping`, `before merge`
    - `ship`, `release`, `publish`, `deliver` when the section lists **agent obligations** before push/PR
    - `local project rule` / `local harness` when tied to shipping or PR creation
+   - `skill integrity` / `generate-integrity` / `verify-integrity` / `skill-integrity.json` when the hub requires regenerating digests before push/PR
 3. **List hits** in board evidence for row 5 (file + heading + one-line obligation). Zero hits → ⏭ with `no prepare/before-push steps found in scanned sources` and list what was scanned.
 
 #### Wait / execute

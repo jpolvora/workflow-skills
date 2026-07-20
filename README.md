@@ -140,6 +140,7 @@ Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/con
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
 - **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `shared/` hub templates. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `shared/skill-integrity-local.json` from actual digests).
+- **Upstream regenerate (authors):** any change to hashed skill/hub/install inputs must run `npm run generate-integrity` and commit `bin/skill-integrity.json` in the same change; `npm run verify-integrity` must pass before claim complete / PR (see root `AGENTS.md`). `check-harness` and install tests fail closed on a stale manifest.
 - **Audit:** `integrity` recomputes digests for skills listed in `installed-skills.json` and compares to `skill-integrity-local.json` (selective installs only require their closure). `--check` compares semver **and** `fullPackageDigest` when the remote integrity manifest is reachable.
 - **Consumer-owned exclusions:** `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `CHANGELOG.md`, and `skill-integrity-local.json` are never hashed and never fail integrity when edited.
 - **Trust limit:** the integrity manifest is **unsigned**. Fetching it shares the same trust boundary as today’s remote `package.json` / raw GitHub fetch (no publisher signing in this release).
@@ -152,7 +153,8 @@ Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/con
 
 ```bash
 npm run generate-integrity      # rebuild bin/skill-integrity.json
-node bin/generate-skill-integrity.js --check   # fail if stale vs tree / package.json
+npm run verify-integrity        # fail if stale vs tree / package.json (required before PR)
+node bin/generate-skill-integrity.js --check   # same as verify-integrity
 npm run tests              # remote-style install check
 npm run tests -- --local   # pack current tree into test/
 ```

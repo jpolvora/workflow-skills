@@ -88,4 +88,11 @@ else
   echo "==> $frontend_dir/ not touched — skipping frontend"
 fi
 
+# Upstream workflow-skills only: fail closed if committed skill digests drift.
+integrity_gen="$repo_root/bin/generate-skill-integrity.js"
+if [ -f "$integrity_gen" ]; then
+  echo "==> node bin/generate-skill-integrity.js --check"
+  node "$integrity_gen" --check
+fi
+
 echo "VERIFY_OK"
