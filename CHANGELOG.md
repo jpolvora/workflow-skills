@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 09:43] Agent: Cursor Grok
+- **Prompt**: bump
+- **Done**: Patch-bumped `0.0.61` → `0.0.62`; regenerated site footer; synced `test/package.json` tarball ref
+- **Result**: Install/`--version`/`--check` align with site v0.0.62
+
 ### [2026-07-20 09:35] Agent: Cursor Grok
 - **Prompt**: Rename shared stack companion to STACK.md and update references
 - **Done**: `stack.md.example` → `STACK.md.example`; default seed/path `shared/STACK.md`; installer renames legacy `shared/stack.md` once; refs across hubs/skills/CLI/tests/docs updated
