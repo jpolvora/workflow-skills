@@ -1158,6 +1158,8 @@ child.on('close', async (code) => {
       buildUpstreamManifest,
       stableStringify,
       evaluateVersionAndDigestCheck,
+      hashFileBytes,
+      canonicalizeForHash,
     } = await import(pathToFileURL(path.join(parentDir, 'bin', 'skill-integrity-lib.js')).href);
     const { HUB_WHITELIST, CONSUMER_OWNED_HUB_FILES } = await import(
       pathToFileURL(path.join(parentDir, 'bin', 'install-rules.js')).href
@@ -1208,6 +1210,24 @@ child.on('close', async (code) => {
       fail('Generator not idempotent vs committed skill-integrity.json');
     }
     ok('skill/full digests present; generator idempotent');
+
+    // EOL canonicalization: CRLF / LF / lone-CR of same logical text → same digest
+    {
+      const logical = 'alpha\nbeta\ngamma\n';
+      const lfBuf = Buffer.from(logical, 'utf8');
+      const crlfBuf = Buffer.from(logical.replace(/\n/g, '\r\n'), 'utf8');
+      const loneCrBuf = Buffer.from(logical.replace(/\n/g, '\r'), 'utf8');
+      const digLf = hashFileBytes(lfBuf);
+      const digCrlf = hashFileBytes(crlfBuf);
+      const digLone = hashFileBytes(loneCrBuf);
+      if (digLf !== digCrlf || digLf !== digLone) {
+        fail(`EOL parity failed: lf=${digLf} crlf=${digCrlf} loneCr=${digLone}`);
+      }
+      if (!canonicalizeForHash(crlfBuf).equals(lfBuf) || !canonicalizeForHash(loneCrBuf).equals(lfBuf)) {
+        fail('canonicalizeForHash must map CRLF and lone CR to LF bytes');
+      }
+    }
+    ok('EOL canonical digest parity (CRLF/LF/lone-CR)');
 
     // AC10: digest changes when an included file changes (compute without writing)
     const tamperSkill = 'caveman';

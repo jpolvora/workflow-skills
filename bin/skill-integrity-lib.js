@@ -1,7 +1,9 @@
 /**
  * SHA-256 integrity digests for managed skills + hub templates.
  * Enumeration mirrors installer copy rules (install-rules.js).
- * Hash file bytes as stored (no EOL rewrite).
+ * Per-file digests are LF-canonical / EOL-stable: hash after normalizing
+ * CRLF and lone CR to LF (no on-disk rewrite). Aggregate helpers still
+ * hash raw UTF-8 of the digest-line maps via sha256Hex.
  */
 
 import crypto from 'crypto';
@@ -30,6 +32,33 @@ const CANONICAL_ORDER = {
 
 export function sha256Hex(buf) {
   return crypto.createHash(ALGORITHM).update(buf).digest('hex');
+}
+
+/**
+ * Normalize EOL for hashing: \r\n → \n, then remaining \r → \n.
+ * Operates on a Buffer copy; does not rewrite disk.
+ */
+export function canonicalizeForHash(buf) {
+  const raw = Buffer.isBuffer(buf) ? buf : Buffer.from(buf);
+  const out = Buffer.allocUnsafe(raw.length);
+  let j = 0;
+  for (let i = 0; i < raw.length; i++) {
+    const b = raw[i];
+    if (b === 0x0d) {
+      if (i + 1 < raw.length && raw[i + 1] === 0x0a) {
+        i += 1;
+      }
+      out[j++] = 0x0a;
+    } else {
+      out[j++] = b;
+    }
+  }
+  return out.subarray(0, j);
+}
+
+/** SHA-256 of LF-canonical file bytes. */
+export function hashFileBytes(buf) {
+  return sha256Hex(canonicalizeForHash(buf));
 }
 
 export function toPosix(p) {
@@ -139,7 +168,7 @@ export function enumerateSkillFiles(skillRoot) {
         walk(abs, rel);
       } else {
         const buf = fs.readFileSync(abs);
-        files[rel] = sha256Hex(buf);
+        files[rel] = hashFileBytes(buf);
       }
     }
   }
@@ -175,7 +204,7 @@ export function enumerateHubFiles(sharedRoot) {
         files[toPosix(path.join(name, rel))] = dig;
       }
     } else {
-      files[toPosix(name)] = sha256Hex(fs.readFileSync(abs));
+      files[toPosix(name)] = hashFileBytes(fs.readFileSync(abs));
     }
   }
   return files;

@@ -68,7 +68,7 @@ Consumers rely on `main/package.json` for `--check` / update signals. CI deploy 
 
 ### Upstream skill integrity regenerate (this repo only)
 
-**Local project rule** for agents in `workflow-skills`. Prevents consumers from failing install/update when published skill bytes no longer match `bin/skill-integrity.json`.
+**Local project rule** for agents in `workflow-skills`. Prevents consumers from failing install/update when published skill bytes no longer match `bin/skill-integrity.json`. Integrity digests are LF-canonical (EOL-stable) so Windows CRLF working trees and LF packages share the same hashes.
 
 When **any** of these change in a commit / PR / push that ships package content:
 
