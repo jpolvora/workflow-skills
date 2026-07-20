@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-20 09:05] Agent: Cursor Composer
+- **Prompt**: Fix typical main-push race between Deploy site and legacy pages-build-deployment
+- **Done**: Deploy site uploads `docs/` + `deploy-pages`; repo Pages `build_type` → `workflow`; kept docs sync commit with `[skip ci]`; removed invalid `include-hidden-files` input; merged #80/#81
+- **Result**: Push to main runs only Deploy site (build+deploy); no cancelled legacy Pages race; site built at jpolvora.github.io/workflow-skills
+
 ### [2026-07-20 08:45] Agent: Cursor Composer
 - **Prompt**: Stop installing `.agents/AGENTS.md` into consumer projects
 - **Done**: Removed `installPackagedAgentsIndex` from CLI (install/update/uninstall); dropped `.agents/AGENTS.md` from npm package `files`; expanded `shared/AGENTS.md` with External dependencies + skill discovery; retargeted spec-to-pr/spec-format/setup links; updated README/hubs/site copy; install tests assert no `.agents/AGENTS.md` copy
