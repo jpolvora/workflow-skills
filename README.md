@@ -170,7 +170,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Description |
 |-------|-------------|
 | [`check-harness`](.agents/skills/check-harness/SKILL.md) | Audit routing, links, portability |
-| [`check-workflows`](.agents/skills/check-workflows/SKILL.md) | Validate workflow FSM / dual-mode |
+| [`check-workflows`](.agents/skills/check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
 | [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`show-harness`](.agents/skills/show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 
