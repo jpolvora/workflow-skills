@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-21 21:29] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: update check-workflows skill to deeply validate and simulate full and lite workflows, detect broken steps, generate report, and offer user confirmation prompt. Bump version to 0.0.68 and ship.
+- **Done**: Enhanced `check_workflows.py` with full (`spec-to-pr`, steps 0–9) and lite (`spec-to-pr-lite`, steps 0–5) workflow step simulation, script compilation/syntax checks, dependency closure verification, broken step detection, actionable fix suggestions, markdown report generation (`--report`), auto-fix mode (`--fix`), and interactive user confirmation gate. Updated `check-workflows/SKILL.md`, `AGENTS.md`, and `README.md`. Bumped version to `0.0.68`, regenerated site catalog and skill integrity manifest, synced `test/package.json`, and ran test suite.
+- **Result**: `check-workflows` passes 100%, test suite green, ready to ship.
+
 ### [2026-07-20 20:56] Agent: Antigravity (Gemini 3.5 Flash)
 - **Prompt**: design idea: in website skill cards, add badges into each skill card showing <full> or <lite> flaging that skill is dependency of one or both workflows. Update website and ship.
 - **Done**: Added recursive standard/lite dependency resolution to `build-site.js`; stored skill slug; generated dynamic HTML badge tags (`full` and `lite`) on skill cards; styled badges in `style.css` using theme Sky Blue and Emerald Green; bumped package version (0.0.66 -> 0.0.67); ran integrity checks and full test suite; committed and pushed to `develop`.

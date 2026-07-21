@@ -1,55 +1,60 @@
 ---
 name: check-workflows
-description: Auto-check workflow processes (spec-to-pr & spec-to-pr-lite) for step continuity, config sharing, state isolation, compatibility, and provider references. Use when validating orchestrators, adding steps, or testing workflow changes.
+description: Deeply validate and simulate workflow processes (spec-to-pr & spec-to-pr-lite) near real usage. Detects broken steps, missing dependencies, script syntax errors, and suggests actionable fixes with interactive user confirmation.
 upstream: jpolvora/workflow-skills — this skill is a harness validation skill. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.0
+version: 1.1
 disable-model-invocation: true
 ---
 
 # check-workflows
 
-Utility skill designed to analyze, validate, and verify the structural integrity of both the standard `spec-to-pr` and the sequential `spec-to-pr-lite` workflow orchestrator files (`SKILL.md`, `setup.md`, and helper scripts).
+Deep validation and simulation skill designed to analyze, simulate, and verify the structural integrity of both the standard `spec-to-pr` (steps 0–9) and sequential `spec-to-pr-lite` (steps 0–5) workflow orchestrators.
 
 ---
 
-## Quick start
+## Quick Start
 
-To run the automated validation script against both workflows in the current repository:
+Run deep simulation and validation against both workflows:
 
 ```bash
+# Standard report execution
 python .agents/skills/check-workflows/scripts/check_workflows.py
+
+# Save Markdown report to check-workflows-report.md
+python .agents/skills/check-workflows/scripts/check_workflows.py --report
+
+# Interactive auto-fix mode (prompts for confirmation before applying)
+python .agents/skills/check-workflows/scripts/check_workflows.py --fix
+
+# Non-interactive auto-fix (CI / automated runner)
+python .agents/skills/check-workflows/scripts/check_workflows.py --fix --yes
 ```
 
 ---
 
-## Validation Scope
+## Simulation & Validation Scope
 
-The validation process evaluates the following areas:
+The validation process performs end-to-end simulation across both orchestrators:
 
-### 1. FSM Step Continuity
-- **Step indexes**: Asserts that all steps in the FSM tables (steps 0–9 in `spec-to-pr`, steps 0–5 in `spec-to-pr-lite`) map sequentially without duplicates or missing levels.
-- **Linked skills**: Verifies that every step maps to a valid and existing dependency skill under `.agents/skills/` (e.g. `01-write-plan`, `04-implement-tasks`).
+### 1. Workflow Simulation & Step Continuity
+- **Standard (`spec-to-pr`) Simulation**: Simulates stepping through Steps 0 to 9 (`00-write-spec`, `01-write-plan`, `02-interview`, `03-plan-to-tasks`, `04-implement-tasks`, `05-verify-plan`, `06-code-review`, `07-testing`, `08-ship-pr`, `09-fix-pr`).
+- **Lite (`spec-to-pr-lite`) Simulation**: Simulates stepping through Steps 0 to 5 (`00-write-spec`, `01-write-plan`, `04-implement-tasks`, `06-code-review`, `08-ship-pr`, `09-fix-pr`).
+- **Linked Skill Check**: Verifies that every step links to an existing skill under `.agents/skills/<skill>/SKILL.md`.
 
-### 2. Config Path Integrity
-- Ensures that both workflow orchestrators (`spec-to-pr`, `spec-to-pr-lite`) and SCM providers reference `shared/config.json` as the single canonical config location.
-- Verifies that no script or skill contains legacy references to `spec-to-pr/config.json` or `spec-to-pr-lite/config.json` as the primary config path.
-- There is no fallback — `shared/config.json` is the only valid runtime config location.
+### 2. Script Syntax & Execution Check
+- Compiles Python scripts (`.py`) via `py_compile` and checks Node.js scripts (`.cjs`/`.js`) via `node --check`.
+- Flags syntax errors, invalid imports, or execution issues as critical broken steps.
 
-### 3. State Isolation & Schema
-- Checks that `update_state.py` and state schemas enforce the `workflowType` field (`standard` vs `lite`) to ensure runtime state isolation.
-- Verifies that the resume/reset discovery scripts filter files using this field.
+### 3. Orchestrator Dependency Closure
+- Asserts that all skills dispatched by `spec-to-pr` and `spec-to-pr-lite` are declared in `bin/skill-dependencies.json`.
 
-### 4. Provider Reference Resolution
-- Asserts that local spec provider and SCM provider scripts resolve configuration from `.agents/skills/shared/config.json` only (no standard/lite private config paths).
-
-### 5. Orchestrator Dependency Closure (manual checklist — not yet automated in `check_workflows.py`)
-- Extract every skill id each orchestrator dispatches (`ws-*` steps, providers at Step 0 entry, fix-pr loop skills) from `SKILL.md` step tables and [`shared/setup.md`](../shared/setup.md) § Shared entry.
-- Assert each id appears in upstream `bin/skill-dependencies.json` → `dependencies["spec-to-pr"]` / `dependencies["spec-to-pr-lite"]` (direct or transitive). A missing id means a selective install of that orchestrator produces a broken workflow — treat as **critical**.
+### 4. Config Sharing & State Isolation
+- Verifies that all provider scripts and state handlers target `shared/config.json`.
+- Confirms state handlers serialize `workflowType` (`standard` vs `lite`).
 
 ---
 
-## Verification Automation
+## Report & Confirmation Flow
 
-The validation logic is encoded in the Python script located at `scripts/check_workflows.py`. It reads the markdown files, parses their tables, and scans script files for potential coupling or path drift.
-
-See [`scripts/check_workflows.py`](scripts/check_workflows.py) for the complete linting assertions.
+1. **Detailed Simulation Report**: Generates a structured breakdown of Full and Lite workflow simulation results, along with a table of detected issues and actionable **Suggested Fixes**.
+2. **User Confirmation Gate**: Prompts for explicit user confirmation before applying automated fixes.

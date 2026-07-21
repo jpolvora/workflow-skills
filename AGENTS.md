@@ -262,7 +262,7 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 | Skill | Path | Description |
 |-------|------|-------------|
 | `check-harness` | `.agents/skills/check-harness/SKILL.md` | Harness integrity audit |
-| `check-workflows` | `.agents/skills/check-workflows/SKILL.md` | Workflow FSM / dual-mode checks |
+| `check-workflows` | `.agents/skills/check-workflows/SKILL.md` | Deep workflow simulation & validation (Full/Lite) |
 | `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `show-harness` | `.agents/skills/show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |

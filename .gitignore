@@ -36,3 +36,4 @@ __pycache__/
 **/__pycache__/
 *.py[cod]
 *.pyo
+check-workflows-report.md
