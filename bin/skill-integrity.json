@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "d3b6ec34f31d34216dd16cacd4f11b51d9ae835e814c81ff26064111c92733d7",
+  "fullPackageDigest": "2e8bd1c84ceb1b3138113883a4d511aae1bc5a7523d3b16f481faa499a3857d7",
   "hub": {
     "files": {
       "AGENTS.md": "f5374b9e8e40b8cccfde8b04a2204e6d704a17f5994696ca68d1be871e0b625d",
@@ -126,10 +126,10 @@
     },
     "check-workflows": {
       "files": {
-        "scripts/check_workflows.py": "8808d586ea3566a6d462c75669c2329461dfcb9e16d9372167bd8a8f0b03225c",
-        "SKILL.md": "fecdbc63bab9e45a7906a46fc66fc9e9789051919a9d3cf7a883ca1e7c954634"
+        "scripts/check_workflows.py": "78798dce858565a0ffd21dec2bacab30c6c7638e91d7512a97c631f7c70c65a8",
+        "SKILL.md": "5d1c789637e753630e3477ea3ea3471732ab6c2bdad3063795379936fcf441e6"
       },
-      "skillDigest": "9468a59af952bc6f53cc9be306333f1a4694391387e36c18896c863f57613833"
+      "skillDigest": "9213975062cd06514c4d3a8e2dfc8ea6f9dac1a0768d6dd5ff4d56cee29e6f20"
     },
     "configure-project": {
       "files": {
