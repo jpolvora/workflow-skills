@@ -147,6 +147,19 @@ False positives that look like “forward reference” bugs are almost always sa
 
 ---
 
+## Recommended Feature Delivery Checklist (before push / ship)
+
+Run this checklist prior to triggering `/ship-pr` or shipping features:
+
+- [ ] **1. Run Tests & Verification**: Execute local test commands (`verification.backendTest` / `verification.frontendTest` or `npm run test`).
+- [ ] **2. Single Version Bump** (for package/library releases): Increment package version once per PR and sync site/doc footers (`npm run build-site:bump`).
+- [ ] **3. Regenerate Integrity Manifest** (if managed skills edited): Run `npm run generate-integrity` and `npm run verify-integrity`.
+- [ ] **4. Harness & Workflow Audit**: Run `check-harness` to ensure 0 critical findings.
+- [ ] **5. Clean Docs & Artifacts**: Ensure documentation files have no merge conflict markers or uncommitted scratch files.
+- [ ] **6. Ship via `ship-pr`**: Execute `/ship-pr` (runs Prepare Board, commits, pushes, creates PR, waits 30s for code-review Action to start, and runs `goal-fix-pr` until clean).
+
+---
+
 ## Skill discovery (consumers)
 
 Installed skills live at `.agents/skills/<name>/SKILL.md`. Load on demand from orchestrator dispatch, task intent, or host skill discovery. There is **no** packaged `.agents/AGENTS.md` in consumer projects; **this file** is the consumer-facing hub. A thin root `AGENTS.md` (when the consumer adds one) should point here — installer never writes it.
