@@ -260,13 +260,21 @@ const sorted = Object.entries(groups).sort(([a], [b]) => {
   return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
 });
 
+const totalSkills = sorted
+  .filter(([k]) => layerPriority.includes(k))
+  .reduce((sum, [, layer]) => sum + layer.skills.length, 0);
+
 // --- 4. Generate catalog HTML (English) ---
 let catalogHtml = '';
 for (const [key, layer] of sorted) {
   const count = layer.skills.length;
+  const layerSlug = key.toLowerCase().replace(/\s+/g, '-');
   catalogHtml += `  <!-- ${key} -->\n`;
-  catalogHtml += `  <div class="layer">\n`;
-  catalogHtml += `    <h3>${key} — ${layer.name} <span class="count">(${count})</span></h3>\n`;
+  catalogHtml += `  <div class="layer" data-layer-id="${layerSlug}">\n`;
+  catalogHtml += `    <div class="layer-header">\n`;
+  catalogHtml += `      <h3><span class="layer-tag">${key}</span> — ${layer.name}</h3>\n`;
+  catalogHtml += `      <span class="count">${count} skills</span>\n`;
+  catalogHtml += `    </div>\n`;
   catalogHtml += `    <div class="skill-grid">\n`;
   for (const sk of layer.skills) {
     if (!sk.description) continue;
@@ -285,12 +293,14 @@ for (const [key, layer] of sorted) {
       badgesHtml += `        </div>\n`;
     }
 
-    catalogHtml += `      <div class="skill-card" data-path="${sk.path}">\n`;
-    catalogHtml += `        <div class="name">${sk.name}</div>\n`;
+    catalogHtml += `      <div class="skill-card" data-path="${sk.path}" data-name="${sk.name.toLowerCase()}" data-slug="${sk.slug.toLowerCase()}" data-desc="${sk.description.toLowerCase()}" data-layer="${layerSlug}" data-full="${isFull}" data-lite="${isLite}">\n`;
+    catalogHtml += `        <div class="skill-card-top">\n`;
+    catalogHtml += `          <div class="name">${sk.name}</div>\n`;
     catalogHtml += badgesHtml;
+    catalogHtml += `        </div>\n`;
     catalogHtml += `        <div class="desc">${sk.description}</div>\n`;
     if (sk.path) {
-      catalogHtml += `        <a class="view-skill" href="#" data-path="${sk.path}">View skill</a>\n`;
+      catalogHtml += `        <a class="view-skill" href="#" data-path="${sk.path}">View skill <span class="arrow">&rarr;</span></a>\n`;
     }
     catalogHtml += `      </div>\n`;
   }
@@ -320,9 +330,42 @@ const catEnd = html.indexOf('</section>', catStart) + '</section>'.length;
 const startComment = html.slice(0, catStart).lastIndexOf('<!--') !== -1 ? html.slice(0, catStart).lastIndexOf('<!--') : catStart;
 const newSection =
 `<section id="catalog">
-  <h2>Skill Catalog</h2>
+  <div class="catalog-header-wrap">
+    <div>
+      <h2>Skill Catalog</h2>
+      <p class="section-subtitle">Discover production-grade agent skills across 4 modular layers.</p>
+    </div>
+    <div class="catalog-stats">
+      <span class="catalog-counter"><strong id="visible-skills-count">${totalSkills || 30}</strong> skills available</span>
+    </div>
+  </div>
 
-${catalogHtml}</section>`;
+  <div class="catalog-controls">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="skill-search" placeholder="Search skills by name, keyword, or description... (Press '/' to focus)" aria-label="Search skills">
+      <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+    </div>
+    <div class="filter-pills" id="filter-pills">
+      <button type="button" class="filter-pill active" data-filter="all">All Skills</button>
+      <button type="button" class="filter-pill" data-filter="layer-0">Layer 0 (Harness)</button>
+      <button type="button" class="filter-pill" data-filter="layer-2">Layer 2 (Pipeline)</button>
+      <button type="button" class="filter-pill" data-filter="layer-4">Layer 4 (Audit)</button>
+      <button type="button" class="filter-pill" data-filter="layer-5">Layer 5 (Utility)</button>
+      <button type="button" class="filter-pill" data-filter="full">Full Profile</button>
+      <button type="button" class="filter-pill" data-filter="lite">Lite Profile</button>
+    </div>
+  </div>
+
+  <div id="catalog-layers-wrap">
+${catalogHtml}  </div>
+  <div id="no-results" class="no-results hidden">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+    <h3>No matching skills found</h3>
+    <p>Try searching for another keyword or clear filters.</p>
+    <button type="button" id="reset-search-btn" class="btn-secondary">Reset Search & Filters</button>
+  </div>
+</section>`;
 
 html = html.slice(0, catStart) + newSection + html.slice(catEnd);
 
@@ -345,41 +388,46 @@ if (fs.existsSync(depMapPath)) {
     : '';
 
   packagesHtml = `<section id="install-packages">
-  <h2>Installation packages</h2>
-  <p>
-    The interactive installer (<code>npx --yes github:jpolvora/workflow-skills</code>) supports package shortcuts
-    and skill-by-skill selection. Membership and install-time dependencies are defined in
-    <code>bin/skill-dependencies.json</code> (update the map whenever the installer graph changes).
-  </p>
-  <p>
-    Full / Workflows installs also ensure the <code>shared/</code> hub (templates + preserved consumer data).
-    Managed skills are tracked in <code>shared/installed-skills.json</code> for <code>update</code> / <code>uninstall</code>.
-    Workflow artifact paths come from consumer <code>config.json</code> (defaults under <code>.agents/plans</code> /
-    <code>.agents/codereviews</code>). Fixed skill-layout hints use <code>pathTokens</code>
-    (<code>{skillsRoot}</code> / <code>{sharedDir}</code>; see
-    <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/skills/shared/tools.md">tools.md</a> § Path tokens).
-    Optional host pointer files are consumer-owned — not required by skills.
-    Consumer agent contract: <code>skills/shared/AGENTS.md</code> (installed with the hub; includes portable
-    <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/skills/shared/AGENTS.md#external-dependencies">External dependencies</a>).
-  </p>
-  <div class="install-steps">
-    <div class="install-step">
-      <h4>Full package (<code>${full.shortcut || 'f'}</code>)</h4>
-      <p>${full.label || 'Full package'} — selects every installable top-level skill and installs the <code>shared/</code> config/docs hub.</p>
+  <div class="section-header">
+    <h2>Installation Packages</h2>
+    <p class="section-subtitle">Flexible installation presets powered by <code>bin/skill-dependencies.json</code> dependency graph.</p>
+  </div>
+
+  <div class="packages-grid">
+    <div class="package-card">
+      <div class="package-badge-wrap">
+        <span class="package-shortcut">Shortcut: <code>${full.shortcut || 'f'}</code></span>
+      </div>
+      <h4>Full Package</h4>
+      <p class="package-desc">${full.label || 'Full package'} — selects every installable top-level skill and initializes the <code>shared/</code> config/docs hub.</p>
+      <div class="package-features">
+        <div class="pkg-feat"><span>✓</span> Every top-level skill</div>
+        <div class="pkg-feat"><span>✓</span> Full <code>shared/</code> config & docs hub</div>
+        <div class="pkg-feat"><span>✓</span> Best for complete team environments</div>
+      </div>
     </div>
-    <div class="install-step">
-      <h4>Workflows package (<code>${workflows.shortcut || 'w'}</code>)</h4>
-      <p>${workflows.label || 'Workflows package'} — ${wfCount} skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub. Does not force Extra-only skills.</p>
-      <p>Includes: ${wfPreview}</p>
+
+    <div class="package-card featured">
+      <div class="package-featured-badge">RECOMMENDED</div>
+      <div class="package-badge-wrap">
+        <span class="package-shortcut">Shortcut: <code>${workflows.shortcut || 'w'}</code></span>
+      </div>
+      <h4>Workflows Package</h4>
+      <p class="package-desc">${workflows.label || 'Workflows package'} — ${wfCount} skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
+      <div class="package-preview">
+        <strong>Included core skills:</strong> ${wfPreview}
+      </div>
     </div>
-    <div class="install-step">
-      <h4>Extra package (<code>${extra.shortcut || 'e'}</code>)</h4>
-      <p>${extra.label || 'Extra package'} — ${exCount} optional authoring/review skills. Does not install workflow orchestrators or the hub by default.</p>
-      <p>Includes: ${exPreview}</p>
-    </div>
-    <div class="install-step">
-      <h4>Individual selection</h4>
-      <p>Toggle skills by number. Selecting a skill also selects its transitive install dependencies from the map. Deselecting a skill does <strong>not</strong> cascade-deselect dependencies.</p>
+
+    <div class="package-card">
+      <div class="package-badge-wrap">
+        <span class="package-shortcut">Shortcut: <code>${extra.shortcut || 'e'}</code></span>
+      </div>
+      <h4>Extra Package</h4>
+      <p class="package-desc">${extra.label || 'Extra package'} — ${exCount} optional authoring/review skills. Does not install workflow orchestrators or hub by default.</p>
+      <div class="package-preview">
+        <strong>Includes:</strong> ${exPreview}
+      </div>
     </div>
   </div>
 </section>
@@ -400,10 +448,6 @@ if (installStart !== -1) {
 }
 
 // Update badge count
-const totalSkills = sorted
-  .filter(([k]) => layerPriority.includes(k))
-  .reduce((sum, [, layer]) => sum + layer.skills.length, 0);
-
 html = html.replace(
   /(<span class="badge">)\d+( skills<\/span>)/,
   `$1${totalSkills}$2`

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-US" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workflow Skills — Agent Skills Hub</title>
-  <meta name="description" content="Centralized agent skill repository — installable, auto-loading skills for Cursor/opencode agents">
+  <title>Workflow Skills — Autonomous AI Agent Skills Hub</title>
+  <meta name="description" content="Centralized agent skill repository — installable, auto-loading FSM orchestrators and behavioral guidelines for Cursor, OpenCode, and LLM agent harnesses.">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -14,648 +14,644 @@
 <body>
 
 <nav>
-  <div class="inner">
-    <a href="#" class="logo">Workflow Skills</a>
-    <a href="#workflows">Workflows</a>
-    <a href="#catalog">Catalog</a>
-    <a href="#install-packages">Packages</a>
-    <a href="#install">Install / Update / Uninstall</a>
+  <div class="nav-inner">
+    <a href="#" class="brand">
+      <div class="brand-icon">⚡</div>
+      Workflow Skills
+    </a>
+    <div class="nav-links">
+      <a href="#workflows">Workflows</a>
+      <a href="#catalog">Catalog</a>
+      <a href="#install-packages">Packages</a>
+      <a href="#install">Installation</a>
+      <a href="#contribute">Contribute</a>
+    </div>
     <div class="nav-right">
+      <button type="button" id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme" title="Toggle Dark/Light theme">
+        <svg class="sun-icon hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </button>
       <a href="https://github.com/jpolvora/workflow-skills" class="star-btn" target="_blank" rel="noopener">
         <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg>
-        Star repo
+        Star Repo
       </a>
     </div>
   </div>
 </nav>
 
 <header class="hero">
-  <h1>Workflow <span>Skills</span></h1>
-  <p>Centralized repository of agent behavioral guidelines and workflow automation (<strong>skills</strong>) for Cursor/opencode agents. Single source of truth to install, update, and sync skills across multiple projects.</p>
-  <div class="badges">
-    <span class="badge">30 skills</span>
-    <span class="badge">4 layers</span>
-    <span class="badge">MIT license</span>
-    <span class="badge">npx github:jpolvora/workflow-skills</span>
+  <div class="hero-announcement">
+    <span>✨ Next-Gen Autonomous AI Harness</span>
+  </div>
+  <h1>Workflow <span class="gradient-text">Skills</span></h1>
+  <p class="hero-subtitle">Production-grade FSM orchestrators, behavioral guidelines, and automated delivery pipelines for Cursor, OpenCode, and LLM coding agents.</p>
+
+  <div class="terminal-box">
+    <div class="terminal-header">
+      <div class="terminal-dots">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green"></div>
+      </div>
+      <div class="terminal-title">Quick Install — npx CLI</div>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-cmd">
+        <span class="terminal-prompt">$</span>
+        <span>npx --yes github:jpolvora/workflow-skills</span>
+      </div>
+      <button type="button" class="terminal-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        Copy Command
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-metrics">
+    <div class="metric-card">
+      <div class="metric-val cyan">30+</div>
+      <div class="metric-lbl">Shipped Skills</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val purple">4</div>
+      <div class="metric-lbl">Pipeline Layers</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val emerald">Dual-Mode</div>
+      <div class="metric-lbl">FSM Engine</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val amber">100%</div>
+      <div class="metric-lbl">Portable & Neutral</div>
+    </div>
   </div>
 </header>
 
-<section id="workflows" class="workflows-section">
-  <h2>Workflows</h2>
-  <p class="section-subtitle">Choose the right workflow orchestrator for your task's scope and speed requirements. Both share <code>shared/config.json</code> and <code>gates.md</code> (dual-mode). Session model on every transition; switch via Pause → Cursor → Resume (no <code>--model</code> / <code>--model-chain</code>). Standard step dispatch: <code>STEP-DISPATCH.md</code> (not used as lite step numbers).</p>
+<section id="workflows">
+  <div class="section-header">
+    <h2>Workflows</h2>
+    <p class="section-subtitle">Choose the right workflow orchestrator for your task scope. Both share <code>shared/config.json</code> and <code>gates.md</code> in dual-mode execution.</p>
+  </div>
   
-  <div class="workflows-container">
-    <div class="workflow-card">
-      <div class="workflow-badge standard">Standard</div>
-      <h3>spec-to-pr</h3>
+  <div class="workflows-grid">
+    <div class="workflow-card standard">
+      <div class="workflow-card-header">
+        <h3>spec-to-pr</h3>
+        <span class="workflow-badge standard">Standard FSM</span>
+      </div>
       <p class="workflow-tagline">Full multi-stage pipeline (Steps 0–9)</p>
-      <p>A comprehensive Finite State Machine (FSM) orchestrator designed for end-to-end software lifecycle delivery. Best for complex tasks starting from feature descriptions or issues.</p>
-      <ul>
+      <p>A comprehensive Finite State Machine orchestrator designed for end-to-end software lifecycle delivery from initial spec brainstorming down to PR shipping.</p>
+      <div class="workflow-steps-title">Pipeline Execution Steps:</div>
+      <ul class="workflow-steps-list">
         <li>Collaborative Spec Brainstorming (Step 0)</li>
         <li>Architectural Review & Interview (Steps 1–2)</li>
         <li>DAG Task Decomposition (Step 3)</li>
-        <li>Implement, verify, local review (Steps 4–6)</li>
-        <li>Testing, ship, goal-fix-pr / fix-pr (Steps 7–9)</li>
-        <li>Session model + phase soft tips; Pause to switch</li>
+        <li>Implement, verify & local code review (Steps 4–6)</li>
+        <li>Pre-PR testing, shipping & goal-fix-pr (Steps 7–9)</li>
       </ul>
-      <a class="workflow-btn view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View spec-to-pr workflow</a>
+      <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/spec-to-pr/SKILL.md">
+        View spec-to-pr workflow &rarr;
+      </button>
     </div>
 
-    <div class="workflow-card">
-      <div class="workflow-badge lite">Lite</div>
-      <h3>spec-to-pr-lite</h3>
+    <div class="workflow-card lite">
+      <div class="workflow-card-header">
+        <h3>spec-to-pr-lite</h3>
+        <span class="workflow-badge lite">Lite FSM</span>
+      </div>
       <p class="workflow-tagline">Fast sequential pipeline (Steps 0–5)</p>
-      <p>A streamlined, fast alternative designed to run planning, sequential coding, code review, and shipping in a direct loop. Requires an existing specification.</p>
-      <ul>
-        <li>Planning and brainstorm from existing specification</li>
+      <p>A streamlined alternative designed to run planning, sequential coding, code review, and shipping in a rapid direct feedback loop.</p>
+      <div class="workflow-steps-title">Pipeline Execution Steps:</div>
+      <ul class="workflow-steps-list">
+        <li>Planning & brainstorm from existing spec</li>
         <li>Direct sequential coding (no complex DAG required)</li>
         <li>Quick local code review & automatic fix cycles</li>
-        <li>Fast consolidation and PR shipping</li>
+        <li>Fast consolidation & PR delivery</li>
         <li>Zero setup/config duplication in dual-mode</li>
-        <li>Session model banner; Pause → Cursor → Resume to switch</li>
       </ul>
-      <a class="workflow-btn view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View spec-to-pr-lite workflow</a>
+      <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">
+        View spec-to-pr-lite workflow &rarr;
+      </button>
     </div>
   </div>
 </section>
 
 <section id="catalog">
-  <h2>Skill Catalog</h2>
+  <div class="catalog-header-wrap">
+    <div>
+      <h2>Skill Catalog</h2>
+      <p class="section-subtitle">Discover production-grade agent skills across 4 modular layers.</p>
+    </div>
+    <div class="catalog-stats">
+      <span class="catalog-counter"><strong id="visible-skills-count">30</strong> skills available</span>
+    </div>
+  </div>
 
+  <div class="catalog-controls">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="skill-search" placeholder="Search skills by name, keyword, or description... (Press '/' to focus)" aria-label="Search skills">
+      <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+    </div>
+    <div class="filter-pills" id="filter-pills">
+      <button type="button" class="filter-pill active" data-filter="all">All Skills</button>
+      <button type="button" class="filter-pill" data-filter="layer-0">Layer 0 (Harness)</button>
+      <button type="button" class="filter-pill" data-filter="layer-2">Layer 2 (Pipeline)</button>
+      <button type="button" class="filter-pill" data-filter="layer-4">Layer 4 (Audit)</button>
+      <button type="button" class="filter-pill" data-filter="layer-5">Layer 5 (Utility)</button>
+      <button type="button" class="filter-pill" data-filter="full">Full Profile</button>
+      <button type="button" class="filter-pill" data-filter="lite">Lite Profile</button>
+    </div>
+  </div>
+
+  <div id="catalog-layers-wrap">
   <!-- Layer 0 -->
-  <div class="layer">
-    <h3>Layer 0 — Harness <span class="count">(4)</span></h3>
+  <div class="layer" data-layer-id="layer-0">
+    <div class="layer-header">
+      <h3><span class="layer-tag">Layer 0</span> — Harness</h3>
+      <span class="count">4 skills</span>
+    </div>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md">
-        <div class="name">check-harness</div>
+      <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md" data-name="check-harness" data-slug="check-harness" data-desc="audit harness integrity — validates agents.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. read-only scan → correction plan → apply with approval." data-layer="layer-0" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">check-harness</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
+        </div>
         </div>
         <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/check-workflows/SKILL.md">
-        <div class="name">check-workflows</div>
+      <div class="skill-card" data-path=".agents/skills/check-workflows/SKILL.md" data-name="check-workflows" data-slug="check-workflows" data-desc="deeply validate and simulate workflow processes (spec-to-pr & spec-to-pr-lite) near real usage. detects broken steps, missing dependencies, script syntax errors, and suggests actionable fixes with interactive user confirmation." data-layer="layer-0" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">check-workflows</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
         </div>
+        </div>
         <div class="desc">Deeply validate and simulate workflow processes (spec-to-pr & spec-to-pr-lite) near real usage. Detects broken steps, missing dependencies, script syntax errors, and suggests actionable fixes with interactive user confirmation.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/check-workflows/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/check-workflows/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/show-harness/SKILL.md">
-        <div class="name">show-harness</div>
+      <div class="skill-card" data-path=".agents/skills/show-harness/SKILL.md" data-name="show-harness" data-slug="show-harness" data-desc="snapshot the harness active in this session — skills, rules, instructions, precedence, and can/cannot — as short bullets. invoke anytime with /show-harness or @show-harness." data-layer="layer-0" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">show-harness</div>
+        </div>
         <div class="desc">Snapshot the harness active in this session — skills, rules, instructions, precedence, and can/cannot — as short bullets. Invoke anytime with /show-harness or @show-harness.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/show-harness/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/show-harness/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/write-a-skill/SKILL.md">
-        <div class="name">write-a-skill</div>
+      <div class="skill-card" data-path=".agents/skills/write-a-skill/SKILL.md" data-name="write-a-skill" data-slug="write-a-skill" data-desc="creates, edits, or audits agent skills for predictability — structure, progressive disclosure, descriptions, and pruning. use when the user wants to create, write, build, rewrite, or optimize a skill, or mentions skill authoring." data-layer="layer-0" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">write-a-skill</div>
+        </div>
         <div class="desc">Creates, edits, or audits agent skills for predictability — structure, progressive disclosure, descriptions, and pruning. Use when the user wants to create, write, build, rewrite, or optimize a skill, or mentions skill authoring.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/write-a-skill/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/write-a-skill/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
     </div>
   </div>
   <!-- Layer 2 -->
-  <div class="layer">
-    <h3>Layer 2 — Pipeline + providers <span class="count">(15)</span></h3>
+  <div class="layer" data-layer-id="layer-2">
+    <div class="layer-header">
+      <h3><span class="layer-tag">Layer 2</span> — Pipeline + providers</h3>
+      <span class="count">15 skills</span>
+    </div>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md">
-        <div class="name">ws-write-spec</div>
+      <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md" data-name="ws-write-spec" data-slug="00-write-spec" data-desc="drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr step 0 brainstorm)." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-write-spec</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr Step 0 brainstorm).</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/00-write-spec/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/00-write-spec/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/01-write-plan/SKILL.md">
-        <div class="name">ws-write-plan</div>
+      <div class="skill-card" data-path=".agents/skills/01-write-plan/SKILL.md" data-name="ws-write-plan" data-slug="01-write-plan" data-desc="generates the implementation plan (step-01-{slug}.plan.md) from the specification." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-write-plan</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Generates the implementation plan (step-01-{slug}.plan.md) from the specification.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/01-write-plan/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/01-write-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/02-interview/SKILL.md">
-        <div class="name">ws-interview</div>
+      <div class="skill-card" data-path=".agents/skills/02-interview/SKILL.md" data-name="ws-interview" data-slug="02-interview" data-desc="audits and interrogates an implementation plan to resolve ambiguities before task creation." data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-interview</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
+        </div>
         </div>
         <div class="desc">Audits and interrogates an implementation plan to resolve ambiguities before task creation.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/02-interview/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/02-interview/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">
-        <div class="name">ws-plan-to-tasks</div>
+      <div class="skill-card" data-path=".agents/skills/03-plan-to-tasks/SKILL.md" data-name="ws-plan-to-tasks" data-slug="03-plan-to-tasks" data-desc="breaks an implementation plan into atomic tasks organized in a dag, or sequential when small." data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-plan-to-tasks</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
+        </div>
         </div>
         <div class="desc">Breaks an implementation plan into atomic tasks organized in a DAG, or sequential when small.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/04-implement-tasks/SKILL.md">
-        <div class="name">ws-implement-tasks</div>
+      <div class="skill-card" data-path=".agents/skills/04-implement-tasks/SKILL.md" data-name="ws-implement-tasks" data-slug="04-implement-tasks" data-desc="executes code implementations or fixes defects following a plan, dag, or review findings." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-implement-tasks</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Executes code implementations or fixes defects following a plan, DAG, or review findings.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/04-implement-tasks/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/04-implement-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md">
-        <div class="name">ws-verify-plan</div>
+      <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md" data-name="ws-verify-plan" data-slug="05-verify-plan" data-desc="compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. publishes a 0–10 score." data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-verify-plan</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
+        </div>
         </div>
         <div class="desc">Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/05-verify-plan/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/05-verify-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md">
-        <div class="name">ws-code-review</div>
+      <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md" data-name="ws-code-review" data-slug="06-code-review" data-desc="senior code reviewer — two-phase triage and investigation with defect class generalization. standalone or workflow step 6." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-code-review</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/06-code-review/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/06-code-review/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/07-testing/SKILL.md">
-        <div class="name">ws-testing</div>
+      <div class="skill-card" data-path=".agents/skills/07-testing/SKILL.md" data-name="ws-testing" data-slug="07-testing" data-desc="plans and executes pre-pr testing — unit tests, integration/e2e, coverage, testing quality, and feature quality." data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-testing</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
+        </div>
         </div>
         <div class="desc">Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/07-testing/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/07-testing/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/08-ship-pr/SKILL.md">
-        <div class="name">ws-ship-pr</div>
+      <div class="skill-card" data-path=".agents/skills/08-ship-pr/SKILL.md" data-name="ws-ship-pr" data-slug="08-ship-pr" data-desc="end-to-end delivery — prepare-to-pr checklist (including discover+wait for local consumer prepare/before-push rules), push/create pr, wait 30 seconds for code-review action to start on github infrastructure, run goal-fix-pr (default 300s) until no open issues, then merge (unless stopbeforefixpr / no-merge)." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-ship-pr</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait 30 seconds for code-review action to start on GitHub infrastructure, run goal-fix-pr (default 300s) until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/08-ship-pr/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/08-ship-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/09-fix-pr/SKILL.md">
-        <div class="name">ws-fix-pr</div>
+      <div class="skill-card" data-path=".agents/skills/09-fix-pr/SKILL.md" data-name="ws-fix-pr" data-slug="09-fix-pr" data-desc="cooperatively resolve active pr code review threads on github or azure devops with structured validation and reports." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-fix-pr</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/09-fix-pr/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/09-fix-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/azure-devops-provider/SKILL.md">
-        <div class="name">azure-devops-provider</div>
+      <div class="skill-card" data-path=".agents/skills/azure-devops-provider/SKILL.md" data-name="azure-devops-provider" data-slug="azure-devops-provider" data-desc="azure devops provider for spec-to-pr — work item→spec, pat auth, pr create/threads/merge via az cli and/or rest plus provider scripts. use when providers.active or providers.scm is azure-devops, or when invoking /azure-devops-provider standalone." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">azure-devops-provider</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Azure DevOps provider for spec-to-pr — work item→spec, PAT auth, PR create/threads/merge via az CLI and/or REST plus provider scripts. Use when providers.active or providers.scm is azure-devops, or when invoking /azure-devops-provider standalone.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/azure-devops-provider/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/azure-devops-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/github-provider/SKILL.md">
-        <div class="name">github-provider</div>
+      <div class="skill-card" data-path=".agents/skills/github-provider/SKILL.md" data-name="github-provider" data-slug="github-provider" data-desc="github provider for spec-to-pr — issue→spec, auth checks, pr create/threads/merge via gh cli and provider scripts. use when providers.active or providers.scm is github, or when invoking /github-provider standalone." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">github-provider</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">GitHub provider for spec-to-pr — issue→spec, auth checks, PR create/threads/merge via gh CLI and provider scripts. Use when providers.active or providers.scm is github, or when invoking /github-provider standalone.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/github-provider/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/github-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/goal-fix-pr/SKILL.md">
-        <div class="name">ws-goal-fix-pr</div>
+      <div class="skill-card" data-path=".agents/skills/goal-fix-pr/SKILL.md" data-name="ws-goal-fix-pr" data-slug="goal-fix-pr" data-desc="convergence loop — runs fix-pr rounds until all pr threads are resolved or the max iteration cap is reached." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-goal-fix-pr</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/goal-fix-pr/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/goal-fix-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/local-spec-provider/SKILL.md">
-        <div class="name">local-spec-provider</div>
+      <div class="skill-card" data-path=".agents/skills/local-spec-provider/SKILL.md" data-name="local-spec-provider" data-slug="local-spec-provider" data-desc="local markdown spec provider for spec-to-pr — detect/configure specsdir, register/normalize/mirror hand-written *.spec.md into canonical step-00 artifacts (source: local). pr intents delegate to providers.scm. use when /local-spec-provider, active provider is local, or registering a local *.spec.md path." data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">local-spec-provider</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
         </div>
+        </div>
         <div class="desc">Local markdown spec provider for spec-to-pr — detect/configure specsDir, register/normalize/mirror hand-written *.spec.md into canonical step-00 artifacts (source: local). PR intents delegate to providers.scm. Use when /local-spec-provider, active provider is local, or registering a local *.spec.md path.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/local-spec-provider/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/local-spec-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/update-plan-implementation/SKILL.md">
-        <div class="name">ws-update-plan-implementation</div>
+      <div class="skill-card" data-path=".agents/skills/update-plan-implementation/SKILL.md" data-name="ws-update-plan-implementation" data-slug="update-plan-implementation" data-desc="post-workflow delta adjustments. captures manual qa findings, plans delta fixes, implements changes, and updates result summaries." data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-update-plan-implementation</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
         </div>
+        </div>
         <div class="desc">Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/update-plan-implementation/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/update-plan-implementation/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
     </div>
   </div>
   <!-- Layer 4 -->
-  <div class="layer">
-    <h3>Layer 4 — Review & audit <span class="count">(1)</span></h3>
+  <div class="layer" data-layer-id="layer-4">
+    <div class="layer-header">
+      <h3><span class="layer-tag">Layer 4</span> — Review & audit</h3>
+      <span class="count">1 skills</span>
+    </div>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/secrets-leak-review/SKILL.md">
-        <div class="name">secrets-leak-review</div>
+      <div class="skill-card" data-path=".agents/skills/secrets-leak-review/SKILL.md" data-name="secrets-leak-review" data-slug="secrets-leak-review" data-desc="use when asked to check for secrets, leak check, secrets scan, pre-commit security check, hardcoded passwords, pii scan, repo leak audit, or before pushing to a public repository." data-layer="layer-4" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">secrets-leak-review</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
         </div>
+        </div>
         <div class="desc">Use when asked to check for secrets, leak check, secrets scan, pre-commit security check, hardcoded passwords, PII scan, repo leak audit, or before pushing to a public repository.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/secrets-leak-review/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/secrets-leak-review/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
     </div>
   </div>
   <!-- Layer 5 -->
-  <div class="layer">
-    <h3>Layer 5 — Utility & meta <span class="count">(10)</span></h3>
+  <div class="layer" data-layer-id="layer-5">
+    <div class="layer-header">
+      <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
+      <span class="count">10 skills</span>
+    </div>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md">
-        <div class="name">caveman</div>
+      <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md" data-name="caveman" data-slug="caveman" data-desc="ultra-compressed communication mode. cuts output token usage ~75% while keeping full technical accuracy. intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. use when the user invokes /caveman or asks for briefer, lower-token responses." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">caveman</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Ultra-compressed communication mode. Cuts output token usage ~75% while keeping full technical accuracy. Intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. Use when the user invokes /caveman or asks for briefer, lower-token responses.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/caveman/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/caveman/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/changelog/SKILL.md">
-        <div class="name">changelog</div>
+      <div class="skill-card" data-path=".agents/skills/changelog/SKILL.md" data-name="changelog" data-slug="changelog" data-desc="write a summarized historical record of the task into the configured changelog file (default `.agents/skills/shared/changelog.md`). use at the very end of every implementation task." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">changelog</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Write a summarized historical record of the task into the configured changelog file (default `.agents/skills/shared/CHANGELOG.md`). Use at the very end of every implementation task.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/changelog/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/changelog/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/configure-project/SKILL.md">
-        <div class="name">configure-project</div>
+      <div class="skill-card" data-path=".agents/skills/configure-project/SKILL.md" data-name="configure-project" data-slug="configure-project" data-desc="interview and detect project settings to fill or update `.agents/skills/shared/config.json` with suggested values. use when config.json is missing or incomplete, after install when the user wants to configure, before spec-to-pr bootstrap, or when the user asks to set up / reconfigure workflow config, providers, stack, or verification commands." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">configure-project</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Interview and detect project settings to fill or update `.agents/skills/shared/config.json` with suggested values. Use when config.json is missing or incomplete, after install when the user wants to configure, before spec-to-pr bootstrap, or when the user asks to set up / reconfigure workflow config, providers, stack, or verification commands.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/configure-project/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/configure-project/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/gabarito/SKILL.md">
-        <div class="name">gabarito</div>
+      <div class="skill-card" data-path=".agents/skills/gabarito/SKILL.md" data-name="gabarito" data-slug="gabarito" data-desc="gabarito — operational response guidelines (accountability, anti-sycophancy, systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification, calibrated confidence, prompt refinement, anti-regression memory) plus style discipline. apply on every user-facing response unless the user opts out." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">gabarito</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Gabarito — operational response guidelines (accountability, anti-sycophancy, systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification, calibrated confidence, prompt refinement, anti-regression memory) plus style discipline. Apply on every user-facing response unless the user opts out.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/gabarito/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/gabarito/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md">
-        <div class="name">goal-loop</div>
+      <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md" data-name="goal-loop" data-slug="goal-loop" data-desc="generic goal/loop pattern for convergence-driven loops. provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. consumed by goal-orchestrator skills (e.g., goal-fix-pr). not invocable standalone." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">goal-loop</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., goal-fix-pr). Not invocable standalone.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md">
-        <div class="name">karpathy-guidelines</div>
+      <div class="skill-card" data-path=".agents/skills/karpathy-guidelines/SKILL.md" data-name="karpathy-guidelines" data-slug="karpathy-guidelines" data-desc="behavioral guidelines to reduce common llm coding mistakes. use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">karpathy-guidelines</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/karpathy-guidelines/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/karpathy-guidelines/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/self-learning/SKILL.md">
-        <div class="name">self-learning</div>
+      <div class="skill-card" data-path=".agents/skills/self-learning/SKILL.md" data-name="self-learning" data-slug="self-learning" data-desc="consult anti-regression memory before planning or writing code, and record new traps into the shared memory hub after implementation. use at session/task start (read) and task completion (write + compile). prevents repeating known mistakes." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">self-learning</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Consult anti-regression MEMORY before planning or writing code, and record new traps into the shared memory hub after implementation. Use at session/task start (read) and task completion (write + compile). Prevents repeating known mistakes.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/self-learning/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/self-learning/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md">
-        <div class="name">spec-format</div>
+      <div class="skill-card" data-path=".agents/skills/spec-format/SKILL.md" data-name="spec-format" data-slug="spec-format" data-desc="creates, reviews, or formats *.spec.md artifacts (local us/feature specification). project-agnostic. load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format." data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">spec-format</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
           <span class="skill-badge lite">lite</span>
+        </div>
         </div>
         <div class="desc">Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic. Load when the user invokes /spec-format, @spec-format, "create spec", "review spec", "format spec" or requests validation of local specification format.</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md">
-        <div class="name">spec-to-pr</div>
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md" data-name="spec-to-pr" data-slug="spec-to-pr" data-desc="spec-to-pr delivery orchestrator fsm (f0–f6, steps 0–9). agent contract only — not human docs. invoke: /spec-to-pr | @[spec-to-pr]. entry: github issue | azure devops work item | *.spec.md | feature description. flags: dry-run, auto, skip-testing, skip-tests, full, strict. flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). delegates via `dispatch-agent` (host subagent dispatch)." data-layer="layer-5" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">spec-to-pr</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
         </div>
+        </div>
         <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-testing, skip-tests, full, strict. Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via `dispatch-agent` (host subagent dispatch).</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">
-        <div class="name">spec-to-pr-lite</div>
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md" data-name="spec-to-pr-lite" data-slug="spec-to-pr-lite" data-desc="spec-to-pr lite delivery orchestrator fsm. fast sequential spec → plan → implement → review → ship → fix-pr. invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. entry: github issue | azure devops work item | *.spec.md | plain text. flags: dry-run, auto, skip-tests, full. flags combine freely (e.g. full + auto + dry-run). inline execution in main session. dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md)." data-layer="layer-5" data-full="false" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">spec-to-pr-lite</div>
         <div class="skill-badges">
           <span class="skill-badge lite">lite</span>
         </div>
+        </div>
         <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text. Flags: dry-run, auto, skip-tests, full. Flags combine freely (e.g. full + auto + dry-run). Inline execution in main session. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).</div>
-        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill</a>
+        <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
     </div>
+  </div>
+  </div>
+  <div id="no-results" class="no-results hidden">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+    <h3>No matching skills found</h3>
+    <p>Try searching for another keyword or clear filters.</p>
+    <button type="button" id="reset-search-btn" class="btn-secondary">Reset Search & Filters</button>
   </div>
 </section>
 
 <section id="install-packages">
-  <h2>Installation packages</h2>
-  <p>
-    The interactive installer (<code>npx --yes github:jpolvora/workflow-skills</code>) supports package shortcuts
-    and skill-by-skill selection. Membership and install-time dependencies are defined in
-    <code>bin/skill-dependencies.json</code> (update the map whenever the installer graph changes).
-  </p>
-  <p>
-    Full / Workflows installs also ensure the <code>shared/</code> hub (templates + preserved consumer data).
-    Managed skills are tracked in <code>shared/installed-skills.json</code> for <code>update</code> / <code>uninstall</code>.
-    Workflow artifact paths come from consumer <code>config.json</code> (defaults under <code>.agents/plans</code> /
-    <code>.agents/codereviews</code>). Fixed skill-layout hints use <code>pathTokens</code>
-    (<code>{skillsRoot}</code> / <code>{sharedDir}</code>; see
-    <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/skills/shared/tools.md">tools.md</a> § Path tokens).
-    Optional host pointer files are consumer-owned — not required by skills.
-    Consumer agent contract: <code>skills/shared/AGENTS.md</code> (installed with the hub; includes portable
-    <a href="https://github.com/jpolvora/workflow-skills/blob/main/.agents/skills/shared/AGENTS.md#external-dependencies">External dependencies</a>).
-  </p>
-  <div class="install-steps">
-    <div class="install-step">
-      <h4>Full package (<code>f</code>)</h4>
-      <p>Full package — selects every installable top-level skill and installs the <code>shared/</code> config/docs hub.</p>
+  <div class="section-header">
+    <h2>Installation Packages</h2>
+    <p class="section-subtitle">Flexible installation presets powered by <code>bin/skill-dependencies.json</code> dependency graph.</p>
+  </div>
+
+  <div class="packages-grid">
+    <div class="package-card">
+      <div class="package-badge-wrap">
+        <span class="package-shortcut">Shortcut: <code>f</code></span>
+      </div>
+      <h4>Full Package</h4>
+      <p class="package-desc">Full package — selects every installable top-level skill and initializes the <code>shared/</code> config/docs hub.</p>
+      <div class="package-features">
+        <div class="pkg-feat"><span>✓</span> Every top-level skill</div>
+        <div class="pkg-feat"><span>✓</span> Full <code>shared/</code> config & docs hub</div>
+        <div class="pkg-feat"><span>✓</span> Best for complete team environments</div>
+      </div>
     </div>
-    <div class="install-step">
-      <h4>Workflows package (<code>w</code>)</h4>
-      <p>Workflows package — 28 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub. Does not force Extra-only skills.</p>
-      <p>Includes: <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+20)</p>
+
+    <div class="package-card featured">
+      <div class="package-featured-badge">RECOMMENDED</div>
+      <div class="package-badge-wrap">
+        <span class="package-shortcut">Shortcut: <code>w</code></span>
+      </div>
+      <h4>Workflows Package</h4>
+      <p class="package-desc">Workflows package — 28 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
+      <div class="package-preview">
+        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+20)
+      </div>
     </div>
-    <div class="install-step">
-      <h4>Extra package (<code>e</code>)</h4>
-      <p>Extra package — 2 optional authoring/review skills. Does not install workflow orchestrators or the hub by default.</p>
-      <p>Includes: <code>write-a-skill</code>, <code>show-harness</code></p>
-    </div>
-    <div class="install-step">
-      <h4>Individual selection</h4>
-      <p>Toggle skills by number. Selecting a skill also selects its transitive install dependencies from the map. Deselecting a skill does <strong>not</strong> cascade-deselect dependencies.</p>
+
+    <div class="package-card">
+      <div class="package-badge-wrap">
+        <span class="package-shortcut">Shortcut: <code>e</code></span>
+      </div>
+      <h4>Extra Package</h4>
+      <p class="package-desc">Extra package — 2 optional authoring/review skills. Does not install workflow orchestrators or hub by default.</p>
+      <div class="package-preview">
+        <strong>Includes:</strong> <code>write-a-skill</code>, <code>show-harness</code>
+      </div>
     </div>
   </div>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 
 <section id="install">
-  <h2>Install, update, and uninstall</h2>
-  <p style="color:var(--text-muted);max-width:70ch;margin-bottom:20px;line-height:1.5">
-    Canonical form: <code>npx --yes github:jpolvora/workflow-skills</code> (never <code>@latest</code> / <code>@main</code> on <code>github:</code>).
-    Consumer-owned under <code>.agents/skills/shared/</code>: <code>config.json</code>, <code>STACK.md</code>, <code>MEMORY.md</code>, <code>memory/</code>, <code>installed-skills.json</code> — preserved on update/uninstall.
-    The CLI tracks managed skills in <code>installed-skills.json</code> for <code>update</code> / <code>uninstall</code>.
-    Artifact paths come from consumer <code>config.json</code> (defaults <code>.agents/plans</code> / <code>.agents/codereviews</code>). Optional host pointer files are not required by skills.
-  </p>
-  <div class="install-steps">
-    <div class="install-step">
+  <div class="section-header">
+    <h2>Installation, Updates & Management</h2>
+    <p class="section-subtitle">
+      Canonical installation form: <code>npx --yes github:jpolvora/workflow-skills</code>.
+      Preserves consumer-owned files under <code>.agents/skills/shared/</code>.
+    </p>
+  </div>
+
+  <div class="install-grid">
+    <div class="install-card">
       <h4>Interactive Menu</h4>
-      <p>Open the visual menu to select packages or skills.</p>
+      <p>Launch the interactive visual installer to select skills and packages.</p>
       <div class="cmd-list">
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+          <code>npx --yes github:jpolvora/workflow-skills</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills">Copy</button>
         </div>
       </div>
     </div>
-    <div class="install-step">
-      <h4>Update</h4>
-      <p>Refresh skills listed in <code>shared/installed-skills.json</code> (bootstraps from disk if missing). Preserves consumer-owned <code>shared/</code> files.</p>
+
+    <div class="install-card">
+      <h4>Update Skills</h4>
+      <p>Refresh managed skills listed in <code>shared/installed-skills.json</code> while preserving local config.</p>
       <div class="cmd-list">
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills update</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+          <code>npx --yes github:jpolvora/workflow-skills update</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills update">Copy</button>
         </div>
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills update --include-new</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+          <code>npx --yes github:jpolvora/workflow-skills update --include-new</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills update --include-new">Copy</button>
         </div>
       </div>
     </div>
-    <div class="install-step">
-      <h4>Uninstall</h4>
-      <p>Remove named skills; cascades dependents and unused deps. Never deletes <code>shared/</code> consumer data. Non-TTY requires <code>--yes</code>.</p>
+
+    <div class="install-card">
+      <h4>Uninstall Skills</h4>
+      <p>Remove specified skills with automatic dependency cascading.</p>
       <div class="cmd-list">
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills uninstall --skills write-a-skill,show-harness --yes</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+          <code>npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes">Copy</button>
         </div>
       </div>
     </div>
-    <div class="install-step">
-      <h4>Non-interactive install</h4>
-      <p>For agents/CI. Overwrites skills; always preserves consumer-owned <code>shared/</code> files. Non-TTY requires <code>--yes</code>.</p>
+
+    <div class="install-card">
+      <h4>Non-Interactive / CI</h4>
+      <p>Automated unattended installation for CI/CD pipelines and agent harnesses.</p>
       <div class="cmd-list">
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills install --full --yes</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills install --package workflows --yes</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+          <code>npx --yes github:jpolvora/workflow-skills install --package workflows --yes</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills install --package workflows --yes">Copy</button>
         </div>
       </div>
     </div>
-    <div class="install-step">
-      <h4>Fresh fetch / cache</h4>
-      <p>Never append <code>@latest</code> or <code>@main</code> to the <code>github:</code> specifier (exits 128). Bust cache by clearing npx cache, then re-run with <code>npx --yes</code>.</p>
+
+    <div class="install-card">
+      <h4>Version & Health Check</h4>
+      <p>Verify current local installed version against latest remote release.</p>
       <div class="cmd-list">
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills update</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+          <code>npx --yes github:jpolvora/workflow-skills --check</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills --check">Copy</button>
+        </div>
+        <div class="cmd-row">
+          <code>npx --yes github:jpolvora/workflow-skills --version</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills --version">Copy</button>
         </div>
       </div>
     </div>
-    <div class="install-step">
-      <h4>Version Check</h4>
-      <p>Compare installed vs latest online, or print the local version.</p>
+
+    <div class="install-card">
+      <h4>cURL Quick Shim</h4>
+      <p>Execute CLI directly via shell pipeline (requires Node.js).</p>
       <div class="cmd-list">
         <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills --check</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <div class="cmd-row">
-          <pre><code>npx --yes github:jpolvora/workflow-skills --version</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-      </div>
-    </div>
-    <div class="install-step">
-      <h4>cURL (shim → npx)</h4>
-      <p>Same CLI as npx. Requires Node.js. Pass args after <code>bash -s --</code>.</p>
-      <div class="cmd-list">
-        <div class="cmd-row">
-          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s --</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <div class="cmd-row">
-          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- install --full --yes</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <div class="cmd-row">
-          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- update</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
-        </div>
-        <div class="cmd-row">
-          <pre><code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- uninstall --skills goal-fix-pr --yes</code></pre>
-          <button type="button" class="cmd-copy" aria-label="Copy command">Copy</button>
+          <code>curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s --</code>
+          <button type="button" class="cmd-copy-btn" data-copy="curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s --">Copy</button>
         </div>
       </div>
     </div>
@@ -663,45 +659,51 @@
 </section>
 
 <section id="contribute">
-  <h2>Contribute</h2>
-  <p>
-    Skills live in <code>.agents/skills/&lt;name&gt;/SKILL.md</code> with YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>).
-    Agents: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md">AGENTS.md</a> for the full routing table.
-    Humans: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/README.md">README.md</a> for install and contribute.
-  </p>
+  <div class="section-header">
+    <h2>Contribute</h2>
+  </div>
+  <div class="contribute-box">
+    <p>
+      Skills live in <code>.agents/skills/&lt;name&gt;/SKILL.md</code> with standard YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>).
+    </p>
+    <p style="margin-top: 12px;">
+      Agents: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md" target="_blank" rel="noopener">AGENTS.md</a> for the full routing contract.<br>
+      Humans: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/README.md" target="_blank" rel="noopener">README.md</a> for install and contribution guidelines.
+    </p>
+  </div>
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills">jpolvora/workflow-skills</a> &mdash; v0.0.71</p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.71</p>
 </footer>
 
-<!-- Modal -->
+<!-- Skill Viewer Modal -->
 <div id="skill-modal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <span class="modal-title"></span>
+      <span class="modal-title">Skill Details</span>
       <div class="modal-actions">
-        <button class="close-btn" title="Close">&times;</button>
+        <button type="button" class="copy-btn modal-copy-btn">Copy Raw</button>
+        <button type="button" class="close-btn" aria-label="Close modal">&times;</button>
       </div>
     </div>
     <div class="modal-tabs">
-      <button class="modal-tab active" data-tab="preview">Preview</button>
-      <button class="modal-tab" data-tab="raw">Raw</button>
+      <button type="button" class="modal-tab active" data-tab="preview">Preview</button>
+      <button type="button" class="modal-tab" data-tab="raw">Raw</button>
     </div>
     <div class="modal-body">
       <div class="modal-panel" id="modal-panel-preview">
         <div class="modal-markdown"></div>
       </div>
       <div class="modal-panel hidden" id="modal-panel-raw">
-        <div class="raw-toolbar">
-          <span class="raw-label">.agents/skills/&hellip;/SKILL.md</span>
-          <button class="copy-btn" title="Copy raw markdown">Copy</button>
-        </div>
         <pre class="modal-raw"></pre>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
 
 <script>
 (function() {
@@ -711,14 +713,74 @@
   const modalMarkdown = modal.querySelector('.modal-markdown');
   const modalRaw = modal.querySelector('.modal-raw');
   const closeBtn = modal.querySelector('.close-btn');
-  const copyBtn = modal.querySelector('.copy-btn');
+  const copyBtn = modal.querySelector('.modal-copy-btn');
   const tabs = modal.querySelectorAll('.modal-tab');
   const panelPreview = document.getElementById('modal-panel-preview');
   const panelRaw = document.getElementById('modal-panel-raw');
+  const toastContainer = document.getElementById('toast-container');
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = themeToggle.querySelector('.sun-icon');
+  const moonIcon = themeToggle.querySelector('.moon-icon');
 
   var rawFullText = '';
-  var rawBodyText = '';
 
+  /* ─── Toast Notifications ─── */
+  function showToast(msg) {
+    var toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = '<span class="toast-icon">✓</span> <span>' + msg + '</span>';
+    toastContainer.appendChild(toast);
+    setTimeout(function() {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 3000);
+  }
+
+  /* ─── Theme Switcher ─── */
+  var currentTheme = localStorage.getItem('theme') || 'dark';
+  function setTheme(theme) {
+    currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'light') {
+      sunIcon.classList.remove('hidden');
+      moonIcon.classList.add('hidden');
+    } else {
+      sunIcon.classList.add('hidden');
+      moonIcon.classList.remove('hidden');
+    }
+  }
+  setTheme(currentTheme);
+
+  themeToggle.addEventListener('click', function() {
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  /* ─── Clipboard Copy Handlers ─── */
+  document.addEventListener('click', function(e) {
+    var copyTarget = e.target.closest('[data-copy], .cmd-copy-btn, .terminal-copy-btn');
+    if (!copyTarget) return;
+
+    var textToCopy = copyTarget.getAttribute('data-copy');
+    if (!textToCopy) {
+      var cmdRow = copyTarget.closest('.cmd-row');
+      if (cmdRow) {
+        var codeEl = cmdRow.querySelector('code');
+        if (codeEl) textToCopy = codeEl.textContent.trim();
+      }
+    }
+
+    if (textToCopy) {
+      navigator.clipboard.writeText(textToCopy).then(function() {
+        copyTarget.classList.add('copied');
+        showToast('Copied to clipboard!');
+        setTimeout(function() { copyTarget.classList.remove('copied'); }, 2000);
+      }).catch(function() {
+        showToast('Failed to copy');
+      });
+    }
+  });
+
+  /* ─── Modal Handling ─── */
   function closeModal() {
     modal.classList.remove('open');
     document.body.style.overflow = '';
@@ -733,93 +795,150 @@
   }
 
   tabs.forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      switchTab(this.dataset.tab);
-    });
+    tab.addEventListener('click', function() { switchTab(this.dataset.tab); });
   });
 
   closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) closeModal();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeModal();
-  });
-
-  function stripFrontmatter(text) {
-    return text.replace(/^---[\s\S]*?---\n*/, '');
-  }
+  modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 
   copyBtn.addEventListener('click', function() {
     if (!rawFullText) return;
     navigator.clipboard.writeText(rawFullText).then(function() {
-      copyBtn.textContent = 'Copied!';
-      setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
-    }).catch(function() {
-      copyBtn.textContent = 'Failed';
-      setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+      showToast('Skill markdown copied!');
     });
   });
 
-  // Install section: one-command rows with copy buttons
-  document.querySelectorAll('#install .cmd-copy').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var row = btn.closest('.cmd-row');
-      var code = row && row.querySelector('code');
-      if (!code) return;
-      var text = code.textContent.trim();
-      navigator.clipboard.writeText(text).then(function() {
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(function() {
-          btn.textContent = 'Copy';
-          btn.classList.remove('copied');
-        }, 2000);
-      }).catch(function() {
-        btn.textContent = 'Failed';
-        setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+  document.addEventListener('click', function(e) {
+    var viewBtn = e.target.closest('.view-skill');
+    if (!viewBtn) return;
+
+    e.preventDefault();
+    var path = viewBtn.getAttribute('data-path');
+    var card = viewBtn.closest('.skill-card, .workflow-card');
+    var name = card ? (card.querySelector('.name') || card.querySelector('h3')).textContent.trim() : 'Skill';
+    var url = RAW_BASE + path;
+
+    rawFullText = '';
+    modalTitle.textContent = name;
+    modalMarkdown.innerHTML = '<p style="color:var(--text-muted)">Loading skill details...</p>';
+    modalRaw.textContent = '';
+    switchTab('preview');
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    fetch(url)
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(function(text) {
+        rawFullText = text;
+        var bodyText = text.replace(/^---[\s\S]*?---\n*/, '');
+        modalMarkdown.innerHTML = marked.parse(bodyText, { breaks: true, gfm: true });
+        modalRaw.textContent = text;
+      })
+      .catch(function(err) {
+        modalMarkdown.innerHTML = '<p style="color:var(--accent-rose)">Failed to load skill: ' + err.message + '</p>';
+        modalRaw.textContent = 'Error loading ' + url;
       });
+  });
+
+  /* ─── Skill Search & Filtering ─── */
+  var searchInput = document.getElementById('skill-search');
+  var searchClear = document.getElementById('search-clear');
+  var resetBtn = document.getElementById('reset-search-btn');
+  var filterPills = document.querySelectorAll('.filter-pill');
+  var visibleCountEl = document.getElementById('visible-skills-count');
+  var noResultsEl = document.getElementById('no-results');
+
+  var currentFilter = 'all';
+  var currentSearch = '';
+
+  function filterSkills() {
+    var cards = document.querySelectorAll('.skill-card');
+    var layers = document.querySelectorAll('.layer');
+    var visibleCount = 0;
+
+    cards.forEach(function(card) {
+      var name = card.getAttribute('data-name') || '';
+      var desc = card.getAttribute('data-desc') || '';
+      var slug = card.getAttribute('data-slug') || '';
+      var layer = card.getAttribute('data-layer') || '';
+      var isFull = card.getAttribute('data-full') === 'true';
+      var isLite = card.getAttribute('data-lite') === 'true';
+
+      var matchesSearch = !currentSearch || name.includes(currentSearch) || desc.includes(currentSearch) || slug.includes(currentSearch);
+      
+      var matchesFilter = true;
+      if (currentFilter === 'layer-0') matchesFilter = layer.includes('layer-0');
+      else if (currentFilter === 'layer-2') matchesFilter = layer.includes('layer-2');
+      else if (currentFilter === 'layer-4') matchesFilter = layer.includes('layer-4');
+      else if (currentFilter === 'layer-5') matchesFilter = layer.includes('layer-5');
+      else if (currentFilter === 'full') matchesFilter = isFull;
+      else if (currentFilter === 'lite') matchesFilter = isLite;
+
+      if (matchesSearch && matchesFilter) {
+        card.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    // Hide empty layers
+    layers.forEach(function(layer) {
+      var hasVisibleCard = layer.querySelector('.skill-card:not(.hidden)');
+      layer.classList.toggle('hidden', !hasVisibleCard);
+    });
+
+    if (visibleCountEl) visibleCountEl.textContent = visibleCount;
+    if (noResultsEl) noResultsEl.classList.toggle('hidden', visibleCount > 0);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      currentSearch = this.value.toLowerCase().trim();
+      filterSkills();
+    });
+
+    // Press '/' to focus search
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+  }
+
+  if (searchClear) {
+    searchClear.addEventListener('click', function() {
+      searchInput.value = '';
+      currentSearch = '';
+      filterSkills();
+      searchInput.focus();
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      currentSearch = '';
+      currentFilter = 'all';
+      filterPills.forEach(function(p) { p.classList.toggle('active', p.getAttribute('data-filter') === 'all'); });
+      filterSkills();
+    });
+  }
+
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      currentFilter = this.getAttribute('data-filter');
+      filterSkills();
     });
   });
 
-  document.querySelectorAll('.view-skill').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const path = this.getAttribute('data-path');
-      const card = this.closest('.skill-card, .workflow-card');
-      const name = card ? card.querySelector('.name, h3').textContent : 'Skill';
-      const url = RAW_BASE + path;
-
-      // Reset state
-      rawFullText = '';
-      rawBodyText = '';
-      modalTitle.textContent = name;
-      modalMarkdown.innerHTML = '<p style="color:var(--text-muted)">Loading...</p>';
-      modalRaw.textContent = '';
-      copyBtn.textContent = 'Copy';
-      switchTab('preview');
-      modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-
-      fetch(url)
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.text();
-        })
-        .then(function(text) {
-          rawFullText = text;
-          rawBodyText = stripFrontmatter(text);
-          var html = marked.parse(rawBodyText, { breaks: true, gfm: true });
-          modalMarkdown.innerHTML = html;
-          modalRaw.textContent = text;
-        })
-        .catch(function(err) {
-          var errMsg = 'Failed to load skill: ' + err.message;
-          modalMarkdown.innerHTML = '<p style="color:var(--text-muted)">' + errMsg + '</p><pre style="color:var(--accent-orange);margin-top:8px">' + url + '</pre>';
-          modalRaw.textContent = errMsg + '\n' + url;
-        });
-    });
-  });
 })();
 </script>
 
