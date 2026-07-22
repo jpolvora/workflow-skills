@@ -17,6 +17,7 @@ export const HUB_WHITELIST = [
   'hub.gitignore',
   'MEMORY.md.template',
   'CHANGELOG.md.template',
+  'skill-dependencies.json',
 ];
 
 /** Dest name when whitelist source name differs (pack vs consumer layout). */
