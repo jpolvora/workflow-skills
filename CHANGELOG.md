@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-07-22 04:33] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Standardize `ensure_utf8_stdio()` top-level import across all Python scripts; default `plans.dir` to `.agents/plans` and `plans.specsDir` to `.agents/specs`. Bump version to `0.0.70`.
+- **Done**: Added `os.environ["PYTHONIOENCODING"] = "utf-8"` and top-level `ensure_utf8_stdio()` to all 12 Python scripts across `.agents/skills/`; updated `config.json`, `config.json.example`, `config.schema.json`, `detect_specs_dir.py`, `local-spec-provider/SKILL.md`, `configure-project`, `AGENTS.md`, and `README.md` to default `plans.dir` to `.agents/plans` and `plans.specsDir` to `.agents/specs`; bumped version to `0.0.70`; regenerated site catalog and skill integrity manifest (`bin/skill-integrity.json`).
+- **Result**: Universal UTF-8 stdio stability across Windows cp1252 terminals; canonical defaults set to `.agents/plans` and `.agents/specs`; all 11 test suite phases passed 100%.
+
+### [2026-07-22 04:24] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: `/spec-to-pr-lite` — fix(check-workflows): immediate UTF-8 stdio reconfiguration
+- **Done**: Set `os.environ["PYTHONIOENCODING"] = "utf-8"` in `ensure_utf8_stdio()` and invoked `ensure_utf8_stdio()` immediately at module top-level import in `check_workflows.py`; regenerated skill integrity manifest (`bin/skill-integrity.json`).
+- **Result**: Prevents UnicodeEncodeError on cp1252 Windows terminals; `check_workflows.py` passes 100%; test suite green.
+
 ### [2026-07-22 04:18] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: `/spec-to-pr 95` — fix(check-workflows): dependency closure audit fails in consumer repos (missing bin/skill-dependencies.json)
 - **Done**: Added `skill-dependencies.json` under `.agents/skills/shared/skill-dependencies.json` and added it to `HUB_WHITELIST` in `bin/install-rules.js` so consumer repos receive the manifest on install/update; updated `bin/cli.js` `skillGraphPath` fallback; updated `check_workflows.py` to check `shared/skill-dependencies.json` first, fall back to `bin/`, and guard closure audit when no manifest is loaded (`if self.deps_loaded:`); regenerated skill integrity manifest (`bin/skill-integrity.json`).

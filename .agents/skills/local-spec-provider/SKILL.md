@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 # local-spec-provider
 
-Owns **filesystem** local-spec entry for `spec-to-pr`: detect/configure `plans.specsDir` (default **`.agents/plans/specs`**; prefer existing repo-root `specs/` when present), register/normalize hand-written `*.spec.md` into `{us-dir}/step-00-{slug}.spec.md` with `source: local`, and optional human-browsable mirrors. Does **not** call remote trackers.
+Owns **filesystem** local-spec entry for `spec-to-pr`: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/` when present), register/normalize hand-written `*.spec.md` into `{us-dir}/step-00-{slug}.spec.md` with `source: local`, and optional human-browsable mirrors. Does **not** call remote trackers.
 
 **PR / thread / merge intents** are **hybrid**: this skill does not implement SCM APIs. Load the skill selected by `providers.scm` (`github-provider` or `azure-devops-provider`) and run those intents there. Never no-op silently.
 
@@ -54,12 +54,12 @@ Read [`.agents/skills/shared/config.json`](../shared/config.json):
 
 | Key | Role |
 |-----|------|
-| `plans.specsDir` | Local specs root (default **`.agents/plans/specs`**; if repo-root `specs/` already exists and config omits the key, prefer `specs`). |
+| `plans.specsDir` | Local specs root (default **`.agents/specs`**; if repo-root `specs/` already exists and config omits the key, prefer `specs`). |
 | `plans.dir` | Plans root; `{us-dir}` = `{plansDir}/{slug}/`. |
 | `providers.active` | When `local`, entry uses this skill for `fetch-to-spec`. |
 | `providers.scm` | Host for PR intents (`github` \| `azure-devops`). Required when shipping from local specs. **Never** `local`. |
 
-If `plans.specsDir` is missing: prefer existing repo-root `specs/`; otherwise use `.agents/plans/specs`. Create the directory and write `plans.specsDir` into local `config.json` (gitignored — never commit). Do **not** create a new repo-root `specs/` unless the consumer explicitly chose that path.
+If `plans.specsDir` is missing: prefer existing repo-root `specs/`; otherwise use `.agents/specs`. Create the directory and write `plans.specsDir` into local `config.json` (gitignored — never commit). Do **not** create a new repo-root `specs/` unless the consumer explicitly chose that path.
 
 ### Specs layout (flat + one-level nested)
 

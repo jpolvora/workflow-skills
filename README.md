@@ -129,7 +129,7 @@ Installer **never** writes consumer repo-root files. Consumers may add a thin ro
 | Host pointer (name varies by IDE) | Minimal pointer so agents follow project `AGENTS.md` or load skills from `.agents/skills/` |
 | `rules.changelogFile` target | Append-only history (default under `shared/`; optional root `CHANGELOG.md` when configured) |
 
-Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/config.json` (defaults: `.agents/plans`, `.agents/plans/specs`, `.agents/codereviews`). Existing repo-root `specs/` is kept when already present. Optional `pathTokens` documents fixed install roots for agents (`{skillsRoot}` / `{sharedDir}`); see [`tools.md`](.agents/skills/shared/tools.md) § Path tokens — not relocatable like `plans.dir`.
+Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/config.json` (defaults: `.agents/plans`, `.agents/specs`, `.agents/codereviews`). Existing repo-root `specs/` is kept when already present. Optional `pathTokens` documents fixed install roots for agents (`{skillsRoot}` / `{sharedDir}`); see [`tools.md`](.agents/skills/shared/tools.md) § Path tokens — not relocatable like `plans.dir`.
 
 ---
 

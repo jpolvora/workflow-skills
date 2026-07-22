@@ -165,7 +165,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set — do not invent filenames |
-| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/plans/specs`) · optional `reviews.dir` (default `.agents/codereviews`) |
+| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/specs`) · optional `reviews.dir` (default `.agents/codereviews`) |
 
 Bootstrap notes: [`setup.md`](setup.md). Config resolution: [`config-resolution.md`](config-resolution.md).
 

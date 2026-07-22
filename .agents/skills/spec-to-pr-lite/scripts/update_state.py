@@ -17,6 +17,7 @@ This script:
   7. Runs validate_state.py on the result.
 """
 
+import os
 import sys
 import re
 import ast
@@ -28,6 +29,7 @@ import subprocess
 
 def ensure_utf8_stdio() -> None:
     """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
+    os.environ["PYTHONIOENCODING"] = "utf-8"
     for stream in (sys.stdin, sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if not callable(reconfigure):
@@ -39,6 +41,9 @@ def ensure_utf8_stdio() -> None:
                 reconfigure(errors="replace")
             except Exception:
                 pass
+
+
+ensure_utf8_stdio()
 
 
 def format_val(v):

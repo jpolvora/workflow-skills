@@ -36,7 +36,7 @@ Scan consumer **repo root** (not this skill package alone):
 | `.agents/skills/shared/CHANGELOG.md` (preferred) | `rules.changelogFile` → that path |
 | Repo-root `CHANGELOG.md` | Only if user sets `rules.changelogFile: "CHANGELOG.md"` |
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
-| No specs dir yet | Suggest `plans.specsDir: ".agents/plans/specs"` |
+| No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
 ## Interview order
