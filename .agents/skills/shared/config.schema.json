@@ -104,8 +104,8 @@
         },
         "specsDir": {
           "type": "string",
-          "default": ".agents/plans/specs",
-          "description": "Repo-relative directory for human-facing local specs (default: .agents/plans/specs). Prefer existing repo-root specs/ when already present. Used by local-spec-provider detect/configure and optional mirrors; canonical workflow copy remains {us-dir}/step-00-{slug}.spec.md"
+          "default": ".agents/specs",
+          "description": "Repo-relative directory for human-facing local specs (default: .agents/specs). Prefer existing repo-root specs/ when already present. Used by local-spec-provider detect/configure and optional mirrors; canonical workflow copy remains {us-dir}/step-00-{slug}.spec.md"
         },
         "worktreesDir": {
           "type": "string",

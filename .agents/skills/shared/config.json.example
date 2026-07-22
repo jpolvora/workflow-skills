@@ -127,8 +127,8 @@
   "plans": {
     "dir": ".agents/plans",
     "_comment_plansDir": "Resolve skill token {plansDir} from plans.dir (there is no separate plansDir key).",
-    "_comment_specsDir": "Human-facing local specs dir under .agents/ by default. Prefer existing repo-root specs/ when already present. Canonical workflow copy stays under {plansDir}/{slug}/step-00-*.spec.md.",
-    "specsDir": ".agents/plans/specs",
+    "_comment_specsDir": "Human-facing local specs dir under .agents/ by default (.agents/specs). Prefer existing repo-root specs/ when already present. Canonical workflow copy stays under {plansDir}/{slug}/step-00-*.spec.md.",
+    "specsDir": ".agents/specs",
     "worktreesDir": ".agents/plans/{slug}/worktrees",
     "useWorktrees": false
   },

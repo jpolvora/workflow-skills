@@ -7,7 +7,7 @@ Usage:
   python detect_specs_dir.py --configure <relative-or-absolute-dir> [--json]
   python detect_specs_dir.py --validate [--json]
 
-Defaults: plans.specsDir = ".agents/plans/specs" (under .agents/).
+Defaults: plans.specsDir = ".agents/specs" (under .agents/).
 If repo-root "specs/" already exists and config omits specsDir, prefer "specs" (legacy).
 Never commits config.json (gitignored in consumers).
 """
@@ -41,12 +41,12 @@ ensure_utf8_stdio()
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
-DEFAULT_SPECS_DIR = ".agents/plans/specs"
+DEFAULT_SPECS_DIR = ".agents/specs"
 LEGACY_SPECS_DIR = "specs"
 
 
 def default_specs_dir_rel() -> str:
-    """Prefer existing repo-root specs/; otherwise default under .agents/plans/specs."""
+    """Prefer existing repo-root specs/; otherwise default under .agents/specs."""
     if (REPO_ROOT / LEGACY_SPECS_DIR).is_dir():
         return LEGACY_SPECS_DIR
     return DEFAULT_SPECS_DIR
@@ -202,13 +202,13 @@ def emit(payload: dict, as_json: bool) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Detect/configure local specsDir (plans.specsDir, default .agents/plans/specs)."
+        description="Detect/configure local specsDir (plans.specsDir, default .agents/specs)."
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "--detect",
         action="store_true",
-        help="Print resolved specsDir (from config or default .agents/plans/specs).",
+        help="Print resolved specsDir (from config or default .agents/specs).",
     )
     group.add_argument(
         "--configure",

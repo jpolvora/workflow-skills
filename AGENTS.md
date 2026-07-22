@@ -395,7 +395,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames; prefer skills over host-private rule files |
 | Domain catalog | `specs/domains/` — consumer; starter [`specs/domains/index.md.example`](specs/domains/index.md.example) |
-| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/plans/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (default `.agents/codereviews`) |
+| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (default `.agents/codereviews`) |
 
 Packaged consumer mirror: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) § External dependencies · bootstrap notes in [`shared/setup.md`](.agents/skills/shared/setup.md).
 

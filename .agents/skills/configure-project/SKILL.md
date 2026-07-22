@@ -54,5 +54,5 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Prefer detect + suggest over blank prompts.
 - Do not invent org/repo secrets; leave PAT/env keys as env-var names only.
 - `providers.scm` never `local`; hybrid `active=local` + `scm=github|azure-devops` allowed.
-- Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/plans/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/shared/CHANGELOG.md` unless user picks otherwise.
+- Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/shared/CHANGELOG.md` unless user picks otherwise.
 - Language: en-us.
