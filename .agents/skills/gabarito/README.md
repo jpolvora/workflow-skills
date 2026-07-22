@@ -10,7 +10,7 @@ Operational communication skill for agents: eleven directives plus style discipl
 
 ## Consumer projects
 
-Listed in root `AGENTS.md` § Skill loading (autoload every prompt). Works alongside `senior-developer` (global or local install), `karpathy-guidelines`, and **caveman full**; does not replace specs or engineering rules. See hub § Precedence and § Opt-out.
+Listed in `shared/AGENTS.md` § Skill loading (autoload every prompt; or root `AGENTS.md` when authoring against the source repo). Works alongside `senior-developer` (global or local install), `karpathy-guidelines`, and **caveman full**; does not replace specs or engineering rules. See hub § Precedence and § Opt-out.
 
 ## Caveman
 
@@ -18,7 +18,7 @@ Listed in root `AGENTS.md` § Skill loading (autoload every prompt). Works along
 
 ## Opt-out
 
-`stop gabarito`, or `normal mode` (caveman off: `stop caveman`). Canonical table: root [`AGENTS.md`](../../../AGENTS.md) § Opt-out.
+`stop gabarito`, or `normal mode` (caveman off: `stop caveman`). Canonical table: [`shared/AGENTS.md`](../shared/AGENTS.md) § Opt-out (or root [`AGENTS.md`](../../../AGENTS.md) § Opt-out when authoring against the source repo).
 
 ## Files
 

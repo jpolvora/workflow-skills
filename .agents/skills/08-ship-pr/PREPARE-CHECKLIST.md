@@ -25,7 +25,7 @@ Resolve from the **consumer project** only — never invent stack commands:
 | Source | Use for |
 |--------|---------|
 | `config.json` → `verification.*` | Build / test / format |
-| `config.json` → `rules.*` + [`AGENTS.md` External dependencies](../../../AGENTS.md#external-dependencies) | Guardrails / optional rule paths |
+| `config.json` → `rules.*` + [`shared/AGENTS.md` External dependencies](../shared/AGENTS.md#external-dependencies) | Guardrails / optional rule paths (or root `AGENTS.md#external-dependencies` when authoring upstream) |
 | `STACK.md` (`rules.stackFile`, default `{sharedDir}/STACK.md`) | Ship/verify notes |
 | Consumer hubs + ship docs (see §5 scan list) | Prepare / before-push / before-publish steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
@@ -49,7 +49,7 @@ Prefer `bash .agents/skills/08-ship-pr/scripts/verify.sh` when it covers configu
 ### 3. Tests
 **When:** no green tests yet for the current tree.  
 **Do:** `verification.backendTest` (+ `frontendTest` if frontend touched), or full `bash .agents/skills/08-ship-pr/scripts/verify.sh`.  
-**Upstream `workflow-skills`:** `verify.sh` also runs `node bin/generate-skill-integrity.js --check` when that script exists. Testing / ship approval requires it green; if red → `npm run generate-integrity`, commit `bin/skill-integrity.json`, re-run (see root `AGENTS.md` § Upstream skill integrity regenerate).  
+**Upstream `workflow-skills`:** `verify.sh` also runs `node bin/generate-skill-integrity.js --check` when that script exists. Testing / ship approval requires it green; if red → `npm run generate-integrity`, commit `bin/skill-integrity.json`, re-run (see root `AGENTS.md` § Upstream skill integrity regenerate when authoring against the source repo).  
 **⏭:** green evidence, or `skipTests` / orch `skipTesting` with waiver on board.  
 **Done when:** tests green (including integrity `--check` when applicable), waived with evidence, or ❌.
 
