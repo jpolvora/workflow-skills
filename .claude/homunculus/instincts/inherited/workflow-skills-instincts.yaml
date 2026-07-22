@@ -1,0 +1,363 @@
+# Instincts generated from https://github.com/jpolvora/workflow-skills
+# Generated: 2026-07-22T04:21:00.575Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: workflow-skills-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: docs, fix, chore
+
+## Evidence
+
+- 5 commits analyzed
+- Detected conventional commit pattern
+- Examples: fix(check-workflows): resolve dependency closure audit failure in consumer repos (#95), docs(us-95): delivery result and implementation plan
+
+---
+id: workflow-skills-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Length
+
+## Action
+
+Write moderate-length commit messages (~69 characters)
+
+## Evidence
+
+- Average commit message length: 69 chars
+- Based on 5 commits
+
+---
+id: workflow-skills-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Naming Files
+
+## Action
+
+Use kebab-case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: kebab-case
+
+---
+id: workflow-skills-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: workflow-skills-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: workflow-skills-workflow-spec-documentation-workflow
+trigger: "when doing spec documentation workflow"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Workflow Spec Documentation Workflow
+
+## Action
+
+Follow the spec-documentation-workflow workflow:
+1. Create or update issue and specification markdown/json files under specs/<issue-id>/
+2. Add or update planning, review, testing, and result artifacts for the issue
+3. Commit all related documentation files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: specs/<issue-id>/step-00-<issue-id>.issue.json, specs/<issue-id>/step-00-<issue-id>.spec.md, specs/<issue-id>/step-01-<issue-id>.plan.md
+
+---
+id: workflow-skills-instinct-file-naming
+trigger: "When creating a new file in the repository"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct File Naming
+
+## Action
+
+Name the file using kebab-case (lowercase words separated by hyphens)
+
+## Evidence
+
+- Pattern in namingConventions.files
+- All example files use kebab-case
+
+---
+id: workflow-skills-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: workflow-skills-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: workflow-skills-instinct-constant-naming
+trigger: "When defining a constant value"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: workflow-skills-instinct-import-style
+trigger: "When importing modules in JavaScript files"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Import Style
+
+## Action
+
+Use absolute import paths
+
+## Evidence
+
+- Pattern in importStyle: absolute
+
+---
+id: workflow-skills-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle: named
+
+---
+id: workflow-skills-instinct-try-catch-error-handling
+trigger: "When handling errors in code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Try Catch Error Handling
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- Pattern in errorHandling.style: try-catch
+
+---
+id: workflow-skills-instinct-test-location
+trigger: "When adding or updating tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Test Location
+
+## Action
+
+Place test files in the separate 'test' folder
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation: separate
+- Presence of 'test' folder
+
+---
+id: workflow-skills-instinct-test-package-json
+trigger: "When configuring test dependencies"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Test Package Json
+
+## Action
+
+Use a separate package.json inside the 'test' folder
+
+## Evidence
+
+- Pattern in architecture.configFiles: test/package.json
+
+---
+id: workflow-skills-instinct-git-commit-format
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Git Commit Format
+
+## Action
+
+Use conventional commit format with prefixes: docs, fix, or chore
+
+## Evidence
+
+- Pattern in commits.prefixes: docs, fix, chore
+- Examples: 'fix(check-workflows): ...', 'docs(us-95): ...', 'chore(release): ...'
+
+---
+id: workflow-skills-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Commit Length
+
+## Action
+
+Keep the commit message concise, around 69 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength: 69
+
+---
+id: workflow-skills-instinct-spec-documentation-workflow
+trigger: "When formally documenting the lifecycle of a user story or issue (including plans, reviews, and results)"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Spec Documentation Workflow
+
+## Action
+
+Create or update specification, planning, review, testing, and result artifacts under specs/<issue-id>/ and commit all related documentation files
+
+## Evidence
+
+- Workflow: spec-documentation-workflow
+- Example commits and files: specs/<issue-id>/step-00-<issue-id>.issue.json, specs/<issue-id>/step-00-<issue-id>.spec.md, etc.
+
