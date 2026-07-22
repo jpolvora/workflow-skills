@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "62e17e6a192d088b35d737081dff148e93de358377a44821dd992f4d79fe6269",
+  "fullPackageDigest": "c4ee08b1f9866648000c39245f15ef3a4d823a5b2edd0ec472529c324ec3ec2c",
   "hub": {
     "files": {
       "AGENTS.md": "18b26dff242533609357432dcbd2c71748de9f6a143b5733969baf174e290419",
@@ -23,7 +23,7 @@
     },
     "skillDigest": "42d706b0cd721ae4e6d594dc714b1d3a4b3be433e2a91ac4788c4818707c85ec"
   },
-  "packageVersion": "0.0.70",
+  "packageVersion": "0.0.71",
   "skills": {
     "00-write-spec": {
       "files": {
@@ -76,14 +76,14 @@
     },
     "08-ship-pr": {
       "files": {
-        "examples.md": "a2d2b2b4931153897ef0f28c39c3cf7c1cb79d3c885a523add298d64124d586e",
-        "GOAL-OVERRIDES.md": "de0c1bd6a934988f7720b31db5e823ee12454ca14cac6723326dd0b4e8f46e81",
+        "examples.md": "389b89ac35c99b41c511d1a7f506ced4d5e8662141c74f7ec624f60c4c280675",
+        "GOAL-OVERRIDES.md": "32d06ce831ffd2be1eb282900039e1371abcd86302f7849af7372b51e9475310",
         "PREPARE-CHECKLIST.md": "3b62c3cd3a82e21d97090e4b8830b610667b98d8763171dcd69b2471789edb89",
         "scripts/detect-base-branch.sh": "8435a94884d1ce3653159f2ffdee12829b758c8eb69cb9481d51ff8916c756fd",
         "scripts/verify.sh": "5b7816e0035edddb74098c769dc220304d9fb62abb71313bb68742e61ffe6264",
-        "SKILL.md": "5a099aac9ea7ce7ec621bdd4d6e874c8d3ef87d621d7469cb3223134cbc7f374"
+        "SKILL.md": "a84a0e089ccd1cf4de5b77cbd4eb9f22f1873da5052c6ccc01879d8dc7970b00"
       },
-      "skillDigest": "cee50d49e8e0dc07481338e50227e795869462dd3f7ff3a36c1ec2aa295eef4a"
+      "skillDigest": "4b914a80c1ae7d3f140a694e42509d38333a47c90c524156e828d7f2334f6234"
     },
     "09-fix-pr": {
       "files": {
@@ -228,9 +228,9 @@
         "scripts/validate_state.py": "9f968f3b5f77bf82cc7fe90b8fb869be4c42d557989718950bab7b18a2677ef2",
         "SKILL.md": "d56cb5b3acf13ab073eab938b1faede30ed98198062102f8ec4617cc9e5d390d",
         "spec-to-pr-run-test.md": "5e1e11e7298a427774ac0cadcbf0f748fabb2e213edbf0a03d17528dfd124920",
-        "STEP-DISPATCH.md": "b20b1eefb3a93e84e933beb1f448b526c113cdc9ed67d035c5ae27699565834b"
+        "STEP-DISPATCH.md": "2d81da62f3c4340473402d7b02dee33aa24ea632b13e2a7f97ce2437a45943ff"
       },
-      "skillDigest": "1520e6e6800472e2d8ae88aad3945af9494dff9bc76292969e135fd10e61f80c"
+      "skillDigest": "5be03106c323e6acf2778a288efad0395bbbefd17f47544b8b3f4465a9b445c6"
     },
     "spec-to-pr-lite": {
       "files": {

@@ -1,6 +1,6 @@
 ---
 name: ws-ship-pr
-description: End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait for code-review feedback, run goal-fix-pr until no open issues, then merge (unless stopBeforeFixPr / no-merge).
+description: End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait 30 seconds for code-review action to start on GitHub infrastructure, run goal-fix-pr (default 300s) until no open issues, then merge (unless stopBeforeFixPr / no-merge).
 upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
 version: 1.10
 disable-model-invocation: true
@@ -12,7 +12,7 @@ invocation_names:
 
 # ship-pr
 
-Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (verify + **discover and wait** for local consumer prepare / before-push / before-publish harness steps), then push/create PR via configured SCM, wait for code-review/CI, converge via `goal-fix-pr`, and merge only when clean.
+Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (verify + **discover and wait** for local consumer prepare / before-push / before-publish harness steps), then push/create PR via configured SCM, wait 30 seconds for code-review action to start on GitHub infrastructure, run `goal-fix-pr` (default 300 seconds heartbeats), and merge only when clean.
 
 Prepare board (mandatory): [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Wait/converge timing: [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md). Examples: [examples.md](examples.md).
 
@@ -57,7 +57,7 @@ Before executing, restate commit title, head/base, SCM provider, mode, `stopBefo
 5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../shared/config-resolution.md) (reject `local`; STOP if unresolved — do not invent a client). Load matching provider ([github-provider](../github-provider/SKILL.md) or [azure-devops-provider](../azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {workingBranch} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
    - Done when: PR id/URL captured or reused. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).
 
-6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [goal-fix-pr](../goal-fix-pr/SKILL.md)). Otherwise apply post-push settle (default **300s**, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks and `list-threads`, and dispatch `goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
+6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [goal-fix-pr](../goal-fix-pr/SKILL.md)). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action to start on GitHub infrastructure), then start [goal-fix-pr](../goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks and `list-threads`, and dispatch `goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
    - Done when: `activeThreads == 0` and required checks green, or run stopped with PR URL reported.
 
 7. **Merge**: only when Step 6 converged and checks green. Provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. Never delete `{workingBranch}`.

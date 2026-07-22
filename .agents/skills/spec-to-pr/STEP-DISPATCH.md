@@ -66,7 +66,7 @@ Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr:
 
 After Step 8 when `shipAction: create-pr` and PR exists:
 
-1. **Wait for code-review / CI feedback** (same policy as `ws-ship-pr` Step 6 settle: ≥300s post-push, then poll checks + threads). Do not merge yet.
+1. **Wait for code-review / CI feedback** (same policy as `ws-ship-pr` Step 6 settle: wait 30s post-PR creation for code-review action to start on GitHub infrastructure, then default 300s post-push heartbeats, then poll checks + threads). Do not merge yet.
 2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot) until **no open issues to fix** (`activeThreads == 0`).
 3. **Merge** via SCM provider `merge-pr` only after step 2 converges and required checks are green. Never merge with open review threads or failing required checks.
 

@@ -11,7 +11,7 @@
 3. Code-review auto-fix until **No feedback** (≤3 rounds) unless orch already reviewed
 4. Commit → `git push origin develop` (only if prepare green)
 5. Create PR via `providers.scm` (`create-pr` intent)
-6. Sleep 5m → `/goal-fix-pr {pr} max 10` (5m heartbeats)
+6. Wait 30s (code-review action start on GitHub infrastructure) → `/goal-fix-pr {pr} max 10` (default 300s heartbeats)
 7. Merge via provider `merge-pr` (keep `develop`)
 
 **PR:** `https://github.com/{owner}/{repo}/pull/{n}`
