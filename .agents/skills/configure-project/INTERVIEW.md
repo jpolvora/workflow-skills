@@ -29,6 +29,7 @@ Scan consumer **repo root** (not this skill package alone):
 | `gh` auth / GitHub remote | `providers.active=github`, enable `issueTrackers.github` |
 | ADO remote only | `providers.active=azure-devops` |
 | No tracker remote / `specs/**/*.spec.md` | Suggest `active=local` + set `scm` from remote host or ask |
+| No app stack detected + `.agents/skills/` present | Suggest `verification.backendTest: "python .agents/skills/check-workflows/scripts/check_workflows.py"` for harness validation |
 | `prisma/` / `drizzle` / `Migrations/` / compose DB services | `stack.database.*` hints |
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
 | `.agents/skills/shared/STACK.md` (preferred) | `rules.stackFile` → that path |

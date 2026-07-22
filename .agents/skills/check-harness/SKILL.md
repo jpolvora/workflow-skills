@@ -139,7 +139,7 @@ Phase 4 detects new or removed skills that diverge from declared routing; treat 
 
 All project skills live under `.agents/skills/`. Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` (like this skill (`check-harness/SKILL.md`)) are also treated as skills in the scan.
 
-**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively and `.md` files with frontmatter in `skills/`, comparing against declared routing in `AGENTS.md`. Do not rely on hardcoded lists — the disk is the truth.
+**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively and `.md` files with frontmatter in `skills/`, comparing against declared routing in the resolved hub (§ Hub resolution; `shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the disk is the truth.
 
 > **`name:` collision:** two `SKILL.md` files with the same `name:` break skill resolution → report as **warning** and propose renaming one id or consolidating into a single file.
 

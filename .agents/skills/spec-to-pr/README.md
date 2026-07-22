@@ -23,7 +23,7 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 | [`DIAGRAM.md`](DIAGRAM.md) | Visual | Mermaid 0–9 / lite 0–5 |
 | [`ARTIFACTS.md`](ARTIFACTS.md) | Both | Canonical filenames |
 
-**Project entry:** [`AGENTS.md`](../../../AGENTS.md).
+**Project entry:** [`shared/AGENTS.md`](../shared/AGENTS.md) (or root [`AGENTS.md`](../../../AGENTS.md) when authoring against the source repo).
 
 ---
 
