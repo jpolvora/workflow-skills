@@ -48,7 +48,7 @@ flowchart LR
 - **Invocation:** `/check-harness`, `@check-harness`, "audit the harness", "remove redundancy between skills".
 - **Approval triggers (normal):** `apply corrections`, `apply the plan`, `approved`, etc. Cancellation or vague response = abort corrections.
 
-- **Out of scope:** planning/implementing US, product code review, PR fixing, starting services — use dedicated skills routed by [`AGENTS.md`](../../../AGENTS.md).
+- **Out of scope:** planning/implementing US, product code review, PR fixing, starting services — use dedicated skills routed by the resolved hub (per § Hub resolution; [`shared/AGENTS.md`](../shared/AGENTS.md) in consumer mode).
 
 ---
 
@@ -362,9 +362,9 @@ Check:
 6. **Orchestrator dependency closure** (when upstream `bin/skill-dependencies.json` present) — for each orchestrator (e.g. `spec-to-pr`, `spec-to-pr-lite`), extract every dispatched skill id (step-table `ws-*` ids, providers from the shared entry matrix, fix-pr loop skills) and assert each appears in `dependencies["<orch>"]`, directly or transitively via another listed dep. Missing id → **critical** (selective install of that orchestrator yields a broken workflow).
 7. **Skill integrity manifest** (upstream only) — when `bin/skill-integrity.json` is expected in this repo, confirm it is present and `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exits 0 (committed digests match the current tree and `package.json` version). Stale/missing → **critical** for release hygiene. **Correction (do not invent digests):** `npm run generate-integrity`, then re-run `--check`, and commit `bin/skill-integrity.json` with the skill/package change (root `AGENTS.md` § Upstream skill integrity regenerate). Never tell consumers to use `--force-integrity` as the fix for upstream drift.
 
-### Phase 4 — Skills/rules not routed in `AGENTS.md`
+### Phase 4 — Skills/rules not routed in the resolved hub
 
-Compare the **filesystem** against declared routing in [`AGENTS.md`](../../../AGENTS.md). This phase is **mandatory** in every full audit.
+Compare the **filesystem** against declared routing in the **resolved hub** (§ Hub resolution; [`shared/AGENTS.md`](../shared/AGENTS.md) in consumer mode, or root `AGENTS.md` in upstream mode). This phase is **mandatory** in every full audit.
 
 #### 4a. Discover artifacts on disk
 
