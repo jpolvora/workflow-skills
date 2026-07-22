@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-22 04:24] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: `/spec-to-pr-lite` — fix(check-workflows): immediate UTF-8 stdio reconfiguration
+- **Done**: Set `os.environ["PYTHONIOENCODING"] = "utf-8"` in `ensure_utf8_stdio()` and invoked `ensure_utf8_stdio()` immediately at module top-level import in `check_workflows.py`; regenerated skill integrity manifest (`bin/skill-integrity.json`).
+- **Result**: Prevents UnicodeEncodeError on cp1252 Windows terminals; `check_workflows.py` passes 100%; test suite green.
+
 ### [2026-07-22 04:18] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: `/spec-to-pr 95` — fix(check-workflows): dependency closure audit fails in consumer repos (missing bin/skill-dependencies.json)
 - **Done**: Added `skill-dependencies.json` under `.agents/skills/shared/skill-dependencies.json` and added it to `HUB_WHITELIST` in `bin/install-rules.js` so consumer repos receive the manifest on install/update; updated `bin/cli.js` `skillGraphPath` fallback; updated `check_workflows.py` to check `shared/skill-dependencies.json` first, fall back to `bin/`, and guard closure audit when no manifest is loaded (`if self.deps_loaded:`); regenerated skill integrity manifest (`bin/skill-integrity.json`).
