@@ -116,12 +116,23 @@ When installable package content changes (skills, CLI, installer, shared hub tem
 | 1 | Tests | `npm run tests` · `npm run tests -- --local` when installer/graph touched |
 | 2 | Code review | `ws-code-review` or § [Local dry-run: agentic code reviewers](#local-dry-run-agentic-code-reviewers) |
 | 3 | Dependency graph | Update [`bin/skill-dependencies.json`](bin/skill-dependencies.json) when adding/removing/renaming skills or changing orchestrator dispatch; `check-harness` Phase 3/4b validates closure |
-| 4 | Integrity digests | § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only) |
-| 5 | Site + catalog + version | § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only) when routing/layers/catalog change; else `node bin/build-site.js` (footer stamp only) |
+| 4 | Integrity digests | § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only) (`npm run generate-integrity` + `npm run verify-integrity`) |
+| 5 | Site + catalog + version | § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only) when routing/layers/catalog change (`npm run build-site:bump`) |
 | 6 | Hub drift | Sync root `AGENTS.md` + [`.agents/AGENTS.md`](.agents/AGENTS.md) (and [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) when shared hub templates ship) |
-| 7 | Ship | Commit → push → open/update PR (`develop` → `main`) |
+| 7 | Ship | Commit → push → open/update PR (`develop` → `main`) via `08-ship-pr` |
 
 `08-ship-pr` / `ws-ship-pr` PREPARE-CHECKLIST discovers consumer-local before-push rules; upstream rows above are **additive** for this repo.
+
+#### Recommended Feature Delivery Checklist (before push / ship)
+
+Run this checklist prior to triggering `/ship-pr` or merging feature branches:
+
+- [ ] **1. Run Tests & Validation**: Execute `npm run test` (runs installer, integrity checks, and tree verification).
+- [ ] **2. Single Version Bump** (package releases): Run `npm run build-site:bump` once per PR to increment `package.json` and sync site footer version.
+- [ ] **3. Regenerate Skill Integrity Manifest**: Run `npm run generate-integrity` then `npm run verify-integrity` to update `bin/skill-integrity.json`.
+- [ ] **4. Check Harness Integrity**: Run `check-harness` or `python .agents/skills/check-workflows/scripts/check_workflows.py` to ensure 0 critical harness errors.
+- [ ] **5. Clean Site Docs**: Verify `docs/index.html` has no git merge conflict markers.
+- [ ] **6. Ship & Converge**: Trigger `/ship-pr` (commits, pushes, creates PR, waits 30s for code-review Action to start, then runs `goal-fix-pr` with 300s heartbeats until clean).
 
 ### Upstream PR version bump (this repo only)
 
