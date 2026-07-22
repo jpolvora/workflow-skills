@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "2e8bd1c84ceb1b3138113883a4d511aae1bc5a7523d3b16f481faa499a3857d7",
+  "fullPackageDigest": "e41d664f77d48bf02b6e2bb0b01cf37c4f0111cf91283a28d0cca6c0bae9e4a5",
   "hub": {
     "files": {
       "AGENTS.md": "f5374b9e8e40b8cccfde8b04a2204e6d704a17f5994696ca68d1be871e0b625d",
@@ -17,12 +17,13 @@
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "7c6093172b70d16497d540059c702d56a060d34abc0365ef6c7d13391d2cd44c",
       "setup.md": "65b68111cdf60b7f1c33e93e13243eb56066c2409b0165cd88cc77eff7f814bf",
+      "skill-dependencies.json": "b2949afc3a719e3b6d43893fa9178e75fe977db4bed841a644096770cf732652",
       "STACK.md.example": "4ad571e8b8e8a96922d99bd8265220061863586a05ad93e1b5134e5f34908ea2",
       "tools.md": "154d246dc12be136cccdf5f0f9fa00a85188fedf2554fb421a77b5dd6288d432"
     },
-    "skillDigest": "7deb582e5dc349949675eab31a5c9a49578e67406c4e9230bfce76b4474d1c81"
+    "skillDigest": "5ab36b74b6244b0668b02ab202c6ae16efdf7446c488df8cef9207c4f0c78674"
   },
-  "packageVersion": "0.0.68",
+  "packageVersion": "0.0.69",
   "skills": {
     "00-write-spec": {
       "files": {
@@ -126,10 +127,10 @@
     },
     "check-workflows": {
       "files": {
-        "scripts/check_workflows.py": "78798dce858565a0ffd21dec2bacab30c6c7638e91d7512a97c631f7c70c65a8",
+        "scripts/check_workflows.py": "1f405960d14b2cd5d5f54008eae547dadacd2e50a2a8633eafac6912068d162a",
         "SKILL.md": "5d1c789637e753630e3477ea3ea3471732ab6c2bdad3063795379936fcf441e6"
       },
-      "skillDigest": "9213975062cd06514c4d3a8e2dfc8ea6f9dac1a0768d6dd5ff4d56cee29e6f20"
+      "skillDigest": "1ceaa0287f2e3c973d02c920bfe5d6d7e264ab0a85f500f010d810bf14a70c60"
     },
     "configure-project": {
       "files": {

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-22 04:18] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: `/spec-to-pr 95` — fix(check-workflows): dependency closure audit fails in consumer repos (missing bin/skill-dependencies.json)
+- **Done**: Added `skill-dependencies.json` under `.agents/skills/shared/skill-dependencies.json` and added it to `HUB_WHITELIST` in `bin/install-rules.js` so consumer repos receive the manifest on install/update; updated `bin/cli.js` `skillGraphPath` fallback; updated `check_workflows.py` to check `shared/skill-dependencies.json` first, fall back to `bin/`, and guard closure audit when no manifest is loaded (`if self.deps_loaded:`); regenerated skill integrity manifest (`bin/skill-integrity.json`).
+- **Result**: `check_workflows.py` passes cleanly in consumer repos and upstream; all 11 test suite phases passed.
+
 ### [2026-07-21 21:29] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: update check-workflows skill to deeply validate and simulate full and lite workflows, detect broken steps, generate report, and offer user confirmation prompt. Bump version to 0.0.68 and ship.
 - **Done**: Enhanced `check_workflows.py` with full (`spec-to-pr`, steps 0–9) and lite (`spec-to-pr-lite`, steps 0–5) workflow step simulation, script compilation/syntax checks, dependency closure verification, broken step detection, actionable fix suggestions, markdown report generation (`--report`), auto-fix mode (`--fix`), and interactive user confirmation gate. Updated `check-workflows/SKILL.md`, `AGENTS.md`, and `README.md`. Bumped version to `0.0.68`, regenerated site catalog and skill integrity manifest, synced `test/package.json`, and ran test suite.

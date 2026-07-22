@@ -25,7 +25,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 REPO_ROOT = SKILL_DIR.parents[2]
 SKILLS_DIR = REPO_ROOT / ".agents" / "skills"
-DEPS_JSON_PATH = REPO_ROOT / "bin" / "skill-dependencies.json"
+SHARED_DEPS_PATH = SKILLS_DIR / "shared" / "skill-dependencies.json"
+BIN_DEPS_PATH = REPO_ROOT / "bin" / "skill-dependencies.json"
 
 
 def ensure_utf8_stdio() -> None:
@@ -69,21 +70,36 @@ class WorkflowChecker:
             "lite": {"steps": {}, "status": "PASS"},
         }
         self.deps_map: Dict[str, List[str]] = {}
+        self.deps_loaded: bool = False
+        self.deps_location: str = "skill-dependencies.json"
         self._load_dependencies()
 
     def _load_dependencies(self) -> None:
-        if DEPS_JSON_PATH.exists():
+        deps_path = None
+        if SHARED_DEPS_PATH.exists():
+            deps_path = SHARED_DEPS_PATH
+        elif BIN_DEPS_PATH.exists():
+            deps_path = BIN_DEPS_PATH
+
+        if deps_path:
             try:
-                data = json.loads(DEPS_JSON_PATH.read_text(encoding="utf-8"))
+                rel = deps_path.relative_to(REPO_ROOT)
+                self.deps_location = str(rel).replace("\\", "/")
+            except ValueError:
+                self.deps_location = str(deps_path).replace("\\", "/")
+
+            try:
+                data = json.loads(deps_path.read_text(encoding="utf-8"))
                 self.deps_map = data.get("dependencies", {})
+                self.deps_loaded = True
             except Exception as e:
                 self.issues.append(
                     Issue(
                         "WARNING",
                         "Dependency Graph",
-                        str(DEPS_JSON_PATH),
+                        self.deps_location,
                         f"Failed to parse skill-dependencies.json: {e}",
-                        "Verify JSON syntax in bin/skill-dependencies.json.",
+                        f"Verify JSON syntax in {self.deps_location}.",
                     )
                 )
 
@@ -168,18 +184,21 @@ class WorkflowChecker:
             if (SKILLS_DIR / aux / "SKILL.md").exists():
                 dispatched_skills.add(aux)
 
-        # Check dependency closure in bin/skill-dependencies.json
-        declared_deps = set(self.deps_map.get("spec-to-pr", []))
-        missing_deps = dispatched_skills - declared_deps
-        if missing_deps:
-            self.add_issue(
-                "CRITICAL",
-                "Dependency Closure",
-                "bin/skill-dependencies.json",
-                f"spec-to-pr dispatches skills not listed in dependencies['spec-to-pr']: {sorted(missing_deps)}.",
-                "Add missing skill IDs to bin/skill-dependencies.json under dependencies['spec-to-pr'].",
-            )
-            self.simulation_results["standard"]["status"] = "FAIL"
+        # Check dependency closure in skill-dependencies.json
+        if self.deps_loaded:
+            declared_deps = set(self.deps_map.get("spec-to-pr", []))
+            missing_deps = dispatched_skills - declared_deps
+            if missing_deps:
+                self.add_issue(
+                    "CRITICAL",
+                    "Dependency Closure",
+                    self.deps_location,
+                    f"spec-to-pr dispatches skills not listed in dependencies['spec-to-pr']: {sorted(missing_deps)}.",
+                    f"Add missing skill IDs to {self.deps_location} under dependencies['spec-to-pr'].",
+                )
+                self.simulation_results["standard"]["status"] = "FAIL"
+            elif any(info["status"] == "FAIL" for info in self.simulation_results["standard"]["steps"].values()):
+                self.simulation_results["standard"]["status"] = "FAIL"
         elif any(info["status"] == "FAIL" for info in self.simulation_results["standard"]["steps"].values()):
             self.simulation_results["standard"]["status"] = "FAIL"
 
@@ -254,17 +273,20 @@ class WorkflowChecker:
             if (SKILLS_DIR / aux / "SKILL.md").exists():
                 dispatched_skills.add(aux)
 
-        declared_deps = set(self.deps_map.get("spec-to-pr-lite", []))
-        missing_deps = dispatched_skills - declared_deps
-        if missing_deps:
-            self.add_issue(
-                "CRITICAL",
-                "Dependency Closure",
-                "bin/skill-dependencies.json",
-                f"spec-to-pr-lite dispatches skills not listed in dependencies['spec-to-pr-lite']: {sorted(missing_deps)}.",
-                "Add missing skill IDs to bin/skill-dependencies.json under dependencies['spec-to-pr-lite'].",
-            )
-            self.simulation_results["lite"]["status"] = "FAIL"
+        if self.deps_loaded:
+            declared_deps = set(self.deps_map.get("spec-to-pr-lite", []))
+            missing_deps = dispatched_skills - declared_deps
+            if missing_deps:
+                self.add_issue(
+                    "CRITICAL",
+                    "Dependency Closure",
+                    self.deps_location,
+                    f"spec-to-pr-lite dispatches skills not listed in dependencies['spec-to-pr-lite']: {sorted(missing_deps)}.",
+                    f"Add missing skill IDs to {self.deps_location} under dependencies['spec-to-pr-lite'].",
+                )
+                self.simulation_results["lite"]["status"] = "FAIL"
+            elif any(info["status"] == "FAIL" for info in self.simulation_results["lite"]["steps"].values()):
+                self.simulation_results["lite"]["status"] = "FAIL"
         elif any(info["status"] == "FAIL" for info in self.simulation_results["lite"]["steps"].values()):
             self.simulation_results["lite"]["status"] = "FAIL"
 

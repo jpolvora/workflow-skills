@@ -34,7 +34,9 @@ const __dirname = path.dirname(__filename);
 
 const packageRoot = path.resolve(__dirname, '..');
 const srcSkillsDir = path.join(packageRoot, '.agents', 'skills');
-const skillGraphPath = path.join(packageRoot, 'bin', 'skill-dependencies.json');
+const skillGraphPath = fs.existsSync(path.join(packageRoot, 'bin', 'skill-dependencies.json'))
+  ? path.join(packageRoot, 'bin', 'skill-dependencies.json')
+  : path.join(packageRoot, '.agents', 'skills', 'shared', 'skill-dependencies.json');
 const integrityManifestPath = path.join(packageRoot, MANIFEST_REL);
 const targetDir = process.cwd();
 const targetAgentsDir = path.join(targetDir, '.agents');
