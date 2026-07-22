@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cb8ec3cc699e1621801748d1df5734ccc7a97ef3acc61a2bc19a2d89c6036d47",
+  "fullPackageDigest": "9a0d942aac2737ed19dfeabfda67086e4f833fdd923768b595886ce6149cc54e",
   "hub": {
     "files": {
       "AGENTS.md": "f12954ce6226eaab9d4fbec8d0241c57f01cc1343d8ea083dd65d73f63cf0eca",
@@ -121,9 +121,9 @@
     "check-harness": {
       "files": {
         "REPORT-FORMAT.md": "9f76f58f570caee33d8539247e8495cd7cfa4bd57f30765b323c72e32a1c5b3a",
-        "SKILL.md": "51f316fc27d516e730bec8afdef7fdcadd004e65774ff6f5a4ab1203f03660f8"
+        "SKILL.md": "258bfed30c1aafd2a693d1a2fd84b8ee01cea48b2fd59aedfe092e9a3835b9b6"
       },
-      "skillDigest": "f2ee7ec47e834fc8ab0e6e2b40566089354fe477603e33ab330823e293fcfd5b"
+      "skillDigest": "5eb353138b8c56fbd2deaa9ebba2de4eccc24f8be1f0e0b0448e30ec366a311c"
     },
     "check-workflows": {
       "files": {
