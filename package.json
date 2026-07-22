@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.0.68",
+  "version": "0.0.69",
   "description": "Centralized agent skills and multi-workflow hub for Cursor (spec-to-pr and related pipeline skills)",
   "license": "MIT",
   "author": "Jone Polvora",
