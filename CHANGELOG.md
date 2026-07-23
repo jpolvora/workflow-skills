@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-23 17:19] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Consolidate all open GitHub issues in repo (#106, #109, #110), create consolidated spec, implement fixes, ship PR #111, and merge to main.
+- **Done**: Created consolidated spec `step-00-consolidated-gh-issues.spec.md`; fixed residual `AGENTS.md` wording in `check-harness/SKILL.md` and `REPORT-FORMAT.md` (#106); cleared missing optional domain default paths in `config.json.example`, cleaned template layer rows in `STACK.md`, updated consumer-mode check-harness policy (#109); updated `check_workflows.py` with dynamic root detection, explicit UTF-8 encoding across subprocess/IO operations, non-interactive execution handling, and custom `pathTokens` resolution (#110). Bumped version to `0.0.75`, updated site catalog and integrity digests, created and merged PR #111 to `main`.
+- **Result**: PR #111 merged to `main`; issues #106, #109, #110 resolved; all 11 test suite phases passed cleanly.
+
 ### [2026-07-22 04:33] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: Standardize `ensure_utf8_stdio()` top-level import across all Python scripts; default `plans.dir` to `.agents/plans` and `plans.specsDir` to `.agents/specs`. Bump version to `0.0.70`.
 - **Done**: Added `os.environ["PYTHONIOENCODING"] = "utf-8"` and top-level `ensure_utf8_stdio()` to all 12 Python scripts across `.agents/skills/`; updated `config.json`, `config.json.example`, `config.schema.json`, `detect_specs_dir.py`, `local-spec-provider/SKILL.md`, `configure-project`, `AGENTS.md`, and `README.md` to default `plans.dir` to `.agents/plans` and `plans.specsDir` to `.agents/specs`; bumped version to `0.0.70`; regenerated site catalog and skill integrity manifest (`bin/skill-integrity.json`).
