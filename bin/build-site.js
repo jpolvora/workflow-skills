@@ -461,7 +461,7 @@ html = html.replace(
 
 // Stamp footer from package.json (same version consumers see via --version / --check)
 html = html.replace(
-  /(<footer>\s*<p>MIT &mdash; <a href="https:\/\/github.com\/jpolvora\/workflow-skills">jpolvora\/workflow-skills<\/a>)( &mdash; v\d+\.\d+\.\d+)?(\s*<\/p>\s*<\/footer>)/,
+  /(<footer>\s*<p>MIT &mdash; <a href="https:\/\/github.com\/jpolvora\/workflow-skills"[^>]*>jpolvora\/workflow-skills<\/a>)( &mdash; v\d+\.\d+\.\d+)?(\s*<\/p>\s*<\/footer>)/,
   `$1 &mdash; v${siteVersion}$3`
 );
 
