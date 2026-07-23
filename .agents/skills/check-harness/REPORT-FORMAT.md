@@ -44,7 +44,7 @@ Otherwise — **correction plan** (mandatory before editing):
 - **Error:** ...
 - **Correction:** ...
 
-### Skills and rules not routed in AGENTS.md
+### Skills and rules not routed in the resolved hub
 | Type | Id / file | Path | Plan suggestion (#) |
 |------|--------------|------|------------------------|
 | skill | `example` | `.agents/skills/example/SKILL.md` | #2 |
@@ -54,7 +54,7 @@ Otherwise — **correction plan** (mandatory before editing):
 - [ ] Progressive disclosure (AGENTS.md does not duplicate bodies) — [OK | inflation]
 - [ ] Skill → skill relationships — [OK | gaps]
 - [ ] Invocation triggers — [OK | absent]
-- [ ] Skills/rules on disk vs `AGENTS.md` — [OK | unrouted: N]
+- [ ] Skills/rules on disk vs resolved hub — [OK | unrouted: N]
 - [ ] Orchestrator dependency closure vs `bin/skill-dependencies.json` — [OK | gaps: ...]
 - [ ] `spec-to-pr` dependency portability — [OK | parameterization deviations from config.json]
 

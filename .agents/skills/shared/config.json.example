@@ -69,8 +69,8 @@
     "model": "<Brief domain model description>",
     "tenancyField": "<e.g. CompanyId, TenantId>",
     "platformPrefix": "<e.g. /api/v1/platform>",
-    "glossaryFile": "CONTEXT.md",
-    "designTokens": "DESIGN.md",
+    "glossaryFile": "",
+    "designTokens": "",
     "architectureSpec": "<path to architecture spec doc>"
   },
 

@@ -20,14 +20,6 @@ import subprocess
 from pathlib import Path
 from typing import List, Dict, Tuple, Set, Optional
 
-# Paths
-SCRIPT_DIR = Path(__file__).resolve().parent
-SKILL_DIR = SCRIPT_DIR.parent
-REPO_ROOT = SKILL_DIR.parents[2]
-SKILLS_DIR = REPO_ROOT / ".agents" / "skills"
-SHARED_DEPS_PATH = SKILLS_DIR / "shared" / "skill-dependencies.json"
-BIN_DEPS_PATH = REPO_ROOT / "bin" / "skill-dependencies.json"
-
 
 def ensure_utf8_stdio() -> None:
     """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode."""
@@ -46,6 +38,46 @@ def ensure_utf8_stdio() -> None:
 
 
 ensure_utf8_stdio()
+
+
+# Paths resolution
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+
+def find_repo_root(start_dir: Path) -> Path:
+    """Dynamically detect project root by scanning upward for marker files/folders."""
+    curr = start_dir.resolve()
+    for p in [curr] + list(curr.parents):
+        if (p / ".git").exists() or (p / "package.json").exists() or (p / ".agents").exists():
+            return p
+    if len(start_dir.parents) >= 2:
+        return start_dir.parents[2]
+    return start_dir.root
+
+
+REPO_ROOT = find_repo_root(SCRIPT_DIR)
+
+
+def resolve_skills_dir(repo_root: Path) -> Path:
+    """Respect pathTokens.skillsRoot from shared/config.json when present."""
+    config_path = repo_root / ".agents" / "skills" / "shared" / "config.json"
+    if config_path.exists():
+        try:
+            cfg = json.loads(config_path.read_text(encoding="utf-8", errors="replace"))
+            skills_token = cfg.get("pathTokens", {}).get("skillsRoot")
+            if skills_token:
+                candidate = repo_root / skills_token
+                if candidate.exists():
+                    return candidate
+        except Exception:
+            pass
+    fallback = repo_root / ".agents" / "skills"
+    return fallback if fallback.exists() else repo_root
+
+
+SKILLS_DIR = resolve_skills_dir(REPO_ROOT)
+SHARED_DEPS_PATH = SKILLS_DIR / "shared" / "skill-dependencies.json"
+BIN_DEPS_PATH = REPO_ROOT / "bin" / "skill-dependencies.json"
 
 
 class Issue:
@@ -93,7 +125,7 @@ class WorkflowChecker:
                 self.deps_location = str(deps_path).replace("\\", "/")
 
             try:
-                data = json.loads(deps_path.read_text(encoding="utf-8"))
+                data = json.loads(deps_path.read_text(encoding="utf-8", errors="replace"))
                 self.deps_map = data.get("dependencies", {})
                 self.deps_loaded = True
             except Exception as e:
@@ -124,8 +156,8 @@ class WorkflowChecker:
             self.simulation_results["standard"]["status"] = "FAIL"
             return
 
-        text = std_skill_path.read_text(encoding="utf-8")
-        
+        text = std_skill_path.read_text(encoding="utf-8", errors="replace")
+
         # Step definitions for Standard FSM
         expected_steps = {
             0: ("Spec Creation", "00-write-spec"),
@@ -220,7 +252,7 @@ class WorkflowChecker:
             self.simulation_results["lite"]["status"] = "FAIL"
             return
 
-        text = lite_skill_path.read_text(encoding="utf-8")
+        text = lite_skill_path.read_text(encoding="utf-8", errors="replace")
 
         expected_steps = {
             0: ("Spec Creation", "00-write-spec"),
@@ -305,7 +337,11 @@ class WorkflowChecker:
                 scripts_to_check.append(p)
 
         for script in scripts_to_check:
-            rel_path = script.relative_to(REPO_ROOT)
+            try:
+                rel_path = script.relative_to(REPO_ROOT)
+            except ValueError:
+                rel_path = script
+
             if script.suffix == ".py":
                 try:
                     py_compile.compile(str(script), doraise=True)
@@ -324,6 +360,8 @@ class WorkflowChecker:
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
                         text=True,
+                        encoding="utf-8",
+                        errors="replace",
                     )
                     if res.returncode != 0:
                         self.add_issue(
@@ -341,7 +379,7 @@ class WorkflowChecker:
         """Verify state update files and provider scripts target shared/config.json and serialize workflowType."""
         std_update = SKILLS_DIR / "spec-to-pr" / "scripts" / "update_state.py"
         if std_update.exists():
-            code = std_update.read_text(encoding="utf-8")
+            code = std_update.read_text(encoding="utf-8", errors="replace")
             if "workflowType" not in code or "standard" not in code:
                 self.add_issue(
                     "CRITICAL",
@@ -353,7 +391,7 @@ class WorkflowChecker:
 
         lite_update = SKILLS_DIR / "spec-to-pr-lite" / "scripts" / "update_state.py"
         if lite_update.exists():
-            code = lite_update.read_text(encoding="utf-8")
+            code = lite_update.read_text(encoding="utf-8", errors="replace")
             if "workflowType" not in code or "lite" not in code:
                 self.add_issue(
                     "CRITICAL",
@@ -365,7 +403,7 @@ class WorkflowChecker:
 
         lite_val_state = SKILLS_DIR / "spec-to-pr-lite" / "scripts" / "validate_state.py"
         if lite_val_state.exists():
-            code = lite_val_state.read_text(encoding="utf-8")
+            code = lite_val_state.read_text(encoding="utf-8", errors="replace")
             if "shared" not in code or "config.json" not in code:
                 self.add_issue(
                     "WARNING",
@@ -385,7 +423,7 @@ class WorkflowChecker:
         lines = []
         lines.append("# 🔍 check-workflows Deep Validation & Simulation Report")
         lines.append("")
-        
+
         overall = "PASS" if not any(i.severity == "CRITICAL" for i in self.issues) else "FAIL"
         badge = "✅ PASS" if overall == "PASS" else "❌ FAIL"
         lines.append(f"**Overall Status**: {badge}")
@@ -394,7 +432,7 @@ class WorkflowChecker:
 
         lines.append("## 🔄 Workflow Simulations")
         lines.append("")
-        
+
         for wf_key, wf_title in [("standard", "Standard (`spec-to-pr`)"), ("lite", "Lite (`spec-to-pr-lite`)")]:
             wf_data = self.simulation_results[wf_key]
             wf_status_icon = "✅" if wf_data["status"] == "PASS" else "❌"
@@ -448,18 +486,21 @@ def main():
 
     if args.report:
         report_file = REPO_ROOT / "check-workflows-report.md"
-        report_file.write_text(report_content, encoding="utf-8")
+        report_file.write_text(report_content, encoding="utf-8", errors="replace")
         print(f"\n📝 Report saved to {report_file}")
 
     # Interactive confirmation prompt when issues exist or when --fix is provided
     if checker.issues:
         if args.fix:
             print("\n🔧 Auto-fix mode requested.")
-            if not args.yes and sys.stdin.isatty():
-                ans = input("Do you want to proceed with applying suggested fixes? [y/N]: ").strip().lower()
-                if ans not in ("y", "yes"):
-                    print("Aborted by user.")
-                    sys.exit(1)
+            if not args.yes:
+                if sys.stdin.isatty():
+                    ans = input("Do you want to proceed with applying suggested fixes? [y/N]: ").strip().lower()
+                    if ans not in ("y", "yes"):
+                        print("Aborted by user.")
+                        sys.exit(1)
+                else:
+                    print("Non-interactive mode detected; proceeding with safe fixes.")
             print("Applying fixes...")
             # Auto-fixes applied here if any safe automated actions are registered
             print("Fixes evaluated.")

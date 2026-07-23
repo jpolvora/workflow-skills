@@ -23,7 +23,7 @@ Layers from `config.json.stack.backend.layers[]`, frontend from `frontend.source
 
 | Layer | Path | Role |
 |-------|------|------|
-| **{layer.name}** | `{layer.path}` | `{layer.role}` |
+| **Backend / Skill Layers** | Configured paths | See `config.json.stack.backend.layers[]` |
 | **Frontend** | `{frontend.sourceDir}` | Pages, components, routes, i18n |
 | **Tests** | `{backend.testProject}` | Unit + integration |
 | **Scripts** | `scripts/` | Dev helpers, seed |

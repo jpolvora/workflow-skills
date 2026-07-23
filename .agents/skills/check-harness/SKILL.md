@@ -98,8 +98,9 @@ Detect **install mode** before routing audits:
 - Primary hub is always `.agents/skills/shared/AGENTS.md` when present. Missing root `AGENTS.md` is **OK** (not a warning). A thin root pointer the consumer added is **OK**.
 - Do **not** warn that root lacks skill loading when the shared hub has it.
 - Route Phase 4 skill/rule inventory against **shared/AGENTS.md** (and root only if it also lists skills).
-- If root `AGENTS.md` is absent or does not point at the shared hub: optional **suggestion** that the consumer add a thin pointer (do **not** treat as a shipped-skill defect; installer must never write consumer root files).
-- Links to `shared/config.json` are healthy when the file exists (fresh install seeds it from `config.json.example`). Placeholder values → **suggestion** to run `configure-project`, **not** a warning for “missing config”.
+- If root `AGENTS.md` is absent or product-owned (does not claim to be the workflow router): do **not** emit a correction-plan item. At most print a one-line informational note suggesting a thin pointer.
+- Links to `shared/config.json` are healthy when the file exists (fresh install seeds it from `config.json.example`). Unconfigured seed placeholders or template `STACK.md` rows → **informational bootstrap note** recommending `configure-project`, **not** a correction-plan item.
+- Empty or unset optional rule keys (e.g. `rules.seniorDeveloper: ""`) are documented as optional and must **not** appear as numbered correction-plan items.
 - Missing `config.json` when `config.json.example` exists → **warning** (installer should have seeded; propose copy + configure-project).
 - Pipeline / orch / provider skills may be intentionally omitted from the promoted table when the hub marks them orch-only.
 - Sections titled **Extra package (optional)**: missing Extra skill paths are **intentional omission**, not phantom/critical broken links. When Extra skills **are** on disk, they must appear in that section (else unrouted warning).
@@ -669,7 +670,7 @@ Otherwise — **correction plan** (mandatory before editing): load [`REPORT-FORM
 1. Header (date, mode, scope, files inspected, status)
 2. Executive summary
 3. Correction plan table (`#` | severity | file | problem | proposed correction) + per-item details
-4. Skills and rules not routed in `AGENTS.md`
+4. Skills and rules not routed in the resolved hub
 5. Routing and decision checklist
 6. Redundancies and conflicts
 7. Auto-load skills matrix (Phase 5c.1) + conflict matrix + precedence verification
@@ -717,7 +718,7 @@ If the user requests, save to:
 - [ ] All § Scope files have been read or sampled via grep with link coverage
 - [ ] Phase 2: token expand before existence; no false `../` rewrites of healthy tokens; pipeline § 3b structure + retired folder ids checked (when `spec-to-pr` present)
 - [ ] Phase 3: orchestrator dependency closure checked vs `bin/skill-dependencies.json` (when present)
-- [ ] Phase 4 executed: filesystem ↔ `AGENTS.md` (+ packaged hub / `skill-dependencies.json` when present) diff documented
+- [ ] Phase 4 executed: filesystem ↔ resolved hub (§ Hub resolution; shared/AGENTS.md in consumer mode) (+ packaged hub / `skill-dependencies.json` when present) diff documented
 - [ ] Phase 5c executed: auto-load matrix, overlap analysis, simulated context load
 - [ ] No harness file was edited in this step
 

@@ -5,25 +5,25 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "9a0d942aac2737ed19dfeabfda67086e4f833fdd923768b595886ce6149cc54e",
+  "fullPackageDigest": "7dce403f57e455d5c381227590169d5d070a82c1182e63aee3d9eadf102830c8",
   "hub": {
     "files": {
       "AGENTS.md": "f12954ce6226eaab9d4fbec8d0241c57f01cc1343d8ea083dd65d73f63cf0eca",
       "CHANGELOG.md.template": "629bc607090addbd0a14b2f8dddedeec0af0a72e79c4cd4f77d7782cda1c4163",
       "config-resolution.md": "cb1345624a5b01e48e7b24d72af51bfbae4cb7373b4a092b6b961dd995ce605e",
-      "config.json.example": "516ddd9230886e28aa3674cfdf5a7cd6eaac9592e8b060d22adaed8a2d5264b6",
+      "config.json.example": "c1f3194a4754f9944162e3f2ad88ea19df58c92c0b3da4aa51d456b1ad48b0a2",
       "config.schema.json": "4ed520274dc00c0a6fce9d08b5d944aca64b3ec96efc7f3dfb72379a7d29c50a",
       "gates.md": "ba9a386a5cfdfff3119498a30a2f2d229e1ca938a712d8ba5112b27db3be37a5",
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "7c6093172b70d16497d540059c702d56a060d34abc0365ef6c7d13391d2cd44c",
       "setup.md": "65b68111cdf60b7f1c33e93e13243eb56066c2409b0165cd88cc77eff7f814bf",
       "skill-dependencies.json": "b2949afc3a719e3b6d43893fa9178e75fe977db4bed841a644096770cf732652",
-      "STACK.md.example": "4ad571e8b8e8a96922d99bd8265220061863586a05ad93e1b5134e5f34908ea2",
+      "STACK.md.example": "5c519c964971704c8d4ce27a6f7c59eabe516dc81b7aa036d566c9a3dccb2f1f",
       "tools.md": "154d246dc12be136cccdf5f0f9fa00a85188fedf2554fb421a77b5dd6288d432"
     },
-    "skillDigest": "a376971bd0f06041a83971439221af82f58fd049af72cc1e8b3bd362f770199a"
+    "skillDigest": "77a75d85193a3da501e43819d7e2dc1393ee0c95432ab6c8596631683f5267c2"
   },
-  "packageVersion": "0.0.74",
+  "packageVersion": "0.0.75",
   "skills": {
     "00-write-spec": {
       "files": {
@@ -120,17 +120,17 @@
     },
     "check-harness": {
       "files": {
-        "REPORT-FORMAT.md": "9f76f58f570caee33d8539247e8495cd7cfa4bd57f30765b323c72e32a1c5b3a",
-        "SKILL.md": "258bfed30c1aafd2a693d1a2fd84b8ee01cea48b2fd59aedfe092e9a3835b9b6"
+        "REPORT-FORMAT.md": "a2b433ac28de9ebf8d6f444bce29423a3f24a7a1007e0294a1629e5114f31cd0",
+        "SKILL.md": "0c6e364f7d2739ff99fab3361ee14476f145efce65a6bcbbd69ae4d6810ecf8c"
       },
-      "skillDigest": "5eb353138b8c56fbd2deaa9ebba2de4eccc24f8be1f0e0b0448e30ec366a311c"
+      "skillDigest": "44510fdd0f2b6c00b78b6ded4525f539cbcdd04534e696d2ac82b15ae47d0b77"
     },
     "check-workflows": {
       "files": {
-        "scripts/check_workflows.py": "79629e7328fdbbe10078234c70e83ece392fab3f770e6240f38d66e7ddc56afb",
+        "scripts/check_workflows.py": "26eb51f8d50278bcc3c5d421ca4a29e5c2e282b31683d86ebd6bf7a7c5d14bca",
         "SKILL.md": "5d1c789637e753630e3477ea3ea3471732ab6c2bdad3063795379936fcf441e6"
       },
-      "skillDigest": "37884421c4292e0b1aaf420c341d33da33541a1cfe285d911d1a8ccadd0fa12a"
+      "skillDigest": "09d9b4cff615f9e7d2e31be251088680d5494d5d6d9c099814ad19231e334751"
     },
     "configure-project": {
       "files": {
