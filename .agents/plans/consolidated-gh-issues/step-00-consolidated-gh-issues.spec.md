@@ -22,15 +22,15 @@ The open issues consolidated are:
 #### Issue #106: Residual `AGENTS.md` Wording in `check-harness`
 - **Context:** Follow-up to #103. While Phase 4 heading was updated to reference the "resolved hub", residual text in `check-harness/SKILL.md` (lines ~672 and ~720) and `REPORT-FORMAT.md` (lines ~47 and ~57) still hardcodes bare `` `AGENTS.md` ``, causing confusion in consumer mode where the hub is `shared/AGENTS.md`.
 - **Target Files:**
-  - [.agents/skills/check-harness/SKILL.md](file:///l:/source/workflow-skills/.agents/skills/check-harness/SKILL.md)
-  - [.agents/skills/check-harness/REPORT-FORMAT.md](file:///l:/source/workflow-skills/.agents/skills/check-harness/REPORT-FORMAT.md)
+  - [.agents/skills/check-harness/SKILL.md](.agents/skills/check-harness/SKILL.md)
+  - [.agents/skills/check-harness/REPORT-FORMAT.md](.agents/skills/check-harness/REPORT-FORMAT.md)
 
 #### Issue #109: Near-Zero `check-harness` Suggestions on Fresh Consumer Install
 - **Context:** A fresh install in a consumer repository currently yields 5 suggestion items in `check-harness` due to seed defaults (placeholders in `config.json.example`, optional uncreated files like `CONTEXT.md` / `DESIGN.md`, template rows in `STACK.md`, and unresolved optional rules like `rules.seniorDeveloper`).
 - **Target Files & Changes:**
-  - [.agents/skills/shared/config.json.example](file:///l:/source/workflow-skills/.agents/skills/shared/config.json.example) / `config.json`: Clear `domain.glossaryFile` and `domain.designTokens` to `""`.
-  - [.agents/skills/shared/STACK.md.example](file:///l:/source/workflow-skills/.agents/skills/shared/STACK.md.example) / `STACK.md`: Clean up template layer rows to prevent false broken inventory signals.
-  - [.agents/skills/check-harness/SKILL.md](file:///l:/source/workflow-skills/.agents/skills/check-harness/SKILL.md): Update consumer-mode check-harness classification so unconfigured seed placeholders and optional missing rules do not populate the correction plan as required edits.
+  - [.agents/skills/shared/config.json.example](.agents/skills/shared/config.json.example) / `config.json`: Clear `domain.glossaryFile` and `domain.designTokens` to `""`.
+  - [.agents/skills/shared/STACK.md.example](.agents/skills/shared/STACK.md.example) / `STACK.md`: Clean up template layer rows to prevent false broken inventory signals.
+  - [.agents/skills/check-harness/SKILL.md](.agents/skills/check-harness/SKILL.md): Update consumer-mode check-harness classification so unconfigured seed placeholders and optional missing rules do not populate the correction plan as required edits.
 
 #### Issue #110: `check-workflows` Path Resolution, Windows Encoding, and Error Handling
 - **Context:** Execution of `check_workflows.py` encounters edge cases:
@@ -38,7 +38,7 @@ The open issues consolidated are:
   2. Subprocess calls or file reads without explicit `encoding='utf-8'` trigger `UnicodeDecodeError` / `UnicodeEncodeError` on Windows (cp1252).
   3. Hardcoded references to `.agents/skills` ignore custom `pathTokens` from `shared/config.json`.
 - **Target Files:**
-  - [.agents/skills/check-workflows/scripts/check_workflows.py](file:///l:/source/workflow-skills/.agents/skills/check-workflows/scripts/check_workflows.py)
+  - [.agents/skills/check-workflows/scripts/check_workflows.py](.agents/skills/check-workflows/scripts/check_workflows.py)
 
 ---
 
