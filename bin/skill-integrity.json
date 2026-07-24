@@ -23,7 +23,7 @@
     },
     "skillDigest": "d6a70cd332a12e23df70336ecb4a94b60bf95159e384077c98f98d8262e9ae3a"
   },
-  "packageVersion": "0.0.78",
+  "packageVersion": "0.0.79",
   "skills": {
     "00-write-spec": {
       "files": {
