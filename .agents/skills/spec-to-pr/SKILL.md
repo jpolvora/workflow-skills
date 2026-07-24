@@ -56,6 +56,7 @@ Deterministic FSM; step content delegated to skills via **`dispatch-agent`**.
 2. **Context Isolation & State Hygiene:** Run each step in a clean, isolated subagent (`dispatch-agent`) with optional step worktrees, while keeping state sync (`state.md` + `MEMORY.md`) strictly valid.
 3. **Safety & Gates:** Enforce transition gates and explicit authorization before coding, review fixes, testing, and shipping.
 4. **Portability:** Keep the orchestrator FSM stack-agnostic and configuration-driven, resolving all project metadata and commands dynamically from `config.json` and `STACK.md`.
+5. **Optional Fable Quality Integration:** Read `config.json.fable`. When `enabled: true`, seamlessly incorporate domain adapters ([`fable-domain`](../fable-domain/SKILL.md) at Step 1) and adversarial audits ([`fable-judge`](../fable-judge/SKILL.md) at Steps 5, 6, and 8).
 
 ## Invariants
 

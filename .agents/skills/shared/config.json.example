@@ -156,5 +156,13 @@
     "efOnlyInInfrastructure": true,
     "noInlineHandWrittenMigrations": true,
     "commitPlanFilesOnlyAtStep8": true
+  },
+
+  "fable": {
+    "_comment": "Opt-in integration for fable-* skills within spec-to-pr / spec-to-pr-lite workflows. Master toggle must be true to enable automatic calls.",
+    "enabled": true,
+    "autoAudit": true,
+    "autoDetectDomain": true,
+    "auditVerdictsBlockShip": true
   }
 }
