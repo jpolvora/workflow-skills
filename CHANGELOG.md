@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-24 01:30] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Fix merge conflict in docs/index.html, remove bot commit step from deploy-site.yml, add Jone Polvora portfolio link to site footer, and ship PR #117.
+- **Done**: Removed the `github-actions[bot]` commit step from `.github/workflows/deploy-site.yml` to permanently eliminate branch drift between `main` and `develop`. Updated `bin/build-site.js` and `docs/index.html` to add `Developed by Jone Polvora` linking to `https://jpolvora.github.io/` in the site footer. Rebuilt site catalog (`v0.0.78`), regenerated integrity digests (`npm run generate-integrity`), ran workflow simulations (`check-workflows` ✅ PASS), created PR #117, merged PR #117 to `main`, and fast-forward synced `develop` with `main`.
+- **Result**: PR #117 merged; permanent fix for `docs/index.html` merge conflicts applied; site footer displays link to `jpolvora.github.io`; `main` and `develop` branches 100% in sync (`6e36563`).
+
 ### [2026-07-24 01:23] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: update AGENTS.md with new skills, verify if fable methods should be autoload (is it recommended?), check progressive disclosure index routing skills in root agents.md, and ship-pr.
 - **Done**: Replaced shorthand `.agents/skills/.../SKILL.md` in root `AGENTS.md` Layer 5 table with explicit paths for `spec-to-pr` and `spec-to-pr-lite`; updated Workflows package count reference from 28 to 31 ids in `.agents/AGENTS.md`; verified `fable-method` is not autoloaded and documented why autoloading it is not recommended; bumped version to `0.0.78`, regenerated site catalog and skill integrity manifest (`bin/skill-integrity.json`), ran full test suite (`npm run test` passed 100%), opened PR #116, resolved merge conflict with `main`, and merged PR #116 to `main`.
