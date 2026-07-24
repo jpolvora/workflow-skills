@@ -1,0 +1,15 @@
+{
+  "execMode": "sequential",
+  "tasks": [
+    {
+      "id": "task-1",
+      "description": "Fix verifyIds in bin/cli.js runUpdate to exclude custom consumer skills not in upstreamSet",
+      "files": ["bin/cli.js"]
+    },
+    {
+      "id": "task-2",
+      "description": "Add test case in test/test-install.js for updating with repo-local custom skills",
+      "files": ["test/test-install.js"]
+    }
+  ]
+}
