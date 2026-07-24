@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-23 21:26] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: `/spec-to-pr gh 113` — [bug] cli: update fails post-verification when consumer workspace has repo-local custom skills
+- **Done**: Modified `bin/cli.js` `runUpdate()` to filter `afterManifest.skills` by `upstreamSet.has(n)` so that post-verification evaluates only upstream skills against `bin/skill-integrity.json`. Added Phase 2b test assertion in `test/test-install.js` verifying update with repo-local custom skills. Created delivery commit `4e3cde5`, created PR #114, waited for CI checks, and merged PR #114 to `main`.
+- **Result**: Issue #113 fixed; PR #114 merged; `npm run tests -- --local` passed 100%.
+
 ### [2026-07-23 17:19] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: Consolidate all open GitHub issues in repo (#106, #109, #110), create consolidated spec, implement fixes, ship PR #111, and merge to main.
 - **Done**: Created consolidated spec `step-00-consolidated-gh-issues.spec.md`; fixed residual `AGENTS.md` wording in `check-harness/SKILL.md` and `REPORT-FORMAT.md` (#106); cleared missing optional domain default paths in `config.json.example`, cleaned template layer rows in `STACK.md`, updated consumer-mode check-harness policy (#109); updated `check_workflows.py` with dynamic root detection, explicit UTF-8 encoding across subprocess/IO operations, non-interactive execution handling, and custom `pathTokens` resolution (#110). Bumped version to `0.0.75`, updated site catalog and integrity digests, created and merged PR #111 to `main`.
