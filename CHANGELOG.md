@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-24 01:23] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: update AGENTS.md with new skills, verify if fable methods should be autoload (is it recommended?), check progressive disclosure index routing skills in root agents.md, and ship-pr.
+- **Done**: Replaced shorthand `.agents/skills/.../SKILL.md` in root `AGENTS.md` Layer 5 table with explicit paths for `spec-to-pr` and `spec-to-pr-lite`; updated Workflows package count reference from 28 to 31 ids in `.agents/AGENTS.md`; verified `fable-method` is not autoloaded and documented why autoloading it is not recommended; bumped version to `0.0.78`, regenerated site catalog and skill integrity manifest (`bin/skill-integrity.json`), ran full test suite (`npm run test` passed 100%), opened PR #116, resolved merge conflict with `main`, and merged PR #116 to `main`.
+- **Result**: PR #116 merged to `main`; `AGENTS.md` and `.agents/AGENTS.md` fully audited and aligned; test suite 100% green.
+
 ### [2026-07-23 21:26] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: `/spec-to-pr gh 113` — [bug] cli: update fails post-verification when consumer workspace has repo-local custom skills
 - **Done**: Modified `bin/cli.js` `runUpdate()` to filter `afterManifest.skills` by `upstreamSet.has(n)` so that post-verification evaluates only upstream skills against `bin/skill-integrity.json`. Added Phase 2b test assertion in `test/test-install.js` verifying update with repo-local custom skills. Created delivery commit `4e3cde5`, created PR #114, waited for CI checks, and merged PR #114 to `main`.

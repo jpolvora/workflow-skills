@@ -461,8 +461,8 @@ html = html.replace(
 
 // Stamp footer from package.json (same version consumers see via --version / --check)
 html = html.replace(
-  /(<footer>\s*<p>MIT &mdash; <a href="https:\/\/github.com\/jpolvora\/workflow-skills"[^>]*>jpolvora\/workflow-skills<\/a>)( &mdash; v\d+\.\d+\.\d+)?(\s*<\/p>\s*<\/footer>)/,
-  `$1 &mdash; v${siteVersion}$3`
+  /(<footer>\s*<p>MIT &mdash; <a href="https:\/\/github.com\/jpolvora\/workflow-skills"[^>]*>jpolvora\/workflow-skills<\/a>)( &mdash; v\d+\.\d+\.\d+)?(.*?\s*<\/p>\s*<\/footer>)/s,
+  `$1 &mdash; v${siteVersion} &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>\n</footer>`
 );
 
 fs.writeFileSync(indexPath, html);
