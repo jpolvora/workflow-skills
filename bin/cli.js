@@ -1470,7 +1470,7 @@ function runUpdate(skills, includeNew, forceIntegrity = false) {
 
   const afterManifest = readInstalledSkillsManifest();
   const verifyIds = afterManifest
-    ? afterManifest.skills.filter((n) => fs.existsSync(path.join(targetSkillsDir, n)))
+    ? afterManifest.skills.filter((n) => upstreamSet.has(n) && fs.existsSync(path.join(targetSkillsDir, n)))
     : skillsToCopy.filter((n) => fs.existsSync(path.join(targetSkillsDir, n)));
   if (verifyIds.length > 0) {
     postVerifyAndWriteLocal(verifyIds, {
