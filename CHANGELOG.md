@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-24 16:06] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: check last fixes. analyze, update website, README.md, dependencies graph, checksums, installer npx/bash, bump version to 0.0.79, commit, push, ship-pr, and wait for code-review.
+- **Done**: Audited codebase and harness integrity (`check-workflows` ✅ PASS, 0 issues); verified dependencies graph (`bin/skill-dependencies.json`); added domain catalog starter example (`specs/domains/index.md.example`); bumped version to `0.0.79` (`npm run build-site:bump`); updated site HTML (`docs/index.html`); regenerated integrity digests (`npm run generate-integrity`); updated test consumer package version (`test/package.json`); verified integrity (`npm run verify-integrity`); ran installation test suite (`npm run test` ✅ PASS across all 11 phases); prepared release commit and PR.
+- **Result**: Version `0.0.79` released with verified integrity digests, site catalog update, domain catalog example, and 100% passing test suite.
+
 ### [2026-07-24 01:38] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: Address local Agentic Code Reviewer findings (deduplicate config-resolution.md and align fable spec defaults) and ship PR #118.
 - **Done**: Removed 65-line duplicated text block in `.agents/skills/shared/config-resolution.md`; aligned `fable.enabled` default in `.agents/specs/fable-skills-integration.spec.md` (`true` default in fresh config example); regenerated integrity digests (`npm run generate-integrity`), ran workflow simulations (`check-workflows` ✅ PASS), created PR #118, merged PR #118 to `main`, and fast-forward synced `develop` with `main`.

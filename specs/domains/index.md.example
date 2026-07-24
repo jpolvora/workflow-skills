@@ -1,0 +1,20 @@
+# Domain Catalog
+
+Domain adapters customize evidence, authority, and fraud detection for specialized work.
+Each domain adapter file in this catalog follows the schema in `.agents/skills/fable-domain/references/TEMPLATE.md`.
+
+## Usage
+
+```bash
+/fable-domain create <domain-name>
+```
+
+## Adding a Domain
+
+1. Pick a domain name (kebab-case, e.g. `infrastructure`, `data-science`, `marketing`)
+2. Create `<domain>.md` in this directory
+3. Follow the template structure: domain identity, authority sources, binding evidence, verification commands, domain frauds
+
+## Example
+
+See `.agents/skills/fable-domain/references/devops.md` for a complete reference adapter.
