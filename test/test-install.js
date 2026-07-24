@@ -607,6 +607,42 @@ child.on('close', async (code) => {
     console.log('⏭ Skipped include-new restore assert (no removable candidate skill)');
   }
 
+  // --- Phase 2b: update with repo-local custom skills ---
+  {
+    const installedManifestPath = path.join(testSkillsDir, 'shared', 'installed-skills.json');
+    const customSkillDir = path.join(testSkillsDir, 'custom-local-skill');
+    fs.mkdirSync(customSkillDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(customSkillDir, 'SKILL.md'),
+      '---\nname: custom-local-skill\ndescription: Custom local skill\n---\n',
+      'utf8'
+    );
+
+    let manifestObj = JSON.parse(fs.readFileSync(installedManifestPath, 'utf8'));
+    if (!manifestObj.skills.includes('custom-local-skill')) {
+      manifestObj.skills.push('custom-local-skill');
+      fs.writeFileSync(installedManifestPath, JSON.stringify(manifestObj, null, 2), 'utf8');
+    }
+
+    const customUpdateResult = cp.spawnSync('npx', updateArgs, {
+      cwd: __dirname,
+      shell: true,
+      encoding: 'utf8'
+    });
+    if (customUpdateResult.status !== 0) {
+      console.error(customUpdateResult.stdout);
+      console.error(customUpdateResult.stderr);
+      fail(`update failed with custom repo-local skill (code ${customUpdateResult.status})`);
+    }
+
+    // Clean up temporary custom test skill
+    fs.rmSync(customSkillDir, { recursive: true, force: true });
+    manifestObj = JSON.parse(fs.readFileSync(installedManifestPath, 'utf8'));
+    manifestObj.skills = manifestObj.skills.filter((s) => s !== 'custom-local-skill');
+    fs.writeFileSync(installedManifestPath, JSON.stringify(manifestObj, null, 2), 'utf8');
+    ok('update succeeded with custom repo-local skill present');
+  }
+
   // Ensure upstream skills still covered (pipeline + providers)
   const installedAfter = listSkillDirs(testSkillsDir);
   const missingPipeline = [
