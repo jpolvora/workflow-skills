@@ -279,7 +279,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `caveman` | `.agents/skills/caveman/SKILL.md` | Autoload |
 | `gabarito` | `.agents/skills/gabarito/SKILL.md` | Autoload |
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Autoload |
-| `spec-to-pr` / `spec-to-pr-lite` | `.agents/skills/.../SKILL.md` | Orchestrators |
+| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
+| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |
 | `fable-method` | `.agents/skills/fable-method/SKILL.md` | 7-step problem-solving loop with gates |
 | `fable-domain` | `.agents/skills/fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
