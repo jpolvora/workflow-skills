@@ -44,7 +44,10 @@
         "self-learning",
         "changelog",
         "secrets-leak-review",
-        "configure-project"
+        "configure-project",
+        "fable-method",
+        "fable-judge",
+        "fable-domain"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -131,6 +134,19 @@
       "caveman",
       "gabarito",
       "self-learning"
+    ],
+    "fable-method": [
+      "fable-judge",
+      "fable-domain",
+      "caveman",
+      "gabarito",
+      "karpathy-guidelines",
+      "self-learning"
+    ],
+    "fable-judge": [
+      "caveman",
+      "gabarito",
+      "karpathy-guidelines"
     ]
   },
   "autoloadOnly": [],

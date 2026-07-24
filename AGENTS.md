@@ -225,7 +225,7 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 ## Skill catalog (layers)
 
-> **Drift check (dual scope):** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Packaged [`.agents/AGENTS.md`](.agents/AGENTS.md) scopes its Skill index and Task router to the **Workflows package** (28 skills) so Workflows-only consumer installs avoid phantom routes; Extra-package skills appear there only under `### Extra package (optional)`.
+> **Drift check (dual scope):** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Packaged [`.agents/AGENTS.md`](.agents/AGENTS.md) scopes its Skill index and Task router to the **Workflows package** (31 skills) so Workflows-only consumer installs avoid phantom routes; Extra-package skills appear there only under `### Extra package (optional)`.
 
 ### Layer 0 — Harness
 
@@ -267,9 +267,10 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 ### Layer 4 — Review & audit
 
-| Skill | Path |
-|-------|------|
-| `secrets-leak-review` | `.agents/skills/secrets-leak-review/SKILL.md` |
+| Skill | Path | Description |
+|-------|------|-------------|
+| `secrets-leak-review` | `.agents/skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+| `fable-judge` | `.agents/skills/fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Layer 5 — Utility & meta
 
@@ -279,6 +280,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `gabarito` | `.agents/skills/gabarito/SKILL.md` | Autoload |
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Autoload |
 | `spec-to-pr` / `spec-to-pr-lite` | `.agents/skills/.../SKILL.md` | Orchestrators |
+| `fable-method` | `.agents/skills/fable-method/SKILL.md` | 7-step problem-solving loop with gates |
+| `fable-domain` | `.agents/skills/fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
 | `self-learning` | `.agents/skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
 | `changelog` | `.agents/skills/changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
@@ -299,6 +302,9 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Verify | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `secrets-leak-review` |
+| Adversarial audit / fraud scan | `fable-judge` |
+| Fable Method 7-step loop | `fable-method` |
+| Domain adapters (DevOps/Data/Research) | `fable-domain` |
 | Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship PR | `ws-ship-pr` |

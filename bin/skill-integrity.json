@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "7dce403f57e455d5c381227590169d5d070a82c1182e63aee3d9eadf102830c8",
+  "fullPackageDigest": "d902e065730a598f352488d95002641b675915ba63ca431e7f67bf480785b6a1",
   "hub": {
     "files": {
       "AGENTS.md": "f12954ce6226eaab9d4fbec8d0241c57f01cc1343d8ea083dd65d73f63cf0eca",
@@ -23,7 +23,7 @@
     },
     "skillDigest": "77a75d85193a3da501e43819d7e2dc1393ee0c95432ab6c8596631683f5267c2"
   },
-  "packageVersion": "0.0.75",
+  "packageVersion": "0.0.76",
   "skills": {
     "00-write-spec": {
       "files": {
@@ -138,6 +138,27 @@
         "SKILL.md": "9fda9ea30b7c2f261641f0430ca2cc986ba0ce55716102c6129e054bb9078b27"
       },
       "skillDigest": "8f4735b4fb6ad0718c0d5561f08b544c0b9a4867d35d41260d4b8d81ea4f118e"
+    },
+    "fable-domain": {
+      "files": {
+        "references/devops.md": "a632eec8bcb1402a91055056f1b930ddbb6bf60e97939915eb78085ee36ddeb0",
+        "references/research.md": "14ce979c0650621b64d4103f412ff219ecc19650ad17e412c39bf7e08d0be02b",
+        "references/TEMPLATE.md": "0e734323e1d77d42e885d56109c26ad6ba0e1826a5119a2558e4740b39e61bf9",
+        "SKILL.md": "e0c39fc49309ac7573bf89a9bac9481ad257ba4f14cc690f30e31319f3d20980"
+      },
+      "skillDigest": "eafe6e9d48b4cfa41970fbe5e77aaf40c788b2d5261b7ff6e4ac1144a61bd8f0"
+    },
+    "fable-judge": {
+      "files": {
+        "SKILL.md": "5f3609807400a0607397485add42217c3e97c0f3739626d272fe94ef3fa0b050"
+      },
+      "skillDigest": "768e0708821cc364998db7c35183bcf6afcd2bb96837cca24e82d1980d93dfd5"
+    },
+    "fable-method": {
+      "files": {
+        "SKILL.md": "561f931dfc2797a0ba3ee9e0d7197a6a3d21ac5838e895e89a09b46c6b5469c0"
+      },
+      "skillDigest": "af6d45044c1ce883f2129dbd7ef302984777bc705b04b57ca48de62e2836cc30"
     },
     "gabarito": {
       "files": {

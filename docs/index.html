@@ -143,7 +143,7 @@
       <p class="section-subtitle">Discover production-grade agent skills across 4 modular layers.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">30</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">33</strong> skills available</span>
     </div>
   </div>
 
@@ -381,9 +381,16 @@
   <div class="layer" data-layer-id="layer-4">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 4</span> — Review & audit</h3>
-      <span class="count">1 skills</span>
+      <span class="count">2 skills</span>
     </div>
     <div class="skill-grid">
+      <div class="skill-card" data-path=".agents/skills/fable-judge/SKILL.md" data-name="fable-judge" data-slug="fable-judge" data-desc="adversarial verification of finished work. diff ground truth against claims, re-run verifications, and detect the 4 classic frauds (weakened checks, false completion claims, scope creep, unauthorized action). delivers an evidence-based verdict (verified, verified with caveats, refuted)." data-layer="layer-4" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">fable-judge</div>
+        </div>
+        <div class="desc">Adversarial verification of finished work. Diff Ground Truth against claims, re-run verifications, and detect the 4 classic frauds (weakened checks, false completion claims, scope creep, unauthorized action). Delivers an evidence-based verdict (VERIFIED, VERIFIED WITH CAVEATS, REFUTED).</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/fable-judge/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+      </div>
       <div class="skill-card" data-path=".agents/skills/secrets-leak-review/SKILL.md" data-name="secrets-leak-review" data-slug="secrets-leak-review" data-desc="use when asked to check for secrets, leak check, secrets scan, pre-commit security check, hardcoded passwords, pii scan, repo leak audit, or before pushing to a public repository." data-layer="layer-4" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">secrets-leak-review</div>
@@ -401,7 +408,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">10 skills</span>
+      <span class="count">12 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md" data-name="caveman" data-slug="caveman" data-desc="ultra-compressed communication mode. cuts output token usage ~75% while keeping full technical accuracy. intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. use when the user invokes /caveman or asks for briefer, lower-token responses." data-layer="layer-5" data-full="true" data-lite="true">
@@ -436,6 +443,20 @@
         </div>
         <div class="desc">Interview and detect project settings to fill or update `.agents/skills/shared/config.json` with suggested values. Use when config.json is missing or incomplete, after install when the user wants to configure, before spec-to-pr bootstrap, or when the user asks to set up / reconfigure workflow config, providers, stack, or verification commands.</div>
         <a class="view-skill" href="#" data-path=".agents/skills/configure-project/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/fable-domain/SKILL.md" data-name="fable-domain" data-slug="fable-domain" data-desc="generates and manages domain adapters for specialized agent workflows (devops, data analysis, research, ops). defines binding minimum evidence sets, domain authority, observation rules, and fraud definitions." data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">fable-domain</div>
+        </div>
+        <div class="desc">Generates and manages domain adapters for specialized agent workflows (DevOps, Data Analysis, Research, Ops). Defines binding minimum evidence sets, domain authority, observation rules, and fraud definitions.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/fable-domain/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/fable-method/SKILL.md" data-name="fable-method" data-slug="fable-method" data-desc="step-by-step problem-solving loop with triviality & fit gates (classify ask, define done, gather evidence from primary sources, decide, act surgically, verify by observation, report outcome-first). use when invoked via /fable-method or when approaching complex/trap-prone tasks without full spec-to-pr ceremony." data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">fable-method</div>
+        </div>
+        <div class="desc">Step-by-step problem-solving loop with triviality & fit gates (classify ask, define done, gather evidence from primary sources, decide, act surgically, verify by observation, report outcome-first). Use when invoked via /fable-method or when approaching complex/trap-prone tasks without full spec-to-pr ceremony.</div>
+        <a class="view-skill" href="#" data-path=".agents/skills/fable-method/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
       </div>
       <div class="skill-card" data-path=".agents/skills/gabarito/SKILL.md" data-name="gabarito" data-slug="gabarito" data-desc="gabarito — operational response guidelines (accountability, anti-sycophancy, systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification, calibrated confidence, prompt refinement, anti-regression memory) plus style discipline. apply on every user-facing response unless the user opts out." data-layer="layer-5" data-full="true" data-lite="true">
         <div class="skill-card-top">
@@ -549,9 +570,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 28 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 31 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+20)
+        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+23)
       </div>
     </div>
 
@@ -567,6 +588,8 @@
     </div>
   </div>
 </section>
+
+
 
 
 
@@ -690,7 +713,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.75</p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.76</p>
 </footer>
 
 <!-- Skill Viewer Modal -->

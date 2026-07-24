@@ -28,6 +28,7 @@ Two delivery workflows (install independently; both share `.agents/skills/shared
 |----------|----------|---------|
 | **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM steps 0–9) |
 | **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → review → ship → fix-pr (steps 0–5) |
+| **[`fable-method`](.agents/skills/fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
 
 They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer a native structured choice UI when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the executing session model (`Current model` on every transition). To change model for the next step: Pause → switch in your IDE/agent host → resume (no `--model` / `--model-chain` flags). Skills stay **host-neutral** — artifact dirs come from `config.json` (`plans.dir` default `.agents/plans`; optional `reviews.dir` default `.agents/codereviews`). Agents also expand fixed **path tokens** (`pathTokens.skillsRoot` / `sharedDir`, defaults `.agents/skills` and `.agents/skills/shared`) per [`tools.md`](.agents/skills/shared/tools.md) § Path tokens. Details for agents: [`AGENTS.md`](AGENTS.md) § Portability. Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
 
@@ -182,9 +183,21 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`update-plan-implementation`](.agents/skills/update-plan-implementation/SKILL.md) | Pipeline `00`–`09` + `goal-fix-pr` / `update-plan-implementation` (`ws-*`; FSM steps 0–9 + post) |
 | [`github-provider`](.agents/skills/github-provider/SKILL.md) · [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) · [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
 
-### Review & audit (Extra)
+### Review & audit
 
-[`secrets-leak-review`](.agents/skills/secrets-leak-review/SKILL.md)
+| Skill | Role |
+|-------|------|
+| [`secrets-leak-review`](.agents/skills/secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan |
+| [`fable-judge`](.agents/skills/fable-judge/SKILL.md) | Adversarial audit, fraud detection & diff-grounded verification |
+
+### Utility, meta & domain
+
+| Skill | Role |
+|-------|------|
+| [`fable-method`](.agents/skills/fable-method/SKILL.md) | 7-step problem-solving loop with gates |
+| [`fable-domain`](.agents/skills/fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) |
+| [`caveman`](.agents/skills/caveman/SKILL.md) · [`gabarito`](.agents/skills/gabarito/SKILL.md) · [`karpathy-guidelines`](.agents/skills/karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
+| [`self-learning`](.agents/skills/self-learning/SKILL.md) · [`changelog`](.agents/skills/changelog/SKILL.md) · [`configure-project`](.agents/skills/configure-project/SKILL.md) | Memory, history & project configuration |
 
 ---
 
