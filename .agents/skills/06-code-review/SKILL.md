@@ -61,6 +61,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
    - Done when: the pattern sweep ran and results are reported.
 
 6. **Check invariants**: cross-check `config.json.invariants` / `config.json.rules`: tenancy filters, DB-migrations-CLI-only, domain rules, React hook cleanup/dependency arrays, and i18n keys present in every locale from `config.json.stack.frontend.i18n.locales[]`.
+   - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`fable-judge`](../fable-judge/SKILL.md) to perform adversarial audit for the 4 classic frauds (Weakened Checks, False Completion, Scope Creep, Unauthorized Action). Report detected frauds as Critical or Warning findings to trigger `04-implement-tasks mode=fix`.
    - Done when: each applicable checklist item is checked.
 
 7. **Write report**: save `step-06-{slug}.review.md`. No findings: write `No feedback` and stop. Findings: use severity sections Critical / Warning / Suggestion, each with `path:L#`, description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?**.

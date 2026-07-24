@@ -13,7 +13,7 @@ Disclosed detail for [`SKILL.md`](SKILL.md). Load when detecting or interviewing
 
 ## Optional (offer once, skippable)
 
-`stack`, `domain`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`.
+`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`.
 
 ## Detection heuristics
 
@@ -38,6 +38,7 @@ Scan consumer **repo root** (not this skill package alone):
 | Repo-root `CHANGELOG.md` | Only if user sets `rules.changelogFile: "CHANGELOG.md"` |
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
+| Fable skills in `.agents/skills/` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: true` |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
 ## Interview order
@@ -47,7 +48,8 @@ Scan consumer **repo root** (not this skill package alone):
 3. `plans.dir` / `plans.specsDir` / optional `reviews.dir`
 4. `verification` (+ `orchestration` if detected)
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
-6. `domain` / `rules` / `defaults` — optional
+6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
+7. `domain` / `rules` / `defaults` — optional
 
 Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.
 

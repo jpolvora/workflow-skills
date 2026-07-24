@@ -126,14 +126,22 @@
       "09-fix-pr",
       "goal-loop"
     ],
+    "01-write-plan": [
+      "fable-domain"
+    ],
+    "05-verify-plan": [
+      "fable-judge"
+    ],
     "08-ship-pr": [
-      "secrets-leak-review"
+      "secrets-leak-review",
+      "fable-judge"
     ],
     "06-code-review": [
       "karpathy-guidelines",
       "caveman",
       "gabarito",
-      "self-learning"
+      "self-learning",
+      "fable-judge"
     ],
     "fable-method": [
       "fable-judge",

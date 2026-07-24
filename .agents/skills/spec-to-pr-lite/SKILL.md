@@ -30,6 +30,7 @@ Deterministic FSM for sequential spec-to-ship delivery. Reuses the **same** pipe
 - **Ship:** Combined delivery+ship gate at Step 4; `08-ship-pr` with `workflowMode: true`, `stopBeforeFixPr: true`.
 - **Fix-PR:** Step 5 first-class (`ws-goal-fix-pr` / `ws-fix-pr`).
 - **Branch-direct** default; worktree when `plans.useWorktrees=true`.
+- **Optional Fable integration:** Respects `config.json.fable.enabled`. When `true`, Step 1 consults [`fable-domain`](../fable-domain/SKILL.md), Step 3 runs [`fable-judge`](../fable-judge/SKILL.md) during code review, and Step 4 verifies audit verdict before PR creation.
 
 ---
 

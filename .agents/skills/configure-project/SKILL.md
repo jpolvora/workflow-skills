@@ -23,7 +23,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 | Flag | Effect |
 |------|--------|
-| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `defaults`) |
+| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`) |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
 
