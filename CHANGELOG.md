@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-24 16:32] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: add to website in each skill card at the bottom each skill dependency badge.
+- **Done**: Updated `bin/build-site.js` to extract direct skill dependencies from `bin/skill-dependencies.json` and render interactive dependency badges (`.dep-pill`) at the bottom of every skill card in `docs/index.html`; styled `.skill-card-bottom`, `.skill-deps-wrap`, `.deps-heading`, `.deps-list`, and `.dep-pill` in `docs/assets/css/style.css` with theme-tailored colors, hover glow, and thin custom scrollbars; added interactive click-to-search on dependency pills; regenerated site HTML (`docs/index.html`); updated skill integrity digests (`npm run generate-integrity`); ran full installation test suite (`npm run test` ✅ PASS).
+- **Result**: Every skill card on the catalog now displays interactive dependency badges; test suite 100% green.
+
 ### [2026-07-24 16:06] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: check last fixes. analyze, update website, README.md, dependencies graph, checksums, installer npx/bash, bump version to 0.0.79, commit, push, ship-pr, and wait for code-review.
 - **Done**: Audited codebase and harness integrity (`check-workflows` ✅ PASS, 0 issues); verified dependencies graph (`bin/skill-dependencies.json`); added domain catalog starter example (`specs/domains/index.md.example`); bumped version to `0.0.79` (`npm run build-site:bump`); updated site HTML (`docs/index.html`); regenerated integrity digests (`npm run generate-integrity`); updated test consumer package version (`test/package.json`); verified integrity (`npm run verify-integrity`); ran installation test suite (`npm run test` ✅ PASS across all 11 phases); prepared release commit and PR.
