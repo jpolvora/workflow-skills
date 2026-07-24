@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-24 01:38] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Address local Agentic Code Reviewer findings (deduplicate config-resolution.md and align fable spec defaults) and ship PR #118.
+- **Done**: Removed 65-line duplicated text block in `.agents/skills/shared/config-resolution.md`; aligned `fable.enabled` default in `.agents/specs/fable-skills-integration.spec.md` (`true` default in fresh config example); regenerated integrity digests (`npm run generate-integrity`), ran workflow simulations (`check-workflows` ✅ PASS), created PR #118, merged PR #118 to `main`, and fast-forward synced `develop` with `main`.
+- **Result**: PR #118 merged; `config-resolution.md` deduplicated; `main` and `develop` branches 100% in sync (`01608a1`).
+
 ### [2026-07-24 01:30] Agent: Antigravity (Gemini 3.6 Flash)
 - **Prompt**: Fix merge conflict in docs/index.html, remove bot commit step from deploy-site.yml, add Jone Polvora portfolio link to site footer, and ship PR #117.
 - **Done**: Removed the `github-actions[bot]` commit step from `.github/workflows/deploy-site.yml` to permanently eliminate branch drift between `main` and `develop`. Updated `bin/build-site.js` and `docs/index.html` to add `Developed by Jone Polvora` linking to `https://jpolvora.github.io/` in the site footer. Rebuilt site catalog (`v0.0.78`), regenerated integrity digests (`npm run generate-integrity`), ran workflow simulations (`check-workflows` ✅ PASS), created PR #117, merged PR #117 to `main`, and fast-forward synced `develop` with `main`.
