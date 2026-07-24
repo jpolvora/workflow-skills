@@ -890,8 +890,99 @@ section h2 {
   font-size: 0.875rem;
   color: var(--text-muted);
   line-height: 1.55;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   flex-grow: 1;
+}
+
+.skill-card-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.skill-deps-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.deps-heading {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.deps-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-height: 72px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.deps-list::-webkit-scrollbar {
+  width: 4px;
+}
+.deps-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+.deps-list::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+
+.dep-pill {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  color: var(--accent-purple);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .dep-pill {
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.25);
+  color: #7c3aed;
+}
+
+.dep-pill:hover {
+  background: rgba(167, 139, 250, 0.2);
+  border-color: var(--accent-purple);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.2);
+}
+
+.dep-pill.none {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-subtle);
+  color: var(--text-dim);
+  font-weight: 400;
+  font-style: italic;
+  cursor: default;
+}
+
+.dep-pill.none:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-subtle);
+}
+
+[data-theme="light"] .dep-pill.none {
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .skill-card .view-skill {
@@ -902,7 +993,6 @@ section h2 {
   font-weight: 600;
   color: var(--accent-cyan);
   font-family: var(--font-mono);
-  margin-top: auto;
   transition: all var(--transition-fast);
 }
 

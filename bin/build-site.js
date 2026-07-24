@@ -127,18 +127,19 @@ for (let i = 0; i < layerSections.length; i++) {
 const depMapPath = path.join(root, 'bin', 'skill-dependencies.json');
 let standardDeps = new Set();
 let liteDeps = new Set();
+let directDepsMap = {};
 
 if (fs.existsSync(depMapPath)) {
   try {
     const depMap = JSON.parse(fs.readFileSync(depMapPath, 'utf-8'));
-    const deps = depMap.dependencies || {};
+    directDepsMap = depMap.dependencies || {};
 
     function getTransitiveDeps(rootSkill) {
       const result = new Set([rootSkill]);
       const queue = [rootSkill];
       while (queue.length > 0) {
         const current = queue.shift();
-        const currentDeps = deps[current] || [];
+        const currentDeps = directDepsMap[current] || [];
         for (const d of currentDeps) {
           if (!result.has(d)) {
             result.add(d);
@@ -293,15 +294,27 @@ for (const [key, layer] of sorted) {
       badgesHtml += `        </div>\n`;
     }
 
-    catalogHtml += `      <div class="skill-card" data-path="${sk.path}" data-name="${sk.name.toLowerCase()}" data-slug="${sk.slug.toLowerCase()}" data-desc="${sk.description.toLowerCase()}" data-layer="${layerSlug}" data-full="${isFull}" data-lite="${isLite}">\n`;
+    const rawDeps = directDepsMap[sk.slug] || directDepsMap[sk.name] || [];
+    let depsHtml = '';
+    if (rawDeps.length > 0) {
+      const depPills = rawDeps.map(dep => `<span class="dep-pill" data-dep="${dep}">${dep}</span>`).join('');
+      depsHtml = `<div class="skill-deps-wrap"><div class="deps-heading">Dependencies (${rawDeps.length}):</div><div class="deps-list">${depPills}</div></div>`;
+    } else {
+      depsHtml = `<div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>`;
+    }
+
+    catalogHtml += `      <div class="skill-card" data-path="${sk.path}" data-name="${sk.name.toLowerCase()}" data-slug="${sk.slug.toLowerCase()}" data-desc="${sk.description.toLowerCase()}" data-deps="${rawDeps.join(' ').toLowerCase()}" data-layer="${layerSlug}" data-full="${isFull}" data-lite="${isLite}">\n`;
     catalogHtml += `        <div class="skill-card-top">\n`;
     catalogHtml += `          <div class="name">${sk.name}</div>\n`;
     catalogHtml += badgesHtml;
     catalogHtml += `        </div>\n`;
     catalogHtml += `        <div class="desc">${sk.description}</div>\n`;
+    catalogHtml += `        <div class="skill-card-bottom">\n`;
+    catalogHtml += `          ${depsHtml}\n`;
     if (sk.path) {
-      catalogHtml += `        <a class="view-skill" href="#" data-path="${sk.path}">View skill <span class="arrow">&rarr;</span></a>\n`;
+      catalogHtml += `          <a class="view-skill" href="#" data-path="${sk.path}">View skill <span class="arrow">&rarr;</span></a>\n`;
     }
+    catalogHtml += `        </div>\n`;
     catalogHtml += `      </div>\n`;
   }
   catalogHtml += `    </div>\n`;
