@@ -9,7 +9,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 > **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (28 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (31 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
 
 > **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
@@ -151,6 +151,8 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `caveman` | `skills/caveman/SKILL.md` | Ultra-compressed response (~75% fewer tokens) |
 | `gabarito` | `skills/gabarito/SKILL.md` | Ten operational response guidelines |
 | `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
+| `fable-method` | `skills/fable-method/SKILL.md` | 7-step problem-solving loop with gates |
+| `fable-domain` | `skills/fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `spec-format` | `skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
 | `self-learning` | `skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
@@ -162,6 +164,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | Skill | Path | Description |
 |-------|------|-------------|
 | `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+| `fable-judge` | `skills/fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Extra package (optional)
 
@@ -184,6 +187,9 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 |-------------|---------------|
 | Spec → PR end-to-end | `spec-to-pr` |
 | Spec → PR lite (sequential) | `spec-to-pr-lite` |
+| Fable Method 7-step loop | `fable-method` |
+| Adversarial audit / fraud scan | `fable-judge` |
+| Domain adapters (DevOps/Data/Research) | `fable-domain` |
 | Write a spec | `ws-write-spec` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement / fix code | `ws-implement-tasks` |
