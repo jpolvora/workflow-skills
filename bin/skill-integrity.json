@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "bf1f5d0c9ac2ad13f9cba857b0b9cdf85b3bf6fa33ced563fc510b34bc1a066a",
+  "fullPackageDigest": "497f37f96b7a7b021195361d3acd381c80e723b1bedffd25f22005f20166708e",
   "hub": {
     "files": {
       "AGENTS.md": "f12954ce6226eaab9d4fbec8d0241c57f01cc1343d8ea083dd65d73f63cf0eca",
@@ -172,9 +172,9 @@
         "scripts/fetch_threads.cjs": "7565a31dc61914bd5c32b179f0281f78a5e2e581c137ef10d4b6332e23eb6d82",
         "scripts/github-issue-to-spec.py": "796ba91e8d017febf9f54d771324c53a5e18e2232bf206c46c0432fa9a5432c7",
         "scripts/resolve_thread.cjs": "c3bbde8a992fef85e16e61ba22750130bb109d42e039fa9864d25206d1fabd81",
-        "SKILL.md": "6e96c45788b4341f9cd27df24b2ad40ef92e3b44951742f42be7510f9e585cc6"
+        "SKILL.md": "bae99c61b8b1c66c810f1de12cef08493b47fdbdc01316ddec8b88b2658aeabd"
       },
-      "skillDigest": "3d15813501cee081571617f8ea2c140a76c6603c950d8d5902600ab522121c12"
+      "skillDigest": "d601f2b2ad98963ecd318ca1c68b6e29d7f6eca92e416942925cc50b63112e3d"
     },
     "goal-fix-pr": {
       "files": {

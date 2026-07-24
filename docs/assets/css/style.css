@@ -925,6 +925,8 @@ section h2 {
   max-height: 72px;
   overflow-y: auto;
   padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle) rgba(0, 0, 0, 0.1);
 }
 
 .deps-list::-webkit-scrollbar {

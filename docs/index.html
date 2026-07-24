@@ -702,6 +702,8 @@
 
 
 
+
+
 <section id="install">
   <div class="section-header">
     <h2>Installation, Updates & Management</h2>
@@ -994,11 +996,16 @@
       var name = card.getAttribute('data-name') || '';
       var desc = card.getAttribute('data-desc') || '';
       var slug = card.getAttribute('data-slug') || '';
+      var deps = card.getAttribute('data-deps') || '';
       var layer = card.getAttribute('data-layer') || '';
       var isFull = card.getAttribute('data-full') === 'true';
       var isLite = card.getAttribute('data-lite') === 'true';
 
-      var matchesSearch = !currentSearch || name.includes(currentSearch) || desc.includes(currentSearch) || slug.includes(currentSearch);
+      var matchesSearch = !currentSearch ||
+        name.includes(currentSearch) ||
+        desc.includes(currentSearch) ||
+        slug.includes(currentSearch) ||
+        deps.includes(currentSearch);
       
       var matchesFilter = true;
       if (currentFilter === 'layer-0') matchesFilter = layer.includes('layer-0');
@@ -1025,6 +1032,18 @@
     if (visibleCountEl) visibleCountEl.textContent = visibleCount;
     if (noResultsEl) noResultsEl.classList.toggle('hidden', visibleCount > 0);
   }
+
+  // Click on dependency pill to filter catalog for that dependency
+  document.addEventListener('click', function(e) {
+    var pill = e.target.closest('.dep-pill:not(.none)');
+    if (!pill) return;
+    var depName = pill.getAttribute('data-dep');
+    if (!depName || !searchInput) return;
+    searchInput.value = depName;
+    currentSearch = depName.toLowerCase().trim();
+    filterSkills();
+    searchInput.focus();
+  });
 
   if (searchInput) {
     searchInput.addEventListener('input', function() {

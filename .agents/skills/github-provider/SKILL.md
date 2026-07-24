@@ -120,8 +120,10 @@ Plans dir may follow `config.plans.dir` (default `.agents/plans`).
 ### `create-pr`
 
 ```bash
-gh pr create --head {head} --base {base} --title "{title}" --body "{body}"
+gh pr create --head {head} --base {base} --title "{title}" --body-file {plansDir}/pr-body.md
 ```
+
+*Shell / Encoding note*: On Windows / PowerShell, prefer `--body-file <file>` (or single-quoted `'...'` body string) to prevent PowerShell backtick escape sequence mangling (e.g. `` `b `` converting to backspace `\x08` or `` `n `` converting to newline `\n`).
 
 Reuse an existing open PR for the same head→base when present (`gh pr list` / `gh pr view`). Capture PR number and URL for the caller (`08-ship-pr`).
 
