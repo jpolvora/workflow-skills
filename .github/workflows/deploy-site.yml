@@ -43,20 +43,6 @@ jobs:
             exit 1
           fi
 
-      # Keep docs/ on main in sync for the repo; [skip ci] avoids re-entry.
-      # Pages publish no longer watches the branch — only the deploy job below.
-      - name: Commit catalog changes (if any)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore: auto-regenerate site catalog [skip ci]"
-            git push
-          fi
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
