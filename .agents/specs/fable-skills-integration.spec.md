@@ -14,7 +14,7 @@ Define and implement an opt-in integration mechanism connecting the `fable-*` sk
 
 ### Goals
 
-- **Strict Opt-In Control**: Default `config.json.fable.enabled` to `false` to maintain 100% backward compatibility and prevent unexpected side effects in existing projects.
+- **Default Integration**: Default `config.json.fable.enabled` to `true` in fresh `config.json.example` while treating missing `fable` blocks in legacy configs as disabled.
 - **Adversarial Audit Gate (`fable-judge`)**: Run adversarial checks against `git diff` ground truth during plan verification (`05-verify-plan`), code review (`06-code-review`), and pre-ship checks (`08-ship-pr`). Detect the 4 classic frauds (Weakened Checks, False Completion, Scope Creep, Unauthorized Action) and block ship when verdicts yield `REFUTED`.
 - **Domain Context Resolution (`fable-domain`)**: Automatically inspect project stack signals (IaC `*.tf`, Kubernetes `*.yaml`, Docker, DB migrations, Data scripts) during plan generation (`01-write-plan`) to inject mandatory primary sources & domain observation rules.
 - **Harness & Integrity Parity**: Keep `skill-dependencies.json`, `skill-integrity.json`, and site catalog (`docs/index.html`) in sync with all updated skill manifests.
@@ -30,7 +30,7 @@ Add `"fable"` configuration schema to `.agents/skills/shared/config.json.example
 ```json
 "fable": {
   "_comment": "Opt-in integration for fable-* skills within spec-to-pr / spec-to-pr-lite workflows. Master toggle must be true to enable automatic calls.",
-  "enabled": false,
+  "enabled": true,
   "autoAudit": true,
   "autoDetectDomain": true,
   "auditVerdictsBlockShip": true
