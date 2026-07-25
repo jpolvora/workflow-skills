@@ -134,6 +134,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-ship-pr` | 8 | `skills/ws-ship-pr/SKILL.md` | Delivery commit + push + create PR |
 | `ws-fix-pr` | 9 | `skills/ws-fix-pr/SKILL.md` | Resolve active PR review threads |
 | `ws-goal-fix-pr` | 9 | `skills/ws-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
+| `ws-long-runner` | Orchestrator | `skills/ws-long-runner/SKILL.md` | Sequential multi-spec batch delivery orchestrator |
 | `ws-update-plan-implementation` | Post-workflow | `skills/ws-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
 
 ### Providers (platform-specific entry + PR ops)
@@ -187,6 +188,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 |-------------|---------------|
 | Spec → PR end-to-end | `spec-to-pr` |
 | Spec → PR lite (sequential) | `spec-to-pr-lite` |
+| Batch spec delivery | `ws-long-runner` |
 | Fable Method 7-step loop | `fable-method` |
 | Adversarial audit / fraud scan | `fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `fable-domain` |
