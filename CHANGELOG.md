@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 02:20] Agent: Cursor Grok 4.5
+- **Prompt**: Add rules to `.github/agentic-code-reviewers-prompt.md` for harness/workflow gates, installer tests, dependency graph, skill lists, and naming
+- **Done**: Extended review prompt with must-pass `check-harness` / `check-workflows`, installer tests, `skill-dependencies.json` closure, skill inventory drift, `ws-*` + bare invocation names, and ban on `NN-*` folders
+- **Result**: Custom stack reviewer prompt encodes upstream ship gates and skill naming contract
+
 ### [2026-07-25 00:57] Agent: Cursor Grok 4.5
 - **Prompt**: commit all, update website, graph, installer, prepare ship-pr (rename pipeline folders to ws-*)
 - **Done**: Renamed 12 pipeline folders to match frontmatter (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`); updated hubs, orch/dispatch, `skill-dependencies.json`, installer/CLI examples, validators, tests, and stale `00`–`09` prose; fixed `self_learning.py` shared-path after `scripts/` move; bumped to `0.0.81`, rebuilt site catalog + integrity digests
