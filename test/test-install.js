@@ -162,8 +162,17 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   const depMap = JSON.parse(
     fs.readFileSync(path.join(parentDir, 'bin/skill-dependencies.json'), 'utf8')
   );
+  const sharedDepMap = JSON.parse(
+    fs.readFileSync(path.join(parentDir, '.agents/skills/shared/skill-dependencies.json'), 'utf8')
+  );
   if (!depMap.packages?.workflows?.skills?.includes('spec-to-pr')) {
     fail('skill-dependencies.json workflows package missing spec-to-pr');
+  }
+  if (!depMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
+    fail('bin/skill-dependencies.json workflows package missing ws-multi-spec');
+  }
+  if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
+    fail('.agents/skills/shared/skill-dependencies.json workflows package missing ws-multi-spec');
   }
   if (depMap.packages?.extra?.skills?.includes('spec-to-pr')) {
     fail('skill-dependencies.json Extra must not include workflow orchestrators');
