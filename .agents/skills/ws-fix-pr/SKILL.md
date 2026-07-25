@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.
-version: 0.0.81
+version: 0.0.82
 disable-model-invocation: true
 invocation_names:
   - fix-pr

@@ -1,7 +1,7 @@
 ---
 name: azure-devops-provider
 description: Azure DevOps provider for spec-to-pr — work item→spec, PAT auth, PR create/threads/merge via az CLI and/or REST plus provider scripts. Use when providers.active or providers.scm is azure-devops, or when invoking /azure-devops-provider standalone.
-version: 0.0.81
+version: 0.0.82
 disable-model-invocation: true
 ---
 
@@ -13,11 +13,17 @@ Resolve `org` / `project` from `{sharedDir}/config.json` (`issueTrackers.azureDe
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /azure-devops-provider <intent> [args...]
 ```
 
-Workflow: orch entry / fix-pr / ship-pr pass intent + args; gates follow the parent.
+Examples: `fetch-to-spec ADO 123` · `validate-auth` · `create-pr --head develop --base main` · `list-threads 42` · `merge-pr 42`.
+
+### Workflow Mode
+
+Orch entry / `ws-fix-pr` / `ws-goal-fix-pr` / `ws-ship-pr` pass intent + args when `providers.active` or `providers.scm` is `azure-devops`; gates follow the parent.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|

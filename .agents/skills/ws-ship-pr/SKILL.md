@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait 30 seconds for code-review action to start on GitHub infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopBeforeFixPr / no-merge).
-version: 0.0.81
+version: 0.0.82
 disable-model-invocation: true
 invocation_names:
   - ship-pr

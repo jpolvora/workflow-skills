@@ -1,7 +1,7 @@
 ---
 name: check-workflows
 description: Deeply validate and simulate workflow processes (spec-to-pr & spec-to-pr-lite) near real usage. Detects broken steps, missing dependencies, script syntax errors, and suggests actionable fixes with interactive user confirmation.
-version: 0.0.81
+version: 0.0.82
 disable-model-invocation: true
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: ws-verify-plan
 description: Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.
-version: 0.0.81
+version: 0.0.82
 disable-model-invocation: true
 invocation_names:
   - verify-plan

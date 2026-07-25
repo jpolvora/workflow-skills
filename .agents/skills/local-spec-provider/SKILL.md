@@ -5,7 +5,7 @@ description: >
   hand-written *.spec.md into canonical step-00 artifacts (source: local). PR intents delegate to
   providers.scm. Use when /local-spec-provider, active provider is local, or registering a local
   *.spec.md path.
-version: 0.0.81
+version: 0.0.82
 disable-model-invocation: true
 ---
 
@@ -17,11 +17,17 @@ Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agen
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /local-spec-provider <intent> [args...]
 ```
 
-Workflow: orch when `providers.active=local` or input is `*.spec.md`; also `ws-write-spec` optional mirror.
+Examples: `fetch-to-spec path/to/feature.spec.md` · `validate-auth` · `fetch-to-spec feature --mirror`. Prints `specPath` / `specsDir`.
+
+### Workflow Mode
+
+Orch when `providers.active=local` or input is `*.spec.md`; also `ws-write-spec` optional mirror. Records `specSource: local`, skips Step 0 → Step 1 gate.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|

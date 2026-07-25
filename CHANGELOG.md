@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 02:35] Agent: Cursor Grok 4.5
+- **Prompt**: `/ws-ship-pr` (develop → main)
+- **Done**: Restored Standalone/Workflow Mode sections on provider SKILL.md files; inlined check-harness Phase 3 skill-integrity `--check` gate in SKILL.md; bumped package to `0.0.82`, regenerated site footer + integrity digests; verified `verify.sh`, `check-workflows`, leak scan
+- **Result**: Release `0.0.82` ready to ship (`develop` → `main`)
+
 ### [2026-07-25 02:20] Agent: Cursor Grok 4.5
 - **Prompt**: Add rules to `.github/agentic-code-reviewers-prompt.md` for harness/workflow gates, installer tests, dependency graph, skill lists, and naming
 - **Done**: Extended review prompt with must-pass `check-harness` / `check-workflows`, installer tests, `skill-dependencies.json` closure, skill inventory drift, `ws-*` + bare invocation names, and ban on `NN-*` folders

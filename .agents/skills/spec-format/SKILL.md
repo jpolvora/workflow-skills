@@ -5,7 +5,7 @@ description: >-
   Load when the user invokes /spec-format, @spec-format, "create spec", "review spec",
   "format spec" or requests validation of local specification format.
 disable-model-invocation: true
-version: 0.0.81
+version: 0.0.82
 ---
 
 # spec-format

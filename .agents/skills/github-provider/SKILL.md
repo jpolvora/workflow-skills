@@ -1,7 +1,7 @@
 ---
 name: github-provider
 description: GitHub provider for spec-to-pr — issue→spec, auth checks, PR create/threads/merge via gh CLI and provider scripts. Use when providers.active or providers.scm is github, or when invoking /github-provider standalone.
-version: 0.0.81
+version: 0.0.82
 disable-model-invocation: true
 ---
 
@@ -13,11 +13,17 @@ Resolve `owner` / `repo` from `{sharedDir}/config.json` ([`config-resolution.md`
 
 ## Invocation
 
+### Standalone Mode
+
 ```
 /github-provider <intent> [args...]
 ```
 
-Workflow: orch entry / `ws-fix-pr` / `ws-goal-fix-pr` / `ws-ship-pr` pass intent + args; gates follow the parent.
+Examples: `fetch-to-spec 2416` · `validate-auth` · `create-pr --head develop --base main` · `list-threads 42` · `merge-pr 42`.
+
+### Workflow Mode
+
+Orch entry / `ws-fix-pr` / `ws-goal-fix-pr` / `ws-ship-pr` pass intent + args when `providers.active` or `providers.scm` is `github`; gates follow the parent.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|

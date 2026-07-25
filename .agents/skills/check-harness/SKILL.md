@@ -2,7 +2,7 @@
 name: check-harness
 description: Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (ws-* folders == frontmatter name), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.
 disable-model-invocation: true
-version: 0.0.81
+version: 0.0.82
 ---
 
 # Check Harness
@@ -68,6 +68,8 @@ Consumer: missing root `AGENTS.md` is OK. Extra-package optional missing paths =
 ## Scan + methodology
 
 **Always load** [`PHASES.md`](PHASES.md) for: Scan scope inventory, pipeline § 3b contract, Phases 0–7 procedures (including 5b/5c).
+
+**Skill integrity manifest (Phase 3, upstream only):** when `bin/skill-integrity.json` is expected, require `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exit 0. Stale/missing → **critical**. Correction: `npm run generate-integrity`, re-run `--check`, commit `bin/skill-integrity.json` with the package change. Full procedure: [`PHASES.md`](PHASES.md) Phase 3 item 7.
 
 Step ↔ Phase: Step 1 = Phases 0–5c · Step 2 = Phase 6 · Step 3 = Phase 7.
 
