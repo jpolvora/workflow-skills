@@ -5,10 +5,10 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "52671dddad4c5695c6cb64362deb6b86c25e712f6354d7efddaa7b159fc8349f",
+  "fullPackageDigest": "531978163a43cc7fa944d4dc71ddca1f671ee8b3112688dd2193dbb28c63f2a7",
   "hub": {
     "files": {
-      "AGENTS.md": "d9f1f836589004c9bfb36110ce67b3b58862b59b45f1b54bdf079f7849051512",
+      "AGENTS.md": "6cb399eff376e6fb6378a85c15fc8b0609d64524ad2c6891df4e6f6aa87c4725",
       "CHANGELOG.md.template": "629bc607090addbd0a14b2f8dddedeec0af0a72e79c4cd4f77d7782cda1c4163",
       "config-resolution.md": "55249e33df5c1cbf25d072b2d22c206f9fc6a934c67aa9ad78a609b521a27117",
       "config.json.example": "c949a85f94338132c81bff18a187110bf39eb7543b0ed95099afc622bc3155c3",
@@ -17,13 +17,13 @@
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "27eae7b6faf83bd00d299ff8cef6f2d0411a563c376a066ef6ec5a7a1a4f19a2",
       "setup.md": "65b68111cdf60b7f1c33e93e13243eb56066c2409b0165cd88cc77eff7f814bf",
-      "skill-dependencies.json": "d4fe0f191ee9f1a1b6a8182c5509f8222bb1de3e365f81391e8d172b36dc7f8e",
+      "skill-dependencies.json": "8cc3b2a466fed4411fd6fea9fa0f1ae6f2d45ac190f9c85f7e95a1be7d65b4e1",
       "STACK.md.example": "455ba84c006261566831416d412a7cc2f127901678b2547799fccf949a1d4d54",
       "tools.md": "3c0d2857351cd86e58c33ac2ae2d60956be2645b183b2fe4d27fdcc8d604e32a"
     },
-    "skillDigest": "05ca42e4b3bc2325fd04c7dcb89d7dcbeb6c7b072471ed7e11b588ce23542017"
+    "skillDigest": "97b74e1ada9c349cfa57f9ebf942f6cfda102a0d07fd12a01aa7cfd5e091c6f4"
   },
-  "packageVersion": "0.0.82",
+  "packageVersion": "0.0.83",
   "skills": {
     "azure-devops-provider": {
       "files": {
@@ -258,6 +258,16 @@
         "SKILL.md": "d49bde0b110ab44ebfbcc3ce5c25c0522c30b475d0cdc63e0da8da1a1315e13d"
       },
       "skillDigest": "49463eba21087e1a7f846b1cdafbd06260105e6d5950a564c73c2d06968185ea"
+    },
+    "ws-long-runner": {
+      "files": {
+        "evals/evals.json": "e63363c94cf75db9e1dc148552a5ceb000398434fc87ddeca54b51689678b555",
+        "EXAMPLES.md": "f508cac9504280153a482f110ddc4809e406dd319a3f0a950cc7aba935d53f26",
+        "PROTOCOL.md": "4990cc20dc13a5172b3710cf34a30ccecbe4e91f8939415c985fa802418ad6b0",
+        "SKILL.md": "ace1fc0e89f5ae8e36107eae67c0e40bacfd521b0fefd549613e4bc2ffbe4efe",
+        "STATE.md": "7c8f02b356dfdd5b74e594633dddd6ada6eb08dbffea73920725fc767d7282e1"
+      },
+      "skillDigest": "c36f6189117021c4ac533383adf26eaafa5afd30ae2beb25b2f90ca53f3db05c"
     },
     "ws-plan-to-tasks": {
       "files": {

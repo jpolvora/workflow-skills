@@ -143,7 +143,7 @@
       <p class="section-subtitle">Discover production-grade agent skills across 4 modular layers.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">33</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">34</strong> skills available</span>
     </div>
   </div>
 
@@ -475,7 +475,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">12 skills</span>
+      <span class="count">13 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md" data-name="caveman" data-slug="caveman" data-desc="ultra-compressed communication mode. cuts output token usage ~75% while keeping full technical accuracy. intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. use when the user invokes /caveman or asks for briefer, lower-token responses." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
@@ -640,6 +640,16 @@
           <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <div class="skill-card" data-path=".agents/skills/ws-long-runner/SKILL.md" data-name="ws-long-runner" data-slug="ws-long-runner" data-desc="sequential multi-spec batch delivery orchestrator. executes a queue of specs sequentially using spec-to-pr workers. invoke: /ws-long-runner | @[ws-long-runner]. entry: state file | list of specs | blank (scan default specsdir)." data-deps="spec-to-pr caveman gabarito karpathy-guidelines" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-long-runner</div>
+        </div>
+        <div class="desc">Sequential multi-spec batch delivery orchestrator. Executes a queue of specs sequentially using spec-to-pr workers. Invoke: /ws-long-runner | @[ws-long-runner]. Entry: state file | list of specs | blank (scan default specsDir).</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (4):</div><div class="deps-list"><span class="dep-pill" data-dep="spec-to-pr">spec-to-pr</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-long-runner/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
     </div>
   </div>
   </div>
@@ -677,9 +687,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 31 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 32 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, <code>ws-verify-plan</code>, … (+23)
+        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, <code>ws-verify-plan</code>, … (+24)
       </div>
     </div>
 
@@ -695,6 +705,10 @@
     </div>
   </div>
 </section>
+
+
+
+
 
 
 
@@ -820,7 +834,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.82 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.83 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->
