@@ -83,6 +83,8 @@
 | `caveman` | [`../caveman/SKILL.md`](../caveman/SKILL.md) |
 | `gabarito` | [`../gabarito/SKILL.md`](../gabarito/SKILL.md) |
 | `karpathy-guidelines` | [`../karpathy-guidelines/SKILL.md`](../karpathy-guidelines/SKILL.md) |
+| `fable-method` | [`../fable-method/SKILL.md`](../fable-method/SKILL.md) |
+| `fable-domain` | [`../fable-domain/SKILL.md`](../fable-domain/SKILL.md) |
 | `spec-format` | [`../spec-format/SKILL.md`](../spec-format/SKILL.md) |
 | `configure-project` | [`../configure-project/SKILL.md`](../configure-project/SKILL.md) |
 | `goal-loop` | [`../goal-loop/SKILL.md`](../goal-loop/SKILL.md) |
@@ -96,6 +98,7 @@
 | `check-harness` | [`../check-harness/SKILL.md`](../check-harness/SKILL.md) |
 | `check-workflows` | [`../check-workflows/SKILL.md`](../check-workflows/SKILL.md) |
 | `secrets-leak-review` | [`../secrets-leak-review/SKILL.md`](../secrets-leak-review/SKILL.md) |
+| `fable-judge` | [`../fable-judge/SKILL.md`](../fable-judge/SKILL.md) |
 
 ### Extra package (optional)
 
@@ -120,6 +123,9 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 |--------|------|
 | Spec → PR E2E | `spec-to-pr` |
 | Spec → PR lite | `spec-to-pr-lite` |
+| Fable Method 7-step loop | `fable-method` |
+| Adversarial audit / fraud scan | `fable-judge` |
+| Domain adapters (DevOps/Data/Research) | `fable-domain` |
 | Fill / update `config.json` | `configure-project` |
 | Audit harness | `check-harness` |
 | Check workflows | `check-workflows` |
