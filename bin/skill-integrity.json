@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "8080d63e461b1defc6337f6dd7c7feb7ba45bfd5d8451697f0f2189e776d33f0",
+  "fullPackageDigest": "89534febf73b1c7315aaffa1c801eff07978065837ae7738abb9d9d06f10673e",
   "hub": {
     "files": {
       "AGENTS.md": "6fb589261405a02c4023e4854523dac70cd5ce28a4fa7a710972b963d2c35620",
@@ -17,13 +17,13 @@
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "27eae7b6faf83bd00d299ff8cef6f2d0411a563c376a066ef6ec5a7a1a4f19a2",
       "setup.md": "65b68111cdf60b7f1c33e93e13243eb56066c2409b0165cd88cc77eff7f814bf",
-      "skill-dependencies.json": "6d513e45f57d906214ece911409e7a00806d691345a2154a5d8c0a0e4f19d77a",
+      "skill-dependencies.json": "2b22c19f5b26a2752ecfde193775bea767a310ab4cdc281691674ea1cb46292b",
       "STACK.md.example": "455ba84c006261566831416d412a7cc2f127901678b2547799fccf949a1d4d54",
       "tools.md": "3c0d2857351cd86e58c33ac2ae2d60956be2645b183b2fe4d27fdcc8d604e32a"
     },
-    "skillDigest": "5ea77ba5787d0f6a23cc475ddcf12e73c9c5966e20c854e43945a50504441a08"
+    "skillDigest": "c18a81c7e32bf701b8ff122f53c5e36a349edb024a1ebc8a0cfd344edeaaa8b2"
   },
-  "packageVersion": "0.0.84",
+  "packageVersion": "0.0.85",
   "skills": {
     "azure-devops-provider": {
       "files": {
@@ -62,10 +62,10 @@
     "check-workflows": {
       "files": {
         "evals/evals.json": "3858f287aa98330372ba406fbe98c2cb037a24464385bad22a3b4ad3fce34a06",
-        "scripts/check_workflows.py": "bcccf24bd77509233d6cbf0c0e704cd343fd03d94b497af44ca460881fee47c4",
+        "scripts/check_workflows.py": "9f06286cf995c7a92e895472d4062d47073070db083f76448a59a5a79e673f72",
         "SKILL.md": "5abc235826804a49a68716102dcde4ebdd90e6c0e61a1f9d92612394a5fb8c15"
       },
-      "skillDigest": "3af2a6b85e5a9878067cbc4b4e5784ba6da5b5c17149f17064cde91dfe5caf6c"
+      "skillDigest": "45b1310e92d506749b349c84d9802838b387e02e6d9d164a8c5585078a08c398"
     },
     "configure-project": {
       "files": {
