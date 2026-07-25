@@ -31,6 +31,7 @@
 | [`setup.md`](setup.md) | Bootstrap & entry logic shared by `spec-to-pr` and `spec-to-pr-lite` |
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
 | [`CHANGELOG.md.template`](CHANGELOG.md.template) | Empty changelog stub — seeds `CHANGELOG.md` |
+| [`skill-dependencies.json`](skill-dependencies.json) | Install graph + **`packageVersion`** + single **`upstream`** ownership block (no per-skill `upstream:` in SKILL.md) |
 
 ## Consumer-owned (local only)
 

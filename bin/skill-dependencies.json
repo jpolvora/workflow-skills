@@ -1,5 +1,11 @@
 {
   "version": 1,
+  "packageVersion": "0.0.81",
+  "upstream": {
+    "repo": "jpolvora/workflow-skills",
+    "url": "https://github.com/jpolvora/workflow-skills",
+    "note": "Managed skills ship from this upstream. Lasting improvements must be submitted as PRs there; consumer copies are overwritten on update."
+  },
   "hub": {
     "dir": "shared",
     "ensureWhen": [

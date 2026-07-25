@@ -1,8 +1,7 @@
 ---
 name: check-workflows
 description: Deeply validate and simulate workflow processes (spec-to-pr & spec-to-pr-lite) near real usage. Detects broken steps, missing dependencies, script syntax errors, and suggests actionable fixes with interactive user confirmation.
-upstream: jpolvora/workflow-skills — this skill is a harness validation skill. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.1
+version: 0.0.81
 disable-model-invocation: true
 ---
 

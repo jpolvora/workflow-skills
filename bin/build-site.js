@@ -38,6 +38,45 @@ if (shouldBump) {
   pkg.version = siteVersion;
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
   console.log(`Bumping package.json version: ${currentVersion} -> ${siteVersion}`);
+
+  // Keep skill frontmatter + skill-dependencies packageVersion in lockstep with package.json
+  const skillRoot = path.join(root, '.agents', 'skills');
+  let skillVerUpdates = 0;
+  for (const ent of fs.readdirSync(skillRoot, { withFileTypes: true })) {
+    if (!ent.isDirectory()) continue;
+    const skillMd = path.join(skillRoot, ent.name, 'SKILL.md');
+    if (!fs.existsSync(skillMd)) continue;
+    const text = fs.readFileSync(skillMd, 'utf-8');
+    if (!text.startsWith('---\n')) continue;
+    const end = text.indexOf('\n---\n', 4);
+    if (end < 0) continue;
+    let fm = text.slice(4, end);
+    const body = text.slice(end + 5);
+    if (/^version:\s*/m.test(fm)) {
+      fm = fm.replace(/^version:\s*.*$/m, `version: ${siteVersion}`);
+    } else if (/^name:\s*/m.test(fm)) {
+      fm = fm.replace(/^(name:\s*.*)$/m, `$1\nversion: ${siteVersion}`);
+    } else {
+      fm = `version: ${siteVersion}\n${fm}`;
+    }
+    const next = `---\n${fm}\n---\n${body}`;
+    if (next !== text) {
+      fs.writeFileSync(skillMd, next);
+      skillVerUpdates += 1;
+    }
+  }
+  console.log(`Synced version: ${siteVersion} into ${skillVerUpdates} SKILL.md frontmatter(s)`);
+
+  for (const rel of [
+    path.join(root, 'bin', 'skill-dependencies.json'),
+    path.join(root, '.agents', 'skills', 'shared', 'skill-dependencies.json'),
+  ]) {
+    if (!fs.existsSync(rel)) continue;
+    const deps = JSON.parse(fs.readFileSync(rel, 'utf-8'));
+    deps.packageVersion = siteVersion;
+    fs.writeFileSync(rel, JSON.stringify(deps, null, 2) + '\n');
+    console.log(`Synced packageVersion in ${path.relative(root, rel)}`);
+  }
 } else {
   console.log(`Using package.json version: ${siteVersion} (pass --bump to patch-bump)`);
 }

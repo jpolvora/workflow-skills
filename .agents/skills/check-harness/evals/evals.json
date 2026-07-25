@@ -6,7 +6,7 @@
       "prompt": "/check-harness on this repo after skill edits.",
       "expected_output": "Phases 0–5c audit report; critical findings listed with paths.",
       "assertions": [
-        "Agent loads check-harness",
+        "Agent loads check-harness SKILL.md and PHASES.md for methodology",
         "Checks routing, links, portability, en-us",
         "Does not claim zero critical without running phases"
       ]

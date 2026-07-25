@@ -1,8 +1,7 @@
 ---
 name: ws-update-plan-implementation
 description: Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 1.4
+version: 0.0.81
 disable-model-invocation: true
 invocation_names:
   - update-plan-implementation

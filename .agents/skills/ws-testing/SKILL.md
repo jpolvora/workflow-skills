@@ -1,8 +1,7 @@
 ---
 name: ws-testing
 description: Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.5
+version: 0.0.81
 disable-model-invocation: true
 invocation_names:
   - testing

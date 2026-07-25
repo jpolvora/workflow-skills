@@ -1,8 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Executes code implementations or fixes defects following a plan, DAG, or review findings.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.4
+version: 0.0.81
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -91,10 +90,6 @@ summary: |
   (Summary text of changes and verifications)
 ```
 
-## Rules of Engagement
+## Rules
 
-- No auto-commits: never commit or push code; let the orchestrator or user handle branch staging and commits.
-- Strict scope isolation: do not refactor adjacent files or expand feature scope.
-- Migration safety: never hand-write schema migration files; always use project CLI tools.
-
-Language: en-us only.
+No commit/push (orch/user owns staging). Surgical scope only. Schema migrations via project CLI only. Language: en-us.
