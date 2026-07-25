@@ -84,7 +84,7 @@ Entry / fetch: resolve `providers.active` → [`github-provider`](../github-prov
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `update-memory` | Write learned pattern | Create unique file in `{sharedDir}/memory/` and run `python {skillsRoot}/self-learning/self_learning.py --compile` |
+| `update-memory` | Write learned pattern | Create unique file in `{sharedDir}/memory/` and run `python {skillsRoot}/self-learning/scripts/self_learning.py --compile` |
 | `update-changelog` | Append historical log | `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
 ## Script launchers

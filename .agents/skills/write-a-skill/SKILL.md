@@ -39,9 +39,11 @@ Root virtue: **predictability** (same process every run, not the same tokens). B
 ```
 skill-name/
 ├── SKILL.md        # required (prefer ≤100 lines)
+├── evals/
+│   └── evals.json  # recommended — 2–3 prompts + assertions per agentskills.io
 ├── GLOSSARY.md     # or REFERENCE.md — disclosed reference
 ├── EXAMPLES.md     # optional
-└── scripts/        # deterministic helpers only
+└── scripts/        # deterministic helpers only (when earned)
 ```
 
 ## Description (model-invoked)

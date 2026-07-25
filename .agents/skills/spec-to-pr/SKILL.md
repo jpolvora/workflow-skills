@@ -302,7 +302,7 @@ Fix substep is **not** its own `completedSteps` entry — log `review-fix` in `#
 
 At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated decisions`, `## Step outputs`) and `.agents/skills/shared/MEMORY.md` index. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
 
-**Step 8 sweep:** Promote generalizable patterns to `shared/memory/*.md` + run `self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
+**Step 8 sweep:** Promote generalizable patterns to `shared/memory/*.md` + run `python {skillsRoot}/self-learning/scripts/self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
 
 ### Specification Protocol
 
