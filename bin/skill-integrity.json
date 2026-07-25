@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "d5c87c84dd66befe4ffb2b88ba3000c978a9fe98471891a58a5c2047a4dd2adb",
+  "fullPackageDigest": "ccd8ccef2ce84b07baf81c59c3605e2a1790ce6017e789b2e80945364292d089",
   "hub": {
     "files": {
       "AGENTS.md": "f7de6ba9c946759c8b7db5f198a5aab47c914bf698ec921e4076d1d4aca61f3f",
@@ -233,11 +233,11 @@
     },
     "ws-goal-fix-pr": {
       "files": {
-        "evals/evals.json": "c82446b9acce3ea042ec3b128c50ba8e4f31acc01f38acc48c2d427069fa284c",
+        "evals/evals.json": "7b901c239e025ebe3b52fed16d77ffc30911391ba07691b06a9aeba06eb14547",
         "examples.md": "5b556ba1020dcfb084e1d3c83fc81232e048a207c6706e5ec0627b9bfbe48e76",
         "SKILL.md": "9ab7c738ef87e55340eb854d80b917daa681553c3fb37bd0d9a4100009083e13"
       },
-      "skillDigest": "1579b019fc91fb9db00beaebf21aa371bfb2b113ff7a23d3df732fa79e9bb29d"
+      "skillDigest": "8d5b7d61fc43a64160b668cd040d71af78d863ef58283dd0d731d4d16d035f8e"
     },
     "ws-implement-tasks": {
       "files": {

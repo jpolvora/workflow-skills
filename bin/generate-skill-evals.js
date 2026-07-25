@@ -267,7 +267,7 @@ const EVALS = {
         prompt: 'Keep fixing PR #42 until zero open review threads.',
         expected_output: 'Convergence loop via ws-goal-fix-pr until thread count is zero or blocked.',
         assertions: [
-          'Agent loads ws-goal-fix-pr or ws-goal-fix-pr',
+          'Agent loads ws-goal-fix-pr or goal-fix-pr',
           'Uses goal-loop convergence pattern',
           'Reports remaining thread count each iteration',
         ],
