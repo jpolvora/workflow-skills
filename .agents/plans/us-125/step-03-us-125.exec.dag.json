@@ -1,0 +1,51 @@
+{
+  "execMode": "sequential",
+  "reason": "Skill addition and registration fits well within sequential execution bounds (5 tasks across skill creation, registration, indexes, site/integrity build).",
+  "tasks": [
+    {
+      "id": "task-1",
+      "name": "Create ws-long-runner skill files",
+      "files": [
+        ".agents/skills/ws-long-runner/SKILL.md",
+        ".agents/skills/ws-long-runner/PROTOCOL.md",
+        ".agents/skills/ws-long-runner/STATE.md",
+        ".agents/skills/ws-long-runner/EXAMPLES.md",
+        ".agents/skills/ws-long-runner/evals/evals.json"
+      ],
+      "deps": []
+    },
+    {
+      "id": "task-2",
+      "name": "Register skill in bin/skill-dependencies.json",
+      "files": [
+        "bin/skill-dependencies.json"
+      ],
+      "deps": ["task-1"]
+    },
+    {
+      "id": "task-3",
+      "name": "Update skill hubs and routers (AGENTS.md)",
+      "files": [
+        "AGENTS.md",
+        ".agents/AGENTS.md",
+        ".agents/skills/shared/AGENTS.md"
+      ],
+      "deps": ["task-2"]
+    },
+    {
+      "id": "task-4",
+      "name": "Rebuild site catalog and integrity checksums",
+      "files": [
+        "bin/skill-integrity.json",
+        "docs/index.html"
+      ],
+      "deps": ["task-3"]
+    },
+    {
+      "id": "task-5",
+      "name": "Run verification checks (integrity, harness, tests)",
+      "files": [],
+      "deps": ["task-4"]
+    }
+  ]
+}
