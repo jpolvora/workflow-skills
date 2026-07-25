@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 02:40] Agent: Cursor Grok 4.5
+- **Prompt**: `/fable-method` fix GH Action code review false-positive success (OpenCode install / BASH_SOURCE)
+- **Done**: Removed `continue-on-error: true` from `.github/workflows/code-review.yml`; pre-install OpenCode via authenticated `gh api` + pinned `--version`; run `run.sh` from a downloaded file (not `curl|bash`); aligned root `AGENTS.md` dry-run recipe
+- **Result**: Reviewer exit 1 can no longer paint the job green; CI avoids unauthenticated GitHub rate-limit install failure
+
 ### [2026-07-25 02:35] Agent: Cursor Grok 4.5
 - **Prompt**: `/ws-ship-pr` (develop → main)
 - **Done**: Restored Standalone/Workflow Mode sections on provider SKILL.md files; inlined check-harness Phase 3 skill-integrity `--check` gate in SKILL.md; bumped package to `0.0.82`, regenerated site footer + integrity digests; verified `verify.sh`, `check-workflows`, leak scan

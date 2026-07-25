@@ -345,7 +345,10 @@ Upstream package root: full ordered checklist in § [Upstream developer workflow
 Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). See [`README.md`](README.md) for human-oriented context; command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh | bash -s -- \
+# Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.
+curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh \
+  -o /tmp/agentic-code-reviewers-run.sh
+bash /tmp/agentic-code-reviewers-run.sh \
   --dry-run \
   --gh \
   --engine opencode \
