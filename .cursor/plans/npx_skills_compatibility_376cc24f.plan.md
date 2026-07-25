@@ -6,7 +6,7 @@ todos:
     content: Add {dataDir} token (default .agents/workflow) to tools.md, config-resolution.md, config.json.example, config.schema.json; repoint the canonical config path
     status: pending
   - id: phase1-rename
-    content: "git mv 12 folders to ws-*; set invocation_names to ws-{name}+{name}; full-repo path scan/replace; zero live 0N-* / unprefixed goal-fix-pr / update-plan-implementation folder refs"
+    content: "git mv 12 folders to ws-*; set invocation_names to ws-{name}+{name}; full-repo path scan/replace; zero live 0N-* / unprefixed ws-goal-fix-pr / ws-update-plan-implementation folder refs"
     status: pending
   - id: phase2-shared-split
     content: Add shared/SKILL.md; split shared references so the 7 consumer files use {dataDir} and immutable assets stay {sharedDir}; add workflow.gitignore template
@@ -18,7 +18,7 @@ todos:
     content: Rewrite check-harness §3b + phases and check-workflows step maps and config path to ws-* and .agents/workflow
     status: pending
   - id: phase5-scripts
-    content: Repoint 6 config/MEMORY scripts to .agents/workflow and fix the hardcoded 09-fix-pr string in fetch_threads.cjs
+    content: Repoint 6 config/MEMORY scripts to .agents/workflow and fix the hardcoded ws-fix-pr string in fetch_threads.cjs
     status: pending
   - id: phase6-docs
     content: Update the three hubs, setup.md, README npx skills section, add skills.sh.json and orchestrator dep preflight, rebuild site
@@ -36,7 +36,7 @@ isProject: false
 `npx skills` (vercel-labs/skills) already treats `.agents/skills/` as a discovery root and tolerates all custom frontmatter, so every skill is *discovered* today. Three things stop them *working* after install:
 
 - **Blocker 1 (data-loss):** `shared/` has no `SKILL.md` (never installed by the CLI), and it holds consumer data (`config.json`, `MEMORY.md`, `STACK.md`, `CHANGELOG.md`, `memory/`, `installed-skills.json`, `skill-integrity-local.json`). The CLI's `cleanAndCreateDirectory` does `rm -rf` before copy, and `skills update` runs non-interactively, so if `shared/` ever became installable it would delete that data.
-- **Blocker 2 (broken links):** the CLI installs each skill into a dir named after frontmatter `name`, not the source folder. The 12 pipeline folders (`00-write-spec`…`09-fix-pr`, `goal-fix-pr`, `update-plan-implementation`) have `name: ws-*`, so they install to `ws-*/` and the ~19 `../0N-name/` relative links dangle.
+- **Blocker 2 (broken links):** the CLI installs each skill into a dir named after frontmatter `name`, not the source folder. The 12 pipeline folders (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`) have `name: ws-*`, so they install to `ws-*/` and the ~19 `../0N-name/` relative links dangle.
 - **Blocker 3 (no deps):** the CLI has no dependency resolution; installing `spec-to-pr` alone yields a broken orchestrator.
 
 Decisions locked with the user: **1A** (new `.agents/workflow/` data dir + `{dataDir}` token; `shared/` becomes an installable skill of immutable assets) and **2A** (rename the 12 folders to `ws-*`). This inverts the current internal convention (numeric folders + consumer data in `shared/`) that `check-harness` and `check-workflows` actively enforce, so those validators, the installer, the integrity manifest, the dependency graph, the tests, the site, and ~8 scripts all change together. This is a large refactor; it is phased so each phase leaves the tree buildable and ends at a verifiable checkpoint.
@@ -85,18 +85,18 @@ flowchart LR
 
 | Old folder | New folder (`name:`) |
 |------------|----------------------|
-| `00-write-spec` | `ws-write-spec` |
-| `01-write-plan` | `ws-write-plan` |
-| `02-interview` | `ws-interview` |
-| `03-plan-to-tasks` | `ws-plan-to-tasks` |
-| `04-implement-tasks` | `ws-implement-tasks` |
-| `05-verify-plan` | `ws-verify-plan` |
-| `06-code-review` | `ws-code-review` |
-| `07-testing` | `ws-testing` |
-| `08-ship-pr` | `ws-ship-pr` |
-| `09-fix-pr` | `ws-fix-pr` |
-| `goal-fix-pr` | `ws-goal-fix-pr` |
-| `update-plan-implementation` | `ws-update-plan-implementation` |
+| `ws-write-spec` | `ws-write-spec` |
+| `ws-write-plan` | `ws-write-plan` |
+| `ws-interview` | `ws-interview` |
+| `ws-plan-to-tasks` | `ws-plan-to-tasks` |
+| `ws-implement-tasks` | `ws-implement-tasks` |
+| `ws-verify-plan` | `ws-verify-plan` |
+| `ws-code-review` | `ws-code-review` |
+| `ws-testing` | `ws-testing` |
+| `ws-ship-pr` | `ws-ship-pr` |
+| `ws-fix-pr` | `ws-fix-pr` |
+| `ws-goal-fix-pr` | `ws-goal-fix-pr` |
+| `ws-update-plan-implementation` | `ws-update-plan-implementation` |
 
 Orchestrators `spec-to-pr` / `spec-to-pr-lite` and non-pipeline skills already match; no rename.
 
@@ -121,10 +121,10 @@ For every pipeline skill, frontmatter must satisfy:
 | `ws-testing` | `testing`, `ws-testing` |
 | `ws-ship-pr` | `ship-pr`, `ws-ship-pr` |
 | `ws-fix-pr` | `fix-pr`, `ws-fix-pr` |
-| `ws-goal-fix-pr` | `goal-fix-pr`, `ws-goal-fix-pr` |
-| `ws-update-plan-implementation` | `update-plan-implementation`, `ws-update-plan-implementation` |
+| `ws-goal-fix-pr` | `ws-goal-fix-pr`, `ws-goal-fix-pr` |
+| `ws-update-plan-implementation` | `ws-update-plan-implementation`, `ws-update-plan-implementation` |
 
-**Drop** all numeric aliases (`00-write-spec`, `09-fix-pr`, …). **Drop** extra shorts that are not the strip-`ws-` form (e.g. retire `fix-pr` → use `fix-pr` / `ws-fix-pr` only; update slash-command docs `/ship-pr` stays valid via `ship-pr`).
+**Drop** all numeric aliases (`ws-write-spec`, `ws-fix-pr`, …). **Drop** extra shorts that are not the strip-`ws-` form (e.g. retire `fix-pr` → use `fix-pr` / `ws-fix-pr` only; update slash-command docs `/ship-pr` stays valid via `ship-pr`).
 
 Hosts may invoke `/write-spec`, `@ws-write-spec`, etc. Skill bodies and hubs document both forms.
 
@@ -136,18 +136,18 @@ Do **not** stop at the ~19 relative links. After `git mv`, run a **repo-wide** s
 
 ```text
 0[0-9]-[a-z0-9-]+          # numeric folders / aliases
-(?<!ws-)goal-fix-pr       # old unprefixed folder (keep as short invocation text only where intentional)
-(?<!ws-)update-plan-implementation
+(?<!ws-)ws-goal-fix-pr       # old unprefixed folder (keep as short invocation text only where intentional)
+(?<!ws-)ws-update-plan-implementation
 \.\./0[0-9]-
 skills/0[0-9]-
 \.agents/skills/0[0-9]-
-\.agents/skills/goal-fix-pr/
-\.agents/skills/update-plan-implementation/
-\.agents/skills/08-ship-pr/
-\.agents/skills/09-fix-pr/
+\.agents/skills/ws-goal-fix-pr/
+\.agents/skills/ws-update-plan-implementation/
+\.agents/skills/ws-ship-pr/
+\.agents/skills/ws-fix-pr/
 ```
 
-**Scan roots:** `.agents/skills/`, `.agents/AGENTS.md`, root `AGENTS.md`, `README.md`, `bin/` (`cli.js`, `skill-dependencies.json`, `build-site.js`, …), `test/`, `docs/` (then rebuild), `shared/skill-dependencies.json` mirror. Scripts under providers that hardcode `09-fix-pr` (e.g. `fetch_threads.cjs`).
+**Scan roots:** `.agents/skills/`, `.agents/AGENTS.md`, root `AGENTS.md`, `README.md`, `bin/` (`cli.js`, `skill-dependencies.json`, `build-site.js`, …), `test/`, `docs/` (then rebuild), `shared/skill-dependencies.json` mirror. Scripts under providers that hardcode `ws-fix-pr` (e.g. `fetch_threads.cjs`).
 
 **Allowlist (do not rewrite):**
 - `CHANGELOG.md` historical entries
@@ -157,7 +157,7 @@ skills/0[0-9]-
 **Replace map (path segments):** every old folder segment → new `ws-*` segment (including markdown links, code fences, JSON skill ids, test path lists, STEP-DISPATCH, DIAGRAM, FAQ, hub Layer 2 tables).
 
 **Done when:**
-1. `ls .agents/skills/0{0..9}-*` → empty; `goal-fix-pr/` and `update-plan-implementation/` folders gone (only `ws-*` remain).
+1. `ls .agents/skills/0{0..9}-*` → empty; `ws-goal-fix-pr/` and `ws-update-plan-implementation/` folders gone (only `ws-*` remain).
 2. Grep for live `0[0-9]-` skill path/alias hits → 0 outside allowlist.
 3. Each of the 12 skills has `invocation_names` = short + `ws-*` only.
 4. Relative links like `../ws-write-spec/SKILL.md` resolve on disk.
@@ -192,7 +192,7 @@ Prerequisite: the **Add skill evals** plan has already moved the compiler to `.a
   - [`.agents/skills/local-spec-provider/scripts/detect_specs_dir.py`](.agents/skills/local-spec-provider/scripts/detect_specs_dir.py)
   - [`.agents/skills/local-spec-provider/scripts/register_local_spec.py`](.agents/skills/local-spec-provider/scripts/register_local_spec.py)
   - [`.agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py`](.agents/skills/azure-devops-provider/scripts/fix_pr_azure_context.py)
-- Fix hardcoded `09-fix-pr` / `ws-fix-pr` path in [`.agents/skills/github-provider/scripts/fetch_threads.cjs`](.agents/skills/github-provider/scripts/fetch_threads.cjs) → `.agents/skills/ws-fix-pr/…` (incl. `COOPERATIVE_FIX.md`).
+- Fix hardcoded `ws-fix-pr` / `ws-fix-pr` path in [`.agents/skills/github-provider/scripts/fetch_threads.cjs`](.agents/skills/github-provider/scripts/fetch_threads.cjs) → `.agents/skills/ws-fix-pr/…` (incl. `COOPERATIVE_FIX.md`).
 
 ## Phase 6 - Hubs, docs, ecosystem
 

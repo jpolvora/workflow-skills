@@ -16,7 +16,7 @@ scope:
   - .agents/skills/check-harness/SKILL.md (integrity bullet)
   - .agents/skills/shared/hub.gitignore
   - .agents/skills/shared/.gitignore
-excluded: pre-existing dirty 08-ship-pr/*
+excluded: pre-existing dirty ws-ship-pr/*
 ---
 
 # Code review — skill-install-checksums (Step 6)

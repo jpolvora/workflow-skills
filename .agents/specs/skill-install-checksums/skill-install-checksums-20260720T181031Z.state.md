@@ -21,9 +21,9 @@ prState: MERGED
 mergeCommit: d5d6605c078fcd11d3104f6654e21e17aa573056
 baselineCommit: 85e7a0b1078d5353299d620039b89acdb2b2c42b
 preExistingDirty:
-  - .agents/skills/08-ship-pr/PREPARE-CHECKLIST.md
-  - .agents/skills/08-ship-pr/SKILL.md
-  - .agents/skills/08-ship-pr/examples.md
+  - .agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md
+  - .agents/skills/ws-ship-pr/SKILL.md
+  - .agents/skills/ws-ship-pr/examples.md
   - AGENTS.md
   - CHANGELOG.md
 checkpoints: []
@@ -154,7 +154,7 @@ telemetry:
 ## Gate history
 - `workflow-complete | PR #88 MERGED @ d5d6605 | 2026-07-20T18:47:17Z`
 - auto-gate | step 9 | PR #88 merged — workflow complete | 2026-07-20T18:49:14Z
-- auto-gate | step 8 | Run goal-fix-pr loop | 2026-07-20T18:33:55Z
+- auto-gate | step 8 | Run ws-goal-fix-pr loop | 2026-07-20T18:33:55Z
 - auto-gate | step 7 | Commit plan + result, then create PR | 2026-07-20T18:32:02Z
 - auto-gate | step 6 | Advance to Step 7 | 2026-07-20T18:31:07Z
 

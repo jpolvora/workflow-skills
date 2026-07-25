@@ -107,7 +107,7 @@ Present only after Extra or Full install. If a path is missing, treat as intenti
 
 ### Intentionally orch-only (not duplicated here)
 
-Pipeline folders `00`–`09`, `goal-fix-pr`, `update-plan-implementation`, orchestrators (`spec-to-pr`, `spec-to-pr-lite`), and providers are discovered via host invoke / orch dispatch — not listed as promoted utilities.
+Pipeline folders `ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`, orchestrators (`spec-to-pr`, `spec-to-pr-lite`), and providers are discovered via host invoke / orch dispatch — not listed as promoted utilities.
 
 Install packages and dependency map: upstream `bin/skill-dependencies.json` in [workflow-skills](https://github.com/jpolvora/workflow-skills) (not vendored in consumer clones).
 

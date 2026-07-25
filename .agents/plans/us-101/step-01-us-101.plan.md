@@ -12,7 +12,7 @@ Address upstream audit findings from `check-harness` run on consumer test repo `
 4. Update `configure-project/SKILL.md` heuristic to seed default `verification.backendTest` for harness-only / skills-only test projects when no traditional app stack is detected.
 
 ## 1. Definition of Ready & Scope
-- AC1: `gabarito/README.md`, `08-ship-pr/PREPARE-CHECKLIST.md`, `shared/setup.md`, `spec-to-pr/README.md` have updated relative link targets pointing to `shared/AGENTS.md`.
+- AC1: `gabarito/README.md`, `ws-ship-pr/PREPARE-CHECKLIST.md`, `shared/setup.md`, `spec-to-pr/README.md` have updated relative link targets pointing to `shared/AGENTS.md`.
 - AC2: `shared/AGENTS.md` delivery checklist clearly demarcates upstream-only commands (`npm run build-site:bump`, `generate-integrity`, `verify-integrity`) from consumer verification.
 - AC3: `check-harness/SKILL.md` Phase 4 prose explicitly uses the resolved hub per § Hub resolution.
 - AC4: `configure-project/SKILL.md` includes fallback heuristic for harness-only repos.
@@ -22,7 +22,7 @@ Address upstream audit findings from `check-harness` run on consumer test repo `
 - **Layer**: `.agents/skills` (workflow & pipeline skill docs, scripts, and hubs).
 - **Files to modify**:
   - `.agents/skills/gabarito/README.md`
-  - `.agents/skills/08-ship-pr/PREPARE-CHECKLIST.md`
+  - `.agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md`
   - `.agents/skills/shared/setup.md`
   - `.agents/skills/spec-to-pr/README.md`
   - `.agents/skills/shared/AGENTS.md`
@@ -32,7 +32,7 @@ Address upstream audit findings from `check-harness` run on consumer test repo `
 ## 3. Step-by-Step Plan
 1. **Fix Consumer-facing Managed Doc Links**:
    - `gabarito/README.md`: replace `../../../AGENTS.md` with `../shared/AGENTS.md`.
-   - `08-ship-pr/PREPARE-CHECKLIST.md`: replace `../../../AGENTS.md#external-dependencies` with `../shared/AGENTS.md#external-dependencies`.
+   - `ws-ship-pr/PREPARE-CHECKLIST.md`: replace `../../../AGENTS.md#external-dependencies` with `../shared/AGENTS.md#external-dependencies`.
    - `shared/setup.md`: replace `../../../AGENTS.md#external-dependencies` with `AGENTS.md#external-dependencies`.
    - `spec-to-pr/README.md`: replace `../../../AGENTS.md` link with `../shared/AGENTS.md`.
 2. **Update `shared/AGENTS.md` Delivery Checklist**:

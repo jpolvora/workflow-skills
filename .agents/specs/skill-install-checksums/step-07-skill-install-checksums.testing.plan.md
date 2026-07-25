@@ -50,7 +50,7 @@ sourceReview: step-06-skill-install-checksums.review.md
 | AC4 | Pre-copy source verify fail-closed; no dest overwrite unless `--force-integrity` | Phase 11 source-mismatch abort + force override |
 | AC5 | Post-copy verify + write `skill-integrity-local.json` only on success (or force) | Phase 11 clean install local record; W1 regression (no bless on fail) |
 | AC6 | `integrity` audit lists paths; exit ≠0 on mismatch | Phase 11 mutate managed file → audit fail |
-| AC7 | Selective install: only closure required | Phase 11 selective `goal-fix-pr` audit |
+| AC7 | Selective install: only closure required | Phase 11 selective `ws-goal-fix-pr` audit |
 | AC8 | Consumer-owned edits never fail integrity | Phase 11 MEMORY/config edit → audit OK |
 | AC9 | `--check` surfaces `fullPackageDigest` match/mismatch vs semver | Phase 11 fixture / evaluate asserts |
 | AC10 | Clean install / mutate / force / digest-change covered | Phase 11 suite as a whole |

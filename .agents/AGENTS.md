@@ -25,12 +25,12 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 
 1. **Portable and project-agnostic** — Skills must work in any consumer repo. Do **not** hardcode org/repo names, solution filenames, API hosts, tenant fields, or stack-specific build/test commands inside skill bodies or scripts.
 2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in `skills/shared/config.json` (gitignored; copy from `skills/shared/config.json.example`). Skills **read** config / `rules.stackFile` companion / `tools.md`; they do not embed consumer metadata. See [`config-resolution.md`](skills/shared/config-resolution.md).
-3. **Repo-root-relative paths only** — References use paths like `skills/01-write-plan/SKILL.md` or `.agents/skills/...` from the consumer root. **Forbidden:** absolute paths (`C:\Users\...`, `/home/...`) or author-machine dependencies.
+3. **Repo-root-relative paths only** — References use paths like `skills/ws-write-plan/SKILL.md` or `.agents/skills/...` from the consumer root. **Forbidden:** absolute paths (`C:\Users\...`, `/home/...`) or author-machine dependencies.
 4. **Harness-neutral** — Skill bodies must not name IDE or agent-product brands. Artifact roots come **only** from config: `plans.dir` (skill token `{plansDir}`), optional `reviews.dir`. Skills layout tokens `{skillsRoot}` / `{sharedDir}` come from `pathTokens` (fixed install defaults; see `tools.md` § Path tokens). Documented default for `plans.dir` is `.agents/plans`. Skill prose uses `{plansDir}/{slug}/` — no hardcoded plans roots. No undeclared path shorthands. Gates use `user-gate`; model switches via Pause → IDE/agent host → Resume; step work via `dispatch-agent` / host subagent dispatch. Mirror: root [`AGENTS.md`](../AGENTS.md) § Portability & harness neutrality.
 5. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
 6. **No `name:` collisions** — Each `SKILL.md` frontmatter `name:` must be unique across the installed tree.
 7. **Evidence-based harness changes** — When fixing routing/links, cite verified paths; do not invent files.
-8. **Consistent skill and task folder references** — FSM steps `00`–`09` use prefixed folder names (e.g. `05-verify-plan`, `07-testing`, `09-fix-pr`). Convergence / post skills use unprefixed folders `goal-fix-pr` and `update-plan-implementation`. Retired or placeholder folder references are forbidden.
+8. **Consistent skill and task folder references** — Pipeline folders match frontmatter `name:` (`ws-write-spec` … `ws-fix-pr`, plus `ws-goal-fix-pr` and `ws-update-plan-implementation`). Numeric `NN-*` folder prefixes are forbidden. Retired or placeholder folder references are forbidden.
 
 ### Language (mandatory)
 
@@ -71,7 +71,7 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 
 Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Shared Configuration**: `.agents/skills/shared/config.json` only ([`config-resolution.md`](skills/shared/config-resolution.md)).
-- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — prefer `user-gate`; markdown fallback when unavailable; slim transitions; one delivery; one ship; no re-ask inside `08-ship-pr` when `workflowMode: true`.
+- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — prefer `user-gate`; markdown fallback when unavailable; slim transitions; one delivery; one ship; no re-ask inside `ws-ship-pr` when `workflowMode: true`.
 - **Session model**: `currentModel` from the executing session; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Soft tips at F1→F2 / F3→F4 (full orch only).
 - **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
 - **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
@@ -119,22 +119,22 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `check-harness` | `skills/check-harness/SKILL.md` | Audit harness integrity (routing, links, redundancy) |
 | `check-workflows` | `skills/check-workflows/SKILL.md` | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
 
-### `spec-to-pr` pipeline (`00`–`09` + goal-fix / update-plan)
+### `spec-to-pr` pipeline (steps 0–9, `ws-*` folders + goal-fix / update-plan)
 
 | Skill | Step(s) | Path | Description |
 |-------|---------|------|-------------|
-| `ws-write-spec` | 0 | `skills/00-write-spec/SKILL.md` | Draft canonical spec from feature description |
-| `ws-write-plan` | 1 | `skills/01-write-plan/SKILL.md` | Generate implementation plan from issue / spec |
-| `ws-interview` | 2 | `skills/02-interview/SKILL.md` | Audit and refine plan until shared understanding |
-| `ws-plan-to-tasks` | 3 | `skills/03-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
-| `ws-implement-tasks` | 4, 6 (fix substep) | `skills/04-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
-| `ws-verify-plan` | 5 | `skills/05-verify-plan/SKILL.md` | Check-implementation vs spec (score 0–10) |
-| `ws-code-review` | 6 | `skills/06-code-review/SKILL.md` | Two-phase triage + investigation local review |
-| `ws-testing` | 7 | `skills/07-testing/SKILL.md` | Testing gate (unit, integration, coverage) |
-| `ws-ship-pr` | 8 | `skills/08-ship-pr/SKILL.md` | Delivery commit + push + create PR |
-| `ws-fix-pr` | 9 | `skills/09-fix-pr/SKILL.md` | Resolve active PR review threads |
-| `ws-goal-fix-pr` | 9 | `skills/goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
-| `ws-update-plan-implementation` | Post-workflow | `skills/update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
+| `ws-write-spec` | 0 | `skills/ws-write-spec/SKILL.md` | Draft canonical spec from feature description |
+| `ws-write-plan` | 1 | `skills/ws-write-plan/SKILL.md` | Generate implementation plan from issue / spec |
+| `ws-interview` | 2 | `skills/ws-interview/SKILL.md` | Audit and refine plan until shared understanding |
+| `ws-plan-to-tasks` | 3 | `skills/ws-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
+| `ws-implement-tasks` | 4, 6 (fix substep) | `skills/ws-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
+| `ws-verify-plan` | 5 | `skills/ws-verify-plan/SKILL.md` | Check-implementation vs spec (score 0–10) |
+| `ws-code-review` | 6 | `skills/ws-code-review/SKILL.md` | Two-phase triage + investigation local review |
+| `ws-testing` | 7 | `skills/ws-testing/SKILL.md` | Testing gate (unit, integration, coverage) |
+| `ws-ship-pr` | 8 | `skills/ws-ship-pr/SKILL.md` | Delivery commit + push + create PR |
+| `ws-fix-pr` | 9 | `skills/ws-fix-pr/SKILL.md` | Resolve active PR review threads |
+| `ws-goal-fix-pr` | 9 | `skills/ws-goal-fix-pr/SKILL.md` | Loop fix-pr until zero open threads |
+| `ws-update-plan-implementation` | Post-workflow | `skills/ws-update-plan-implementation/SKILL.md` | Capture QA findings and apply plan deltas |
 
 ### Providers (platform-specific entry + PR ops)
 
@@ -157,7 +157,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `self-learning` | `skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
 | `configure-project` | `skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
-| `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `goal-fix-pr`) |
+| `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
 
 ### Review & audit (Workflows package)
 

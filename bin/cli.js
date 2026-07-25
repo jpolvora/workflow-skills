@@ -812,7 +812,7 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills              Interactive install
   npx --yes github:jpolvora/workflow-skills install --full --yes
   npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes
+  npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,ws-goal-fix-pr --yes
   npx --yes github:jpolvora/workflow-skills update       Update installed skills (from shared/installed-skills.json)
   npx --yes github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally
@@ -827,7 +827,7 @@ Curl shim (same argv; requires Node.js):
   curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s --
   curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- install --full --yes
   curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- update
-  curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- uninstall --skills goal-fix-pr --yes
+  curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- uninstall --skills ws-goal-fix-pr --yes
 
 Non-interactive install:
   install --full|--package <key>|--skills <csv> [--yes] [--force-integrity]

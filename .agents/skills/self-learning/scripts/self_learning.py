@@ -33,7 +33,7 @@ def ensure_utf8_stdio() -> None:
 
 ensure_utf8_stdio()
 
-SKILL_DIR = Path(__file__).resolve().parent
+SKILL_DIR = Path(__file__).resolve().parent.parent  # self-learning/ (script lives in scripts/)
 # Consumer-owned memory lives in the shared hub (not inside this skill package).
 SHARED_DIR = SKILL_DIR.parent / "shared"
 MEMORY_DIR = SHARED_DIR / "memory"

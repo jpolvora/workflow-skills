@@ -18,7 +18,7 @@ createdAt: "2026-07-20T18:25:00Z"
 | Expected files (unique) | 11 | ≤ 6 | **exceeded** |
 | Layers (cli / skills / tests / docs / packaging) | 5 | ≤ 2 | **exceeded** |
 
-**execMode: `parallel`** (any threshold exceeded → parallel per `03-plan-to-tasks`).
+**execMode: `parallel`** (any threshold exceeded → parallel per `ws-plan-to-tasks`).
 
 **Concurrency reality:** Critical path shares `bin/cli.js` and the integrity lib (`T1`→`T5` must be serial). Only **T6 ∥ T7** (tests vs docs) share a level. Treat as near-sequential; do not open conflicting worktrees on `bin/cli.js`.
 
@@ -166,7 +166,7 @@ Every plan step A–G maps to ≥1 task. Every task has non-empty `files` and `c
 
 ## Handoff
 
-Next: [04-implement-tasks](../../.agents/skills/04-implement-tasks/SKILL.md) with:
+Next: [ws-implement-tasks](../../.agents/skills/ws-implement-tasks/SKILL.md) with:
 
 - `specs/skill-install-checksums/step-03-skill-install-checksums.plan.exec.md`
 - `specs/skill-install-checksums/step-03-skill-install-checksums.exec.dag.json`

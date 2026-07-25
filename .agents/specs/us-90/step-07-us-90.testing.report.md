@@ -107,6 +107,6 @@ Thresholds from plan met: V1 exit 0, V2 exit 0, zero Critical integrity regressi
 ## Recommendation
 
 - [x] **PASS** — Advance to Step 8 (Ship)
-- [ ] FAIL — fix loop via `04-implement-tasks` (not required)
+- [ ] FAIL — fix loop via `ws-implement-tasks` (not required)
 
 **Learning:** N/A (standard verification; MEMORY integrity/pack/EOL guidance applied; no new trap)

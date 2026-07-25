@@ -265,9 +265,9 @@ const EVALS = {
       {
         id: 1,
         prompt: 'Keep fixing PR #42 until zero open review threads.',
-        expected_output: 'Convergence loop via goal-fix-pr until thread count is zero or blocked.',
+        expected_output: 'Convergence loop via ws-goal-fix-pr until thread count is zero or blocked.',
         assertions: [
-          'Agent loads ws-goal-fix-pr or goal-fix-pr',
+          'Agent loads ws-goal-fix-pr or ws-goal-fix-pr',
           'Uses goal-loop convergence pattern',
           'Reports remaining thread count each iteration',
         ],
@@ -278,7 +278,7 @@ const EVALS = {
         expected_output: 'Single ws-fix-pr pass, not unbounded goal loop.',
         assertions: [
           'Does not run infinite loop when user caps iterations',
-          'Distinguishes goal-fix-pr from single fix-pr',
+          'Distinguishes ws-goal-fix-pr from single fix-pr',
         ],
       },
     ],

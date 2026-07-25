@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 00:57] Agent: Cursor Grok 4.5
+- **Prompt**: commit all, update website, graph, installer, prepare ship-pr (rename pipeline folders to ws-*)
+- **Done**: Renamed 12 pipeline folders to match frontmatter (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`); updated hubs, orch/dispatch, `skill-dependencies.json`, installer/CLI examples, validators, tests, and stale `00`–`09` prose; fixed `self_learning.py` shared-path after `scripts/` move; bumped to `0.0.81`, rebuilt site catalog + integrity digests
+- **Result**: Release `0.0.81` prepared for ship (`develop` → `main`); tests + check-workflows + integrity green
+
 ### [2026-07-25 00:39] Agent: Cursor Grok 4.5
 - **Prompt**: prepare and ship-pr committing everything
 - **Done**: Added `evals/evals.json` for all 33 skills plus `bin/generate-skill-evals.js`; moved `self_learning.py` to `scripts/` and updated path refs (`SKILL.md`, `tools.md`, `spec-to-pr`, `cli.js`, `MEMORY.md.template`, `write-a-skill` layout); bumped package to `0.0.80`, regenerated site + integrity digests; verified with `npm run tests -- --local`, `check-workflows`, and `verify-integrity`
