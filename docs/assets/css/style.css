@@ -505,7 +505,7 @@ section h2 {
 /* ─── Workflows Section ─── */
 .workflows-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 28px;
 }
 
@@ -550,11 +550,13 @@ section h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 12px;
 }
 
 .workflow-card h3 {
-  font-size: 1.75rem;
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text-heading);
@@ -1527,6 +1529,10 @@ footer a:hover {
 }
 
 /* ─── Media Queries ─── */
+@media (max-width: 900px) {
+  .workflows-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 768px) {
   nav .nav-inner { padding: 0; }
   .nav-links { display: none; }
