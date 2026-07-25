@@ -281,7 +281,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Autoload |
 | `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
 | `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |
-| `ws-long-runner` | `.agents/skills/ws-long-runner/SKILL.md` | Sequential multi-spec batch delivery orchestrator |
+| `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Sequential smart multi-spec batch delivery orchestrator |
 | `fable-method` | `.agents/skills/fable-method/SKILL.md` | 7-step problem-solving loop with gates |
 | `fable-domain` | `.agents/skills/fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
@@ -312,7 +312,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Ship PR | `ws-ship-pr` |
 | Spec → PR E2E | `spec-to-pr` |
 | Spec → PR lite | `spec-to-pr-lite` |
-| Batch spec delivery | `ws-long-runner` |
+| Batch spec delivery | `ws-multi-spec` |
 | GitHub issue/PR ops | `github-provider` |
 | ADO WI/PR ops | `azure-devops-provider` |
 | Local `*.spec.md` | `local-spec-provider` |

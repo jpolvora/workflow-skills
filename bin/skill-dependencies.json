@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.0.83",
+  "packageVersion": "0.0.84",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -54,7 +54,7 @@
         "fable-method",
         "fable-judge",
         "fable-domain",
-        "ws-long-runner"
+        "ws-multi-spec"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -163,8 +163,9 @@
       "gabarito",
       "karpathy-guidelines"
     ],
-    "ws-long-runner": [
+    "ws-multi-spec": [
       "spec-to-pr",
+      "spec-to-pr-lite",
       "caveman",
       "gabarito",
       "karpathy-guidelines"

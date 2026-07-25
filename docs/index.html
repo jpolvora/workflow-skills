@@ -133,6 +133,25 @@
         View spec-to-pr-lite workflow &rarr;
       </button>
     </div>
+
+    <div class="workflow-card multi-spec featured-big-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(99, 102, 241, 0.05)); border: 1px solid rgba(99, 102, 241, 0.2);">
+      <div class="workflow-card-header">
+        <h3>ws-multi-spec</h3>
+        <span class="workflow-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">Smart Multi-Spec Orchestrator</span>
+      </div>
+      <p class="workflow-tagline">Sequential multi-spec queue execution with Smart Flow Auto-Detection</p>
+      <p>An intelligent orchestrator that processes a queue of feature specs sequentially. Automatically analyzes each spec's complexity (tasks, files, layers) to dynamically choose the optimal execution pipeline (full <code>spec-to-pr</code> or fast <code>spec-to-pr-lite</code>).</p>
+      <div class="workflow-steps-title">Key Smart Capabilities:</div>
+      <ul class="workflow-steps-list">
+        <li><strong>Smart Flow Auto-Detection:</strong> Auto-routes low-complexity specs to <code>spec-to-pr-lite</code> and complex specs to full <code>spec-to-pr</code></li>
+        <li><strong>Already-Implemented Probe:</strong> Probes previous PRs/commits to skip completed specs</li>
+        <li><strong>Unified State Persistence:</strong> Tracks multi-spec execution status under <code>{plansDir}/ws-multi-spec/</code></li>
+        <li><strong>Interactive Failure Recovery:</strong> Pauses with clear <code>user-gate</code> options (Resume, Skip, Abort) on worker failure</li>
+      </ul>
+      <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-multi-spec/SKILL.md">
+        View ws-multi-spec orchestrator &rarr;
+      </button>
+    </div>
   </div>
 </section>
 
@@ -640,14 +659,14 @@
           <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-long-runner/SKILL.md" data-name="ws-long-runner" data-slug="ws-long-runner" data-desc="sequential multi-spec batch delivery orchestrator. executes a queue of specs sequentially using spec-to-pr workers. invoke: /ws-long-runner | @[ws-long-runner]. entry: state file | list of specs | blank (scan default specsdir)." data-deps="spec-to-pr caveman gabarito karpathy-guidelines" data-layer="layer-5" data-full="false" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-multi-spec/SKILL.md" data-name="ws-multi-spec" data-slug="ws-multi-spec" data-desc="sequential smart multi-spec batch delivery orchestrator. evaluates spec complexity to dispatch spec-to-pr or spec-to-pr-lite workers. invoke: /ws-multi-spec | @[ws-multi-spec]. entry: state file | list of specs | blank (scan default specsdir)." data-deps="spec-to-pr spec-to-pr-lite caveman gabarito karpathy-guidelines" data-layer="layer-5" data-full="false" data-lite="false">
         <div class="skill-card-top">
-          <div class="name">ws-long-runner</div>
+          <div class="name">ws-multi-spec</div>
         </div>
-        <div class="desc">Sequential multi-spec batch delivery orchestrator. Executes a queue of specs sequentially using spec-to-pr workers. Invoke: /ws-long-runner | @[ws-long-runner]. Entry: state file | list of specs | blank (scan default specsDir).</div>
+        <div class="desc">Sequential smart multi-spec batch delivery orchestrator. Evaluates spec complexity to dispatch spec-to-pr or spec-to-pr-lite workers. Invoke: /ws-multi-spec | @[ws-multi-spec]. Entry: state file | list of specs | blank (scan default specsDir).</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (4):</div><div class="deps-list"><span class="dep-pill" data-dep="spec-to-pr">spec-to-pr</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/ws-long-runner/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (5):</div><div class="deps-list"><span class="dep-pill" data-dep="spec-to-pr">spec-to-pr</span><span class="dep-pill" data-dep="spec-to-pr-lite">spec-to-pr-lite</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-multi-spec/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
     </div>
@@ -705,6 +724,8 @@
     </div>
   </div>
 </section>
+
+
 
 
 
@@ -834,7 +855,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.83 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.84 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

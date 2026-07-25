@@ -1,18 +1,18 @@
-# `ws-long-runner` — State Schema & Already-Implemented Probe
+# `ws-multi-spec` — State Schema & Already-Implemented Probe
 
-Canonical run state lives under `{plansDir}/ws-long-runner/` (expand `{plansDir}` from `config.plans.dir`, default `.agents/plans`).
+Canonical run state lives under `{plansDir}/ws-multi-spec/` (expand `{plansDir}` from `config.plans.dir`, default `.agents/plans`).
 
 ## Run ID
 
-`{runId}` = `lr-{YYYYMMDDTHHMMSSZ}` (e.g. `lr-20260725T220000Z`).
-State file: `{plansDir}/ws-long-runner/{runId}.state.md`.
+`{runId}` = `ms-{YYYYMMDDTHHMMSSZ}` (e.g. `ms-20260725T220000Z`).
+State file: `{plansDir}/ws-multi-spec/{runId}.state.md`.
 
 ## State File Format
 
 ```markdown
 ---
-workflowType: ws-long-runner
-runId: lr-20260725T220000Z
+workflowType: ws-multi-spec
+runId: ms-20260725T220000Z
 status: active
 dryRun: false
 createdAt: "2026-07-25T22:00:00Z"
@@ -20,11 +20,12 @@ updatedAt: "2026-07-25T22:00:00Z"
 specsDir: .agents/specs
 ---
 
-# Long-runner — lr-20260725T220000Z
+# Multi-spec Runner — ms-20260725T220000Z
 
-| # | slug | specPath | status | prNumber | prUrl | reason | updatedAt |
-|---|------|----------|--------|----------|-------|--------|-----------|
-| 1 | 01-docker-compose | .agents/specs/01-docker-compose.spec.md | pending | | | | 2026-07-25T22:00:00Z |
+| # | slug | specPath | flowMode | status | prNumber | prUrl | reason | updatedAt |
+|---|------|----------|----------|--------|----------|-------|--------|-----------|
+| 1 | 01-docker-compose | .agents/specs/01-docker-compose.spec.md | lite | pending | | | | 2026-07-25T22:00:00Z |
+| 2 | 02-user-auth | .agents/specs/02-user-auth.spec.md | standard | pending | | | | 2026-07-25T22:00:00Z |
 ```
 
 ### Field Definitions
@@ -33,6 +34,7 @@ specsDir: .agents/specs
 |-------|----------------|
 | Run `status` | `active` · `paused` · `completed` |
 | Item `status` | `pending` · `in_progress` · `shipped` · `skipped` · `failed` |
+| `flowMode` | `lite` (dispatches `spec-to-pr-lite`) · `standard` (dispatches full `spec-to-pr`) |
 | `slug` | Basename of spec without `.spec.md` (stable id) |
 | `specPath` | Repo-relative path to source `*.spec.md` |
 | `reason` | Required when `skipped` or `failed` (e.g. `already-implemented`, error summary) |
@@ -40,12 +42,13 @@ specsDir: .agents/specs
 
 ## Worker `step-output` Contract
 
-Workers dispatched by `ws-long-runner` must return a parseable `step-output` block in their final output:
+Workers dispatched by `ws-multi-spec` must return a parseable `step-output` block in their final output:
 
 ```text
 step-output:
   status: shipped|failed
   slug: {slug}
+  flowMode: lite|standard
   prNumber: {n|null}
   prUrl: {url|null}
   evidence: {one-line cite}
@@ -55,7 +58,7 @@ Missing or unparseable output is treated as `status: failed`.
 
 ## Already-Implemented Probe
 
-Before dispatching a worker for a `pending` or `failed` item, run the probe check:
+Before evaluating flow mode or dispatching a worker, run the probe check:
 
 | # | Check | Evidence | Action |
 |---|-------|----------|--------|
@@ -63,7 +66,7 @@ Before dispatching a worker for a `pending` or `failed` item, run the probe chec
 | 2 | Prior delivery result for slug | `Glob` `{plansDir}/{slug}/**/step-08-*.result.md` exists and cites merged PR / commit | Mark `skipped` + `reason: already-implemented` |
 | 3 | SCM merged PR for slug | Provider `gh` / SCM list shows merged PR referencing slug / title | Mark `skipped` + `reason: already-implemented` |
 
-If ambiguous (e.g., unmerged open PR or missing evidence), do **not** skip. Proceed to worker execution.
+If ambiguous (e.g., unmerged open PR or missing evidence), do **not** skip. Proceed to flow auto-detection and worker execution.
 
 ## Blank-List Scan
 
@@ -76,7 +79,7 @@ When invoked without args or state file:
 
 ## Resume Policy
 
-When loading an existing `{plansDir}/ws-long-runner/*.state.md`:
-1. Retain original queue ordering.
+When loading an existing `{plansDir}/ws-multi-spec/*.state.md`:
+1. Retain original queue ordering and assigned `flowMode`.
 2. Skip items marked `shipped` or `skipped`.
 3. Resume execution at the first `pending`, `in_progress` (reset to `pending`), or `failed` item.
