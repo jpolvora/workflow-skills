@@ -1,8 +1,7 @@
 ---
 name: ws-code-review
 description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.4
+version: 0.0.82
 disable-model-invocation: true
 invocation_names:
   - code-review

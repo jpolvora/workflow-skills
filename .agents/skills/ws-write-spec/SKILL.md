@@ -1,8 +1,7 @@
 ---
 name: ws-write-spec
 description: Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr Step 0 brainstorm).
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 3.4
+version: 0.0.82
 disable-model-invocation: true
 invocation_names:
   - write-spec

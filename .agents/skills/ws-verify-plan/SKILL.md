@@ -1,8 +1,7 @@
 ---
 name: ws-verify-plan
 description: Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.
-upstream: jpolvora/workflow-skills — this skill is a spec-to-pr pipeline dependency. Improvements must be submitted upstream to https://github.com/jpolvora/workflow-skills
-version: 2.4
+version: 0.0.82
 disable-model-invocation: true
 invocation_names:
   - verify-plan
