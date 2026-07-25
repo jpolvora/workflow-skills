@@ -60,7 +60,7 @@ npx --yes github:jpolvora/workflow-skills
 # Non-interactive install (exactly one mode; Non-TTY requires --yes)
 npx --yes github:jpolvora/workflow-skills install --full --yes
 npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,goal-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,ws-goal-fix-pr --yes
 
 # Update tracked skills (bootstraps installed-skills.json from disk if missing)
 npx --yes github:jpolvora/workflow-skills update
@@ -69,7 +69,7 @@ npx --yes github:jpolvora/workflow-skills update
 npx --yes github:jpolvora/workflow-skills update --include-new
 
 # Uninstall (cascades dependents + unused deps; preserves shared/ consumer data)
-npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills uninstall --skills ws-goal-fix-pr --yes
 ```
 
 **Canonical form:** do **not** append `@latest` or `@main` to `github:jpolvora/workflow-skills`.
@@ -100,7 +100,7 @@ Requires Node/`npx`. Flags after `bash -s --` match Option A:
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s --
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- install --full --yes
 curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- update
-curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- uninstall --skills goal-fix-pr --yes
+curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- uninstall --skills ws-goal-fix-pr --yes
 ```
 
 From a **local clone** of this repo: `./install-skills.sh` → `node bin/cli.js` (includes uncommitted changes).
@@ -180,7 +180,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Role |
 |-------|------|
 | [`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md) / [`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md) | Orchestrators |
-| [`00-write-spec`](.agents/skills/00-write-spec/SKILL.md) … [`update-plan-implementation`](.agents/skills/update-plan-implementation/SKILL.md) | Pipeline `00`–`09` + `goal-fix-pr` / `update-plan-implementation` (`ws-*`; FSM steps 0–9 + post) |
+| [`ws-write-spec`](.agents/skills/ws-write-spec/SKILL.md) … [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` / `ws-update-plan-implementation` (`ws-*`; FSM steps 0–9 + post) |
 | [`github-provider`](.agents/skills/github-provider/SKILL.md) · [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) · [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
 
 ### Review & audit

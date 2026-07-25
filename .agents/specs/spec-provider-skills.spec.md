@@ -19,7 +19,7 @@ Introduce three **provider skills** that collaborate with the `spec-to-pr` orche
 
 - **Single active provider per project** (config-driven): when GitHub is enabled, entry + PR/fix-pr use GitHub; when Azure DevOps is enabled, use ADO; when the user works with local markdown, use the local-spec provider and a configured specs folder (default `specs/` at repo root).
 - **Dual mode** for every provider and every updated pipeline skill:
-  - **Workflow mode:** dispatched by `spec-to-pr` (and by `09-fix-pr` / `goal-fix-pr` / `08-ship-pr` as needed).
+  - **Workflow mode:** dispatched by `spec-to-pr` (and by `ws-fix-pr` / `ws-goal-fix-pr` / `ws-ship-pr` as needed).
   - **Standalone mode:** invocable alone (`/github-provider`, `/azure-devops-provider`, `/local-spec-provider`, plus existing `/fix-pr`, `/ship-pr`, etc.) without running the full FSM.
 - **Progressive disclosure:** orchestrator and generic pipeline skills **delegate** to the active provider instead of embedding `gh` / `az` / filesystem details.
 - **Portability:** no hardcoded org/repo/project names; resolve from `config.json` (and env for secrets).
@@ -55,14 +55,14 @@ Pipeline skills call these intents by **loading the active provider skill**, not
 - Optionally ship **PowerShell** helpers under `github-provider/scripts/` for Windows consumers (same behavior as `gh` flows).
 - Move / wrap existing assets:
   - `spec-to-pr/scripts/github-issue-to-spec.py` → owned or invoked by this provider (keep thin wrappers under `spec-to-pr/scripts/` only if needed for backward compatibility).
-  - GitHub thread scripts used by `09-fix-pr` (`fetch_threads.cjs`, `resolve_thread.cjs`) referenced from this provider.
+  - GitHub thread scripts used by `ws-fix-pr` (`fetch_threads.cjs`, `resolve_thread.cjs`) referenced from this provider.
 - Entry patterns: `{n}`, `US {n}`, GitHub issue URL.
 - PR patterns: `gh pr create|checks|merge|view`; GraphQL thread APIs as today.
 
 #### `azure-devops-provider`
 
 - Prefer **`az` boards / repos** when Azure CLI is installed; otherwise PowerShell + REST using PAT from `ADO_PAT` / `AZURE_DEVOPS_PAT` / `config.issueTrackers.azureDevOps.patEnvVar`.
-- Own / wrap `ado-workitem-to-spec.py` and ADO-oriented pieces of `09-fix-pr/scripts/fix_pr_azure_context.py` (provider documents the canonical path; fix-pr delegates).
+- Own / wrap `ado-workitem-to-spec.py` and ADO-oriented pieces of `ws-fix-pr/scripts/fix_pr_azure_context.py` (provider documents the canonical path; fix-pr delegates).
 - Entry patterns: `{org}/{project}#{id}`, `ADO {id}`, `WI {id}`, ADO work-item URL.
 - PR patterns: Azure Repos PRs via `az repos pr` and/or REST/PowerShell; thread collect/resolve via provider scripts.
 
@@ -71,7 +71,7 @@ Pipeline skills call these intents by **loading the active provider skill**, not
 - **Detect** existing specs directory: prefer `config.plans.specsDir`, else `specs/` at repo root, else ask once and write config.
 - **Configure** default: `plans.specsDir: "specs"` (repo root). Support nested layout e.g. `specs/{slug}.spec.md` and/or `specs/{slug}/README.spec.md` — canonical workflow copy remains `{us-dir}/step-00-{slug}.spec.md`.
 - **Read:** register/copy/normalize hand-written markdown into canonical step-00 path (`source: local`).
-- **Write:** when brainstorming (`00-write-spec`) or when the user asks to persist a human-browsable mirror, write under `{specsDir}` without breaking the canonical us-dir file.
+- **Write:** when brainstorming (`ws-write-spec`) or when the user asks to persist a human-browsable mirror, write under `{specsDir}` without breaking the canonical us-dir file.
 - **PR/threads:** local provider does **not** talk to a remote tracker. For ship/fix-pr when only local provider is active:
   - Either require an explicit remote provider for PR operations, **or**
   - Document that `create-pr` / `fix-pr` fall back to the **VCS host of `project.repoUrl`** (GitHub vs Azure) while specs remain local — **decision: hybrid allowed**. Specs stay `source: local`; PR host is selected from `project.repoUrl` / enabled tracker for SCM only.
@@ -107,9 +107,9 @@ Resolution rules:
 | Area | Change |
 |------|--------|
 | `spec-to-pr` Specification Protocol / Entry Gate | Delegate fetch/register to active provider skill; remove duplicated CLI recipes from orchestrator body (link only). |
-| `08-ship-pr` | Delegate `create-pr`, checks, merge to `providers.scm` skill. |
-| `09-fix-pr` / `goal-fix-pr` | Delegate list/resolve threads to `providers.scm` skill; keep scoring/fix FSM generic. |
-| `00-write-spec` | After draft, optionally ask local-spec-provider to mirror under `specsDir`. |
+| `ws-ship-pr` | Delegate `create-pr`, checks, merge to `providers.scm` skill. |
+| `ws-fix-pr` / `ws-goal-fix-pr` | Delegate list/resolve threads to `providers.scm` skill; keep scoring/fix FSM generic. |
+| `ws-write-spec` | After draft, optionally ask local-spec-provider to mirror under `specsDir`. |
 | `ARTIFACTS.md` / FAQ / README / tools.md | Document provider delegation and intents. |
 | `AGENTS.md` | Route three provider skills (Layer 2 or Layer 5); Task router entries. |
 | Install / tests | Package providers; canonicity asserts provider SKILL.md + scripts; migration notes if scripts move. |
@@ -146,7 +146,7 @@ Skill bodies, scripts, gates, and user-facing workflow banners: **en-us** only (
 - AC2: With `providers.active: "github"` (or legacy GitHub-only enabled), invoking entry with a numeric issue id produces `{us-dir}/step-00-us-{id}.spec.md` via the GitHub provider (`gh` and/or its scripts), without the orchestrator embedding raw `gh` recipes beyond a link to the provider.
 - AC3: With `providers.active: "azure-devops"` and valid org/project/PAT, entry with `ADO {id}` or `{org}/{project}#{id}` produces the canonical spec via the Azure DevOps provider (`az` and/or PowerShell/Python REST).
 - AC4: With `providers.active: "local"`, entry with a path under `specs/` (or configured `specsDir`) registers/copies to `{us-dir}/step-00-{slug}.spec.md` with `source: local`; missing `specs/` is detected and default-configured to repo-root `specs/`.
-- AC5: `08-ship-pr` create/merge and `09-fix-pr` thread fetch/resolve call the provider selected by `providers.scm` (GitHub → `gh`/GitHub scripts; Azure DevOps → `az`/ADO scripts); no GitHub-only hardcoding remains in those skills’ happy paths.
+- AC5: `ws-ship-pr` create/merge and `ws-fix-pr` thread fetch/resolve call the provider selected by `providers.scm` (GitHub → `gh`/GitHub scripts; Azure DevOps → `az`/ADO scripts); no GitHub-only hardcoding remains in those skills’ happy paths.
 - AC6: Each provider skill is invocable standalone for at least `fetch-to-spec` (and for remote providers, `validate-auth` + one PR intent) without running the full `spec-to-pr` FSM.
 - AC7: `config.schema.json` + `config.json.example` document `providers.active`, `providers.scm`, and `plans.specsDir`; backward compatible with existing `issueTrackers` when `providers` is omitted.
 - AC8: `AGENTS.md` routes the three providers; `npm run tests -- --local` still passes; site catalog regenerated after implementation.
@@ -169,7 +169,7 @@ Skill bodies, scripts, gates, and user-facing workflow banners: **en-us** only (
 - **Status:** planned
 - **Description:** Refactor Specification Protocol / Entry Gate to dispatch active provider `fetch-to-spec`.
 
-### Task #4 — Wire ship-pr + fix-pr + goal-fix-pr
+### Task #4 — Wire ship-pr + fix-pr + ws-goal-fix-pr
 
 - **Status:** planned
 - **Description:** Delegate SCM intents to `providers.scm` skill; keep generic FSM in pipeline skills.
@@ -181,7 +181,7 @@ Skill bodies, scripts, gates, and user-facing workflow banners: **en-us** only (
 
 ## Notes
 
-- Current state already has entry docs and converters under `spec-to-pr/scripts/` and dual GitHub/ADO support inside `09-fix-pr`; this feature **extracts and productizes** that into first-class provider skills and forces all workflow dependencies to reference them.
+- Current state already has entry docs and converters under `spec-to-pr/scripts/` and dual GitHub/ADO support inside `ws-fix-pr`; this feature **extracts and productizes** that into first-class provider skills and forces all workflow dependencies to reference them.
 - Hybrid mode (`active=local`, `scm=github|azure-devops`) is intentional so teams can author specs offline while still shipping via GitHub or Azure Repos.
 - Prefer moving scripts into provider folders with short compatibility shims rather than duplicating logic.
-- Related paths today: `.agents/skills/spec-to-pr/SKILL.md` (Specification Protocol), `.agents/skills/09-fix-pr/`, `.agents/skills/08-ship-pr/`, `.agents/skills/spec-to-pr/config.json.example`.
+- Related paths today: `.agents/skills/spec-to-pr/SKILL.md` (Specification Protocol), `.agents/skills/ws-fix-pr/`, `.agents/skills/ws-ship-pr/`, `.agents/skills/spec-to-pr/config.json.example`.

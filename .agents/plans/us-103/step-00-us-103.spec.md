@@ -20,7 +20,7 @@ Follow-up to #101 (closed). Re-verified in consumer test repo **jskills** after 
 
 **#101 fixes confirmed working:**
 - `gabarito/README.md` — links to `shared/AGENTS.md` first; root `AGENTS.md` gated as upstream-only
-- `08-ship-pr/PREPARE-CHECKLIST.md` — links to `shared/AGENTS.md#external-dependencies`
+- `ws-ship-pr/PREPARE-CHECKLIST.md` — links to `shared/AGENTS.md#external-dependencies`
 - `spec-to-pr/README.md` — project entry points at shared hub first
 - `shared/AGENTS.md` — delivery checklist split into **Consumer Projects** vs **Upstream Maintainers**
 - `configure-project/INTERVIEW.md` — harness-only heuristic suggests `check-workflows.py` when no app stack detected

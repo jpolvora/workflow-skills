@@ -15,7 +15,7 @@ upstream: jpolvora/workflow-skills — this skill is a workflow owned by workflo
 | **Orchestrator (this file)** | FSM + tool bindings + asserts |
 | **Humans** | [`README.md`](README.md), [`docs/faq.md`](docs/faq.md), [`DIAGRAM.md`](DIAGRAM.md) |
 
-**Load:** current step + linked protocols only. Setup → [`setup.md`](../shared/setup.md). Gates (dual-mode) → [`gates.md`](../shared/gates.md). Config/SCM → [`config-resolution.md`](../shared/config-resolution.md). Artifacts → [`ARTIFACTS.md`](ARTIFACTS.md). Dispatch → [`STEP-DISPATCH.md`](STEP-DISPATCH.md) (load only when advancing/dispatching). Protocols → [`protocols/`](protocols/) (on demand). Stack → `config.json.rules.stackFile` (auto-loaded steps 4, 6, 7). Hub → [`AGENTS.md`](../shared/AGENTS.md) (consumer shared hub; optional project root `AGENTS.md` when the host provides one). Step 2 → [`02-interview`](../02-interview/SKILL.md). Tools → [`tools.md`](../shared/tools.md). Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md): shared skills must stay interchangeable.
+**Load:** current step + linked protocols only. Setup → [`setup.md`](../shared/setup.md). Gates (dual-mode) → [`gates.md`](../shared/gates.md). Config/SCM → [`config-resolution.md`](../shared/config-resolution.md). Artifacts → [`ARTIFACTS.md`](ARTIFACTS.md). Dispatch → [`STEP-DISPATCH.md`](STEP-DISPATCH.md) (load only when advancing/dispatching). Protocols → [`protocols/`](protocols/) (on demand). Stack → `config.json.rules.stackFile` (auto-loaded steps 4, 6, 7). Hub → [`AGENTS.md`](../shared/AGENTS.md) (consumer shared hub; optional project root `AGENTS.md` when the host provides one). Step 2 → [`ws-interview`](../ws-interview/SKILL.md). Tools → [`tools.md`](../shared/tools.md). Dual-mode with [`spec-to-pr-lite`](../spec-to-pr-lite/SKILL.md): shared skills must stay interchangeable.
 
 ## Language
 
@@ -62,7 +62,7 @@ Deterministic FSM; step content delegated to skills via **`dispatch-agent`**.
 
 | Topic | Rule |
 |-------|------|
-| Scope | Steps 0–7 deliver locally (code + plan/report artifacts). Step 8 = delivery commit + push/PR (combined gate). Step 9 = fix-pr / goal-fix-pr after PR exists. No push before Step 8 ship action. |
+| Scope | Steps 0–7 deliver locally (code + plan/report artifacts). Step 8 = delivery commit + push/PR (combined gate). Step 9 = fix-pr / ws-goal-fix-pr after PR exists. No push before Step 8 ship action. |
 | Auth | G1+ needs gate. user-gate cancelled → HS-1. Commit → G2 + explicit menu (HS-2). |
 | Isolation | Fresh `dispatch-agent`/step; `Shell` tag `uswf/{id}/before-step-{N}`; **branch-direct default**; worktree when `config.plans.useWorktrees=true` (code steps 4, 6-fix, 7 preferred). |
 | State | Hygiene `Write`/`StrReplace` → asserts → board. Fail → HS-5. |
@@ -93,13 +93,13 @@ Deterministic FSM; step content delegated to skills via **`dispatch-agent`**.
 | **Config** | `.agents/skills/shared/config.json` — project identity, stack, issue trackers, verification commands, invariants |
 | **Tools** | `tools.md` — canonical tool aliases |
 | Stack | `config.json.rules.stackFile` — project-specific stack reference; derived from config.json and auto-loaded for code review & optimization |
-| Scripts | Orchestrator: `check_memory_conflict.py`, `validate_state.py` under `spec-to-pr/scripts/`. Converters + thread helpers: **canonical** under `github-provider/scripts/` and `azure-devops-provider/scripts/` (thin shims remain at `spec-to-pr/scripts/` and `09-fix-pr/scripts/` for canonicity). Local register/mirror: `local-spec-provider/scripts/`. |
+| Scripts | Orchestrator: `check_memory_conflict.py`, `validate_state.py` under `spec-to-pr/scripts/`. Converters + thread helpers: **canonical** under `github-provider/scripts/` and `azure-devops-provider/scripts/` (thin shims remain at `spec-to-pr/scripts/` and `ws-fix-pr/scripts/` for canonicity). Local register/mirror: `local-spec-provider/scripts/`. |
 | Providers | [`github-provider`](../github-provider/SKILL.md) · [`azure-devops-provider`](../azure-devops-provider/SKILL.md) · [`local-spec-provider`](../local-spec-provider/SKILL.md) — `providers.active` owns `fetch-to-spec`; `providers.scm` owns PR/thread/merge intents |
 | SCM CLIs | Via provider skills only (`gh` / `az`); orchestrator does not embed platform CLI recipes |
 | State | `{plansDir}/{slug}/{workflow-id}.state.md` |
 | Skills | `ws-write-spec`→0 · `ws-write-plan`→1 · `ws-interview`→2 · `ws-plan-to-tasks`→3 · `ws-implement-tasks`→4 build, 6 fix · `ws-verify-plan`→5 · `ws-code-review`→6 · `ws-testing`→7 · `ws-ship-pr`→8 · `ws-fix-pr`/`ws-goal-fix-pr`→9 · `spec-format` |
 
-Filesystem paths: FSM steps `00`–`09` use numeric prefixes; `goal-fix-pr` / `update-plan-implementation` are unprefixed. Skill `name:` uses `ws-` prefix. Post-8 PR threads: [`ws-fix-pr`](../09-fix-pr/SKILL.md) / [`ws-goal-fix-pr`](../goal-fix-pr/SKILL.md).
+Filesystem paths: pipeline folders match `ws-*` frontmatter names (`ws-write-spec` … `ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`). Post-8 PR threads: [`ws-fix-pr`](../ws-fix-pr/SKILL.md) / [`ws-goal-fix-pr`](../ws-goal-fix-pr/SKILL.md).
 
 ### Work dir `{us-dir}` = `{plansDir}/{slug}/` (`{plansDir}` ← `config.plans.dir`)
 
@@ -217,7 +217,7 @@ Available at **every** transition gate (normal mode; under **More options…** w
 
 ### Refinement FSM (Step 2)
 
-2a/2b/2d → `02-interview`. Orch: 2c Escalate, 2e Shared Understanding, redispatch.
+2a/2b/2d → `ws-interview`. Orch: 2c Escalate, 2e Shared Understanding, redispatch.
 
 | State | Owner | Output |
 |-------|-------|--------|
@@ -274,7 +274,7 @@ dispatch-agent:
 Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree via `Shell`: `worktree add` → merge → `worktree remove` → `branch -d`. Max 1 active. Audit: `Write` `stepDispatches[]`. No per-DAG-task worktree.
 
 **Step 4 dispatch:**
-- `execMode: sequential` → single `dispatch-agent` `04-implement-tasks` mode `build` with `step-01-*.plan.md` directly (no DAG).
+- `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `step-01-*.plan.md` directly (no DAG).
 - `execMode: parallel` → DAG: `dispatch-agent` per level, ≤3 concurrent, no file overlap within level.
 
 ### Check-implementation score gate (Step 5)
@@ -302,7 +302,7 @@ Fix substep is **not** its own `completedSteps` entry — log `review-fix` in `#
 
 At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated decisions`, `## Step outputs`) and `.agents/skills/shared/MEMORY.md` index. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
 
-**Step 8 sweep:** Promote generalizable patterns to `shared/memory/*.md` + run `self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
+**Step 8 sweep:** Promote generalizable patterns to `shared/memory/*.md` + run `python {skillsRoot}/self-learning/scripts/self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
 
 ### Specification Protocol
 
@@ -313,7 +313,7 @@ At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated 
 | `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` → `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
 | `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `azure-devops-provider` | `fetch-to-spec` | No — skip to Step 1 |
 | `*.spec.md` | `local-spec-provider` | `fetch-to-spec` | No — skip to Step 1 |
-| free-text / no args | none | `00-write-spec` → spec file | Yes — `dispatch-agent` `00-write-spec` |
+| free-text / no args | none | `ws-write-spec` → spec file | Yes — `dispatch-agent` `ws-write-spec` |
 
 Provider resolution and `fetch-to-spec` dispatch: load active provider skill; auth failure → STOP (no silent fallback). Details in each provider `SKILL.md`.
 
@@ -321,7 +321,7 @@ Provider resolution and `fetch-to-spec` dispatch: load active provider skill; au
 
 1. **Tracker id** → provider `fetch-to-spec` → skip Step 0 → Step 1 gate.
 2. **Local `*.spec.md`** → `local-spec-provider` → skip Step 0 → Step 1 gate.
-3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`00-write-spec` only path).
+3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`ws-write-spec` only path).
 
 Store `specPath` in state `## Artifacts`.
 
@@ -331,7 +331,7 @@ Before G2-code commit: `config.json.rules.stackFile` → build (+ tests unless `
 
 ### Testing (Step 7)
 
-`07-testing` via **`dispatch-agent`** (label **Testing** — broader than integration-only). `skipTesting` → skip to Step 8. `autoMode`/`dryRun` → `dispatch-agent` without browser.
+`ws-testing` via **`dispatch-agent`** (label **Testing** — broader than integration-only). `skipTesting` → skip to Step 8. `autoMode`/`dryRun` → `dispatch-agent` without browser.
 
 Gates (normal): **Approve and run test battery** (rec) / **Run without browser** / **Adjust test plan** / **Skip validation** / **Pause workflow**.
 
@@ -398,7 +398,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 7 failure | **Apply fixes and revalidate** |
 | Step 8 combined gate (`fullMode`) | **Commit plan + result, then create PR** |
 | Step 8 combined gate (not `fullMode`) | **Commit plan + result, skip PR** |
-| Step 9 fix-pr | **Run goal-fix-pr loop** |
+| Step 9 fix-pr | **Run ws-goal-fix-pr loop** |
 
 Shared defaults: [`gates.md`](../shared/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.
 
@@ -491,7 +491,7 @@ Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct
 
 ## Post-workflow (outside this agent)
 
-Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`update-plan-implementation`](../update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix substep (in-pipeline review fixes).
+Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix substep (in-pipeline review fixes).
 
 ## Triggers
 

@@ -36,7 +36,7 @@ Examples:
 
 ### Workflow Mode
 
-Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.active` resolves to `local`, or when the trigger input is an existing `*.spec.md` path. Receives intent + path/slug from the orchestrator. Also used by `00-write-spec` for optional post-draft mirror under `specsDir`.
+Dispatched by `spec-to-pr` (entry / Specification Protocol) when `providers.active` resolves to `local`, or when the trigger input is an existing `*.spec.md` path. Receives intent + path/slug from the orchestrator. Also used by `ws-write-spec` for optional post-draft mirror under `specsDir`.
 
 ### Parameters
 

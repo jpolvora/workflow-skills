@@ -27,7 +27,7 @@ Deterministic FSM for sequential spec-to-ship delivery. Reuses the **same** pipe
 - **State hygiene:** `python .agents/skills/spec-to-pr-lite/scripts/update_state.py` after every step. Pass measured `--elapsed` (required for completed/failed). Upserts `## Telemetry log`. Missing telemetry → treat as hygiene fail.
 - **Artifacts:** Spec `step-00-{slug}.spec.md`; plan `step-01-{slug}.plan.md`; result `step-08-{slug}.result.md` (shared with standard).
 - **Commits:** Code during implement/review fix substep. Plan + result at Step 4 combined ship gate (G2-delivery).
-- **Ship:** Combined delivery+ship gate at Step 4; `08-ship-pr` with `workflowMode: true`, `stopBeforeFixPr: true`.
+- **Ship:** Combined delivery+ship gate at Step 4; `ws-ship-pr` with `workflowMode: true`, `stopBeforeFixPr: true`.
 - **Fix-PR:** Step 5 first-class (`ws-goal-fix-pr` / `ws-fix-pr`).
 - **Branch-direct** default; worktree when `plans.useWorktrees=true`.
 - **Optional Fable integration:** Respects `config.json.fable.enabled`. When `true`, Step 1 consults [`fable-domain`](../fable-domain/SKILL.md), Step 3 runs [`fable-judge`](../fable-judge/SKILL.md) during code review, and Step 4 verifies audit verdict before PR creation.
@@ -124,7 +124,7 @@ Prefer `user-gate` when available; markdown fallback per [`gates.md`](../shared/
 | Step 3 fix substep | Apply fixes (if findings) |
 | Step 4 combined ship (`fullMode`) | Commit plan + result, then create PR |
 | Step 4 combined ship (not `fullMode`) | Skip delivery commit and skip shipping |
-| Step 5 | Run goal-fix-pr loop |
+| Step 5 | Run ws-goal-fix-pr loop |
 
 ---
 

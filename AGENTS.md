@@ -92,7 +92,7 @@ These ship to consumers but are **not required** on consumer projects — consum
 
 | Intent | Load |
 |--------|------|
-| Draft a spec | `ws-write-spec` (`00-write-spec`) or local `specs/**/*.spec.md` + `spec-format` |
+| Draft a spec | `ws-write-spec` (`ws-write-spec`) or local `specs/**/*.spec.md` + `spec-format` |
 | Spec → PR (full) | `spec-to-pr` |
 | Spec → PR (fast) | `spec-to-pr-lite` |
 | GitHub issue → spec / fix | `github-provider` or orchestrator with issue URL |
@@ -119,9 +119,9 @@ When shipping changes that modify installable package content (skills, CLI, inst
 | 4 | **Harness Audit** | `check-harness` / `python .agents/skills/check-workflows/scripts/check_workflows.py` | Ensure 0 critical harness errors |
 | 5 | **Clean Site Docs** | Verify `docs/index.html` | Confirm no git merge conflict markers exist |
 | 6 | **Hub Drift** | Sync `AGENTS.md` + `.agents/AGENTS.md` | Keep packaged hub indexes aligned |
-| 7 | **Ship & Converge** | `/ship-pr` | Commit, push, create PR, wait 30s for Action start, run `goal-fix-pr` (300s) |
+| 7 | **Ship & Converge** | `/ship-pr` | Commit, push, create PR, wait 30s for Action start, run `ws-goal-fix-pr` (300s) |
 
-*Note*: CI deploy on `main` never bumps version; every upstream release PR must run `build-site:bump` and `generate-integrity` locally before push. `08-ship-pr` automatically discovers this checklist during Step 2 preflight.
+*Note*: CI deploy on `main` never bumps version; every upstream release PR must run `build-site:bump` and `generate-integrity` locally before push. `ws-ship-pr` automatically discovers this checklist during Step 2 preflight.
 
 ### Consumer CLI (install / update / uninstall)
 
@@ -245,18 +245,18 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 | Step | Skill | Path |
 |------|-------|------|
-| 00 | `ws-write-spec` | `.agents/skills/00-write-spec/SKILL.md` |
-| 01 | `ws-write-plan` | `.agents/skills/01-write-plan/SKILL.md` |
-| 02 | `ws-interview` | `.agents/skills/02-interview/SKILL.md` |
-| 03 | `ws-plan-to-tasks` | `.agents/skills/03-plan-to-tasks/SKILL.md` |
-| 04 | `ws-implement-tasks` | `.agents/skills/04-implement-tasks/SKILL.md` |
-| 05 | `ws-verify-plan` | `.agents/skills/05-verify-plan/SKILL.md` |
-| 06 | `ws-code-review` | `.agents/skills/06-code-review/SKILL.md` |
-| 07 | `ws-testing` | `.agents/skills/07-testing/SKILL.md` |
-| 08 | `ws-ship-pr` | `.agents/skills/08-ship-pr/SKILL.md` |
-| 09 | `ws-fix-pr` | `.agents/skills/09-fix-pr/SKILL.md` |
-| — | `ws-goal-fix-pr` | `.agents/skills/goal-fix-pr/SKILL.md` |
-| Post | `ws-update-plan-implementation` | `.agents/skills/update-plan-implementation/SKILL.md` |
+| 00 | `ws-write-spec` | `.agents/skills/ws-write-spec/SKILL.md` |
+| 01 | `ws-write-plan` | `.agents/skills/ws-write-plan/SKILL.md` |
+| 02 | `ws-interview` | `.agents/skills/ws-interview/SKILL.md` |
+| 03 | `ws-plan-to-tasks` | `.agents/skills/ws-plan-to-tasks/SKILL.md` |
+| 04 | `ws-implement-tasks` | `.agents/skills/ws-implement-tasks/SKILL.md` |
+| 05 | `ws-verify-plan` | `.agents/skills/ws-verify-plan/SKILL.md` |
+| 06 | `ws-code-review` | `.agents/skills/ws-code-review/SKILL.md` |
+| 07 | `ws-testing` | `.agents/skills/ws-testing/SKILL.md` |
+| 08 | `ws-ship-pr` | `.agents/skills/ws-ship-pr/SKILL.md` |
+| 09 | `ws-fix-pr` | `.agents/skills/ws-fix-pr/SKILL.md` |
+| — | `ws-goal-fix-pr` | `.agents/skills/ws-goal-fix-pr/SKILL.md` |
+| Post | `ws-update-plan-implementation` | `.agents/skills/ws-update-plan-implementation/SKILL.md` |
 | — | `github-provider` | `.agents/skills/github-provider/SKILL.md` |
 | — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` |
 | — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` |

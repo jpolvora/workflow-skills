@@ -199,13 +199,13 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
   }
-  // 09-fix-pr → provider thread/context shims (AC9)
+  // ws-fix-pr → provider thread/context shims (AC9)
   for (const rel of [
-    '.agents/skills/09-fix-pr/scripts/fetch_threads.cjs',
-    '.agents/skills/09-fix-pr/scripts/resolve_thread.cjs',
-    '.agents/skills/09-fix-pr/scripts/fix_pr_azure_context.py'
+    '.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs',
+    '.agents/skills/ws-fix-pr/scripts/resolve_thread.cjs',
+    '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.py'
   ]) {
-    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing 09-fix-pr shim: ${rel}`);
+    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing ws-fix-pr shim: ${rel}`);
   }
   // AC11: committed integrity manifest must match current tree + package.json version
   // Testing-step / ship gate: verify-integrity must pass to approve
@@ -249,11 +249,11 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     ok('AGENTS.md documents upstream skill integrity regenerate obligation');
 
     const verifySh = fs.readFileSync(
-      path.join(parentDir, '.agents', 'skills', '08-ship-pr', 'scripts', 'verify.sh'),
+      path.join(parentDir, '.agents', 'skills', 'ws-ship-pr', 'scripts', 'verify.sh'),
       'utf8'
     );
     if (!verifySh.includes('generate-skill-integrity.js') || !verifySh.includes('--check')) {
-      fail('08-ship-pr/scripts/verify.sh must run generate-skill-integrity.js --check when present');
+      fail('ws-ship-pr/scripts/verify.sh must run generate-skill-integrity.js --check when present');
     }
     ok('verify.sh gates on integrity --check');
 
@@ -275,7 +275,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     const shimHelps = [
       [py, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
       [py, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
-      [py, '.agents/skills/09-fix-pr/scripts/fix_pr_azure_context.py', '--help']
+      [py, '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.py', '--help']
     ];
     for (const [bin, rel, flag] of shimHelps) {
       const r = cp.spawnSync(bin, [path.join(parentDir, rel), flag], {
@@ -288,8 +288,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
     // CJS shims have no --help; missing args → Usage from canonical (exit 1) proves forward
     for (const rel of [
-      '.agents/skills/09-fix-pr/scripts/resolve_thread.cjs',
-      '.agents/skills/09-fix-pr/scripts/fetch_threads.cjs'
+      '.agents/skills/ws-fix-pr/scripts/resolve_thread.cjs',
+      '.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs'
     ]) {
       const r = cp.spawnSync(process.execPath, [path.join(parentDir, rel)], {
         encoding: 'utf8',
@@ -341,8 +341,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   if (!skill.includes('ARTIFACTS.md')) fail('SKILL.md must link ARTIFACTS.md');
   const agents = fs.readFileSync(path.join(parentDir, 'AGENTS.md'), 'utf8');
-  if (/04-implement-tasks` \| Steps 5, 10, 11/.test(agents)) {
-    fail('AGENTS.md still maps Step 11 to 04-implement-tasks');
+  if (/ws-implement-tasks` \| Steps 5, 10, 11/.test(agents)) {
+    fail('AGENTS.md still maps Step 11 to ws-implement-tasks');
   }
   const example = JSON.parse(
     fs.readFileSync(path.join(parentDir, '.agents/skills/shared/config.json.example'), 'utf8')
@@ -647,10 +647,10 @@ child.on('close', async (code) => {
   const installedAfter = listSkillDirs(testSkillsDir);
   const missingPipeline = [
     'spec-to-pr',
-    '00-write-spec',
-    '04-implement-tasks',
-    '07-testing',
-    '08-ship-pr',
+    'ws-write-spec',
+    'ws-implement-tasks',
+    'ws-testing',
+    'ws-ship-pr',
     'check-harness',
     'github-provider',
     'azure-devops-provider',
@@ -692,9 +692,9 @@ child.on('close', async (code) => {
     path.join('spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
     path.join('local-spec-provider', 'scripts', 'detect_specs_dir.py'),
     path.join('local-spec-provider', 'scripts', 'register_local_spec.py'),
-    path.join('09-fix-pr', 'scripts', 'fetch_threads.cjs'),
-    path.join('09-fix-pr', 'scripts', 'resolve_thread.cjs'),
-    path.join('09-fix-pr', 'scripts', 'fix_pr_azure_context.py')
+    path.join('ws-fix-pr', 'scripts', 'fetch_threads.cjs'),
+    path.join('ws-fix-pr', 'scripts', 'resolve_thread.cjs'),
+    path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.py')
   ]) {
     if (!fs.existsSync(path.join(testSkillsDir, rel))) {
       fail(`Provider/shim script missing in consumer install: ${rel}`);
@@ -713,7 +713,7 @@ child.on('close', async (code) => {
         `Consumer shim --help failed: status=${helpResult.status}\n${helpResult.stderr || helpResult.stdout}`
       );
     }
-    const cjsShim = path.join(testSkillsDir, '09-fix-pr', 'scripts', 'resolve_thread.cjs');
+    const cjsShim = path.join(testSkillsDir, 'ws-fix-pr', 'scripts', 'resolve_thread.cjs');
     const cjsResult = cp.spawnSync(process.execPath, [cjsShim], {
       encoding: 'utf8',
       cwd: path.join(__dirname)
@@ -817,7 +817,7 @@ child.on('close', async (code) => {
     ok('Workflows package installs workflows+hub without Extra-only skills');
   }
 
-  // --- Phase 7: dependency auto-select (goal-fix-pr → goal-loop) ---
+  // --- Phase 7: dependency auto-select (ws-goal-fix-pr → goal-loop) ---
   console.log('\n[Phase 7] Dependency auto-select on individual toggle...');
   {
     const depDir = path.join(__dirname, '.pkg-deps');
@@ -827,8 +827,8 @@ child.on('close', async (code) => {
     const installable = listSkillDirs(rootSkillsDir)
       .filter((n) => n !== 'shared' && fs.existsSync(path.join(rootSkillsDir, n, 'SKILL.md')))
       .sort((a, b) => a.localeCompare(b));
-    const idx = installable.indexOf('goal-fix-pr');
-    if (idx < 0) fail('goal-fix-pr not in installable skill list');
+    const idx = installable.indexOf('ws-goal-fix-pr');
+    if (idx < 0) fail('ws-goal-fix-pr not in installable skill list');
     const num = String(idx + 1);
     const depInstall = await new Promise((resolve) => {
       const child = cp.spawn(process.execPath, [cliPath], {
@@ -862,17 +862,17 @@ child.on('close', async (code) => {
       fail(`Dep auto-select install exited ${depInstall.status}`);
     }
     const depSkills = path.join(depDir, '.agents', 'skills');
-    if (!fs.existsSync(path.join(depSkills, 'goal-fix-pr', 'SKILL.md'))) {
-      fail('goal-fix-pr not installed after toggle');
+    if (!fs.existsSync(path.join(depSkills, 'ws-goal-fix-pr', 'SKILL.md'))) {
+      fail('ws-goal-fix-pr not installed after toggle');
     }
     if (!fs.existsSync(path.join(depSkills, 'goal-loop', 'SKILL.md'))) {
-      fail('goal-loop not auto-selected as dependency of goal-fix-pr');
+      fail('goal-loop not auto-selected as dependency of ws-goal-fix-pr');
     }
-    if (!fs.existsSync(path.join(depSkills, '09-fix-pr', 'SKILL.md'))) {
-      fail('09-fix-pr not auto-selected as dependency of goal-fix-pr');
+    if (!fs.existsSync(path.join(depSkills, 'ws-fix-pr', 'SKILL.md'))) {
+      fail('ws-fix-pr not auto-selected as dependency of ws-goal-fix-pr');
     }
     fs.rmSync(depDir, { recursive: true, force: true });
-    ok('Selecting goal-fix-pr auto-selects goal-loop + 09-fix-pr');
+    ok('Selecting ws-goal-fix-pr auto-selects goal-loop + ws-fix-pr');
   }
 
   // --- Phase 8: non-interactive install --yes (config preserve, no overwrite prompts) ---
@@ -943,7 +943,7 @@ child.on('close', async (code) => {
     fs.mkdirSync(skillsDir2, { recursive: true });
     const skillsInstall = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
+      [cliPath, 'install', '--skills', 'ws-goal-fix-pr', '--yes'],
       {
         cwd: skillsDir2,
         encoding: 'utf8',
@@ -954,17 +954,17 @@ child.on('close', async (code) => {
     const skillsOut = `${skillsInstall.stdout || ''}${skillsInstall.stderr || ''}`;
     if (skillsInstall.status !== 0) {
       console.error(skillsOut);
-      fail(`install --skills goal-fix-pr --yes exited ${skillsInstall.status}`);
+      fail(`install --skills ws-goal-fix-pr --yes exited ${skillsInstall.status}`);
     }
     const sRoot = path.join(skillsDir2, '.agents', 'skills');
-    if (!fs.existsSync(path.join(sRoot, 'goal-fix-pr', 'SKILL.md'))) {
-      fail('--skills install missing goal-fix-pr');
+    if (!fs.existsSync(path.join(sRoot, 'ws-goal-fix-pr', 'SKILL.md'))) {
+      fail('--skills install missing ws-goal-fix-pr');
     }
     if (!fs.existsSync(path.join(sRoot, 'goal-loop', 'SKILL.md'))) {
       fail('--skills install missing transitive goal-loop');
     }
-    if (!fs.existsSync(path.join(sRoot, '09-fix-pr', 'SKILL.md'))) {
-      fail('--skills install missing transitive 09-fix-pr');
+    if (!fs.existsSync(path.join(sRoot, 'ws-fix-pr', 'SKILL.md'))) {
+      fail('--skills install missing transitive ws-fix-pr');
     }
     fs.rmSync(skillsDir2, { recursive: true, force: true });
     ok('install --skills applies transitive deps without prompts');
@@ -1096,7 +1096,7 @@ child.on('close', async (code) => {
 
     const inst = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
+      [cliPath, 'install', '--skills', 'ws-goal-fix-pr', '--yes'],
       {
         cwd: uDir,
         encoding: 'utf8',
@@ -1106,7 +1106,7 @@ child.on('close', async (code) => {
     );
     if (inst.status !== 0) {
       console.error(`${inst.stdout || ''}${inst.stderr || ''}`);
-      fail(`goal-fix-pr install for uninstall test exited ${inst.status}`);
+      fail(`ws-goal-fix-pr install for uninstall test exited ${inst.status}`);
     }
 
     const manifestPath = path.join(
@@ -1120,15 +1120,15 @@ child.on('close', async (code) => {
       fail('install must write shared/installed-skills.json');
     }
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    for (const need of ['goal-fix-pr', '09-fix-pr', 'goal-loop']) {
+    for (const need of ['ws-goal-fix-pr', 'ws-fix-pr', 'goal-loop']) {
       if (!manifest.skills.includes(need)) {
         fail(`installed-skills.json missing ${need}: ${manifest.skills.join(',')}`);
       }
     }
-    if (!manifest.selected || !manifest.selected.includes('goal-fix-pr')) {
-      fail(`installed-skills.json selected roots should include goal-fix-pr: ${JSON.stringify(manifest.selected)}`);
+    if (!manifest.selected || !manifest.selected.includes('ws-goal-fix-pr')) {
+      fail(`installed-skills.json selected roots should include ws-goal-fix-pr: ${JSON.stringify(manifest.selected)}`);
     }
-    if (manifest.selected.includes('09-fix-pr') || manifest.selected.includes('goal-loop')) {
+    if (manifest.selected.includes('ws-fix-pr') || manifest.selected.includes('goal-loop')) {
       fail(`deps should not be selected roots: ${JSON.stringify(manifest.selected)}`);
     }
     ok('install writes installed-skills.json with transitive deps');
@@ -1158,18 +1158,18 @@ child.on('close', async (code) => {
     if (fs.existsSync(path.join(skillsRoot, 'goal-loop'))) {
       fail('uninstall did not remove goal-loop');
     }
-    if (fs.existsSync(path.join(skillsRoot, 'goal-fix-pr'))) {
-      fail('uninstall goal-loop must cascade-remove goal-fix-pr');
+    if (fs.existsSync(path.join(skillsRoot, 'ws-goal-fix-pr'))) {
+      fail('uninstall goal-loop must cascade-remove ws-goal-fix-pr');
     }
-    // 09-fix-pr may remain if nothing else needed it — goal-fix-pr cascade should leave
-    // 09-fix-pr as orphan unless keep set still needs it. After removing goal-fix-pr+goal-loop,
-    // 09-fix-pr is orphan → should be removed by forward orphan pass.
-    if (fs.existsSync(path.join(skillsRoot, '09-fix-pr'))) {
-      fail('uninstall cascade should remove orphan 09-fix-pr');
+    // ws-fix-pr may remain if nothing else needed it — ws-goal-fix-pr cascade should leave
+    // ws-fix-pr as orphan unless keep set still needs it. After removing ws-goal-fix-pr+goal-loop,
+    // ws-fix-pr is orphan → should be removed by forward orphan pass.
+    if (fs.existsSync(path.join(skillsRoot, 'ws-fix-pr'))) {
+      fail('uninstall cascade should remove orphan ws-fix-pr');
     }
 
     const afterManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    if (afterManifest.skills.includes('goal-loop') || afterManifest.skills.includes('goal-fix-pr')) {
+    if (afterManifest.skills.includes('goal-loop') || afterManifest.skills.includes('ws-goal-fix-pr')) {
       fail(`manifest still lists removed skills: ${afterManifest.skills.join(',')}`);
     }
     if (!fs.existsSync(markerCfg)) {
@@ -1352,7 +1352,7 @@ child.on('close', async (code) => {
       );
       const bad = cp.spawnSync(
         process.execPath,
-        [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
+        [cliPath, 'install', '--skills', 'ws-goal-fix-pr', '--yes'],
         {
           cwd: iDir,
           encoding: 'utf8',
@@ -1361,7 +1361,7 @@ child.on('close', async (code) => {
         }
       );
       if (bad.status === 0) fail('install should fail on source mismatch');
-      if (fs.existsSync(path.join(iDir, '.agents', 'skills', 'goal-fix-pr'))) {
+      if (fs.existsSync(path.join(iDir, '.agents', 'skills', 'ws-goal-fix-pr'))) {
         fail('source mismatch must not copy skill dirs');
       }
       if (!/source package mismatch/i.test(`${bad.stdout || ''}${bad.stderr || ''}`)) {
@@ -1371,7 +1371,7 @@ child.on('close', async (code) => {
 
       const forced = cp.spawnSync(
         process.execPath,
-        [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes', '--force-integrity'],
+        [cliPath, 'install', '--skills', 'ws-goal-fix-pr', '--yes', '--force-integrity'],
         {
           cwd: iDir,
           encoding: 'utf8',
@@ -1383,7 +1383,7 @@ child.on('close', async (code) => {
         console.error(`${forced.stdout || ''}${forced.stderr || ''}`);
         fail(`--force-integrity install exited ${forced.status}`);
       }
-      if (!fs.existsSync(path.join(iDir, '.agents', 'skills', 'goal-fix-pr'))) {
+      if (!fs.existsSync(path.join(iDir, '.agents', 'skills', 'ws-goal-fix-pr'))) {
         fail('--force-integrity should install despite source mismatch');
       }
       ok('--force-integrity overrides source mismatch');
@@ -1519,7 +1519,7 @@ child.on('close', async (code) => {
     fs.mkdirSync(sDir, { recursive: true });
     const sel = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', 'goal-fix-pr', '--yes'],
+      [cliPath, 'install', '--skills', 'ws-goal-fix-pr', '--yes'],
       {
         cwd: sDir,
         encoding: 'utf8',
@@ -1529,7 +1529,7 @@ child.on('close', async (code) => {
     );
     if (sel.status !== 0) {
       console.error(`${sel.stdout || ''}${sel.stderr || ''}`);
-      fail(`selective goal-fix-pr install exited ${sel.status}`);
+      fail(`selective ws-goal-fix-pr install exited ${sel.status}`);
     }
     if (fs.existsSync(path.join(sDir, '.agents', 'skills', 'write-a-skill'))) {
       fail('selective install should not include write-a-skill');

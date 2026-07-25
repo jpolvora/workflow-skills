@@ -107,7 +107,7 @@
         <li>Architectural Review & Interview (Steps 1–2)</li>
         <li>DAG Task Decomposition (Step 3)</li>
         <li>Implement, verify & local code review (Steps 4–6)</li>
-        <li>Pre-PR testing, shipping & goal-fix-pr (Steps 7–9)</li>
+        <li>Pre-PR testing, shipping & ws-goal-fix-pr (Steps 7–9)</li>
       </ul>
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/spec-to-pr/SKILL.md">
         View spec-to-pr workflow &rarr;
@@ -172,14 +172,14 @@
       <span class="count">4 skills</span>
     </div>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md" data-name="check-harness" data-slug="check-harness" data-desc="audit harness integrity — validates agents.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. read-only scan → correction plan → apply with approval." data-deps="" data-layer="layer-0" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/check-harness/SKILL.md" data-name="check-harness" data-slug="check-harness" data-desc="audit harness integrity — validates agents.md routing, pipeline folder/step alignment (ws-* folders == frontmatter name), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. read-only scan → correction plan → apply with approval." data-deps="" data-layer="layer-0" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">check-harness</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
         </div>
         </div>
-        <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (00–09 / ws-* + unprefixed goal-fix-pr / update-plan-implementation), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
+        <div class="desc">Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (ws-* folders == frontmatter name), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/check-harness/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
@@ -227,142 +227,6 @@
       <span class="count">15 skills</span>
     </div>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/00-write-spec/SKILL.md" data-name="ws-write-spec" data-slug="00-write-spec" data-desc="drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr step 0 brainstorm)." data-deps="spec-format" data-layer="layer-2" data-full="true" data-lite="true">
-        <div class="skill-card-top">
-          <div class="name">ws-write-spec</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-          <span class="skill-badge lite">lite</span>
-        </div>
-        </div>
-        <div class="desc">Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr Step 0 brainstorm).</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="spec-format">spec-format</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/00-write-spec/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/01-write-plan/SKILL.md" data-name="ws-write-plan" data-slug="01-write-plan" data-desc="generates the implementation plan (step-01-{slug}.plan.md) from the specification." data-deps="fable-domain" data-layer="layer-2" data-full="true" data-lite="true">
-        <div class="skill-card-top">
-          <div class="name">ws-write-plan</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-          <span class="skill-badge lite">lite</span>
-        </div>
-        </div>
-        <div class="desc">Generates the implementation plan (step-01-{slug}.plan.md) from the specification.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="fable-domain">fable-domain</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/01-write-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/02-interview/SKILL.md" data-name="ws-interview" data-slug="02-interview" data-desc="audits and interrogates an implementation plan to resolve ambiguities before task creation." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
-        <div class="skill-card-top">
-          <div class="name">ws-interview</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-        </div>
-        </div>
-        <div class="desc">Audits and interrogates an implementation plan to resolve ambiguities before task creation.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/02-interview/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/03-plan-to-tasks/SKILL.md" data-name="ws-plan-to-tasks" data-slug="03-plan-to-tasks" data-desc="breaks an implementation plan into atomic tasks organized in a dag, or sequential when small." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
-        <div class="skill-card-top">
-          <div class="name">ws-plan-to-tasks</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-        </div>
-        </div>
-        <div class="desc">Breaks an implementation plan into atomic tasks organized in a DAG, or sequential when small.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/03-plan-to-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/04-implement-tasks/SKILL.md" data-name="ws-implement-tasks" data-slug="04-implement-tasks" data-desc="executes code implementations or fixes defects following a plan, dag, or review findings." data-deps="" data-layer="layer-2" data-full="true" data-lite="true">
-        <div class="skill-card-top">
-          <div class="name">ws-implement-tasks</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-          <span class="skill-badge lite">lite</span>
-        </div>
-        </div>
-        <div class="desc">Executes code implementations or fixes defects following a plan, DAG, or review findings.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/04-implement-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/05-verify-plan/SKILL.md" data-name="ws-verify-plan" data-slug="05-verify-plan" data-desc="compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. publishes a 0–10 score." data-deps="fable-judge" data-layer="layer-2" data-full="true" data-lite="false">
-        <div class="skill-card-top">
-          <div class="name">ws-verify-plan</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-        </div>
-        </div>
-        <div class="desc">Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="fable-judge">fable-judge</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/05-verify-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/06-code-review/SKILL.md" data-name="ws-code-review" data-slug="06-code-review" data-desc="senior code reviewer — two-phase triage and investigation with defect class generalization. standalone or workflow step 6." data-deps="karpathy-guidelines caveman gabarito self-learning fable-judge" data-layer="layer-2" data-full="true" data-lite="true">
-        <div class="skill-card-top">
-          <div class="name">ws-code-review</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-          <span class="skill-badge lite">lite</span>
-        </div>
-        </div>
-        <div class="desc">Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (5):</div><div class="deps-list"><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="fable-judge">fable-judge</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/06-code-review/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/07-testing/SKILL.md" data-name="ws-testing" data-slug="07-testing" data-desc="plans and executes pre-pr testing — unit tests, integration/e2e, coverage, testing quality, and feature quality." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
-        <div class="skill-card-top">
-          <div class="name">ws-testing</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-        </div>
-        </div>
-        <div class="desc">Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/07-testing/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/08-ship-pr/SKILL.md" data-name="ws-ship-pr" data-slug="08-ship-pr" data-desc="end-to-end delivery — prepare-to-pr checklist (including discover+wait for local consumer prepare/before-push rules), push/create pr, wait 30 seconds for code-review action to start on github infrastructure, run goal-fix-pr (default 300s) until no open issues, then merge (unless stopbeforefixpr / no-merge)." data-deps="secrets-leak-review fable-judge" data-layer="layer-2" data-full="true" data-lite="true">
-        <div class="skill-card-top">
-          <div class="name">ws-ship-pr</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-          <span class="skill-badge lite">lite</span>
-        </div>
-        </div>
-        <div class="desc">End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait 30 seconds for code-review action to start on GitHub infrastructure, run goal-fix-pr (default 300s) until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="secrets-leak-review">secrets-leak-review</span><span class="dep-pill" data-dep="fable-judge">fable-judge</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/08-ship-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
-      <div class="skill-card" data-path=".agents/skills/09-fix-pr/SKILL.md" data-name="ws-fix-pr" data-slug="09-fix-pr" data-desc="cooperatively resolve active pr code review threads on github or azure devops with structured validation and reports." data-deps="" data-layer="layer-2" data-full="true" data-lite="true">
-        <div class="skill-card-top">
-          <div class="name">ws-fix-pr</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-          <span class="skill-badge lite">lite</span>
-        </div>
-        </div>
-        <div class="desc">Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/09-fix-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
       <div class="skill-card" data-path=".agents/skills/azure-devops-provider/SKILL.md" data-name="azure-devops-provider" data-slug="azure-devops-provider" data-desc="azure devops provider for spec-to-pr — work item→spec, pat auth, pr create/threads/merge via az cli and/or rest plus provider scripts. use when providers.active or providers.scm is azure-devops, or when invoking /azure-devops-provider standalone." data-deps="spec-format" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">azure-devops-provider</div>
@@ -391,20 +255,6 @@
           <a class="view-skill" href="#" data-path=".agents/skills/github-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/goal-fix-pr/SKILL.md" data-name="ws-goal-fix-pr" data-slug="goal-fix-pr" data-desc="convergence loop — runs fix-pr rounds until all pr threads are resolved or the max iteration cap is reached." data-deps="09-fix-pr goal-loop" data-layer="layer-2" data-full="true" data-lite="true">
-        <div class="skill-card-top">
-          <div class="name">ws-goal-fix-pr</div>
-        <div class="skill-badges">
-          <span class="skill-badge full">full</span>
-          <span class="skill-badge lite">lite</span>
-        </div>
-        </div>
-        <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
-        <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="09-fix-pr">09-fix-pr</span><span class="dep-pill" data-dep="goal-loop">goal-loop</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/goal-fix-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
-        </div>
-      </div>
       <div class="skill-card" data-path=".agents/skills/local-spec-provider/SKILL.md" data-name="local-spec-provider" data-slug="local-spec-provider" data-desc="local markdown spec provider for spec-to-pr — detect/configure specsdir, register/normalize/mirror hand-written *.spec.md into canonical step-00 artifacts (source: local). pr intents delegate to providers.scm. use when /local-spec-provider, active provider is local, or registering a local *.spec.md path." data-deps="spec-format" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">local-spec-provider</div>
@@ -419,7 +269,116 @@
           <a class="view-skill" href="#" data-path=".agents/skills/local-spec-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/update-plan-implementation/SKILL.md" data-name="ws-update-plan-implementation" data-slug="update-plan-implementation" data-desc="post-workflow delta adjustments. captures manual qa findings, plans delta fixes, implements changes, and updates result summaries." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-code-review/SKILL.md" data-name="ws-code-review" data-slug="ws-code-review" data-desc="senior code reviewer — two-phase triage and investigation with defect class generalization. standalone or workflow step 6." data-deps="karpathy-guidelines caveman gabarito self-learning fable-judge" data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-code-review</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (5):</div><div class="deps-list"><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="fable-judge">fable-judge</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-code-review/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-fix-pr/SKILL.md" data-name="ws-fix-pr" data-slug="ws-fix-pr" data-desc="cooperatively resolve active pr code review threads on github or azure devops with structured validation and reports." data-deps="" data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-fix-pr</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Cooperatively resolve active PR code review threads on GitHub or Azure DevOps with structured validation and reports.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-fix-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-goal-fix-pr/SKILL.md" data-name="ws-goal-fix-pr" data-slug="ws-goal-fix-pr" data-desc="convergence loop — runs fix-pr rounds until all pr threads are resolved or the max iteration cap is reached." data-deps="ws-fix-pr goal-loop" data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-goal-fix-pr</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Convergence loop — runs fix-pr rounds until all PR threads are resolved or the max iteration cap is reached.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="goal-loop">goal-loop</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-goal-fix-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-implement-tasks/SKILL.md" data-name="ws-implement-tasks" data-slug="ws-implement-tasks" data-desc="executes code implementations or fixes defects following a plan, dag, or review findings." data-deps="" data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-implement-tasks</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Executes code implementations or fixes defects following a plan, DAG, or review findings.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-implement-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-interview/SKILL.md" data-name="ws-interview" data-slug="ws-interview" data-desc="audits and interrogates an implementation plan to resolve ambiguities before task creation." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-interview</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
+        </div>
+        <div class="desc">Audits and interrogates an implementation plan to resolve ambiguities before task creation.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-interview/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-plan-to-tasks/SKILL.md" data-name="ws-plan-to-tasks" data-slug="ws-plan-to-tasks" data-desc="breaks an implementation plan into atomic tasks organized in a dag, or sequential when small." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-plan-to-tasks</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
+        </div>
+        <div class="desc">Breaks an implementation plan into atomic tasks organized in a DAG, or sequential when small.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-plan-to-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-ship-pr/SKILL.md" data-name="ws-ship-pr" data-slug="ws-ship-pr" data-desc="end-to-end delivery — prepare-to-pr checklist (including discover+wait for local consumer prepare/before-push rules), push/create pr, wait 30 seconds for code-review action to start on github infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopbeforefixpr / no-merge)." data-deps="secrets-leak-review fable-judge" data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-ship-pr</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait 30 seconds for code-review action to start on GitHub infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="secrets-leak-review">secrets-leak-review</span><span class="dep-pill" data-dep="fable-judge">fable-judge</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-ship-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-testing/SKILL.md" data-name="ws-testing" data-slug="ws-testing" data-desc="plans and executes pre-pr testing — unit tests, integration/e2e, coverage, testing quality, and feature quality." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-testing</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
+        </div>
+        <div class="desc">Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-testing/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-update-plan-implementation/SKILL.md" data-name="ws-update-plan-implementation" data-slug="ws-update-plan-implementation" data-desc="post-workflow delta adjustments. captures manual qa findings, plans delta fixes, implements changes, and updates result summaries." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-update-plan-implementation</div>
         <div class="skill-badges">
@@ -429,7 +388,48 @@
         <div class="desc">Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
-          <a class="view-skill" href="#" data-path=".agents/skills/update-plan-implementation/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-update-plan-implementation/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-verify-plan/SKILL.md" data-name="ws-verify-plan" data-slug="ws-verify-plan" data-desc="compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. publishes a 0–10 score." data-deps="fable-judge" data-layer="layer-2" data-full="true" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-verify-plan</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+        </div>
+        </div>
+        <div class="desc">Compares implementation quality and code deliverables against the spec (or plan when no spec) and acceptance criteria. Publishes a 0–10 score.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="fable-judge">fable-judge</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-verify-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-write-plan/SKILL.md" data-name="ws-write-plan" data-slug="ws-write-plan" data-desc="generates the implementation plan (step-01-{slug}.plan.md) from the specification." data-deps="fable-domain" data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-write-plan</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Generates the implementation plan (step-01-{slug}.plan.md) from the specification.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="fable-domain">fable-domain</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-write-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-write-spec/SKILL.md" data-name="ws-write-spec" data-slug="ws-write-spec" data-desc="drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr step 0 brainstorm)." data-deps="spec-format" data-layer="layer-2" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-write-spec</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (spec-to-pr Step 0 brainstorm).</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="spec-format">spec-format</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-write-spec/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
     </div>
@@ -558,7 +558,7 @@
           <a class="view-skill" href="#" data-path=".agents/skills/gabarito/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md" data-name="goal-loop" data-slug="goal-loop" data-desc="generic goal/loop pattern for convergence-driven loops. provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. consumed by goal-orchestrator skills (e.g., goal-fix-pr). not invocable standalone." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/goal-loop/SKILL.md" data-name="goal-loop" data-slug="goal-loop" data-desc="generic goal/loop pattern for convergence-driven loops. provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. consumed by goal-orchestrator skills (e.g., ws-goal-fix-pr). not invocable standalone." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">goal-loop</div>
         <div class="skill-badges">
@@ -566,7 +566,7 @@
           <span class="skill-badge lite">lite</span>
         </div>
         </div>
-        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., goal-fix-pr). Not invocable standalone.</div>
+        <div class="desc">Generic goal/loop pattern for convergence-driven loops. Provides sentinel management, heartbeat/sleeper, re-collect -> check -> continue/done loop, stop conditions, verify framework, and report format. Consumed by goal-orchestrator skills (e.g., ws-goal-fix-pr). Not invocable standalone.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/goal-loop/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
@@ -614,7 +614,7 @@
           <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md" data-name="spec-to-pr" data-slug="spec-to-pr" data-desc="spec-to-pr delivery orchestrator fsm (f0–f6, steps 0–9). agent contract only — not human docs. invoke: /spec-to-pr | @[spec-to-pr]. entry: github issue | azure devops work item | *.spec.md | feature description. flags: dry-run, auto, skip-testing, skip-tests, full, strict. flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). delegates via `dispatch-agent` (host subagent dispatch)." data-deps="00-write-spec 01-write-plan 02-interview 03-plan-to-tasks 04-implement-tasks 05-verify-plan 06-code-review 07-testing 08-ship-pr 09-fix-pr goal-fix-pr update-plan-implementation github-provider azure-devops-provider local-spec-provider check-harness check-workflows caveman gabarito karpathy-guidelines spec-format goal-loop self-learning changelog configure-project" data-layer="layer-5" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md" data-name="spec-to-pr" data-slug="spec-to-pr" data-desc="spec-to-pr delivery orchestrator fsm (f0–f6, steps 0–9). agent contract only — not human docs. invoke: /spec-to-pr | @[spec-to-pr]. entry: github issue | azure devops work item | *.spec.md | feature description. flags: dry-run, auto, skip-testing, skip-tests, full, strict. flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). delegates via `dispatch-agent` (host subagent dispatch)." data-deps="ws-write-spec ws-write-plan ws-interview ws-plan-to-tasks ws-implement-tasks ws-verify-plan ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-update-plan-implementation github-provider azure-devops-provider local-spec-provider check-harness check-workflows caveman gabarito karpathy-guidelines spec-format goal-loop self-learning changelog configure-project" data-layer="layer-5" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">spec-to-pr</div>
         <div class="skill-badges">
@@ -623,11 +623,11 @@
         </div>
         <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-testing, skip-tests, full, strict. Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via `dispatch-agent` (host subagent dispatch).</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (25):</div><div class="deps-list"><span class="dep-pill" data-dep="00-write-spec">00-write-spec</span><span class="dep-pill" data-dep="01-write-plan">01-write-plan</span><span class="dep-pill" data-dep="02-interview">02-interview</span><span class="dep-pill" data-dep="03-plan-to-tasks">03-plan-to-tasks</span><span class="dep-pill" data-dep="04-implement-tasks">04-implement-tasks</span><span class="dep-pill" data-dep="05-verify-plan">05-verify-plan</span><span class="dep-pill" data-dep="06-code-review">06-code-review</span><span class="dep-pill" data-dep="07-testing">07-testing</span><span class="dep-pill" data-dep="08-ship-pr">08-ship-pr</span><span class="dep-pill" data-dep="09-fix-pr">09-fix-pr</span><span class="dep-pill" data-dep="goal-fix-pr">goal-fix-pr</span><span class="dep-pill" data-dep="update-plan-implementation">update-plan-implementation</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="check-harness">check-harness</span><span class="dep-pill" data-dep="check-workflows">check-workflows</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="goal-loop">goal-loop</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (25):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-write-plan">ws-write-plan</span><span class="dep-pill" data-dep="ws-interview">ws-interview</span><span class="dep-pill" data-dep="ws-plan-to-tasks">ws-plan-to-tasks</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-verify-plan">ws-verify-plan</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-testing">ws-testing</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-update-plan-implementation">ws-update-plan-implementation</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="check-harness">check-harness</span><span class="dep-pill" data-dep="check-workflows">check-workflows</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="goal-loop">goal-loop</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md" data-name="spec-to-pr-lite" data-slug="spec-to-pr-lite" data-desc="spec-to-pr lite delivery orchestrator fsm. fast sequential spec → plan → implement → review → ship → fix-pr. invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. entry: github issue | azure devops work item | *.spec.md | plain text. flags: dry-run, auto, skip-tests, full. flags combine freely (e.g. full + auto + dry-run). inline execution in main session. dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md)." data-deps="00-write-spec 01-write-plan 04-implement-tasks 06-code-review 08-ship-pr 09-fix-pr goal-fix-pr github-provider azure-devops-provider local-spec-provider caveman gabarito karpathy-guidelines spec-format self-learning changelog configure-project" data-layer="layer-5" data-full="false" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md" data-name="spec-to-pr-lite" data-slug="spec-to-pr-lite" data-desc="spec-to-pr lite delivery orchestrator fsm. fast sequential spec → plan → implement → review → ship → fix-pr. invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. entry: github issue | azure devops work item | *.spec.md | plain text. flags: dry-run, auto, skip-tests, full. flags combine freely (e.g. full + auto + dry-run). inline execution in main session. dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md)." data-deps="ws-write-spec ws-write-plan ws-implement-tasks ws-code-review ws-ship-pr ws-fix-pr ws-goal-fix-pr github-provider azure-devops-provider local-spec-provider caveman gabarito karpathy-guidelines spec-format self-learning changelog configure-project" data-layer="layer-5" data-full="false" data-lite="true">
         <div class="skill-card-top">
           <div class="name">spec-to-pr-lite</div>
         <div class="skill-badges">
@@ -636,7 +636,7 @@
         </div>
         <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text. Flags: dry-run, auto, skip-tests, full. Flags combine freely (e.g. full + auto + dry-run). Inline execution in main session. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (17):</div><div class="deps-list"><span class="dep-pill" data-dep="00-write-spec">00-write-spec</span><span class="dep-pill" data-dep="01-write-plan">01-write-plan</span><span class="dep-pill" data-dep="04-implement-tasks">04-implement-tasks</span><span class="dep-pill" data-dep="06-code-review">06-code-review</span><span class="dep-pill" data-dep="08-ship-pr">08-ship-pr</span><span class="dep-pill" data-dep="09-fix-pr">09-fix-pr</span><span class="dep-pill" data-dep="goal-fix-pr">goal-fix-pr</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (17):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-write-plan">ws-write-plan</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -679,7 +679,7 @@
       <h4>Workflows Package</h4>
       <p class="package-desc">Workflows package — 31 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>00-write-spec</code>, <code>01-write-plan</code>, <code>02-interview</code>, <code>03-plan-to-tasks</code>, <code>04-implement-tasks</code>, <code>05-verify-plan</code>, … (+23)
+        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, <code>ws-verify-plan</code>, … (+23)
       </div>
     </div>
 
@@ -695,6 +695,12 @@
     </div>
   </div>
 </section>
+
+
+
+
+
+
 
 
 
@@ -745,8 +751,8 @@
       <p>Remove specified skills with automatic dependency cascading.</p>
       <div class="cmd-list">
         <div class="cmd-row">
-          <code>npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes</code>
-          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills uninstall --skills goal-fix-pr --yes">Copy</button>
+          <code>npx --yes github:jpolvora/workflow-skills uninstall --skills ws-goal-fix-pr --yes</code>
+          <button type="button" class="cmd-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills uninstall --skills ws-goal-fix-pr --yes">Copy</button>
         </div>
       </div>
     </div>
@@ -806,7 +812,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.79 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.81 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

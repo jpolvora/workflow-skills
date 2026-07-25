@@ -18,7 +18,7 @@ createdAt: "2026-07-20T19:18:00Z"
 | Expected files (unique) | 7 | ≤ 6 | **exceeded** |
 | Layers (cli / tests / docs / packaging) | 4 | ≤ 2 | **exceeded** |
 
-**execMode: `parallel`** (any threshold exceeded → parallel per `03-plan-to-tasks`).
+**execMode: `parallel`** (any threshold exceeded → parallel per `ws-plan-to-tasks`).
 
 **Concurrency reality:** Critical path is serial on the hasher + regenerated manifest (`T1`→`T2`). Only **T3 ∥ T4** (tests vs docs) share a level after T2. Package bump (`T5`) stays last. Near-sequential overall; do not parallelize T1/T2.
 
@@ -129,7 +129,7 @@ Every plan step A–E maps to ≥1 task. Every task has non-empty `files` and `c
 
 ## Handoff
 
-Next: [04-implement-tasks](../../.agents/skills/04-implement-tasks/SKILL.md) with:
+Next: [ws-implement-tasks](../../.agents/skills/ws-implement-tasks/SKILL.md) with:
 
 - `specs/us-90/step-03-us-90.plan.exec.md`
 - `specs/us-90/step-03-us-90.exec.dag.json`

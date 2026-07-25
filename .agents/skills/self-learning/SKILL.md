@@ -22,7 +22,7 @@ Consumer-owned memory lives in the shared hub (never overwritten by install/upda
 | Moment | Action |
 |--------|--------|
 | **Before plan / before code / before fix** | **Consult:** `Grep` / `Read` `{sharedDir}/MEMORY.md` for keywords of the task (shell, script, encoding, skill path, module). Apply matching **Solution** lines. Skip only for pure Q&A with no repo edits. |
-| Implementation hit a trap/pitfall/race | **Write:** new file in `{sharedDir}/memory/`, then `python {skillsRoot}/self-learning/self_learning.py --compile` (expand tokens before shell) |
+| Implementation hit a trap/pitfall/race | **Write:** new file in `{sharedDir}/memory/`, then `python {skillsRoot}/self-learning/scripts/self_learning.py --compile` (expand tokens before shell) |
 | Standard feature/bug fix, no new trap | Proof line: `Learning: N/A (standard implementation)` after confirming no new pitfall |
 | Pure Q&A, no durable insight | Proof line: `Learning: N/A (no new project knowledge)` |
 
@@ -41,7 +41,7 @@ Task is **not done** until the completion side runs (write or explicit `Learning
 2. **Write to `{sharedDir}/memory/`** — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a changelog or to record patterns an LLM already knows.
 3. **Compile `MEMORY.md`** — Expand tokens, then run:
    ```bash
-   python .agents/skills/self-learning/self_learning.py --compile
+   python .agents/skills/self-learning/scripts/self_learning.py --compile
    ```
 4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` in the final proof; one-line summary in the reply.
 
@@ -49,7 +49,7 @@ Task is **not done** until the completion side runs (write or explicit `Learning
 
 If `MEMORY.md` merge-conflicts on pull/merge, **do not** resolve by hand. Run:
 ```bash
-python .agents/skills/self-learning/self_learning.py --compile
+python .agents/skills/self-learning/scripts/self_learning.py --compile
 ```
 This rebuilds a clean index from `{sharedDir}/memory/` (per-file entries do not conflict).
 

@@ -6,7 +6,7 @@
 **Workflow Mode:** Standard (full auto)  
 
 ## Summary of Changes
-1. **Consumer-facing Managed Skill Links**: Updated relative links in `gabarito/README.md`, `08-ship-pr/PREPARE-CHECKLIST.md`, `shared/setup.md`, `spec-to-pr/README.md` to point to `shared/AGENTS.md`.
+1. **Consumer-facing Managed Skill Links**: Updated relative links in `gabarito/README.md`, `ws-ship-pr/PREPARE-CHECKLIST.md`, `shared/setup.md`, `spec-to-pr/README.md` to point to `shared/AGENTS.md`.
 2. **Delivery Checklist Portability**: Split delivery checklist in `shared/AGENTS.md` into Consumer Projects and Upstream Maintainers (`jpolvora/workflow-skills`).
 3. **Phase 4 Hub Resolution**: Updated `check-harness/SKILL.md` Phase 4 prose to cite resolved hub (`shared/AGENTS.md` in consumer mode).
 4. **Harness Verification Heuristics**: Added detection heuristic in `configure-project/INTERVIEW.md` for harness-only test repos.

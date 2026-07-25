@@ -56,7 +56,7 @@ Closing line: `Success! Install, canonicity, … and integrity all passed.` (exi
 | AC4 | PASS | abort on source mismatch; force override |
 | AC5 | PASS | local record written; W1: no bless on post-verify fail |
 | AC6 | PASS | audit fails + path report on managed mutation |
-| AC7 | PASS | selective `goal-fix-pr` audit OK |
+| AC7 | PASS | selective `ws-goal-fix-pr` audit OK |
 | AC8 | PASS | MEMORY/config edits ignored |
 | AC9 | PASS | `--check` digest label match/mismatch |
 | AC10 | PASS | Phase 11 covers clean / mutate / force / digest-change |

@@ -19,18 +19,18 @@
       "skills": [
         "spec-to-pr",
         "spec-to-pr-lite",
-        "00-write-spec",
-        "01-write-plan",
-        "02-interview",
-        "03-plan-to-tasks",
-        "04-implement-tasks",
-        "05-verify-plan",
-        "06-code-review",
-        "07-testing",
-        "08-ship-pr",
-        "09-fix-pr",
-        "goal-fix-pr",
-        "update-plan-implementation",
+        "ws-write-spec",
+        "ws-write-plan",
+        "ws-interview",
+        "ws-plan-to-tasks",
+        "ws-implement-tasks",
+        "ws-verify-plan",
+        "ws-code-review",
+        "ws-testing",
+        "ws-ship-pr",
+        "ws-fix-pr",
+        "ws-goal-fix-pr",
+        "ws-update-plan-implementation",
         "github-provider",
         "azure-devops-provider",
         "local-spec-provider",
@@ -65,18 +65,18 @@
   },
   "dependencies": {
     "spec-to-pr": [
-      "00-write-spec",
-      "01-write-plan",
-      "02-interview",
-      "03-plan-to-tasks",
-      "04-implement-tasks",
-      "05-verify-plan",
-      "06-code-review",
-      "07-testing",
-      "08-ship-pr",
-      "09-fix-pr",
-      "goal-fix-pr",
-      "update-plan-implementation",
+      "ws-write-spec",
+      "ws-write-plan",
+      "ws-interview",
+      "ws-plan-to-tasks",
+      "ws-implement-tasks",
+      "ws-verify-plan",
+      "ws-code-review",
+      "ws-testing",
+      "ws-ship-pr",
+      "ws-fix-pr",
+      "ws-goal-fix-pr",
+      "ws-update-plan-implementation",
       "github-provider",
       "azure-devops-provider",
       "local-spec-provider",
@@ -92,13 +92,13 @@
       "configure-project"
     ],
     "spec-to-pr-lite": [
-      "00-write-spec",
-      "01-write-plan",
-      "04-implement-tasks",
-      "06-code-review",
-      "08-ship-pr",
-      "09-fix-pr",
-      "goal-fix-pr",
+      "ws-write-spec",
+      "ws-write-plan",
+      "ws-implement-tasks",
+      "ws-code-review",
+      "ws-ship-pr",
+      "ws-fix-pr",
+      "ws-goal-fix-pr",
       "github-provider",
       "azure-devops-provider",
       "local-spec-provider",
@@ -110,7 +110,7 @@
       "changelog",
       "configure-project"
     ],
-    "00-write-spec": [
+    "ws-write-spec": [
       "spec-format"
     ],
     "github-provider": [
@@ -122,21 +122,21 @@
     "local-spec-provider": [
       "spec-format"
     ],
-    "goal-fix-pr": [
-      "09-fix-pr",
+    "ws-goal-fix-pr": [
+      "ws-fix-pr",
       "goal-loop"
     ],
-    "01-write-plan": [
+    "ws-write-plan": [
       "fable-domain"
     ],
-    "05-verify-plan": [
+    "ws-verify-plan": [
       "fable-judge"
     ],
-    "08-ship-pr": [
+    "ws-ship-pr": [
       "secrets-leak-review",
       "fable-judge"
     ],
-    "06-code-review": [
+    "ws-code-review": [
       "karpathy-guidelines",
       "caveman",
       "gabarito",

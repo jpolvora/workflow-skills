@@ -34,7 +34,7 @@ Several managed files link to `../../../AGENTS.md#external-dependencies` or `../
 | File | Link target | Problem |
 |------|-------------|---------|
 | `gabarito/README.md` | `../../../AGENTS.md` § Opt-out, § Skill loading | Root hub lacks these sections in default consumer layout |
-| `08-ship-pr/PREPARE-CHECKLIST.md` | `../../../AGENTS.md#external-dependencies` | Anchor missing on typical consumer root `AGENTS.md` |
+| `ws-ship-pr/PREPARE-CHECKLIST.md` | `../../../AGENTS.md#external-dependencies` | Anchor missing on typical consumer root `AGENTS.md` |
 | `shared/setup.md` | `../../../AGENTS.md#external-dependencies` | Same — points at upstream-only root hub |
 | `spec-to-pr/README.md` | `../../../AGENTS.md` as "Project entry" | Consumer entry is `shared/AGENTS.md` |
 
@@ -112,7 +112,7 @@ in `configure-project` detection heuristics when no app stack is detected.
 
 ## What passed
 
-- Pipeline folders `00`–`09` + `goal-fix-pr` + `update-plan-implementation` present
+- Pipeline folders `00`–`09` + `ws-goal-fix-pr` + `ws-update-plan-implementation` present
 - No retired path ids in `spec-to-pr` / `STEP-DISPATCH.md` dispatch
 - `ws-*` `name:` fields align with § 3b folder map
 - `check-workflows` deep validation: **0 issues** (standard + lite)

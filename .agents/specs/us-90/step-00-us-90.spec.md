@@ -23,12 +23,12 @@ Installing skills from `workflow-skills` fails the integrity gate: every tracked
 From a consumer project (e.g. `jskills`), run the install for the Full / workflow package (30 skills). Observed output:
 
 ```text
-Installing 30 skill(s): 00-write-spec, 01-write-plan, 02-interview, 03-plan-to-tasks, 04-implement-tasks, 05-verify-plan, 06-code-review, 07-testing, 08-ship-pr, 09-fix-pr, azure-devops-provider, caveman, changelog, check-harness, check-workflows, configure-project, gabarito, github-provider, goal-fix-pr, goal-loop, karpathy-guidelines, local-spec-provider, secrets-leak-review, self-learning, show-harness, spec-format, spec-to-pr, spec-to-pr-lite, update-plan-implementation, write-a-skill
+Installing 30 skill(s): ws-write-spec, ws-write-plan, ws-interview, ws-plan-to-tasks, ws-implement-tasks, ws-verify-plan, ws-code-review, ws-testing, ws-ship-pr, ws-fix-pr, azure-devops-provider, caveman, changelog, check-harness, check-workflows, configure-project, gabarito, github-provider, ws-goal-fix-pr, goal-loop, karpathy-guidelines, local-spec-provider, secrets-leak-review, self-learning, show-harness, spec-format, spec-to-pr, spec-to-pr-lite, ws-update-plan-implementation, write-a-skill
 Starting installation...
 Integrity: source package mismatch vs bin/skill-integrity.json
-  - 00-write-spec/SKILL.md (digest-mismatch)
-  - 01-write-plan/SKILL.md (digest-mismatch)
-  - 01-write-plan/SKILL.md (digest-mismatch)
+  - ws-write-spec/SKILL.md (digest-mismatch)
+  - ws-write-plan/SKILL.md (digest-mismatch)
+  - ws-write-plan/SKILL.md (digest-mismatch)
   ... (all listed files below)
 Aborting before any skill copy. Re-run with --force-integrity to override (unsafe).
 ```
@@ -46,25 +46,25 @@ Widespread `digest-mismatch` across skills and hub templates — looks like the 
 ## Affected paths (from install log)
 
 ### Skills
-- `00-write-spec/SKILL.md`
-- `01-write-plan/SKILL.md`
-- `02-interview/SKILL.md`
-- `03-plan-to-tasks/SKILL.md`
-- `04-implement-tasks/SKILL.md`
-- `05-verify-plan/SKILL.md`
-- `05-verify-plan/TEMPLATE.md`
-- `06-code-review/SKILL.md`
-- `07-testing/SKILL.md`
-- `08-ship-pr/GOAL-OVERRIDES.md`
-- `08-ship-pr/PREPARE-CHECKLIST.md`
-- `08-ship-pr/SKILL.md`
-- `08-ship-pr/examples.md`
-- `09-fix-pr/README.md`
-- `09-fix-pr/SKILL.md`
-- `09-fix-pr/scripts/AUTO_FIX.md`
-- `09-fix-pr/scripts/COOPERATIVE_FIX.md`
-- `09-fix-pr/scripts/fetch_threads.cjs`
-- `09-fix-pr/scripts/resolve_thread.cjs`
+- `ws-write-spec/SKILL.md`
+- `ws-write-plan/SKILL.md`
+- `ws-interview/SKILL.md`
+- `ws-plan-to-tasks/SKILL.md`
+- `ws-implement-tasks/SKILL.md`
+- `ws-verify-plan/SKILL.md`
+- `ws-verify-plan/TEMPLATE.md`
+- `ws-code-review/SKILL.md`
+- `ws-testing/SKILL.md`
+- `ws-ship-pr/GOAL-OVERRIDES.md`
+- `ws-ship-pr/PREPARE-CHECKLIST.md`
+- `ws-ship-pr/SKILL.md`
+- `ws-ship-pr/examples.md`
+- `ws-fix-pr/README.md`
+- `ws-fix-pr/SKILL.md`
+- `ws-fix-pr/scripts/AUTO_FIX.md`
+- `ws-fix-pr/scripts/COOPERATIVE_FIX.md`
+- `ws-fix-pr/scripts/fetch_threads.cjs`
+- `ws-fix-pr/scripts/resolve_thread.cjs`
 - `azure-devops-provider/SKILL.md`
 - `caveman/README.md`
 - `caveman/SKILL.md`
@@ -79,8 +79,8 @@ Widespread `digest-mismatch` across skills and hub templates — looks like the 
 - `github-provider/SKILL.md`
 - `github-provider/scripts/fetch_threads.cjs`
 - `github-provider/scripts/resolve_thread.cjs`
-- `goal-fix-pr/SKILL.md`
-- `goal-fix-pr/examples.md`
+- `ws-goal-fix-pr/SKILL.md`
+- `ws-goal-fix-pr/examples.md`
 - `goal-loop/SKILL.md`
 - `karpathy-guidelines/SKILL.md`
 - `local-spec-provider/SKILL.md`
@@ -102,8 +102,8 @@ Widespread `digest-mismatch` across skills and hub templates — looks like the 
 - `spec-to-pr/scripts/github-issue-to-spec.py`
 - `spec-to-pr/spec-to-pr-run-test.md`
 - `spec-to-pr-lite/SKILL.md`
-- `update-plan-implementation/SKILL.md`
-- `update-plan-implementation/plan-delta-template.md`
+- `ws-update-plan-implementation/SKILL.md`
+- `ws-update-plan-implementation/plan-delta-template.md`
 - `write-a-skill/GLOSSARY.md`
 - `write-a-skill/SKILL.md`
 - `write-a-skill/agents/openai.yaml`

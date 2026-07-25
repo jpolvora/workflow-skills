@@ -240,7 +240,7 @@ Map each AC → concrete cases in `test/test-install.js` (and generator `--check
 | AC4 | `testInstallAbortsOnSourceMismatch` | Fixture with corrupted source skill file vs manifest → install exit ≠0 and dest skill dir unchanged; with `--force-integrity` proceeds |
 | AC5 | `testPostInstallWritesLocalRecord` | After clean `--package workflows --yes`, `skill-integrity-local.json` exists with closure digests + `verifiedAt`; consumer `config.json`/`MEMORY.md` untouched |
 | AC6 | `testIntegrityAuditFailsOnMutation` | Install clean → mutate one managed `SKILL.md` → `integrity` exit ≠0 and prints path |
-| AC7 | `testSelectiveClosureOnly` | `install --skills goal-fix-pr --yes` → audit OK without Extra-only skills present; missing `write-a-skill` not reported |
+| AC7 | `testSelectiveClosureOnly` | `install --skills ws-goal-fix-pr --yes` → audit OK without Extra-only skills present; missing `write-a-skill` not reported |
 | AC8 | `testConsumerOwnedIgnored` | Edit `shared/MEMORY.md` / `config.json` after install → `integrity` still exit 0 |
 | AC9 | `testCheckReportsFullPackageDigest` | Mock or local pack: `--check` prints digest match/mismatch distinct from version; mismatch → exit ≠0 when versions equal but digests differ (fixture) |
 | AC10 | umbrella | Cases AC4–AC6 + `testFullPackageDigestChangesOnFileEdit` (change one included file → regenerate → `fullPackageDigest` changes) |
