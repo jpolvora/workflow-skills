@@ -290,6 +290,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `configure-project` | `.agents/skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `.agents/skills/goal-loop/SKILL.md` | Convergence |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
+| `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
 
@@ -315,6 +316,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Spec → PR lite | `spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
+| Auto-update feature specs after code changes | `ws-sync-spec` |
 | GitHub issue/PR ops | `github-provider` |
 | ADO WI/PR ops | `azure-devops-provider` |
 | Local `*.spec.md` | `local-spec-provider` |
