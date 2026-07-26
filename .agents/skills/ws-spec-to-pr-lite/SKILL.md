@@ -3,8 +3,9 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.0.95
+version: 0.0.96
 description: >-
   Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr.
   Invoke: /ws-spec-to-pr-lite | @[ws-spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text.

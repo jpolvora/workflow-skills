@@ -3,9 +3,10 @@
 
 
 
+
 name: ws-check-workflows
 description: Deeply validate and simulate workflow processes (ws-spec-to-pr & ws-spec-to-pr-lite) near real usage. Detects broken steps, missing dependencies, script syntax errors, and suggests actionable fixes with interactive user confirmation.
-version: 0.0.95
+version: 0.0.96
 disable-model-invocation: true
 ---
 
