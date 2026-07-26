@@ -1,0 +1,80 @@
+# Workflow Skills — Specification Index
+
+## 1. How to use
+
+- **Index (this file):** High-level roadmap, phase feature map, next specs, done log.
+- **Detail specs (`*.spec.md`):** Deep requirements and acceptance criteria in `.agents/specs/`.
+
+## 2. Status legend
+
+| Mark | Meaning |
+|------|---------|
+| `[ ]` | todo |
+| `[~]` | partial |
+| `[x]` | done |
+| `Verified: ...` | optional host smoke — **never auto-written by sync** |
+
+## 3. Goal
+
+Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skills for coding assistants, enabling seamless spec-to-PR delivery, code review, verification, and harness maintenance across repositories.
+
+## 4. Problems
+
+- LLM agents often produce scope creep, over-complicated edits, or unverified claims.
+- Delivery pipelines (spec generation, planning, implementation, review, testing, PR creation) are often monolithic or hardcoded to specific IDEs.
+- Consumer projects need managed skill installation with customizable local project configurations.
+
+## 5. Primary use cases
+
+- **UC1:** End-to-end automated software delivery using `ws-spec-to-pr` or `ws-spec-to-pr-lite`.
+- **UC2:** Batch execution of multiple specs sequentially with `ws-multi-spec`.
+- **UC3:** Harness integrity scanning and verification via `ws-check-harness` and `ws-check-workflows`.
+- **UC4:** Opt-in adversarial verification and domain reasoning via `ws-fable-judge` and `ws-fable-domain`.
+
+## 6. Constraints & non-goals
+
+- Skills must remain host-neutral and portable across IDEs/agents without product-specific hardcoding.
+- Consumer `shared/` configurations (`config.json`, `STACK.md`, `MEMORY.md`) are consumer-owned and never overwritten on upstream updates.
+
+## 7. Feature map by phase
+
+### Phase 1: Core Foundation & Provider Abstractions
+- [x] Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) (`spec: spec-provider-skills.spec.md`)
+- [x] Promote shared skills to first-class installable packages (`spec: promote-shared-skills.spec.md`)
+
+### Phase 2: System Quality & Integration
+- [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: consolidated-gh-issues.spec.md`)
+- [x] Opt-in Integration of fable-* Skills with spec-to-pr Workflows (`spec: fable-skills-integration.spec.md`)
+
+## 8. Next specs
+
+| # | Spec | Status | Target Phase | Notes |
+|---|------|--------|--------------|-------|
+| 1 | `spec-provider-skills` | `[x]` done | Phase 1 | GitHub, ADO, and local spec provider skills |
+| 2 | `promote-shared-skills` | `[x]` done | Phase 1 | Top-level skill promotion for utilities |
+| 3 | `consolidated-gh-issues` | `[x]` done | Phase 2 | Fixes #106, #109, #110 |
+| 4 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
+
+## 9. Inbox (unscheduled ideas)
+
+- Advanced multi-repository orchestrator support
+- CI/CD workflow generator skill
+
+## 10. Done log
+
+| Date | Slug | Title | PR / Commit |
+|------|------|-------|-------------|
+| 2026-07-13 | `spec-provider-skills` | Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) | Implemented |
+| 2026-07-16 | `promote-shared-skills` | Promote shared skills to first-class installable packages | Implemented |
+| 2026-07-23 | `consolidated-gh-issues` | Consolidated GitHub Issues Fix: #106, #109, and #110 | Implemented |
+| 2026-07-24 | `fable-skills-integration` | Opt-in Integration of fable-* Skills with spec-to-pr Workflows | Implemented |
+
+## 11. Maintenance checklist
+
+- [x] All completed features logged in Done log.
+- [x] Linked `*.spec.md` files exist for active Next specs.
+
+## 12. Related docs
+
+- [`README.md`](../../README.md)
+- [`AGENTS.md`](../../AGENTS.md)
