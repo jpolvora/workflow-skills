@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-26 06:24] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: `/ws-check-harness` — Audit harness integrity and apply corrections.
+- **Done**: Executed Phases 0–5c scan; fixed relative links in `.agents/skills/ws-spec-index/INDEX-TEMPLATE.md` to point to repo-root `README.md` and `AGENTS.md`; bumped package version to `0.0.95`; rebuilt site catalog; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #147, verified CI checks, merged PR #147 to `main`, and synced local/remote `main` and `develop` branches.
+- **Result**: Release `0.0.95` shipped and merged to `main` with 100% test coverage and verified harness integrity.
+
 ### [2026-07-26 06:20] Agent: Antigravity AI (Gemini 3.6 Flash)
 - **Prompt**: Ensure each task cycle in `ws-multi-spec` merges PR after review threads = 0, and sync base branches (`main`/`master`/`develop`) post-merge before starting a new feature branch (`git checkout -b`).
 - **Done**: Updated `SKILL.md`, `PROTOCOL.md`, `STATE.md`, and `evals.json` in `ws-multi-spec` to enforce mandatory PR merge and closure via SCM provider, strict queue advancement blocking until `state: MERGED`, and immediate post-merge base branch synchronization (`git fetch` & `git pull {baseBranch}`) before creating subsequent feature branches; bumped version to `0.0.94`; rebuilt site catalog; regenerated integrity checksums; verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #145 and PR #146, verified CI checks, merged PRs to `main`, and synced local/remote `main` and `develop` branches.
