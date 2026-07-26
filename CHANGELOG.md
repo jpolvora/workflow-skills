@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-26 06:07] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: `/ws-fable-method` ensure `ws-multi-spec` skill checks for base branch synchronization (`baseBranch`) before starting or resuming work on each spec in a batch.
+- **Done**: Added `baseBranch` auto-detection and persistence to `ws-multi-spec` state header; added pre-dispatch base branch sync preflight (`git merge` / `git rebase`) and conflict pause gate to `PROTOCOL.md` and `SKILL.md`; updated `STATE.md` schema, `EXAMPLES.md`, and `evals.json`; bumped package version to `0.0.92`; rebuilt site docs; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and full test suite (`npm test`, 11/11 phases green); created PR #144, ran GitHub CI checks, and merged PR #144 to `main`.
+- **Result**: Release `0.0.92` shipped and merged to `main` with 100% test coverage and verified integrity.
+
 ### [2026-07-26 00:29] Agent: Antigravity AI
 - **Prompt**: Refactor all skills to add ws-* prefix to folder/skill names, update all references across files/relations, rebuild site, test install/update, and ship PR.
 - **Done**: Renamed all 21 remaining unprefixed skill directories under `.agents/skills/` to use `ws-` prefix via `git mv` (36 total skills now all prefixed with `ws-`); updated `name: ws-<skill>` and `invocation_names` in SKILL.md frontmatters to support activation via both `ws-skillName` and `skillName`; updated dependency graphs (`bin/skill-dependencies.json` & `shared/skill-dependencies.json`), CLI, test suite (`test-install.js`), and docs (`AGENTS.md`, `shared/AGENTS.md`, `README.md`); bumped version to `0.0.90`; rebuilt site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 12 phases green); opened PR #141, verified CI checks, and merged PR #141 to `main`.
