@@ -21,7 +21,8 @@ flowchart TD
   WorkerOutcome -->|Failure| PauseGate[Pause Gate: Resume / Skip / Abort]
   ConvergeGate -->|No| RunGoalFixPr[Dispatch ws-goal-fix-pr + merge via SCM provider]
   RunGoalFixPr --> ConvergeGate
-  ConvergeGate -->|Yes| P5[5 Record Outcome - Merged & Shipped]
+  ConvergeGate -->|Yes| PostMergeSync[Post-Merge Base Branch Sync: git fetch & pull baseBranch]
+  PostMergeSync --> P5[5 Record Outcome - Merged & Shipped]
   PauseGate -->|Resume| BaseSync
   PauseGate -->|Skip| P5
   PauseGate -->|Abort| P6
@@ -59,8 +60,9 @@ Evaluate the target `*.spec.md` file:
 ### Phase 4: Pre-Dispatch Base Sync & Dispatch Worker
 - **Base Branch Sync Preflight**:
   - Before starting work on `{slug}` (new spec or resuming paused/failed work):
-  - Ensure the spec feature branch is created from or synced with `baseBranch` (`git fetch {gitRemote} {baseBranch}` followed by `git merge {baseBranch}` or `git rebase {baseBranch}`).
-  - This guarantees the feature branch stays in sync with latest changes merged into `baseBranch` by previous specs in the batch or external commits.
+  - Ensure local `baseBranch` (`main`/`master`/`develop`) is fully updated (`git checkout {baseBranch} && git pull {gitRemote} {baseBranch}`).
+  - Create or sync the spec feature branch (`git checkout -b feature/{slug}` or `git checkout feature/{slug} && git merge {baseBranch}`) from the updated `baseBranch`.
+  - This guarantees every feature branch starts from an up-to-date base containing all PRs merged by previous specs in the batch or external commits.
   - On merge/rebase conflict: pause with Phase 5 `user-gate` (Resume after resolving, Skip, Abort).
 - Mark state item `status: in_progress`, `flowMode: {lite|standard}`. Update state file `updatedAt`.
 - Dispatch subagent via `dispatch-agent`:
@@ -68,8 +70,8 @@ Evaluate the target `*.spec.md` file:
   - Command: if `flowMode == lite`: `/ws-spec-to-pr-lite full auto {specPath}` else: `/ws-spec-to-pr full auto {specPath}` (pass `dryRun` if set and `baseBranch: {baseBranch}`).
 - Await completion or worker exit `step-output`.
 
-### Phase 4b: Delivery Convergence, Code-Review Wait, & PR Merge Closure
-Every created PR MUST complete full code-review convergence and merge before queue advancement:
+### Phase 4b: Delivery Convergence, Code-Review Wait, & Post-Merge Base Sync
+Every created PR MUST complete full code-review convergence, merge, and post-merge base branch sync before queue advancement:
 1. **Detect PR**: Read worker `step-output` and query SCM provider (`gh` CLI / ADO API) to capture `prNumber` and `prUrl`.
 2. **Run Convergence Loop (`ws-goal-fix-pr`)**:
    - Dispatch [`ws-goal-fix-pr`](../ws-goal-fix-pr/SKILL.md) for `<prNumber>`.
@@ -80,12 +82,17 @@ Every created PR MUST complete full code-review convergence and merge before que
    - Once threads are 0 and checks green, master MUST execute PR merge via SCM provider: `gh pr merge {prNumber} --merge` (or SCM merge API) to merge and close the PR into `baseBranch`.
    - If merge fails due to base branch drift, master syncs the branch with `baseBranch` (`git merge {baseBranch}`), pushes, and retries merge until state is `MERGED`.
    - Confirm PR status is `state: MERGED` (`merged: true`).
-4. **Strict Block & Prohibition**: Leaving PRs open or unmerged is FORBIDDEN. Master orchestrator MUST NOT dispatch the next spec worker until the current spec PR is confirmed fully merged (`merged: true`, `activeThreads: 0`, `state: MERGED`).
-5. If convergence fails (max iterations, checks red, escalation): mark item `status: failed` and present Phase 5 `user-gate` failure menu.
+4. **Post-Merge Base Branch Synchronization**:
+   - Immediately after PR merge success (`state: MERGED`), master MUST execute post-merge sync:
+     - `git fetch {gitRemote}`
+     - `git checkout {baseBranch} && git pull {gitRemote} {baseBranch}` (and pull `workingBranch` if different).
+   - This ensures `baseBranch` (`main`/`master`/`develop`) on local disk matches the remote merged state before the next spec worker creates a new feature branch (`git checkout -b feature/{slug}`).
+5. **Strict Block & Prohibition**: Leaving PRs open or unmerged is FORBIDDEN. Master orchestrator MUST NOT dispatch the next spec worker until the current spec PR is confirmed fully merged (`merged: true`, `activeThreads: 0`, `state: MERGED`) and base branches are synced locally.
+6. If convergence fails (max iterations, checks red, escalation): mark item `status: failed` and present Phase 5 `user-gate` failure menu.
 
 ### Phase 5: Record Outcome
 - Update state item:
-  - On full merge convergence: set `status: shipped`, `merged: true`, `activeThreads: 0`, `prNumber`, `prUrl`, `updatedAt`.
+  - On full merge convergence & post-merge sync: set `status: shipped`, `merged: true`, `activeThreads: 0`, `prNumber`, `prUrl`, `updatedAt`.
   - On failure or unresolvable PR state: mark item `status: failed`, present `user-gate` failure menu:
     - **Resume (Recommended):** Re-sync feature branch with `baseBranch` and re-dispatch worker or convergence gate for same spec.
     - **Skip:** Mark item `status: skipped`, record `reason`, proceed to next item.

@@ -2,7 +2,7 @@
 
 
 name: ws-multi-spec
-version: 0.0.93
+version: 0.0.94
 description: >-
   Sequential smart multi-spec batch delivery orchestrator. Evaluates spec complexity to dispatch ws-spec-to-pr or ws-spec-to-pr-lite workers.
   Invoke: /ws-multi-spec | @[ws-multi-spec].
@@ -41,8 +41,9 @@ Sequential multi-spec batch delivery orchestrator with **smart complexity & flow
 3. Probe before execution to skip already-implemented specs.
 4. Base branch synchronization (`baseBranch`) before worker dispatch and on run resume.
 5. **Complete End-to-End Cycle per Spec**: After worker creates PR, wait for automated code reviewers and CI, execute `ws-goal-fix-pr` until `activeThreads == 0`, and explicitly merge & close PR via SCM provider before queue advancement.
-6. Unified state management across specs in `{plansDir}/ws-multi-spec/{runId}.state.md`.
-7. Pause on worker failure with clear recovery options (Resume, Skip, Abort).
+6. **Post-Merge Base Sync**: Automatically fetch and pull base branches (`main`/`master`/`develop`) immediately after PR merge success so subsequent feature branches (`checkout -b`) are created from an up-to-date, synced base.
+7. Unified state management across specs in `{plansDir}/ws-multi-spec/{runId}.state.md`.
+8. Pause on worker failure with clear recovery options (Resume, Skip, Abort).
 
 ## Invariants
 
@@ -52,7 +53,8 @@ Sequential multi-spec batch delivery orchestrator with **smart complexity & flow
 | Base Branch Sync | Master records `baseBranch` in state file header; before worker dispatch or on resume, spec feature branch MUST be synced with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`) to incorporate latest base features/merged code |
 | Flow Auto-Detect | `ws-spec-to-pr-lite` when ≤3 steps / ≤6 files / ≤2 layers / frontmatter `complexity: low`; `ws-spec-to-pr` otherwise |
 | Merge & Closure | Every created PR MUST undergo `ws-goal-fix-pr` convergence (waiting for automated code reviews & CI), resolve `activeThreads` to 0, and be explicitly merged (`state: MERGED`) via SCM provider (`gh pr merge` / SCM API). Leaving PRs open/unmerged is FORBIDDEN |
-| Next-Spec Block | Master orchestrator MUST NOT dispatch the next spec until prior spec PR is fully merged (`merged: true`, `activeThreads: 0`, `state: MERGED`) on SCM provider |
+| Post-Merge Sync | Immediately after PR merge success (`state: MERGED`), master MUST fetch and pull `baseBranch` (`main`/`master`/`develop`) so the next spec worker's feature branch (`git checkout -b feature/{slug}`) is created from an already updated and fully synced base branch |
+| Next-Spec Block | Master orchestrator MUST NOT dispatch the next spec until prior spec PR is fully merged (`merged: true`, `activeThreads: 0`, `state: MERGED`) on SCM provider and base branches are synced |
 | Isolation | Fresh worker context per spec; no shared scratch across specs |
 | Pause on fail | No silent continue on worker failure; gate required |
 | Skip done | Probe already-implemented items before dispatching |

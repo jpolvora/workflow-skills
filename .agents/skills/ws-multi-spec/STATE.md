@@ -42,7 +42,7 @@ specsDir: .agents/specs
 | `reason` | Required when `skipped` or `failed` (e.g. `already-implemented`, error summary) |
 | `prNumber` / `prUrl` | Set on PR creation and retained on `shipped` |
 
-*Note on `shipped`:* An item is terminal `shipped` ONLY when the PR is fully merged (`merged: true`) with 0 open review threads (`activeThreads: 0`). Open, unmerged PRs are non-terminal and must complete Phase 4b delivery convergence before advancing to the next spec.
+*Note on `shipped`:* An item is terminal `shipped` ONLY when the PR is fully merged (`merged: true`, `state: MERGED`) with 0 open review threads (`activeThreads: 0`). Open, unmerged PRs are non-terminal and must complete Phase 4b delivery convergence and PR merge before advancing to the next spec.
 
 ## Worker `step-output` Contract
 
@@ -94,3 +94,4 @@ When loading an existing `{plansDir}/ws-multi-spec/*.state.md`:
 4. Rows with open PRs (`merged: false` / unmerged) must re-enter Phase 4b convergence gate to run `ws-goal-fix-pr` and merge into `baseBranch`.
 5. Resume execution at the first `pending`, `in_progress` (reset to `pending`), or `failed` item.
 6. Before re-dispatching worker for a spec, sync feature branch with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`) to ensure all prior merged changes and base features are incorporated.
+7. Immediately after any PR merge success (`state: MERGED`), pull the latest `baseBranch` before creating a new feature branch for the next spec.

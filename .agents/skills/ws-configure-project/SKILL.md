@@ -3,7 +3,7 @@
 
 
 name: ws-configure-project
-version: 0.0.93
+version: 0.0.94
 description: >
   Interview and detect project settings to fill or update `.agents/skills/shared/config.json`
   with suggested values. Use when config.json is missing or incomplete, after install when the
