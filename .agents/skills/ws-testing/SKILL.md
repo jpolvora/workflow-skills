@@ -4,7 +4,7 @@
 
 name: ws-testing
 description: Plans and executes pre-PR testing — unit tests, integration/E2E, coverage, testing quality, and feature quality.
-version: 0.0.93
+version: 0.0.94
 disable-model-invocation: true
 invocation_names:
   - testing

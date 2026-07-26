@@ -4,7 +4,7 @@
 
 name: ws-update-plan-implementation
 description: Post-workflow delta adjustments. Captures manual QA findings, plans delta fixes, implements changes, and updates result summaries.
-version: 0.0.93
+version: 0.0.94
 disable-model-invocation: true
 invocation_names:
   - update-plan-implementation

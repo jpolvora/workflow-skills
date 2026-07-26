@@ -8,7 +8,7 @@ description: >-
   management, heartbeat/sleeper, re-collect -> check -> continue/done loop,
   stop conditions, verify framework, and report format. Consumed by
   goal-orchestrator skills (e.g., ws-goal-fix-pr). Not invocable standalone.
-version: 0.0.93
+version: 0.0.94
 disable-model-invocation: true
 ---
 
