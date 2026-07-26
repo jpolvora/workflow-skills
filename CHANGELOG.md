@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 23:17] Agent: Gemini 3.6 Flash
+- **Prompt**: `/spec-to-pr-lite gh issue check and get to create spec` (Issue #129)
+- **Done**: Registered `ws-multi-spec` in `.agents/skills/shared/skill-dependencies.json` to match `bin/skill-dependencies.json`; added automatic `bin` ↔ `shared` dependency graph sync assertions in `check_workflows.py`; updated test suite assertions in `test-install.js`; bumped version to `0.0.85`; regenerated integrity digests; created and merged PR #130.
+- **Result**: Managed consumer updates maintain `ws-multi-spec` dependency closure and prevent hub manifest drift.
+
 ### [2026-07-25 02:40] Agent: Cursor Grok 4.5
 - **Prompt**: `/fable-method` fix GH Action code review false-positive success (OpenCode install / BASH_SOURCE)
 - **Done**: Removed `continue-on-error: true` from `.github/workflows/code-review.yml`; pre-install OpenCode via authenticated `gh api` + pinned `--version`; run `run.sh` from a downloaded file (not `curl|bash`); aligned root `AGENTS.md` dry-run recipe
