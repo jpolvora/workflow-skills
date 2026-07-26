@@ -1,0 +1,250 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "planPath": ".agents/plans/us-150/step-02-us-150.plan.refined.md",
+  "reason": "7 refined implementation steps, 52 expected unique changed files, and 6 safe levels exceed sequential thresholds of 3 steps, 6 files, and 2 levels.",
+  "metrics": {
+    "planSteps": 7,
+    "atomicTasks": 9,
+    "expectedUniqueChangedFiles": 52,
+    "safeDagLevels": 6,
+    "maxConcurrentTasks": 3,
+    "sameLevelFileCollisions": 0,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Create optional senior-developer gate",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-senior-developer/SKILL.md"
+      ],
+      "acceptance": "AC1–AC5 and AC8: portable en-us model-invoked skill has trigger-specific description, no disable-model-invocation, no scripts/autoload/dependency edge, all required routing and pre-ship branches, one canonical detailed Code review proof checklist, and checkable Done-when criteria.",
+      "coderPrompt": "Create only .agents/skills/ws-senior-developer/SKILL.md. Apply ws-write-a-skill and consulted MEMORY: model invocation is justified; use {skillsRoot}, {sharedDir}, {plansDir}, user-gate, and configured aliases; no host names, hardcoded consumer commands, scripts, or copied consumer policy. Include named-workflow/explicit implementation routing before gates, trivial/single-file exemption, non-trivial context and MEMORY reads plus confirmed-plan requirement, pre-ship proof checklist, policy/managed-skill boundary, and Done-when per phase. Keep under preferred 100 lines."
+    },
+    {
+      "id": "T2",
+      "title": "Document opt-in resolution and routing",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/shared/config.json.example",
+        ".agents/skills/shared/setup.md",
+        "AGENTS.md",
+        ".agents/AGENTS.md",
+        ".agents/skills/shared/AGENTS.md",
+        "README.md"
+      ],
+      "acceptance": "AC6–AC8 and AC11: empty seniorDeveloper default remains empty; packaged path is documented as opt-in; config-path-first resolution and pointer-only checklist ownership remain intact; root-pointer wording remains consumer-owned.",
+      "coderPrompt": "Update exactly the six listed docs/config-template files. Document .agents/skills/ws-senior-developer/SKILL.md only as an explicit rules.seniorDeveloper opt-in value. Add correct Layer 1, Workflows-only, shared promoted-utility, and router routes. Preserve resolution precedence and do not reproduce the detailed Code review proof checklist, change consumer-owned config/STACK, or claim installer writes a root AGENTS.md."
+    },
+    {
+      "id": "T3",
+      "title": "Register Workflows package member",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        "bin/skill-dependencies.json",
+        ".agents/skills/shared/skill-dependencies.json"
+      ],
+      "acceptance": "AC7 and AC9: both manifests include ws-senior-developer only in packages.workflows.skills, remain mirrored, and contain no new dependencies or autoloadOnly entry.",
+      "coderPrompt": "Add ws-senior-developer to packages.workflows.skills in both listed mirrored manifests. Do not alter dependencies, autoloadOnly, installer code, or other package membership. Preserve JSON formatting and ordering conventions."
+    },
+    {
+      "id": "T4",
+      "title": "Add and generate senior-developer evals",
+      "parallelGroup": "L2",
+      "dependsOn": [
+        "T1"
+      ],
+      "files": [
+        "bin/generate-skill-evals.js",
+        ".agents/skills/ws-azure-devops-provider/evals/evals.json",
+        ".agents/skills/ws-caveman/evals/evals.json",
+        ".agents/skills/ws-changelog/evals/evals.json",
+        ".agents/skills/ws-check-harness/evals/evals.json",
+        ".agents/skills/ws-check-workflows/evals/evals.json",
+        ".agents/skills/ws-code-review/evals/evals.json",
+        ".agents/skills/ws-configure-project/evals/evals.json",
+        ".agents/skills/ws-fable-domain/evals/evals.json",
+        ".agents/skills/ws-fable-judge/evals/evals.json",
+        ".agents/skills/ws-fable-method/evals/evals.json",
+        ".agents/skills/ws-fix-pr/evals/evals.json",
+        ".agents/skills/ws-gabarito/evals/evals.json",
+        ".agents/skills/ws-github-provider/evals/evals.json",
+        ".agents/skills/ws-goal-fix-pr/evals/evals.json",
+        ".agents/skills/ws-goal-loop/evals/evals.json",
+        ".agents/skills/ws-implement-tasks/evals/evals.json",
+        ".agents/skills/ws-interview/evals/evals.json",
+        ".agents/skills/ws-karpathy-guidelines/evals/evals.json",
+        ".agents/skills/ws-local-spec-provider/evals/evals.json",
+        ".agents/skills/ws-multi-spec/evals/evals.json",
+        ".agents/skills/ws-plan-to-tasks/evals/evals.json",
+        ".agents/skills/ws-senior-developer/evals/evals.json",
+        ".agents/skills/ws-secrets-leak-review/evals/evals.json",
+        ".agents/skills/ws-self-learning/evals/evals.json",
+        ".agents/skills/ws-ship-pr/evals/evals.json",
+        ".agents/skills/ws-show-harness/evals/evals.json",
+        ".agents/skills/ws-spec-format/evals/evals.json",
+        ".agents/skills/ws-spec-index/evals/evals.json",
+        ".agents/skills/ws-spec-to-pr-lite/evals/evals.json",
+        ".agents/skills/ws-spec-to-pr/evals/evals.json",
+        ".agents/skills/ws-sync-spec/evals/evals.json",
+        ".agents/skills/ws-testing/evals/evals.json",
+        ".agents/skills/ws-update-plan-implementation/evals/evals.json",
+        ".agents/skills/ws-verify-plan/evals/evals.json",
+        ".agents/skills/ws-write-a-skill/evals/evals.json",
+        ".agents/skills/ws-write-plan/evals/evals.json",
+        ".agents/skills/ws-write-spec/evals/evals.json"
+      ],
+      "acceptance": "AC3–AC5 and AC13: dedicated ws-senior-developer source payload has four portable scenarios, each with at least three assertions, and generated diff contains only expected serialization changes plus the new eval.",
+      "coderPrompt": "Add a ws-senior-developer EVALS entry in bin/generate-skill-evals.js with four scenarios: multi-file free text requires context reads and a confirmed plan; trivial single-file work avoids excess ceremony; explicit implementation/named workflows route without a conflicting gate; branch/PR handoff requires review, configured verification, secrets, docs/spec-index assessment, and evidence/blockers. Run node bin/generate-skill-evals.js once. It writes every listed eval file, so inspect and revert any unrelated semantic change."
+    },
+    {
+      "id": "T5",
+      "title": "Add Workflows installation assertions",
+      "parallelGroup": "L2",
+      "dependsOn": [
+        "T3"
+      ],
+      "files": [
+        "test/test-install.js"
+      ],
+      "acceptance": "AC7 and AC9: Phase 0b verifies both manifests; Phase 6 verifies Workflows installation of SKILL.md, evals/evals.json, and shared hub; optional direct/selective behavior remains covered.",
+      "coderPrompt": "In test/test-install.js add narrow assertions that both dependency manifests list ws-senior-developer in Workflows and that Phase 6 Workflows install includes ws-senior-developer/SKILL.md plus evals/evals.json and shared hub. Retain dynamic integrity coverage and existing Extra-only security-review assertion unchanged in purpose."
+    },
+    {
+      "id": "T6",
+      "title": "Bump release and rebuild site catalog",
+      "parallelGroup": "L3",
+      "dependsOn": [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5"
+      ],
+      "files": [
+        "package.json",
+        "bin/skill-dependencies.json",
+        ".agents/skills/shared/skill-dependencies.json",
+        "docs/index.html",
+        ".agents/skills/ws-azure-devops-provider/SKILL.md",
+        ".agents/skills/ws-caveman/SKILL.md",
+        ".agents/skills/ws-changelog/SKILL.md",
+        ".agents/skills/ws-check-harness/SKILL.md",
+        ".agents/skills/ws-check-workflows/SKILL.md",
+        ".agents/skills/ws-code-review/SKILL.md",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-fable-domain/SKILL.md",
+        ".agents/skills/ws-fable-judge/SKILL.md",
+        ".agents/skills/ws-fable-method/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-gabarito/SKILL.md",
+        ".agents/skills/ws-github-provider/SKILL.md",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-loop/SKILL.md",
+        ".agents/skills/ws-implement-tasks/SKILL.md",
+        ".agents/skills/ws-interview/SKILL.md",
+        ".agents/skills/ws-karpathy-guidelines/SKILL.md",
+        ".agents/skills/ws-local-spec-provider/SKILL.md",
+        ".agents/skills/ws-multi-spec/SKILL.md",
+        ".agents/skills/ws-plan-to-tasks/SKILL.md",
+        ".agents/skills/ws-senior-developer/SKILL.md",
+        ".agents/skills/ws-secrets-leak-review/SKILL.md",
+        ".agents/skills/ws-self-learning/SKILL.md",
+        ".agents/skills/ws-ship-pr/SKILL.md",
+        ".agents/skills/ws-show-harness/SKILL.md",
+        ".agents/skills/ws-spec-format/SKILL.md",
+        ".agents/skills/ws-spec-index/SKILL.md",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-sync-spec/SKILL.md",
+        ".agents/skills/ws-testing/SKILL.md",
+        ".agents/skills/ws-update-plan-implementation/SKILL.md",
+        ".agents/skills/ws-verify-plan/SKILL.md",
+        ".agents/skills/ws-write-a-skill/SKILL.md",
+        ".agents/skills/ws-write-plan/SKILL.md",
+        ".agents/skills/ws-write-spec/SKILL.md"
+      ],
+      "acceptance": "AC1, AC11, and AC12: a single npm run build-site:bump synchronizes package version, every SKILL.md frontmatter, both manifest package versions, root-hub-derived site catalog, and footer.",
+      "coderPrompt": "After all source tasks are settled, run npm run build-site:bump exactly once. Do not manually bump versions. Confirm docs/index.html includes the senior-developer card and no conflict markers; confirm all listed generated version targets agree."
+    },
+    {
+      "id": "T7",
+      "title": "Synchronize test tarball fixture",
+      "parallelGroup": "L4",
+      "dependsOn": [
+        "T6"
+      ],
+      "files": [
+        "test/package.json"
+      ],
+      "acceptance": "AC12: test/package.json uses file:../workflow-skills-<exact-bumped-version>.tgz and matches package.json.",
+      "coderPrompt": "Read the version produced by T6 and update only test/package.json's workflow-skills file dependency to the matching tarball filename."
+    },
+    {
+      "id": "T8",
+      "title": "Regenerate integrity manifest",
+      "parallelGroup": "L5",
+      "dependsOn": [
+        "T7"
+      ],
+      "files": [
+        "bin/skill-integrity.json"
+      ],
+      "acceptance": "AC9, AC10, and AC12: final manifest contains current digests for the new skill, generated evals, hubs, manifests, and release output.",
+      "coderPrompt": "Run npm run generate-integrity after every source and generated artifact is final. Change only bin/skill-integrity.json; do not run it earlier or bless failed verification."
+    },
+    {
+      "id": "T9",
+      "title": "Run final delivery verification",
+      "parallelGroup": "L6",
+      "dependsOn": [
+        "T8"
+      ],
+      "files": [
+        "AGENTS.md",
+        ".agents/AGENTS.md",
+        ".agents/skills/shared/AGENTS.md",
+        "README.md",
+        "docs/index.html",
+        "package.json",
+        "test/package.json",
+        "bin/skill-integrity.json"
+      ],
+      "fileMode": "read-only verification targets; no edits expected",
+      "acceptance": "AC6 and AC9–AC12: integrity verification, configured local package tests, non-bumping site build, workflow checker, harness Phases 0–5c, and changed-doc conflict search pass with zero critical findings.",
+      "coderPrompt": "Run npm run verify-integrity; npm run tests -- --local; node bin/build-site.js; python .agents/skills/ws-check-workflows/scripts/check_workflows.py; and ws-check-harness Phases 0–5c. Search AGENTS.md, .agents/AGENTS.md, .agents/skills/shared/AGENTS.md, README.md, and docs/index.html for conflict markers. Report command evidence and blockers; do not edit files in this task."
+    }
+  ],
+  "levels": [
+    [
+      "T1",
+      "T2",
+      "T3"
+    ],
+    [
+      "T4",
+      "T5"
+    ],
+    [
+      "T6"
+    ],
+    [
+      "T7"
+    ],
+    [
+      "T8"
+    ],
+    [
+      "T9"
+    ]
+  ]
+}

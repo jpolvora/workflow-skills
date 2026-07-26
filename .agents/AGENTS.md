@@ -161,6 +161,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-goal-loop` | `skills/ws-goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
 | `ws-spec-index` | `skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-sync-spec` | `skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
+| `ws-senior-developer` | `skills/ws-senior-developer/SKILL.md` | Optional engineering-delivery gate and Code review proof source |
 
 ### Review & audit (Workflows package)
 
@@ -199,6 +200,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Write a spec | `ws-write-spec` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement / fix code | `ws-implement-tasks` |
+| Engineering delivery gate / Code review proof | `ws-senior-developer` (opt in through `rules.seniorDeveloper` or invoke explicitly) |
 | Verify against plan | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Testing pre-PR | `ws-testing` |
@@ -233,7 +235,7 @@ Not shipped in the skill package (except where noted). Resolve each dependency i
 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → global/user skill |
+| `senior-developer` | `config.json` → `rules.seniorDeveloper` (set `.agents/skills/ws-senior-developer/SKILL.md` to opt in to the packaged skill) → local skill (`senior-developer/SKILL.md`) → global/user skill |
 | `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `skills/ws-karpathy-guidelines/SKILL.md` → global skill |
 | Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root only if explicitly configured |

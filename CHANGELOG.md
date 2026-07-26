@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-07-26 18:10] Agent: Cursor Grok 4.5
+- **Prompt**: `/ws-spec-to-pr` GH issue #150 — ship optional `ws-senior-developer` with full auto checks, tests, site, integrity, and PR.
+- **Done**: Added installable opt-in `ws-senior-developer` (Workflows package); hubs/docs/config opt-in for `rules.seniorDeveloper`; dedicated evals; installer assertions; `ws-sync-spec` eval payload for npm pack parity; bumped to `0.0.97`; regenerated site catalog and integrity; synced branches with `develop` as source of truth.
+- **Result**: Release `0.0.97` ready (`develop` → `main`) with verified integrity and local package tests.
+
+### [2026-07-26 06:30] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: Update `README.md`, website skills, installer, dependency graph, and checksums, then ship PR.
+- **Done**: Updated `README.md` catalog table to list `ws-sync-spec`, `ws-spec-format`, and `ws-goal-loop`; rebuilt site catalog (`docs/index.html`); bumped version to `0.0.96`; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #148, verified CI checks, merged PR #148 to `main`, and synced local/remote `main` and `develop` branches.
+- **Result**: Release `0.0.96` shipped and merged to `main` with 100% test coverage and verified integrity.
+
 ### [2026-07-26 06:24] Agent: Antigravity AI (Gemini 3.6 Flash)
 - **Prompt**: `/ws-check-harness` — Audit harness integrity and apply corrections.
 - **Done**: Executed Phases 0–5c scan; fixed relative links in `.agents/skills/ws-spec-index/INDEX-TEMPLATE.md` to point to repo-root `README.md` and `AGENTS.md`; bumped package version to `0.0.95`; rebuilt site catalog; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #147, verified CI checks, merged PR #147 to `main`, and synced local/remote `main` and `develop` branches.
