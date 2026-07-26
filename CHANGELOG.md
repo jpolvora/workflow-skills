@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-26 06:20] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: Ensure each task cycle in `ws-multi-spec` merges PR after review threads = 0, and sync base branches (`main`/`master`/`develop`) post-merge before starting a new feature branch (`git checkout -b`).
+- **Done**: Updated `SKILL.md`, `PROTOCOL.md`, `STATE.md`, and `evals.json` in `ws-multi-spec` to enforce mandatory PR merge and closure via SCM provider, strict queue advancement blocking until `state: MERGED`, and immediate post-merge base branch synchronization (`git fetch` & `git pull {baseBranch}`) before creating subsequent feature branches; bumped version to `0.0.94`; rebuilt site catalog; regenerated integrity checksums; verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #145 and PR #146, verified CI checks, merged PRs to `main`, and synced local/remote `main` and `develop` branches.
+- **Result**: Release `0.0.94` shipped and merged to `main` with 100% test coverage, verified integrity, and post-merge branch synchronization.
+
 ### [2026-07-26 06:07] Agent: Antigravity AI (Gemini 3.6 Flash)
 - **Prompt**: `/ws-fable-method` ensure `ws-multi-spec` skill checks for base branch synchronization (`baseBranch`) before starting or resuming work on each spec in a batch.
 - **Done**: Added `baseBranch` auto-detection and persistence to `ws-multi-spec` state header; added pre-dispatch base branch sync preflight (`git merge` / `git rebase`) and conflict pause gate to `PROTOCOL.md` and `SKILL.md`; updated `STATE.md` schema, `EXAMPLES.md`, and `evals.json`; bumped package version to `0.0.92`; rebuilt site docs; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and full test suite (`npm test`, 11/11 phases green); created PR #144, ran GitHub CI checks, and merged PR #144 to `main`.

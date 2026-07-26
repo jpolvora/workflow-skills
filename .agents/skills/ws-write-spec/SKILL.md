@@ -2,9 +2,10 @@
 
 
 
+
 name: ws-write-spec
 description: Drafts a canonical step-00-{slug}.spec.md from a free-text feature description (ws-spec-to-pr Step 0 brainstorm).
-version: 0.0.94
+version: 0.0.95
 disable-model-invocation: true
 invocation_names:
   - write-spec
