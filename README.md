@@ -199,6 +199,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`fable-domain`](.agents/skills/fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) |
 | [`caveman`](.agents/skills/caveman/SKILL.md) · [`gabarito`](.agents/skills/gabarito/SKILL.md) · [`karpathy-guidelines`](.agents/skills/karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
 | [`self-learning`](.agents/skills/self-learning/SKILL.md) · [`changelog`](.agents/skills/changelog/SKILL.md) · [`configure-project`](.agents/skills/configure-project/SKILL.md) | Memory, history & project configuration |
+| [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | Project spec index init/sync/promote |
 
 ---
 

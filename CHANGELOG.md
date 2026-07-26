@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 22:30] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: `/fable-method` update website, README.md, checksums, dependencies, installer, npx/bash script, AGENTS.md, check-workflows, tests, check-harness and bump version to prepare release 0.0.86
+- **Done**: Bumped package version to `0.0.86`; updated website catalog (`docs/index.html`) with 35 skills across 4 layers; updated `README.md` catalog tables; synced dependency manifests (`bin/skill-dependencies.json` and `.agents/skills/shared/skill-dependencies.json`); updated test suite tarball reference in `test/package.json`; regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues, 100% PASS) and `npm run tests -- --local` (all 11 phases green).
+- **Result**: Release `0.0.86` ready to ship (`develop` → `main`) with 100% verified integrity, site catalog, installer, and test suite.
+
 ### [2026-07-25 21:45] Agent: Gemini 3.6 Flash (High)
 - **Prompt**: `/spec-to-pr gh iisue 134 /write-a-skill /fable-method`
 - **Done**: Added `ws-spec-index` model-invoked skill for project spec index lifecycle management (`init`, `sync`, `promote`); created skill documentation, templates, reference schemas, and evals; registered in `bin/skill-dependencies.json` and `.agents/skills/shared/skill-dependencies.json`; updated hub skill indexes and task routers (`AGENTS.md` and `.agents/skills/shared/AGENTS.md`); wired auto-sync call sites in `spec-to-pr`, `spec-to-pr-lite`, and `ws-ship-pr`; updated integrity digests and website catalog; created PR #135, ran GitHub CI checks, and merged PR #135 to `main`.

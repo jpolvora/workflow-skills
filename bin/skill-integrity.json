@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cbdacc3e2e2a86ba37b0479b5b73489e8e92b78f984e63925e8dbe9586d6b867",
+  "fullPackageDigest": "abfb70be9ca9fad1bb2d9d62826dc8dbe852a255865a067ce35fe8bdbfd3d23b",
   "hub": {
     "files": {
       "AGENTS.md": "04a4ccc32d7115f3de35b4f77c4aaa06d457b7dc58d16a78e898adda33e1affc",
@@ -17,13 +17,13 @@
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "27eae7b6faf83bd00d299ff8cef6f2d0411a563c376a066ef6ec5a7a1a4f19a2",
       "setup.md": "65b68111cdf60b7f1c33e93e13243eb56066c2409b0165cd88cc77eff7f814bf",
-      "skill-dependencies.json": "7f737e97e8e14ef11201743390de78857853198dde00cecd21ee7948efcc5263",
+      "skill-dependencies.json": "3d9599d762a74b0c198b6aff6d27ee6580d5d0a931c200116fa700b4f554a4ae",
       "STACK.md.example": "455ba84c006261566831416d412a7cc2f127901678b2547799fccf949a1d4d54",
       "tools.md": "3c0d2857351cd86e58c33ac2ae2d60956be2645b183b2fe4d27fdcc8d604e32a"
     },
-    "skillDigest": "281126bd042ad46377407f812bdb8fc7086ec73c1e8516c45777fd5c5ba5e841"
+    "skillDigest": "69fccdb664545452ba6a892a10495c4bc0d13beb0fbec430db833bfa130b9b52"
   },
-  "packageVersion": "0.0.85",
+  "packageVersion": "0.0.86",
   "skills": {
     "azure-devops-provider": {
       "files": {
