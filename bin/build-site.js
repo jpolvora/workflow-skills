@@ -47,11 +47,11 @@ if (shouldBump) {
     const skillMd = path.join(skillRoot, ent.name, 'SKILL.md');
     if (!fs.existsSync(skillMd)) continue;
     const text = fs.readFileSync(skillMd, 'utf-8');
-    if (!text.startsWith('---\n')) continue;
-    const end = text.indexOf('\n---\n', 4);
-    if (end < 0) continue;
+    const match = text.match(/\r?\n---\r?\n/);
+    if (!match) continue;
+    const end = match.index;
     let fm = text.slice(4, end);
-    const body = text.slice(end + 5);
+    const body = text.slice(end + match[0].length);
     if (/^version:\s*/m.test(fm)) {
       fm = fm.replace(/^version:\s*.*$/m, `version: ${siteVersion}`);
     } else if (/^name:\s*/m.test(fm)) {

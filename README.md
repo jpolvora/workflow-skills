@@ -26,12 +26,12 @@ Two delivery workflows (install independently; both share `.agents/skills/shared
 
 | Workflow | Best for | Summary |
 |----------|----------|---------|
-| **[`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM steps 0–9) |
-| **[`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → review → ship → fix-pr (steps 0–5) |
-| **[`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue execution with smart flow auto-detection (`spec-to-pr` vs `spec-to-pr-lite` per spec complexity) |
-| **[`fable-method`](.agents/skills/fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
+| **[`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM steps 0–9) |
+| **[`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → review → ship → fix-pr (steps 0–5) |
+| **[`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue execution with smart flow auto-detection (`ws-spec-to-pr` vs `ws-spec-to-pr-lite` per spec complexity) |
+| **[`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
 
-They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer a native structured choice UI when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the executing session model (`Current model` on every transition). To change model for the next step: Pause → switch in your IDE/agent host → resume (no `--model` / `--model-chain` flags). Skills stay **host-neutral** — artifact dirs come from `config.json` (`plans.dir` default `.agents/plans`; optional `reviews.dir` default `.agents/codereviews`). Agents also expand fixed **path tokens** (`pathTokens.skillsRoot` / `sharedDir`, defaults `.agents/skills` and `.agents/skills/shared`) per [`tools.md`](.agents/skills/shared/tools.md) § Path tokens. Details for agents: [`AGENTS.md`](AGENTS.md) § Portability. Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`spec-to-pr/docs/faq.md`](.agents/skills/spec-to-pr/docs/faq.md).
+They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). User gates prefer a native structured choice UI when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/shared/gates.md)). **Model:** workflows use the executing session model (`Current model` on every transition). To change model for the next step: Pause → switch in your IDE/agent host → resume (no `--model` / `--model-chain` flags). Skills stay **host-neutral** — artifact dirs come from `config.json` (`plans.dir` default `.agents/plans`; optional `reviews.dir` default `.agents/codereviews`). Agents also expand fixed **path tokens** (`pathTokens.skillsRoot` / `sharedDir`, defaults `.agents/skills` and `.agents/skills/shared`) per [`tools.md`](.agents/skills/shared/tools.md) § Path tokens. Details for agents: [`AGENTS.md`](AGENTS.md) § Portability. Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md).
 
 ### Contribution policy
 
@@ -61,7 +61,7 @@ npx --yes github:jpolvora/workflow-skills
 # Non-interactive install (exactly one mode; Non-TTY requires --yes)
 npx --yes github:jpolvora/workflow-skills install --full --yes
 npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills spec-to-pr,ws-goal-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills install --skills ws-spec-to-pr,ws-goal-fix-pr --yes
 
 # Update tracked skills (bootstraps installed-skills.json from disk if missing)
 npx --yes github:jpolvora/workflow-skills update
@@ -82,7 +82,7 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills ws-goal-fix-pr --ye
 | Installed version | `npx --yes github:jpolvora/workflow-skills --version` |
 | Help | `npx --yes github:jpolvora/workflow-skills --help` |
 
-**After install/update:** ask your agent to run `check-harness` (load `.agents/skills/check-harness/SKILL.md`, Phases 0–5c). Optional: `/configure-project` to fill `shared/config.json`.
+**After install/update:** ask your agent to run `ws-check-harness` (load `.agents/skills/ws-check-harness/SKILL.md`, Phases 0–5c). Optional: `/ws-configure-project` to fill `shared/config.json`.
 
 #### Troubleshooting
 
@@ -112,9 +112,9 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit |
+| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/ws-configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit |
 | `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
-| `MEMORY.md` | Anti-regression index (`self-learning`) |
+| `MEMORY.md` | Anti-regression index (`ws-self-learning`) |
 | `memory/*.md` | Individual memory entries |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` |
 | `skill-integrity-local.json` | Local digest record after install/update (gitignored; never overwritten from upstream) |
@@ -123,7 +123,7 @@ Edit under `.agents/skills/shared/` — never overwritten by upstream:
 
 ### Optional root / host configuration
 
-Installer **never** writes consumer repo-root files. Consumers may add a thin root `AGENTS.md` pointing at `.agents/skills/shared/AGENTS.md` so their IDE discovers the hub; check-harness may suggest this. Host pointers are **optional**. Workflow history defaults to `.agents/skills/shared/CHANGELOG.md` via `rules.changelogFile` (set to `CHANGELOG.md` only if you want a repo-root file). Prefer putting lasting guidance in skills / the shared hub, not host-private rule files.
+Installer **never** writes consumer repo-root files. Consumers may add a thin root `AGENTS.md` pointing at `.agents/skills/shared/AGENTS.md` so their IDE discovers the hub; ws-check-harness may suggest this. Host pointers are **optional**. Workflow history defaults to `.agents/skills/shared/CHANGELOG.md` via `rules.changelogFile` (set to `CHANGELOG.md` only if you want a repo-root file). Prefer putting lasting guidance in skills / the shared hub, not host-private rule files.
 
 | File | Role |
 |------|------|
@@ -142,7 +142,7 @@ Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/con
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
 - **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `shared/` hub templates. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `shared/skill-integrity-local.json` from actual digests).
-- **Upstream regenerate (authors):** any change to hashed skill/hub/install inputs must run `npm run generate-integrity` and commit `bin/skill-integrity.json` in the same change; `npm run verify-integrity` must pass before claim complete / PR (see root `AGENTS.md`). `check-harness` and install tests fail closed on a stale manifest.
+- **Upstream regenerate (authors):** any change to hashed skill/hub/install inputs must run `npm run generate-integrity` and commit `bin/skill-integrity.json` in the same change; `npm run verify-integrity` must pass before claim complete / PR (see root `AGENTS.md`). `ws-check-harness` and install tests fail closed on a stale manifest.
 - **Audit:** `integrity` recomputes digests for skills listed in `installed-skills.json` and compares to `skill-integrity-local.json` (selective installs only require their closure). `--check` compares semver **and** `fullPackageDigest` when the remote integrity manifest is reachable.
 - **Consumer-owned exclusions:** `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `CHANGELOG.md`, and `skill-integrity-local.json` are never hashed and never fail integrity when edited.
 - **Trust limit:** the integrity manifest is **unsigned**. Fetching it shares the same trust boundary as today’s remote `package.json` / raw GitHub fetch (no publisher signing in this release).
@@ -171,34 +171,34 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 
 | Skill | Description |
 |-------|-------------|
-| [`check-harness`](.agents/skills/check-harness/SKILL.md) | Audit routing, links, portability |
-| [`check-workflows`](.agents/skills/check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
-| [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
-| [`show-harness`](.agents/skills/show-harness/SKILL.md) | Snapshot active session harness (Extra) |
+| [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | Audit routing, links, portability |
+| [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
+| [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
+| [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 
 ### Pipeline & providers
 
 | Skill | Role |
 |-------|------|
-| [`spec-to-pr`](.agents/skills/spec-to-pr/SKILL.md) / [`spec-to-pr-lite`](.agents/skills/spec-to-pr-lite/SKILL.md) | Orchestrators |
+| [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | Orchestrators |
 | [`ws-write-spec`](.agents/skills/ws-write-spec/SKILL.md) … [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` / `ws-update-plan-implementation` (`ws-*`; FSM steps 0–9 + post) |
-| [`github-provider`](.agents/skills/github-provider/SKILL.md) · [`azure-devops-provider`](.agents/skills/azure-devops-provider/SKILL.md) · [`local-spec-provider`](.agents/skills/local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
+| [`ws-github-provider`](.agents/skills/ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](.agents/skills/ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](.agents/skills/ws-local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
 
 ### Review & audit
 
 | Skill | Role |
 |-------|------|
-| [`secrets-leak-review`](.agents/skills/secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan |
-| [`fable-judge`](.agents/skills/fable-judge/SKILL.md) | Adversarial audit, fraud detection & diff-grounded verification |
+| [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan |
+| [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Utility, meta & domain
 
 | Skill | Role |
 |-------|------|
-| [`fable-method`](.agents/skills/fable-method/SKILL.md) | 7-step problem-solving loop with gates |
-| [`fable-domain`](.agents/skills/fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) |
-| [`caveman`](.agents/skills/caveman/SKILL.md) · [`gabarito`](.agents/skills/gabarito/SKILL.md) · [`karpathy-guidelines`](.agents/skills/karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
-| [`self-learning`](.agents/skills/self-learning/SKILL.md) · [`changelog`](.agents/skills/changelog/SKILL.md) · [`configure-project`](.agents/skills/configure-project/SKILL.md) | Memory, history & project configuration |
+| [`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md) | 7-step problem-solving loop with gates |
+| [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) |
+| [`ws-caveman`](.agents/skills/ws-caveman/SKILL.md) · [`ws-gabarito`](.agents/skills/ws-gabarito/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
+| [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration |
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | Project spec index init/sync/promote |
 
 ---
@@ -224,7 +224,7 @@ version: 1.0
 ---
 ```
 
-Agent obligations (portability, check-harness before `main`): see [`.agents/skills/shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) after install and root [`AGENTS.md`](AGENTS.md) when contributing upstream.
+Agent obligations (portability, ws-check-harness before `main`): see [`.agents/skills/shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) after install and root [`AGENTS.md`](AGENTS.md) when contributing upstream.
 
 After harness or catalog changes: regenerate the site with `node bin/build-site.js` when layers/routing change. That stamps the footer from `package.json` (no auto-bump). For an intentional release bump + site rebuild: `npm run build-site:bump` (or `node bin/build-site.js --bump`), then sync `test/package.json`’s `file:../workflow-skills-<version>.tgz` reference. CI site deploy never bumps — install/`--version`/`--check` stay aligned with the footer.
 
