@@ -171,6 +171,8 @@
     "ws-multi-spec": [
       "ws-spec-to-pr",
       "ws-spec-to-pr-lite",
+      "ws-ship-pr",
+      "ws-goal-fix-pr",
       "ws-caveman",
       "ws-gabarito",
       "ws-karpathy-guidelines"
