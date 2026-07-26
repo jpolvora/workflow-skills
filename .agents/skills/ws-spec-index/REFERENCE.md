@@ -64,8 +64,8 @@ output:
 
 ## Call Sites Wired in `workflow-skills`
 
-1. `spec-to-pr` Step 8: Call `sync` after successful delivery commit and/or create-PR ship action.
-2. `spec-to-pr-lite` Step 4: Call `sync` on ship path with delivery evidence.
+1. `ws-spec-to-pr` Step 8: Call `sync` after successful delivery commit and/or create-PR ship action.
+2. `ws-spec-to-pr-lite` Step 4: Call `sync` on ship path with delivery evidence.
 3. `ws-ship-pr`: Call `sync` after successful ship action.
 
 ## Out of Scope (v1)

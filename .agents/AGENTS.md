@@ -3,7 +3,7 @@
 **Audience: agents** (consumer skill index + portability rules).  
 **Humans:** install and contribute via the upstream root [`README.md`](../README.md). Upstream agent hub: root [`AGENTS.md`](../AGENTS.md).
 
-This folder ships skills for consumers (`npx --yes github:jpolvora/workflow-skills` or local CLI). Skills under `.agents/skills/` support project workflows (`spec-to-pr` / lite + pipeline) and the `test/` install dry-run tree.
+This folder ships skills for consumers (`npx --yes github:jpolvora/workflow-skills` or local CLI). Skills under `.agents/skills/` support project workflows (`ws-spec-to-pr` / lite + pipeline) and the `test/` install dry-run tree.
 
 This file is the **packaged routing index** after install — not a human install guide.
 
@@ -19,7 +19,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 ## Rules for skills under `skills/` (`.agents/skills/*`)
 
-These rules apply to **every** skill shipped in this package (pipeline, providers, review, utility). They mirror the portability and integrity expectations enforced by [`check-harness`](skills/check-harness/SKILL.md).
+These rules apply to **every** skill shipped in this package (pipeline, providers, review, utility). They mirror the portability and integrity expectations enforced by [`ws-check-harness`](skills/ws-check-harness/SKILL.md).
 
 ### Portability and genericity (mandatory)
 
@@ -47,16 +47,16 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | **No silent LLM refactors** | In **consumer** checkouts and **CI/Actions**, agents must **not** autonomously hygiene-refactor managed skill scripts (reorder helpers, “fix” false forward refs, rewrite scanners) without user approval. If a real fix belongs in skills, **suggest or open an upstream PR** — do not treat the consumer copy as the source of truth. Consumer hub copy: [`skills/shared/AGENTS.md`](skills/shared/AGENTS.md) § Managed skills. |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
-### Pre-merge gate: `check-harness` (mandatory for upstream)
+### Pre-merge gate: `ws-check-harness` (mandatory for upstream)
 
 Before committing skill changes and before merging to **`main`** on `workflow-skills`:
 
-1. Load and run [`skills/check-harness/SKILL.md`](skills/check-harness/SKILL.md) (Phases 0–5c scan → Phase 6 correction plan → Phase 7 only with approval).
+1. Load and run [`skills/ws-check-harness/SKILL.md`](skills/ws-check-harness/SKILL.md) (Phases 0–5c scan → Phase 6 correction plan → Phase 7 only with approval).
 2. The audit **must** cover at least: routing vs disk inventory, broken/relative links, absolute paths, redundancy / progressive disclosure, **portability** (no hardcoded project metadata; parameterization via `config.json` / stack docs), **harness neutrality** (no IDE/agent product coupling; no legacy host path defaults), and **en-us** compliance.
 3. Do **not** merge skill PRs to `main` while critical harness findings remain open.
 4. After harness-affecting changes, also regenerate the site catalog when applicable (`node bin/build-site.js` in the upstream repo) and keep root `AGENTS.md` + this packaged index in sync (**Drift check** above).
 
-Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` for report-only).
+Standalone invoke: `/ws-check-harness` or `@ws-check-harness` (optional `--dry-run` for report-only).
 
 ---
 
@@ -64,8 +64,8 @@ Standalone invoke: `/check-harness` or `@check-harness` (optional `--dry-run` fo
 
 | Skill | Path | Role |
 |-------|------|------|
-| `spec-to-pr` | `skills/spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
-| `spec-to-pr-lite` | `skills/spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
+| `ws-spec-to-pr` | `skills/ws-spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
+| `ws-spec-to-pr-lite` | `skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 ### Dual-Mode Execution & Compatibility
 
@@ -75,7 +75,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 - **Session model**: `currentModel` from the executing session; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Soft tips at F1→F2 / F3→F4 (full orch only).
 - **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
 - **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
-- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5; do not treat STEP-DISPATCH as lite step numbers.
+- **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5; do not treat STEP-DISPATCH as lite step numbers.
 
 ---
 
@@ -83,28 +83,28 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `caveman` | `skills/caveman/SKILL.md` | Every prompt — compression |
-| `gabarito` | `skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
-| `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
-| `changelog` | `skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `skills/self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
+| `ws-caveman` | `skills/ws-caveman/SKILL.md` | Every prompt — compression |
+| `ws-gabarito` | `skills/ws-gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `ws-karpathy-guidelines` | `skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
+| `ws-changelog` | `skills/ws-changelog/SKILL.md` | Every task completion |
+| `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global — not shipped)` | Session start — skill discovery |
 
 ### Precedence (highest first)
 
 1. Explicit user instructions (current turn)
 2. Design / spec / architecture constraints
-3. `karpathy-guidelines`
-4. `gabarito`
-5. `caveman` (compression only; keep technical accuracy)
+3. `ws-karpathy-guidelines`
+4. `ws-gabarito`
+5. `ws-caveman` (compression only; keep technical accuracy)
 
 ### Opt-out
 
 | Phrase | Effect |
 |--------|--------|
-| `stop caveman` / `normal mode` | Disable caveman |
-| `stop gabarito` / `sem gabarito` | Disable gabarito |
-| `/caveman lite\|full\|ultra\|…` | Intensity |
+| `stop ws-caveman` / `normal mode` | Disable ws-caveman |
+| `stop ws-gabarito` / `sem ws-gabarito` | Disable ws-gabarito |
+| `/ws-caveman lite\|full\|ultra\|…` | Intensity |
 
 ---
 
@@ -116,10 +116,10 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `check-harness` | `skills/check-harness/SKILL.md` | Audit harness integrity (routing, links, redundancy) |
-| `check-workflows` | `skills/check-workflows/SKILL.md` | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
+| `ws-check-harness` | `skills/ws-check-harness/SKILL.md` | Audit harness integrity (routing, links, redundancy) |
+| `ws-check-workflows` | `skills/ws-check-workflows/SKILL.md` | Validate workflow FSM paths, step continuity, config sharing, and state isolation |
 
-### `spec-to-pr` pipeline (steps 0–9, `ws-*` folders + goal-fix / update-plan)
+### `ws-spec-to-pr` pipeline (steps 0–9, `ws-*` folders + goal-fix / update-plan)
 
 | Skill | Step(s) | Path | Description |
 |-------|---------|------|-------------|
@@ -141,24 +141,24 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `github-provider` | `skills/github-provider/SKILL.md` | GitHub issue→spec; auth; PR create/threads/merge (`gh`) |
-| `azure-devops-provider` | `skills/azure-devops-provider/SKILL.md` | ADO work item→spec; PAT auth; PR create/threads/merge |
-| `local-spec-provider` | `skills/local-spec-provider/SKILL.md` | Local `*.spec.md` detect/register; PR via configured SCM |
+| `ws-github-provider` | `skills/ws-github-provider/SKILL.md` | GitHub issue→spec; auth; PR create/threads/merge (`gh`) |
+| `ws-azure-devops-provider` | `skills/ws-azure-devops-provider/SKILL.md` | ADO work item→spec; PAT auth; PR create/threads/merge |
+| `ws-local-spec-provider` | `skills/ws-local-spec-provider/SKILL.md` | Local `*.spec.md` detect/register; PR via configured SCM |
 
 ### Utility & meta (promoted — Workflows package)
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `caveman` | `skills/caveman/SKILL.md` | Ultra-compressed response (~75% fewer tokens) |
-| `gabarito` | `skills/gabarito/SKILL.md` | Ten operational response guidelines |
-| `karpathy-guidelines` | `skills/karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
-| `fable-method` | `skills/fable-method/SKILL.md` | 7-step problem-solving loop with gates |
-| `fable-domain` | `skills/fable-domain/SKILL.md` | Domain adapter generator & schemas |
-| `spec-format` | `skills/spec-format/SKILL.md` | Create / review / format `*.spec.md` |
-| `self-learning` | `skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
-| `changelog` | `skills/changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
-| `configure-project` | `skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
-| `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
+| `ws-caveman` | `skills/ws-caveman/SKILL.md` | Ultra-compressed response (~75% fewer tokens) |
+| `ws-gabarito` | `skills/ws-gabarito/SKILL.md` | Ten operational response guidelines |
+| `ws-karpathy-guidelines` | `skills/ws-karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
+| `ws-fable-method` | `skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
+| `ws-fable-domain` | `skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
+| `ws-spec-format` | `skills/ws-spec-format/SKILL.md` | Create / review / format `*.spec.md` |
+| `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
+| `ws-changelog` | `skills/ws-changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
+| `ws-configure-project` | `skills/ws-configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
+| `ws-goal-loop` | `skills/ws-goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
 | `ws-spec-index` | `skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-sync-spec` | `skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 
@@ -166,8 +166,8 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `secrets-leak-review` | `skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
-| `fable-judge` | `skills/fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
+| `ws-secrets-leak-review` | `skills/ws-secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+| `ws-fable-judge` | `skills/ws-fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Extra package (optional)
 
@@ -177,8 +177,8 @@ Not on disk after a **Workflows-only** install. Add via installer shortcut **`e`
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `write-a-skill` | `skills/write-a-skill/SKILL.md` | Create, edit, and optimize predictable skills |
-| `show-harness` | `skills/show-harness/SKILL.md` | Snapshot skills/rules/instructions active in this session |
+| `ws-write-a-skill` | `skills/ws-write-a-skill/SKILL.md` | Create, edit, and optimize predictable skills |
+| `ws-show-harness` | `skills/ws-show-harness/SKILL.md` | Snapshot skills/rules/instructions active in this session |
 
 ---
 
@@ -188,31 +188,31 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 
 | When to use | Skill to load |
 |-------------|---------------|
-| Spec → PR end-to-end | `spec-to-pr` |
-| Spec → PR lite (sequential) | `spec-to-pr-lite` |
+| Spec → PR end-to-end | `ws-spec-to-pr` |
+| Spec → PR lite (sequential) | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
-| Fable Method 7-step loop | `fable-method` |
-| Adversarial audit / fraud scan | `fable-judge` |
-| Domain adapters (DevOps/Data/Research) | `fable-domain` |
+| Fable Method 7-step loop | `ws-fable-method` |
+| Adversarial audit / fraud scan | `ws-fable-judge` |
+| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
 | Write a spec | `ws-write-spec` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement / fix code | `ws-implement-tasks` |
 | Verify against plan | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Testing pre-PR | `ws-testing` |
-| Secrets / leak scan | `secrets-leak-review` |
+| Secrets / leak scan | `ws-secrets-leak-review` |
 | Fix PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship / merge PR | `ws-ship-pr` |
-| GitHub issue→spec or GitHub PR ops | `github-provider` |
-| Azure DevOps work item→spec or ADO PR ops | `azure-devops-provider` |
-| Local `*.spec.md` register / normalize | `local-spec-provider` |
-| Format / review a spec | `spec-format` |
-| Fill / update `config.json` | `configure-project` |
-| Audit harness | `check-harness` |
-| Validate / check workflow processes | `check-workflows` |
-| Generic convergence loop | `goal-loop` |
+| GitHub issue→spec or GitHub PR ops | `ws-github-provider` |
+| Azure DevOps work item→spec or ADO PR ops | `ws-azure-devops-provider` |
+| Local `*.spec.md` register / normalize | `ws-local-spec-provider` |
+| Format / review a spec | `ws-spec-format` |
+| Fill / update `config.json` | `ws-configure-project` |
+| Audit harness | `ws-check-harness` |
+| Validate / check workflow processes | `ws-check-workflows` |
+| Generic convergence loop | `ws-goal-loop` |
 
 ### Extra package (optional)
 
@@ -220,8 +220,8 @@ Requires Extra or Full install — skills not on Workflows-only disk.
 
 | When to use | Skill to load |
 |-------------|---------------|
-| Create / rewrite a skill | `write-a-skill` |
-| Show active harness snapshot | `show-harness` |
+| Create / rewrite a skill | `ws-write-a-skill` |
+| Show active harness snapshot | `ws-show-harness` |
 
 ---
 
@@ -234,7 +234,7 @@ Not shipped in the skill package (except where noted). Resolve each dependency i
 | Dependency | Resolve (first match) |
 |------------|------------------------|
 | `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → global/user skill |
-| `karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `skills/karpathy-guidelines/SKILL.md` → global skill |
+| `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `skills/ws-karpathy-guidelines/SKILL.md` → global skill |
 | Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
@@ -264,7 +264,7 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
 - `shared/installed-skills.json` tracks managed skills (`skills` + `selected` roots). `update` bootstraps it from disk when missing. `uninstall` cascades unused deps and never deletes `shared/` consumer data.
 - Consumers may copy or adapt routing into their own root `AGENTS.md`; keep paths relative to the install root (typically `.agents/skills/...`).
 - **Consumer hub:** `.agents/skills/shared/AGENTS.md` is installed with the shared hub and documents config, gates, and external dependencies. The installer does **not** copy `.agents/AGENTS.md` into consumer projects.
-- **Dual hub (upstream only):** root `AGENTS.md` and packaged `.agents/AGENTS.md` stay aligned for check-harness drift checks in this source repo.
+- **Dual hub (upstream only):** root `AGENTS.md` and packaged `.agents/AGENTS.md` stay aligned for ws-check-harness drift checks in this source repo.
 - **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** / **No silent LLM refactors** above). In-place edits are overwritten on update.
-- Before upstream merge to `main`, skill changes must pass **`check-harness`** (see **Pre-merge gate** above).
+- Before upstream merge to `main`, skill changes must pass **`ws-check-harness`** (see **Pre-merge gate** above).
 - Guardrails / External Dependencies: use **this file** § [External dependencies](#external-dependencies) (`rules.seniorDeveloper` / `rules.karpathyGuidelines` / `rules.stackFile` in config). Do not require a consumer root `AGENTS.md` section; if the root hub also documents the contract, keep both aligned.

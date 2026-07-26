@@ -26,8 +26,8 @@ const ignoredPatterns = [
   /(^|[\\/])shared[\\/]memory([\\/]|$)/,
   /(^|[\\/])shared[\\/]MEMORY\.md\.template$/,
   /(^|[\\/])shared[\\/]CHANGELOG\.md\.template$/,
-  /(^|[\\/])self-learning[\\/]MEMORY\.md$/,
-  /(^|[\\/])self-learning[\\/]memory([\\/]|$)/
+  /(^|[\\/])ws-self-learning[\\/]MEMORY\.md$/,
+  /(^|[\\/])ws-self-learning[\\/]memory([\\/]|$)/
 ];
 
 function getFilesRecursive(dir) {
@@ -116,7 +116,7 @@ console.log('\n[Phase 0] Self-overwrite protection...');
 console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
 {
   const required = [
-    '.agents/skills/spec-to-pr/ARTIFACTS.md',
+    '.agents/skills/ws-spec-to-pr/ARTIFACTS.md',
     '.agents/skills/shared/config.schema.json',
     '.agents/skills/shared/config.json.example',
     '.agents/skills/shared/tools.md',
@@ -124,36 +124,36 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/shared/MEMORY.md.template',
     '.agents/skills/shared/CHANGELOG.md.template',
     '.agents/skills/shared/setup.md',
-    '.agents/skills/spec-to-pr/spec-to-pr-run-test.md',
-    '.agents/skills/spec-to-pr/SKILL.md',
-    '.agents/skills/check-harness/SKILL.md',
+    '.agents/skills/ws-spec-to-pr/ws-spec-to-pr-run-test.md',
+    '.agents/skills/ws-spec-to-pr/SKILL.md',
+    '.agents/skills/ws-check-harness/SKILL.md',
     '.agents/skills/shared/AGENTS.md',
     // Spec-source / SCM provider skills (packed under .agents/skills/)
-    '.agents/skills/github-provider/SKILL.md',
-    '.agents/skills/azure-devops-provider/SKILL.md',
-    '.agents/skills/local-spec-provider/SKILL.md',
+    '.agents/skills/ws-github-provider/SKILL.md',
+    '.agents/skills/ws-azure-devops-provider/SKILL.md',
+    '.agents/skills/ws-local-spec-provider/SKILL.md',
     // Promoted top-level skills + dependency map
     'bin/skill-dependencies.json',
-    '.agents/skills/caveman/SKILL.md',
-    '.agents/skills/gabarito/SKILL.md',
-    '.agents/skills/karpathy-guidelines/SKILL.md',
-    '.agents/skills/spec-format/SKILL.md',
-    '.agents/skills/goal-loop/SKILL.md',
-    '.agents/skills/self-learning/SKILL.md',
-    '.agents/skills/changelog/SKILL.md'
+    '.agents/skills/ws-caveman/SKILL.md',
+    '.agents/skills/ws-gabarito/SKILL.md',
+    '.agents/skills/ws-karpathy-guidelines/SKILL.md',
+    '.agents/skills/ws-spec-format/SKILL.md',
+    '.agents/skills/ws-goal-loop/SKILL.md',
+    '.agents/skills/ws-self-learning/SKILL.md',
+    '.agents/skills/ws-changelog/SKILL.md'
   ];
   for (const rel of required) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing required file: ${rel}`);
   }
   // Promoted skills must not remain nested under shared/
   for (const slug of [
-    'caveman',
-    'gabarito',
-    'karpathy-guidelines',
-    'spec-format',
-    'goal-loop',
-    'self-learning',
-    'changelog'
+    'ws-caveman',
+    'ws-gabarito',
+    'ws-karpathy-guidelines',
+    'ws-spec-format',
+    'ws-goal-loop',
+    'ws-self-learning',
+    'ws-changelog'
   ]) {
     if (fs.existsSync(path.join(parentDir, '.agents/skills/shared', slug))) {
       fail(`Promoted skill still nested under shared/: ${slug}`);
@@ -165,8 +165,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   const sharedDepMap = JSON.parse(
     fs.readFileSync(path.join(parentDir, '.agents/skills/shared/skill-dependencies.json'), 'utf8')
   );
-  if (!depMap.packages?.workflows?.skills?.includes('spec-to-pr')) {
-    fail('skill-dependencies.json workflows package missing spec-to-pr');
+  if (!depMap.packages?.workflows?.skills?.includes('ws-spec-to-pr')) {
+    fail('skill-dependencies.json workflows package missing ws-spec-to-pr');
   }
   if (!depMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
     fail('bin/skill-dependencies.json workflows package missing ws-multi-spec');
@@ -174,37 +174,37 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
     fail('.agents/skills/shared/skill-dependencies.json workflows package missing ws-multi-spec');
   }
-  if (depMap.packages?.extra?.skills?.includes('spec-to-pr')) {
+  if (depMap.packages?.extra?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json Extra must not include workflow orchestrators');
   }
-  const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/ARTIFACTS.md'), 'utf8');
+  const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('ws-testing')) fail('ARTIFACTS.md missing Step 7 Testing ownership');
   // AC9: converter shims under orch paths forward to provider canonical scripts
-  if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py'))) {
-    fail('Missing github-issue-to-spec.py shim under spec-to-pr/scripts');
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py'))) {
+    fail('Missing github-issue-to-spec.py shim under ws-spec-to-pr/scripts');
   }
-  if (!fs.existsSync(path.join(parentDir, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py'))) {
-    fail('Missing ado-workitem-to-spec.py shim under spec-to-pr/scripts');
-  }
-  if (
-    !fs.existsSync(
-      path.join(parentDir, '.agents/skills/github-provider/scripts/github-issue-to-spec.py')
-    )
-  ) {
-    fail('Missing canonical github-issue-to-spec.py under github-provider/scripts');
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py'))) {
+    fail('Missing ado-workitem-to-spec.py shim under ws-spec-to-pr/scripts');
   }
   if (
     !fs.existsSync(
-      path.join(parentDir, '.agents/skills/azure-devops-provider/scripts/ado-workitem-to-spec.py')
+      path.join(parentDir, '.agents/skills/ws-github-provider/scripts/github-issue-to-spec.py')
     )
   ) {
-    fail('Missing canonical ado-workitem-to-spec.py under azure-devops-provider/scripts');
+    fail('Missing canonical github-issue-to-spec.py under ws-github-provider/scripts');
   }
-  // local-spec-provider scripts (AC1)
+  if (
+    !fs.existsSync(
+      path.join(parentDir, '.agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py')
+    )
+  ) {
+    fail('Missing canonical ado-workitem-to-spec.py under ws-azure-devops-provider/scripts');
+  }
+  // ws-local-spec-provider scripts (AC1)
   for (const rel of [
-    '.agents/skills/local-spec-provider/scripts/detect_specs_dir.py',
-    '.agents/skills/local-spec-provider/scripts/register_local_spec.py'
+    '.agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.py',
+    '.agents/skills/ws-local-spec-provider/scripts/register_local_spec.py'
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
   }
@@ -267,23 +267,23 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     ok('verify.sh gates on integrity --check');
 
     const harness = fs.readFileSync(
-      path.join(parentDir, '.agents', 'skills', 'check-harness', 'SKILL.md'),
+      path.join(parentDir, '.agents', 'skills', 'ws-check-harness', 'SKILL.md'),
       'utf8'
     );
     if (!/Skill integrity manifest/i.test(harness) || !/generate-skill-integrity\.js --check/.test(harness)) {
-      fail('check-harness must require skill-integrity --check (Phase 3)');
+      fail('ws-check-harness must require skill-integrity --check (Phase 3)');
     }
     if (!/generate-integrity/i.test(harness)) {
-      fail('check-harness integrity finding must point to npm run generate-integrity correction');
+      fail('ws-check-harness integrity finding must point to npm run generate-integrity correction');
     }
-    ok('check-harness Phase 3 integrity detect + regenerate guidance present');
+    ok('ws-check-harness Phase 3 integrity detect + regenerate guidance present');
   }
   // Cheap shim --help / usage smoke: proves parents[2] / relative forward resolves
   {
     const py = process.platform === 'win32' ? 'python' : 'python3';
     const shimHelps = [
-      [py, '.agents/skills/spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
-      [py, '.agents/skills/spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
+      [py, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
+      [py, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
       [py, '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.py', '--help']
     ];
     for (const [bin, rel, flag] of shimHelps) {
@@ -320,9 +320,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   // Provider SKILL.md smoke: frontmatter name + dual-mode sections
   const providerSkills = [
-    'github-provider',
-    'azure-devops-provider',
-    'local-spec-provider'
+    'ws-github-provider',
+    'ws-azure-devops-provider',
+    'ws-local-spec-provider'
   ];
   for (const name of providerSkills) {
     const body = fs.readFileSync(
@@ -337,13 +337,13 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
   }
   const goalLoop = fs.readFileSync(
-    path.join(parentDir, '.agents/skills/goal-loop/SKILL.md'),
+    path.join(parentDir, '.agents/skills/ws-goal-loop/SKILL.md'),
     'utf8'
   );
-  if (/[>] ?\/tmp\//.test(goalLoop) || /\/tmp\/goal-loop/.test(goalLoop)) {
-    fail('goal-loop must not write sentinels under /tmp');
+  if (/[>] ?\/tmp\//.test(goalLoop) || /\/tmp\/ws-goal-loop/.test(goalLoop)) {
+    fail('ws-goal-loop must not write sentinels under /tmp');
   }
-  const skill = fs.readFileSync(path.join(parentDir, '.agents/skills/spec-to-pr/SKILL.md'), 'utf8');
+  const skill = fs.readFileSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
   if (/specs\/\{slug\}\.spec\.md/.test(skill) && !/mirror/i.test(skill)) {
     // brainstorm must not treat specs/ as sole canonical
     console.warn('Warning: SKILL.md still mentions specs/{slug}.spec.md — verify mirror-only wording');
@@ -551,7 +551,7 @@ child.on('close', async (code) => {
 
   // --- Phase 2: config.json preserve on update ---
   console.log('\n[Phase 2] Update preserves config.json...');
-  const usConfigDir = path.join(testSkillsDir, 'spec-to-pr');
+  const usConfigDir = path.join(testSkillsDir, 'ws-spec-to-pr');
   const consumerConfig = path.join(usConfigDir, 'config.json');
   const marker = {
     project: { name: 'consumer-marker-project', baseBranch: 'main', workingBranch: 'feature/x' },
@@ -562,19 +562,19 @@ child.on('close', async (code) => {
   fs.writeFileSync(consumerConfig, JSON.stringify(marker, null, 2), 'utf8');
 
   // Plain `update` only refreshes skills already present. New upstream skill folders
-  // (e.g. github-provider, azure-devops-provider, local-spec-provider) require
+  // (e.g. ws-github-provider, ws-azure-devops-provider, ws-local-spec-provider) require
   // `npx github:jpolvora/workflow-skills update --include-new` (or interactive install).
   const sourceSkills = listSkillDirs(rootSkillsDir);
   const installedBefore = listSkillDirs(testSkillsDir);
   // Prefer removing a provider skill so --include-new coverage matches consumer upgrades
   const removable = installedBefore.find(
     (s) =>
-      s === 'local-spec-provider' ||
-      s === 'github-provider' ||
-      s === 'azure-devops-provider' ||
-      s === 'secrets-leak-review' ||
-      s === 'write-a-skill' ||
-      s === 'show-harness'
+      s === 'ws-local-spec-provider' ||
+      s === 'ws-github-provider' ||
+      s === 'ws-azure-devops-provider' ||
+      s === 'ws-secrets-leak-review' ||
+      s === 'ws-write-a-skill' ||
+      s === 'ws-show-harness'
   );
   let removedForIncludeNew = null;
   if (removable) {
@@ -655,21 +655,21 @@ child.on('close', async (code) => {
   // Ensure upstream skills still covered (pipeline + providers)
   const installedAfter = listSkillDirs(testSkillsDir);
   const missingPipeline = [
-    'spec-to-pr',
+    'ws-spec-to-pr',
     'ws-write-spec',
     'ws-implement-tasks',
     'ws-testing',
     'ws-ship-pr',
-    'check-harness',
-    'github-provider',
-    'azure-devops-provider',
-    'local-spec-provider'
+    'ws-check-harness',
+    'ws-github-provider',
+    'ws-azure-devops-provider',
+    'ws-local-spec-provider'
   ].filter((s) => !installedAfter.includes(s));
   if (missingPipeline.length) {
     fail(`Pipeline/provider skills missing after update: ${missingPipeline.join(', ')}`);
   }
-  if (!fs.existsSync(path.join(testSkillsDir, 'check-harness', 'SKILL.md'))) {
-    fail('check-harness/SKILL.md missing after install/update');
+  if (!fs.existsSync(path.join(testSkillsDir, 'ws-check-harness', 'SKILL.md'))) {
+    fail('ws-check-harness/SKILL.md missing after install/update');
   }
   const packagedAgents = path.join(__dirname, '.agents', 'AGENTS.md');
   if (fs.existsSync(packagedAgents)) {
@@ -686,21 +686,21 @@ child.on('close', async (code) => {
   if (!/Skill loading \(mandatory\)/i.test(sharedAgentsBody)) {
     fail('Consumer shared/AGENTS.md missing Skill loading section');
   }
-  if (!/check-harness/i.test(sharedAgentsBody) || !/check-workflows/i.test(sharedAgentsBody)) {
-    fail('Consumer shared/AGENTS.md must route check-harness and check-workflows');
+  if (!/ws-check-harness/i.test(sharedAgentsBody) || !/ws-check-workflows/i.test(sharedAgentsBody)) {
+    fail('Consumer shared/AGENTS.md must route ws-check-harness and ws-check-workflows');
   }
-  ok('check-harness + shared/AGENTS.md hub shipped to consumer (no .agents/AGENTS.md)');
-  for (const name of ['github-provider', 'azure-devops-provider', 'local-spec-provider']) {
+  ok('ws-check-harness + shared/AGENTS.md hub shipped to consumer (no .agents/AGENTS.md)');
+  for (const name of ['ws-github-provider', 'ws-azure-devops-provider', 'ws-local-spec-provider']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
     }
   }
   // AC9 shims + local-spec scripts must ship to consumers
   for (const rel of [
-    path.join('spec-to-pr', 'scripts', 'github-issue-to-spec.py'),
-    path.join('spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
-    path.join('local-spec-provider', 'scripts', 'detect_specs_dir.py'),
-    path.join('local-spec-provider', 'scripts', 'register_local_spec.py'),
+    path.join('ws-spec-to-pr', 'scripts', 'github-issue-to-spec.py'),
+    path.join('ws-spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
+    path.join('ws-local-spec-provider', 'scripts', 'detect_specs_dir.py'),
+    path.join('ws-local-spec-provider', 'scripts', 'register_local_spec.py'),
     path.join('ws-fix-pr', 'scripts', 'fetch_threads.cjs'),
     path.join('ws-fix-pr', 'scripts', 'resolve_thread.cjs'),
     path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.py')
@@ -712,7 +712,7 @@ child.on('close', async (code) => {
   // Consumer-side cheap shim forward smoke (installed tree)
   {
     const py = process.platform === 'win32' ? 'python' : 'python3';
-    const helpShim = path.join(testSkillsDir, 'spec-to-pr', 'scripts', 'github-issue-to-spec.py');
+    const helpShim = path.join(testSkillsDir, 'ws-spec-to-pr', 'scripts', 'github-issue-to-spec.py');
     const helpResult = cp.spawnSync(py, [helpShim, '--help'], {
       encoding: 'utf8',
       cwd: path.join(__dirname)
@@ -737,7 +737,7 @@ child.on('close', async (code) => {
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
     const schemaInTest = path.join(testSkillsDir, 'shared', 'config.schema.json');
-    const artifactsInTest = path.join(testSkillsDir, 'spec-to-pr', 'ARTIFACTS.md');
+    const artifactsInTest = path.join(testSkillsDir, 'ws-spec-to-pr', 'ARTIFACTS.md');
     if (!fs.existsSync(schemaInTest)) fail('config.schema.json not installed into consumer');
     if (!fs.existsSync(artifactsInTest)) fail('ARTIFACTS.md not installed into consumer');
     ok('schema + ARTIFACTS shipped to consumer');
@@ -747,13 +747,13 @@ child.on('close', async (code) => {
   console.log('\n[Phase 4] Promoted skills install as top-level folders...');
   {
     for (const slug of [
-      'caveman',
-      'gabarito',
-      'karpathy-guidelines',
-      'spec-format',
-      'goal-loop',
-      'self-learning',
-      'changelog'
+      'ws-caveman',
+      'ws-gabarito',
+      'ws-karpathy-guidelines',
+      'ws-spec-format',
+      'ws-goal-loop',
+      'ws-self-learning',
+      'ws-changelog'
     ]) {
       if (!fs.existsSync(path.join(testSkillsDir, slug, 'SKILL.md'))) {
         fail(`Promoted skill missing at top-level: ${slug}/SKILL.md`);
@@ -765,8 +765,8 @@ child.on('close', async (code) => {
     if (!fs.existsSync(path.join(testSkillsDir, 'shared', 'config.json.example'))) {
       fail('shared/ hub missing config.json.example after install');
     }
-    if (fs.existsSync(path.join(testSkillsDir, 'shared', 'self-learning'))) {
-      fail('shared/self-learning should not exist after promotion');
+    if (fs.existsSync(path.join(testSkillsDir, 'shared', 'ws-self-learning'))) {
+      fail('shared/ws-self-learning should not exist after promotion');
     }
     ok('Promoted skills top-level; shared/ is hub-only');
   }
@@ -810,11 +810,11 @@ child.on('close', async (code) => {
       fail(`Workflows package install exited ${pkgInstall.status}`);
     }
     const pkgSkills = path.join(pkgDir, '.agents', 'skills');
-    if (!fs.existsSync(path.join(pkgSkills, 'spec-to-pr', 'SKILL.md'))) {
-      fail('Workflows package did not install spec-to-pr');
+    if (!fs.existsSync(path.join(pkgSkills, 'ws-spec-to-pr', 'SKILL.md'))) {
+      fail('Workflows package did not install ws-spec-to-pr');
     }
-    if (!fs.existsSync(path.join(pkgSkills, 'caveman', 'SKILL.md'))) {
-      fail('Workflows package did not install promoted caveman');
+    if (!fs.existsSync(path.join(pkgSkills, 'ws-caveman', 'SKILL.md'))) {
+      fail('Workflows package did not install promoted ws-caveman');
     }
     if (!fs.existsSync(path.join(pkgSkills, 'shared', 'config.json.example'))) {
       fail('Workflows package did not install shared/ hub');
@@ -826,7 +826,7 @@ child.on('close', async (code) => {
     ok('Workflows package installs workflows+hub without Extra-only skills');
   }
 
-  // --- Phase 7: dependency auto-select (ws-goal-fix-pr → goal-loop) ---
+  // --- Phase 7: dependency auto-select (ws-goal-fix-pr → ws-goal-loop) ---
   console.log('\n[Phase 7] Dependency auto-select on individual toggle...');
   {
     const depDir = path.join(__dirname, '.pkg-deps');
@@ -874,14 +874,14 @@ child.on('close', async (code) => {
     if (!fs.existsSync(path.join(depSkills, 'ws-goal-fix-pr', 'SKILL.md'))) {
       fail('ws-goal-fix-pr not installed after toggle');
     }
-    if (!fs.existsSync(path.join(depSkills, 'goal-loop', 'SKILL.md'))) {
-      fail('goal-loop not auto-selected as dependency of ws-goal-fix-pr');
+    if (!fs.existsSync(path.join(depSkills, 'ws-goal-loop', 'SKILL.md'))) {
+      fail('ws-goal-loop not auto-selected as dependency of ws-goal-fix-pr');
     }
     if (!fs.existsSync(path.join(depSkills, 'ws-fix-pr', 'SKILL.md'))) {
       fail('ws-fix-pr not auto-selected as dependency of ws-goal-fix-pr');
     }
     fs.rmSync(depDir, { recursive: true, force: true });
-    ok('Selecting ws-goal-fix-pr auto-selects goal-loop + ws-fix-pr');
+    ok('Selecting ws-goal-fix-pr auto-selects ws-goal-loop + ws-fix-pr');
   }
 
   // --- Phase 8: non-interactive install --yes (config preserve, no overwrite prompts) ---
@@ -893,7 +893,7 @@ child.on('close', async (code) => {
     fs.mkdirSync(niDir, { recursive: true });
 
     // Seed an existing skill + custom config.json to overwrite
-    const seedSkill = path.join(niDir, '.agents', 'skills', 'spec-to-pr');
+    const seedSkill = path.join(niDir, '.agents', 'skills', 'ws-spec-to-pr');
     fs.mkdirSync(seedSkill, { recursive: true });
     fs.writeFileSync(path.join(seedSkill, 'SKILL.md'), '# stale seed\n', 'utf8');
     const seedConfig = {
@@ -926,14 +926,14 @@ child.on('close', async (code) => {
     if (/Overwrite\?/i.test(fullOut) || /Overwrite \d+ existing/i.test(fullOut)) {
       fail(`Non-interactive install must not prompt for overwrite.\n${fullOut}`);
     }
-    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'spec-to-pr', 'SKILL.md'))) {
-      fail('install --package workflows --yes did not refresh spec-to-pr');
+    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'ws-spec-to-pr', 'SKILL.md'))) {
+      fail('install --package workflows --yes did not refresh ws-spec-to-pr');
     }
-    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'caveman', 'SKILL.md'))) {
-      fail('install --package workflows --yes missing promoted caveman');
+    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'ws-caveman', 'SKILL.md'))) {
+      fail('install --package workflows --yes missing promoted ws-caveman');
     }
     const afterSkillCfg = JSON.parse(
-      fs.readFileSync(path.join(niDir, '.agents', 'skills', 'spec-to-pr', 'config.json'), 'utf8')
+      fs.readFileSync(path.join(niDir, '.agents', 'skills', 'ws-spec-to-pr', 'config.json'), 'utf8')
     );
     if (afterSkillCfg._testMarker !== 'install-yes-preserve-me') {
       fail('skill config.json not preserved on install --yes');
@@ -969,8 +969,8 @@ child.on('close', async (code) => {
     if (!fs.existsSync(path.join(sRoot, 'ws-goal-fix-pr', 'SKILL.md'))) {
       fail('--skills install missing ws-goal-fix-pr');
     }
-    if (!fs.existsSync(path.join(sRoot, 'goal-loop', 'SKILL.md'))) {
-      fail('--skills install missing transitive goal-loop');
+    if (!fs.existsSync(path.join(sRoot, 'ws-goal-loop', 'SKILL.md'))) {
+      fail('--skills install missing transitive ws-goal-loop');
     }
     if (!fs.existsSync(path.join(sRoot, 'ws-fix-pr', 'SKILL.md'))) {
       fail('--skills install missing transitive ws-fix-pr');
@@ -1007,7 +1007,7 @@ child.on('close', async (code) => {
 
     const fresh = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', 'self-learning', '--yes'],
+      [cliPath, 'install', '--skills', 'ws-self-learning', '--yes'],
       {
         cwd: memDir,
         encoding: 'utf8',
@@ -1017,7 +1017,7 @@ child.on('close', async (code) => {
     );
     if (fresh.status !== 0) {
       console.error(`${fresh.stdout || ''}${fresh.stderr || ''}`);
-      fail(`self-learning install for MEMORY isolation exited ${fresh.status}`);
+      fail(`ws-self-learning install for MEMORY isolation exited ${fresh.status}`);
     }
     const destMem = path.join(memDir, '.agents', 'skills', 'shared', 'MEMORY.md');
     const destStack = path.join(memDir, '.agents', 'skills', 'shared', 'STACK.md');
@@ -1058,7 +1058,7 @@ child.on('close', async (code) => {
     fs.writeFileSync(consumerEntry, '### [2099-01-01] Consumer local trap\n');
     fs.writeFileSync(destStack, '# Consumer STACK\nkeep-me\n');
     fs.writeFileSync(destConfig, '{\n  "project": { "name": "consumer-preserve-me" }\n}\n');
-    fs.writeFileSync(destChangelog, '# Changelog\n\nkeep-changelog\n');
+    fs.writeFileSync(destChangelog, '# Changelog\n\nkeep-ws-changelog\n');
     // Consumer-owned root file must remain untouched by update
     fs.writeFileSync(destRootAgents, '# AGENTS.md\n\nkeep-root-pointer\n');
 
@@ -1085,7 +1085,7 @@ child.on('close', async (code) => {
     if (!fs.readFileSync(destConfig, 'utf8').includes('consumer-preserve-me')) {
       fail('Consumer shared/config.json was overwritten on update');
     }
-    if (!fs.readFileSync(destChangelog, 'utf8').includes('keep-changelog')) {
+    if (!fs.readFileSync(destChangelog, 'utf8').includes('keep-ws-changelog')) {
       fail('Consumer shared/CHANGELOG.md was overwritten on update');
     }
     if (!fs.readFileSync(destRootAgents, 'utf8').includes('keep-root-pointer')) {
@@ -1129,7 +1129,7 @@ child.on('close', async (code) => {
       fail('install must write shared/installed-skills.json');
     }
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    for (const need of ['ws-goal-fix-pr', 'ws-fix-pr', 'goal-loop']) {
+    for (const need of ['ws-goal-fix-pr', 'ws-fix-pr', 'ws-goal-loop']) {
       if (!manifest.skills.includes(need)) {
         fail(`installed-skills.json missing ${need}: ${manifest.skills.join(',')}`);
       }
@@ -1137,7 +1137,7 @@ child.on('close', async (code) => {
     if (!manifest.selected || !manifest.selected.includes('ws-goal-fix-pr')) {
       fail(`installed-skills.json selected roots should include ws-goal-fix-pr: ${JSON.stringify(manifest.selected)}`);
     }
-    if (manifest.selected.includes('ws-fix-pr') || manifest.selected.includes('goal-loop')) {
+    if (manifest.selected.includes('ws-fix-pr') || manifest.selected.includes('ws-goal-loop')) {
       fail(`deps should not be selected roots: ${JSON.stringify(manifest.selected)}`);
     }
     ok('install writes installed-skills.json with transitive deps');
@@ -1150,7 +1150,7 @@ child.on('close', async (code) => {
 
     const un = cp.spawnSync(
       process.execPath,
-      [cliPath, 'uninstall', '--skills', 'goal-loop', '--yes'],
+      [cliPath, 'uninstall', '--skills', 'ws-goal-loop', '--yes'],
       {
         cwd: uDir,
         encoding: 'utf8',
@@ -1160,25 +1160,25 @@ child.on('close', async (code) => {
     );
     if (un.status !== 0) {
       console.error(`${un.stdout || ''}${un.stderr || ''}`);
-      fail(`uninstall goal-loop exited ${un.status}`);
+      fail(`uninstall ws-goal-loop exited ${un.status}`);
     }
 
     const skillsRoot = path.join(uDir, '.agents', 'skills');
-    if (fs.existsSync(path.join(skillsRoot, 'goal-loop'))) {
-      fail('uninstall did not remove goal-loop');
+    if (fs.existsSync(path.join(skillsRoot, 'ws-goal-loop'))) {
+      fail('uninstall did not remove ws-goal-loop');
     }
     if (fs.existsSync(path.join(skillsRoot, 'ws-goal-fix-pr'))) {
-      fail('uninstall goal-loop must cascade-remove ws-goal-fix-pr');
+      fail('uninstall ws-goal-loop must cascade-remove ws-goal-fix-pr');
     }
     // ws-fix-pr may remain if nothing else needed it — ws-goal-fix-pr cascade should leave
-    // ws-fix-pr as orphan unless keep set still needs it. After removing ws-goal-fix-pr+goal-loop,
+    // ws-fix-pr as orphan unless keep set still needs it. After removing ws-goal-fix-pr+ws-goal-loop,
     // ws-fix-pr is orphan → should be removed by forward orphan pass.
     if (fs.existsSync(path.join(skillsRoot, 'ws-fix-pr'))) {
       fail('uninstall cascade should remove orphan ws-fix-pr');
     }
 
     const afterManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    if (afterManifest.skills.includes('goal-loop') || afterManifest.skills.includes('ws-goal-fix-pr')) {
+    if (afterManifest.skills.includes('ws-goal-loop') || afterManifest.skills.includes('ws-goal-fix-pr')) {
       fail(`manifest still lists removed skills: ${afterManifest.skills.join(',')}`);
     }
     if (!fs.existsSync(markerCfg)) {
@@ -1275,7 +1275,7 @@ child.on('close', async (code) => {
     ok('EOL canonical digest parity (CRLF/LF/lone-CR)');
 
     // AC10: digest changes when an included file changes (compute without writing)
-    const tamperSkill = 'caveman';
+    const tamperSkill = 'ws-caveman';
     const skillMd = path.join(parentDir, '.agents', 'skills', tamperSkill, 'SKILL.md');
     const original = fs.readFileSync(skillMd);
     try {
@@ -1352,7 +1352,7 @@ child.on('close', async (code) => {
     fs.mkdirSync(iDir, { recursive: true });
 
     // AC4: source mismatch aborts without copy (tamper a file in the selected closure)
-    const closureSkillMd = path.join(parentDir, '.agents', 'skills', 'goal-loop', 'SKILL.md');
+    const closureSkillMd = path.join(parentDir, '.agents', 'skills', 'ws-goal-loop', 'SKILL.md');
     const closureBackup = fs.readFileSync(closureSkillMd);
     try {
       fs.writeFileSync(
@@ -1438,7 +1438,7 @@ child.on('close', async (code) => {
     // prior skill-integrity-local.json must stay unchanged (so audit still fails).
     {
       const priorLocal = fs.readFileSync(localRecord, 'utf8');
-      const extraPath = path.join(iDir, '.agents', 'skills', 'caveman', 'integrity-extra.txt');
+      const extraPath = path.join(iDir, '.agents', 'skills', 'ws-caveman', 'integrity-extra.txt');
       fs.writeFileSync(extraPath, 'not-in-manifest\n');
       const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
         cwd: iDir,
@@ -1482,7 +1482,7 @@ child.on('close', async (code) => {
     ok('post-verify failure does not bless bad local integrity record');
 
     // AC6: mutate managed skill → integrity fails
-    const managedSkill = path.join(iDir, '.agents', 'skills', 'caveman', 'SKILL.md');
+    const managedSkill = path.join(iDir, '.agents', 'skills', 'ws-caveman', 'SKILL.md');
     fs.appendFileSync(managedSkill, '\n# mutated-after-install\n');
     const auditFail = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
       cwd: iDir,
@@ -1491,12 +1491,12 @@ child.on('close', async (code) => {
       timeout: 60000,
     });
     if (auditFail.status === 0) fail('integrity should fail after managed file mutation');
-    if (!/caveman\/SKILL\.md/i.test(`${auditFail.stdout || ''}${auditFail.stderr || ''}`)) {
+    if (!/ws-caveman\/SKILL\.md/i.test(`${auditFail.stdout || ''}${auditFail.stderr || ''}`)) {
       fail(`integrity should report mutated path\n${auditFail.stdout || ''}${auditFail.stderr || ''}`);
     }
     // restore for further checks
     const srcSkill = fs.readFileSync(
-      path.join(parentDir, '.agents', 'skills', 'caveman', 'SKILL.md')
+      path.join(parentDir, '.agents', 'skills', 'ws-caveman', 'SKILL.md')
     );
     fs.writeFileSync(managedSkill, srcSkill);
     ok('integrity audit fails on managed file mutation');
@@ -1540,8 +1540,8 @@ child.on('close', async (code) => {
       console.error(`${sel.stdout || ''}${sel.stderr || ''}`);
       fail(`selective ws-goal-fix-pr install exited ${sel.status}`);
     }
-    if (fs.existsSync(path.join(sDir, '.agents', 'skills', 'write-a-skill'))) {
-      fail('selective install should not include write-a-skill');
+    if (fs.existsSync(path.join(sDir, '.agents', 'skills', 'ws-write-a-skill'))) {
+      fail('selective install should not include ws-write-a-skill');
     }
     const selAudit = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
       cwd: sDir,
@@ -1554,8 +1554,8 @@ child.on('close', async (code) => {
       fail('selective integrity audit should pass without Extra-only skills');
     }
     const selOut = `${selAudit.stdout || ''}${selAudit.stderr || ''}`;
-    if (/write-a-skill/.test(selOut)) {
-      fail('selective audit must not report missing write-a-skill');
+    if (/ws-write-a-skill/.test(selOut)) {
+      fail('selective audit must not report missing ws-write-a-skill');
     }
     ok('selective closure integrity ignores non-installed skills');
 
