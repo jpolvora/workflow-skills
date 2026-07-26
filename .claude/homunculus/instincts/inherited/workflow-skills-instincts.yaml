@@ -1,0 +1,383 @@
+# Instincts generated from https://github.com/jpolvora/workflow-skills
+# Generated: 2026-07-26T22:11:17.427Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: workflow-skills-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: docs, fix, feat
+
+## Evidence
+
+- 5 commits analyzed
+- Detected conventional commit pattern
+- Examples: docs(changelog): record release 0.0.96 documentation and integrity sync, fix(skills): complete shared ws-multi-spec dependency sync (#129)
+
+---
+id: workflow-skills-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Length
+
+## Action
+
+Write moderate-length commit messages (~72 characters)
+
+## Evidence
+
+- Average commit message length: 72 chars
+- Based on 5 commits
+
+---
+id: workflow-skills-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Naming Files
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: PascalCase
+
+---
+id: workflow-skills-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: workflow-skills-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: workflow-skills-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: workflow-skills-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: workflow-skills-workflow-sync-skill-dependencies-and-integrity
+trigger: "when doing sync skill dependencies and integrity"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Workflow Sync Skill Dependencies And Integrity
+
+## Action
+
+Follow the sync-skill-dependencies-and-integrity workflow:
+1. Edit .agents/skills/shared/skill-dependencies.json to update dependencies.
+2. Regenerate bin/skill-integrity.json to reflect updated dependencies.
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: .agents/skills/shared/skill-dependencies.json, bin/skill-integrity.json
+
+---
+id: workflow-skills-instinct-file-naming
+trigger: "When creating or renaming a file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct File Naming
+
+## Action
+
+Use PascalCase for file names
+
+## Evidence
+
+- Pattern in namingConventions.files: PascalCase
+
+---
+id: workflow-skills-instinct-function-naming
+trigger: "When defining a function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Function Naming
+
+## Action
+
+Use camelCase for function names
+
+## Evidence
+
+- Pattern in namingConventions.functions: camelCase
+
+---
+id: workflow-skills-instinct-class-naming
+trigger: "When defining a class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Class Naming
+
+## Action
+
+Use PascalCase for class names
+
+## Evidence
+
+- Pattern in namingConventions.classes: PascalCase
+
+---
+id: workflow-skills-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Constant Naming
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names
+
+## Evidence
+
+- Pattern in namingConventions.constants: SCREAMING_SNAKE_CASE
+
+---
+id: workflow-skills-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in importStyle: relative
+
+---
+id: workflow-skills-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle: named
+
+---
+id: workflow-skills-instinct-test-file-pattern
+trigger: "When creating a test file"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Test File Pattern
+
+## Action
+
+Name the file with the pattern *.test.ts
+
+## Evidence
+
+- Pattern in testing.filePattern: *.test.ts
+
+---
+id: workflow-skills-instinct-test-type
+trigger: "When writing tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Test Type
+
+## Action
+
+Write unit tests
+
+## Evidence
+
+- Pattern in testing.testTypes: unit
+
+---
+id: workflow-skills-instinct-commit-format
+trigger: "When making a commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Commit Format
+
+## Action
+
+Use Conventional Commits format with prefixes: docs, fix, feat
+
+## Evidence
+
+- Pattern in commits.prefixes: docs, fix, feat
+- Seen in commit: docs(changelog): record release 0.0.96 documentation and integrity sync
+- Seen in commit: fix(skills): complete shared ws-multi-spec dependency sync (#129)
+- Seen in commit: feat(skills): add optional ws-senior-developer delivery gate (#150)
+
+---
+id: workflow-skills-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Commit Length
+
+## Action
+
+Keep commit messages around 72 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength: 72
+
+---
+id: workflow-skills-instinct-sync-skill-deps
+trigger: "When updating or adding skill dependencies to keep shared and binary dependency files in sync"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Sync Skill Deps
+
+## Action
+
+Edit .agents/skills/shared/skill-dependencies.json and regenerate bin/skill-integrity.json
+
+## Evidence
+
+- Workflow: sync-skill-dependencies-and-integrity
+- Seen in commit sequence: Edit .agents/skills/shared/skill-dependencies.json to update dependencies. Regenerate bin/skill-integrity.json to reflect updated dependencies.
+
