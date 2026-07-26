@@ -14,6 +14,7 @@ State file: `{plansDir}/ws-multi-spec/{runId}.state.md`.
 workflowType: ws-multi-spec
 runId: ms-20260725T220000Z
 status: active
+baseBranch: develop
 dryRun: false
 createdAt: "2026-07-25T22:00:00Z"
 updatedAt: "2026-07-25T22:00:00Z"
@@ -33,6 +34,7 @@ specsDir: .agents/specs
 | Field | Values / Notes |
 |-------|----------------|
 | Run `status` | `active` · `paused` · `completed` |
+| `baseBranch` | Base branch recorded at run start (e.g. `develop` or `main`), used for worker sync and PR targets |
 | Item `status` | `pending` · `in_progress` · `shipped` · `skipped` · `failed` |
 | `flowMode` | `lite` (dispatches `ws-spec-to-pr-lite`) · `standard` (dispatches full `ws-spec-to-pr`) |
 | `slug` | Basename of spec without `.spec.md` (stable id) |
@@ -87,6 +89,8 @@ When invoked without args or state file:
 
 When loading an existing `{plansDir}/ws-multi-spec/*.state.md`:
 1. Retain original queue ordering and assigned `flowMode`.
-2. Skip items marked `shipped` (with `merged: true` confirmed) or `skipped`.
-3. Rows with open PRs (`merged: false` / unmerged) must re-enter Phase 4b convergence gate to run `ws-goal-fix-pr` and merge.
-4. Resume execution at the first `pending`, `in_progress` (reset to `pending`), or `failed` item.
+2. Load recorded `baseBranch` from state frontmatter (or auto-detect active base branch if missing).
+3. Skip items marked `shipped` (with `merged: true` confirmed) or `skipped`.
+4. Rows with open PRs (`merged: false` / unmerged) must re-enter Phase 4b convergence gate to run `ws-goal-fix-pr` and merge into `baseBranch`.
+5. Resume execution at the first `pending`, `in_progress` (reset to `pending`), or `failed` item.
+6. Before re-dispatching worker for a spec, sync feature branch with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`) to ensure all prior merged changes and base features are incorporated.

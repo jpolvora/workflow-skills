@@ -2,7 +2,7 @@
 
 
 name: ws-karpathy-guidelines
-version: 0.0.91
+version: 0.0.92
 description: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
 license: MIT
 ---

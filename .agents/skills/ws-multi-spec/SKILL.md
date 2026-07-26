@@ -2,7 +2,7 @@
 
 
 name: ws-multi-spec
-version: 0.0.91
+version: 0.0.92
 description: >-
   Sequential smart multi-spec batch delivery orchestrator. Evaluates spec complexity to dispatch ws-spec-to-pr or ws-spec-to-pr-lite workers.
   Invoke: /ws-multi-spec | @[ws-multi-spec].
@@ -39,14 +39,16 @@ Sequential multi-spec batch delivery orchestrator with **smart complexity & flow
 1. Batch process a list or directory of specs sequentially.
 2. **Smart Flow Auto-Detection**: Evaluate spec complexity to select `ws-spec-to-pr` (full) or `ws-spec-to-pr-lite` (fast).
 3. Probe before execution to skip already-implemented specs.
-4. Unified state management across specs in `{plansDir}/ws-multi-spec/{runId}.state.md`.
-5. Pause on worker failure with clear recovery options (Resume, Skip, Abort).
+4. Base branch synchronization (`baseBranch`) before worker dispatch and on run resume.
+5. Unified state management across specs in `{plansDir}/ws-multi-spec/{runId}.state.md`.
+6. Pause on worker failure with clear recovery options (Resume, Skip, Abort).
 
 ## Invariants
 
 | Topic | Rule |
 |-------|------|
 | Sequential | Exactly one spec worker active at a time |
+| Base Branch Sync | Master records `baseBranch` in state file header; before worker dispatch or on resume, spec feature branch MUST be synced with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`) to incorporate latest base features/merged code |
 | Flow Auto-Detect | `ws-spec-to-pr-lite` when ≤3 steps / ≤6 files / ≤2 layers / frontmatter `complexity: low`; `ws-spec-to-pr` otherwise |
 | Merge & Convergence | Worker or master MUST run `ws-ship-pr` + `ws-goal-fix-pr` until `activeThreads == 0`, required CI checks pass, and PR is merged (`merged: true`) before item is terminal |
 | Next-Spec Block | Master orchestrator MUST NOT dispatch the next spec until prior spec PR is fully merged with 0 active review threads |
