@@ -160,6 +160,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `configure-project` | `skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
 | `ws-spec-index` | `skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
+| `ws-sync-spec` | `skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 
 ### Review & audit (Workflows package)
 
@@ -191,6 +192,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Spec → PR lite (sequential) | `spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
+| Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `fable-method` |
 | Adversarial audit / fraud scan | `fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `fable-domain` |

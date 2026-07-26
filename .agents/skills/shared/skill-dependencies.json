@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.0.86",
+  "packageVersion": "0.0.87",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -55,7 +55,8 @@
         "fable-judge",
         "fable-domain",
         "ws-multi-spec",
-        "ws-spec-index"
+        "ws-spec-index",
+        "ws-sync-spec"
       ],
       "ensureHub": true,
       "shortcut": "w",
