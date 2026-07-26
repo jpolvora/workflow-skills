@@ -2,9 +2,10 @@
 
 
 
+
 name: ws-github-provider
 description: GitHub provider for ws-spec-to-pr — issue→spec, auth checks, PR create/threads/merge via gh CLI and provider scripts. Use when providers.active or providers.scm is github, or when invoking /ws-github-provider standalone.
-version: 0.0.94
+version: 0.0.95
 disable-model-invocation: true
 ---
 

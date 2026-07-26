@@ -2,9 +2,10 @@
 
 
 
+
 name: ws-interview
 description: Audits and interrogates an implementation plan to resolve ambiguities before task creation.
-version: 0.0.94
+version: 0.0.95
 disable-model-invocation: true
 invocation_names:
   - interview
