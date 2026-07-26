@@ -68,17 +68,20 @@ Evaluate the target `*.spec.md` file:
   - Command: if `flowMode == lite`: `/ws-spec-to-pr-lite full auto {specPath}` else: `/ws-spec-to-pr full auto {specPath}` (pass `dryRun` if set and `baseBranch: {baseBranch}`).
 - Await completion or worker exit `step-output`.
 
-### Phase 4b: Delivery Convergence & PR Merge Verification
-- Read worker `step-output` and query SCM provider (`gh` CLI / ADO API):
-  1. Check if PR was created (`prNumber` / `prUrl`).
-  2. Verify PR thread status: `activeThreads == 0` (via `list-threads`).
-  3. Verify required CI / automated code-review checks are green.
-  4. Verify PR is merged (`merged: true`).
-- If worker exited after PR creation without completing thread resolution or merge:
-  - Master dispatches [`ws-goal-fix-pr`](../ws-goal-fix-pr/SKILL.md) for `<prNumber>` to wait 30s for code-review actions, poll checks, and resolve review threads until `activeThreads == 0`.
-  - Once threads are 0 and checks green, merge PR into `baseBranch` via SCM provider [`ws-ship-pr`](../ws-ship-pr/SKILL.md) merge step.
-- **Strict Block:** Master orchestrator MUST NOT dispatch the next spec worker until the current spec PR is fully merged into `baseBranch` (`merged: true`, `activeThreads == 0`).
-- If convergence fails (max iterations, checks red, escalation): mark item `status: failed` and present Phase 5 `user-gate` failure menu.
+### Phase 4b: Delivery Convergence, Code-Review Wait, & PR Merge Closure
+Every created PR MUST complete full code-review convergence and merge before queue advancement:
+1. **Detect PR**: Read worker `step-output` and query SCM provider (`gh` CLI / ADO API) to capture `prNumber` and `prUrl`.
+2. **Run Convergence Loop (`ws-goal-fix-pr`)**:
+   - Dispatch [`ws-goal-fix-pr`](../ws-goal-fix-pr/SKILL.md) for `<prNumber>`.
+   - Wait **30 seconds** post-PR creation for automated code-review actions (e.g. Agentic Code Reviewer or SCM review bots) and CI pipelines to execute on SCM infrastructure.
+   - Poll thread status (`list-threads`) and resolve review threads until `activeThreads == 0`.
+   - Verify required CI checks are green (`checksStatus == green`).
+3. **Execute PR Merge & Close**:
+   - Once threads are 0 and checks green, master MUST execute PR merge via SCM provider: `gh pr merge {prNumber} --merge` (or SCM merge API) to merge and close the PR into `baseBranch`.
+   - If merge fails due to base branch drift, master syncs the branch with `baseBranch` (`git merge {baseBranch}`), pushes, and retries merge until state is `MERGED`.
+   - Confirm PR status is `state: MERGED` (`merged: true`).
+4. **Strict Block & Prohibition**: Leaving PRs open or unmerged is FORBIDDEN. Master orchestrator MUST NOT dispatch the next spec worker until the current spec PR is confirmed fully merged (`merged: true`, `activeThreads: 0`, `state: MERGED`).
+5. If convergence fails (max iterations, checks red, escalation): mark item `status: failed` and present Phase 5 `user-gate` failure menu.
 
 ### Phase 5: Record Outcome
 - Update state item:
