@@ -239,7 +239,9 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 ### Layer 1 — Engineering standards
 
-*(None on disk in this upstream tree. Former Extra UI skills were removed; restore via PR if needed.)*
+| Skill | Path | Description |
+|-------|------|-------------|
+| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Optional engineering-delivery gate and Code review proof source |
 
 ### Layer 2 — Pipeline + providers
 
@@ -303,6 +305,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Write a spec | `ws-write-spec` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
+| Engineering delivery gate / Code review proof | `ws-senior-developer` (opt in through `rules.seniorDeveloper` or invoke explicitly) |
 | Verify | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `ws-secrets-leak-review` |
@@ -374,7 +377,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → global/user skill |
+| `senior-developer` | `config.json` → `rules.seniorDeveloper` (set `.agents/skills/ws-senior-developer/SKILL.md` to opt in to the packaged skill) → local skill (`senior-developer/SKILL.md`) → global/user skill |
 | `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/ws-karpathy-guidelines/SKILL.md` → global skill |
 | Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root `CHANGELOG.md` only if explicitly configured |

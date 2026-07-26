@@ -306,6 +306,32 @@ const EVALS = {
       },
     ],
   },
+  'ws-sync-spec': {
+    evals: [
+      {
+        id: 1,
+        prompt: 'Sync the oauth-login spec after its callback API changed from GET to POST.',
+        expected_output:
+          'A drift analysis and surgical spec update proposal, with a Revision History entry, before any file is written.',
+        assertions: [
+          'Agent loads ws-sync-spec and identifies modified implementation scope',
+          'Compares actual code behavior against existing spec requirements and acceptance criteria',
+          'Proposes updates and requests user approval before writing the spec',
+        ],
+      },
+      {
+        id: 2,
+        prompt: 'Check whether recent billing controller changes have a matching feature spec to sync.',
+        expected_output:
+          'Candidate specs are searched under configured spec locations, or the agent reports that no existing spec was found.',
+        assertions: [
+          'Searches {plansDir}/specs and existing specs without inventing a spec path',
+          'Reports the exact no-existing-spec outcome when no matching spec exists',
+          'Does not create a new spec as part of drift synchronization',
+        ],
+      },
+    ],
+  },
   'spec-to-pr': {
     evals: [
       {
@@ -794,6 +820,59 @@ const EVALS = {
         assertions: [
           'Distinguishes installed vs missing pipeline skills',
           'References shared hub or installed-skills.json when present',
+        ],
+      },
+    ],
+  },
+  'ws-senior-developer': {
+    evals: [
+      {
+        id: 1,
+        prompt: 'Add audit logging across the API, worker, and admin UI from this free-text request.',
+        expected_output:
+          'The delivery gate reads applicable project context and MEMORY, then requires a confirmed multi-file plan before implementation.',
+        assertions: [
+          'Classifies the free-text request as non-trivial multi-file work',
+          'Reads configured project context, applicable rules, and {sharedDir}/MEMORY.md',
+          'Requires a confirmed plan with scope and verification before implementation',
+          'Uses {plansDir} or installed workflow/specification capabilities for the plan handoff',
+        ],
+      },
+      {
+        id: 2,
+        prompt: 'Rename one typo in src/constants.ts.',
+        expected_output:
+          'A focused single-file change with risk-proportionate checks, without plan ceremony.',
+        assertions: [
+          'Classifies the request as trivial or single-file work',
+          'Does not require a multi-file plan or user-gate confirmation',
+          'Limits verification to focused checks appropriate to the small change',
+          'Avoids unrelated refactors or unconfigured commands',
+        ],
+      },
+      {
+        id: 3,
+        prompt: '/ws-spec-to-pr implement the approved billing export plan.',
+        expected_output:
+          'The named workflow and explicit implementation route take precedence without a competing delivery gate.',
+        assertions: [
+          'Routes the named workflow command through ws-spec-to-pr',
+          'Identifies the explicit implementation request before adding planning or review gates',
+          'Does not impose a conflicting duplicate workflow or plan gate',
+          'Applies senior-developer constraints only when explicitly requested or configured',
+        ],
+      },
+      {
+        id: 4,
+        prompt: 'The multi-file change is ready for a branch and PR handoff.',
+        expected_output:
+          'Pre-ship proof covers review, configured verification, secrets, docs/spec-index assessment, and evidence or blockers.',
+        assertions: [
+          'Performs focused review of changed scope for correctness, regressions, and policy compliance',
+          'Runs applicable non-empty configured build, test, and format aliases',
+          'Runs configured secrets checking and resolves or reports findings',
+          'Assesses relevant documentation and specification-index updates',
+          'Reports command evidence, outcomes, remaining risks, and explicit blockers',
         ],
       },
     ],

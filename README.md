@@ -133,6 +133,10 @@ Installer **never** writes consumer repo-root files. Consumers may add a thin ro
 
 Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/shared/config.json` (defaults: `.agents/plans`, `.agents/specs`, `.agents/codereviews`). Existing repo-root `specs/` is kept when already present. Optional `pathTokens` documents fixed install roots for agents (`{skillsRoot}` / `{sharedDir}`); see [`tools.md`](.agents/skills/shared/tools.md) § Path tokens — not relocatable like `plans.dir`.
 
+### Optional engineering delivery gate
+
+The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md), but it is inactive by default. To opt in, set `"rules.seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md"` in your consumer-owned `.agents/skills/shared/config.json`; you can instead configure another compatible guardrail. The installer does not create or modify a root `AGENTS.md`.
+
 ---
 
 ## Safety and how it works
@@ -197,6 +201,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 |-------|------|
 | [`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md) | 7-step problem-solving loop with gates |
 | [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) |
+| [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md) | Optional engineering-delivery gate and Code review proof source |
 | [`ws-caveman`](.agents/skills/ws-caveman/SKILL.md) · [`ws-gabarito`](.agents/skills/ws-gabarito/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration |
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, feature spec sync, spec format & goal loop |

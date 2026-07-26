@@ -174,6 +174,12 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
     fail('.agents/skills/shared/skill-dependencies.json workflows package missing ws-multi-spec');
   }
+  if (!depMap.packages?.workflows?.skills?.includes('ws-senior-developer')) {
+    fail('bin/skill-dependencies.json workflows package missing ws-senior-developer');
+  }
+  if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-senior-developer')) {
+    fail('.agents/skills/shared/skill-dependencies.json workflows package missing ws-senior-developer');
+  }
   if (depMap.packages?.extra?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json Extra must not include workflow orchestrators');
   }
@@ -815,6 +821,14 @@ child.on('close', async (code) => {
     }
     if (!fs.existsSync(path.join(pkgSkills, 'ws-caveman', 'SKILL.md'))) {
       fail('Workflows package did not install promoted ws-caveman');
+    }
+    for (const rel of [
+      path.join('ws-senior-developer', 'SKILL.md'),
+      path.join('ws-senior-developer', 'evals', 'evals.json')
+    ]) {
+      if (!fs.existsSync(path.join(pkgSkills, rel))) {
+        fail(`Workflows package did not install ${rel}`);
+      }
     }
     if (!fs.existsSync(path.join(pkgSkills, 'shared', 'config.json.example'))) {
       fail('Workflows package did not install shared/ hub');
