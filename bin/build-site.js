@@ -487,15 +487,17 @@ if (fs.existsSync(depMapPath)) {
 `;
 }
 
-const installStart = html.indexOf('<section id="install">');
-if (installStart !== -1) {
-  // Replace existing install-packages section if present, else insert before #install
-  const existingPkgs = html.indexOf('<section id="install-packages">');
-  if (existingPkgs !== -1) {
-    const existingEnd = html.indexOf('</section>', existingPkgs) + '</section>'.length;
-    html = html.slice(0, existingPkgs) + packagesHtml + html.slice(existingEnd);
-  } else {
-    html = html.slice(0, installStart) + packagesHtml + html.slice(installStart);
+if (packagesHtml) {
+  if (html.includes('<section id="install-packages">')) {
+    html = html.replace(
+      /<section id="install-packages">[\s\S]*?<\/section>/,
+      packagesHtml.trim()
+    );
+  } else if (html.includes('<section id="install">')) {
+    html = html.replace(
+      '<section id="install">',
+      `${packagesHtml.trim()}\n\n<section id="install">`
+    );
   }
 }
 
