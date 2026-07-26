@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 21:45] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: `/spec-to-pr gh iisue 134 /write-a-skill /fable-method`
+- **Done**: Added `ws-spec-index` model-invoked skill for project spec index lifecycle management (`init`, `sync`, `promote`); created skill documentation, templates, reference schemas, and evals; registered in `bin/skill-dependencies.json` and `.agents/skills/shared/skill-dependencies.json`; updated hub skill indexes and task routers (`AGENTS.md` and `.agents/skills/shared/AGENTS.md`); wired auto-sync call sites in `spec-to-pr`, `spec-to-pr-lite`, and `ws-ship-pr`; updated integrity digests and website catalog; created PR #135, ran GitHub CI checks, and merged PR #135 to `main`.
+- **Result**: `ws-spec-index` skill shipped and merged to `main` with 100% test suite and harness validation passing.
+
 ### [2026-07-25 23:17] Agent: Gemini 3.6 Flash
 - **Prompt**: `/spec-to-pr-lite gh issue check and get to create spec` (Issue #129)
 - **Done**: Registered `ws-multi-spec` in `.agents/skills/shared/skill-dependencies.json` to match `bin/skill-dependencies.json`; added automatic `bin` ↔ `shared` dependency graph sync assertions in `check_workflows.py`; updated test suite assertions in `test-install.js`; bumped version to `0.0.85`; regenerated integrity digests; created and merged PR #130.
