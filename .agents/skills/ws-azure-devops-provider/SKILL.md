@@ -3,7 +3,7 @@
 
 name: ws-azure-devops-provider
 description: Azure DevOps provider for ws-spec-to-pr — work item→spec, PAT auth, PR create/threads/merge via az CLI and/or REST plus provider scripts. Use when providers.active or providers.scm is azure-devops, or when invoking /ws-azure-devops-provider standalone.
-version: 0.0.91
+version: 0.0.92
 disable-model-invocation: true
 ---
 

@@ -7,7 +7,7 @@ description: >
   hand-written *.spec.md into canonical step-00 artifacts (source: local). PR intents delegate to
   providers.scm. Use when /ws-local-spec-provider, active provider is local, or registering a local
   *.spec.md path.
-version: 0.0.91
+version: 0.0.92
 disable-model-invocation: true
 ---
 
