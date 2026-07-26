@@ -330,11 +330,11 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-plan-to-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-ship-pr/SKILL.md" data-name="ws-ship-pr" data-slug="ws-ship-pr" data-desc="end-to-end delivery — prepare-to-pr checklist (including discover+wait for local consumer prepare/before-push rules), push/create pr, wait 30 seconds for code-review action to start on github infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopbeforefixpr / no-merge)." data-deps="ws-secrets-leak-review ws-fable-judge ws-spec-index" data-layer="layer-2" data-full="false" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-ship-pr/SKILL.md" data-name="ws-ship-pr" data-slug="ws-ship-pr" data-desc="end-to-end delivery — scm-agnostic (reads config.json providers.scm for github, azure devops / ado, or configured scm). prepare-to-pr checklist (discover+wait for local consumer rules), push/create pr, wait 30s for code-review/ci actions to start on scm infrastructure, run ws-goal-fix-pr (default 300s) until clean, then merge (unless stopbeforefixpr / no-merge)." data-deps="ws-secrets-leak-review ws-fable-judge ws-spec-index" data-layer="layer-2" data-full="false" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-ship-pr</div>
         </div>
-        <div class="desc">End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait 30 seconds for code-review action to start on GitHub infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
+        <div class="desc">End-to-end delivery — SCM-agnostic (reads config.json providers.scm for GitHub, Azure DevOps / ADO, or configured SCM). Prepare-to-PR checklist (discover+wait for local consumer rules), push/create PR, wait 30s for code-review/CI actions to start on SCM infrastructure, run ws-goal-fix-pr (default 300s) until clean, then merge (unless stopBeforeFixPr / no-merge).</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (3):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-secrets-leak-review">ws-secrets-leak-review</span><span class="dep-pill" data-dep="ws-fable-judge">ws-fable-judge</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-ship-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>

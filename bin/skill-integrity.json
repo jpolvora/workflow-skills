@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "bab297d5598ef94f7b945b735072979421ea35ad9f4e219d35f54e19fa0dd579",
+  "fullPackageDigest": "9615ae69861061944ac18de4286c31556ef222bcd5958d6b9b609ad9bcdf4a5d",
   "hub": {
     "files": {
       "AGENTS.md": "f5e5a17933efa642e19c5da2e7fe65794879dcb781499b6b7b42e0beedff8d4b",
@@ -228,9 +228,9 @@
         "PREPARE-CHECKLIST.md": "c637d905e08c55a1593b8f20cf5e9c2fb32025b510b14801e1f4d2b0d55ecce9",
         "scripts/detect-base-branch.sh": "8435a94884d1ce3653159f2ffdee12829b758c8eb69cb9481d51ff8916c756fd",
         "scripts/verify.sh": "5b7816e0035edddb74098c769dc220304d9fb62abb71313bb68742e61ffe6264",
-        "SKILL.md": "ad5e67016787eb69f992e2c14126899ef209935a6a01e7201e3c776cb238b74e"
+        "SKILL.md": "168e0ec2e190be08f9a91762289768d054bfc899c88f902a8c84ae36d491710d"
       },
-      "skillDigest": "adb30544cce5f2084af1ad38a26ec4c85eefd36f8cf3bd241541821a1b47315b"
+      "skillDigest": "16282cee032f8a20619bb99e1e263649881fdaddc22926996e5350af2842a144"
     },
     "ws-show-harness": {
       "files": {
