@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-26 00:29] Agent: Antigravity AI
+- **Prompt**: Refactor all skills to add ws-* prefix to folder/skill names, update all references across files/relations, rebuild site, test install/update, and ship PR.
+- **Done**: Renamed all 21 remaining unprefixed skill directories under `.agents/skills/` to use `ws-` prefix via `git mv` (36 total skills now all prefixed with `ws-`); updated `name: ws-<skill>` and `invocation_names` in SKILL.md frontmatters to support activation via both `ws-skillName` and `skillName`; updated dependency graphs (`bin/skill-dependencies.json` & `shared/skill-dependencies.json`), CLI, test suite (`test-install.js`), and docs (`AGENTS.md`, `shared/AGENTS.md`, `README.md`); bumped version to `0.0.90`; rebuilt site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 12 phases green); opened PR #141, verified CI checks, and merged PR #141 to `main`.
+- **Result**: Release `0.0.90` shipped and merged to `main` with 100% test coverage and verified integrity.
+
 ### [2026-07-26 00:05] Agent: Gemini 3.6 Flash (High)
 - **Prompt**: Fix new GH issues (#138, #139, #129, #131, #132), update website, integrity digests, dependencies, tests, and ship PR.
 - **Done**: Routed `ws-sync-spec` in `shared/AGENTS.md` (Promoted Utilities + Task Router); added `init` guard (`--force` flag requirement for non-empty `index.PRD`) and consumer dialect contract support to `ws-spec-index`; added consumer dialect eval case; bumped version to `0.0.88`; rebuilt site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm run test` (all 11 phases green).
