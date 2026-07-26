@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-26 00:05] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: Fix new GH issues (#138, #139, #129, #131, #132), update website, integrity digests, dependencies, tests, and ship PR.
+- **Done**: Routed `ws-sync-spec` in `shared/AGENTS.md` (Promoted Utilities + Task Router); added `init` guard (`--force` flag requirement for non-empty `index.PRD`) and consumer dialect contract support to `ws-spec-index`; added consumer dialect eval case; bumped version to `0.0.88`; rebuilt site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm run test` (all 11 phases green).
+- **Result**: Release `0.0.88` ready to ship (`develop` → `main`) with 100% verified integrity, site catalog, and test suite.
+
 ### [2026-07-25 22:48] Agent: Gemini 3.6 Flash (High)
 - **Prompt**: Brainstorm and grill `ws-sync-spec` skill, build skill, update dependencies, website, checksums, tests, and ship via `/ws-ship-pr`.
 - **Done**: Created `ws-sync-spec` skill (`v0.0.87`) for continuous feature spec auto-updates after prompt evolutions and code changes; updated dependency graphs (`bin/skill-dependencies.json` & `shared/skill-dependencies.json`); updated site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); ran full test suite (`npm test`, 11/11 phases green) and `check_workflows.py` (0 issues); created PR #137, waited for Agentic Code Reviewer (`SUCCESS`), and merged PR #137 to `main`.
