@@ -54,7 +54,8 @@
         "fable-method",
         "fable-judge",
         "fable-domain",
-        "ws-multi-spec"
+        "ws-multi-spec",
+        "ws-spec-index"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -96,7 +97,8 @@
       "goal-loop",
       "self-learning",
       "changelog",
-      "configure-project"
+      "configure-project",
+      "ws-spec-index"
     ],
     "spec-to-pr-lite": [
       "ws-write-spec",
@@ -115,7 +117,8 @@
       "spec-format",
       "self-learning",
       "changelog",
-      "configure-project"
+      "configure-project",
+      "ws-spec-index"
     ],
     "ws-write-spec": [
       "spec-format"
@@ -141,7 +144,8 @@
     ],
     "ws-ship-pr": [
       "secrets-leak-review",
-      "fable-judge"
+      "fable-judge",
+      "ws-spec-index"
     ],
     "ws-code-review": [
       "karpathy-guidelines",
