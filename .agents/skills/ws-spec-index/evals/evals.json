@@ -36,6 +36,17 @@
           "never auto-writes Verified: field"
         ]
       }
+    },
+    {
+      "id": "sync-spec-index-consumer-dialect",
+      "prompt": "Run /ws-spec-index sync with valid ship evidence on an index.PRD using non-template headers (Status | Spec file)",
+      "expected": {
+        "assertions": [
+          "matches slug and updates status checkbox in non-template dialect table",
+          "updates matching feature map bullet",
+          "appends completed entry to Done log"
+        ]
+      }
     }
   ]
 }

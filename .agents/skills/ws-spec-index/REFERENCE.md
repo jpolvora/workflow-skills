@@ -29,6 +29,19 @@ Mark `[x]` or update spec `status` only when **both** conditions hold:
 
 If no mapping exists: return `updated: []` and `skipped: "No matching index row for slug"`. Do **not** edit files.
 
+## Minimum Index Contract & Accepted Dialects
+
+Consumer repositories may evolve their `index.PRD` layout. `ws-spec-index` operations must respect living documents and accept common Markdown table/list variations:
+
+| Area | Accepted Dialects / Variations | Machine Match Strategy |
+|------|--------------------------------|------------------------|
+| **Next specs table** | Template: `# \| Spec \| Status \| Target Phase \| Notes`<br/>Live: `# \| Status \| Spec file \| Scope` (or any table with Status + Spec/file) | Locate backtick `*.spec.md` or slug in table row; update status column cell (`[ ]` → `[x]`). |
+| **Done log table** | Template: `Date \| Slug \| Title \| PR / Commit`<br/>Live: `When \| Item \| Notes` (or Date/When + Item/Slug) | Append completed row using available column layout. |
+| **Feature map** | Bullet lists `- [ ] Feature (\`spec: ...\`)` or nested bullets with separate `- **spec:** \`...\`` | Match backtick `*.spec.md` or slug; update checkbox `[ ]` → `[x]`. |
+| **Dual-path specs** | Both `{plans.specsDir}/{slug}.spec.md` mirror and `{plans.dir}/{slug}/step-00-*.spec.md` exist | `{plans.specsDir}/{slug}.spec.md` path is primary for index status updates. |
+| **`init` Guard** | Non-empty `{plans.specsDir}/index.PRD` exists | Refuse to overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"`. |
+| **Spec Frontmatter** | Frontmatter may have `status: draft|completed` or no `status` field | Index row + disk slug mapping is primary; spec frontmatter update is optional. |
+
 ## Orchestrator Call Contract
 
 ```yaml
@@ -51,8 +64,8 @@ output:
 
 ## Call Sites Wired in `workflow-skills`
 
-1. `spec-to-pr` Step 8: Call `sync` after successful delivery commit and/or create-PR ship action.
-2. `spec-to-pr-lite` Step 4: Call `sync` on ship path with delivery evidence.
+1. `ws-spec-to-pr` Step 8: Call `sync` after successful delivery commit and/or create-PR ship action.
+2. `ws-spec-to-pr-lite` Step 4: Call `sync` on ship path with delivery evidence.
 3. `ws-ship-pr`: Call `sync` after successful ship action.
 
 ## Out of Scope (v1)

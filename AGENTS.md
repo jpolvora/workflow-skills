@@ -47,9 +47,9 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed**. `update` overwrites skill files; `uninstall` removes skill folders (cascades unused deps) and never deletes `shared/` consumer data.
 - **Preserve** under `.agents/skills/shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Installer does **not** copy `.agents/AGENTS.md` — consumer hub is `shared/AGENTS.md`. Fresh install seeds `config.json` (from example), `MEMORY.md`, `CHANGELOG.md`, and `STACK.md` under `shared/` when missing. Installer never writes consumer repo-root files.
 - **Latest layout only:** installer does not migrate older folder names or legacy host paths — consumers get the current skill tree and neutral defaults on install/update. See [`README.md`](README.md) § Safety and § [Portability & harness neutrality](#portability--harness-neutrality-mandatory).
-- Lasting skill changes: PR to `develop` → `main` only after **`check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
+- Lasting skill changes: PR to `develop` → `main` only after **`ws-check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - **Consumers / CI / Actions:** agents must not silently hygiene-refactor managed skill scripts; lasting fixes → suggest or open an **upstream** PR. See [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) § Managed skills.
-- After install/update in a consumer: run `check-harness`.
+- After install/update in a consumer: run `ws-check-harness`.
 - Skills stay portable: parameterize via `shared/config.json` / stack docs; no project hardcoding; no IDE/agent product coupling. Client data hub: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md).
 - Guardrails resolution: § [External dependencies](#external-dependencies) (consumer install mirror: [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md)).
 - **This upstream’s local `.cursor/`:** authoring/plans only for this repo — never the shipped default for consumers.
@@ -71,8 +71,8 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 |-------|----------------|
 | Portability, language, folder naming | [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills |
 | Script launchers (`python` / `node` / `bash`) | [`shared/tools.md`](.agents/skills/shared/tools.md) § Script launchers |
-| New or rewritten skills (markdown + scripts) | [`write-a-skill`](.agents/skills/write-a-skill/SKILL.md) |
-| Spec shape / review | [`spec-format`](.agents/skills/spec-format/SKILL.md) |
+| New or rewritten skills (markdown + scripts) | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) |
+| Spec shape / review | [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) |
 
 Managed script calls use explicit launchers; do not rewrite skill scripts for shell quirks in consumer trees — fix upstream.
 
@@ -82,9 +82,9 @@ In **this repo**, load every session for authoring quality:
 
 | Skill | Why |
 |-------|-----|
-| `karpathy-guidelines` | Surgical scope; no drive-by refactors |
-| `gabarito` | Operational rigor and verification discipline |
-| `caveman` | Compression (opt out via `stop caveman` / `normal mode`) |
+| `ws-karpathy-guidelines` | Surgical scope; no drive-by refactors |
+| `ws-gabarito` | Operational rigor and verification discipline |
+| `ws-caveman` | Compression (opt out via `stop ws-caveman` / `normal mode`) |
 
 These ship to consumers but are **not required** on consumer projects — consumer hubs may treat them as optional recommendations.
 
@@ -92,10 +92,10 @@ These ship to consumers but are **not required** on consumer projects — consum
 
 | Intent | Load |
 |--------|------|
-| Draft a spec | `ws-write-spec` (`ws-write-spec`) or local `specs/**/*.spec.md` + `spec-format` |
-| Spec → PR (full) | `spec-to-pr` |
-| Spec → PR (fast) | `spec-to-pr-lite` |
-| GitHub issue → spec / fix | `github-provider` or orchestrator with issue URL |
+| Draft a spec | `ws-write-spec` (`ws-write-spec`) or local `specs/**/*.spec.md` + `ws-spec-format` |
+| Spec → PR (full) | `ws-spec-to-pr` |
+| Spec → PR (fast) | `ws-spec-to-pr-lite` |
+| GitHub issue → spec / fix | `ws-github-provider` or orchestrator with issue URL |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 
 Workflow artifacts: prefer repo-root `specs/` (this upstream dogfoods `specs/`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
@@ -104,7 +104,7 @@ Workflow artifacts: prefer repo-root `specs/` (this upstream dogfoods `specs/`);
 
 After edits under `.agents/skills/`, hubs, `docs/`, `bin/`, or installer inputs:
 
-1. Run **`check-harness`** (Phases 0–5c) — see also § [Harness change protocol](#harness-change-protocol).
+1. Run **`ws-check-harness`** (Phases 0–5c) — see also § [Harness change protocol](#harness-change-protocol).
 2. Resolve **critical** findings before claim complete / merge.
 
 #### Before ship PR (package release checklist)
@@ -116,7 +116,7 @@ When shipping changes that modify installable package content (skills, CLI, inst
 | 1 | **Tests** | `npm run test` | Run installer, integrity checks, and tree verification |
 | 2 | **Version Bump** | `npm run build-site:bump` | Increment `package.json` patch version once and stamp site footer |
 | 3 | **Integrity Digests** | `npm run generate-integrity` && `npm run verify-integrity` | Update and verify `bin/skill-integrity.json` checksums |
-| 4 | **Harness Audit** | `check-harness` / `python .agents/skills/check-workflows/scripts/check_workflows.py` | Ensure 0 critical harness errors |
+| 4 | **Harness Audit** | `ws-check-harness` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | Ensure 0 critical harness errors |
 | 5 | **Clean Site Docs** | Verify `docs/index.html` | Confirm no git merge conflict markers exist |
 | 6 | **Hub Drift** | Sync `AGENTS.md` + `.agents/AGENTS.md` | Keep packaged hub indexes aligned |
 | 7 | **Ship & Converge** | `/ship-pr` | Commit, push, create PR, wait 30s for Action start, run `ws-goal-fix-pr` (300s) |
@@ -145,8 +145,8 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 
 | Workflow | Path | Role |
 |----------|------|------|
-| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
-| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
+| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
+| `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
 
 ### Dual-mode
 
@@ -155,13 +155,13 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 - **Session model:** `currentModel` = executing session model; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
-- **Dispatch:** [`spec-to-pr/STEP-DISPATCH.md`](.agents/skills/spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
+- **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
 
 | Skill | Step(s) | Role |
 |-------|---------|------|
-| `spec-to-pr` | Orchestrator | FSM dispatcher |
+| `ws-spec-to-pr` | Orchestrator | FSM dispatcher |
 | `ws-write-spec` | 0 | Spec from description |
 | `ws-write-plan` | 1 | Implementation plan |
 | `ws-interview` | 2 | Plan audit |
@@ -174,11 +174,11 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 | `ws-fix-pr` | 9 | PR thread fix |
 | `ws-goal-fix-pr` | 9 | Fix until zero threads |
 | `ws-update-plan-implementation` | Post | Plan deltas |
-| `github-provider` | Provider | GitHub issue→spec + PR ops |
-| `azure-devops-provider` | Provider | ADO WI→spec + PR ops |
-| `local-spec-provider` | Provider | Local `*.spec.md` |
-| `spec-format` | Protocol | Spec format |
-| `goal-loop` | Primitive | Convergence loop |
+| `ws-github-provider` | Provider | GitHub issue→spec + PR ops |
+| `ws-azure-devops-provider` | Provider | ADO WI→spec + PR ops |
+| `ws-local-spec-provider` | Provider | Local `*.spec.md` |
+| `ws-spec-format` | Protocol | Spec format |
+| `ws-goal-loop` | Primitive | Convergence loop |
 
 ---
 
@@ -186,30 +186,30 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `caveman` | `.agents/skills/caveman/SKILL.md` | Every prompt — compression |
-| `gabarito` | `.agents/skills/gabarito/SKILL.md` | Every prompt — operational guidelines |
-| `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
-| `changelog` | `.agents/skills/changelog/SKILL.md` | Every task completion |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
+| `ws-caveman` | `.agents/skills/ws-caveman/SKILL.md` | Every prompt — compression |
+| `ws-gabarito` | `.agents/skills/ws-gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
+| `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Every task completion |
+| `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
-**Upstream dogfood (this repo):** The `karpathy-guidelines` / `gabarito` / `caveman` trio is **recommended every session** when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers receive these skills on install but need not autoload them; [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) documents the consumer contract.
+**Upstream dogfood (this repo):** The `ws-karpathy-guidelines` / `ws-gabarito` / `ws-caveman` trio is **recommended every session** when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers receive these skills on install but need not autoload them; [`shared/AGENTS.md`](.agents/skills/shared/AGENTS.md) documents the consumer contract.
 
 ### Precedence (highest first)
 
 1. Explicit user instructions (current turn)
 2. Design / spec / architecture constraints
-3. `karpathy-guidelines`
-4. `gabarito`
-5. `caveman` (compression only; keep technical accuracy)
+3. `ws-karpathy-guidelines`
+4. `ws-gabarito`
+5. `ws-caveman` (compression only; keep technical accuracy)
 
 ### Opt-out
 
 | Phrase | Effect |
 |--------|--------|
-| `stop caveman` / `normal mode` | Disable caveman |
-| `stop gabarito` / `sem gabarito` | Disable gabarito |
-| `/caveman lite\|full\|ultra\|…` | Intensity |
+| `stop ws-caveman` / `normal mode` | Disable ws-caveman |
+| `stop ws-gabarito` / `sem ws-gabarito` | Disable ws-gabarito |
+| `/ws-caveman lite\|full\|ultra\|…` | Intensity |
 
 ---
 
@@ -217,8 +217,8 @@ Manifest: `.agents/skills/shared/installed-skills.json` (`skills` + `selected` r
 
 On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
-1. Ask the user whether to run **check-harness** and whether **site** / **README** need updates.
-2. Evaluate: check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR (dependency graph, integrity, version/catalog, hub drift).
+1. Ask the user whether to run **ws-check-harness** and whether **site** / **README** need updates.
+2. Evaluate: ws-check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR (dependency graph, integrity, version/catalog, hub drift).
 3. If the change affects hashed install content, run § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only) in the same commit (`npm run generate-integrity` + `npm run verify-integrity`).
 
 ---
@@ -231,10 +231,10 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `check-harness` | `.agents/skills/check-harness/SKILL.md` | Harness integrity audit |
-| `check-workflows` | `.agents/skills/check-workflows/SKILL.md` | Deep workflow simulation & validation (Full/Lite) |
-| `write-a-skill` | `.agents/skills/write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
-| `show-harness` | `.agents/skills/show-harness/SKILL.md` | Session harness snapshot (Extra) |
+| `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
+| `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation (Full/Lite) |
+| `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
+| `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |
 
 ### Layer 1 — Engineering standards
@@ -257,9 +257,9 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 | 09 | `ws-fix-pr` | `.agents/skills/ws-fix-pr/SKILL.md` |
 | — | `ws-goal-fix-pr` | `.agents/skills/ws-goal-fix-pr/SKILL.md` |
 | Post | `ws-update-plan-implementation` | `.agents/skills/ws-update-plan-implementation/SKILL.md` |
-| — | `github-provider` | `.agents/skills/github-provider/SKILL.md` |
-| — | `azure-devops-provider` | `.agents/skills/azure-devops-provider/SKILL.md` |
-| — | `local-spec-provider` | `.agents/skills/local-spec-provider/SKILL.md` |
+| — | `ws-github-provider` | `.agents/skills/ws-github-provider/SKILL.md` |
+| — | `ws-azure-devops-provider` | `.agents/skills/ws-azure-devops-provider/SKILL.md` |
+| — | `ws-local-spec-provider` | `.agents/skills/ws-local-spec-provider/SKILL.md` |
 
 ### Layer 3 — Discovery (reserved)
 
@@ -269,27 +269,28 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `secrets-leak-review` | `.agents/skills/secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
-| `fable-judge` | `.agents/skills/fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
+| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+| `ws-fable-judge` | `.agents/skills/ws-fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Layer 5 — Utility & meta
 
 | Skill | Path | Notes |
 |-------|------|-------|
-| `caveman` | `.agents/skills/caveman/SKILL.md` | Autoload |
-| `gabarito` | `.agents/skills/gabarito/SKILL.md` | Autoload |
-| `karpathy-guidelines` | `.agents/skills/karpathy-guidelines/SKILL.md` | Autoload |
-| `spec-to-pr` | `.agents/skills/spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
-| `spec-to-pr-lite` | `.agents/skills/spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |
+| `ws-caveman` | `.agents/skills/ws-caveman/SKILL.md` | Autoload |
+| `ws-gabarito` | `.agents/skills/ws-gabarito/SKILL.md` | Autoload |
+| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Autoload |
+| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
+| `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |
 | `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Sequential smart multi-spec batch delivery orchestrator |
-| `fable-method` | `.agents/skills/fable-method/SKILL.md` | 7-step problem-solving loop with gates |
-| `fable-domain` | `.agents/skills/fable-domain/SKILL.md` | Domain adapter generator & schemas |
-| `spec-format` | `.agents/skills/spec-format/SKILL.md` | Specs |
-| `self-learning` | `.agents/skills/self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
-| `changelog` | `.agents/skills/changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
-| `configure-project` | `.agents/skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
-| `goal-loop` | `.agents/skills/goal-loop/SKILL.md` | Convergence |
+| `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
+| `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
+| `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Specs |
+| `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
+| `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
+| `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
+| `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
+| `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
 
@@ -304,30 +305,31 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Implement | `ws-implement-tasks` |
 | Verify | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
-| Secrets / leaks | `secrets-leak-review` |
-| Adversarial audit / fraud scan | `fable-judge` |
-| Fable Method 7-step loop | `fable-method` |
-| Domain adapters (DevOps/Data/Research) | `fable-domain` |
+| Secrets / leaks | `ws-secrets-leak-review` |
+| Adversarial audit / fraud scan | `ws-fable-judge` |
+| Fable Method 7-step loop | `ws-fable-method` |
+| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
 | Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship PR | `ws-ship-pr` |
-| Spec → PR E2E | `spec-to-pr` |
-| Spec → PR lite | `spec-to-pr-lite` |
+| Spec → PR E2E | `ws-spec-to-pr` |
+| Spec → PR lite | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
-| GitHub issue/PR ops | `github-provider` |
-| ADO WI/PR ops | `azure-devops-provider` |
-| Local `*.spec.md` | `local-spec-provider` |
-| Format/review spec | `spec-format` |
-| New skill / skill rewrite | `write-a-skill` |
-| Show active harness | `show-harness` |
-| Audit harness | `check-harness` |
-| Check workflows | `check-workflows` |
+| Auto-update feature specs after code changes | `ws-sync-spec` |
+| GitHub issue/PR ops | `ws-github-provider` |
+| ADO WI/PR ops | `ws-azure-devops-provider` |
+| Local `*.spec.md` | `ws-local-spec-provider` |
+| Format/review spec | `ws-spec-format` |
+| New skill / skill rewrite | `ws-write-a-skill` |
+| Show active harness | `ws-show-harness` |
+| Audit harness | `ws-check-harness` |
+| Check workflows | `ws-check-workflows` |
 | Grill plan vs docs | `grill-with-docs` |
-| Record learning | `self-learning` |
-| Convergence loop | `goal-loop` |
-| Record changelog | `changelog` |
-| Fill / update `config.json` | `configure-project` |
+| Record learning | `ws-self-learning` |
+| Convergence loop | `ws-goal-loop` |
+| Record ws-changelog | `ws-changelog` |
+| Fill / update `config.json` | `ws-configure-project` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 
 ---
@@ -336,9 +338,9 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 Upstream package root: full ordered checklist in § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR. Summary:
 
-1. **Harness:** load `.agents/skills/check-harness/SKILL.md` → Phases 0–5c
+1. **Harness:** load `.agents/skills/ws-check-harness/SKILL.md` → Phases 0–5c
 2. **Install tests:** `npm run tests` · `npm run tests -- --local`
-3. **Dependency graph:** if skills added/removed/renamed or orch dispatch changed → update `bin/skill-dependencies.json`; `check-harness` Phase 3/4b must pass
+3. **Dependency graph:** if skills added/removed/renamed or orch dispatch changed → update `bin/skill-dependencies.json`; `ws-check-harness` Phase 3/4b must pass
 4. **Skill integrity:** if package-hashed content changed → § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only); always `npm run verify-integrity` (must exit 0) before claim complete / PR. Testing Step approval requires this green.
 5. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
 6. **Catalog / version:** if shipping package changes → § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only); else if only regenerating catalog → `node bin/build-site.js` (no bump). `package.json` ↔ footer must match; CI deploy never bumps.
@@ -373,7 +375,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
 | `senior-developer` | `config.json` → `rules.seniorDeveloper` → local skill (`senior-developer/SKILL.md`) → global/user skill |
-| `karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/karpathy-guidelines/SKILL.md` → global skill |
+| `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/ws-karpathy-guidelines/SKILL.md` → global skill |
 | Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root `CHANGELOG.md` only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
