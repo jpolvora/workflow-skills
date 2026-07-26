@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-25 22:48] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: Brainstorm and grill `ws-sync-spec` skill, build skill, update dependencies, website, checksums, tests, and ship via `/ws-ship-pr`.
+- **Done**: Created `ws-sync-spec` skill (`v0.0.87`) for continuous feature spec auto-updates after prompt evolutions and code changes; updated dependency graphs (`bin/skill-dependencies.json` & `shared/skill-dependencies.json`); updated site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); ran full test suite (`npm test`, 11/11 phases green) and `check_workflows.py` (0 issues); created PR #137, waited for Agentic Code Reviewer (`SUCCESS`), and merged PR #137 to `main`.
+- **Result**: `ws-sync-spec` shipped and merged to `main` with 100% test coverage and verified integrity.
+
 ### [2026-07-25 22:30] Agent: Gemini 3.6 Flash (High)
 - **Prompt**: `/fable-method` update website, README.md, checksums, dependencies, installer, npx/bash script, AGENTS.md, check-workflows, tests, check-harness and bump version to prepare release 0.0.86
 - **Done**: Bumped package version to `0.0.86`; updated website catalog (`docs/index.html`) with 35 skills across 4 layers; updated `README.md` catalog tables; synced dependency manifests (`bin/skill-dependencies.json` and `.agents/skills/shared/skill-dependencies.json`); updated test suite tarball reference in `test/package.json`; regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues, 100% PASS) and `npm run tests -- --local` (all 11 phases green).
