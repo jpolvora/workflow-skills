@@ -25,6 +25,7 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 
 - Read source document (`README.md`, `PROJECT.PRD`, `SPECS.md`, or user text).
 - Create `{plans.specsDir}/` directory (default `.agents/specs/`).
+- **Guard:** If `{plans.specsDir}/index.PRD` already exists and is non-empty, do **not** overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"` when `--force` is absent.
 - Write `{plans.specsDir}/index.PRD` using structure from [`INDEX-TEMPLATE.md`](INDEX-TEMPLATE.md).
 - Seed phase feature lists (`- [ ]`) and next-specs table with `spec:` links.
 - **Done when:** `{plans.specsDir}/index.PRD` exists with standard sections and seed items; no invented full AC bodies.
@@ -32,6 +33,8 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 ### 2. `sync` (auto-run at delivery/ship exit)
 
 - Check E1 evidence rule ([`REFERENCE.md`](REFERENCE.md)): requires delivery commit or PR URL signal AND matching index row / `*.spec.md` slug.
+- Support consumer `index.PRD` table dialects (e.g. Next-specs headers `# | Status | Spec file` as well as `# | Spec | Status | Target Phase | Notes`).
+- Match backtick `*.spec.md` filename or `slug` anywhere in Feature map bullets (`- [ ]`) and Next-specs table.
 - If E1 satisfied: update status checkboxes to `[x]`, move completed rows to Done log, optionally set spec frontmatter `status: completed`.
 - Never auto-write `Verified:`. Idempotent (re-applying `[x]` is safe).
 - If unmapped or no evidence: return `updated: []` and `skipped: <reason>` without editing files.

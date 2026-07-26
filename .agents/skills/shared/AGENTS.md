@@ -91,6 +91,7 @@
 | `self-learning` | [`../self-learning/SKILL.md`](../self-learning/SKILL.md) |
 | `changelog` | [`../changelog/SKILL.md`](../changelog/SKILL.md) |
 | `ws-spec-index` | [`../ws-spec-index/SKILL.md`](../ws-spec-index/SKILL.md) |
+| `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
 
 ### Harness & review (Workflows package)
 
@@ -126,6 +127,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Spec → PR lite | `spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
+| Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `fable-method` |
 | Adversarial audit / fraud scan | `fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `fable-domain` |
