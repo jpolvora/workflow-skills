@@ -162,7 +162,7 @@
       <p class="section-subtitle">Discover production-grade agent skills across 4 modular layers.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">34</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">35</strong> skills available</span>
     </div>
   </div>
 
@@ -370,7 +370,7 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-plan-to-tasks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-ship-pr/SKILL.md" data-name="ws-ship-pr" data-slug="ws-ship-pr" data-desc="end-to-end delivery — prepare-to-pr checklist (including discover+wait for local consumer prepare/before-push rules), push/create pr, wait 30 seconds for code-review action to start on github infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopbeforefixpr / no-merge)." data-deps="secrets-leak-review fable-judge" data-layer="layer-2" data-full="true" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/ws-ship-pr/SKILL.md" data-name="ws-ship-pr" data-slug="ws-ship-pr" data-desc="end-to-end delivery — prepare-to-pr checklist (including discover+wait for local consumer prepare/before-push rules), push/create pr, wait 30 seconds for code-review action to start on github infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopbeforefixpr / no-merge)." data-deps="secrets-leak-review fable-judge ws-spec-index" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-ship-pr</div>
         <div class="skill-badges">
@@ -380,7 +380,7 @@
         </div>
         <div class="desc">End-to-end delivery — prepare-to-PR checklist (including discover+wait for local consumer prepare/before-push rules), push/create PR, wait 30 seconds for code-review action to start on GitHub infrastructure, run ws-goal-fix-pr (default 300s) until no open issues, then merge (unless stopBeforeFixPr / no-merge).</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="secrets-leak-review">secrets-leak-review</span><span class="dep-pill" data-dep="fable-judge">fable-judge</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (3):</div><div class="deps-list"><span class="dep-pill" data-dep="secrets-leak-review">secrets-leak-review</span><span class="dep-pill" data-dep="fable-judge">fable-judge</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-ship-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -494,7 +494,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">13 skills</span>
+      <span class="count">14 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/caveman/SKILL.md" data-name="caveman" data-slug="caveman" data-desc="ultra-compressed communication mode. cuts output token usage ~75% while keeping full technical accuracy. intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. use when the user invokes /caveman or asks for briefer, lower-token responses." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
@@ -633,7 +633,7 @@
           <a class="view-skill" href="#" data-path=".agents/skills/spec-format/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md" data-name="spec-to-pr" data-slug="spec-to-pr" data-desc="spec-to-pr delivery orchestrator fsm (f0–f6, steps 0–9). agent contract only — not human docs. invoke: /spec-to-pr | @[spec-to-pr]. entry: github issue | azure devops work item | *.spec.md | feature description. flags: dry-run, auto, skip-testing, skip-tests, full, strict. flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). delegates via `dispatch-agent` (host subagent dispatch)." data-deps="ws-write-spec ws-write-plan ws-interview ws-plan-to-tasks ws-implement-tasks ws-verify-plan ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-update-plan-implementation github-provider azure-devops-provider local-spec-provider check-harness check-workflows caveman gabarito karpathy-guidelines spec-format goal-loop self-learning changelog configure-project" data-layer="layer-5" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr/SKILL.md" data-name="spec-to-pr" data-slug="spec-to-pr" data-desc="spec-to-pr delivery orchestrator fsm (f0–f6, steps 0–9). agent contract only — not human docs. invoke: /spec-to-pr | @[spec-to-pr]. entry: github issue | azure devops work item | *.spec.md | feature description. flags: dry-run, auto, skip-testing, skip-tests, full, strict. flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). delegates via `dispatch-agent` (host subagent dispatch)." data-deps="ws-write-spec ws-write-plan ws-interview ws-plan-to-tasks ws-implement-tasks ws-verify-plan ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-update-plan-implementation github-provider azure-devops-provider local-spec-provider check-harness check-workflows caveman gabarito karpathy-guidelines spec-format goal-loop self-learning changelog configure-project ws-spec-index" data-layer="layer-5" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">spec-to-pr</div>
         <div class="skill-badges">
@@ -642,11 +642,11 @@
         </div>
         <div class="desc">Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs. Invoke: /spec-to-pr | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description. Flags: dry-run, auto, skip-testing, skip-tests, full, strict. Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via `dispatch-agent` (host subagent dispatch).</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (25):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-write-plan">ws-write-plan</span><span class="dep-pill" data-dep="ws-interview">ws-interview</span><span class="dep-pill" data-dep="ws-plan-to-tasks">ws-plan-to-tasks</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-verify-plan">ws-verify-plan</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-testing">ws-testing</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-update-plan-implementation">ws-update-plan-implementation</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="check-harness">check-harness</span><span class="dep-pill" data-dep="check-workflows">check-workflows</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="goal-loop">goal-loop</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (26):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-write-plan">ws-write-plan</span><span class="dep-pill" data-dep="ws-interview">ws-interview</span><span class="dep-pill" data-dep="ws-plan-to-tasks">ws-plan-to-tasks</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-verify-plan">ws-verify-plan</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-testing">ws-testing</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-update-plan-implementation">ws-update-plan-implementation</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="check-harness">check-harness</span><span class="dep-pill" data-dep="check-workflows">check-workflows</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="goal-loop">goal-loop</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md" data-name="spec-to-pr-lite" data-slug="spec-to-pr-lite" data-desc="spec-to-pr lite delivery orchestrator fsm. fast sequential spec → plan → implement → review → ship → fix-pr. invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. entry: github issue | azure devops work item | *.spec.md | plain text. flags: dry-run, auto, skip-tests, full. flags combine freely (e.g. full + auto + dry-run). inline execution in main session. dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md)." data-deps="ws-write-spec ws-write-plan ws-implement-tasks ws-code-review ws-ship-pr ws-fix-pr ws-goal-fix-pr github-provider azure-devops-provider local-spec-provider caveman gabarito karpathy-guidelines spec-format self-learning changelog configure-project" data-layer="layer-5" data-full="false" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/spec-to-pr-lite/SKILL.md" data-name="spec-to-pr-lite" data-slug="spec-to-pr-lite" data-desc="spec-to-pr lite delivery orchestrator fsm. fast sequential spec → plan → implement → review → ship → fix-pr. invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. entry: github issue | azure devops work item | *.spec.md | plain text. flags: dry-run, auto, skip-tests, full. flags combine freely (e.g. full + auto + dry-run). inline execution in main session. dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md)." data-deps="ws-write-spec ws-write-plan ws-implement-tasks ws-code-review ws-ship-pr ws-fix-pr ws-goal-fix-pr github-provider azure-devops-provider local-spec-provider caveman gabarito karpathy-guidelines spec-format self-learning changelog configure-project ws-spec-index" data-layer="layer-5" data-full="false" data-lite="true">
         <div class="skill-card-top">
           <div class="name">spec-to-pr-lite</div>
         <div class="skill-badges">
@@ -655,7 +655,7 @@
         </div>
         <div class="desc">Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr. Invoke: /spec-to-pr-lite | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text. Flags: dry-run, auto, skip-tests, full. Flags combine freely (e.g. full + auto + dry-run). Inline execution in main session. Dual-mode compatible with spec-to-pr (shared skills, shared/config.json, shared/gates.md).</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (17):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-write-plan">ws-write-plan</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (18):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-write-plan">ws-write-plan</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="github-provider">github-provider</span><span class="dep-pill" data-dep="azure-devops-provider">azure-devops-provider</span><span class="dep-pill" data-dep="local-spec-provider">local-spec-provider</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span><span class="dep-pill" data-dep="spec-format">spec-format</span><span class="dep-pill" data-dep="self-learning">self-learning</span><span class="dep-pill" data-dep="changelog">changelog</span><span class="dep-pill" data-dep="configure-project">configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/spec-to-pr-lite/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -667,6 +667,20 @@
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (5):</div><div class="deps-list"><span class="dep-pill" data-dep="spec-to-pr">spec-to-pr</span><span class="dep-pill" data-dep="spec-to-pr-lite">spec-to-pr-lite</span><span class="dep-pill" data-dep="caveman">caveman</span><span class="dep-pill" data-dep="gabarito">gabarito</span><span class="dep-pill" data-dep="karpathy-guidelines">karpathy-guidelines</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-multi-spec/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-index/SKILL.md" data-name="ws-spec-index" data-slug="ws-spec-index" data-desc="manage and sync progressive-disclosure project spec index (index.prd) and feature specs for consumer repos. use when initializing a project spec index (init), updating spec checkboxes and status after delivery or ship (sync), or promoting inbox ideas into planned specs (promote)." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-index</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Manage and sync progressive-disclosure project spec index (index.PRD) and feature specs for consumer repos. Use when initializing a project spec index (init), updating spec checkboxes and status after delivery or ship (sync), or promoting inbox ideas into planned specs (promote).</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-index/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
     </div>
@@ -706,9 +720,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 32 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 33 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, <code>ws-verify-plan</code>, … (+24)
+        <strong>Included core skills:</strong> <code>spec-to-pr</code>, <code>spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, <code>ws-verify-plan</code>, … (+25)
       </div>
     </div>
 
@@ -724,6 +738,8 @@
     </div>
   </div>
 </section>
+
+
 
 
 

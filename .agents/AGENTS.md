@@ -159,6 +159,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `changelog` | `skills/changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
 | `configure-project` | `skills/configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
 | `goal-loop` | `skills/goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
+| `ws-spec-index` | `skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 
 ### Review & audit (Workflows package)
 
@@ -189,6 +190,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Spec → PR end-to-end | `spec-to-pr` |
 | Spec → PR lite (sequential) | `spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
+| Project spec index init/sync/promote | `ws-spec-index` |
 | Fable Method 7-step loop | `fable-method` |
 | Adversarial audit / fraud scan | `fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `fable-domain` |
