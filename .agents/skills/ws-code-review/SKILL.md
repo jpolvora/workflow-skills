@@ -6,9 +6,10 @@
 
 
 
+
 name: ws-code-review
 description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.
-version: 0.0.98
+version: 0.0.99
 disable-model-invocation: true
 invocation_names:
   - code-review

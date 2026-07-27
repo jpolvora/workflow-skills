@@ -1,7 +1,13 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import cp from 'child_process';
 import { fileURLToPath } from 'url';
+import {
+  isBlockedInstallTarget,
+  findWorkflowSkillsSourceRoot,
+  isWorkflowSkillsSourceTree,
+} from '../bin/install-rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -110,6 +116,34 @@ console.log('\n[Phase 0] Self-overwrite protection...');
     fail(`Self-overwrite guard missing expected error message. Output:\n${combined}`);
   }
   ok('CLI refuses install when cwd is package root');
+}
+
+// --- Phase 0a: upstream auto-detect (remote npx into source repo) ---
+console.log('\n[Phase 0a] Upstream source auto-detect (remote npx guard)...');
+{
+  if (!isWorkflowSkillsSourceTree(parentDir)) {
+    fail('isWorkflowSkillsSourceTree should detect workflow-skills package root');
+  }
+  if (findWorkflowSkillsSourceRoot(parentDir) !== parentDir) {
+    fail('findWorkflowSkillsSourceRoot should resolve package root from cwd');
+  }
+  const fakeNpxCache = path.join(__dirname, '_fake-npx-cache');
+  if (isBlockedInstallTarget(parentDir, fakeNpxCache)) {
+    ok('Blocked when cwd is upstream root but CLI runs from npx cache path');
+  } else {
+    fail('Remote npx guard failed: install should be blocked in upstream root');
+  }
+  const testDir = path.join(parentDir, 'test');
+  if (!isBlockedInstallTarget(testDir, fakeNpxCache)) {
+    ok('Allowed when cwd is test/ consumer (remote npx simulation)');
+  } else {
+    fail('Remote npx guard should allow test/ consumer installs');
+  }
+  if (isBlockedInstallTarget(os.tmpdir(), fakeNpxCache)) {
+    fail('Remote npx guard should not block arbitrary consumer cwd');
+  } else {
+    ok('Arbitrary consumer cwd not blocked by upstream auto-detect');
+  }
 }
 
 // --- Phase 0b: dry-run / canonicity contract files ---

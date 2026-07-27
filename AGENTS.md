@@ -108,21 +108,36 @@ After edits under `.agents/skills/`, hubs, `docs/`, `bin/`, or installer inputs:
 1. Run **`ws-check-harness`** (Phases 0–5c) — see also § [Harness change protocol](#harness-change-protocol).
 2. Resolve **critical** findings before claim complete / merge.
 
-#### Before ship PR (package release checklist)
+#### Before ship PR — upstream `ws-ship-pr` mandatory gate (this repo only)
 
-When shipping changes that modify installable package content (skills, CLI, installer, shared hub templates, site catalog, dependency graph):
+**Scope:** `jpolvora/workflow-skills` package root only — not consumer projects.  
+**Trigger:** Every time an agent runs `ws-ship-pr` / `/ship-pr` here, Step 2 (Prepare to PR) **must** execute this checklist before commit, push, or PR creation. `ws-ship-pr` discovers it via root `AGENTS.md` (Prepare row 5). Any ❌ → STOP (no push/PR).
 
-| # | Step | Command / Skill | Purpose |
-|---|------|-----------------|---------|
-| 1 | **Tests** | `npm run test` | Run installer, integrity checks, and tree verification |
-| 2 | **Version Bump** | `npm run build-site:bump` | Increment `package.json` patch version once and stamp site footer |
-| 3 | **Integrity Digests** | `npm run generate-integrity` && `npm run verify-integrity` | Update and verify `bin/skill-integrity.json` checksums |
-| 4 | **Harness Audit** | `ws-check-harness` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | Ensure 0 critical harness errors |
-| 5 | **Clean Site Docs** | Verify `docs/index.html` | Confirm no git merge conflict markers exist |
-| 6 | **Hub Drift** | Sync `AGENTS.md` + `.agents/AGENTS.md` | Keep packaged hub indexes aligned |
-| 7 | **Ship & Converge** | `/ship-pr` | Commit, push, create PR, wait 30s for Action start, run `ws-goal-fix-pr` (300s) |
+Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PREPARE-CHECKLIST.md`](.agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md)).
 
-*Note*: CI deploy on `main` never bumps version; every upstream release PR must run `build-site:bump` and `generate-integrity` locally before push. `ws-ship-pr` automatically discovers this checklist during Step 2 preflight.
+| # | Check | Command / skill | When required |
+|---|-------|-----------------|---------------|
+| 1 | **Install tests** | `npm run test` (or `npm run tests -- --local` during dev) | Always — installer, integrity, tree verification |
+| 2 | **Website / catalog** | `npm run build-site:bump` when shipping package content; else `node bin/build-site.js` for catalog-only | Skills/hubs/CLI/installer changed → bump + rebuild `docs/index.html`; verify no merge-conflict markers |
+| 3 | **Version** | `package.json` patch bump via step 2; `bin/skill-dependencies.json` → `packageVersion` stays aligned | **CI deploy on `main` never bumps** — bump locally once per release PR before push |
+| 4 | **Installer (Node CLI)** | Review/fix `bin/cli.js`, `bin/install-rules.js` | Install/update/uninstall behavior or hub paths changed |
+| 5 | **Installer (npx + bash shim)** | `install-skills.sh` argv/help aligned with `bin/cli.js --help`; consumer docs in `README.md` if UX changed | Shim or npx surface changed |
+| 6 | **Skill dependency graph** | `bin/skill-dependencies.json` (+ `.agents/skills/ws-shared/skill-dependencies.json` when packaged graph ships) | Skills added/removed/renamed, package membership, or orch dispatch changed |
+| 7 | **Integrity digests** | `npm run generate-integrity` && `npm run verify-integrity` | Any hashed install content changed (`bin/skill-integrity.json` must exit 0 on `--check`) |
+| 8 | **Harness audit** | `ws-check-harness` Phases 0–5c → 0 critical | New/changed skills, hubs, routing, links, portability, en-us; Phase 3/4b must cover new skill ids and dependency graph |
+| 9 | **Workflow simulation** | `ws-check-workflows` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | Orchestrator FSM, step dispatch, gates, or simulation docs changed — 0 critical |
+| 10 | **Hub drift** | Sync root `AGENTS.md` + `.agents/AGENTS.md` (+ `ws-shared/AGENTS.md` when hub templates changed) | Routing tables or skill index changed |
+| 11 | **Human docs** | `README.md` when install/usage/safety narrative changed | Not required for skill-only doc fixes |
+| 12 | **Ship** | `ws-ship-pr` / `/ship-pr` after rows 1–11 are ✅ or justified ⏭ | Commit → push → create PR |
+| 13 | **Review convergence** | Wait **30s** after PR creation for code-review Action/CI to start, then `ws-goal-fix-pr` (default **300s** heartbeats per [`ws-ship-pr/GOAL-OVERRIDES.md`](.agents/skills/ws-ship-pr/GOAL-OVERRIDES.md)) until `activeThreads == 0` or escalate | Standalone ship-pr Step 6; orch Step 9 when `stopBeforeFixPr` |
+
+**Upstream skill integrity regenerate (step 7 detail):** Hashed paths include `.agents/skills/*` install tree, `bin/` installer inputs, and hub templates packed by the CLI. Regenerate and commit `bin/skill-integrity.json` in the **same** commit as content changes; `npm run generate-integrity` and `npm run verify-integrity` must exit 0 before ship.
+
+**Version bump (step 3 detail):** One patch bump per release PR (`npm run build-site:bump` stamps site footer + `package.json`). Do not rely on GitHub Actions to bump — Actions deploy site on `main` only.
+
+**Post-ship:** Do not merge while review threads are open or required checks are red. `ws-goal-fix-pr` owns the fix loop; `ws-ship-pr` merges only after convergence (unless `no-merge` / orch `stopBeforeFixPr`).
+
+*Note:* Consumers use [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) § Recommended Feature Delivery Checklist — not this table.
 
 ### Consumer CLI (install / update / uninstall)
 
@@ -228,8 +243,8 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 1. Ask the user whether to run **ws-check-harness** and whether **site** / **README** need updates.
-2. Evaluate: ws-check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR (dependency graph, integrity, version/catalog, hub drift).
-3. If the change affects hashed install content, run § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only) in the same commit (`npm run generate-integrity` + `npm run verify-integrity`).
+2. Evaluate: ws-check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR — upstream `ws-ship-pr` mandatory gate (dependency graph, integrity, version/catalog, hub drift).
+3. If the change affects hashed install content, run integrity regenerate in the same commit (`npm run generate-integrity` + `npm run verify-integrity`) — see § [Before ship PR — upstream `ws-ship-pr` mandatory gate](#before-ship-pr--upstream-ws-ship-pr-mandatory-gate-this-repo-only) step 7.
 
 ---
 
@@ -349,14 +364,15 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 ## Verification (before claim complete / commit)
 
-Upstream package root: full ordered checklist in § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR. Summary:
+Upstream package root: full ordered checklist in § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § [Before ship PR — upstream `ws-ship-pr` mandatory gate](#before-ship-pr--upstream-ws-ship-pr-mandatory-gate-this-repo-only). Summary:
 
 1. **Harness:** load `.agents/skills/ws-check-harness/SKILL.md` → Phases 0–5c
-2. **Install tests:** `npm run tests` · `npm run tests -- --local`
+2. **Install tests:** `npm run test` · `npm run tests -- --local`
 3. **Dependency graph:** if skills added/removed/renamed or orch dispatch changed → update `bin/skill-dependencies.json`; `ws-check-harness` Phase 3/4b must pass
-4. **Skill integrity:** if package-hashed content changed → § [Upstream skill integrity regenerate](#upstream-skill-integrity-regenerate-this-repo-only); always `npm run verify-integrity` (must exit 0) before claim complete / PR. Testing Step approval requires this green.
-5. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
-6. **Catalog / version:** if shipping package changes → § [Upstream PR version bump](#upstream-pr-version-bump-this-repo-only); else if only regenerating catalog → `node bin/build-site.js` (no bump). `package.json` ↔ footer must match; CI deploy never bumps.
+4. **Skill integrity:** if package-hashed content changed → `npm run generate-integrity` && `npm run verify-integrity` (must exit 0) before claim complete / PR
+5. **Workflow simulation:** `ws-check-workflows` when orch/gates/simulations changed
+6. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
+7. **Catalog / version:** if shipping package changes → `npm run build-site:bump`; else catalog-only → `node bin/build-site.js`. `package.json` ↔ footer must match; CI deploy never bumps.
 ---
 
 ## Local dry-run: agentic code reviewers

@@ -5,8 +5,9 @@
 
 
 
+
 name: ws-caveman
-version: 0.0.98
+version: 0.0.99
 description: >
   Ultra-compressed communication mode. Cuts output token usage ~75% while keeping full
   technical accuracy. Intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full,

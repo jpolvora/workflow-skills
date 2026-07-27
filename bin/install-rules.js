@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 /**
  * Shared installer include/skip rules — used by cli.js copy paths and skill-integrity hashing.
  * Keep copy and hash enumeration in lockstep; do not diverge these sets.
@@ -65,4 +68,66 @@ export function isConsumerOwnedEntry(entryName, isDirectory) {
   if (CONSUMER_OWNED_FILES.has(entryName)) return true;
   if (isDirectory && CONSUMER_OWNED_DIRS.has(entryName)) return true;
   return false;
+}
+
+/**
+ * True when `dir` is the workflow-skills upstream package root (authoring source).
+ * Used to block remote `npx` installs into this repo — packageRoot alone is insufficient
+ * because npx runs the CLI from a cache copy, not from cwd.
+ */
+export function isWorkflowSkillsSourceTree(dir) {
+  const root = path.resolve(dir);
+  const pkgPath = path.join(root, 'package.json');
+  const cliPath = path.join(root, 'bin', 'cli.js');
+  if (!fs.existsSync(pkgPath) || !fs.existsSync(cliPath)) return false;
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    if (pkg.name !== 'workflow-skills') return false;
+  } catch {
+    return false;
+  }
+  return (
+    fs.existsSync(path.join(root, 'bin', 'skill-dependencies.json')) ||
+    fs.existsSync(path.join(root, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json'))
+  );
+}
+
+/** Walk parents from startDir; return workflow-skills source root or null. */
+export function findWorkflowSkillsSourceRoot(startDir) {
+  let dir = path.resolve(startDir);
+  const fsRoot = path.parse(dir).root;
+  while (true) {
+    if (isWorkflowSkillsSourceTree(dir)) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir || dir === fsRoot) return null;
+    dir = parent;
+  }
+}
+
+/**
+ * Whether install/update/uninstall must refuse cwd.
+ * @param {string} cwd - consumer target directory
+ * @param {string} packageRoot - running CLI package root (local checkout or npx cache)
+ */
+export function isBlockedInstallTarget(cwd, packageRoot) {
+  const resolvedCwd = path.resolve(cwd);
+  const resolvedPackageRoot = path.resolve(packageRoot);
+  const packageTestDir = path.join(resolvedPackageRoot, 'test');
+
+  const isExactPackageRoot = resolvedCwd === resolvedPackageRoot;
+  const isUnderPackageRoot = resolvedCwd.startsWith(resolvedPackageRoot + path.sep);
+  const isPackageTestConsumer =
+    resolvedCwd === packageTestDir || resolvedCwd.startsWith(packageTestDir + path.sep);
+
+  if (isExactPackageRoot || (isUnderPackageRoot && !isPackageTestConsumer)) {
+    return true;
+  }
+
+  const sourceRoot = findWorkflowSkillsSourceRoot(resolvedCwd);
+  if (!sourceRoot) return false;
+
+  const sourceTestDir = path.join(sourceRoot, 'test');
+  const isSourceTestConsumer =
+    resolvedCwd === sourceTestDir || resolvedCwd.startsWith(sourceTestDir + path.sep);
+  return !isSourceTestConsumer;
 }

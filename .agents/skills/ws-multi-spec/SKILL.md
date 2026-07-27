@@ -4,8 +4,9 @@
 
 
 
+
 name: ws-multi-spec
-version: 0.0.98
+version: 0.0.99
 description: >-
   Sequential smart multi-spec batch delivery orchestrator. Evaluates spec complexity to dispatch ws-spec-to-pr or ws-spec-to-pr-lite workers.
   Invoke: /ws-multi-spec | @[ws-multi-spec].

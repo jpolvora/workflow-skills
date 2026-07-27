@@ -5,9 +5,10 @@
 
 
 
+
 name: ws-implement-tasks
 description: Executes code implementations or fixes defects following a plan, DAG, or review findings.
-version: 0.0.98
+version: 0.0.99
 disable-model-invocation: true
 invocation_names:
   - implement-tasks

@@ -15,6 +15,8 @@ import {
   SKIP_INSTALL_FILES,
   shouldSkipInstallEntry,
   isConsumerOwnedEntry,
+  isBlockedInstallTarget,
+  findWorkflowSkillsSourceRoot,
 } from './install-rules.js';
 import {
   MANIFEST_REL,
@@ -510,19 +512,20 @@ function ensureSharedHubInstalled(mode = 'install') {
 function assertNotSelfOverwrite() {
   const cwd = path.resolve(targetDir);
   const root = path.resolve(packageRoot);
-  const testDir = path.resolve(packageRoot, 'test');
 
-  const isExactRoot = cwd === root;
-  const isUnderRoot = cwd.startsWith(root + path.sep);
-  const isTestConsumer = cwd === testDir || cwd.startsWith(testDir + path.sep);
+  if (!isBlockedInstallTarget(cwd, root)) return;
 
-  if (isExactRoot || (isUnderRoot && !isTestConsumer)) {
-    console.error('Error: Refusing to install into the workflow-skills source repository.');
-    console.error(`  Package root: ${root}`);
-    console.error(`  Current dir:  ${cwd}`);
-    console.error('Run this command from a consumer project, or from the test/ folder.');
-    process.exit(1);
+  const sourceRoot = findWorkflowSkillsSourceRoot(cwd);
+  console.error('Error: Refusing to install into the workflow-skills source repository.');
+  console.error(`  CLI package:  ${root}`);
+  console.error(`  Current dir:  ${cwd}`);
+  if (sourceRoot && sourceRoot !== root) {
+    console.error(`  Detected upstream source root at: ${sourceRoot}`);
+    console.error('  Remote npx cannot install into the canonical upstream repo.');
   }
+  console.error('Run this command from a consumer project, or from the test/ folder.');
+  console.error('Upstream maintainers: use `node bin/cli.js` locally (not npx) under test/ only.');
+  process.exit(1);
 }
 
 function getLocalVersion() {
@@ -1351,7 +1354,7 @@ async function runUninstall(_upstreamSkills, argv) {
 
   console.log('');
   console.log(`Uninstalled ${removedCount} skill folder(s). Manifest now lists ${keep.length} skill(s).`);
-  console.log(`Note: shared/ (${CONFIG_FILE}, MEMORY.md, STACK.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
+  console.log(`Note: ws-shared/ (${CONFIG_FILE}, MEMORY.md, STACK.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
   process.exit(0);
 }
 

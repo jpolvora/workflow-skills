@@ -1,12 +1,13 @@
 ---
 
+
 name: ws-senior-developer
 description: >
   Guide engineering delivery for non-trivial changes, including plan confirmation,
   implementation constraints, and pre-ship proof. Default rules.seniorDeveloper
   delivery gate; autoloaded via hub skill loading. Set rules.seniorDeveloper to ""
   in config.json to disable.
-version: 0.0.98
+version: 0.0.99
 invocation_names:
   - senior-developer
   - ws-senior-developer
