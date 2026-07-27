@@ -5,10 +5,10 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "708bef29f957166a3288a76f13af6f544c44ec389707e177f17fcbd515b271c6",
+  "fullPackageDigest": "f9f77bc49596709ed73ca58ae4a15925c513d63e18796062e8f3fd0d39a7f76d",
   "hub": {
     "files": {
-      "AGENTS.md": "701039bd5871c987b5218e7600c9ac1d0c3b55adb0356864dacebc4f3917ee3d",
+      "AGENTS.md": "9074482cc151f211c7b33465f4de4a1e58a70d622039797588a43b9341ee86c7",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "config-resolution.md": "fdc91195189dc6f340a1c119ce82beac73a6d29b34671b964530b62ca283040b",
       "config.json.example": "21a7d5c77723753f6d256ce972d288ca9ccaa5064ea683afa406b79955d0c05c",
@@ -16,12 +16,12 @@
       "gates.md": "890ba3abe2f8bd216365879af06c2a8161baaa5faf246c5efab069a1d2fd013b",
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "0eeb41a64215f3966d4733fab25a2d5b8ca0603efc8a281d5d2e03fcba263cf0",
-      "setup.md": "abcd16c5e69ee67bb4b339e907196232aff58982a980ecdcfd2e39062846eb7b",
+      "setup.md": "ea2833e912ccfc83cbc813ee0af91e5dae556383922945dc206a55fa2719412d",
       "skill-dependencies.json": "ccd39fe03ca3f39fb3b5a066ad1ce9a4cbb7be6f4c6c2ee577c749daf4aacb5a",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "bbca2680a91598435abdc2803ce387352b6e40144eb632cdc96459fc22044f8b"
     },
-    "skillDigest": "c503454c9c77cec0ac9a24f6e60a0ed129688d2498377af3e9d66484862bb430"
+    "skillDigest": "3217c806426e776b034ea3102975e6d2562ffb67e9aff47aed0c669d668d0cd8"
   },
   "packageVersion": "0.0.97",
   "skills": {
@@ -53,11 +53,11 @@
     "ws-check-harness": {
       "files": {
         "evals/evals.json": "ce38c0d26016208ae27eb944d21de285fdb3bd486bbb23ec5074b17d315b4b32",
-        "PHASES.md": "6cc140b77385b933ffb6459fdf4080ece0d484fcff25286a1c7ccbeb75e4f159",
+        "PHASES.md": "42e528516cff2b60b558e64b8f499b6b6cf160752c9818c149c504233de0faf4",
         "REPORT-FORMAT.md": "41b0db56ad4c014eb4e87198615ac40541c615c5d2c533523a94598a5778cbdf",
         "SKILL.md": "52d4686b4c713a31f5a630583159409b3146c0719f72042c00fc5335ed21e0aa"
       },
-      "skillDigest": "67690057f68cf3f5c1376dea29c9ff18767513eaaf67e648ef4833af2dd8232d"
+      "skillDigest": "d040aaf010f3b22ec449fce7a81025159f58ec190135c262a6d4eee49c501275"
     },
     "ws-check-workflows": {
       "files": {

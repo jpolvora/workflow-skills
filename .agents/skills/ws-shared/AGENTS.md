@@ -55,16 +55,26 @@
 | `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) | Every task completion |
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
-| `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) | Every prompt — engineering delivery gate |
+
+### Consumer root override (dual-hub)
+
+Default **shared hub only** (typical consumer install): `ws-senior-developer` is **on-demand** — opt in via `rules.seniorDeveloper` or explicit invoke; it is **not** in the mandatory autoload table above.
+
+Some consumers add a **root** `AGENTS.md` (installer never writes it) that promotes `ws-senior-developer` to per-prompt autoload (engineering delivery gate). That is an **intentional consumer override**, not a shared-hub defect.
+
+When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
+
+See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGENTS.md` (dogfood example of root autoload).
 
 ### Precedence (highest first)
 
 1. Explicit user instructions (current turn)
-2. Design / spec / architecture constraints
-3. `ws-karpathy-guidelines`
-4. `ws-gabarito`
-5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
-6. `ws-caveman` (compression only; keep technical accuracy)
+2. Consumer root `AGENTS.md` when present (skill loading + precedence — overrides shared-hub opt-in defaults)
+3. Design / spec / architecture constraints
+4. `ws-karpathy-guidelines`
+5. `ws-gabarito`
+6. `ws-senior-developer` when autoloaded (root hub or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
+7. `ws-caveman` (compression only; keep technical accuracy)
 
 ### Opt-out
 
@@ -72,6 +82,7 @@
 |--------|--------|
 | `stop ws-caveman` / `normal mode` | Disable ws-caveman |
 | `stop ws-gabarito` / `sem ws-gabarito` | Disable ws-gabarito |
+| `stop ws-senior-developer` | Disable ws-senior-developer when autoloaded |
 | `/ws-caveman lite\|full\|ultra\|…` | Intensity |
 
 ---
@@ -134,7 +145,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Fable Method 7-step loop | `ws-fable-method` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
-| Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload; opt out via `stop ws-senior-developer` or unset `rules.seniorDeveloper`) |
+| Engineering delivery gate / Code review proof | `ws-senior-developer` (default on-demand; opt in via `rules.seniorDeveloper`; root `AGENTS.md` may autoload — see § Consumer root override) |
 | Fill / update `config.json` | `ws-configure-project` |
 | Audit harness | `ws-check-harness` |
 | Check workflows | `ws-check-workflows` |
@@ -199,7 +210,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` (default `.agents/skills/ws-senior-developer/SKILL.md`; set `""` to disable) → local skill (`senior-developer/SKILL.md`) → global/user skill |
+| `senior-developer` | `config.json` → `rules.seniorDeveloper` (set path to opt in; default on-demand in shared hub) → local skill (`senior-developer/SKILL.md`) → global/user skill. Root `AGENTS.md` may autoload — see § Consumer root override |
 | `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `../ws-karpathy-guidelines/SKILL.md` → global skill |
 | Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/ws-shared/STACK.md`) — consumer-owned under `ws-shared/` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |

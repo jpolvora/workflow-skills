@@ -192,19 +192,26 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Every task completion |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
-| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate |
+| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate (upstream dogfood) |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
 **Upstream dogfood (this repo):** The `ws-karpathy-guidelines` / `ws-gabarito` / `ws-caveman` trio is **recommended every session** when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers receive these skills on install but need not autoload them; [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) documents the consumer contract.
 
+### Dual-hub precedence (root override)
+
+This **root** hub autoloads `ws-senior-developer` for upstream dogfood. The installed **ws-shared** hub ([`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)) treats it as **on-demand** by default (opt in via `rules.seniorDeveloper`).
+
+Consumers may add their own root `AGENTS.md` with the same override pattern. When root and ws-shared hubs both load, **root hub** skill-loading and precedence sections win for autoload decisions. This is intentional — not a harness drift defect. See ws-shared § Consumer root override.
+
 ### Precedence (highest first)
 
 1. Explicit user instructions (current turn)
-2. Design / spec / architecture constraints
-3. `ws-karpathy-guidelines`
-4. `ws-gabarito`
-5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
-6. `ws-caveman` (compression only; keep technical accuracy)
+2. This root `AGENTS.md` when present (skill loading + precedence — overrides ws-shared opt-in defaults; see § Dual-hub precedence)
+3. Design / spec / architecture constraints
+4. `ws-karpathy-guidelines`
+5. `ws-gabarito`
+6. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
+7. `ws-caveman` (compression only; keep technical accuracy)
 
 ### Opt-out
 
@@ -308,7 +315,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Write a spec | `ws-write-spec` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
-| Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload; opt out via `stop ws-senior-developer` or unset `rules.seniorDeveloper`) |
+| Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload in this root hub; ws-shared default on-demand — see § Dual-hub precedence) |
 | Verify | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `ws-secrets-leak-review` |

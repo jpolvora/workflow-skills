@@ -88,8 +88,12 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `ws-karpathy-guidelines` | `skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `ws-changelog` | `skills/ws-changelog/SKILL.md` | Every task completion |
 | `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
-| `ws-senior-developer` | `skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate |
+| `ws-senior-developer` | `skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate (upstream authoring hub) |
 | `using-superpowers` | `(global — not shipped)` | Session start — skill discovery |
+
+### Dual-hub note (upstream authoring)
+
+Packaged consumer hub [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md) treats `ws-senior-developer` as **on-demand** by default. This packaged index and root `AGENTS.md` may **autoload** it for upstream dogfood. When both hubs load, root hub precedence wins — intentional override; see ws-shared § Consumer root override. Do not flag as drift in harness audits.
 
 ### Precedence (highest first)
 
@@ -202,7 +206,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Write a spec | `ws-write-spec` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement / fix code | `ws-implement-tasks` |
-| Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload; opt out via `stop ws-senior-developer` or unset `rules.seniorDeveloper`) |
+| Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload in upstream root; ws-shared default on-demand) |
 | Verify against plan | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Testing pre-PR | `ws-testing` |

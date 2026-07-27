@@ -25,6 +25,7 @@ Detect install mode before routing audits (summary also in `SKILL.md`):
 - Pipeline / orch / provider skills may be intentionally omitted from the promoted table when the hub marks them orch-only.
 - Sections titled **Extra package (optional)**: missing Extra skill paths are **intentional omission**. When Extra skills **are** on disk, they must appear in that section (else unrouted warning).
 - Phase 5b sprawl on managed upstream skills → **Upstream debt (informational)**; do **not** count toward consumer “Problems found” unless the user asked to optimize those skills.
+- **Dual-hub `ws-senior-developer`:** When consumer root `AGENTS.md` autoloads `ws-senior-developer` while `ws-shared/AGENTS.md` documents on-demand opt-in, treat as **intentional consumer override** — not hub drift, not a correction-plan item. Same when upstream root `AGENTS.md` autoloads for dogfood while ws-shared stays opt-in default.
 
 ## Path token expand algorithm
 
