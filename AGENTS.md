@@ -78,15 +78,15 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 
 #### Recommended DX autoload (upstream dogfood)
 
-In **this repo**, load every session for authoring quality:
+In **this repo only** (development), load every session for authoring quality:
 
 | Skill | Why |
 |-------|-----|
 | `ws-karpathy-guidelines` | Surgical scope; no drive-by refactors |
-| `ws-tdah` | Action-first replies + operational judgment (opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`; retired `stop ws-gabarito` / `sem ws-gabarito`) |
+| `ws-tdah` (`/ws-tdah`) | Action-first replies + operational judgment (opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`; retired `stop ws-gabarito` / `sem ws-gabarito`) |
 | `ws-senior-developer` | Engineering delivery gate and pre-ship proof |
 
-These ship to consumers but are **not required** on consumer projects — consumer hubs may treat them as optional recommendations.
+These ship to consumers but are **not autoloaded** by default on consumer projects (`ws-shared` keeps `ws-tdah` / `ws-senior-developer` on-demand).
 
 #### Start work
 
@@ -201,18 +201,18 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Every prompt — `/ws-tdah` action-first shape + judgment (**upstream development only**) |
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Every task completion |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 | `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate (upstream dogfood) |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
-**Upstream dogfood (this repo):** The `ws-karpathy-guidelines` / `ws-tdah` duo is **recommended every session** when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers receive these skills on install but need not autoload them; [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) documents the consumer contract.
+**Upstream dogfood (this repo only):** Autoload `/ws-tdah` + `ws-karpathy-guidelines` (+ `ws-senior-developer`) every session when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers get the skills on install but **do not** autoload `ws-tdah` from [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) (on-demand via `/ws-tdah` / `start ws-tdah`).
 
 ### Dual-hub precedence (root override)
 
-This **root** hub autoloads `ws-senior-developer` for upstream dogfood. The installed **ws-shared** hub ([`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)) treats it as **on-demand** by default (opt in via `rules.seniorDeveloper`).
+This **root** hub autoloads `ws-tdah` and `ws-senior-developer` for upstream development dogfood. The installed **ws-shared** hub ([`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)) treats both as **on-demand** by default (`ws-tdah` via invoke; `ws-senior-developer` via `rules.seniorDeveloper`).
 
 Consumers may add their own root `AGENTS.md` with the same override pattern. When root and ws-shared hubs both load, **root hub** skill-loading and precedence sections win for autoload decisions. This is intentional — not a harness drift defect. See ws-shared § Consumer root override.
 
@@ -300,7 +300,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Notes |
 |-------|------|-------|
-| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Autoload (shape + judgment) |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Autoload upstream only (`/ws-tdah`; consumer on-demand) |
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Autoload |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |

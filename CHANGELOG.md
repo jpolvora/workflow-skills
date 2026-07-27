@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-07-27 12:45] Agent: Cursor Grok 4.5
+- **Prompt**: Add `/ws-tdah` autoload in root AGENTS.md (development only)
+- **Done**: Root + packaged hubs keep Every-prompt `/ws-tdah`; `ws-shared` mandatory table drops it (on-demand invoke)
+- **Result**: Development dogfood autoload; consumers opt in via `/ws-tdah`
+
 ### [2026-07-27 11:52] Agent: Cursor Grok 4.5
 - **Prompt**: Commit all + ship/release — full prepare checklist (`/ws-ship-pr`, `/ws-goal-fix-pr`)
 - **Done**: Release `0.0.100` — `ws-tdah` replaces caveman/gabarito; Step 6 fix→re-review (max 3); harness corrections; site/integrity/tests green

@@ -5,10 +5,10 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "3844df7ae1d1c7892bb4e076a3c0aa91cdcb353b5c8ec1bf20ccbe57e352239d",
+  "fullPackageDigest": "32023d5db2c0b3e3ee3436386fe0001be7c97e542833d2d47a8085909508af17",
   "hub": {
     "files": {
-      "AGENTS.md": "83e61bab4926f4ab4d6584f5ef5ac7dc4016f8d5016751246471da06f3104331",
+      "AGENTS.md": "b0d5766cd2c6aa0c2e1fb755b71eb1820e83ff02bd52b4d126de802df6b495bf",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "config-resolution.md": "fdc91195189dc6f340a1c119ce82beac73a6d29b34671b964530b62ca283040b",
       "config.json.example": "21a7d5c77723753f6d256ce972d288ca9ccaa5064ea683afa406b79955d0c05c",
@@ -21,7 +21,7 @@
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "bbca2680a91598435abdc2803ce387352b6e40144eb632cdc96459fc22044f8b"
     },
-    "skillDigest": "e32ab1cedc4857b89c53c9037f15acc7340e93b44ffc192c18e85271b07fbd4e"
+    "skillDigest": "13dc64b34ba08793e86e320fb30c83f3b8d63276c41b7f6d31b11504ffefd077"
   },
   "packageVersion": "0.0.100",
   "skills": {
