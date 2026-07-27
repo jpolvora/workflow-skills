@@ -50,8 +50,7 @@
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-caveman` | [`../ws-caveman/SKILL.md`](../ws-caveman/SKILL.md) | Every prompt — compression |
-| `ws-gabarito` | [`../ws-gabarito/SKILL.md`](../ws-gabarito/SKILL.md) | Every prompt — operational guidelines |
+| `ws-tdah` | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) | Every prompt — action-first shape + judgment |
 | `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) | Every task completion |
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
@@ -72,18 +71,17 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 2. Consumer root `AGENTS.md` when present (skill loading + precedence — overrides shared-hub opt-in defaults)
 3. Design / spec / architecture constraints
 4. `ws-karpathy-guidelines`
-5. `ws-gabarito`
-6. `ws-senior-developer` when autoloaded (root hub or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
-7. `ws-caveman` (compression only; keep technical accuracy)
+5. `ws-senior-developer` when autoloaded (root hub or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
+6. `ws-tdah` (action-first shape + judgment; still below karpathy/senior)
 
 ### Opt-out
 
 | Phrase | Effect |
 |--------|--------|
-| `stop ws-caveman` / `normal mode` | Disable ws-caveman |
-| `stop ws-gabarito` / `sem ws-gabarito` | Disable ws-gabarito |
+| `stop ws-tdah` / `stop verbosity` / `normal mode` | Disable ws-tdah |
+| `stop ws-gabarito` / `sem ws-gabarito` | Same disable (retired alias) |
 | `stop ws-senior-developer` | Disable ws-senior-developer when autoloaded |
-| `/ws-caveman lite\|full\|ultra\|…` | Intensity |
+| `/ws-tdah` · `/tdah` · `start ws-tdah` · `start ws-gabarito` | Activate (single default mode) |
 
 ---
 
@@ -93,8 +91,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 
 | Skill | Path |
 |-------|------|
-| `ws-caveman` | [`../ws-caveman/SKILL.md`](../ws-caveman/SKILL.md) |
-| `ws-gabarito` | [`../ws-gabarito/SKILL.md`](../ws-gabarito/SKILL.md) |
+| `ws-tdah` | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) |
 | `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) |
 | `ws-fable-method` | [`../ws-fable-method/SKILL.md`](../ws-fable-method/SKILL.md) |
 | `ws-fable-domain` | [`../ws-fable-domain/SKILL.md`](../ws-fable-domain/SKILL.md) |

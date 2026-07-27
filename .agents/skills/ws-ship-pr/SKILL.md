@@ -6,9 +6,10 @@
 
 
 
+
 name: ws-ship-pr
 description: End-to-end delivery — SCM-agnostic (reads config.json providers.scm for GitHub, Azure DevOps / ADO, or configured SCM). Prepare-to-PR checklist (discover+wait for local consumer rules), push/create PR, wait 30s for code-review/CI actions to start on SCM infrastructure, run ws-goal-fix-pr (default 300s) until clean, then merge (unless stopBeforeFixPr / no-merge).
-version: 0.0.99
+version: 0.0.100
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -62,8 +63,8 @@ Before executing, restate commit title, head/base, SCM provider (read from `conf
 2. **Prepare to PR (goal)**: load [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Drive coverage → build → tests → security → **consumer prepare discovery** (scan local `AGENTS.md` / `{sharedDir}/AGENTS.md` / `rules.*` / ship docs for prepare or before-push/publish/deliver steps; **wait** until those obligations complete) until every required row is ✅/⏭. Show the board to the user after each item and before shipping. Credit orch Steps 6–7 only with cited evidence for the **current** tree. STOP on any ❌ — including unfinished discovered local prepare steps.
    - Done when: board shown; scan evidence recorded for row 5; all required rows ✅/⏭.
 
-3. **Code-review loop**: skip if already reviewed under `ws-spec-to-pr` Step 6 or `ws-spec-to-pr-lite` Step 3 (record on board). Otherwise load [ws-code-review](../ws-code-review/SKILL.md) against `base` and auto-fix Critical/Warning findings, up to 3 iterations.
-   - Done when: review clean, 3-iteration cap reached, or skipped with evidence.
+3. **Code-review loop**: skip if already reviewed under `ws-spec-to-pr` Step 6 or `ws-spec-to-pr-lite` Step 3 (record on board). Otherwise load [ws-code-review](../ws-code-review/SKILL.md) against `base` and run the fix → re-review loop for Critical/Warning (max 3 rounds; Pause on residual).
+   - Done when: review clean, Pause after 3-iteration cap with residual documented, or skipped with evidence.
 
 4. **Commit & push**: only after Step 2 is green. Commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {workingBranch}`. Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.

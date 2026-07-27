@@ -1,15 +1,8 @@
 ---
 
-
-
-
-
-
-
-
 name: ws-code-review
 description: Senior code reviewer — two-phase triage and investigation with defect class generalization. Standalone or workflow Step 6.
-version: 0.0.99
+version: 0.0.100
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -30,24 +23,40 @@ Standalone:
 /code-review [base=<ref>] [plan=<plan-path>]
 ```
 
-Workflow (ws-spec-to-pr Step 6): dispatched automatically, receives `base` and `planPath` from orchestrator state.
+Workflow (ws-spec-to-pr Step 6 / lite Step 3): dispatched automatically, receives `base` and `planPath` from orchestrator state.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `base` | `origin/main`/`origin/master` (auto-detected) | Git ref to diff against |
 | `plan` | (optional) | `step-02-*.plan.refined.md` or `step-01-*.plan.md` to cross-reference planned changes |
 
-## Conditional fix substep (workflow)
+## Fix → re-review loop (workflow)
 
-Fix is not its own workflow step. After this skill returns:
+Fix is not its own workflow step. **Do not advance with open Critical/Warning** — clear them in this step so defects do not accumulate downstream.
 
-| Case | Orchestrator behavior |
-|------|----------------------|
-| Clean (no Critical/Warning) | Completes Step 6; advances to Step 7 |
-| Critical or Warning findings | Dispatches [ws-implement-tasks](../ws-implement-tasks/SKILL.md) `mode=fix`, optional targeted re-review, then completes Step 6 |
-| User declines fix | Logs skip; advances with findings (or pauses) |
+| Case | Behavior |
+|------|----------|
+| Clean (no Critical/Warning) | Complete Step 6 / lite Step 3; Advance |
+| Critical or Warning findings | Run **fix → re-review** rounds until clean or max rounds |
+| Suggestions only | Optional one fix pass; do not block Advance |
+| Residual Critical/Warning after max rounds | **Pause** (fail closed) — do not Advance |
 
-Log `review-fix` in gate history; do not add a separate `completedSteps` entry for the fix substep. Standalone `/code-review`: apply fixes inline after user confirms (Step 8 below).
+**Round loop (max 3):**
+
+1. Dispatch [ws-implement-tasks](../ws-implement-tasks/SKILL.md) `mode=fix` against current findings (include Suggestions in the same surgical pass when fixing).
+2. Targeted re-review of touched scope (Steps 1–6 below, focused on prior findings + new regressions).
+3. Update `step-06-{slug}.review.md` (and append round notes to `step-06-{slug}.fix.report.md`).
+4. **State / memory each round:** log `review-fix | round={n}/3 | fixed=… | remaining=…` in gate history; append traps/gaps to `## Workflow memory` in state; when a durable anti-regression trap appears, write via [ws-self-learning](../ws-self-learning/SKILL.md) (or `Learning: N/A` if none).
+5. Exit when no Critical/Warning remain, else continue until round 3.
+
+**Modes:**
+
+| Mode | Gate / auto |
+|------|-------------|
+| Interactive | Gate after first report: **Apply fixes and re-review** (Recommended) / **Pause**. Do not offer “Proceed without fixing” while Critical/Warning remain. |
+| `autoMode` | Autofix without asking; same max **3** rounds; residual Critical/Warning → Pause |
+
+Log `review-fix` in gate history; do not add a separate `completedSteps` entry for the fix substep. Standalone `/code-review`: same loop after user confirms Apply fixes (Step 8).
 
 ## Steps
 
@@ -67,19 +76,19 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
    - Done when: the pattern sweep ran and results are reported.
 
 6. **Check invariants**: cross-check `config.json.invariants` / `config.json.rules`: tenancy filters, DB-migrations-CLI-only, domain rules, React hook cleanup/dependency arrays, and i18n keys present in every locale from `config.json.stack.frontend.i18n.locales[]`.
-   - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) to perform adversarial audit for the 4 classic frauds (Weakened Checks, False Completion, Scope Creep, Unauthorized Action). Report detected frauds as Critical or Warning findings to trigger `ws-implement-tasks mode=fix`.
+   - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) to perform adversarial audit for the 4 classic frauds (Weakened Checks, False Completion, Scope Creep, Unauthorized Action). Report detected frauds as Critical or Warning findings so the fix → re-review loop runs.
    - Done when: each applicable checklist item is checked.
 
-7. **Write report**: save `step-06-{slug}.review.md`. No findings: write `No feedback` and stop. Findings: use severity sections Critical / Warning / Suggestion, each with `path:L#`, description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?**.
+7. **Write report**: save `step-06-{slug}.review.md`. No findings: write `No feedback` and stop (clean). Findings: use severity sections Critical / Warning / Suggestion, each with `path:L#`, description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?** (workflow: answer follows the loop table above).
    - Done when: the report file matches the format described above.
 
-8. **Apply fixes (standalone only)**: after the user answers YES, apply surgical fixes, run `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` if UI logic touched), and report the outcome in `step-06-{slug}.fix.report.md` when a plan directory exists. Under workflow, the orchestrator owns this via `ws-implement-tasks` instead.
-   - Done when: fixes are applied and verification commands ran, or this step was skipped under workflow.
+8. **Apply fixes + re-review**: under workflow (and standalone after YES), run the fix → re-review loop (max 3). Each round: surgical fixes via `ws-implement-tasks` `mode=fix`, run `build-backend`, `test-backend`, `build-frontend` (+ `test-frontend` if UI logic touched), re-review, update `step-06-{slug}.fix.report.md`, record state/memory. Stop when clean or after round 3 with Pause on residual Critical/Warning.
+   - Done when: no Critical/Warning remain, or Pause after max rounds with residual findings documented.
 
 ## Rules of engagement
 
 - Precision before volume: include only findings with complete evidence, no speculative comments.
-- Convergence goal: one report round covering all issues; avoid review loops.
+- Convergence goal: clear Critical/Warning before Advance; use fix → re-review (max 3), not a single drive-by report.
 - Do not commit: changes stay in the working tree for the orchestrator or developer to stage.
 
 Language: en-us only.

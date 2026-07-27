@@ -110,9 +110,8 @@ Otherwise — **correction plan** (mandatory before editing):
 ```
 AGENTS.md
     ├── senior-developer (resolve via config / External Dependencies — optional)
-    ├── ws-gabarito/SKILL.md (auto)
+    ├── ws-tdah/SKILL.md (auto)
     ├── ws-karpathy-guidelines/SKILL.md (auto)
-    ├── ws-caveman/SKILL.md (auto)
     ├── optional rules from config.json.rules.* (when set)
     └── MEMORY.md (session start, before first implementation)
 ```

@@ -31,7 +31,7 @@ Never write workflow state under `.agents/`.
 | DAG | `step-03-{slug}.exec.dag.json` | Step 3 | No |
 | Check-implementation report | `step-05-{slug}.plan.report.md` | Step 5 | No |
 | Code review | `step-06-{slug}.review.md` | Step 6 | No |
-| Review fix report | `step-06-{slug}.fix.report.md` | Step 6 fix substep | No |
+| Review fix report | `step-06-{slug}.fix.report.md` | Step 6 fix → re-review loop | No |
 | Testing plan | `step-07-{slug}.testing.plan.md` | Step 7 | No |
 | Testing report | `step-07-{slug}.testing.report.md` | Step 7 | No |
 | Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** |
@@ -88,7 +88,7 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 | 3 | `ws-plan-to-tasks` |
 | 4 | `ws-implement-tasks` (build) |
 | 5 | `ws-verify-plan` |
-| 6 | `ws-code-review` (+ conditional `ws-implement-tasks` fix substep) |
+| 6 | `ws-code-review` (+ `ws-implement-tasks` fix → re-review, max 3) |
 | 7 | `ws-testing` (Testing) |
 | 8 | `ws-ship-pr` (delivery + push/PR; no terminal goal-fix) |
 | 9 | `ws-fix-pr` / `ws-goal-fix-pr` |

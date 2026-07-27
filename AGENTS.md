@@ -83,8 +83,7 @@ In **this repo**, load every session for authoring quality:
 | Skill | Why |
 |-------|-----|
 | `ws-karpathy-guidelines` | Surgical scope; no drive-by refactors |
-| `ws-gabarito` | Operational rigor and verification discipline |
-| `ws-caveman` | Compression (opt out via `stop ws-caveman` / `normal mode`) |
+| `ws-tdah` | Action-first replies + operational judgment (opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`; retired `stop ws-gabarito` / `sem ws-gabarito`) |
 | `ws-senior-developer` | Engineering delivery gate and pre-ship proof |
 
 These ship to consumers but are **not required** on consumer projects — consumer hubs may treat them as optional recommendations.
@@ -184,7 +183,7 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 | `ws-plan-to-tasks` | 3 | DAG tasks |
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
 | `ws-verify-plan` | 5 | Check-implementation (spec score) |
-| `ws-code-review` | 6 | Local review (+ conditional fix) |
+| `ws-code-review` | 6 | Local review (fix → re-review, max 3) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage) |
 | `ws-ship-pr` | 8 | Delivery commit + push/PR |
 | `ws-fix-pr` | 9 | PR thread fix |
@@ -202,15 +201,14 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-caveman` | `.agents/skills/ws-caveman/SKILL.md` | Every prompt — compression |
-| `ws-gabarito` | `.agents/skills/ws-gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Every task completion |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 | `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate (upstream dogfood) |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
-**Upstream dogfood (this repo):** The `ws-karpathy-guidelines` / `ws-gabarito` / `ws-caveman` trio is **recommended every session** when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers receive these skills on install but need not autoload them; [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) documents the consumer contract.
+**Upstream dogfood (this repo):** The `ws-karpathy-guidelines` / `ws-tdah` duo is **recommended every session** when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers receive these skills on install but need not autoload them; [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) documents the consumer contract.
 
 ### Dual-hub precedence (root override)
 
@@ -224,17 +222,16 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 2. This root `AGENTS.md` when present (skill loading + precedence — overrides ws-shared opt-in defaults; see § Dual-hub precedence)
 3. Design / spec / architecture constraints
 4. `ws-karpathy-guidelines`
-5. `ws-gabarito`
-6. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
-7. `ws-caveman` (compression only; keep technical accuracy)
+5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
+6. `ws-tdah` (action-first shape + judgment; still below karpathy/senior)
 
 ### Opt-out
 
 | Phrase | Effect |
 |--------|--------|
-| `stop ws-caveman` / `normal mode` | Disable ws-caveman |
-| `stop ws-gabarito` / `sem ws-gabarito` | Disable ws-gabarito |
-| `/ws-caveman lite\|full\|ultra\|…` | Intensity |
+| `stop ws-tdah` / `stop verbosity` / `normal mode` | Disable ws-tdah |
+| `stop ws-gabarito` / `sem ws-gabarito` | Same disable (retired alias) |
+| `/ws-tdah` · `/tdah` · `start ws-tdah` · `start ws-gabarito` | Activate (single default mode) |
 
 ---
 
@@ -250,7 +247,7 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 ## Skill catalog (layers)
 
-> **Drift check (dual scope):** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Packaged [`.agents/AGENTS.md`](.agents/AGENTS.md) scopes its Skill index and Task router to the **Workflows package** (31 skills) so Workflows-only consumer installs avoid phantom routes; Extra-package skills appear there only under `### Extra package (optional)`.
+> **Drift check (dual scope):** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Packaged [`.agents/AGENTS.md`](.agents/AGENTS.md) scopes its Skill index and Task router to the **Workflows package** (34 skills) so Workflows-only consumer installs avoid phantom routes; Extra-package skills appear there only under `### Extra package (optional)`.
 
 ### Layer 0 — Harness
 
@@ -303,8 +300,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Notes |
 |-------|------|-------|
-| `ws-caveman` | `.agents/skills/ws-caveman/SKILL.md` | Autoload |
-| `ws-gabarito` | `.agents/skills/ws-gabarito/SKILL.md` | Autoload |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Autoload (shape + judgment) |
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Autoload |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |

@@ -663,48 +663,36 @@ const EVALS = {
       },
     ],
   },
-  'caveman': {
+  'ws-tdah': {
     evals: [
       {
         id: 1,
-        prompt: '/caveman explain why JWT refresh fails intermittently',
-        expected_output: 'Terse technical answer; articles and filler dropped.',
+        prompt: '/ws-tdah explain why JWT refresh fails intermittently',
+        expected_output: 'Leads with next action; unverbose; ends with one concrete next step.',
         assertions: [
-          'Response is compressed vs normal prose',
+          'Leads with next action; no preamble',
           'Technical terms and code remain exact',
-          'Still answers the question accurately',
+          'Ends with one concrete next step',
         ],
       },
       {
         id: 2,
-        prompt: 'stop caveman — give full sentences for onboarding doc',
-        expected_output: 'Normal mode; caveman opt-out honored.',
-        assertions: [
-          'Uses full sentences after stop caveman',
-          'Does not continue ultra-compressed style',
-        ],
-      },
-    ],
-  },
-  'gabarito': {
-    evals: [
-      {
-        id: 1,
         prompt: 'Is this architecture good? (vague praise wanted)',
-        expected_output: 'Direct accountable answer; no empty praise; calibrated confidence.',
+        expected_output: 'Direct accountable answer; challenges weak framing; no empty praise.',
         assertions: [
           'Does not output sycophantic flattery',
           'States assumptions or asks one critical question if blocked',
-          'No em dash per gabarito style',
+          'Keeps action-first shape',
         ],
       },
       {
-        id: 2,
-        prompt: 'stop gabarito — just answer yes or no: should we use Redis?',
-        expected_output: 'Opt-out honored; shorter direct answer without gabarito lecture.',
+        id: 3,
+        prompt: 'stop ws-gabarito — give full sentences for an onboarding doc',
+        expected_output: 'Normal mode; retired gabarito opt-out honored.',
         assertions: [
-          'Respects stop gabarito opt-out phrase',
-          'Still gives reasoned recommendation when asked',
+          'Recognizes stop ws-gabarito / stop ws-tdah / stop verbosity / normal mode',
+          'Uses full sentences after stop',
+          'Does not offer intensity or level switches',
         ],
       },
     ],

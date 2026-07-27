@@ -6,11 +6,12 @@
 
 
 
+
 name: ws-show-harness
 description: >
   Snapshot the harness active in this session — skills, rules, instructions, precedence,
   and can/cannot — as short bullets. Invoke anytime with /ws-show-harness or @ws-show-harness.
-version: 0.0.99
+version: 0.0.100
 disable-model-invocation: true
 invocation_names:
   - ws-show-harness
@@ -27,7 +28,7 @@ Read-only. Emit one report, then **stop**. For integrity/routing audits use [`ws
 
 1. **Collect** — From this turn's context only, list what is loaded:
    - Entry: root `AGENTS.md` when authoring upstream; after install load `skills/ws-shared/AGENTS.md` (optional project root `AGENTS.md` when the host provides one)
-   - Autoload / always-on skills and opt-outs (ws-caveman, ws-gabarito, karpathy, hooks, etc.)
+   - Autoload / always-on skills and opt-outs (ws-tdah, karpathy, hooks, etc.)
    - Session-loaded skills (attached, routed, or already Read this turn)
    - Workspace rules + user rules that bind this agent
    - Config / external deps only if already known or a one-line path check (`skills/ws-shared/config.json`)

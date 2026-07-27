@@ -140,7 +140,7 @@ flowchart TD
 ### Step 6: Code Review
 *   **Executor**: Reviewer subagent (`ws-code-review` / `ws-code-review`).
 *   **Role**: Runs local static analysis on changed code compared to the base branch.
-    *   **Fix Substep**: If Critical or Warning findings are present, runs a coder subagent in `mode: fix` to address the findings before moving forward.
+    *   **Fix → re-review**: If Critical or Warning findings are present, runs `ws-implement-tasks` `mode=fix`, then re-reviews (max 3 rounds; `autoMode` autofix). Records traps/gaps in state/memory each round. Advance only when clean; Pause on residual after max rounds.
 
 ### Step 7: Testing
 *   **Executor**: Verifier subagent (`ws-testing` / `ws-testing`).

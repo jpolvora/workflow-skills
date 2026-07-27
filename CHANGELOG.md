@@ -1,5 +1,30 @@
 # Changelog
 
+### [2026-07-27 11:52] Agent: Cursor Grok 4.5
+- **Prompt**: Commit all + ship/release — full prepare checklist (`/ws-ship-pr`, `/ws-goal-fix-pr`)
+- **Done**: Release `0.0.100` — `ws-tdah` replaces caveman/gabarito; Step 6 fix→re-review (max 3); harness corrections; site/integrity/tests green
+- **Result**: Ready to push `develop` → PR `main`
+
+### [2026-07-27 11:40] Agent: Cursor Grok 4.5
+- **Prompt**: Merge ws-gabarito into ws-tdah (action-first + judgment; retire gabarito)
+- **Done**: Merged judgment directives into `ws-tdah`; deleted `ws-gabarito`; updated hubs/deps/tests/orch/harness/site; retired opt-out aliases; 36 skills; integrity OK
+- **Result**: One autoload communication skill (`ws-tdah`); dogfood duo with `ws-karpathy-guidelines`
+
+### [2026-07-27 11:35] Agent: Cursor Grok 4.5
+- **Prompt**: `/ws-write-a-skill` one-pass format for `ws-tdah`
+- **Done**: Pruned to gabarito-style flat reference; leading word `action-first`; Before/After → `EXAMPLES.md`; Opt-out + Before send; evals aligned; integrity OK (50 lines)
+- **Result**: Ready for user accept / further edit
+
+### [2026-07-27 11:30] Agent: Cursor Grok 4.5
+- **Prompt**: Replace ws-tdah examples with auth Before/After shape
+- **Done**: Canonical Before/After in `SKILL.md` + `README.md`; integrity regenerated
+- **Result**: Example matches required response shape
+
+### [2026-07-27 11:20] Agent: Cursor Grok 4.5
+- **Prompt**: Rename `ws-caveman` → `ws-tdah`; single default mode; ADHD-friendly structure rules
+- **Done**: Added `.agents/skills/ws-tdah/` (SKILL/README/evals); removed `ws-caveman`; updated hubs, deps, tests, harness docs, site catalog, integrity; dropped intensity levels; start/stop only
+- **Result**: Live contracts point at `ws-tdah`; integrity verify OK; historical plans/specs still mention retired id (exempt)
+
 ### [2026-07-27 00:45] Agent: Cursor Composer
 - **Prompt**: Auto-load `ws-senior-developer`; rename `shared` → `ws-shared`; orchestrators use `AskQuestion` at each gate; allow short skill invocation names; update harness checks.
 - **Done**: Renamed `.agents/skills/shared` → `ws-shared` across repo (installer `HUB_DIR`, path tokens, scripts, tests, hubs); autoload `ws-senior-developer` in `AGENTS.md` / `ws-shared/AGENTS.md` / `.agents/AGENTS.md`; `gates.md` + both orchs prefer `AskQuestion` at every step boundary; added `invocation_names` short forms to all skills; `ws-check-harness` flags retired `shared/` paths; regenerated integrity; `npm test` + `check_workflows.py` green (0 issues).
@@ -593,6 +618,11 @@
 - **Prompt**: Review the spec-to-pr edge-to-edge process, execute it in dry-run mode, find opportunities to enhance/compact/stabilize it, and implement improvements.
 - **Done**: Simulated the end-to-end dry-run execution of `spec-to-pr` for `specs/test-workflow.spec.md` by generating all expected plans and state files under `.cursor/plans/test-workflow/`. Created `update_state.py` to automate state hygiene updates and step transitions, avoiding manual markdown/yaml editing errors. Fixed list parsing type-conversion bugs in `update_state.py` to prevent sorting errors. Updated `SKILL.md` to reference `update_state.py` while keeping a manual fallback. Cleaned up simulated folders, ran local skill package tests, and rebuilt the catalog website.
 - **Result**: The dry-run state validator passes fully, local installation tests pass cleanly, and the catalog website is updated.
+
+### 2026-07-27 — PR triage, merge, and branch sync (v0.0.99 ship)
+- **Prompt**: Check all active PRs, fix threads, merge when ready, close stale PRs, sync develop/main, ensure green consumer install.
+- **Done**: Merged PR #154 (develop→main, v0.0.99 release: ws-shared hub rename, senior-developer gate, npx upstream guard); fixed and merged PR #157 (harness bare-link false-positive guard + integrity regen); closed PR #155 (auto-generated ECC bundle — not aligned with harness neutrality); synced develop and main to `3af35c1`; verified `npm run tests --local`, integrity, and ws-check-workflows all pass.
+- **Result**: Zero open PRs; `main` and `develop` aligned at v0.0.99; consumer install path green.
 
 ### 2026-07-12 14:31 Agent: Antigravity
 - **Prompt**: Create an install test for workflow-skills consumed by a test project and update AGENTS.md to allow install from remote only for the test/ folder.

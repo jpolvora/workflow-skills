@@ -9,7 +9,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 > **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (31 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (34 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
 
 > **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
@@ -83,8 +83,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-caveman` | `skills/ws-caveman/SKILL.md` | Every prompt — compression |
-| `ws-gabarito` | `skills/ws-gabarito/SKILL.md` | Every prompt — operational guidelines |
+| `ws-tdah` | `skills/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
 | `ws-karpathy-guidelines` | `skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `ws-changelog` | `skills/ws-changelog/SKILL.md` | Every task completion |
 | `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
@@ -100,17 +99,16 @@ Packaged consumer hub [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md)
 1. Explicit user instructions (current turn)
 2. Design / spec / architecture constraints
 3. `ws-karpathy-guidelines`
-4. `ws-gabarito`
-5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
-6. `ws-caveman` (compression only; keep technical accuracy)
+4. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
+5. `ws-tdah` (action-first shape + judgment; still below karpathy/senior)
 
 ### Opt-out
 
 | Phrase | Effect |
 |--------|--------|
-| `stop ws-caveman` / `normal mode` | Disable ws-caveman |
-| `stop ws-gabarito` / `sem ws-gabarito` | Disable ws-gabarito |
-| `/ws-caveman lite\|full\|ultra\|…` | Intensity |
+| `stop ws-tdah` / `stop verbosity` / `normal mode` | Disable ws-tdah |
+| `stop ws-gabarito` / `sem ws-gabarito` | Same disable (retired alias) |
+| `/ws-tdah` · `/tdah` · `start ws-tdah` · `start ws-gabarito` | Activate (single default mode) |
 
 ---
 
@@ -135,7 +133,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-plan-to-tasks` | 3 | `skills/ws-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
 | `ws-implement-tasks` | 4, 6 (fix substep) | `skills/ws-implement-tasks/SKILL.md` | Execute or fix code following plan/DAG |
 | `ws-verify-plan` | 5 | `skills/ws-verify-plan/SKILL.md` | Check-implementation vs spec (score 0–10) |
-| `ws-code-review` | 6 | `skills/ws-code-review/SKILL.md` | Two-phase triage + investigation local review |
+| `ws-code-review` | 6 | `skills/ws-code-review/SKILL.md` | Two-phase review + fix → re-review (max 3) |
 | `ws-testing` | 7 | `skills/ws-testing/SKILL.md` | Testing gate (unit, integration, coverage) |
 | `ws-ship-pr` | 8 | `skills/ws-ship-pr/SKILL.md` | Delivery commit + push + create PR |
 | `ws-fix-pr` | 9 | `skills/ws-fix-pr/SKILL.md` | Resolve active PR review threads |
@@ -155,8 +153,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `ws-caveman` | `skills/ws-caveman/SKILL.md` | Ultra-compressed response (~75% fewer tokens) |
-| `ws-gabarito` | `skills/ws-gabarito/SKILL.md` | Ten operational response guidelines |
+| `ws-tdah` | `skills/ws-tdah/SKILL.md` | Action-first replies + operational judgment |
 | `ws-karpathy-guidelines` | `skills/ws-karpathy-guidelines/SKILL.md` | Surgical changes; no scope creep |
 | `ws-fable-method` | `skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
 | `ws-fable-domain` | `skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |

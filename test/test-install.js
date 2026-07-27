@@ -168,8 +168,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/ws-local-spec-provider/SKILL.md',
     // Promoted top-level skills + dependency map
     'bin/skill-dependencies.json',
-    '.agents/skills/ws-caveman/SKILL.md',
-    '.agents/skills/ws-gabarito/SKILL.md',
+    '.agents/skills/ws-tdah/SKILL.md',
     '.agents/skills/ws-karpathy-guidelines/SKILL.md',
     '.agents/skills/ws-spec-format/SKILL.md',
     '.agents/skills/ws-goal-loop/SKILL.md',
@@ -181,8 +180,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   // Promoted skills must not remain nested under ws-shared/
   for (const slug of [
-    'ws-caveman',
-    'ws-gabarito',
+    'ws-tdah',
     'ws-karpathy-guidelines',
     'ws-spec-format',
     'ws-goal-loop',
@@ -787,8 +785,7 @@ child.on('close', async (code) => {
   console.log('\n[Phase 4] Promoted skills install as top-level folders...');
   {
     for (const slug of [
-      'ws-caveman',
-      'ws-gabarito',
+      'ws-tdah',
       'ws-karpathy-guidelines',
       'ws-spec-format',
       'ws-goal-loop',
@@ -853,8 +850,8 @@ child.on('close', async (code) => {
     if (!fs.existsSync(path.join(pkgSkills, 'ws-spec-to-pr', 'SKILL.md'))) {
       fail('Workflows package did not install ws-spec-to-pr');
     }
-    if (!fs.existsSync(path.join(pkgSkills, 'ws-caveman', 'SKILL.md'))) {
-      fail('Workflows package did not install promoted ws-caveman');
+    if (!fs.existsSync(path.join(pkgSkills, 'ws-tdah', 'SKILL.md'))) {
+      fail('Workflows package did not install promoted ws-tdah');
     }
     for (const rel of [
       path.join('ws-senior-developer', 'SKILL.md'),
@@ -977,8 +974,8 @@ child.on('close', async (code) => {
     if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'ws-spec-to-pr', 'SKILL.md'))) {
       fail('install --package workflows --yes did not refresh ws-spec-to-pr');
     }
-    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'ws-caveman', 'SKILL.md'))) {
-      fail('install --package workflows --yes missing promoted ws-caveman');
+    if (!fs.existsSync(path.join(niDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('install --package workflows --yes missing promoted ws-tdah');
     }
     const afterSkillCfg = JSON.parse(
       fs.readFileSync(path.join(niDir, '.agents', 'skills', 'ws-spec-to-pr', 'config.json'), 'utf8')
@@ -1323,7 +1320,7 @@ child.on('close', async (code) => {
     ok('EOL canonical digest parity (CRLF/LF/lone-CR)');
 
     // AC10: digest changes when an included file changes (compute without writing)
-    const tamperSkill = 'ws-caveman';
+    const tamperSkill = 'ws-tdah';
     const skillMd = path.join(parentDir, '.agents', 'skills', tamperSkill, 'SKILL.md');
     const original = fs.readFileSync(skillMd);
     try {
@@ -1486,7 +1483,7 @@ child.on('close', async (code) => {
     // prior skill-integrity-local.json must stay unchanged (so audit still fails).
     {
       const priorLocal = fs.readFileSync(localRecord, 'utf8');
-      const extraPath = path.join(iDir, '.agents', 'skills', 'ws-caveman', 'integrity-extra.txt');
+      const extraPath = path.join(iDir, '.agents', 'skills', 'ws-tdah', 'integrity-extra.txt');
       fs.writeFileSync(extraPath, 'not-in-manifest\n');
       const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
         cwd: iDir,
@@ -1530,7 +1527,7 @@ child.on('close', async (code) => {
     ok('post-verify failure does not bless bad local integrity record');
 
     // AC6: mutate managed skill → integrity fails
-    const managedSkill = path.join(iDir, '.agents', 'skills', 'ws-caveman', 'SKILL.md');
+    const managedSkill = path.join(iDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md');
     fs.appendFileSync(managedSkill, '\n# mutated-after-install\n');
     const auditFail = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
       cwd: iDir,
@@ -1539,12 +1536,12 @@ child.on('close', async (code) => {
       timeout: 60000,
     });
     if (auditFail.status === 0) fail('integrity should fail after managed file mutation');
-    if (!/ws-caveman\/SKILL\.md/i.test(`${auditFail.stdout || ''}${auditFail.stderr || ''}`)) {
+    if (!/ws-tdah\/SKILL\.md/i.test(`${auditFail.stdout || ''}${auditFail.stderr || ''}`)) {
       fail(`integrity should report mutated path\n${auditFail.stdout || ''}${auditFail.stderr || ''}`);
     }
     // restore for further checks
     const srcSkill = fs.readFileSync(
-      path.join(parentDir, '.agents', 'skills', 'ws-caveman', 'SKILL.md')
+      path.join(parentDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md')
     );
     fs.writeFileSync(managedSkill, srcSkill);
     ok('integrity audit fails on managed file mutation');

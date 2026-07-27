@@ -51,7 +51,7 @@ Add `"fable"` configuration schema to `.agents/skills/ws-shared/config.json.exam
 |------------|-------------------|----------|
 | **[`ws-write-plan`](../.agents/skills/ws-write-plan/SKILL.md)** | Step 1 (Context Load) | Auto-detect domain files (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations). Consult `fable-domain` to append binding primary sources into plan sections 2/6. |
 | **[`ws-verify-plan`](../.agents/skills/ws-verify-plan/SKILL.md)** | Steps 2 & 3 (Evaluate & Score) | Execute `fable-judge` adversarial audit on `git diff` ground truth. Record verdict & fraud audit. Cap score < 7 if `REFUTED` and `auditVerdictsBlockShip` is enabled. |
-| **[`ws-code-review`](../.agents/skills/ws-code-review/SKILL.md)** | Step 6 (Check Invariants) | Run `fable-judge` to detect Weakened Checks or Scope Creep. Escalate findings to Critical/Warning to trigger `ws-implement-tasks mode=fix` substep. |
+| **[`ws-code-review`](../.agents/skills/ws-code-review/SKILL.md)** | Step 6 (Check Invariants) | Run `fable-judge` to detect Weakened Checks or Scope Creep. Escalate findings to Critical/Warning to start the fix → re-review loop (`ws-implement-tasks mode=fix`, max 3). |
 | **[`ws-ship-pr`](../.agents/skills/ws-ship-pr/SKILL.md)** | Step 1 (Preflight) | Verify `fable-judge` audit verdict is not `REFUTED`. Stop PR push/creation if `REFUTED`. |
 | **[`spec-to-pr`](../.agents/skills/spec-to-pr/SKILL.md)** / **[`spec-to-pr-lite`](../.agents/skills/spec-to-pr-lite/SKILL.md)** | Core Invariants | Document `fable` integration invariant across orchestrator FSM steps. |
 

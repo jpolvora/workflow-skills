@@ -122,15 +122,16 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 `--strict`: always run full verification matrix regardless of score. `autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
 
-### Code review + conditional fix (Step 6)
+### Code review + fix → re-review loop (Step 6)
 
 | Case | Behavior |
 |------|----------|
 | Clean (no Critical/Warning) | Complete step 6; Advance to 7 |
-| Fixable findings | **Fix substep:** `ws-implement-tasks` mode fix → optional re-review slice → complete step 6 |
-| User declines fix | Log skip; Advance with findings (or Pause) |
+| Critical/Warning findings | **Fix → re-review loop:** `ws-implement-tasks` mode fix → targeted re-review (max **3** rounds); each round logs gate history + Workflow memory (+ `ws-self-learning` when durable); Advance only when clean |
+| Residual after 3 rounds | **Pause** (fail closed) — do not Advance with open Critical/Warning |
+| `autoMode` | Autofix without asking; same max 3; Pause on residual |
 
-Fix substep is **not** its own `completedSteps` entry — log `review-fix` in `## Gate history`. Artifacts: `step-06-{slug}.review.md`, optional `step-06-{slug}.fix.report.md`.
+Fix substep is **not** its own `completedSteps` entry — log `review-fix | round={n}/3` in `## Gate history`. Artifacts: `step-06-{slug}.review.md`, optional `step-06-{slug}.fix.report.md`. Full contract: [`ws-code-review`](../ws-code-review/SKILL.md) § Fix → re-review loop.
 
 ### Learning & Memory Protocol
 
@@ -287,7 +288,7 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
 Orch: SKILL.md § Step {STEP} · model {currentModel} · {modeFlags}
-Enhancing skills (mandatory): ws-karpathy-guidelines, ws-caveman, ws-self-learning, ws-gabarito
+Enhancing skills (mandatory): ws-karpathy-guidelines, ws-tdah, ws-self-learning
 Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
 Role: fresh; no resume. files_touched required (revert). model: {currentModel}.
@@ -325,4 +326,4 @@ Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct
 
 ## Post-workflow (outside this agent)
 
-Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix substep (in-pipeline review fixes).
+Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix → re-review loop (in-pipeline review fixes).
