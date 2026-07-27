@@ -19,10 +19,10 @@ specDate: 2026-07-22
 Follow-up to #101 (closed). Re-verified in consumer test repo **jskills** after `npx github:jpolvora/workflow-skills update` + full `check-harness` scan (2026-07-22).
 
 **#101 fixes confirmed working:**
-- `gabarito/README.md` — links to `shared/AGENTS.md` first; root `AGENTS.md` gated as upstream-only
+- `gabarito/README.md` — links to `ws-shared/AGENTS.md` first; root `AGENTS.md` gated as upstream-only
 - `ws-ship-pr/PREPARE-CHECKLIST.md` — links to `shared/AGENTS.md#external-dependencies`
 - `spec-to-pr/README.md` — project entry points at shared hub first
-- `shared/AGENTS.md` — delivery checklist split into **Consumer Projects** vs **Upstream Maintainers**
+- `ws-shared/AGENTS.md` — delivery checklist split into **Consumer Projects** vs **Upstream Maintainers**
 - `configure-project/INTERVIEW.md` — harness-only heuristic suggests `check-workflows.py` when no app stack detected
 - `check-workflows` deep validation: **PASS** (0 issues)
 - Consumer harness: **0 broken hub links**, **0 unrouted skills**, **0 config placeholders** (post configure-project)
@@ -38,14 +38,14 @@ Follow-up to #101 (closed). Re-verified in consumer test repo **jskills** after 
 
 Line ~142 correctly states:
 
-> comparing against declared routing in the **resolved hub** (§ Hub resolution; `shared/AGENTS.md` in consumer mode)
+> comparing against declared routing in the **resolved hub** (§ Hub resolution; `ws-shared/AGENTS.md` in consumer mode)
 
 But the Phase 4 section title and primary link still hardcode upstream root `AGENTS.md`, which can mislead agents executing Phase 4 in consumer repos.
 
 ## Proposed fix
 
 1. Rename Phase 4 heading to **"Skills/rules not routed in the resolved hub"**.
-2. Replace line ~367 link with `` [`shared/AGENTS.md`](../shared/AGENTS.md) `` (consumer default) and note root `AGENTS.md` only in upstream mode — mirror § Hub resolution table.
+2. Replace line ~367 link with `` [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md) `` (consumer default) and note root `AGENTS.md` only in upstream mode — mirror § Hub resolution table.
 3. Update line ~51 out-of-scope routing link similarly (or "resolved hub per § Hub resolution").
 
 ## Severity

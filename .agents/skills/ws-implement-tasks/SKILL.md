@@ -5,9 +5,10 @@
 
 
 
+
 name: ws-implement-tasks
 description: Executes code implementations or fixes defects following a plan, DAG, or review findings.
-version: 0.0.97
+version: 0.0.99
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -18,7 +19,7 @@ invocation_names:
 
 Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Act as a Senior Software Developer: clean code, SOLID, surgical edits, stack-consistent, no duplication.
 
-**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `{sharedDir}/MEMORY.md` (Grep task keywords before coding — expand per [`tools.md`](../shared/tools.md) § Path tokens; [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult).
+**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `{sharedDir}/MEMORY.md` (Grep task keywords before coding — expand per [`tools.md`](../ws-shared/tools.md) § Path tokens; [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult).
 
 ## Invocation
 

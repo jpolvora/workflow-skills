@@ -5,17 +5,21 @@
 
 
 
+
 name: ws-github-provider
 description: GitHub provider for ws-spec-to-pr — issue→spec, auth checks, PR create/threads/merge via gh CLI and provider scripts. Use when providers.active or providers.scm is github, or when invoking /ws-github-provider standalone.
-version: 0.0.97
+version: 0.0.99
 disable-model-invocation: true
+invocation_names:
+  - github-provider
+  - ws-github-provider
 ---
 
 # ws-github-provider
 
 GitHub-specific inbound (`fetch-to-spec`) and SCM (`create-pr`, threads, merge). Pipeline skills load this when `providers.active` / `providers.scm` is `github`; they link here instead of embedding `gh` recipes.
 
-Resolve `owner` / `repo` from `{sharedDir}/config.json` ([`config-resolution.md`](../shared/config-resolution.md)). Never hardcode org/repo.
+Resolve `owner` / `repo` from `{sharedDir}/config.json` ([`config-resolution.md`](../ws-shared/config-resolution.md)). Never hardcode org/repo.
 
 ## Invocation
 

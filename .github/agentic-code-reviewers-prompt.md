@@ -8,7 +8,7 @@ Focus review on this repository’s real stack: Cursor/agent skill markdown, Nod
 * **Progressive disclosure:** Do not paste entire skill bodies into hubs or sibling skills. Prefer links to the canonical skill.
 * **Portability:** Skills under `.agents/skills/` must stay project-agnostic. Flag hardcoded org/repo names, absolute machine paths, or consumer-specific build/test commands inside skill bodies. Parameterize via `config.json` / `stack.md` / `tools.md`.
 * **Language:** Skill content, gates, banners, and pipeline output must stay **en-us**. Flag Portuguese (or other locales) in skill files.
-* **Shared vs promoted skills:** Treat `shared/` hub files (`config*`, `tools.md`, `stack.md`, `setup.md`, `gates.md`) as config/docs; do not invent skill folders there unless the change intentionally adds them.
+* **Shared vs promoted skills:** Treat `ws-shared/` hub files (`config*`, `tools.md`, `stack.md`, `setup.md`, `gates.md`) as config/docs; do not invent skill folders there unless the change intentionally adds them.
 * **No silent managed-skill refactors:** Flag LLM-driven hygiene churn on managed skill scripts (helper reorder, “forward ref” fixes with no runtime proof) when the change is not a verified bug. In consumer/CI context, lasting skill fixes must be suggested as **upstream** PRs to `jpolvora/workflow-skills`, not left as local-only edits that `update` will wipe.
 * **STEP-DISPATCH dual-mode:** `spec-to-pr/STEP-DISPATCH.md` is standard-orch only (0–13). Lite must keep its own Steps 1–5; shared skills stay orch-agnostic via `gates.md`.
 * **Root seeds:** Installer create-if-missing for `.cursorrules` / `CHANGELOG.md` must never overwrite existing consumer files.

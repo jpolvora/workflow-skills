@@ -18,7 +18,7 @@ totalTasks: 4
    - `bin/skill-dependencies.json`
 
 3. **Task 3: Update hub skill indexes and task routers**
-   - `.agents/skills/shared/AGENTS.md`
+   - `.agents/skills/ws-shared/AGENTS.md`
    - `AGENTS.md`
 
 4. **Task 4: Wire orchestrator auto-sync call sites**

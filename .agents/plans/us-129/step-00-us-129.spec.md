@@ -1,14 +1,14 @@
 ---
 id: 129
 slug: us-129
-title: "Sync shared/skill-dependencies.json with bin: register ws-multi-spec for consumer update"
+title: "Sync ws-shared/skill-dependencies.json with bin: register ws-multi-spec for consumer update"
 source: github
 issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/129"
 specDate: 2026-07-25
 ---
 
-# Specification — Sync shared/skill-dependencies.json with bin: register ws-multi-spec for consumer update
+# Specification — Sync ws-shared/skill-dependencies.json with bin: register ws-multi-spec for consumer update
 
 **State:** open
 
@@ -23,7 +23,7 @@ Consumer harness audit on [jpolvora/cursor-server](https://github.com/jpolvora/c
 | File | `ws-multi-spec` in `packages.workflows.skills` | `dependencies["ws-multi-spec"]` |
 |------|-----------------------------------------------|----------------------------------|
 | `bin/skill-dependencies.json` | present | `["spec-to-pr","spec-to-pr-lite","caveman","gabarito","karpathy-guidelines"]` |
-| `.agents/skills/shared/skill-dependencies.json` | **missing** | **missing** |
+| `.agents/skills/ws-shared/skill-dependencies.json` | **missing** | **missing** |
 
 Skill folder `.agents/skills/ws-multi-spec/` and hub task-router row (“Batch spec delivery”) already exist. Disk inventory and root/packaged `AGENTS.md` routing are fine; **install graph drift** is the update hazard.
 
@@ -33,11 +33,11 @@ Related consumer noise (not present on upstream disk, but shows up after partial
 
 ## Why this matters
 
-`update` overwrites managed hub files under `.agents/skills/shared/` (except consumer-owned data). Consumers who only patch `shared/skill-dependencies.json` lose `ws-multi-spec` registration on the next update, so selective install / dependency closure / uninstall cascade stay wrong.
+`update` overwrites managed hub files under `.agents/skills/ws-shared/` (except consumer-owned data). Consumers who only patch `ws-shared/skill-dependencies.json` lose `ws-multi-spec` registration on the next update, so selective install / dependency closure / uninstall cascade stay wrong.
 
 ## Proposed fix
 
-1. Align `.agents/skills/shared/skill-dependencies.json` with `bin/skill-dependencies.json` for `ws-multi-spec`:
+1. Align `.agents/skills/ws-shared/skill-dependencies.json` with `bin/skill-dependencies.json` for `ws-multi-spec`:
    - Add to `packages.workflows.skills` (near other orchestrators).
    - Add `dependencies["ws-multi-spec"]` matching bin (at least `spec-to-pr`, `spec-to-pr-lite`; include Layer-0 autoload deps if that is the bin contract).
 2. Confirm installer/`update` copies the synced shared file (or generates shared from `bin/` so drift cannot recur).
@@ -46,8 +46,8 @@ Related consumer noise (not present on upstream disk, but shows up after partial
 
 ## Acceptance
 
-- [ ] Fresh `install --full` / `update` leaves `ws-multi-spec` in consumer `shared/skill-dependencies.json` workflows + dependencies.
-- [ ] `bin/skill-dependencies.json` and `shared/skill-dependencies.json` agree on `ws-multi-spec` (and no `ws-long-runner`).
+- [ ] Fresh `install --full` / `update` leaves `ws-multi-spec` in consumer `ws-shared/skill-dependencies.json` workflows + dependencies.
+- [ ] `bin/skill-dependencies.json` and `ws-shared/skill-dependencies.json` agree on `ws-multi-spec` (and no `ws-long-runner`).
 - [ ] Integrity check green if applicable.
 
 ## Context

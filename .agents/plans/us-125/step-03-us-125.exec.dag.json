@@ -28,7 +28,7 @@
       "files": [
         "AGENTS.md",
         ".agents/AGENTS.md",
-        ".agents/skills/shared/AGENTS.md"
+        ".agents/skills/ws-shared/AGENTS.md"
       ],
       "deps": ["task-2"]
     },

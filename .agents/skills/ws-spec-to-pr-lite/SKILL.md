@@ -5,18 +5,26 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.0.97
+version: 0.0.99
 description: >-
   Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr.
-  Invoke: /ws-spec-to-pr-lite | @[ws-spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text.
+  Invoke: /ws-spec-to-pr-lite | /spec-to-pr-lite | @[ws-spec-to-pr-lite] | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text.
   Flags: dry-run, auto, skip-tests, full. Flags combine freely (e.g. full + auto + dry-run).
-  Inline execution in main session. Dual-mode compatible with ws-spec-to-pr (shared skills, shared/config.json, shared/gates.md).
+  Inline execution in main session. Dual-mode compatible with ws-spec-to-pr (shared skills, ws-shared/config.json, ws-shared/gates.md).
+invocation_names:
+  - spec-to-pr-lite
+  - ws-spec-to-pr-lite
 ---
 
 # Spec-to-PR Lite — Orchestrator
 
-Sequential spec→ship using the **same** pipeline skills as [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md). Dual-mode: [`gates.md`](../shared/gates.md) · [`config-resolution.md`](../shared/config-resolution.md) · [`setup.md`](../shared/setup.md). Do **not** use [`STEP-DISPATCH.md`](../ws-spec-to-pr/STEP-DISPATCH.md) for lite step numbers (standard 0–9 only).
+Sequential spec→ship using the **same** pipeline skills as [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md). Dual-mode: [`gates.md`](../ws-shared/gates.md) · [`config-resolution.md`](../ws-shared/config-resolution.md) · [`setup.md`](../ws-shared/setup.md). Do **not** use [`STEP-DISPATCH.md`](../ws-spec-to-pr/STEP-DISPATCH.md) for lite step numbers (standard 0–9 only).
+
+## Native tool contract
+
+Canonical aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in normal mode: prefer `AskQuestion` (host structured choice) with ≥2 options per [`gates.md`](../ws-shared/gates.md); markdown fallback when unavailable; `autoMode` → auto-gate index 0; cancelled → HS-1.
 
 ## Invariants
 
@@ -45,11 +53,11 @@ Skips interview, DAG, check-implementation, Testing vs standard.
 | 4 | Ship | orch + `ws-ship-pr` | Combined delivery+ship gate |
 | 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` | After PR; merge only when checks green |
 
-**Transitions** ([`gates.md`](../shared/gates.md)): Advance (Recommended) · More options… (Previous / Repeat / Refine→Replay / Commit / Undo / Pause / Cancel). Banner: model + Pause→host→Resume. No phase soft tips.
+**Transitions** ([`gates.md`](../ws-shared/gates.md)): Advance (Recommended) · More options… (Previous / Repeat / Refine→Replay / Commit / Undo / Pause / Cancel). Banner: model + Pause→host→Resume. No phase soft tips.
 
 ### Step details (done when)
 
-- **0:** `step-00-{slug}.spec.md` via [`setup.md`](../shared/setup.md) § Shared entry → gate Advance.
+- **0:** `step-00-{slug}.spec.md` via [`setup.md`](../ws-shared/setup.md) § Shared entry → gate Advance.
 - **1:** `step-01-{slug}.plan.md` → Advance.
 - **2:** build mode + verification → Advance.
 - **3:** review file; optional fix substep (`mode=fix`) or logged skip → Advance.
@@ -75,7 +83,7 @@ Skill: {SKILL.md path} — read full.
 Orch: ws-spec-to-pr-lite · model {currentModel} · {modeFlags} · workflowType: lite · workflowMode: true
 Enhancing skills (mandatory): ws-karpathy-guidelines, ws-caveman, ws-self-learning, ws-gabarito
 Read: state workflow memory + decisions; MEMORY.md index; `config.json.rules.stackFile`.
-Config/SCM: `.agents/skills/shared/config-resolution.md`
+Config/SCM: `.agents/skills/ws-shared/config-resolution.md`
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root}
 Role: fresh; no resume. files_touched required. model: {currentModel}.
 Rules: no `{plansDir}/` in git-add except Step 4 G2-delivery; needs_user: ≥2 choices, recommended first.

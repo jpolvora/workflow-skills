@@ -26,13 +26,13 @@ The independent authoring, documentation, and package-registration changes form 
 
 #### T2: Document opt-in resolution and routes
 - **Depends on:** none
-- **Files:** `.agents/skills/shared/config.json.example`, `.agents/skills/shared/setup.md`, `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/shared/AGENTS.md`, `README.md`
+- **Files:** `.agents/skills/ws-shared/config.json.example`, `.agents/skills/ws-shared/setup.md`, `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/ws-shared/AGENTS.md`, `README.md`
 - **Work:** Keep `rules.seniorDeveloper` empty by default; document `.agents/skills/ws-senior-developer/SKILL.md` as its explicit opt-in value. Add root Layer 1 and task-router inventory, packaged Workflows-only inventory/router, shared promoted-utility/router, resolution wording, and human-facing availability. Do not duplicate the skill's detailed checklist or claim the installer creates a consumer root `AGENTS.md`.
 - **Acceptance:** AC6–AC8, AC11. Config-path-first precedence remains intact, hubs retain pointer-only proof language, and root-pointer wording remains consumer-owned.
 
 #### T3: Register Workflows package membership
 - **Depends on:** none
-- **Files:** `bin/skill-dependencies.json`, `.agents/skills/shared/skill-dependencies.json`
+- **Files:** `bin/skill-dependencies.json`, `.agents/skills/ws-shared/skill-dependencies.json`
 - **Work:** Add `ws-senior-developer` to only `packages.workflows.skills` in both mirrored manifests. Do not add `dependencies` or `autoloadOnly` entries.
 - **Acceptance:** AC7, AC9. The two graph copies remain equivalent; Full inherits the skill through `all-skills`; no unconditional dispatch edge is introduced.
 
@@ -54,7 +54,7 @@ The independent authoring, documentation, and package-registration changes form 
 
 #### T6: Bump once and rebuild catalog
 - **Depends on:** T1, T2, T3, T4, T5
-- **Files:** `package.json`, `bin/skill-dependencies.json`, `.agents/skills/shared/skill-dependencies.json`, `docs/index.html`; every `SKILL.md` listed for T6 in `step-03-us-150.exec.dag.json`
+- **Files:** `package.json`, `bin/skill-dependencies.json`, `.agents/skills/ws-shared/skill-dependencies.json`, `docs/index.html`; every `SKILL.md` listed for T6 in `step-03-us-150.exec.dag.json`
 - **Work:** Run `npm run build-site:bump` exactly once after all source edits. Inspect the generated catalog card and footer.
 - **Acceptance:** AC1, AC11, AC12. Package version, all skill frontmatter, both manifest versions, root-hub-derived catalog, and footer agree. No merge markers remain.
 
@@ -78,7 +78,7 @@ The independent authoring, documentation, and package-registration changes form 
 
 #### T9: Run delivery checks and inspect evidence
 - **Depends on:** T8
-- **Files:** `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/shared/AGENTS.md`, `README.md`, `docs/index.html`, `package.json`, `test/package.json`, `bin/skill-integrity.json` (read-only verification targets, no edits expected)
+- **Files:** `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/ws-shared/AGENTS.md`, `README.md`, `docs/index.html`, `package.json`, `test/package.json`, `bin/skill-integrity.json` (read-only verification targets, no edits expected)
 - **Work:** Run `npm run verify-integrity`; configured `npm run tests -- --local`; `node bin/build-site.js`; `python .agents/skills/ws-check-workflows/scripts/check_workflows.py`; and `ws-check-harness` Phases 0–5c. Search changed human and hub docs for conflict markers. Report evidence and blockers.
 - **Acceptance:** AC6, AC9–AC12. All commands succeed, harness has zero critical findings, and docs have no conflict markers.
 

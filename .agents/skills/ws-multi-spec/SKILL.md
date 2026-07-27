@@ -4,12 +4,16 @@
 
 
 
+
 name: ws-multi-spec
-version: 0.0.97
+version: 0.0.99
 description: >-
   Sequential smart multi-spec batch delivery orchestrator. Evaluates spec complexity to dispatch ws-spec-to-pr or ws-spec-to-pr-lite workers.
   Invoke: /ws-multi-spec | @[ws-multi-spec].
   Entry: state file | list of specs | blank (scan default specsDir).
+invocation_names:
+  - multi-spec
+  - ws-multi-spec
 ---
 
 ## Audience & load
@@ -20,11 +24,11 @@ description: >-
 | **Protocol & State** | [`PROTOCOL.md`](PROTOCOL.md) · [`STATE.md`](STATE.md) |
 | **Examples & Evals** | [`EXAMPLES.md`](EXAMPLES.md) · [`evals/evals.json`](evals/evals.json) |
 
-**Always-on load:** this file + [`PROTOCOL.md`](PROTOCOL.md). **On demand:** [`STATE.md`](STATE.md) · [`EXAMPLES.md`](EXAMPLES.md) · [`../ws-spec-to-pr/SKILL.md`](../ws-spec-to-pr/SKILL.md) · [`../ws-spec-to-pr-lite/SKILL.md`](../ws-spec-to-pr-lite/SKILL.md) · [`../ws-ship-pr/SKILL.md`](../ws-ship-pr/SKILL.md) · [`../ws-goal-fix-pr/SKILL.md`](../ws-goal-fix-pr/SKILL.md) · [`../shared/tools.md`](../shared/tools.md). Language: **en-us** only.
+**Always-on load:** this file + [`PROTOCOL.md`](PROTOCOL.md). **On demand:** [`STATE.md`](STATE.md) · [`EXAMPLES.md`](EXAMPLES.md) · [`../ws-spec-to-pr/SKILL.md`](../ws-spec-to-pr/SKILL.md) · [`../ws-spec-to-pr-lite/SKILL.md`](../ws-spec-to-pr-lite/SKILL.md) · [`../ws-ship-pr/SKILL.md`](../ws-ship-pr/SKILL.md) · [`../ws-goal-fix-pr/SKILL.md`](../ws-goal-fix-pr/SKILL.md) · [`../ws-shared/tools.md`](../ws-shared/tools.md). Language: **en-us** only.
 
 ## Native tool contract
 
-Canonical aliases: [`../shared/tools.md`](../shared/tools.md). Params: `{sharedDir}/config.json`. Never narrate undone work. Master orchestrator never edits code directly — dispatches `ws-spec-to-pr` or `ws-spec-to-pr-lite` workers via `dispatch-agent`.
+Canonical aliases: [`../ws-shared/tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Never narrate undone work. Master orchestrator never edits code directly — dispatches `ws-spec-to-pr` or `ws-spec-to-pr-lite` workers via `dispatch-agent`.
 
 | Intent | Alias | Rule |
 |--------|-------|------|

@@ -5,10 +5,14 @@
 
 
 
+
 name: ws-secrets-leak-review
-version: 0.0.97
+version: 0.0.99
 description: Use when asked to check for secrets, leak check, secrets scan, pre-commit security check, hardcoded passwords, PII scan, repo leak audit, or before pushing to a public repository.
 allowed-tools: Read, Grep, Glob
+invocation_names:
+  - secrets-leak-review
+  - ws-secrets-leak-review
 ---
 
 # Secrets & Leak Review

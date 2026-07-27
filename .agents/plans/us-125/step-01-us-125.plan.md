@@ -55,7 +55,7 @@ Implement a new workflow skill `ws-long-runner` that orchestrates sequential bat
 #### [MODIFY] [AGENTS.md (.agents)](file:///l:/source/workflow-skills/.agents/AGENTS.md)
 - Add `long-runner` to Workflows package skill index and Task router.
 
-#### [MODIFY] [AGENTS.md (shared)](file:///l:/source/workflow-skills/.agents/skills/shared/AGENTS.md)
+#### [MODIFY] [AGENTS.md (shared)](file:///l:/source/workflow-skills/.agents/skills/ws-shared/AGENTS.md)
 - Add `long-runner` to Workflows package skill index and Task router.
 
 ---

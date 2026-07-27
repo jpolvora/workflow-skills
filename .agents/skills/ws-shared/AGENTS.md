@@ -9,10 +9,10 @@
 > Promoted utilities and harness skills live as **top-level** installable skills under `.agents/skills/<skill>/`.
 >
 > **Consumer-owned** (preserved on update; never overwritten by upstream):
-> `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, and `CHANGELOG.md` (when `rules.changelogFile` points under `shared/`).
+> `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, and `CHANGELOG.md` (when `rules.changelogFile` points under `ws-shared/`).
 > Fresh install seeds `config.json` from `config.json.example`, empty `MEMORY.md` / `CHANGELOG.md` from templates, and `STACK.md` from `STACK.md.example`. Prefer [`ws-configure-project`](../ws-configure-project/SKILL.md) to fill placeholders. The installer writes `installed-skills.json` for update/uninstall tracking.
 >
-> **Installer scope:** only `.agents/skills/` (skill folders + this `shared/` hub). Never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers). Optional root/host pointers stay consumer-owned; ws-check-harness may suggest them.
+> **Installer scope:** only `.agents/skills/` (skill folders + this `ws-shared/` hub). Never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers). Optional root/host pointers stay consumer-owned; ws-check-harness may suggest them.
 
 **Language:** en-us only for skill bodies, gates, banners, and harness docs.
 
@@ -56,13 +56,25 @@
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) | Every task completion |
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 
+### Consumer root override (dual-hub)
+
+Default **shared hub only** (typical consumer install): `ws-senior-developer` is **on-demand** — opt in via `rules.seniorDeveloper` or explicit invoke; it is **not** in the mandatory autoload table above.
+
+Some consumers add a **root** `AGENTS.md` (installer never writes it) that promotes `ws-senior-developer` to per-prompt autoload (engineering delivery gate). That is an **intentional consumer override**, not a shared-hub defect.
+
+When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
+
+See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGENTS.md` (dogfood example of root autoload).
+
 ### Precedence (highest first)
 
 1. Explicit user instructions (current turn)
-2. Design / spec / architecture constraints
-3. `ws-karpathy-guidelines`
-4. `ws-gabarito`
-5. `ws-caveman` (compression only; keep technical accuracy)
+2. Consumer root `AGENTS.md` when present (skill loading + precedence — overrides shared-hub opt-in defaults)
+3. Design / spec / architecture constraints
+4. `ws-karpathy-guidelines`
+5. `ws-gabarito`
+6. `ws-senior-developer` when autoloaded (root hub or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
+7. `ws-caveman` (compression only; keep technical accuracy)
 
 ### Opt-out
 
@@ -70,6 +82,7 @@
 |--------|--------|
 | `stop ws-caveman` / `normal mode` | Disable ws-caveman |
 | `stop ws-gabarito` / `sem ws-gabarito` | Disable ws-gabarito |
+| `stop ws-senior-developer` | Disable ws-senior-developer when autoloaded |
 | `/ws-caveman lite\|full\|ultra\|…` | Intensity |
 
 ---
@@ -132,7 +145,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Fable Method 7-step loop | `ws-fable-method` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
-| Engineering delivery gate / Code review proof | `ws-senior-developer` (opt in through `rules.seniorDeveloper` or invoke explicitly) |
+| Engineering delivery gate / Code review proof | `ws-senior-developer` (default on-demand; opt in via `rules.seniorDeveloper`; root `AGENTS.md` may autoload — see § Consumer root override) |
 | Fill / update `config.json` | `ws-configure-project` |
 | Audit harness | `ws-check-harness` |
 | Check workflows | `ws-check-workflows` |
@@ -149,7 +162,7 @@ Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder 
 
 ## Managed skills — no silent local refactors
 
-Skills under `.agents/skills/` (except consumer-owned `shared/` data) are **managed upstream copies**. `update` overwrites them.
+Skills under `.agents/skills/` (except consumer-owned `ws-shared/` data) are **managed upstream copies**. `update` overwrites them.
 
 | Context | Do | Do not |
 |---------|----|--------|
@@ -169,7 +182,7 @@ Run this checklist prior to triggering `/ship-pr` or shipping features in a cons
 
 - [ ] **1. Run Tests & Verification**: Execute local test commands (`verification.backendTest` / `verification.frontendTest` or project test scripts).
 - [ ] **2. Harness & Workflow Audit**: Run `ws-check-harness` / `ws-check-workflows` to ensure 0 critical findings.
-- [ ] **3. Configure & Verify Project**: Verify `.agents/skills/shared/config.json` settings and stack definitions.
+- [ ] **3. Configure & Verify Project**: Verify `.agents/skills/ws-shared/config.json` settings and stack definitions.
 - [ ] **4. Clean Docs & Artifacts**: Ensure documentation files have no merge conflict markers or uncommitted scratch files.
 - [ ] **5. Ship via `ship-pr`**: Execute `/ship-pr` (runs Prepare Board, commits, pushes, creates PR).
 
@@ -197,10 +210,10 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` (set `.agents/skills/ws-senior-developer/SKILL.md` to opt in to the packaged skill) → local skill (`senior-developer/SKILL.md`) → global/user skill |
+| `senior-developer` | `config.json` → `rules.seniorDeveloper` (set path to opt in; default on-demand in shared hub) → local skill (`senior-developer/SKILL.md`) → global/user skill. Root `AGENTS.md` may autoload — see § Consumer root override |
 | `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `../ws-karpathy-guidelines/SKILL.md` → global skill |
-| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/` |
-| Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) |
+| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/ws-shared/STACK.md`) — consumer-owned under `ws-shared/` |
+| Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set — do not invent filenames |
 | Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/specs`) · optional `reviews.dir` (default `.agents/codereviews`) |

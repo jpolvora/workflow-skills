@@ -69,7 +69,7 @@ if (shouldBump) {
 
   for (const rel of [
     path.join(root, 'bin', 'skill-dependencies.json'),
-    path.join(root, '.agents', 'skills', 'shared', 'skill-dependencies.json'),
+    path.join(root, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json'),
   ]) {
     if (!fs.existsSync(rel)) continue;
     const deps = JSON.parse(fs.readFileSync(rel, 'utf-8'));
@@ -189,18 +189,18 @@ if (fs.existsSync(depMapPath)) {
       return result;
     }
 
-    standardDeps = getTransitiveDeps('spec-to-pr');
-    liteDeps = getTransitiveDeps('spec-to-pr-lite');
+    standardDeps = getTransitiveDeps('ws-spec-to-pr');
+    liteDeps = getTransitiveDeps('ws-spec-to-pr-lite');
   } catch (err) {
     console.error(`Warning: Failed to parse skill-dependencies.json: ${err.message}`);
   }
 }
 
-// --- 2. Scan skills directories (top-level only; shared/ is config hub, not skills) ---
+// --- 2. Scan skills directories (top-level only; ws-shared/ is config hub, not skills) ---
 const skillsDir = path.join(root, '.agents', 'skills');
 const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
 const skillDirs = entries
-  .filter(e => e.isDirectory() && e.name !== 'shared')
+  .filter(e => e.isDirectory() && e.name !== 'ws-shared')
   .map(e => e.name);
 const skillFiles = entries
   .filter(e => e.isFile() && e.name.endsWith('.md'))
@@ -451,10 +451,10 @@ if (fs.existsSync(depMapPath)) {
         <span class="package-shortcut">Shortcut: <code>${full.shortcut || 'f'}</code></span>
       </div>
       <h4>Full Package</h4>
-      <p class="package-desc">${full.label || 'Full package'} — selects every installable top-level skill and initializes the <code>shared/</code> config/docs hub.</p>
+      <p class="package-desc">${full.label || 'Full package'} — selects every installable top-level skill and initializes the <code>ws-shared/</code> config/docs hub.</p>
       <div class="package-features">
         <div class="pkg-feat"><span>✓</span> Every top-level skill</div>
-        <div class="pkg-feat"><span>✓</span> Full <code>shared/</code> config & docs hub</div>
+        <div class="pkg-feat"><span>✓</span> Full <code>ws-shared/</code> config & docs hub</div>
         <div class="pkg-feat"><span>✓</span> Best for complete team environments</div>
       </div>
     </div>
@@ -465,7 +465,7 @@ if (fs.existsSync(depMapPath)) {
         <span class="package-shortcut">Shortcut: <code>${workflows.shortcut || 'w'}</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">${workflows.label || 'Workflows package'} — ${wfCount} skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>shared/</code> hub.</p>
+      <p class="package-desc">${workflows.label || 'Workflows package'} — ${wfCount} skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
       <div class="package-preview">
         <strong>Included core skills:</strong> ${wfPreview}
       </div>

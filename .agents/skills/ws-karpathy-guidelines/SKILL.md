@@ -5,10 +5,14 @@
 
 
 
+
 name: ws-karpathy-guidelines
-version: 0.0.97
+version: 0.0.99
 description: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
 license: MIT
+invocation_names:
+  - karpathy-guidelines
+  - ws-karpathy-guidelines
 ---
 
 # Karpathy Guidelines
@@ -26,7 +30,7 @@ Before implementing:
 - If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
-- **Consult project MEMORY** — `Grep` / `Read` `{sharedDir}/MEMORY.md` (expand per [`tools.md`](../shared/tools.md) § Path tokens) for task keywords (scripts, encoding, shell, skill paths, modules). Apply matching Solutions before inventing a new approach. See [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult.
+- **Consult project MEMORY** — `Grep` / `Read` `{sharedDir}/MEMORY.md` (expand per [`tools.md`](../ws-shared/tools.md) § Path tokens) for task keywords (scripts, encoding, shell, skill paths, modules). Apply matching Solutions before inventing a new approach. See [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult.
 
 ## 2. Simplicity First
 

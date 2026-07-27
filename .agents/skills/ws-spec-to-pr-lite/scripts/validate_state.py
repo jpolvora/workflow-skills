@@ -40,7 +40,7 @@ PLANS_DIR = None
 
 def load_plans_dir() -> Path:
     """Resolve plans.dir from ws-spec-to-pr project config."""
-    cfg = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
+    cfg = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
     plans = Path(".agents") / "plans"
     if cfg.exists():
         try:

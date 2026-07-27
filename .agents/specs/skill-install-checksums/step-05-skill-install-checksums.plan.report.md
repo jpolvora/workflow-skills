@@ -23,7 +23,7 @@ githubSource: none
 | AC2 Per-file digests, `skillDigest`, `fullPackageDigest`, canonical order | **Implemented** | Manifest schema + `canonicalOrder` (`hubPlacement: after-skills`). Digest rules in `skill-integrity-lib.js` (`digestFromFilesMap`, `aggregateDigest`). |
 | AC3 Maintained generator; stable / idempotent output | **Implemented** | `bin/generate-skill-integrity.js` + `package.json` script `generate-integrity`. Phase 11 idempotency + lowercase hex asserts. `--check` drift gate. |
 | AC4 Pre-copy source verify; fail closed; no overwrite unless `--force-integrity` | **Implemented** | `preVerifySourceIntegrity` in `bin/cli.js` (~L574–596) before copy in `installSelectedSkills` / update path. Test: install aborts on source mismatch without creating dest skill dir; `--force-integrity` proceeds (`test/test-install.js` Phase 11). |
-| AC5 Post-copy consumer verify + `skill-integrity-local.json` | **Implemented** | `postVerifyAndWriteLocal` (~L602–653); writes `shared/skill-integrity-local.json` with closure digests + `verifiedAt`. Gitignored + `CONSUMER_OWNED_HUB_FILES`. Clean workflows install test asserts local record. |
+| AC5 Post-copy consumer verify + `skill-integrity-local.json` | **Implemented** | `postVerifyAndWriteLocal` (~L602–653); writes `ws-shared/skill-integrity-local.json` with closure digests + `verifiedAt`. Gitignored + `CONSUMER_OWNED_HUB_FILES`. Clean workflows install test asserts local record. |
 | AC6 `integrity` audit; exit ≠0 on mismatch; print paths | **Implemented** | `runIntegrityAudit` / `integrity` command (~L715–778, L1180+). Mutation of managed `SKILL.md` → audit fail + path report (Phase 11). |
 | AC7 Selective closure only | **Implemented** | Verify/audit scoped to installed ids; record-only absent skills skipped. Phase 11 selective `ws-goal-fix-pr` install + audit OK without Extra-only skills. |
 | AC8 Consumer-owned never hashed / never fail audit | **Implemented** | Exclusions in `install-rules.js` + hub enum. Edit `MEMORY.md`/`config.json` → integrity still exit 0 (Phase 11). |
@@ -43,7 +43,7 @@ githubSource: none
 |--------------------------|------------------|------|
 | `hub.gitignore` npm-pack alias | `bin/install-rules.js`, `enumerateHubFiles` | Required packaging fix; keeps installer/hash lockstep |
 | `SKIP_INSTALL_FILES` includes `runs` | `bin/install-rules.js` | Aligns copy/hash skip with ephemeral runs dirs |
-| `package.json` files negation for local integrity | `package.json` `!.agents/skills/shared/skill-integrity-local.json` | Extra safety vs shipping consumer record |
+| `package.json` files negation for local integrity | `package.json` `!.agents/skills/ws-shared/skill-integrity-local.json` | Extra safety vs shipping consumer record |
 | Uninstall local-record rewrite | `bin/cli.js` `rewriteLocalIntegrityForRemaining` | Plan G8; keeps AC6 honest after uninstall |
 
 ## Gaps and Next Steps

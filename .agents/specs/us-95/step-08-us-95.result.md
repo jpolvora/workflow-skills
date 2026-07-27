@@ -11,14 +11,14 @@
 - **Steps skipped:** 2 (conditional interview)
 
 ## Summary of Changes
-1. **Shipped `skill-dependencies.json` in `.agents/skills/shared/`**:
-   - Added `.agents/skills/shared/skill-dependencies.json` containing the package & dependency graph.
+1. **Shipped `skill-dependencies.json` in `.agents/skills/ws-shared/`**:
+   - Added `.agents/skills/ws-shared/skill-dependencies.json` containing the package & dependency graph.
 2. **Updated `bin/install-rules.js`**:
    - Added `'skill-dependencies.json'` to `HUB_WHITELIST` so `install`/`update` ships `skill-dependencies.json` into consumer shared directories.
 3. **Updated `bin/cli.js`**:
-   - Updated `skillGraphPath` to resolve from `.agents/skills/shared/skill-dependencies.json` when `bin/skill-dependencies.json` is missing.
+   - Updated `skillGraphPath` to resolve from `.agents/skills/ws-shared/skill-dependencies.json` when `bin/skill-dependencies.json` is missing.
 4. **Updated `check_workflows.py`**:
-   - Updated dependency path resolution to check `.agents/skills/shared/skill-dependencies.json` first, fall back to `bin/skill-dependencies.json`, and guard closure checks when no manifest is loaded (`if self.deps_loaded:`).
+   - Updated dependency path resolution to check `.agents/skills/ws-shared/skill-dependencies.json` first, fall back to `bin/skill-dependencies.json`, and guard closure checks when no manifest is loaded (`if self.deps_loaded:`).
 5. **Regenerated Integrity Manifest**:
    - Ran `npm run generate-integrity` to update `bin/skill-integrity.json`.
 

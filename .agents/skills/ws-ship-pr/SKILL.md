@@ -5,9 +5,10 @@
 
 
 
+
 name: ws-ship-pr
 description: End-to-end delivery — SCM-agnostic (reads config.json providers.scm for GitHub, Azure DevOps / ADO, or configured SCM). Prepare-to-PR checklist (discover+wait for local consumer rules), push/create PR, wait 30s for code-review/CI actions to start on SCM infrastructure, run ws-goal-fix-pr (default 300s) until clean, then merge (unless stopBeforeFixPr / no-merge).
-version: 0.0.97
+version: 0.0.99
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -16,11 +17,11 @@ invocation_names:
 
 # ship-pr
 
-Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (verify + **discover and wait** for local consumer prepare / before-push / before-publish harness steps), then push/create PR via the SCM provider configured in `.agents/skills/shared/config.json` (`providers.scm`: GitHub, Azure DevOps / ADO, etc.), wait 30 seconds for automated code-review actions / CI pipelines to start on SCM infrastructure, run `ws-goal-fix-pr` (default 300 seconds heartbeats), and merge only when clean.
+Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (verify + **discover and wait** for local consumer prepare / before-push / before-publish harness steps), then push/create PR via the SCM provider configured in `.agents/skills/ws-shared/config.json` (`providers.scm`: GitHub, Azure DevOps / ADO, etc.), wait 30 seconds for automated code-review actions / CI pipelines to start on SCM infrastructure, run `ws-goal-fix-pr` (default 300 seconds heartbeats), and merge only when clean.
 
 ## SCM Independence & Configuration
 
-`ws-ship-pr` is **SCM-provider independent**. It reads `.agents/skills/shared/config.json` at runtime to determine the active SCM platform and dispatch the corresponding provider skill:
+`ws-ship-pr` is **SCM-provider independent**. It reads `.agents/skills/ws-shared/config.json` at runtime to determine the active SCM platform and dispatch the corresponding provider skill:
 
 - **`providers.scm: "github"`** → dispatches [`ws-github-provider`](../ws-github-provider/SKILL.md) (`gh` CLI / GitHub REST API)
 - **`providers.scm: "azure-devops"`** (or `"ado"`) → dispatches [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) (`az repos` / ADO REST API)
@@ -50,7 +51,7 @@ Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with
 | `shipAction` | (orchestrator-selected) | `create-pr` \| `push-only` \| `skip` |
 | `stopBeforeFixPr` | `false` | Skip Step 6; orchestrator owns fix-PR at Step 9 |
 
-Before executing, restate commit title, head/base, SCM provider (read from `config.json`), mode, `stopBeforeFixPr`, max, and `shipAction`. Resolve branches and provider from `.agents/skills/shared/config.json` only.
+Before executing, restate commit title, head/base, SCM provider (read from `config.json`), mode, `stopBeforeFixPr`, max, and `shipAction`. Resolve branches and provider from `.agents/skills/ws-shared/config.json` only.
 
 ## Steps
 
@@ -67,7 +68,7 @@ Before executing, restate commit title, head/base, SCM provider (read from `conf
 4. **Commit & push**: only after Step 2 is green. Commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {workingBranch}`. Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
-5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../shared/config-resolution.md) (read from `config.json`: `github`, `azure-devops` / `ado`, or `local-spec-provider`; STOP if unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {workingBranch} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
+5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (read from `config.json`: `github`, `azure-devops` / `ado`, or `local-spec-provider`; STOP if unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {workingBranch} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
    - Done when: PR id/URL captured or reused. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).
 
 6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action / CI workflows to start on SCM infrastructure), then start [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks and `list-threads` via the configured SCM provider, and dispatch `ws-goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `ws-goal-fix-pr` even when stopping early so Step 9 can resume cleanly.

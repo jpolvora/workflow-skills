@@ -1,6 +1,6 @@
 # Spec-to-PR — Diagrams (FSM 0–9)
 
-> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`; folder == `name:`). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../shared/gates.md), [`config-resolution.md`](../shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
+> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`; folder == `name:`). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../ws-shared/gates.md), [`config-resolution.md`](../ws-shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
 
 ---
 
@@ -85,7 +85,7 @@ flowchart LR
   State --> Gate
 ```
 
-Universal controls ([`gates.md`](../shared/gates.md)): **Next**, **Previous**, **Replay**, **Refine→Replay**, **Commit**, **Undo**.
+Universal controls ([`gates.md`](../ws-shared/gates.md)): **Next**, **Previous**, **Replay**, **Refine→Replay**, **Commit**, **Undo**.
 
 ---
 

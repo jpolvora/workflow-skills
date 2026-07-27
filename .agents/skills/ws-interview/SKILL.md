@@ -5,9 +5,10 @@
 
 
 
+
 name: ws-interview
 description: Audits and interrogates an implementation plan to resolve ambiguities before task creation.
-version: 0.0.97
+version: 0.0.99
 disable-model-invocation: true
 invocation_names:
   - interview
@@ -28,7 +29,7 @@ Standalone:
 @[refine] <plan-path> [spec=<spec-path>]
 ```
 
-Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip interview (see [gates.md](../shared/gates.md) conditional interview). May be skipped entirely for simple plans.
+Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip interview (see [gates.md](../ws-shared/gates.md) conditional interview). May be skipped entirely for simple plans.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|

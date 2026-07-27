@@ -1,4 +1,4 @@
-# Delivery Result — US 129: Sync shared/skill-dependencies.json with bin: register ws-multi-spec for consumer update
+# Delivery Result — US 129: Sync ws-shared/skill-dependencies.json with bin: register ws-multi-spec for consumer update
 
 ## Benchmark & Telemetry
 
@@ -12,11 +12,11 @@
 ## Changes Summary
 
 1. **Manifest Synchronization**:
-   - Added `"ws-multi-spec"` to `packages.workflows.skills` in `.agents/skills/shared/skill-dependencies.json`.
-   - Added `"ws-multi-spec": ["spec-to-pr", "spec-to-pr-lite", "caveman", "gabarito", "karpathy-guidelines"]` under `dependencies` in `.agents/skills/shared/skill-dependencies.json`.
-   - Bumped package version to `0.0.85` across `package.json`, `bin/skill-dependencies.json`, `.agents/skills/shared/skill-dependencies.json`, and site documentation.
+   - Added `"ws-multi-spec"` to `packages.workflows.skills` in `.agents/skills/ws-shared/skill-dependencies.json`.
+   - Added `"ws-multi-spec": ["spec-to-pr", "spec-to-pr-lite", "caveman", "gabarito", "karpathy-guidelines"]` under `dependencies` in `.agents/skills/ws-shared/skill-dependencies.json`.
+   - Bumped package version to `0.0.85` across `package.json`, `bin/skill-dependencies.json`, `.agents/skills/ws-shared/skill-dependencies.json`, and site documentation.
 2. **Audit Guardrails**:
-   - Added automatic sync assertion in `.agents/skills/check-workflows/scripts/check_workflows.py` to ensure `bin/skill-dependencies.json` and `.agents/skills/shared/skill-dependencies.json` remain identical in skill membership.
+   - Added automatic sync assertion in `.agents/skills/check-workflows/scripts/check_workflows.py` to ensure `bin/skill-dependencies.json` and `.agents/skills/ws-shared/skill-dependencies.json` remain identical in skill membership.
 3. **Test Suite Verification**:
    - Added test assertions in `test/test-install.js` for `ws-multi-spec` registration and `bin` ↔ `shared` sync.
 4. **Integrity Checksums**:

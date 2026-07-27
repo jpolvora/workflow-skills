@@ -9,7 +9,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 | Token | Resolve | Default (install contract) |
 |-------|---------|----------------------------|
 | `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
-| `{sharedDir}` | `pathTokens.sharedDir` | `{skillsRoot}/shared` → `.agents/skills/shared` |
+| `{sharedDir}` | `pathTokens.sharedDir` | `{skillsRoot}/ws-shared` → `.agents/skills/ws-shared` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{us-dir}` | `{plansDir}/{slug}/` | (slug from workflow) |
@@ -17,10 +17,10 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 **Agent contract:**
 
 1. Load `config.json` (`read-config`) then this file (`toolsFile`, default `tools.md`) early in the session.
-2. Expand tokens **before** tool calls. Example: `{sharedDir}/MEMORY.md` → `.agents/skills/shared/MEMORY.md`.
-3. **Forbidden:** bare `shared/MEMORY.md` or other undeclared shorthands (do not Grep those literals).
+2. Expand tokens **before** tool calls. Example: `{sharedDir}/MEMORY.md` → `.agents/skills/ws-shared/MEMORY.md`.
+3. **Forbidden:** bare `ws-shared/MEMORY.md` or other undeclared shorthands (do not Grep those literals).
 4. **Shell recipes:** expand tokens before paste, or write the Default path literally (copy-paste safe).
-5. **Markdown links** in skill files: use real relative paths (`../shared/…`), never brace tokens (GitHub/ws-check-harness cannot expand them).
+5. **Markdown links** in skill files: use real relative paths (`../ws-shared/…`), never brace tokens (GitHub/ws-check-harness cannot expand them).
 6. **Hub routing tables** that inventory disk paths: keep full `.agents/skills/…` literals so audits stay filesystem-true.
 7. `{skillsRoot}` / `{sharedDir}` are **fixed install layout**, not relocatable consumer knobs (unlike `plans.dir`).
 
@@ -76,7 +76,7 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 |------|--------|--------|
 | `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
 | `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | Subagent dispatch (host-provided) — same worktree, no file overlap |
-| `user-gate` | Ask question | Prefer native structured choice UI when available; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback with same options when unavailable (see [`gates.md`](gates.md)); log `user-gate-fallback` |
+| `user-gate` | Ask question | **Prefer `AskQuestion`** when the host provides it; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback with same options when unavailable (see [`gates.md`](gates.md)); log `user-gate-fallback` |
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
 | `browser-mcp` | Browser integration test | Host browser MCP when available (only normal mode, non-dry-run, gated) |
 

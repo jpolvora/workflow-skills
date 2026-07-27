@@ -63,11 +63,11 @@ Available at **every** transition gate (normal mode; under **More options…** w
 
 Rules: multiple `needs_user` → one by design-tree priority. **End refinement and advance** → log `assumed-default`, set `shared_understanding: confirmed`, skip 2e. Block Step 3 only if interview ran and `refine.shared_understanding !== confirmed`.
 
-**Conditional skip:** See [`gates.md`](../shared/gates.md) § Conditional interview. Step 2 grills the **plan**, not the spec.
+**Conditional skip:** See [`gates.md`](../ws-shared/gates.md) § Conditional interview. Step 2 grills the **plan**, not the spec.
 
 ### Complexity / Dynamic Execution
 
-Before Step 1, classify per [`gates.md`](../shared/gates.md) § Complexity gate. User may override when ambiguous: **Simple path** / **Standard path** (rec) / **Full grill**.
+Before Step 1, classify per [`gates.md`](../ws-shared/gates.md) § Complexity gate. User may override when ambiguous: **Simple path** / **Standard path** (rec) / **Full grill**.
 
 **Simple path:** stub `step-01-{slug}.plan.md`, `execMode: sequential`, skip Steps 1–2–3, jump to Step 4.
 
@@ -91,7 +91,7 @@ Every completed/failed step: pass measured `--elapsed` into `update_state.py` (r
 
 No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → IDE/agent host → Resume).
 
-When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
+When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
 ### Step Dispatch & Isolation
 
@@ -134,9 +134,9 @@ Fix substep is **not** its own `completedSteps` entry — log `review-fix` in `#
 
 ### Learning & Memory Protocol
 
-At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated decisions`, `## Step outputs`) and `.agents/skills/shared/MEMORY.md` index. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
+At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated decisions`, `## Step outputs`) and `.agents/skills/ws-shared/MEMORY.md` index. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
 
-**Step 8 sweep:** Promote generalizable patterns to `shared/memory/*.md` + run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
+**Step 8 sweep:** Promote generalizable patterns to `ws-shared/memory/*.md` + run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
 
 ### Specification Protocol
 
@@ -188,7 +188,7 @@ Orch `git add` must be path-scoped — never `git add .` on code-commit steps.
 
 **Order:** delivery result → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
 
-**Combined gate** ([`gates.md`](../shared/gates.md) + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
+**Combined gate** ([`gates.md`](../ws-shared/gates.md) + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
 
 1. **Commit plan + result, then create PR** (Recommended when `fullMode`)
 2. **Commit plan + result, push only**
@@ -234,7 +234,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 8 combined gate (not `fullMode`) | **Commit plan + result, skip PR** |
 | Step 9 fix-pr | **Run ws-goal-fix-pr loop** |
 
-Shared defaults: [`gates.md`](../shared/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.
+Shared defaults: [`gates.md`](../ws-shared/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.
 
 ### Checkpoints
 
@@ -278,7 +278,7 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 
 ### Resume / reset
 
-→ [`setup.md`](../shared/setup.md) § Resume / reset
+→ [`setup.md`](../ws-shared/setup.md) § Resume / reset
 
 ### Base Prompt Prefix (`dispatch-agent` body)
 
@@ -305,7 +305,7 @@ Post-step: hygiene → checkpoint (`Shell` tag) → short summary → gate. Boar
 | Mode | Tool |
 |------|------|
 | auto | auto-gate table → immediate `dispatch-agent`/`Shell` |
-| normal | Prefer `user-gate`; slim menu per [`gates.md`](../shared/gates.md) |
+| normal | Prefer `user-gate`; slim menu per [`gates.md`](../ws-shared/gates.md) |
 
 Shows gates.md banner (`Current model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only.
 
@@ -313,7 +313,7 @@ Shows gates.md banner (`Current model` + Pause → IDE/agent host → Resume) an
 
 ## Bootstrap & Entry
 
-→ [`setup.md`](../shared/setup.md) § Bootstrap & Entry
+→ [`setup.md`](../ws-shared/setup.md) § Bootstrap & Entry
 
 ## Step instructions
 

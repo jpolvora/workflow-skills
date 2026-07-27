@@ -4,7 +4,7 @@
 **Findings:** 0 Critical, 0 Warning, 0 Suggestion
 
 ## Reviewed Files
-1. `.agents/skills/shared/skill-dependencies.json`
+1. `.agents/skills/ws-shared/skill-dependencies.json`
 2. `bin/install-rules.js`
 3. `bin/cli.js`
 4. `.agents/skills/check-workflows/scripts/check_workflows.py`

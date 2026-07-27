@@ -4,7 +4,7 @@ Canonical gate UX for [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec
 Both orchestrators MUST follow this file so shared pipeline skills stay interchangeable.
 
 Artifact paths: [`../ws-spec-to-pr/ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md).
-Config: [`.agents/skills/shared/config.json`](config.json) only — see [`config-resolution.md`](config-resolution.md).
+Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`config-resolution.md`](config-resolution.md).
 
 ---
 
@@ -18,17 +18,21 @@ Config: [`.agents/skills/shared/config.json`](config.json) only — see [`config
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
-| **Config** | Only `.agents/skills/shared/config.json`. No `ws-spec-to-pr/config.json` / `ws-spec-to-pr-lite/config.json`. |
+| **Config** | Only `.agents/skills/ws-shared/config.json`. No `ws-spec-to-pr/config.json` / `ws-spec-to-pr-lite/config.json`. |
 | **User gates** | Prefer native structured choice UI when available; markdown fallback when not; HS-1 on cancel. |
 
 ---
 
 ## User gates (`user-gate`)
 
-1. Every normal-mode gate: **prefer** native structured choice UI (`user-gate`) with ≥2 options; recommended first.
-2. If the structured choice UI is unavailable or returns tool-not-found → present the **same options** as a short markdown list; wait for user reply. Optional log: `user-gate-fallback | {gate} | ISO`.
+Portable alias: `user-gate`. **Native tool:** when the host exposes a structured multiple-choice tool (e.g. `AskQuestion`), **invoke it at every orchestration gate** — step transitions, entry/resume/config, refinement, G2-code, delivery+ship, fix-pr. Do not skip gates in normal mode.
+
+1. Every normal-mode gate: **prefer** `AskQuestion` (or host equivalent) with ≥2 options; recommended first. Map to portable `user-gate` vocabulary in logs.
+2. If `AskQuestion` / structured choice is unavailable or returns tool-not-found → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 3. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
 4. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
+
+**Orchestrator obligation:** both [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) MUST call `AskQuestion` (when available) at **each** step boundary before advancing, replaying, refining, committing, shipping, or fix-pr — not only at entry or ship.
 
 ---
 

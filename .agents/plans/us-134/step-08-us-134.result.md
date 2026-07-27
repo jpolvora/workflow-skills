@@ -2,7 +2,7 @@
 
 ## Summary
 Added `ws-spec-index` model-invoked skill for project spec index lifecycle management (`init`, `sync`, `promote`) in consumer repositories.
-Registered in `bin/skill-dependencies.json` (Workflows + Full packages), updated hub skill indexes and task routers (`AGENTS.md` and `.agents/skills/shared/AGENTS.md`), and wired orchestrator auto-sync call sites.
+Registered in `bin/skill-dependencies.json` (Workflows + Full packages), updated hub skill indexes and task routers (`AGENTS.md` and `.agents/skills/ws-shared/AGENTS.md`), and wired orchestrator auto-sync call sites.
 
 ## Artifacts
 - Plan: `.agents/plans/us-134/step-02-us-134.plan.refined.md`

@@ -14,8 +14,8 @@ scope:
   - test/test-install.js (Phase 0b / Phase 11)
   - README.md (integrity docs)
   - .agents/skills/check-harness/SKILL.md (integrity bullet)
-  - .agents/skills/shared/hub.gitignore
-  - .agents/skills/shared/.gitignore
+  - .agents/skills/ws-shared/hub.gitignore
+  - .agents/skills/ws-shared/.gitignore
 excluded: pre-existing dirty ws-ship-pr/*
 ---
 

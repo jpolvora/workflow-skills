@@ -5,13 +5,17 @@
 
 
 
+
 name: ws-spec-format
 description: >-
   Creates, reviews, or formats *.spec.md artifacts (local US/feature specification). Project-agnostic.
   Load when the user invokes /ws-spec-format, @ws-spec-format, "create spec", "review spec",
   "format spec" or requests validation of local specification format.
 disable-model-invocation: true
-version: 0.0.97
+version: 0.0.99
+invocation_names:
+  - spec-format
+  - ws-spec-format
 ---
 
 # ws-spec-format
@@ -48,4 +52,4 @@ Infer mode or ask. Triggers: `/ws-spec-format`, `@ws-spec-format`, create/review
 
 `ws-spec-to-pr`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-testing` read **`{us-dir}/step-00-{slug}.spec.md`** only — never live tracker APIs or `*.issue.json`. See [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md).
 
-Providers: [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md). Hub: [`AGENTS.md`](../shared/AGENTS.md).
+Providers: [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md). Hub: [`AGENTS.md`](../ws-shared/AGENTS.md).

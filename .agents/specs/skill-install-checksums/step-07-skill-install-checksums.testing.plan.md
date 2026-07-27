@@ -38,7 +38,7 @@ sourceReview: step-06-skill-install-checksums.review.md
 | `test/test-install.js` | Phase 0b + Phase 11 (AC coverage + W1 regression) |
 | `README.md` | AC12 docs |
 | `.agents/skills/check-harness/SKILL.md` | AC11 harness bullet |
-| `.agents/skills/shared/hub.gitignore` | Packable hub gitignore |
+| `.agents/skills/ws-shared/hub.gitignore` | Packable hub gitignore |
 
 ## AC → test mapping
 

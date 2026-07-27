@@ -34,11 +34,11 @@
       "parallelGroup": "L1",
       "dependsOn": [],
       "files": [
-        ".agents/skills/shared/config.json.example",
-        ".agents/skills/shared/setup.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/setup.md",
         "AGENTS.md",
         ".agents/AGENTS.md",
-        ".agents/skills/shared/AGENTS.md",
+        ".agents/skills/ws-shared/AGENTS.md",
         "README.md"
       ],
       "acceptance": "AC6–AC8 and AC11: empty seniorDeveloper default remains empty; packaged path is documented as opt-in; config-path-first resolution and pointer-only checklist ownership remain intact; root-pointer wording remains consumer-owned.",
@@ -51,7 +51,7 @@
       "dependsOn": [],
       "files": [
         "bin/skill-dependencies.json",
-        ".agents/skills/shared/skill-dependencies.json"
+        ".agents/skills/ws-shared/skill-dependencies.json"
       ],
       "acceptance": "AC7 and AC9: both manifests include ws-senior-developer only in packages.workflows.skills, remain mirrored, and contain no new dependencies or autoloadOnly entry.",
       "coderPrompt": "Add ws-senior-developer to packages.workflows.skills in both listed mirrored manifests. Do not alter dependencies, autoloadOnly, installer code, or other package membership. Preserve JSON formatting and ordering conventions."
@@ -133,7 +133,7 @@
       "files": [
         "package.json",
         "bin/skill-dependencies.json",
-        ".agents/skills/shared/skill-dependencies.json",
+        ".agents/skills/ws-shared/skill-dependencies.json",
         "docs/index.html",
         ".agents/skills/ws-azure-devops-provider/SKILL.md",
         ".agents/skills/ws-caveman/SKILL.md",
@@ -212,7 +212,7 @@
       "files": [
         "AGENTS.md",
         ".agents/AGENTS.md",
-        ".agents/skills/shared/AGENTS.md",
+        ".agents/skills/ws-shared/AGENTS.md",
         "README.md",
         "docs/index.html",
         "package.json",
@@ -221,7 +221,7 @@
       ],
       "fileMode": "read-only verification targets; no edits expected",
       "acceptance": "AC6 and AC9–AC12: integrity verification, configured local package tests, non-bumping site build, workflow checker, harness Phases 0–5c, and changed-doc conflict search pass with zero critical findings.",
-      "coderPrompt": "Run npm run verify-integrity; npm run tests -- --local; node bin/build-site.js; python .agents/skills/ws-check-workflows/scripts/check_workflows.py; and ws-check-harness Phases 0–5c. Search AGENTS.md, .agents/AGENTS.md, .agents/skills/shared/AGENTS.md, README.md, and docs/index.html for conflict markers. Report command evidence and blockers; do not edit files in this task."
+      "coderPrompt": "Run npm run verify-integrity; npm run tests -- --local; node bin/build-site.js; python .agents/skills/ws-check-workflows/scripts/check_workflows.py; and ws-check-harness Phases 0–5c. Search AGENTS.md, .agents/AGENTS.md, .agents/skills/ws-shared/AGENTS.md, README.md, and docs/index.html for conflict markers. Report command evidence and blockers; do not edit files in this task."
     }
   ],
   "levels": [

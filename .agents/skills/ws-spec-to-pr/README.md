@@ -2,7 +2,7 @@
 
 > **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract. Use this README + [`DIAGRAM.md`](DIAGRAM.md) for onboarding. FAQ sections that still mention steps 11–13 are **legacy**; trust [`SKILL.md`](SKILL.md) / this README for steps **0–9**.
 >
-> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../shared/tools.md). Config: `.agents/skills/shared/config.json`.
+> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/tools.md). Config: `.agents/skills/ws-shared/config.json`.
 >
 > **Identity:** `/ws-spec-to-pr` / `@[ws-spec-to-pr]`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
@@ -23,7 +23,7 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 | [`DIAGRAM.md`](DIAGRAM.md) | Visual | Mermaid 0–9 / lite 0–5 |
 | [`ARTIFACTS.md`](ARTIFACTS.md) | Both | Canonical filenames |
 
-**Project entry:** [`shared/AGENTS.md`](../shared/AGENTS.md) (or root [`AGENTS.md`](../../../AGENTS.md) when authoring against the source repo).
+**Project entry:** [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md) (or root [`AGENTS.md`](../../../AGENTS.md) when authoring against the source repo).
 
 ---
 
@@ -51,7 +51,7 @@ Lite: 0 Spec → 1 Plan → 2 Implement → 3 Review → 4 Ship → 5 Fix-PR (no
   → 8 Ship (delivery commit + push/PR) → 9 Fix-PR
 ```
 
-Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../shared/setup.md).
+Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/setup.md).
 
 ---
 
@@ -83,7 +83,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 | `full` | Step 8 Recommended = commit plan+result then create PR |
 | `strict` | Full verification matrix at Step 5 |
 
-**Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../shared/setup.md).
+**Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/setup.md).
 
 ### Model selection
 
@@ -114,7 +114,7 @@ Unit + integration/E2E + coverage + feature-quality checks. Auto-skip when `skip
 
 ### Golden rule
 
-After Transition Gate **Next**, dispatch the next step in the **same turn**. Universal controls: Next / Previous / Replay / Refine→Replay / Commit / Undo ([`gates.md`](../shared/gates.md)).
+After Transition Gate **Next**, dispatch the next step in the **same turn**. Universal controls: Next / Previous / Replay / Refine→Replay / Commit / Undo ([`gates.md`](../ws-shared/gates.md)).
 
 ---
 
@@ -126,13 +126,13 @@ Local tags **never pushed**: `uswf/{workflow-id}/before-step-{N}`.
 
 ## Dual-mode
 
-Same skills, `shared/config.json`, `gates.md`. `workflowType`: `standard` | `lite` — no cross-resume. Lite has **no** Testing step.
+Same skills, `ws-shared/config.json`, `gates.md`. `workflowType`: `standard` | `lite` — no cross-resume. Lite has **no** Testing step.
 
 ---
 
 ## Related
 
 - Lite orchestrator: [`ws-spec-to-pr-lite/SKILL.md`](../ws-spec-to-pr-lite/SKILL.md)
-- Shared bootstrap: [`setup.md`](../shared/setup.md)
+- Shared bootstrap: [`setup.md`](../ws-shared/setup.md)
 - Step dispatch (standard only): [`STEP-DISPATCH.md`](STEP-DISPATCH.md)
 - Dry-run FSM test runbook: [`ws-spec-to-pr-run-test.md`](ws-spec-to-pr-run-test.md)

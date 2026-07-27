@@ -27,9 +27,9 @@ npx --yes github:jpolvora/workflow-skills update --yes
 
 | Item | Status in 0.0.73 |
 |------|------------------|
-| Out of scope link (was `../../../AGENTS.md`) | **Fixed** — now `shared/AGENTS.md` + § Hub resolution |
+| Out of scope link (was `../../../AGENTS.md`) | **Fixed** — now `ws-shared/AGENTS.md` + § Hub resolution |
 | Phase 4 heading | **Fixed** — "Skills/rules not routed in the **resolved hub**" |
-| Phase 4 intro link | **Fixed** — points at `shared/AGENTS.md` (consumer) / root (upstream) |
+| Phase 4 intro link | **Fixed** — points at `ws-shared/AGENTS.md` (consumer) / root (upstream) |
 | `check-workflows` | **PASS** (0 issues) |
 | Hub broken links / unrouted skills / retired path ids | **0** |
 | #101 consumer hub + checklist split + configure-project heuristic | Still good |
@@ -41,7 +41,7 @@ npx --yes github:jpolvora/workflow-skills update --yes
 | Location | Current text | Problem |
 |----------|--------------|---------|
 | Output format § required sections, item **4** (~L672) | `Skills and rules not routed in \`AGENTS.md\`` | Should say **resolved hub** (match Phase 4 heading) |
-| Quick checklist / DoD Step 1 (~L720) | `Phase 4 executed: filesystem ↔ \`AGENTS.md\` (+ packaged hub / …)` | Should say **resolved hub** (consumer: `shared/AGENTS.md`; upstream: root `AGENTS.md`) |
+| Quick checklist / DoD Step 1 (~L720) | `Phase 4 executed: filesystem ↔ \`AGENTS.md\` (+ packaged hub / …)` | Should say **resolved hub** (consumer: `ws-shared/AGENTS.md`; upstream: root `AGENTS.md`) |
 
 `REPORT-FORMAT.md` does not repeat these phrases (OK).
 

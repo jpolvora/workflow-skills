@@ -82,7 +82,7 @@ This makes the shipped skill opt-in and maintains `AGENTS.md` as policy routing,
 `bin/cli.js` discovers top-level skill folders and applies `bin/skill-dependencies.json` package membership transitively. No new installer branch is needed:
 
 - add `ws-senior-developer` to `packages.workflows.skills`;
-- mirror the dependency graph in `.agents/skills/shared/skill-dependencies.json`, which is shipped through `HUB_WHITELIST`;
+- mirror the dependency graph in `.agents/skills/ws-shared/skill-dependencies.json`, which is shipped through `HUB_WHITELIST`;
 - do not add a `dependencies` entry because no skill dispatches it unconditionally;
 - preserve existing `shouldEnsureHub` behavior, now satisfied because Workflows selection includes the skill;
 - preserve `ensureSharedHubInstalled` and its prohibition on root-file writes.
@@ -107,14 +107,14 @@ This makes the shipped skill opt-in and maintains `AGENTS.md` as policy routing,
    - Check: frontmatter name equals folder; version is package-aligned after release bump; description is model-invoked; every step has Done when; no script or non-LF shell file exists.
 
 3. **Add activation and proof-source integration**
-   - Update `config.json.example` comments and `shared/setup.md` to document an empty-by-default `rules.seniorDeveloper` and the opt-in packaged path.
-   - Update the external-dependency / Code review proof text in root `AGENTS.md`, `.agents/AGENTS.md`, and `shared/AGENTS.md` so a configured packaged path resolves before local/global fallback, and detailed checklist ownership remains only in the new skill.
+   - Update `config.json.example` comments and `ws-shared/setup.md` to document an empty-by-default `rules.seniorDeveloper` and the opt-in packaged path.
+   - Update the external-dependency / Code review proof text in root `AGENTS.md`, `.agents/AGENTS.md`, and `ws-shared/AGENTS.md` so a configured packaged path resolves before local/global fallback, and detailed checklist ownership remains only in the new skill.
    - Update `STACK.md.example` only if its engineering-guardrails row needs the same activation fact; do not change consumer-owned local `STACK.md`.
    - Check: search finds no hub-level duplication of the checklist, and empty optional values remain informational in harness behavior.
 
 4. **Register package and consumer-facing routing**
-   - Add `ws-senior-developer` to the Workflows package in `bin/skill-dependencies.json`, then mirror the same graph in `.agents/skills/shared/skill-dependencies.json`.
-   - Register it in root `AGENTS.md` under engineering standards or promoted utilities, `.agents/AGENTS.md` under the Workflows package index/task router, and `shared/AGENTS.md` under promoted utilities/task routing as appropriate.
+   - Add `ws-senior-developer` to the Workflows package in `bin/skill-dependencies.json`, then mirror the same graph in `.agents/skills/ws-shared/skill-dependencies.json`.
+   - Register it in root `AGENTS.md` under engineering standards or promoted utilities, `.agents/AGENTS.md` under the Workflows package index/task router, and `ws-shared/AGENTS.md` under promoted utilities/task routing as appropriate.
    - Update README's human-facing catalog and optional activation guidance, including the existing optional root-pointer policy. Do not imply the installer creates a root pointer.
    - Check: package membership and both hub inventories agree with the on-disk folder; Full inherits the skill through `all-skills`; no `autoloadOnly` addition or new unconditional graph dependency appears.
 
@@ -153,7 +153,7 @@ Portability protections:
 
 - consumer-specific policy stays in consumer root `AGENTS.md` or configured rules;
 - the shared hub is the installed consumer contract;
-- consumer activation edits only `shared/config.json`, which the installer preserves;
+- consumer activation edits only `ws-shared/config.json`, which the installer preserves;
 - installer logic must never create or overwrite consumer root `AGENTS.md` or host pointer files;
 - English (en-us) is required for the skill, evals, hubs, and generated catalog text.
 

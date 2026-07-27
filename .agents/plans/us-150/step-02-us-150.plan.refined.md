@@ -57,10 +57,10 @@ The detailed Code review proof checklist belongs in the pre-ship phase of this s
 
 ### Packaging, configuration, and documentation
 
-- Add `ws-senior-developer` to `packages.workflows.skills` in `bin/skill-dependencies.json` and `.agents/skills/shared/skill-dependencies.json`.
+- Add `ws-senior-developer` to `packages.workflows.skills` in `bin/skill-dependencies.json` and `.agents/skills/ws-shared/skill-dependencies.json`.
 - Do not add it to `dependencies` or `autoloadOnly`. `bin/cli.js` already discovers top-level skills, resolves package members, and ensures the hub for every Workflows member.
-- Extend `config.json.example` and `shared/setup.md` with the shipped opt-in path while keeping the configured path first in resolution precedence.
-- Add concise routes to root `AGENTS.md` Layer 1 and task router, packaged `.agents/AGENTS.md` Workflows index/task router, and `shared/AGENTS.md` promoted utilities/task router. Preserve the packaged index's Workflows-only scope.
+- Extend `config.json.example` and `ws-shared/setup.md` with the shipped opt-in path while keeping the configured path first in resolution precedence.
+- Add concise routes to root `AGENTS.md` Layer 1 and task router, packaged `.agents/AGENTS.md` Workflows index/task router, and `ws-shared/AGENTS.md` promoted utilities/task router. Preserve the packaged index's Workflows-only scope.
 - Update README with human-facing availability and opt-in instructions. State that an optional consumer-root pointer is consumer-owned and never installer-created.
 - Do not edit local `config.json`, local `STACK.md`, or any consumer-owned artifact.
 

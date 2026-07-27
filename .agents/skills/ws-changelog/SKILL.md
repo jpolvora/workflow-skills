@@ -5,11 +5,15 @@
 
 
 
+
 name: ws-changelog
-version: 0.0.97
+version: 0.0.99
 description: >
   Write a summarized historical record of the task into the configured ws-changelog file
-  (default `.agents/skills/shared/CHANGELOG.md`). Use at the very end of every implementation task.
+  (default `.agents/skills/ws-shared/CHANGELOG.md`). Use at the very end of every implementation task.
+invocation_names:
+  - changelog
+  - ws-changelog
 ---
 
 # Changelog
@@ -24,12 +28,12 @@ Run at the end of every implementation task to maintain a historical record of w
 
 ## Path resolution
 
-Resolve the target file from `.agents/skills/shared/config.json`:
+Resolve the target file from `.agents/skills/ws-shared/config.json`:
 
 | Source | Path |
 |--------|------|
 | `rules.changelogFile` when set | that path (repo-relative) |
-| Default | `.agents/skills/shared/CHANGELOG.md` |
+| Default | `.agents/skills/ws-shared/CHANGELOG.md` |
 
 Do **not** create or require a repo-root `CHANGELOG.md` unless the consumer explicitly set `rules.changelogFile` to that path (e.g. `"CHANGELOG.md"`).
 

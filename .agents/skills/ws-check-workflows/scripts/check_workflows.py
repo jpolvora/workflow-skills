@@ -60,7 +60,7 @@ REPO_ROOT = find_repo_root(SCRIPT_DIR)
 
 def resolve_skills_dir(repo_root: Path) -> Path:
     """Respect pathTokens.skillsRoot from shared/config.json when present."""
-    config_path = repo_root / ".agents" / "skills" / "shared" / "config.json"
+    config_path = repo_root / ".agents" / "skills" / "ws-shared" / "config.json"
     if config_path.exists():
         try:
             cfg = json.loads(config_path.read_text(encoding="utf-8", errors="replace"))
@@ -76,7 +76,7 @@ def resolve_skills_dir(repo_root: Path) -> Path:
 
 
 SKILLS_DIR = resolve_skills_dir(REPO_ROOT)
-SHARED_DEPS_PATH = SKILLS_DIR / "shared" / "skill-dependencies.json"
+SHARED_DEPS_PATH = SKILLS_DIR / "ws-shared" / "skill-dependencies.json"
 BIN_DEPS_PATH = REPO_ROOT / "bin" / "skill-dependencies.json"
 
 
@@ -151,18 +151,18 @@ class WorkflowChecker:
                 if shared_wf_skills != bin_wf_skills:
                     diff_missing = bin_wf_skills - shared_wf_skills
                     diff_extra = shared_wf_skills - bin_wf_skills
-                    msg = "Package skills mismatch between bin/skill-dependencies.json and shared/skill-dependencies.json."
+                    msg = "Package skills mismatch between bin/skill-dependencies.json and ws-shared/skill-dependencies.json."
                     if diff_missing:
-                        msg += f" Missing in shared: {sorted(diff_missing)}."
+                        msg += f" Missing in ws-shared: {sorted(diff_missing)}."
                     if diff_extra:
-                        msg += f" Extra in shared: {sorted(diff_extra)}."
+                        msg += f" Extra in ws-shared: {sorted(diff_extra)}."
                     self.issues.append(
                         Issue(
                             "CRITICAL",
                             "Dependency Graph Sync",
-                            "shared/skill-dependencies.json",
+                            "ws-shared/skill-dependencies.json",
                             msg,
-                            "Sync .agents/skills/shared/skill-dependencies.json with bin/skill-dependencies.json.",
+                            "Sync .agents/skills/ws-shared/skill-dependencies.json with bin/skill-dependencies.json.",
                         )
                     )
             except Exception:
@@ -485,13 +485,13 @@ class WorkflowChecker:
         lite_val_state = SKILLS_DIR / "ws-spec-to-pr-lite" / "scripts" / "validate_state.py"
         if lite_val_state.exists():
             code = lite_val_state.read_text(encoding="utf-8", errors="replace")
-            if "shared" not in code or "config.json" not in code:
+            if "ws-shared" not in code or "config.json" not in code:
                 self.add_issue(
                     "WARNING",
                     "Config Sharing",
                     "ws-spec-to-pr-lite/scripts/validate_state.py",
-                    "Lite validate_state.py does not target shared/config.json.",
-                    "Update script to reference shared/config.json.",
+                    "Lite validate_state.py does not target ws-shared/config.json.",
+                    "Update script to reference ws-shared/config.json.",
                 )
 
     def run_all(self) -> None:

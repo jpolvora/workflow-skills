@@ -5,13 +5,17 @@
 
 
 
+
 name: ws-spec-to-pr
-version: 0.0.97
+version: 0.0.99
 description: >-
   Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs.
-  Invoke: /ws-spec-to-pr | @[ws-spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description.
+  Invoke: /ws-spec-to-pr | /spec-to-pr | @[ws-spec-to-pr] | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description.
   Flags: dry-run, auto, skip-testing, skip-tests, full, strict.
   Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via `dispatch-agent` (host subagent dispatch).
+invocation_names:
+  - spec-to-pr
+  - ws-spec-to-pr
 ---
 
 ## Audience & load
@@ -21,16 +25,16 @@ description: >-
 | **Orchestrator (this file)** | FSM + tool bindings + asserts |
 | **Humans** | [`README.md`](README.md), [`docs/faq.md`](docs/faq.md), [`DIAGRAM.md`](DIAGRAM.md) |
 
-**Always-on load:** this file + current step skill. **On demand:** [`setup.md`](../shared/setup.md) · [`gates.md`](../shared/gates.md) · [`config-resolution.md`](../shared/config-resolution.md) · [`tools.md`](../shared/tools.md) · [`ARTIFACTS.md`](ARTIFACTS.md) · [`STEP-DISPATCH.md`](STEP-DISPATCH.md) (when advancing) · [`PROTOCOLS.md`](PROTOCOLS.md) (gates, auth ladder, step protocols, state YAML, errors) · [`protocols/`](protocols/) · stack file (steps 4/6/7) · [`shared/AGENTS.md`](../shared/AGENTS.md). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md): shared skills stay interchangeable. Language: **en-us** only.
+**Always-on load:** this file + current step skill. **On demand:** [`setup.md`](../ws-shared/setup.md) · [`gates.md`](../ws-shared/gates.md) · [`config-resolution.md`](../ws-shared/config-resolution.md) · [`tools.md`](../ws-shared/tools.md) · [`ARTIFACTS.md`](ARTIFACTS.md) · [`STEP-DISPATCH.md`](STEP-DISPATCH.md) (when advancing) · [`PROTOCOLS.md`](PROTOCOLS.md) (gates, auth ladder, step protocols, state YAML, errors) · [`protocols/`](protocols/) · stack file (steps 4/6/7) · [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md): shared skills stay interchangeable. Language: **en-us** only.
 
 ## Native tool contract
 
-Canonical aliases: [`tools.md`](../shared/tools.md). Params: `{sharedDir}/config.json`. Never narrate undone work. Orch never edits code — `dispatch-agent` only.
+Canonical aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Never narrate undone work. Orch never edits code — `dispatch-agent` only.
 
 | Intent | Alias | Rule |
 |--------|-------|------|
 | Step work | `dispatch-agent` | `generalPurpose`\|`shell`; `description: "STP step {N} — {Label}"`; readonly step 5; no resume across steps; step 4 DAG ≤3 parallel |
-| User gate | `user-gate` / `user-gate-auto` | Prefer native; markdown fallback [`gates.md`](../shared/gates.md); ≥2 options; cancelled → HS-1; auto → index 0 |
+| User gate | `user-gate` / `user-gate-auto` | **At every step boundary:** prefer `AskQuestion` when available; else markdown fallback [`gates.md`](../ws-shared/gates.md); ≥2 options; cancelled → HS-1; auto → index 0 |
 | Build/test / SCM | `Shell` | `config.json.verification`; cite real `gh`/`git` output |
 | State | `read-state` / `write-state` | Hygiene before board |
 | Browser (7) | `browser-mcp` | Normal, non-dry-run, non-skip, gated |
@@ -73,7 +77,7 @@ Runtime tokens: `uswf/` tags/worktrees; slugs `us-{id}`.
 | Need | Load |
 |------|------|
 | Filenames / `{us-dir}` | [`ARTIFACTS.md`](ARTIFACTS.md) |
-| Bootstrap / flags / resume | [`setup.md`](../shared/setup.md) |
+| Bootstrap / flags / resume | [`setup.md`](../ws-shared/setup.md) |
 | Providers | [`ws-github-provider`](../ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) |
 | Step map | `ws-write-spec`→0 … `ws-ship-pr`→8 · `ws-fix-pr`/`ws-goal-fix-pr`→9 · `ws-update-plan-implementation` Post |
 | Auth ladder, step protocols, state YAML, errors | [`PROTOCOLS.md`](PROTOCOLS.md) |
@@ -133,10 +137,10 @@ flowchart LR
 
 1. [`PROTOCOLS.md`](PROTOCOLS.md) — Authorization Ladder, transition discipline, step-specific protocols, state schema, base prompt prefix, HS-* stops.
 2. [`STEP-DISPATCH.md`](STEP-DISPATCH.md) — step instruction bodies.
-3. [`gates.md`](../shared/gates.md) — user-gate menus.
+3. [`gates.md`](../ws-shared/gates.md) — user-gate menus.
 4. Step skill from index above.
 
-Bootstrap/entry → [`setup.md`](../shared/setup.md). Post-workflow QA → [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) (outside this orch).
+Bootstrap/entry → [`setup.md`](../ws-shared/setup.md). Post-workflow QA → [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) (outside this orch).
 
 ## Triggers
 

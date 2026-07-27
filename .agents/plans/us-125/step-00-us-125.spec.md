@@ -32,7 +32,7 @@ So that each feature is automatically specified, implemented, verified, reviewed
 
 ### FR-2: Package registration & index integration
 - Register `ws-long-runner` under `packages.workflows.skills` in `bin/skill-dependencies.json`.
-- Add `ws-long-runner` to skill catalogs and routing tables in `AGENTS.md`, `.agents/AGENTS.md`, and `.agents/skills/shared/AGENTS.md`.
+- Add `ws-long-runner` to skill catalogs and routing tables in `AGENTS.md`, `.agents/AGENTS.md`, and `.agents/skills/ws-shared/AGENTS.md`.
 
 ### FR-3: Harness & integrity validation
 - Ensure `check-harness` passes with 0 critical findings.
