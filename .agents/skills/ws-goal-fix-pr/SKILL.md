@@ -41,7 +41,7 @@ Before executing, restate the parsed parameters: PR number, success criterion, m
 
 ## SCM resolution
 
-Resolve per [config-resolution.md](../shared/config-resolution.md).
+Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
 
 | `providers.scm` | Provider skill | Intent used here |
 |-----------------|----------------|-------------------|

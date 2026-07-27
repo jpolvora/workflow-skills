@@ -530,7 +530,7 @@ const EVALS = {
       {
         id: 1,
         prompt: 'Set up workflow config for a new Node + React monorepo.',
-        expected_output: 'Interview/detect fills shared/config.json from example template.',
+        expected_output: 'Interview/detect fills ws-shared/config.json from example template.',
         assertions: [
           'Agent loads configure-project',
           'Writes config.json under {sharedDir}, not repo root',
@@ -819,7 +819,7 @@ const EVALS = {
         expected_output: 'Reports missing deps and install guidance, not a false full snapshot.',
         assertions: [
           'Distinguishes installed vs missing pipeline skills',
-          'References shared hub or installed-skills.json when present',
+          'References ws-shared hub or installed-skills.json when present',
         ],
       },
     ],
@@ -914,7 +914,7 @@ function genericEvals(skillName, description) {
         expected_output: 'Agent stops or bootstraps via configure-project/setup, not silent guessing.',
         assertions: [
           `Recognizes ${skillName} trigger from slash or @ invocation`,
-          'References shared/config.json or configure-project when config missing',
+          'References ws-shared/config.json or configure-project when config missing',
           'Does not invent project-specific metadata',
         ],
       },
@@ -923,7 +923,7 @@ function genericEvals(skillName, description) {
 }
 
 const dirs = fs.readdirSync(skillsRoot, { withFileTypes: true })
-  .filter((d) => d.isDirectory() && d.name !== 'shared')
+  .filter((d) => d.isDirectory() && d.name !== 'ws-shared')
   .map((d) => d.name);
 
 let written = 0;

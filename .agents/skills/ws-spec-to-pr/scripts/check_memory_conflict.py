@@ -7,7 +7,7 @@ Usage:
     python check_memory_conflict.py <plan_file> --json    (JSON output)
 
 Given a *.plan.md or *.exec.md, extracts layers, modules, entities and file paths
-from the plan, then compares against structured entries in `.agents/skills/shared/MEMORY.md`.
+from the plan, then compares against structured entries in `.agents/skills/ws-shared/MEMORY.md`.
 
 Returns:
   - Exit 0: no overlaps found
@@ -41,7 +41,7 @@ ensure_utf8_stdio()
 
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-MEMORY_PATH = SKILL_ROOT.parent / "shared" / "MEMORY.md"
+MEMORY_PATH = SKILL_ROOT.parent / "ws-shared" / "MEMORY.md"
 
 # Portable default: no project-specific domain vocabulary.
 # Consumers may extend matching via MEMORY.md content; do not hardcode org modules here.

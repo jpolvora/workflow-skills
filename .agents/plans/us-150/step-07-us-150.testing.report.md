@@ -28,7 +28,7 @@
 
 | Phase | Evidence | Result |
 |---|---|---|
-| 0, baseline | Upstream mode confirmed on `develop`; primary hub is `AGENTS.md`; configured tokens resolve to `.agents/skills`, `.agents/skills/shared`, and `.agents/plans`. | PASS |
+| 0, baseline | Upstream mode confirmed on `develop`; primary hub is `AGENTS.md`; configured tokens resolve to `.agents/skills`, `.agents/skills/ws-shared`, and `.agents/plans`. | PASS |
 | 1–2, references and paths | Package install/tree verification passed; no documentation conflict markers; `git diff --check` passed. | PASS |
 | 3, routing and closure | Integrity verification passed; `ws-check-workflows` found zero dispatch or dependency issues. | PASS |
 | 4, disk-to-route inventory | Local package test installed and verified all 37 skills plus shared hub; name scan found 37 distinct skill names and no collisions. | PASS |

@@ -40,12 +40,12 @@ Workflow (called by [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)): all interacti
 ## Prerequisites
 
 - Local branch checked out matches the PR source branch.
-- `.agents/skills/shared/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../shared/config-resolution.md).
+- `.agents/skills/ws-shared/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../ws-shared/config-resolution.md).
 - Provider skill's `validate-auth` passes before mutating remote threads.
 
 ## SCM provider resolution
 
-Resolve per [config-resolution.md](../shared/config-resolution.md): read `providers.active` / `providers.scm`; if absent, prefer an enabled GitHub tracker, else Azure DevOps; reject `scm: "local"`.
+Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `providers.active` / `providers.scm`; if absent, prefer an enabled GitHub tracker, else Azure DevOps; reject `scm: "local"`.
 
 | `providers.scm` | Skill | Intents used here |
 |-----------------|-------|-------------------|

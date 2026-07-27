@@ -6,7 +6,7 @@ SHA-256 integrity for managed skill trees keyed to `bin/skill-dependencies.json`
 
 - Upstream manifest `bin/skill-integrity.json` (per-file, per-skill, `fullPackageDigest`)
 - Pre-copy source verify + post-copy consumer verify on install/update (fail closed; `--force-integrity` unsafe override)
-- Local record `shared/skill-integrity-local.json` (consumer-owned, never hashed)
+- Local record `ws-shared/skill-integrity-local.json` (consumer-owned, never hashed)
 - `integrity` audit CLI + `--check` digest compare
 - Tests Phase 0b/11, README Safety docs, check-harness stale-manifest note
 - ACs 1–12 from `step-00-skill-install-checksums.spec.md`

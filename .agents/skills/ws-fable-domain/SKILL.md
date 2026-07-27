@@ -13,6 +13,8 @@ version: 0.0.97
 invocation_names:
   - ws-fable-domain
   - /ws-fable-domain
+  - fable-domain
+  - /fable-domain
 ---
 
 # Fable Domain (`ws-fable-domain`)

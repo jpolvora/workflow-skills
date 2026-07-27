@@ -25,12 +25,12 @@ Resolve from the **consumer project** only — never invent stack commands:
 | Source | Use for |
 |--------|---------|
 | `config.json` → `verification.*` | Build / test / format |
-| `config.json` → `rules.*` + [`shared/AGENTS.md` External dependencies](../shared/AGENTS.md#external-dependencies) | Guardrails / optional rule paths (or root `AGENTS.md#external-dependencies` when authoring upstream) |
+| `config.json` → `rules.*` + [`ws-shared/AGENTS.md` External dependencies](../ws-shared/AGENTS.md#external-dependencies) | Guardrails / optional rule paths (or root `AGENTS.md#external-dependencies` when authoring upstream) |
 | `STACK.md` (`rules.stackFile`, default `{sharedDir}/STACK.md`) | Ship/verify notes |
 | Consumer hubs + ship docs (see §5 scan list) | Prepare / before-push / before-publish steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
 
-Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../shared/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../shared/tools.md) § Path tokens).
+Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../ws-shared/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../ws-shared/tools.md) § Path tokens).
 
 ## Checklist items
 
@@ -90,7 +90,7 @@ Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configu
 **Done when:** all discovered required steps ✅, or ⏭ with scan evidence.
 
 ### 6. Show board & gate
-Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resolves (`providers.scm` per [config-resolution.md](../shared/config-resolution.md)). Unresolved SCM or `shipAction: skip` → stop after board.  
+Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resolves (`providers.scm` per [config-resolution.md](../ws-shared/config-resolution.md)). Unresolved SCM or `shipAction: skip` → stop after board.  
 **Done when:** user saw board; ship gate decision explicit.
 
 ## Rationalizations

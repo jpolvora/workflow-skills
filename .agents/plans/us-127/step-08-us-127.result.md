@@ -12,8 +12,8 @@ Evolved batch orchestrator into **`ws-multi-spec`** with smart complexity and fl
 - Removed retired `ws-long-runner` skill folder.
 - Updated `check_workflows.py` (`.agents/skills/check-workflows/scripts/check_workflows.py`) to simulate and validate `ws-multi-spec`.
 - Added featured big card for `ws-multi-spec` in `docs/index.html` section `#workflows`.
-- Registered `ws-multi-spec` in `bin/skill-dependencies.json` and `.agents/skills/shared/skill-dependencies.json`.
-- Updated skill routing tables and indexes in `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/shared/AGENTS.md`, and `README.md`.
+- Registered `ws-multi-spec` in `bin/skill-dependencies.json` and `.agents/skills/ws-shared/skill-dependencies.json`.
+- Updated skill routing tables and indexes in `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/ws-shared/AGENTS.md`, and `README.md`.
 - Bumped package patch version to `0.0.84` and regenerated integrity manifest `bin/skill-integrity.json`.
 
 ## Verification Results

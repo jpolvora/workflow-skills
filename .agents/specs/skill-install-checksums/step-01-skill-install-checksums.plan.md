@@ -13,7 +13,7 @@ status: "plan to be refined"
 | Item | Value |
 |------|--------|
 | Upstream manifest | `bin/skill-integrity.json` |
-| Consumer local record | `.agents/skills/shared/skill-integrity-local.json` |
+| Consumer local record | `.agents/skills/ws-shared/skill-integrity-local.json` |
 | Algorithm | `sha256`, lowercase hex |
 | Unsafe override | `--force-integrity` |
 | Audit CLI | Prefer `integrity` subcommand; also extend `--check` for `fullPackageDigest` |
@@ -84,7 +84,7 @@ Prefer one shared library so generator and CLI cannot drift:
 | `bin/generate-skill-integrity.js` | CLI entry: walk package root → write `bin/skill-integrity.json` (stable JSON) |
 | `bin/cli.js` | Call lib before/after copy; `integrity` command; extend `--check` |
 | `bin/skill-integrity.json` | Committed publish artifact |
-| `.agents/skills/shared/skill-integrity-local.json` | Consumer-only; gitignore; never overwrite from upstream |
+| `.agents/skills/ws-shared/skill-integrity-local.json` | Consumer-only; gitignore; never overwrite from upstream |
 
 ### Manifest schemas
 
@@ -101,7 +101,7 @@ Prefer one shared library so generator and CLI cannot drift:
     }
   },
   "hub": {
-    "files": { "<relPath under shared/>": "<hex>" },
+    "files": { "<relPath under ws-shared/>": "<hex>" },
     "skillDigest": "<hex>"
   },
   "fullPackageDigest": "<hex>",
@@ -113,7 +113,7 @@ Prefer one shared library so generator and CLI cannot drift:
 }
 ```
 
-**Consumer `.agents/skills/shared/skill-integrity-local.json`:**
+**Consumer `.agents/skills/ws-shared/skill-integrity-local.json`:**
 
 ```json
 {
@@ -193,7 +193,7 @@ Ordered by dependency. Each step: action, files, checks.
 ### Step C — Wire install/update verify + local record
 
 - **Action:** Parse `--force-integrity`. Before skill copy in install/update/interactive paths: verify source. After successful copy + hub ensure: verify consumer closure; write `skill-integrity-local.json`. Add `skill-integrity-local.json` to `CONSUMER_OWNED_HUB_FILES` and `shared/.gitignore` so update never overwrites / pack never ships it.
-- **Files:** `bin/cli.js`, `.agents/skills/shared/.gitignore`.
+- **Files:** `bin/cli.js`, `.agents/skills/ws-shared/.gitignore`.
 - **Checks:** Manual local: install into `test/` temp; mutate managed file → post-verify fail; `--force-integrity` allows proceed.
 - **ACs:** AC4, AC5, AC7, AC8.
 
@@ -241,7 +241,7 @@ Map each AC → concrete cases in `test/test-install.js` (and generator `--check
 | AC5 | `testPostInstallWritesLocalRecord` | After clean `--package workflows --yes`, `skill-integrity-local.json` exists with closure digests + `verifiedAt`; consumer `config.json`/`MEMORY.md` untouched |
 | AC6 | `testIntegrityAuditFailsOnMutation` | Install clean → mutate one managed `SKILL.md` → `integrity` exit ≠0 and prints path |
 | AC7 | `testSelectiveClosureOnly` | `install --skills ws-goal-fix-pr --yes` → audit OK without Extra-only skills present; missing `write-a-skill` not reported |
-| AC8 | `testConsumerOwnedIgnored` | Edit `shared/MEMORY.md` / `config.json` after install → `integrity` still exit 0 |
+| AC8 | `testConsumerOwnedIgnored` | Edit `ws-shared/MEMORY.md` / `config.json` after install → `integrity` still exit 0 |
 | AC9 | `testCheckReportsFullPackageDigest` | Mock or local pack: `--check` prints digest match/mismatch distinct from version; mismatch → exit ≠0 when versions equal but digests differ (fixture) |
 | AC10 | umbrella | Cases AC4–AC6 + `testFullPackageDigestChangesOnFileEdit` (change one included file → regenerate → `fullPackageDigest` changes) |
 | AC11 | `testCommittedManifestNotStale` | `node bin/generate-skill-integrity.js --check` in Phase 0; `packageVersion` == `package.json.version` |

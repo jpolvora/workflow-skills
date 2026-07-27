@@ -2,7 +2,7 @@
 
 Human-readable companion to `config.json`. Agents read `config.json` for machine-readable values; this doc explains structure and conventions.
 
-> **Source of truth:** `.agents/skills/shared/config.json` — project identity, stack, verification, invariants. `tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
+> **Source of truth:** `.agents/skills/ws-shared/config.json` — project identity, stack, verification, invariants. `tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
 >
 > Fresh installs seed this file from `STACK.md.example`. Run [`ws-configure-project`](../ws-configure-project/SKILL.md) to replace placeholders with your project’s real stack.
 
@@ -60,14 +60,14 @@ Paths from `config.json.rules` and domain keys:
 
 | Area | Config key | Notes |
 |------|-----------|-------|
-| **Harness routing** | `rules.harness` | Consumer hub (usually `.agents/skills/shared/AGENTS.md` or root pointer) |
-| **Engineering guardrails** | `rules.seniorDeveloper` | Code review proof source (optional) |
+| **Harness routing** | `rules.harness` | Consumer hub (usually `.agents/skills/ws-shared/AGENTS.md` or root pointer) |
+| **Engineering guardrails** | `rules.seniorDeveloper` | Code review proof source (default `.agents/skills/ws-senior-developer/SKILL.md`) |
 | **Karpathy guidelines** | `rules.karpathyGuidelines` | Surgical changes, simplicity |
 | **UI patterns** | `rules.viewPatterns` | Optional |
 | **Architecture spec** | `domain.architectureSpec` | Optional |
 | **Glossary** | `domain.glossaryFile` | Optional |
 | **Design tokens** | `domain.designTokens` | Optional |
-| **Changelog** | `rules.changelogFile` | Default `.agents/skills/shared/CHANGELOG.md` |
+| **Changelog** | `rules.changelogFile` | Default `.agents/skills/ws-shared/CHANGELOG.md` |
 
 Delegated workflow skills (pipeline `ws-*` folders: `ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`) live under `.agents/skills/` — see [AGENTS.md](AGENTS.md) and orchestrator `SKILL.md` § Allowed deps.
 

@@ -19,7 +19,7 @@ specDate: 2026-07-22
 `check-harness` full audit on consumer test repo **jskills** (`jpolvora/jskills`, workflows + extra packages installed). Pipeline simulation (`check-workflows`) **PASS** — no critical FSM or retired-folder drift. This issue tracks **upstream-fixable warnings and suggestions** from that audit.
 
 **Audit date:** 2026-07-22  
-**Consumer install mode:** `.agents/skills/shared/AGENTS.md` as primary hub (no packaged root `.agents/AGENTS.md`)
+**Consumer install mode:** `.agents/skills/ws-shared/AGENTS.md` as primary hub (no packaged root `.agents/AGENTS.md`)
 
 ---
 
@@ -35,20 +35,20 @@ Several managed files link to `../../../AGENTS.md#external-dependencies` or `../
 |------|-------------|---------|
 | `gabarito/README.md` | `../../../AGENTS.md` § Opt-out, § Skill loading | Root hub lacks these sections in default consumer layout |
 | `ws-ship-pr/PREPARE-CHECKLIST.md` | `../../../AGENTS.md#external-dependencies` | Anchor missing on typical consumer root `AGENTS.md` |
-| `shared/setup.md` | `../../../AGENTS.md#external-dependencies` | Same — points at upstream-only root hub |
-| `spec-to-pr/README.md` | `../../../AGENTS.md` as "Project entry" | Consumer entry is `shared/AGENTS.md` |
+| `ws-shared/setup.md` | `../../../AGENTS.md#external-dependencies` | Same — points at upstream-only root hub |
+| `spec-to-pr/README.md` | `../../../AGENTS.md` as "Project entry" | Consumer entry is `ws-shared/AGENTS.md` |
 
 **Evidence:** `check-harness` Phase 2 anchor scan flagged `PREPARE-CHECKLIST.md → ../../../AGENTS.md#external-dependencies` as missing anchor on consumer root.
 
 **Proposed fix:**
 
-- In consumer-facing managed docs, link to **`shared/AGENTS.md`** (or `{sharedDir}/AGENTS.md` in prose) for Opt-out, Skill loading, External dependencies, and task router.
+- In consumer-facing managed docs, link to **`ws-shared/AGENTS.md`** (or `{sharedDir}/AGENTS.md` in prose) for Opt-out, Skill loading, External dependencies, and task router.
 - Reserve `../../../AGENTS.md` references for upstream repo docs only, or gate them with "when authoring against the source repo".
 - Optionally: installer/doc template for a **thin consumer root pointer** (consumer-owned) — `check-harness` already suggests this; managed skills should not assume it exists.
 
 ---
 
-### 2. `shared/AGENTS.md` delivery checklist includes upstream-only commands
+### 2. `ws-shared/AGENTS.md` delivery checklist includes upstream-only commands
 
 The **Recommended Feature Delivery Checklist** block (recent addition under shared hub) references:
 
@@ -70,9 +70,9 @@ These apply to the **workflow-skills upstream repo**, not typical consumer proje
 
 ### 3. `check-harness` Phase 4 still cites root `AGENTS.md` in consumer mode
 
-`check-harness/SKILL.md` Phase 4 says compare filesystem routing against `` [`AGENTS.md`](../../../AGENTS.md) ``. Consumer mode resolution (§ Hub resolution) correctly uses `shared/AGENTS.md`, but the Phase 4 prose still anchors to root — easy for agents to audit the wrong file.
+`check-harness/SKILL.md` Phase 4 says compare filesystem routing against `` [`AGENTS.md`](../../../AGENTS.md) ``. Consumer mode resolution (§ Hub resolution) correctly uses `ws-shared/AGENTS.md`, but the Phase 4 prose still anchors to root — easy for agents to audit the wrong file.
 
-**Proposed fix:** Phase 4 text should say "resolved hub per § Hub resolution" and use `shared/AGENTS.md` in consumer examples.
+**Proposed fix:** Phase 4 text should say "resolved hub per § Hub resolution" and use `ws-shared/AGENTS.md` in consumer examples.
 
 ---
 

@@ -6,7 +6,7 @@
   "pathTokens": {
     "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
     "skillsRoot": ".agents/skills",
-    "sharedDir": ".agents/skills/shared"
+    "sharedDir": ".agents/skills/ws-shared"
   },
 
   "project": {
@@ -139,14 +139,14 @@
   },
 
   "rules": {
-    "_comment": "Guardrails paths. Resolve per shared/AGENTS.md External dependencies (first match). seniorDeveloper = optional Code review proof checklist source; leave empty unless opting in to .agents/skills/ws-senior-developer/SKILL.md or another configured guardrail; karpathyGuidelines = surgical-change skill; stackFile = stack companion; changelogFile = append-only history (default under shared/); other keys optional consumer rule paths — leave empty when unused.",
-    "harness": ".agents/skills/shared/AGENTS.md",
-    "seniorDeveloper": "",
+    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). seniorDeveloper = Code review proof checklist source (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = surgical-change skill; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
+    "harness": ".agents/skills/ws-shared/AGENTS.md",
+    "seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md",
     "karpathyGuidelines": ".agents/skills/ws-karpathy-guidelines/SKILL.md",
     "viewPatterns": "",
     "efMigrations": "",
-    "stackFile": ".agents/skills/shared/STACK.md",
-    "changelogFile": ".agents/skills/shared/CHANGELOG.md"
+    "stackFile": ".agents/skills/ws-shared/STACK.md",
+    "changelogFile": ".agents/skills/ws-shared/CHANGELOG.md"
   },
 
   "invariants": {

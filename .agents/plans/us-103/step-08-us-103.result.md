@@ -1,7 +1,7 @@
 # Delivery Result — us-103
 
 ## Summary
-Fixed consumer hub drift in `check-harness/SKILL.md` (Issue #103). Updated Out-of-scope link and Phase 4 heading/link to reference the resolved agent hub (`shared/AGENTS.md` in consumer mode) instead of hardcoding upstream root `AGENTS.md`.
+Fixed consumer hub drift in `check-harness/SKILL.md` (Issue #103). Updated Out-of-scope link and Phase 4 heading/link to reference the resolved agent hub (`ws-shared/AGENTS.md` in consumer mode) instead of hardcoding upstream root `AGENTS.md`.
 
 ## Deliverables
 - [check-harness/SKILL.md](file:///l:/source/workflow-skills/.agents/skills/check-harness/SKILL.md) — updated Line ~51 out-of-scope link and Line ~365-367 Phase 4 heading/link to point to the resolved hub.

@@ -24,7 +24,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 ### Portability and genericity (mandatory)
 
 1. **Portable and project-agnostic** — Skills must work in any consumer repo. Do **not** hardcode org/repo names, solution filenames, API hosts, tenant fields, or stack-specific build/test commands inside skill bodies or scripts.
-2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in `skills/shared/config.json` (gitignored; copy from `skills/shared/config.json.example`). Skills **read** config / `rules.stackFile` companion / `tools.md`; they do not embed consumer metadata. See [`config-resolution.md`](skills/shared/config-resolution.md).
+2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in `skills/ws-shared/config.json` (gitignored; copy from `skills/ws-shared/config.json.example`). Skills **read** config / `rules.stackFile` companion / `tools.md`; they do not embed consumer metadata. See [`config-resolution.md`](skills/ws-shared/config-resolution.md).
 3. **Repo-root-relative paths only** — References use paths like `skills/ws-write-plan/SKILL.md` or `.agents/skills/...` from the consumer root. **Forbidden:** absolute paths (`C:\Users\...`, `/home/...`) or author-machine dependencies.
 4. **Harness-neutral** — Skill bodies must not name IDE or agent-product brands. Artifact roots come **only** from config: `plans.dir` (skill token `{plansDir}`), optional `reviews.dir`. Skills layout tokens `{skillsRoot}` / `{sharedDir}` come from `pathTokens` (fixed install defaults; see `tools.md` § Path tokens). Documented default for `plans.dir` is `.agents/plans`. Skill prose uses `{plansDir}/{slug}/` — no hardcoded plans roots. No undeclared path shorthands. Gates use `user-gate`; model switches via Pause → IDE/agent host → Resume; step work via `dispatch-agent` / host subagent dispatch. Mirror: root [`AGENTS.md`](../AGENTS.md) § Portability & harness neutrality.
 5. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
@@ -42,9 +42,9 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 | Role | Rule |
 |------|------|
 | **Canonical upstream** | [`jpolvora/workflow-skills`](https://github.com/jpolvora/workflow-skills) is the authoritative source for pipeline and dependency skills. |
-| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `shared/config.json`, `shared/STACK.md`, `shared/MEMORY.md`, `shared/memory/*`, `shared/installed-skills.json`, and optional `shared/CHANGELOG.md` when configured there. Latest layout only — no older-folder migration and no legacy host-path shims (see upstream README § Safety; root [`AGENTS.md`](../AGENTS.md) § Portability). |
+| **Installed copies** | Skills under `.agents/skills/` in consumer projects are **managed copies**. A plain `update` **overwrites** skill files. **Preserved:** `ws-shared/config.json`, `ws-shared/STACK.md`, `ws-shared/MEMORY.md`, `ws-shared/memory/*`, `ws-shared/installed-skills.json`, and optional `ws-shared/CHANGELOG.md` when configured there. Latest layout only — no older-folder migration and no legacy host-path shims (see upstream README § Safety; root [`AGENTS.md`](../AGENTS.md) § Portability). |
 | **Local edits** | Consumers **may** edit skills locally for experiments, but those changes **can be lost** on the next `npx --yes github:jpolvora/workflow-skills update` (or `update --include-new`). |
-| **No silent LLM refactors** | In **consumer** checkouts and **CI/Actions**, agents must **not** autonomously hygiene-refactor managed skill scripts (reorder helpers, “fix” false forward refs, rewrite scanners) without user approval. If a real fix belongs in skills, **suggest or open an upstream PR** — do not treat the consumer copy as the source of truth. Consumer hub copy: [`skills/shared/AGENTS.md`](skills/shared/AGENTS.md) § Managed skills. |
+| **No silent LLM refactors** | In **consumer** checkouts and **CI/Actions**, agents must **not** autonomously hygiene-refactor managed skill scripts (reorder helpers, “fix” false forward refs, rewrite scanners) without user approval. If a real fix belongs in skills, **suggest or open an upstream PR** — do not treat the consumer copy as the source of truth. Consumer hub copy: [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md) § Managed skills. |
 | **Contribute back** | Lasting improvements must be authored against the upstream repo and submitted as a **pull request** to `jpolvora/workflow-skills` (prefer `develop` → `main`). Do not treat a consumer fork of skill files as the long-term source of truth. |
 
 ### Pre-merge gate: `ws-check-harness` (mandatory for upstream)
@@ -70,8 +70,8 @@ Standalone invoke: `/ws-check-harness` or `@ws-check-harness` (optional `--dry-r
 ### Dual-Mode Execution & Compatibility
 
 Both workflows co-exist cleanly in **dual mode** inside consumer projects:
-- **Shared Configuration**: `.agents/skills/shared/config.json` only ([`config-resolution.md`](skills/shared/config-resolution.md)).
-- **Shared Gates**: [`gates.md`](skills/shared/gates.md) — prefer `user-gate`; markdown fallback when unavailable; slim transitions; one delivery; one ship; no re-ask inside `ws-ship-pr` when `workflowMode: true`.
+- **Shared Configuration**: `.agents/skills/ws-shared/config.json` only ([`config-resolution.md`](skills/ws-shared/config-resolution.md)).
+- **Shared Gates**: [`gates.md`](skills/ws-shared/gates.md) — prefer `user-gate`; markdown fallback when unavailable; slim transitions; one delivery; one ship; no re-ask inside `ws-ship-pr` when `workflowMode: true`.
 - **Session model**: `currentModel` from the executing session; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Soft tips at F1→F2 / F3→F4 (full orch only).
 - **State Isolation**: `workflowType` (`standard` / `lite`) prevents cross-resuming.
 - **Pipeline Reusability**: Shared pipeline skills stay orch-agnostic and interchangeable.
@@ -88,6 +88,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 | `ws-karpathy-guidelines` | `skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `ws-changelog` | `skills/ws-changelog/SKILL.md` | Every task completion |
 | `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
+| `ws-senior-developer` | `skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate |
 | `using-superpowers` | `(global — not shipped)` | Session start — skill discovery |
 
 ### Precedence (highest first)
@@ -96,7 +97,8 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 2. Design / spec / architecture constraints
 3. `ws-karpathy-guidelines`
 4. `ws-gabarito`
-5. `ws-caveman` (compression only; keep technical accuracy)
+5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
+6. `ws-caveman` (compression only; keep technical accuracy)
 
 ### Opt-out
 
@@ -156,8 +158,8 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-fable-domain` | `skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `ws-spec-format` | `skills/ws-spec-format/SKILL.md` | Create / review / format `*.spec.md` |
 | `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
-| `ws-changelog` | `skills/ws-changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `shared/`) |
-| `ws-configure-project` | `skills/ws-configure-project/SKILL.md` | Interview/detect fill `shared/config.json` |
+| `ws-changelog` | `skills/ws-changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `ws-shared/`) |
+| `ws-configure-project` | `skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
 | `ws-goal-loop` | `skills/ws-goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
 | `ws-spec-index` | `skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-sync-spec` | `skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
@@ -200,7 +202,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Write a spec | `ws-write-spec` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement / fix code | `ws-implement-tasks` |
-| Engineering delivery gate / Code review proof | `ws-senior-developer` (opt in through `rules.seniorDeveloper` or invoke explicitly) |
+| Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload; opt out via `stop ws-senior-developer` or unset `rules.seniorDeveloper`) |
 | Verify against plan | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Testing pre-PR | `ws-testing` |
@@ -229,16 +231,16 @@ Requires Extra or Full install — skills not on Workflows-only disk.
 
 ## External dependencies
 
-Portable guardrails contract for **upstream authoring** (this packaged index). **Installed consumers** use [`skills/shared/AGENTS.md`](skills/shared/AGENTS.md) § External dependencies. Upstream full catalog: root [`AGENTS.md`](../AGENTS.md) § External dependencies. Bootstrap notes: [`skills/shared/setup.md`](skills/shared/setup.md).
+Portable guardrails contract for **upstream authoring** (this packaged index). **Installed consumers** use [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md) § External dependencies. Upstream full catalog: root [`AGENTS.md`](../AGENTS.md) § External dependencies. Bootstrap notes: [`skills/ws-shared/setup.md`](skills/ws-shared/setup.md).
 
-Not shipped in the skill package (except where noted). Resolve each dependency in **order** (first match wins). Read paths from `skills/shared/config.json` when present. Do **not** assume host-private rule folders.
+Not shipped in the skill package (except where noted). Resolve each dependency in **order** (first match wins). Read paths from `skills/ws-shared/config.json` when present. Do **not** assume host-private rule folders.
 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` (set `.agents/skills/ws-senior-developer/SKILL.md` to opt in to the packaged skill) → local skill (`senior-developer/SKILL.md`) → global/user skill |
+| `senior-developer` | `config.json` → `rules.seniorDeveloper` (default `.agents/skills/ws-senior-developer/SKILL.md`; set `""` to disable) → local skill (`senior-developer/SKILL.md`) → global/user skill |
 | `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `skills/ws-karpathy-guidelines/SKILL.md` → global skill |
-| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/shared/STACK.md`) — consumer-owned under `shared/`; do not require repo-root `STACK.md` |
-| Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/shared/CHANGELOG.md`) — create under that path only; repo-root only if explicitly configured |
+| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/ws-shared/STACK.md`) — consumer-owned under `ws-shared/`; do not require repo-root `STACK.md` |
+| Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) — create under that path only; repo-root only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames; prefer skills over host-private rule files |
 | Domain catalog | `specs/domains/` — consumer-owned |
@@ -252,7 +254,7 @@ When skills ask for **Code review proof**, use the checklist / verification obli
 
 ## Consumer notes
 
-- Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/`, `installed-skills.json`, optional `CHANGELOG.md` — preserved on update; skill files are overwritten. Fresh install seeds `config.json` (from example), empty `MEMORY`/`CHANGELOG`, and `STACK.md` under `shared/` when missing. Installer never writes consumer repo-root files.
+- Installed skill trees are **managed upstream copies**. Consumer-owned under `skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/`, `installed-skills.json`, optional `CHANGELOG.md` — preserved on update; skill files are overwritten. Fresh install seeds `config.json` (from example), empty `MEMORY`/`CHANGELOG`, and `STACK.md` under `ws-shared/` when missing. Installer never writes consumer repo-root files.
 - **Install / update / uninstall** (consumer project cwd; never `@latest` / `@main`):
 
 ```bash
@@ -263,9 +265,9 @@ npx --yes github:jpolvora/workflow-skills update --include-new
 npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
 ```
 
-- `shared/installed-skills.json` tracks managed skills (`skills` + `selected` roots). `update` bootstraps it from disk when missing. `uninstall` cascades unused deps and never deletes `shared/` consumer data.
+- `ws-shared/installed-skills.json` tracks managed skills (`skills` + `selected` roots). `update` bootstraps it from disk when missing. `uninstall` cascades unused deps and never deletes `ws-shared/` consumer data.
 - Consumers may copy or adapt routing into their own root `AGENTS.md`; keep paths relative to the install root (typically `.agents/skills/...`).
-- **Consumer hub:** `.agents/skills/shared/AGENTS.md` is installed with the shared hub and documents config, gates, and external dependencies. The installer does **not** copy `.agents/AGENTS.md` into consumer projects.
+- **Consumer hub:** `.agents/skills/ws-shared/AGENTS.md` is installed with the ws-shared hub and documents config, gates, and external dependencies. The installer does **not** copy `.agents/AGENTS.md` into consumer projects.
 - **Dual hub (upstream only):** root `AGENTS.md` and packaged `.agents/AGENTS.md` stay aligned for ws-check-harness drift checks in this source repo.
 - **Do not** rely on in-place edits to pipeline skills in a consumer project for production workflows — prefer an upstream PR (see **Upstream ownership** / **No silent LLM refactors** above). In-place edits are overwritten on update.
 - Before upstream merge to `main`, skill changes must pass **`ws-check-harness`** (see **Pre-merge gate** above).

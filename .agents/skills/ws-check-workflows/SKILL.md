@@ -9,6 +9,9 @@ name: ws-check-workflows
 description: Deeply validate and simulate workflow processes (ws-spec-to-pr & ws-spec-to-pr-lite) near real usage. Detects broken steps, missing dependencies, script syntax errors, and suggests actionable fixes with interactive user confirmation.
 version: 0.0.97
 disable-model-invocation: true
+invocation_names:
+  - check-workflows
+  - ws-check-workflows
 ---
 
 # ws-check-workflows
@@ -54,7 +57,7 @@ The validation process performs end-to-end simulation across both orchestrators:
 - Asserts that all skills dispatched by `ws-spec-to-pr` and `ws-spec-to-pr-lite` are declared in `bin/skill-dependencies.json`.
 
 ### 4. Config Sharing & State Isolation
-- Verifies that all provider scripts and state handlers target `shared/config.json`.
+- Verifies that all provider scripts and state handlers target `ws-shared/config.json`.
 - Confirms state handlers serialize `workflowType` (`standard` vs `lite`).
 
 ---

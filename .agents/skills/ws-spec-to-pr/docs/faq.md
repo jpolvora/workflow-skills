@@ -3,9 +3,9 @@
 This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0–9) and **Spec-to-PR Lite** (Steps 0–5) orchestrated workflows.
 
 > **Architecture:**
-> - Shared config: [`.agents/skills/shared/config.json`](../../shared/config.json) (see [`config-resolution.md`](../../shared/config-resolution.md))
-> - Shared gates: [`gates.md`](../../shared/gates.md)
-> - Dynamic paths: [Path tokens](../../shared/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
+> - Shared config: [`.agents/skills/ws-shared/config.json`](../../ws-shared/config.json) (see [`config-resolution.md`](../../ws-shared/config-resolution.md))
+> - Shared gates: [`gates.md`](../../ws-shared/gates.md)
+> - Dynamic paths: [Path tokens](../../ws-shared/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
 > - Model Selection: Switch model only via **Pause → IDE/Agent model picker → Resume** (no in-gate model picker or CLI flags).
 
 ---
@@ -196,9 +196,9 @@ Every step transition exposes:
 ## 6. Artifacts & State Lifecycle
 
 ### Path Tokens
-All file references in workflow logs use bracketed path tokens which are resolved against `.agents/skills/shared/config.json`:
+All file references in workflow logs use bracketed path tokens which are resolved against `.agents/skills/ws-shared/config.json`:
 *   `{skillsRoot}`: Path to installation folder (default `.agents/skills`).
-*   `{sharedDir}`: Path to shared seeds (default `.agents/skills/shared`).
+*   `{sharedDir}`: Path to shared seeds (default `.agents/skills/ws-shared`).
 *   `{plansDir}`: Path to plans workspace (default `.agents/plans`).
 *   `{reviewsDir}`: Path to review summaries (default `.agents/codereviews`).
 *   `{us-dir}`: Path to specific US folder `{plansDir}/us-{id}`.

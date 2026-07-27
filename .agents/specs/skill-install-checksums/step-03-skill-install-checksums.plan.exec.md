@@ -32,7 +32,7 @@ createdAt: "2026-07-20T18:25:00Z"
 | Item | Value |
 |------|--------|
 | Upstream manifest | `bin/skill-integrity.json` |
-| Consumer local record | `.agents/skills/shared/skill-integrity-local.json` |
+| Consumer local record | `.agents/skills/ws-shared/skill-integrity-local.json` |
 | Algorithm | `sha256`, lowercase hex |
 | Unsafe override | `--force-integrity` |
 | Audit CLI | `integrity` + `--check` for `fullPackageDigest` |
@@ -89,7 +89,7 @@ Max concurrent tasks per level: **2** (≤ 3). No same-level file collision.
 
 ### T4 — Wire install/update verify + local record
 - **Depends on:** T3
-- **Files:** `bin/cli.js`, `.agents/skills/shared/.gitignore`
+- **Files:** `bin/cli.js`, `.agents/skills/ws-shared/.gitignore`
 - **Plan step:** C
 - **ACs:** AC4, AC5, AC7, AC8
 - **Done when:** Pre-verify before first copy; post-verify + local record write; `--force-integrity`; uninstall rewrites record; local file gitignored + consumer-owned.
@@ -158,7 +158,7 @@ Every plan step A–G maps to ≥1 task. Every task has non-empty `files` and `c
 4. `bin/generate-skill-integrity.js`
 5. `bin/skill-integrity.json`
 6. `package.json`
-7. `.agents/skills/shared/.gitignore`
+7. `.agents/skills/ws-shared/.gitignore`
 8. `test/test-install.js`
 9. `README.md`
 10. `.agents/skills/check-harness/SKILL.md`

@@ -2,7 +2,7 @@
 
 **Only when `status: completed` and user explicitly chooses cleanup** — never on **Pause workflow**.
 
-Gate options (folded into combined Step 8 gate "delete temps" in [`gates.md`](../../shared/gates.md)):
+Gate options (folded into combined Step 8 gate "delete temps" in [`gates.md`](../../ws-shared/gates.md)):
 
 - **Delete temporary artifacts** — exec/dag/issue/report/testing files, worktrees, baseline, archive, checkpoint tags
 - **Keep all artifacts** (audit)

@@ -37,12 +37,12 @@ workflowManifest:
     - bin/skill-integrity-lib.js
     - bin/generate-skill-integrity.js
     - bin/skill-integrity.json
-    - .agents/skills/shared/hub.gitignore
-    - .agents/skills/shared/memory/2026-07-20-integrity-npm-gitignore-runs.md
+    - .agents/skills/ws-shared/hub.gitignore
+    - .agents/skills/ws-shared/memory/2026-07-20-integrity-npm-gitignore-runs.md
     - specs/skill-install-checksums/step-05-skill-install-checksums.plan.report.md
     - specs/skill-install-checksums/step-06-skill-install-checksums.review.md
     - specs/skill-install-checksums/step-06-skill-install-checksums.fix.report.md
-    - .agents/skills/shared/memory/2026-07-20-integrity-post-verify-no-bless.md
+    - .agents/skills/ws-shared/memory/2026-07-20-integrity-post-verify-no-bless.md
     - specs/skill-install-checksums/step-07-skill-install-checksums.testing.plan.md
     - specs/skill-install-checksums/step-07-skill-install-checksums.testing.report.md
     - specs/skill-install-checksums/step-08-skill-install-checksums.result.md
@@ -180,7 +180,7 @@ telemetry:
 ## Accumulated decisions
 
 - Integrity path: `bin/skill-integrity.json` (from spec example; lock in plan)
-- Local record: sibling `shared/skill-integrity-local.json` (spec prefer)
+- Local record: sibling `ws-shared/skill-integrity-local.json` (spec prefer)
 - Algorithm: sha256 lowercase hex
 - Unsafe override: `--force-integrity`
 

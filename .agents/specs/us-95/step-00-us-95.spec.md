@@ -30,11 +30,11 @@ Because \_load_dependencies()\ sets \self.deps_map = {}\ when \in/skill-depende
 
 Rather than simply ignoring the check when \in/\ is missing, consumer repos would benefit from running real dependency closure validation to ensure all sub-skills dispatched by orchestrators are present on disk.
 
-### Option A (Recommended): Ship \skill-dependencies.json\ in \.agents/skills/shared/\
-- Move or copy \skill-dependencies.json\ into \.agents/skills/shared/skill-dependencies.json\.
-- Include \shared/skill-dependencies.json\ as a managed file shipped during \install\ / \update\.
+### Option A (Recommended): Ship \skill-dependencies.json\ in \.agents/skills/ws-shared/\
+- Move or copy \skill-dependencies.json\ into \.agents/skills/ws-shared/skill-dependencies.json\.
+- Include \ws-shared/skill-dependencies.json\ as a managed file shipped during \install\ / \update\.
 - Update \check_workflows.py\ path resolution order:
-  1. Check \.agents/skills/shared/skill-dependencies.json\ (consumer install path)
+  1. Check \.agents/skills/ws-shared/skill-dependencies.json\ (consumer install path)
   2. Fall back to \REPO_ROOT/bin/skill-dependencies.json\ (upstream dev path)
   3. If neither exists, guard the closure check to prevent false positives (\if DEPS_JSON_PATH.exists():\).
 

@@ -9,13 +9,16 @@ name: ws-azure-devops-provider
 description: Azure DevOps provider for ws-spec-to-pr — work item→spec, PAT auth, PR create/threads/merge via az CLI and/or REST plus provider scripts. Use when providers.active or providers.scm is azure-devops, or when invoking /ws-azure-devops-provider standalone.
 version: 0.0.97
 disable-model-invocation: true
+invocation_names:
+  - azure-devops-provider
+  - ws-azure-devops-provider
 ---
 
 # ws-azure-devops-provider
 
 Azure DevOps inbound (`fetch-to-spec`) and SCM (`create-pr`, threads, merge). Pipeline skills load this when `providers.active` / `providers.scm` is `azure-devops`; they link here instead of embedding `az` / REST recipes.
 
-Resolve `org` / `project` from `{sharedDir}/config.json` (`issueTrackers.azureDevOps`) — [`config-resolution.md`](../shared/config-resolution.md). Never hardcode org/project.
+Resolve `org` / `project` from `{sharedDir}/config.json` (`issueTrackers.azureDevOps`) — [`config-resolution.md`](../ws-shared/config-resolution.md). Never hardcode org/project.
 
 ## Invocation
 

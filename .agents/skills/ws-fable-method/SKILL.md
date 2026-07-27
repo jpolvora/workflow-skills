@@ -14,6 +14,8 @@ version: 0.0.97
 invocation_names:
   - ws-fable-method
   - /ws-fable-method
+  - fable-method
+  - /fable-method
 ---
 
 # Fable Method (`ws-fable-method`)

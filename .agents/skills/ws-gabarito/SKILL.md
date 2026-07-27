@@ -12,6 +12,9 @@ description: >
   systematization, clarification, effort scaffolding, self-eval, step-back, chain-of-verification,
   calibrated confidence, prompt refinement, anti-regression memory) plus style discipline.
   Apply on every user-facing response unless the user opts out.
+invocation_names:
+  - gabarito
+  - ws-gabarito
 ---
 
 # Gabarito

@@ -11,6 +11,9 @@ description: >
   Ultra-compressed communication mode. Cuts output token usage ~75% while keeping full
   technical accuracy. Intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full,
   wenyan-ultra. Use when the user invokes /ws-caveman or asks for briefer, lower-token responses.
+invocation_names:
+  - caveman
+  - ws-caveman
 ---
 
 Respond terse like smart ws-caveman. All technical substance stay. Only fluff die.

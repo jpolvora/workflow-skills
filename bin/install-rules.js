@@ -3,7 +3,7 @@
  * Keep copy and hash enumeration in lockstep; do not diverge these sets.
  */
 
-/** Hub files copied into consumer shared/ (upstream templates/docs — not consumer data). */
+/** Hub files copied into consumer ws-shared/ (upstream templates/docs — not consumer data). */
 export const HUB_WHITELIST = [
   'config.json.example',
   'config.schema.json',
@@ -29,7 +29,7 @@ export const INSTALLED_SKILLS_FILE = 'installed-skills.json';
 export const SKILL_INTEGRITY_LOCAL_FILE = 'skill-integrity-local.json';
 
 /**
- * Consumer-owned artifacts under shared/ — never copy upstream content into consumers.
+ * Consumer-owned artifacts under ws-shared/ — never copy upstream content into consumers.
  * Fresh install seeds empty templates; existing consumer files are preserved.
  */
 export const CONSUMER_OWNED_HUB_FILES = new Set([

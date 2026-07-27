@@ -13,7 +13,7 @@ Thread list/resolve I/O goes through `config.providers.scm` → [ws-github-provi
 | Main skill | `.agents/skills/ws-fix-pr/SKILL.md` |
 | Convergence loop | `.agents/skills/ws-goal-fix-pr/SKILL.md` — `/ws-goal-fix-pr <PR-ID>` |
 | Code review (pre-push) | `.agents/skills/ws-code-review/SKILL.md` |
-| SCM config | `providers.scm` in `.agents/skills/shared/config.json` (`github` \| `azure-devops`) |
+| SCM config | `providers.scm` in `.agents/skills/ws-shared/config.json` (`github` \| `azure-devops`) |
 | GitHub provider | `.agents/skills/ws-github-provider/SKILL.md` — `list-threads` / `resolve-thread` |
 | Azure DevOps provider | `.agents/skills/ws-azure-devops-provider/SKILL.md` — `list-threads` / `resolve-thread` |
 | GitHub list (canonical) | `node .agents/skills/ws-github-provider/scripts/fetch_threads.cjs` |
@@ -28,7 +28,7 @@ Thread list/resolve I/O goes through `config.providers.scm` → [ws-github-provi
 | **GitHub** (`scm: github`) | Provider intents `list-threads` / `resolve-thread` → `node …/fetch_threads.cjs` / `node …/resolve_thread.cjs` | `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` / `GITHUB_TOKEN` / `GH_TOKEN` (+ `gh` for CLI flows) |
 | **Azure DevOps** (`scm: azure-devops`) | Provider intents `list-threads` / `resolve-thread` → `python …/fix_pr_azure_context.py` collect / resolve-thread | PAT via `issueTrackers.azureDevOps.patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` |
 
-Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should call the provider skill or canonical paths with explicit launchers ([`tools.md`](../shared/tools.md) § Script launchers).
+Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should call the provider skill or canonical paths with explicit launchers ([`tools.md`](../ws-shared/tools.md) § Script launchers).
 
 ## Flow summary
 

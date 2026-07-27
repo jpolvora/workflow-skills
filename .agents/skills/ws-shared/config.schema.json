@@ -19,7 +19,7 @@
         },
         "sharedDir": {
           "type": "string",
-          "default": ".agents/skills/shared",
+          "default": ".agents/skills/ws-shared",
           "description": "Expand {sharedDir}. Usually {skillsRoot}/shared."
         }
       }

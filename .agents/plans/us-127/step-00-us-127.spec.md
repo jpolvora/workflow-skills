@@ -33,7 +33,7 @@ We need to evolve `ws-long-runner` into **`ws-multi-spec`**, an intelligent mult
 
 ### FR-5: Package & Hub Sync
 - Update `bin/skill-dependencies.json` (`ws-multi-spec` replacing `ws-long-runner`).
-- Sync `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/shared/AGENTS.md`, `README.md`.
+- Sync `AGENTS.md`, `.agents/AGENTS.md`, `.agents/skills/ws-shared/AGENTS.md`, `README.md`.
 - Regenerate site (`node bin/build-site.js --bump` to `0.0.84`) and integrity digests (`npm run generate-integrity`).
 
 ## Verification Plan

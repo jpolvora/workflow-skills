@@ -27,7 +27,7 @@ But check-harness still produced **5 suggestion-severity items** that required l
 | Field | Value |
 |-------|--------|
 | Consumer repo | `jpolvora/cursor-profile-manager` |
-| Install mode | Consumer (primary hub `.agents/skills/shared/AGENTS.md`) |
+| Install mode | Consumer (primary hub `.agents/skills/ws-shared/AGENTS.md`) |
 | Install time | `2026-07-23T17:18:39.777Z` (`installed-skills.json`) |
 | Selected roots | `show-harness`, `spec-to-pr`, `spec-to-pr-lite`, `write-a-skill` (Full-style closure; 30 skill folders) |
 | check-harness | v3.2-generic (installed copy) |
@@ -37,8 +37,8 @@ But check-harness still produced **5 suggestion-severity items** that required l
 
 | # | Severity | Finding | Why it felt like an install defect |
 |---|----------|---------|-------------------------------------|
-| 1 | suggestion | Seeded `shared/config.json` still full of `<PROJECT_NAME>`, `<GITHUB_ORG>`, `<STACK_ID>`, example verification commands, .NET-oriented `invariants` defaults | Fresh install seeds from `config.json.example` but does not complete configure-project; check-harness then flags placeholders |
-| 2 | suggestion | Repo-root `AGENTS.md` (product guide) does not point at `shared/AGENTS.md` | Installer correctly never writes root files; check-harness still suggests a thin pointer — noisy for consumers that already have a product `AGENTS.md` |
+| 1 | suggestion | Seeded `ws-shared/config.json` still full of `<PROJECT_NAME>`, `<GITHUB_ORG>`, `<STACK_ID>`, example verification commands, .NET-oriented `invariants` defaults | Fresh install seeds from `config.json.example` but does not complete configure-project; check-harness then flags placeholders |
+| 2 | suggestion | Repo-root `AGENTS.md` (product guide) does not point at `ws-shared/AGENTS.md` | Installer correctly never writes root files; check-harness still suggests a thin pointer — noisy for consumers that already have a product `AGENTS.md` |
 | 3 | suggestion | `domain.glossaryFile: CONTEXT.md` and `domain.designTokens: DESIGN.md` in seed, but files **do not exist** | Example config invents optional files that are missing on disk → harness suggests create stubs or clear keys |
 | 4 | suggestion | Seeded `STACK.md` still template (`{layer.name}` table rows, generic stack prose) | Same seed debt as #1; looks unfinished after “successful” install |
 | 5 | suggestion | `rules.seniorDeveloper` empty / unresolved | Documented as optional, but still appears in the correction plan noise |

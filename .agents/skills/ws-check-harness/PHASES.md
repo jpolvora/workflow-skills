@@ -11,15 +11,15 @@ Detect install mode before routing audits (summary also in `SKILL.md`):
 | Mode | Detection (first match) | Primary hub |
 |------|-------------------------|-------------|
 | **Upstream** | `bin/skill-dependencies.json` at repo root **and** `.agents/AGENTS.md` | Root `AGENTS.md` (+ dual-hub drift vs `.agents/AGENTS.md`) |
-| **Consumer** | `.agents/skills/shared/AGENTS.md` exists; upstream markers absent | `.agents/skills/shared/AGENTS.md` |
+| **Consumer** | `.agents/skills/ws-shared/AGENTS.md` exists; upstream markers absent | `.agents/skills/ws-shared/AGENTS.md` |
 
 **Consumer rules:**
 
-- Primary hub is always `.agents/skills/shared/AGENTS.md` when present. Missing root `AGENTS.md` is **OK**. Thin root pointer is **OK**.
-- Do **not** warn that root lacks skill loading when the shared hub has it.
-- Route Phase 4 against **shared/AGENTS.md** (and root only if it also lists skills).
+- Primary hub is always `.agents/skills/ws-shared/AGENTS.md` when present. Missing root `AGENTS.md` is **OK**. Thin root pointer is **OK**.
+- Do **not** warn that root lacks skill loading when the ws-shared hub has it.
+- Route Phase 4 against **ws-shared/AGENTS.md** (and root only if it also lists skills).
 - If root `AGENTS.md` is absent or product-owned: do **not** emit a correction-plan item. At most a one-line informational note suggesting a thin pointer.
-- Links to `shared/config.json` are healthy when the file exists. Unconfigured seed placeholders → **informational** (`ws-configure-project`), not a correction-plan item.
+- Links to `ws-shared/config.json` are healthy when the file exists. Unconfigured seed placeholders → **informational** (`ws-configure-project`), not a correction-plan item.
 - Empty optional rule keys (e.g. `rules.seniorDeveloper: ""`) must **not** appear as numbered correction-plan items.
 - Missing `config.json` when `config.json.example` exists → **warning** (seed + ws-configure-project).
 - Pipeline / orch / provider skills may be intentionally omitted from the promoted table when the hub marks them orch-only.
@@ -28,12 +28,12 @@ Detect install mode before routing audits (summary also in `SKILL.md`):
 
 ## Path token expand algorithm
 
-Canonical contract: [`../shared/tools.md`](../shared/tools.md) § Path tokens.
+Canonical contract: [`../ws-shared/tools.md`](../ws-shared/tools.md) § Path tokens.
 
 1. If the cited string contains `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` / `{us-dir}`, substitute from the map (nested: expand `{sharedDir}` after `{skillsRoot}` if needed).
 2. Result is **repo-root-relative**. Check existence from **repo root**, not from the citing file’s directory.
 3. If braces remain after known-token substitution, treat as **template** — do **not** flag broken.
-4. Undeclared shorthand `shared/MEMORY.md` → **warning** (prefer `{sharedDir}/MEMORY.md`).
+4. Undeclared shorthand `ws-shared/MEMORY.md` → **warning** (prefer `{sharedDir}/MEMORY.md`).
 5. Markdown link targets `(...)`: real relative or repo-root paths only (no brace tokens).
 
 ## Scan scope (canonical inventory)
@@ -45,8 +45,8 @@ Go through **all** artifacts below, in harness routing order (progressive disclo
 | File | Role |
 |---------|--------|
 | Resolved hub (§ Hub resolution) | Agent **hub** — skill loading, task router, verification (not human install docs) |
-| Root `AGENTS.md` | Upstream: full hub. Consumer: optional thin pointer to `shared/AGENTS.md` (absent is OK; never required by shipped skills) |
-| `.agents/skills/shared/AGENTS.md` | Consumer primary hub (always installed with workflows/full) |
+| Root `AGENTS.md` | Upstream: full hub. Consumer: optional thin pointer to `ws-shared/AGENTS.md` (absent is OK; never required by shipped skills) |
+| `.agents/skills/ws-shared/AGENTS.md` | Consumer primary hub (always installed with workflows/full) |
 | `README.md` | Human **README** — install, overview, contribute (not the skill router) |
 | Optional host entry pointer | Thin file pointing at `AGENTS.md` when the consumer/host uses one — verify if present; **not required** |
 
@@ -68,7 +68,7 @@ Phase 4 detects new or removed skills that diverge from declared routing; treat 
 
 All project skills live under `.agents/skills/`. Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` (like this skill (`ws-check-harness/SKILL.md`)) are also treated as skills in the scan.
 
-**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively and `.md` files with frontmatter in `skills/`, comparing against declared routing in the resolved hub (§ Hub resolution; `shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the disk is the truth.
+**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively and `.md` files with frontmatter in `skills/`, comparing against declared routing in the resolved hub (§ Hub resolution; `ws-shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the disk is the truth.
 
 > **`name:` collision:** two `SKILL.md` files with the same `name:` break skill resolution → report as **warning** and propose renaming one id or consolidating into a single file.
 
@@ -113,9 +113,12 @@ Phase 4 still **discovers** inventory from disk. When this hub ships `ws-spec-to
 | `10-update-plan-implementation` / `11-update-plan-implementation` | `ws-update-plan-implementation` |
 | `11-ship-pr` | `ws-ship-pr` |
 | `ws-integration-validation` (as skill id / path) | `ws-testing` |
-| Nested `shared/<utility-skill>/` as skill folders | Top-level `.agents/skills/<skill>/` |
+| Nested `ws-shared/<utility-skill>/` as skill folders | Top-level `.agents/skills/<skill>/` |
 | `us-workflow` | `ws-spec-to-pr` |
 | `writing-great-skills` | `ws-write-a-skill` |
+| `.agents/skills/shared` / `skills/shared/` (retired hub folder) | `.agents/skills/ws-shared` / `skills/ws-shared/` |
+| `hub.dir: "shared"` in `skill-dependencies.json` | `hub.dir: "ws-shared"` |
+| `pathTokens.sharedDir` default `.agents/skills/shared` | `.agents/skills/ws-shared` |
 
 #### Skill writing quality (optional — `ws-write-a-skill`)
 
@@ -197,7 +200,7 @@ export PYTHONIOENCODING=utf-8
 ```
 
 5. **Python heredoc string escapes (Windows / bash):** never write `replace('\', '/')` inside `python - <<'PY'` — the `\'` ends the string early → `SyntaxError: unterminated string literal`. Prefer `Path.as_posix()`, or write a temp `.py` file, or use `replace(chr(92), "/")` / `replace("\\", "/")` with a double-quoted Python string. Prefer compiling skill scripts with `python -m py_compile` over ad-hoc one-liners when validating syntax.
-6. **Load path token map** (§ Path token map) from `{sharedDir}/config.json` when present (else `config.json.example` defaults) + [`tools.md`](../shared/tools.md) § Path tokens. Record the resolved map in the Phase 0 notes / report. **Do not** run Phase 1/2 path existence or relative rewrites until this map is loaded.
+6. **Load path token map** (§ Path token map) from `{sharedDir}/config.json` when present (else `config.json.example` defaults) + [`tools.md`](../ws-shared/tools.md) § Path tokens. Record the resolved map in the Phase 0 notes / report. **Do not** run Phase 1/2 path existence or relative rewrites until this map is loaded.
 
 ### Phase 1 — Reference extraction
 
@@ -240,8 +243,8 @@ For each internal reference (post-expansion when applicable):
 | Numeric consistency | folder `ws-write-plan` vs. `name: ws-write-plan` (numeric prefix on filesystem only; `ws-` on `name:`) |
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
-| Undeclared shorthand | bare `shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../shared/` from an arbitrary skill) |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `shared/ws-caveman/` skill folders) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
+| Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-caveman/` skill folders) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / packaged `AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and packaged `.agents/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
@@ -295,7 +298,7 @@ Check:
 
 ### Phase 4 — Skills/rules not routed in the resolved hub
 
-Compare the **filesystem** against declared routing in the **resolved hub** (§ Hub resolution; [`shared/AGENTS.md`](../shared/AGENTS.md) in consumer mode, or root `AGENTS.md` in upstream mode). This phase is **mandatory** in every full audit.
+Compare the **filesystem** against declared routing in the **resolved hub** (§ Hub resolution; [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md) in consumer mode, or root `AGENTS.md` in upstream mode). This phase is **mandatory** in every full audit.
 
 #### 4a. Discover artifacts on disk
 
@@ -321,7 +324,7 @@ Go through **all** tables that route skills or docs in the **primary hub** (§ H
 | `§ Skill loading (mandatory)` | auto-load and per-task skills |
 | Layer / Skill index / Promoted tables | skill ids and paths |
 | Packaged `.agents/AGENTS.md` Skill index (upstream only) | same — compare to root hub when both exist (dual-hub drift) |
-| Consumer `.agents/skills/shared/AGENTS.md` | always extract when present (consumer primary hub) |
+| Consumer `.agents/skills/ws-shared/AGENTS.md` | always extract when present (consumer primary hub) |
 | `§ Task router` | skills and project docs per task |
 | Layer 3 / External deps / project docs | links to project docs (e.g., CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
 | Upstream `bin/skill-dependencies.json` (when present) | workflow package skill **folder** ids must exist under `.agents/skills/` |
@@ -554,13 +557,13 @@ Consolidate **all** findings from Phases 0–5c into an ordered plan. This phase
 1. **Enumerate problems** — numbered list with severity (`critical` / `warning` / `suggestion`).
 2. **For each problem**, document:
    - **Error** — what is wrong (with evidence: file, line, path; include **expanded** path when the citation used tokens)
-   - **Proposed correction** — exact diff or surgical instruction (relative path, before/after snippet when applicable). Preserve declared path tokens in prose; only rewrite Markdown link targets to real relatives. Never “normalize” `{sharedDir}/…` into `../shared/…` as a default fix.
+   - **Proposed correction** — exact diff or surgical instruction (relative path, before/after snippet when applicable). Preserve declared path tokens in prose; only rewrite Markdown link targets to real relatives. Never “normalize” `{sharedDir}/…` into `../ws-shared/…` as a default fix.
 3. **Classify findings:**
 
 | Severity | Criterion |
 |------------|----------|
 | **critical** | Broken link in hub (`AGENTS.md`) or skill invoked by workflow (after token expand) |
-| **warning** | Broken secondary link, absolute path, token-in-link-target, undeclared `shared/` shorthand, redundancy that may confuse agent, unrouted skill/rule, `name:` collision |
+| **warning** | Broken secondary link, absolute path, token-in-link-target, undeclared `ws-shared/` shorthand, redundancy that may confuse agent, unrouted skill/rule, `name:` collision |
 | **suggestion** | Clarity improvement, table symmetry, outdated doc without functional breakage |
 
 4. **Emit report** in § Output format — the **Correction plan** section is the main artifact of this phase.

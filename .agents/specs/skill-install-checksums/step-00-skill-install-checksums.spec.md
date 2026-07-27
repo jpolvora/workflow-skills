@@ -21,7 +21,7 @@ This feature adds a **checksum integrity mechanism** keyed to the install depend
 
 ### Goals
 
-1. **Per-skill digests** — For every installable skill id in the dependency map (and the `shared/` hub templates that ship with install), compute stable content digests of managed files.
+1. **Per-skill digests** — For every installable skill id in the dependency map (and the `ws-shared/` hub templates that ship with install), compute stable content digests of managed files.
 2. **Before install / update** — Verify the **source package** (npx cache / local package root being copied from) matches the published integrity manifest for that package version. Fail closed on mismatch unless the user explicitly opts into an unsafe override.
 3. **After install / update** — Recompute digests on the consumer disk under `.agents/skills/` and compare to the expected digests for the installed closure. Fail closed on mismatch.
 4. **Ongoing audit** — A CLI command (and optional check-harness hook) compares on-disk managed skills to the last recorded expected digests (and/or re-fetches the published manifest for the recorded package version).
@@ -45,10 +45,10 @@ This feature adds a **checksum integrity mechanism** keyed to the install depend
 
 ### Scope of hashed files
 
-For each skill folder id under `.agents/skills/<id>/` (and hub templates under `.agents/skills/shared/` excluding consumer-owned names):
+For each skill folder id under `.agents/skills/<id>/` (and hub templates under `.agents/skills/ws-shared/` excluding consumer-owned names):
 
 - Include: all files the installer would copy (same skip rules as `bin/cli.js`: no `__pycache__`, `.pyc`, `.pyo`, `.npmignore` / `.gitignore` as skipped today, no consumer-owned entries).
-- Exclude: consumer-owned names listed in installer preservation rules; anything under `shared/memory/`; generated or local-only artifacts not shipped upstream.
+- Exclude: consumer-owned names listed in installer preservation rules; anything under `ws-shared/memory/`; generated or local-only artifacts not shipped upstream.
 - Normalization: hash **file bytes as stored in the package** (no line-ending rewrite during hash). Upstream must keep managed text files LF where already required by harness rules so Windows clones do not create false mismatches after a clean install from the package tarball/npx extract.
 
 ### Integrity artifacts
@@ -59,7 +59,7 @@ For each skill folder id under `.agents/skills/<id>/` (and hub templates under `
    - `skills`: map of skill-id → `{ files: { "<relative-path>": "<hex digest>" }, skillDigest: "<hex>" }`
    - `hub`: same shape for managed `shared/` template files (not consumer-owned)
    - `fullPackageDigest`: single hex digest over a **canonical ordered** concatenation of all per-file digests in the Full-package file set (document order: sorted skill ids, then sorted relative paths; hub after or before skills — pick one and lock it)
-2. **Consumer record** (written/updated on successful install/update): extend `shared/installed-skills.json` **or** sibling `shared/skill-integrity-local.json` (prefer sibling so consumer edits to selected skills do not conflate with digests) with:
+2. **Consumer record** (written/updated on successful install/update): extend `ws-shared/installed-skills.json` **or** sibling `ws-shared/skill-integrity-local.json` (prefer sibling so consumer edits to selected skills do not conflate with digests) with:
    - `packageVersion`
    - `fullPackageDigest` (of what was installed, or of full upstream if Full install)
    - expected digests for the **installed closure** only
@@ -82,14 +82,14 @@ For each skill folder id under `.agents/skills/<id>/` (and hub templates under `
 
 ## Acceptance Criteria
 
-- AC1: Upstream ships a machine-readable integrity manifest (SHA-256) covering every installable skill folder and managed `shared/` hub template files, excluding consumer-owned names, using the same include/skip rules as the installer copy path.
+- AC1: Upstream ships a machine-readable integrity manifest (SHA-256) covering every installable skill folder and managed `ws-shared/` hub template files, excluding consumer-owned names, using the same include/skip rules as the installer copy path.
 - AC2: Each skill entry in the manifest includes per-file digests (paths relative to the skill root) and a deterministic `skillDigest` derived from those file digests; the manifest also includes a deterministic `fullPackageDigest` over the Full-package file set with a documented canonical sort order.
 - AC3: A maintained generator (script under `bin/` or CI step) rebuilds the integrity manifest from the repo tree; running it on a clean tree produces bit-identical output (stable ordering, stable hex encoding).
 - AC4: `install` and `update` verify the **source** package against the integrity manifest **before** copying skill trees into the consumer; on mismatch the command exits non-zero and does not overwrite consumer skill dirs (unless an explicit unsafe override flag is used).
-- AC5: After a successful `install` or `update`, the CLI verifies the **consumer** on-disk managed files for the installed dependency closure against expected digests and writes/updates a local integrity record under `shared/` (not overwriting consumer-owned config/MEMORY/stack).
+- AC5: After a successful `install` or `update`, the CLI verifies the **consumer** on-disk managed files for the installed dependency closure against expected digests and writes/updates a local integrity record under `ws-shared/` (not overwriting consumer-owned config/MEMORY/stack).
 - AC6: An audit command recomputes digests for currently installed managed skills and reports each mismatched or missing path; exit code is non-zero when any mismatch exists.
 - AC7: Verifying a selective install (e.g. one skill + transitive deps) only requires digests for that closure; skills not installed are not required to be present, and their absence is not reported as failure.
-- AC8: Consumer-owned paths (`config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, and configured consumer changelog when under `shared/`) are never included in digests and never fail integrity checks when edited.
+- AC8: Consumer-owned paths (`config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, and configured consumer changelog when under `ws-shared/`) are never included in digests and never fail integrity checks when edited.
 - AC9: `--check` (or the documented integrity-aware check) compares local vs remote **fullPackageDigest** (when remote manifest fetch succeeds) in addition to semver, and surfaces digest mismatch distinctly from version mismatch.
 - AC10: Automated tests under `test/` cover: clean install passes integrity; mutating one managed file after install causes audit failure; unsafe override is required to proceed past a deliberate source mismatch in a controlled test fixture; Full-package digest changes when any included file changes.
 - AC11: Release/CI (or `check-harness` / `npm run tests`) fails if the committed integrity manifest does not match a freshly generated manifest for the current tree and `package.json` version.
@@ -98,9 +98,9 @@ For each skill folder id under `.agents/skills/<id>/` (and hub templates under `
 ## Notes
 
 - **Canonical workflow path for this US:** `specs/skill-install-checksums/step-00-skill-install-checksums.spec.md` (`plans.dir` = `specs` for this repo).
-- Related existing pieces: `bin/skill-dependencies.json`, `bin/cli.js` copy/skip/preserve rules, `shared/installed-skills.json`, `--check` / `--version`.
+- Related existing pieces: `bin/skill-dependencies.json`, `bin/cli.js` copy/skip/preserve rules, `ws-shared/installed-skills.json`, `--check` / `--version`.
 - Prefer SHA-256 hex lowercase; avoid MD5/SHA-1.
-- Prompt-injection / agent rewrite defense is **detection + fail audit**, not prevention of the first malicious write; pair with existing “no silent managed-skill refactors” policy in `shared/AGENTS.md`.
+- Prompt-injection / agent rewrite defense is **detection + fail audit**, not prevention of the first malicious write; pair with existing “no silent managed-skill refactors” policy in `ws-shared/AGENTS.md`.
 - If implementation splits files: keep one published manifest path; do not invent parallel checksum formats.
 - Optional later: signed manifest, pinning digests in consumer lockfile committed to git — not required for this US.
 )

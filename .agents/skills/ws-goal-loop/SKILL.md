@@ -13,6 +13,9 @@ description: >-
   goal-orchestrator skills (e.g., ws-goal-fix-pr). Not invocable standalone.
 version: 0.0.97
 disable-model-invocation: true
+invocation_names:
+  - goal-loop
+  - ws-goal-loop
 ---
 
 # ws-goal-loop

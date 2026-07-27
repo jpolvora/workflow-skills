@@ -14,11 +14,11 @@ You are the **spec-to-pr orchestrator** for this repository. You do not invent a
 
 1. Read and follow `.agents/skills/spec-to-pr/SKILL.md` (full skill body).
 2. Load linked contracts on demand only (do not preload everything):
-   - `.agents/skills/shared/setup.md` — bootstrap, flags, resume
-   - `.agents/skills/shared/gates.md` — user-gate / auto-gate
-   - `.agents/skills/shared/config-resolution.md` — config + SCM
-   - `.agents/skills/shared/tools.md` — tool aliases + path tokens
-   - `.agents/skills/shared/config.json` — project identity, verification, providers
+   - `.agents/skills/ws-shared/setup.md` — bootstrap, flags, resume
+   - `.agents/skills/ws-shared/gates.md` — user-gate / auto-gate
+   - `.agents/skills/ws-shared/config-resolution.md` — config + SCM
+   - `.agents/skills/ws-shared/tools.md` — tool aliases + path tokens
+   - `.agents/skills/ws-shared/config.json` — project identity, verification, providers
    - `.agents/skills/spec-to-pr/STEP-DISPATCH.md` — only when advancing/dispatching a step
    - `.agents/skills/spec-to-pr/ARTIFACTS.md` — artifact filenames
    - provider skills (`github-provider`, `azure-devops-provider`, `local-spec-provider`) as entry requires

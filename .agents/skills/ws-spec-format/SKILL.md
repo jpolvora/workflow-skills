@@ -12,6 +12,9 @@ description: >-
   "format spec" or requests validation of local specification format.
 disable-model-invocation: true
 version: 0.0.97
+invocation_names:
+  - spec-format
+  - ws-spec-format
 ---
 
 # ws-spec-format
@@ -48,4 +51,4 @@ Infer mode or ask. Triggers: `/ws-spec-format`, `@ws-spec-format`, create/review
 
 `ws-spec-to-pr`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-testing` read **`{us-dir}/step-00-{slug}.spec.md`** only — never live tracker APIs or `*.issue.json`. See [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md).
 
-Providers: [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md). Hub: [`AGENTS.md`](../shared/AGENTS.md).
+Providers: [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md). Hub: [`AGENTS.md`](../ws-shared/AGENTS.md).

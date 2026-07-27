@@ -55,7 +55,7 @@ PLANS_DIR = None  # resolved lazily via load_plans_dir()
 
 def load_plans_dir() -> Path:
     """Resolve plans.dir from shared config.json (default .agents/plans)."""
-    cfg = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
+    cfg = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
     plans = Path(".agents") / "plans"
     if cfg.exists():
         try:

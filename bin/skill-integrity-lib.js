@@ -21,7 +21,7 @@ import {
 } from './install-rules.js';
 
 export const ALGORITHM = 'sha256';
-export const HUB_DIR = 'shared';
+export const HUB_DIR = 'ws-shared';
 export const MANIFEST_REL = path.join('bin', 'skill-integrity.json');
 
 const CANONICAL_ORDER = {
@@ -125,7 +125,7 @@ export function aggregateDigest(skillIds, skillsMap, hub) {
   return sha256Hex(Buffer.from(parts.join(''), 'utf8'));
 }
 
-/** Top-level dirs with SKILL.md, excluding shared/. */
+/** Top-level dirs with SKILL.md, excluding ws-shared/. */
 export function listInstallableSkills(skillsDir) {
   if (!fs.existsSync(skillsDir)) return [];
   return fs

@@ -25,7 +25,7 @@ Define and implement an opt-in integration mechanism connecting the `fable-*` sk
 
 ### 1. Configuration & Resolution Schema
 
-Add `"fable"` configuration schema to `.agents/skills/shared/config.json.example` and document resolution rules in `.agents/skills/shared/config-resolution.md`:
+Add `"fable"` configuration schema to `.agents/skills/ws-shared/config.json.example` and document resolution rules in `.agents/skills/ws-shared/config-resolution.md`:
 
 ```json
 "fable": {

@@ -18,7 +18,7 @@ invocation_names:
 
 Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Act as a Senior Software Developer: clean code, SOLID, surgical edits, stack-consistent, no duplication.
 
-**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `{sharedDir}/MEMORY.md` (Grep task keywords before coding — expand per [`tools.md`](../shared/tools.md) § Path tokens; [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult).
+**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `{sharedDir}/MEMORY.md` (Grep task keywords before coding — expand per [`tools.md`](../ws-shared/tools.md) § Path tokens; [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult).
 
 ## Invocation
 

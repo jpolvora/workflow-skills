@@ -11,13 +11,16 @@ description: >
   Consult anti-regression MEMORY before planning or writing code, and record new traps
   into the shared memory hub after implementation. Use at session/task start (read)
   and task completion (write + compile). Prevents repeating known mistakes.
+invocation_names:
+  - self-learning
+  - ws-self-learning
 ---
 
 # Self-Learning
 
 **Bidirectional gate** — MEMORY is both input (avoid known traps) and output (record new ones).
 
-Expand path tokens first ([`tools.md`](../shared/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/shared`, `{skillsRoot}` → `.agents/skills`.
+Expand path tokens first ([`tools.md`](../ws-shared/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`.
 
 Consumer-owned memory lives in the shared hub (never overwritten by install/update):
 
@@ -71,4 +74,4 @@ This rebuilds a clean index from `{sharedDir}/memory/` (per-file entries do not 
 - **Solution**: [How to do it correctly to avoid the trap]
 ```
 
-Path tokens: [`tools.md`](../shared/tools.md) § Path tokens.
+Path tokens: [`tools.md`](../ws-shared/tools.md) § Path tokens.

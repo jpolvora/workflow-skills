@@ -57,10 +57,10 @@
       "dependsOn": ["T3"],
       "files": [
         "bin/cli.js",
-        ".agents/skills/shared/.gitignore"
+        ".agents/skills/ws-shared/.gitignore"
       ],
       "acceptance": "AC4, AC5, AC7, AC8. Parse --force-integrity. Pre-verify entire closure before first skill copy; on mismatch exit ≠0 without overwriting (unless force). Post-copy+hub: verify consumer closure; write skill-integrity-local.json. Add skill-integrity-local.json to CONSUMER_OWNED_HUB_FILES and shared/.gitignore. Uninstall success rewrites local record for remaining set. Shared hook covers install/update/interactive.",
-      "coderPrompt": "From refined plan Step C + §2 CLI flows: wire integrity into shared install path (installSelectedSkills / update equivalent) so install, update, and interactive all get pre+post verify. Pre-verify full closure before first copy. After copy + hub ensure/refresh: recompute + compare; write .agents/skills/shared/skill-integrity-local.json. --force-integrity skips gates but still writes local record from actual digests. Add skill-integrity-local.json to consumer-owned list and .agents/skills/shared/.gitignore. On uninstall success rewrite local record. Document fail-closed no rollback in code comments only if needed. Validate: node --check bin/cli.js. MEMORY: after CLI edits will need npm run tests -- --local in T6."
+      "coderPrompt": "From refined plan Step C + §2 CLI flows: wire integrity into shared install path (installSelectedSkills / update equivalent) so install, update, and interactive all get pre+post verify. Pre-verify full closure before first copy. After copy + hub ensure/refresh: recompute + compare; write .agents/skills/ws-shared/skill-integrity-local.json. --force-integrity skips gates but still writes local record from actual digests. Add skill-integrity-local.json to consumer-owned list and .agents/skills/ws-shared/.gitignore. On uninstall success rewrite local record. Document fail-closed no rollback in code comments only if needed. Validate: node --check bin/cli.js. MEMORY: after CLI edits will need npm run tests -- --local in T6."
     },
     {
       "id": "T5",

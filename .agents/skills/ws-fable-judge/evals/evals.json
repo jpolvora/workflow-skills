@@ -18,7 +18,7 @@
       "expected_output": "Agent stops or bootstraps via configure-project/setup, not silent guessing.",
       "assertions": [
         "Recognizes ws-fable-judge trigger from slash or @ invocation",
-        "References shared/config.json or configure-project when config missing",
+        "References ws-shared/config.json or configure-project when config missing",
         "Does not invent project-specific metadata"
       ]
     }

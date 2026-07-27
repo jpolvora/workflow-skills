@@ -9,6 +9,9 @@ name: ws-check-harness
 description: Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (ws-* folders == frontmatter name), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.
 disable-model-invocation: true
 version: 0.0.97
+invocation_names:
+  - check-harness
+  - ws-check-harness
 ---
 
 # Check Harness
@@ -50,17 +53,17 @@ Invoke: `/ws-check-harness`, `@ws-check-harness`, or “audit the harness”. Dr
 
 ## Path token map (load in Phase 0)
 
-Canonical: [`tools.md`](../shared/tools.md) § Path tokens · [`config-resolution.md`](../shared/config-resolution.md).
+Canonical: [`tools.md`](../ws-shared/tools.md) § Path tokens · [`config-resolution.md`](../ws-shared/config-resolution.md).
 
 | Token | Resolve (first match) | Default |
 |-------|----------------------|---------|
 | `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
-| `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/shared` |
+| `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/ws-shared` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{us-dir}` | `{plansDir}/{slug}/` | skip existence if slug unknown |
 
-Expand braces before any broken-link claim. Remaining unknown braces → template (skip). Bare `shared/MEMORY.md` → warning (prefer `{sharedDir}/MEMORY.md`). Token-only prose outside links is healthy; Markdown `(...)` targets must be real paths.
+Expand braces before any broken-link claim. Remaining unknown braces → template (skip). Bare `ws-shared/MEMORY.md` → warning (prefer `{sharedDir}/MEMORY.md`). Token-only prose outside links is healthy; Markdown `(...)` targets must be real paths.
 
 ## Hub resolution (Phase 0)
 

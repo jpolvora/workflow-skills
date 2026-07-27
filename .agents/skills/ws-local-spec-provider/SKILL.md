@@ -13,6 +13,9 @@ description: >
   *.spec.md path.
 version: 0.0.97
 disable-model-invocation: true
+invocation_names:
+  - local-spec-provider
+  - ws-local-spec-provider
 ---
 
 # ws-local-spec-provider

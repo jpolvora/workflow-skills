@@ -164,7 +164,7 @@ output:
 
 Pass `slug` from workflow state when available.
 
-Also add hub **task-router** entry in packaged `shared/AGENTS.md` (and site/docs catalog as needed).
+Also add hub **task-router** entry in packaged `ws-shared/AGENTS.md` (and site/docs catalog as needed).
 
 ---
 

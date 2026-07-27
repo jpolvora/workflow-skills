@@ -7,7 +7,7 @@
     "note": "Managed skills ship from this upstream. Lasting improvements must be submitted as PRs there; consumer copies are overwritten on update."
   },
   "hub": {
-    "dir": "shared",
+    "dir": "ws-shared",
     "ensureWhen": [
       "full",
       "workflows",

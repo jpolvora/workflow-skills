@@ -8,19 +8,22 @@
 name: ws-configure-project
 version: 0.0.97
 description: >
-  Interview and detect project settings to fill or update `.agents/skills/shared/config.json`
+  Interview and detect project settings to fill or update `.agents/skills/ws-shared/config.json`
   with suggested values. Use when config.json is missing or incomplete, after install when the
   user wants to configure, before ws-spec-to-pr bootstrap, or when the user asks to set up /
   reconfigure workflow config, providers, stack, or verification commands.
+invocation_names:
+  - configure-project
+  - ws-configure-project
 ---
 
 # ws-configure-project
 
 Fill or refresh consumer `config.json` via detect → suggest → user-gate. Portable: no host-product names; paths use `{plansDir}` tokens after write.
 
-**Config path:** `.agents/skills/shared/config.json` (gitignored). Template: [`shared/config.json.example`](../shared/config.json.example). Schema: [`shared/config.schema.json`](../shared/config.schema.json).
+**Config path:** `.agents/skills/ws-shared/config.json` (gitignored). Template: [`ws-shared/config.json.example`](../ws-shared/config.json.example). Schema: [`shared/config.schema.json`](../ws-shared/config.schema.json).
 
-**Callers:** standalone anytime; [`shared/setup.md`](../shared/setup.md) bootstrap step 1; post-install when user opts in.
+**Callers:** standalone anytime; [`ws-shared/setup.md`](../ws-shared/setup.md) bootstrap step 1; post-install when user opts in.
 
 ## Invocation
 
@@ -48,9 +51,9 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (or batch if user prefers). Never commit `config.json`.
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
-5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file.
-   - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/shared/STACK.md` (**Recommended**) / Keep current / Skip.
-   - If the resolved target is missing: offer **Generate** into `.agents/skills/shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/shared/` unless the user explicitly chose another path.
+5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file.
+   - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
+   - If the resolved target is missing: offer **Generate** into `.agents/skills/ws-shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/ws-shared/` unless the user explicitly chose another path.
    - Done when: config points at an existing companion, or user skipped.
 
 6. **Validate & handoff** — Confirm JSON parses; required fields non-placeholder; print summary table (`key` → `value`). Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`.
@@ -61,5 +64,5 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Prefer detect + suggest over blank prompts.
 - Do not invent org/repo secrets; leave PAT/env keys as env-var names only.
 - `providers.scm` never `local`; hybrid `active=local` + `scm=github|azure-devops` allowed.
-- Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/shared/CHANGELOG.md` unless user picks otherwise.
+- Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/ws-shared/CHANGELOG.md` unless user picks otherwise.
 - Language: en-us.

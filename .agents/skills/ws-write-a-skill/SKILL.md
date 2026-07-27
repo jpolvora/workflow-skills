@@ -13,6 +13,7 @@ description: >
 version: 0.0.97
 invocation_names:
   - ws-write-a-skill
+  - write-a-skill
 ---
 
 # ws-write-a-skill
@@ -30,7 +31,7 @@ Root virtue: **predictability** (same process every run, not the same tokens). B
 3. **Decide invocation** — Model-invoked (keep `description`, pay **context load**) only if the agent or another skill must reach it. Otherwise user-invoked (`disable-model-invocation: true`, human-facing one-line description).
    - Done when: invocation mode is set and justified.
 
-4. **Draft** — Create `skill-name/SKILL.md` (plus scripts/reference files only when earned). Prefer **steps** with checkable **Done when** criteria; push rare detail behind a **context pointer**. Recipes must use explicit `python` / `node` / `bash` launchers ([`tools.md`](../shared/tools.md) § Script launchers). `.sh` files: LF only. Frontmatter `version:` must match package `package.json` / `{sharedDir}/skill-dependencies.json` → `packageVersion`. Do **not** put per-skill `upstream:` — ownership lives once in `skill-dependencies.json` → `upstream`.
+4. **Draft** — Create `skill-name/SKILL.md` (plus scripts/reference files only when earned). Prefer **steps** with checkable **Done when** criteria; push rare detail behind a **context pointer**. Recipes must use explicit `python` / `node` / `bash` launchers ([`tools.md`](../ws-shared/tools.md) § Script launchers). `.sh` files: LF only. Frontmatter `version:` must match package `package.json` / `{sharedDir}/skill-dependencies.json` → `packageVersion`. Do **not** put per-skill `upstream:` — ownership lives once in `skill-dependencies.json` → `upstream`.
    - Done when: frontmatter + body exist; every step has a Done when; description matches mode (triggers if model-invoked); version matches package.
 
 5. **Prune** — Single source of truth; cut **no-ops**, **duplication**, **sediment**; hunt **leading words**; collapse synonym **branches** in the description.

@@ -45,7 +45,7 @@ Decisions locked with the user: **1A** (new `.agents/workflow/` data dir + `{dat
 
 - `{dataDir}` default = `.agents/workflow` (joins the `.agents/plans`, `.agents/codereviews` family), configurable via `config.json` `pathTokens.dataDir`.
 - Consumer-owned files move to `{dataDir}/`: `config.json`, `MEMORY.md`, `memory/`, `STACK.md`, `CHANGELOG.md`, `installed-skills.json`, `skill-integrity-local.json`, plus a shipped `.agents/workflow/.gitignore`.
-- `shared/` keeps only immutable shipped assets (`tools.md`, `gates.md`, `config-resolution.md`, `setup.md`, `AGENTS.md`, `config.schema.json`, `*.example`, `*.template`, `skill-dependencies.json`) and gains a `SKILL.md` (`name: shared`) so `npx skills` installs it to `.agents/skills/shared/`.
+- `shared/` keeps only immutable shipped assets (`tools.md`, `gates.md`, `config-resolution.md`, `setup.md`, `AGENTS.md`, `config.schema.json`, `*.example`, `*.template`, `skill-dependencies.json`) and gains a `SKILL.md` (`name: shared`) so `npx skills` installs it to `.agents/skills/ws-shared/`.
 - All 12 pipeline folders rename to their `ws-*` name; folder == frontmatter `name`; orchestrators (`spec-to-pr`, `spec-to-pr-lite`) already match and do not move.
 - Pipeline skills are actionable by **both** `ws-{skill-name}` and `{skill-name}` (`invocation_names` = strip-`ws-` short + full `ws-*`; drop numeric `0N-*` and non-canonical shorts like `fix-pr`).
 - Phase 1 includes a **full-repo** path scan (not only relative skill links) until live `0N-*` / old folder paths are gone outside the allowlist.
@@ -74,8 +74,8 @@ flowchart LR
 
 ## Phase 0 - Token contract
 
-- Add `{dataDir}` (→ `pathTokens.dataDir`, default `.agents/workflow`) to [.agents/skills/shared/tools.md](.agents/skills/shared/tools.md) Path-tokens table and [.agents/skills/shared/config-resolution.md](.agents/skills/shared/config-resolution.md). Change config-resolution.md "Config path (only)" from `.agents/skills/shared/config.json` to `.agents/workflow/config.json`.
-- Add `pathTokens.dataDir` to [.agents/skills/shared/config.json.example](.agents/skills/shared/config.json.example) and [.agents/skills/shared/config.schema.json](.agents/skills/shared/config.schema.json).
+- Add `{dataDir}` (→ `pathTokens.dataDir`, default `.agents/workflow`) to [.agents/skills/ws-shared/tools.md](.agents/skills/ws-shared/tools.md) Path-tokens table and [.agents/skills/ws-shared/config-resolution.md](.agents/skills/ws-shared/config-resolution.md). Change config-resolution.md "Config path (only)" from `.agents/skills/ws-shared/config.json` to `.agents/workflow/config.json`.
+- Add `pathTokens.dataDir` to [.agents/skills/ws-shared/config.json.example](.agents/skills/ws-shared/config.json.example) and [.agents/skills/ws-shared/config.schema.json](.agents/skills/ws-shared/config.schema.json).
 
 ## Phase 1 - Remove folder numbering; real `ws-*` names (2A)
 
@@ -147,7 +147,7 @@ skills/0[0-9]-
 \.agents/skills/ws-fix-pr/
 ```
 
-**Scan roots:** `.agents/skills/`, `.agents/AGENTS.md`, root `AGENTS.md`, `README.md`, `bin/` (`cli.js`, `skill-dependencies.json`, `build-site.js`, …), `test/`, `docs/` (then rebuild), `shared/skill-dependencies.json` mirror. Scripts under providers that hardcode `ws-fix-pr` (e.g. `fetch_threads.cjs`).
+**Scan roots:** `.agents/skills/`, `.agents/AGENTS.md`, root `AGENTS.md`, `README.md`, `bin/` (`cli.js`, `skill-dependencies.json`, `build-site.js`, …), `test/`, `docs/` (then rebuild), `ws-shared/skill-dependencies.json` mirror. Scripts under providers that hardcode `ws-fix-pr` (e.g. `fetch_threads.cjs`).
 
 **Allowlist (do not rewrite):**
 - `CHANGELOG.md` historical entries
@@ -164,22 +164,22 @@ skills/0[0-9]-
 
 ## Phase 2 - shared/ becomes a skill; move consumer data
 
-- Add `.agents/skills/shared/SKILL.md` (`name: shared`, description = "workflow config and shared assets hub").
-- Split the ~130 `shared/` references: the seven consumer files → `{dataDir}/…` (`.agents/workflow/…`); immutable assets stay `{sharedDir}` / `../shared/`. Highest-density files: [self-learning/SKILL.md](.agents/skills/self-learning/SKILL.md), [check-harness/SKILL.md](.agents/skills/check-harness/SKILL.md), [configure-project/SKILL.md](.agents/skills/configure-project/SKILL.md), [changelog/SKILL.md](.agents/skills/changelog/SKILL.md), [spec-to-pr/SKILL.md](.agents/skills/spec-to-pr/SKILL.md).
-- Add shipped `.agents/skills/shared/workflow.gitignore` template (installer lands it as `.agents/workflow/.gitignore`).
+- Add `.agents/skills/ws-shared/SKILL.md` (`name: shared`, description = "workflow config and shared assets hub").
+- Split the ~130 `shared/` references: the seven consumer files → `{dataDir}/…` (`.agents/workflow/…`); immutable assets stay `{sharedDir}` / `../ws-shared/`. Highest-density files: [self-learning/SKILL.md](.agents/skills/self-learning/SKILL.md), [check-harness/SKILL.md](.agents/skills/check-harness/SKILL.md), [configure-project/SKILL.md](.agents/skills/configure-project/SKILL.md), [changelog/SKILL.md](.agents/skills/changelog/SKILL.md), [spec-to-pr/SKILL.md](.agents/skills/spec-to-pr/SKILL.md).
+- Add shipped `.agents/skills/ws-shared/workflow.gitignore` template (installer lands it as `.agents/workflow/.gitignore`).
 
 ## Phase 3 - Installer, dependency graph, integrity
 
 - [bin/skill-dependencies.json](bin/skill-dependencies.json): rename all 12 ids in `packages.workflows.skills` and every `dependencies` key/value to `ws-*`.
 - [bin/install-rules.js](bin/install-rules.js): add `shared/SKILL.md` + `workflow.gitignore` to `HUB_WHITELIST`; move `CONSUMER_OWNED_HUB_FILES` / `CONSUMER_OWNED_HUB_DIRS` semantics to a new data-dir target.
-- [bin/cli.js](bin/cli.js): retarget `ensureSharedConsumerArtifacts`, `installedSkillsManifestPath`, config seeding, and `ensurePathTokensInConfig` (add `dataDir`) from `.agents/skills/shared/` to `.agents/workflow/`; keep `shared/` hub copy for immutable assets only; keep `assertNotSelfOverwrite`.
+- [bin/cli.js](bin/cli.js): retarget `ensureSharedConsumerArtifacts`, `installedSkillsManifestPath`, config seeding, and `ensurePathTokensInConfig` (add `dataDir`) from `.agents/skills/ws-shared/` to `.agents/workflow/`; keep `ws-shared/` hub copy for immutable assets only; keep `assertNotSelfOverwrite`.
 - [bin/skill-integrity-lib.js](bin/skill-integrity-lib.js): `localIntegrityPath` → `.agents/workflow/`; keep `HUB_DIR = 'shared'` for immutable-asset hashing (now includes `SKILL.md`).
 - Regenerate [bin/skill-integrity.json](bin/skill-integrity.json) via `npm run generate-integrity` (skill keys become `ws-*`; hub adds `SKILL.md`).
 
 ## Phase 4 - Validators
 
 - [check-harness/SKILL.md](.agents/skills/check-harness/SKILL.md): rewrite the §3b folder/step table and Rules 1-2 to "folder == frontmatter `name` == `ws-*`" (step number tracked only in AGENTS.md), update the retired-id list, the `ls 0{0..9}-*` spot-check, Phase 2/5 matching, and the `{sharedDir}` consumer-file guidance (now `{dataDir}`).
-- [check-workflows/scripts/check_workflows.py](.agents/skills/check-workflows/scripts/check_workflows.py): rewrite `expected_steps`/`aux_skills` maps to `ws-*`, `resolve_skills_dir` + `SHARED_DEPS_PATH`, and the `shared/config.json` state-isolation assertion to `.agents/workflow/config.json`. Update [check-workflows/SKILL.md](.agents/skills/check-workflows/SKILL.md) folder lists.
+- [check-workflows/scripts/check_workflows.py](.agents/skills/check-workflows/scripts/check_workflows.py): rewrite `expected_steps`/`aux_skills` maps to `ws-*`, `resolve_skills_dir` + `SHARED_DEPS_PATH`, and the `ws-shared/config.json` state-isolation assertion to `.agents/workflow/config.json`. Update [check-workflows/SKILL.md](.agents/skills/check-workflows/SKILL.md) folder lists.
 
 ## Phase 5 - Scripts
 
@@ -196,7 +196,7 @@ Prerequisite: the **Add skill evals** plan has already moved the compiler to `.a
 
 ## Phase 6 - Hubs, docs, ecosystem
 
-- Update folder ids and consumer-data paths in root [AGENTS.md](AGENTS.md), [.agents/AGENTS.md](.agents/AGENTS.md), [.agents/skills/shared/AGENTS.md](.agents/skills/shared/AGENTS.md), [.agents/skills/shared/setup.md](.agents/skills/shared/setup.md).
+- Update folder ids and consumer-data paths in root [AGENTS.md](AGENTS.md), [.agents/AGENTS.md](.agents/AGENTS.md), [.agents/skills/ws-shared/AGENTS.md](.agents/skills/ws-shared/AGENTS.md), [.agents/skills/ws-shared/setup.md](.agents/skills/ws-shared/setup.md).
 - [README.md](README.md): add an `npx skills add jpolvora/workflow-skills --all` section (with the no-dep-resolution note) alongside the existing installer.
 - Add root `skills.sh.json` (groupings: Orchestrators, Pipeline, Providers, Utilities, Review, Harness).
 - Add a missing-dependency preflight to [spec-to-pr/SKILL.md](.agents/skills/spec-to-pr/SKILL.md) and [spec-to-pr-lite/SKILL.md](.agents/skills/spec-to-pr-lite/SKILL.md): if `{sharedDir}/tools.md` or required `ws-*` skills are absent, print the exact `npx skills add ... --all` command and stop.
@@ -204,8 +204,8 @@ Prerequisite: the **Add skill evals** plan has already moved the compiler to `.a
 
 ## Phase 7 - Update tests and verify
 
-- Rewrite [test/test-install.js](test/test-install.js): pipeline path lists → `ws-*` (lines ~202-208, 252-256, 344-345, 648-658, 695-716, 830-875, 1123-1129) and the Phase 9/10 consumer-data assertions + ignore patterns from `.agents/skills/shared/` to `.agents/workflow/`.
-- Run in order: `npm run generate-integrity && npm run verify-integrity`, `npm run test`, then `check-harness` and `check-workflows` (0 critical), then a scratch `npx skills add <local path> --all` dry-run to confirm the installed tree has intact `ws-*` links and no consumer data under `shared/`.
+- Rewrite [test/test-install.js](test/test-install.js): pipeline path lists → `ws-*` (lines ~202-208, 252-256, 344-345, 648-658, 695-716, 830-875, 1123-1129) and the Phase 9/10 consumer-data assertions + ignore patterns from `.agents/skills/ws-shared/` to `.agents/workflow/`.
+- Run in order: `npm run generate-integrity && npm run verify-integrity`, `npm run test`, then `check-harness` and `check-workflows` (0 critical), then a scratch `npx skills add <local path> --all` dry-run to confirm the installed tree has intact `ws-*` links and no consumer data under `ws-shared/`.
 
 ## Risks
 

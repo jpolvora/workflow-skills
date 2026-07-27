@@ -32,9 +32,9 @@ Scan consumer **repo root** (not this skill package alone):
 | No app stack detected + `.agents/skills/` present | Suggest `verification.backendTest: "python .agents/skills/ws-check-workflows/scripts/check_workflows.py"` for harness validation |
 | `prisma/` / `drizzle` / `Migrations/` / compose DB services | `stack.database.*` hints |
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
-| `.agents/skills/shared/STACK.md` (preferred) | `rules.stackFile` → that path |
+| `.agents/skills/ws-shared/STACK.md` (preferred) | `rules.stackFile` → that path |
 | Root `STACK.md` / `stack.md` (legacy optional) | Keep only if user already uses it; do not create or require |
-| `.agents/skills/shared/CHANGELOG.md` (preferred) | `rules.changelogFile` → that path |
+| `.agents/skills/ws-shared/CHANGELOG.md` (preferred) | `rules.changelogFile` → that path |
 | Repo-root `CHANGELOG.md` | Only if user sets `rules.changelogFile: "CHANGELOG.md"` |
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
@@ -57,4 +57,4 @@ Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit�
 
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
-- After write: show path `.agents/skills/shared/config.json` and remind it is gitignored.
+- After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.

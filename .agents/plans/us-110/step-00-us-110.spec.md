@@ -26,12 +26,12 @@ ode --check\) or file reading without explicit encoding fallbacks can trigger \U
 3. **Non-Interactive Execution Handling**:
    - Interactive prompt check \sys.stdin.isatty()\ when running \--fix\ in non-interactive CI/CD or background task runners needs explicit non-interactive fail-safe handling.
 4. **Path Token & Custom Config Resolution**:
-   - Hardcoded references to \.agents/skills\ should respect custom \pathTokens.skillsRoot\ and \pathTokens.sharedDir\ defined in \shared/config.json\.
+   - Hardcoded references to \.agents/skills\ should respect custom \pathTokens.skillsRoot\ and \pathTokens.sharedDir\ defined in \ws-shared/config.json\.
 
 ### Proposed Fix
 - Dynamically detect project root by scanning upward for \.git\, \package.json\, or \.agents/\ marker directory instead of fixed parent depth \parents[2]\.
 - Enforce explicit \encoding='utf-8', errors='replace'\ across all subprocess executions and file readers.
-- Respect \pathTokens\ from \shared/config.json\ when present.
+- Respect \pathTokens\ from \ws-shared/config.json\ when present.
 
 ## Acceptance Criteria
 

@@ -26,7 +26,7 @@ Acceptance Criteria (ACs):
 - **AC8:** `promote` turns inbox idea into phase bullet + next-specs row.
 - **AC9:** Documents OOS v1 (no session stop hooks, no deterministic python rewrite scripts, no Kanban API coupling).
 - **AC10:** `evals/evals.json` containing ≥2 prompts covering `init` and `sync` (skip vs update).
-- **AC11:** Hub task routers (`AGENTS.md` and `.agents/skills/shared/AGENTS.md`) updated.
+- **AC11:** Hub task routers (`AGENTS.md` and `.agents/skills/ws-shared/AGENTS.md`) updated.
 - **AC12:** Changes are skill/docs/packaging only.
 
 ## 2. Technical Design & Architecture
@@ -39,7 +39,7 @@ Acceptance Criteria (ACs):
 
 ### Files to modify:
 1. `bin/skill-dependencies.json`: Register `ws-spec-index` in `packages.workflows.skills` and `packages.full.skills`.
-2. `.agents/skills/shared/AGENTS.md`: Add `ws-spec-index` to skill index and task router tables.
+2. `.agents/skills/ws-shared/AGENTS.md`: Add `ws-spec-index` to skill index and task router tables.
 3. `AGENTS.md`: Add `ws-spec-index` to Layer 2 / Layer 5 skill catalog and task router tables.
 4. `.agents/skills/spec-to-pr/STEP-DISPATCH.md`: Document `ws-spec-index` sync call at Step 8 exit.
 5. `.agents/skills/spec-to-pr-lite/SKILL.md`: Document `ws-spec-index` sync call at Step 4 exit.
@@ -57,7 +57,7 @@ Acceptance Criteria (ACs):
    - Update `bin/skill-dependencies.json` to include `"ws-spec-index"` in `workflows` and `full` skill lists.
 
 3. **Step 3: Update Hub Indexes & Task Routers**
-   - Update `.agents/skills/shared/AGENTS.md`
+   - Update `.agents/skills/ws-shared/AGENTS.md`
    - Update root `AGENTS.md`
 
 4. **Step 4: Wire Orchestrator Call Sites for Auto-Sync**

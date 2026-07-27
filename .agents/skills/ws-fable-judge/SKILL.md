@@ -14,6 +14,8 @@ version: 0.0.97
 invocation_names:
   - ws-fable-judge
   - /ws-fable-judge
+  - fable-judge
+  - /fable-judge
 ---
 
 # Fable Judge (`ws-fable-judge`)
