@@ -81,7 +81,7 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
 | **3** | Execution Plan & DAG | `ws-plan-to-tasks` — sequential may skip empty DAG artifacts |
 | **4** | Implementation | `ws-implement-tasks` mode build |
 | **5** | Check-implementation | `ws-verify-plan` quick-score; auto pauses if score &lt; 7 |
-| **6** | Code Review (+ fix) | `ws-code-review`; fix substep only if Critical/Warning |
+| **6** | Code Review (+ fix → re-review) | `ws-code-review`; on Critical/Warning: fix → re-review max 3; Pause on residual |
 | **7** | Testing | May auto-skip (`skipTesting` / no surface); else `ws-testing` without browser |
 | **8** | Ship | Delivery result + combined gate → simulate plan+result commit + PR (`ws-ship-pr`) |
 | **9** | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` when PR created (`full`) |

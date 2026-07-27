@@ -47,7 +47,7 @@ Lite: 0 Spec → 1 Plan → 2 Implement → 3 Review → 4 Ship → 5 Fix-PR (no
 /ws-spec-to-pr 2416
   → 0 Spec → 1 Plan → 2 Interview → 3 Tasks
   → 4 Implement → 5 Check (≥7 or approve-below-7)
-  → 6 Review (+ fix if Critical/Warning) → 7 Testing
+  → 6 Review (fix → re-review, max 3) → 7 Testing
   → 8 Ship (delivery commit + push/PR) → 9 Fix-PR
 ```
 
@@ -101,7 +101,7 @@ Session model only. Pause → switch in IDE/agent host → Resume. No `--model` 
 | **3** | Plan-to-tasks | `ws-plan-to-tasks` | exec + DAG |
 | **4** | Implement | `ws-implement-tasks` | Code |
 | **5** | Check-implementation | `ws-verify-plan` | Score 0–10; &lt;7 gate |
-| **6** | Code-review | `ws-code-review` (+ fix substep) | `step-06-{slug}.review.md` |
+| **6** | Code-review | `ws-code-review` (+ fix → re-review, max 3) | `step-06-{slug}.review.md` |
 | **7** | Testing | `ws-testing` | `step-07-{slug}.testing.*` |
 | **8** | Ship | `ws-ship-pr` | Delivery + push/PR → `step-08-{slug}.result.md` |
 | **9** | Fix-PR | `ws-fix-pr` / `ws-goal-fix-pr` | Threads → merge policy |

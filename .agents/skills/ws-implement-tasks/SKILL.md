@@ -6,9 +6,10 @@
 
 
 
+
 name: ws-implement-tasks
 description: Executes code implementations or fixes defects following a plan, DAG, or review findings.
-version: 0.0.99
+version: 0.0.100
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -29,7 +30,7 @@ Standalone:
 /implement-tasks <plan-path> [mode=build|fix] [findings=<path>]
 ```
 
-Workflow (ws-spec-to-pr Step 4 build; conditional fix substep under Step 6 review findings / Step 7 test failures; lite Step 2 build / Step 3 review-fix): orchestrator passes `planPath`, `mode`, and optional `findings` path.
+Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; Step 7 test failures): orchestrator passes `planPath`, `mode`, and optional `findings` path.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|

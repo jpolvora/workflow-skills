@@ -169,7 +169,7 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 | HS-1 / HS-2 / HS-2a | Both orch |
 | G2-code | Full Steps 4 / 6 fix; lite after implement if committing mid-flow |
 | G2-delivery | Inside combined delivery + ship gate above |
-| Review findings | Lite Step 3; full Step 6 when findings |
+| Review findings | Lite Step 3; full Step 6 — fix → re-review until clean (max 3); Pause on residual Critical/Warning |
 | Active Resume | `setup.md` |
 
 ---
@@ -182,7 +182,7 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 | Combined delivery + ship (`fullMode`) | Commit plan + result, then create PR |
 | Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
 | Check-implementation < 7 | Pause (no auto-approve) |
-| Review findings (lite) | Apply fixes once, else Proceed without fixing |
+| Review findings (full Step 6 / lite Step 3) | Autofix → re-review (max 3); Pause on residual Critical/Warning |
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`) |
 
 ---

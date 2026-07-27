@@ -6,8 +6,9 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.0.99
+version: 0.0.100
 description: >-
   Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr.
   Invoke: /ws-spec-to-pr-lite | /spec-to-pr-lite | @[ws-spec-to-pr-lite] | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text.
@@ -49,7 +50,7 @@ Skips interview, DAG, check-implementation, Testing vs standard.
 | 0 | Spec | providers / `ws-write-spec` | Soft clarify if AC empty |
 | 1 | Planning | `ws-write-plan` | No interview/DAG |
 | 2 | Implementation | `ws-implement-tasks` build | Build+tests unless `skipTests` |
-| 3 | Code Review | `ws-code-review` (+ fix if Critical/Warning) | Artifact `step-06-{slug}.review.md` |
+| 3 | Code Review | `ws-code-review` (+ fix → re-review, max 3) | Artifact `step-06-{slug}.review.md` |
 | 4 | Ship | orch + `ws-ship-pr` | Combined delivery+ship gate |
 | 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` | After PR; merge only when checks green |
 
@@ -60,7 +61,7 @@ Skips interview, DAG, check-implementation, Testing vs standard.
 - **0:** `step-00-{slug}.spec.md` via [`setup.md`](../ws-shared/setup.md) § Shared entry → gate Advance.
 - **1:** `step-01-{slug}.plan.md` → Advance.
 - **2:** build mode + verification → Advance.
-- **3:** review file; optional fix substep (`mode=fix`) or logged skip → Advance.
+- **3:** review file; on Critical/Warning run fix → re-review (max 3; `autoMode` autofix); state/memory each round; Advance only when clean (Pause on residual).
 - **4:** checklist `[x]`; write `step-08-{slug}.result.md` with Benchmark Total time; combined ship gate; `ws-ship-pr` inline (`workflowType: lite`); auto-run [`ws-spec-index`](../ws-spec-index/SKILL.md) `sync` → Advance when PR/skip done.
 - **5:** ≥300s settle; loop until `activeThreads == 0`; `merge-pr` via scm; never delete `project.workingBranch`.
 
@@ -69,7 +70,7 @@ Skips interview, DAG, check-implementation, Testing vs standard.
 | Context | Index 0 |
 |---------|---------|
 | Transitions | Advance |
-| Step 3 fix | Apply fixes (if findings) |
+| Step 3 fix | Autofix → re-review (max 3); Pause on residual Critical/Warning |
 | Step 4 (`fullMode`) | Commit plan+result, create PR |
 | Step 4 (not full) | Skip delivery + skip shipping |
 | Step 5 | Run ws-goal-fix-pr loop |
@@ -81,7 +82,7 @@ Skips interview, DAG, check-implementation, Testing vs standard.
 Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
 Orch: ws-spec-to-pr-lite · model {currentModel} · {modeFlags} · workflowType: lite · workflowMode: true
-Enhancing skills (mandatory): ws-karpathy-guidelines, ws-caveman, ws-self-learning, ws-gabarito
+Enhancing skills (mandatory): ws-karpathy-guidelines, ws-tdah, ws-self-learning
 Read: state workflow memory + decisions; MEMORY.md index; `config.json.rules.stackFile`.
 Config/SCM: `.agents/skills/ws-shared/config-resolution.md`
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root}

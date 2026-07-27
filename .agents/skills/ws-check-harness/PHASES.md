@@ -85,7 +85,7 @@ Phase 4 still **discovers** inventory from disk. When this hub ships `ws-spec-to
 | `ws-write-plan` | `ws-write-plan` | 1 | Plan |
 | `ws-interview` | `ws-interview` | 2 | Interview (plan grill) |
 | `ws-plan-to-tasks` | `ws-plan-to-tasks` | 3 | DAG / exec |
-| `ws-implement-tasks` | `ws-implement-tasks` | 4 build; 6 fix substep | Implement |
+| `ws-implement-tasks` | `ws-implement-tasks` | 4 build; 6 fix→re-review | Implement |
 | `ws-verify-plan` | `ws-verify-plan` | 5 | Check-implementation |
 | `ws-code-review` | `ws-code-review` | 6 | Local review |
 | `ws-testing` | `ws-testing` | 7 | Testing (standard only; lite skips) |
@@ -245,7 +245,7 @@ For each internal reference (post-expansion when applicable):
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
 | Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-caveman/` skill folders) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / packaged `AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and packaged `.agents/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
@@ -423,7 +423,7 @@ This phase generates three independent analyses that compose the **context simul
     - Separate into two groups: **mandatory** (always loaded: guardrails, response guidelines, compression) and **conditional** (learning, ws-changelog at task end; UI patterns, responsive design, library docs by task trigger)
 
 2. **For each mandatory auto-load skill**, inspect the `SKILL.md` and extract:
-   - **Output directives** imposed on the agent (e.g., opening phrase "Senior Developer in use.", response compression "ws-caveman full", scope restriction "surgical changes only")
+   - **Output directives** imposed on the agent (e.g., opening phrase "Senior Developer in use.", response compression "ws-tdah", scope restriction "surgical changes only")
    - **Behavior rules** that modify agent output, tone, or processes
    - **Interaction with other skills** (declared dependencies, cross-references, delegation instructions)
    - **Footprint estimate:** total `SKILL.md` lines + character size (context load proxy)
@@ -434,7 +434,7 @@ This phase generates three independent analyses that compose the **context simul
     |---------|---------|-------------------|-----------|-----------|
     | Guardrails skill | Surgical-scope skill | Complementary — engineering scope vs surgical changes | No | — |
     | Response guidelines | Compression skill | Both modify tone/response — guidelines define accountability, compression reduces prose | No (precedence defined) | AGENTS.md § Precedence |
-    | Compression skill | Guardrails skill | Compression reduces ALL prose; guardrails require detailed proof | **Potential** — proof may be overly compressed | Compression skill § Intensity: "keep technical accuracy" |
+    | Compression skill | Guardrails skill | Compression reduces ALL prose; guardrails require detailed proof | **Potential** — proof may be overly compressed | Compression skill: "keep technical accuracy" |
 
    For each cell with potential conflict, classify:
    - **`none`** — no conflict detected
@@ -535,7 +535,7 @@ This phase generates three independent analyses that compose the **context simul
    | Full task (worst case) | all conditional + docs | ~total lines | 100% |
 
 5. **Validate opt-out consistency in simulation:**
-   - Verify that `stop ws-gabarito` / `stop ws-caveman` / `skip senior-developer` are recognized in all relevant skills
+   - Verify that `stop ws-gabarito` / `stop ws-tdah` / `skip senior-developer` are recognized in all relevant skills
    - Verify that no auto-load skill imposes behavior that cannot be disabled (opt-out violation)
    - If one auto-load skill references opt-outs that another auto-load skill does not recognize → `warning`
 

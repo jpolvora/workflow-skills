@@ -11,7 +11,7 @@ flowchart LR
   F0[F0 Bootstrap<br/>step 0] --> F1[F1 Planning<br/>steps 1–3]
   F1 --> F2[F2 Implement<br/>step 4]
   F2 --> F3[F3 Check<br/>step 5]
-  F3 --> F4[F4 Review<br/>step 6 + fix substep]
+  F3 --> F4[F4 Review<br/>step 6 fix→re-review]
   F4 --> F5[F5 Testing<br/>step 7]
   F5 --> F6[F6 Ship + Fix-PR<br/>steps 8–9]
 ```
@@ -48,7 +48,7 @@ flowchart TD
 flowchart TD
   L0[0 Spec — same entry as standard] --> L1[1 Plan]
   L1 --> L2[2 Implement]
-  L2 --> L3[3 Review + conditional fix]
+  L2 --> L3[3 Review fix→re-review]
   L3 --> L4[4 Ship]
   L4 --> L5[5 Fix-PR]
 ```

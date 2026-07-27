@@ -7,9 +7,10 @@
 
 
 
+
 name: ws-write-plan
 description: Generates the implementation plan (step-01-{slug}.plan.md) from the specification.
-version: 0.0.99
+version: 0.0.100
 disable-model-invocation: true
 invocation_names:
   - write-plan

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.0.99",
+  "packageVersion": "0.0.100",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -42,8 +42,7 @@
         "ws-local-spec-provider",
         "ws-check-harness",
         "ws-check-workflows",
-        "ws-caveman",
-        "ws-gabarito",
+        "ws-tdah",
         "ws-karpathy-guidelines",
         "ws-spec-format",
         "ws-goal-loop",
@@ -92,8 +91,7 @@
       "ws-local-spec-provider",
       "ws-check-harness",
       "ws-check-workflows",
-      "ws-caveman",
-      "ws-gabarito",
+      "ws-tdah",
       "ws-karpathy-guidelines",
       "ws-spec-format",
       "ws-goal-loop",
@@ -113,8 +111,7 @@
       "ws-github-provider",
       "ws-azure-devops-provider",
       "ws-local-spec-provider",
-      "ws-caveman",
-      "ws-gabarito",
+      "ws-tdah",
       "ws-karpathy-guidelines",
       "ws-spec-format",
       "ws-self-learning",
@@ -151,22 +148,19 @@
     ],
     "ws-code-review": [
       "ws-karpathy-guidelines",
-      "ws-caveman",
-      "ws-gabarito",
+      "ws-tdah",
       "ws-self-learning",
       "ws-fable-judge"
     ],
     "ws-fable-method": [
       "ws-fable-judge",
       "ws-fable-domain",
-      "ws-caveman",
-      "ws-gabarito",
+      "ws-tdah",
       "ws-karpathy-guidelines",
       "ws-self-learning"
     ],
     "ws-fable-judge": [
-      "ws-caveman",
-      "ws-gabarito",
+      "ws-tdah",
       "ws-karpathy-guidelines"
     ],
     "ws-multi-spec": [
@@ -174,8 +168,7 @@
       "ws-spec-to-pr-lite",
       "ws-ship-pr",
       "ws-goal-fix-pr",
-      "ws-caveman",
-      "ws-gabarito",
+      "ws-tdah",
       "ws-karpathy-guidelines"
     ]
   },

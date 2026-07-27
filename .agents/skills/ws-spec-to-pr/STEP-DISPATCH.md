@@ -16,7 +16,7 @@
 | 3 | `dispatch-agent` `ws-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |
 | 4 | `dispatch-agent` `ws-implement-tasks` mode build; branch-direct default | verification |
 | 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve) | `step-05-{slug}.plan.report.md` |
-| 6 | `dispatch-agent` `ws-code-review`; findings → **fix substep** `ws-implement-tasks` fix (not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
+| 6 | `dispatch-agent` `ws-code-review`; Critical/Warning → **fix → re-review** via `ws-implement-tasks` (max 3; not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
 | 7 | Auto-skip if `skipTesting` or (no test surface + unit tests green); else `dispatch-agent` `ws-testing` (Testing) | `step-07-{slug}.testing.*` |
 | 8 | Delivery result + **combined ship gate** ([`gates.md`](../ws-shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
 | 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists | PR threads / merge |
@@ -34,15 +34,16 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 `autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
 
-### Step 6 — Code-review + conditional fix (substep)
+### Step 6 — Code-review + fix → re-review loop (substep)
 
 | Case | Behavior |
 |------|----------|
 | Clean (no Critical/Warning) | Complete step 6; Advance to 7 |
-| Fixable findings | Substep: `ws-implement-tasks` mode fix → optional re-review slice → complete step 6 |
-| User declines fix | Log skip; Advance with findings (or Pause) |
+| Critical/Warning findings | Fix → re-review rounds via `ws-implement-tasks` mode fix (max **3**); state/memory each round; Advance only when clean |
+| Residual after 3 rounds | **Pause** (fail closed) — do not Advance with open Critical/Warning |
+| `autoMode` | Autofix (no ask); same max 3; Pause on residual |
 
-Fix is **not** its own `completedSteps` entry — log `review-fix` in gate history.
+Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3` in gate history. Contract: [`ws-code-review`](../ws-code-review/SKILL.md) § Fix → re-review loop.
 
 ### Step 8 — Ship (delivery + push/PR)
 
