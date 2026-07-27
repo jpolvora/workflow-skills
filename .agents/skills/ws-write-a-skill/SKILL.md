@@ -10,7 +10,7 @@ description: >
   Creates, edits, or audits agent skills for predictability — structure, progressive disclosure,
   descriptions, and pruning. Use when the user wants to create, write, build, rewrite, or optimize
   a skill, or mentions skill authoring.
-version: 0.0.97
+version: 0.0.98
 invocation_names:
   - ws-write-a-skill
   - write-a-skill

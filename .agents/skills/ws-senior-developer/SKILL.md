@@ -6,7 +6,7 @@ description: >
   implementation constraints, and pre-ship proof. Default rules.seniorDeveloper
   delivery gate; autoloaded via hub skill loading. Set rules.seniorDeveloper to ""
   in config.json to disable.
-version: 0.0.97
+version: 0.0.98
 invocation_names:
   - senior-developer
   - ws-senior-developer

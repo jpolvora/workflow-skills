@@ -11,7 +11,7 @@ description: >-
   Load when the user invokes /ws-spec-format, @ws-spec-format, "create spec", "review spec",
   "format spec" or requests validation of local specification format.
 disable-model-invocation: true
-version: 0.0.97
+version: 0.0.98
 invocation_names:
   - spec-format
   - ws-spec-format

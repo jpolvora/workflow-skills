@@ -5,9 +5,10 @@
 
 
 
+
 name: ws-plan-to-tasks
 description: Breaks an implementation plan into atomic tasks organized in a DAG, or sequential when small.
-version: 0.0.97
+version: 0.0.98
 disable-model-invocation: true
 invocation_names:
   - plan-to-tasks
