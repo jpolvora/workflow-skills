@@ -1,0 +1,539 @@
+# Instincts generated from https://github.com/jpolvora/workflow-skills
+# Generated: 2026-07-27T04:55:11.539Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: workflow-skills-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, docs
+
+## Evidence
+
+- 2 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat(skills): rename shared hub to ws-shared and enable senior-developer by default, docs(hubs): document ws-senior-developer dual-hub autoload vs opt-in (#153)
+
+---
+id: workflow-skills-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Length
+
+## Action
+
+Write moderate-length commit messages (~79 characters)
+
+## Evidence
+
+- Average commit message length: 79 chars
+- Based on 2 commits
+
+---
+id: workflow-skills-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Naming Files
+
+## Action
+
+Use kebab-case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: kebab-case
+
+---
+id: workflow-skills-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: workflow-skills-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: workflow-skills-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.ts
+
+## Evidence
+
+- File pattern: *.test.ts
+- Consistent across test files
+
+---
+id: workflow-skills-test-types
+trigger: "when planning tests for a feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Test Types
+
+## Action
+
+Write unit, integration tests to match project standards
+
+## Evidence
+
+- Test types detected: unit, integration
+- Coverage config: no
+
+---
+id: workflow-skills-workflow-add-or-update-skill
+trigger: "when doing add or update skill"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Workflow Add Or Update Skill
+
+## Action
+
+Follow the add-or-update-skill workflow:
+1. Create or update SKILL.md in the skill's directory
+2. Update or add evals/evals.json for the skill
+3. Optionally add or update scripts or supporting files in the skill directory
+4. Update shared skill registry or dependencies if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: .agents/skills/*/SKILL.md, .agents/skills/*/evals/evals.json, .agents/skills/*/scripts/*.py
+
+---
+id: workflow-skills-workflow-plan-and-execute-feature
+trigger: "when doing plan and execute feature"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Workflow Plan And Execute Feature
+
+## Action
+
+Follow the plan-and-execute-feature workflow:
+1. Create step-00-<feature>.issue.json and step-00-<feature>.spec.md
+2. Write step-01-<feature>.plan.md and optionally further refined plan files
+3. Add execution and report files (e.g., exec.dag.json, plan.exec.md, plan.report.md, testing.report.md)
+4. Add review and result files (review.md, result.md)
+5. Update state.md to reflect current progress
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: .agents/plans/*/step-00-*.issue.json, .agents/plans/*/step-00-*.spec.md, .agents/plans/*/step-01-*.plan.md
+
+---
+id: workflow-skills-workflow-update-shared-hub-or-config
+trigger: "when doing update shared hub or config"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Workflow Update Shared Hub Or Config
+
+## Action
+
+Follow the update-shared-hub-or-config workflow:
+1. Rename or move shared hub directories
+2. Update config files and schema (config.json.example, config.schema.json)
+3. Update documentation (AGENTS.md, setup.md, gates.md, etc.)
+4. Propagate path and config changes across skills and installer scripts
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: .agents/skills/ws-shared/*, .agents/skills/ws-shared/config*.json*, .agents/skills/ws-shared/AGENTS.md
+
+---
+id: workflow-skills-workflow-document-and-review-feature
+trigger: "when doing document and review feature"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Workflow Document And Review Feature
+
+## Action
+
+Follow the document-and-review-feature workflow:
+1. Update AGENTS.md in root and/or .agents/skills/ws-shared/
+2. Update documentation files (setup.md, PHASES.md, etc.)
+3. Update review or integrity check files as needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: AGENTS.md, .agents/AGENTS.md, .agents/skills/ws-shared/AGENTS.md
+
+---
+id: workflow-skills-instinct-naming-files
+trigger: "When creating or renaming files"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Naming Files
+
+## Action
+
+Use kebab-case for file names
+
+## Evidence
+
+- Pattern in file naming conventions
+- No snake_case or camelCase files detected
+
+---
+id: workflow-skills-instinct-naming-functions
+trigger: "When defining functions"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Naming Functions
+
+## Action
+
+Use camelCase for function names
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.functions
+
+---
+id: workflow-skills-instinct-naming-classes
+trigger: "When defining classes"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Naming Classes
+
+## Action
+
+Use PascalCase for class names
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.classes
+
+---
+id: workflow-skills-instinct-naming-constants
+trigger: "When defining constants"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Naming Constants
+
+## Action
+
+Use SCREAMING_SNAKE_CASE for constant names
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.constants
+
+---
+id: workflow-skills-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Import Style
+
+## Action
+
+Use absolute import paths
+
+## Evidence
+
+- Pattern in codeStyle.importStyle
+
+---
+id: workflow-skills-instinct-export-style
+trigger: "When exporting modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in codeStyle.exportStyle
+
+---
+id: workflow-skills-instinct-testing-file-pattern
+trigger: "When creating test files"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Testing File Pattern
+
+## Action
+
+Name test files with the pattern *.test.ts
+
+## Evidence
+
+- Pattern in testing.filePattern
+
+---
+id: workflow-skills-instinct-testing-types
+trigger: "When writing tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Testing Types
+
+## Action
+
+Include both unit and integration tests
+
+## Evidence
+
+- Pattern in testing.testTypes
+
+---
+id: workflow-skills-instinct-testing-location
+trigger: "When adding tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Testing Location
+
+## Action
+
+Place test files in a separate directory from source code
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
+---
+id: workflow-skills-instinct-git-commit-format
+trigger: "When making a git commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Git Commit Format
+
+## Action
+
+Use conventional commit format with prefixes like feat or docs, and scope in parentheses
+
+## Evidence
+
+- Seen in commit: feat(skills): rename shared hub to ws-shared and enable senior-developer by default
+- Seen in commit: docs(hubs): document ws-senior-developer dual-hub autoload vs opt-in (#153)
+
+---
+id: workflow-skills-instinct-add-or-update-skill
+trigger: "When introducing a new skill or updating an existing skill's logic, documentation, or evaluation"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Add Or Update Skill
+
+## Action
+
+Create or update SKILL.md, update/add evals/evals.json, optionally update scripts, and update shared skill registry if needed
+
+## Evidence
+
+- Workflow: add-or-update-skill
+- Pattern in .agents/skills/*/SKILL.md, .agents/skills/*/evals/evals.json, .agents/skills/*/scripts/*.py
+
+---
+id: workflow-skills-instinct-plan-and-execute-feature
+trigger: "When delivering a new feature or user story using agents/plans or agents/specs workflow"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Plan And Execute Feature
+
+## Action
+
+Create issue and spec files, write plan files, add execution and report files, add review and result files, and update state.md
+
+## Evidence
+
+- Workflow: plan-and-execute-feature
+- Pattern in .agents/plans/*/step-00-*.issue.json, .agents/plans/*/step-00-*.spec.md, .agents/plans/*/step-01-*.plan.md, etc.
+
+---
+id: workflow-skills-instinct-update-shared-hub-or-config
+trigger: "When reorganizing the shared hub, updating config schemas, or changing default behaviors for skills"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Update Shared Hub Or Config
+
+## Action
+
+Rename or move shared hub directories, update config files and schema, update documentation, and propagate changes across skills and scripts
+
+## Evidence
+
+- Workflow: update-shared-hub-or-config
+- Pattern in .agents/skills/ws-shared/*, .agents/skills/ws-shared/config*.json*, bin/install-rules.js
+
+---
+id: workflow-skills-instinct-document-and-review-feature
+trigger: "When documenting a new hub/skill behavior or updating review guidance"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Document And Review Feature
+
+## Action
+
+Update AGENTS.md, update documentation files, and update review or integrity check files as needed
+
+## Evidence
+
+- Workflow: document-and-review-feature
+- Pattern in AGENTS.md, .agents/skills/ws-shared/AGENTS.md, bin/skill-integrity.json
+
+---
+id: workflow-skills-instinct-error-handling
+trigger: "When handling errors in code"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Error Handling
+
+## Action
+
+Use try-catch blocks for error handling; do not use custom error classes or global handlers
+
+## Evidence
+
+- Pattern in errorHandling.style
+- No customErrorClasses or globalHandler
+
