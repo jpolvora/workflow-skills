@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.0.103",
+  "packageVersion": "0.0.104",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -26,6 +26,7 @@
         "ws-spec-to-pr",
         "ws-spec-to-pr-lite",
         "ws-write-spec",
+        "ws-classify-complexity",
         "ws-write-plan",
         "ws-interview",
         "ws-plan-to-tasks",
@@ -75,6 +76,7 @@
   "dependencies": {
     "ws-spec-to-pr": [
       "ws-write-spec",
+      "ws-classify-complexity",
       "ws-write-plan",
       "ws-interview",
       "ws-plan-to-tasks",
@@ -103,6 +105,7 @@
     ],
     "ws-spec-to-pr-lite": [
       "ws-write-spec",
+      "ws-classify-complexity",
       "ws-write-plan",
       "ws-implement-tasks",
       "ws-code-review",

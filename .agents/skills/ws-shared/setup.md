@@ -59,9 +59,11 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
    - Generate companion from the detected information using [`STACK.md.example`](STACK.md.example) as format reference.
    - Write to `.agents/skills/ws-shared/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/ws-shared/`). Do **not** create a repo-root stack file.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
-   - Log: `stack companion  2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`).
+   - Log: `stack companion bootstrapped: {stackFile}`.
+2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`).
    - **Combined Switches:** These switches can be used individually or combined in any configuration (e.g. `full` + `auto` + `dry-run` to run a fully automated dry-run simulation of the entire workflow for testing).
-   - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`; `score-and-refine` / `analyze-second-pass` / `score-refine` / `scoreAndRefine` → `scoreAndRefine: true`.
+   - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`; `skip-gates` → `skipQualityGates: true`; `score-and-refine` / `analyze-second-pass` / `score-refine` / `scoreAndRefine` → `scoreAndRefine: true`.
+   - When `skipQualityGates` is true (flag or `config.json` → `invariants.skipQualityGates`), quality gates are bypassed (classifier enforcement, fable quality visibility except `auditVerdictsBlockShip` + REFUTED, pre-advance CI, telemetry soft gates). Build, test, security, SCM, and HS-1..HS-4 still run.
    - Set `currentModel` from the **executing session model** (agent identity / runtime). If unknown → `unknown`.
    - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch model in IDE/agent host → Resume`.
    - Do **not** store or apply `modelChain`.
@@ -81,6 +83,7 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
    | `scoreAndRefine` | `{true/false}` |
    | `skipTesting` | `{true/false}` |
    | `skipTests` | `{true/false}` |
+   | `skipQualityGates` | `{true/false}` |
    | `currentModel` | `{session model}` |
    | `slug` | `{slug}` |
    | `workflowId` | `{workflow-id}` |

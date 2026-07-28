@@ -22,13 +22,13 @@ HS-2: Commit without explicit gate menu selection → STOP.
 HS-2a: `git add` or commit any `{plansDir}/` path during Steps 0–7 → STOP (workflow artifacts forbidden until Step 8 delivery commit).
 HS-3: Mutating step success + empty files_touched → FAILED.
 HS-4: Step 4/6-fix/7 success without expected files on state.branch → FAILED.
-HS-5: State Hygiene failed → STOP before Progress Board.
+HS-5: State Hygiene or pre-advance validation failed → STOP before Progress Board; no dispatch.
 ```
 Auto: HS-3/4/5 apply; HS-1/2 N/A.
 
 ### Transition Discipline
 
-**Normal:** N done → Hygiene → checkpoint `before-step-{N+1}` → Board → summary → Transition Gate → dispatch N+1.
+**Normal:** N done → `update_state` (+ `--jsonl-out`) → checkpoint `before-step-{N+1}` → `validate_state --pre-advance {N+1}` (shell; skip when `skipQualityGates` / `--skip-gates`) → Board → summary → Transition Gate → dispatch N+1.
 
 **Auto:** auto-gate + dispatch N+1 same turn.
 
@@ -85,7 +85,7 @@ Any step **may** use a worktree when `useWorktrees=true`. **Preferred** for code
 
 → [`protocols/state-hygiene.md`](protocols/state-hygiene.md)
 
-Every completed/failed step: pass measured `--elapsed` into `update_state.py` (required; script rejects omit). Upserts `## Telemetry log`. Missing step-output telemetry or hygiene fail → **HS-5**.
+Every completed/failed step: pass measured `--elapsed` into `update_state.py` (required; script rejects omit). Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. Upserts `## Telemetry log`. After checkpoint, run pre-advance validation (shell; see [`state-hygiene.md`](protocols/state-hygiene.md)). Missing step-output telemetry, hygiene fail, or pre-advance exit ≠ 0 → **HS-5**.
 
 ### Model readiness
 
@@ -302,7 +302,7 @@ End with ```step-output(status, step, artifacts, files_touched, verification, re
 
 ### Transition Gates
 
-Post-step: hygiene → checkpoint (`Shell` tag) → short summary → gate. Board at phase boundaries.
+Post-step: `update_state` (+ JSONL) → checkpoint (`Shell` tag) → pre-advance validate (shell) → short summary → gate. Board at phase boundaries.
 
 | Mode | Tool |
 |------|------|

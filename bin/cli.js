@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
+import { spawnSync } from 'child_process';
 import readline from 'readline/promises';
 import { fileURLToPath } from 'url';
 import {
@@ -810,6 +811,24 @@ function fetchRemoteVersion() {
   });
 }
 
+function runTelemetryAggregate() {
+  const scriptPath = path.join(__dirname, 'generate-telemetry-aggregate.cjs');
+  if (!fs.existsSync(scriptPath)) {
+    console.error(`Error: telemetry script not found at ${scriptPath}`);
+    process.exit(1);
+  }
+  const result = spawnSync(process.execPath, [scriptPath], {
+    stdio: 'inherit',
+    cwd: targetDir,
+    env: process.env,
+  });
+  if (result.error) {
+    console.error(`Error: failed to run telemetry aggregate: ${result.error.message}`);
+    process.exit(1);
+  }
+  process.exit(result.status ?? 1);
+}
+
 function printHelp() {
   console.log(`Usage:
   npx --yes github:jpolvora/workflow-skills              Interactive install
@@ -824,6 +843,8 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills --version    Print installed version
   npx --yes github:jpolvora/workflow-skills --check      Compare version + fullPackageDigest vs main
   npx --yes github:jpolvora/workflow-skills integrity    Audit installed skills vs local integrity record
+  npx --yes github:jpolvora/workflow-skills telemetry aggregate
+      Regenerate {plansDir}/telemetry/aggregate.json from workflow state files
   npx --yes github:jpolvora/workflow-skills --help
 
 Curl shim (same argv; requires Node.js):
@@ -1192,6 +1213,20 @@ async function main() {
     assertNotSelfOverwrite();
     runIntegrityAudit();
     return;
+  }
+
+  if (command === 'telemetry') {
+    const sub = args[1];
+    if (sub === '--help' || sub === '-h' || sub === 'help') {
+      printHelp();
+      process.exit(0);
+    }
+    if (!sub || sub === 'aggregate') {
+      runTelemetryAggregate();
+      return;
+    }
+    console.error(`Error: Unknown telemetry subcommand '${sub}'. Use: telemetry aggregate`);
+    process.exit(1);
   }
 
   if (command === 'install') {

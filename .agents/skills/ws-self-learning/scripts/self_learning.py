@@ -35,7 +35,7 @@ ensure_utf8_stdio()
 
 SKILL_DIR = Path(__file__).resolve().parent.parent  # ws-self-learning/ (script lives in scripts/)
 # Consumer-owned memory lives in the shared hub (not inside this skill package).
-SHARED_DIR = SKILL_DIR.parent / "shared"
+SHARED_DIR = SKILL_DIR.parent / "ws-shared"
 MEMORY_DIR = SHARED_DIR / "memory"
 COMPILED_MEMORY_PATH = SHARED_DIR / "MEMORY.md"
 

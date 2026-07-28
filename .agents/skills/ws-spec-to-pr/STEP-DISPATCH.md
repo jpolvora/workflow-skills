@@ -21,7 +21,25 @@
 | 8 | Delivery result + **combined ship gate** ([`gates.md`](../ws-shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
 | 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists | PR threads / merge |
 
-Post-mutating: merge files_touched → Step file log; backup preExistingDirty; checkpoint `before-step-{N+1}`.
+### Post-mutating transition (after step N completes)
+
+**Order (mandatory):**
+
+1. **`update_state.py`** — merge `files_touched` → Step file log; record telemetry; advance `currentStep`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl` (zero-padded `NN`; lazy-create `telemetry/`). When `--skip-gates` or `config.json.invariants.skipQualityGates` is active, add `--bypassed` on this call.
+2. **Checkpoint** — `Shell` tag `uswf/{workflow-id}/before-step-{N+1}` @ HEAD (skip tag write in `dryRun`; log only). Pre-advance soft-passes missing tags when `dryRun: true`.
+3. **Pre-advance validation** — **shell command** (not `dispatch-agent`):
+
+```bash
+python {skillsRoot}/ws-spec-to-pr/scripts/validate_state.py \
+  {plansDir}/{slug}/{workflow-id}.state.md \
+  --pre-advance {N+1}
+```
+
+On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, no dispatch to step N+1.
+
+**Skip (pre-advance gate only):** When `--skip-gates` or `skipQualityGates` is active, **omit** step 3; log gate-bypass in JSONL (`type: gate-bypass`, `gate: pre-advance`, `reason: skip-gates|config`). Does **not** skip `update_state`, checkpoint, build/test/security, or HS-1–HS-4.
+
+4. **Progress Board** → **Transition Gate** → dispatch step N+1 (or auto-gate + dispatch in `autoMode`).
 
 ### Step 5 — Check-implementation (score gate)
 
@@ -30,6 +48,7 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows):
 - Evaluates each plan task in `step-01-{slug}.plan.md` on criteria fulfillment, code quality, edge-cases, and test coverage.
 - Outputs `step-05-{slug}.score-analysis.md` containing task-by-task scores (0–10) and specific enhancement recommendations.
+- **Optional (AC6):** When `step-05-{slug}.score-analysis.md` exists, re-invoke `ws-classify-complexity` with `--score-analysis` before the score gate — advisory only; does not block Advance.
 - Prompts **Pass 1 Score Analysis Gate** via `user-gate` (Option 1: Proceed with Second Pass Refinement; Option 2: Accept Pass 1 As-Is & Ship; Option 3: Selective Refinement).
 - Option 1 or 3 re-dispatches `ws-implement-tasks` for flagged tasks with scoring feedback, followed by 2nd pass verification.
 

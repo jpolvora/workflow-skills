@@ -12,8 +12,9 @@
 | 2 | Build (consumer verification) | ✅ / ❌ / ⏭ | … |
 | 3 | Tests run | ✅ / ❌ / ⏭ | … |
 | 4 | Security / leak scan | ✅ / ❌ / ⏭ | … |
-| 5 | Consumer prepare / before-push steps | ✅ / ❌ / ⏭ | … |
-| 6 | Board shown; ready to ship | ✅ / ❌ | … |
+| 5 | Fable-judge audit verdict | ✅ / ❌ / ⏭ | … |
+| 6 | Consumer prepare / before-push steps | ✅ / ❌ / ⏭ | … |
+| 7 | Board shown; ready to ship | ✅ / ❌ | … |
 ```
 
 ✅ = done/credited · ❌ = failed · ⏭ = N/A or proven earlier with evidence for the **current** tree.
@@ -27,7 +28,7 @@ Resolve from the **consumer project** only — never invent stack commands:
 | `config.json` → `verification.*` | Build / test / format |
 | `config.json` → `rules.*` + [`ws-shared/AGENTS.md` External dependencies](../ws-shared/AGENTS.md#external-dependencies) | Guardrails / optional rule paths (or root `AGENTS.md#external-dependencies` when authoring upstream) |
 | `STACK.md` (`rules.stackFile`, default `{sharedDir}/STACK.md`) | Ship/verify notes |
-| Consumer hubs + ship docs (see §5 scan list) | Prepare / before-push / before-publish steps |
+| Consumer hubs + ship docs (see §6 scan list) | Prepare / before-push / before-publish steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
 
 Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../ws-shared/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../ws-shared/tools.md) § Path tokens).
@@ -59,7 +60,16 @@ Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configu
 **⏭:** clean scan evidence for current ship-scope tree.  
 **Done when:** scan clean, or HIGH findings listed and push blocked.
 
-### 5. Consumer prepare / before-push steps (discover + wait)
+### 5. Fable-judge audit verdict
+
+**When:** always show on the board before commit/push/create-PR.  
+**Do:** read the latest [`ws-fable-judge`](../ws-fable-judge/SKILL.md) verdict for the **current** ship-scope tree (orch Steps 5/6 reports, review artifacts, or a fresh run when no verdict exists).  
+**Status mapping:** `VERIFIED` or `VERIFIED WITH CAVEATS` → ✅ · `REFUTED` → ❌ and **STOP** (no push/PR).  
+**⏭:** `config.json` → `fable.enabled` is `false`, or `autoAudit` is `false`, or no fable run applies to the current tree — cite config + evidence. Prior orch fable runs still **show** this row; credit ⏭ only when the verdict (or N/A reason) matches the **current** tree.  
+**Note:** Step 1 preflight in [`ws-ship-pr`](SKILL.md) still enforces `fable.enabled` + `autoAudit` + `auditVerdictsBlockShip`; this row is **visibility only** — do not weaken that gate.  
+**Done when:** verdict shown on board with ✅, ❌, or justified ⏭.
+
+### 6. Consumer prepare / before-push steps (discover + wait)
 
 **When:** always, before commit/push/create-PR.  
 **Gate:** do **not** proceed to ship-pr Steps 4–5 until this row is ✅ or justified ⏭. Discovered steps are **blocking** unless the cited section marks them optional.
@@ -79,7 +89,7 @@ Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configu
    - `ship`, `release`, `publish`, `deliver` when the section lists **agent obligations** before push/PR
    - `local project rule` / `local harness` when tied to shipping or PR creation
    - `skill integrity` / `generate-integrity` / `verify-integrity` / `skill-integrity.json` when the hub requires regenerating digests before push/PR
-3. **List hits** in board evidence for row 5 (file + heading + one-line obligation). Zero hits → ⏭ with `no prepare/before-push steps found in scanned sources` and list what was scanned.
+3. **List hits** in board evidence for row 6 (file + heading + one-line obligation). Zero hits → ⏭ with `no prepare/before-push steps found in scanned sources` and list what was scanned.
 
 #### Wait / execute
 
@@ -89,7 +99,7 @@ Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configu
 
 **Done when:** all discovered required steps ✅, or ⏭ with scan evidence.
 
-### 6. Show board & gate
+### 7. Show board & gate
 Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resolves (`providers.scm` per [config-resolution.md](../ws-shared/config-resolution.md)). Unresolved SCM or `shipAction: skip` → stop after board.  
 **Done when:** user saw board; ship gate decision explicit.
 
@@ -103,3 +113,4 @@ Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resol
 | "No SCM — invent gh" | STOP; resolve `providers.scm` or skip ship. |
 | "No consumer prepare — skip scan" | Always scan hubs/rules; ⏭ only after an empty scan with sources listed. |
 | "Local AGENTS bump/rule is optional" | If discovery found a before-push/ship obligation, it blocks until done. |
+| "Fable already ran in orch — skip board" | Show row 5; credit ⏭ only with current-tree verdict or N/A evidence. |

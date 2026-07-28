@@ -134,6 +134,17 @@
       }
     },
     "rules": { "type": "object" },
-    "invariants": { "type": "object" }
+    "invariants": {
+      "type": "object",
+      "description": "Project invariants and workflow bypass toggles.",
+      "additionalProperties": true,
+      "properties": {
+        "skipQualityGates": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, same effect as the --skip-gates CLI flag: bypass quality gates (classifier enforcement, fable quality visibility except auditVerdictsBlockShip + REFUTED, pre-advance CI, telemetry soft gates). Does not skip build, test, security, SCM, or HS-1..HS-4."
+        }
+      }
+    }
   }
 }

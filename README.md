@@ -162,7 +162,7 @@ npm run generate-integrity      # rebuild bin/skill-integrity.json
 npm run verify-integrity        # fail if stale vs tree / package.json (required before PR)
 node bin/generate-skill-integrity.js --check   # same as verify-integrity
 npm run tests              # remote-style install check
-npm run tests -- --local   # pack current tree into test/
+npm run tests              # pack current tree into test/ (local mode)
 ```
 
 ---
