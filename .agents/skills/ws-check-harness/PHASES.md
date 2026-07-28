@@ -244,6 +244,7 @@ For each internal reference (post-expansion when applicable):
 | Numeric consistency | folder `ws-write-plan` vs. `name: ws-write-plan` (numeric prefix on filesystem only; `ws-` on `name:`) |
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
+| Bare relative link resolution | Link `docs/faq.md` inside a skill directory resolved from repo root (`docs/faq.md`) instead of containing folder (`.agents/skills/.../docs/faq.md`) → **warning**; resolution must use containing directory |
 | Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
 | Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / packaged `AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
