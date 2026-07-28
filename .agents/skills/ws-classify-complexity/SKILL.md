@@ -7,7 +7,6 @@ version: 0.0.104
 invocation_names:
   - classify-complexity
   - ws-classify-complexity
-  - classify
 ---
 
 # ws-classify-complexity
@@ -32,7 +31,7 @@ Do not merge the two axes. A `lite` recommendation does not imply `simple`; a `s
 Standalone:
 
 ```
-/classify <spec-path> [--score-analysis <path>]
+/classify-complexity <spec-path> [--score-analysis <path>]
 ```
 
 Workflow (Step 0): orchestrator runs after `step-00-{slug}.spec.md` exists and **before** advancing to Step 1.

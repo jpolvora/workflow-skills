@@ -156,7 +156,7 @@ After `step-00-{slug}.spec.md` exists and **before** the transition gate to Step
 
 **Orthogonal to Complexity gate:** Pipeline classifier (`lite` | `standard`) recommends orchestrator choice. Full-orch **Complexity gate** ([`gates.md`](../ws-shared/gates.md) § Complexity gate; [`PROTOCOLS.md`](PROTOCOLS.md) § Complexity / Dynamic Execution) uses `simple` | `standard` | `complex` to skip or enforce Steps 1–2–3. Do not merge axes — `lite` ≠ `simple`; `standard` recommendation ≠ `complex`.
 
-When `skipQualityGates` is active: skip classifier **enforcement** (user gate); advisory `classify.md` may still be written. Standalone: `/classify <spec-path>` per classify skill.
+When `skipQualityGates` is active: skip classifier **enforcement** (user gate); advisory `classify.md` may still be written. Standalone: `/classify-complexity <spec-path>` per classify skill.
 
 ## Quality gate bypass (`skipQualityGates`)
 
@@ -200,4 +200,4 @@ go back | change plan | back to step X → Backward Nav (not in auto)
 switch model | change model → Pause → IDE/agent host → Resume
 ```
 
-Flags: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`. Standalone classify: `/classify <spec-path>` ([`ws-classify-complexity`](../ws-classify-complexity/SKILL.md)). Model = session only.
+Flags: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`. Standalone classify: `/classify-complexity <spec-path>` ([`ws-classify-complexity`](../ws-classify-complexity/SKILL.md)). Model = session only.
