@@ -159,7 +159,6 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-fable-method` | `skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
 | `ws-fable-domain` | `skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `ws-spec-format` | `skills/ws-spec-format/SKILL.md` | Create / review / format `*.spec.md` |
-| `ws-classify-complexity` | `skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
 | `ws-changelog` | `skills/ws-changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `ws-shared/`) |
 | `ws-configure-project` | `skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
