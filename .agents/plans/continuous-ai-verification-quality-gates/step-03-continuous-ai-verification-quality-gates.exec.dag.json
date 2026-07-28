@@ -1,0 +1,214 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "planPath": ".agents/plans/continuous-ai-verification-quality-gates/step-02-continuous-ai-verification-quality-gates.plan.refined.md",
+  "reason": "8 refined implementation steps, 26 expected unique changed files, and 3 layers (skills/cli/tests) exceed sequential thresholds of 3 steps, 6 files, and 2 layers.",
+  "metrics": {
+    "planSteps": 8,
+    "atomicTasks": 16,
+    "expectedUniqueChangedFiles": 26,
+    "safeDagLevels": 6,
+    "maxConcurrentTasks": 3,
+    "sameLevelFileCollisions": 0,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "AC1 Fable-judge PREPARE board row",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md"
+      ],
+      "acceptance": "AC1: Insert fable-judge as row 5; renumber consumer prepare→6, board→7; REFUTED=❌ STOP; VERIFIED/WITH CAVEATS=✅; disabled/not-run=⏭ with evidence; rationalizations updated; en-us; no host names.",
+      "coderPrompt": "Edit only PREPARE-CHECKLIST.md. Insert a Fable-judge audit verdict row between security (4) and consumer prepare. Renumber former 5→6 and 6→7 everywhere (board template, checklist headings). Status symbols ✅/❌/⏭. Visibility only — do not change Step 1 preflight enforcement. Add rationalization: prior orch fable run still shows the row; credit ⏭ only with current-tree evidence. Keep markdown tables sequential and links intact. en-us only."
+    },
+    {
+      "id": "T2",
+      "title": "AC3+AC6 Create ws-classify-complexity skill",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-classify-complexity/SKILL.md",
+        ".agents/skills/ws-classify-complexity/scripts/classify.cjs"
+      ],
+      "acceptance": "AC3+AC6: New skill + classify.cjs with manual YAML parse, dagThresholds comparison, classify.md output, Accept/Override gate, autoMode index-0; --score-analysis deferred at Step 0 and advisory-only mid-flight; node --check; no npm YAML; en-us; harness-neutral.",
+      "coderPrompt": "Create only the two listed files under ws-classify-complexity/. SKILL.md: protocol for classifying a spec vs config.json dagThresholds into lite|standard; user-gate Accept recommendation / Override to standard / Override to lite; autoMode accepts recommendation; document orthogonality to gates.md Complexity simple|standard|complex; default stay on current orch if lite recommended mid-flight. classify.cjs: Node .cjs, manual frontmatter mini-parser (mirror validate_state spirit), count ACs/sections/path refs/layers, read dagThresholds from shared config, write step-00-{slug}.classify.md, optional --score-analysis for Pass 1 (AC6), exit non-zero if spec missing. No npm deps. Run node --check on classify.cjs."
+    },
+    {
+      "id": "T3",
+      "title": "ARTIFACTS registry for inputs/classify/telemetry",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-spec-to-pr/ARTIFACTS.md"
+      ],
+      "acceptance": "AC2/AC3/AC4 (G1/G2): Step input prerequisites table for advance-to-N; register step-00-{slug}.classify.md (not Step 8 stage set); register {us-dir}/telemetry/ runtime path.",
+      "coderPrompt": "Edit only ARTIFACTS.md. Add Step input prerequisites table exactly as refined plan §2b (steps 1–9 required artifacts; note lite mirrors 1–5). Register classify.md artifact type and {us-dir}/telemetry/ for JSONL. Do not put classify in Step 8 delivery stage set. Keep existing naming conventions; en-us; no host names."
+    },
+    {
+      "id": "T4",
+      "title": "AC2 Standard validate_state --pre-advance",
+      "parallelGroup": "L2",
+      "dependsOn": ["T3"],
+      "files": [
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.py"
+      ],
+      "acceptance": "AC2: --pre-advance N adds checkpoint tag, ARTIFACTS-driven step-input, and completedSteps monotonicity checks; exit 1 on failure; existing post-step path unchanged without flag; py_compile clean.",
+      "coderPrompt": "Edit only standard validate_state.py. Implement --pre-advance <N> as NEW checks (G5): verify_checkpoint_tag via git tag -l uswf/{workflow-id}/before-step-{N} + reachable commit; verify_step_artifacts from ARTIFACTS Step input prerequisites; verify_monotonicity on completedSteps (sorted unique, no gaps except logged skippedSteps; duplicates error). Keep post-step hygiene when flag absent. Descriptive stderr; exit 1 on failure. python -m py_compile. No host product names."
+    },
+    {
+      "id": "T5",
+      "title": "AC2 Lite validate_state --pre-advance",
+      "parallelGroup": "L2",
+      "dependsOn": ["T3"],
+      "files": [
+        ".agents/skills/ws-spec-to-pr-lite/scripts/validate_state.py"
+      ],
+      "acceptance": "AC2: Lite mirror of --pre-advance for Steps 1–5 with lite artifact equivalents; same exit/monotonicity/checkpoint semantics; py_compile clean.",
+      "coderPrompt": "Edit only lite validate_state.py. Mirror standard --pre-advance for lite Steps 1–5 using lite artifact equivalents from ARTIFACTS notes. Same checkpoint/artifact/monotonicity rules and exit codes. python -m py_compile. Do not touch standard script."
+    },
+    {
+      "id": "T6",
+      "title": "AC4 Standard update_state JSONL dual-write",
+      "parallelGroup": "L2",
+      "dependsOn": ["T3"],
+      "files": [
+        ".agents/skills/ws-spec-to-pr/scripts/update_state.py"
+      ],
+      "acceptance": "AC4: --jsonl-out appends one flat JSONL record per successful update; lazy mkdir; optional verification/fable/errors/bypassed fields; state.md telemetry unchanged; no secrets/PII; py_compile clean.",
+      "coderPrompt": "Edit only standard update_state.py. Add --jsonl-out path; mkdir parents; append one JSON object per successful invocation with schema timestamp/step/label/elapsedSec/promptTokens/completionTokens/filesTouched/model/verificationScore/fableVerdict/gateDecision/errors/bypassed. Add optional --verification-score, --fable-verdict, --errors, --bypassed; gateDecision from existing --gate-choice. Preserve nested state.md telemetry (dual-write). Never write source/secrets/PII. python -m py_compile."
+    },
+    {
+      "id": "T7",
+      "title": "AC4 Lite update_state JSONL dual-write",
+      "parallelGroup": "L3",
+      "dependsOn": ["T3"],
+      "files": [
+        ".agents/skills/ws-spec-to-pr-lite/scripts/update_state.py"
+      ],
+      "acceptance": "AC4: Lite mirror of --jsonl-out and optional fields; same schema/safety; py_compile clean.",
+      "coderPrompt": "Edit only lite update_state.py. Mirror standard --jsonl-out dual-write and optional verification/fable/errors/bypassed flags. Same flat schema and safety rules. Preserve state.md telemetry path. python -m py_compile."
+    },
+    {
+      "id": "T8",
+      "title": "AC7 generate-telemetry-aggregate.cjs",
+      "parallelGroup": "L3",
+      "dependsOn": [],
+      "files": [
+        "bin/generate-telemetry-aggregate.cjs"
+      ],
+      "acceptance": "AC7: Scans current {plansDir}/**/*.state.md (+ optional JSONL bypass events); writes {plansDir}/telemetry/aggregate.json with required flat fields; idempotent; node --check.",
+      "coderPrompt": "Create only bin/generate-telemetry-aggregate.cjs. Resolve plans.dir from ws-shared config (default .agents/plans). Scan **/*.state.md; optionally merge gate-bypass events from **/telemetry/*.jsonl. Write aggregate.json with totalWorkflows, completedWorkflows, averageElapsedSec, averageVerificationScore, fableVerdictDistribution, gateBypassCount, errorTypeDistribution (maps ≤1 nesting level). Idempotent full regenerate; current project only. node --check."
+    },
+    {
+      "id": "T9",
+      "title": "AC5 skip-gates setup + config templates",
+      "parallelGroup": "L3",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/config.schema.json"
+      ],
+      "acceptance": "AC5 (G6/G10): setup.md parses skip-gates→skipQualityGates; example invariants.skipQualityGates=false; schema documents property; do not edit consumer config.json.",
+      "coderPrompt": "Edit only the three listed shared templates. Add skip-gates / skipQualityGates to setup.md Parse flags. Add invariants.skipQualityGates false to config.json.example. Document the property under invariants in config.schema.json. Never touch consumer-owned config.json. en-us."
+    },
+    {
+      "id": "T10",
+      "title": "AC2+AC4 Wire standard dispatch/protocols",
+      "parallelGroup": "L4",
+      "dependsOn": ["T4", "T6"],
+      "files": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+        ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md"
+      ],
+      "acceptance": "AC2+AC4(+AC6 note): Post-mutating order update_state→checkpoint before-step-{N+1}→validate --pre-advance {N+1}→board/gate/dispatch; HS-5 on failure; always pass --jsonl-out; shell not subagent; optional classify re-invoke after score-analysis.",
+      "coderPrompt": "Edit only the three listed protocol/dispatch files. Document shell pre-advance after checkpoint before board/gate/dispatch (OQ1/G11). On validate failure: HS-5, no dispatch. Honor skip-gates for this quality gate only. Always pass --jsonl-out to {plansDir}/{slug}/telemetry/step-{NN}.jsonl (G12). Add optional Step 5 note to re-invoke classify when scoreAndRefine + score-analysis exist (AC6). No host names."
+    },
+    {
+      "id": "T11",
+      "title": "AC3+AC5 Wire standard orch SKILL.md",
+      "parallelGroup": "L4",
+      "dependsOn": ["T2", "T6", "T9"],
+      "files": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md"
+      ],
+      "acceptance": "AC3+AC5: Classify after Step 0 spec before Step 1 advance; --skip-gates matrix with auditVerdictsBlockShip safety floor; [GATES BYPASSED] banner; bypass JSONL event; orthogonal to Complexity gate.",
+      "coderPrompt": "Edit only ws-spec-to-pr/SKILL.md. Wire classify after step-00 spec exists before Step 1; document gate options and autoMode. Document --skip-gates / skipQualityGates: skips classifier enforcement, fable quality visibility (except auditVerdictsBlockShip+REFUTED), pre-advance CI, telemetry soft gates; never skips build/test/security/SCM/HS-1..4/required --elapsed. Banner [GATES BYPASSED]. Bypass JSONL event shape. Note classifier lite|standard orthogonal to Complexity gate. en-us; no host names."
+    },
+    {
+      "id": "T12",
+      "title": "AC2+AC3+AC5 Wire lite orch SKILL.md",
+      "parallelGroup": "L4",
+      "dependsOn": ["T2", "T5", "T7", "T9"],
+      "files": [
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md"
+      ],
+      "acceptance": "AC2+AC3+AC5: Lite Steps 1–5 pre-advance shell after checkpoint; --classify; --skip-gates same matrix + safety floor; --jsonl-out recipes; [GATES BYPASSED] banner.",
+      "coderPrompt": "Edit only ws-spec-to-pr-lite/SKILL.md. Wire pre-advance shell after checkpoint for Steps 1–5; --classify; --skip-gates / skipQualityGates with same skip/not-skip matrix and safety floor as standard; always pass --jsonl-out; show [GATES BYPASSED] when active. en-us; no host names."
+    },
+    {
+      "id": "T13",
+      "title": "AC5+AC7 Wire ws-ship-pr SKILL.md",
+      "parallelGroup": "L5",
+      "dependsOn": ["T8", "T9"],
+      "files": [
+        ".agents/skills/ws-ship-pr/SKILL.md"
+      ],
+      "acceptance": "AC5+AC7: --skip-gates documented with safety floor; call generate-telemetry-aggregate.cjs after delivery (and Step 9 convergence) with warn-and-continue on failure; bypass banner when active.",
+      "coderPrompt": "Edit only ws-ship-pr/SKILL.md. Document --skip-gates aligning with orch matrix; never bypass auditVerdictsBlockShip+REFUTED. After successful delivery (and Step 9 workflow completion), run node bin/generate-telemetry-aggregate.cjs — warn and continue if it fails (do not block ship). Reference PREPARE fable row visibility. en-us."
+    },
+    {
+      "id": "T14",
+      "title": "AC7 Optional cli.js telemetry aggregate",
+      "parallelGroup": "L5",
+      "dependsOn": ["T8"],
+      "files": [
+        "bin/cli.js"
+      ],
+      "acceptance": "AC7 (G9): Thin telemetry aggregate subcommand spawns generate-telemetry-aggregate.cjs; primary entry remains direct node script; help aligned if applicable.",
+      "coderPrompt": "Edit only bin/cli.js. Add a thin telemetry aggregate (or equivalent) subcommand that spawns bin/generate-telemetry-aggregate.cjs. Do not duplicate aggregation logic. Update --help if subcommands are listed. Keep existing install/update/uninstall behavior intact."
+    },
+    {
+      "id": "T15",
+      "title": "AC3 Register skill in deps + hubs",
+      "parallelGroup": "L5",
+      "dependsOn": ["T2"],
+      "files": [
+        "bin/skill-dependencies.json",
+        ".agents/skills/ws-shared/skill-dependencies.json",
+        "AGENTS.md",
+        ".agents/AGENTS.md",
+        ".agents/skills/ws-shared/AGENTS.md"
+      ],
+      "acceptance": "AC3 (G8): ws-classify-complexity in Workflows package (+ orch dependency edges as needed); both manifests mirrored; root/packaged/shared hubs list skill in indexes/routers; en-us.",
+      "coderPrompt": "Edit only the five listed files. Add ws-classify-complexity to packages.workflows.skills in both skill-dependencies manifests; add orch dependencies edges if dispatch requires it; keep manifests mirrored. Update AGENTS.md, .agents/AGENTS.md, and ws-shared/AGENTS.md skill index / task router as appropriate for Workflows package. No host names; no Extra phantom routes."
+    },
+    {
+      "id": "T16",
+      "title": "All ACs Integration tests",
+      "parallelGroup": "L6",
+      "dependsOn": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15"],
+      "files": [
+        "test/test-quality-gates.js"
+      ],
+      "acceptance": "All ACs: test-quality-gates.js covers fable row, pre-advance checks/HS-5, classify+override, JSONL, skip-gates+safety floor, scoreAndRefine defer/distribution, aggregate fields/idempotence per refined plan §5.",
+      "coderPrompt": "Create only test/test-quality-gates.js. Implement cases from refined plan §5 (testFableRowExists, testFableRefutedBlocks, checkpoint/artifact/monotonicity/HS-5, classify output/thresholds/override, jsonl*, skipGates*/bypassSafetyFloor, classifier Pass1/score distribution, aggregate*). Prefer unit/integration style matching existing test/ helpers. Do not rewrite unrelated install tests."
+    }
+  ],
+  "levels": [
+    ["T1", "T2", "T3"],
+    ["T4", "T5", "T6"],
+    ["T7", "T8", "T9"],
+    ["T10", "T11", "T12"],
+    ["T13", "T14", "T15"],
+    ["T16"]
+  ]
+}
