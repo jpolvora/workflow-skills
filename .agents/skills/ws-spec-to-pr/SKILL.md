@@ -9,8 +9,9 @@
 
 
 
+
 name: ws-spec-to-pr
-version: 0.0.102
+version: 0.0.103
 description: End-to-end Spec-to-PR delivery orchestrator FSM (Steps 0–9). Coordinates planning, DAG execution, verification, review loops, testing, and SCM PR delivery with subagent isolation.
 
 invocation_names:
@@ -66,6 +67,7 @@ Deterministic FSM; step content via **`dispatch-agent`**.
 | `autoMode` | Auto-gate 0; `[AUTO]`; HS-3/4/5 pause; no browser; telemetry still mandatory. |
 | `skipTesting` / `skipTests` | Skip Step 7 vs skip test suites (build required). |
 | `fullMode` | Step 8 Recommended = commit plan+result then create PR. |
+| `scoreAndRefine` | Pass 1 task scoring + 2nd pass refinement loop (`[SCORE-REFINE]`). |
 | Artifacts | **Never commit `{plansDir}/` in Steps 0–7.** Delivery commit Step 8: plan + `step-08-{slug}.result.md` only. |
 | Pause / model | Pause keeps artifacts (`status: active`). `currentModel` = session; switch via Pause → host → Resume. |
 | Revert | Manifest + checkpoint only — no global hard reset. |

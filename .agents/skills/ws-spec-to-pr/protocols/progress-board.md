@@ -4,7 +4,7 @@ Render: bootstrap/resume; **phase boundaries** (F0→F1 … F5→F6); after fail
 
 ```markdown
 ## Progress — US {us} (`{workflow-id}`)
-**Status:** … | **Phase:** {Fx} | **Step:** {N} — {label} | **Branch:** `{branch}` | **Mode:** {autoMode→[AUTO] / dryRun→[DRY-RUN] / fullMode→[FULL] / normal}
+**Status:** … | **Phase:** {Fx} | **Step:** {N} — {label} | **Branch:** `{branch}` | **Mode:** {autoMode→[AUTO] / dryRun→[DRY-RUN] / fullMode→[FULL] / scoreAndRefine→[SCORE-REFINE] / normal}
 **Current model:** {currentModel} | **Step models:** {list}
 _Model switch: Pause → change model in IDE/agent host → resume._
 

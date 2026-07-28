@@ -258,11 +258,12 @@ Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `b
 ```yaml
 workflowId, slug, us, specSource, specPath
 startedAt, endedAt, status: active|completed|cancelled|failed
-currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode
+currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode, scoreAndRefine
 execMode: sequential|parallel|null  # set after Step 3
 branch, baselineCommit, preExistingDirty: []
 checkpoints, workflowManifest, commits: [{sha, step, message}]
 completedSteps, stepStatus, skippedSteps, completedTasks, stepDispatches
+pass1Scores, pass2Scores, scoreGateChoice
 refineRound, currentModel  # session-derived; refresh on resume
 stepModels: [{step: N, model: "name", dispatched: ISO}]
 # modelChain removed — ignore if present in old state files

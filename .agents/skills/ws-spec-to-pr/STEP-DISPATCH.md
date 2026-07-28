@@ -27,6 +27,12 @@ Post-mutating: merge files_touched → Step file log; backup preExistingDirty; c
 
 Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.md`**. Publish integer **score 0–10** in Progress Board + report.
 
+When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows):
+- Evaluates each plan task in `step-01-{slug}.plan.md` on criteria fulfillment, code quality, edge-cases, and test coverage.
+- Outputs `step-05-{slug}.score-analysis.md` containing task-by-task scores (0–10) and specific enhancement recommendations.
+- Prompts **Pass 1 Score Analysis Gate** via `user-gate` (Option 1: Proceed with Second Pass Refinement; Option 2: Accept Pass 1 As-Is & Ship; Option 3: Selective Refinement).
+- Option 1 or 3 re-dispatches `ws-implement-tasks` for flagged tasks with scoring feedback, followed by 2nd pass verification.
+
 | Score | Behavior |
 |-------|----------|
 | ≥ 7 | Complete step 5; Advance to 6 |
@@ -48,6 +54,8 @@ Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3`
 ### Step 8 — Ship (delivery + push/PR)
 
 **Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**) → render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)) → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+
+When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
 
 Telemetry/`--elapsed` still required under `autoMode`/`fullMode` (State Hygiene → HS-5 if missing).
 
