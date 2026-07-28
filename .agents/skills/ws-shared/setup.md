@@ -59,10 +59,9 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
    - Generate companion from the detected information using [`STACK.md.example`](STACK.md.example) as format reference.
    - Write to `.agents/skills/ws-shared/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/ws-shared/`). Do **not** create a repo-root stack file.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
-   - Log: `stack companion created → {path}` in step output.
-2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict`.
+   - Log: `stack companion  2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`).
    - **Combined Switches:** These switches can be used individually or combined in any configuration (e.g. `full` + `auto` + `dry-run` to run a fully automated dry-run simulation of the entire workflow for testing).
-   - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`.
+   - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`; `score-and-refine` / `analyze-second-pass` / `score-refine` / `scoreAndRefine` → `scoreAndRefine: true`.
    - Set `currentModel` from the **executing session model** (agent identity / runtime). If unknown → `unknown`.
    - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch model in IDE/agent host → Resume`.
    - Do **not** store or apply `modelChain`.
@@ -79,6 +78,7 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
    | `autoMode` | `{true/false}` |
    | `dryRun` | `{true/false}` |
    | `fullMode` | `{true/false}` |
+   | `scoreAndRefine` | `{true/false}` |
    | `skipTesting` | `{true/false}` |
    | `skipTests` | `{true/false}` |
    | `currentModel` | `{session model}` |
@@ -108,25 +108,35 @@ Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream ski
 
 1. `Glob` `{plansDir}/**/*.state.md` (`{plansDir}` ← `config.plans.dir`) → list all state files.
 2. For each, `Read` frontmatter YAML: `status`, `workflowId`, `slug`, `us`, `currentStep`, `startedAt`, `autoMode`, `workflowType`.
-3. **[ws-spec-to-pr]** Filter: (`status: active` or `status: paused`) and `workflowType` is `standard` or absent.
-   **[ws-spec-to-pr-lite]** Filter: (`status: active` or `status: paused`) and `workflowType` is exactly `lite`.
-4. Present as **selectable list** via user-gate:
-
-```text
-Found {N} unfinished workflow(s):
-
-1. US {us} — {slug} — Step {currentStep} — started {startedAt} — [{autoMode ? 'AUTO' : 'normal'}] (Recommended)
-2. US {us} — {slug} — Step {currentStep} — started {startedAt} — [{autoMode ? 'AUTO' : 'normal'}]
-
-Options:
-- Resume workflow #1 (Recommended)
-- Resume workflow #2
-- Start new workflow (ignore existing)
-- Cancel for now
-```
-
-5. Resume: load state, `status: active`, skip bootstrap, jump to `currentStep` gate.
+3. Filter by `workflowType` match (`standard` vs `lite`).
+   - **Completed Workflow Check:** If an existing workflow matches the target US/slug and has `status: completed` (or all steps finished):
+     Prompt via `user-gate`:
+     ```text
+     Completed workflow state detected for US {us} ({slug}):
+     
+     Options:
+     1. Run Score & Second Pass (score-and-refine) mode to analyze task scores and refine implementation (Recommended)
+     2. Restart workflow from zero (overwrite/new run)
+     3. View completed results & exit
+     ```
+     Choosing Option 1 sets `scoreAndRefine: true` and dispatches Score Analysis / 2nd Pass execution.
+   - **Unfinished Workflow Check:** Filter `status: active` or `status: paused`. Present as **selectable list** via user-gate:
+     ```text
+     Found {N} unfinished workflow(s):
+     
+     1. US {us} — {slug} — Step {currentStep} — started {startedAt} — [{autoMode ? 'AUTO' : 'normal'}] (Recommended)
+     2. US {us} — {slug} — Step {currentStep} — started {startedAt} — [{autoMode ? 'AUTO' : 'normal'}]
+     
+     Options:
+     - Resume workflow #1 (Recommended)
+     - Resume workflow #2
+     - Start new workflow from zero
+     - Cancel for now
+     ```
+   - **Non-Existent State:** If no matching completed or unfinished workflow exists, start fresh from **Zero** (Step 0).
+4. Resume: load state, `status: active`, skip bootstrap, jump to `currentStep` gate.
 5a. **Session model refresh (mandatory on every resume):** Re-read the executing session model → update `currentModel`. If changed vs prior frontmatter value, log `model-change | step {currentStep} | {old} → {new} | ISO` in ## Gate history. Ignore leftover `modelChain` keys in old state files.
+6. Paused: resume at same step (checkpoint revert M=currentStep → hygiene → board → gate)..
 6. Paused: resume at same step (checkpoint revert M=currentStep → hygiene → board → gate).
 7. No unfinished workflows: skip list, proceed to bootstrap.
 

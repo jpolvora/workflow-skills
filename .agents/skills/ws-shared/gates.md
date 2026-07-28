@@ -162,6 +162,26 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 
 ---
 
+## Score & Refine gate (`scoreAndRefine`)
+
+When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows):
+
+1. **Pass 1 Score Analysis Gate:** After scoring plan tasks against acceptance criteria (`step-05-{slug}.score-analysis.md`), present findings via `user-gate`:
+   ```text
+   Score Analysis Complete:
+   - Overall Score: {score}/10
+   - Tasks Flagged for Improvement: {N} tasks
+
+   Options:
+   1. Proceed with Second Pass Refinement (Recommended)
+   2. Accept First Pass As-Is & Ship
+   3. Selective Refinement (choose specific tasks)
+   ```
+2. **Second Pass Execution:** Re-run implementation for flagged tasks with Pass 1 scoring context, followed by 2nd pass verification and comparative reporting (`step-08-{slug}.second-pass-report.md`).
+3. **Comparative Delivery Gate:** Final delivery gate comparing Pass 1 vs Pass 2 scores, LOC deltas, and test metrics before ship/commit.
+
+---
+
 ## Safety gates to keep
 
 | Gate | Where |
@@ -181,6 +201,8 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 | Transition | Next (Advance) |
 | Combined delivery + ship (`fullMode`) | Commit plan + result, then create PR |
 | Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
+| Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |
+| Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
 | Check-implementation < 7 | Pause (no auto-approve) |
 | Review findings (full Step 6 / lite Step 3) | Autofix → re-review (max 3); Pause on residual Critical/Warning |
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`) |
@@ -192,3 +214,5 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 | Flag | Meaning |
 |------|---------|
 | `skipTesting` | Skip Step 7 Testing (auto-skip when no test surface + unit tests green) |
+| `scoreAndRefine` | Enable Pass 1 Task Scoring & 2nd Pass Refinement loop (aliases: `analyze-second-pass`, `score-refine`) |
+

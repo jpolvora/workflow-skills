@@ -70,7 +70,7 @@ Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/set
 @[ws-spec-to-pr] soft-delete for suppliers
 ```
 
-State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`).
+State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`, `scoreAndRefine`).
 
 ### Flags
 
@@ -82,6 +82,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 | `skip-tests` | Skip implement-time test suite runs (build still runs) |
 | `full` | Step 8 Recommended = commit plan+result then create PR |
 | `strict` | Full verification matrix at Step 5 |
+| `score-and-refine` | Pass 1 task scoring + 2nd pass refinement loop (aliases: `analyze-second-pass`, `score-refine`) |
 
 **Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/setup.md).
 

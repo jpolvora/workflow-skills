@@ -90,7 +90,11 @@
           "description": "Skip Step 7 Testing (standard orch)."
         },
         "skipTests": { "type": "boolean" },
-        "fullMode": { "type": "boolean" }
+        "fullMode": { "type": "boolean" },
+        "scoreAndRefine": {
+          "type": "boolean",
+          "description": "Enable Pass 1 Task Scoring and 2nd Pass Refinement loop."
+        }
       }
     },
     "plans": {

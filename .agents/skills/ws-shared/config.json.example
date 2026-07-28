@@ -121,7 +121,8 @@
     "dryRun": false,
     "skipTesting": false,
     "skipTests": false,
-    "fullMode": false
+    "fullMode": false,
+    "scoreAndRefine": false
   },
 
   "plans": {
