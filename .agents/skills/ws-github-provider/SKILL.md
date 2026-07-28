@@ -8,9 +8,10 @@
 
 
 
+
 name: ws-github-provider
 description: GitHub SCM provider — handles GitHub issue-to-spec conversion, authentication, PR creation, review thread resolution, and merging via gh CLI.
-version: 0.0.101
+version: 0.0.102
 disable-model-invocation: true
 invocation_names:
   - github-provider
