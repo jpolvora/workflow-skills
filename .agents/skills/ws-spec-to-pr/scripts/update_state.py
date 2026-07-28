@@ -3,7 +3,7 @@
 update_state -- Automate State Hygiene updates for ws-spec-to-pr state.md (v7)
 
 Usage:
-    python update_state.py <state-path> --step <N> --status <status> --elapsed <sec> [--tokens <prompt>:<comp>] [--model <model>] [--created <file1,file2>] [--modified <file1,file2>] [--deleted <file1,file2>] [--gate-choice <choice>]
+    python update_state.py <state-path> --step <N> --status <status> --elapsed <sec> [--tokens <prompt>:<comp>] [--model <model>] [--label <label>] [--created <file1,file2>] [--modified <file1,file2>] [--deleted <file1,file2>] [--gate-choice <choice>] [--jsonl-out <path>] [--verification-score <int>] [--fable-verdict <str>] [--errors <csv-or-json>] [--bypassed]
 
 --elapsed is required for completed/failed (HS-5 if omitted). Skipped may omit (defaults to 0).
 
@@ -15,12 +15,14 @@ This script:
   5. Upserts ## Telemetry log + appends ## Gate history.
   6. Writes the updated state.md file back cleanly.
   7. Runs validate_state.py on the result.
+  8. Optionally appends a flat JSONL telemetry record (--jsonl-out).
 """
 
 import os
 import sys
 import re
 import ast
+import json
 import datetime
 import argparse
 from pathlib import Path
@@ -44,6 +46,69 @@ def ensure_utf8_stdio() -> None:
 
 
 ensure_utf8_stdio()
+
+
+# Canonical standard steps 0–9 (legacy 10–13 labels kept for old state resume)
+STEP_LABELS = {
+    0: "Spec",
+    1: "Planning",
+    2: "Interview",
+    3: "Plan to tasks",
+    4: "Implement",
+    5: "Verify",
+    6: "Code review",
+    7: "Testing",
+    8: "Ship",
+    9: "Fix PR",
+    10: "Fixes & Second Commit",
+    11: "Integration Validation",
+    12: "Consolidation & Cleanup",
+    13: "Ship & PR",
+}
+
+_SECRET_PATTERNS = [
+    (re.compile(r"\b(sk-[a-zA-Z0-9]{10,})\b"), "[REDACTED]"),
+    (re.compile(r"\b(AKIA[0-9A-Z]{16})\b"), "[REDACTED]"),
+    (re.compile(r"(?i)(password|passwd|secret|token|api[_-]?key)\s*[:=]\s*\S+"), r"\1=[REDACTED]"),
+    (re.compile(r"-----BEGIN [A-Z ]+ PRIVATE KEY-----[\s\S]*?-----END [A-Z ]+ PRIVATE KEY-----"), "[REDACTED]"),
+    (re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"), "[REDACTED]"),
+]
+
+_TELEMETRY_STRING_MAX_LEN = 500
+
+
+def sanitize_telemetry_string(value: str, max_len: int = _TELEMETRY_STRING_MAX_LEN) -> str:
+    """Strip secrets/PII and truncate; never emit source blobs in telemetry."""
+    if not value:
+        return ""
+    text = str(value).replace("\r\n", "\n").replace("\r", "\n")
+    for pattern, repl in _SECRET_PATTERNS:
+        text = pattern.sub(repl, text)
+    if len(text) > max_len:
+        text = text[: max_len - 3] + "..."
+    return text
+
+
+def parse_errors_arg(value: str | None) -> list:
+    """Parse --errors as JSON array or comma-separated strings."""
+    if not value:
+        return []
+    raw = value.strip()
+    if raw.startswith("["):
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, list):
+                return [sanitize_telemetry_string(str(item)) for item in parsed if str(item).strip()]
+        except (json.JSONDecodeError, TypeError):
+            pass
+    return [sanitize_telemetry_string(part) for part in raw.split(",") if part.strip()]
+
+
+def append_jsonl_record(jsonl_path: Path, record: dict) -> None:
+    """Append one flat JSON object per line; create parent dirs lazily."""
+    jsonl_path.parent.mkdir(parents=True, exist_ok=True)
+    with jsonl_path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(record, separators=(",", ":"), ensure_ascii=False) + "\n")
 
 
 def format_val(v):
@@ -322,6 +387,12 @@ def main():
     parser.add_argument("--modified", type=str, help="Comma-separated list of modified files")
     parser.add_argument("--deleted", type=str, help="Comma-separated list of deleted files")
     parser.add_argument("--gate-choice", type=str, help="Choice chosen at the transition gate")
+    parser.add_argument("--label", type=str, help="Step label (defaults from step number)")
+    parser.add_argument("--jsonl-out", type=str, help="Append flat JSONL telemetry record to this path")
+    parser.add_argument("--verification-score", type=int, default=None, help="Verification score (Steps 5/6)")
+    parser.add_argument("--fable-verdict", type=str, default=None, help="Fable judge verdict (Steps 5/6/8)")
+    parser.add_argument("--errors", type=str, default=None, help="Errors as comma-separated list or JSON array")
+    parser.add_argument("--bypassed", action="store_true", help="Record that quality gates were bypassed")
 
     args = parser.parse_args()
     if args.elapsed is None:
@@ -452,24 +523,7 @@ def main():
 
     files_count = len(created_list) + len(modified_list) + len(deleted_list)
 
-    # Canonical standard steps 0–9 (legacy 10–13 labels kept for old state resume)
-    step_labels = {
-        0: "Spec",
-        1: "Planning",
-        2: "Interview",
-        3: "Plan to tasks",
-        4: "Implement",
-        5: "Verify",
-        6: "Code review",
-        7: "Testing",
-        8: "Ship",
-        9: "Fix PR",
-        10: "Fixes & Second Commit",
-        11: "Integration Validation",
-        12: "Consolidation & Cleanup",
-        13: "Ship & PR",
-    }
-    step_label = step_labels.get(step, f"Step {step}")
+    step_label = args.label or STEP_LABELS.get(step, f"Step {step}")
 
     step_telemetry = {
         "N": step,
@@ -548,6 +602,37 @@ def main():
             sys.exit(1)
         else:
             print("Validation PASSED after update.")
+
+    if args.jsonl_out:
+        fable_verdict = (
+            sanitize_telemetry_string(args.fable_verdict) if args.fable_verdict is not None else None
+        )
+        jsonl_record = {
+            "timestamp": iso_now,
+            "step": step,
+            "label": step_label,
+            "elapsedSec": args.elapsed,
+            "promptTokens": prompt_tok,
+            "completionTokens": comp_tok,
+            "filesTouched": files_count,
+            "model": sanitize_telemetry_string(current_model),
+            "verificationScore": args.verification_score,
+            "fableVerdict": fable_verdict or None,
+            "gateDecision": sanitize_telemetry_string(gate_choice),
+            "errors": parse_errors_arg(args.errors),
+            "bypassed": bool(args.bypassed),
+        }
+        append_jsonl_record(Path(args.jsonl_out), jsonl_record)
+        if args.bypassed:
+            bypass_record = {
+                "type": "gate-bypass",
+                "gate": "quality-gates",
+                "reason": "skip-gates",
+                "timestamp": iso_now,
+                "step": step,
+            }
+            append_jsonl_record(Path(args.jsonl_out), bypass_record)
+        print(f"Appended JSONL telemetry to {args.jsonl_out}")
 
 
 if __name__ == "__main__":

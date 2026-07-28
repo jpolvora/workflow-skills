@@ -25,6 +25,7 @@ Never write workflow state under `.agents/`.
 | State | `{workflow-id}.state.md` | Orchestrator | No |
 | Issue snapshot | `step-00-{slug}.issue.json` | Step 0 / issue fetch | No |
 | **Spec (canonical)** | `step-00-{slug}.spec.md` | Step 0 / issue→spec / local register | No |
+| Complexity classification | `step-00-{slug}.classify.md` | Step 0 (`ws-classify-complexity`) | No |
 | Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 8)** if no refined plan |
 | Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 8)** if present (replaces plan) |
 | Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 | No |
@@ -38,12 +39,34 @@ Never write workflow state under `.agents/`.
 
 **Do not write obsolete names:** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md`.
 
+## Step input prerequisites
+
+Minimum on-disk artifacts required before **advance to step N** (standard FSM). Consumed by `validate_state.py --pre-advance <N>` after checkpoint tag `uswf/{workflow-id}/before-step-{N}`.
+
+| Advance to step N | Required on disk (minimum) |
+|-------------------|----------------------------|
+| 1 | `step-00-{slug}.spec.md` |
+| 2 | `step-00-{slug}.spec.md` + `step-01-{slug}.plan.md` |
+| 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` |
+| 4 | `step-02-{slug}.plan.refined.md` if present, else `step-01-{slug}.plan.md` |
+| 5 | plan or refined plan + implementation tree (state manifest `created` / `artifacts` non-empty, or `dryRun`) |
+| 6 | `step-05-{slug}.plan.report.md` |
+| 7 | `step-06-{slug}.review.md` when code review ran |
+| 8 | `step-07-{slug}.testing.report.md` when Step 7 completed (not skipped) |
+| 9 | `step-08-{slug}.result.md` + PR exists (ship evidence) |
+
+**Lite orch:** mirrors advance-to steps **1–5** with the same artifact names where those steps exist; lite ship still uses `step-08-{slug}.result.md` at delivery.
+
+`step-00-{slug}.classify.md` is advisory (Step 0); it is **not** a prerequisite for advance-to.
+
 ## Step 8 delivery commit
 
 Stage **only**:
 
 1. `step-02-{slug}.plan.refined.md` if it exists, else `step-01-{slug}.plan.md`
 2. `step-08-{slug}.result.md`
+
+**Not staged:** `step-00-{slug}.classify.md`, `{us-dir}/telemetry/`, and other runtime artifacts.
 
 ## Spec entry rules
 
@@ -74,6 +97,8 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 | Path | Purpose |
 |------|---------|
 | `{us-dir}/.runtime/` | Sentinels, PIDs, temp wake signals (not `/tmp`) |
+| `{us-dir}/telemetry/` | Per-step JSONL telemetry (`step-{NN}.jsonl`); append on each `update_state` invocation for that step |
+| `{plansDir}/telemetry/` | Project-wide aggregate output (`aggregate.json`; not per-workflow) |
 | `{worktrees-dir}/step-{N}/` | Step isolation (code steps preferred) |
 | `{us-dir}/{workflow-id}.archive/` | Archived stale workflows |
 | `{us-dir}/{workflow-id}.baseline/` | Baseline snapshots |

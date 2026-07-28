@@ -116,7 +116,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 | # | Check | Command / skill | When required |
 |---|-------|-----------------|---------------|
-| 1 | **Install tests** | `npm run test` (or `npm run tests -- --local` during dev) | Always — installer, integrity, tree verification |
+| 1 | **Install tests** | `npm run test` (or `npm run tests` during dev) | Always — installer, integrity, tree verification |
 | 2 | **Website / catalog** | `npm run build-site:bump` when shipping package content; else `node bin/build-site.js` for catalog-only | Skills/hubs/CLI/installer changed → bump + rebuild `docs/index.html`; verify no merge-conflict markers |
 | 3 | **Version** | `package.json` patch bump via step 2; `bin/skill-dependencies.json` → `packageVersion` stays aligned | **CI deploy on `main` never bumps** — bump locally once per release PR before push |
 | 4 | **Installer (Node CLI)** | Review/fix `bin/cli.js`, `bin/install-rules.js` | Install/update/uninstall behavior or hub paths changed |
@@ -178,6 +178,7 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 |-------|---------|------|
 | `ws-spec-to-pr` | Orchestrator | FSM dispatcher |
 | `ws-write-spec` | 0 | Spec from description |
+| `ws-classify-complexity` | 0 (after spec) | Pipeline lite vs standard classifier |
 | `ws-write-plan` | 1 | Implementation plan |
 | `ws-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
@@ -247,7 +248,7 @@ On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
 ## Skill catalog (layers)
 
-> **Drift check (dual scope):** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Packaged [`.agents/AGENTS.md`](.agents/AGENTS.md) scopes its Skill index and Task router to the **Workflows package** (34 skills) so Workflows-only consumer installs avoid phantom routes; Extra-package skills appear there only under `### Extra package (optional)`.
+> **Drift check (dual scope):** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Packaged [`.agents/AGENTS.md`](.agents/AGENTS.md) scopes its Skill index and Task router to the **Workflows package** (35 skills) so Workflows-only consumer installs avoid phantom routes; Extra-package skills appear there only under `### Extra package (optional)`.
 
 ### Layer 0 — Harness
 
@@ -308,6 +309,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
 | `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Specs |
+| `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
 | `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
@@ -324,6 +326,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Intent | Load |
 |--------|------|
 | Write a spec | `ws-write-spec` |
+| Classify spec pipeline complexity | `ws-classify-complexity` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
 | Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload in this root hub; ws-shared default on-demand — see § Dual-hub precedence) |
@@ -363,7 +366,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 Upstream package root: full ordered checklist in § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § [Before ship PR — upstream `ws-ship-pr` mandatory gate](#before-ship-pr--upstream-ws-ship-pr-mandatory-gate-this-repo-only). Summary:
 
 1. **Harness:** load `.agents/skills/ws-check-harness/SKILL.md` → Phases 0–5c
-2. **Install tests:** `npm run test` · `npm run tests -- --local`
+2. **Install tests:** `npm run test` · `npm run tests`
 3. **Dependency graph:** if skills added/removed/renamed or orch dispatch changed → update `bin/skill-dependencies.json`; `ws-check-harness` Phase 3/4b must pass
 4. **Skill integrity:** if package-hashed content changed → `npm run generate-integrity` && `npm run verify-integrity` (must exit 0) before claim complete / PR
 5. **Workflow simulation:** `ws-check-workflows` when orch/gates/simulations changed

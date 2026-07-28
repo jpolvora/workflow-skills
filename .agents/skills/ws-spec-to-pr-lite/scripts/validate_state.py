@@ -5,6 +5,23 @@ validate_state -- State Hygiene assertions for a ws-spec-to-pr-lite state.md (v7
 Usage:
     python validate_state.py <workflow-id-or-state-path>
     python validate_state.py <...> --json
+    python validate_state.py <...> --pre-advance <N>
+
+Validates a workflow `state.md` against the v7 State Hygiene Protocol:
+  - YAML frontmatter is parseable and has the required keys.
+  - Every file in `workflowManifest.created` / `artifacts` exists on disk
+    (skipped when `dryRun: true`).
+  - `currentStep` is coherent with `completedSteps`.
+  - Commits recorded in `commits[]` exist in git (best-effort).
+
+With `--pre-advance <N>` (before dispatch to lite step N, N=1..5):
+  - Checkpoint tag `uswf/{workflow-id}/before-step-{N}` exists and is reachable.
+  - Required input artifacts for advance-to-N exist (ARTIFACTS.md; lite mirrors 1–5).
+  - `completedSteps` is strictly increasing with no gaps except `skippedSteps`.
+
+Exit codes:
+  0  state coherent (warnings allowed)
+  1  incoherent (missing files, bad currentStep, unparseable state)
 """
 
 import json
@@ -35,11 +52,15 @@ ensure_utf8_stdio()
 
 
 AGENT_ROOT = Path(__file__).resolve().parent.parent          # .../ws-spec-to-pr-lite
-REPO_ROOT = Path(__file__).resolve().parents[4]              # repo root (.agents/skills/ws-spec-to-pr-lite/scripts → 4 up)
+REPO_ROOT = Path(__file__).resolve().parents[4]              # repo root
 PLANS_DIR = None
 
+LITE_ADVANCE_MIN = 1
+LITE_ADVANCE_MAX = 5
+
+
 def load_plans_dir() -> Path:
-    """Resolve plans.dir from ws-spec-to-pr project config."""
+    """Resolve plans.dir from ws-shared config.json (default .agents/plans)."""
     cfg = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
     plans = Path(".agents") / "plans"
     if cfg.exists():
@@ -52,8 +73,10 @@ def load_plans_dir() -> Path:
             pass
     return (REPO_ROOT / plans).resolve() if not plans.is_absolute() else plans.resolve()
 
+
 REQUIRED_KEYS = ["workflowId", "us", "status", "currentStep"]
 PHASE_SOFT_TIP_STEPS = set()  # No phase soft-tip steps in ws-spec-to-pr-lite
+
 
 def resolve_state_path(arg: str) -> Path:
     p = Path(arg)
@@ -68,14 +91,17 @@ def resolve_state_path(arg: str) -> Path:
                 return matches[0]
     return p
 
+
 def extract_frontmatter(text: str) -> str:
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
     if not m:
         raise ValueError("frontmatter YAML (--- ... ---) not found")
     return m.group(1)
 
+
 def _strip(val: str) -> str:
     return val.strip().strip('"').strip("'").strip()
+
 
 def parse_frontmatter(fm: str) -> dict:
     data: dict = {}
@@ -107,6 +133,7 @@ def parse_frontmatter(fm: str) -> dict:
 
         data[key] = _strip(val)
     return data
+
 
 def _parse_block(block: list) -> dict | list:
     items = []
@@ -144,6 +171,7 @@ def _parse_block(block: list) -> dict | list:
         return items
     return nested
 
+
 def _as_int_list(val) -> list:
     out = []
     if isinstance(val, list):
@@ -153,6 +181,222 @@ def _as_int_list(val) -> list:
             except ValueError:
                 pass
     return out
+
+
+def resolve_slug(data: dict, state_path: Path) -> str:
+    for key in ("slug", "us"):
+        val = data.get(key)
+        if val is None:
+            continue
+        text = str(val).strip()
+        if text and text.lower() not in ("null", "none"):
+            return text
+    return state_path.parent.name
+
+
+def resolve_us_dir(slug: str) -> Path:
+    return load_plans_dir() / slug
+
+
+def _rel_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(REPO_ROOT.resolve()))
+    except ValueError:
+        return str(path)
+
+
+def _require_exists(path: Path, label: str, errors: list[str]) -> bool:
+    if not path.exists():
+        errors.append(f"pre-advance artifact missing: {label} ({_rel_path(path)})")
+        return False
+    return True
+
+
+def _skipped_step_numbers(data: dict, fm_raw: str) -> set[int]:
+    out: set[int] = set()
+    raw = data.get("skippedSteps")
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict) and "step" in item:
+                try:
+                    out.add(int(str(item["step"]).strip()))
+                except (TypeError, ValueError):
+                    pass
+            elif isinstance(item, str):
+                m = re.search(r"step:\s*(\d+)", item)
+                if m:
+                    out.add(int(m.group(1)))
+    sec = re.search(
+        r"^skippedSteps:\s*\n(.*?)(?=^[A-Za-z0-9_]+:|\Z)",
+        fm_raw,
+        re.MULTILINE | re.DOTALL,
+    )
+    if sec:
+        for m in re.finditer(r"step:\s*(\d+)", sec.group(1)):
+            out.add(int(m.group(1)))
+    return out
+
+
+def verify_checkpoint_tag(
+    workflow_id: str,
+    step_n: int,
+    errors: list[str],
+    warnings: list[str] | None = None,
+    *,
+    dry_run: bool = False,
+) -> None:
+    """Require checkpoint tag; soft-pass (warning only) when dry_run is True."""
+    tag = f"uswf/{workflow_id}/before-step-{step_n}"
+    sink = warnings if dry_run and warnings is not None else errors
+    suffix = " (soft-pass: dryRun)" if dry_run and warnings is not None else ""
+
+    try:
+        listed = subprocess.run(
+            ["git", "tag", "-l", tag],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if listed.returncode != 0 or not listed.stdout.strip():
+            sink.append(f"pre-advance checkpoint tag missing: {tag}{suffix}")
+            return
+        verified = subprocess.run(
+            ["git", "rev-parse", "--verify", f"{tag}^{{commit}}"],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if verified.returncode != 0:
+            sink.append(f"pre-advance checkpoint tag not reachable: {tag}{suffix}")
+    except (OSError, FileNotFoundError):
+        sink.append(f"pre-advance git unavailable for checkpoint tag: {tag}{suffix}")
+
+
+def verify_monotonicity(
+    completed: list[int], skipped: set[int], errors: list[str]
+) -> None:
+    if not completed:
+        return
+    seen: set[int] = set()
+    duplicates: list[int] = []
+    for step in completed:
+        if step in seen:
+            duplicates.append(step)
+        seen.add(step)
+    if duplicates:
+        errors.append(
+            "pre-advance duplicate completedSteps entries: "
+            f"{sorted(set(duplicates))}"
+        )
+    unique = sorted(seen)
+    lo, hi = unique[0], unique[-1]
+    for step in range(lo, hi + 1):
+        if step not in seen and step not in skipped:
+            errors.append(
+                f"pre-advance gap in completedSteps: step {step} missing "
+                "(not listed in skippedSteps)"
+            )
+
+
+def verify_step_artifacts_lite(
+    slug: str,
+    advance_to: int,
+    us_dir: Path,
+    data: dict,
+    dry_run: bool,
+    errors: list[str],
+) -> None:
+    """ARTIFACTS.md step input prerequisites for lite steps 1–5 (mirrors standard 1–5)."""
+    spec = us_dir / f"step-00-{slug}.spec.md"
+    plan = us_dir / f"step-01-{slug}.plan.md"
+    refined = us_dir / f"step-02-{slug}.plan.refined.md"
+    plan_or_refined = refined if refined.exists() else plan
+
+    if advance_to == 1:
+        _require_exists(spec, f"step-00-{slug}.spec.md", errors)
+        return
+
+    if advance_to == 2:
+        _require_exists(spec, f"step-00-{slug}.spec.md", errors)
+        _require_exists(plan, f"step-01-{slug}.plan.md", errors)
+        return
+
+    if advance_to == 3:
+        _require_exists(spec, f"step-00-{slug}.spec.md", errors)
+        if refined.exists():
+            _require_exists(refined, f"step-02-{slug}.plan.refined.md", errors)
+        else:
+            _require_exists(plan, f"step-01-{slug}.plan.md", errors)
+        return
+
+    if advance_to == 4:
+        label = (
+            f"step-02-{slug}.plan.refined.md"
+            if refined.exists()
+            else f"step-01-{slug}.plan.md"
+        )
+        _require_exists(plan_or_refined, label, errors)
+        return
+
+    if advance_to == 5:
+        label = (
+            f"step-02-{slug}.plan.refined.md"
+            if refined.exists()
+            else f"step-01-{slug}.plan.md"
+        )
+        _require_exists(plan_or_refined, label, errors)
+        if dry_run:
+            return
+        manifest = data.get("workflowManifest", {})
+        created = manifest.get("created", []) if isinstance(manifest, dict) else []
+        artifacts = manifest.get("artifacts", []) if isinstance(manifest, dict) else []
+        paths = [
+            p
+            for p in list(created) + list(artifacts)
+            if p and str(p).strip() not in ("[]", "|")
+        ]
+        if not paths:
+            errors.append(
+                "pre-advance implementation tree required "
+                "(workflowManifest created/artifacts non-empty or dryRun)"
+            )
+
+
+def run_pre_advance_checks(
+    state_path: Path,
+    data: dict,
+    fm_raw: str,
+    advance_to: int,
+    dry_run: bool,
+    completed: list[int],
+    errors: list[str],
+    warnings: list[str] | None = None,
+) -> None:
+    if advance_to < LITE_ADVANCE_MIN or advance_to > LITE_ADVANCE_MAX:
+        errors.append(
+            f"pre-advance step out of lite range "
+            f"({LITE_ADVANCE_MIN}..{LITE_ADVANCE_MAX}): {advance_to}"
+        )
+        return
+
+    workflow_id = str(data.get("workflowId", "")).strip()
+    if not workflow_id:
+        errors.append("pre-advance workflowId missing in state frontmatter")
+        return
+
+    slug = resolve_slug(data, state_path)
+    us_dir = resolve_us_dir(slug)
+
+    verify_checkpoint_tag(
+        workflow_id, advance_to, errors, warnings, dry_run=dry_run
+    )
+    verify_step_artifacts_lite(slug, advance_to, us_dir, data, dry_run, errors)
+    verify_monotonicity(completed, _skipped_step_numbers(data, fm_raw), errors)
+
 
 def git_commit_exists(sha: str) -> bool:
     try:
@@ -165,7 +409,8 @@ def git_commit_exists(sha: str) -> bool:
     except (OSError, FileNotFoundError):
         return True
 
-def validate(state_path: Path) -> dict:
+
+def validate(state_path: Path, pre_advance: int | None = None) -> dict:
     errors: list[str] = []
     warnings: list[str] = []
 
@@ -223,6 +468,18 @@ def validate(state_path: Path) -> dict:
             if not git_commit_exists(sha):
                 errors.append(f"registered commit does not exist in git: {sha}")
 
+    if pre_advance is not None:
+        run_pre_advance_checks(
+            state_path,
+            data,
+            fm_raw,
+            pre_advance,
+            dry_run,
+            completed,
+            errors,
+            warnings,
+        )
+
     return {
         "state": str(state_path),
         "workflowId": data.get("workflowId"),
@@ -230,6 +487,7 @@ def validate(state_path: Path) -> dict:
         "currentStep": current,
         "dryRun": dry_run,
         "completedSteps": completed,
+        "preAdvance": pre_advance,
         "files_checked": checked,
         "commits_checked": commit_shas,
         "errors": errors,
@@ -237,31 +495,71 @@ def validate(state_path: Path) -> dict:
         "ok": not errors,
     }
 
+
+def _parse_cli(argv: list[str]) -> tuple[list[str], bool, int | None]:
+    as_json = False
+    pre_advance: int | None = None
+    positional: list[str] = []
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg == "--json":
+            as_json = True
+            i += 1
+            continue
+        if arg == "--pre-advance":
+            if i + 1 >= len(argv):
+                print("Error: --pre-advance requires a step number", file=sys.stderr)
+                sys.exit(1)
+            try:
+                pre_advance = int(argv[i + 1])
+            except ValueError:
+                print(
+                    f"Error: --pre-advance step must be an integer, got {argv[i + 1]!r}",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            i += 2
+            continue
+        if arg.startswith("--"):
+            print(f"Error: unknown flag: {arg}", file=sys.stderr)
+            sys.exit(1)
+        positional.append(arg)
+        i += 1
+    return positional, as_json, pre_advance
+
+
 def main():
     ensure_utf8_stdio()
 
-    as_json = "--json" in sys.argv
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    if len(args) < 1:
-        print("Usage: python validate_state.py <workflow-id-or-state-path> [--json]")
+    positional, as_json, pre_advance = _parse_cli(sys.argv[1:])
+    if len(positional) < 1:
+        print(
+            "Usage: python validate_state.py <workflow-id-or-state-path> "
+            "[--json] [--pre-advance <N>]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    state_path = resolve_state_path(args[0])
+    state_path = resolve_state_path(positional[0])
     if not state_path.exists():
-        print(f"Error: state.md not found: {args[0]}")
+        print(f"Error: state.md not found: {positional[0]}", file=sys.stderr)
         sys.exit(1)
 
     try:
-        result = validate(state_path)
+        result = validate(state_path, pre_advance=pre_advance)
     except (ValueError, OSError) as exc:
-        print(f"Error validating {state_path}: {exc}")
+        print(f"Error validating {state_path}: {exc}", file=sys.stderr)
         sys.exit(1)
 
     if as_json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
+        title = "validate_state (lite) -- State Hygiene (v7)"
+        if pre_advance is not None:
+            title += f" [pre-advance {pre_advance}]"
         print("=" * 50)
-        print("  validate_state (lite) -- State Hygiene (v7)")
+        print(f"  {title}")
         print("=" * 50)
         print(f"State: {result['state']}")
         print(f"Workflow: {result['workflowId']} | status: {result['status']} "
@@ -280,7 +578,12 @@ def main():
         else:
             print("\n[OK] state is consistent with manifest and git.")
 
+    if not result["ok"]:
+        for err in result["errors"]:
+            print(err, file=sys.stderr)
+
     sys.exit(0 if result["ok"] else 1)
+
 
 if __name__ == "__main__":
     main()

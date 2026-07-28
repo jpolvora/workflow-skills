@@ -9,7 +9,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 > **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (34 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (35 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
 
 > **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
@@ -114,7 +114,7 @@ Packaged consumer hub [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md)
 
 ## Skill index
 
-Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 31 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
+Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 35 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
 
 ### Harness & infrastructure
 
@@ -128,6 +128,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | Skill | Step(s) | Path | Description |
 |-------|---------|------|-------------|
 | `ws-write-spec` | 0 | `skills/ws-write-spec/SKILL.md` | Draft canonical spec from feature description |
+| `ws-classify-complexity` | 0 (after spec) | `skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-write-plan` | 1 | `skills/ws-write-plan/SKILL.md` | Generate implementation plan from issue / spec |
 | `ws-interview` | 2 | `skills/ws-interview/SKILL.md` | Audit and refine plan until shared understanding |
 | `ws-plan-to-tasks` | 3 | `skills/ws-plan-to-tasks/SKILL.md` | Break plan into atomic DAG tasks |
@@ -158,6 +159,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-fable-method` | `skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
 | `ws-fable-domain` | `skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `ws-spec-format` | `skills/ws-spec-format/SKILL.md` | Create / review / format `*.spec.md` |
+| `ws-classify-complexity` | `skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after |
 | `ws-changelog` | `skills/ws-changelog/SKILL.md` | Summarized history via `rules.changelogFile` (default under `ws-shared/`) |
 | `ws-configure-project` | `skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
@@ -201,6 +203,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
 | Write a spec | `ws-write-spec` |
+| Classify spec pipeline complexity | `ws-classify-complexity` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement / fix code | `ws-implement-tasks` |
 | Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload in upstream root; ws-shared default on-demand) |

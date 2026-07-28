@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.0.103",
+  "version": "0.0.104",
   "description": "Centralized agent skills and multi-workflow hub for Cursor (spec-to-pr and related pipeline skills)",
   "license": "MIT",
   "author": "Jone Polvora",
@@ -17,8 +17,9 @@
   },
   "scripts": {
     "pretests": "npm pack",
-    "test": "npm run tests -- --local",
-    "tests": "node test/test-install.js",
+    "test": "npm run tests",
+    "tests": "node test/test-install.js --local && node test/test-quality-gates.js",
+    "tests:remote": "node test/test-install.js && node test/test-quality-gates.js",
     "build-site": "node bin/build-site.js",
     "build-site:bump": "node bin/build-site.js --bump",
     "generate-integrity": "node bin/generate-skill-integrity.js",

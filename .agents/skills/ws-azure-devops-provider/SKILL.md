@@ -9,9 +9,10 @@
 
 
 
+
 name: ws-azure-devops-provider
 description: Azure DevOps SCM provider — converts ADO work items to specs, manages PAT auth, PR creation, thread resolution, and work item linking.
-version: 0.0.103
+version: 0.0.104
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider

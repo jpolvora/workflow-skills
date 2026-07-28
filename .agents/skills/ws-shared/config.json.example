@@ -156,7 +156,8 @@
     "tenancyViaGlobalQueryFilters": true,
     "efOnlyInInfrastructure": true,
     "noInlineHandWrittenMigrations": true,
-    "commitPlanFilesOnlyAtStep8": true
+    "commitPlanFilesOnlyAtStep8": true,
+    "skipQualityGates": false
   },
 
   "fable": {

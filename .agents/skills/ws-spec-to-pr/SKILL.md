@@ -10,8 +10,9 @@
 
 
 
+
 name: ws-spec-to-pr
-version: 0.0.103
+version: 0.0.104
 description: End-to-end Spec-to-PR delivery orchestrator FSM (Steps 0–9). Coordinates planning, DAG execution, verification, review loops, testing, and SCM PR delivery with subagent isolation.
 
 invocation_names:
@@ -68,6 +69,7 @@ Deterministic FSM; step content via **`dispatch-agent`**.
 | `skipTesting` / `skipTests` | Skip Step 7 vs skip test suites (build required). |
 | `fullMode` | Step 8 Recommended = commit plan+result then create PR. |
 | `scoreAndRefine` | Pass 1 task scoring + 2nd pass refinement loop (`[SCORE-REFINE]`). |
+| `skipQualityGates` | `--skip-gates` or `invariants.skipQualityGates`; `[GATES BYPASSED]` banner; quality gates only — see § Quality gate bypass. |
 | Artifacts | **Never commit `{plansDir}/` in Steps 0–7.** Delivery commit Step 8: plan + `step-08-{slug}.result.md` only. |
 | Pause / model | Pause keeps artifacts (`status: active`). `currentModel` = session; switch via Pause → host → Resume. |
 | Revert | Manifest + checkpoint only — no global hard reset. |
@@ -84,6 +86,7 @@ Runtime tokens: `uswf/` tags/worktrees; slugs `us-{id}`.
 | Step map | `ws-write-spec`→0 … `ws-ship-pr`→8 · `ws-fix-pr`/`ws-goal-fix-pr`→9 · `ws-update-plan-implementation` Post |
 | Auth ladder, step protocols, state YAML, errors | [`PROTOCOLS.md`](PROTOCOLS.md) |
 | Dispatch bodies | [`STEP-DISPATCH.md`](STEP-DISPATCH.md) |
+| Pipeline classify | [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) — Step 0 after spec, before Step 1 |
 
 ## Phases F0–F6 ↔ steps 0–9
 
@@ -135,6 +138,49 @@ flowchart LR
 
 ‡ Worktree + complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). GP = `generalPurpose`. All steps dispatch. Fixed labels for board/banners.
 
+## Step 0 — Pipeline classify (before Step 1)
+
+After `step-00-{slug}.spec.md` exists and **before** the transition gate to Step 1, invoke [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md):
+
+1. Run `classify.cjs` → `step-00-{slug}.classify.md` (advisory artifact; not a delivery-stage file).
+2. **User gate** — unless `autoMode` or `skipQualityGates`:
+
+   | # | Option |
+   |---|--------|
+   | 1 | **Accept recommendation** (Recommended) |
+   | 2 | **Override to standard** |
+   | 3 | **Override to lite** |
+
+   `autoMode` / `user-gate-auto`: index **0** (accept recommendation). Log: `classify | recommended={lite|standard} | choice={accept|override-standard|override-lite} | ISO`.
+3. **Apply** `finalPipeline`. Mid-flight on standard orch: if recommendation is `lite`, **stay on standard** unless user chooses **Override to lite** — never silently switch `workflowType`.
+
+**Orthogonal to Complexity gate:** Pipeline classifier (`lite` | `standard`) recommends orchestrator choice. Full-orch **Complexity gate** ([`gates.md`](../ws-shared/gates.md) § Complexity gate; [`PROTOCOLS.md`](PROTOCOLS.md) § Complexity / Dynamic Execution) uses `simple` | `standard` | `complex` to skip or enforce Steps 1–2–3. Do not merge axes — `lite` ≠ `simple`; `standard` recommendation ≠ `complex`.
+
+When `skipQualityGates` is active: skip classifier **enforcement** (user gate); advisory `classify.md` may still be written. Standalone: `/classify <spec-path>` per classify skill.
+
+## Quality gate bypass (`skipQualityGates`)
+
+`--skip-gates` → `skipQualityGates: true` in state (or `config.json` → `invariants.skipQualityGates`). Parsed at bootstrap — [`setup.md`](../ws-shared/setup.md) § Parse flags.
+
+When active:
+
+| Skipped (quality gates only) | Never skipped |
+|------------------------------|---------------|
+| Classifier user-gate / recommendation enforcement | Build, test, security/leak scan |
+| Fable quality visibility (PREPARE may ⏭) — **except** `auditVerdictsBlockShip` + **REFUTED** (safety floor still STOP) | SCM resolution |
+| Pre-advance CI (`validate_state --pre-advance`; [`STEP-DISPATCH.md`](STEP-DISPATCH.md)) | HS-1–HS-4 |
+| Telemetry soft gates (e.g. `scoreAndRefine` advisory reclassify prompts) | Required `--elapsed` / State Hygiene; `update_state` + `--jsonl-out` |
+
+**Banner:** Progress Board and Step 8 delivery result show `[GATES BYPASSED]` alongside mode flags (`[AUTO]`, `[DRY-RUN]`, etc.).
+
+**Bypass JSONL event** — append to current step file `{plansDir}/{slug}/telemetry/step-{NN}.jsonl`:
+
+```json
+{"type":"gate-bypass","gate":"{name}","reason":"skip-gates|config","timestamp":"ISO"}
+```
+
+Pass `--bypassed` on `update_state` when `skipQualityGates` is active ([`protocols/state-hygiene.md`](protocols/state-hygiene.md)).
+
 ## Load when advancing
 
 1. [`PROTOCOLS.md`](PROTOCOLS.md) — Authorization Ladder, transition discipline, step-specific protocols, state schema, base prompt prefix, HS-* stops.
@@ -147,11 +193,11 @@ Bootstrap/entry → [`setup.md`](../ws-shared/setup.md). Post-workflow QA → [`
 ## Triggers
 
 ```
-@[ws-spec-to-pr] [auto|dry-run|skip-testing|skip-tests|full|strict] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
+@[ws-spec-to-pr] [auto|dry-run|skip-testing|skip-tests|skip-gates|full|strict] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /ws-spec-to-pr [flags] [US {issue_id} | {org}/{project}#{id} | {name}.spec.md | "feature description"]
 /status | progress | where am I? → Progress Board only
 go back | change plan | back to step X → Backward Nav (not in auto)
 switch model | change model → Pause → IDE/agent host → Resume
 ```
 
-Flags: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `full`, `strict`. Model = session only.
+Flags: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`. Standalone classify: `/classify <spec-path>` ([`ws-classify-complexity`](../ws-classify-complexity/SKILL.md)). Model = session only.

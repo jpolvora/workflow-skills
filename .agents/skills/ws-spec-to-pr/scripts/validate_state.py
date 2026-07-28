@@ -5,6 +5,7 @@ validate_state -- State Hygiene assertions for a ws-spec-to-pr state.md (v7).
 Usage:
     python validate_state.py <workflow-id-or-state-path>
     python validate_state.py <...> --json
+    python validate_state.py <...> --pre-advance <N>
 
 Validates a workflow `state.md` against the v7 State Hygiene Protocol:
   - YAML frontmatter is parseable and has the required keys.
@@ -16,6 +17,12 @@ Validates a workflow `state.md` against the v7 State Hygiene Protocol:
     never board steps in v7) -> ERROR.
   - Commits recorded in `commits[]` exist in git (best-effort; skipped if git
     is unavailable or `dryRun: true`).
+
+With `--pre-advance <N>` (before dispatch to step N):
+  - Checkpoint tag `uswf/{workflow-id}/before-step-{N}` exists and is reachable
+    (soft-pass / warning only when `dryRun: true`; tags are not written in dry-run).
+  - Required input artifacts for advance-to-N exist (ARTIFACTS.md step table).
+  - `completedSteps` is strictly increasing with no gaps except `skippedSteps`.
 
 Exit codes:
   0  state coherent (warnings allowed)
@@ -203,6 +210,307 @@ def git_commit_exists(sha: str) -> bool:
         return True  # git unavailable -> do not fail
 
 
+def _parse_skipped_steps(data: dict, fm_raw: str = "") -> set[int]:
+    """Return step numbers recorded in skippedSteps (and skipTesting → step 7)."""
+    skipped: set[int] = set()
+    raw = data.get("skippedSteps", [])
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                step_val = item.get("step")
+                try:
+                    skipped.add(int(str(step_val).strip()))
+                except (TypeError, ValueError, AttributeError):
+                    pass
+            else:
+                try:
+                    skipped.add(int(str(item).strip()))
+                except ValueError:
+                    pass
+    elif isinstance(raw, (int, str)):
+        try:
+            skipped.add(int(str(raw).strip()))
+        except ValueError:
+            pass
+
+    if fm_raw:
+        block_match = re.search(
+            r"^skippedSteps:\s*\n((?:[ \t].*\n?)*)",
+            fm_raw,
+            re.MULTILINE,
+        )
+        if block_match:
+            block = block_match.group(1)
+            for m in re.finditer(r"step:\s*(\d+)", block):
+                skipped.add(int(m.group(1)))
+            for m in re.finditer(r"^-\s*(\d+)\s*$", block, re.MULTILINE):
+                skipped.add(int(m.group(1)))
+
+    if str(data.get("skipTesting", "false")).lower() == "true":
+        skipped.add(7)
+    return skipped
+
+
+def _us_dir(slug: str, state_path: Path) -> Path:
+    """Resolve {us-dir} — parent of state.md when it matches slug layout."""
+    if state_path.parent.name == slug:
+        return state_path.parent
+    return load_plans_dir() / slug
+
+
+def verify_checkpoint_tag(
+    workflow_id: str, step_n: int, *, dry_run: bool = False
+) -> tuple[list[str], list[str]]:
+    """`git tag -l uswf/{workflow-id}/before-step-{N}` must exist and be reachable.
+
+    When ``dry_run`` is True, missing/unreachable tags are warnings only (soft-pass),
+    matching checkpoint creation which skips tag writes in dry-run.
+    """
+    errors: list[str] = []
+    warnings: list[str] = []
+    tag = f"uswf/{workflow_id}/before-step-{step_n}"
+
+    def _fail(msg: str) -> tuple[list[str], list[str]]:
+        if dry_run:
+            warnings.append(f"{msg} (soft-pass: dryRun)")
+        else:
+            errors.append(msg)
+        return errors, warnings
+
+    try:
+        listed = subprocess.run(
+            ["git", "tag", "-l", tag],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+        )
+        if listed.returncode != 0:
+            return _fail(
+                f"checkpoint tag lookup failed for {tag!r} (git tag -l exit {listed.returncode})"
+            )
+        matches = [line.strip() for line in listed.stdout.splitlines() if line.strip()]
+        if not matches:
+            return _fail(
+                f"checkpoint tag missing: {tag} "
+                f"(create before advance to step {step_n})"
+            )
+        resolved = subprocess.run(
+            ["git", "rev-parse", "--verify", f"{tag}^{{commit}}"],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+        )
+        if resolved.returncode != 0:
+            return _fail(
+                f"checkpoint tag {tag} does not point to a reachable commit"
+            )
+    except (OSError, FileNotFoundError):
+        return _fail(f"git unavailable; cannot verify checkpoint tag {tag}")
+    return errors, warnings
+
+
+def _artifact_exists(us_dir: Path, name: str) -> bool:
+    return (us_dir / name).is_file()
+
+
+def _verify_pr_ship_evidence(data: dict, slug: str, us_dir: Path) -> list[str]:
+    """Step 9 prerequisite: PR exists (ship evidence)."""
+    for key in ("prUrl", "prNumber", "pullRequest", "pr"):
+        val = data.get(key)
+        if val is not None and str(val).strip().lower() not in ("", "null", "none", "false"):
+            return []
+
+    result_path = us_dir / f"step-08-{slug}.result.md"
+    if result_path.is_file():
+        body = result_path.read_text(encoding="utf-8", errors="replace")
+        if re.search(r"github\.com/[^/\s]+/[^/\s]+/pull/\d+", body, re.I):
+            return []
+        if re.search(r"\bPR\s*#?\d+\b", body, re.I):
+            return []
+
+    branch = data.get("branch")
+    if branch:
+        try:
+            viewed = subprocess.run(
+                ["gh", "pr", "view", str(branch).strip(), "--json", "url"],
+                cwd=str(REPO_ROOT),
+                capture_output=True,
+                text=True,
+            )
+            if viewed.returncode == 0 and viewed.stdout.strip():
+                return []
+        except (OSError, FileNotFoundError):
+            pass
+
+    return [
+        "advance to step 9 requires ship evidence (PR url/number in state, "
+        "step-08 result, or an open PR for workflow branch)"
+    ]
+
+
+def verify_step_artifacts(
+    slug: str, step_n: int, data: dict, state_path: Path, fm_raw: str = ""
+) -> list[str]:
+    """Required on-disk artifacts before advance to step N (ARTIFACTS.md table)."""
+    errors: list[str] = []
+    if step_n < 1 or step_n > 9:
+        errors.append(f"invalid advance step N={step_n} (standard FSM supports 1–9)")
+        return errors
+
+    us_dir = _us_dir(slug, state_path)
+    dry_run = str(data.get("dryRun", "false")).lower() == "true"
+    skipped = _parse_skipped_steps(data, fm_raw)
+    completed = _as_int_list(data.get("completedSteps", []))
+
+    spec = f"step-00-{slug}.spec.md"
+    plan = f"step-01-{slug}.plan.md"
+    refined = f"step-02-{slug}.plan.refined.md"
+
+    def require(name: str) -> None:
+        if not _artifact_exists(us_dir, name):
+            rel = us_dir / name
+            try:
+                display = rel.relative_to(REPO_ROOT)
+            except ValueError:
+                display = rel
+            errors.append(
+                f"required artifact missing for advance to step {step_n}: {display}"
+            )
+
+    if step_n == 1:
+        require(spec)
+    elif step_n == 2:
+        require(spec)
+        require(plan)
+    elif step_n == 3:
+        require(spec)
+        if _artifact_exists(us_dir, refined):
+            require(refined)
+        else:
+            require(plan)
+    elif step_n == 4:
+        if _artifact_exists(us_dir, refined):
+            require(refined)
+        else:
+            require(plan)
+    elif step_n == 5:
+        if _artifact_exists(us_dir, refined):
+            pass  # refined present
+        elif _artifact_exists(us_dir, plan):
+            pass  # plan present
+        else:
+            require(plan)
+        if not dry_run:
+            manifest = data.get("workflowManifest", {})
+            created = manifest.get("created", []) if isinstance(manifest, dict) else []
+            artifacts = manifest.get("artifacts", []) if isinstance(manifest, dict) else []
+            impl_paths = [
+                p for p in list(created) + list(artifacts)
+                if p and p not in ("[]", "|")
+            ]
+            if not impl_paths:
+                errors.append(
+                    "advance to step 5 requires a non-empty implementation tree "
+                    "(workflowManifest created/artifacts) or dryRun: true"
+                )
+    elif step_n == 6:
+        require(f"step-05-{slug}.plan.report.md")
+    elif step_n == 7:
+        if 6 not in skipped:
+            require(f"step-06-{slug}.review.md")
+    elif step_n == 8:
+        if 7 not in skipped and 7 in completed:
+            require(f"step-07-{slug}.testing.report.md")
+    elif step_n == 9:
+        require(f"step-08-{slug}.result.md")
+        if not dry_run:
+            errors.extend(_verify_pr_ship_evidence(data, slug, us_dir))
+
+    return errors
+
+
+def verify_monotonicity(completed_steps: list[int], skipped_steps: set[int]) -> list[str]:
+    """completedSteps strictly increasing; no gaps except skippedSteps; no duplicates."""
+    errors: list[str] = []
+    if not completed_steps:
+        return errors
+
+    seen: set[int] = set()
+    dupes: list[int] = []
+    for step in completed_steps:
+        if step in seen:
+            dupes.append(step)
+        seen.add(step)
+    if dupes:
+        errors.append(
+            f"completedSteps contains duplicates: {sorted(set(dupes))}"
+        )
+
+    ordered = sorted(set(completed_steps))
+    for i in range(1, len(ordered)):
+        if ordered[i] <= ordered[i - 1]:
+            errors.append(
+                f"completedSteps not strictly increasing when sorted: {completed_steps}"
+            )
+            break
+
+    if ordered:
+        lo, hi = ordered[0], ordered[-1]
+        for step in range(lo, hi + 1):
+            if step not in ordered and step not in skipped_steps:
+                errors.append(
+                    f"completedSteps gap at step {step} "
+                    f"(must be completed or listed in skippedSteps; "
+                    f"completed={ordered}, skipped={sorted(skipped_steps)})"
+                )
+    return errors
+
+
+def validate_pre_advance(state_path: Path, step_n: int) -> dict:
+    """Pre-dispatch checks before advancing to step N."""
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    text = state_path.read_text(encoding="utf-8")
+    fm = extract_frontmatter(text)
+    data = parse_frontmatter(fm)
+
+    workflow_id = str(data.get("workflowId", "")).strip()
+    slug = str(data.get("slug", "")).strip()
+    if not workflow_id:
+        errors.append("mandatory key missing in frontmatter: workflowId")
+    if not slug:
+        errors.append("mandatory key missing in frontmatter: slug")
+
+    completed = _as_int_list(data.get("completedSteps", []))
+    skipped = _parse_skipped_steps(data, fm)
+    dry_run = str(data.get("dryRun", "false")).lower() == "true"
+
+    if workflow_id:
+        tag_errors, tag_warnings = verify_checkpoint_tag(
+            workflow_id, step_n, dry_run=dry_run
+        )
+        errors.extend(tag_errors)
+        warnings.extend(tag_warnings)
+    if slug:
+        errors.extend(verify_step_artifacts(slug, step_n, data, state_path, fm))
+    errors.extend(verify_monotonicity(completed, skipped))
+
+    return {
+        "state": str(state_path),
+        "mode": "pre-advance",
+        "preAdvanceStep": step_n,
+        "workflowId": workflow_id or None,
+        "slug": slug or None,
+        "completedSteps": completed,
+        "skippedSteps": sorted(skipped),
+        "dryRun": dry_run,
+        "errors": errors,
+        "warnings": warnings,
+        "ok": not errors,
+    }
+
+
 def validate(state_path: Path) -> dict:
     errors: list[str] = []
     warnings: list[str] = []
@@ -284,28 +592,80 @@ def validate(state_path: Path) -> dict:
     }
 
 
+def _parse_cli(argv: list[str]) -> tuple[list[str], bool, int | None]:
+    """Return (positional args, --json flag, --pre-advance N or None)."""
+    as_json = False
+    pre_advance: int | None = None
+    positional: list[str] = []
+    i = 1
+    while i < len(argv):
+        arg = argv[i]
+        if arg == "--json":
+            as_json = True
+            i += 1
+            continue
+        if arg == "--pre-advance":
+            if i + 1 >= len(argv):
+                print("Error: --pre-advance requires a step number", file=sys.stderr)
+                sys.exit(1)
+            try:
+                pre_advance = int(argv[i + 1].strip())
+            except ValueError:
+                print(f"Error: --pre-advance value must be an integer: {argv[i + 1]!r}",
+                      file=sys.stderr)
+                sys.exit(1)
+            i += 2
+            continue
+        if arg.startswith("--"):
+            print(f"Error: unknown flag: {arg}", file=sys.stderr)
+            sys.exit(1)
+        positional.append(arg)
+        i += 1
+    return positional, as_json, pre_advance
+
+
 def main():
     ensure_utf8_stdio()
 
-    as_json = "--json" in sys.argv
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    if len(args) < 1:
-        print("Usage: python validate_state.py <workflow-id-or-state-path> [--json]")
+    positional, as_json, pre_advance = _parse_cli(sys.argv)
+    if len(positional) < 1:
+        print(
+            "Usage: python validate_state.py <workflow-id-or-state-path> "
+            "[--json] [--pre-advance <N>]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    state_path = resolve_state_path(args[0])
+    state_path = resolve_state_path(positional[0])
     if not state_path.exists():
-        print(f"Error: state.md not found: {args[0]}")
+        print(f"Error: state.md not found: {positional[0]}", file=sys.stderr)
         sys.exit(1)
 
     try:
-        result = validate(state_path)
+        if pre_advance is not None:
+            result = validate_pre_advance(state_path, pre_advance)
+        else:
+            result = validate(state_path)
     except (ValueError, OSError) as exc:
-        print(f"Error validating {state_path}: {exc}")
+        print(f"Error validating {state_path}: {exc}", file=sys.stderr)
         sys.exit(1)
 
     if as_json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif pre_advance is not None:
+        print("=" * 50)
+        print(f"  validate_state -- pre-advance step {pre_advance}")
+        print("=" * 50)
+        print(f"State: {result['state']}")
+        print(f"Workflow: {result['workflowId']} | slug: {result['slug']}")
+        print(f"completedSteps: {result['completedSteps']}")
+        print(f"skippedSteps: {result['skippedSteps']}")
+        if result["errors"]:
+            print("\n## ERRORS", file=sys.stderr)
+            for e in result["errors"]:
+                print(f"  x {e}", file=sys.stderr)
+        else:
+            print(f"\n[OK] pre-advance checks passed for step {pre_advance}.")
     else:
         print("=" * 50)
         print("  validate_state -- State Hygiene (v7)")
@@ -321,9 +681,9 @@ def main():
             for w in result["warnings"]:
                 print(f"  ! {w}")
         if result["errors"]:
-            print("\n## ERRORS")
+            print("\n## ERRORS", file=sys.stderr)
             for e in result["errors"]:
-                print(f"  x {e}")
+                print(f"  x {e}", file=sys.stderr)
         else:
             print("\n[OK] state is consistent with manifest and git.")
 

@@ -466,8 +466,14 @@ if (useLocal) {
     fail('No .tgz package found in parent folder. Did you run npm pack?');
   }
   console.log(`Found package tarball: ${tgzPath}`);
+  // Drop stale node_modules copy so same-version re-packs (new skills / bumps) always apply.
+  const localPkg = path.join(__dirname, 'node_modules', 'workflow-skills');
+  if (fs.existsSync(localPkg)) {
+    console.log('Removing stale test/node_modules/workflow-skills before reinstall...');
+    fs.rmSync(localPkg, { recursive: true, force: true });
+  }
   console.log('Installing local package pack in test environment...');
-  const installResult = cp.spawnSync('npm', ['install', tgzPath], {
+  const installResult = cp.spawnSync('npm', ['install', '--force', tgzPath], {
     cwd: __dirname,
     shell: true,
     stdio: 'inherit'
@@ -477,14 +483,18 @@ if (useLocal) {
   }
 }
 
-const command = 'npx';
-const args = useLocal ? ['workflow-skills'] : ['-y', 'github:jpolvora/workflow-skills'];
+const command = useLocal
+  ? process.execPath
+  : 'npx';
+const args = useLocal
+  ? [path.join(__dirname, 'node_modules', 'workflow-skills', 'bin', 'cli.js')]
+  : ['-y', 'github:jpolvora/workflow-skills'];
 
 console.log(`\nSpawning installer: ${command} ${args.join(' ')}`);
 const child = cp.spawn(command, args, {
   cwd: __dirname,
   stdio: ['pipe', 'pipe', 'inherit'],
-  shell: true
+  shell: !useLocal
 });
 
 let selectAllSent = false;
@@ -496,8 +506,9 @@ child.stdout.on('data', (data) => {
 
   if (output.includes('Select action or toggle') && !selectAllSent) {
     selectAllSent = true;
-    console.log("\n[Test Automation] Sending 'a' to select all skills...");
-    child.stdin.write('a\n');
+    // Prefer Full package ('f') over toggle-all ('a') — 'a' deselects when already full.
+    console.log("\n[Test Automation] Sending 'f' to select Full package...");
+    child.stdin.write('f\n');
   } else if (output.includes('Select action or toggle') && selectAllSent && !installSent) {
     installSent = true;
     console.log("\n[Test Automation] Sending 'y' to confirm installation...");
@@ -580,7 +591,7 @@ child.on('close', async (code) => {
     console.error('\n❌ Directory verification failed.');
     if (!useLocal) {
       console.log('\n💡 Note: remote install may lag local changes. Prefer:');
-      console.log('  npm run tests -- --local');
+      console.log('  npm run tests');
     }
     process.exit(1);
   }
