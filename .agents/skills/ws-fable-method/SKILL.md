@@ -7,12 +7,11 @@
 
 
 
+
 name: ws-fable-method
-description: >
-  Step-by-step problem-solving loop with triviality & fit gates (classify ask, define done,
-  gather evidence from primary sources, decide, act surgically, verify by observation, report outcome-first).
-  Use when invoked via /ws-fable-method or when approaching complex/trap-prone tasks without full ws-spec-to-pr ceremony.
-version: 0.0.100
+description: 7-step structured problem-solving methodology — evidence-based problem classification, primary-source investigation, surgical action, and adversarial verification for complex tasks.
+
+version: 0.0.101
 invocation_names:
   - ws-fable-method
   - /ws-fable-method

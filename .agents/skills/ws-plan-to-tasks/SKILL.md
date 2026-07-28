@@ -8,9 +8,10 @@
 
 
 
+
 name: ws-plan-to-tasks
-description: Breaks an implementation plan into atomic tasks organized in a DAG, or sequential when small.
-version: 0.0.100
+description: Task DAG breakdown generator — transforms approved implementation plans into atomic, dependency-mapped task execution graphs.
+version: 0.0.101
 disable-model-invocation: true
 invocation_names:
   - plan-to-tasks

@@ -7,13 +7,11 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.0.100
-description: >-
-  Spec-to-PR lite delivery orchestrator FSM. Fast sequential spec → plan → implement → review → ship → fix-pr.
-  Invoke: /ws-spec-to-pr-lite | /spec-to-pr-lite | @[ws-spec-to-pr-lite] | @[spec-to-pr-lite]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | plain text.
-  Flags: dry-run, auto, skip-tests, full. Flags combine freely (e.g. full + auto + dry-run).
-  Inline execution in main session. Dual-mode compatible with ws-spec-to-pr (shared skills, ws-shared/config.json, ws-shared/gates.md).
+version: 0.0.101
+description: Fast sequential Spec-to-PR lite delivery orchestrator FSM (Steps 0–5). Streamlined spec → plan → implement → review → ship → fix-pr pipeline for fast feature delivery.
+
 invocation_names:
   - spec-to-pr-lite
   - ws-spec-to-pr-lite
@@ -82,7 +80,7 @@ Skips interview, DAG, check-implementation, Testing vs standard.
 Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
 Orch: ws-spec-to-pr-lite · model {currentModel} · {modeFlags} · workflowType: lite · workflowMode: true
-Enhancing skills (mandatory): ws-karpathy-guidelines, ws-tdah, ws-self-learning
+Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
 Read: state workflow memory + decisions; MEMORY.md index; `config.json.rules.stackFile`.
 Config/SCM: `.agents/skills/ws-shared/config-resolution.md`
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root}

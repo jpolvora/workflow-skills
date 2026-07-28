@@ -7,11 +7,11 @@
 
 
 
+
 name: ws-changelog
-version: 0.0.100
-description: >
-  Write a summarized historical record of the task into the configured ws-changelog file
-  (default `.agents/skills/ws-shared/CHANGELOG.md`). Use at the very end of every implementation task.
+version: 0.0.101
+description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
+
 invocation_names:
   - changelog
   - ws-changelog

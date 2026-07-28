@@ -7,9 +7,10 @@
 
 
 
+
 name: ws-interview
-description: Audits and interrogates an implementation plan to resolve ambiguities before task creation.
-version: 0.0.100
+description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
+version: 0.0.101
 disable-model-invocation: true
 invocation_names:
   - interview

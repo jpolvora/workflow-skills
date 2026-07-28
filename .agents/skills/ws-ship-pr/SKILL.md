@@ -7,9 +7,10 @@
 
 
 
+
 name: ws-ship-pr
-description: End-to-end delivery — SCM-agnostic (reads config.json providers.scm for GitHub, Azure DevOps / ADO, or configured SCM). Prepare-to-PR checklist (discover+wait for local consumer rules), push/create PR, wait 30s for code-review/CI actions to start on SCM infrastructure, run ws-goal-fix-pr (default 300s) until clean, then merge (unless stopBeforeFixPr / no-merge).
-version: 0.0.100
+description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
+version: 0.0.101
 disable-model-invocation: true
 invocation_names:
   - ship-pr

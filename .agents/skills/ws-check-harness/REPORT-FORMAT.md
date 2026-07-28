@@ -93,16 +93,15 @@ Otherwise — **correction plan** (mandatory before editing):
 - [ ] No auto-load skill contradicts the declared hierarchy
 - [ ] Documented opt-outs are recognized by all affected skills
 
-### Overlapping skills (Phase 5c.2)
-| Domain | Skills | Overlap type | Conflict? | Recommendation |
-|---------|--------|---------------------|-----------|--------------|
-| Code review | local review vs workflow review step | complementary — local branch vs workflow step | No | Distinct triggers; keep both |
-| Code review | architecture review vs diff review | complementary — architecture vs diff | No | Task router already distinguishes |
-| Security | general security vs language-specific | complementary — OWASP vs language-specific | No | Domain review already references security review |
-| PR workflow | fix vs ws-goal-fix-pr | superset — ws-goal-fix-pr wraps fix-pr | No | Keep both; ws-goal-fix-pr delegates to fix-pr |
-| Planning | write-plan vs interview | complementary — create vs audit plan | No | Sequential workflow; distinct triggers |
-| Domain | single vs multi-domain review | superset — batch orchestrator | No | Multi-domain orchestrates single |
-| UI/Frontend | UI patterns vs taste/design | complementary — internal patterns vs anti-slop | No | Taste skill loads design doc for distinction |
+### Overlapping skills, instruction duplication & composition topology (Phase 5c.2)
+| Domain | Skills | Overlap / Composition type | Role Clarity | Recommendation |
+|---------|--------|----------------------------|--------------|----------------|
+| Code review | `ws-code-review` vs `ws-fable-judge` | composed — `ws-code-review` delegates adversarial audit to `ws-fable-judge` | ✅ Sharp | Keep composed relationship; avoid inline duplicate audit logic |
+| Implementation | `ws-senior-developer` vs `ws-karpathy-guidelines` | complementary — macro delivery gate vs micro diff hygiene | ✅ Sharp | Distinct triggers; maintain scope vs diff boundary |
+| PR workflow | `ws-fix-pr` vs `ws-goal-fix-pr` | composed — `ws-goal-fix-pr` wraps `ws-fix-pr` & `ws-goal-loop` | ✅ Sharp | Keep composition; `ws-goal-fix-pr` delegates single-pass fix to `ws-fix-pr` |
+| Security | `ws-ship-pr` vs `ws-secrets-leak-review` | composed — `ws-ship-pr` invokes `ws-secrets-leak-review` pre-commit | ✅ Sharp | Maintain single security scanner primitive |
+| Planning | `ws-write-plan` vs `ws-interview` | complementary — create plan vs audit plan | ✅ Sharp | Sequential pipeline steps; distinct triggers |
+| Specs & Indexing | `ws-spec-format` vs `ws-write-spec` | composed — `ws-write-spec` outputs `ws-spec-format` schema | ✅ Sharp | Schema SoT cleanly separated from authoring step |
 
 ### Simulated context load (Phase 5c.3)
 

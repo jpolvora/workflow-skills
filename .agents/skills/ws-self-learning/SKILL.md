@@ -7,12 +7,11 @@
 
 
 
+
 name: ws-self-learning
-version: 0.0.100
-description: >
-  Consult anti-regression MEMORY before planning or writing code, and record new traps
-  into the shared memory hub after implementation. Use at session/task start (read)
-  and task completion (write + compile). Prevents repeating known mistakes.
+version: 0.0.101
+description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
+
 invocation_names:
   - self-learning
   - ws-self-learning

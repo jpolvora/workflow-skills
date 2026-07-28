@@ -453,9 +453,9 @@ This phase generates three independent analyses that compose the **context simul
    - Sum always-loaded `.mdc` rules (Layer 0)
    - Report total and percentage per skill (e.g., "Mandatory auto-load: ~1200 lines / 45% of estimated total context")
 
-#### 5c.2 — Overlapping skills analysis
+#### 5c.2 — Overlapping skills, instruction duplication & composition topology analysis
 
-**Objective:** detect skills covering the same functional domain and classify the overlap.
+**Objective:** detect instruction duplication across skills, verify that each skill has a well-defined single role, and confirm all skills participate in a collaborative, complementing, or composed topology without un-composed slop.
 
 **Steps:**
 
@@ -463,38 +463,35 @@ This phase generates three independent analyses that compose the **context simul
 
    | Domain | Examples |
    |---------|----------|
-   | Code review | Local review skill, architecture review skill, security review skill |
-   | Security | General security skill, language-specific security skill |
-   | Planning | Write plan, interview/refine, plan-to-tasks skills |
-   | Implementation | Implementation executor, guardrails skill |
-   | Verification | `ws-verify-plan` (`ws-verify-plan`), `ws-testing` (`ws-testing`) |
-   | PR workflow | `ws-fix-pr` (`ws-fix-pr`), `ws-goal-fix-pr` (`ws-goal-fix-pr`), `ws-ship-pr` (`ws-ship-pr`) |
-   | Domain | Single domain review, multi-domain review skills |
-   | Documentation | Learning/recording, ws-changelog skills |
-   | UI/Frontend | UI patterns, responsive design, taste/design skills |
-   | Harness | Check harness, ws-write-a-skill |
-   | External library | Library docs integration skill |
+   | Code review | Local review skill (`ws-code-review`), quality gates (`ws-fable-judge`) |
+   | Security | Secrets leak review (`ws-secrets-leak-review`), adversarial audit (`ws-fable-judge`) |
+   | Planning | Write spec (`ws-write-spec`), write plan (`ws-write-plan`), interview (`ws-interview`), task DAG (`ws-plan-to-tasks`) |
+   | Implementation | Build executor (`ws-implement-tasks`), engineering delivery gate (`ws-senior-developer`), surgical diffs (`ws-karpathy-guidelines`) |
+   | Verification | Score verification (`ws-verify-plan`), pre-PR testing (`ws-testing`), pre-ship proof (`ws-senior-developer`) |
+   | PR workflow | Thread resolution (`ws-fix-pr`), thread loop (`ws-goal-fix-pr`), delivery & ship (`ws-ship-pr`) |
+   | Specs & Indexing | Spec schema (`ws-spec-format`), project PRD index (`ws-spec-index`), auto-sync (`ws-sync-spec`) |
+   | Documentation & Memory | Self-learning anti-regression (`ws-self-learning`), changelog (`ws-changelog`) |
+   | Harness & Meta | Check harness (`ws-check-harness`), workflow simulation (`ws-check-workflows`), write a skill (`ws-write-a-skill`) |
 
-2. **For each domain with 2+ skills**, analyze overlap:
+2. **Audit instruction duplication, role clarity & composition**:
 
-   a. **Compare `description:`** — overlapping keywords/triggers indicate routing ambiguity
-   b. **Compare § Task router** — skills appearing on the same task router line share the same trigger
-   c. **Compare dependencies** — skills referencing the same external skill may be redundant
-   d. **Compare `SKILL.md` body** — sample equivalent sections (e.g., both have security checklists, both define "how to review code")
+   a. **Instruction Block Duplication**: Scan `SKILL.md` bodies for duplicated verbatim instruction blocks (e.g. repeated checklists, duplicated provider logic, parallel verification procedures). Skills must **delegate** to canonical composed primitives (e.g. `ws-fable-judge`, `ws-secrets-leak-review`, `ws-spec-format`, `ws-senior-developer`, `ws-karpathy-guidelines`) rather than copy-pasting parallel instructions.
+   b. **Role Definition Clarity**: Assert that every skill defines a sharp, non-overlapping single responsibility in its frontmatter `description:` and header section.
+   c. **Composition Topology**: Verify that orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`) delegate step execution to pipeline skills, and high-level wrappers (e.g. `ws-goal-fix-pr`) compose underlying primitives (`ws-fix-pr`, `ws-goal-loop`) without implementing redundant inline logic.
 
-3. **Classify each overlap:**
+3. **Classify each overlap & duplication finding:**
 
    | Classification | Criterion | Recommended action |
    |---------------|----------|------------------|
-   | **`duplicate`** | Two skills do essentially the same thing with identical approach | Consolidate into one; remove the redundant |
-   | **`superset`** | One skill fully covers the other's scope + extras | Keep superset; subset should delegate to superset |
-   | **`complementary`** | Skills cover the same domain from different angles (e.g., one reviews security via OWASP, another via query analysis) | Keep both; clarify `description:` and task router with distinct triggers |
+   | **`duplicate`** | Two skills do essentially the same thing or duplicate large instruction blocks | Consolidate into canonical skill; delegate from consumer |
+   | **`superset`** | One skill fully covers another's scope + extras | Keep superset; subset should delegate to superset |
+   | **`complementary`** | Skills cover the same domain from distinct, non-overlapping angles (e.g. macro delivery gate `ws-senior-developer` vs micro diff hygiene `ws-karpathy-guidelines`) | Keep both; verify distinct triggers in task router |
+   | **`uncomposed_slop`** | A skill reimplements logic already owned by a canonical primitive instead of delegating | Refactor skill body to compose/link canonical primitive |
    | **`conflicting`** | Two skills give contradictory instructions for the same scenario | **critical** — resolve conflict; elect canonical source |
 
-4. **For each `duplicate` or `conflicting` overlap**, emit `warning` in the Phase 6 plan with concrete recommendation.
-   For `complementary` overlaps, emit `suggestion` if routing triggers are ambiguous.
+4. **For each `duplicate`, `uncomposed_slop`, or `conflicting` overlap**, emit `warning` in the Phase 6 plan with concrete refactoring recommendations. For `complementary` overlaps, emit `suggestion` if routing triggers are ambiguous.
 
-5. **Check `name:` collision in subdirectories** (e.g., `ws-code-review/SKILL.md` with `name: ws-code-review` vs another skill with the same `name:`) — if distinct, OK; if identical, already covered in Phase 5 as `warning`. Also verify `name:` matches § 3b (`ws-` + folder suffix) for numbered pipeline skills.
+5. **Check `name:` collision in subdirectories** — verify frontmatter `name:` matches § 3b (`ws-` + folder suffix) for pipeline skills.
 
 #### 5c.3 — Simulated context load
 
