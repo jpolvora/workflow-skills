@@ -11,9 +11,10 @@
 
 
 
+
 name: ws-write-spec
 description: Canonical spec authoring step — drafts structured step-00 feature specifications from free-text user requirements and intent.
-version: 0.0.105
+version: 0.0.106
 disable-model-invocation: true
 invocation_names:
   - write-spec
