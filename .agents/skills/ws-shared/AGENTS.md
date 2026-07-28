@@ -50,16 +50,17 @@
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-tdah` | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) | Every prompt — action-first shape + judgment |
 | `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) | Every task completion |
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 
+`ws-tdah` is **on-demand** here (invoke `/ws-tdah` · `/tdah` · `start ws-tdah`). Upstream root `AGENTS.md` may autoload it for development dogfood only — not the consumer default.
+
 ### Consumer root override (dual-hub)
 
-Default **shared hub only** (typical consumer install): `ws-senior-developer` is **on-demand** — opt in via `rules.seniorDeveloper` or explicit invoke; it is **not** in the mandatory autoload table above.
+Default **shared hub only** (typical consumer install): `ws-tdah` and `ws-senior-developer` are **on-demand** — `ws-tdah` via explicit invoke; `ws-senior-developer` via `rules.seniorDeveloper` or explicit invoke. Neither is in the mandatory autoload table above.
 
-Some consumers add a **root** `AGENTS.md` (installer never writes it) that promotes `ws-senior-developer` to per-prompt autoload (engineering delivery gate). That is an **intentional consumer override**, not a shared-hub defect.
+Some consumers add a **root** `AGENTS.md` (installer never writes it) that promotes `ws-tdah` and/or `ws-senior-developer` to per-prompt autoload. That is an **intentional consumer override**, not a shared-hub defect.
 
 When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
 
@@ -72,7 +73,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 3. Design / spec / architecture constraints
 4. `ws-karpathy-guidelines`
 5. `ws-senior-developer` when autoloaded (root hub or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
-6. `ws-tdah` (action-first shape + judgment; still below karpathy/senior)
+6. `ws-tdah` when autoloaded (root hub or `/ws-tdah`; opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`)
 
 ### Opt-out
 

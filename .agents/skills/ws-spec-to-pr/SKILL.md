@@ -7,13 +7,11 @@
 
 
 
+
 name: ws-spec-to-pr
-version: 0.0.100
-description: >-
-  Spec-to-PR delivery orchestrator FSM (F0–F6, steps 0–9). Agent contract only — not human docs.
-  Invoke: /ws-spec-to-pr | /spec-to-pr | @[ws-spec-to-pr] | @[spec-to-pr]. Entry: GitHub issue | Azure DevOps work item | *.spec.md | feature description.
-  Flags: dry-run, auto, skip-testing, skip-tests, full, strict.
-  Flags combine freely (e.g. full + auto + dry-run for automated end-to-end dry-run). Delegates via `dispatch-agent` (host subagent dispatch).
+version: 0.0.101
+description: End-to-end Spec-to-PR delivery orchestrator FSM (Steps 0–9). Coordinates planning, DAG execution, verification, review loops, testing, and SCM PR delivery with subagent isolation.
+
 invocation_names:
   - spec-to-pr
   - ws-spec-to-pr

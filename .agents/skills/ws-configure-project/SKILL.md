@@ -7,13 +7,11 @@
 
 
 
+
 name: ws-configure-project
-version: 0.0.100
-description: >
-  Interview and detect project settings to fill or update `.agents/skills/ws-shared/config.json`
-  with suggested values. Use when config.json is missing or incomplete, after install when the
-  user wants to configure, before ws-spec-to-pr bootstrap, or when the user asks to set up /
-  reconfigure workflow config, providers, stack, or verification commands.
+version: 0.0.101
+description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
+
 invocation_names:
   - configure-project
   - ws-configure-project

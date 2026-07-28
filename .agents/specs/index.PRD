@@ -46,6 +46,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: consolidated-gh-issues.spec.md`)
 - [x] Opt-in Integration of fable-* Skills with spec-to-pr Workflows (`spec: fable-skills-integration.spec.md`)
 
+### Phase 3: Continuous Verification & Advanced Quality Gates
+- [ ] Continuous AI Verification & Quality Gates Engine (`spec: continuous-ai-verification-quality-gates.spec.md`)
+
 ## 8. Next specs
 
 | # | Spec | Status | Target Phase | Notes |
@@ -54,6 +57,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 2 | `promote-shared-skills` | `[x]` done | Phase 1 | Top-level skill promotion for utilities |
 | 3 | `consolidated-gh-issues` | `[x]` done | Phase 2 | Fixes #106, #109, #110 |
 | 4 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
+| 5 | `continuous-ai-verification-quality-gates` | `[ ]` todo | Phase 3 | Pre-PR fable-judge gate, workflow CI, complexity classifier, and telemetry |
 
 ## 9. Inbox (unscheduled ideas)
 

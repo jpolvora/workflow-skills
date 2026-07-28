@@ -83,7 +83,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-tdah` | `skills/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
+| `ws-tdah` | `skills/ws-tdah/SKILL.md` | Every prompt — `/ws-tdah` (**upstream development dogfood only**) |
 | `ws-karpathy-guidelines` | `skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
 | `ws-changelog` | `skills/ws-changelog/SKILL.md` | Every task completion |
 | `ws-self-learning` | `skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
@@ -92,7 +92,7 @@ Both workflows co-exist cleanly in **dual mode** inside consumer projects:
 
 ### Dual-hub note (upstream authoring)
 
-Packaged consumer hub [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md) treats `ws-senior-developer` as **on-demand** by default. This packaged index and root `AGENTS.md` may **autoload** it for upstream dogfood. When both hubs load, root hub precedence wins — intentional override; see ws-shared § Consumer root override. Do not flag as drift in harness audits.
+Packaged consumer hub [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md) treats `ws-tdah` and `ws-senior-developer` as **on-demand** by default. This packaged index and root `AGENTS.md` may **autoload** both for upstream development dogfood. When both hubs load, root hub precedence wins — intentional override; see ws-shared § Consumer root override. Do not flag as drift in harness audits.
 
 ### Precedence (highest first)
 

@@ -1,11 +1,10 @@
 ---
 
+
 name: ws-tdah
-version: 0.0.100
-description: >
-  Action-first unverbose replies plus operational judgment. Lead with next action,
-  number steps, restate state, challenge weak plans, ask when blocked. Use when
-  the user invokes /ws-tdah, /tdah, start ws-tdah, or asks for briefer responses.
+version: 0.0.101
+description: Action-first response & execution directives — enforces concise, action-led replies, numbered steps, and operational decision-making.
+
 invocation_names:
   - tdah
   - ws-tdah

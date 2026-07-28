@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.0.100",
+  "packageVersion": "0.0.101",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -98,7 +98,8 @@
       "ws-self-learning",
       "ws-changelog",
       "ws-configure-project",
-      "ws-spec-index"
+      "ws-spec-index",
+      "ws-senior-developer"
     ],
     "ws-spec-to-pr-lite": [
       "ws-write-spec",
@@ -117,7 +118,8 @@
       "ws-self-learning",
       "ws-changelog",
       "ws-configure-project",
-      "ws-spec-index"
+      "ws-spec-index",
+      "ws-senior-developer"
     ],
     "ws-write-spec": [
       "ws-spec-format"

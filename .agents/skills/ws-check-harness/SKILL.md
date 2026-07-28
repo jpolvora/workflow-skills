@@ -1,16 +1,9 @@
 ---
 
-
-
-
-
-
-
-
 name: ws-check-harness
-description: Audit harness integrity — validates AGENTS.md routing, pipeline folder/step alignment (ws-* folders == frontmatter name), retired path ids, broken links (after path-token expand), orphan skills/rules, absolute paths, redundancy, and portability. Read-only scan → correction plan → apply with approval.
+description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.0.100
+version: 0.0.101
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -23,8 +16,9 @@ Meta-harness audit: health, cohesion, portability of agent routing. Project-agno
 ## Goals
 
 1. Validate hub + skill links, routing, retired pipeline ids, progressive disclosure.
-2. Enforce portability (no hardcoded project metadata in skills).
-3. Scan read-only → correction plan → edit only with approval (or stop on `--dry-run`).
+2. Audit skill role clarity, composition topology, and instruction duplication across skills.
+3. Enforce portability (no hardcoded project metadata in skills).
+4. Scan read-only → correction plan → edit only with approval (or stop on `--dry-run`).
 
 ## Execution flow
 
@@ -80,7 +74,7 @@ Consumer: missing root `AGENTS.md` is OK. Extra-package optional missing paths =
 
 **Always load** [`PHASES.md`](PHASES.md) for: Scan scope inventory, pipeline § 3b contract, Phases 0–7 procedures (including 5b/5c).
 
-**Skill integrity manifest (Phase 3, upstream only):** when `bin/skill-integrity.json` is expected, require `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exit 0. Stale/missing → **critical**. Correction: `npm run generate-integrity`, re-run `--check`, commit `bin/skill-integrity.json` with the package change. Full procedure: [`PHASES.md`](PHASES.md) Phase 3 item 7.
+**Skill integrity manifest (Phase 3, upstream only):** when `bin/skill-integrity.json` is expected, require `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exit 0. Stale/missing → **critical**. Correction: `npm run generate-integrity`, re-run `--check`, and commit `bin/skill-integrity.json` with the package change. Full procedure: [`PHASES.md`](PHASES.md) Phase 3 item 7.
 
 Step ↔ Phase: Step 1 = Phases 0–5c · Step 2 = Phase 6 · Step 3 = Phase 7.
 

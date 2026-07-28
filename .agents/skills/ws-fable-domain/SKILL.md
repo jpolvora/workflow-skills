@@ -7,11 +7,11 @@
 
 
 
+
 name: ws-fable-domain
-description: >
-  Generates and manages domain adapters for specialized agent workflows (DevOps, Data Analysis, Research, Ops).
-  Defines binding minimum evidence sets, domain authority, observation rules, and fraud definitions.
-version: 0.0.100
+description: Domain adapter generator & schemas — binds domain authority, minimum evidence sets, observation rules, and fraud definitions for DevOps, Data, Research, and Ops.
+
+version: 0.0.101
 invocation_names:
   - ws-fable-domain
   - /ws-fable-domain

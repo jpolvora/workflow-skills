@@ -7,13 +7,11 @@
 
 
 
+
 name: ws-goal-loop
-description: >-
-  Generic goal/loop pattern for convergence-driven loops. Provides sentinel
-  management, heartbeat/sleeper, re-collect -> check -> continue/done loop,
-  stop conditions, verify framework, and report format. Consumed by
-  goal-orchestrator skills (e.g., ws-goal-fix-pr). Not invocable standalone.
-version: 0.0.100
+description: Generic convergence loop primitive — stateful loop engine providing sentinel management, heartbeat/settle timers, and re-check convergence control.
+
+version: 0.0.101
 disable-model-invocation: true
 invocation_names:
   - goal-loop

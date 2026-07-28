@@ -288,7 +288,7 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
 Orch: SKILL.md § Step {STEP} · model {currentModel} · {modeFlags}
-Enhancing skills (mandatory): ws-karpathy-guidelines, ws-tdah, ws-self-learning
+Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
 Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
 Role: fresh; no resume. files_touched required (revert). model: {currentModel}.

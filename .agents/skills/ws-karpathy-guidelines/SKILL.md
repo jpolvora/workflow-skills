@@ -7,9 +7,10 @@
 
 
 
+
 name: ws-karpathy-guidelines
-version: 0.0.100
-description: Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
+version: 0.0.101
+description: Micro code diff hygiene guidelines — reduces LLM coding mistakes through surgical changes, minimal diff footprints, and surfacing assumptions.
 license: MIT
 invocation_names:
   - karpathy-guidelines
