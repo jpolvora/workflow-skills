@@ -50,12 +50,10 @@ flowchart TD
 
 #### Smart Flow Auto-Detection Logic
 Evaluate the target `*.spec.md` file:
-1. **Explicit Frontmatter**: Check frontmatter `complexity:` or `flow:` field if present (`lite` / `fast` / `standard` / `full`).
-2. **Threshold Scan**:
-   - Count sections / requirements / tasks / files in spec.
-   - If implementation tasks ≤ 3 AND estimated files ≤ 6 AND layers ≤ 2 (matching `config.json.dagThresholds` limits) → select **`ws-spec-to-pr-lite`**.
-   - Otherwise → select **`ws-spec-to-pr`** (full standard orchestrator).
-3. Log selected `flowMode` (`lite` or `standard`) into the item state row.
+1. **Explicit Frontmatter**: Check frontmatter `complexity:` or `flow:` field if present (`lite` / `fast` / `standard` / `full`). Map `lite`/`fast` → `flowMode: lite`; `standard`/`full` → `flowMode: standard`.
+2. **Classifier (preferred)**: When no overriding frontmatter, run [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) on the spec (writes `step-00-{slug}.classify.md` under `{us-dir}` when a plans slug exists, or use `--output-dir` next to the spec). Map recommendation `lite` → **`ws-spec-to-pr-lite`**; `standard` → **`ws-spec-to-pr`**. Do **not** hardcode numeric thresholds in this skill — `classify.cjs` reads live `{sharedDir}/config.json` → `dagThresholds`.
+3. **Fallback** (classifier unavailable): Read `dagThresholds` from `{sharedDir}/config.json` (keys `maxImplementationSteps`, `maxExpectedFiles`, `maxLayers`). Count sections / requirements / path refs / layers from the spec the same way as the classifier. If all counts are within those limits → `lite`; else `standard`.
+4. Log selected `flowMode` (`lite` or `standard`) and classifier evidence into the item state row.
 
 ### Phase 4: Pre-Dispatch Base Sync & Dispatch Worker
 - **Base Branch Sync Preflight**:

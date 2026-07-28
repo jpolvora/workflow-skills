@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.0.104",
+  "packageVersion": "0.0.105",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -171,6 +171,7 @@
     "ws-multi-spec": [
       "ws-spec-to-pr",
       "ws-spec-to-pr-lite",
+      "ws-classify-complexity",
       "ws-ship-pr",
       "ws-goal-fix-pr",
       "ws-tdah",

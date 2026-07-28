@@ -70,7 +70,7 @@ output:
 
 ## Out of Scope (v1)
 
-- Cursor session `stop` / after-agent hooks
+- IDE/agent session stop / after-agent hooks
 - Deterministic Python/Node index rewrite scripts
 - Coupling to Kanban board / `/board` data plane
 - Auto-writing `Verified:`

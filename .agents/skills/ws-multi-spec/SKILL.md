@@ -9,8 +9,9 @@
 
 
 
+
 name: ws-multi-spec
-version: 0.0.104
+version: 0.0.105
 description: Sequential smart multi-spec batch orchestrator — evaluates spec complexity across project specifications to dispatch standard or lite pipeline workers.
 
 invocation_names:
@@ -46,7 +47,7 @@ Sequential multi-spec batch delivery orchestrator with **smart complexity & flow
 ## Goals
 
 1. Batch process a list or directory of specs sequentially.
-2. **Smart Flow Auto-Detection**: Evaluate spec complexity to select `ws-spec-to-pr` (full) or `ws-spec-to-pr-lite` (fast).
+2. **Smart Flow Auto-Detection**: Evaluate spec complexity via [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) (live `dagThresholds`) to select `ws-spec-to-pr` (full) or `ws-spec-to-pr-lite` (fast). See [`PROTOCOL.md`](PROTOCOL.md).
 3. Probe before execution to skip already-implemented specs.
 4. Base branch synchronization (`baseBranch`) before worker dispatch and on run resume.
 5. **Complete End-to-End Cycle per Spec**: After worker creates PR, wait for automated code reviewers and CI, execute `ws-goal-fix-pr` until `activeThreads == 0`, and explicitly merge & close PR via SCM provider before queue advancement.

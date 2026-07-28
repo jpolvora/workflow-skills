@@ -232,6 +232,7 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 |--------|--------|
 | `stop ws-tdah` / `stop verbosity` / `normal mode` | Disable ws-tdah |
 | `stop ws-gabarito` / `sem ws-gabarito` | Same disable (retired alias) |
+| `stop ws-senior-developer` | Disable ws-senior-developer when autoloaded |
 | `/ws-tdah` · `/tdah` · `start ws-tdah` · `start ws-gabarito` | Activate (single default mode) |
 
 ---
