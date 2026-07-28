@@ -2,7 +2,7 @@
 
 
 name: ws-spec-to-pr-lite
-version: 0.0.104
+version: 0.0.105
 description: Fast sequential Spec-to-PR lite delivery orchestrator FSM (Steps 0–5). Streamlined spec → plan → implement → review → ship → fix-pr pipeline for fast feature delivery.
 
 invocation_names:

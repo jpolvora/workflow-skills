@@ -2,10 +2,11 @@
 
 
 
+
 name: ws-senior-developer
 description: Engineering delivery gate enforcing strict scope control (suggest unasked changes first), anti-reinvention/code simplification, interactive ambiguity resolution via user-gate options, and pre-ship proof.
 
-version: 0.0.104
+version: 0.0.105
 invocation_names:
   - senior-developer
   - ws-senior-developer
@@ -101,3 +102,10 @@ Use configured aliases such as `build-backend`, `test-backend`, and `lint-backen
 hardcode consumer commands.
 
 **Done when:** every applicable checklist item has evidence or an explicit blocker.
+
+## Opt-out
+
+| Phrase | Effect |
+|--------|--------|
+| `stop ws-senior-developer` | Disable for this session when autoloaded |
+| Unset `config.json` → `rules.seniorDeveloper` (empty string) | Disable path resolution / opt out of delivery-gate resolve |

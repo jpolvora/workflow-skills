@@ -1,0 +1,1 @@
+{"timestamp":"2026-07-28T10:25:36Z","step":8,"label":"Ship","elapsedSec":900,"promptTokens":0,"completionTokens":0,"filesTouched":2,"model":"Cursor Grok 4.5","verificationScore":null,"fableVerdict":"VERIFIED WITH CAVEATS","gateDecision":"create-pr","errors":[],"bypassed":false}

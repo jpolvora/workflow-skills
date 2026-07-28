@@ -1,9 +1,10 @@
 ---
 
 
+
 name: ws-classify-complexity
 description: Pipeline complexity classifier — analyzes a spec against config.json dagThresholds and recommends ws-spec-to-pr-lite or ws-spec-to-pr (standard).
-version: 0.0.104
+version: 0.0.105
 invocation_names:
   - classify-complexity
   - ws-classify-complexity
@@ -104,7 +105,7 @@ Heuristic (when scores present): uniform high scores (mean ≥ 8, low variance) 
 
 ## Related skills
 
-- [`ws-multi-spec`](../ws-multi-spec/SKILL.md) — batch Smart Flow uses the same thresholds (may call this skill later).
+- [`ws-multi-spec`](../ws-multi-spec/SKILL.md) — batch Smart Flow prefers this skill (or live `dagThresholds`) for lite vs standard selection.
 - [`ws-plan-to-tasks`](../ws-plan-to-tasks/SKILL.md) — DAG sequential detection uses the same `dagThresholds` for plan size.
 - [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) — orchestrators wire Step 0 classify and `--classify` flag.
 

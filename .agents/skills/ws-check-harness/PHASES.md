@@ -261,7 +261,7 @@ For each internal reference (post-expansion when applicable):
 | Hub routing table literal `.agents/skills/...` | **Repo root** |
 | Bare relative (no `./` / `../`), e.g. `docs/faq.md`, `README.md` | Directory of the **containing file** — **not** repo root |
 
-**Bare relative links (common false positive):** `[faq](docs/faq.md)` inside `.agents/skills/ws-spec-to-pr/SKILL.md` resolves to `.agents/skills/ws-spec-to-pr/docs/faq.md`. Do **not** flag `{repo}/docs/faq.md` as broken. A leading `docs/` segment does **not** imply repo-root resolution unless the citing file is at repo root and the intent is clearly a top-level `docs/` tree.
+**Bare relative links (common false positive):** a Markdown link whose target is the bare relative path `docs/faq.md` inside `.agents/skills/ws-spec-to-pr/SKILL.md` resolves to `.agents/skills/ws-spec-to-pr/docs/faq.md`. Do **not** flag `{repo}/docs/faq.md` as broken. A leading `docs/` segment does **not** imply repo-root resolution unless the citing file is at repo root and the intent is clearly a top-level `docs/` tree.
 
 **Do not propose** rewriting healthy token prose to `../…` “to make it relative.” That is a false fix.
 
