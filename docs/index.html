@@ -20,10 +20,12 @@
       Workflow Skills
     </a>
     <div class="nav-links">
+      <a href="#how-it-works">How It Works</a>
       <a href="#workflows">Workflows</a>
       <a href="#catalog">Catalog</a>
       <a href="#install-packages">Packages</a>
       <a href="#install">Installation</a>
+      <a href="#faq">FAQ</a>
       <a href="#contribute">Contribute</a>
     </div>
     <div class="nav-right">
@@ -86,6 +88,487 @@
     </div>
   </div>
 </header>
+
+<section id="how-it-works">
+  <div class="section-header">
+    <h2>How It Works</h2>
+    <p class="section-subtitle">Understand the FSM workflow execution engine, step-by-step pipeline phases, and skill dispatch routing across your AI coding agent.</p>
+  </div>
+
+  <div class="how-container">
+    <div class="how-nav-tabs">
+      <button type="button" class="how-tab-btn active" data-target="panel-standard">
+        <span>Standard Pipeline</span>
+        <span class="tab-badge">Steps 0–9</span>
+      </button>
+      <button type="button" class="how-tab-btn" data-target="panel-lite">
+        <span>Lite Pipeline</span>
+        <span class="tab-badge">Steps 0–5</span>
+      </button>
+      <button type="button" class="how-tab-btn" data-target="panel-multi">
+        <span>Multi-Spec Batching</span>
+        <span class="tab-badge">Orchestrator</span>
+      </button>
+      <button type="button" class="how-tab-btn" data-target="panel-matrix">
+        <span>Skill Role Matrix</span>
+        <span class="tab-badge">35+ Skills</span>
+      </button>
+    </div>
+
+    <!-- Panel 1: Standard Workflow -->
+    <div class="how-panel active" id="panel-standard">
+      <div class="stepper-timeline">
+        <!-- Phase 1 -->
+        <div class="stepper-item phase-1">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 00</span>
+              <h3 class="stepper-title">Spec Brainstorming & Schema Alignment</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 1: Spec & Architecture</span>
+          </div>
+          <p class="stepper-desc">Transforms free-text user intent, issue description, or context into a canonical <code>*.spec.md</code> with crisp section hierarchy and mandatory acceptance criteria.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-spec/SKILL.md">ws-write-spec</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-classify-complexity/SKILL.md">ws-classify-complexity</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-spec-format/SKILL.md">ws-spec-format</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-spec-index/SKILL.md">ws-spec-index</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-1">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 01</span>
+              <h3 class="stepper-title">Technical Implementation Planning</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 1: Spec & Architecture</span>
+          </div>
+          <p class="stepper-desc">Generates a detailed technical implementation plan (<code>step-01-*.plan.md</code>), mapping proposed file modifications, domain schema bindings, and verification strategies.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-plan/SKILL.md">ws-write-plan</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-fable-domain/SKILL.md">ws-fable-domain</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-1">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 02</span>
+              <h3 class="stepper-title">Architectural Interview & Audit</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 1: Spec & Architecture</span>
+          </div>
+          <p class="stepper-desc">Audits the plan against actual project code structure, surfaces design trade-offs, and resolves ambiguities interactively with structured <code>user-gate</code> choices.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-interview/SKILL.md">ws-interview</span>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="stepper-item phase-2">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 03</span>
+              <h3 class="stepper-title">DAG Task Graph Decomposition</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
+          </div>
+          <p class="stepper-desc">Breaks down the refined plan into an atomic Directed Acyclic Graph (<code>*.exec.dag.json</code>), establishing strict dependencies, touch boundaries, and test obligations.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-plan-to-tasks/SKILL.md">ws-plan-to-tasks</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-2">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 04</span>
+              <h3 class="stepper-title">Subagent Task Implementation</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
+          </div>
+          <p class="stepper-desc">Executes DAG tasks sequentially using subagent isolation. Enforces surgical diff hygiene, memory trap consulting before edits, and action-first execution.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill exec view-skill" data-path=".agents/skills/ws-implement-tasks/SKILL.md">ws-implement-tasks</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-karpathy-guidelines/SKILL.md">ws-karpathy-guidelines</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-self-learning/SKILL.md">ws-self-learning</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-tdah/SKILL.md">ws-tdah</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-2">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 05</span>
+              <h3 class="stepper-title">Spec Compliance Verification</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
+          </div>
+          <p class="stepper-desc">Evaluates code changes against spec acceptance criteria, calculating an objective completeness score (0–10) and generating a verification report.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-2">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 06</span>
+              <h3 class="stepper-title">Multi-Stage Local Code Review & Auto-Fix</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
+          </div>
+          <p class="stepper-desc">Executes a two-phase code review (Security/Bugs & Senior Standards), triggering automatic fix sub-cycles when review findings are surfaced.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-senior-developer/SKILL.md">ws-senior-developer</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-fable-judge/SKILL.md">ws-fable-judge</span>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="stepper-item phase-3">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 07</span>
+              <h3 class="stepper-title">Automated Testing & Quality Gate</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
+          </div>
+          <p class="stepper-desc">Runs pre-PR automated test suites, validating unit tests, integration tests, and code coverage requirements specified in project config.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-testing/SKILL.md">ws-testing</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-secrets-leak-review/SKILL.md">ws-secrets-leak-review</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-3">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 08</span>
+              <h3 class="stepper-title">SCM Commit & Pull Request Delivery</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
+          </div>
+          <p class="stepper-desc">Commits code changes, pushes feature branch to remote origin, and opens Pull Request via configured SCM provider (GitHub CLI / Azure DevOps / Local SCM).</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-ship-pr/SKILL.md">ws-ship-pr</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-github-provider/SKILL.md">ws-github-provider</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-azure-devops-provider/SKILL.md">ws-azure-devops-provider</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-local-spec-provider/SKILL.md">ws-local-spec-provider</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-3">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 09</span>
+              <h3 class="stepper-title">PR Review Thread Convergence</h3>
+            </div>
+            <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
+          </div>
+          <p class="stepper-desc">Monitors open Pull Request review comments in an autonomous goal loop, applying code fixes until zero unresolved threads remain.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-goal-fix-pr/SKILL.md">ws-goal-fix-pr</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-goal-loop/SKILL.md">ws-goal-loop</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-changelog/SKILL.md">ws-changelog</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Lite Workflow -->
+    <div class="how-panel" id="panel-lite">
+      <div class="stepper-timeline">
+        <div class="stepper-item phase-1">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 00</span>
+              <h3 class="stepper-title">Lite Spec Creation & Complexity Routing</h3>
+            </div>
+            <span class="stepper-fsm-tag">Lite Pipeline</span>
+          </div>
+          <p class="stepper-desc">Drafts feature spec and evaluates complexity against <code>dagThresholds</code> in project config to validate Lite eligibility.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-spec/SKILL.md">ws-write-spec</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-classify-complexity/SKILL.md">ws-classify-complexity</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-1">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 01</span>
+              <h3 class="stepper-title">Direct Implementation Planning</h3>
+            </div>
+            <span class="stepper-fsm-tag">Lite Pipeline</span>
+          </div>
+          <p class="stepper-desc">Generates concise, focused implementation plan without requiring deep multi-round interview overhead.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-plan/SKILL.md">ws-write-plan</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-2">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 02</span>
+              <h3 class="stepper-title">Direct Sequential Task Execution</h3>
+            </div>
+            <span class="stepper-fsm-tag">Lite Pipeline</span>
+          </div>
+          <p class="stepper-desc">Executes code changes sequentially in place, bypassing complex JSON DAG file generation for rapid feature delivery.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill exec view-skill" data-path=".agents/skills/ws-implement-tasks/SKILL.md">ws-implement-tasks</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-karpathy-guidelines/SKILL.md">ws-karpathy-guidelines</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-2">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 03</span>
+              <h3 class="stepper-title">Focused Code Review & Refinement</h3>
+            </div>
+            <span class="stepper-fsm-tag">Lite Pipeline</span>
+          </div>
+          <p class="stepper-desc">Performs a single-pass local code review, verifying quality standards and auto-fixing minor issues prior to delivery.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-3">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 04</span>
+              <h3 class="stepper-title">Rapid SCM Delivery</h3>
+            </div>
+            <span class="stepper-fsm-tag">Lite Pipeline</span>
+          </div>
+          <p class="stepper-desc">Pushes feature branch and creates Pull Request immediately upon review completion.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-ship-pr/SKILL.md">ws-ship-pr</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-github-provider/SKILL.md">ws-github-provider</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-3">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Step 05</span>
+              <h3 class="stepper-title">PR Review Fix Convergence</h3>
+            </div>
+            <span class="stepper-fsm-tag">Lite Pipeline</span>
+          </div>
+          <p class="stepper-desc">Runs fix loop on incoming PR comments until all threads are resolved.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-goal-fix-pr/SKILL.md">ws-goal-fix-pr</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3: Multi-Spec -->
+    <div class="how-panel" id="panel-multi">
+      <div class="stepper-timeline">
+        <div class="stepper-item phase-1">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Phase 1</span>
+              <h3 class="stepper-title">Spec Queue Discovery & Validation</h3>
+            </div>
+            <span class="stepper-fsm-tag">Batch Orchestration</span>
+          </div>
+          <p class="stepper-desc">Scans <code>specs/</code> directory or `{plansDir}/specs/` to index all pending feature specifications and verify structural formatting.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-multi-spec/SKILL.md">ws-multi-spec</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-spec-index/SKILL.md">ws-spec-index</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-1">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Phase 2</span>
+              <h3 class="stepper-title">Smart Complexity Auto-Routing</h3>
+            </div>
+            <span class="stepper-fsm-tag">Batch Orchestration</span>
+          </div>
+          <p class="stepper-desc">Evaluates spec complexity (file count, layer depth, estimated tasks). Automatically routes simple specs to <code>ws-spec-to-pr-lite</code> and complex specs to full <code>ws-spec-to-pr</code>.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-classify-complexity/SKILL.md">ws-classify-complexity</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-2">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Phase 3</span>
+              <h3 class="stepper-title">Sequential Worker Dispatch & State Persistence</h3>
+            </div>
+            <span class="stepper-fsm-tag">Batch Orchestration</span>
+          </div>
+          <p class="stepper-desc">Dispatches worker FSM pipelines one spec at a time, persisting multi-spec execution status under <code>{plansDir}/ws-multi-spec/</code> to allow resumption across sessions.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">ws-spec-to-pr</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md">ws-spec-to-pr-lite</span>
+          </div>
+        </div>
+
+        <div class="stepper-item phase-3">
+          <div class="stepper-dot"></div>
+          <div class="stepper-header">
+            <div class="stepper-title-wrap">
+              <span class="stepper-step-num">Phase 4</span>
+              <h3 class="stepper-title">Interactive Failure Recovery & PR Consolidation</h3>
+            </div>
+            <span class="stepper-fsm-tag">Batch Orchestration</span>
+          </div>
+          <p class="stepper-desc">If a worker spec fails, pauses execution with clear <code>user-gate</code> choices (Resume, Skip, Abort). On success, ships individual PRs and updates project changelog.</p>
+          <div class="stepper-skills">
+            <span class="stepper-skills-label">Skills called:</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-ship-pr/SKILL.md">ws-ship-pr</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-changelog/SKILL.md">ws-changelog</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 4: Skill Role Matrix -->
+    <div class="how-panel" id="panel-matrix">
+      <div class="role-matrix-grid">
+        <div class="role-matrix-card">
+          <div class="role-card-header">
+            <div class="role-card-icon">⚡</div>
+            <h4 class="role-card-title">Orchestrators</h4>
+          </div>
+          <p class="role-card-desc">Top-level Finite State Machines that coordinate multi-step workflows, manage subagent lifecycles, and maintain state persistence.</p>
+          <div class="role-card-skills">
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">ws-spec-to-pr</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md">ws-spec-to-pr-lite</span>
+            <span class="skill-tag-pill orch view-skill" data-path=".agents/skills/ws-multi-spec/SKILL.md">ws-multi-spec</span>
+          </div>
+        </div>
+
+        <div class="role-matrix-card">
+          <div class="role-card-header">
+            <div class="role-card-icon">📐</div>
+            <h4 class="role-card-title">Planners & Validators</h4>
+          </div>
+          <p class="role-card-desc">Brainstorming, spec formatting, architectural plan generation, plan auditing, and DAG task graph building.</p>
+          <div class="role-card-skills">
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-spec/SKILL.md">ws-write-spec</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-plan/SKILL.md">ws-write-plan</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-interview/SKILL.md">ws-interview</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-plan-to-tasks/SKILL.md">ws-plan-to-tasks</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-spec-format/SKILL.md">ws-spec-format</span>
+            <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-spec-index/SKILL.md">ws-spec-index</span>
+          </div>
+        </div>
+
+        <div class="role-matrix-card">
+          <div class="role-card-header">
+            <div class="role-card-icon">🛠️</div>
+            <h4 class="role-card-title">Task Executors</h4>
+          </div>
+          <p class="role-card-desc">Isolated coding step workers that execute individual tasks, apply targeted refactoring, and resolve implementation issues.</p>
+          <div class="role-card-skills">
+            <span class="skill-tag-pill exec view-skill" data-path=".agents/skills/ws-implement-tasks/SKILL.md">ws-implement-tasks</span>
+          </div>
+        </div>
+
+        <div class="role-matrix-card">
+          <div class="role-card-header">
+            <div class="role-card-icon">🔍</div>
+            <h4 class="role-card-title">Verifiers & Auditors</h4>
+          </div>
+          <p class="role-card-desc">Spec compliance scoring, multi-pass code reviews, adversarial AI fraud detection, secrets scanning, and test verification.</p>
+          <div class="role-card-skills">
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-testing/SKILL.md">ws-testing</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-secrets-leak-review/SKILL.md">ws-secrets-leak-review</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-fable-judge/SKILL.md">ws-fable-judge</span>
+          </div>
+        </div>
+
+        <div class="role-matrix-card">
+          <div class="role-card-header">
+            <div class="role-card-icon">🚀</div>
+            <h4 class="role-card-title">SCM Delivery & PR Fixers</h4>
+          </div>
+          <p class="role-card-desc">Branch management, git commits, PR creation across GitHub / Azure DevOps / Local SCM, and goal loops for PR thread fixing.</p>
+          <div class="role-card-skills">
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-ship-pr/SKILL.md">ws-ship-pr</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-goal-fix-pr/SKILL.md">ws-goal-fix-pr</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-github-provider/SKILL.md">ws-github-provider</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-azure-devops-provider/SKILL.md">ws-azure-devops-provider</span>
+            <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-local-spec-provider/SKILL.md">ws-local-spec-provider</span>
+          </div>
+        </div>
+
+        <div class="role-matrix-card">
+          <div class="role-card-header">
+            <div class="role-card-icon">🛡️</div>
+            <h4 class="role-card-title">Guardrails & Memory</h4>
+          </div>
+          <p class="role-card-desc">Scope control standards, surgical code diff guidelines, anti-regression memory, action-first response rules, and changelog updates.</p>
+          <div class="role-card-skills">
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-senior-developer/SKILL.md">ws-senior-developer</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-karpathy-guidelines/SKILL.md">ws-karpathy-guidelines</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-self-learning/SKILL.md">ws-self-learning</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-tdah/SKILL.md">ws-tdah</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-changelog/SKILL.md">ws-changelog</span>
+            <span class="skill-tag-pill rule view-skill" data-path=".agents/skills/ws-configure-project/SKILL.md">ws-configure-project</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section id="workflows">
   <div class="section-header">
@@ -870,6 +1353,178 @@
   </div>
 </section>
 
+<section id="faq">
+  <div class="section-header">
+    <h2>Frequently Asked Questions</h2>
+    <p class="section-subtitle">Everything you need to know about Workflow Skills, FSM execution engine, quality gates, and agent harness compatibility.</p>
+  </div>
+
+  <div class="faq-controls">
+    <div class="faq-search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="faq-search-input" placeholder="Search FAQ by keyword, feature, or question..." aria-label="Search FAQ">
+    </div>
+    <div class="faq-cat-pills" id="faq-cat-pills">
+      <button type="button" class="faq-cat-pill active" data-faq-cat="all">All Topics</button>
+      <button type="button" class="faq-cat-pill" data-faq-cat="getting-started">Getting Started</button>
+      <button type="button" class="faq-cat-pill" data-faq-cat="workflows">Workflows & FSM</button>
+      <button type="button" class="faq-cat-pill" data-faq-cat="quality">Quality & Safety</button>
+      <button type="button" class="faq-cat-pill" data-faq-cat="config">Configuration</button>
+      <button type="button" class="faq-cat-pill" data-faq-cat="compatibility">Compatibility</button>
+    </div>
+  </div>
+
+  <div class="faq-accordion" id="faq-accordion">
+    <!-- Q1 -->
+    <div class="faq-item" data-faq-cat="getting-started" data-search="what is workflow skills autonomous fsm agent harness skills framework">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Getting Started</span>
+          <span>What is Workflow Skills and how does it enhance AI agents?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Workflow Skills is an open-source, agent- and IDE-neutral skill hub and Finite State Machine (FSM) framework. It equips AI coding assistants (Cursor, Windsurf, OpenCode, Claude Code, Gemini CLI, etc.) with structured software engineering workflows, quality gates, automated testing, and SCM PR delivery.</p>
+          <p>Instead of relying on free-form prompt engineering that leads to scope creep or unverified code, Workflow Skills enforces structured multi-step pipelines (Steps 0–9) where each phase calls specialized, single-responsibility skills.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="difference standard ws-spec-to-pr vs lite ws-spec-to-pr-lite pipeline step count">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows</span>
+          <span>What is the difference between Standard (<code>ws-spec-to-pr</code>) and Lite (<code>ws-spec-to-pr-lite</code>) workflows?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>The choice depends on task complexity and scope:</p>
+          <ul>
+            <li><strong>Standard (<code>ws-spec-to-pr</code>)</strong>: A comprehensive 10-step pipeline (Steps 0–9). Includes deep architectural planning, interactive plan audit interviews, JSON DAG task graph decomposition, isolated subagent task execution, 2-phase local code review, pre-PR automated testing, and autonomous PR thread fixing.</li>
+            <li><strong>Lite (<code>ws-spec-to-pr-lite</code>)</strong>: A streamlined 6-step pipeline (Steps 0–5). Designed for direct sequential coding without complex DAG generation overhead, offering rapid feature delivery while maintaining code review and PR shipping gates.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="multi spec ws-multi-spec batch orchestrator queue auto routing complexity">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows</span>
+          <span>How does <code>ws-multi-spec</code> handle batch feature development?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p><code>ws-multi-spec</code> is a sequential smart multi-spec batch orchestrator. It indexes all feature specifications under <code>specs/</code>, runs <code>ws-classify-complexity</code> on each spec to dynamically select between Standard or Lite pipeline execution, and processes them one by one.</p>
+          <p>It maintains state persistence under <code>{plansDir}/ws-multi-spec/</code> (allowing safe session pauses/resumes), skips specs with already-merged PRs, and presents structured <code>user-gate</code> choices if a spec encounters an issue.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="faq-item" data-faq-cat="config" data-search="update command preserve local settings ws-shared config.json memory stack changelog">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Configuration</span>
+          <span>Will <code>npx workflow-skills update</code> overwrite my local project configurations?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p><strong>No!</strong> Workflow Skills maintains a strict separation between <em>managed skill files</em> and <em>consumer-owned project data</em>.</p>
+          <p>Files located under <code>.agents/skills/ws-shared/</code> — including <code>config.json</code>, <code>STACK.md</code>, <code>MEMORY.md</code>, memory entries, and <code>CHANGELOG.md</code> — are strictly preserved during all updates and uninstalls. Only managed <code>SKILL.md</code> definitions and skill scripts are updated from canonical upstream releases.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="faq-item" data-faq-cat="quality" data-search="quality gates adversarial audit ws-fable-judge ws-senior-developer code review security leak">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Quality & Safety</span>
+          <span>How do quality gates and adversarial audits protect my codebase?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Workflow Skills includes multiple layers of automated defense:</p>
+          <ul>
+            <li><strong><code>ws-senior-developer</code></strong>: Delivery gate enforcing surgical diff footprints, anti-reinvention checks, and pre-ship verification proof.</li>
+            <li><strong><code>ws-fable-judge</code></strong>: Adversarial audit engine performing diff-grounded verification to detect 4 classic AI code frauds (weakened unit tests, false verification claims, unauthorized side effects, and scope creep).</li>
+            <li><strong><code>ws-secrets-leak-review</code></strong>: Pre-PR scanner checking diffs for hardcoded API tokens, private keys, passwords, and sensitive credentials.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="faq-item" data-faq-cat="compatibility" data-search="ide compatibility cursor windsurf opencode claude code gemini harness neutral portable">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Compatibility</span>
+          <span>Which IDEs and AI agent tools are supported?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Workflow Skills is <strong>100% harness-neutral and portable</strong>. Shipped skills run in any consumer environment capable of reading standard markdown skill files under <code>.agents/skills/</code>.</p>
+          <p>It supports Cursor, Windsurf, OpenCode, Claude Code, Gemini CLI, VS Code agent extensions, and custom AI agent harnesses without vendor lock-in or host-specific coupling.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="faq-item" data-faq-cat="config" data-search="customize project settings test runner scm provider github azure devops local config.json">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Configuration</span>
+          <span>How do I customize test runners or SCM providers for my repository?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>You can run <code>ws-configure-project</code> or edit <code>.agents/skills/ws-shared/config.json</code> directly. Key configurable options include:</p>
+          <ul>
+            <li><code>plans.dir</code>: Target folder for workflow plans and execution artifacts (default: <code>.agents/plans</code>).</li>
+            <li><code>providers.scm</code>: Active SCM provider (<code>github</code> via <code>gh</code> CLI, <code>azure-devops</code> via ADO PAT, or <code>local</code>).</li>
+            <li><code>rules.stackFile</code>: Path to project technology stack guidance (default: <code>.agents/skills/ws-shared/STACK.md</code>).</li>
+            <li><code>testRunner</code> & <code>buildCommands</code>: Automated verification and test execution commands.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="faq-item" data-faq-cat="getting-started" data-search="create custom skills write a skill contribute upstream yaml frontmatter">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Getting Started</span>
+          <span>Can I author my own custom skills or contribute upstream?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Yes! To author a new skill, use our meta-skill <strong><code>ws-write-a-skill</code></strong>. It guides you through defining standard YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>), applying progressive disclosure principles, and structuring helper scripts.</p>
+          <p>Lasting skill improvements can be submitted via Pull Request to the canonical upstream repository: <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="contribute">
   <div class="section-header">
     <h2>Contribute</h2>
@@ -886,7 +1541,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.105 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.0.106 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->
@@ -1167,6 +1822,96 @@
       filterSkills();
     });
   });
+
+  /* ─── How It Works Tab Switcher ─── */
+  var howTabBtns = document.querySelectorAll('.how-tab-btn');
+  var howPanels = document.querySelectorAll('.how-panel');
+
+  howTabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var targetId = this.getAttribute('data-target');
+      howTabBtns.forEach(function(b) { b.classList.remove('active'); });
+      howPanels.forEach(function(p) { p.classList.remove('active'); });
+
+      this.classList.add('active');
+      var targetPanel = document.getElementById(targetId);
+      if (targetPanel) targetPanel.classList.add('active');
+    });
+  });
+
+  /* ─── FAQ Accordion & Filtering ─── */
+  var faqQuestions = document.querySelectorAll('.faq-question');
+  var faqItems = document.querySelectorAll('.faq-item');
+  var faqCatPills = document.querySelectorAll('.faq-cat-pill');
+  var faqSearchInput = document.getElementById('faq-search-input');
+
+  var activeFaqCat = 'all';
+  var faqSearchQuery = '';
+
+  faqQuestions.forEach(function(q) {
+    q.addEventListener('click', function() {
+      var item = this.closest('.faq-item');
+      var answer = item.querySelector('.faq-answer');
+      var isOpen = item.classList.contains('open');
+
+      // Close all other open items
+      faqItems.forEach(function(other) {
+        if (other !== item && other.classList.contains('open')) {
+          other.classList.remove('open');
+          var otherQuestion = other.querySelector('.faq-question');
+          if (otherQuestion) otherQuestion.setAttribute('aria-expanded', 'false');
+          var otherAnswer = other.querySelector('.faq-answer');
+          if (otherAnswer) otherAnswer.style.maxHeight = null;
+        }
+      });
+
+      if (isOpen) {
+        item.classList.remove('open');
+        this.setAttribute('aria-expanded', 'false');
+        answer.style.maxHeight = null;
+      } else {
+        item.classList.add('open');
+        this.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
+
+  function filterFaq() {
+    faqItems.forEach(function(item) {
+      var cat = item.getAttribute('data-faq-cat') || '';
+      var searchData = (item.getAttribute('data-search') || '') + ' ' + (item.textContent || '');
+      searchData = searchData.toLowerCase();
+
+      var matchesCat = (activeFaqCat === 'all' || cat === activeFaqCat);
+      var matchesSearch = (!faqSearchQuery || searchData.includes(faqSearchQuery));
+
+      if (matchesCat && matchesSearch) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+        item.classList.remove('open');
+        var answer = item.querySelector('.faq-answer');
+        if (answer) answer.style.maxHeight = null;
+      }
+    });
+  }
+
+  faqCatPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      faqCatPills.forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      activeFaqCat = this.getAttribute('data-faq-cat');
+      filterFaq();
+    });
+  });
+
+  if (faqSearchInput) {
+    faqSearchInput.addEventListener('input', function() {
+      faqSearchQuery = this.value.toLowerCase().trim();
+      filterFaq();
+    });
+  }
 
 })();
 </script>
