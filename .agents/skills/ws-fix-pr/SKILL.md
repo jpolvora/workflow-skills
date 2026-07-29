@@ -80,7 +80,7 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 5. **Surgical fix**: for each blocking thread, analyze call sites and adjacent logic, then apply minimal edits (Karpathy guidelines) that fix the defect class, not just the reported instance.
    - Done when: all approved threads have code changes or a resolution comment drafted.
 
-6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
+6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via `resolve-thread` (executing `resolveReviewThread` GraphQL mutation via `resolve_thread.cjs` so `isResolved` transitions to `true`; skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: verification passed, report exists, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).
 
 Language: en-us only.

@@ -73,7 +73,7 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call, using t
 2. **Initial heartbeat check**: call `list-threads`. If `activeThreads == 0` on this first check, do not exit: arm the ws-goal-loop 300s heartbeat timer, wait, and re-collect once.
    - Done when: `activeThreads` is confirmed either still 0 (stop, converged) or > 0 (proceed to Act).
 
-3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads, and `git push origin HEAD` (skip push when `dry-run`).
+3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads by executing the `resolveReviewThread` GraphQL mutation (via `resolve_thread.cjs` or `gh api graphql` so `isResolved` transitions to `true`), and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: the round's approved threads are fixed or resolved, and pushed (unless `dry-run`).
 
 4. **Verify**: run `config.json.verification` commands plus a `ws-code-review` diff check. Three consecutive verification failures stop the loop and escalate.

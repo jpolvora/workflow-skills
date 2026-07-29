@@ -49,7 +49,7 @@ Orch entry / `ws-fix-pr` / `ws-goal-fix-pr` / `ws-ship-pr` pass intent + args wh
 ## Prerequisites
 
 - `gh` on `PATH`; `gh auth status` for CLI flows.
-- GraphQL threads: `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN`.
+- GraphQL threads: `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN` → `gh auth token` fallback.
 - Config: `issueTrackers.github` and/or `providers.active` / `providers.scm` = `github`.
 
 Auth failure → **STOP** with `validate-auth` fixes. No silent provider fallback.
@@ -62,7 +62,7 @@ Auth failure → **STOP** with `validate-auth` fixes. No silent provider fallbac
 | `validate-auth` | none | Pass/fail + fixes | `gh auth status` + thread token note |
 | `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base) |
 | `list-threads` | PR id | Thread list | `fetch_threads.cjs` |
-| `resolve-thread` | thread id (+ comment) | Resolved (or dry-run log) | `resolve_thread.cjs` |
+| `resolve-thread` | thread id (+ comment) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation) | `resolve_thread.cjs` |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 
 **Branch rule:** never `--delete-branch` when head is `project.workingBranch` (default `develop`).
