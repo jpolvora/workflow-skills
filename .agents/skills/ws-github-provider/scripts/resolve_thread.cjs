@@ -17,11 +17,24 @@ function loadDotEnv() {
 }
 
 function resolveToken() {
-  return (
+  const envToken =
     process.env.AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN ||
     process.env.GITHUB_TOKEN ||
-    process.env.GH_TOKEN
-  );
+    process.env.GH_TOKEN;
+  if (envToken) return envToken;
+
+  try {
+    const { execSync } = require('child_process');
+    const token = execSync('gh auth token', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).trim();
+    if (token) return token;
+  } catch (_err) {
+    // gh CLI token retrieval unavailable
+  }
+
+  return null;
 }
 
 function buildResolutionBody(note) {
