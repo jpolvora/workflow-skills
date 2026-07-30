@@ -8,7 +8,7 @@
 name: ws-senior-developer
 description: Engineering delivery gate enforcing strict scope control (suggest unasked changes first), anti-reinvention/code simplification, interactive ambiguity resolution via user-gate options, and pre-ship proof.
 
-version: 0.0.107
+version: 0.0.108
 invocation_names:
   - senior-developer
   - ws-senior-developer
@@ -52,20 +52,6 @@ Treat a trivial or single-file change as exempt from plan ceremony; apply only t
 checks needed for its risk. For multi-file or multi-modification free-text work, continue
 to context and planning.
 
-If scope or requirements are ambiguous during classification, apply Core Directive 3 (stop and ask via `user-gate`).
-
-**Done when:** the work is classified as exempt or non-trivial with a stated reason.
-
-## 3. Load delivery context
-
-For non-trivial work, read the configured project context, consumer root `AGENTS.md` when
-present, applicable architecture constraints and `rules.*`, and `{sharedDir}/MEMORY.md`.
-Consumer root policy owns policy decisions; do not copy it here or rewrite managed consumer
-skills.
-
-**Done when:** applicable constraints, policy sources, and MEMORY guidance are recorded.
-
-## 4. Confirm the plan
 
 Require a confirmed plan before multi-file or multi-modification free-text work. Use
 `{plansDir}` for plan artifacts, and route applicable work to installed workflow,

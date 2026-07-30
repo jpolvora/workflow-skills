@@ -135,9 +135,11 @@ Fix substep is **not** its own `completedSteps` entry — log `review-fix | roun
 
 ### Learning & Memory Protocol
 
-At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated decisions`, `## Step outputs`) and `.agents/skills/ws-shared/MEMORY.md` index. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
+At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated decisions`, `## Step outputs`) and `{sharedDir}/MEMORY.md` index. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
 
-**Step 8 sweep:** Promote generalizable patterns to `ws-shared/memory/*.md` + run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
+All recorded learnings and memory entries must use clear, direct, and actionable directives (e.g. "When dealing with X: DO NOT use Y because Z; INSTEAD DO W"). Avoid vague or passive descriptions so that humans and agents instantly understand what pattern to avoid and what pattern to execute.
+
+**Step 8 sweep:** Promote generalizable patterns to `{sharedDir}/memory/*.md` + run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
 
 ### Specification Protocol
 
