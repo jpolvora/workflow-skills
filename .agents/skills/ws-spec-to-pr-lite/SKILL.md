@@ -3,8 +3,9 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.0.109
+version: 0.0.110
 description: Fast sequential Spec-to-PR lite delivery orchestrator FSM (Steps 0–5). Streamlined spec → plan → implement → review → ship → fix-pr pipeline for fast feature delivery.
 
 invocation_names:
@@ -33,6 +34,7 @@ Canonical aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary
 | Artifacts | `step-00` spec · `step-01` plan · `step-08` result (shared names with standard) |
 | Commits | Code in implement/review-fix; plan+result at Step 4 G2-delivery |
 | Ship / Fix-PR | Step 4 combined gate + `ws-ship-pr` (`workflowMode`, `stopBeforeFixPr`); Step 5 `ws-goal-fix-pr` / `ws-fix-pr` |
+| `autoMode` models | In `autoMode: true`, switch model at phase boundaries when `config.json` → `defaults` defines preferences (Steps 0–1 → `plannerModel`; Step 2 → `executionModel`; Step 3 → `reviewerModel`); fallback to active model if switch fails/unsupported. |
 | Worktree | Branch-direct default; worktree when `plans.useWorktrees=true` |
 | Fable | When `config.json.fable.enabled`: domain@1, judge@3, verify before PR@4 |
 | `scoreAndRefine` | Score plan tasks (0–10) in `step-05-{slug}.score-analysis.md`, run 2nd pass implementation, and write `step-08-{slug}.second-pass-report.md` |

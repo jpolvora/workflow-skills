@@ -8,6 +8,8 @@
 
 > **Consistency:** the Skill map in `SKILL.md` (`ws-verify-plan` → Step 5, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
 
+> **autoMode Model Switching:** When `autoMode: true` and `config.json` → `defaults` defines `plannerModel`, `executionModel`, or `reviewerModel`, the orchestrator applies the phase model override during `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–7 → `reviewerModel`). On switch failure or unconfigured model, gracefully maintain the current active model.
+
 | Step | Action | Artifact |
 |------|--------|----------|
 | 0 | Entry gate (user-gate). US/spec provided → provider or skip to write. No args → free-text → `dispatch-agent` `ws-write-spec`. Optional soft clarify if AC empty. | `step-00-{slug}.spec.md` |

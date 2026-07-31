@@ -80,6 +80,20 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
 | `browser-mcp` | Browser integration test | Host browser MCP when available (only normal mode, non-dry-run, gated) |
 
+### Auto-mode subagent model preferences & host IDE switching
+
+When `autoMode: true` and `config.json` → `defaults` defines model preferences (`plannerModel`, `executionModel`, `reviewerModel`), the orchestrator applies phase-matched model overrides during step dispatches:
+- **Planning (Steps 0–3)**: `defaults.plannerModel`
+- **Execution (Step 4)**: `defaults.executionModel`
+- **Review & Verification (Steps 5–7)**: `defaults.reviewerModel`
+
+**Host IDE Subagent Model Parameterization:**
+- **OpenCode**: Pass subagent option `model: "{modelName}"` or agent config override.
+- **Antigravity**: Pass tool parameter `model: "{modelName}"` or prompt header directive `Model: {modelName}`.
+- **Cursor**: Pass subagent parameter `model: "{modelName}"` or step prompt model hint.
+
+**Non-blocking Fallback Guarantee:** If a configured model string is empty, rejected by the provider/API, or dynamic model switching is unsupported in the host IDE environment, the orchestrator and subagent **must seamlessly maintain execution using the active session model** (standard mode behavior) without interrupting workflow execution.
+
 ## Knowledge tools
 
 | Tool | Action | Native |

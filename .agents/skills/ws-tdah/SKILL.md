@@ -5,8 +5,9 @@
 
 
 
+
 name: ws-tdah
-version: 0.0.109
+version: 0.0.110
 description: Action-first response & execution directives — enforces concise, action-led replies, numbered steps, and operational decision-making.
 
 invocation_names:

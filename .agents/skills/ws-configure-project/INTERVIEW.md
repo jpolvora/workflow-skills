@@ -39,6 +39,7 @@ Scan consumer **repo root** (not this skill package alone):
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
 | Fable skills in `.agents/skills/` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: true` |
+| Top-level `.cursor/`, `.opencode/`, `.gemini/` or IDE env | Detect host IDE (Cursor / OpenCode / Antigravity) to suggest canonical model strings for `defaults.plannerModel`, `defaults.executionModel`, `defaults.reviewerModel` (Cursor: `claude-3-5-sonnet` / `gpt-4o`; OpenCode: `claude-3-5-sonnet` / `gemini-2.0-flash`; Antigravity: `gemini-3.6-flash` / `claude-3-5-sonnet`) |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
 ## Interview order
@@ -49,7 +50,12 @@ Scan consumer **repo root** (not this skill package alone):
 4. `verification` (+ `orchestration` if detected)
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `domain` / `rules` / `defaults` — optional
+7. `defaults` — optional (autoMode, dryRun, skipTesting, scoreAndRefine) + **LLM model preferences for autoMode phase switching**:
+   - `plannerModel` (Planning phase: Steps 0–3)
+   - `executionModel` (Execution phase: Step 4)
+   - `reviewerModel` (Review & Verification phase: Steps 5–7)
+   - Offer canonical host model choices or custom string; fallback to active model if empty or switch fails.
+8. `domain` / `rules` — optional
 
 Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.
 

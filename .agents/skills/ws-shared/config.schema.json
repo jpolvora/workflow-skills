@@ -94,6 +94,18 @@
         "scoreAndRefine": {
           "type": "boolean",
           "description": "Enable Pass 1 Task Scoring and 2nd Pass Refinement loop."
+        },
+        "plannerModel": {
+          "type": "string",
+          "description": "Preferred LLM model name for planning phase (Steps 0-3) in autoMode."
+        },
+        "executionModel": {
+          "type": "string",
+          "description": "Preferred LLM model name for execution phase (Step 4) in autoMode."
+        },
+        "reviewerModel": {
+          "type": "string",
+          "description": "Preferred LLM model name for review and verification phase (Steps 5-7) in autoMode."
         }
       }
     },
