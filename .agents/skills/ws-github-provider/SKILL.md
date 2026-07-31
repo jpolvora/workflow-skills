@@ -13,9 +13,10 @@
 
 
 
+
 name: ws-github-provider
 description: GitHub SCM provider — handles GitHub issue-to-spec conversion, authentication, PR creation, review thread resolution, and merging via gh CLI.
-version: 0.0.110
+version: 0.0.111
 disable-model-invocation: true
 invocation_names:
   - github-provider
@@ -23,6 +24,8 @@ invocation_names:
 ---
 
 # ws-github-provider
+
+> When this skill is loaded, output "ws-github-provider loaded."
 
 GitHub-specific inbound (`fetch-to-spec`) and SCM (`create-pr`, threads, merge). Pipeline skills load this when `providers.active` / `providers.scm` is `github`; they link here instead of embedding `gh` recipes.
 

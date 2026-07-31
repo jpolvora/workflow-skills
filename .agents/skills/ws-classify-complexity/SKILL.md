@@ -5,15 +5,18 @@
 
 
 
+
 name: ws-classify-complexity
 description: Pipeline complexity classifier — analyzes a spec against config.json dagThresholds and recommends ws-spec-to-pr-lite or ws-spec-to-pr (standard).
-version: 0.0.110
+version: 0.0.111
 invocation_names:
   - classify-complexity
   - ws-classify-complexity
 ---
 
 # ws-classify-complexity
+
+> When this skill is loaded, output "ws-classify-complexity loaded."
 
 Analyze a feature spec and recommend **`lite`** or **`standard`** pipeline (`workflowType`) by comparing counted metrics to `config.json` → `dagThresholds`. Writes `{us-dir}/step-00-{slug}.classify.md`.
 

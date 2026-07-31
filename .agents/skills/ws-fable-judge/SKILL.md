@@ -13,10 +13,11 @@
 
 
 
+
 name: ws-fable-judge
 description: Adversarial audit engine — diff-grounded verification detecting 4 classic AI frauds (weakened checks, false claims, scope creep, unauthorized action) to issue binding verdicts.
 
-version: 0.0.110
+version: 0.0.111
 invocation_names:
   - ws-fable-judge
   - /ws-fable-judge
@@ -25,6 +26,8 @@ invocation_names:
 ---
 
 # Fable Judge (`ws-fable-judge`)
+
+> When this skill is loaded, output "ws-fable-judge loaded."
 
 Adversarial evaluator stance: **A report is a set of claims, not evidence.** Nothing is accepted as true unless observed via ground-truth diffs and executed commands.
 

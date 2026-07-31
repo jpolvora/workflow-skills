@@ -14,9 +14,10 @@
 
 
 
+
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, and E2E test batteries with coverage and quality verification.
-version: 0.0.110
+version: 0.0.111
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -24,6 +25,8 @@ invocation_names:
 ---
 
 # ws-testing
+
+> When this skill is loaded, output "ws-testing loaded."
 
 Plan and execute the pre-PR **testing** battery: unit tests, integration/E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), and feature quality against acceptance criteria. Act as a **Release Engineer / QA Lead** who verifies end-to-end flows, RBAC, and database schema stability.
 

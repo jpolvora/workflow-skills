@@ -15,8 +15,9 @@
 
 
 
+
 name: ws-spec-to-pr
-version: 0.0.110
+version: 0.0.111
 description: End-to-end Spec-to-PR delivery orchestrator FSM (Steps 0–9). Coordinates planning, DAG execution, verification, review loops, testing, and SCM PR delivery with subagent isolation.
 
 invocation_names:
@@ -48,6 +49,8 @@ Canonical aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/con
 Subagents end with parseable `step-output`. User output: summaries + Progress Board + banners. Gate contexts: transitions, entry/resume/config, refinement 2c, G2-code, Step 8 delivery+ship, Step 9 fix-pr.
 
 # Spec-to-PR — Orchestrator
+
+> When this skill is loaded, output "ws-spec-to-pr loaded."
 
 Deterministic FSM; step content via **`dispatch-agent`**.
 

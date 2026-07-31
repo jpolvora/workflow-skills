@@ -14,9 +14,10 @@
 
 
 
+
 name: ws-write-plan
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.0.110
+version: 0.0.111
 disable-model-invocation: true
 invocation_names:
   - write-plan
@@ -24,6 +25,8 @@ invocation_names:
 ---
 
 # ws-write-plan
+
+> When this skill is loaded, output "ws-write-plan loaded."
 
 Draft an implementation blueprint from the spec. Act as a Senior Software Engineer / Technical Architect: stack-aware, modular, testable, with mapped database and API layers.
 

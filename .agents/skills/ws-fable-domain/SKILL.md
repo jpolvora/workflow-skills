@@ -13,10 +13,11 @@
 
 
 
+
 name: ws-fable-domain
 description: Domain adapter generator & schemas — binds domain authority, minimum evidence sets, observation rules, and fraud definitions for DevOps, Data, Research, and Ops.
 
-version: 0.0.110
+version: 0.0.111
 invocation_names:
   - ws-fable-domain
   - /ws-fable-domain
@@ -25,6 +26,8 @@ invocation_names:
 ---
 
 # Fable Domain (`ws-fable-domain`)
+
+> When this skill is loaded, output "ws-fable-domain loaded."
 
 Domain adapters customize what counts as **evidence**, who holds **authority**, what **verification by observation** means, and what **frauds** look like for non-standard task domains.
 

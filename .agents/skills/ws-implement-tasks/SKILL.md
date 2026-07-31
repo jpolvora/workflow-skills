@@ -13,9 +13,10 @@
 
 
 
+
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.0.110
+version: 0.0.111
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -23,6 +24,8 @@ invocation_names:
 ---
 
 # ws-implement-tasks
+
+> When this skill is loaded, output "ws-implement-tasks loaded."
 
 Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Act as a Senior Software Developer: clean code, SOLID, surgical edits, stack-consistent, no duplication.
 

@@ -14,16 +14,19 @@
 
 
 
+
 name: ws-sync-spec
 description: Feature spec synchronizer — auto-updates feature specifications after prompt-driven code changes to prevent spec drift.
 
-version: 0.0.110
+version: 0.0.111
 invocation_names:
   - sync-spec
   - ws-sync-spec
 ---
 
 # ws-sync-spec
+
+> When this skill is loaded, output "ws-sync-spec loaded."
 
 Keep feature specifications (`*.spec.md`) continuously synchronized with real implemented code after prompts, adjustments, or task completions.
 

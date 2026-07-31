@@ -371,6 +371,7 @@ Identify canonical sources for each theme. The table below lists **common themes
 
 | Theme | How to identify the canonical source | Skills/agents that must **delegate** (not duplicate) |
 |------|-----------------------------------|-----------------------------------------------------|
+| Skill loading banner | Primary `SKILL.md` files must include `> When this skill is loaded, output "{ws-skillName} loaded."` (auxiliary `.md` files must not include it) | `ws-write-a-skill`, `ws-check-harness` |
 | Harness routing | `AGENTS.md` (always) | All agents and skills |
 | Guardrails / invariants | Skill with `senior-developer` or `engineering-standards` in `name:` + docs in `docs/specs/` | Planning, implementation, and review skills |
 | Specification format | Skill with `ws-spec-format` or equivalent in `name:` | Planning, refinement, and verification skills |

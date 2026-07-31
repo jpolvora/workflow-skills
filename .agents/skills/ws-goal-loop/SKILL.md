@@ -13,10 +13,11 @@
 
 
 
+
 name: ws-goal-loop
 description: Generic convergence loop primitive — stateful loop engine providing sentinel management, heartbeat/settle timers, and re-check convergence control.
 
-version: 0.0.110
+version: 0.0.111
 disable-model-invocation: true
 invocation_names:
   - goal-loop
@@ -24,6 +25,8 @@ invocation_names:
 ---
 
 # ws-goal-loop
+
+> When this skill is loaded, output "ws-goal-loop loaded."
 
 Convergence loop skeleton. A **goal-orchestrator** loads this skill and binds success criteria, collect, and act.
 

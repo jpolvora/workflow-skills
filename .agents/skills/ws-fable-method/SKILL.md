@@ -13,10 +13,11 @@
 
 
 
+
 name: ws-fable-method
 description: 7-step structured problem-solving methodology — evidence-based problem classification, primary-source investigation, surgical action, and adversarial verification for complex tasks.
 
-version: 0.0.110
+version: 0.0.111
 invocation_names:
   - ws-fable-method
   - /ws-fable-method
@@ -25,6 +26,8 @@ invocation_names:
 ---
 
 # Fable Method (`ws-fable-method`)
+
+> When this skill is loaded, output "ws-fable-method loaded."
 
 Structured problem-solving loop: accuracy via structure, evidence, honesty. Follow literally; do **not** print step headers to the user unless asked. en-us; paths via `{plansDir}` / `{sharedDir}` / `{skillsRoot}` + `config.json`.
 

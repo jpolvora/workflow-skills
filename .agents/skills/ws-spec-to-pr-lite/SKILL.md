@@ -4,8 +4,9 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.0.110
+version: 0.0.111
 description: Fast sequential Spec-to-PR lite delivery orchestrator FSM (Steps 0–5). Streamlined spec → plan → implement → review → ship → fix-pr pipeline for fast feature delivery.
 
 invocation_names:
@@ -14,6 +15,8 @@ invocation_names:
 ---
 
 # Spec-to-PR Lite — Orchestrator
+
+> When this skill is loaded, output "ws-spec-to-pr-lite loaded."
 
 Sequential spec→ship using the **same** pipeline skills as [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md). Dual-mode: [`gates.md`](../ws-shared/gates.md) · [`config-resolution.md`](../ws-shared/config-resolution.md) · [`setup.md`](../ws-shared/setup.md) · [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md). Do **not** use [`STEP-DISPATCH.md`](../ws-spec-to-pr/STEP-DISPATCH.md) for lite step numbers (standard 0–9 only).
 

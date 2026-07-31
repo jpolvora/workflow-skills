@@ -13,9 +13,10 @@
 
 
 
+
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.0.110
+version: 0.0.111
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -23,6 +24,8 @@ invocation_names:
 ---
 
 # ws-goal-fix-pr
+
+> When this skill is loaded, output "ws-goal-fix-pr loaded."
 
 Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
 
