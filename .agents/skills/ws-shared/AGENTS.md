@@ -50,12 +50,11 @@
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-tdah` | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) | Every prompt — `/ws-tdah` action-first shape + judgment |
 | `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) | Every task completion |
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 
-`ws-tdah` autoloads action-first replies and operational judgment. Opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`.
+`ws-tdah` is **on-demand** here (invoke `/ws-tdah` · `/tdah` · `start ws-tdah`). Upstream root `AGENTS.md` may autoload it for development dogfood only — not the consumer default.
 
 ### Consumer root override (dual-hub)
 
