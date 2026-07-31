@@ -174,6 +174,28 @@ False positives that look like “forward reference” bugs are almost always sa
 
 ---
 
+## Cross-platform shell & encoding (Windows + Linux)
+
+Applies to every shell call and temp script an agent creates in a consumer project, on any shell (bash, PowerShell/pwsh, cmd) and any OS (Windows, Linux).
+
+### Python UTF-8 (mandatory)
+
+1. **Never rely on the OS default encoding.** On Windows, Python defaults to `cp1252` for `open()` and console stdout — one non-ASCII char raises `UnicodeEncodeError` / `UnicodeDecodeError`.
+2. Always pass `encoding="utf-8"` explicitly on file I/O: `open(path, "r", encoding="utf-8")` / `Path(path).read_text(encoding="utf-8")` / `write_text(..., encoding="utf-8")`.
+3. Scripts that print non-ASCII: launch with `python -X utf8 script.py` (or set `PYTHONIOENCODING=utf-8` in the same command), or call `sys.stdout.reconfigure(encoding="utf-8")` near the top.
+4. Prefer ASCII-only stdout in short-lived agent scripts; keep accents/non-ASCII inside files, not the console.
+
+### Quoting (bash / PowerShell / cmd)
+
+1. **Create script files with the host file-writing tool, never with shell redirection.** Do not build scripts via `echo "..." > file`, `Set-Content`, or heredocs containing embedded quotes/JSON — quoting rules differ per shell and corrupt content silently.
+2. When a command needs nested quotes (JSON payloads, regex with quotes, multi-line Python/JS), write a short **uncommitted temp script** with the host file-writing tool, run it with an explicit launcher (`python` / `node` / `bash` per [`tools.md`](tools.md) § Script launchers), and delete it when done.
+3. **bash only:** heredocs must use a quoted delimiter (`<<'EOF'`) so `$`, backticks, and quotes pass through literally. Never use heredocs in PowerShell or cmd.
+4. **PowerShell:** single quotes are literal; double quotes expand `$`. Do not paste bash idioms — `&&` fails on Windows PowerShell 5.1 (use `;` or one command per call), `$?` and `$(...)` have different semantics.
+5. **cmd:** no single-quote protection and no multi-line input; avoid it for anything beyond simple one-liners.
+6. When unsure which shell the host runs, keep each call to a single simple invocation and route complex logic through a script file (rule 2).
+
+---
+
 ## Recommended Feature Delivery Checklist (before push / ship)
 
 ### Consumer Projects
