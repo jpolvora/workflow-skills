@@ -7,7 +7,7 @@
 
 name: ws-code-review
 description: Two-phase code review engine — audits correctness, security, policy, and diff quality, executing targeted fix → re-review loops (max 3 rounds) before ship.
-version: 0.0.108
+version: 0.0.109
 disable-model-invocation: true
 invocation_names:
   - code-review
