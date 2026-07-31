@@ -15,7 +15,7 @@
 name: ws-fable-method
 description: 7-step structured problem-solving methodology — evidence-based problem classification, primary-source investigation, surgical action, and adversarial verification for complex tasks.
 
-version: 0.0.107
+version: 0.0.109
 invocation_names:
   - ws-fable-method
   - /ws-fable-method

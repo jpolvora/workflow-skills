@@ -14,7 +14,7 @@
 
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.0.107
+version: 0.0.109
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -42,19 +42,6 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
 | `<plan-path>` | required | Execution, refined, or draft plan path |
 | `mode` | `build` | `build` or `fix` |
 | `findings` | (optional) | Findings report or review comments path |
-
-## Build mode
-
-1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria.
-   - Done when: every task/step has an identified file list and AC.
-
-2. **Consult MEMORY** — Grep `{sharedDir}/MEMORY.md` for modules/paths/keywords in the plan; apply Medium+ Solutions before editing.
-   - Done when: relevant entries noted or none found.
-
-3. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
-   - Done when: a matching pattern is found, or none exists and this is noted.
-
-4. **Implement** — Write minimal, clean, modular code matching the requirements without scope creep.
    - Done when: every planned file is created or modified per its AC.
 
 5. **Validate** — Run the build and unit tests for modified layers (backend/frontend).

@@ -7,7 +7,7 @@
 
 name: ws-code-review
 description: Two-phase code review engine — audits correctness, security, policy, and diff quality, executing targeted fix → re-review loops (max 3 rounds) before ship.
-version: 0.0.107
+version: 0.0.109
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -70,19 +70,6 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 2. **Triage**: flag lines with real defect potential; discard cosmetic nits, untouched pre-existing code, and low-risk TSX without security surface.
    - Done when: a hypothesis list of candidate findings exists.
-
-3. **Investigate**: for each hypothesis, complete all four proof steps: Evidence Read, Failure Scenario, Missing Protection, Discards. Drop any hypothesis that cannot complete all four.
-   - Done when: every retained finding has all four proof steps documented.
-
-4. **Generalize defect class**: for each proven finding, search the full diff for sibling occurrences of the same pattern and report them together.
-   - Done when: sibling occurrences are searched and reported (or none found).
-
-5. **Sweep known patterns**: grep each ID in `MEMORY.md → ## Review Patterns` against the modified file set; report confirmed violations.
-   - Done when: the pattern sweep ran and results are reported.
-
-6. **Check invariants**: cross-check `config.json.invariants` / `config.json.rules`: tenancy filters, DB-migrations-CLI-only, domain rules, React hook cleanup/dependency arrays, and i18n keys present in every locale from `config.json.stack.frontend.i18n.locales[]`.
-   - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) to perform adversarial audit for the 4 classic frauds (Weakened Checks, False Completion, Scope Creep, Unauthorized Action). Report detected frauds as Critical or Warning findings so the fix → re-review loop runs.
-   - Done when: each applicable checklist item is checked.
 
 7. **Write report**: save `step-06-{slug}.review.md`. No findings: write `No feedback` and stop (clean). Findings: use severity sections Critical / Warning / Suggestion, each with `path:L#`, description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?** (workflow: answer follows the loop table above).
    - Done when: the report file matches the format described above.

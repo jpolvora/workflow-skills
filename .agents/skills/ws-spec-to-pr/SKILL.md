@@ -15,7 +15,7 @@
 
 
 name: ws-spec-to-pr
-version: 0.0.107
+version: 0.0.109
 description: End-to-end Spec-to-PR delivery orchestrator FSM (Steps 0–9). Coordinates planning, DAG execution, verification, review loops, testing, and SCM PR delivery with subagent isolation.
 
 invocation_names:

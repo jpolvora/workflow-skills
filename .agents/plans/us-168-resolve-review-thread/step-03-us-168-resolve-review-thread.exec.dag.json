@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "slug": "us-168-resolve-review-thread",
+  "tasks": [
+    {
+      "id": "task-1",
+      "label": "Enhance resolve_thread.cjs Token Fallback",
+      "files": [".agents/skills/ws-github-provider/scripts/resolve_thread.cjs"],
+      "dependencies": []
+    },
+    {
+      "id": "task-2",
+      "label": "Update Skill Instructions and Documentation",
+      "files": [
+        ".agents/skills/ws-github-provider/SKILL.md",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md"
+      ],
+      "dependencies": ["task-1"]
+    },
+    {
+      "id": "task-3",
+      "label": "Verification & Tests",
+      "files": [],
+      "dependencies": ["task-1", "task-2"]
+    }
+  ]
+}

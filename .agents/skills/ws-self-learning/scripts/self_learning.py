@@ -70,6 +70,9 @@ def parse_memory_file(file_path: Path) -> dict:
     layer = ""
     module = ""
     severity = ""
+    scenario_context = ""
+    do_not = ""
+    instead_do = ""
     trap_avoided = ""
     solution = ""
     
@@ -81,13 +84,13 @@ def parse_memory_file(file_path: Path) -> dict:
             module = re.sub(r"^-\s*\*\*Module\*\*:\s*", "", line).strip().strip("`")
         elif line.startswith("- **Severity**:") or line.startswith("- **Severity**:"):
             severity = re.sub(r"^-\s*\*\*Severity\*\*:\s*", "", line).strip().strip("`")
-        elif line.startswith("- **Trap Avoided**:") or line.startswith("- **Trap Avoided**:"):
-            trap_avoided = re.sub(r"^-\s*\*\*Trap Avoided\*\*:\s*", "", line).strip()
-        elif line.startswith("- **Solution**:") or line.startswith("- **Solution**:"):
-            solution = re.sub(r"^-\s*\*\*Solution\*\*:\s*", "", line).strip()
-            
-    # Normalize values for standard check_memory_conflict parsing
-    # If the file lacks explicit list tags but contains the content, we preserve it.
+        elif line.startswith("- **Scenario / Context**:") or line.startswith("- **Scenario/Context**:") or line.startswith("- **Context**:") or line.startswith("- **Scenario**:"):
+            scenario_context = re.sub(r"^-\s*\*\*(?:Scenario\s*/\s*Context|Scenario/Context|Context|Scenario)\*\*:\s*", "", line).strip()
+        elif line.startswith("- **DO NOT**:") or line.startswith("- **Do Not**:") or line.startswith("- **DO_NOT**:") or line.startswith("- **Trap Avoided**:"):
+            do_not = re.sub(r"^-\s*\*\*(?:DO NOT|Do Not|DO_NOT|Trap Avoided)\*\*:\s*", "", line).strip()
+        elif line.startswith("- **INSTEAD DO**:") or line.startswith("- **Instead Do**:") or line.startswith("- **INSTEAD_DO**:") or line.startswith("- **Solution**:"):
+            instead_do = re.sub(r"^-\s*\*\*(?:INSTEAD DO|Instead Do|INSTEAD_DO|Solution)\*\*:\s*", "", line).strip()
+
     return {
         "file_name": file_path.name,
         "date": date_str,
@@ -95,8 +98,11 @@ def parse_memory_file(file_path: Path) -> dict:
         "layer": layer,
         "module": module,
         "severity": severity,
-        "trap_avoided": trap_avoided,
-        "solution": solution,
+        "scenario_context": scenario_context,
+        "do_not": do_not,
+        "instead_do": instead_do,
+        "trap_avoided": do_not,
+        "solution": instead_do,
         "full_text": content.strip()
     }
 
@@ -129,12 +135,6 @@ def compile_memory() -> None:
     
     body_parts = [header]
     for entry in entries:
-        # Construct compiled markdown format that check_memory_conflict.py expects
-        # check_memory_conflict looks for:
-        # ### [Title] or ### [date] Title
-        # - **Layer**: ...
-        # - **Module**: ...
-        # - **Severity**: ...
         lines = [f"\n### [{entry['date']}] {entry['title']}"]
         if entry["layer"]:
             lines.append(f"- **Layer**: `{entry['layer']}`")
@@ -142,15 +142,18 @@ def compile_memory() -> None:
             lines.append(f"- **Module**: `{entry['module']}`")
         if entry["severity"]:
             lines.append(f"- **Severity**: `{entry['severity']}`")
-        if entry["trap_avoided"]:
-            lines.append(f"- **Trap Avoided**: {entry['trap_avoided']}")
-        if entry["solution"]:
-            lines.append(f"- **Solution**: {entry['solution']}")
+        if entry.get("scenario_context"):
+            lines.append(f"- **Scenario / Context**: {entry['scenario_context']}")
+        if entry.get("do_not"):
+            lines.append(f"- **DO NOT**: {entry['do_not']}")
+        if entry.get("instead_do"):
+            lines.append(f"- **INSTEAD DO**: {entry['instead_do']}")
             
         body_parts.append("\n".join(lines))
         
     COMPILED_MEMORY_PATH.write_text("\n".join(body_parts) + "\n", encoding="utf-8")
     print(f"Successfully compiled {len(entries)} memory entries into {COMPILED_MEMORY_PATH}")
+
 
 
 def query_memory(keyword: str) -> None:

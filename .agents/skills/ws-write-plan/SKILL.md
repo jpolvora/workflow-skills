@@ -15,7 +15,7 @@
 
 name: ws-write-plan
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.0.107
+version: 0.0.109
 disable-model-invocation: true
 invocation_names:
   - write-plan
@@ -28,7 +28,7 @@ Draft an implementation blueprint from the spec. Act as a Senior Software Engine
 
 **Canonical path:** `{us-dir}/step-01-{slug}.plan.md` (`{us-dir}` = `{plansDir}/{slug}/`).
 
-**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`, `MEMORY.md`.
+**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`, `{sharedDir}/MEMORY.md` (check and apply **DO NOT** / **INSTEAD DO** directives).
 
 ## Invocation
 
