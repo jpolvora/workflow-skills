@@ -1,0 +1,280 @@
+# Instincts generated from https://github.com/jpolvora/workflow-skills
+# Generated: 2026-07-31T22:37:59.025Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: workflow-skills-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat
+
+## Evidence
+
+- 1 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat: autoMode phase-matched LLM model preferences (plannerModel, executionModel, reviewerModel)
+
+---
+id: workflow-skills-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Commit Length
+
+## Action
+
+Write moderate-length commit messages (~96 characters)
+
+## Evidence
+
+- Average commit message length: 96 chars
+- Based on 1 commits
+
+---
+id: workflow-skills-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Naming Files
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: PascalCase
+
+---
+id: workflow-skills-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: workflow-skills-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/jpolvora/workflow-skills
+---
+
+# Workflow Skills Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: workflow-skills-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct File Naming
+
+## Action
+
+Name the file using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.files: PascalCase
+
+---
+id: workflow-skills-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.functions: camelCase
+
+---
+id: workflow-skills-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.classes: PascalCase
+
+---
+id: workflow-skills-instinct-constant-naming
+trigger: "When declaring a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in namingConventions.constants: SCREAMING_SNAKE_CASE
+
+---
+id: workflow-skills-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Pattern in importStyle: relative
+
+---
+id: workflow-skills-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle: named
+
+---
+id: workflow-skills-instinct-typescript
+trigger: "When writing code"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Typescript
+
+## Action
+
+Use TypeScript language features and syntax
+
+## Evidence
+
+- Pattern in language: TypeScript
+
+---
+id: workflow-skills-instinct-test-location
+trigger: "When adding or locating tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Test Location
+
+## Action
+
+Place tests in mixed locations (not strictly separated from source)
+
+## Evidence
+
+- Pattern in architecture.testLocation: mixed
+
+---
+id: workflow-skills-instinct-git-commit-format
+trigger: "When making a git commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: jpolvora/workflow-skills
+---
+
+# Workflow Skills Instinct Git Commit Format
+
+## Action
+
+Format the commit message using the conventional commit style with the 'feat' prefix for features
+
+## Evidence
+
+- Pattern in commits.type: conventional
+- Pattern in commits.prefixes: ["feat"]
+- Example: 'feat: autoMode phase-matched LLM model preferences (plannerModel, executionModel, reviewerModel)'
+
