@@ -90,6 +90,7 @@ Runtime tokens: `uswf/` tags/worktrees; slugs `us-{id}`.
 | Need | Load |
 |------|------|
 | Filenames / `{us-dir}` | [`ARTIFACTS.md`](ARTIFACTS.md) |
+| Post-workflow cleanup (Phase A git + Phase B temps) | [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) — Phase A once on `status→completed` |
 | Bootstrap / flags / resume | [`setup.md`](../ws-shared/setup.md) |
 | Providers | [`ws-github-provider`](../ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) |
 | Step map | `ws-write-spec`→0 … `ws-ship-pr`→8 · `ws-fix-pr`/`ws-goal-fix-pr`→9 · `ws-update-plan-implementation` Post |

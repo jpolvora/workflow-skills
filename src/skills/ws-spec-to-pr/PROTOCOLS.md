@@ -189,7 +189,15 @@ Orch `git add` must be path-scoped — never `git add .` on code-commit steps.
 
 → [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md`)
 
-**Order:** delivery result → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+**Order:** delivery result → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+
+**Terminal completed (Phase A — once):** When orch sets `status → completed` (after Step 9 convergence **or** after Step 8 when there is no Step 9 / skip-PR), run mandatory Phase A git cleanup **before** claiming ended:
+
+```bash
+python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}
+```
+
+Do **not** invoke Phase A at both Step 8 and Step 9. Phase B stays optional (delete-temps only). Keep-all still runs Phase A. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.
 
 **Combined gate** ([`gates.md`](../ws-shared/gates.md) + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
 
@@ -241,7 +249,7 @@ Shared defaults: [`gates.md`](../ws-shared/gates.md) § Auto-gate defaults. Log 
 
 ### Checkpoints
 
-Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `before-step-1` = `baselineCommit`. Mirror in `checkpoints[]`. Delete on Step 8 completion/reset. Dry-run: log only.
+Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `before-step-1` = `baselineCommit`. Mirror in `checkpoints[]`. **Delete on completion:** Phase A via [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) when `status → completed` (mandatory git runtime cleanup — not gated on delete-temps). Dry-run: log only (`--dry-run`).
 
 ### Safe Revert & Backward Navigation
 

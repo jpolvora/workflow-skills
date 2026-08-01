@@ -229,3 +229,17 @@ Workflows do not provide an in-gate model selector.
 2.  Switch your model in the IDE / Agent host panel.
 3.  Resume the workflow: `/ws-spec-to-pr US {id}`.
 4.  The orchestrator detects the new session model, updates `currentModel` in state, and logs the transition.
+
+### Stale `uswf/` tags, worktrees, or branches after a workflow
+On successful end-of-workflow (`status: completed`), orch always runs **Phase A** git runtime cleanup for that `{workflow-id}` via:
+
+```bash
+python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}
+```
+
+This is **mandatory** even if you chose **Keep all artifacts** (that choice only skips Phase B plan-dir temp markdown). See [`protocols/artifact-cleanup.md`](../protocols/artifact-cleanup.md).
+
+*   **Failed / cancelled / paused** runs do **not** auto-clean. Re-run the script manually with the leftover `{workflow-id}` to clear local `uswf/{workflow-id}/*` tags, matching worktrees, and local branches.
+*   **`WARN: leftover: …` (exit 2):** cleanup finished but some names remain — treat the listed names as the inventory to inspect; orch may still claim ended.
+*   **Dirty worktrees:** default `--dirty-policy force` logs dirty paths then `git worktree remove --force`. Use `--dirty-policy stop` to exit 1 without removing (no half-registered worktree).
+*   **dryRun:** pass `--dry-run` to log intended removals with zero git mutations.

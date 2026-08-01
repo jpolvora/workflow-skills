@@ -39,6 +39,7 @@ Canonical aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary
 | Artifacts | `step-00` spec · `step-01` plan · `step-08` result (shared names with standard) |
 | Commits | Code in implement/review-fix; plan+result at Step 4 G2-delivery |
 | Ship / Fix-PR | Step 4 combined gate + `ws-ship-pr` (`workflowMode`, `stopBeforeFixPr`); Step 5 `ws-goal-fix-pr` / `ws-fix-pr` |
+| Post-workflow cleanup | On lite `status → completed` (after Step 5 fix-pr convergence **or** Step 4 when skip ship/fix-pr): run Phase A once before claiming ended — `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}` ([`../ws-spec-to-pr/protocols/artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md)). Skip auto-clean for `failed` / `cancelled` / `paused`. Phase B plan-dir temps remain optional (delete-temps). |
 | `autoMode` models | In `autoMode: true`, switch model at phase boundaries when `config.json` → `defaults` defines preferences (Steps 0–1 → `plannerModel`; Step 2 → `executionModel`; Step 3 → `reviewerModel`); fallback to active model if switch fails/unsupported. |
 | Worktree | Branch-direct default; worktree when `plans.useWorktrees=true` |
 | Fable | When `config.json.fable.enabled`: domain@1, judge@3, verify before PR@4 |
@@ -54,8 +55,8 @@ Skips interview, DAG, check-implementation, Testing vs standard.
 | 1 | Planning | `ws-write-plan` | No interview/DAG |
 | 2 | Implementation | `ws-implement-tasks` build | Build+tests unless `skipTests`; 2nd pass re-run when `scoreAndRefine` |
 | 3 | Code Review | `ws-code-review` (+ fix → re-review, max 3) | Artifact `step-06-{slug}.review.md` |
-| 4 | Ship | orch + `ws-ship-pr` | Combined delivery+ship gate; 2nd pass comparative report if `scoreAndRefine` |
-| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` | After PR; merge only when checks green |
+| 4 | Ship | orch + `ws-ship-pr` | Combined delivery+ship gate; 2nd pass comparative report if `scoreAndRefine`; if this step sets `completed` (no Step 5), run Phase A git cleanup before claim-ended |
+| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` | After PR; merge only when checks green; on `completed`, run Phase A once (shared script under `ws-spec-to-pr/scripts/`) |
 
 **Transitions** ([`gates.md`](../ws-shared/gates.md)): Advance (Recommended) · More options… (Previous / Repeat / Refine→Replay / Commit / Undo / Pause / Cancel). Banner: model + Pause→host→Resume. When `skipQualityGates` is active, show **`[GATES BYPASSED]`** on Progress Board and in `step-08-{slug}.result.md`. No phase soft tips.
 

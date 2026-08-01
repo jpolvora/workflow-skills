@@ -74,7 +74,9 @@ Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3`
 
 ### Step 8 — Ship (delivery + push/PR)
 
-**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**) → render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)) → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**) → render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)) → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+
+**Phase A git cleanup:** If this Step 8 ends the workflow with `status → completed` (no Step 9 / skip-PR), run Phase A **once** before claiming ended (`python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`). If advancing to Step 9, defer Phase A until Step 9 sets `completed` — never run Phase A at both steps. Exit 0 proceed; exit 2 surface leftovers (may claim ended); exit 1 do not claim ended.
 
 When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
 
@@ -100,5 +102,7 @@ After Step 8 when `shipAction: create-pr` and PR exists:
 1. **Wait for code-review / CI feedback** (same policy as `ws-ship-pr` Step 6 settle: wait 30s post-PR creation for code-review action to start on GitHub infrastructure, then default 300s post-push heartbeats, then poll checks + threads). Do not merge yet.
 2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot) until **no open issues to fix** (`activeThreads == 0`).
 3. **Merge** via SCM provider `merge-pr` only after step 2 converges and required checks are green. Never merge with open review threads or failing required checks.
+
+When setting `status → completed` after convergence (or equivalent terminal end), run **Phase A** git cleanup once before claiming ended — see [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Do not also run Phase A at Step 8 when Step 9 ran.
 
 Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · checks red after convergence attempts.

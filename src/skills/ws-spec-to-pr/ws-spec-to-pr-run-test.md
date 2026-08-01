@@ -151,7 +151,9 @@ git tag -l "uswf/*"
 
 ## Cleanup
 
-After test, remove test artifacts:
+After a **completed** (non-dry-run) workflow, orch runs mandatory **Phase A** git cleanup via `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}` ([`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md)) — tags/worktrees/branches under `uswf/{workflow-id}` are removed even when plan-dir temps are kept.
+
+After this **dry-run** harness test, remove test artifacts manually (dry-run does not mutate git):
 
 ```bash
 rm -rf {plansDir}/test-workflow/
