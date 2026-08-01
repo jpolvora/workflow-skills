@@ -230,7 +230,7 @@ export function buildHubEntry(sharedRoot) {
  * Build upstream publish manifest for packageRoot.
  */
 export function buildUpstreamManifest(packageRoot, packageVersion) {
-  const skillsDir = path.join(packageRoot, '.agents', 'skills');
+  const skillsDir = path.join(packageRoot, 'src', 'skills');
   const skillIds = listInstallableSkills(skillsDir);
   const skills = {};
   for (const id of skillIds) {

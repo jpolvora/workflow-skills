@@ -40,7 +40,7 @@ if (shouldBump) {
   console.log(`Bumping package.json version: ${currentVersion} -> ${siteVersion}`);
 
   // Keep skill frontmatter + skill-dependencies packageVersion in lockstep with package.json
-  const skillRoot = path.join(root, '.agents', 'skills');
+  const skillRoot = path.join(root, 'src', 'skills');
   let skillVerUpdates = 0;
   for (const ent of fs.readdirSync(skillRoot, { withFileTypes: true })) {
     if (!ent.isDirectory()) continue;
@@ -69,7 +69,7 @@ if (shouldBump) {
 
   for (const rel of [
     path.join(root, 'bin', 'skill-dependencies.json'),
-    path.join(root, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json'),
+    path.join(root, 'src', 'skills', 'ws-shared', 'skill-dependencies.json'),
   ]) {
     if (!fs.existsSync(rel)) continue;
     const deps = JSON.parse(fs.readFileSync(rel, 'utf-8'));
@@ -197,7 +197,7 @@ if (fs.existsSync(depMapPath)) {
 }
 
 // --- 2. Scan skills directories (top-level only; ws-shared/ is config hub, not skills) ---
-const skillsDir = path.join(root, '.agents', 'skills');
+const skillsDir = path.join(root, 'src', 'skills');
 const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
 const skillDirs = entries
   .filter(e => e.isDirectory() && e.name !== 'ws-shared')

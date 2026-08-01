@@ -22,6 +22,7 @@
     "tests:remote": "node test/test-install.js && node test/test-quality-gates.js",
     "build-site": "node bin/build-site.js",
     "build-site:bump": "node bin/build-site.js --bump",
+    "sync-skills": "node scripts/sync-skills.js",
     "generate-integrity": "node bin/generate-skill-integrity.js",
     "verify-integrity": "node bin/generate-skill-integrity.js --check"
   },
@@ -32,16 +33,16 @@
     "LICENSE",
     "install-skills.sh",
     ".cursorrules",
-    ".agents/skills/",
-    "!.agents/skills/ws-shared/config.json",
-    "!.agents/skills/ws-shared/config.local.json",
-    "!.agents/skills/ws-shared/STACK.md",
-    "!.agents/skills/ws-shared/MEMORY.md",
-    "!.agents/skills/ws-shared/memory/**",
-    "!.agents/skills/ws-shared/skill-integrity-local.json",
-    "!.agents/skills/**/__pycache__/**",
-    "!.agents/skills/**/*.py[cod]",
-    "!.agents/skills/**/*.pyo"
+    "src/skills/",
+    "!src/skills/ws-shared/config.json",
+    "!src/skills/ws-shared/config.local.json",
+    "!src/skills/ws-shared/STACK.md",
+    "!src/skills/ws-shared/MEMORY.md",
+    "!src/skills/ws-shared/memory/**",
+    "!src/skills/ws-shared/skill-integrity-local.json",
+    "!src/skills/**/__pycache__/**",
+    "!src/skills/**/*.py[cod]",
+    "!src/skills/**/*.pyo"
   ],
   "type": "module"
 }
