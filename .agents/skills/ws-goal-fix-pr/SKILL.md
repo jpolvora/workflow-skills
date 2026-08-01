@@ -76,7 +76,10 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** 
 5. **Re-check & loop**: wait `<wait>` seconds, re-check SCM review/CI run completion and re-collect `activeThreads`, repeating from step 3 until `activeThreads == 0` with all checks completed, `max` is reached, escalation occurs, or the user aborts.
    - Done when: one of the stop conditions above is met.
 
-6. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
+6. **Pre-merge verification gate**: Before declaring convergence, call `list-threads` one final time and confirm every thread has `isResolved: true` in the response payload. This is a **hard gate** — do not exit or hand off to the caller until this verification passes with evidence. If any thread still has `isResolved: false`, do not exit: return to step 3 immediately.
+   - Done when: `list-threads` payload shows zero threads with `isResolved: false` (all resolved).
+
+7. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence from step 6; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
    - Done when: the report is presented to the user.
 
 Language: en-us only.

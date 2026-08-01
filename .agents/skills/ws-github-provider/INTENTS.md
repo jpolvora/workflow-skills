@@ -57,6 +57,8 @@ gh pr checks {PR_ID}
 node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{resolution note}"
 ```
 
+> **IMPORTANT**: Never call `addPullRequestReviewThreadReply` alone. Always use `resolve_thread.cjs`, which calls both `addPullRequestReviewThreadReply` AND `resolveReviewThread` atomically in one GraphQL mutation. Posting the `<!-- resolution-reply -->` marker comment without the `resolveReviewThread` mutation is **not** a resolved thread — `isResolved` will remain `false` until the mutation fires.
+
 Skip remote mutation when the parent skill is in `dry-run`.
 
 ## `merge-pr`
