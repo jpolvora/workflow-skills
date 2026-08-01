@@ -1,0 +1,48 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "planPath": ".agents/plans/global-vs-project-skill-installation/step-01-global-vs-project-skill-installation.plan.md",
+  "tasks": [
+    {
+      "id": "T1",
+      "parallelGroup": null,
+      "dependsOn": [],
+      "files": ["bin/install-rules.js"],
+      "acceptance": "AC4: Export resolveGlobalSkillsDir() and resolveTargetSkillsDir(opts) handling env vars WORKFLOW_SKILLS_GLOBAL_DIR, GEMINI_CONFIG_DIR, and homedir fallback.",
+      "coderPrompt": "In bin/install-rules.js, add and export resolveGlobalSkillsDir() and resolveTargetSkillsDir(opts). Handle WORKFLOW_SKILLS_GLOBAL_DIR, GEMINI_CONFIG_DIR, and fallback to ~/.gemini/config/skills or ~/.agents/skills. Ensure cross-platform path compatibility.",
+      "title": "Install Rules Global Directory Resolution"
+    },
+    {
+      "id": "T2",
+      "parallelGroup": null,
+      "dependsOn": ["T1"],
+      "files": ["bin/cli.js", "install-skills.sh"],
+      "acceptance": "AC1, AC2, AC3, AC5, AC6: Add --global/-g and --project/-p flags; add interactive prompt scope selection; isolate global ws-shared/installed-skills.json manifest; add [Global]/[Project] logging.",
+      "coderPrompt": "In bin/cli.js and install-skills.sh, parse --global/-g and --project/-p flags. Prompt interactive user scope selection when unflagged. Target resolved global vs project directories and ws-shared manifests dynamically. Annotate CLI output logs with target scope.",
+      "title": "CLI Scope Flags, Interactive Prompt & Manifest Management"
+    },
+    {
+      "id": "T3",
+      "parallelGroup": null,
+      "dependsOn": ["T1"],
+      "files": [".agents/skills/ws-check-harness/SKILL.md", ".agents/skills/ws-check-harness/PHASES.md"],
+      "acceptance": "AC9: Add {globalSkillsRoot} token resolution; update harness auditor to treat local project skills as intentional overrides over global skills without collision errors.",
+      "coderPrompt": "Verify and validate .agents/skills/ws-check-harness/SKILL.md and PHASES.md for {globalSkillsRoot} and local project skill override precedence rules.",
+      "title": "Harness Auditor Global & Mixed Mode Support Verification"
+    },
+    {
+      "id": "T4",
+      "parallelGroup": null,
+      "dependsOn": ["T2", "T3"],
+      "files": ["test/test-install.js"],
+      "acceptance": "AC8: Add integration tests for global install, project install, update, uninstall, and local project override precedence.",
+      "coderPrompt": "In test/test-install.js, add automated integration test suite for --global and --project installation, update, uninstall, and local override precedence.",
+      "title": "Integration Test Suite for Global vs Project Skill Installation"
+    }
+  ],
+  "levels": [
+    ["T1"],
+    ["T2", "T3"],
+    ["T4"]
+  ]
+}
