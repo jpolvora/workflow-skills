@@ -41,13 +41,14 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
 
 | `providers.scm` | Provider skill | Intent used here |
 |-----------------|----------------|-------------------|
-| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads` |
-| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads` |
+| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `check-pr-status` |
+| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `check-pr-status` |
 
-Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** all active SCM code-review actions / CI pipelines have finished running (status is completed, not `pending`, `in_progress`, or `queued`).
+Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** `check-pr-status` from the configured SCM provider reports all active code reviews and CI pipelines have completed (status is completed, not `pending`, `in_progress`, or `queued`).
 
-- **If `providers.scm: "github"`**: Verify via `gh pr checks` or GitHub Actions API (`gh run list / gh run view`) that all automated code-review workflows and CI checks have ended (`status` is not `pending`, `in_progress`, or `queued`). If any code-review or CI action is still running, continue waiting in the heartbeat loop (`wait <n>`).
-- **If `providers.scm: "azure-devops"` (or `"ado"`)**: Verify via Azure DevOps PR status policies (`az repos pr policy list`) or build pipeline API (`az pipelines build list`) that active code reviews and build pipelines are completed.
+- **If `providers.scm: "github"`**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-github-provider](../ws-github-provider/SKILL.md) (verifies via `gh pr checks` / Actions API that all automated code-review workflows and CI checks have ended).
+- **If `providers.scm: "azure-devops"` (or `"ado"`)**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) (verifies via Azure DevOps status policies / build pipeline API that active code reviews and build pipelines are completed).
+- If any code-review or CI action is still running, continue waiting in the heartbeat loop (`wait <n>`).
 
 ## Automation overrides (vs fix-pr defaults)
 
