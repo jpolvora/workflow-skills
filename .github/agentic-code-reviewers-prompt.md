@@ -51,3 +51,7 @@ Low signal (usually skip unless clearly wrong):
 * Pure prose style nits in docs
 * Formatting-only markdown churn without behavioral impact
 * Python same-module “call before `def`” ordering when the callee is defined later in the same file (not a runtime `NameError`)
+
+## 5. Minimum score threshold (`score_min: 5`)
+
+* **Thread creation rule:** Create review threads ONLY for findings with a severity score **>= 5** (on a 1–10 scale). Filter out and do not report low-severity suggestions, style preferences, or minor nits scoring below 5.
