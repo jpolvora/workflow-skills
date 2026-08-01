@@ -12,8 +12,10 @@
 
 
 
+
+
 name: ws-secrets-leak-review
-version: 0.0.109
+version: 0.0.112
 description: Secrets & PII leak auditor — scans code diffs and repositories for hardcoded credentials, API tokens, passwords, private keys, and sensitive data.
 allowed-tools: Read, Grep, Glob
 invocation_names:
@@ -22,6 +24,8 @@ invocation_names:
 ---
 
 # Secrets & Leak Review
+
+> When this skill is loaded, output "ws-secrets-leak-review loaded."
 
 Read-only leak audit. Prefer **Grep / Glob / Read** (respect ignore). Do **not** run `secrets_scanner.sh` during the skill run; that script is optional pre-commit only.
 

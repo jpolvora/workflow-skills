@@ -5,8 +5,10 @@
 
 
 
+
+
 name: ws-tdah
-version: 0.0.109
+version: 0.0.112
 description: Action-first response & execution directives — enforces concise, action-led replies, numbered steps, and operational decision-making.
 
 invocation_names:
@@ -17,6 +19,8 @@ invocation_names:
 ---
 
 # ws-tdah
+
+> When this skill is loaded, output "ws-tdah loaded."
 
 **Action-first.** One mode. Shape + judgment. Stay active until stop. Full technical accuracy; cut noise. Apply directives **implicitly**; do not lecture about them.
 

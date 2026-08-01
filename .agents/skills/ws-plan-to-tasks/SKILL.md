@@ -13,9 +13,11 @@
 
 
 
+
+
 name: ws-plan-to-tasks
 description: Task DAG breakdown generator — transforms approved implementation plans into atomic, dependency-mapped task execution graphs.
-version: 0.0.109
+version: 0.0.112
 disable-model-invocation: true
 invocation_names:
   - plan-to-tasks
@@ -23,6 +25,8 @@ invocation_names:
 ---
 
 # ws-plan-to-tasks
+
+> When this skill is loaded, output "ws-plan-to-tasks loaded."
 
 Read the finalized plan (`step-02-{slug}.plan.refined.md`, or `step-01-{slug}.plan.md` if Step 2 was bypassed) and decompose it into atomic tasks. Act as a Scrum Master / Project Manager: schedule tasks into parallelizable DAG levels, or auto-detect sequential execution for small plans.
 

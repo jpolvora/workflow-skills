@@ -65,13 +65,13 @@ Optional consumer rule paths are declared in `config.json` under `rules.*` (e.g.
 
 Phase 4 detects new or removed skills that diverge from declared routing; treat missing optional rule files as **warning** when the config key is set.
 
-### 3. Skills (`.agents/skills/`)
+### 3. Skills (`.agents/skills/` & global skills `{globalSkillsRoot}`)
 
-All project skills live under `.agents/skills/`. Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` (like this skill (`ws-check-harness/SKILL.md`)) are also treated as skills in the scan.
+All project skills live under `.agents/skills/` (and/or globally under `{globalSkillsRoot}`). Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` (like this skill (`ws-check-harness/SKILL.md`)) are also treated as skills in the scan.
 
-**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively and `.md` files with frontmatter in `skills/`, comparing against declared routing in the resolved hub (§ Hub resolution; `ws-shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the disk is the truth.
+**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively across both local `{skillsRoot}` and global `{globalSkillsRoot}`, comparing against declared routing in the resolved hub (§ Hub resolution; `ws-shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the disk is the truth.
 
-> **`name:` collision:** two `SKILL.md` files with the same `name:` break skill resolution → report as **warning** and propose renaming one id or consolidating into a single file.
+> **`name:` collision vs Local Override:** two `SKILL.md` files with the same `name:` within the same scope break skill resolution → report as **warning** and propose renaming one id or consolidating. However, when a local skill in `{skillsRoot}` shares the same `name:` as a global skill in `{globalSkillsRoot}`, the local project skill acts as an **intentional workspace override** → treat as a valid override (do NOT flag as a collision warning).
 
 Also inspect **docs/scripts** referenced by those skills (e.g., scripts in subfolders like `ws-spec-to-pr/scripts/`, `ws-fix-pr/scripts/`).
 
@@ -371,6 +371,7 @@ Identify canonical sources for each theme. The table below lists **common themes
 
 | Theme | How to identify the canonical source | Skills/agents that must **delegate** (not duplicate) |
 |------|-----------------------------------|-----------------------------------------------------|
+| Skill loading banner | Primary `SKILL.md` files must include `> When this skill is loaded, output "{ws-skillName} loaded."` (auxiliary `.md` files must not include it) | `ws-write-a-skill`, `ws-check-harness` |
 | Harness routing | `AGENTS.md` (always) | All agents and skills |
 | Guardrails / invariants | Skill with `senior-developer` or `engineering-standards` in `name:` + docs in `docs/specs/` | Planning, implementation, and review skills |
 | Specification format | Skill with `ws-spec-format` or equivalent in `name:` | Planning, refinement, and verification skills |

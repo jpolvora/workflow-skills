@@ -12,8 +12,10 @@
 
 
 
+
+
 name: ws-changelog
-version: 0.0.109
+version: 0.0.112
 description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
 
 invocation_names:
@@ -22,6 +24,8 @@ invocation_names:
 ---
 
 # Changelog
+
+> When this skill is loaded, output "ws-changelog loaded."
 
 **Mandatory completion gate** — run after [ws-self-learning](../ws-self-learning/SKILL.md) at the end of implementation tasks.
 

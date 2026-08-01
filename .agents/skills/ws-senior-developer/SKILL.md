@@ -5,16 +5,20 @@
 
 
 
+
+
 name: ws-senior-developer
 description: Engineering delivery gate enforcing strict scope control (suggest unasked changes first), anti-reinvention/code simplification, interactive ambiguity resolution via user-gate options, and pre-ship proof.
 
-version: 0.0.109
+version: 0.0.112
 invocation_names:
   - senior-developer
   - ws-senior-developer
 ---
 
 # ws-senior-developer
+
+> When this skill is loaded, output "ws-senior-developer loaded."
 
 Use this optional, model-invoked delivery gate only when explicitly invoked or resolved
 through `rules.seniorDeveloper`. It guides engineering work across prompting/interactive

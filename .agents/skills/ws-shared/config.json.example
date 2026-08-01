@@ -122,7 +122,11 @@
     "skipTesting": false,
     "skipTests": false,
     "fullMode": false,
-    "scoreAndRefine": false
+    "scoreAndRefine": false,
+    "_comment_models": "Optional model preferences for autoMode phase switching (e.g. claude-3-5-sonnet, gpt-4o, gemini-1.5-pro, gemini-2.0-flash). Fallback to active model if empty or switch fails.",
+    "plannerModel": "",
+    "executionModel": "",
+    "reviewerModel": ""
   },
 
   "plans": {

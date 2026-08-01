@@ -12,16 +12,20 @@
 
 
 
+
+
 name: ws-spec-index
 description: Project PRD index manager — initializes, synchronizes, and promotes feature specifications within the project index (index.PRD).
 
-version: 0.0.109
+version: 0.0.112
 invocation_names:
   - spec-index
   - ws-spec-index
 ---
 
 # ws-spec-index
+
+> When this skill is loaded, output "ws-spec-index loaded."
 
 Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifications. Disclosed reference: [`REFERENCE.md`](REFERENCE.md), template: [`INDEX-TEMPLATE.md`](INDEX-TEMPLATE.md).
 

@@ -12,9 +12,11 @@
 
 
 
+
+
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.0.109
+version: 0.0.112
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -22,6 +24,8 @@ invocation_names:
 ---
 
 # ws-fix-pr
+
+> When this skill is loaded, output "ws-fix-pr loaded."
 
 Fetch, score, and systematically resolve active PR review threads on GitHub or Azure DevOps: local fixes, test validation, thread resolution, and push back to the remote branch.
 

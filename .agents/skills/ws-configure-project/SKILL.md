@@ -12,8 +12,10 @@
 
 
 
+
+
 name: ws-configure-project
-version: 0.0.109
+version: 0.0.112
 description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
 
 invocation_names:
@@ -22,6 +24,8 @@ invocation_names:
 ---
 
 # ws-configure-project
+
+> When this skill is loaded, output "ws-configure-project loaded."
 
 Fill or refresh consumer `config.json` via detect → suggest → user-gate. Portable: no host-product names; paths use `{plansDir}` tokens after write.
 

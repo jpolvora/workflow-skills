@@ -13,9 +13,11 @@
 
 
 
+
+
 name: ws-verify-plan
 description: Plan & spec verification scorer — compares implemented code against spec acceptance criteria and emits an integer verification score (0–10).
-version: 0.0.109
+version: 0.0.112
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -23,6 +25,8 @@ invocation_names:
 ---
 
 # ws-verify-plan
+
+> When this skill is loaded, output "ws-verify-plan loaded."
 
 Audit implementation deliverables against the specification and plan. Act as a **Senior QA Engineer / SDET** who checks acceptance criteria, code quality, and test coverage, then publishes a **0–10 score**.
 

@@ -12,8 +12,10 @@
 
 
 
+
+
 name: ws-multi-spec
-version: 0.0.109
+version: 0.0.112
 description: Sequential smart multi-spec batch orchestrator — evaluates spec complexity across project specifications to dispatch standard or lite pipeline workers.
 
 invocation_names:
@@ -43,6 +45,8 @@ Canonical aliases: [`../ws-shared/tools.md`](../ws-shared/tools.md). Params: `{s
 | State persistence | `write-to-file` | Update `{plansDir}/ws-multi-spec/{runId}.state.md` |
 
 # `ws-multi-spec` — Smart Multi-Spec Orchestrator
+
+> When this skill is loaded, output "ws-multi-spec loaded."
 
 Sequential multi-spec batch delivery orchestrator with **smart complexity & flow auto-detection**.
 

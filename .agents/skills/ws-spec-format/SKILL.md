@@ -12,16 +12,20 @@
 
 
 
+
+
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
 
-version: 0.0.109
+version: 0.0.112
 invocation_names:
   - spec-format
   - ws-spec-format
 ---
 
 # ws-spec-format
+
+> When this skill is loaded, output "ws-spec-format loaded."
 
 Create, review, or format `*.spec.md`. Canonical format SoT — other skills **reference** this skill; they do not duplicate frontmatter/sections. Schema: [`FORMAT.md`](FORMAT.md). Language: **en-us**.
 

@@ -12,9 +12,11 @@
 
 
 
+
+
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.0.109
+version: 0.0.112
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -22,6 +24,8 @@ invocation_names:
 ---
 
 # ship-pr
+
+> When this skill is loaded, output "ws-ship-pr loaded."
 
 Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (verify + **discover and wait** for local consumer prepare / before-push / before-publish harness steps), then push/create PR via the SCM provider configured in `.agents/skills/ws-shared/config.json` (`providers.scm`: GitHub, Azure DevOps / ADO, etc.), wait 30 seconds for automated code-review actions / CI pipelines to start on SCM infrastructure, run `ws-goal-fix-pr` (default 300 seconds heartbeats), and merge only when clean.
 

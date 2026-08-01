@@ -12,9 +12,11 @@
 
 
 
+
+
 name: ws-azure-devops-provider
 description: Azure DevOps SCM provider — converts ADO work items to specs, manages PAT auth, PR creation, thread resolution, and work item linking.
-version: 0.0.109
+version: 0.0.112
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider
@@ -22,6 +24,8 @@ invocation_names:
 ---
 
 # ws-azure-devops-provider
+
+> When this skill is loaded, output "ws-azure-devops-provider loaded."
 
 Azure DevOps inbound (`fetch-to-spec`) and SCM (`create-pr`, threads, merge). Pipeline skills load this when `providers.active` / `providers.scm` is `azure-devops`; they link here instead of embedding `az` / REST recipes.
 

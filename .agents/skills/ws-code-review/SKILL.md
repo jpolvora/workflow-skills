@@ -5,9 +5,11 @@
 
 
 
+
+
 name: ws-code-review
 description: Two-phase code review engine — audits correctness, security, policy, and diff quality, executing targeted fix → re-review loops (max 3 rounds) before ship.
-version: 0.0.109
+version: 0.0.112
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -15,6 +17,8 @@ invocation_names:
 ---
 
 # ws-code-review
+
+> When this skill is loaded, output "ws-code-review loaded."
 
 Perform a comprehensive local code review of all modified files, relative to the base branch, before a PR is raised. Act as a **Senior Code Reviewer** conducting static and logical analysis for style, security, tenancy, performance, correctness, and architectural invariants.
 

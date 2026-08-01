@@ -1617,6 +1617,106 @@ child.on('close', async (code) => {
 
     fs.rmSync(iDir, { recursive: true, force: true });
     fs.rmSync(sDir, { recursive: true, force: true });
+
+    // AC1, AC2, AC4, AC5, AC6, AC7, AC8: Global skills installation, update, uninstall, and local override test
+    const globalTestDir = path.join(__dirname, '.global-test-dir');
+    const projectTestDir = path.join(__dirname, '.project-test-dir');
+    fs.rmSync(globalTestDir, { recursive: true, force: true });
+    fs.rmSync(projectTestDir, { recursive: true, force: true });
+    fs.mkdirSync(globalTestDir, { recursive: true });
+    fs.mkdirSync(projectTestDir, { recursive: true });
+
+    const globalEnv = { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalTestDir, FORCE_COLOR: '0' };
+
+    // 1. Global install
+    const gInst = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-tdah', '--global', '--yes'],
+      {
+        cwd: projectTestDir,
+        encoding: 'utf8',
+        env: globalEnv,
+        timeout: 60000,
+      }
+    );
+    if (gInst.status !== 0) {
+      console.error(`${gInst.stdout || ''}${gInst.stderr || ''}`);
+      fail('global skill install exited non-zero');
+    }
+    if (!fs.existsSync(path.join(globalTestDir, 'ws-tdah', 'SKILL.md'))) {
+      fail('global skill install did not write to WORKFLOW_SKILLS_GLOBAL_DIR');
+    }
+    if (fs.existsSync(path.join(projectTestDir, '.agents', 'skills', 'ws-tdah'))) {
+      fail('global install must not write into local project .agents/skills');
+    }
+    const gOut = `${gInst.stdout || ''}${gInst.stderr || ''}`;
+    if (!/Global Scope/i.test(gOut)) {
+      fail('global install output must report Global Scope');
+    }
+    ok('global skill install writes to global directory with Global Scope log');
+
+    // 2. Global update
+    const gUpd = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'update', '--global'],
+      {
+        cwd: projectTestDir,
+        encoding: 'utf8',
+        env: globalEnv,
+        timeout: 60000,
+      }
+    );
+    if (gUpd.status !== 0) {
+      console.error(`${gUpd.stdout || ''}${gUpd.stderr || ''}`);
+      fail('global update exited non-zero');
+    }
+    ok('global skill update succeeds');
+
+    // 3. Local project install (override coexistence)
+    const pInst = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-tdah', '--project', '--yes'],
+      {
+        cwd: projectTestDir,
+        encoding: 'utf8',
+        env: globalEnv,
+        timeout: 60000,
+      }
+    );
+    if (pInst.status !== 0) {
+      console.error(`${pInst.stdout || ''}${pInst.stderr || ''}`);
+      fail('project skill install exited non-zero');
+    }
+    if (!fs.existsSync(path.join(projectTestDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('project install did not write to project .agents/skills');
+    }
+    ok('project skill install creates local override coexisting with global install');
+
+    // 4. Global uninstall
+    const gUninst = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'uninstall', '--skills', 'ws-tdah', '--global', '--yes'],
+      {
+        cwd: projectTestDir,
+        encoding: 'utf8',
+        env: globalEnv,
+        timeout: 60000,
+      }
+    );
+    if (gUninst.status !== 0) {
+      console.error(`${gUninst.stdout || ''}${gUninst.stderr || ''}`);
+      fail('global uninstall exited non-zero');
+    }
+    if (fs.existsSync(path.join(globalTestDir, 'ws-tdah'))) {
+      fail('global uninstall did not remove skill from global directory');
+    }
+    if (!fs.existsSync(path.join(projectTestDir, '.agents', 'skills', 'ws-tdah'))) {
+      fail('global uninstall must not delete project-level skills');
+    }
+    ok('global uninstall removes global skill while preserving project-level skill');
+
+    fs.rmSync(globalTestDir, { recursive: true, force: true });
+    fs.rmSync(projectTestDir, { recursive: true, force: true });
   }
 
   console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, uninstall, and integrity all passed.');

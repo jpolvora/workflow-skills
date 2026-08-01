@@ -12,9 +12,11 @@
 
 
 
+
+
 name: ws-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.0.109
+version: 0.0.112
 disable-model-invocation: true
 invocation_names:
   - interview
@@ -22,6 +24,8 @@ invocation_names:
 ---
 
 # ws-interview
+
+> When this skill is loaded, output "ws-interview loaded."
 
 Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants. Act as a Technical Lead / Senior Architect on a "grill-me" philosophy: resolve ambiguities and secure shared understanding before task decomposition.
 
