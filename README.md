@@ -58,7 +58,7 @@ Packages in the interactive menu: `f` Full · `w` Workflows · `e` Extra (member
 # Interactive install (prompts for Global vs Project scope)
 npx --yes github:jpolvora/workflow-skills
 
-# Non-interactive install (project scope by default, or explicitly --global / --project)
+# Non-interactive install (project scope by default; when cwd is user home (~), defaults to Global scope)
 npx --yes github:jpolvora/workflow-skills install --full --yes
 npx --yes github:jpolvora/workflow-skills install --package workflows --global --yes
 npx --yes github:jpolvora/workflow-skills install --skills ws-spec-to-pr,ws-goal-fix-pr --project --yes

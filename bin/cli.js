@@ -20,6 +20,9 @@ import {
   findWorkflowSkillsSourceRoot,
   resolveGlobalSkillsDir,
   resolveTargetSkillsDir,
+  getHomeDir,
+  isHomeDirectory,
+  ensureWriteableDir,
 } from './install-rules.js';
 import {
   MANIFEST_REL,
@@ -44,8 +47,19 @@ const skillGraphPath = fs.existsSync(path.join(packageRoot, 'bin', 'skill-depend
   : path.join(packageRoot, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json');
 const integrityManifestPath = path.join(packageRoot, MANIFEST_REL);
 
-let isGlobalScope = process.argv.includes('--global') || process.argv.includes('-g');
+const hasExplicitScopeFlag =
+  process.argv.includes('--global') ||
+  process.argv.includes('-g') ||
+  process.argv.includes('--project') ||
+  process.argv.includes('-p');
+
 let targetDir = process.cwd();
+let isGlobalScope = process.argv.includes('--global') || process.argv.includes('-g');
+
+if (!hasExplicitScopeFlag && isHomeDirectory(targetDir)) {
+  isGlobalScope = true;
+}
+
 let targetSkillsDir = resolveTargetSkillsDir({ isGlobal: isGlobalScope, targetDir });
 let targetAgentsDir = path.dirname(targetSkillsDir);
 
@@ -154,7 +168,7 @@ function readInstalledSkillsManifest() {
 
 function writeInstalledSkillsManifest(skillNames, selectedNames = null) {
   const destShared = path.join(targetSkillsDir, HUB_DIR);
-  fs.mkdirSync(destShared, { recursive: true });
+  ensureWriteableDir(destShared);
   const skills = [...new Set(skillNames.filter((s) => s && s !== HUB_DIR))].sort((a, b) =>
     a.localeCompare(b)
   );
@@ -334,10 +348,10 @@ function ensurePathTokensInConfig(configPath) {
  */
 function ensureSharedConsumerArtifacts() {
   const destShared = path.join(targetSkillsDir, HUB_DIR);
-  fs.mkdirSync(destShared, { recursive: true });
+  ensureWriteableDir(destShared);
 
   const memoryDir = path.join(destShared, 'memory');
-  fs.mkdirSync(memoryDir, { recursive: true });
+  ensureWriteableDir(memoryDir);
 
   const configPath = path.join(destShared, CONFIG_FILE);
   if (fs.existsSync(configPath)) {
@@ -412,7 +426,7 @@ function afterSkillCopy(skillName, destPath) {
 }
 
 function copyDirSync(src, dest) {
-  fs.mkdirSync(dest, { recursive: true });
+  ensureWriteableDir(dest);
   const entries = fs.readdirSync(src, { withFileTypes: true });
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
@@ -1572,14 +1586,21 @@ async function runInteractive(skills, forceIntegrity = false) {
     !process.argv.includes('-p')
   ) {
     if (process.stdin.isTTY) {
-      console.log('Select target installation scope:');
-      console.log('  1) Project directory (.agents/skills in current directory) [Default]');
-      console.log('  2) Global directory (user global agent profile)');
-      const scopeAns = (await rl.question('Choice (1 or 2, default 1): ')).trim();
-      if (scopeAns === '2') {
+      const isHome = isHomeDirectory(process.cwd());
+      if (isHome) {
+        console.log('Detected current directory is your user home directory (~).');
         setScope(true);
+        console.log('Scope: Global (~/.agents/skills)');
       } else {
-        setScope(false);
+        console.log('Select target installation scope:');
+        console.log('  1) Project directory (.agents/skills in current directory) [Default]');
+        console.log('  2) Global directory (~/.agents/skills)');
+        const scopeAns = (await rl.question('Choice (1 or 2, default 1): ')).trim();
+        if (scopeAns === '2') {
+          setScope(true);
+        } else {
+          setScope(false);
+        }
       }
       console.log('');
     }

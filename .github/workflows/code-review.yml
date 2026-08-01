@@ -45,10 +45,11 @@ jobs:
             -o /tmp/agentic-code-reviewers-run.sh
           bash /tmp/agentic-code-reviewers-run.sh \
             --engine opencode \
-            --model opencode-go/mimo-v2.5 \
+            --model opencode-go/deepseek-v4-flash \
             --gh \
             --stack Custom \
             --custom-prompt .github/agentic-code-reviewers-prompt.md \
+            --score-min 5 \
             --include-patterns "**/*.md,**/*.mdc,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
             --source-branch "refs/heads/${{ github.head_ref }}" \
             --target-branch "refs/heads/${{ github.event.pull_request.base.ref }}"

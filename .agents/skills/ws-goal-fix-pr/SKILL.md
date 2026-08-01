@@ -1,23 +1,7 @@
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.0.113
+version: 0.0.114
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -57,10 +41,14 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
 
 | `providers.scm` | Provider skill | Intent used here |
 |-----------------|----------------|-------------------|
-| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads` |
-| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads` |
+| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `check-pr-status` |
+| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `check-pr-status` |
 
-Success criterion: `len(activeThreads) == 0` from a `list-threads` call, using the provider's normalized status: never a raw `gh pr view … jq` or ADO collect command inlined here.
+Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** `check-pr-status` from the configured SCM provider reports all active code reviews and CI pipelines have completed (status is completed, not `pending`, `in_progress`, or `queued`).
+
+- **If `providers.scm: "github"`**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-github-provider](../ws-github-provider/SKILL.md) (verifies via `gh pr checks` / Actions API that all automated code-review workflows and CI checks have ended).
+- **If `providers.scm: "azure-devops"` (or `"ado"`)**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) (verifies via Azure DevOps status policies / build pipeline API that active code reviews and build pipelines are completed).
+- If any code-review or CI action is still running, continue waiting in the heartbeat loop (`wait <n>`).
 
 ## Automation overrides (vs fix-pr defaults)
 
@@ -76,8 +64,8 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call, using t
 1. **Initialize**: restate parameters (above) and resolve `providers.scm`.
    - Done when: PR number, mode, and provider are confirmed.
 
-2. **Initial heartbeat check**: call `list-threads`. If `activeThreads == 0` on this first check, do not exit: arm the ws-goal-loop 300s heartbeat timer, wait, and re-collect once.
-   - Done when: `activeThreads` is confirmed either still 0 (stop, converged) or > 0 (proceed to Act).
+2. **Initial heartbeat check**: call `list-threads` and check active SCM CI/code-review run status. If `activeThreads == 0` and actions/pipelines are completed on this first check, do not exit immediately: arm the ws-goal-loop 300s heartbeat timer, wait, and re-collect once. If review actions are still `pending` or `in_progress`, wait until they complete before evaluating thread convergence.
+   - Done when: `activeThreads` is confirmed either still 0 and actions completed (stop, converged) or > 0 / actions in progress (proceed to Act or wait).
 
 3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads by executing the `resolveReviewThread` GraphQL mutation (via `resolve_thread.cjs` or `gh api graphql` so `isResolved` transitions to `true`), and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: the round's approved threads are fixed or resolved, and pushed (unless `dry-run`).
@@ -85,7 +73,7 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call, using t
 4. **Verify**: run `config.json.verification` commands plus a `ws-code-review` diff check. Three consecutive verification failures stop the loop and escalate.
    - Done when: verification passed, or the loop has stopped and escalated.
 
-5. **Re-check & loop**: wait `<wait>` seconds, re-collect `activeThreads`, and repeat from step 3 until `activeThreads == 0`, `max` is reached, escalation occurs, or the user aborts.
+5. **Re-check & loop**: wait `<wait>` seconds, re-check SCM review/CI run completion and re-collect `activeThreads`, repeating from step 3 until `activeThreads == 0` with all checks completed, `max` is reached, escalation occurs, or the user aborts.
    - Done when: one of the stop conditions above is met.
 
 6. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).

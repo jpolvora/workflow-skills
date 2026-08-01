@@ -1,9 +1,10 @@
 ---
 
+
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.0.113
+version: 0.0.114
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -60,7 +61,7 @@ Canonical: [`tools.md`](../ws-shared/tools.md) § Path tokens · [`config-resolu
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{us-dir}` | `{plansDir}/{slug}/` | skip existence if slug unknown |
-| `{globalSkillsRoot}` | `GEMINI_CONFIG_DIR/skills` / `WORKFLOW_SKILLS_GLOBAL_DIR/skills` / `~/.gemini/config/skills` / `~/.agents/skills` | `~/.gemini/config/skills` |
+| `{globalSkillsRoot}` | `WORKFLOW_SKILLS_GLOBAL_DIR` / `~/.agents/skills` | `~/.agents/skills` |
 
 Expand braces before any broken-link claim. Remaining unknown braces → template (skip). Bare `ws-shared/MEMORY.md` → warning (prefer `{sharedDir}/MEMORY.md`). Token-only prose outside links is healthy; Markdown `(...)` targets must be real paths.
 

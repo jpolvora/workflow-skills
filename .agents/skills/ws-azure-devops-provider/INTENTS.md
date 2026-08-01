@@ -53,6 +53,15 @@ python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py c
 
 Return structured threads to `ws-fix-pr` / `ws-goal-fix-pr`. Active count = `len(activeThreads)`. Collect prints `collect-summary:` on stderr. `context.json` is UTF-8 — on Windows re-read with `encoding="utf-8"`.
 
+## `check-pr-status`
+
+```bash
+az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}" --project "{project}"
+```
+
+- Evaluates build pipelines and status policies for `{PR_ID}`.
+- Finished when all status policies and build pipelines report completed status (`approved`/`succeeded`/`failed`, not active/running).
+
 ## `resolve-thread`
 
 ```bash

@@ -15,8 +15,9 @@
 
 
 
+
 name: ws-configure-project
-version: 0.0.113
+version: 0.0.114
 description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
 
 invocation_names:

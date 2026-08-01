@@ -7,6 +7,10 @@ import {
   isBlockedInstallTarget,
   findWorkflowSkillsSourceRoot,
   isWorkflowSkillsSourceTree,
+  getHomeDir,
+  isHomeDirectory,
+  resolveGlobalSkillsDir,
+  ensureWriteableDir,
 } from '../bin/install-rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1717,6 +1721,110 @@ child.on('close', async (code) => {
 
     fs.rmSync(globalTestDir, { recursive: true, force: true });
     fs.rmSync(projectTestDir, { recursive: true, force: true });
+
+    // 5. Unit & integration tests for multi-OS home dir detection and global skills dir resolution
+    const originalHome = process.env.HOME;
+    const originalUserProfile = process.env.USERPROFILE;
+    const originalHomeDrive = process.env.HOMEDRIVE;
+    const originalHomePath = process.env.HOMEPATH;
+    const originalGlobalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+
+    try {
+      // 5a. HOME vs USERPROFILE env var test
+      delete process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+      delete process.env.HOMEDRIVE;
+      delete process.env.HOMEPATH;
+      const mockHome1 = path.resolve(__dirname, '.mock-home-1');
+      process.env.USERPROFILE = mockHome1;
+      process.env.HOME = mockHome1;
+      if (getHomeDir() !== mockHome1) {
+        fail('getHomeDir did not respect profile home dir');
+      }
+      if (resolveGlobalSkillsDir() !== path.join(mockHome1, '.agents', 'skills')) {
+        fail('resolveGlobalSkillsDir did not default to ~/.agents/skills under profile home dir');
+      }
+
+      // 5b. Windows Git Bash POSIX HOME override test
+      const mockHome2 = path.resolve(__dirname, '.mock-home-2');
+      if (process.platform === 'win32') {
+        process.env.HOME = '/c/Users/mockuser';
+        process.env.USERPROFILE = mockHome2;
+        if (getHomeDir() !== mockHome2) {
+          fail('getHomeDir on win32 did not prioritize USERPROFILE over POSIX Git Bash HOME');
+        }
+      } else {
+        delete process.env.HOME;
+        process.env.USERPROFILE = mockHome2;
+        if (getHomeDir() !== mockHome2) {
+          fail('getHomeDir did not fallback to USERPROFILE when HOME is unset');
+        }
+      }
+
+      // 5c. isHomeDirectory test
+      if (!isHomeDirectory(mockHome2)) {
+        fail('isHomeDirectory failed to identify home directory path');
+      }
+      if (isHomeDirectory(path.resolve(__dirname, '.other-dir'))) {
+        fail('isHomeDirectory returned true for non-home directory');
+      }
+
+      // 5d. ensureWriteableDir error handling test
+      const probeFile = path.join(__dirname, '.mock-file-probe');
+      fs.writeFileSync(probeFile, 'test');
+      let threwWriteError = false;
+      try {
+        ensureWriteableDir(path.join(probeFile, 'subfolder'));
+      } catch (err) {
+        threwWriteError = true;
+        if (!/not writeable or cannot be created/i.test(err.message)) {
+          fail(`ensureWriteableDir error message format mismatch: ${err.message}`);
+        }
+      } finally {
+        if (fs.existsSync(probeFile)) fs.unlinkSync(probeFile);
+      }
+      if (!threwWriteError) {
+        fail('ensureWriteableDir did not throw error on invalid/unwriteable path');
+      }
+
+      ok('multi-OS home directory detection, ~/.agents/skills resolution, and write pre-checks passed');
+    } finally {
+      if (originalHome !== undefined) process.env.HOME = originalHome; else delete process.env.HOME;
+      if (originalUserProfile !== undefined) process.env.USERPROFILE = originalUserProfile; else delete process.env.USERPROFILE;
+      if (originalHomeDrive !== undefined) process.env.HOMEDRIVE = originalHomeDrive; else delete process.env.HOMEDRIVE;
+      if (originalHomePath !== undefined) process.env.HOMEPATH = originalHomePath; else delete process.env.HOMEPATH;
+      if (originalGlobalDir !== undefined) process.env.WORKFLOW_SKILLS_GLOBAL_DIR = originalGlobalDir; else delete process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+    }
+
+    // 6. CWD == Home dir auto-scope default test
+    const homeMockDir = path.join(__dirname, '.mock-home-dir');
+    fs.rmSync(homeMockDir, { recursive: true, force: true });
+    fs.mkdirSync(homeMockDir, { recursive: true });
+    const mockHomeEnv = { ...process.env, HOME: homeMockDir, USERPROFILE: homeMockDir, FORCE_COLOR: '0' };
+    delete mockHomeEnv.WORKFLOW_SKILLS_GLOBAL_DIR;
+
+    const cwdHomeInst = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-tdah', '--yes'],
+      {
+        cwd: homeMockDir,
+        encoding: 'utf8',
+        env: mockHomeEnv,
+        timeout: 60000,
+      }
+    );
+    if (cwdHomeInst.status !== 0) {
+      console.error(`${cwdHomeInst.stdout || ''}${cwdHomeInst.stderr || ''}`);
+      fail('install from user home directory exited non-zero');
+    }
+    const homeOut = `${cwdHomeInst.stdout || ''}${cwdHomeInst.stderr || ''}`;
+    if (!/Global Scope/i.test(homeOut)) {
+      fail('install from user home directory without explicit scope flag must default to Global Scope');
+    }
+    if (!fs.existsSync(path.join(homeMockDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('install from user home directory did not install to ~/.agents/skills');
+    }
+    ok('installer auto-defaults scope to Global when cwd is user home directory');
+    fs.rmSync(homeMockDir, { recursive: true, force: true });
   }
 
   console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, uninstall, and integrity all passed.');
