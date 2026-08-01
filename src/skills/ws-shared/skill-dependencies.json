@@ -56,6 +56,7 @@
         "ws-fable-domain",
         "ws-multi-spec",
         "ws-spec-index",
+        "ws-spec-list",
         "ws-sync-spec",
         "ws-senior-developer"
       ],
@@ -176,6 +177,11 @@
       "ws-goal-fix-pr",
       "ws-tdah",
       "ws-karpathy-guidelines"
+    ],
+    "ws-spec-list": [
+      "ws-spec-to-pr",
+      "ws-spec-to-pr-lite",
+      "ws-configure-project"
     ]
   },
   "autoloadOnly": [],

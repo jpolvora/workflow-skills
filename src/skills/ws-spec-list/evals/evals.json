@@ -1,0 +1,37 @@
+{
+  "skill_name": "ws-spec-list",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/ws-spec-list — show the project spec board and let me pick one.",
+      "expected_output": "Agent resolves plans.dir, scans state/spec files, prints board, then user-gate for row select.",
+      "assertions": [
+        "Agent loads ws-spec-list before acting",
+        "Resolves {plansDir} / plans.specsDir from config.json",
+        "Discovers *.state.md and orphan *.spec.md without a helper script",
+        "Presents user-gate for selection (or markdown fallback)",
+        "Output is en-us and harness-neutral"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/ws-spec-list — continue the active workflow for slug X.",
+      "expected_output": "Board → select X → Continue → hand off to matching orch; list skill stops.",
+      "assertions": [
+        "Offers Continue only for active/failed live rows",
+        "Hands off to ws-spec-to-pr or ws-spec-to-pr-lite per workflowType",
+        "Does not re-implement pipeline steps inside ws-spec-list"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/ws-spec-list — remove a completed plan folder.",
+      "expected_output": "Confirm gate requiring slug match before delete; no delete on dismiss.",
+      "assertions": [
+        "Requires Confirm before Remove",
+        "HS-1 / re-present on cancel — never infers yes",
+        "Does not delete ws-shared consumer data"
+      ]
+    }
+  ]
+}

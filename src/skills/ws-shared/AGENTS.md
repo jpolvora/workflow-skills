@@ -12,7 +12,9 @@
 > `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, and `CHANGELOG.md` (when `rules.changelogFile` points under `ws-shared/`).
 > Fresh install seeds `config.json` from `config.json.example`, empty `MEMORY.md` / `CHANGELOG.md` from templates, and `STACK.md` from `STACK.md.example`. Prefer [`ws-configure-project`](../ws-configure-project/SKILL.md) to fill placeholders. The installer writes `installed-skills.json` for update/uninstall tracking.
 >
-> **Installer scope:** only `.agents/skills/` (skill folders + this `ws-shared/` hub). Never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers). Optional root/host pointers stay consumer-owned; ws-check-harness may suggest them.
+> **Installer scope:** skill packages install to **project-local** `.agents/skills/` and/or **global** `$HOME/.agents/skills/` (`--global` / `WORKFLOW_SKILLS_GLOBAL_DIR`). This `ws-shared/` hub under the **project** is where `ws-configure-project` writes consumer data. Never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers). Optional root/host pointers stay consumer-owned; ws-check-harness may suggest them.
+>
+> **Hybrid / override (mandatory):** Agents may load `ws-*` skill bodies from the global skills root while reading **project** `$PWD/.agents/skills/ws-shared/config.json`. **Local (project) config always overrides global hub config.** Upstream skill SoT is `src/ws-*` (see root `AGENTS.md` § Skill SoT, install scopes & config override).
 
 **Language:** en-us only for skill bodies, gates, banners, and harness docs.
 
@@ -103,6 +105,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) |
 | `ws-spec-index` | [`../ws-spec-index/SKILL.md`](../ws-spec-index/SKILL.md) |
+| `ws-spec-list` | [`../ws-spec-list/SKILL.md`](../ws-spec-list/SKILL.md) |
 | `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
 
@@ -140,6 +143,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Spec → PR lite | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
+| List / manage spec workflows (board + menu) | `ws-spec-list` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |

@@ -9,7 +9,7 @@ This file is the **packaged routing index** after install — not a human instal
 
 > **Source hub:** Root [`AGENTS.md`](../AGENTS.md) owns layers, skill loading, verification, and site catalog for the upstream repo. Prefer *this* file for what ships under `.agents/skills/` in consumers.
 
-> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (35 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
+> **Drift check:** After add/remove/rename under `.agents/skills/`, update **both** root `AGENTS.md` and this packaged index (and regenerate the site when routing/layers change). Root [`AGENTS.md`](../AGENTS.md) retains the **full upstream layer catalog** (Workflows + Extra + global discovery). **This file** scopes the Skill index and Task router to the **Workflows package** (36 skills on disk after a default install); Extra-package skills appear only in [`### Extra package (optional)`](#extra-package-optional) so Workflows-only consumers avoid phantom routes.
 
 > **Doc roles:** `AGENTS.md` / this file = agent contracts. `README.md` = human install/UX. Keep facts aligned; do not put install walkthroughs here.
 
@@ -24,13 +24,15 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 ### Portability and genericity (mandatory)
 
 1. **Portable and project-agnostic** — Skills must work in any consumer repo. Do **not** hardcode org/repo names, solution filenames, API hosts, tenant fields, or stack-specific build/test commands inside skill bodies or scripts.
-2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in `skills/ws-shared/config.json` (gitignored; copy from `skills/ws-shared/config.json.example`). Skills **read** config / `rules.stackFile` companion / `tools.md`; they do not embed consumer metadata. See [`config-resolution.md`](skills/ws-shared/config-resolution.md).
-3. **Repo-root-relative paths only** — References use paths like `skills/ws-write-plan/SKILL.md` or `.agents/skills/...` from the consumer root. **Forbidden:** absolute paths (`C:\Users\...`, `/home/...`) or author-machine dependencies.
-4. **Harness-neutral** — Skill bodies must not name IDE or agent-product brands. Artifact roots come **only** from config: `plans.dir` (skill token `{plansDir}`), optional `reviews.dir`. Skills layout tokens `{skillsRoot}` / `{sharedDir}` come from `pathTokens` (fixed install defaults; see `tools.md` § Path tokens). Documented default for `plans.dir` is `.agents/plans`. Skill prose uses `{plansDir}/{slug}/` — no hardcoded plans roots. No undeclared path shorthands. Gates use `user-gate`; model switches via Pause → IDE/agent host → Resume; step work via `dispatch-agent` / host subagent dispatch. Mirror: root [`AGENTS.md`](../AGENTS.md) § Portability & harness neutrality.
+2. **Customize via `config.json`** — Project identity, stack, verification commands, issue trackers, and `providers.active` / `providers.scm` live in the **project** hub `ws-shared/config.json` (gitignored; copy from `config.json.example`). Skills **read** config / `rules.stackFile` companion / `tools.md`; they do not embed consumer metadata. See [`config-resolution.md`](skills/ws-shared/config-resolution.md). **Project-local config always overrides global hub config** (root [`AGENTS.md`](../AGENTS.md) § Skill SoT, install scopes & config override).
+3. **Repo-root-relative paths only** — References use paths like `skills/ws-write-plan/SKILL.md` or `.agents/skills/...` from the consumer root. **Forbidden:** absolute paths (`C:\Users\...`, `/home/...`) or author-machine dependencies. Global install roots use `$HOME/.agents/skills` (or `WORKFLOW_SKILLS_GLOBAL_DIR`) only as the skills package location, not as the project config SoT.
+4. **Harness-neutral** — Skill bodies must not name IDE or agent-product brands. Artifact roots come **only** from config: `plans.dir` (skill token `{plansDir}`), optional `reviews.dir`. Skills layout tokens `{skillsRoot}` / `{sharedDir}` come from `pathTokens` plus hybrid resolution (project `{sharedDir}` may differ from global `{skillsRoot}`; see root hub). Documented default for `plans.dir` is `.agents/plans`. Skill prose uses `{plansDir}/{slug}/` — no hardcoded plans roots. No undeclared path shorthands. Gates use `user-gate`; model switches via Pause → IDE/agent host → Resume; step work via `dispatch-agent` / host subagent dispatch. Mirror: root [`AGENTS.md`](../AGENTS.md) § Portability & harness neutrality.
 5. **Progressive disclosure** — Route via this index / root hub; do not paste entire skill bodies into hubs. Prefer links to the canonical skill over duplicated prose.
 6. **No `name:` collisions** — Each `SKILL.md` frontmatter `name:` must be unique across the installed tree.
 7. **Evidence-based harness changes** — When fixing routing/links, cite verified paths; do not invent files.
 8. **Consistent skill and task folder references** — Pipeline folders match frontmatter `name:` (`ws-write-spec` … `ws-fix-pr`, plus `ws-goal-fix-pr` and `ws-update-plan-implementation`). Numeric `NN-*` folder prefixes are forbidden. Retired or placeholder folder references are forbidden.
+
+**Upstream SoT (authoring in this package):** skill bodies are developed under **`src/ws-*`**. Consumer install targets remain project `.agents/skills` and/or global `$HOME/.agents/skills`. Project `.agents/skills/ws-shared` holds local config data only. **Promote path:** skills added/installed/developed under `.agents/skills/ws-*` may be promoted into `src/ws-*` to become part of the published package (see root [`AGENTS.md`](../AGENTS.md) § Skill SoT — Promote into SoT). Do not promote `ws-shared` consumer-owned files.
 
 ### Language (mandatory)
 
@@ -165,6 +167,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-configure-project` | `skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
 | `ws-goal-loop` | `skills/ws-goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
 | `ws-spec-index` | `skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
+| `ws-spec-list` | `skills/ws-spec-list/SKILL.md` | Spec workflow board + continue/start/finish/cancel/archive/remove menu |
 | `ws-sync-spec` | `skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `ws-senior-developer` | `skills/ws-senior-developer/SKILL.md` | Optional engineering-delivery gate and Code review proof source |
 
@@ -198,6 +201,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Spec → PR lite (sequential) | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
+| List / manage spec workflows (board + menu) | `ws-spec-list` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
