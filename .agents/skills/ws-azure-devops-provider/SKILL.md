@@ -1,23 +1,6 @@
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 name: ws-azure-devops-provider
-description: Azure DevOps SCM provider — converts ADO work items to specs, manages PAT auth, PR creation, thread resolution, and work item linking.
+description: Azure DevOps work-item-to-spec & SCM PR operations — authenticates via PAT, converts ADO work items to specs, lists PR threads, resolves threads via REST API, and merges PRs.
 version: 0.0.114
 disable-model-invocation: true
 invocation_names:
@@ -29,9 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-azure-devops-provider loaded."
 
-Azure DevOps inbound (`fetch-to-spec`) and SCM (`create-pr`, threads, merge). Pipeline skills load this when `providers.active` / `providers.scm` is `azure-devops`; they link here instead of embedding `az` / REST recipes.
-
-Resolve `org` / `project` from `{sharedDir}/config.json` (`issueTrackers.azureDevOps`) — [`config-resolution.md`](../ws-shared/config-resolution.md). Never hardcode org/project.
+Integrate Azure DevOps Work Items and Pull Requests with workflow-skills. Pipeline skills (`ws-write-spec`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-spec-to-pr`) link here instead of embedding `az` / REST recipes.
 
 ## Invocation
 
@@ -41,7 +22,7 @@ Resolve `org` / `project` from `{sharedDir}/config.json` (`issueTrackers.azureDe
 /ws-azure-devops-provider <intent> [args...]
 ```
 
-Examples: `fetch-to-spec ADO 123` · `validate-auth` · `create-pr --head develop --base main` · `list-threads 42` · `merge-pr 42`.
+Examples: `fetch-to-spec 12345` · `validate-auth` · `create-pr --head develop --base main` · `list-threads 42` · `merge-pr 42`.
 
 ### Workflow Mode
 
@@ -50,7 +31,7 @@ Orch entry / `ws-fix-pr` / `ws-goal-fix-pr` / `ws-ship-pr` pass intent + args wh
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `<intent>` | required | Contract table below |
-| ids | per intent | Work item / PR / thread ids |
+| ids | per intent | ADO WI / PR ids |
 | `dry-run` | false | Simulate when caller supports it |
 
 ## Prerequisites
@@ -70,6 +51,7 @@ Auth/config failure → **STOP**. No silent provider fallback.
 | `validate-auth` | none | Pass/fail + fixes | Org/project + PAT; optional WIT smoke |
 | `create-pr` | head, base, title/body | PR URL + id | `az repos pr create` and/or REST |
 | `list-threads` | PR id | Thread list | `fix_pr_azure_context.py collect` |
+| `check-pr-status` | PR id | Status of build pipelines & policy checks | `az repos pr policy list` / build API |
 | `resolve-thread` | thread id (+ PR id, comment) | Resolved (or dry-run) | `fix_pr_azure_context.py resolve-thread` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
@@ -82,22 +64,16 @@ Auth/config failure → **STOP**. No silent provider fallback.
 | Script | Path |
 |--------|------|
 | Work item → spec | `.agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` |
-| PR/thread collect + resolve | `.agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
-
-Optional: `issueTrackers.azureDevOps.workItemToSpecScript` must still resolve to the converter. Orch/fix-pr shims may forward here.
+| Thread ops | `.agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
 
 ## Config keys
 
 | Key | Role |
 |-----|------|
 | `providers.active` / `providers.scm` | `azure-devops` → this skill |
-| `issueTrackers.azureDevOps` | enabled, org, project, patEnvVar, apiBase, optional script |
+| `issueTrackers.azureDevOps` | enabled, `org`, `project`, `patEnvVar` |
 | `project.workingBranch` / `baseBranch` / `gitRemote` | create/merge defaults |
 | `plans.dir` | `{us-dir}` root |
-
-**PAT order:** `patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` → legacy `.secret` only as fallback.
-
-Legacy: absent `providers.*` → select when tracker enabled or entry is explicitly ADO-shaped.
 
 ## Dependencies
 

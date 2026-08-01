@@ -1,23 +1,6 @@
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 name: ws-github-provider
-description: GitHub SCM provider — handles GitHub issue-to-spec conversion, authentication, PR creation, review thread resolution, and merging via gh CLI.
+description: GitHub issue-to-spec & SCM PR operations — authenticates via gh CLI, converts GitHub issues to specs, lists PR review threads, resolves threads via GraphQL, and merges PRs.
 version: 0.0.114
 disable-model-invocation: true
 invocation_names:
@@ -29,9 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-github-provider loaded."
 
-GitHub-specific inbound (`fetch-to-spec`) and SCM (`create-pr`, threads, merge). Pipeline skills load this when `providers.active` / `providers.scm` is `github`; they link here instead of embedding `gh` recipes.
-
-Resolve `owner` / `repo` from `{sharedDir}/config.json` ([`config-resolution.md`](../ws-shared/config-resolution.md)). Never hardcode org/repo.
+Integrate GitHub Issues and Pull Requests with workflow-skills. Pipeline skills (`ws-write-spec`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-spec-to-pr`) link here instead of embedding `gh` recipes or API calls.
 
 ## Invocation
 
@@ -69,6 +50,7 @@ Auth failure → **STOP** with `validate-auth` fixes. No silent provider fallbac
 | `validate-auth` | none | Pass/fail + fixes | `gh auth status` + thread token note |
 | `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base) |
 | `list-threads` | PR id | Thread list | `fetch_threads.cjs` |
+| `check-pr-status` | PR id | Status of CI & code-review runs | `gh pr checks` / GitHub Actions API |
 | `resolve-thread` | thread id (+ comment) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation) | `resolve_thread.cjs` |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 
