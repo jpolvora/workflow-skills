@@ -5,7 +5,8 @@ slug: global-vs-project-skill-installation
 us: global-vs-project-skill-installation
 title: Global vs Project Skill Installation Choice
 specPath: .agents/plans/global-vs-project-skill-installation/step-00-global-vs-project-skill-installation.spec.md
-status: active
+status: completed
+endedAt: 2026-08-01T16:52:02Z
 currentStep: 9
 completedSteps:
   - 0
@@ -131,3 +132,11 @@ stepModels:
 - status: success
 - recommendedPipeline: standard
 - finalPipeline: standard
+
+
+## Conclusion
+
+- **status:** completed
+- **endedAt:** 2026-08-01T16:52:02Z
+- **reason:** Workflow session closed — feature delivered/published. Published: feat commit 56c5896 + PR #174 merged to main (2026-08-01).
+- **prior:** Was briefly marked cancelled during queue clear (2026-08-01T16:48:34Z); corrected to completed after publish verification.

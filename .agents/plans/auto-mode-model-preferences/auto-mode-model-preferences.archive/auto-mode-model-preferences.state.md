@@ -3,7 +3,8 @@ workflowId: auto-mode-model-preferences
 us: auto-mode-model-preferences
 slug: auto-mode-model-preferences
 workflowType: lite
-status: active
+status: completed
+endedAt: 2026-08-01T16:52:02Z
 currentStep: 6
 startedAt: "2026-07-31T22:31:00Z"
 autoMode: false
@@ -97,3 +98,11 @@ telemetry:
 - auto-gate | step 2 | Advance to Step 3 | 2026-07-31T22:32:28Z
 - auto-gate | step 1 | Advance to Step 2 | 2026-07-31T22:31:34Z
 - auto-gate | step 0 | Override to lite | 2026-07-31T22:31:00Z
+
+
+## Conclusion
+
+- **status:** completed
+- **endedAt:** 2026-08-01T16:52:02Z
+- **reason:** Workflow session closed — feature delivered/published. Published: PR #172 merged to main (2026-08-01). Delivery result SUCCESS.
+- **prior:** Was briefly marked cancelled during queue clear (2026-08-01T16:48:34Z); corrected to completed after publish verification.
