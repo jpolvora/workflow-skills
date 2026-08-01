@@ -1,21 +1,4 @@
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
 version: 0.0.114
@@ -24,37 +7,6 @@ invocation_names:
   - goal-fix-pr
   - ws-goal-fix-pr
 ---
-
-# ws-goal-fix-pr
-
-> When this skill is loaded, output "ws-goal-fix-pr loaded."
-
-Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
-
-Act as a **Principal Engineer** coordinating fix iterations and driving open threads to zero. Thread-count probes and fix rounds are SCM-aware: resolve `providers.scm`, then delegate platform I/O: never hardcode a GitHub-only or ADO-only recipe here. See [examples.md](examples.md) for worked scenarios.
-
-## Invocation
-
-Standalone:
-
-```
-/ws-goal-fix-pr <PR-NUMBER> [dry-run] [max <n>] [wait <n>]
-```
-
-Workflow (Step 9 of ws-spec-to-pr / Step 5 of ws-spec-to-pr-lite): dispatched by the orchestrator after ship creates a PR (`stopBeforeFixPr: true`); receives `PR-NUMBER` and `max` from orchestrator state.
-
-| Parameter | Default | Notes |
-|-----------|---------|-------|
-| `<PR-NUMBER>` | required | Target Pull Request number |
-| `dry-run` | false | Simulate fixes/resolutions; no commits, pushes, or resolve calls |
-| `max <n>` | 10 | Iteration ceiling (align with `ws-ship-pr` default) |
-| `wait <n>` | 300 | Post-round / pre-check wait interval in seconds |
-
-Before executing, restate the parsed parameters: PR number, success criterion, mode, `max`, `wait`, `dry-run`, and `providers.scm`.
-
-## SCM resolution
-
-Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
 
 # ws-goal-fix-pr
 
