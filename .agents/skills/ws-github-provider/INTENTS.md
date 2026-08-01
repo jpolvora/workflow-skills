@@ -42,6 +42,15 @@ node .agents/skills/ws-github-provider/scripts/fetch_threads.cjs {PR_ID} [--json
 
 Return structured threads (`threadId`, path, line, comments) to `ws-fix-pr` / `ws-goal-fix-pr`.
 
+## `check-pr-status`
+
+```bash
+gh pr checks {PR_ID}
+```
+
+- Evaluates CI checks and automated code-review action status.
+- Finished when all checks/runs have completed status (none `pending`, `in_progress`, or `queued`).
+
 ## `resolve-thread`
 
 ```bash
