@@ -148,7 +148,11 @@ export function resolveGlobalSkillsDir() {
     return path.basename(geminiDir) === 'skills' ? geminiDir : path.join(geminiDir, 'skills');
   }
   const home = os.homedir();
-  return path.join(home, '.gemini', 'config', 'skills');
+  const geminiSkills = path.join(home, '.gemini', 'config', 'skills');
+  if (fs.existsSync(geminiSkills)) return geminiSkills;
+  const agentsSkills = path.join(home, '.agents', 'skills');
+  if (fs.existsSync(agentsSkills)) return agentsSkills;
+  return geminiSkills;
 }
 
 /**
