@@ -14,9 +14,10 @@
 
 
 
+
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.0.112
+version: 0.0.113
 disable-model-invocation: true
 invocation_names:
   - ship-pr

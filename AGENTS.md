@@ -143,11 +143,14 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 Human narrative: [`README.md`](README.md) § Install, update, and uninstall. Agents in a **consumer** project (not this package root):
 
 ```bash
-npx --yes github:jpolvora/workflow-skills              # interactive install
+npx --yes github:jpolvora/workflow-skills              # interactive install (prompts for scope)
 npx --yes github:jpolvora/workflow-skills install --package workflows --yes
+npx --yes github:jpolvora/workflow-skills install --package workflows --global --yes
 npx --yes github:jpolvora/workflow-skills update       # uses ws-shared/installed-skills.json
+npx --yes github:jpolvora/workflow-skills update --global
 npx --yes github:jpolvora/workflow-skills update --include-new
 npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
+npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --global --yes
 ```
 
 Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected` roots). Missing on first update → bootstrap from disk. Uninstall preserves `shared/` (config, MEMORY, stack, manifest rewrite).

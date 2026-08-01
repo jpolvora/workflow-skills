@@ -14,9 +14,10 @@
 
 
 
+
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.0.112
+version: 0.0.113
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr

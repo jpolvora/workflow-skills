@@ -7,10 +7,11 @@
 
 
 
+
 name: ws-senior-developer
 description: Engineering delivery gate enforcing strict scope control (suggest unasked changes first), anti-reinvention/code simplification, interactive ambiguity resolution via user-gate options, and pre-ship proof.
 
-version: 0.0.112
+version: 0.0.113
 invocation_names:
   - senior-developer
   - ws-senior-developer

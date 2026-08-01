@@ -14,9 +14,10 @@
 
 
 
+
 name: ws-check-workflows
 description: Workflow FSM simulation runner — validates step continuity, state isolation, provider dispatch, and artifact transitions across standard, lite, and multi-spec pipelines.
-version: 0.0.112
+version: 0.0.113
 disable-model-invocation: true
 invocation_names:
   - check-workflows

@@ -14,8 +14,9 @@
 
 
 
+
 name: ws-secrets-leak-review
-version: 0.0.112
+version: 0.0.113
 description: Secrets & PII leak auditor — scans code diffs and repositories for hardcoded credentials, API tokens, passwords, private keys, and sensitive data.
 allowed-tools: Read, Grep, Glob
 invocation_names:

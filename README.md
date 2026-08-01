@@ -55,22 +55,24 @@ Packages in the interactive menu: `f` Full · `w` Workflows · `e` Extra (member
 ### Option A — NPX (recommended)
 
 ```bash
-# Interactive install
+# Interactive install (prompts for Global vs Project scope)
 npx --yes github:jpolvora/workflow-skills
 
-# Non-interactive install (exactly one mode; Non-TTY requires --yes)
+# Non-interactive install (project scope by default, or explicitly --global / --project)
 npx --yes github:jpolvora/workflow-skills install --full --yes
-npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --skills ws-spec-to-pr,ws-goal-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills install --package workflows --global --yes
+npx --yes github:jpolvora/workflow-skills install --skills ws-spec-to-pr,ws-goal-fix-pr --project --yes
 
-# Update tracked skills (bootstraps installed-skills.json from disk if missing)
+# Update tracked skills (project or global scope)
 npx --yes github:jpolvora/workflow-skills update
+npx --yes github:jpolvora/workflow-skills update --global
 
 # Also install new top-level skills added upstream
 npx --yes github:jpolvora/workflow-skills update --include-new
 
 # Uninstall (cascades dependents + unused deps; preserves ws-shared/ consumer data)
 npx --yes github:jpolvora/workflow-skills uninstall --skills ws-goal-fix-pr --yes
+npx --yes github:jpolvora/workflow-skills uninstall --skills ws-tdah --global --yes
 ```
 
 **Canonical form:** do **not** append `@latest` or `@main` to `github:jpolvora/workflow-skills`.
