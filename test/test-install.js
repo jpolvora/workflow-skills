@@ -1730,26 +1730,34 @@ child.on('close', async (code) => {
     const originalGlobalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
 
     try {
-      // 5a. HOME env var test
+      // 5a. HOME vs USERPROFILE env var test
       delete process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
-      delete process.env.USERPROFILE;
       delete process.env.HOMEDRIVE;
       delete process.env.HOMEPATH;
       const mockHome1 = path.resolve(__dirname, '.mock-home-1');
+      process.env.USERPROFILE = mockHome1;
       process.env.HOME = mockHome1;
       if (getHomeDir() !== mockHome1) {
-        fail('getHomeDir did not respect process.env.HOME');
+        fail('getHomeDir did not respect profile home dir');
       }
       if (resolveGlobalSkillsDir() !== path.join(mockHome1, '.agents', 'skills')) {
-        fail('resolveGlobalSkillsDir did not default to ~/.agents/skills under process.env.HOME');
+        fail('resolveGlobalSkillsDir did not default to ~/.agents/skills under profile home dir');
       }
 
-      // 5b. USERPROFILE env var test (Windows style)
-      delete process.env.HOME;
+      // 5b. Windows Git Bash POSIX HOME override test
       const mockHome2 = path.resolve(__dirname, '.mock-home-2');
-      process.env.USERPROFILE = mockHome2;
-      if (getHomeDir() !== mockHome2) {
-        fail('getHomeDir did not respect process.env.USERPROFILE');
+      if (process.platform === 'win32') {
+        process.env.HOME = '/c/Users/mockuser';
+        process.env.USERPROFILE = mockHome2;
+        if (getHomeDir() !== mockHome2) {
+          fail('getHomeDir on win32 did not prioritize USERPROFILE over POSIX Git Bash HOME');
+        }
+      } else {
+        delete process.env.HOME;
+        process.env.USERPROFILE = mockHome2;
+        if (getHomeDir() !== mockHome2) {
+          fail('getHomeDir did not fallback to USERPROFILE when HOME is unset');
+        }
       }
 
       // 5c. isHomeDirectory test

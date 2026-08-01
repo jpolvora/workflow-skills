@@ -135,26 +135,43 @@ export function isBlockedInstallTarget(cwd, packageRoot) {
 
 /**
  * Resolves user home directory reliably across operating systems and environment configurations.
- * Checks HOME, USERPROFILE, HOMEDRIVE+HOMEPATH, and os.homedir().
+ * On Windows (win32), prioritizes USERPROFILE / HOMEDRIVE+HOMEPATH to avoid Git Bash POSIX path issues.
  * @returns {string} Absolute path to user home directory
  */
 export function getHomeDir() {
-  if (process.env.HOME && process.env.HOME.trim()) {
-    return path.resolve(process.env.HOME.trim());
+  const pick = (p) => (p && typeof p === 'string' && p.trim() ? path.resolve(p.trim()) : null);
+  const fromDrive = () =>
+    process.env.HOMEDRIVE && process.env.HOMEPATH
+      ? path.resolve(process.env.HOMEDRIVE + process.env.HOMEPATH)
+      : null;
+
+  if (process.platform === 'win32') {
+    const userProfile = pick(process.env.USERPROFILE);
+    if (userProfile) return userProfile;
+    const drivePath = fromDrive();
+    if (drivePath) return drivePath;
+    if (process.env.HOME && !process.env.HOME.startsWith('/')) {
+      const homePath = pick(process.env.HOME);
+      if (homePath) return homePath;
+    }
+  } else {
+    const homePath = pick(process.env.HOME);
+    if (homePath) return homePath;
+    const userProfile = pick(process.env.USERPROFILE);
+    if (userProfile) return userProfile;
+    const drivePath = fromDrive();
+    if (drivePath) return drivePath;
   }
-  if (process.env.USERPROFILE && process.env.USERPROFILE.trim()) {
-    return path.resolve(process.env.USERPROFILE.trim());
-  }
-  if (process.env.HOMEDRIVE && process.env.HOMEPATH) {
-    return path.resolve(process.env.HOMEDRIVE + process.env.HOMEPATH);
-  }
+
   try {
     const home = os.homedir();
     if (home && home.trim()) return path.resolve(home.trim());
   } catch {
     // Fall through to error
   }
-  throw new Error('Unable to determine user home directory across environment variables (HOME, USERPROFILE) or os.homedir().');
+  throw new Error(
+    'Unable to determine user home directory across environment variables (USERPROFILE, HOME) or os.homedir().'
+  );
 }
 
 /**
@@ -171,6 +188,8 @@ export function isHomeDirectory(dir = process.cwd()) {
   }
 }
 
+let legacyGlobalWarned = false;
+
 /**
  * Resolves the global skills directory based on environment override or user home default (~/.agents/skills).
  * 1. process.env.WORKFLOW_SKILLS_GLOBAL_DIR (if set)
@@ -182,7 +201,30 @@ export function resolveGlobalSkillsDir() {
     return path.resolve(process.env.WORKFLOW_SKILLS_GLOBAL_DIR.trim());
   }
   const home = getHomeDir();
-  return path.join(home, '.agents', 'skills');
+  const newGlobalDir = path.join(home, '.agents', 'skills');
+
+  if (!legacyGlobalWarned) {
+    try {
+      const candidates = [
+        process.env.GEMINI_CONFIG_DIR ? path.join(path.resolve(process.env.GEMINI_CONFIG_DIR), 'skills') : null,
+        path.join(home, '.gemini', 'config', 'skills'),
+      ].filter(Boolean);
+      const legacyDir = candidates.find((d) =>
+        fs.existsSync(path.join(d, HUB_DIR, INSTALLED_SKILLS_FILE))
+      );
+      if (legacyDir && path.resolve(legacyDir) !== path.resolve(newGlobalDir)) {
+        console.warn(
+          `Notice: Detected a previous global skills installation at "${legacyDir}". ` +
+            `Global operations now target "${newGlobalDir}". You can move your existing skills to "${newGlobalDir}".`
+        );
+        legacyGlobalWarned = true;
+      }
+    } catch {
+      // Ignore detection errors
+    }
+  }
+
+  return newGlobalDir;
 }
 
 /**
