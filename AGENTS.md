@@ -244,8 +244,11 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 
 On changes under `.agents/skills/`, this file, `README.md`, or `docs/`:
 
-1. Ask the user whether to run **ws-check-harness** and whether **site** / **README** need updates.
-2. Evaluate: ws-check-harness (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR — upstream `ws-ship-pr` mandatory gate (dependency graph, integrity, version/catalog, hub drift).
+1. **Mandatory Website & Documentation Update Rule:** Whenever any feature, capability, CLI option, workflow, or skill is added, changed, updated, or removed, agents **MUST** update and describe the change across:
+   - `docs/index.html` (rebuild catalog via `node bin/build-site.js` / `npm run build-site:bump`, and update website feature cards/install sections/FAQ as applicable).
+   - `README.md` (update human install/usage narrative, CLI flags, and feature options).
+   - `AGENTS.md` and `.agents/AGENTS.md` (keep skill indexes, task routers, and CLI documentation in sync).
+2. Evaluate: **ws-check-harness** (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) § Before ship PR — upstream `ws-ship-pr` mandatory gate (dependency graph, integrity, version/catalog, hub drift).
 3. If the change affects hashed install content, run integrity regenerate in the same commit (`npm run generate-integrity` + `npm run verify-integrity`) — see § [Before ship PR — upstream `ws-ship-pr` mandatory gate](#before-ship-pr--upstream-ws-ship-pr-mandatory-gate-this-repo-only) step 7.
 
 ---

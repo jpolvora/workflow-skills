@@ -54,7 +54,7 @@ Before committing skill changes and before merging to **`main`** on `workflow-sk
 1. Load and run [`skills/ws-check-harness/SKILL.md`](skills/ws-check-harness/SKILL.md) (Phases 0–5c scan → Phase 6 correction plan → Phase 7 only with approval).
 2. The audit **must** cover at least: routing vs disk inventory, broken/relative links, absolute paths, redundancy / progressive disclosure, **portability** (no hardcoded project metadata; parameterization via `config.json` / stack docs), **harness neutrality** (no IDE/agent product coupling; no legacy host path defaults), and **en-us** compliance.
 3. Do **not** merge skill PRs to `main` while critical harness findings remain open.
-4. After harness-affecting changes, also regenerate the site catalog when applicable (`node bin/build-site.js` in the upstream repo) and keep root `AGENTS.md` + this packaged index in sync (**Drift check** above).
+4. **Website & Documentation Sync:** Whenever any feature, capability, CLI option, workflow, or skill is added, changed, updated, or removed, agents **MUST** update and describe the change across `docs/index.html` (`node bin/build-site.js` / `npm run build-site:bump`), `README.md`, `AGENTS.md`, and this packaged index. Keep root `AGENTS.md` + this packaged index in sync (**Drift check** above).
 
 Standalone invoke: `/ws-check-harness` or `@ws-check-harness` (optional `--dry-run` for report-only).
 
@@ -264,9 +264,12 @@ When skills ask for **Code review proof**, use the checklist / verification obli
 ```bash
 npx --yes github:jpolvora/workflow-skills
 npx --yes github:jpolvora/workflow-skills install --package workflows --yes
+npx --yes github:jpolvora/workflow-skills install --package workflows --global --yes
 npx --yes github:jpolvora/workflow-skills update
+npx --yes github:jpolvora/workflow-skills update --global
 npx --yes github:jpolvora/workflow-skills update --include-new
 npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
+npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --global --yes
 ```
 
 - `ws-shared/installed-skills.json` tracks managed skills (`skills` + `selected` roots). `update` bootstraps it from disk when missing. `uninstall` cascades unused deps and never deletes `ws-shared/` consumer data.
