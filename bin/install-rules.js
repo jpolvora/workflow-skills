@@ -134,25 +134,82 @@ export function isBlockedInstallTarget(cwd, packageRoot) {
 }
 
 /**
- * Resolves the global skills directory based on environment variables or user home defaults.
- * 1. process.env.WORKFLOW_SKILLS_GLOBAL_DIR
- * 2. process.env.GEMINI_CONFIG_DIR (append /skills if path doesn't end with /skills)
- * 3. Default: ~/.gemini/config/skills
+ * Resolves user home directory reliably across operating systems and environment configurations.
+ * Checks HOME, USERPROFILE, HOMEDRIVE+HOMEPATH, and os.homedir().
+ * @returns {string} Absolute path to user home directory
+ */
+export function getHomeDir() {
+  if (process.env.HOME && process.env.HOME.trim()) {
+    return path.resolve(process.env.HOME.trim());
+  }
+  if (process.env.USERPROFILE && process.env.USERPROFILE.trim()) {
+    return path.resolve(process.env.USERPROFILE.trim());
+  }
+  if (process.env.HOMEDRIVE && process.env.HOMEPATH) {
+    return path.resolve(process.env.HOMEDRIVE + process.env.HOMEPATH);
+  }
+  try {
+    const home = os.homedir();
+    if (home && home.trim()) return path.resolve(home.trim());
+  } catch {
+    // Fall through to error
+  }
+  throw new Error('Unable to determine user home directory across environment variables (HOME, USERPROFILE) or os.homedir().');
+}
+
+/**
+ * Checks whether a given directory is the user home directory.
+ * @param {string} [dir=process.cwd()]
+ * @returns {boolean}
+ */
+export function isHomeDirectory(dir = process.cwd()) {
+  try {
+    const home = getHomeDir();
+    return path.resolve(dir) === path.resolve(home);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Resolves the global skills directory based on environment override or user home default (~/.agents/skills).
+ * 1. process.env.WORKFLOW_SKILLS_GLOBAL_DIR (if set)
+ * 2. Default: ~/.agents/skills
+ * @returns {string} Absolute path to global skills directory
  */
 export function resolveGlobalSkillsDir() {
-  if (process.env.WORKFLOW_SKILLS_GLOBAL_DIR) {
-    return path.resolve(process.env.WORKFLOW_SKILLS_GLOBAL_DIR);
+  if (process.env.WORKFLOW_SKILLS_GLOBAL_DIR && process.env.WORKFLOW_SKILLS_GLOBAL_DIR.trim()) {
+    return path.resolve(process.env.WORKFLOW_SKILLS_GLOBAL_DIR.trim());
   }
-  if (process.env.GEMINI_CONFIG_DIR) {
-    const geminiDir = path.resolve(process.env.GEMINI_CONFIG_DIR);
-    return path.basename(geminiDir) === 'skills' ? geminiDir : path.join(geminiDir, 'skills');
+  const home = getHomeDir();
+  return path.join(home, '.agents', 'skills');
+}
+
+/**
+ * Checks and ensures target directory exists and is writeable.
+ * Throws a friendly, actionable Error if target cannot be created or written to.
+ * @param {string} targetDirPath - Directory to check/create
+ * @returns {string} Absolute path to ensured writeable directory
+ */
+export function ensureWriteableDir(targetDirPath) {
+  const resolvedPath = path.resolve(targetDirPath);
+  try {
+    if (!fs.existsSync(resolvedPath)) {
+      fs.mkdirSync(resolvedPath, { recursive: true });
+    }
+    try {
+      fs.accessSync(resolvedPath, fs.constants.W_OK);
+    } catch {
+      const probeFile = path.join(resolvedPath, `.probe-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      fs.writeFileSync(probeFile, 'test');
+      fs.unlinkSync(probeFile);
+    }
+  } catch (err) {
+    throw new Error(
+      `Target directory "${resolvedPath}" is not writeable or cannot be created: ${err.message}. Please check write permissions.`
+    );
   }
-  const home = os.homedir();
-  const geminiSkills = path.join(home, '.gemini', 'config', 'skills');
-  if (fs.existsSync(geminiSkills)) return geminiSkills;
-  const agentsSkills = path.join(home, '.agents', 'skills');
-  if (fs.existsSync(agentsSkills)) return agentsSkills;
-  return geminiSkills;
+  return resolvedPath;
 }
 
 /**
