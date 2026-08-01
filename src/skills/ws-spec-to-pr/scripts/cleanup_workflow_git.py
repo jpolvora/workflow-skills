@@ -3,7 +3,9 @@
 cleanup_workflow_git — Phase A mandatory git runtime cleanup for one workflow-id.
 
 Removes local uswf/{workflow-id} worktrees, tags, and branches. Never mutates
-remotes. Invoked by orch when status → completed (shared by standard/lite).
+remotes. Never deletes protected branches (main/master/develop and config
+baseBranch/workingBranch). Invoked by orch when status → completed
+(shared by standard/lite).
 
 Usage:
     python cleanup_workflow_git.py --workflow-id {id}
@@ -46,6 +48,45 @@ ensure_utf8_stdio()
 
 # Refuse empty, glob wildcards, or path-traversal-like workflow ids.
 _ID_OK = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+# Exact local branch names that must never be deleted (AC11).
+_PROTECTED_BRANCH_DEFAULTS = frozenset({"main", "master", "develop"})
+
+
+def load_config_protected_branches(repo: Path) -> frozenset[str]:
+    """Optional extras from project.baseBranch / project.workingBranch."""
+    extra: set[str] = set()
+    candidates = [
+        repo / ".agents" / "skills" / "ws-shared" / "config.json",
+        Path.cwd() / ".agents" / "skills" / "ws-shared" / "config.json",
+    ]
+    for cfg_path in candidates:
+        if not cfg_path.is_file():
+            continue
+        try:
+            import json
+
+            data = json.loads(cfg_path.read_text(encoding="utf-8"))
+            project = data.get("project") or {}
+            for key in ("baseBranch", "workingBranch"):
+                val = project.get(key)
+                if isinstance(val, str) and val.strip():
+                    extra.add(val.strip())
+        except Exception:
+            continue
+        break
+    return frozenset(extra)
+
+
+def is_protected_branch(name: str, *, repo: Path | None = None) -> bool:
+    """True for main/master/develop and configured base/working branches."""
+    if not name:
+        return False
+    if name in _PROTECTED_BRANCH_DEFAULTS:
+        return True
+    if repo is not None and name in load_config_protected_branches(repo):
+        return True
+    return False
 
 
 def die(msg: str, code: int = 1) -> None:
@@ -248,6 +289,9 @@ def remove_tags(repo: Path, workflow_id: str, *, dry_run: bool) -> None:
 def remove_branches(repo: Path, workflow_id: str, *, dry_run: bool) -> None:
     head = current_branch(repo)
     for branch in list_branches(repo, workflow_id):
+        if is_protected_branch(branch, repo=repo):
+            print(f"SKIP branch (protected): {branch}")
+            continue
         if head == branch:
             print(f"SKIP branch (checked out on HEAD): {branch}")
             continue

@@ -28,6 +28,7 @@ Scope is limited to resources namespaced to the concluding `workflow-id` under t
 - AC8: Git runtime cleanup (tags/worktrees/branches) runs by default on successful end-of-workflow even when the user chooses **Keep all artifacts** for plan-dir temp files; optional "delete temps" continues to control plan-dir temp markdown only.
 - AC9: If a worktree path is dirty with uncommitted changes belonging to the concluding workflow, cleanup either force-removes after logging the dirty paths, or STOPs with a user-gate listing leftovers; it must not leave a half-registered broken worktree.
 - AC10: Harness docs (`artifact-cleanup` protocol, orch SKILL/PROTOCOLS, and FAQ troubleshooting) describe the mandatory git cleanup vs optional plan-dir temp delete split, with en-us portable wording (no host product names).
+- AC11: Cleanup never deletes protected local branches: `main`, `master`, and `develop` when present (exact name match), plus `config.json` → `project.baseBranch` and `project.workingBranch` when set. These must be skipped even if a bug or mis-invocation would otherwise list them for deletion. The primary repository worktree is never removed.
 
 ## Notes
 

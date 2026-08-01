@@ -27,7 +27,7 @@ Script behavior (namespace `uswf/{workflow-id}` only):
 
 1. Remove matching worktrees (`git worktree remove --force`, prune if needed).
 2. Delete local tags (`git tag -d`) — never push or delete remote tags.
-3. Delete local branches (`git branch -D`) when not checked out elsewhere.
+3. Delete local branches (`git branch -D`) when not checked out elsewhere. **Never** delete protected branches: `main`, `master`, `develop` (when present), plus `config.json` → `project.baseBranch` / `project.workingBranch`. Never remove the primary repository worktree.
 4. Verify re-list; print `CLEAN` or `WARN: leftover: …` with exact names.
 
 **Exit-code contract (orch):**

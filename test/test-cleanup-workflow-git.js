@@ -1,5 +1,5 @@
 /**
- * cleanup_workflow_git.py + Phase A/B doc-contract tests (AC2–AC10).
+ * cleanup_workflow_git.py + Phase A/B doc-contract tests (AC2–AC11).
  * Run: node test/test-cleanup-workflow-git.js
  */
 import fs from 'fs';
@@ -332,12 +332,53 @@ function testProtocolMandatoryVsOptionalSplit() {
   );
 }
 
+function testCleanupProtectsBaseBranches() {
+  console.log('\n--- testCleanupProtectsBaseBranches ---');
+  // AC11: never delete main/master/develop (exact names).
+  const scriptDir = path.dirname(SCRIPT).replace(/\\/g, '/');
+  const check = cp.spawnSync(
+    process.env.PYTHON || 'python',
+    [
+      '-c',
+      [
+        'import sys',
+        `sys.path.insert(0, r'${scriptDir}')`,
+        'import cleanup_workflow_git as m',
+        'assert m.is_protected_branch("main")',
+        'assert m.is_protected_branch("master")',
+        'assert m.is_protected_branch("develop")',
+        'assert not m.is_protected_branch("uswf/x/before-step-1")',
+        'assert not m.is_protected_branch("feature/foo")',
+        'print("ok")',
+      ].join('; '),
+    ],
+    { encoding: 'utf8' },
+  );
+  assert(check.status === 0, `is_protected_branch helper: ${(check.stderr || '') + (check.stdout || '')}`);
+
+  const repo = initTempGitRepo('cwg-protect-');
+  if (!repo) return;
+  // initTempGitRepo uses `main`; also plant develop + uswf branch to delete
+  assert(git(repo, 'branch', 'develop').status === 0, 'plant develop');
+  assert(git(repo, 'branch', 'master').status === 0, 'plant master');
+  assert(git(repo, 'branch', `${PREFIX}/tmp`).status === 0, 'plant drop branch');
+  assert(git(repo, 'tag', `${PREFIX}/t1`).status === 0, 'plant drop tag');
+
+  const r = runCleanup(repo);
+  assert(r.status === 0, `cleanup exit 0 (got ${r.status}): ${(r.stdout || '') + (r.stderr || '')}`);
+  assert(git(repo, 'branch', '--list', 'main').stdout.includes('main'), 'main kept');
+  assert(git(repo, 'branch', '--list', 'develop').stdout.includes('develop'), 'develop kept');
+  assert(git(repo, 'branch', '--list', 'master').stdout.includes('master'), 'master kept');
+  assert(!git(repo, 'branch', '--list', `${PREFIX}/*`).stdout.trim(), 'namespace branch deleted');
+}
+
 function testFaqDocumentsCleanupSplit() {
   console.log('\n--- testFaqDocumentsCleanupSplit ---');
   const faq = read(FAQ);
   assert(faq.includes('WARN: leftover'), 'FAQ mentions WARN leftovers');
   assert(faq.includes('--dirty-policy force') || faq.includes('dirty-policy force'), 'FAQ mentions dirty-policy force default');
   assert(faq.includes('Failed') || faq.includes('failed'), 'FAQ covers failed/cancelled manual re-run');
+  assert(faq.includes('Protected branches'), 'FAQ documents protected base branches');
 }
 
 function main() {
@@ -353,6 +394,7 @@ function main() {
     testCleanupIgnoresCoincidentalWorkflowIdPath();
     testCleanupDirtyWorktreeForce();
     testCleanupDirtyWorktreeStop();
+    testCleanupProtectsBaseBranches();
     testDocsReferenceSharedCleanupContract();
     testProtocolMandatoryVsOptionalSplit();
     testFaqDocumentsCleanupSplit();

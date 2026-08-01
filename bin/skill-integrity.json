@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "8b571cd176e75698d8e4fa62f9af9a9762d5f85bf04d3d4c6921bf3220b7c39b",
+  "fullPackageDigest": "d2e79bf36d26cbf06e7e9581aaf351c936e20e942d2a5d62413835975f2b200e",
   "hub": {
     "files": {
       "AGENTS.md": "c1443e75f767501addece0dcc2853fb72ea22947329bd4fc8e7b2428c4e1f3c6",
@@ -266,17 +266,17 @@
       "files": {
         "ARTIFACTS.md": "49236c936db49193504f18c06dcbedf56fc8a7e09f9b88e3446b883b18fcb644",
         "DIAGRAM.md": "ef113a98519e3a74fd58e1e2a9881479aa6ec5b9a70d830a51a9a61b4b0d8b48",
-        "docs/faq.md": "cb7e630cc7eb0b9943fba9113ec181e4dd09cc27c2dfd8a57188b85124cbaa70",
+        "docs/faq.md": "c5de12e73a63b498331f29728b5349c5b0748d31fb702a2dabbee01cefa5b5bd",
         "evals/evals.json": "0de4d6e2a47141ce29b6b30aec23585c6f44added20dfe5a7b0f476750af9b59",
         "PROTOCOLS.md": "237fb4e1b8a7a5b935f0b6c95e4ea9622d263b94023a7f355e0f3b2569f56651",
-        "protocols/artifact-cleanup.md": "1b9f891976d874aba51034ba652d414002e9fbbeac8a088487f7d2fda05b4929",
+        "protocols/artifact-cleanup.md": "b1a344a931294d1b7d5bd66ce6c429c43364176da2e1728b2cd68960ea82e7ac",
         "protocols/delivery-result.md": "238b4962119579d409052d0a7560d8a30088a21d1e0fbcae3fb698f2c527507e",
         "protocols/progress-board.md": "22cb673fa2562738905a85d151828f800778aea3ae5bd2338b2e4b0f2c456213",
         "protocols/state-hygiene.md": "a3213b61dca519dbb76d7536360c61527e75a2718e18245f5693f596f663bf38",
         "README.md": "f101d1f14f9db153c156c09700b6d835c270ed8e7841300473f0c6698778016d",
         "scripts/ado-workitem-to-spec.py": "29ffee588e070359a020b1a23990a756b4a31dc9ed82cafc4d124b7c51047825",
         "scripts/check_memory_conflict.py": "f9361863756fc8292c04da79df28420256282370f06d7e20a731173036f9b33a",
-        "scripts/cleanup_workflow_git.py": "5cd950a6d7adb15380e13eadd72052b008cf9c800b170c91af60009f305308d5",
+        "scripts/cleanup_workflow_git.py": "d1994a50c5ff75eabab3428d524b1f0e0faa56d3162355a33952090137007fdd",
         "scripts/github-issue-to-spec.py": "b8bc4b3f2ead8817a17e8d172f7fe51285e9aaed077cb1a2de7ee6d69f2ddccc",
         "scripts/update_state.py": "0df6d051b74f0562635bb11b4aa1945831e86796b806b87257c78c3412aee4f4",
         "scripts/validate_state.py": "ba234db8f06dae6ff1e03f71b256c483e999bdeb3265517cd196d4f54dd083f8",
@@ -284,7 +284,7 @@
         "STEP-DISPATCH.md": "3622f1ef5fcb48f66c9eb74669e934d0327070462e3eb7a5d359dd4fea051fda",
         "ws-spec-to-pr-run-test.md": "b822380eeacd53443a85a6ed0f980c008f0b586091838c45d01b1042f82e6d28"
       },
-      "skillDigest": "209714d35e7b981958e89b07dc1f7444c352e07d209c71e409567cb641aefab1"
+      "skillDigest": "69e22e0ce1b4ef20ce496204d01f84821ffe228b9475a1168b7f8dde2d486ff1"
     },
     "ws-spec-to-pr-lite": {
       "files": {

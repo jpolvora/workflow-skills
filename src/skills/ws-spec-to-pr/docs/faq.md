@@ -242,4 +242,5 @@ This is **mandatory** even if you chose **Keep all artifacts** (that choice only
 *   **Failed / cancelled / paused** runs do **not** auto-clean. Re-run the script manually with the leftover `{workflow-id}` to clear local `uswf/{workflow-id}/*` tags, matching worktrees, and local branches.
 *   **`WARN: leftover: …` (exit 2):** cleanup finished but some names remain — treat the listed names as the inventory to inspect; orch may still claim ended.
 *   **Dirty worktrees:** default `--dirty-policy force` logs dirty paths then `git worktree remove --force`. Use `--dirty-policy stop` to exit 1 without removing (no half-registered worktree).
+*   **Protected branches:** cleanup never deletes `main`, `master`, or `develop` (exact names), nor `project.baseBranch` / `project.workingBranch` from `config.json`. The primary worktree is never removed.
 *   **dryRun:** pass `--dry-run` to log intended removals with zero git mutations.
