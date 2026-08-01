@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-01 02:42] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: `/ws-spec-to-pr` a new feature that allows user to choose between install skills globally or in directory project, with local project overriding skills support.
+- **Done**: Added `--global`/`-g` and `--project`/`-p` scope flags to `bin/cli.js` across `install`, `update`, and `uninstall`; added interactive scope selection prompt; added `resolveGlobalSkillsDir()` and `resolveTargetSkillsDir()` to `bin/install-rules.js`; updated `ws-check-harness` (`SKILL.md` & `PHASES.md`) for global token map and workspace skill override precedence; added comprehensive integration test suite in `test/test-install.js` (100% passing); regenerated `bin/skill-integrity.json`.
+- **Result**: Fully implemented and verified Spec-to-PR delivery for Global vs Project skill installation.
+
 ### [2026-07-27 12:45] Agent: Cursor Grok 4.5
 - **Prompt**: Add `/ws-tdah` autoload in root AGENTS.md (development only)
 - **Done**: Root + packaged hubs keep Every-prompt `/ws-tdah`; `ws-shared` mandatory table drops it (on-demand invoke)

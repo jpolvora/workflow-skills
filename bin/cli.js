@@ -18,6 +18,8 @@ import {
   isConsumerOwnedEntry,
   isBlockedInstallTarget,
   findWorkflowSkillsSourceRoot,
+  resolveGlobalSkillsDir,
+  resolveTargetSkillsDir,
 } from './install-rules.js';
 import {
   MANIFEST_REL,
@@ -41,9 +43,19 @@ const skillGraphPath = fs.existsSync(path.join(packageRoot, 'bin', 'skill-depend
   ? path.join(packageRoot, 'bin', 'skill-dependencies.json')
   : path.join(packageRoot, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json');
 const integrityManifestPath = path.join(packageRoot, MANIFEST_REL);
-const targetDir = process.cwd();
-const targetAgentsDir = path.join(targetDir, '.agents');
-const targetSkillsDir = path.join(targetAgentsDir, 'skills');
+
+let isGlobalScope = process.argv.includes('--global') || process.argv.includes('-g');
+let targetDir = process.cwd();
+let targetSkillsDir = resolveTargetSkillsDir({ isGlobal: isGlobalScope, targetDir });
+let targetAgentsDir = path.dirname(targetSkillsDir);
+
+function setScope(isGlobal, customDir = process.cwd()) {
+  isGlobalScope = !!isGlobal;
+  targetDir = path.resolve(customDir);
+  targetSkillsDir = resolveTargetSkillsDir({ isGlobal: isGlobalScope, targetDir });
+  targetAgentsDir = path.dirname(targetSkillsDir);
+}
+
 const CONFIG_FILE = 'config.json';
 const HUB_DIR = 'ws-shared';
 if (HUB_DIR !== INTEGRITY_HUB_DIR) {
@@ -915,6 +927,14 @@ function parseInstallArgs(args) {
       yes = true;
       continue;
     }
+    if (a === '--global' || a === '-g') {
+      setScope(true);
+      continue;
+    }
+    if (a === '--project' || a === '-p') {
+      setScope(false);
+      continue;
+    }
     if (a === '--force-integrity') {
       forceIntegrity = true;
       continue;
@@ -1101,7 +1121,7 @@ async function runInstall(skills, opts) {
   console.log('============================================================');
   console.log('  Workflow Skills - Non-interactive Install');
   console.log('============================================================');
-  console.log(`Target: ${targetSkillsDir}`);
+  console.log(`Target: ${targetSkillsDir} [${isGlobalScope ? 'Global Scope' : 'Project Scope'}]`);
   console.log('------------------------------------------------------------');
 
   const selected = buildSelectedFromInstallOpts(skills, opts);
@@ -1267,6 +1287,14 @@ function parseUninstallArgs(args) {
       yes = true;
       continue;
     }
+    if (a === '--global' || a === '-g') {
+      setScope(true);
+      continue;
+    }
+    if (a === '--project' || a === '-p') {
+      setScope(false);
+      continue;
+    }
     if (a === '--skills') {
       skillsCsv = args[++i];
       if (!skillsCsv) {
@@ -1304,7 +1332,7 @@ async function runUninstall(_upstreamSkills, argv) {
   console.log('============================================================');
   console.log('  Workflow Skills - Uninstall');
   console.log('============================================================');
-  console.log(`Target: ${targetSkillsDir}`);
+  console.log(`Target: ${targetSkillsDir} [${isGlobalScope ? 'Global Scope' : 'Project Scope'}]`);
   console.log('------------------------------------------------------------');
 
   if (!fs.existsSync(targetSkillsDir)) {
@@ -1397,7 +1425,7 @@ function runUpdate(skills, includeNew, forceIntegrity = false) {
   console.log('============================================================');
   console.log('  Workflow Skills - Auto Updater');
   console.log('============================================================');
-  console.log(`Target: ${targetSkillsDir}`);
+  console.log(`Target: ${targetSkillsDir} [${isGlobalScope ? 'Global Scope' : 'Project Scope'}]`);
   console.log('------------------------------------------------------------');
 
   if (!fs.existsSync(targetSkillsDir)) {
@@ -1537,6 +1565,26 @@ async function runInteractive(skills, forceIntegrity = false) {
     output: process.stdout,
   });
 
+  if (
+    !process.argv.includes('--global') &&
+    !process.argv.includes('-g') &&
+    !process.argv.includes('--project') &&
+    !process.argv.includes('-p')
+  ) {
+    if (process.stdin.isTTY) {
+      console.log('Select target installation scope:');
+      console.log('  1) Project directory (.agents/skills in current directory) [Default]');
+      console.log('  2) Global directory (user global agent profile)');
+      const scopeAns = (await rl.question('Choice (1 or 2, default 1): ')).trim();
+      if (scopeAns === '2') {
+        setScope(true);
+      } else {
+        setScope(false);
+      }
+      console.log('');
+    }
+  }
+
   const selected = new Array(skills.length).fill(false);
 
   while (true) {
@@ -1545,7 +1593,7 @@ async function runInteractive(skills, forceIntegrity = false) {
     console.log('  Workflow Skills - Skill Installer');
     console.log('============================================================');
     console.log(`Source: ${srcSkillsDir}`);
-    console.log(`Target: ${targetSkillsDir}`);
+    console.log(`Target: ${targetSkillsDir} [${isGlobalScope ? 'Global Scope' : 'Project Scope'}]`);
     console.log('------------------------------------------------------------');
     console.log("Packages: 'f' Full · 'w' Workflows · 'e' Extra");
     console.log("Toggle: number · 'a' all · Selecting a skill also selects its deps.");

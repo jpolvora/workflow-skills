@@ -1,15 +1,8 @@
 ---
-
-
-
-
-
-
-
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.0.111
+version: 0.0.112
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -66,15 +59,21 @@ Canonical: [`tools.md`](../ws-shared/tools.md) § Path tokens · [`config-resolu
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{us-dir}` | `{plansDir}/{slug}/` | skip existence if slug unknown |
+| `{globalSkillsRoot}` | `GEMINI_CONFIG_DIR/skills` / `WORKFLOW_SKILLS_GLOBAL_DIR/skills` / `~/.gemini/config/skills` / `~/.agents/skills` | `~/.gemini/config/skills` |
 
 Expand braces before any broken-link claim. Remaining unknown braces → template (skip). Bare `ws-shared/MEMORY.md` → warning (prefer `{sharedDir}/MEMORY.md`). Token-only prose outside links is healthy; Markdown `(...)` targets must be real paths.
 
-## Hub resolution (Phase 0)
+## Hub resolution & Mixed Install Support (Phase 0)
 
 | Mode | Detection | Primary hub |
 |------|-----------|-------------|
 | **Upstream** | `bin/skill-dependencies.json` + `.agents/AGENTS.md` | Root `AGENTS.md` (+ dual-hub drift) |
 | **Consumer** | `{sharedDir}/AGENTS.md` without upstream markers | `{sharedDir}/AGENTS.md` |
+
+**Global & Mixed Install Rules:**
+- Skills may be installed globally (`{globalSkillsRoot}`) or locally (`{skillsRoot}`).
+- **Local Overrides:** Local project skills in `{skillsRoot}` take precedence over global skills in `{globalSkillsRoot}`. If a skill exists in both locations, the local project version is the active override — do **not** flag duplicate `name:` entries across global vs local as a collision error.
+- **Config Precedence:** Local `{sharedDir}/config.json` overrides global `{globalSkillsRoot}/ws-shared/config.json`.
 
 Consumer: missing root `AGENTS.md` is OK. Extra-package optional missing paths = intentional omission. Phase 5b sprawl on managed upstream skills → Upstream debt (informational), not consumer problem count (unless user asked to optimize).
 

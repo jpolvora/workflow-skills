@@ -10,7 +10,7 @@
 
 
 name: ws-self-learning
-version: 0.0.111
+version: 0.0.112
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 
 invocation_names:

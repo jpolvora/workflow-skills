@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 
 /**
  * Shared installer include/skip rules — used by cli.js copy paths and skill-integrity hashing.
@@ -131,3 +132,36 @@ export function isBlockedInstallTarget(cwd, packageRoot) {
     resolvedCwd === sourceTestDir || resolvedCwd.startsWith(sourceTestDir + path.sep);
   return !isSourceTestConsumer;
 }
+
+/**
+ * Resolves the global skills directory based on environment variables or user home defaults.
+ * 1. process.env.WORKFLOW_SKILLS_GLOBAL_DIR
+ * 2. process.env.GEMINI_CONFIG_DIR (append /skills if path doesn't end with /skills)
+ * 3. Default: ~/.gemini/config/skills
+ */
+export function resolveGlobalSkillsDir() {
+  if (process.env.WORKFLOW_SKILLS_GLOBAL_DIR) {
+    return path.resolve(process.env.WORKFLOW_SKILLS_GLOBAL_DIR);
+  }
+  if (process.env.GEMINI_CONFIG_DIR) {
+    const geminiDir = path.resolve(process.env.GEMINI_CONFIG_DIR);
+    return path.basename(geminiDir) === 'skills' ? geminiDir : path.join(geminiDir, 'skills');
+  }
+  const home = os.homedir();
+  return path.join(home, '.gemini', 'config', 'skills');
+}
+
+/**
+ * Resolves the target skills directory for installation based on scope options.
+ * @param {Object} options
+ * @param {boolean} [options.isGlobal] - Whether target scope is global
+ * @param {string} [options.targetDir] - Project root directory (defaults to process.cwd())
+ */
+export function resolveTargetSkillsDir(options = {}) {
+  if (options.isGlobal) {
+    return resolveGlobalSkillsDir();
+  }
+  const baseDir = options.targetDir ? path.resolve(options.targetDir) : process.cwd();
+  return path.join(baseDir, '.agents', 'skills');
+}
+
