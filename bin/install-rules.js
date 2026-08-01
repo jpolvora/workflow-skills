@@ -29,6 +29,7 @@ export const HUB_DEST_ALIASES = {
   'hub.gitignore': '.gitignore',
 };
 
+export const HUB_DIR = 'ws-shared';
 export const INSTALLED_SKILLS_FILE = 'installed-skills.json';
 export const SKILL_INTEGRITY_LOCAL_FILE = 'skill-integrity-local.json';
 
@@ -188,8 +189,6 @@ export function isHomeDirectory(dir = process.cwd()) {
   }
 }
 
-let legacyGlobalWarned = false;
-
 /**
  * Resolves the global skills directory based on environment override or user home default (~/.agents/skills).
  * 1. process.env.WORKFLOW_SKILLS_GLOBAL_DIR (if set)
@@ -201,30 +200,7 @@ export function resolveGlobalSkillsDir() {
     return path.resolve(process.env.WORKFLOW_SKILLS_GLOBAL_DIR.trim());
   }
   const home = getHomeDir();
-  const newGlobalDir = path.join(home, '.agents', 'skills');
-
-  if (!legacyGlobalWarned) {
-    try {
-      const candidates = [
-        process.env.GEMINI_CONFIG_DIR ? path.join(path.resolve(process.env.GEMINI_CONFIG_DIR), 'skills') : null,
-        path.join(home, '.gemini', 'config', 'skills'),
-      ].filter(Boolean);
-      const legacyDir = candidates.find((d) =>
-        fs.existsSync(path.join(d, HUB_DIR, INSTALLED_SKILLS_FILE))
-      );
-      if (legacyDir && path.resolve(legacyDir) !== path.resolve(newGlobalDir)) {
-        console.warn(
-          `Notice: Detected a previous global skills installation at "${legacyDir}". ` +
-            `Global operations now target "${newGlobalDir}". You can move your existing skills to "${newGlobalDir}".`
-        );
-        legacyGlobalWarned = true;
-      }
-    } catch {
-      // Ignore detection errors
-    }
-  }
-
-  return newGlobalDir;
+  return path.join(home, '.agents', 'skills');
 }
 
 /**

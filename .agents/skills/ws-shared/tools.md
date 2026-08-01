@@ -13,6 +13,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{us-dir}` | `{plansDir}/{slug}/` | (slug from workflow) |
+| `{globalSkillsRoot}` | `WORKFLOW_SKILLS_GLOBAL_DIR` (if set) | `~/.agents/skills` |
 
 **Agent contract:**
 
