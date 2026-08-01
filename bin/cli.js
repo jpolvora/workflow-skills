@@ -1589,15 +1589,8 @@ async function runInteractive(skills, forceIntegrity = false) {
       const isHome = isHomeDirectory(process.cwd());
       if (isHome) {
         console.log('Detected current directory is your user home directory (~).');
-        console.log('Select target installation scope:');
-        console.log('  1) Global directory (~/.agents/skills) [Default]');
-        console.log('  2) Project directory (.agents/skills in current directory)');
-        const scopeAns = (await rl.question('Choice (1 or 2, default 1): ')).trim();
-        if (scopeAns === '2') {
-          setScope(false);
-        } else {
-          setScope(true);
-        }
+        setScope(true);
+        console.log('Scope: Global (~/.agents/skills)');
       } else {
         console.log('Select target installation scope:');
         console.log('  1) Project directory (.agents/skills in current directory) [Default]');
