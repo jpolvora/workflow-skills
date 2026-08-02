@@ -167,7 +167,7 @@ Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.j
 | `ws-configure-project` | `skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
 | `ws-goal-loop` | `skills/ws-goal-loop/SKILL.md` | Generic convergence loop (used by `ws-goal-fix-pr`) |
 | `ws-spec-index` | `skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
-| `ws-spec-list` | `skills/ws-spec-list/SKILL.md` | Spec workflow board + continue/start/finish/cancel/archive/remove menu |
+| `ws-spec-list` | `skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |
 | `ws-sync-spec` | `skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `ws-senior-developer` | `skills/ws-senior-developer/SKILL.md` | Optional engineering-delivery gate and Code review proof source |
 
@@ -201,7 +201,7 @@ Primary table: **Workflows-package** install only (matches Skill index above).
 | Spec → PR lite (sequential) | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
-| List / manage spec workflows (board + menu) | `ws-spec-list` |
+| List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
@@ -252,7 +252,7 @@ Not shipped in the skill package (except where noted). Resolve each dependency i
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames; prefer skills over host-private rule files |
 | Domain catalog | `specs/domains/` — consumer-owned |
-| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/plans/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (default `.agents/codereviews`) |
+| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (token `{specsDir}`; default `.agents/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (token `{reviewsDir}`; default `.agents/codereviews`) |
 
 ### Code review proof
 

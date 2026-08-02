@@ -11,6 +11,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 | `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
 | `{sharedDir}` | `pathTokens.sharedDir` | `{skillsRoot}/ws-shared` → `.agents/skills/ws-shared` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
+| `{specsDir}` | `plans.specsDir` | `.agents/specs` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{us-dir}` | `{plansDir}/{slug}/` | (slug from workflow) |
 | `{globalSkillsRoot}` | `WORKFLOW_SKILLS_GLOBAL_DIR` (if set) | `~/.agents/skills` |
@@ -23,7 +24,8 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 4. **Shell recipes:** expand tokens before paste, or write the Default path literally (copy-paste safe).
 5. **Markdown links** in skill files: use real relative paths (`../ws-shared/…`), never brace tokens (GitHub/ws-check-harness cannot expand them).
 6. **Hub routing tables** that inventory disk paths: keep full `.agents/skills/…` literals so audits stay filesystem-true.
-7. `{skillsRoot}` / `{sharedDir}` are **fixed install layout**, not relocatable consumer knobs (unlike `plans.dir`).
+7. `{skillsRoot}` / `{sharedDir}` are **fixed install layout**, not relocatable consumer knobs (unlike `plans.dir` / `plans.specsDir` / `reviews.dir`).
+8. Spec skills read/write human-facing `*.spec.md` under `{specsDir}` by default; canonical workflow copy remains `{us-dir}/step-00-*.spec.md`.
 
 ## Core tools
 

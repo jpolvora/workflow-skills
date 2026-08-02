@@ -82,6 +82,8 @@ Sequential multi-spec batch delivery orchestrator with **smart complexity & flow
 
 ```
 /ws-multi-spec
-/ws-multi-spec .agents/specs/13-runner.spec.md .agents/specs/14-editor.spec.md
-/ws-multi-spec .agents/plans/ws-multi-spec/ms-20260725T220000Z.state.md
+/ws-multi-spec {specsDir}/13-runner.spec.md {specsDir}/14-editor.spec.md
+/ws-multi-spec {plansDir}/ws-multi-spec/ms-20260725T220000Z.state.md
 ```
+
+Resolve `{specsDir}` ← `plans.specsDir` (default `.agents/specs`) and `{plansDir}` ← `plans.dir` before tool calls.

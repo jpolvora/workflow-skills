@@ -9,7 +9,7 @@
 | Token | Resolution |
 |-------|------------|
 | `{plansDir}` | **Token** (not a config key). Resolve from `config.json` → `plans.dir` (default value: `.agents/plans`) |
-| `{specs-dir}` | **Token**. Resolve from `config.json` → `plans.specsDir` (default: `.agents/specs`; prefer existing repo-root `specs/` when present) — optional mirror only |
+| `{specsDir}` | **Token** (not a config key). Resolve from `config.json` → `plans.specsDir` (default: `.agents/specs`; prefer existing repo-root `specs/` when present) — human-facing specs / optional mirror |
 | `{us-dir}` | `{plansDir}/{slug}/` |
 | `{slug}` | `us-{id}` for issues; basename or frontmatter `slug:` for local specs |
 | `{workflow-id}` | Unique run id; state file basename without `.state.md`. **Format:** `{slug}-{YYYYMMDDTHHMMSSZ}[-{suffix}]` (issue runs: `us-{id}-{YYYYMMDDTHHMMSSZ}`). Examples: `us-2416-20260621T214006`, `spec-provider-skills-20260713T142006Z-7cdbef`. **Not** `step-*` (reserved for step artifacts below) and **not** invented abbreviations (`stp-`, `uswf-` as basename). |
@@ -77,7 +77,7 @@ Stage **only**:
 | Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `local` |
 | Free-text brainstorm | `ws-write-spec` (optional mirror via `ws-local-spec-provider`) | `{us-dir}/step-00-{slug}.spec.md` | `local` |
 
-Optional: copy a read-only mirror to `{specs-dir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `## Artifacts.specPath` (must point at the `step-00-` file under `{us-dir}`).
+Optional: copy a read-only mirror to `{specsDir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `## Artifacts.specPath` (must point at the `step-00-` file under `{us-dir}`).
 
 **Snapshot (audit-only):** tracker fetches also write `step-00-{slug}.issue.json` (GitHub issue JSON or ADO WIT JSON). Never treat the snapshot as the canonical spec.
 
@@ -87,7 +87,7 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 
 - `{us-dir}/{slug}.spec.md`
 - `{us-dir}/{slug}.plan.md`
-- `{specs-dir}/{slug}.spec.md` as the only copy (mirror OK)
+- `{specsDir}/{slug}.spec.md` as the only copy (mirror OK)
 - Bare `{slug}.result.md` without `step-08-` prefix
 - `stp-*.state.md` or any invented prefix for state (use `{workflow-id}.state.md` with `{slug}-{ISO}` form)
 - `step-*.state.md` — `step-NN-` is **only** for step deliverables in the table above, never for state/archive/baseline

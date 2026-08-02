@@ -44,11 +44,11 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 ### 1. `init`
 
 - Read source document (`README.md`, `PROJECT.PRD`, `SPECS.md`, or user text).
-- Create `{plans.specsDir}/` directory (default `.agents/specs/`).
-- **Guard:** If `{plans.specsDir}/index.PRD` already exists and is non-empty, do **not** overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"` when `--force` is absent.
-- Write `{plans.specsDir}/index.PRD` using structure from [`INDEX-TEMPLATE.md`](INDEX-TEMPLATE.md).
+- Create `{specsDir}/` directory (`plans.specsDir`, default `.agents/specs/`).
+- **Guard:** If `{specsDir}/index.PRD` already exists and is non-empty, do **not** overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"` when `--force` is absent.
+- Write `{specsDir}/index.PRD` using structure from [`INDEX-TEMPLATE.md`](INDEX-TEMPLATE.md).
 - Seed phase feature lists (`- [ ]`) and next-specs table with `spec:` links.
-- **Done when:** `{plans.specsDir}/index.PRD` exists with standard sections and seed items; no invented full AC bodies.
+- **Done when:** `{specsDir}/index.PRD` exists with standard sections and seed items; no invented full AC bodies.
 
 ### 2. `sync` (auto-run at delivery/ship exit)
 

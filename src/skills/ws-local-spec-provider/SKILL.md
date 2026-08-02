@@ -52,7 +52,7 @@ Orch when `providers.active=local` or input is `*.spec.md`; also `ws-write-spec`
 |-----------|---------|-------|
 | `<intent>` | required | Contract below |
 | path / slug | — | Local file or slug under `specsDir` |
-| `--mirror` | false | Also write `{specs-dir}/{slug}.spec.md` |
+| `--mirror` | false | Also write `{specsDir}/{slug}.spec.md` |
 
 ## Config
 
@@ -67,8 +67,8 @@ Missing `specsDir`: ensure dir + write key into local `config.json` (gitignored)
 
 | Layout | Path |
 |--------|------|
-| Flat | `{specs-dir}/{slug}.spec.md` |
-| Nested | `{specs-dir}/{slug}/README.spec.md` or `{slug}/{slug}.spec.md` |
+| Flat | `{specsDir}/{slug}.spec.md` |
+| Nested | `{specsDir}/{slug}/README.spec.md` or `{slug}/{slug}.spec.md` |
 
 Canonical copy is always `{us-dir}/step-00-{slug}.spec.md`.
 

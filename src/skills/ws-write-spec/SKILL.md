@@ -32,7 +32,7 @@ invocation_names:
 
 Draft a **canonical** local spec from free-text. Act as a Product Manager: clear scope, testable acceptance criteria.
 
-**Canonical path:** `{us-dir}/step-00-{slug}.spec.md` (`{us-dir}` = `{plansDir}/{slug}/`). Human-browsable mirrors under `plans.specsDir` are owned by [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) — never copy them yourself.
+**Canonical path:** `{us-dir}/step-00-{slug}.spec.md` (`{us-dir}` = `{plansDir}/{slug}/`). Human-browsable mirrors under `{specsDir}` (`plans.specsDir`, default `.agents/specs`) are owned by [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) — never copy them yourself.
 
 **Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` and `id: null`.
 
@@ -72,7 +72,7 @@ Workflow (ws-spec-to-pr / lite Step 0): orchestrator passes `description` and op
      --mirror
    ```
 
-   That script normalizes `source: local` (in-place when input is already the canonical `step-00-` file) and writes `{plans.specsDir}/{slug}.spec.md` (default `specs/`). Use `--force` only when overwriting an existing mirror that differs.
+   That script normalizes `source: local` (in-place when input is already the canonical `step-00-` file) and writes `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Use `--force` only when overwriting an existing mirror that differs.
    - Done when: command succeeded, or this step was skipped.
 
 5. **Handoff** — Return the canonical `{us-dir}/step-00-{slug}.spec.md` path for [ws-write-plan](../ws-write-plan/SKILL.md). Mention the mirror path only if one was written. In workflow mode the orchestrator records `specPath` at that file and `specSource: local`.

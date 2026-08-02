@@ -143,7 +143,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Spec → PR lite | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
-| List / manage spec workflows (board + menu) | `ws-spec-list` |
+| List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
@@ -242,7 +242,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set — do not invent filenames |
-| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/specs`) · optional `reviews.dir` (default `.agents/codereviews`) |
+| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (token `{specsDir}`; default `.agents/specs`) · optional `reviews.dir` (token `{reviewsDir}`; default `.agents/codereviews`) |
 
 Bootstrap notes: [`setup.md`](setup.md). Config resolution: [`config-resolution.md`](config-resolution.md).
 

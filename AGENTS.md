@@ -138,7 +138,7 @@ These ship to consumers but are **not autoloaded** by default on consumer projec
 | GitHub issue → spec / fix | `ws-github-provider` or orchestrator with issue URL |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 
-Workflow artifacts: prefer repo-root `specs/` (this upstream dogfoods `specs/`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
+Workflow artifacts: prefer `{specsDir}` from `config.json` → `plans.specsDir` (default `.agents/specs`; this upstream may also keep legacy repo-root `specs/`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
 
 #### After changes (recommend / gate)
 
@@ -362,7 +362,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
-| `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Spec workflow board + continue/start/finish/cancel/archive/remove menu |
+| `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -391,7 +391,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Spec → PR lite | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
-| List / manage spec workflows (board + menu) | `ws-spec-list` |
+| List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | GitHub issue/PR ops | `ws-github-provider` |
 | ADO WI/PR ops | `ws-azure-devops-provider` |
@@ -458,7 +458,7 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
 | Optional consumer rules | Other `config.json` `rules.*` paths when set (e.g. `rules.efMigrations`, `rules.viewPatterns`) — do not invent filenames; prefer skills over host-private rule files |
 | Domain catalog | `specs/domains/` — consumer; starter [`specs/domains/index.md.example`](specs/domains/index.md.example) |
-| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (default `.agents/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (default `.agents/codereviews`) |
+| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (token `{specsDir}`; default `.agents/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (token `{reviewsDir}`; default `.agents/codereviews`) |
 
 Packaged consumer mirror: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) § External dependencies · bootstrap notes in [`ws-shared/setup.md`](.agents/skills/ws-shared/setup.md).
 

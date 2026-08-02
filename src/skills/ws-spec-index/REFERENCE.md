@@ -6,8 +6,8 @@ Reference details, evidence rules, path tokens, and call contracts for `ws-spec-
 
 | Token | Default | Source |
 |-------|---------|--------|
-| `{plans.specsDir}` | `.agents/specs/` | `config.json` → `plans.specsDir` |
-| `{plans.dir}` | `.agents/plans/` | `config.json` → `plans.dir` |
+| `{specsDir}` | `.agents/specs/` | `config.json` → `plans.specsDir` |
+| `{plansDir}` | `.agents/plans/` | `config.json` → `plans.dir` |
 
 ## Status Legend
 
@@ -38,8 +38,8 @@ Consumer repositories may evolve their `index.PRD` layout. `ws-spec-index` opera
 | **Next specs table** | Template: `# \| Spec \| Status \| Target Phase \| Notes`<br/>Live: `# \| Status \| Spec file \| Scope` (or any table with Status + Spec/file) | Locate backtick `*.spec.md` or slug in table row; update status column cell (`[ ]` → `[x]`). |
 | **Done log table** | Template: `Date \| Slug \| Title \| PR / Commit`<br/>Live: `When \| Item \| Notes` (or Date/When + Item/Slug) | Append completed row using available column layout. |
 | **Feature map** | Bullet lists `- [ ] Feature (\`spec: ...\`)` or nested bullets with separate `- **spec:** \`...\`` | Match backtick `*.spec.md` or slug; update checkbox `[ ]` → `[x]`. |
-| **Dual-path specs** | Both `{plans.specsDir}/{slug}.spec.md` mirror and `{plans.dir}/{slug}/step-00-*.spec.md` exist | `{plans.specsDir}/{slug}.spec.md` path is primary for index status updates. |
-| **`init` Guard** | Non-empty `{plans.specsDir}/index.PRD` exists | Refuse to overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"`. |
+| **Dual-path specs** | Both `{specsDir}/{slug}.spec.md` mirror and `{plansDir}/{slug}/step-00-*.spec.md` exist | `{specsDir}/{slug}.spec.md` path is primary for index status updates. |
+| **`init` Guard** | Non-empty `{specsDir}/index.PRD` exists | Refuse to overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"`. |
 | **Spec Frontmatter** | Frontmatter may have `status: draft|completed` or no `status` field | Index row + disk slug mapping is primary; spec frontmatter update is optional. |
 
 ## Orchestrator Call Contract

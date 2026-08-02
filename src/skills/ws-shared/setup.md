@@ -39,11 +39,11 @@ Same entry paths for **standard** and **lite**. Resolve provider from `config.js
 | Free-text feature description (no spec) | `ws-write-spec` (standard or lite) | Brainstorm → `step-00-{slug}.spec.md` |
 | Plain text in invocation (no issue id, no `*.spec.md` path) | `ws-write-spec` | Same as free-text row |
 
-Optional mirror: `{specs-dir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `step-00-{slug}.spec.md` under `{us-dir}`.
+Optional mirror: `{specsDir}/{slug}.spec.md` for human browsing (`plans.specsDir`, default `.agents/specs`). Downstream skills **always** read `step-00-{slug}.spec.md` under `{us-dir}`.
 
 1. **Config check**: Check if `.agents/skills/ws-shared/config.json` exists (fresh install normally seeds it from `config.json.example`).
    - If missing: `cp .agents/skills/ws-shared/config.json.example .agents/skills/ws-shared/config.json`.
-   - Load path tokens early ([`tools.md`](tools.md) § Path tokens): `pathTokens.skillsRoot` / `sharedDir` (defaults `.agents/skills` / `.agents/skills/ws-shared`) plus `{plansDir}` ← `plans.dir`. Expand braces before Read/Grep/Shell.
+   - Load path tokens early ([`tools.md`](tools.md) § Path tokens): `pathTokens.skillsRoot` / `sharedDir` (defaults `.agents/skills` / `.agents/skills/ws-shared`) plus `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Expand braces before Read/Grep/Shell.
    - User-gate: **Configure now (Recommended)** / **Skip**.
    - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`ws-configure-project`](../ws-configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
    - If **Skip**: continue with example defaults; warn that providers/verification may be wrong until ws-configure-project runs.

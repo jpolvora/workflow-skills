@@ -8,7 +8,7 @@ Standard progressive-disclosure spec index scaffold.
 ## 1. How to use
 
 - **Index (this file):** High-level roadmap, phase feature map, next specs, done log.
-- **Detail specs (`*.spec.md`):** Deep requirements and acceptance criteria in `{plans.specsDir}/`.
+- **Detail specs (`*.spec.md`):** Deep requirements and acceptance criteria in `{specsDir}/`.
 
 ## 2. Status legend
 

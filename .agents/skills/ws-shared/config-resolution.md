@@ -31,9 +31,10 @@ Load early with `toolsFile` (default `tools.md` § Path tokens).
 | `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
 | `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/ws-shared` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
+| `{specsDir}` | `plans.specsDir` | `.agents/specs` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 
-Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{plansDir}` / `{reviewsDir}` remain consumer-configurable.
+Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{plansDir}` / `{specsDir}` / `{reviewsDir}` remain consumer-configurable.
 
 ---
 

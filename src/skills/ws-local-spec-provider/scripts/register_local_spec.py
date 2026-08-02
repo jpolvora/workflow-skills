@@ -8,12 +8,12 @@ Usage:
   python register_local_spec.py --input specs/foo/README.spec.md --force
 
 Writes: {plansDir}/{slug}/step-00-{slug}.spec.md with source: local.
-Optional mirror: {specs-dir}/{slug}.spec.md (flat human-browsable copy).
+Optional mirror: {specsDir}/{slug}.spec.md (flat human-browsable copy).
 
 Supported input layouts under specsDir:
-  Flat:    {specs-dir}/{slug}.spec.md
-  Nested:  {specs-dir}/{slug}/README.spec.md
-           {specs-dir}/{slug}/{slug}.spec.md
+  Flat:    {specsDir}/{slug}.spec.md
+  Nested:  {specsDir}/{slug}/README.spec.md
+           {specsDir}/{slug}/{slug}.spec.md
 """
 from __future__ import annotations
 
@@ -46,9 +46,9 @@ ensure_utf8_stdio()
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
+CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
 DEFAULT_PLANS_DIR = ".agents/plans"
-DEFAULT_SPECS_DIR = "specs"
+DEFAULT_SPECS_DIR = ".agents/specs"
 
 _FM_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
 _SLUG_LINE = re.compile(r"^slug:\s*(.+)$", re.MULTILINE | re.IGNORECASE)
@@ -258,7 +258,7 @@ def main() -> int:
     parser.add_argument(
         "--mirror",
         action="store_true",
-        help="Also write flat mirror {specs-dir}/{slug}.spec.md.",
+        help="Also write flat mirror {specsDir}/{slug}.spec.md.",
     )
     parser.add_argument(
         "--force",

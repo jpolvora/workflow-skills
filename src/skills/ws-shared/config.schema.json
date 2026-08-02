@@ -121,7 +121,7 @@
         "specsDir": {
           "type": "string",
           "default": ".agents/specs",
-          "description": "Repo-relative directory for human-facing local specs (default: .agents/specs). Prefer existing repo-root specs/ when already present. Used by ws-local-spec-provider detect/configure and optional mirrors; canonical workflow copy remains {us-dir}/step-00-{slug}.spec.md"
+          "description": "Repo-relative directory for human-facing local specs. Skill token {specsDir} ← plans.specsDir (default: .agents/specs). Prefer existing repo-root specs/ when already present. Used by ws-local-spec-provider, ws-spec-index, ws-spec-list, ws-multi-spec, ws-sync-spec; canonical workflow copy remains {us-dir}/step-00-{slug}.spec.md"
         },
         "worktreesDir": {
           "type": "string",

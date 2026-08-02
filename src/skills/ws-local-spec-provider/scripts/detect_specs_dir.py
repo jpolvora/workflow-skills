@@ -40,7 +40,7 @@ ensure_utf8_stdio()
 
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "shared" / "config.json"
+CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
 DEFAULT_SPECS_DIR = ".agents/specs"
 LEGACY_SPECS_DIR = "specs"
 

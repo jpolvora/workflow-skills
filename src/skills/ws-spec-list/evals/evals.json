@@ -3,12 +3,14 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "/ws-spec-list — show the project spec board and let me pick one.",
-      "expected_output": "Agent resolves plans.dir, scans state/spec files, prints board, then user-gate for row select.",
+      "prompt": "/ws-spec-list — show the project boards and let me pick one.",
+      "expected_output": "Agent resolves plans.dir and plans.specsDir, prints separate Specs and Plans boards, then user-gate for row select.",
       "assertions": [
         "Agent loads ws-spec-list before acting",
-        "Resolves {plansDir} / plans.specsDir from config.json",
-        "Discovers *.state.md and orphan *.spec.md without a helper script",
+        "Resolves {plansDir} and {specsDir} from config.json",
+        "Discovers {specsDir}/**/*.spec.md separately from {plansDir}/**/*.state.md",
+        "Does not list {plansDir}/**/step-00-*.spec.md on the Spec board",
+        "Presents two boards (or one when --specs/--plans) without merging kinds",
         "Presents user-gate for selection (or markdown fallback)",
         "Output is en-us and harness-neutral"
       ]
@@ -16,9 +18,9 @@
     {
       "id": 2,
       "prompt": "/ws-spec-list — continue the active workflow for slug X.",
-      "expected_output": "Board → select X → Continue → hand off to matching orch; list skill stops.",
+      "expected_output": "Plan board → select X → Continue → hand off to matching orch; list skill stops.",
       "assertions": [
-        "Offers Continue only for active/failed live rows",
+        "Offers Continue only for active/failed live plan rows",
         "Hands off to ws-spec-to-pr or ws-spec-to-pr-lite per workflowType",
         "Does not re-implement pipeline steps inside ws-spec-list"
       ]
@@ -26,11 +28,23 @@
     {
       "id": 3,
       "prompt": "/ws-spec-list — remove a completed plan folder.",
-      "expected_output": "Confirm gate requiring slug match before delete; no delete on dismiss.",
+      "expected_output": "Confirm gate requiring slug match before delete; deletes {us-dir} only; no delete on dismiss.",
       "assertions": [
         "Requires Confirm before Remove",
+        "States kind being deleted (plan folder vs spec file)",
         "HS-1 / re-present on cancel — never infers yes",
+        "Plan Remove does not delete {specsDir} files",
         "Does not delete ws-shared consumer data"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/ws-spec-list --specs — start work from an unlinked spec.",
+      "expected_output": "Spec board only; Start hands off orch with {specsDir} path.",
+      "assertions": [
+        "Shows Spec board rooted at {specsDir}",
+        "Does not treat plan state rows as specs",
+        "Start on spec uses the {specsDir} file path"
       ]
     }
   ]

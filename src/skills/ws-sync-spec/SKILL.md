@@ -53,7 +53,8 @@ Run after task completion (alongside `ws-changelog` and `ws-self-learning`).
    - **Done when:** A summary of modified code symbols, components, and logic changes is established.
 
 2. **Discover Target Spec(s)**:
-   - Search `{plansDir}/specs`, `specs/`, and `{plansDir}/specs/index.PRD` for candidate `*.spec.md` files.
+   - Resolve `{specsDir}` ← `config.json` → `plans.specsDir` (default `.agents/specs`) and `{plansDir}` ← `plans.dir`.
+   - Search `{specsDir}/**/*.spec.md`, `{specsDir}/index.PRD`, and `{plansDir}/**/step-00-*.spec.md` for candidate specs.
    - Match modified code filenames, component names, API endpoints, or domain concepts against spec text.
    - If no spec is found, report: `"No existing spec found for modified feature."` (optionally suggest `ws-write-spec`).
    - **Done when:** Target spec file path(s) are selected or confirmed.

@@ -59,4 +59,4 @@ specDate: 2026-07-02
 1. ACs enumerable and testable — one line per AC.
 2. `source: local` → author owns complete ACs (no tracker fetch).
 3. `*.issue.json` is audit-only — downstream reads `spec.md` only.
-4. Hand-written specs may live under `specs/` etc.; orch normalizes to canonical `step-00` path.
+4. Hand-written specs may live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch normalizes to canonical `step-00` path.
