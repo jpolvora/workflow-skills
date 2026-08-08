@@ -12,7 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-interview loaded."
 
-Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants. Act as a Technical Lead / Senior Architect on a "grill-me" philosophy: resolve ambiguities and secure shared understanding before task decomposition.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
+Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants.
 
 **Canonical path:** writes `{us-dir}/step-02-{slug}.plan.refined.md`, leaving `step-01-{slug}.plan.md` untouched.
 
@@ -86,4 +88,3 @@ needs_user:
   design_branch: string         # e.g., "Authorization / tenant"
 ```
 
-Language: en-us only.

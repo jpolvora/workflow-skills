@@ -11,9 +11,11 @@ invocation_names:
 
 > When this skill is loaded, output "ws-classify-complexity loaded."
 
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
 Analyze a feature spec and recommend **`lite`** or **`standard`** pipeline (`workflowType`) by comparing counted metrics to `config.json` → `dagThresholds`. Writes `{us-dir}/step-00-{slug}.classify.md`.
 
-**Language:** en-us only. **Harness-neutral:** use portable aliases from [`../ws-shared/tools.md`](../ws-shared/tools.md).
+**Harness-neutral:** use portable aliases from [`../ws-shared/tools.md`](../ws-shared/tools.md). Thresholds / scoreAndRefine detail: [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 
 ## Orthogonality to Complexity gate
 
@@ -50,7 +52,7 @@ node {skillsRoot}/ws-classify-complexity/scripts/classify.cjs <spec-path> [--out
 
 ## Steps
 
-1. **Resolve paths** — Expand `{skillsRoot}`, `{sharedDir}`, `{plansDir}` from [`config.json`](../ws-shared/config.json) (or example). Input spec must exist; script exits non-zero if missing.
+1. **Resolve paths** — Expand `{skillsRoot}`, `{sharedDir}`, `{plansDir}` from project `{sharedDir}/config.json` (Entry check above; use `config.json.example` only as last-resort template with an explicit log). Input spec must exist; script exits non-zero if missing.
    - Done when: spec path and slug are known.
 
 2. **Run classifier** — Invoke `classify.cjs`. It:
@@ -76,31 +78,13 @@ node {skillsRoot}/ws-classify-complexity/scripts/classify.cjs <spec-path> [--out
    - **Mid-flight advisory:** If already running `ws-spec-to-pr` and recommendation is `lite`, **stay on current orchestrator** unless the user explicitly chooses **Override to lite** (and orch supports handoff). Log `classify | lite-recommended | stay-standard-unless-override`. Never silently switch `workflowType` mid-flight.
    - Done when: `finalPipeline` is set and orch routes accordingly.
 
-## scoreAndRefine (AC6)
+## scoreAndRefine & thresholds
 
-| Phase | Behavior |
-|-------|----------|
-| **Step 0 / first classify** | Threshold-only recommendation. Classify artifact § scoreAndRefine = `deferred (Pass 1 scores unavailable at Step 0)`. |
-| **After Pass 1** | Orchestrator may re-invoke with `--score-analysis {us-dir}/step-05-{slug}.score-analysis.md`. Script adds distribution (mean, variance, low-score clusters) and may adjust **advisory** recommendation. |
-| **Mid-flight** | Updated recommendation is **advisory only** unless user re-gates. Do not silently change `workflowType`. |
-
-Heuristic (when scores present): uniform high scores (mean ≥ 8, low variance) may reinforce `lite`; high variance or low-score clusters bias toward `standard`.
+See [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 
 ## Output artifact
 
 `{us-dir}/step-00-{slug}.classify.md` — runtime artifact (not Step 8 delivery stage set). Registered in [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) when wired.
-
-## Threshold source
-
-[`config.json`](../ws-shared/config.json) → `dagThresholds` (defaults in [`config.json.example`](../ws-shared/config.json.example)):
-
-| Key | Default | Compared metric |
-|-----|---------|-----------------|
-| `maxImplementationSteps` | 3 | AC / requirement count |
-| `maxExpectedFiles` | 6 | Unique backtick path references |
-| `maxLayers` | 2 | Spec layer headings + configured stack layers |
-
-**Recommend `lite`** when **all** metrics are within limits; otherwise **`standard`**.
 
 ## Related skills
 

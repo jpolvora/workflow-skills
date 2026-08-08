@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr-lite
 version: 0.0.118
-description: Fast sequential Spec-to-PR lite delivery orchestrator FSM (Steps 0–5). Streamlined spec → plan → implement → review → ship → fix-pr pipeline for fast feature delivery. Trigger when user requests fast/lite spec-to-PR delivery.
+description: Fast sequential Spec-to-PR lite orchestrator (Steps 0–5). Trigger when user requests lite/fast spec-to-PR delivery.
 invocation_names:
   - spec-to-pr-lite
   - ws-spec-to-pr-lite
@@ -15,13 +15,13 @@ Sequential spec→ship orchestrator executing inline steps (0–5) using the sam
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in normal mode: prefer `AskQuestion` with ≥2 options per [`gates.md`](../ws-shared/gates.md); fallback to markdown; `autoMode` → auto-gate index 0; cancel → HS-1.
+Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in normal mode: use `user-gate` with ≥2 options per [`gates.md`](../ws-shared/gates.md) (host structured-choice when available; markdown fallback); `autoMode` → auto-gate index 0; cancel → HS-1.
 
 ## Invariants & Mode Rules
 
 1. **Isolation:** `workflowType: lite` — never cross-resume with `standard`.
 2. **Execution:** Inline in main session (no subagent dispatch).
-3. **State & Telemetry:** Run `python .agents/skills/ws-spec-to-pr-lite/scripts/update_state.py` each step with measured `--elapsed` and `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. Missing telemetry → **HS-5**.
+3. **State & Telemetry:** Run `python {skillsRoot}/ws-spec-to-pr-lite/scripts/update_state.py` each step with measured `--elapsed` and `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. Missing telemetry → **HS-5**.
 4. **Artifacts:** `step-00` spec · `step-01` plan · `step-08` result (shared names with standard).
 5. **Commits & Cleanup:** Code in implement/review-fix; plan+result at Step 4 G2-delivery. On `status → completed`, run Phase A git cleanup: `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
 6. **Auto Mode Models:** In `autoMode: true`, switch models per phase if `config.json` → `defaults` defines `plannerModel` (Steps 0–1), `executionModel` (Step 2), `reviewerModel` (Step 3). Fallback to active model if switch fails.
@@ -44,7 +44,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 After completing step N (0..4), before step N+1:
 1. **State Hygiene:** `update_state.py` with measured `--elapsed`, file lists, `--gate-choice`, `--jsonl-out`, and `--bypassed` (if `skipQualityGates`).
 2. **Checkpoint:** `git tag uswf/{workflow-id}/before-step-{N+1}`.
-3. **Pre-Advance CI:** Unless `skipQualityGates`, run `python .agents/skills/ws-spec-to-pr-lite/scripts/validate_state.py {plansDir}/{slug}/{workflow-id}.state.md --pre-advance {N+1}`. Exit code > 0 → **HS-5** (STOP).
+3. **Pre-Advance CI:** Unless `skipQualityGates`, run `python {skillsRoot}/ws-spec-to-pr-lite/scripts/validate_state.py {plansDir}/{slug}/{workflow-id}.state.md --pre-advance {N+1}`. Exit code > 0 → **HS-5** (STOP).
 4. **Progress Board:** Display board → transition gate → proceed to step N+1.
 
 ## Step 0 — Pipeline Classifier
@@ -55,10 +55,7 @@ After `step-00-{slug}.spec.md` exists and before Step 1:
 
 ## Quality Gate Bypass (`skipQualityGates`)
 
-Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
-- **Skipped:** Classifier user-gate, Fable quality visibility, pre-advance CI, telemetry soft gates.
-- **Enforced:** Build, test, security scan, commit/push/PR gates, safety floor (REFUTED verdict + `auditVerdictsBlockShip` = STOP).
-- **Banner & Telemetry:** Show **`[GATES BYPASSED]`** on Progress Board & result file. Append `{"type":"gate-bypass","gate":"{name}","reason":"skip-gates|config","timestamp":"ISO"}` to step JSONL.
+See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
 
 ## Triggers
 

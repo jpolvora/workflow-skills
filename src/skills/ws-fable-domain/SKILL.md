@@ -43,7 +43,7 @@ To create a new adapter bundle:
 2. **Draft Adapter:** Use `references/TEMPLATE.md` as schema.
 3. **Define Binding Evidence:** List 2–4 mandatory primary sources (e.g. IaC state file, cloud logs, raw dataset headers).
 4. **Define Domain Frauds:** List 3 domain-specific false completion patterns.
-5. **Save Adapter:** Save to `.agents/skills/ws-fable-domain/references/<domain-name>.md`.
+5. **Save Adapter:** Save to `{skillsRoot}/ws-fable-domain/references/<domain-name>.md`.
 
 ---
 
@@ -53,4 +53,4 @@ To create a new adapter bundle:
 - [`research.md`](references/research.md): Primary document research, literature synthesis, citation verification.
 - [`TEMPLATE.md`](references/TEMPLATE.md): Standard schema for crafting custom domain adapters.
 
-Language: en-us only.
+**Done when:** adapter file exists under `{skillsRoot}/ws-fable-domain/references/` with required schema sections.

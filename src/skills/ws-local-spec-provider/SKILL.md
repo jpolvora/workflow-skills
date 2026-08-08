@@ -12,6 +12,8 @@ invocation_names:
 
 > When this skill is loaded, output "ws-local-spec-provider loaded."
 
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
 Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/`), register/normalize `*.spec.md` → `{us-dir}/step-00-{slug}.spec.md` with `source: local`. No remote trackers.
 
 **PR/thread/merge:** hybrid — load `providers.scm` skill ([ws-github-provider](../ws-github-provider/SKILL.md) / [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)). Never no-op silently. Reject `scm: "local"`.
@@ -71,10 +73,10 @@ Canonical copy is always `{us-dir}/step-00-{slug}.spec.md`.
 ## Scripts (Done when)
 
 ```bash
-python .agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.py --validate   # validate-auth
-python .agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.py --detect [--ensure]
-python .agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.py --configure specs
-python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
+python {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.py --validate   # validate-auth
+python {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.py --detect [--ensure]
+python {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.py --configure specs
+python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py \
   --input path/to/feature.spec.md [--slug feature] [--mirror] [--force]
 ```
 

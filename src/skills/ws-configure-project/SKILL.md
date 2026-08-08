@@ -13,7 +13,7 @@ invocation_names:
 
 Fill or refresh consumer `config.json` via detect → suggest → user-gate. Portable: no host-product names; paths use `{plansDir}` tokens after write.
 
-**Config path:** `.agents/skills/ws-shared/config.json` (gitignored). Template: [`ws-shared/config.json.example`](../ws-shared/config.json.example). Schema: [`shared/config.schema.json`](../ws-shared/config.schema.json).
+**Config path:** `{sharedDir}/config.json` (gitignored). Template: [`ws-shared/config.json.example`](../ws-shared/config.json.example). Schema: [`shared/config.schema.json`](../ws-shared/config.schema.json).
 
 **Callers:** standalone anytime; [`ws-shared/setup.md`](../ws-shared/setup.md) bootstrap step 1; post-install when user opts in.
 
@@ -40,7 +40,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 3. **Gap list** — Compare current `config.json` to required keys in INTERVIEW.md § Required. Mark each: filled / placeholder (`<…>` or empty) / missing.
    - Done when: gap list exists; `--force` treats filled as re-ask candidates.
 
-4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (or batch if user prefers). Never commit `config.json`.
+4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never commit `config.json`.
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
 5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file.
@@ -57,4 +57,3 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Do not invent org/repo secrets; leave PAT/env keys as env-var names only.
 - `providers.scm` never `local`; hybrid `active=local` + `scm=github|azure-devops` allowed.
 - Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/ws-shared/CHANGELOG.md` unless user picks otherwise.
-- Language: en-us.

@@ -12,9 +12,11 @@ invocation_names:
 
 > When this skill is loaded, output "ws-implement-tasks loaded."
 
-Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Act as a Senior Software Developer: clean code, SOLID, surgical edits, stack-consistent, no duplication.
+Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Surgical edits only; match stack patterns; no duplication.
 
-**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; `{sharedDir}/MEMORY.md` (Grep task keywords before coding — expand per [`tools.md`](../ws-shared/tools.md) § Path tokens; [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult).
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
+**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
 
 ## Invocation
 
@@ -31,10 +33,23 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
 | `<plan-path>` | required | Execution, refined, or draft plan path |
 | `mode` | `build` | `build` or `fix` |
 | `findings` | (optional) | Findings report or review comments path |
+
+## Build mode
+
+1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria.
+   - Done when: every task/step has an identified file list and AC.
+
+2. **Consult MEMORY** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for modules/paths/keywords in the plan; apply Medium+ Solutions before editing.
+   - Done when: relevant entries noted or none found.
+
+3. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
+   - Done when: a matching pattern is found, or none exists and this is noted.
+
+4. **Implement** — Write minimal, modular code matching the requirements without scope creep.
    - Done when: every planned file is created or modified per its AC.
 
-5. **Validate** — Run the build and unit tests for modified layers (backend/frontend).
-   - Done when: build/test results are captured (pass or fail).
+5. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
+   - Done when: applicable verification commands exit 0 (or failures are listed in step-output with `status: failed`).
 
 6. **Report** — Return the modified/created file lists and test output details.
    - Done when: the step-output below is populated.
@@ -44,7 +59,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
 1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
    - Done when: every finding is enumerated.
 
-2. **Consult MEMORY** — Grep `{sharedDir}/MEMORY.md` for the defect class / paths; reuse known Solutions before inventing fixes.
+2. **Consult MEMORY** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths; reuse known Solutions before inventing fixes.
    - Done when: relevant entries noted or none found.
 
 3. **Correct** — Apply minimal, targeted fixes per [ws-karpathy-guidelines](../ws-karpathy-guidelines/SKILL.md).
@@ -56,8 +71,8 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
 5. **Anti-regression test** — Write a unit test covering the corrected defect scenario.
    - Done when: each fixed finding has a covering test.
 
-6. **Validate** — Run the project build and test suites to confirm no regressions were introduced.
-   - Done when: build/test results are captured (pass or fail).
+6. **Validate** — Run project build and test suites from `config.json.verification`.
+   - Done when: applicable verification commands exit 0 (or failures are listed in step-output with `status: failed`).
 
 ## Output (both modes)
 
@@ -81,4 +96,4 @@ summary: |
 
 ## Rules
 
-No commit/push (orch/user owns staging). Surgical scope only. Schema migrations via project CLI only. Language: en-us.
+No commit/push (orch/user owns staging). Surgical scope only. Schema migrations via project CLI only.

@@ -1,7 +1,7 @@
 ---
 name: ws-tdah
 version: 0.0.118
-description: Action-first response & execution directives — enforces concise, action-led replies, numbered steps, and operational decision-making.
+description: Action-first reply shape and operational judgment. Trigger via /ws-tdah, /tdah, or start ws-tdah (autoload in upstream dogfood hubs).
 invocation_names:
   - tdah
   - ws-tdah

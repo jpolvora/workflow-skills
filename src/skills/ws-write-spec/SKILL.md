@@ -12,7 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-write-spec loaded."
 
-Draft a **canonical** local spec from free-text. Act as a Product Manager: clear scope, testable acceptance criteria.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
+Draft a **canonical** local spec from free-text. 
 
 **Canonical path:** `{us-dir}/step-00-{slug}.spec.md` (`{us-dir}` = `{plansDir}/{slug}/`). Human-browsable mirrors under `{specsDir}` (`plans.specsDir`, default `.agents/specs`) are owned by [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) — never copy them yourself.
 
@@ -49,7 +51,7 @@ Workflow (ws-spec-to-pr / lite Step 0): orchestrator passes `description` and op
 4. **Optional mirror** — Only if `--mirror` or the orchestrator requests a human-browsable copy. Delegate; do not copy files yourself:
 
    ```bash
-   python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
+   python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py \
      --input "{us-dir}/step-00-{slug}.spec.md" \
      --mirror
    ```
@@ -60,4 +62,3 @@ Workflow (ws-spec-to-pr / lite Step 0): orchestrator passes `description` and op
 5. **Handoff** — Return the canonical `{us-dir}/step-00-{slug}.spec.md` path for [ws-write-plan](../ws-write-plan/SKILL.md). Mention the mirror path only if one was written. In workflow mode the orchestrator records `specPath` at that file and `specSource: local`.
    - Done when: caller has the canonical `step-00-` path.
 
-Language: en-us only.

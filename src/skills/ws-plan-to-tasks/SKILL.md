@@ -12,7 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-plan-to-tasks loaded."
 
-Read the finalized plan (`step-02-{slug}.plan.refined.md`, or `step-01-{slug}.plan.md` if Step 2 was bypassed) and decompose it into atomic tasks. Act as a Scrum Master / Project Manager: schedule tasks into parallelizable DAG levels, or auto-detect sequential execution for small plans.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
+Read the finalized plan (`step-02-{slug}.plan.refined.md`, or `step-01-{slug}.plan.md` if Step 2 was bypassed) and decompose it into atomic tasks. 
 
 **Canonical paths:** `{us-dir}/step-03-{slug}.plan.exec.md` (human-readable) and `{us-dir}/step-03-{slug}.exec.dag.json` (machine-readable).
 
@@ -68,4 +70,3 @@ Workflow (ws-spec-to-pr Step 3): orchestrator passes `planPath` (`step-02-*.plan
 - Strict isolation: tasks in the same parallel level never share files (prevents worktree merge conflicts).
 - Consult `config.json` for layer boundaries and project paths.
 
-Language: en-us only.

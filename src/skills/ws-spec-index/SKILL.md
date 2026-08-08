@@ -11,6 +11,8 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-index loaded."
 
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
 Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifications. Disclosed reference: [`REFERENCE.md`](REFERENCE.md), template: [`INDEX-TEMPLATE.md`](INDEX-TEMPLATE.md).
 
 ## Subcommands

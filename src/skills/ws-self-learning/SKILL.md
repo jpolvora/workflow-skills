@@ -11,6 +11,8 @@ invocation_names:
 
 > When this skill is loaded, output "ws-self-learning loaded."
 
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
 **Bidirectional gate** — MEMORY is both input (avoid known traps) and output (record new ones).
 
 Expand path tokens first ([`tools.md`](../ws-shared/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`.
@@ -44,7 +46,7 @@ Task is **not done** until the completion side runs (write or explicit `Learning
 2. **Write to `{sharedDir}/memory/`** — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
 3. **Compile `MEMORY.md`** — Expand tokens, then run:
    ```bash
-   python .agents/skills/ws-self-learning/scripts/self_learning.py --compile
+   python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile
    ```
 4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` in the final proof; one-line summary in the reply.
 
@@ -52,7 +54,7 @@ Task is **not done** until the completion side runs (write or explicit `Learning
 
 If `MEMORY.md` merge-conflicts on pull/merge, **do not** resolve by hand. Run:
 ```bash
-python .agents/skills/ws-self-learning/scripts/self_learning.py --compile
+python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile
 ```
 This rebuilds a clean index from `{sharedDir}/memory/` (per-file entries do not conflict).
 
@@ -69,3 +71,9 @@ This rebuilds a clean index from `{sharedDir}/memory/` (per-file entries do not 
 ```
 
 Path tokens: [`tools.md`](../ws-shared/tools.md) § Path tokens.
+
+## Done when
+
+- Pre-work: Grep notes recorded or none found.
+- Completion: new `{sharedDir}/memory/*.md` compiled via script exit 0, or explicit `Learning: N/A` proof line.
+

@@ -12,7 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-testing loaded."
 
-Plan and execute the pre-PR **testing** battery: unit tests, integration/E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), and feature quality against acceptance criteria. Act as a **Release Engineer / QA Lead** who verifies end-to-end flows, RBAC, and database schema stability.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
+Plan and execute the pre-PR **testing** battery: unit tests, integration/E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), and feature quality against acceptance criteria. 
 
 **Canonical outputs:** `step-07-{slug}.testing.plan.md`, `step-07-{slug}.testing.report.md`. Do not write retired artifact names (`step-11-*.integration-test.*`).
 
@@ -35,7 +37,7 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 ## Prerequisites
 
 - `config.json` resolves local dev server URLs (`apiHost`, `devHost`), locales, and DB seed keys.
-- Codebase builds cleanly (backend + frontend); DB migrations are applied.
+- `config.json.verification` build aliases exit 0 before Step 3; DB migrations applied when required.
 
 ## Steps
 
@@ -43,10 +45,10 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
    - Done when: the plan file exists covering all areas above.
 
 2. **Verify base build**: run build and core test commands from `config.json.verification`.
-   - Done when: the commands ran and results are recorded.
+   - Done when: applicable verification commands exit 0 (failures listed in report with `status: failed`).
 
 3. **Run unit tests**: execute project unit test suites; note failures and missing coverage on touched code.
-   - Done when: unit suite results are recorded.
+   - Done when: unit suite exit code recorded (0 or fail with log excerpt).
 
 4. **Apply DB seeds**: apply and verify seed constraints and cleanups.
    - Done when: seed state is verified or reported as unnecessary.
@@ -64,4 +66,3 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 
 - No code fixes: report gaps and hand off to [ws-implement-tasks (fix mode)](../ws-implement-tasks/SKILL.md) rather than editing code.
 
-Language: en-us only.

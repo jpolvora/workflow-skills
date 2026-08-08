@@ -41,4 +41,4 @@ Root virtue: **predictability** (same process every run, not the same tokens). A
 - [ ] Clean context boundary? (Rare material in separate file or section)
 - [ ] Explicit script launchers? (`python` / `node` / `bash`)
 - [ ] Checkable exit criteria? (`Done when:`)
-- [ ] Version aligned with package? (`version: 0.0.114`)
+- [ ] Version aligned with package? (`version:` matches `package.json` / `packageVersion`)

@@ -1,6 +1,6 @@
 ---
 name: ws-azure-devops-provider
-description: Azure DevOps work-item-to-spec & SCM PR operations — authenticates via PAT, converts ADO work items to specs, lists PR threads, resolves threads via REST API, and merges PRs.
+description: Azure DevOps work-item→spec and PR ops (PAT auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is azure-devops or user invokes /ws-azure-devops-provider.
 version: 0.0.118
 disable-model-invocation: true
 invocation_names:
@@ -11,6 +11,8 @@ invocation_names:
 # ws-azure-devops-provider
 
 > When this skill is loaded, output "ws-azure-devops-provider loaded."
+
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
 Integrate Azure DevOps Work Items and Pull Requests with workflow-skills. Pipeline skills (`ws-write-spec`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-spec-to-pr`) link here instead of embedding `az` / REST recipes.
 
@@ -49,7 +51,7 @@ Auth/config failure → **STOP**. No silent provider fallback.
 |--------|-------|--------|----------------|
 | `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | `{us-dir}/step-00-us-{id}.spec.md` (+ optional JSON) | `ado-workitem-to-spec.py` |
 | `validate-auth` | none | Pass/fail + fixes | Org/project + PAT; optional WIT smoke |
-| `create-pr` | head, base, title/body | PR URL + id | `az repos pr create` and/or REST |
+| `create-pr` | head, base, title/body | PR URL + id | Prefer `az repos pr create`; if `az` missing/fails → REST in INTENTS.md |
 | `list-threads` | PR id | Thread list | `fix_pr_azure_context.py collect` |
 | `check-pr-status` | PR id | Status of build pipelines & policy checks | `az repos pr policy list` / build API |
 | `resolve-thread` | thread id (+ PR id, comment) | Resolved (or dry-run) | `fix_pr_azure_context.py resolve-thread` |
@@ -63,8 +65,8 @@ Auth/config failure → **STOP**. No silent provider fallback.
 
 | Script | Path |
 |--------|------|
-| Work item → spec | `.agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` |
-| Thread ops | `.agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
+| Work item → spec | `{skillsRoot}/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` |
+| Thread ops | `{skillsRoot}/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
 
 ## Config keys
 
@@ -78,3 +80,8 @@ Auth/config failure → **STOP**. No silent provider fallback.
 ## Dependencies
 
 [ws-spec-to-pr](../ws-spec-to-pr/SKILL.md) · [ws-ship-pr](../ws-ship-pr/SKILL.md) · [ws-fix-pr](../ws-fix-pr/SKILL.md) · [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · [ws-spec-format](../ws-spec-format/SKILL.md)
+
+## Done when
+
+- Intent from the contract table completed with cited CLI/script exit 0 (or dry-run simulation recorded).
+- Auth/config failures STOP (no silent fallback).

@@ -12,11 +12,13 @@ invocation_names:
 
 > When this skill is loaded, output "ws-ship-pr loaded."
 
-Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`. Act as a **DevOps Engineer / Release Manager**: drive the **prepare-to-PR** goal checklist (verify + **discover and wait** for local consumer prepare / before-push / before-publish harness steps), then push/create PR via the SCM provider configured in `.agents/skills/ws-shared/config.json` (`providers.scm`: GitHub, Azure DevOps / ADO, etc.), wait 30 seconds for automated code-review actions / CI pipelines to start on SCM infrastructure, run `ws-goal-fix-pr` (default 300 seconds heartbeats), and merge only when clean.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
+Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`: prepare board → push/create PR via configured SCM → wait for CI → `ws-goal-fix-pr` → merge when clean.
 
 ## SCM Independence & Configuration
 
-`ws-ship-pr` is **SCM-provider independent**. It reads `.agents/skills/ws-shared/config.json` at runtime to determine the active SCM platform and dispatch the corresponding provider skill:
+`ws-ship-pr` is **SCM-provider independent**. It reads `{sharedDir}/config.json` at runtime to determine the active SCM platform and dispatch the corresponding provider skill:
 
 - **`providers.scm: "github"`** → dispatches [`ws-github-provider`](../ws-github-provider/SKILL.md) (`gh` CLI / GitHub REST API)
 - **`providers.scm: "azure-devops"`** (or `"ado"`) → dispatches [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) (`az repos` / ADO REST API)
@@ -48,27 +50,15 @@ Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with
 | `stopBeforeFixPr` | `false` | Skip Step 6; orchestrator owns fix-PR at Step 9 |
 | `skipQualityGates` | `false` | Orchestrator-set from `--skip-gates` or `config.json` → `invariants.skipQualityGates` |
 
-Before executing, restate commit title, head/base, SCM provider (read from `config.json`), mode, `skipQualityGates`, `stopBeforeFixPr`, max, and `shipAction`. When `skipQualityGates` is active, prefix banners with **`[GATES BYPASSED]`**. Resolve branches and provider from `.agents/skills/ws-shared/config.json` only.
+Before executing, restate commit title, head/base, SCM provider (read from `config.json`), mode, `skipQualityGates`, `stopBeforeFixPr`, max, and `shipAction`. When `skipQualityGates` is active, prefix banners with **`[GATES BYPASSED]`**. Resolve branches and provider from `{sharedDir}/config.json` only.
 
 ## Quality gate bypass (`skipQualityGates`)
 
-`--skip-gates` → `skipQualityGates: true` (or `config.json` → `invariants.skipQualityGates`). Parsed at orchestrator bootstrap — [`setup.md`](../ws-shared/setup.md) § Parse flags; inherited in `workflowMode`.
-
-When active:
-
-| Skipped (quality gates only) | Never skipped |
-|------------------------------|---------------|
-| Fable PREPARE row 5 visibility (may credit ⏭) — see [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) § 5 | Build, test, security/leak scan (PREPARE rows 1–4) |
-| **Except** `auditVerdictsBlockShip` + **REFUTED** (safety floor still STOP) | SCM resolution and auth |
-| Consumer prepare discovery when orch already satisfied (cite evidence) | HS-1–HS-4 |
-
-**Safety floor (never bypassed):** When `config.json` → `fable.enabled`, `autoAudit`, and `auditVerdictsBlockShip` are all `true`, a **REFUTED** [`ws-fable-judge`](../ws-fable-judge/SKILL.md) verdict still **STOP**s delivery — Step 1 preflight and PREPARE row 5 ❌.
-
-**Banner:** Closing summary, Prepare board header, and delivery outcome show **`[GATES BYPASSED]`** alongside mode flags (`[DRY-RUN]`, etc.) when `skipQualityGates` is true.
+See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row 5 nuances: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) § 5. Safety floor (REFUTED) never bypassed.
 
 ## Steps
 
-1. **Preflight**: resolve `workingBranch`/`baseBranch`/`gitRemote` and SCM provider (`providers.scm` in `config.json`); confirm active branch is `workingBranch`; check `git status` and tracking drift; `git pull {gitRemote} {workingBranch}`; auto-detect base via `bash .agents/skills/ws-ship-pr/scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
+1. **Preflight**: resolve `workingBranch`/`baseBranch`/`gitRemote` and SCM provider (`providers.scm` in `config.json`); confirm active branch is `workingBranch`; check `git status` and tracking drift; `git pull {gitRemote} {workingBranch}`; auto-detect base via `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
    - Optional `fable` integration (safety floor — **never** bypassed by `skipQualityGates`): If `config.json.fable.enabled`, `autoAudit`, and `auditVerdictsBlockShip` are `true`, verify [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audit verdict is not `REFUTED`. If `REFUTED`, stop delivery and require remediation before pushing or creating PR.
    - Done when: branches and SCM provider resolved; working tree clean enough to ship and pulled.
 
@@ -81,7 +71,7 @@ When active:
 4. **Commit & push**: only after Step 2 is green. Commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {workingBranch}`. Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
-5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (read from `config.json`: `github`, `azure-devops` / `ado`, or `local-spec-provider`; STOP if unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {workingBranch} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
+5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {workingBranch} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
    - Done when: PR id/URL captured or reused. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).
 
 6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action / CI workflows to start on SCM infrastructure), then start [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks and `list-threads` via the configured SCM provider, and dispatch `ws-goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `ws-goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
@@ -103,10 +93,9 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 
 ## Dependencies
 
-- Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `bash .agents/skills/ws-ship-pr/scripts/verify.sh`
+- Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `bash {skillsRoot}/ws-ship-pr/scripts/verify.sh`
 - SCM Providers (configured via `config.json` `providers.scm`): [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md)
 - Security: [ws-secrets-leak-review](../ws-secrets-leak-review/SKILL.md)
 - Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md)
-- Base detection: `bash .agents/skills/ws-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../ws-spec-to-pr/ARTIFACTS.md)
+- Base detection: `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../ws-spec-to-pr/ARTIFACTS.md)
 
-Language: en-us only.

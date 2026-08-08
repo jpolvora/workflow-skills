@@ -1,6 +1,6 @@
 ---
 name: ws-github-provider
-description: GitHub issue-to-spec & SCM PR operations — authenticates via gh CLI, converts GitHub issues to specs, lists PR review threads, resolves threads via GraphQL, and merges PRs.
+description: GitHub issue→spec and PR ops (auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is github or user invokes /ws-github-provider.
 version: 0.0.118
 disable-model-invocation: true
 invocation_names:
@@ -11,6 +11,8 @@ invocation_names:
 # ws-github-provider
 
 > When this skill is loaded, output "ws-github-provider loaded."
+
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
 Integrate GitHub Issues and Pull Requests with workflow-skills. Pipeline skills (`ws-write-spec`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-spec-to-pr`) link here instead of embedding `gh` recipes or API calls.
 
@@ -64,9 +66,9 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 
 | Script | Path |
 |--------|------|
-| Issue → spec | `.agents/skills/ws-github-provider/scripts/github-issue-to-spec.py` |
-| List threads | `.agents/skills/ws-github-provider/scripts/fetch_threads.cjs` |
-| Resolve thread | `.agents/skills/ws-github-provider/scripts/resolve_thread.cjs` |
+| Issue → spec | `{skillsRoot}/ws-github-provider/scripts/github-issue-to-spec.py` |
+| List threads | `{skillsRoot}/ws-github-provider/scripts/fetch_threads.cjs` |
+| Resolve thread | `{skillsRoot}/ws-github-provider/scripts/resolve_thread.cjs` |
 
 Optional: `issueTrackers.github.issueToSpecScript` must still resolve to the converter.
 
@@ -84,3 +86,8 @@ Legacy: absent `providers.*` → GitHub default when `issueTrackers.github.enabl
 ## Dependencies
 
 [ws-spec-to-pr](../ws-spec-to-pr/SKILL.md) · [ws-ship-pr](../ws-ship-pr/SKILL.md) · [ws-fix-pr](../ws-fix-pr/SKILL.md) · [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · [ws-spec-format](../ws-spec-format/SKILL.md)
+
+## Done when
+
+- Intent from the contract table completed with cited CLI/script exit 0 (or dry-run simulation recorded).
+- Auth failures STOP with `validate-auth` remediation (no silent fallback).

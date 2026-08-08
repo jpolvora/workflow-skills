@@ -12,9 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-goal-fix-pr loaded."
 
-Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
-Act as a **Principal Engineer** coordinating fix iterations and driving open threads to zero. Thread-count probes and fix rounds are SCM-aware: resolve `providers.scm`, then delegate platform I/O: never hardcode a GitHub-only or ADO-only recipe here. See [examples.md](examples.md) for worked scenarios.
+Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
 
 ## Invocation
 
@@ -67,7 +67,7 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** 
 2. **Initial heartbeat check**: call `list-threads` and check active SCM CI/code-review run status. If `activeThreads == 0` and actions/pipelines are completed on this first check, do not exit immediately: arm the ws-goal-loop 300s heartbeat timer, wait, and re-collect once. If review actions are still `pending` or `in_progress`, wait until they complete before evaluating thread convergence.
    - Done when: `activeThreads` is confirmed either still 0 and actions completed (stop, converged) or > 0 / actions in progress (proceed to Act or wait).
 
-3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads by executing the `resolveReviewThread` GraphQL mutation (via `resolve_thread.cjs` or `gh api graphql` so `isResolved` transitions to `true`), and `git push origin HEAD` (skip push when `dry-run`).
+3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads via the configured SCM provider intent `resolve-thread`, and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: the round's approved threads are fixed or resolved, and pushed (unless `dry-run`).
 
 4. **Verify**: run `config.json.verification` commands plus a `ws-code-review` diff check. Three consecutive verification failures stop the loop and escalate.
@@ -82,4 +82,3 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** 
 7. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence from step 6; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
    - Done when: the report is presented to the user.
 
-Language: en-us only.

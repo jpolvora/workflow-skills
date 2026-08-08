@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 version: 0.0.118
-description: End-to-end Spec-to-PR delivery orchestrator FSM (Steps 0–9). Coordinates planning, DAG execution, verification, review loops, testing, and SCM PR delivery with subagent isolation. Trigger when user requests end-to-end spec-to-PR delivery.
+description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
 invocation_names:
   - spec-to-pr
   - ws-spec-to-pr
@@ -17,7 +17,7 @@ Deterministic FSM orchestrating Steps 0–9 via **`dispatch-agent`**.
 
 - **Always-on load:** This file + current step skill.
 - **On-demand:** [`setup.md`](../ws-shared/setup.md) · [`gates.md`](../ws-shared/gates.md) · [`config-resolution.md`](../ws-shared/config-resolution.md) · [`tools.md`](../ws-shared/tools.md) · [`ARTIFACTS.md`](ARTIFACTS.md) · [`STEP-DISPATCH.md`](STEP-DISPATCH.md) (when advancing) · [`PROTOCOLS.md`](PROTOCOLS.md) · [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md).
-- **Dual-mode:** Shared pipeline skills stay interchangeable with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Language: **en-us** only.
+- **Dual-mode:** Shared pipeline skills stay interchangeable with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
 
 ## Native Tool Contract
 
@@ -26,7 +26,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`.
 | Intent | Alias | Rule |
 |--------|-------|------|
 | Step work | `dispatch-agent` | `generalPurpose`\|`shell`; `description: "STP step {N} — {Label}"`; readonly step 5; step 4 DAG ≤3 parallel |
-| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** prefer `AskQuestion`; fallback [`gates.md`](../ws-shared/gates.md); ≥2 options; cancel → HS-1; auto → index 0 |
+| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** use `user-gate` per [`gates.md`](../ws-shared/gates.md) (host structured-choice when available; markdown fallback); ≥2 options; cancel → HS-1; auto → index 0 |
 | Verification / SCM | `Shell` | `config.json.verification`; cite real `gh`/`git` output |
 | State | `read-state` / `write-state` | Hygiene before Progress Board |
 | Browser (7) | `browser-mcp` | Normal, non-dry-run, non-skip, gated |
@@ -62,14 +62,11 @@ Worktree & complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). Dispatch bodies: [`
 After `step-00-{slug}.spec.md` exists and before Step 1:
 1. Invoke [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) → writes `step-00-{slug}.classify.md`.
 2. **User Gate** (unless `autoMode` or `skipQualityGates`): Accept recommendation (Recommended) · Override to standard · Override to lite.
-3. Apply `finalPipeline`. Mid-flight on standard orch: if recommended `lite`, stay standard unless user overrides.
+3. Apply `finalPipeline` from [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) (mid-flight stay-standard rule lives there).
 
 ## Quality Gate Bypass (`skipQualityGates`)
 
-Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
-- **Skipped:** Classifier user-gate, Fable quality visibility (except REFUTED + `auditVerdictsBlockShip`), pre-advance CI (`validate_state`), telemetry soft gates.
-- **Never Skipped:** Build, test, leak scans, SCM resolution, safety floor (REFUTED), HS-1–HS-4 stops.
-- **Telemetry:** Append `{"type":"gate-bypass","gate":"{name}","reason":"skip-gates|config","timestamp":"ISO"}` to step JSONL. Pass `--bypassed` to `update_state`.
+See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
 
 ## Triggers
 

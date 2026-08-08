@@ -12,9 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-update-plan-implementation loaded."
 
-Post-workflow delta corrections: capture manual QA findings, plan and implement delta fixes, and update the delivery result summary after the main workflow has finished.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
-Act as a **Technical Lead** who audits post-workflow QA findings, drafts delta correction tasks, implements fixes, and updates documentation to prevent drift.
+Post-workflow delta corrections: capture manual QA findings, plan and implement delta fixes, and update the delivery result summary after the main workflow has finished.
 
 **Canonical paths:** Finalized Plan `step-02-{slug}.plan.refined.md` (fallback `step-01-{slug}.plan.md`); Delivery Result `step-08-{slug}.result.md`. §9 format and examples: [plan-delta-template.md](plan-delta-template.md).
 
@@ -50,4 +50,3 @@ Not part of the main `ws-spec-to-pr` pipeline; invoked by the developer explicit
 5. **Verify & certify**: confirm every blocker finding is resolved; record commit hashes in the plan's §9 commits table; update `step-08-{slug}.result.md` (append fixes to the Done section); present the PR Readiness Summary in English.
    - Done when: all blockers show resolved and the result document reflects the delta.
 
-Language: en-us only.

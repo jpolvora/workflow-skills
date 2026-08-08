@@ -12,7 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-verify-plan loaded."
 
-Audit implementation deliverables against the specification and plan. Act as a **Senior QA Engineer / SDET** who checks acceptance criteria, code quality, and test coverage, then publishes a **0–10 score**.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
+Audit implementation deliverables against the specification and plan. 
 
 Runs in two modes: **Quick Score** (code quality vs plan, no spec required) or **US Verification** (feature-by-feature match between spec, plan, and code).
 
@@ -47,41 +49,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Optional `fable` integration: If `ws-fable-judge` returned `REFUTED` and `config.json.fable.auditVerdictsBlockShip` is `true`, cap score at < 7 to require remediation.
    - Done when: an integer score 0-10 is set.
 
-4. **Write report**: save `{us-dir}/step-05-{slug}.plan.report.md` matching this format exactly:
-
-   ```markdown
-   ---
-   us: "{slug}"
-   reportDate: YYYY-MM-DD
-   score: N
-   sourcePlans: ["step-02-{slug}.plan.refined.md"]
-   evalSource: step-02-{slug}.plan.refined.md | step-00-{slug}.spec.md
-   githubSource: gh | none
-   ---
-
-   # Implementation Report - {slug}
-
-   **Generated on:** YYYY-MM-DD
-   **Score:** N/10
-   **Evaluation source:** step-02-{slug}.plan.refined.md (or step-00-{slug}.spec.md)
-   **Reference Plan:** step-02-{slug}.plan.refined.md (or step-01-{slug}.plan.md)
-
-   ## Result by Feature (Plan & ACs)
-
-   | Feature | Situation | Detail / Evidence |
-   |---------|-----------|-------------------|
-   | CRUD Accounts | **Implemented** | `AccountService.cs:L20-L45` |
-
-   ## Additional Features Beyond Original Plan
-
-   | Feature / Extra Behavior | Location in Code | Note |
-   |--------------------------|------------------|------|
-
-   ## Gaps and Next Steps
-   - (List missing or incomplete tasks to resolve before PR approval)
-   ```
-
-   Do not edit the reference plan/spec files. Write only the canonical `step-05-{slug}.plan.report.md` name.
+4. **Write report**: save `{us-dir}/step-05-{slug}.plan.report.md` using [`TEMPLATE.md`](TEMPLATE.md) shape (frontmatter: `us`, `reportDate`, `score`, `sourcePlans`, `evalSource`; body sections Result by Feature, Additional Features, Gaps and Next Steps). Do not edit the reference plan/spec files.
    - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
 5. **Handoff**: return the score and report path.
@@ -89,4 +57,3 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Standalone: apply the same `>= 7` / `< 7` threshold; recommend re-implementation or a full matrix when below 7.
    - Done when: the caller has the score and report path.
 
-Language: en-us only.

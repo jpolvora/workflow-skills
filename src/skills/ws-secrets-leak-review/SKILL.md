@@ -90,10 +90,10 @@ Zero findings → `No leaks detected.`
 ## Optional pre-commit (user-requested only)
 
 ```bash
-bash .agents/skills/ws-secrets-leak-review/scripts/install-hook.sh
+bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh
 ```
 
-Hook runs `bash .agents/skills/ws-secrets-leak-review/scripts/pre-commit.sh` on staged files (which calls `bash …/secrets_scanner.sh`). Override: `git commit --no-verify`.
+Hook runs `bash {skillsRoot}/ws-secrets-leak-review/scripts/pre-commit.sh` on staged files (which calls `bash {skillsRoot}/ws-secrets-leak-review/scripts/secrets_scanner.sh`). Override: `git commit --no-verify`.
 
 ## Rules
 

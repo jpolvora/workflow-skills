@@ -11,6 +11,8 @@ invocation_names:
 
 > When this skill is loaded, output "ws-changelog loaded."
 
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
 **Mandatory completion gate** — run after [ws-self-learning](../ws-self-learning/SKILL.md) at the end of implementation tasks.
 
 ## When to run
@@ -21,12 +23,12 @@ Run at the end of every implementation task to maintain a historical record of w
 
 ## Path resolution
 
-Resolve the target file from `.agents/skills/ws-shared/config.json`:
+Resolve the target file from `{sharedDir}/config.json`:
 
 | Source | Path |
 |--------|------|
 | `rules.changelogFile` when set | that path (repo-relative) |
-| Default | `.agents/skills/ws-shared/CHANGELOG.md` |
+| Default | `{sharedDir}/CHANGELOG.md` |
 
 Do **not** create or require a repo-root `CHANGELOG.md` unless the consumer explicitly set `rules.changelogFile` to that path (e.g. `"CHANGELOG.md"`).
 
@@ -34,6 +36,7 @@ Do **not** create or require a repo-root `CHANGELOG.md` unless the consumer expl
 
 1. **Analyze context** — What was the prompt? What did the agent (you) actually do? What was the final result?
 2. **Update the resolved ws-changelog file** — Append a new entry using the template below. Create the file (and parent dirs) if it does not exist.
+   - Done when: the resolved changelog path contains a new top entry with Prompt / Done / Result for this task.
 
 ## CHANGELOG.md Template
 

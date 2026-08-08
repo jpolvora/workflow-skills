@@ -25,14 +25,14 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 
 ## User gates (`user-gate`)
 
-Portable alias: `user-gate`. **Native tool:** when the host exposes a structured multiple-choice tool (e.g. `AskQuestion`), **invoke it at every orchestration gate** — step transitions, entry/resume/config, refinement, G2-code, delivery+ship, fix-pr. Do not skip gates in normal mode.
+Portable alias: `user-gate`. Invoke at every orchestration gate — step transitions, entry/resume/config, refinement, G2-code, delivery+ship, fix-pr. Do not skip gates in normal mode.
 
-1. Every normal-mode gate: **prefer** `AskQuestion` (or host equivalent) with ≥2 options; recommended first. Map to portable `user-gate` vocabulary in logs.
-2. If `AskQuestion` / structured choice is unavailable or returns tool-not-found → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
+1. Every normal-mode gate: use `user-gate` with ≥2 options; recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
+2. If structured choice is unavailable → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 3. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
 4. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
 
-**Orchestrator obligation:** both [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) MUST call `AskQuestion` (when available) at **each** step boundary before advancing, replaying, refining, committing, shipping, or fix-pr — not only at entry or ship.
+**Orchestrator obligation:** both [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) MUST run `user-gate` at **each** step boundary before advancing, replaying, refining, committing, shipping, or fix-pr — not only at entry or ship.
 
 ---
 
@@ -208,6 +208,21 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`) |
 
 ---
+
+## Quality gate bypass (`skipQualityGates`)
+
+Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`. Orchs and `ws-ship-pr` link here; do not restate the full matrix in skill bodies.
+
+| Skipped (quality only) | Never skipped |
+|------------------------|---------------|
+| Classifier user-gate | Build / test / leak scans |
+| Fable quality visibility (except REFUTED + `auditVerdictsBlockShip`) | SCM resolution and auth |
+| Pre-advance CI (`validate_state`) | Safety floor (REFUTED) |
+| Telemetry soft gates | HS-1–HS-4 stops |
+
+**Telemetry:** Append `{"type":"gate-bypass","gate":"{name}","reason":"skip-gates|config","timestamp":"ISO"}` to step JSONL. Pass `--bypassed` to `update_state`. Banner: **`[GATES BYPASSED]`**.
+
+Ship/PREPARE nuances (row 5 visibility): [`../ws-ship-pr/PREPARE-CHECKLIST.md`](../ws-ship-pr/PREPARE-CHECKLIST.md) § 5.
 
 ## Flags
 

@@ -12,9 +12,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-fix-pr loaded."
 
-Fetch, score, and systematically resolve active PR review threads on GitHub or Azure DevOps: local fixes, test validation, thread resolution, and push back to the remote branch.
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
-Act as a **Senior Software Developer**: parse threads, run regression tests, and apply minimal surgical fixes that satisfy reviewers.
+Fetch, score, and systematically resolve active PR review threads on GitHub or Azure DevOps: local fixes, test validation, thread resolution, and push back to the remote branch.
 
 Platform I/O (`list-threads`, `resolve-thread`) is **delegated** to the skill selected by `providers.scm`: never hardcode a single-host happy path here. See [README.md](README.md) for platform support, flow summary, and fix checklist.
 
@@ -36,7 +36,7 @@ Workflow (called by [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)): all interacti
 ## Prerequisites
 
 - Local branch checked out matches the PR source branch.
-- `.agents/skills/ws-shared/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../ws-shared/config-resolution.md).
+- `{sharedDir}/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../ws-shared/config-resolution.md).
 - Provider skill's `validate-auth` passes before mutating remote threads.
 
 ## SCM provider resolution
@@ -64,13 +64,12 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
    | 0–5 | Resolve with a comment justifying no code change |
    | 6–10 | Apply a surgical code fix |
 
-4. **Confirmation gate**: save the proposed fix checklist to `.agents/skills/ws-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted) and ask: "Proceed with fixes for threads [ID1, ID2]?" Under [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md), auto-yes (save gate file and proceed).
+4. **Confirmation gate**: save the proposed fix checklist to `{skillsRoot}/ws-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted) and ask: "Proceed with fixes for threads [ID1, ID2]?" Under [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md), auto-yes (save gate file and proceed).
    - Done when: checklist confirmed by user, or auto-approved by the goal loop.
 
 5. **Surgical fix**: for each blocking thread, analyze call sites and adjacent logic, then apply minimal edits (Karpathy guidelines) that fix the defect class, not just the reported instance.
    - Done when: all approved threads have code changes or a resolution comment drafted.
 
-6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via `resolve-thread` (executing `resolveReviewThread` GraphQL mutation via `resolve_thread.cjs` so `isResolved` transitions to `true`; skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
+6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via provider intent `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: verification passed, report exists, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).
 
-Language: en-us only.

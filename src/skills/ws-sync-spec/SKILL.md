@@ -11,6 +11,8 @@ invocation_names:
 
 > When this skill is loaded, output "ws-sync-spec loaded."
 
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+
 Keep feature specifications (`*.spec.md`) continuously synchronized with real implemented code after prompts, adjustments, or task completions.
 
 ## Purpose
@@ -31,7 +33,7 @@ Run after task completion (alongside `ws-changelog` and `ws-self-learning`).
 
 1. **Identify Delta Scope**:
    - Inspect `git status` / `git diff HEAD` (or recent turn prompt context) to determine modified files, classes, routes, views, controllers, or business logic.
-   - **Done when:** A summary of modified code symbols, components, and logic changes is established.
+   - **Done when:** `git diff --name-status` (or equivalent) listed and mapped to symbols/components.
 
 2. **Discover Target Spec(s)**:
    - Resolve `{specsDir}` ← `config.json` → `plans.specsDir` (default `.agents/specs`) and `{plansDir}` ← `plans.dir`.
@@ -54,12 +56,5 @@ Run after task completion (alongside `ws-changelog` and `ws-self-learning`).
 5. **Apply Updates & Report**:
    - Apply surgical replacements to the target spec file(s) and append the revision history log.
    - Display a summary of updated files and sections to the user.
-   - **Done when:** Spec file is written to disk and confirmation report is presented in English.
+   - **Done when:** Spec file(s) on disk contain the approved edits and a new Revision History line dated today.
 
-## Optional Autoload Rule (Consumer `AGENTS.md`)
-
-To automatically check for spec drift at the end of every implementation task, users can optionally add the following suggestion to their project's `AGENTS.md`:
-
-```markdown
-- **Spec Drift Sync**: At the end of implementation tasks, invoke `ws-sync-spec` to ensure feature specs (`*.spec.md`) stay synced with updated code.
-```

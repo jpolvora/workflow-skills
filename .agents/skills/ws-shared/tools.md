@@ -79,7 +79,7 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 |------|--------|--------|
 | `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
 | `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | Subagent dispatch (host-provided) — same worktree, no file overlap |
-| `user-gate` | Ask question | **Prefer `AskQuestion`** when the host provides it; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback with same options when unavailable (see [`gates.md`](gates.md)); log `user-gate-fallback` |
+| `user-gate` | Ask question | Host structured-choice UI when available; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback when unavailable (see [`gates.md`](gates.md)); log `user-gate-fallback` |
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
 | `browser-mcp` | Browser integration test | Host browser MCP when available (only normal mode, non-dry-run, gated) |
 

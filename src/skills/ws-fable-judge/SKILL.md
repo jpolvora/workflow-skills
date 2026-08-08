@@ -1,6 +1,6 @@
 ---
 name: ws-fable-judge
-description: Adversarial audit engine — diff-grounded verification detecting 4 classic AI frauds (weakened checks, false claims, scope creep, unauthorized action) to issue binding verdicts.
+description: Adversarial audit of claimed work against git diffs and re-run verifications. Trigger after claimed completion, during local review, or before merge.
 version: 0.0.118
 invocation_names:
   - ws-fable-judge
@@ -56,33 +56,11 @@ Scan ground truth specifically for these four common failure modes:
 Summarize audit results into one of three official verdicts:
 
 - **`VERIFIED`**: All claims match ground truth diff, all verifications re-ran green, 0 frauds detected.
-- **`VERIFIED WITH CAVEATS`**: Core functionality works and verifications pass, but minor non-critical caveats exist (e.g., unverified manual steps or minor style gaps).
+- **`VERIFIED WITH CAVEATS`**: Core claims match and verifications pass, but ≥1 item is UNVERIFIABLE or listed under Action Items (non-fraud).
 - **`REFUTED`**: One or more classic frauds detected, verifications failed, or implementation contradicts ground truth diff.
 
 ---
 
-## Output Template
+## Output
 
-```markdown
-# Adversarial Audit Report (`ws-fable-judge`)
-
-**Verdict:** `[VERIFIED | VERIFIED WITH CAVEATS | REFUTED]`
-
-## Claims vs Ground Truth
-- **Claimed Scope:** [Description]
-- **Ground Truth Diff:** [Summary of touched files & lines]
-
-## Re-Run Verification Results
-- `[Command]` -> `[PASSED | FAILED | UNVERIFIABLE]` (Exit code: N)
-
-## Fraud Audit
-- **Weakened Checks:** [None detected | Details & Line links]
-- **False Completion:** [None detected | Details]
-- **Scope Creep:** [None detected | Files outside blast radius]
-- **Unauthorized Actions:** [None detected | Details]
-
-## Action Items
-- [Specific remediation required if REFUTED or CAVEATED]
-```
-
-Language: en-us only.
+Write the report using [`references/REPORT.md`](references/REPORT.md). Done when: file or chat report includes Verdict enum + all required sections.

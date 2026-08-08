@@ -1,7 +1,7 @@
 ---
 name: ws-spec-list
 version: 0.0.118
-description: Dual board for project specs vs plan workflows — list human-facing specs and separate plan/state runs; select continue/start/finish/cancel/archive/remove/open-pr.
+description: Dual board for specs vs plan workflows plus manage menu. Trigger when listing, picking, or managing specs/plans.
 disable-model-invocation: true
 invocation_names:
   - spec-list
@@ -11,6 +11,8 @@ invocation_names:
 # ws-spec-list
 
 > When this skill is loaded, output "ws-spec-list loaded."
+
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
 Interactive **two-board + menu** for the current project. **Specs ≠ plans** — never merge them into one inventory.
 
