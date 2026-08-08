@@ -8,7 +8,8 @@
       "assertions": [
         "Agent loads ws-interview",
         "Does not jump straight to implementation without plan review",
-        "Surfaces ambiguities or missing decisions from the plan"
+        "Surfaces ambiguities or missing decisions from the plan",
+        "Runs project-context sweep (specs, MEMORY, codebase, architecture, rules) before asking the user"
       ]
     },
     {
@@ -19,6 +20,16 @@
         "Agent does not silently skip interview obligations when orchestrated at Step 2",
         "If proceeding, documents assumption or uses user-gate when available",
         "Uses path tokens ({skillsRoot}, {sharedDir}, {plansDir}) instead of hardcoded consumer paths"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "autoMode interview: a blocking gap remains after searching the repo; no project source answers it.",
+      "expected_output": "Agent applies model-inferred default with rationale; does not block on user-gate for that gap.",
+      "assertions": [
+        "Agent attempts project-context sweep before falling back",
+        "In autoMode, marks resolutionSource model-inferred (or equivalent) instead of needs_user",
+        "Registry records evidence path(s) when project-sourced, or model-inferred rationale when not"
       ]
     }
   ]
