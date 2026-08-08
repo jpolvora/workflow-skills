@@ -4,7 +4,6 @@ slug: remove-consumer-agents-md-requirement
 title: "Remove Consumer Requirement for .agents/AGENTS.md and Consolidate Consumer Context into ws-shared/"
 source: local
 specDate: 2026-08-07
-status: completed
 ---
 
 # Specification — Remove Consumer Requirement for .agents/AGENTS.md and Consolidate Consumer Context into ws-shared/
@@ -25,11 +24,11 @@ Legacy harness checks or skill references occasionally assumed `.agents/AGENTS.m
 
 ## Acceptance Criteria
 
-- [x] AC1: No skill, orchestrator, script, or installer tool requires or errors on the absence of `.agents/AGENTS.md` in consumer repositories.
-- [x] AC2: `ws-shared/AGENTS.md` serves as the complete, self-contained source of truth for consumer hub routing, skill indexes, capability vocabulary (`ws-shared/tools.md`), and config contracts (`ws-shared/config.json`).
-- [x] AC3: `ws-check-harness` audits distinguish between upstream repo checks (which check root `AGENTS.md` + `.agents/AGENTS.md` drift) and consumer repo checks (which audit `ws-shared/AGENTS.md` only and do not require `.agents/AGENTS.md`).
-- [x] AC4: `ws-configure-project` and installer scripts verify that all necessary consumer hub files (`config.json`, `STACK.md`, `MEMORY.md`, `AGENTS.md`) reside cleanly under `ws-shared/`.
-- [x] AC5: Automated test suite (`npm run test`) includes explicit assertions confirming 100% test success in consumer trees missing `.agents/AGENTS.md`.
+- [ ] AC1: No skill, orchestrator, script, or installer tool requires or errors on the absence of `.agents/AGENTS.md` in consumer repositories.
+- [ ] AC2: `ws-shared/AGENTS.md` serves as the complete, self-contained source of truth for consumer hub routing, skill indexes, capability vocabulary (`ws-shared/tools.md`), and config contracts (`ws-shared/config.json`).
+- [ ] AC3: `ws-check-harness` audits distinguish between upstream repo checks (which check root `AGENTS.md` + `.agents/AGENTS.md` drift) and consumer repo checks (which audit `ws-shared/AGENTS.md` only and do not require `.agents/AGENTS.md`).
+- [ ] AC4: `ws-configure-project` and installer scripts verify that all necessary consumer hub files (`config.json`, `STACK.md`, `MEMORY.md`, `AGENTS.md`) reside cleanly under `ws-shared/`.
+- [ ] AC5: Automated test suite (`npm run test`) includes explicit assertions confirming 100% test success in consumer trees missing `.agents/AGENTS.md`.
 
 ## Notes
 
