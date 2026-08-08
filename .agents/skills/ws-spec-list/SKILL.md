@@ -1,7 +1,8 @@
 ---
 
+
 name: ws-spec-list
-version: 0.0.119
+version: 0.0.120
 description: Dual board for specs vs plan workflows plus manage menu. Trigger when listing, picking, or managing specs/plans.
 disable-model-invocation: true
 invocation_names:

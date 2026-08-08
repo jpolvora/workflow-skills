@@ -2,7 +2,7 @@
 
 name: ws-write-a-skill
 description: Skill authoring & optimization protocol — guides the creation, editing, structural formatting, and progressive-disclosure tuning of agent skills.
-version: 0.0.119
+version: 0.0.120
 invocation_names:
   - ws-write-a-skill
   - write-a-skill

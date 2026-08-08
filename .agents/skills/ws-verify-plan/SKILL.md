@@ -2,7 +2,7 @@
 
 name: ws-verify-plan
 description: Plan & spec verification scorer — compares implemented code against spec acceptance criteria and emits an integer verification score (0–10).
-version: 0.0.119
+version: 0.0.120
 disable-model-invocation: true
 invocation_names:
   - verify-plan
