@@ -29,9 +29,13 @@ if (!fs.existsSync(memoryDir)) {
 fs.writeFileSync(testMemoryPath, testMemoryContent, "utf-8");
 createdFile = true;
 
+const scriptPath = fs.existsSync(path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.py"))
+  ? path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.py")
+  : path.join(rootDir, "src", "skills", "ws-self-learning", "scripts", "self_learning.py");
+
 try {
   // Run compiler
-  const compileCmd = `python ${path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.py")} --compile`;
+  const compileCmd = `python ${scriptPath} --compile`;
   execSync(compileCmd, { cwd: rootDir, encoding: "utf-8" });
 
   const compiledMemoryPath = path.join(sharedDir, "MEMORY.md");
@@ -55,7 +59,7 @@ try {
     fs.unlinkSync(testMemoryPath);
   }
   try {
-    const compileCmd = `python ${path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.py")} --compile`;
+    const compileCmd = `python ${scriptPath} --compile`;
     execSync(compileCmd, { cwd: rootDir, encoding: "utf-8" });
   } catch (e) {
     // Ignore cleanup recompile error if no other files remain
