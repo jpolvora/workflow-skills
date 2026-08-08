@@ -36,10 +36,12 @@ ensure_utf8_stdio()
 SKILL_DIR = Path(__file__).resolve().parent.parent  # ws-self-learning/ (script lives in scripts/)
 # Consumer-owned memory lives in the shared hub (not inside this skill package).
 SHARED_DIR = SKILL_DIR.parent / "ws-shared"
-if SKILL_DIR.parent.name == "skills" and SKILL_DIR.parent.parent.name != ".agents":
-    dev_agents_shared = SKILL_DIR.parent.parent / ".agents" / "skills" / "ws-shared"
-    if dev_agents_shared.exists():
-        SHARED_DIR = dev_agents_shared
+# Find active project .agents/skills/ws-shared from src/skills/ or .agents/skills/
+repo_agents_shared = SKILL_DIR.parent.parent.parent / ".agents" / "skills" / "ws-shared"
+if repo_agents_shared.exists():
+    SHARED_DIR = repo_agents_shared
+elif (SKILL_DIR.parent.parent / ".agents" / "skills" / "ws-shared").exists():
+    SHARED_DIR = SKILL_DIR.parent.parent / ".agents" / "skills" / "ws-shared"
 MEMORY_DIR = SHARED_DIR / "memory"
 COMPILED_MEMORY_PATH = SHARED_DIR / "MEMORY.md"
 
