@@ -1,0 +1,56 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "reason": "7 mandatory plan steps (> maxImplementationSteps 3), 3 files (≤6), 1 layer (≤2)",
+  "planPath": ".agents/plans/check-harness-upstream-sot/step-02-check-harness-upstream-sot.plan.refined.md",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "SKILL.md Install mode + scan root + DoD",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        "src/skills/ws-check-harness/SKILL.md"
+      ],
+      "acceptance": "Hub table documents Install mode upstream|consumer and Skills scan root; upstream requires markers+SoT; markers-SoT => consumer; integrity upstream-only; AC10 DoD uses Install mode terminology; en-us portable.",
+      "coderPrompt": "Edit only src/skills/ws-check-harness/SKILL.md. Expand Hub resolution & Mixed Install Support so Install mode drives Skills scan root per refined plan detection algorithm (markers + SoT => upstream/src/skills; else consumer/{skillsRoot}+global; markers without SoT => hard consumer + optional info note). Keep path tokens from {sharedDir}/config.json. Clarify integrity remains upstream-only. Add short DoD/verification checklist using Install mode terminology (AC10). Do not edit .agents/skills dogfood. Do not rename execution Mode. Surgical docs-only.",
+      "acs": ["AC1", "AC2", "AC5", "AC6", "AC8", "AC9", "AC10"],
+      "planSteps": ["A", "E", "F", "G"]
+    },
+    {
+      "id": "T2",
+      "title": "PHASES.md Phase 0 / scan scope / Phase 4",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        "src/skills/ws-check-harness/PHASES.md"
+      ],
+      "acceptance": "Phase 0 Install mode + SoT gate; §3/§3b and Phase 4 mode-aware (upstream src/skills, consumer {skillsRoot}); dogfood lag informational only; integrity Phase 3 item 7 upstream-only; AC10 note; no always-.agents/skills SoT claim for upstream.",
+      "coderPrompt": "Edit only src/skills/ws-check-harness/PHASES.md. Implement refined plan Steps A-C (and E/G as needed): Phase 0 detection table + procedure; rewrite §3 Skills / §3b for mode-aware skills scan root; add upstream dogfood lag policy (AC4); parameterize Phase 4a/4b and nearby hardcoded inventory examples so upstream uses src/skills and consumer uses {skillsRoot}/.agents/skills. Preserve intentional hub-literal .agents/skills paths. Confirm Phase 3 item 7 integrity wording. Optional AC10 verification note. Docs-only; no dogfood mirror edits.",
+      "acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC8", "AC9", "AC10"],
+      "planSteps": ["A", "B", "C", "E", "F", "G"]
+    },
+    {
+      "id": "T3",
+      "title": "REPORT-FORMAT.md header fields",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        "src/skills/ws-check-harness/REPORT-FORMAT.md"
+      ],
+      "acceptance": "Keep Mode normal|dry-run; add Install mode and Skills scan root; concepts unambiguous; en-us; no absolute paths.",
+      "coderPrompt": "Edit only src/skills/ws-check-harness/REPORT-FORMAT.md. Keep existing Mode (normal|dry-run). Add Install mode and Skills scan root beside it per refined plan normative header. Do not rename Mode. Clarify install vs execution mode if nearby prose could confuse. Docs-only surgical edit.",
+      "acs": ["AC7", "AC9"],
+      "planSteps": ["D", "F"]
+    }
+  ],
+  "levels": [
+    ["T1", "T2", "T3"]
+  ],
+  "optionalExcluded": [
+    {
+      "planStep": "H",
+      "note": "Optional npm run sync-skills and evals/evals.json; not DoD"
+    }
+  ]
+}
