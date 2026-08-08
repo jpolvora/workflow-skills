@@ -110,7 +110,7 @@ flowchart TD
     *   **GitHub ID**: Dispatches [`ws-github-provider`](../../ws-github-provider/SKILL.md) to fetch issue and write `step-00-{slug}.spec.md`.
     *   **Azure DevOps ID**: Dispatches [`ws-azure-devops-provider`](../../ws-azure-devops-provider/SKILL.md) to fetch work item and write `step-00-{slug}.spec.md`.
     *   **Local Spec**: Normalizes spec format using [`ws-local-spec-provider`](../../ws-local-spec-provider/SKILL.md).
-    *   **Free-text**: Invokes `ws-write-spec` to brainstorm and draft the spec.
+    *   **Free-text**: Invokes `ws-write-spec` → `{specsDir}/{slug}.spec.md`, then registers into `{us-dir}/step-00-` before planning.
 
 ### Step 1: Planning and Brainstorm
 *   **Executor**: Planner subagent (`ws-write-plan` / `ws-write-plan`).

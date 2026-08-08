@@ -1,0 +1,1 @@
+{"timestamp":"2026-08-08T15:52:54Z","step":5,"label":"Verify","elapsedSec":90,"promptTokens":0,"completionTokens":0,"filesTouched":2,"model":"Cursor Grok 4.5","verificationScore":9,"fableVerdict":null,"gateDecision":"auto:Next","errors":[],"bypassed":false}

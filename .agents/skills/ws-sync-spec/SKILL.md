@@ -1,8 +1,9 @@
 ---
 
+
 name: ws-sync-spec
 description: Feature spec synchronizer — auto-updates feature specifications after prompt-driven code changes to prevent spec drift.
-version: 0.0.119
+version: 0.0.120
 invocation_names:
   - sync-spec
   - ws-sync-spec
@@ -15,6 +16,8 @@ invocation_names:
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
 Keep feature specifications (`*.spec.md`) continuously synchronized with real implemented code after prompts, adjustments, or task completions.
+
+**Specs family:** Role = surgical **body** updates when code drifts from AC text. Prefer editing `{specsDir}/{slug}.spec.md`; if a workflow `step-00` copy exists and still matters, keep them aligned or re-register. **Not** `ws-spec-index sync` (index checkboxes vs delivery evidence). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Purpose
 

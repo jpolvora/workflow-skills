@@ -1,8 +1,9 @@
 ---
 
+
 name: ws-local-spec-provider
 description: Local Markdown spec provider — detects, normalizes, and registers hand-written *.spec.md feature specifications into canonical pipeline artifacts.
-version: 0.0.119
+version: 0.0.120
 disable-model-invocation: true
 invocation_names:
   - local-spec-provider
@@ -16,6 +17,8 @@ invocation_names:
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
 Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/`), register/normalize `*.spec.md` → `{us-dir}/step-00-{slug}.spec.md` with `source: local`. No remote trackers.
+
+**Specs family:** Role = bridge `{specsDir}` ↔ `{us-dir}` (register / fetch-to-spec). Drafts come from [`ws-write-spec`](../ws-write-spec/SKILL.md) or hand-written files; format SoT [`ws-spec-format`](../ws-spec-format/SKILL.md). Orch entry for local files. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 **PR/thread/merge:** hybrid — load `providers.scm` skill ([ws-github-provider](../ws-github-provider/SKILL.md) / [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)). Never no-op silently. Reject `scm: "local"`.
 
@@ -31,13 +34,13 @@ Examples: `fetch-to-spec path/to/feature.spec.md` · `validate-auth` · `fetch-t
 
 ### Workflow Mode
 
-Orch when `providers.active=local` or input is `*.spec.md`; also `ws-write-spec` optional mirror. Records `specSource: local`, skips Step 0 → Step 1 gate.
+Orch when `providers.active=local` or input is `*.spec.md`; also after `ws-write-spec` when a workflow needs a `{us-dir}/step-00-` copy (`--register`). Records `specSource: local`, skips Step 0 → Step 1 gate when input was already a local spec.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `<intent>` | required | Contract below |
 | path / slug | — | Local file or slug under `specsDir` |
-| `--mirror` | false | Also write `{specsDir}/{slug}.spec.md` |
+| `--mirror` | false | Also write/refresh `{specsDir}/{slug}.spec.md` when registering from a non-specsDir input |
 
 ## Config
 

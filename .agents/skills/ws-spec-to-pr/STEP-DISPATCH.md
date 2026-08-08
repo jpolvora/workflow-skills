@@ -12,7 +12,7 @@
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (user-gate). US/spec provided → provider or skip to write. No args → free-text → `dispatch-agent` `ws-write-spec`. Optional soft clarify if AC empty. | `step-00-{slug}.spec.md` |
+| 0 | Entry gate (user-gate). US/spec provided → provider or skip to write. No args → free-text → `dispatch-agent` `ws-write-spec` (writes `{specsDir}/{slug}.spec.md` only) → register via `ws-local-spec-provider` into `{us-dir}`. Optional soft clarify if AC empty. | `{specsDir}/{slug}.spec.md` + `step-00-{slug}.spec.md` (after register) |
 | 1 | Complexity gate → if simple: stub plan + skip to 4. Else `dispatch-agent` `ws-write-plan`. | `step-01-{slug}.plan.md` |
 | 2 | Conditional: skip if eligible; else `dispatch-agent` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
 | 3 | `dispatch-agent` `ws-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |

@@ -1,7 +1,8 @@
 ---
 
+
 name: ws-tdah
-version: 0.0.119
+version: 0.0.120
 description: Action-first reply shape and operational judgment. Trigger via /ws-tdah, /tdah, or start ws-tdah (autoload in upstream dogfood hubs).
 invocation_names:
   - tdah
@@ -39,7 +40,7 @@ Shape: `[next action]. [state]. [numbered steps]. [one next step].`
 | 04 | Clarification | No silent guessing; state assumptions; one critical question when blocked |
 | 08 | Verification | Risky facts: verify with tools before asserting |
 | 09 | Confidence | "I don't know" over guessing; no fake certainty |
-| 11 | MEMORY | Before plan/code/fix: Grep `{sharedDir}/MEMORY.md` (expand per `tools.md` Path tokens); after: write traps via `ws-self-learning` |
+| 11 | MEMORY | Before plan/code/fix and after traps: follow [`ws-self-learning`](../ws-self-learning/SKILL.md) (do not restate that protocol here) |
 
 ## Style
 
@@ -68,4 +69,4 @@ Code, commits, PRs: normal prose. Skill bodies / gates / banners: en-us.
 
 ## Before send
 
-Action-first line; numbered steps if multi-step; state restated; one next step; ≤5 list items; no preamble/recap/closer/tangent; no em dash; challenge weak plans; verify risky facts; MEMORY consulted when mutating work.
+Action-first line; numbered steps if multi-step; state restated; one next step; ≤5 list items; no preamble/recap/closer/tangent; no em dash; challenge weak plans; verify risky facts; MEMORY via `ws-self-learning` when mutating work.

@@ -1,7 +1,8 @@
 ---
 
+
 name: ws-spec-to-pr-lite
-version: 0.0.119
+version: 0.0.120
 description: Fast sequential Spec-to-PR lite orchestrator (Steps 0–5). Trigger when user requests lite/fast spec-to-PR delivery.
 invocation_names:
   - spec-to-pr-lite
@@ -13,6 +14,8 @@ invocation_names:
 > When this skill is loaded, output "ws-spec-to-pr-lite loaded."
 
 Sequential spec→ship orchestrator executing inline steps (0–5) using the same pipeline skills as [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md). Do **not** use `STEP-DISPATCH.md` for lite step numbers.
+
+**Specs family:** Role = single-feature **lite** Spec→PR. Same entry rules as standard for specs (`{specsDir}` draft → register; or provider). Prefer when `ws-classify-complexity` recommends lite. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Native Tool Contract
 
@@ -33,7 +36,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` | `step-00-{slug}.spec.md` exists + classifier user-gate completed |
+| 0 | Spec | providers / `ws-write-spec` (+ register for free-text) | `{specsDir}` draft and/or `step-00-{slug}.spec.md` exists (free-text: write-spec → specsDir, then register) + classifier user-gate completed |
 | 1 | Planning | `ws-write-plan` | `step-01-{slug}.plan.md` created & validated |
 | 2 | Implementation | `ws-implement-tasks` | Code modified + build/tests pass (`config.json.verification`) |
 | 3 | Review | `ws-code-review` (+ fix) | `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops) |

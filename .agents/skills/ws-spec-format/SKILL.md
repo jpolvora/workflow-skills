@@ -1,7 +1,8 @@
 ---
+
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
-version: 0.0.119
+version: 0.0.120
 invocation_names:
   - spec-format
   - ws-spec-format
@@ -12,6 +13,8 @@ invocation_names:
 > When this skill is loaded, output "ws-spec-format loaded."
 
 Create, review, or format `*.spec.md`. Canonical format SoT — other skills **reference** this skill; they do not duplicate frontmatter/sections. Schema: [`FORMAT.md`](FORMAT.md). Language: **en-us**.
+
+**Specs family:** Role = schema + validate/reshape. Free-text draft → [`ws-write-spec`](../ws-write-spec/SKILL.md) (writes `{specsDir}`); register → [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Modes
 
@@ -34,10 +37,11 @@ Infer mode or ask. Triggers: `/ws-spec-format`, `@ws-spec-format`, create/review
 ## Create (Done when path confirmed)
 
 1. Collect title, description, ACs (or provider fetch).
-2. GitHub issue → `ws-github-provider` `fetch-to-spec`.
-3. ADO WI → `ws-azure-devops-provider` `fetch-to-spec`.
-4. Existing hand-written `*.spec.md` → `ws-local-spec-provider` register/normalize (no invented tracker fields).
-5. Confirm canonical path with complete frontmatter + sections.
+2. Free-text local draft → [`ws-write-spec`](../ws-write-spec/SKILL.md) → `{specsDir}/{slug}.spec.md` (not `{plansDir}`).
+3. GitHub issue → `ws-github-provider` `fetch-to-spec`.
+4. ADO WI → `ws-azure-devops-provider` `fetch-to-spec`.
+5. Existing hand-written `*.spec.md` → `ws-local-spec-provider` register/normalize (no invented tracker fields).
+6. Confirm path with complete frontmatter + sections (`{specsDir}` for standalone; `{us-dir}/step-00-` after register/workflow).
 
 ## Downstream
 

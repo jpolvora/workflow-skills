@@ -1,7 +1,8 @@
 ---
 
+
 name: ws-spec-to-pr
-version: 0.0.119
+version: 0.0.120
 description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
 invocation_names:
   - spec-to-pr
@@ -13,6 +14,8 @@ invocation_names:
 > When this skill is loaded, output "ws-spec-to-pr loaded."
 
 Deterministic FSM orchestrating Steps 0–9 via **`dispatch-agent`**.
+
+**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-write-spec` (`{specsDir}`) then `ws-local-spec-provider` register; existing `*.spec.md` → local-spec-provider; tracker id → SCM provider. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Audience & Load
 

@@ -1,7 +1,8 @@
 ---
 
+
 name: ws-multi-spec
-version: 0.0.119
+version: 0.0.120
 description: Sequential smart multi-spec batch orchestrator — evaluates spec complexity across project specifications to dispatch standard or lite pipeline workers. Trigger when user requests batch processing or sequential multi-spec delivery.
 invocation_names:
   - multi-spec
@@ -15,6 +16,8 @@ invocation_names:
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
 Sequential multi-spec batch delivery orchestrator with **smart complexity & flow auto-detection**.
+
+**Specs family:** Role = master batch loop over `{specsDir}` (or explicit paths). Per spec: classify → `ws-spec-to-pr-lite` or `ws-spec-to-pr` worker → fix-pr → merge → next. Interactive pick-one → [`ws-spec-list`](../ws-spec-list/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Audience & Load
 

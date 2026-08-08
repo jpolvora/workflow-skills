@@ -1,8 +1,9 @@
 ---
 
+
 name: ws-senior-developer
 description: Engineering delivery gate for scope control, anti-reinvention, ambiguity stops via user-gate, and pre-ship proof. Invoke via rules.seniorDeveloper or /senior-developer.
-version: 0.0.119
+version: 0.0.120
 invocation_names:
   - senior-developer
   - ws-senior-developer
@@ -13,6 +14,8 @@ invocation_names:
 > When this skill is loaded, output "ws-senior-developer loaded."
 
 Optional model-invoked delivery gate when explicitly invoked or resolved through `rules.seniorDeveloper`. Guides prompting, planning, implementation, and review; does not replace project policy or an installed workflow.
+
+**Complement:** Named orch (`ws-spec-to-pr*`) wins routing (see §1). For non-orch non-trivial investigation without a confirmed plan, prefer [`ws-fable-method`](../ws-fable-method/SKILL.md) for Evidence→Act→Verify structure — do not run a second full plan ceremony. This skill alone owns the **Code review proof** checklist (§5).
 
 When config-resolved: if `$PWD/.agents/skills/ws-shared/config.json` is missing, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) before relying on verification aliases.
 

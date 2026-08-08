@@ -1,8 +1,9 @@
 ---
 
+
 name: ws-classify-complexity
 description: Pipeline complexity classifier — analyzes a spec against config.json dagThresholds and recommends ws-spec-to-pr-lite or ws-spec-to-pr (standard).
-version: 0.0.119
+version: 0.0.120
 invocation_names:
   - classify-complexity
   - ws-classify-complexity
@@ -15,6 +16,8 @@ invocation_names:
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
 Analyze a feature spec and recommend **`lite`** or **`standard`** pipeline (`workflowType`) by comparing counted metrics to `config.json` → `dagThresholds`. Writes `{us-dir}/step-00-{slug}.classify.md`.
+
+**Specs family:** Role = orch chooser after a workflow `step-00` exists (or classify a `{specsDir}` file once registered). Used by Step 0 and [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 **Harness-neutral:** use portable aliases from [`../ws-shared/tools.md`](../ws-shared/tools.md). Thresholds / scoreAndRefine detail: [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 

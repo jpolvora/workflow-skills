@@ -1,0 +1,57 @@
+{
+  "slug": "autoload-skills-overlap-audit",
+  "execMode": "sequential",
+  "tasks": [
+    {
+      "id": "T1",
+      "dependsOn": [],
+      "label": "Evidence harvest — read five SKILL.md + hub/autoload",
+      "files": [
+        ".agents/skills/ws-senior-developer/SKILL.md",
+        ".agents/skills/ws-self-learning/SKILL.md",
+        ".agents/skills/ws-changelog/SKILL.md",
+        ".agents/skills/ws-fable-method/SKILL.md",
+        ".agents/skills/ws-tdah/SKILL.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/autoload.md"
+      ]
+    },
+    {
+      "id": "T2",
+      "dependsOn": ["T1"],
+      "label": "Write overlap-matrix.md + recommendations.md",
+      "files": [
+        ".agents/plans/autoload-skills-overlap-audit/overlap-matrix.md",
+        ".agents/plans/autoload-skills-overlap-audit/recommendations.md"
+      ]
+    },
+    {
+      "id": "T3",
+      "dependsOn": ["T2"],
+      "label": "Apply Thin/cross-link edits (auto-accepted)",
+      "files": [
+        ".agents/skills/ws-senior-developer/SKILL.md",
+        ".agents/skills/ws-self-learning/SKILL.md",
+        ".agents/skills/ws-changelog/SKILL.md",
+        ".agents/skills/ws-fable-method/SKILL.md",
+        ".agents/skills/ws-tdah/SKILL.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/autoload.md"
+      ]
+    },
+    {
+      "id": "T4",
+      "dependsOn": ["T3"],
+      "label": "Harness check + AC8 simplification proof",
+      "files": [
+        ".agents/plans/autoload-skills-overlap-audit/recommendations.md"
+      ]
+    },
+    {
+      "id": "T5",
+      "dependsOn": ["T4"],
+      "label": "Delivery prep for fullMode ship",
+      "files": []
+    }
+  ]
+}

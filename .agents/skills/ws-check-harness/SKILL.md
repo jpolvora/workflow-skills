@@ -1,9 +1,10 @@
 ---
 
+
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.0.119
+version: 0.0.120
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -86,7 +87,7 @@ Load the token map from project `{sharedDir}/config.json` when present. **Instal
 - **Local Overrides:** Local project skills in `{skillsRoot}` take precedence over global skills in `{globalSkillsRoot}`. If a skill exists in both locations, the local project version is the active override — do **not** flag duplicate `name:` entries across global vs local as a collision error.
 - **Config Precedence:** Local `{sharedDir}/config.json` overrides global `{globalSkillsRoot}/ws-shared/config.json`.
 
-Consumer: missing root `AGENTS.md` is OK. Extra-package optional missing paths = intentional omission. Phase 5b sprawl on managed upstream skills → Upstream debt (informational), not consumer problem count (unless user asked to optimize).
+Consumer: missing root `AGENTS.md` is OK. When root `AGENTS.md` references `autoload.md`, Always-applied vs shared-hub on-demand mismatch is intentional consumer override (not dual-hub drift). Extra-package optional missing paths = intentional omission. Phase 5b sprawl on managed upstream skills → Upstream debt (informational), not consumer problem count (unless user asked to optimize).
 
 ## Scan + methodology
 

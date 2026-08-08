@@ -126,7 +126,7 @@ These ship to consumers but are **not autoloaded** by default on consumer projec
 
 | Intent | Load |
 |--------|------|
-| Draft a spec | `ws-write-spec` (`ws-write-spec`) or local `specs/**/*.spec.md` + `ws-spec-format` |
+| Draft a spec | `ws-write-spec` → `{specsDir}/{slug}.spec.md` (not `{plansDir}`) or local `*.spec.md` + `ws-spec-format` |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
 | GitHub issue → spec / fix | `ws-github-provider` or orchestrator with issue URL |
@@ -261,7 +261,8 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 3. Design / spec / architecture constraints
 4. `ws-karpathy-guidelines`
 5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
-6. `ws-tdah` (action-first shape + judgment; still below karpathy/senior)
+6. `ws-fable-method` when autoloaded (defer Plan-First when orch owns session or senior plan already confirmed; see `{sharedDir}/autoload.md`)
+7. `ws-tdah` (action-first shape + judgment; still below karpathy/senior/fable)
 
 ### Opt-out
 
@@ -386,6 +387,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| Specs keywords / which skill to invoke | `{sharedDir}/autoload.md` § Specs skill router |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | GitHub issue/PR ops | `ws-github-provider` |
 | ADO WI/PR ops | `ws-azure-devops-provider` |
