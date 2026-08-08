@@ -60,6 +60,8 @@ Prefer authoring directly in `src/ws-*` when practical; use `.agents/skills` dog
 
 **Agent obligations:** before tool calls, resolve `{sharedDir}` from the project working tree first; expand `{skillsRoot}` independently when hybrid. Do not assume `{skillsRoot}` and `{sharedDir}` are always the same physical tree.
 
+**Global skill execution & local config gate:** When executing a skill installed globally (`$HOME/.agents/skills`), agents must check if the target skill is **config-dependent** (requires project settings, verification commands, SCM providers, or stack companions). If so, the agent MUST verify that the consuming local repository has `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, the agent MUST prompt the user via `user-gate` recommending running `ws-configure-project` to set up the project hub. Config-independent skills (e.g., `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`) do not require `config.json` and may run directly.
+
 ---
 
 ## Doc roles (mandatory)
@@ -68,6 +70,7 @@ Prefer authoring directly in `src/ws-*` when practical; use `.agents/skills` dog
 |------|----------|---------|
 | **`AGENTS.md`** (this file) | Agents | Skill loading, task router, layers, verification, harness rules |
 | **`README.md`** | Humans | What this repo is, how to install/update/uninstall, contribute, safety |
+| **`SKILL_AUTHORING.md`** | Agents & Skill Authors | Mandatory guidelines for designing, pruning, and maintaining lean skills |
 | **`.agents/AGENTS.md`** | Agents (upstream authoring) | Workflows-package index for dual-hub drift checks in this repo — **not** installed into consumers |
 | **`src/ws-*/SKILL.md`** | Agents (upstream SoT) | Skill bodies under development / publish — load on demand via router |
 | **Installed `…/skills/*/SKILL.md`** | Agents (consumers) | Progressive disclosure after project-local or global install |
@@ -109,6 +112,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 | Topic | Canonical doc |
 |-------|----------------|
+| Skill design, pruning & protocol rules (mandatory) | [`SKILL_AUTHORING.md`](SKILL_AUTHORING.md) |
 | Portability, language, folder naming | [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills |
 | Script launchers (`python` / `node` / `bash`) | [`ws-shared/tools.md`](.agents/skills/ws-shared/tools.md) § Script launchers |
 | New or rewritten skills (markdown + scripts) | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) |
