@@ -96,7 +96,7 @@ Session model only. Pause → switch in IDE/agent host → Resume. No `--model` 
 
 | # | Name | Skill / action | Objective |
 |---|------|----------------|-----------|
-| **0** | Spec | providers / `ws-write-spec` | `step-00-{slug}.spec.md` |
+| **0** | Spec | providers / `ws-write-spec` (+ register for free-text) | `{specsDir}` draft; workflow `step-00-{slug}.spec.md` after register |
 | **1** | Plan | `ws-write-plan` | `step-01-{slug}.plan.md` |
 | **2** | Interview | `ws-interview` | `step-02-{slug}.plan.refined.md` |
 | **3** | Plan-to-tasks | `ws-plan-to-tasks` | exec + DAG |

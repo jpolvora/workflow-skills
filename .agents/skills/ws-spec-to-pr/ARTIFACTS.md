@@ -75,9 +75,9 @@ Stage **only**:
 | GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `github` |
 | ADO `{org}/{project}#{id}` or `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `azure-devops` |
 | Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `local` |
-| Free-text brainstorm | `ws-write-spec` (optional mirror via `ws-local-spec-provider`) | `{us-dir}/step-00-{slug}.spec.md` | `local` |
+| Free-text brainstorm | `ws-write-spec` → `{specsDir}/{slug}.spec.md`; orch then `ws-local-spec-provider` register when entering a workflow | Standalone: `{specsDir}/{slug}.spec.md` only. Workflow: also `{us-dir}/step-00-{slug}.spec.md` after register | `local` |
 
-Optional: copy a read-only mirror to `{specsDir}/{slug}.spec.md` for human browsing. Downstream skills **always** read `## Artifacts.specPath` (must point at the `step-00-` file under `{us-dir}`).
+Standalone `/write-spec` **never** writes under `{plansDir}`. Optional `--register` (or orch post-write register) creates the workflow `step-00-` copy. Downstream workflow skills **always** read `## Artifacts.specPath` (must point at the `step-00-` file under `{us-dir}` once a run has started).
 
 **Snapshot (audit-only):** tracker fetches also write `step-00-{slug}.issue.json` (GitHub issue JSON or ADO WIT JSON). Never treat the snapshot as the canonical spec.
 
@@ -87,7 +87,7 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 
 - `{us-dir}/{slug}.spec.md`
 - `{us-dir}/{slug}.plan.md`
-- `{specsDir}/{slug}.spec.md` as the only copy (mirror OK)
+- `{specsDir}/{slug}.spec.md` as the **workflow** sole copy after a run has started (standalone `/write-spec` may leave only `{specsDir}` until register; orch must register before Step 1)
 - Bare `{slug}.result.md` without `step-08-` prefix
 - `stp-*.state.md` or any invented prefix for state (use `{workflow-id}.state.md` with `{slug}-{ISO}` form)
 - `step-*.state.md` — `step-NN-` is **only** for step deliverables in the table above, never for state/archive/baseline

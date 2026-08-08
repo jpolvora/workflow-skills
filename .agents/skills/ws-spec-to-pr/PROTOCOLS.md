@@ -150,7 +150,7 @@ All recorded learnings and memory entries must use clear, direct, and actionable
 | `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` → `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
 | `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-azure-devops-provider` | `fetch-to-spec` | No — skip to Step 1 |
 | `*.spec.md` | `ws-local-spec-provider` | `fetch-to-spec` | No — skip to Step 1 |
-| free-text / no args | none | `ws-write-spec` → spec file | Yes — `dispatch-agent` `ws-write-spec` |
+| free-text / no args | none | `ws-write-spec` → `{specsDir}/{slug}.spec.md`, then `ws-local-spec-provider` register → `{us-dir}/step-00-{slug}.spec.md` | Yes — `dispatch-agent` `ws-write-spec` (+ register before Step 1) |
 
 Provider resolution and `fetch-to-spec` dispatch: load active provider skill; auth failure → STOP (no silent fallback). Details in each provider `SKILL.md`.
 
@@ -158,7 +158,7 @@ Provider resolution and `fetch-to-spec` dispatch: load active provider skill; au
 
 1. **Tracker id** → provider `fetch-to-spec` → skip Step 0 → Step 1 gate.
 2. **Local `*.spec.md`** → `ws-local-spec-provider` → skip Step 0 → Step 1 gate.
-3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`ws-write-spec` only path).
+3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`ws-write-spec` → `{specsDir}` only, then register to `{us-dir}` before planning).
 
 Store `specPath` in state `## Artifacts`.
 

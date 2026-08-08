@@ -7,9 +7,10 @@ Referenced by [`SKILL.md`](SKILL.md). Other skills link here — do not duplicat
 | Source | Pattern |
 |--------|---------|
 | Tracker issue/WI `{id}` | `{plansDir}/us-{id}/step-00-us-{id}.spec.md` |
-| Local slug | `{plansDir}/{slug}/step-00-{slug}.spec.md` |
+| Local draft (`ws-write-spec` / hand-written) | `{specsDir}/{slug}.spec.md` |
+| Local workflow copy (after `ws-local-spec-provider` register) | `{plansDir}/{slug}/step-00-{slug}.spec.md` |
 
-Slug: `us-{id}` for tracker ids; else basename without `.spec.md` (strip optional `step-00-`).
+Slug: `us-{id}` for tracker ids; else basename without `.spec.md` (strip optional `step-00-`). Standalone `/write-spec` writes **only** the `{specsDir}` path — never creates `{plansDir}` artifacts.
 
 ## YAML frontmatter (required)
 
@@ -59,4 +60,4 @@ specDate: 2026-07-02
 1. ACs enumerable and testable — one line per AC.
 2. `source: local` → author owns complete ACs (no tracker fetch).
 3. `*.issue.json` is audit-only — downstream reads `spec.md` only.
-4. Hand-written specs may live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch normalizes to canonical `step-00` path.
+4. Local drafts (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.

@@ -31,13 +31,13 @@ Examples: `fetch-to-spec path/to/feature.spec.md` · `validate-auth` · `fetch-t
 
 ### Workflow Mode
 
-Orch when `providers.active=local` or input is `*.spec.md`; also `ws-write-spec` optional mirror. Records `specSource: local`, skips Step 0 → Step 1 gate.
+Orch when `providers.active=local` or input is `*.spec.md`; also after `ws-write-spec` when a workflow needs a `{us-dir}/step-00-` copy (`--register`). Records `specSource: local`, skips Step 0 → Step 1 gate when input was already a local spec.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `<intent>` | required | Contract below |
 | path / slug | — | Local file or slug under `specsDir` |
-| `--mirror` | false | Also write `{specsDir}/{slug}.spec.md` |
+| `--mirror` | false | Also write/refresh `{specsDir}/{slug}.spec.md` when registering from a non-specsDir input |
 
 ## Config
 

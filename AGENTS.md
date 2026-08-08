@@ -126,7 +126,7 @@ These ship to consumers but are **not autoloaded** by default on consumer projec
 
 | Intent | Load |
 |--------|------|
-| Draft a spec | `ws-write-spec` (`ws-write-spec`) or local `specs/**/*.spec.md` + `ws-spec-format` |
+| Draft a spec | `ws-write-spec` → `{specsDir}/{slug}.spec.md` (not `{plansDir}`) or local `*.spec.md` + `ws-spec-format` |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
 | GitHub issue → spec / fix | `ws-github-provider` or orchestrator with issue URL |

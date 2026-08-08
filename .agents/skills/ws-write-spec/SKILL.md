@@ -1,7 +1,6 @@
 ---
-
 name: ws-write-spec
-description: Canonical spec authoring step — drafts structured step-00 feature specifications from free-text user requirements and intent.
+description: Local spec authoring — drafts structured *.spec.md feature specifications under {specsDir} from free-text user requirements.
 version: 0.0.119
 disable-model-invocation: true
 invocation_names:
@@ -15,9 +14,11 @@ invocation_names:
 
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
-Draft a **canonical** local spec from free-text. 
+Draft a **local** `*.spec.md` from free-text into the project specs directory only.
 
-**Canonical path:** `{us-dir}/step-00-{slug}.spec.md` (`{us-dir}` = `{plansDir}/{slug}/`). Human-browsable mirrors under `{specsDir}` (`plans.specsDir`, default `.agents/specs`) are owned by [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) — never copy them yourself.
+**Write path:** `{specsDir}/{slug}.spec.md` — resolve `{specsDir}` ← `config.json` → `plans.specsDir` (default `.agents/specs`; prefer existing repo-root `specs/` when that is the configured value). Create `{specsDir}` if missing.
+
+**Do not** create `{plansDir}/{slug}/`, `step-00-*.spec.md`, state files, or any other plan/workflow artifact. Plan copies are owned by [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` / `--register` when a workflow starts — never by this skill’s default write.
 
 **Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` and `id: null`.
 
@@ -26,17 +27,17 @@ Draft a **canonical** local spec from free-text.
 Standalone:
 
 ```
-/write-spec "<description>" [slug=<slug>] [output-dir=<path>] [--mirror]
+/write-spec "<description>" [slug=<slug>] [output-dir=<path>] [--register]
 ```
 
-Workflow (ws-spec-to-pr / lite Step 0): orchestrator passes `description` and optional `slug`; optional mirror when requested or when mirroring is policy for local brainstorms.
+Workflow (ws-spec-to-pr / lite Step 0 free-text): orchestrator runs this skill (specsDir write), then **must** register via ws-local-spec-provider before planning if a `{us-dir}/step-00-` copy is required. Do not treat plansDir as the write-spec destination.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `<description>` | required | Raw feature / business text |
 | `slug` | inferred | URL-safe id from title/description |
-| `output-dir` | `{us-dir}` | Optional override for destination `{us-dir}` (`{plansDir}/{slug}/`) |
-| `--mirror` | false | After write, register via ws-local-spec-provider |
+| `output-dir` | `{specsDir}` | Optional override for the specs directory only (still writes `{output-dir}/{slug}.spec.md`; never `{plansDir}`) |
+| `--register` | false | After write, register into `{us-dir}/step-00-{slug}.spec.md` via ws-local-spec-provider (workflow only) |
 
 ## Steps
 
@@ -46,20 +47,18 @@ Workflow (ws-spec-to-pr / lite Step 0): orchestrator passes `description` and op
 2. **Draft** — Build the spec per [ws-spec-format](../ws-spec-format/SKILL.md).
    - Done when: frontmatter has `source: local`, `id: null`, `slug`, `title`, `specDate`; body has Description, Acceptance Criteria (each AC specific and testable), and Notes as needed; every stated requirement maps to ≥1 AC or an explicit out-of-scope note in Notes.
 
-3. **Write** — Save `{us-dir}/step-00-{slug}.spec.md`.
-   - Done when: that file exists on disk.
+3. **Write** — Save `{specsDir}/{slug}.spec.md` (or `{output-dir}/{slug}.spec.md` when overridden). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`.
+   - Done when: that specsDir file exists on disk.
 
-4. **Optional mirror** — Only if `--mirror` or the orchestrator requests a human-browsable copy. Delegate; do not copy files yourself:
+4. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy. Delegate; do not copy files yourself:
 
    ```bash
    python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py \
-     --input "{us-dir}/step-00-{slug}.spec.md" \
-     --mirror
+     --input "{specsDir}/{slug}.spec.md"
    ```
 
-   That script normalizes `source: local` (in-place when input is already the canonical `step-00-` file) and writes `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Use `--force` only when overwriting an existing mirror that differs.
+   That script normalizes `source: local` and writes `{us-dir}/step-00-{slug}.spec.md`. Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
    - Done when: command succeeded, or this step was skipped.
 
-5. **Handoff** — Return the canonical `{us-dir}/step-00-{slug}.spec.md` path for [ws-write-plan](../ws-write-plan/SKILL.md). Mention the mirror path only if one was written. In workflow mode the orchestrator records `specPath` at that file and `specSource: local`.
-   - Done when: caller has the canonical `step-00-` path.
-
+5. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: local`.
+   - Done when: caller has the specsDir path (and plan path only when registered).

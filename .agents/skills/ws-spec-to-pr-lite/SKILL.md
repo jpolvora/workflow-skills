@@ -33,7 +33,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` | `step-00-{slug}.spec.md` exists + classifier user-gate completed |
+| 0 | Spec | providers / `ws-write-spec` (+ register for free-text) | `{specsDir}` draft and/or `step-00-{slug}.spec.md` exists (free-text: write-spec → specsDir, then register) + classifier user-gate completed |
 | 1 | Planning | `ws-write-plan` | `step-01-{slug}.plan.md` created & validated |
 | 2 | Implementation | `ws-implement-tasks` | Code modified + build/tests pass (`config.json.verification`) |
 | 3 | Review | `ws-code-review` (+ fix) | `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops) |
