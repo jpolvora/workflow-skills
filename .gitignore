@@ -37,3 +37,6 @@ __pycache__/
 *.py[cod]
 *.pyo
 check-workflows-report.md
+
+# Generated output from sync-skills — source of truth is src/skills/
+.agents/skills/ws-*/

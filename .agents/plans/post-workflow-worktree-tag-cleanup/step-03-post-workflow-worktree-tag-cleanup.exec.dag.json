@@ -1,0 +1,120 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "planPath": ".agents/plans/post-workflow-worktree-tag-cleanup/step-02-post-workflow-worktree-tag-cleanup.plan.refined.md",
+  "reason": "7 refined implementation steps, 12 expected unique changed files, and 3 layers (skills-sot, tests, installer-cli) exceed sequential thresholds of 3 steps, 6 files, and 2 layers.",
+  "metrics": {
+    "planSteps": 7,
+    "atomicTasks": 8,
+    "expectedUniqueChangedFiles": 12,
+    "layersTouched": 3,
+    "safeDagLevels": 4,
+    "maxConcurrentTasks": 3,
+    "sameLevelFileCollisions": 0,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Shared cleanup_workflow_git.py Phase A script",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        "src/skills/ws-spec-to-pr/scripts/cleanup_workflow_git.py"
+      ],
+      "acceptance": "AC2,AC3,AC4,AC5,AC6,AC9: Enumerate/remove/verify tags, worktrees, branches under uswf/{workflow-id}; default --dirty-policy force; dry-run log-only; exit 0 CLEAN / 2 WARN leftovers / 1 hard failure or stop; no remote ops; py_compile clean.",
+      "coderPrompt": "Create only src/skills/ws-spec-to-pr/scripts/cleanup_workflow_git.py. Mirror patterns from sibling scripts (ensure_utf8_stdio, argparse, subprocess list-args git). Flags: --workflow-id (required), --dry-run, --repo (cwd default), --dirty-policy force|stop default force. Refuse empty/*/traversal-like ids. Enumerate git tag -l uswf/{id}/*, worktree list --porcelain (branch uswf/{id}/* or path under plans.worktreesDir for id), git branch --list uswf/{id}/*. Remove order: worktrees (remove --force + prune if needed) → tags (-d) → branches (-D if not checked out elsewhere). Dirty WT: log git -C status --porcelain then force-remove; on stop exit 1 without half-register. Verify re-list; print CLEAN or WARN with exact leftover names. dryRun prints [DRY-RUN] intents, exit 0, zero mutations. Never push/delete remote tags. python -m py_compile."
+    },
+    {
+      "id": "T2",
+      "title": "Rewrite artifact-cleanup Phase A vs B",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        "src/skills/ws-spec-to-pr/protocols/artifact-cleanup.md"
+      ],
+      "acceptance": "AC5,AC8,AC10: Phase A mandatory on completed; Phase B optional plan-dir; replace GNU xargs git snippets with shared python script invoke; document skip active/Pause/failed/cancelled, dryRun, Keep-all still Phase A, single completed hook, exit codes 0/2/1; en-us; no host names.",
+      "coderPrompt": "Edit only src/skills/ws-spec-to-pr/protocols/artifact-cleanup.md. Reframe as Post-workflow cleanup with Phase A (mandatory git runtime on status→completed) vs Phase B (optional plan-dir temps). Replace xargs -r/grep git pipelines with: python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id …. Keep Phase B rm list and preserved artifacts list. Document skip while active/Pause/failed/cancelled; dryRun log-only; Keep all artifacts still runs Phase A; single hook on completed (not dual Step 8+9); orch exit-code contract. en-us; harness-neutral; no host product names."
+    },
+    {
+      "id": "T3",
+      "title": "FAQ mandatory git vs optional plan-dir",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        "src/skills/ws-spec-to-pr/docs/faq.md"
+      ],
+      "acceptance": "AC10: FAQ covers stale uswf leftovers, mandatory git vs Keep all, manual re-run for failed/cancelled, WARN leftovers, dirty-policy force default; no README/site bump; en-us; portable.",
+      "coderPrompt": "Edit only src/skills/ws-spec-to-pr/docs/faq.md. Add a troubleshooting entry for stale uswf/ tags/worktrees/branches: mandatory Phase A git cleanup vs optional Keep all plan-dir artifacts; how to re-run cleanup_workflow_git.py manually (including failed/cancelled leftovers); meaning of WARN leftovers (exit 2); default --dirty-policy force. Do not bump README or docs/index.html. en-us; no host product names."
+    },
+    {
+      "id": "T4",
+      "title": "Wire standard orch completed Phase A hook",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T2"],
+      "files": [
+        "src/skills/ws-spec-to-pr/PROTOCOLS.md",
+        "src/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        "src/skills/ws-spec-to-pr/SKILL.md",
+        "src/skills/ws-spec-to-pr/ARTIFACTS.md"
+      ],
+      "acceptance": "AC1,AC7,AC8: Phase A invoked once on status→completed before claim-ended (after Step 9 or Step 8 when no Step 9); Phase B stays optional; no double Step 8+9 invoke; exit-code orch behavior documented; ARTIFACTS pointer mandatory git + optional plan-dir; surgical en-us edits.",
+      "coderPrompt": "Edit only the four listed standard orch files under src/skills/ws-spec-to-pr/. Update Ship order / Checkpoints Delete-on-completion / STEP-DISPATCH Step 8–9 notes so Phase A runs once when status→completed, before claiming ended; Phase B only on delete-temps. Never invoke Phase A at both Step 8 and Step 9. Add brief SKILL cleanup pointer. ARTIFACTS: one-line mandatory git + optional plan-dir. Document exit 0 proceed, exit 2 surface leftovers still may claim ended, exit 1 do not claim ended. Link artifact-cleanup protocol. Surgical only; en-us; no host names."
+    },
+    {
+      "id": "T5",
+      "title": "Wire lite orch Phase A parity",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T2"],
+      "files": [
+        "src/skills/ws-spec-to-pr-lite/SKILL.md"
+      ],
+      "acceptance": "AC1,AC7: Lite documents and invokes same Phase A script/protocol at terminal completed; skip auto-clean for failed/cancelled/paused; en-us; no host names.",
+      "coderPrompt": "Edit only src/skills/ws-spec-to-pr-lite/SKILL.md. At lite terminal completed (after Step 5 fix-pr convergence or Step 4 when skip ship/fix-pr), invoke the same Phase A script path under ws-spec-to-pr/scripts/cleanup_workflow_git.py and link shared artifact-cleanup protocol. Document skip auto-clean when failed/cancelled/paused. Surgical; en-us; no host names."
+    },
+    {
+      "id": "T6",
+      "title": "Multi-spec child Phase A ownership",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T2"],
+      "files": [
+        "src/skills/ws-multi-spec/PROTOCOL.md"
+      ],
+      "acceptance": "AC1,AC7: Child orch owns Phase A on child completed; skipped/failed/aborted children do not auto-clean; batch runId is not a uswf cleanup target; en-us.",
+      "coderPrompt": "Edit only src/skills/ws-multi-spec/PROTOCOL.md (Phase 5 / post-child). Document that successful child workers run Phase A via their own orch on child completed; skipped/failed/aborted children do not auto-clean; batch runId is not a uswf/{workflow-id} cleanup target. Link shared protocol/script. Surgical; en-us; no host names."
+    },
+    {
+      "id": "T7",
+      "title": "test-cleanup-workflow-git.js coverage",
+      "parallelGroup": "L3",
+      "dependsOn": ["T1", "T2", "T3", "T4", "T5", "T6"],
+      "files": [
+        "test/test-cleanup-workflow-git.js"
+      ],
+      "acceptance": "AC2–AC10: Temp-repo fixtures cover tag delete local-only, WT/branch remove, WARN leftovers exit 2, dry-run no mutate, namespace isolation, dirty force/stop; doc asserts for shared path / Phase A vs B / FAQ as practical; matches test/*.js style.",
+      "coderPrompt": "Create only test/test-cleanup-workflow-git.js. Spawn python cleanup_workflow_git.py against temporary git repos with planted uswf/{id} tags/worktrees/branches. Implement cases from refined plan §5: testCleanupDeletesLocalTagsOnly, testCleanupRemovesWorktreesAndBranches, testCleanupWarnsOnLeftovers, testCleanupDryRunNoMutate, testCleanupNamespaceIsolation, testCleanupDirtyWorktreeForce, testCleanupDirtyWorktreeStop, plus lightweight doc asserts for shared script path and Phase A vs B / FAQ wording. Prefer existing test/ helper patterns. Do not rewrite unrelated install tests."
+    },
+    {
+      "id": "T8",
+      "title": "Integrity regenerate + run-test cleanup alignment",
+      "parallelGroup": "L4",
+      "dependsOn": ["T1", "T2", "T3", "T4", "T5", "T6", "T7"],
+      "files": [
+        "bin/skill-integrity.json",
+        "src/skills/ws-spec-to-pr/ws-spec-to-pr-run-test.md"
+      ],
+      "acceptance": "Ship prep: npm run generate-integrity && verify-integrity exit 0; update run-test.md cleanup section only if it still says optional-only git delete → mandatory Phase A; no new skill-dependencies membership.",
+      "coderPrompt": "After SoT files from T1–T7 exist: run npm run generate-integrity && npm run verify-integrity (must exit 0) and commit digests via updating bin/skill-integrity.json. Edit src/skills/ws-spec-to-pr/ws-spec-to-pr-run-test.md only if cleanup still describes optional-only git delete — change expectation to mandatory Phase A on completed. Do not add a new skill id to skill-dependencies.json. No README/site bump."
+    }
+  ],
+  "levels": [
+    ["T1", "T2", "T3"],
+    ["T4", "T5", "T6"],
+    ["T7"],
+    ["T8"]
+  ]
+}

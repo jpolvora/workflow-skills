@@ -2,14 +2,14 @@
 # Installer seeds fresh empty MEMORY.md + STACK.md for new consumers and preserves existing ones.
 # Note: presence of this file means npm does NOT apply root .gitignore — list bytecode/junk here too.
 
-.agents/skills/ws-shared/config.json
-.agents/skills/ws-shared/config.local.json
-.agents/skills/ws-shared/STACK.md
-.agents/skills/ws-shared/MEMORY.md
-.agents/skills/ws-shared/memory/**
-!.agents/skills/ws-shared/MEMORY.md.template
-!.agents/skills/ws-shared/STACK.md.example
-!.agents/skills/ws-shared/config.json.example
+src/skills/ws-shared/config.json
+src/skills/ws-shared/config.local.json
+src/skills/ws-shared/STACK.md
+src/skills/ws-shared/MEMORY.md
+src/skills/ws-shared/memory/**
+!src/skills/ws-shared/MEMORY.md.template
+!src/skills/ws-shared/STACK.md.example
+!src/skills/ws-shared/config.json.example
 
 **/__pycache__/
 **/*.py[cod]
