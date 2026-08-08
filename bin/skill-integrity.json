@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "963e9597b471dfe9d63dfbb0af398d9f3cf38f0714c593b9ebece2df6e6f2971",
+  "fullPackageDigest": "694bec74ca9ed5bef5d44902d9ce325cc175c23cc4c2f1c0df5ef502f2cc4d51",
   "hub": {
     "files": {
       "AGENTS.md": "3e3341b882bfd9ab9c269bbce60d1017fddf0bf65304cb1131d071ea86826ce8",
@@ -23,7 +23,7 @@
     },
     "skillDigest": "18cc5c2c582d9274bf6e39c00e3c9e609a065cecb92d80af0bcd1e37fa7cd954"
   },
-  "packageVersion": "0.0.116",
+  "packageVersion": "0.0.117",
   "skills": {
     "ws-azure-devops-provider": {
       "files": {
@@ -45,11 +45,11 @@
     "ws-check-harness": {
       "files": {
         "evals/evals.json": "ce38c0d26016208ae27eb944d21de285fdb3bd486bbb23ec5074b17d315b4b32",
-        "PHASES.md": "96e9a48f6a5ceb06b6c0223dee6bd2c79f20e670270abcc8d50e49489d273341",
-        "REPORT-FORMAT.md": "b4e61cd40424dfa2e0079ddc5834005bcd97ca0ed2ce5b10f163d0ad435a9b4a",
-        "SKILL.md": "b7943dd6647598d0cfb073a727568084bbc753fa9f5c219c5775820dc6cbc2bc"
+        "PHASES.md": "2df7734446d78893a6325936513037cbece0da24761511d47e18255cd02d4a2d",
+        "REPORT-FORMAT.md": "361da218cb35f9d3e5d3dd16d1d3e2293c1d6012023a8f4e3d20e107ef774c62",
+        "SKILL.md": "6c552e572d339f2a1a3a3881a1f787347d4a92736e8bc0d2e490a1fa63ac5197"
       },
-      "skillDigest": "893cef19c3475b119b26fc07c8b246c3efe7bebfcfaa66e08a2f219dacac0afc"
+      "skillDigest": "de3408235f7b01952493e3f79218ddec9f9501e6fb40225b7ec6909821e388bd"
     },
     "ws-check-workflows": {
       "files": {
