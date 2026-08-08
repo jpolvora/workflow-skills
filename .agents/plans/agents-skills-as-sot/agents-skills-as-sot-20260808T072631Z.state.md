@@ -6,10 +6,10 @@ us: agents-skills-as-sot
 title: Refactor skill SoT from src/skills to .agents/skills
 specSource: local
 specPath: .agents/plans/agents-skills-as-sot/step-00-agents-skills-as-sot.spec.md
-status: active
+status: completed
 startedAt: "2026-08-08T07:26:31Z"
-endedAt: null
-currentStep: 8
+endedAt: "2026-08-08T08:30:09Z"
+currentStep: 10
 completedSteps:
   - 0
   - 1
@@ -19,6 +19,8 @@ completedSteps:
   - 5
   - 6
   - 7
+  - 8
+  - 9
 skippedSteps: []
 autoMode: true
 dryRun: false
@@ -27,7 +29,9 @@ scoreAndRefine: false
 skipTesting: false
 skipTests: false
 skipQualityGates: false
-shipAction: null
+shipAction: create-pr
+prUrl: "https://github.com/jpolvora/workflow-skills/pull/181"
+prNumber: 181
 execMode: parallel
 finalPipeline: standard
 complexityClass: standard
@@ -52,6 +56,7 @@ workflowManifest:
     - .agents/plans/agents-skills-as-sot/step-06-agents-skills-as-sot.fix.report.md
     - .agents/plans/agents-skills-as-sot/step-07-agents-skills-as-sot.testing.plan.md
     - .agents/plans/agents-skills-as-sot/step-07-agents-skills-as-sot.testing.report.md
+    - .agents/plans/agents-skills-as-sot/step-08-agents-skills-as-sot.result.md
   modified: []
   deleted: []
   artifacts: []
@@ -65,6 +70,8 @@ stepStatus:
   5: completed
   6: completed
   7: completed
+  8: completed
+  9: completed
 stepDispatches:
   - { step: 0, dispatched: "2026-08-08T07:27:37Z" }
   - { step: 1, dispatched: "2026-08-08T07:32:22Z" }
@@ -74,6 +81,8 @@ stepDispatches:
   - { step: 5, dispatched: "2026-08-08T08:04:28Z" }
   - { step: 6, dispatched: "2026-08-08T08:12:51Z" }
   - { step: 7, dispatched: "2026-08-08T08:15:50Z" }
+  - { step: 8, dispatched: "2026-08-08T08:22:07Z" }
+  - { step: 9, dispatched: "2026-08-08T08:30:09Z" }
 stepModels:
   - { step: 0, model: Cursor Grok 4.5, dispatched: "2026-08-08T07:27:37Z" }
   - { step: 1, model: Cursor Grok 4.5, dispatched: "2026-08-08T07:32:22Z" }
@@ -83,6 +92,8 @@ stepModels:
   - { step: 5, model: Cursor Grok 4.5, dispatched: "2026-08-08T08:04:28Z" }
   - { step: 6, model: Cursor Grok 4.5, dispatched: "2026-08-08T08:12:51Z" }
   - { step: 7, model: Cursor Grok 4.5, dispatched: "2026-08-08T08:15:50Z" }
+  - { step: 8, model: Cursor Grok 4.5, dispatched: "2026-08-08T08:22:07Z" }
+  - { step: 9, model: Cursor Grok 4.5, dispatched: "2026-08-08T08:30:09Z" }
 gateHistory: []
 telemetry:
   workflowStartedAt: "2026-08-08T07:26:31Z"
@@ -96,9 +107,11 @@ telemetry:
     - { N: 5, label: verify-plan, dispatchedAt: "2026-08-08T08:04:28Z", finishedAt: "2026-08-08T08:04:28Z", elapsedSec: 135, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 1 }
     - { N: 6, label: code-review, dispatchedAt: "2026-08-08T08:12:51Z", finishedAt: "2026-08-08T08:12:51Z", elapsedSec: 152, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 4 }
     - { N: 7, label: testing, dispatchedAt: "2026-08-08T08:15:50Z", finishedAt: "2026-08-08T08:15:50Z", elapsedSec: 17, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 2 }
-  totalElapsedSec: 1941
+    - { N: 8, label: ship-pr, dispatchedAt: "2026-08-08T08:22:07Z", finishedAt: "2026-08-08T08:22:07Z", elapsedSec: 300, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 1 }
+    - { N: 9, label: goal-fix-pr, dispatchedAt: "2026-08-08T08:30:09Z", finishedAt: "2026-08-08T08:30:09Z", elapsedSec: 360, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 0 }
+  totalElapsedSec: 2601
   totalTokens: 0
-  workflowEndedAt: "2026-08-08T08:15:50Z"
+  workflowEndedAt: "2026-08-08T08:30:09Z"
 ---
 # Workflow state — agents-skills-as-sot-20260808T072631Z
 
@@ -123,3 +136,5 @@ telemetry:
 | Step 5 | verify-plan | Cursor Grok 4.5 | 135s | 0 |
 | Step 6 | code-review | Cursor Grok 4.5 | 152s | 0 |
 | Step 7 | testing | Cursor Grok 4.5 | 17s | 0 |
+| Step 8 | ship-pr | Cursor Grok 4.5 | 300s | 0 |
+| Step 9 | goal-fix-pr | Cursor Grok 4.5 | 360s | 0 |
