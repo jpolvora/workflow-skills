@@ -238,11 +238,13 @@ Useful commands:
 rg -o '\[[^\]]+\]\(([^)]+)\)' AGENTS.md
 
 # Path tokens in skills/hubs (must expand before broken-link claims)
-# Upstream Install mode: also scan src/skills; consumer: {skillsRoot} (often .agents/skills)
-rg -n '\{skillsRoot\}|\{sharedDir\}|\{plansDir\}|\{reviewsDir\}' AGENTS.md src/skills/ .agents/skills/ --glob '*.md'
+# Install mode upstream (skills scan root = src/skills):
+rg -n '\{skillsRoot\}|\{sharedDir\}|\{plansDir\}|\{reviewsDir\}' AGENTS.md src/skills/ --glob '*.md'
+# Install mode consumer ({skillsRoot}, often .agents/skills; guard missing roots):
+rg -n '\{skillsRoot\}|\{sharedDir\}|\{plansDir\}|\{reviewsDir\}' AGENTS.md .agents/skills/ --glob '*.md' 2>/dev/null || true
 
 # .agents paths cited in the harness (also flag leftover host-specific dirs if present)
-rg -n '\.agents/|\.cursor/' AGENTS.md .agents/
+rg -n '\.agents/|\.cursor/' AGENTS.md .agents/ 2>/dev/null || true
 ```
 
 ### Phase 2 — Existence and path format validation
@@ -290,10 +292,14 @@ ls -d src/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement-tas
 ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement-tasks,verify-plan,code-review,testing,ship-pr,fix-pr,goal-fix-pr,update-plan-implementation} 2>/dev/null
 
 # Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ)
-# Scan skills scan root (src/skills upstream; {skillsRoot}/.agents/skills consumer) + hubs
+# Install mode upstream:
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
-  AGENTS.md .agents/AGENTS.md src/skills/ .agents/skills/ bin/skill-dependencies.json \
+  AGENTS.md .agents/AGENTS.md src/skills/ bin/skill-dependencies.json \
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md'
+# Install mode consumer (guard missing hubs / skills root):
+rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
+  AGENTS.md .agents/skills/ bin/skill-dependencies.json \
+  --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' 2>/dev/null || true
 ```
 
 ### Phase 3 — Routing graph and decision paths

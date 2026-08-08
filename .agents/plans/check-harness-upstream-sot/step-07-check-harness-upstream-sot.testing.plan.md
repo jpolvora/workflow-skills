@@ -14,6 +14,8 @@ Docs-only change under `src/skills/ws-check-harness/{SKILL,PHASES,REPORT-FORMAT}
 | API / integration | Skip | No API contracts touched |
 | UI / E2E / browser | Skip (`skip-browser` / no UI) | Docs-only |
 | Feature AC | Docs accuracy vs harness SoT | Covered by package tests + prior harness review steps |
+| Harness audit | `ws-check-harness` Phases 0–5c on this tree | AGENTS.md pre-ship gate row 8 — expect 0 critical for changed skill `ws-check-harness`; record Install mode + Skills scan root |
+| Workflows simulation | `ws-check-workflows` | ⏭ orch/dispatch surfaces unchanged |
 
 ## Defect threshold
 

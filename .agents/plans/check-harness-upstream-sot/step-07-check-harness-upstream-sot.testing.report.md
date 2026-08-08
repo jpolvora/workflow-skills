@@ -17,6 +17,8 @@
 | API / integration | Skipped | Covered by install/QG suite |
 | UI / E2E / browser | Skipped | Docs-only / no UI |
 | Accessibility / contrast | Skipped | No UI forms |
+| Harness audit (Phases 0–5c) | PASS | Install mode: **upstream**; Skills scan root: **src/skills**; SoT `ws-check-harness` SKILL/PHASES/REPORT present; mode-split `rg` examples guarded; 0 critical on changed skill contract |
+| Workflows simulation | Skipped | orch/dispatch unchanged |
 
 **tests_passed:** true
 
@@ -46,3 +48,11 @@ Pass criterion met: zero exit from `npm run verify-integrity` and `npm run test`
 - `.agents/skills/*` (via `sync-skills`, dogfood mirror)
 - This report
 
+
+## Harness audit (ship fix round)
+
+- Date: 2026-08-08
+- Install mode: upstream (markers + SoT)
+- Skills scan root: src/skills
+- Critical findings for `ws-check-harness` change: **0**
+- Evidence: Phase 1/2 example commands mode-split; REPORT-FORMAT Install mode + Skills scan root fields present.
