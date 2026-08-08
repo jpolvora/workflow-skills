@@ -6,12 +6,18 @@ Contains: canonical scan inventory (§ Scan scope) and Phases 0–7 methodology.
 
 ## Hub resolution details (Phase 0)
 
-Detect install mode before routing audits (summary also in `SKILL.md`):
+Detect **Install mode** and **Skills scan root** before routing audits (summary also in `SKILL.md`). Execution `Mode` (`normal` | `dry-run`) is orthogonal — do not conflate it with Install mode.
 
-| Mode | Detection (first match) | Primary hub |
-|------|-------------------------|-------------|
-| **Upstream** | `bin/skill-dependencies.json` at repo root **and** `.agents/AGENTS.md` | Root `AGENTS.md` (+ dual-hub drift vs `.agents/AGENTS.md`) |
-| **Consumer** | `.agents/skills/ws-shared/AGENTS.md` exists; upstream markers absent | `.agents/skills/ws-shared/AGENTS.md` |
+| Install mode | Detection (required evidence) | Primary hub | Skills scan root | Integrity gate |
+|--------------|------------------------------|-------------|------------------|----------------|
+| **upstream** | `bin/skill-dependencies.json` **and** `.agents/AGENTS.md` **and** at least one `src/skills/ws-*/SKILL.md` | Root `AGENTS.md` (+ dual-hub drift vs `.agents/AGENTS.md`) | `src/skills` | Required (Phase 3 item 7) |
+| **consumer** | Upstream evidence incomplete (markers and/or SoT absent); typically `{sharedDir}/AGENTS.md` present | `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) | `{skillsRoot}` (+ optional `{globalSkillsRoot}` hybrid) | Skip / not required |
+
+**Hard rule:** Package markers (`bin/skill-dependencies.json` + `.agents/AGENTS.md`) **without** `src/skills` SoT ⇒ **Install mode: consumer** for skills inventory. Optional one-line informational note only (markers present, SoT absent) — not a problem-count item. Do **not** select `src/skills` as skills scan root without SoT evidence.
+
+**Consumer ignores stray `src/skills`:** When Install mode is consumer, do not scan a folder named `src/skills` for Phase 4 inventory even if it exists.
+
+**Verification (Install mode):** At an upstream package root → report `Install mode: upstream` + skills scan root `src/skills`. In a consumer tree with only `{skillsRoot}` / global install → `Install mode: consumer` + scan root under `.agents/skills` and/or `{globalSkillsRoot}`.
 
 **Consumer rules:**
 
@@ -65,19 +71,26 @@ Optional consumer rule paths are declared in `config.json` under `rules.*` (e.g.
 
 Phase 4 detects new or removed skills that diverge from declared routing; treat missing optional rule files as **warning** when the config key is set.
 
-### 3. Skills (`.agents/skills/` & global skills `{globalSkillsRoot}`)
+### 3. Skills (mode-aware skills scan root)
 
-All project skills live under `.agents/skills/` (and/or globally under `{globalSkillsRoot}`). Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly in `skills/` (like this skill (`ws-check-harness/SKILL.md`)) are also treated as skills in the scan.
+Skill inventory is driven by **Install mode** (§ Hub resolution). Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly under the scan root are also treated as skills.
 
-**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` recursively across both local `{skillsRoot}` and global `{globalSkillsRoot}`, comparing against declared routing in the resolved hub (§ Hub resolution; `ws-shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the disk is the truth.
+| Install mode | Discover `SKILL.md` under | Notes |
+|--------------|---------------------------|-------|
+| **upstream** | `src/skills` | Only skill-content SoT. Do **not** treat `.agents/skills` dogfood as inventory SoT. |
+| **consumer** | `{skillsRoot}` (+ optional `{globalSkillsRoot}` with local override) | Install layout token `{skillsRoot}` (default `.agents/skills`). Ignore stray `src/skills`. |
 
-> **`name:` collision vs Local Override:** two `SKILL.md` files with the same `name:` within the same scope break skill resolution → report as **warning** and propose renaming one id or consolidating. However, when a local skill in `{skillsRoot}` shares the same `name:` as a global skill in `{globalSkillsRoot}`, the local project skill acts as an **intentional workspace override** → treat as a valid override (do NOT flag as a collision warning).
+**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` under the **skills scan root** resolved in Phase 0, comparing against declared routing in the resolved hub (§ Hub resolution; `ws-shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the skills scan root on disk is the truth.
+
+**Dogfood lag (upstream only):** After inventory from `src/skills`, do **not** add unrouted/phantom items solely because `.agents/skills/ws-*` is missing or differs. The same SoT-id equivalence applies to Phase 2 **File exists** / hub install-path literals and Phase 4c `phantom_routes` (present if `src/skills/ws-<id>/SKILL.md` exists). Optional one-line informational note: “Dogfood under `{skillsRoot}` may lag SoT; not counted unless dogfood-sync audit requested.” Maintainers may run `npm run sync-skills` for local dogfood; lag is not a mandatory AC / DoD failure.
+
+> **`name:` collision vs Local Override:** two `SKILL.md` files with the same `name:` within the same scope break skill resolution → report as **warning** and propose renaming one id or consolidating. However, when a local skill in `{skillsRoot}` shares the same `name:` as a global skill in `{globalSkillsRoot}`, the local project skill acts as an **intentional workspace override** → treat as a valid override (do NOT flag as a collision warning). (Consumer / hybrid installs only.)
 
 Also inspect **docs/scripts** referenced by those skills (e.g., scripts in subfolders like `ws-spec-to-pr/scripts/`, `ws-fix-pr/scripts/`).
 
 ### 3b. Pipeline skill structure (canonical — when `ws-spec-to-pr` is present)
 
-Phase 4 still **discovers** inventory from disk. When this hub ships `ws-spec-to-pr` / `ws-spec-to-pr-lite`, use the table below as the **alignment contract** for Phases 2 / 5 (phantom paths, retired ids, Step↔folder drift). Consumers without the workflow package: skip § 3b checks.
+Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When this hub ships `ws-spec-to-pr` / `ws-spec-to-pr-lite`, use the table below as the **alignment contract** for Phases 2 / 5 (phantom paths, retired ids, Step↔folder drift). Expected folders are checked under the skills scan root: upstream → `src/skills/ws-*`; consumer → `{skillsRoot}/ws-*` (hub routing tables may still cite install-path literals `.agents/skills/...`). Consumers without the workflow package: skip § 3b checks.
 
 | Folder (disk) | Frontmatter `name:` | FSM step (standard) | Role |
 |---------------|---------------------|---------------------|------|
@@ -100,7 +113,7 @@ Phase 4 still **discovers** inventory from disk. When this hub ships `ws-spec-to
 2. **`name:` / folder** use the `ws-` prefix (e.g. `ws-testing`, `ws-goal-fix-pr`). No numeric `NN-` folder prefixes.
 3. **`invocation_names`** should include bare short id and `ws-*` only — no retired `NN-*` folder aliases.
 4. **Orchestrator dispatch** (`ws-spec-to-pr/STEP-DISPATCH.md`, orch `SKILL.md`): use `ws-*` folder ids. STEP-DISPATCH is **standard-only** (0–9); lite keeps its own 0–5 table.
-5. **Upstream `bin/skill-dependencies.json`:** workflow package skill ids must match folder names on disk.
+5. **Upstream `bin/skill-dependencies.json`:** workflow package skill ids must match folder names on disk under the skills scan root (`src/skills/` when Install mode is upstream; `{skillsRoot}/` when consumer).
 
 **Forbidden folder / path ids** (**critical** in orch dispatch / Layer 2 / `skill-dependencies.json` / live skill bodies; **warning** in human FAQ with an explicit LEGACY banner). Exempt: `CHANGELOG.md` history only:
 
@@ -129,7 +142,8 @@ When **`ws-write-a-skill`** is installed (shipped Extra or global), include in t
 
 | Typical location | Path |
 |------------------|------|
-| Packaged Extra (this repo / consumer) | `.agents/skills/ws-write-a-skill/SKILL.md` |
+| Upstream SoT (Install mode upstream) | `src/skills/ws-write-a-skill/SKILL.md` |
+| Packaged Extra / consumer install | `.agents/skills/ws-write-a-skill/SKILL.md` |
 | User-level skills directory for the host | host-specific user skills path containing `ws-write-a-skill/SKILL.md` |
 | Agents global (alternative) | `~/.agents/skills/ws-write-a-skill/SKILL.md` |
 
@@ -188,7 +202,7 @@ Run **all** scan phases (0–5c) before assembling the plan (6). Phase 7 only oc
 
 1. Confirm branch and git state (`git status --short`) — uncommitted local changes may explain "missing" paths.
 2. Record date/time and requested scope (full vs. specific file).
-3. **Resolve install mode + primary hub** per § Hub resolution (Upstream vs Consumer). Record which file(s) will be used for Phase 4 routing.
+3. **Resolve Install mode + primary hub + skills scan root** per § Hub resolution (`upstream` | `consumer`). Record evidence in Phase 0 notes: which markers matched/failed, whether SoT (`src/skills/ws-*/SKILL.md`) was present, resolved `Install mode`, resolved `Skills scan root`, and which hub file(s) will be used for Phase 4 routing.
 4. **Windows stdio (mandatory when using Python print scans):** skill/hub markdown contains `→` (U+2192) and other non-cp1252 glyphs. Before any Python one-liner that **prints** file contents, force UTF-8 or set `PYTHONIOENCODING=utf-8`. Otherwise Windows consoles raise `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`.
 
 ```bash
@@ -224,10 +238,13 @@ Useful commands:
 rg -o '\[[^\]]+\]\(([^)]+)\)' AGENTS.md
 
 # Path tokens in skills/hubs (must expand before broken-link claims)
-rg -n '\{skillsRoot\}|\{sharedDir\}|\{plansDir\}|\{reviewsDir\}' AGENTS.md .agents/skills/ --glob '*.md'
+# Install mode upstream (skills scan root = src/skills):
+rg -n '\{skillsRoot\}|\{sharedDir\}|\{plansDir\}|\{reviewsDir\}' AGENTS.md src/skills/ --glob '*.md'
+# Install mode consumer ({skillsRoot}, often .agents/skills; guard missing roots):
+rg -n '\{skillsRoot\}|\{sharedDir\}|\{plansDir\}|\{reviewsDir\}' AGENTS.md .agents/skills/ --glob '*.md' 2>/dev/null || true
 
 # .agents paths cited in the harness (also flag leftover host-specific dirs if present)
-rg -n '\.agents/|\.cursor/' AGENTS.md .agents/
+rg -n '\.agents/|\.cursor/' AGENTS.md .agents/ 2>/dev/null || true
 ```
 
 ### Phase 2 — Existence and path format validation
@@ -238,7 +255,7 @@ For each internal reference (post-expansion when applicable):
 
 | Check | Typical failure |
 |-------------|--------------|
-| File exists | orphan link after rename (e.g., path ported from another project without adjustment) |
+| File exists | orphan link after rename (e.g., path ported from another project without adjustment). **Upstream install-path literal exception:** when Install mode is `upstream` and the citation is a hub install-path literal under `.agents/skills/ws-<id>/…` (or `{skillsRoot}/ws-<id>/…`), treat the route as **present** if `src/skills/ws-<id>/SKILL.md` exists (SoT-id equivalence). Do **not** emit broken-link critical/warning solely because the dogfood copy is missing or differs (§ 3 Dogfood lag); optional one-line informational note only unless the user explicitly requested a dogfood-sync audit. **Consumer Install mode:** unchanged — resolve and require the install-path / `{skillsRoot}` file on disk. |
 | Relative path correct | excessive or insufficient `../` from the source file (**Markdown links only**; token prose uses repo-root expand) |
 | Token in Markdown link target | `(...{sharedDir}...)` — GitHub cannot expand braces → **warning**: rewrite link target to a real relative/repo-root path; keep token form in surrounding prose if desired |
 | Numeric consistency | folder `ws-write-plan` vs. `name: ws-write-plan` (numeric prefix on filesystem only; `ws-` on `name:`) |
@@ -258,7 +275,7 @@ For each internal reference (post-expansion when applicable):
 |---------------|--------------|
 | Markdown link `(relative/path)` | Directory of the **containing file** (click simulation) |
 | Declared path token / expanded token | **Repo root** after § Path token map expand |
-| Hub routing table literal `.agents/skills/...` | **Repo root** |
+| Hub routing table literal `.agents/skills/...` | **Repo root** for path shape; **existence (upstream only):** SoT-id equivalence — present if `src/skills/ws-<id>/SKILL.md` exists even when the dogfood literal path is missing (§ 3 / File exists exception). Consumer: literal path under `{skillsRoot}` must exist. |
 | Bare relative (no `./` / `../`), e.g. `docs/faq.md`, `README.md` | Directory of the **containing file** — **not** repo root |
 
 **Bare relative links (common false positive):** a Markdown link whose target is the bare relative path `docs/faq.md` inside `.agents/skills/ws-spec-to-pr/SKILL.md` resolves to `.agents/skills/ws-spec-to-pr/docs/faq.md`. Do **not** flag `{repo}/docs/faq.md` as broken. A leading `docs/` segment does **not** imply repo-root resolution unless the citing file is at repo root and the intent is clearly a top-level `docs/` tree.
@@ -268,13 +285,21 @@ For each internal reference (post-expansion when applicable):
 **Pipeline structure spot-check (when `ws-spec-to-pr` is present):**
 
 ```bash
-# Expected folders present (folder == frontmatter name:)
+# Expected folders present (folder == frontmatter name:) under skills scan root
+# Install mode upstream:
+ls -d src/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement-tasks,verify-plan,code-review,testing,ship-pr,fix-pr,goal-fix-pr,update-plan-implementation} 2>/dev/null
+# Install mode consumer ({skillsRoot}, often .agents/skills):
 ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement-tasks,verify-plan,code-review,testing,ship-pr,fix-pr,goal-fix-pr,update-plan-implementation} 2>/dev/null
 
 # Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ)
+# Install mode upstream:
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
-  AGENTS.md .agents/AGENTS.md .agents/skills/ bin/skill-dependencies.json \
+  AGENTS.md .agents/AGENTS.md src/skills/ bin/skill-dependencies.json \
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md'
+# Install mode consumer (guard missing hubs / skills root):
+rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
+  AGENTS.md .agents/skills/ bin/skill-dependencies.json \
+  --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' 2>/dev/null || true
 ```
 
 ### Phase 3 — Routing graph and decision paths
@@ -283,13 +308,15 @@ Build the mental map (or mermaid) of **who points to whom**:
 
 ```mermaid
 flowchart TD
-  AG[AGENTS.md] --> SKILLS[.agents/skills/*]
+  AG[AGENTS.md] --> SKILLS[skills scan root]
   AG --> DOCS[docs/* + project docs]
   UDW[E2E pipeline] --> STACKWF[stack config]
   UDW --> SKILLS
   CHK[ws-check-harness] --> AG
   SKILLS --> GRD[guardrails skill]
 ```
+
+Skills scan root: `src/skills` (Install mode upstream) or `{skillsRoot}` / `.agents/skills` (consumer). Hub routing tables may still cite install-path literals `.agents/skills/...`.
 
 Check:
 
@@ -299,7 +326,7 @@ Check:
 4. **Invocation triggers** — `disable-model-invocation: true` on skills/agents requiring explicit invocation; `description:` mentions triggers (e.g., `/pipeline`, `@ws-check-harness`).
 5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
 6. **Orchestrator dependency closure** (when upstream `bin/skill-dependencies.json` present) — for each orchestrator (e.g. `ws-spec-to-pr`, `ws-spec-to-pr-lite`), extract every dispatched skill id (step-table `ws-*` ids, providers from the shared entry matrix, fix-pr loop skills) and assert each appears in `dependencies["<orch>"]`, directly or transitively via another listed dep. Missing id → **critical** (selective install of that orchestrator yields a broken workflow).
-7. **Skill integrity manifest** (upstream only) — when `bin/skill-integrity.json` is expected in this repo, confirm it is present and `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exits 0 (committed digests match the current tree and `package.json` version). Stale/missing → **critical** for release hygiene. **Correction (do not invent digests):** `npm run generate-integrity`, then re-run `--check`, and commit `bin/skill-integrity.json` with the skill/package change (root `AGENTS.md` § Upstream skill integrity regenerate). Never tell consumers to use `--force-integrity` as the fix for upstream drift.
+7. **Skill integrity manifest** (upstream Install mode only) — when `bin/skill-integrity.json` is expected, confirm it is present and `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exits 0 (committed digests match hashed package SoT / installer inputs and `package.json` version). Stale/missing → **critical** for release hygiene. **Consumer Install mode:** skip / do not require `bin/skill-integrity.json`. **Correction (do not invent digests):** `npm run generate-integrity`, then re-run `--check`, and commit `bin/skill-integrity.json` with the skill/package change (root `AGENTS.md` § Upstream skill integrity regenerate). Never tell consumers to use `--force-integrity` as the fix for upstream drift.
 
 ### Phase 4 — Skills/rules not routed in the resolved hub
 
@@ -307,11 +334,17 @@ Compare the **filesystem** against declared routing in the **resolved hub** (§ 
 
 #### 4a. Discover artifacts on disk
 
-**Skills** — scan `SKILL.md` recursively + standalone `.md` with frontmatter in `skills/` (exclude `scripts/`, `runs/`):
+**Skills** — scan `SKILL.md` recursively under the Phase 0 **skills scan root** + standalone `.md` with frontmatter at that root (exclude `scripts/`, `runs/`). Unrouted/phantom diffs use this inventory only (dogfood lag under `.agents/skills` is informational in upstream mode — § 3).
 
 ```bash
+# Install mode upstream (SoT):
+find src/skills -mindepth 2 -maxdepth 2 -name 'SKILL.md' 2>/dev/null
+find src/skills -maxdepth 1 -name '*.md' 2>/dev/null
+
+# Install mode consumer ({skillsRoot}, often .agents/skills; + optional {globalSkillsRoot}):
 find .agents/skills -mindepth 2 -maxdepth 2 -name 'SKILL.md' 2>/dev/null
 find .agents/skills -maxdepth 1 -name '*.md' 2>/dev/null
+# Do not scan src/skills when Install mode is consumer
 ```
 
 For each file found, extract from YAML frontmatter:
@@ -332,7 +365,7 @@ Go through **all** tables that route skills or docs in the **primary hub** (§ H
 | Consumer `.agents/skills/ws-shared/AGENTS.md` | always extract when present (consumer primary hub) |
 | `§ Task router` | skills and project docs per task |
 | Layer 3 / External deps / project docs | links to project docs (e.g., CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
-| Upstream `bin/skill-dependencies.json` (when present) | workflow package skill **folder** ids must exist under `.agents/skills/` |
+| Upstream `bin/skill-dependencies.json` (when present) | workflow package skill **folder** ids must exist under skills scan root: `src/skills/` (upstream) or `{skillsRoot}` / `.agents/skills/` (consumer) |
 
 Normalize paths for comparison (file basename + repo-root-relative path).
 
@@ -342,7 +375,7 @@ Normalize paths for comparison (file basename + repo-root-relative path).
 |------|-----------|-------------------------|
 | `unrouted_skills[]` | `SKILL.md` exists on disk, but **no** equivalent link/path appears in the **resolved hub** | **warning** |
 | `unrouted_rules[]` | Rule `*.mdc`/`*.md` exists, but **no** equivalent link appears in the resolved hub | **warning** |
-| `phantom_routes[]` | Hub references skill/rule that does **not** exist on disk | **critical** (already covered in Phase 2/3; revalidate here) — **except** Extra-package optional paths when missing (intentional omission) |
+| `phantom_routes[]` | Hub references skill/rule that does **not** exist on disk under the **skills scan root** (upstream: `src/skills/ws-<id>/SKILL.md`; consumer: `{skillsRoot}/ws-<id>/…`). Hub install-path literals `.agents/skills/ws-<id>/…` are **not** phantom when SoT id exists under the scan root (Phase 2 File exists exception / § 3 Dogfood lag). | **critical** (already covered in Phase 2/3; revalidate here) — **except** Extra-package optional paths when missing (intentional omission); **except** upstream dogfood-literal lag when SoT id is present (informational only) |
 
 **Intentional omission:** if a skill/rule is auxiliary (e.g., only scripts in a subfolder, numbered skill consumed only by `ws-spec-to-pr`, Extra package when not installed, hub marks “orch-only”), record in `intentionally_omitted[]` with justification — **do not** ask the user about these items.
 

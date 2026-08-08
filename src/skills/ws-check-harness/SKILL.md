@@ -5,7 +5,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.0.116
+version: 0.0.117
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -66,12 +66,22 @@ Canonical: [`tools.md`](../ws-shared/tools.md) § Path tokens · [`config-resolu
 
 Expand braces before any broken-link claim. Remaining unknown braces → template (skip). Bare `ws-shared/MEMORY.md` → warning (prefer `{sharedDir}/MEMORY.md`). Token-only prose outside links is healthy; Markdown `(...)` targets must be real paths.
 
+Load the token map from project `{sharedDir}/config.json` when present. **Install mode** may set a separate audit field **Skills scan root** (e.g. `src/skills` upstream); that does **not** redefine `{skillsRoot}` for consumer install layout.
+
 ## Hub resolution & Mixed Install Support (Phase 0)
 
-| Mode | Detection | Primary hub |
-|------|-----------|-------------|
-| **Upstream** | `bin/skill-dependencies.json` + `.agents/AGENTS.md` | Root `AGENTS.md` (+ dual-hub drift) |
-| **Consumer** | `{sharedDir}/AGENTS.md` without upstream markers | `{sharedDir}/AGENTS.md` |
+**Install mode** (`upstream` | `consumer`) selects the primary hub **and** the **Skills scan root** used by Phases 1–5c inventory. Execution **Mode** (`normal` | `dry-run`) is orthogonal — do not rename it.
+
+| Install mode | Detection (first match) | Primary hub | Skills scan root |
+|--------------|-------------------------|-------------|------------------|
+| **upstream** | Package markers (`bin/skill-dependencies.json` + `.agents/AGENTS.md`) **and** SoT evidence (≥1 `src/skills/ws-*/SKILL.md`) | Root `AGENTS.md` (+ dual-hub drift vs `.agents/AGENTS.md`) | `src/skills` |
+| **consumer** | Else (including markers present but SoT absent) | `{sharedDir}/AGENTS.md` | `{skillsRoot}` (+ `{globalSkillsRoot}` hybrid) |
+
+**Detection notes:**
+- Upstream requires **both** package markers **and** SoT under `src/skills/`. Markers without SoT ⇒ hard **Install mode: consumer** for skills inventory; optional one-line informational note only (markers present, SoT absent).
+- Consumer must **not** invent inventory from a stray `src/skills` folder when Install mode is consumer.
+- Hub resolution alone is not sufficient for skills SoT; Install mode drives the scan root.
+- **Upstream hub install-path literals:** hubs may cite `.agents/skills/ws-<id>/…` while inventory SoT is `src/skills`. Phase 2 File exists and Phase 4c `phantom_routes` use SoT-id equivalence under the skills scan root — missing dogfood is informational only ([`PHASES.md`](PHASES.md) § 3 Dogfood lag). Consumer behavior unchanged.
 
 **Global & Mixed Install Rules:**
 - Skills may be installed globally (`{globalSkillsRoot}`) or locally (`{skillsRoot}`).
@@ -84,7 +94,7 @@ Consumer: missing root `AGENTS.md` is OK. Extra-package optional missing paths =
 
 **Always load** [`PHASES.md`](PHASES.md) for: Scan scope inventory, pipeline § 3b contract, Phases 0–7 procedures (including 5b/5c).
 
-**Skill integrity manifest (Phase 3, upstream only):** when `bin/skill-integrity.json` is expected, require `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exit 0. Stale/missing → **critical**. Correction: `npm run generate-integrity`, re-run `--check`, and commit `bin/skill-integrity.json` with the package change. Full procedure: [`PHASES.md`](PHASES.md) Phase 3 item 7.
+**Skill integrity manifest (Phase 3, upstream only):** when **Install mode** is `upstream`, require `bin/skill-integrity.json` and `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exit 0 against hashed package SoT / installer inputs. Stale/missing → **critical**. Correction: `npm run generate-integrity`, re-run `--check`, and commit `bin/skill-integrity.json` with the package change. When **Install mode** is `consumer`, skip / do not require `bin/skill-integrity.json`. Full procedure: [`PHASES.md`](PHASES.md) Phase 3 item 7.
 
 Step ↔ Phase: Step 1 = Phases 0–5c · Step 2 = Phase 6 · Step 3 = Phase 7.
 
@@ -100,8 +110,12 @@ Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REP
 
 ## Definition of Done
 
-**Scan:** path token map loaded; Phases 0–5c done; § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
+**Scan:** path token map loaded from `{sharedDir}/config.json` when present; Install mode + Skills scan root resolved; Phases 0–5c done; § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
 
 **Plan:** severity + evidence + proposed correction; report format; dry-run stops; else `user-gate`.
 
 **Execute (normal):** only approved items; Phase 2 revalidate; report applied vs pending.
+
+**Verification (Install mode — AC10):**
+- At upstream package root (markers + SoT) → report `Install mode: upstream` and Skills scan root `src/skills`.
+- In a consumer tree with only `{skillsRoot}` / global install → report `Install mode: consumer` and Skills scan root under `.agents/skills` and/or `{globalSkillsRoot}`.

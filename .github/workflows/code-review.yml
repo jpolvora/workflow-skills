@@ -11,6 +11,7 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
@@ -38,6 +39,8 @@ jobs:
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
+          # Default 600000 (10m) is tight for Custom-stack / large md+json diffs; OpenCode aborts with ERRO FATAL.
+          AGENTIC_CODE_REVIEWERS_TIMEOUT_MS: "1200000"
         run: |
           set -euo pipefail
           # Download to a file so BASH_SOURCE is bound (curl|bash leaves it unbound under set -u).
@@ -49,7 +52,7 @@ jobs:
             --gh \
             --stack Custom \
             --custom-prompt .github/agentic-code-reviewers-prompt.md \
-            --score-min 5 \
+            --score-min 3 \
             --include-patterns "**/*.md,**/*.mdc,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
             --source-branch "refs/heads/${{ github.head_ref }}" \
             --target-branch "refs/heads/${{ github.event.pull_request.base.ref }}"

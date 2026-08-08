@@ -14,7 +14,9 @@ Otherwise — **correction plan** (mandatory before editing):
 ## Harness Audit
 
 **Date:** YYYY-MM-DD
-**Mode:** [normal | dry-run]
+**Mode:** [normal | dry-run] (execution — orthogonal to Install mode)
+**Install mode:** [upstream | consumer]
+**Skills scan root:** [src/skills | .agents/skills (+ global …)]
 **Scope:** [full | files: ...]
 **Files inspected:** N
 **Path token map:** `{skillsRoot}=…` `{sharedDir}=…` `{plansDir}=…` `{reviewsDir}=…` (from config `pathTokens` / `plans.dir` / defaults)
