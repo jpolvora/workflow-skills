@@ -180,7 +180,11 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/ws-changelog/SKILL.md'
   ];
   for (const rel of required) {
-    if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing required file: ${rel}`);
+    const primary = path.join(parentDir, rel);
+    const srcFallback = path.join(parentDir, rel.replace(/^\.agents[\\/]skills[\\/]/, 'src/skills/'));
+    if (!fs.existsSync(primary) && !fs.existsSync(srcFallback)) {
+      fail(`Missing required file: ${rel}`);
+    }
   }
   // Promoted skills must not remain nested under ws-shared/
   for (const slug of [
