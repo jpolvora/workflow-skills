@@ -6,10 +6,10 @@ us: check-harness-upstream-sot
 title: "ws-check-harness: SoT-aware upstream vs consumer skills scan root"
 specSource: local
 specPath: .agents/plans/check-harness-upstream-sot/step-00-check-harness-upstream-sot.spec.md
-status: completed
+status: active
 startedAt: "2026-08-08T02:06:02Z"
-endedAt: "2026-08-08T03:11:09Z"
-currentStep: 10
+endedAt: null
+currentStep: 8
 completedSteps:
   - 0
   - 1
@@ -19,7 +19,6 @@ completedSteps:
   - 5
   - 6
   - 7
-  - 9
 skippedSteps: []
 autoMode: true
 dryRun: false
@@ -53,7 +52,6 @@ workflowManifest:
     - .agents/plans/check-harness-upstream-sot/step-06-check-harness-upstream-sot.fix.report.md
     - .agents/plans/check-harness-upstream-sot/step-07-check-harness-upstream-sot.testing.plan.md
     - .agents/plans/check-harness-upstream-sot/step-07-check-harness-upstream-sot.testing.report.md
-    - .agents/codereviews/PR-179-round-1.md
   modified: []
   deleted: []
   artifacts: []
@@ -67,7 +65,6 @@ stepStatus:
   5: completed
   6: completed
   7: completed
-  9: completed
 stepDispatches:
   - { step: 0, dispatched: "2026-08-08T02:09:04Z" }
   - { step: 1, dispatched: "2026-08-08T02:12:37Z" }
@@ -77,7 +74,6 @@ stepDispatches:
   - { step: 5, dispatched: "2026-08-08T02:24:24Z" }
   - { step: 6, dispatched: "2026-08-08T02:28:50Z" }
   - { step: 7, dispatched: "2026-08-08T02:31:08Z" }
-  - { step: 9, dispatched: "2026-08-08T03:11:08Z" }
 stepModels:
   - { step: 0, model: Cursor Grok 4.5, dispatched: "2026-08-08T02:09:04Z" }
   - { step: 1, model: Cursor Grok 4.5, dispatched: "2026-08-08T02:12:37Z" }
@@ -87,11 +83,10 @@ stepModels:
   - { step: 5, model: Cursor Grok 4.5, dispatched: "2026-08-08T02:24:24Z" }
   - { step: 6, model: Cursor Grok 4.5, dispatched: "2026-08-08T02:28:50Z" }
   - { step: 7, model: Cursor Grok 4.5, dispatched: "2026-08-08T02:31:08Z" }
-  - { step: 9, model: Cursor Grok 4.5, dispatched: "2026-08-08T03:11:08Z" }
 telemetry:
   workflowStartedAt: "2026-08-08T02:06:02Z"
-  workflowEndedAt: "2026-08-08T03:11:08Z"
-  totalElapsedSec: 2550
+  workflowEndedAt: "2026-08-08T02:31:08Z"
+  totalElapsedSec: 1350
   loc: "{'baseline': null, 'final': null, 'added': null, 'removed': null, 'netDelta': null}"
   totalTokens: 0
   tokenEstimate: true
@@ -104,7 +99,6 @@ telemetry:
     - { N: 5, label: Verify, dispatchedAt: "2026-08-08T02:24:24Z", finishedAt: "2026-08-08T02:24:24Z", elapsedSec: 120, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 1 }
     - { N: 6, label: Code review, dispatchedAt: "2026-08-08T02:28:50Z", finishedAt: "2026-08-08T02:28:50Z", elapsedSec: 240, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 4 }
     - { N: 7, label: Testing, dispatchedAt: "2026-08-08T02:31:08Z", finishedAt: "2026-08-08T02:31:08Z", elapsedSec: 180, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 3 }
-    - { N: 9, label: Fix PR, dispatchedAt: "2026-08-08T03:11:08Z", finishedAt: "2026-08-08T03:11:08Z", elapsedSec: 1200, promptTokens: 0, completionTokens: 0, estimated: true, model: Cursor Grok 4.5, filesTouched: 1 }
 ---
 # Workflow State — check-harness-upstream-sot
 
@@ -126,10 +120,8 @@ telemetry:
 | Step 5 | Verify | Cursor Grok 4.5 | 120s | 0 |
 | Step 6 | Code review | Cursor Grok 4.5 | 240s | 0 |
 | Step 7 | Testing | Cursor Grok 4.5 | 180s | 0 |
-| Step 9 | Fix PR | Cursor Grok 4.5 | 1200s | 0 |
 
 ## Gate history
-- auto-gate | step 9 | goal-fix-pr|converged|activeThreads=0 | 2026-08-08T03:11:08Z
 - auto-gate | step 7 | Advance to Step 8 | 2026-08-08T02:31:08Z
 - auto-gate | step 6 | review-fix|round=1/3|clean | 2026-08-08T02:28:50Z
 - auto-gate | step 5 | Advance to Step 6 | 2026-08-08T02:24:24Z
