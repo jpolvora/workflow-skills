@@ -14,7 +14,7 @@
 >
 > **Installer scope:** skill packages install to **project-local** `.agents/skills/` and/or **global** `$HOME/.agents/skills/` (`--global` / `WORKFLOW_SKILLS_GLOBAL_DIR`). This `ws-shared/` hub under the **project** is where `ws-configure-project` writes consumer data. Never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers). Optional root/host pointers stay consumer-owned; ws-check-harness may suggest them.
 >
-> **Hybrid / override (mandatory):** Agents may load `ws-*` skill bodies from the global skills root while reading **project** `$PWD/.agents/skills/ws-shared/config.json`. **Local (project) config always overrides global hub config.** Upstream skill SoT is `src/ws-*` (see root `AGENTS.md` § Skill SoT, install scopes & config override).
+> **Hybrid / override (mandatory):** Agents may load `ws-*` skill bodies from the global skills root while reading **project** `$PWD/.agents/skills/ws-shared/config.json`. **Local (project) config always overrides global hub config.** Upstream skill SoT is `.agents/skills/ws-*` (see root `AGENTS.md` § Skill SoT, install scopes & config override).
 
 **Language:** en-us only for skill bodies, gates, banners, and harness docs.
 

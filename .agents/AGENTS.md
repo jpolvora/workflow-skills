@@ -34,7 +34,7 @@ These rules apply to **every** skill shipped in this package (pipeline, provider
 9. **Skill design & protocol guidelines** — Skill authoring and maintenance must follow `SKILL_AUTHORING.md` (meta-instruction architecture, 3-tier progressive disclosure, tool-first validation, model role mapping, and zero-sediment pruning).
 10. **Global execution config check** — When running from a global install (`$HOME/.agents/skills`), config-dependent skills must verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt the user via `user-gate` recommending running `ws-configure-project`. Standalone/independent skills (e.g., `ws-configure-project`, `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`) do not require project config.
 
-**Upstream SoT (authoring in this package):** `src/` (`src/skills/ws-*`) is the **only canonical source of truth** for all skills. `.agents/skills` holds local copies used by the development harness. Whenever reviewing, updating, enhancing, or creating skills (`ws-*`), agents **MUST edit files in `src/`**. The installation source shipped by the installer is always `src/`.
+**Upstream SoT (authoring in this package):** `.agents/skills/ws-*` is the **only canonical source of truth** for all skills. Whenever reviewing, updating, enhancing, or creating skills (`ws-*`), agents **MUST edit files under `.agents/skills/`**. The installation source shipped by the installer is always `.agents/skills/`. Consumer-owned hub files under `ws-shared/` (`config.json`, MEMORY, STACK, memory, etc.) are not publishable SoT.
 
 ### Language (mandatory)
 

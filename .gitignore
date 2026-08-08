@@ -38,5 +38,6 @@ __pycache__/
 *.pyo
 check-workflows-report.md
 
-# Generated output from sync-skills — source of truth is src/skills/
-.agents/skills/ws-*/
+# Consumer-owned hub data under .agents/skills/ws-shared/ is ignored via
+# .agents/skills/ws-shared/.gitignore (and shipped hub.gitignore). Skill bodies
+# under .agents/skills/ws-* are tracked Source of Truth.

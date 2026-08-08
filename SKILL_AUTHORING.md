@@ -3,7 +3,7 @@
 **Audience: Agents and Skill Authors**  
 **Mandatory Contract:** Mandatory guidelines for designing, authoring, pruning, and maintaining lean, deterministic, and token-efficient agent skills in this repository.
 
-> **Canonical Source of Truth (`src/`):** `src/` (`src/skills/ws-*`) is the **only canonical source of truth** for all skills. `.agents/skills/` holds local copies used by the development harness. Whenever creating, reviewing, updating, or enhancing skills (`ws-*`), agents **MUST edit files in `src/`**. The installation source shipped by the installer is always `src/`.
+> **Canonical Source of Truth (`.agents/skills/`):** `.agents/skills/ws-*` is the **only canonical source of truth** for all skills in this upstream package. Whenever creating, reviewing, updating, or enhancing skills (`ws-*`), agents **MUST edit files under `.agents/skills/`**. The installation source shipped by the installer is always `.agents/skills/`.
 
 ---
 

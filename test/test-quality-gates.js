@@ -18,33 +18,33 @@ const require = createRequire(import.meta.url);
 
 const VALIDATE = path.join(
   REPO_ROOT,
-  'src/skills/ws-spec-to-pr/scripts/validate_state.py',
+  '.agents/skills/ws-spec-to-pr/scripts/validate_state.py',
 );
 const UPDATE_STATE = path.join(
   REPO_ROOT,
-  'src/skills/ws-spec-to-pr/scripts/update_state.py',
+  '.agents/skills/ws-spec-to-pr/scripts/update_state.py',
 );
 const CLASSIFY = path.join(
   REPO_ROOT,
-  'src/skills/ws-classify-complexity/scripts/classify.cjs',
+  '.agents/skills/ws-classify-complexity/scripts/classify.cjs',
 );
 const PREPARE = path.join(
   REPO_ROOT,
-  'src/skills/ws-ship-pr/PREPARE-CHECKLIST.md',
+  '.agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md',
 );
 const CLASSIFY_SKILL = path.join(
   REPO_ROOT,
-  'src/skills/ws-classify-complexity/SKILL.md',
+  '.agents/skills/ws-classify-complexity/SKILL.md',
 );
-const SETUP_MD = path.join(REPO_ROOT, 'src/skills/ws-shared/setup.md');
+const SETUP_MD = path.join(REPO_ROOT, '.agents/skills/ws-shared/setup.md');
 const CONFIG_EXAMPLE = path.join(
   REPO_ROOT,
-  'src/skills/ws-shared/config.json.example',
+  '.agents/skills/ws-shared/config.json.example',
 );
-const SHIP_SKILL = path.join(REPO_ROOT, 'src/skills/ws-ship-pr/SKILL.md');
+const SHIP_SKILL = path.join(REPO_ROOT, '.agents/skills/ws-ship-pr/SKILL.md');
 const STEP_DISPATCH = path.join(
   REPO_ROOT,
-  'src/skills/ws-spec-to-pr/STEP-DISPATCH.md',
+  '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md',
 );
 
 const PYTHON = process.env.PYTHON || 'python';
@@ -554,7 +554,7 @@ function testBypassSafetyFloor() {
   const ship = read(SHIP_SKILL);
   const prepare = read(PREPARE);
   assert(
-    /Safety floor \(never bypassed\)/.test(ship) &&
+    /Safety floor \(REFUTED\) never bypassed|Safety floor \(never bypassed\)/.test(ship) &&
       /auditVerdictsBlockShip/.test(ship) &&
       /REFUTED/.test(ship),
     'testBypassSafetyFloor: skipQualityGates never bypasses REFUTED + auditVerdictsBlockShip',
