@@ -52,8 +52,10 @@ Shipped project-context grounded auto-resolution for `ws-interview`: mandatory p
 | 3 | Tests | ✅ | `npm run test` pass after integrity |
 | 4 | Security / leak scan | ✅ | Diff grep — no credential patterns |
 | 5 | Fable-judge | ✅ | VERIFIED WITH CAVEATS — see below |
-| 6 | Consumer/upstream prepare | ✅ | Upstream ship gate: integrity + bump + tests |
+| 6 | Consumer/upstream prepare | ✅ | Upstream ship gate: integrity + bump + tests + harness/workflows audits |
 | 7 | Board shown; ready | ✅ | this result |
+| 8 | ws-check-harness 0–5c | ✅ | `harness-audit-20260808.report.md` — 0 critical |
+| 9 | ws-check-workflows | ✅ | PASS, 0 issues (standard + lite + multi-spec) |
 
 ### Fable-judge verdict
 
@@ -61,4 +63,5 @@ Shipped project-context grounded auto-resolution for `ws-interview`: mandatory p
 
 - Ground truth: `git diff origin/main...HEAD` shows interview protocol + cross-links + plans; claims match files.
 - Tests green after `generate-integrity` + version bump.
+- Harness/workflows audits green on final tree (see rows 8–9).
 - Caveat: classifier recommended `standard`; workflow continued `lite` per explicit `/ws-spec-to-pr-lite` invocation (logged override-lite).
