@@ -52,7 +52,13 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 
 ## Grilling Protocol (hard rules)
 
-1. **Diligent exploration first** — search the codebase, ADRs, database schema, and `MEMORY.md` before asking. Resolve discoverable gaps automatically and record the evidence.
+1. **Project-context sweep first** — before asking or applying an ungrounded default, search project sources for the best answer (as applicable to the gap):
+   - Related specs: `{specsDir}/**/*.spec.md`, `{plansDir}/**/step-00-*.spec.md`, current US `step-00`
+   - Memory: `{sharedDir}/MEMORY.md` and `{sharedDir}/memory/*` (honor **DO NOT** / **INSTEAD DO**)
+   - Codebase and established design patterns (layers from `config.json`)
+   - Architecture / domain: `domain.architectureSpec`, `domain.glossaryFile`, `rules.stackFile`, ADRs, schema when present
+   - Rules / guides: `config.json` → `rules.*`, hub `AGENTS.md`, configured standards skills
+   Prefer project evidence over model preference when they conflict. Resolve discoverable gaps automatically and record evidence.
 2. **Walk the design tree** — resolve foundational gaps (scope/schema) before details (UI/i18n).
 3. **Surgical escalation** — ask exactly one question per round; include the recommended solution as the first choice.
 4. **Escalation cap** — max 3 rounds of user questions; on the 4th, apply sensible defaults and exit.
@@ -63,27 +69,31 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 1. **Audit** — Scan sections 0-8 of the plan, run scenario probes (soft-deletion, concurrency, list sizing, rate limits), and register each finding in a `gap_registry` (`id`, `class`, `section`, `gap`, `recommendation`, `status`, `dependsOn`). Classify each gap `blocking` (prevents development or changes AC) or `non-blocking` (quality/optimization, apply via defaults).
    - Done when: every section 0-8 has been scanned and every finding is registered.
 
-2. **Resolve** — Resolve registered gaps by scanning code layers, specs, and `MEMORY.md`; append resolution evidence to the registry.
-   - Done when: every non-blocking gap and every locally resolvable blocking gap has a resolution.
+2. **Resolve** — For each registered gap, run the project-context sweep. On a confident project hit: close the gap, set `resolutionSource: project`, and append evidence (path(s) + short rationale) to the registry (embed in `resolution` if the orch only reads that string). Prefer project-sourced answers over model preference. Non-blocking gaps with no project hit: apply sensible defaults (`resolutionSource: assumed-default`) without escalating.
+   - Done when: every non-blocking gap is closed, and every blocking gap with a project-sourced answer is closed.
 
-3. **Escalate** — For remaining blocking gaps: standalone, prompt via `user-gate`; workflow, return `status: needs_user` per the Grilling Protocol.
-   - Done when: no blocking gap remains unresolved and unescalated, or the escalation cap was reached and defaults were applied.
+3. **Escalate / auto-fallback** — Only after a sweep miss on a **blocking** gap:
+   - **`autoMode` (or workflow auto-answer):** apply best technical judgment / sensible default; set `resolutionSource: model-inferred` with rationale; do **not** emit `needs_user` / `user-gate` for that gap.
+   - **Interactive (not auto):** standalone → prompt via `user-gate`; workflow → `status: needs_user` per the Grilling Protocol (one question, recommended option first). After escalation cap, apply defaults (`assumed-default`).
+   - Done when: no blocking gap remains unresolved and unescalated, or autoMode / cap defaults closed the remainder.
 
 4. **Confirm shared understanding** — Workflow: treat as confirmed when the orchestrator already auto-confirmed via "End refinement and advance" (do not re-prompt); otherwise return `shared_understanding: pending`. Standalone: prompt the user to confirm.
    - Done when: `shared_understanding` is `confirmed`, or `pending` was returned to the orchestrator.
 
-**Fast exit:** when `softSkipEligible` and Step 1 finds `blocking_open == 0`, write the refined plan with defaults applied, set `shared_understanding: confirmed`, and return success without escalation.
+**Fast exit:** when `softSkipEligible` and Step 1 finds `blocking_open == 0`, write the refined plan with defaults applied, set `shared_understanding: confirmed`, and return success without escalation (full sweep applies only when Resolve runs on registered gaps).
 
 ## Outputs
 
-- `step-02-{slug}.plan.refined.md` with frontmatter `status: "plan refined ok"` and an appended `## Interview registry` table.
+- `step-02-{slug}.plan.refined.md` with frontmatter `status: "plan refined ok"` and an appended `## Interview registry` table (include `resolutionSource` / evidence columns when available).
 
 ### step-output (workflow mode)
 
 ```yaml
 status: success | needs_user
 refine:
-  registry: [{id, class, section, gap, status, resolution, dependsOn?}]
+  registry: [{id, class, section, gap, status, resolution, resolutionSource?, evidence?, dependsOn?}]
+  # resolutionSource: project | model-inferred | assumed-default
+  # evidence: path(s) + short rationale (optional; may be inlined in resolution)
   round: number
   blocking_open: number
   shared_understanding: pending | confirmed

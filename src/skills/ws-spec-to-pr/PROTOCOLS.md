@@ -56,7 +56,7 @@ Available at **every** transition gate (normal mode; under **More options…** w
 | State | Owner | Output |
 |-------|-------|--------|
 | 2a Audit | refine | `gap_registry[]` by design-tree |
-| 2b Resolve | refine | Close with evidence; codebase before escalate |
+| 2b Resolve | refine | Project-context sweep then close with evidence; `autoMode` → model-inferred (no `needs_user`); else escalate |
 | 2c Escalate | orch | user-gate — **one** question; max 3 rounds; always **End refinement and advance** |
 | 2d Exit | refine | §8 empty or `assumed-default`; `shared_understanding: pending` |
 | 2e Shared Understanding | orch | Only if 2c did **not** exit via End refinement. Else auto-confirm. |

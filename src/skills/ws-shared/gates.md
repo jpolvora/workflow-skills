@@ -114,7 +114,7 @@ Skip Step 2 (mark skipped, log) when **all** hold:
 - Plan Open Questions section empty or all marked resolved
 - No `blocking` gaps from a 30s orch skim / prior step-output
 
-Otherwise run `ws-interview`. Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
+Otherwise run `ws-interview` (project-context sweep before escalate; in `autoMode`, sweep-miss blocking gaps close as model-inferred — no `user-gate`). Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
 
 ---
 
