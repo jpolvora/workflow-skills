@@ -10,6 +10,8 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls (`{skillsRoot}`
 
 When root `AGENTS.md` points here, load these every prompt (unless the user opted out for that skill). Paths are project-local defaults; hybrid installs may resolve the same id under `{globalSkillsRoot}` when missing locally.
 
+**Complement (not duplicated here):** `ws-karpathy-guidelines` stays in the shared-hub **Skill loading (mandatory)** table — it is intentionally **not** part of this Always-applied promotion set (`shared-autoload-md` non-goal). Root override that loads this table still keeps karpathy via `{sharedDir}/AGENTS.md` mandatory load.
+
 | Skill | Path | Trigger |
 |-------|------|---------|
 | `ws-senior-developer` | `{skillsRoot}/ws-senior-developer/SKILL.md` | Every prompt — delivery gate / Code review proof |
@@ -18,16 +20,17 @@ When root `AGENTS.md` points here, load these every prompt (unless the user opte
 | `ws-fable-method` | `{skillsRoot}/ws-fable-method/SKILL.md` | Every prompt — structured investigate/act/verify when non-trivial |
 | `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
 
-Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for autoload membership; see [`AGENTS.md`](AGENTS.md) § Consumer root override.
+Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for **membership of the Always-applied set above**; shared-hub mandatory skills (including `ws-karpathy-guidelines`) still load. See [`AGENTS.md`](AGENTS.md) § Consumer root override.
 
 ### Precedence among Always-applied (highest first)
 
 1. Explicit user instructions (current turn)
 2. Design / spec / architecture constraints
-3. `ws-senior-developer` (delivery gate + Code review proof; opt out `stop ws-senior-developer`)
-4. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
-5. `ws-tdah` (reply shape; does not override senior proof depth)
-6. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
+3. `ws-karpathy-guidelines` (shared-hub mandatory; surgical scope — not listed in the table above)
+4. `ws-senior-developer` (delivery gate + Code review proof; opt out `stop ws-senior-developer`)
+5. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
+6. `ws-tdah` (reply shape; does not override senior proof depth)
+7. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
 
 **Fable vs senior (single rule):** Orch or confirmed senior plan → no fable Plan-First / competing plan ceremony. Fable Verify does not replace senior Code review proof.
 

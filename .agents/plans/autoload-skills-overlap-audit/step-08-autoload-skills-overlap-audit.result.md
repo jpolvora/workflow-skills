@@ -24,5 +24,9 @@ status: ready-to-ship
 
 ## Remaining
 
-- Formal `ws-check-harness` Phase 5b/5c optional follow-up if CI requires.
-- `shared-autoload-md` configure-project / harness automation still open (separate US).
+- None blocking merge after `/ws-ship-pr` follow-up (see testing report ship table).
+- `shared-autoload-md` configure-project / harness automation **closed** in commit `8e0b21b` + release `0.0.120`.
+
+## Ship follow-up (2026-08-08)
+
+Harness/autoload gates re-run during ship: tests, integrity, workflows simulation, `configure_autoload.py --check`, setup.md specsDir contract aligned. Karpathy remains shared-hub mandatory (not Always-applied table) per spec non-goal.

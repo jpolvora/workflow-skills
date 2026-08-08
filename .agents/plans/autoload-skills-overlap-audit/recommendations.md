@@ -43,7 +43,7 @@
 
 ## Harness notes (AC7)
 
-Re-run Phase 5b/5c mentally against thinned bodies: senior↔tdah remains **mitigated** via precedence (not unresolved). No new critical expected from cross-links. Agent should run `ws-check-harness` before ship if CI requires; document any residual warning as mitigated.
+Ship follow-up (`/ws-ship-pr` 2026-08-08): `npm run test`, `verify-integrity`, `ws-check-workflows` (0 critical), `configure_autoload.py --check` (0 findings), Phase 2 autoload dual-hub rules documented. Phase 5b senior↔tdah remains **mitigated** via precedence. `shared-autoload-md` AC6–AC9 closed.
 
 ## Merge report-only (AC9 N/A)
 

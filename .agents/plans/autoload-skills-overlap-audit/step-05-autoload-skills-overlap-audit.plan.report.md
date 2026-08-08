@@ -16,8 +16,8 @@ status: verified
 | AC4 | OK | Edit list E1–E5 mapped to findings |
 | AC5 | OK | Thin edits: MEMORY→self-learning; proof→senior; fable loop kept; changelog untouched |
 | AC6 | OK | `autoload.md` Always-applied precedence + `ws-shared/AGENTS.md` + root `AGENTS.md` |
-| AC7 | Partial | Documented mitigated senior↔tdah; formal harness script not re-run in-session — note for ship |
+| AC7 | OK | Ship follow-up 2026-08-08: tests + integrity + workflows + `configure_autoload.py --check` + Phase 2 autoload rules; senior↔tdah mitigated |
 | AC8 | OK | Simplification proof section in recommendations.md |
 | AC9 | N/A | No merge |
 
-**Notes:** Deduct 1 for AC7 formal harness re-run deferred to pre-ship. No AC < 7 gate.
+**Notes:** AC7 closed at ship (was Partial pending harness evidence). No AC < 7 gate.
