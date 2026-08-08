@@ -32,7 +32,7 @@ Update `ws-check-harness` so Phase 0 **Install mode** also selects the **skills 
 - Check: `step-05-check-harness-upstream-sot.plan.report.md`
 - Review: `step-06-check-harness-upstream-sot.review.md`
 - Testing: `step-07-check-harness-upstream-sot.testing.report.md`
-- PR: _(filled after create)_
+- PR: https://github.com/jpolvora/workflow-skills/pull/179
 
 ## Benchmark
 
