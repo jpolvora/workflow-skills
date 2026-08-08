@@ -5,12 +5,12 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "0a668073fc6dc552f659e0b35a6078ff48f31684af062c387b1237c6bc1ecaff",
+  "fullPackageDigest": "1fc351d921a2295174c88b329b8bb7869f66320c581f17f301ad8734e274462f",
   "hub": {
     "files": {
       "AGENTS.md": "3e3341b882bfd9ab9c269bbce60d1017fddf0bf65304cb1131d071ea86826ce8",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
-      "config-resolution.md": "5819dc0c142c2363c4d936d9f067df5b64c41168ebf2239b726b5c5747c29909",
+      "config-resolution.md": "25055adc47f97d364cb5fb32f5112bb3837223e4db56b904ca85528ca6f84a72",
       "config.json.example": "b5698d6cbad6f8599de153b21efe36ca2f0f270116565143714829eb36709935",
       "config.schema.json": "69203b918178039d1f528fd45aa5734d8c7548c663ca9c105e4795a2c9935e6c",
       "gates.md": "5c759124a3b64e9ca58475ec6f63f3e826176162c37ac48e45b1ce6c48550266",
@@ -21,7 +21,7 @@
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "44eb7707650c5896ac9fb7af8b63d25509e6b431e79fa9a9a72ed6fea57309f6"
     },
-    "skillDigest": "d6f9a0795e3c769b5d9f032887a3941fb5b186d74eff9d3328a6096047582fe5"
+    "skillDigest": "f14bfc7d5f5cb69c411e6a0bc4fbde8e642314164cdde9e3aec9ccdce82e25aa"
   },
   "packageVersion": "0.0.115",
   "skills": {

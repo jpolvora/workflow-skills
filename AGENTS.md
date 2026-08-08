@@ -60,7 +60,7 @@ Always author directly in `src/skills/ws-*`; `.agents/skills/` copies exist sole
 
 **Agent obligations:** before tool calls, resolve `{sharedDir}` from the project working tree first; expand `{skillsRoot}` independently when hybrid. Do not assume `{skillsRoot}` and `{sharedDir}` are always the same physical tree.
 
-**Global skill execution & local config gate:** When executing a skill installed globally (`$HOME/.agents/skills`), agents must check if the target skill is **config-dependent** (requires project settings, verification commands, SCM providers, or stack companions). If so, the agent MUST verify that the consuming local repository has `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, the agent MUST prompt the user via `user-gate` recommending running `ws-configure-project` to set up the project hub. Config-independent skills (e.g., `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`) do not require `config.json` and may run directly.
+**Global skill execution & local config gate:** When executing a skill installed globally (`$HOME/.agents/skills`), agents must check if the target skill is **config-dependent** (requires project settings, verification commands, SCM providers, or stack companions). If so, the agent MUST verify that the consuming local repository has `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, the agent MUST prompt the user via `user-gate` recommending running `ws-configure-project` to set up the project hub. Config-independent skills (e.g., `ws-configure-project`, `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`) do not require `config.json` and may run directly.
 
 ---
 
