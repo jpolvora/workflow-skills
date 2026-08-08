@@ -16,6 +16,8 @@ invocation_names:
 
 Analyze a feature spec and recommend **`lite`** or **`standard`** pipeline (`workflowType`) by comparing counted metrics to `config.json` → `dagThresholds`. Writes `{us-dir}/step-00-{slug}.classify.md`.
 
+**Specs family:** Role = orch chooser after a workflow `step-00` exists (or classify a `{specsDir}` file once registered). Used by Step 0 and [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+
 **Harness-neutral:** use portable aliases from [`../ws-shared/tools.md`](../ws-shared/tools.md). Thresholds / scoreAndRefine detail: [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 
 ## Orthogonality to Complexity gate

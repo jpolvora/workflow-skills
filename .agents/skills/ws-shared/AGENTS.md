@@ -29,6 +29,7 @@
 | [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
 | [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
 | [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys), **Path tokens** (`{skillsRoot}` / `{sharedDir}` / `{plansDir}`), script launchers (`python` / `node` / `bash`). Load with `config.json` before tool calls. |
+| [`autoload.md`](autoload.md) | Always-applied skill list + **specs vocabulary / progressive-disclosure router** (which specs skill to load) |
 | [`STACK.md.example`](STACK.md.example) | Template for human-readable stack companion — seeds `STACK.md` |
 | [`setup.md`](setup.md) | Bootstrap & entry logic shared by `ws-spec-to-pr` and `ws-spec-to-pr-lite` |
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
@@ -62,7 +63,9 @@
 
 Default **shared hub only** (typical consumer install): `ws-tdah` and `ws-senior-developer` are **on-demand** — `ws-tdah` via explicit invoke; `ws-senior-developer` via `rules.seniorDeveloper` or explicit invoke. Neither is in the mandatory autoload table above.
 
-Some consumers add a **root** `AGENTS.md` (installer never writes it) that promotes `ws-tdah` and/or `ws-senior-developer` to per-prompt autoload. That is an **intentional consumer override**, not a shared-hub defect.
+Some consumers add a **root** `AGENTS.md` (installer never writes it) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an **intentional consumer override**, not a shared-hub defect.
+
+**Specs progressive disclosure:** when the user mentions specs, plans, Spec-to-PR, `index.PRD`, or related keywords without naming a skill, load [`autoload.md`](autoload.md) § Specs vocabulary and § Specs skill router — then load **only** the matching skill.
 
 When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
 
@@ -155,6 +158,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Check workflows | `ws-check-workflows` |
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Format/review spec | `ws-spec-format` |
+| Specs vocabulary / which specs skill to load | [`autoload.md`](autoload.md) § Specs skill router |
 | Record learning | `ws-self-learning` |
 | Record ws-changelog | `ws-changelog` |
 | Create / rewrite a skill | `ws-write-a-skill` (Extra) |

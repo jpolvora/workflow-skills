@@ -16,6 +16,8 @@ invocation_names:
 
 Sequential multi-spec batch delivery orchestrator with **smart complexity & flow auto-detection**.
 
+**Specs family:** Role = master batch loop over `{specsDir}` (or explicit paths). Per spec: classify → `ws-spec-to-pr-lite` or `ws-spec-to-pr` worker → fix-pr → merge → next. Interactive pick-one → [`ws-spec-list`](../ws-spec-list/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+
 ## Audience & Load
 
 - **Master Orchestrator (this file):** Loop FSM + tool bindings + flow auto-detection.

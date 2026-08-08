@@ -386,6 +386,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| Specs keywords / which skill to invoke | `{sharedDir}/autoload.md` § Specs skill router |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | GitHub issue/PR ops | `ws-github-provider` |
 | ADO WI/PR ops | `ws-azure-devops-provider` |

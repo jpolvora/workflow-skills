@@ -14,6 +14,8 @@ invocation_names:
 
 Deterministic FSM orchestrating Steps 0–9 via **`dispatch-agent`**.
 
+**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-write-spec` (`{specsDir}`) then `ws-local-spec-provider` register; existing `*.spec.md` → local-spec-provider; tracker id → SCM provider. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+
 ## Audience & Load
 
 - **Always-on load:** This file + current step skill.

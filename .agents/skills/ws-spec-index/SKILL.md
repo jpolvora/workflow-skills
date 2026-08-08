@@ -16,6 +16,8 @@ invocation_names:
 
 Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifications. Disclosed reference: [`REFERENCE.md`](REFERENCE.md), template: [`INDEX-TEMPLATE.md`](INDEX-TEMPLATE.md).
 
+**Specs family:** Role = `index.PRD` init / status sync / promote. **Not** code↔spec body drift (`ws-sync-spec`) and **not** the dual board (`ws-spec-list`). Optional stub on promote still follows [`ws-spec-format`](../ws-spec-format/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+
 ## Subcommands
 
 ```text

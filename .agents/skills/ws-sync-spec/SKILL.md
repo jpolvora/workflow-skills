@@ -16,6 +16,8 @@ invocation_names:
 
 Keep feature specifications (`*.spec.md`) continuously synchronized with real implemented code after prompts, adjustments, or task completions.
 
+**Specs family:** Role = surgical **body** updates when code drifts from AC text. Prefer editing `{specsDir}/{slug}.spec.md`; if a workflow `step-00` copy exists and still matters, keep them aligned or re-register. **Not** `ws-spec-index sync` (index checkboxes vs delivery evidence). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+
 ## Purpose
 
 When code changes occur days or weeks after initial spec delivery (e.g. prompt: "adjust business logic in controller X"), existing feature specs become out-of-sync. This skill identifies affected specs, analyzes drift between spec requirements and implemented code, proposes surgical updates, and writes approved changes.

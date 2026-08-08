@@ -17,6 +17,7 @@ export const HUB_WHITELIST = [
   'gates.md',
   'config-resolution.md',
   'AGENTS.md',
+  'autoload.md',
   // npm cannot pack a file named .gitignore; ship hub.gitignore → install as .gitignore
   'hub.gitignore',
   'MEMORY.md.template',

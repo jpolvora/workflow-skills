@@ -22,6 +22,8 @@ Draft a **local** `*.spec.md` from free-text into the project specs directory on
 
 **Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` and `id: null`.
 
+**Specs family:** Role = draft under `{specsDir}` only. Router / vocabulary: [`../ws-shared/autoload.md`](../ws-shared/autoload.md). Next: format → `ws-spec-format`; start workflow → `ws-local-spec-provider` register; browse → `ws-spec-list`.
+
 ## Invocation
 
 Standalone:
