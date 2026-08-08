@@ -1,6 +1,7 @@
 ---
+
 name: ws-spec-list
-version: 0.0.114
+version: 0.0.115
 description: Dual board for project specs vs plan workflows — list human-facing specs and separate plan/state runs; select continue/start/finish/cancel/archive/remove/open-pr.
 disable-model-invocation: true
 invocation_names:

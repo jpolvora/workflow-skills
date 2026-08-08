@@ -186,6 +186,9 @@ class WorkflowChecker:
             return
 
         text = std_skill_path.read_text(encoding="utf-8", errors="replace")
+        std_dispatch_path = SKILLS_DIR / "ws-spec-to-pr" / "STEP-DISPATCH.md"
+        if std_dispatch_path.exists():
+            text += "\n" + std_dispatch_path.read_text(encoding="utf-8", errors="replace")
 
         # Step definitions for Standard FSM
         expected_steps = {

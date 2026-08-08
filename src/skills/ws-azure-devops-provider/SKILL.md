@@ -1,7 +1,7 @@
 ---
 name: ws-azure-devops-provider
 description: Azure DevOps work-item-to-spec & SCM PR operations — authenticates via PAT, converts ADO work items to specs, lists PR threads, resolves threads via REST API, and merges PRs.
-version: 0.0.114
+version: 0.0.115
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider
