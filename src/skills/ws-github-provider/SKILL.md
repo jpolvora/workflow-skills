@@ -1,6 +1,4 @@
 ---
-
-
 name: ws-github-provider
 description: GitHub issue-to-spec & SCM PR operations — authenticates via gh CLI, converts GitHub issues to specs, lists PR review threads, resolves threads via GraphQL, and merges PRs.
 version: 0.0.118

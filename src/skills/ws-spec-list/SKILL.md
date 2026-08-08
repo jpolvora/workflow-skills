@@ -1,7 +1,4 @@
 ---
-
-
-
 name: ws-spec-list
 version: 0.0.118
 description: Dual board for project specs vs plan workflows — list human-facing specs and separate plan/state runs; select continue/start/finish/cancel/archive/remove/open-pr.

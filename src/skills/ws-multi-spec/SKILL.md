@@ -1,10 +1,7 @@
 ---
-
-
 name: ws-multi-spec
 version: 0.0.118
 description: Sequential smart multi-spec batch orchestrator — evaluates spec complexity across project specifications to dispatch standard or lite pipeline workers. Trigger when user requests batch processing or sequential multi-spec delivery.
-
 invocation_names:
   - multi-spec
   - ws-multi-spec
