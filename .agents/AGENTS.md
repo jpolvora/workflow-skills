@@ -119,7 +119,7 @@ Packaged consumer hub [`skills/ws-shared/AGENTS.md`](skills/ws-shared/AGENTS.md)
 
 ## Skill index
 
-Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 35 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
+Primary tables list **Workflows-package** skills only (`bin/skill-dependencies.json` → `packages.workflows.skills`, 36 ids). Optional Extra-package skills are in [`### Extra package (optional)`](#extra-package-optional) — not on disk until Extra or Full install.
 
 ### Harness & infrastructure
 
