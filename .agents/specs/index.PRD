@@ -48,6 +48,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 
 ### Phase 3: Continuous Verification & Advanced Quality Gates
 - [ ] Continuous AI Verification & Quality Gates Engine (`spec: continuous-ai-verification-quality-gates.spec.md`)
+- [x] GraphQL Thread Resolution & Verification in `ws-goal-fix-pr` (`spec: us-168-resolve-review-thread.spec.md`)
+- [x] Source-of-Truth Refactoring to `src/` & Hybrid Global Mode (`spec: src-sot-and-hybrid-global-install.spec.md`)
+- [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: workflow-cleanup-and-branch-protection.spec.md`)
+- [x] Skill Authoring Guidelines & Global Config Gate Rules (`spec: skill-authoring-and-config-gate-rules.spec.md`)
+- [x] Dual-Board Spec & Plan Management via `ws-spec-list` (`spec: ws-spec-list-and-board-management.spec.md`)
+- [ ] Remove Consumer Requirement for `.agents/AGENTS.md` and Consolidate Context into `ws-shared/` (`spec: remove-consumer-agents-md-requirement.spec.md`)
 
 ## 8. Next specs
 
@@ -58,6 +64,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 3 | `consolidated-gh-issues` | `[x]` done | Phase 2 | Fixes #106, #109, #110 |
 | 4 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
 | 5 | `continuous-ai-verification-quality-gates` | `[ ]` todo | Phase 3 | Pre-PR fable-judge gate, workflow CI, complexity classifier, and telemetry |
+| 6 | `us-168-resolve-review-thread` | `[x]` done | Phase 3 | GraphQL thread resolution & pre-merge verification gates |
+| 7 | `src-sot-and-hybrid-global-install` | `[x]` done | Phase 3 | Refactor SoT to src/ and hybrid global mode |
+| 8 | `workflow-cleanup-and-branch-protection` | `[x]` done | Phase 3 | Post-run uswf cleanup & base branch protection |
+| 9 | `skill-authoring-and-config-gate-rules` | `[x]` done | Phase 3 | SKILL_AUTHORING guidelines & config check gate |
+| 10 | `ws-spec-list-and-board-management` | `[x]` done | Phase 3 | Dual board spec vs plan inventory management |
+| 11 | `remove-consumer-agents-md-requirement` | `[ ]` todo | Phase 3 | Remove consumer .agents/AGENTS.md requirement & relocate all context to ws-shared/ |
 
 ## 9. Inbox (unscheduled ideas)
 
@@ -72,6 +84,11 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 2026-07-16 | `promote-shared-skills` | Promote shared skills to first-class installable packages | Implemented |
 | 2026-07-23 | `consolidated-gh-issues` | Consolidated GitHub Issues Fix: #106, #109, and #110 | Implemented |
 | 2026-07-24 | `fable-skills-integration` | Opt-in Integration of fable-* Skills with spec-to-pr Workflows | Implemented |
+| 2026-08-01 | `us-168-resolve-review-thread` | fix(ws-goal-fix-pr): execute resolveReviewThread GraphQL mutation | Implemented |
+| 2026-08-01 | `src-sot-and-hybrid-global-install` | Source-of-Truth Refactoring to src/ and Hybrid Global Mode | Implemented |
+| 2026-08-01 | `workflow-cleanup-and-branch-protection` | Mandatory Workflow Git Cleanup and Protected Branch Safeguards | Implemented |
+| 2026-08-07 | `skill-authoring-and-config-gate-rules` | Skill Authoring Guidelines and Global Skill Config Verification Gate | Implemented |
+| 2026-08-01 | `ws-spec-list-and-board-management` | Dual-Board Spec and Plan Inventory Management via ws-spec-list | Implemented |
 
 ## 11. Maintenance checklist
 
