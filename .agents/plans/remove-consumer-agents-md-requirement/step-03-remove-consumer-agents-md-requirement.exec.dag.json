@@ -1,0 +1,22 @@
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Audit and refine ws-check-harness for consumer scope",
+      "description": "Ensure ws-check-harness audits ws-shared/AGENTS.md and does not require .agents/AGENTS.md in consumers.",
+      "dependencies": []
+    },
+    {
+      "id": "T2",
+      "title": "Verify ws-shared/AGENTS.md self-containment",
+      "description": "Validate that ws-shared/AGENTS.md contains complete consumer routing and capability links.",
+      "dependencies": ["T1"]
+    },
+    {
+      "id": "T3",
+      "title": "Verify installer and test suite assertions",
+      "description": "Confirm test-install.js asserts no .agents/AGENTS.md copy and runs green without it.",
+      "dependencies": ["T2"]
+    }
+  ]
+}

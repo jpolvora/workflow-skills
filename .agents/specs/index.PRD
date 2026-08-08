@@ -53,7 +53,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: workflow-cleanup-and-branch-protection.spec.md`)
 - [x] Skill Authoring Guidelines & Global Config Gate Rules (`spec: skill-authoring-and-config-gate-rules.spec.md`)
 - [x] Dual-Board Spec & Plan Management via `ws-spec-list` (`spec: ws-spec-list-and-board-management.spec.md`)
-- [ ] Remove Consumer Requirement for `.agents/AGENTS.md` and Consolidate Context into `ws-shared/` (`spec: remove-consumer-agents-md-requirement.spec.md`)
+- [x] Remove Consumer Requirement for `.agents/AGENTS.md` and Consolidate Context into `ws-shared/` (`spec: remove-consumer-agents-md-requirement.spec.md`)
 
 ## 8. Next specs
 
@@ -69,7 +69,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 8 | `workflow-cleanup-and-branch-protection` | `[x]` done | Phase 3 | Post-run uswf cleanup & base branch protection |
 | 9 | `skill-authoring-and-config-gate-rules` | `[x]` done | Phase 3 | SKILL_AUTHORING guidelines & config check gate |
 | 10 | `ws-spec-list-and-board-management` | `[x]` done | Phase 3 | Dual board spec vs plan inventory management |
-| 11 | `remove-consumer-agents-md-requirement` | `[ ]` todo | Phase 3 | Remove consumer .agents/AGENTS.md requirement & relocate all context to ws-shared/ |
+| 11 | `remove-consumer-agents-md-requirement` | `[x]` done | Phase 3 | Remove consumer .agents/AGENTS.md requirement & relocate all context to ws-shared/ |
+
 
 ## 9. Inbox (unscheduled ideas)
 
@@ -89,6 +90,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 2026-08-01 | `workflow-cleanup-and-branch-protection` | Mandatory Workflow Git Cleanup and Protected Branch Safeguards | Implemented |
 | 2026-08-07 | `skill-authoring-and-config-gate-rules` | Skill Authoring Guidelines and Global Skill Config Verification Gate | Implemented |
 | 2026-08-01 | `ws-spec-list-and-board-management` | Dual-Board Spec and Plan Inventory Management via ws-spec-list | Implemented |
+| 2026-08-07 | `remove-consumer-agents-md-requirement` | Remove Consumer Requirement for .agents/AGENTS.md | Implemented |
 
 ## 11. Maintenance checklist
 
