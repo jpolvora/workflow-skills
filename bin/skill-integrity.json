@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "783c4aa07cae2c02aaecbbd00e0c79f5c729355b8279e2e0ea6043809c7cd75c",
+  "fullPackageDigest": "f6fee1af8e3fc657cd199d2c0d95d697758aeaf4018126ba1d5c1a866dd6f627",
   "hub": {
     "files": {
       "AGENTS.md": "3e48886b4a9b44d7452cd9efd54214163057baac6825bbe4ff4f9e3101a8f387",
@@ -78,11 +78,11 @@
     "ws-configure-project": {
       "files": {
         "evals/evals.json": "7e32b122c4bbc76caaf64a0764260a8e757fdaf6f2ffa8232b6d3ee7caf9790b",
-        "INTERVIEW.md": "29ce8964f32464ea3c771d3d00d2fa3c8bddc17d4dbf34d96dbd01a4b7832523",
-        "scripts/configure_autoload.py": "966364307cd428814e902c1efdc1da1a69d42bfcd72cec459d0ce76a6835a700",
-        "SKILL.md": "a4d620d3a28c914ae71061b5e9ecb367ccf7b27e960bf7ca6e0fcb0184cdc411"
+        "INTERVIEW.md": "dc96c38ac4840d5305d924e195356ef940c2b61b776469b8060e4f18a6257c90",
+        "scripts/configure_autoload.py": "28d0289395a96d2fabe315abe614b95bbe5c364a338aba3e76b6d1d6f121b6b8",
+        "SKILL.md": "a96de48c1b4db9cb6ae8aefee2f33e0f8174eaab9f0d614a767a93de8476590d"
       },
-      "skillDigest": "08e8b584a707a4038298ced3cc1b333b5226808596fa91e7c53988ef697ecd2a"
+      "skillDigest": "9ee7f333e8fc1d07e50060550d3f861b25b0781055316e001848983e6215e818"
     },
     "ws-fable-domain": {
       "files": {

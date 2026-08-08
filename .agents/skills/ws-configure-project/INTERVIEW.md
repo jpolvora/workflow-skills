@@ -78,10 +78,12 @@ Not a `config.json` section. Refreshes `{sharedDir}/autoload.md` and optionally 
 **Helper (agents and tests):**
 
 ```bash
-python .agents/skills/ws-configure-project/scripts/configure_autoload.py --write-autoload
-python .agents/skills/ws-configure-project/scripts/configure_autoload.py --write-root-agents
-python .agents/skills/ws-configure-project/scripts/configure_autoload.py --check --json
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-root-agents
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check --json
 ```
+
+Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd is not the target project. Use `--force` only when overwriting a non-generated root `AGENTS.md` (creates `AGENTS.md.bak`).
 
 **Path rules:** never write absolute paths (`C:\…`, `/Users/…`). Markdown links use real relative targets; prose may use `{skillsRoot}` / `{globalSkillsRoot}` / `{sharedDir}` tokens.
 
