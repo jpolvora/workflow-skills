@@ -69,9 +69,9 @@ Pipeline skills call these intents by **loading the active provider skill**, not
 #### `local-spec-provider`
 
 - **Detect** existing specs directory: prefer `config.plans.specsDir`, else `specs/` at repo root, else ask once and write config.
-- **Configure** default: `plans.specsDir: "specs"` (repo root). Support nested layout e.g. `specs/{slug}.spec.md` and/or `specs/{slug}/README.spec.md` — canonical workflow copy remains `{us-dir}/step-00-{slug}.spec.md`.
-- **Read:** register/copy/normalize hand-written markdown into canonical step-00 path (`source: local`).
-- **Write:** when brainstorming (`ws-write-spec`) or when the user asks to persist a human-browsable mirror, write under `{specsDir}` without breaking the canonical us-dir file.
+- **Configure** default: `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/` when present). Support nested layout e.g. `{specsDir}/{slug}.spec.md` and/or `{specsDir}/{slug}/README.spec.md` — workflow copy remains `{us-dir}/step-00-{slug}.spec.md`.
+- **Read / register:** copy/normalize hand-written or `{specsDir}` markdown into `{us-dir}/step-00-{slug}.spec.md` (`source: local`). Used after `ws-write-spec` when a workflow needs a plan copy (`--register` / orch Step 0).
+- **Write / mirror:** `--mirror` refreshes `{specsDir}/{slug}.spec.md` when registering from a non-specsDir input. Standalone `ws-write-spec` drafts **only** under `{specsDir}` and never creates `{plansDir}` artifacts by default.
 - **PR/threads:** local provider does **not** talk to a remote tracker. For ship/fix-pr when only local provider is active:
   - Either require an explicit remote provider for PR operations, **or**
   - Document that `create-pr` / `fix-pr` fall back to the **VCS host of `project.repoUrl`** (GitHub vs Azure) while specs remain local — **decision: hybrid allowed**. Specs stay `source: local`; PR host is selected from `project.repoUrl` / enabled tracker for SCM only.
@@ -109,7 +109,7 @@ Resolution rules:
 | `spec-to-pr` Specification Protocol / Entry Gate | Delegate fetch/register to active provider skill; remove duplicated CLI recipes from orchestrator body (link only). |
 | `ws-ship-pr` | Delegate `create-pr`, checks, merge to `providers.scm` skill. |
 | `ws-fix-pr` / `ws-goal-fix-pr` | Delegate list/resolve threads to `providers.scm` skill; keep scoring/fix FSM generic. |
-| `ws-write-spec` | After draft, optionally ask local-spec-provider to mirror under `specsDir`. |
+| `ws-write-spec` | Draft only under `{specsDir}/{slug}.spec.md`; optional `--register` via local-spec-provider into `{us-dir}/step-00-`. Never mkdir `{plansDir}` on default write. |
 | `ARTIFACTS.md` / FAQ / README / tools.md | Document provider delegation and intents. |
 | `AGENTS.md` | Route three provider skills (Layer 2 or Layer 5); Task router entries. |
 | Install / tests | Package providers; canonicity asserts provider SKILL.md + scripts; migration notes if scripts move. |
@@ -185,3 +185,8 @@ Skill bodies, scripts, gates, and user-facing workflow banners: **en-us** only (
 - Hybrid mode (`active=local`, `scm=github|azure-devops`) is intentional so teams can author specs offline while still shipping via GitHub or Azure Repos.
 - Prefer moving scripts into provider folders with short compatibility shims rather than duplicating logic.
 - Related paths today: `.agents/skills/spec-to-pr/SKILL.md` (Specification Protocol), `.agents/skills/ws-fix-pr/`, `.agents/skills/ws-ship-pr/`, `.agents/skills/spec-to-pr/config.json.example`.
+- Specs family router: `{sharedDir}/autoload.md` § Specs skill router (progressive disclosure).
+
+## Revision History
+
+### [2026-08-08] Revision: Invert write-spec / local-provider path contract to specsDir-first (Prompt: "/ws-sync-spec after write-spec harness fix")

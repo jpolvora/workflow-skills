@@ -10,7 +10,7 @@ specDate: 2026-08-08
 
 ## Description
 
-The planned consumer autoload set ([`shared-autoload-md`](../shared-autoload-md/step-00-shared-autoload-md.spec.md)) always applies five utility skills together:
+The planned consumer autoload set ([`shared-autoload-md`](shared-autoload-md.spec.md)) always applies five utility skills together:
 
 | Skill | Stated job |
 |-------|------------|
@@ -74,3 +74,7 @@ Known tension seeds to investigate (not presuppose verdicts):
 - Prefer thin + cross-link over merge unless two skills share >50% of agent-facing obligations and no distinct artifact/trigger remains.
 - Language: en-us. Portability: no host product names; paths via `{skillsRoot}` / `{sharedDir}` / tokens.
 - Validation helpers: `ws-check-harness` Phases 5b–5c; optional `ws-fable-judge` on claimed simplification vs diff.
+
+## Revision History
+
+### [2026-08-08] Revision: Fix related link to specsDir sibling shared-autoload-md.spec.md (Prompt: "/ws-sync-spec")
