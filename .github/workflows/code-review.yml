@@ -52,7 +52,7 @@ jobs:
             --gh \
             --stack Custom \
             --custom-prompt .github/agentic-code-reviewers-prompt.md \
-            --score-min 5 \
+            --score-min 3 \
             --include-patterns "**/*.md,**/*.mdc,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
             --source-branch "refs/heads/${{ github.head_ref }}" \
             --target-branch "refs/heads/${{ github.event.pull_request.base.ref }}"
