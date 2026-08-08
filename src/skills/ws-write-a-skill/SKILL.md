@@ -1,25 +1,7 @@
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 name: ws-write-a-skill
 description: Skill authoring & optimization protocol — guides the creation, editing, structural formatting, and progressive-disclosure tuning of agent skills.
-
-version: 0.0.115
+version: 0.0.114
 invocation_names:
   - ws-write-a-skill
   - write-a-skill
@@ -29,7 +11,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-write-a-skill loaded."
 
-Root virtue: **predictability** (same process every run, not the same tokens). Mandatory protocol rules → [`SKILL_AUTHORING.md`](../../../SKILL_AUTHORING.md). Bold terms → [`GLOSSARY.md`](GLOSSARY.md).
+Root virtue: **predictability** (same process every run, not the same tokens). Authoring guidelines → `SKILL_AUTHORING.md`. Bold terms → [`GLOSSARY.md`](GLOSSARY.md).
 
 ## Steps
 
@@ -51,40 +33,12 @@ Root virtue: **predictability** (same process every run, not the same tokens). M
 6. **Review with user** — Coverage, clarity, detail level.
    - Done when: user accepts or requests a specific edit.
 
-## Folder layout
+## Audit Checklist (quick pass)
 
-```
-skill-name/
-├── SKILL.md        # required (prefer ≤100 lines)
-├── evals/
-│   └── evals.json  # recommended — 2–3 prompts + assertions per agentskills.io
-├── GLOSSARY.md     # or REFERENCE.md — disclosed reference
-├── EXAMPLES.md     # optional
-└── scripts/        # deterministic helpers only (when earned)
-```
-
-## Description (model-invoked)
-
-Third person · max 1024 chars · front-load the **leading word** · one trigger per **branch** · no body identity.
-
-Good: `Extract text and tables from PDFs, fill forms, merge docs. Use when working with PDFs, forms, or document extraction.`
-
-Bad: `Helps with documents.`
-
-## When to add scripts / split
-
-- Scripts: deterministic ops, repeated codegen, explicit error handling.
-- Split / disclose: SKILL.md >100 lines, rare branches, distinct domains.
-
-## Review checklist
-
-- [ ] Description mode correct (triggers if model-invoked; human one-liner if user-invoked)
-- [ ] SKILL.md ≤100 lines or excess disclosed
-- [ ] Every step has checkable Done when
-- [ ] No time-sensitive facts; consistent terms; one-level-deep pointers
-- [ ] Failure modes checked: premature completion, duplication, sprawl, no-op, negation
-- [ ] MEMORY consulted; scripts use explicit launchers; `.sh` is LF
-
-## Diagnose (edit existing skills)
-
-Load [`GLOSSARY.md`](GLOSSARY.md). Apply levers: information hierarchy, progressive disclosure, leading words, pruning. Prefer sharpening completion criteria before splitting by sequence.
+- [ ] Single source of truth? (No copy-pasted rules)
+- [ ] No no-ops? (Every sentence changes behavior)
+- [ ] Minimal description triggers? (No bloated synonyms)
+- [ ] Clean context boundary? (Rare material in separate file or section)
+- [ ] Explicit script launchers? (`python` / `node` / `bash`)
+- [ ] Checkable exit criteria? (`Done when:`)
+- [ ] Version aligned with package? (`version: 0.0.114`)

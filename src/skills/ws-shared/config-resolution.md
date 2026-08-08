@@ -29,7 +29,7 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 - **Config-Dependent Skills** (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`, `ws-write-plan`, `ws-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-verify-plan`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, providers):
   - **Entry Gate:** Must verify `$PWD/.agents/skills/ws-shared/config.json` exists and is non-empty.
   - **Missing Config:** If missing or unconfigured (`<...>` placeholders), trigger `user-gate` recommending running `ws-configure-project` (which seeds and populates `$PWD/.agents/skills/ws-shared/config.json`).
-- **Config-Independent / Standalone Skills** (`ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`):
+- **Config-Independent / Standalone Skills** (`ws-configure-project`, `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`):
   - Run directly in any repository without requiring `config.json`.
 
 ---

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "33a724a9687a66b976e0554426b8e85bd0cd8577971f4c9e130520efb208a761",
+  "fullPackageDigest": "0a668073fc6dc552f659e0b35a6078ff48f31684af062c387b1237c6bc1ecaff",
   "hub": {
     "files": {
       "AGENTS.md": "3e3341b882bfd9ab9c269bbce60d1017fddf0bf65304cb1131d071ea86826ce8",
@@ -339,9 +339,9 @@
         "agents/openai.yaml": "1d0f7bb0150d3012add83808fd6fca10ee9ce20bbd6d1e6bea903d0e7f5f2acf",
         "evals/evals.json": "b645f87007b8b8edd6b7208bbe1226835505f22133cf588baac6ba84de1b4fbc",
         "GLOSSARY.md": "fa6c499a74cefa5ccd90f961a8bcf9206ebf9ea6bf6b30cb30283a59d21dda11",
-        "SKILL.md": "2038c3b9f34d30e21e97f9490c0aa50f9a1145973ff819dcb0db568afdd3dcaf"
+        "SKILL.md": "69f07db844bec05a74d8da529749bd44cd1a99a5e89c77372c8a5f62e51bdb8f"
       },
-      "skillDigest": "86a7c0bc19446af0d9369c40fcb3ddf835da763909d102e7649d0fdeac1ab151"
+      "skillDigest": "b6bf84b08131407625048bc07616dfff6469625cf110ddecdc083f72bd93190a"
     },
     "ws-write-plan": {
       "files": {
