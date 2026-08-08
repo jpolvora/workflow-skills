@@ -1,0 +1,1 @@
+{"timestamp":"2026-08-08T03:49:35Z","step":0,"label":"Spec","elapsedSec":45,"promptTokens":0,"completionTokens":0,"filesTouched":2,"model":"Cursor Grok 4.5","verificationScore":null,"fableVerdict":null,"gateDecision":"classify|recommended=standard|choice=override-lite|reason=user-invoked-ws-spec-to-pr-lite","errors":[],"bypassed":false}
