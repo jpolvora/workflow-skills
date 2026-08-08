@@ -28,12 +28,12 @@ Mirror for packaged authoring: [`.agents/AGENTS.md`](.agents/AGENTS.md) § Porta
 
 ## Skill SoT, install scopes & config override (mandatory)
 
-Always apply this layout and resolution order. Do not treat `.agents/skills/ws-*` in this upstream repo as the skill source of truth.
+Always apply this layout and resolution order. **`src/` (`src/skills/ws-*`) is the ONLY canonical source of truth for skills.** Files under `.agents/skills/ws-*` in this repo are local copies used by the development harness. Whenever reviewing, updating, enhancing, or creating skills (`ws-*`), agents **MUST edit the authoritative files in `src/`**. The installation source shipped by the installer is always `src/`.
 
 | Layer | Path | Role |
 |-------|------|------|
-| **Upstream development SoT** | `src/ws-*` (`src/<skill-id>/SKILL.md`) | Author, test, and publish skill bodies here. Packaging, integrity, catalog, and harness audits treat **`src/ws-*`** as the only skill-content SoT. |
-| **Dogfood / scratch install** | `$PWD/.agents/skills/ws-*` (this repo) | Optional local copies for install/test/experiment. May hold **new** skills before they are promoted into SoT. **Not** published until promoted to `src/ws-*`. |
+| **Upstream development SoT** | `src/ws-*` (`src/skills/ws-*`) | Author, test, and publish skill bodies here. Packaging, integrity, catalog, and harness audits treat **`src/`** as the only skill-content SoT. |
+| **Dogfood / scratch install** | `$PWD/.agents/skills/ws-*` (this repo) | Optional local copies for harness of development / test / experiment. May hold **new** skills before they are promoted into SoT. **Not** published until promoted to `src/`. |
 | **Project config hub** | `$PWD/.agents/skills/ws-shared/` | Consumer-owned (and upstream dogfood) project settings: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, optional `CHANGELOG.md`, `installed-skills.json`. Created/filled by `ws-configure-project`. **Not** the published skill SoT. |
 | **Project-local install** | `$PWD/.agents/skills/ws-*` | Optional: install skill packages into a consumer project. Skill bodies live beside the project hub. |
 | **Global install** | `$HOME/.agents/skills/ws-*` (override via `WORKFLOW_SKILLS_GLOBAL_DIR`) | Optional: install skill packages once per machine. Agents may load global `ws-*` while the open project keeps its own `ws-shared` config. |
@@ -42,13 +42,13 @@ Always apply this layout and resolution order. Do not treat `.agents/skills/ws-*
 
 **Promote into SoT (upstream only — mandatory when lasting):** Skills that appear under `.agents/skills/ws-*` after add / install / local development are **candidates**, not the publish tree. To ship them as part of this package:
 
-1. **Copy or move** the skill folder into **`src/ws-<skill-id>/`** (flat SoT layout; keep `SKILL.md` + scripts/refs).
+1. **Copy or move** the skill folder into **`src/skills/ws-<skill-id>/`** (flat SoT layout; keep `SKILL.md` + scripts/refs).
 2. **Do not promote** consumer-owned hub data: never treat `.agents/skills/ws-shared/config.json`, `STACK.md`, `MEMORY.md`, or `memory/*` as SoT content (templates/examples only under `src/ws-shared/`).
 3. **Register** the skill in `bin/skill-dependencies.json` (and package membership) when it should install with Workflows / Extra / Full.
 4. **Update hubs** — root `AGENTS.md`, `.agents/AGENTS.md`, and routing/task tables; regenerate integrity (`npm run generate-integrity`) and site catalog when shipping.
 5. **Verify** with `ws-check-harness` (and install tests). Until promotion, dogfood-only skills under `.agents/skills/ws-*` must not be assumed present for consumers.
 
-Prefer authoring directly in `src/ws-*` when practical; use `.agents/skills` dogfood → promote when iterating via install or local discovery first.
+Always author directly in `src/skills/ws-*`; `.agents/skills/` copies exist solely for harness execution and testing.
 
 **Config specificity (most specific wins — always):**
 
