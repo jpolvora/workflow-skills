@@ -18,8 +18,8 @@
   "scripts": {
     "pretests": "npm pack",
     "test": "npm run tests",
-    "tests": "node test/test-install.js --local && node test/test-quality-gates.js && node test/test-memory-formatting.js",
-    "tests:remote": "node test/test-install.js && node test/test-quality-gates.js",
+    "tests": "node test/test-install.js --local && node test/test-quality-gates.js && node test/test-memory-formatting.js && node test/test-autoload-configure.js",
+    "tests:remote": "node test/test-install.js && node test/test-quality-gates.js && node test/test-autoload-configure.js",
     "build-site": "node bin/build-site.js",
     "build-site:bump": "node bin/build-site.js --bump",
     "generate-integrity": "node bin/generate-skill-integrity.js",

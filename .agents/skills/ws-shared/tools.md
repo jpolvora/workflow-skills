@@ -26,6 +26,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 6. **Hub routing tables** that inventory disk paths: keep full `.agents/skills/…` literals so audits stay filesystem-true.
 7. `{skillsRoot}` / `{sharedDir}` are **fixed install layout**, not relocatable consumer knobs (unlike `plans.dir` / `plans.specsDir` / `reviews.dir`).
 8. Spec skills: standalone drafts under `{specsDir}`; workflow copy under `{us-dir}/step-00-*.spec.md` after register/provider. Specs intent without a named skill → load [`autoload.md`](autoload.md) § Specs skill router first (progressive disclosure).
+9. Consumer root autoload: `ws-configure-project --section autoload` (helper `configure_autoload.py`) may emit `.agents/skills/...` or `{globalSkillsRoot}/...` into `autoload.md` / root `AGENTS.md` — never absolute filesystem paths. Harness Phase 2 validates Always-applied path forms when `autoload.md` is present.
 
 ## Core tools
 

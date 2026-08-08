@@ -63,7 +63,7 @@
 
 Default **shared hub only** (typical consumer install): `ws-tdah` and `ws-senior-developer` are **on-demand** — `ws-tdah` via explicit invoke; `ws-senior-developer` via `rules.seniorDeveloper` or explicit invoke. Neither is in the mandatory autoload table above.
 
-Some consumers add a **root** `AGENTS.md` (installer never writes it) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an **intentional consumer override**, not a shared-hub defect.
+Some consumers add a **root** `AGENTS.md` (installer never writes it; generate via [`ws-configure-project`](../ws-configure-project/SKILL.md) `--section autoload`) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an **intentional consumer override**, not a shared-hub defect.
 
 **Specs progressive disclosure:** when the user mentions specs, plans, Spec-to-PR, `index.PRD`, or related keywords without naming a skill, load [`autoload.md`](autoload.md) § Specs vocabulary and § Specs skill router — then load **only** the matching skill.
 

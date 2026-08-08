@@ -13,7 +13,7 @@ Disclosed detail for [`SKILL.md`](SKILL.md). Load when detecting or interviewing
 
 ## Optional (offer once, skippable)
 
-`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`.
+`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (root `AGENTS.md` + Always-applied path refresh; not a `config.json` key).
 
 ## Detection heuristics
 
@@ -56,11 +56,38 @@ Scan consumer **repo root** (not this skill package alone):
    - `reviewerModel` (Review & Verification phase: Steps 5–7)
    - Offer canonical host model choices or custom string; fallback to active model if empty or switch fails.
 8. `domain` / `rules` — optional
+9. `autoload` — optional (or standalone `--section autoload`)
 
 Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.
+
+## Autoload
+
+Not a `config.json` section. Refreshes `{sharedDir}/autoload.md` and optionally generates repo-root `AGENTS.md`.
+
+| Signal | Suggest |
+|--------|---------|
+| `{sharedDir}/autoload.md` missing | Install/update workflows hub (installer copies `autoload.md` via hub whitelist) |
+| Always-applied skill has `SKILL.md` under project `.agents/skills/` | Path `.agents/skills/ws-<id>/SKILL.md` |
+| Skill only under global skills root | Path `{globalSkillsRoot}/ws-<id>/SKILL.md` |
+| Skill missing both places | Keep `{skillsRoot}/…` token; harness `--check` warns |
+| Root `AGENTS.md` absent | **Generate/Refresh root `AGENTS.md` (Recommended)** |
+| Root `AGENTS.md` present | Refresh (**Recommended**) / Keep current / Skip |
+
+**Root gate options:** Generate/Refresh root `AGENTS.md` (**Recommended**) / Keep current root `AGENTS.md` / Skip.
+
+**Helper (agents and tests):**
+
+```bash
+python .agents/skills/ws-configure-project/scripts/configure_autoload.py --write-autoload
+python .agents/skills/ws-configure-project/scripts/configure_autoload.py --write-root-agents
+python .agents/skills/ws-configure-project/scripts/configure_autoload.py --check --json
+```
+
+**Path rules:** never write absolute paths (`C:\…`, `/Users/…`). Markdown links use real relative targets; prose may use `{skillsRoot}` / `{globalSkillsRoot}` / `{sharedDir}` tokens.
 
 ## Write rules
 
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
 - After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.
+- Autoload writes: `{sharedDir}/autoload.md` (Always-applied paths) and optional repo-root `AGENTS.md` only after user-gate Generate/Refresh — installer never creates root `AGENTS.md`.

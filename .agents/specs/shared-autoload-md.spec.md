@@ -43,10 +43,10 @@ Agents also need a **progressive-disclosure router** for specs/plans vocabulary 
 | Shipped `autoload.md` (Always-applied + Specs vocabulary/router) | Done |
 | Hub install via `HUB_WHITELIST` includes `autoload.md` | Done |
 | Specs-family skills cross-link to `autoload.md` router | Done |
-| `ws-shared/AGENTS.md` / root task router / `tools.md` point at router | Done (partial AC8) |
-| `ws-configure-project` `--section autoload` + root `AGENTS.md` generation | Open (AC2–AC4) |
-| `ws-check-harness` autoload path / missing-skill checks | Open (AC5–AC7) |
-| Automated tests for path emission / no absolute paths | Open (AC9) |
+| `ws-shared/AGENTS.md` / root task router / `tools.md` point at router | Done |
+| `ws-configure-project` `--section autoload` + root `AGENTS.md` generation | Done |
+| `ws-check-harness` autoload path / missing-skill checks | Done |
+| Automated tests for path emission / no absolute paths | Done |
 
 ### Non-goals
 
@@ -77,4 +77,5 @@ Agents also need a **progressive-disclosure router** for specs/plans vocabulary 
 
 ## Revision History
 
+### [2026-08-08] Revision: Close AC2–AC9 (configure-project autoload, harness checks, tests) (Prompt: "finish pending")
 ### [2026-08-08] Revision: Reflect shipped autoload.md router + hub whitelist; mark remaining ACs open (Prompt: "/ws-sync-spec after autoload/specs-family commits")

@@ -127,4 +127,4 @@ after ship / delivery evidence
 
 ## Seed note
 
-Shipped by install/update as hub template. Prefer keeping the Specs vocabulary and router sections aligned with upstream. Customize the Always-applied table per project when needed (or via `ws-configure-project` when that section is implemented).
+Shipped by install/update as hub template. Prefer keeping the Specs vocabulary and router sections aligned with upstream. Customize the Always-applied table per project when needed (or via `ws-configure-project --section autoload`).
