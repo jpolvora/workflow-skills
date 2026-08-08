@@ -26,6 +26,8 @@ Structured problem-solving loop: accuracy via structure, evidence, honesty. Foll
 
 ## Gates (before the loop)
 
+**Orch / senior plan already active** — If `ws-spec-to-pr` / `ws-spec-to-pr-lite` / `ws-multi-spec` owns the session, do **not** add a competing Plan-First STOP or parallel plan ceremony; orch steps win. If `ws-senior-developer` already confirmed a plan for this task, skip fable Step 0 Plan-First and use Evidence→Act→Verify only when investigation structure helps (or skip the loop). Code review proof checklist stays owned by `ws-senior-developer` (fable Verify does not replace it).
+
 **Triviality** — all must hold: 1 file · <10 lines · no new behavior/architecture · solution known without search. If trivial: change → one verify → 1–2 sentence report. Else: full loop.
 
 **Fit** — where is ground truth?

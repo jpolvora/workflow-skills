@@ -20,6 +20,17 @@ When root `AGENTS.md` points here, load these every prompt (unless the user opte
 
 Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for autoload membership; see [`AGENTS.md`](AGENTS.md) § Consumer root override.
 
+### Precedence among Always-applied (highest first)
+
+1. Explicit user instructions (current turn)
+2. Design / spec / architecture constraints
+3. `ws-senior-developer` (delivery gate + Code review proof; opt out `stop ws-senior-developer`)
+4. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
+5. `ws-tdah` (reply shape; does not override senior proof depth)
+6. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
+
+**Fable vs senior (single rule):** Orch or confirmed senior plan → no fable Plan-First / competing plan ceremony. Fable Verify does not replace senior Code review proof.
+
 ---
 
 ## Specs vocabulary (dictionary)

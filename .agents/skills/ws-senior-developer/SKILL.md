@@ -14,6 +14,8 @@ invocation_names:
 
 Optional model-invoked delivery gate when explicitly invoked or resolved through `rules.seniorDeveloper`. Guides prompting, planning, implementation, and review; does not replace project policy or an installed workflow.
 
+**Complement:** Named orch (`ws-spec-to-pr*`) wins routing (see §1). For non-orch non-trivial investigation without a confirmed plan, prefer [`ws-fable-method`](../ws-fable-method/SKILL.md) for Evidence→Act→Verify structure — do not run a second full plan ceremony. This skill alone owns the **Code review proof** checklist (§5).
+
 When config-resolved: if `$PWD/.agents/skills/ws-shared/config.json` is missing, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) before relying on verification aliases.
 
 ## Core Engineering Directives

@@ -77,8 +77,9 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 2. Consumer root `AGENTS.md` when present (skill loading + precedence — overrides shared-hub opt-in defaults)
 3. Design / spec / architecture constraints
 4. `ws-karpathy-guidelines`
-5. `ws-senior-developer` when autoloaded (root hub or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
-6. `ws-tdah` when autoloaded (root hub or `/ws-tdah`; opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`)
+5. `ws-senior-developer` when autoloaded (root hub, `autoload.md`, or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
+6. `ws-fable-method` when autoloaded (root / `autoload.md`; defer Plan-First when orch owns session or senior plan already confirmed)
+7. `ws-tdah` when autoloaded (root hub, `autoload.md`, or `/ws-tdah`; opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`)
 
 ### Opt-out
 

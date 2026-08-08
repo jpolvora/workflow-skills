@@ -261,7 +261,8 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 3. Design / spec / architecture constraints
 4. `ws-karpathy-guidelines`
 5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
-6. `ws-tdah` (action-first shape + judgment; still below karpathy/senior)
+6. `ws-fable-method` when autoloaded (defer Plan-First when orch owns session or senior plan already confirmed; see `{sharedDir}/autoload.md`)
+7. `ws-tdah` (action-first shape + judgment; still below karpathy/senior/fable)
 
 ### Opt-out
 
