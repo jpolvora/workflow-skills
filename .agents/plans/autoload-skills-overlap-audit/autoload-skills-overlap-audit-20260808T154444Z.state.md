@@ -28,9 +28,9 @@ scoreAndRefine: false
 skipTesting: false
 skipTests: false
 skipQualityGates: false
-shipAction: null
-prUrl: null
-prNumber: null
+shipAction: create-pr
+prUrl: "https://github.com/jpolvora/workflow-skills/pull/182"
+prNumber: 182
 execMode: sequential
 finalPipeline: standard
 complexityClass: standard
