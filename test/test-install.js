@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 const parentDir = path.resolve(__dirname, '..');
 
 const useLocal = process.argv.includes('--local');
-const rootSkillsDir = path.resolve(__dirname, '../src/skills');
+const rootSkillsDir = path.resolve(__dirname, '../.agents/skills');
 const testSkillsDir = path.resolve(__dirname, '.agents/skills');
 
 const ignoredPatterns = [
@@ -153,6 +153,22 @@ console.log('\n[Phase 0a] Upstream source auto-detect (remote npx guard)...');
 // --- Phase 0b: dry-run / canonicity contract files ---
 console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
 {
+  if (fs.existsSync(path.join(parentDir, 'scripts/sync-skills.js'))) {
+    fail('scripts/sync-skills.js must be deleted (SoT is .agents/skills)');
+  }
+  const pkgJsonForSync = JSON.parse(fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8'));
+  if (pkgJsonForSync.scripts && pkgJsonForSync.scripts['sync-skills']) {
+    fail('package.json must not define sync-skills script');
+  }
+  const filesField = Array.isArray(pkgJsonForSync.files) ? pkgJsonForSync.files : [];
+  for (const negation of [
+    '!.agents/skills/ws-shared/CHANGELOG.md',
+    '!.agents/skills/ws-shared/installed-skills.json',
+  ]) {
+    if (!filesField.includes(negation)) {
+      fail(`package.json files must exclude consumer hub path (${negation})`);
+    }
+  }
   const required = [
     '.agents/skills/ws-spec-to-pr/ARTIFACTS.md',
     '.agents/skills/ws-shared/config.schema.json',
@@ -181,8 +197,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   ];
   for (const rel of required) {
     const primary = path.join(parentDir, rel);
-    const srcFallback = path.join(parentDir, rel.replace(/^\.agents[\\/]skills[\\/]/, 'src/skills/'));
-    if (!fs.existsSync(primary) && !fs.existsSync(srcFallback)) {
+    if (!fs.existsSync(primary)) {
       fail(`Missing required file: ${rel}`);
     }
   }
@@ -195,7 +210,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     'ws-self-learning',
     'ws-changelog'
   ]) {
-    if (fs.existsSync(path.join(parentDir, 'src/skills/ws-shared', slug))) {
+    if (fs.existsSync(path.join(parentDir, '.agents/skills/ws-shared', slug))) {
       fail(`Promoted skill still nested under ws-shared/: ${slug}`);
     }
   }
@@ -203,7 +218,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fs.readFileSync(path.join(parentDir, 'bin/skill-dependencies.json'), 'utf8')
   );
   const sharedDepMap = JSON.parse(
-    fs.readFileSync(path.join(parentDir, 'src/skills/ws-shared/skill-dependencies.json'), 'utf8')
+    fs.readFileSync(path.join(parentDir, '.agents/skills/ws-shared/skill-dependencies.json'), 'utf8')
   );
   if (!depMap.packages?.workflows?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json workflows package missing ws-spec-to-pr');
@@ -212,53 +227,53 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('bin/skill-dependencies.json workflows package missing ws-multi-spec');
   }
   if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
-    fail('src/skills/ws-shared/skill-dependencies.json workflows package missing ws-multi-spec');
+    fail('.agents/skills/ws-shared/skill-dependencies.json workflows package missing ws-multi-spec');
   }
   if (!depMap.packages?.workflows?.skills?.includes('ws-senior-developer')) {
     fail('bin/skill-dependencies.json workflows package missing ws-senior-developer');
   }
   if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-senior-developer')) {
-    fail('src/skills/ws-shared/skill-dependencies.json workflows package missing ws-senior-developer');
+    fail('.agents/skills/ws-shared/skill-dependencies.json workflows package missing ws-senior-developer');
   }
   if (depMap.packages?.extra?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json Extra must not include workflow orchestrators');
   }
-  const artifacts = fs.readFileSync(path.join(parentDir, 'src/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');
+  const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('ws-testing')) fail('ARTIFACTS.md missing Step 7 Testing ownership');
   // AC9: converter shims under orch paths forward to provider canonical scripts
-  if (!fs.existsSync(path.join(parentDir, 'src/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py'))) {
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py'))) {
     fail('Missing github-issue-to-spec.py shim under ws-spec-to-pr/scripts');
   }
-  if (!fs.existsSync(path.join(parentDir, 'src/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py'))) {
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py'))) {
     fail('Missing ado-workitem-to-spec.py shim under ws-spec-to-pr/scripts');
   }
   if (
     !fs.existsSync(
-      path.join(parentDir, 'src/skills/ws-github-provider/scripts/github-issue-to-spec.py')
+      path.join(parentDir, '.agents/skills/ws-github-provider/scripts/github-issue-to-spec.py')
     )
   ) {
     fail('Missing canonical github-issue-to-spec.py under ws-github-provider/scripts');
   }
   if (
     !fs.existsSync(
-      path.join(parentDir, 'src/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py')
+      path.join(parentDir, '.agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py')
     )
   ) {
     fail('Missing canonical ado-workitem-to-spec.py under ws-azure-devops-provider/scripts');
   }
   // ws-local-spec-provider scripts (AC1)
   for (const rel of [
-    'src/skills/ws-local-spec-provider/scripts/detect_specs_dir.py',
-    'src/skills/ws-local-spec-provider/scripts/register_local_spec.py'
+    '.agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.py',
+    '.agents/skills/ws-local-spec-provider/scripts/register_local_spec.py'
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
   }
   // ws-fix-pr → provider thread/context shims (AC9)
   for (const rel of [
-    'src/skills/ws-fix-pr/scripts/fetch_threads.cjs',
-    'src/skills/ws-fix-pr/scripts/resolve_thread.cjs',
-    'src/skills/ws-fix-pr/scripts/fix_pr_azure_context.py'
+    '.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs',
+    '.agents/skills/ws-fix-pr/scripts/resolve_thread.cjs',
+    '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.py'
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing ws-fix-pr shim: ${rel}`);
   }
@@ -304,7 +319,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     ok('AGENTS.md documents upstream skill integrity regenerate obligation');
 
     const verifySh = fs.readFileSync(
-      path.join(parentDir, 'src', 'skills', 'ws-ship-pr', 'scripts', 'verify.sh'),
+      path.join(parentDir, '.agents', 'skills', 'ws-ship-pr', 'scripts', 'verify.sh'),
       'utf8'
     );
     if (!verifySh.includes('generate-skill-integrity.js') || !verifySh.includes('--check')) {
@@ -313,7 +328,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     ok('verify.sh gates on integrity --check');
 
     const harness = fs.readFileSync(
-      path.join(parentDir, 'src', 'skills', 'ws-check-harness', 'SKILL.md'),
+      path.join(parentDir, '.agents', 'skills', 'ws-check-harness', 'SKILL.md'),
       'utf8'
     );
     if (!/Skill integrity manifest/i.test(harness) || !/generate-skill-integrity\.js --check/.test(harness)) {
@@ -328,9 +343,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   {
     const py = process.platform === 'win32' ? 'python' : 'python3';
     const shimHelps = [
-      [py, 'src/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
-      [py, 'src/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
-      [py, 'src/skills/ws-fix-pr/scripts/fix_pr_azure_context.py', '--help']
+      [py, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
+      [py, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
+      [py, '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.py', '--help']
     ];
     for (const [bin, rel, flag] of shimHelps) {
       const r = cp.spawnSync(bin, [path.join(parentDir, rel), flag], {
@@ -343,8 +358,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
     // CJS shims have no --help; missing args → Usage from canonical (exit 1) proves forward
     for (const rel of [
-      'src/skills/ws-fix-pr/scripts/resolve_thread.cjs',
-      'src/skills/ws-fix-pr/scripts/fetch_threads.cjs'
+      '.agents/skills/ws-fix-pr/scripts/resolve_thread.cjs',
+      '.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs'
     ]) {
       const r = cp.spawnSync(process.execPath, [path.join(parentDir, rel)], {
         encoding: 'utf8',
@@ -372,7 +387,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   ];
   for (const name of providerSkills) {
     const body = fs.readFileSync(
-      path.join(parentDir, `src/skills/${name}/SKILL.md`),
+      path.join(parentDir, `.agents/skills/${name}/SKILL.md`),
       'utf8'
     );
     if (!body.includes(`name: ${name}`)) {
@@ -383,13 +398,13 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
   }
   const goalLoop = fs.readFileSync(
-    path.join(parentDir, 'src/skills/ws-goal-loop/SKILL.md'),
+    path.join(parentDir, '.agents/skills/ws-goal-loop/SKILL.md'),
     'utf8'
   );
   if (/[>] ?\/tmp\//.test(goalLoop) || /\/tmp\/ws-goal-loop/.test(goalLoop)) {
     fail('ws-goal-loop must not write sentinels under /tmp');
   }
-  const skill = fs.readFileSync(path.join(parentDir, 'src/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
+  const skill = fs.readFileSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
   if (/specs\/\{slug\}\.spec\.md/.test(skill) && !/mirror/i.test(skill)) {
     // brainstorm must not treat specs/ as sole canonical
     console.warn('Warning: SKILL.md still mentions specs/{slug}.spec.md — verify mirror-only wording');
@@ -400,7 +415,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('AGENTS.md still maps Step 11 to ws-implement-tasks');
   }
   const example = JSON.parse(
-    fs.readFileSync(path.join(parentDir, 'src/skills/ws-shared/config.json.example'), 'utf8')
+    fs.readFileSync(path.join(parentDir, '.agents/skills/ws-shared/config.json.example'), 'utf8')
   );
   if (!example.project?.workingBranch) fail('config.json.example missing project.workingBranch');
   if (!example.plans?.dir) fail('config.json.example missing plans.dir');
@@ -1279,7 +1294,7 @@ child.on('close', async (code) => {
     const pkgVersion = JSON.parse(
       fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8')
     ).version;
-    const skillIds = listInstallableSkills(path.join(parentDir, 'src', 'skills'));
+    const skillIds = listInstallableSkills(path.join(parentDir, '.agents', 'skills'));
 
     // AC1: covers all installable skills; hub whitelist; no consumer-owned
     if (skillIds.length !== Object.keys(manifest.skills).length) {
@@ -1340,7 +1355,7 @@ child.on('close', async (code) => {
 
     // AC10: digest changes when an included file changes (compute without writing)
     const tamperSkill = 'ws-tdah';
-    const skillMd = path.join(parentDir, 'src', 'skills', tamperSkill, 'SKILL.md');
+    const skillMd = path.join(parentDir, '.agents', 'skills', tamperSkill, 'SKILL.md');
     const original = fs.readFileSync(skillMd);
     try {
       fs.writeFileSync(skillMd, Buffer.concat([original, Buffer.from('\n# integrity-tamper\n')]));
@@ -1416,7 +1431,7 @@ child.on('close', async (code) => {
     fs.mkdirSync(iDir, { recursive: true });
 
     // AC4: source mismatch aborts without copy (tamper a file in the selected closure)
-    const closureSkillMd = path.join(parentDir, 'src', 'skills', 'ws-goal-loop', 'SKILL.md');
+    const closureSkillMd = path.join(parentDir, '.agents', 'skills', 'ws-goal-loop', 'SKILL.md');
     const closureBackup = fs.readFileSync(closureSkillMd);
     try {
       fs.writeFileSync(
@@ -1560,7 +1575,7 @@ child.on('close', async (code) => {
     }
     // restore for further checks
     const srcSkill = fs.readFileSync(
-      path.join(parentDir, 'src', 'skills', 'ws-tdah', 'SKILL.md')
+      path.join(parentDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md')
     );
     fs.writeFileSync(managedSkill, srcSkill);
     ok('integrity audit fails on managed file mutation');

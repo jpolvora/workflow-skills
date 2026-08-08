@@ -90,7 +90,7 @@ export function isWorkflowSkillsSourceTree(dir) {
   }
   return (
     fs.existsSync(path.join(root, 'bin', 'skill-dependencies.json')) ||
-    fs.existsSync(path.join(root, 'src', 'skills', 'ws-shared', 'skill-dependencies.json'))
+    fs.existsSync(path.join(root, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json'))
   );
 }
 

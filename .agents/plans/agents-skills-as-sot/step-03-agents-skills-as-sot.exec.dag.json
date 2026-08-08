@@ -1,0 +1,178 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "reason": "10 implementation steps (> maxImplementationSteps 3), ~25+ expected files (> maxExpectedFiles 6), 4 layers skills-sot/installer-cli/tests/scripts (> maxLayers 2)",
+  "planPath": ".agents/plans/agents-skills-as-sot/step-02-agents-skills-as-sot.plan.refined.md",
+  "slug": "agents-skills-as-sot",
+  "thresholds": {
+    "maxImplementationSteps": 3,
+    "maxExpectedFiles": 6,
+    "maxLayers": 2
+  },
+  "metrics": {
+    "implementationSteps": 10,
+    "expectedFiles": 28,
+    "layers": 4
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Invert .gitignore for tracked skill bodies",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [".gitignore"],
+      "acceptance": "Root no longer ignores all .agents/skills/ws-*/ bodies; consumer-owned hub paths stay ignored; git check-ignore on a skill SKILL.md is not ignored; config.json under ws-shared remains ignored; __pycache__ / *.py[cod] still ignored.",
+      "coderPrompt": "Edit only .gitignore. Remove the rule that ignores .agents/skills/ws-*/ as generated-from-src (and its sync-skills comment). Keep ignoring consumer-owned hub paths (config.json, config.local.json, STACK.md, MEMORY.md, memory/**, CHANGELOG.md, installed-skills.json, skill-integrity-local.json) via root exceptions and/or .agents/skills/ws-shared/.gitignore / hub.gitignore patterns. Keep __pycache__ and *.py[cod] ignores. Do not stage skill bodies yet. Verify mentally: skill SKILL.md trackable; ws-shared/config.json still ignored. AC10, AC2.",
+      "acs": ["AC10", "AC2"],
+      "planSteps": ["2"]
+    },
+    {
+      "id": "T2",
+      "title": "Promote SoT into .agents/skills and delete src",
+      "parallelGroup": "L1",
+      "dependsOn": ["T1"],
+      "files": [".agents/skills/", "src/skills/", "src/"],
+      "acceptance": "All former src/skills/ws-* package ids exist under .agents/skills; publishable content overwritten from src/skills; consumer-owned ws-shared files untouched; src/skills/ and empty src/ deleted; inventory count 39 packages.",
+      "coderPrompt": "After T1: (1) Inventory src/skills/ws-* vs .agents/skills/ws-* (expect 39 each; src/ only skills/). (2) For each non-hub package: copy/replace from src/skills/<id>/ into .agents/skills/<id>/ (force overwrite publishable). For ws-shared: copy only non-consumer-owned items (skip config.json, config.local.json, MEMORY.md, STACK.md, CHANGELOG.md, installed-skills.json, skill-integrity-local.json, .gitignore, memory/) — prefer SoT templates (AGENTS.md, tools.md, gates.md, *.example, hub.gitignore, skill-dependencies.json, etc.). (3) Delete src/skills/ and empty src/ entirely. Do not delete consumer hub files. Do not edit bin/, package.json, hubs, or tests in this task. AC1, AC2. Plan steps 1+3.",
+      "acs": ["AC1", "AC2"],
+      "planSteps": ["1", "3"]
+    },
+    {
+      "id": "T3",
+      "title": "Retarget installer, integrity lib, site, install-rules",
+      "parallelGroup": "L2",
+      "dependsOn": ["T2"],
+      "files": [
+        "bin/cli.js",
+        "bin/skill-integrity-lib.js",
+        "bin/build-site.js",
+        "bin/install-rules.js"
+      ],
+      "acceptance": "Package skills dir resolves to .agents/skills in cli/integrity/site; install-rules secondary marker is .agents/skills/ws-shared/skill-dependencies.json; bin/skill-dependencies.json remains primary; no skill-content SoT requirement on src/skills in bin/; self-overwrite still blocks package root. Do not write bin/skill-integrity.json here (T11).",
+      "coderPrompt": "Edit only the listed bin/*.js files after T2. Point package skills directory to path.join(packageRoot, '.agents', 'skills') in bin/cli.js (rename srcSkillsDir→packageSkillsDir if touching the binding), bin/skill-integrity-lib.js buildUpstreamManifest, and bin/build-site.js catalog/scan roots + data-path prefixes. Update bin/install-rules.js isWorkflowSkillsSourceTree secondary marker from src/skills/ws-shared/skill-dependencies.json to .agents/skills/ws-shared/skill-dependencies.json; keep bin/skill-dependencies.json primary. Grep bin/ for remaining skill-content src/skills requirements and fix. Do NOT run generate-integrity or edit bin/skill-integrity.json (T11 owns that). Do not edit tests/docs. AC3, AC4 partial.",
+      "acs": ["AC3", "AC4"],
+      "planSteps": ["4"]
+    },
+    {
+      "id": "T5",
+      "title": "Retarget tests path expectations",
+      "parallelGroup": "L2",
+      "dependsOn": ["T2"],
+      "files": [
+        "test/test-install.js",
+        "test/test-quality-gates.js",
+        "test/test-cleanup-workflow-git.js"
+      ],
+      "acceptance": "Tests expect .agents/skills SoT; no srcFallback rewriting .agents→src; no Phase 0b sync-skills dependency; sync script absence asserted if covered; any new greps forbidding src/skills/sync-skills scoped to live trees (exclude .agents/plans/** and archived specs).",
+      "coderPrompt": "Edit only the listed test/*.js files after T2. Retarget all SoT path literals/fallbacks from src/skills to .agents/skills. Remove srcFallback (or equivalent) that rewrites .agents/skills paths to src/skills. Drop Phase 0b dependency on sync-skills. Update assertions that required sync-skills script to expect absence. If adding greps forbidding src/skills or sync-skills as maintainer contracts, scope to live trees only (bin/, .agents/skills/, hubs, test/, active docs) — exclude .agents/plans/** and archived specs. Do not edit package.json or bin/. AC4, AC9, AC12. Plan step 6.",
+      "acs": ["AC4", "AC9", "AC12"],
+      "planSteps": ["6"]
+    },
+    {
+      "id": "T6",
+      "title": "Rewrite root hub and human SoT docs",
+      "parallelGroup": "L2",
+      "dependsOn": ["T2"],
+      "files": ["AGENTS.md", "SKILL_AUTHORING.md", "README.md"],
+      "acceptance": "Root hubs/docs state .agents/skills is upstream SoT; remove promote-into-src / author-only-in-src / mandatory sync-skills obligations; en-us; host-neutral; no absolute author paths.",
+      "coderPrompt": "Edit only AGENTS.md, SKILL_AUTHORING.md, and README.md after T2. Rewrite Skill SoT / upstream developer workflow / integrity hashed-path / harness-change prose so author+publish SoT is .agents/skills (not src/skills). Remove promote-into-src, src/-only-author, and required npm run sync-skills / scripts/sync-skills.js maintainer steps. Keep consumer install destinations and hybrid config precedence unchanged. Keep en-us and IDE/agent-neutral wording. Do not edit .agents/AGENTS.md or ws-shared files here (T7). Do not bump site/version here (T10). AC5, AC11, AC9 docs.",
+      "acs": ["AC5", "AC11", "AC9"],
+      "planSteps": ["7"]
+    },
+    {
+      "id": "T4",
+      "title": "package.json files list + delete sync bridge",
+      "parallelGroup": "L3",
+      "dependsOn": ["T3"],
+      "files": ["package.json", "scripts/sync-skills.js"],
+      "acceptance": "package.json files ships .agents/skills/ with consumer exclusions; src/skills entries removed; sync-skills npm script removed; scripts/sync-skills.js deleted; no version bump in this task.",
+      "coderPrompt": "After T3 only. Edit package.json: replace src/skills/ files entries with .agents/skills/ plus consumer exclusions matching refined plan §2 (config.json, config.local.json, STACK.md, MEMORY.md, memory/**, skill-integrity-local.json, __pycache__, *.py[cod], *.pyo). Remove the sync-skills script. Delete scripts/sync-skills.js. Do not run build-site:bump or change package version (T10). Do not edit hubs/tests. AC4, AC9. Plan step 5.",
+      "acs": ["AC4", "AC9"],
+      "planSteps": ["5"]
+    },
+    {
+      "id": "T7",
+      "title": "Rewrite packaged hubs + dogfood layer prose",
+      "parallelGroup": "L3",
+      "dependsOn": ["T2"],
+      "files": [
+        ".agents/AGENTS.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/STACK.md",
+        ".agents/skills/ws-shared/config.json"
+      ],
+      "acceptance": "Packaged hubs align on .agents/skills SoT; dogfood config.json/STACK.md skills-sot path is .agents/skills; migrating-to-src/ws-* and sync-skills dogfood notes removed; consumer hub sanctity otherwise preserved.",
+      "coderPrompt": "After T2. Edit only the four listed files. Align .agents/AGENTS.md and .agents/skills/ws-shared/AGENTS.md SoT pointers with root hubs (author/publish from .agents/skills; no promote/sync-skills obligations). Refresh dogfood STACK.md and config.json layer prose: skills-sot path → .agents/skills; remove outdated migrating-to-src/ws-* and sync-skills dogfood notes. Do not overwrite other consumer-owned hub values unnecessarily. Do not edit root AGENTS.md (T6) or harness skills (T9). AC5, AC11. Plan step 7 (packaged + A11).",
+      "acs": ["AC5", "AC11"],
+      "planSteps": ["7"]
+    },
+    {
+      "id": "T8",
+      "title": "check-workflows + MEMORY + self-learning path comments",
+      "parallelGroup": "L3",
+      "dependsOn": ["T2"],
+      "files": [
+        ".agents/skills/ws-check-workflows/SKILL.md",
+        ".agents/skills/ws-self-learning/scripts/self_learning.py",
+        ".agents/skills/ws-shared/memory/2026-08-01-npm-test-phase-0b-sync-skills.md",
+        ".agents/skills/ws-shared/MEMORY.md"
+      ],
+      "acceptance": "ws-check-workflows has no hard src/skills SoT alternate; self-learning comment not instructing src/skills dual-tree; MEMORY trap 2026-08-01-npm-test-phase-0b-sync-skills superseded and MEMORY.md recompiled; no required sync-skills for Phase 0b.",
+      "coderPrompt": "After T2. Edit only the listed files under .agents/skills. Remove SKILL.md wording that cites SoT src/skills/ as alternate; discovery uses .agents/skills / {skillsRoot}. Fix ws-self-learning/scripts/self_learning.py comment that mentions resolving from src/skills or .agents/skills — drop src/skills dual-tree instruction. Supersede memory/2026-08-01-npm-test-phase-0b-sync-skills.md: Phase 0b reads tracked SoT under .agents/skills; instruct commit/track skill bodies, not sync-skills; recompile MEMORY.md. Do not edit harness files (T9) or ws-shared AGENTS/STACK/config (T7). AC8, AC9, AC11. Plan step 9.",
+      "acs": ["AC8", "AC9", "AC11"],
+      "planSteps": ["9"]
+    },
+    {
+      "id": "T9",
+      "title": "ws-check-harness scan-root + drop dogfood-lag",
+      "parallelGroup": "L4",
+      "dependsOn": ["T6", "T7"],
+      "files": [
+        ".agents/skills/ws-check-harness/SKILL.md",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-check-harness/REPORT-FORMAT.md"
+      ],
+      "acceptance": "Upstream SoT evidence = .agents/skills/ws-*/SKILL.md; Skills scan root upstream = .agents/skills; consumer ignores stray src/skills; dogfood-lag / SoT-id equivalence / install-path exception removed; Phase 3 item 7 hashes .agents/skills; examples use .agents/skills; en-us portable.",
+      "coderPrompt": "After T6+T7 hubs. Edit only the three ws-check-harness docs under .agents/skills (post-move SoT). Flip Install mode upstream evidence to ≥1 .agents/skills/ws-*/SKILL.md; Skills scan root upstream = .agents/skills; consumer ignores stray src/skills. Delete dogfood-lag, SoT-id equivalence, and install-path↔src/skills exception rules. Hub literals under .agents/skills are filesystem-true when that tree is scan root. Phase 3 item 7 integrity remains upstream-only against hashed .agents/skills. Update example rg/find commands to .agents/skills. Do not edit bin/ or other skills. AC6, AC7, AC12. Plan step 8.",
+      "acs": ["AC6", "AC7", "AC12"],
+      "planSteps": ["8"]
+    },
+    {
+      "id": "T10",
+      "title": "Site catalog rebuild via build-site:bump",
+      "parallelGroup": "L4",
+      "dependsOn": ["T3", "T4", "T6"],
+      "files": ["docs/index.html", "package.json"],
+      "acceptance": "npm run build-site:bump updates docs/index.html catalog/data-path and package.json version; site no longer advertises src/skills as SoT; packageVersion alignment preserved for ship.",
+      "coderPrompt": "After T3 (build-site.js retargeted), T4 (files list), and T6 (root SoT narrative). Run npm run build-site:bump so docs/index.html and package.json version/footer reflect .agents/skills as catalog SoT. Do not reintroduce src/skills as published skill SoT in site copy. Do not regenerate skill-integrity.json (T11). Minimal surgical follow-up edits only if bump leaves stale SoT strings. AC5 site. Plan step 7 site.",
+      "acs": ["AC5"],
+      "planSteps": ["7"]
+    },
+    {
+      "id": "T11",
+      "title": "Integrity regenerate + Definition of Done gate",
+      "parallelGroup": "L5",
+      "dependsOn": ["T4", "T5", "T8", "T9", "T10"],
+      "files": ["bin/skill-integrity.json"],
+      "acceptance": "generate-integrity + verify-integrity exit 0; npm run test exit 0; ws-check-harness at package root → Install mode upstream, Skills scan root .agents/skills, 0 critical attributable to SoT move; src/ absent; self-overwrite still refuses package root; consumer hub files excluded from pack; build-site:bump already applied.",
+      "coderPrompt": "LAST task after T4,T5,T8,T9,T10. (1) npm run generate-integrity && npm run verify-integrity (must exit 0) — updates bin/skill-integrity.json against .agents/skills. (2) npm run test exit 0. (3) Run ws-check-harness Phases 0–5c at package root; record Install mode upstream + Skills scan root .agents/skills; 0 critical from SoT move. (4) Confirm src/ absent; spot-check npm pack excludes consumer hub files; assertNotSelfOverwrite still blocks package root (test/ allowed). (5) Optional ws-check-workflows if orch docs/scripts were touched. Do not change product logic beyond integrity manifest. AC12 (+ reconfirm AC1–AC11). Plan steps 4 integrity + 10.",
+      "acs": ["AC12"],
+      "planSteps": ["4", "10"]
+    }
+  ],
+  "levels": [
+    ["T1"],
+    ["T2"],
+    ["T3", "T5", "T6"],
+    ["T4", "T7", "T8"],
+    ["T9", "T10"],
+    ["T11"]
+  ],
+  "orderingNotes": [
+    "gitignore invert (T1) before move/stage (T2)",
+    "move (T2) before retarget (T3) and all post-SoT edits",
+    "delete sync (T4) after retarget (T3)",
+    "harness (T9) after hubs (T6,T7)",
+    "integrity + DoD (T11) last"
+  ]
+}

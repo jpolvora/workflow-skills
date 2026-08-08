@@ -41,10 +41,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const packageRoot = path.resolve(__dirname, '..');
-const srcSkillsDir = path.join(packageRoot, 'src', 'skills');
+const packageSkillsDir = path.join(packageRoot, '.agents', 'skills');
 const skillGraphPath = fs.existsSync(path.join(packageRoot, 'bin', 'skill-dependencies.json'))
   ? path.join(packageRoot, 'bin', 'skill-dependencies.json')
-  : path.join(packageRoot, 'src', 'skills', 'ws-shared', 'skill-dependencies.json');
+  : path.join(packageRoot, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json');
 const integrityManifestPath = path.join(packageRoot, MANIFEST_REL);
 
 const hasExplicitScopeFlag =
@@ -118,7 +118,7 @@ function listSkillDirs(dir) {
 }
 
 /** Top-level dirs with SKILL.md, excluding the ws-shared/ hub. */
-function listInstallableSkills(dir = srcSkillsDir) {
+function listInstallableSkills(dir = packageSkillsDir) {
   return listSkillDirs(dir)
     .filter((name) => name !== HUB_DIR)
     .filter((name) => fs.existsSync(path.join(dir, name, 'SKILL.md')))
@@ -358,7 +358,7 @@ function ensureSharedConsumerArtifacts() {
     console.log(`    Preserved existing ws-shared/config.json`);
     ensurePathTokensInConfig(configPath);
   } else {
-    const example = path.join(srcSkillsDir, HUB_DIR, 'config.json.example');
+    const example = path.join(packageSkillsDir, HUB_DIR, 'config.json.example');
     if (fs.existsSync(example)) {
       fs.copyFileSync(example, configPath);
       console.log(`    Seeded ws-shared/config.json from config.json.example (run ws-configure-project to fill)`);
@@ -370,7 +370,7 @@ function ensureSharedConsumerArtifacts() {
   if (fs.existsSync(memMd)) {
     console.log(`    Preserved existing ws-shared/MEMORY.md`);
   } else {
-    const templatePath = path.join(srcSkillsDir, HUB_DIR, 'MEMORY.md.template');
+    const templatePath = path.join(packageSkillsDir, HUB_DIR, 'MEMORY.md.template');
     const content = fs.existsSync(templatePath)
       ? fs.readFileSync(templatePath, 'utf8')
       : FRESH_MEMORY_MD;
@@ -393,7 +393,7 @@ function ensureSharedConsumerArtifacts() {
   if (fs.existsSync(stackPath)) {
     console.log(`    Preserved existing ws-shared/STACK.md`);
   } else {
-    const example = path.join(srcSkillsDir, HUB_DIR, 'STACK.md.example');
+    const example = path.join(packageSkillsDir, HUB_DIR, 'STACK.md.example');
     if (fs.existsSync(example)) {
       fs.copyFileSync(example, stackPath);
       console.log(`    Seeded ws-shared/STACK.md from STACK.md.example`);
@@ -404,7 +404,7 @@ function ensureSharedConsumerArtifacts() {
   if (fs.existsSync(changelogPath)) {
     console.log(`    Preserved existing ws-shared/CHANGELOG.md`);
   } else {
-    const templatePath = path.join(srcSkillsDir, HUB_DIR, 'CHANGELOG.md.template');
+    const templatePath = path.join(packageSkillsDir, HUB_DIR, 'CHANGELOG.md.template');
     const content = fs.existsSync(templatePath)
       ? fs.readFileSync(templatePath, 'utf8')
       : FRESH_CHANGELOG_MD;
@@ -497,7 +497,7 @@ function copyDirPreservingConfig(src, dest, preservedFile) {
  * Never writes outside `.agents/skills/` (no consumer root AGENTS.md / host pointers).
  */
 function ensureSharedHubInstalled(mode = 'install') {
-  const srcShared = path.join(srcSkillsDir, HUB_DIR);
+  const srcShared = path.join(packageSkillsDir, HUB_DIR);
   const destShared = path.join(targetSkillsDir, HUB_DIR);
   if (!fs.existsSync(srcShared)) return;
 
@@ -592,7 +592,7 @@ function printIntegrityMismatches(mismatches) {
 function preVerifySourceIntegrity(skillIds, { includeHub, force }) {
   const manifest = loadUpstreamIntegrityManifest();
   const result = verifyClosure({
-    skillsDir: srcSkillsDir,
+    skillsDir: packageSkillsDir,
     manifest,
     skillIds,
     includeHub,
@@ -629,7 +629,7 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
 
   if (result.ok) {
     const isFull =
-      listInstallableSkills(srcSkillsDir).length === skillIds.length && includeHub;
+      listInstallableSkills(packageSkillsDir).length === skillIds.length && includeHub;
     const record = buildLocalRecord({
       packageVersion: expected.packageVersion || getLocalVersion(),
       fullPackageDigest: isFull ? expected.fullPackageDigest : null,
@@ -664,7 +664,7 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
       actualHub = buildHubEntry(path.join(targetSkillsDir, HUB_DIR));
     }
     const isFull =
-      listInstallableSkills(srcSkillsDir).length === skillIds.length && includeHub;
+      listInstallableSkills(packageSkillsDir).length === skillIds.length && includeHub;
     const record = buildLocalRecord({
       packageVersion: expected.packageVersion || getLocalVersion(),
       fullPackageDigest: isFull ? expected.fullPackageDigest : null,
@@ -1044,7 +1044,7 @@ function installSelectedSkills(skills, selectedNames, { overwrite, forceIntegrit
   });
 
   for (const skillName of selectedNames) {
-    const srcPath = path.join(srcSkillsDir, skillName);
+    const srcPath = path.join(packageSkillsDir, skillName);
     const destPath = path.join(targetSkillsDir, skillName);
     if (!fs.existsSync(srcPath)) continue;
 
@@ -1179,15 +1179,15 @@ async function runInstall(skills, opts) {
 }
 
 async function main() {
-  if (!fs.existsSync(srcSkillsDir)) {
-    console.error(`Error: Source skills directory not found at ${srcSkillsDir}`);
+  if (!fs.existsSync(packageSkillsDir)) {
+    console.error(`Error: Source skills directory not found at ${packageSkillsDir}`);
     process.exit(1);
   }
 
   loadSkillGraph();
-  const skills = listInstallableSkills(srcSkillsDir);
+  const skills = listInstallableSkills(packageSkillsDir);
   if (skills.length === 0) {
-    console.log(`No installable skills found in ${srcSkillsDir}`);
+    console.log(`No installable skills found in ${packageSkillsDir}`);
     process.exit(0);
   }
 
@@ -1503,7 +1503,7 @@ function runUpdate(skills, includeNew, forceIntegrity = false) {
   if (existingSkills.length > 0) {
     console.log(`Updating ${existingSkills.length} skill(s)...`);
     for (const skillName of existingSkills) {
-      const srcPath = path.join(srcSkillsDir, skillName);
+      const srcPath = path.join(packageSkillsDir, skillName);
       const destPath = path.join(targetSkillsDir, skillName);
       if (!fs.existsSync(srcPath)) continue;
       console.log(`  Updating '${skillName}'...`);
@@ -1529,7 +1529,7 @@ function runUpdate(skills, includeNew, forceIntegrity = false) {
   if (includeNew && missingNew.length > 0) {
     console.log(`Installing ${missingNew.length} new upstream skill(s)...`);
     for (const skillName of missingNew) {
-      const srcPath = path.join(srcSkillsDir, skillName);
+      const srcPath = path.join(packageSkillsDir, skillName);
       const destPath = path.join(targetSkillsDir, skillName);
       console.log(`  Installing new '${skillName}'...`);
       copyDirSync(srcPath, destPath);
@@ -1613,7 +1613,7 @@ async function runInteractive(skills, forceIntegrity = false) {
     console.log('============================================================');
     console.log('  Workflow Skills - Skill Installer');
     console.log('============================================================');
-    console.log(`Source: ${srcSkillsDir}`);
+    console.log(`Source: ${packageSkillsDir}`);
     console.log(`Target: ${targetSkillsDir} [${isGlobalScope ? 'Global Scope' : 'Project Scope'}]`);
     console.log('------------------------------------------------------------');
     console.log("Packages: 'f' Full · 'w' Workflows · 'e' Extra");

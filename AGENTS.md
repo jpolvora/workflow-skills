@@ -28,27 +28,18 @@ Mirror for packaged authoring: [`.agents/AGENTS.md`](.agents/AGENTS.md) § Porta
 
 ## Skill SoT, install scopes & config override (mandatory)
 
-Always apply this layout and resolution order. **`src/` (`src/skills/ws-*`) is the ONLY canonical source of truth for skills.** Files under `.agents/skills/ws-*` in this repo are local copies used by the development harness. Whenever reviewing, updating, enhancing, or creating skills (`ws-*`), agents **MUST edit the authoritative files in `src/`**. The installation source shipped by the installer is always `src/`.
+Always apply this layout and resolution order. **`.agents/skills/ws-*` is the ONLY canonical source of truth for skills in this upstream package.** Author, package, hash, audit, catalog, and install from that tree. Whenever reviewing, updating, enhancing, or creating skills (`ws-*`), agents **MUST edit the authoritative files under `.agents/skills/`**. The installation source shipped by the installer is always `.agents/skills/`.
 
 | Layer | Path | Role |
 |-------|------|------|
-| **Upstream development SoT** | `src/ws-*` (`src/skills/ws-*`) | Author, test, and publish skill bodies here. Packaging, integrity, catalog, and harness audits treat **`src/`** as the only skill-content SoT. |
-| **Dogfood / scratch install** | `$PWD/.agents/skills/ws-*` (this repo) | Optional local copies for harness of development / test / experiment. May hold **new** skills before they are promoted into SoT. **Not** published until promoted to `src/`. |
-| **Project config hub** | `$PWD/.agents/skills/ws-shared/` | Consumer-owned (and upstream dogfood) project settings: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, optional `CHANGELOG.md`, `installed-skills.json`. Created/filled by `ws-configure-project`. **Not** the published skill SoT. |
+| **Upstream development SoT** | `.agents/skills/ws-*` | Author, test, and publish skill bodies here. Packaging, integrity, catalog, and harness audits treat **`.agents/skills/`** as the only skill-content SoT. |
+| **Project config hub** | `$PWD/.agents/skills/ws-shared/` | Consumer-owned (and upstream dogfood) project settings: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, optional `CHANGELOG.md`, `installed-skills.json`. Created/filled by `ws-configure-project`. **Not** published as skill SoT templates (hub templates are the non-consumer-owned files beside them). |
 | **Project-local install** | `$PWD/.agents/skills/ws-*` | Optional: install skill packages into a consumer project. Skill bodies live beside the project hub. |
 | **Global install** | `$HOME/.agents/skills/ws-*` (override via `WORKFLOW_SKILLS_GLOBAL_DIR`) | Optional: install skill packages once per machine. Agents may load global `ws-*` while the open project keeps its own `ws-shared` config. |
 
 **Hybrid mode (supported):** skill bodies from **global** `$HOME/.agents/skills/ws-*` (or project-local `.agents/skills/ws-*`) + **project** config from `$PWD/.agents/skills/ws-shared/`.
 
-**Promote into SoT (upstream only — mandatory when lasting):** Skills that appear under `.agents/skills/ws-*` after add / install / local development are **candidates**, not the publish tree. To ship them as part of this package:
-
-1. **Copy or move** the skill folder into **`src/skills/ws-<skill-id>/`** (flat SoT layout; keep `SKILL.md` + scripts/refs).
-2. **Do not promote** consumer-owned hub data: never treat `.agents/skills/ws-shared/config.json`, `STACK.md`, `MEMORY.md`, or `memory/*` as SoT content (templates/examples only under `src/ws-shared/`).
-3. **Register** the skill in `bin/skill-dependencies.json` (and package membership) when it should install with Workflows / Extra / Full.
-4. **Update hubs** — root `AGENTS.md`, `.agents/AGENTS.md`, and routing/task tables; regenerate integrity (`npm run generate-integrity`) and site catalog when shipping.
-5. **Verify** with `ws-check-harness` (and install tests). Until promotion, dogfood-only skills under `.agents/skills/ws-*` must not be assumed present for consumers.
-
-Always author directly in `src/skills/ws-*`; `.agents/skills/` copies exist solely for harness execution and testing.
+**Authoring in this upstream package:** Edit skill folders directly under **`.agents/skills/ws-<skill-id>/`** (keep `SKILL.md` + scripts/refs). Do **not** treat consumer-owned hub data (`config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `skill-integrity-local.json`, optional `CHANGELOG.md`, hub `.gitignore`) as publishable SoT — templates/examples only (`*.example`, `*.template`, `hub.gitignore`, `AGENTS.md`, `tools.md`, etc.). Register new skills in `bin/skill-dependencies.json`, update hubs, regenerate integrity (`npm run generate-integrity`), and verify with `ws-check-harness` before ship.
 
 **Config specificity (most specific wins — always):**
 
@@ -72,7 +63,7 @@ Always author directly in `src/skills/ws-*`; `.agents/skills/` copies exist sole
 | **`README.md`** | Humans | What this repo is, how to install/update/uninstall, contribute, safety |
 | **`SKILL_AUTHORING.md`** | Agents & Skill Authors | Mandatory guidelines for designing, pruning, and maintaining lean skills |
 | **`.agents/AGENTS.md`** | Agents (upstream authoring) | Workflows-package index for dual-hub drift checks in this repo — **not** installed into consumers |
-| **`src/ws-*/SKILL.md`** | Agents (upstream SoT) | Skill bodies under development / publish — load on demand via router |
+| **`.agents/skills/ws-*/SKILL.md`** | Agents (upstream SoT) | Skill bodies under development / publish — load on demand via router |
 | **Installed `…/skills/*/SKILL.md`** | Agents (consumers) | Progressive disclosure after project-local or global install |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to this hub if the consumer’s IDE needs one — not required by skills; not a portable dependency |
 
@@ -86,7 +77,7 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed** (project-local and/or **global**). `update` overwrites skill files; `uninstall` removes skill folders (cascades unused deps) and never deletes project `ws-shared/` consumer data.
 - **Preserve** under the **project** `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Project hub **overrides** any global `$HOME/.agents/skills/ws-shared` values. Installer does **not** copy `.agents/AGENTS.md` — consumer hub is `ws-shared/AGENTS.md`. Fresh install / `ws-configure-project` seeds `config.json` (from example), `MEMORY.md`, `CHANGELOG.md`, and `STACK.md` under the **project** `ws-shared/` when missing. Installer never writes consumer repo-root files.
-- **Layout contract:** § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory) — upstream SoT `src/ws-*`; consumer install `.agents/skills` and/or `$HOME/.agents/skills`; project config always wins.
+- **Layout contract:** § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory) — upstream SoT `.agents/skills/ws-*`; consumer install `.agents/skills` and/or `$HOME/.agents/skills`; project config always wins.
 - **Latest layout only:** installer does not migrate older folder names or legacy host paths — consumers get the current skill tree and neutral defaults on install/update. See [`README.md`](README.md) § Safety and § [Portability & harness neutrality](#portability--harness-neutrality-mandatory).
 - Lasting skill changes: PR to `develop` → `main` only after **`ws-check-harness`** passes. See [`.agents/AGENTS.md`](.agents/AGENTS.md) § Rules for skills.
 - **Consumers / CI / Actions:** agents must not silently hygiene-refactor managed skill scripts; lasting fixes → suggest or open an **upstream** PR. See [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) § Managed skills.
@@ -102,10 +93,9 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and 
 
 #### Skill tree (authoritative source)
 
-- **Develop and test** under **`src/ws-*`** (`src/<skill-id>/`) — pipeline, providers, utilities, and hub templates shipped with skills. This is the **only** upstream skill-content SoT (see § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory)).
-- **Dogfood / promote:** New or experimental skills may first appear under **`.agents/skills/ws-*`** (add, install, or local edit). **Promote** lasting skills into `src/ws-*` before ship (dependency graph, hubs, integrity, harness). `.agents/skills/ws-shared` consumer data is never promoted as skill SoT.
-- **Project config for dogfood** lives under **`.agents/skills/ws-shared/`** in this repo (`config.json`, MEMORY, STACK) — local/temp consumer-style hub data, not skill SoT.
-- **Package and publish** from `src/ws-*` via the installer/CLI (`bin/cli.js`, `bin/skill-dependencies.json`, `bin/skill-integrity.json`) into consumer **project-local** (`.agents/skills`) or **global** (`$HOME/.agents/skills`) installs.
+- **Develop and test** under **`.agents/skills/ws-*`** — pipeline, providers, utilities, and hub templates shipped with skills. This is the **only** upstream skill-content SoT (see § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory)).
+- **Consumer hub data** under **`.agents/skills/ws-shared/`** in this repo (`config.json`, MEMORY, STACK, memory, installed-skills) stays local/temp consumer-style data — never published as skill SoT.
+- **Package and publish** from `.agents/skills/ws-*` via the installer/CLI (`bin/cli.js`, `bin/skill-dependencies.json`, `bin/skill-integrity.json`) into consumer **project-local** (`.agents/skills`) or **global** (`$HOME/.agents/skills`) installs.
 - **Lasting changes** belong in upstream PRs (`develop` → `main`); consumer copies are managed and overwritten on `update` (project `ws-shared` consumer data preserved).
 
 #### Skill authoring contract
@@ -146,7 +136,7 @@ Workflow artifacts: prefer `{specsDir}` from `config.json` → `plans.specsDir` 
 
 #### After changes (recommend / gate)
 
-After edits under `src/ws-*`, hubs, `docs/`, `bin/`, or installer inputs:
+After edits under `.agents/skills/ws-*`, hubs, `docs/`, `bin/`, or installer inputs:
 
 1. Run **`ws-check-harness`** (Phases 0–5c) — see also § [Harness change protocol](#harness-change-protocol).
 2. Resolve **critical** findings before claim complete / merge.
@@ -174,7 +164,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 | 12 | **Ship** | `ws-ship-pr` / `/ship-pr` after rows 1–11 are ✅ or justified ⏭ | Commit → push → create PR |
 | 13 | **Review convergence** | Wait **30s** after PR creation for code-review Action/CI to start, then `ws-goal-fix-pr` (default **300s** heartbeats per [`ws-ship-pr/GOAL-OVERRIDES.md`](.agents/skills/ws-ship-pr/GOAL-OVERRIDES.md)) until `activeThreads == 0` or escalate | Standalone ship-pr Step 6; orch Step 9 when `stopBeforeFixPr` |
 
-**Upstream skill integrity regenerate (step 7 detail):** Hashed paths include **`src/ws-*`** skill content, `bin/` installer inputs, and hub templates packed by the CLI. Regenerate and commit `bin/skill-integrity.json` in the **same** commit as content changes; `npm run generate-integrity` and `npm run verify-integrity` must exit 0 before ship.
+**Upstream skill integrity regenerate (step 7 detail):** Hashed paths include **`.agents/skills/ws-*`** skill content, `bin/` installer inputs, and hub templates packed by the CLI. Regenerate and commit `bin/skill-integrity.json` in the **same** commit as content changes; `npm run generate-integrity` and `npm run verify-integrity` must exit 0 before ship.
 
 **Version bump (step 3 detail):** One patch bump per release PR (`npm run build-site:bump` stamps site footer + `package.json`). Do not rely on GitHub Actions to bump — Actions deploy site on `main` only.
 
@@ -286,7 +276,7 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 
 ## Harness change protocol
 
-On changes under `src/ws-*`, this file, `README.md`, or `docs/`:
+On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 
 1. **Mandatory Website & Documentation Update Rule:** Whenever any feature, capability, CLI option, workflow, or skill is added, changed, updated, or removed, agents **MUST** update and describe the change across:
    - `docs/index.html` (rebuild catalog via `node bin/build-site.js` / `npm run build-site:bump`, and update website feature cards/install sections/FAQ as applicable).

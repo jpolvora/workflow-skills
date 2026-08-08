@@ -13,17 +13,17 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SCRIPT = path.join(
   REPO_ROOT,
-  'src/skills/ws-spec-to-pr/scripts/cleanup_workflow_git.py',
+  '.agents/skills/ws-spec-to-pr/scripts/cleanup_workflow_git.py',
 );
 const PROTOCOL = path.join(
   REPO_ROOT,
-  'src/skills/ws-spec-to-pr/protocols/artifact-cleanup.md',
+  '.agents/skills/ws-spec-to-pr/protocols/artifact-cleanup.md',
 );
-const FAQ = path.join(REPO_ROOT, 'src/skills/ws-spec-to-pr/docs/faq.md');
-const LITE_SKILL = path.join(REPO_ROOT, 'src/skills/ws-spec-to-pr-lite/SKILL.md');
-const MULTI_PROTOCOL = path.join(REPO_ROOT, 'src/skills/ws-multi-spec/PROTOCOL.md');
-const STEP_DISPATCH = path.join(REPO_ROOT, 'src/skills/ws-spec-to-pr/STEP-DISPATCH.md');
-const ARTIFACTS = path.join(REPO_ROOT, 'src/skills/ws-spec-to-pr/ARTIFACTS.md');
+const FAQ = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/docs/faq.md');
+const LITE_SKILL = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr-lite/SKILL.md');
+const MULTI_PROTOCOL = path.join(REPO_ROOT, '.agents/skills/ws-multi-spec/PROTOCOL.md');
+const STEP_DISPATCH = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
+const ARTIFACTS = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md');
 
 const PYTHON = process.env.PYTHON || 'python';
 const WID = 'cleanup-test-20260801T180000Z';
