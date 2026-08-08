@@ -126,13 +126,16 @@
       "ws-senior-developer"
     ],
     "ws-write-spec": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-local-spec-provider"
     ],
     "ws-github-provider": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-local-spec-provider"
     ],
     "ws-azure-devops-provider": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-local-spec-provider"
     ],
     "ws-local-spec-provider": [
       "ws-spec-format"

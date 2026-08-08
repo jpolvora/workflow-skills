@@ -70,12 +70,14 @@ Stage **only**:
 
 ## Spec entry rules
 
-| Input | Action | Canonical write | `source` frontmatter |
-|-------|--------|-----------------|----------------------|
-| GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `github` |
-| ADO `{org}/{project}#{id}` or `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `azure-devops` |
-| Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | `{us-dir}/step-00-{slug}.spec.md` | `local` |
-| Free-text brainstorm | `ws-write-spec` → `{specsDir}/{slug}.spec.md`; orch then `ws-local-spec-provider` register when entering a workflow | Standalone: `{specsDir}/{slug}.spec.md` only. Workflow: also `{us-dir}/step-00-{slug}.spec.md` after register | `local` |
+Every entry writes the **spec of record** under `{specsDir}` first, then the **workflow copy** under `{us-dir}`.
+
+| Input | Action | Spec of record (1st) | Workflow copy (2nd) | `source` frontmatter |
+|-------|--------|----------------------|---------------------|----------------------|
+| GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) `fetch-to-spec` | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` | `github` |
+| ADO `{org}/{project}#{id}` or `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `fetch-to-spec` | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` | `azure-devops` |
+| Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | `{specsDir}/{slug}.spec.md` (in place when the input already lives there) | `{us-dir}/step-00-{slug}.spec.md` | `local` |
+| Free-text brainstorm | `ws-write-spec` → `{specsDir}/{slug}.spec.md`; orch then `ws-local-spec-provider` register when entering a workflow | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` after register (standalone: none) | `local` |
 
 Standalone `/write-spec` **never** writes under `{plansDir}`. Optional `--register` (or orch post-write register) creates the workflow `step-00-` copy. Downstream workflow skills **always** read `## Artifacts.specPath` (must point at the `step-00-` file under `{us-dir}` once a run has started).
 

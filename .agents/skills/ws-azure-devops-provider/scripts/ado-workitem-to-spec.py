@@ -1,19 +1,25 @@
 #!/usr/bin/env python3
 """
-Fetch or convert an Azure DevOps work item into canonical `*.spec.md`.
+Fetch or convert an Azure DevOps work item into the spec of record under {specsDir}.
 
 Fetch (live API):
   set ADO_PAT=...   # or AZURE_DEVOPS_PAT
   python ado-workitem-to-spec.py \\
     --org contoso --project MyProject --id 2416 \\
-    --output {plansDir}/us-2416/step-00-us-2416.spec.md \\
     --snapshot {plansDir}/us-2416/step-00-us-2416.issue.json
 
 Convert (offline JSON from WIT API):
   python ado-workitem-to-spec.py \\
     --input workitem.json \\
-    --output {plansDir}/us-2416/step-00-us-2416.spec.md \\
     --org contoso --project MyProject
+
+Output defaults to `{specsDir}/us-{id}.spec.md` (`plans.specsDir` from
+ws-shared/config.json, default `.agents/specs`). Promote it to the workflow copy
+`{plansDir}/{slug}/step-00-{slug}.spec.md` with ws-local-spec-provider:
+
+  python register_local_spec.py --input {specsDir}/us-2416.spec.md --source azure-devops
+
+`--output` overrides the destination.
 
 API shape expected for --input: Azure DevOps WIT work item JSON
 (`GET .../_apis/wit/workitems/{id}?$expand=all&api-version=7.1`).
@@ -51,6 +57,40 @@ def ensure_utf8_stdio() -> None:
 
 
 ensure_utf8_stdio()
+
+
+HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
+DEFAULT_SPECS_DIR = ".agents/specs"
+
+
+def resolve_repo_root(override: str | None = None) -> Path:
+    """Project root owning config.json: --repo-root → CWD when it has a hub → script tree.
+
+    The CWD probe keeps global skill installs ($HOME/.agents/skills) writing into the
+    consumer project instead of the user's home directory.
+    """
+    if override:
+        return Path(override).expanduser().resolve()
+    cwd = Path.cwd().resolve()
+    if (cwd / HUB_REL).is_file():
+        return cwd
+    return Path(__file__).resolve().parents[4]
+
+
+def resolve_specs_dir(repo_root: Path, override: str | None = None) -> Path:
+    """Absolute specsDir from --specs-dir, else plans.specsDir, else the portable default."""
+    rel = (override or "").strip()
+    if not rel:
+        cfg: dict = {}
+        cfg_path = repo_root / HUB_REL
+        if cfg_path.is_file():
+            try:
+                cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                cfg = {}
+        rel = ((cfg.get("plans") or {}).get("specsDir") or "").strip() or DEFAULT_SPECS_DIR
+    path = Path(rel)
+    return path.resolve() if path.is_absolute() else (repo_root / path).resolve()
 
 
 _AC_HEADING = re.compile(
@@ -148,10 +188,16 @@ def load_work_item(raw: str) -> dict:
     return data
 
 
+def work_item_slug(work_item: dict) -> str:
+    fields = work_item.get("fields") or {}
+    number = work_item.get("id") or fields.get("System.Id")
+    return f"us-{number}" if number else "spec"
+
+
 def build_spec_md(work_item: dict, org: str | None, project: str | None) -> str:
     fields = work_item.get("fields") or {}
     number = work_item.get("id") or fields.get("System.Id")
-    slug = f"us-{number}" if number else "spec"
+    slug = work_item_slug(work_item)
     title = (fields.get("System.Title") or (f"US {number}" if number else "Specification")).strip()
     state = (fields.get("System.State") or "").strip()
     work_item_type = (fields.get("System.WorkItemType") or "").strip()
@@ -258,7 +304,15 @@ def main() -> int:
         description="Fetch/convert Azure DevOps work item JSON into canonical *.spec.md"
     )
     parser.add_argument("--input", help="Path to WIT JSON file, or '-' for stdin (offline mode)")
-    parser.add_argument("--output", required=True, help="Output path for *.spec.md")
+    parser.add_argument(
+        "--output",
+        help="Output path for *.spec.md (default: {specsDir}/us-{id}.spec.md)",
+    )
+    parser.add_argument("--specs-dir", help="Override plans.specsDir for the default output path")
+    parser.add_argument(
+        "--repo-root",
+        help="Project root owning ws-shared/config.json (default: CWD when it has a hub)",
+    )
     parser.add_argument("--snapshot", help="Optional path to write raw issue/work-item JSON")
     parser.add_argument("--id", type=int, help="Work item id (live fetch mode)")
     parser.add_argument("--org", default="", help="Azure DevOps organization")
@@ -311,10 +365,18 @@ def main() -> int:
         print(f"Snapshot written to: {snap}")
 
     spec_md = build_spec_md(work_item, args.org or None, args.project or None)
-    output_path = Path(args.output)
+
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        repo_root = resolve_repo_root(args.repo_root)
+        output_path = resolve_specs_dir(repo_root, args.specs_dir) / f"{work_item_slug(work_item)}.spec.md"
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(spec_md, encoding="utf-8")
     print(f"Spec written to: {output_path}")
+    print("Next: register into the workflow copy via ws-local-spec-provider")
+    print(f"  register_local_spec.py --input {output_path} --source azure-devops")
     return 0
 
 

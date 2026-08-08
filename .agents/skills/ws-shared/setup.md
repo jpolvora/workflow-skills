@@ -29,17 +29,19 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 
 ### Entry matrix (both orchestrators)
 
-Same entry paths for **standard** and **lite**. Resolve provider from `config.json` `providers.active` (or legacy `issueTrackers.*.enabled` inference). Workflow canonical spec: `{us-dir}/step-00-{slug}.spec.md` (after register or provider fetch). Standalone drafts live under `{specsDir}`.
+Same entry paths for **standard** and **lite**. Resolve provider from `config.json` `providers.active` (or legacy `issueTrackers.*.enabled` inference).
+
+**Spec-before-plan rule (all entries):** every entry path first produces the **spec of record** `{specsDir}/{slug}.spec.md`, then the **workflow copy** `{us-dir}/step-00-{slug}.spec.md`. No provider writes `step-00` without the `{specsDir}` spec.
 
 | Input | Provider / skill | Step 0 action |
 |-------|------------------|---------------|
-| GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) `fetch-to-spec` | Fetch issue → spec; `slug: us-{n}` |
-| ADO `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `fetch-to-spec` | Fetch WI → spec |
-| Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | Register / normalize → canonical workflow `step-00` |
+| GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) `fetch-to-spec` | Issue → `{specsDir}/us-{n}.spec.md` → register `step-00` (`source: github`) |
+| ADO `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `fetch-to-spec` | WI → `{specsDir}/us-{id}.spec.md` → register `step-00` (`source: azure-devops`) |
+| Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | Normalize into `{specsDir}` (in place when already there) → register `step-00` |
 | Free-text feature description (no spec) | `ws-write-spec` (standard or lite) | Brainstorm → `{specsDir}/{slug}.spec.md` only, then `ws-local-spec-provider` register → `{us-dir}/step-00-{slug}.spec.md` |
 | Plain text in invocation (no issue id, no `*.spec.md` path) | `ws-write-spec` | Same as free-text row |
 
-Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDir`, default `.agents/specs`); the workflow `step-00-{slug}.spec.md` under `{us-dir}` is created by register (or provider fetch) when a run starts. Downstream workflow skills **always** read `step-00-{slug}.spec.md` under `{us-dir}`.
+Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDir`, default `.agents/specs`); the workflow `step-00-{slug}.spec.md` under `{us-dir}` is created by register (or provider fetch) when a run starts. Downstream workflow skills **always** read `step-00-{slug}.spec.md` under `{us-dir}` — never `{specsDir}` and never `*.issue.json`.
 
 1. **Config check**: Check if `.agents/skills/ws-shared/config.json` exists (fresh install normally seeds it from `config.json.example`).
    - If missing: `cp .agents/skills/ws-shared/config.json.example .agents/skills/ws-shared/config.json`.

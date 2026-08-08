@@ -743,9 +743,13 @@ child.on('close', async (code) => {
   if (!fs.existsSync(path.join(testSkillsDir, 'ws-check-harness', 'SKILL.md'))) {
     fail('ws-check-harness/SKILL.md missing after install/update');
   }
-  const packagedAgents = path.join(__dirname, '.agents', 'AGENTS.md');
-  if (fs.existsSync(packagedAgents)) {
-    fail('Installer must not copy .agents/AGENTS.md into consumer projects');
+  const consumerAgentsDir = path.join(__dirname, '.agents');
+  const strayDocs = fs
+    .readdirSync(consumerAgentsDir, { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.md'))
+    .map((e) => e.name);
+  if (strayDocs.length) {
+    fail(`Installer must only write under .agents/skills/; found stray docs: ${strayDocs.join(', ')}`);
   }
   const sharedAgents = path.join(testSkillsDir, 'ws-shared', 'AGENTS.md');
   if (!fs.existsSync(sharedAgents)) {
@@ -761,7 +765,7 @@ child.on('close', async (code) => {
   if (!/ws-check-harness/i.test(sharedAgentsBody) || !/ws-check-workflows/i.test(sharedAgentsBody)) {
     fail('Consumer ws-shared/AGENTS.md must route ws-check-harness and ws-check-workflows');
   }
-  ok('ws-check-harness + ws-shared/AGENTS.md hub shipped to consumer (no .agents/AGENTS.md)');
+  ok('ws-check-harness + ws-shared/AGENTS.md hub shipped to consumer (no stray docs above .agents/skills/)');
   for (const name of ['ws-github-provider', 'ws-azure-devops-provider', 'ws-local-spec-provider']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
@@ -804,6 +808,60 @@ child.on('close', async (code) => {
       fail(`Consumer CJS shim forward smoke failed:\n${cjsOut}`);
     }
     ok('Consumer shim forward smoke passed');
+  }
+  // Spec-before-plan contract: register writes {specsDir} spec of record, then {plansDir} step-00
+  {
+    const py = process.platform === 'win32' ? 'python' : 'python3';
+    const scratch = path.join(__dirname, '.tmp-specs-first');
+    fs.rmSync(scratch, { recursive: true, force: true });
+    fs.mkdirSync(path.join(scratch, '.agents', 'skills', 'ws-shared'), { recursive: true });
+    fs.mkdirSync(path.join(scratch, 'inbox'), { recursive: true });
+    fs.writeFileSync(
+      path.join(scratch, '.agents', 'skills', 'ws-shared', 'config.json'),
+      JSON.stringify({ plans: { dir: '.agents/plans', specsDir: '.agents/specs' } }, null, 2)
+    );
+    fs.writeFileSync(
+      path.join(scratch, 'inbox', 'us-7.spec.md'),
+      '# Specification — Demo\n\n## Description\n\nDemo.\n'
+    );
+    const register = path.join(
+      testSkillsDir,
+      'ws-local-spec-provider',
+      'scripts',
+      'register_local_spec.py'
+    );
+    const run = cp.spawnSync(
+      py,
+      [register, '--input', path.join('inbox', 'us-7.spec.md'), '--source', 'github'],
+      { encoding: 'utf8', cwd: scratch }
+    );
+    const specOfRecord = path.join(scratch, '.agents', 'specs', 'us-7.spec.md');
+    const workflowCopy = path.join(
+      scratch,
+      '.agents',
+      'plans',
+      'us-7',
+      'step-00-us-7.spec.md'
+    );
+    if (run.status !== 0) {
+      fail(`register_local_spec.py failed: status=${run.status}\n${run.stderr || run.stdout}`);
+    }
+    if (!fs.existsSync(specOfRecord)) {
+      fail('register must write the spec of record under {specsDir} first');
+    }
+    if (!fs.existsSync(workflowCopy)) {
+      fail('register must write the workflow copy {us-dir}/step-00-*.spec.md');
+    }
+    for (const [label, target] of [
+      ['spec of record', specOfRecord],
+      ['workflow copy', workflowCopy]
+    ]) {
+      if (!/^source: github$/m.test(fs.readFileSync(target, 'utf8'))) {
+        fail(`--source origin must be preserved in the ${label} (expected source: github)`);
+      }
+    }
+    fs.rmSync(scratch, { recursive: true, force: true });
+    ok('Spec-before-plan contract: {specsDir} spec of record then {plansDir} step-00');
   }
   ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
   // --- Phase 3: packed file smoke (local only) ---

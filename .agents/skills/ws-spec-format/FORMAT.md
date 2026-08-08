@@ -6,11 +6,10 @@ Referenced by [`SKILL.md`](SKILL.md). Other skills link here — do not duplicat
 
 | Source | Pattern |
 |--------|---------|
-| Tracker issue/WI `{id}` | `{plansDir}/us-{id}/step-00-us-{id}.spec.md` |
-| Local draft (`ws-write-spec` / hand-written) | `{specsDir}/{slug}.spec.md` |
-| Local workflow copy (after `ws-local-spec-provider` register) | `{plansDir}/{slug}/step-00-{slug}.spec.md` |
+| Spec of record — any origin (tracker fetch, `ws-write-spec`, hand-written) | `{specsDir}/{slug}.spec.md` |
+| Workflow copy (after `ws-local-spec-provider` register) | `{plansDir}/{slug}/step-00-{slug}.spec.md` |
 
-Slug: `us-{id}` for tracker ids; else basename without `.spec.md` (strip optional `step-00-`). Standalone `/write-spec` writes **only** the `{specsDir}` path — never creates `{plansDir}` artifacts.
+Slug: `us-{id}` for tracker ids; else basename without `.spec.md` (strip optional `step-00-`). Order is fixed: the `{specsDir}` spec of record is written **first**, then the `{plansDir}` workflow copy. Standalone `/write-spec` writes **only** the `{specsDir}` path — never creates `{plansDir}` artifacts.
 
 ## YAML frontmatter (required)
 

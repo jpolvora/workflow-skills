@@ -225,13 +225,13 @@ Additional obligations when maintaining and releasing the upstream skills packag
 - [ ] **2. Single Version Bump**: Increment package version once per release PR and stamp site footer (`npm run build-site:bump`).
 - [ ] **3. Regenerate Integrity Manifest**: Run `npm run generate-integrity` and `npm run verify-integrity`.
 - [ ] **4. Harness Audit**: Run `ws-check-harness` to ensure 0 critical findings.
-- [ ] **5. Hub Sync**: Keep `AGENTS.md` and `.agents/AGENTS.md` in sync before shipping PR.
+- [ ] **5. Hub Sync**: Keep the upstream root `AGENTS.md` and this hub (`ws-shared/AGENTS.md` + [`autoload.md`](autoload.md)) in sync before shipping PR.
 
 ---
 
 ## Skill discovery (consumers)
 
-Installed skills live at `.agents/skills/<name>/SKILL.md`. Load on demand from orchestrator dispatch, task intent, or host skill discovery. There is **no** packaged `.agents/AGENTS.md` in consumer projects; **this file** is the consumer-facing hub. A thin root `AGENTS.md` (when the consumer adds one) should point here — installer never writes it.
+Installed skills live at `.agents/skills/<name>/SKILL.md`. Load on demand from orchestrator dispatch, task intent, or host skill discovery. The installer ships **no** separate packaged agent index — **this file** is the consumer-facing hub. A thin root `AGENTS.md` (when the consumer adds one) should point here — installer never writes it.
 
 ---
 

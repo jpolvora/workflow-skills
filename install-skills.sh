@@ -23,7 +23,7 @@ echo "    config.json · STACK.md · MEMORY.md · memory/ · installed-skills.js
 echo "    AGENTS.md (hub) · optional CHANGELOG.md (rules.changelogFile)"
 echo "  Path tokens: config pathTokens + ws-shared/tools.md ({skillsRoot}/{sharedDir}/{plansDir})"
 echo "  (seeded on first install; never overwritten by upstream)"
-echo "  No .agents/AGENTS.md copy — agent contract is skills/ws-shared/AGENTS.md"
+echo "  Agent contract is skills/ws-shared/AGENTS.md (no repo-root files written)"
 echo "  Pack/install skips __pycache__ / *.pyc"
 echo "  Workflows: session model at gates; Pause → IDE/agent host → Resume to switch"
 echo "============================================================"

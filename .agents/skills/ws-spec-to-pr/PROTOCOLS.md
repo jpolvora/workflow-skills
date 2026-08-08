@@ -143,13 +143,13 @@ All recorded learnings and memory entries must use clear, direct, and actionable
 
 ### Specification Protocol
 
-[`ws-spec-format`](../ws-spec-format/SKILL.md). Canonical spec: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0.
+[`ws-spec-format`](../ws-spec-format/SKILL.md). Canonical spec for planning: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Every provider writes the spec of record `{specsDir}/{slug}.spec.md` **before** that workflow copy.
 
 | Input | Tracker / provider | Action | Uses Step 0? |
 |-------|--------------------|--------|--------------|
-| `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` → `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
-| `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-azure-devops-provider` | `fetch-to-spec` | No — skip to Step 1 |
-| `*.spec.md` | `ws-local-spec-provider` | `fetch-to-spec` | No — skip to Step 1 |
+| `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` → `{specsDir}/us-{n}.spec.md` → register `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
+| `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-azure-devops-provider` | `fetch-to-spec` → `{specsDir}` → register `step-00` | No — skip to Step 1 |
+| `*.spec.md` | `ws-local-spec-provider` | `fetch-to-spec` → `{specsDir}` → register `step-00` | No — skip to Step 1 |
 | free-text / no args | none | `ws-write-spec` → `{specsDir}/{slug}.spec.md`, then `ws-local-spec-provider` register → `{us-dir}/step-00-{slug}.spec.md` | Yes — `dispatch-agent` `ws-write-spec` (+ register before Step 1) |
 
 Provider resolution and `fetch-to-spec` dispatch: load active provider skill; auth failure → STOP (no silent fallback). Details in each provider `SKILL.md`.
