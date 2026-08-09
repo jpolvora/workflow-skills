@@ -12,7 +12,17 @@ NC='\033[0m'
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || exit 1)
 cd "$REPO_ROOT"
 
-SCANNER="$REPO_ROOT/.agents/skills/ws-secrets-leak-review/scripts/secrets_scanner.sh"
+# Resolve the scanner at run time: project-local install first, then global
+# (WORKFLOW_SKILLS_GLOBAL_DIR / $HOME/.agents/skills) so hybrid installs work and
+# a skill folder rename cannot leave the hook silently pointing at a dead path.
+SCANNER=""
+for skills_root in "$REPO_ROOT/.agents/skills" "${WORKFLOW_SKILLS_GLOBAL_DIR:-${HOME:-/nonexistent}/.agents/skills}"; do
+  candidate="$skills_root/ws-secrets-leak-review/scripts/secrets_scanner.sh"
+  if [ -f "$candidate" ]; then
+    SCANNER="$candidate"
+    break
+  fi
+done
 
 # Only scan staged files
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null)
@@ -20,8 +30,13 @@ if [ -z "$STAGED_FILES" ]; then
   exit 0
 fi
 
-if [ ! -f "$SCANNER" ]; then
-  echo -e "${YELLOW}[secrets-leak] Scanner not found at $SCANNER, skipping${NC}"
+if [ -z "$SCANNER" ]; then
+  echo -e "${YELLOW}[secrets-leak] ws-secrets-leak-review not found in project or global skills root — skipping${NC}"
+  exit 0
+fi
+
+if ! command -v rg &>/dev/null; then
+  echo -e "${YELLOW}[secrets-leak] ripgrep (rg) not on PATH — commit NOT scanned${NC}"
   exit 0
 fi
 
@@ -29,8 +44,14 @@ fi
 export GIT_STAGED_ONLY=1
 export SECRETS_SCAN_MAX_HITS="${SECRETS_SCAN_MAX_HITS:-30}"
 
-# Capture scanner output (scanner exits 0; never block forever on full-tree rg)
-SCAN_OUTPUT=$(bash "$SCANNER" 2>&1 || true)
+# Capture scanner output. A crashed scanner must not read as a clean scan.
+SCAN_STATUS=0
+SCAN_OUTPUT=$(bash "$SCANNER" 2>&1) || SCAN_STATUS=$?
+if [ "$SCAN_STATUS" -ne 0 ]; then
+  echo -e "${YELLOW}[secrets-leak] Scanner failed (exit $SCAN_STATUS) — commit NOT scanned:${NC}"
+  echo "$SCAN_OUTPUT"
+  exit 0
+fi
 
 # Check for HIGH findings
 if echo "$SCAN_OUTPUT" | rg -q 'HIGH.*must fix'; then
