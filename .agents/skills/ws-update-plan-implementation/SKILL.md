@@ -1,8 +1,9 @@
 ---
 
+
 name: ws-update-plan-implementation
 description: Post-ship QA delta manager — captures manual QA findings, plans delta fixes, executes modifications, and updates delivery summaries.
-version: 0.0.120
+version: 0.3.0
 disable-model-invocation: true
 invocation_names:
   - update-plan-implementation
