@@ -841,15 +841,20 @@ child.on('close', async (code) => {
       fail('Secrets hook installer must back up a foreign hook exactly once');
     }
 
-    fs.writeFileSync(path.join(scratch, 'clean.txt'), 'clean\n');
-    cp.spawnSync('git', ['add', 'clean.txt'], { encoding: 'utf8', cwd: scratch });
+    // Construct at runtime so this test source does not itself match the scanner.
+    const syntheticAwsKey = ['AKIA', '3JQ7BZ2LMWX9QTRV'].join('');
+    fs.writeFileSync(path.join(scratch, 'leak.txt'), `aws_access_key_id = ${syntheticAwsKey}\n`);
+    cp.spawnSync('git', ['add', 'leak.txt'], { encoding: 'utf8', cwd: scratch });
     const hookRun = cp.spawnSync('bash', [hook], {
       encoding: 'utf8',
       cwd: scratch,
       env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: testSkillsDir }
     });
-    if (hookRun.status !== 0) {
-      fail(`Global-only secrets hook resolution failed:\n${hookRun.stderr || hookRun.stdout}`);
+    const hookOutput = `${hookRun.stdout || ''}${hookRun.stderr || ''}`;
+    if (hookRun.status !== 1 || !/COMMIT BLOCKED/.test(hookOutput) || !/AWS Access Key/.test(hookOutput)) {
+      fail(
+        `Global-only hook must invoke the scanner and block a synthetic HIGH finding:\n${hookOutput}`
+      );
     }
 
     const reinstall = cp.spawnSync('bash', [installHook], { encoding: 'utf8', cwd: scratch });
