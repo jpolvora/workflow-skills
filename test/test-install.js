@@ -809,6 +809,60 @@ child.on('close', async (code) => {
     }
     ok('Consumer shim forward smoke passed');
   }
+  // Secrets hook must remain runtime-resolved for global-only installs and
+  // preserve a foreign hook exactly once across idempotent reinstalls.
+  {
+    const scratch = path.join(__dirname, '.tmp-secrets-hook');
+    const hooksDir = path.join(scratch, '.git', 'hooks');
+    const hook = path.join(hooksDir, 'pre-commit');
+    const installHook = path.join(
+      testSkillsDir,
+      'ws-secrets-leak-review',
+      'scripts',
+      'install-hook.sh'
+    );
+    fs.rmSync(scratch, { recursive: true, force: true });
+    fs.mkdirSync(scratch, { recursive: true });
+    const init = cp.spawnSync('git', ['init', '-q'], { encoding: 'utf8', cwd: scratch });
+    if (init.status !== 0) fail(`Secrets hook scratch git init failed:\n${init.stderr}`);
+
+    fs.writeFileSync(hook, '#!/usr/bin/env bash\necho foreign-hook\n', { mode: 0o755 });
+    const install = cp.spawnSync('bash', [installHook], { encoding: 'utf8', cwd: scratch });
+    if (install.status !== 0) {
+      fail(`Secrets hook install failed: status=${install.status}\n${install.stderr || install.stdout}`);
+    }
+    if (!/ws-secrets-leak-review-hook/.test(fs.readFileSync(hook, 'utf8'))) {
+      fail('Secrets pre-commit hook must be a runtime-resolving generated shim');
+    }
+    const backups = fs
+      .readdirSync(hooksDir)
+      .filter((name) => name.startsWith('pre-commit.bak.'));
+    if (backups.length !== 1 || !/foreign-hook/.test(fs.readFileSync(path.join(hooksDir, backups[0]), 'utf8'))) {
+      fail('Secrets hook installer must back up a foreign hook exactly once');
+    }
+
+    fs.writeFileSync(path.join(scratch, 'clean.txt'), 'clean\n');
+    cp.spawnSync('git', ['add', 'clean.txt'], { encoding: 'utf8', cwd: scratch });
+    const hookRun = cp.spawnSync('bash', [hook], {
+      encoding: 'utf8',
+      cwd: scratch,
+      env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: testSkillsDir }
+    });
+    if (hookRun.status !== 0) {
+      fail(`Global-only secrets hook resolution failed:\n${hookRun.stderr || hookRun.stdout}`);
+    }
+
+    const reinstall = cp.spawnSync('bash', [installHook], { encoding: 'utf8', cwd: scratch });
+    if (reinstall.status !== 0) fail(`Secrets hook reinstall failed:\n${reinstall.stderr}`);
+    const backupsAfter = fs
+      .readdirSync(hooksDir)
+      .filter((name) => name.startsWith('pre-commit.bak.'));
+    if (backupsAfter.length !== 1) {
+      fail('Reinstalling the generated secrets hook must not create another backup');
+    }
+    fs.rmSync(scratch, { recursive: true, force: true });
+    ok('Secrets hook preserves foreign hooks and resolves global installs at runtime');
+  }
   // Spec-before-plan contract: register writes {specsDir} spec of record, then {plansDir} step-00
   {
     const py = process.platform === 'win32' ? 'python' : 'python3';

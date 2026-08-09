@@ -194,7 +194,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 
 | Skill | Role |
 |-------|------|
-| [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan |
+| [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan; optional runtime-resolving pre-commit hook supports project-local, global, and hybrid installs |
 | [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Utility, meta & domain

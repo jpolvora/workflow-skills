@@ -4,7 +4,8 @@
 set -euo pipefail
 
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || { echo "Not a git repository"; exit 1; })
-HOOK_SRC="$REPO_ROOT/.agents/skills/ws-secrets-leak-review/scripts/pre-commit.sh"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+HOOK_SRC="$SCRIPT_DIR/pre-commit.sh"
 HOOK_DST="$REPO_ROOT/.git/hooks/pre-commit"
 
 if [ ! -f "$HOOK_SRC" ]; then
@@ -14,16 +15,34 @@ fi
 
 MARKER="ws-secrets-leak-review-hook"
 
-# Back up only a foreign hook. Replacing one of ours must not litter .bak files.
-if [ -f "$HOOK_DST" ] && [ ! -L "$HOOK_DST" ] && ! grep -q "$MARKER" "$HOOK_DST" 2>/dev/null; then
-  BACKUP="${HOOK_DST}.bak.$(date +%Y%m%d-%H%M%S)"
-  echo "Backing up existing hook to $BACKUP"
-  cp "$HOOK_DST" "$BACKUP"
+# Recognize both current generated shims and legacy copies/symlinks installed by
+# this skill before its ws-* rename. Everything else is a foreign hook.
+is_our_hook() {
+  if [ -L "$HOOK_DST" ]; then
+    case "$(readlink "$HOOK_DST" 2>/dev/null || true)" in
+      *secrets-leak-review/scripts/pre-commit.sh) return 0 ;;
+    esac
+    return 1
+  fi
+  grep -q "$MARKER" "$HOOK_DST" 2>/dev/null ||
+    {
+      grep -q "Secrets leak check for git pre-commit hook" "$HOOK_DST" 2>/dev/null &&
+        grep -q "secrets-leak-review/scripts/secrets_scanner.sh" "$HOOK_DST" 2>/dev/null
+    }
+}
+
+# Back up every foreign hook, including symlinks. Replacing one of ours must not
+# litter .bak files.
+if [ -e "$HOOK_DST" ] || [ -L "$HOOK_DST" ]; then
+  if ! is_our_hook; then
+    BACKUP="${HOOK_DST}.bak.$(date +%Y%m%d-%H%M%S)"
+    echo "Backing up existing hook to $BACKUP"
+    cp -P "$HOOK_DST" "$BACKUP"
+  fi
 fi
 
-# Write a shim that resolves the skill at run time. Never copy pre-commit.sh: a copy
-# freezes the skill path and silently stops scanning when the skill is renamed,
-# moved, or updated (Git Bash also turns `ln -s` into a copy without failing).
+# Always write a shim that resolves the skill at run time. A direct project-local
+# symlink cannot fall back to a global install if the local skill is removed.
 install_shim() {
   rm -f "$HOOK_DST"
   {
@@ -40,15 +59,9 @@ install_shim() {
     echo 'exit 0'
   } > "$HOOK_DST"
   chmod +x "$HOOK_DST"
-  echo "Installed pre-commit hook (shim): $HOOK_DST"
+  echo "Installed pre-commit hook (runtime shim): $HOOK_DST"
 }
 
-# Prefer a real symlink; `ln -s` can report success and still leave a plain copy.
-if ln -sf "../../.agents/skills/ws-secrets-leak-review/scripts/pre-commit.sh" "$HOOK_DST" 2>/dev/null &&
-  [ -L "$HOOK_DST" ]; then
-  echo "Installed pre-commit hook (symlink): $HOOK_DST"
-else
-  install_shim
-fi
+install_shim
 
 echo "Done. Pre-commit secrets scan active."

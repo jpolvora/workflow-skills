@@ -2,7 +2,7 @@
 
 name: ws-secrets-leak-review
 version: 0.0.120
-description: Secrets & PII leak auditor — scans code diffs and repositories for hardcoded credentials, API tokens, passwords, private keys, and sensitive data.
+description: Secrets & PII leak auditor with an optional runtime-resolving pre-commit hook for local or global installs.
 allowed-tools: Read, Grep, Glob
 invocation_names:
   - secrets-leak-review
@@ -94,7 +94,7 @@ Zero findings → `No leaks detected.`
 bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh
 ```
 
-Installs a symlink, or a small shim when the filesystem cannot symlink (Git Bash reports success and silently writes a copy). Either way the hook resolves the skill **at run time** — project-local skills root first, then `WORKFLOW_SKILLS_GLOBAL_DIR` / `$HOME/.agents/skills` — so skill updates take effect without reinstalling and a moved skill cannot leave a hook pointing at a dead path. Re-running the installer is idempotent and only backs up a foreign hook.
+Installs a small runtime shim — never a direct skill-path symlink or frozen script copy. The shim resolves the skill **at run time**: project-local skills root first, then `WORKFLOW_SKILLS_GLOBAL_DIR` / `$HOME/.agents/skills`. This keeps global-only and hybrid installs working if the local skill is removed or updated. Re-running the installer is idempotent; it recognizes current and legacy hooks from this skill, and backs up every foreign hook (including symlinks) before replacement.
 
 Hook runs `bash {skillsRoot}/ws-secrets-leak-review/scripts/pre-commit.sh` on staged files (which calls `bash {skillsRoot}/ws-secrets-leak-review/scripts/secrets_scanner.sh`). It **skips loudly** — printing why — when the skill or `rg` is missing, or when the scanner exits non-zero; a skipped scan never silently passes as clean. Override: `git commit --no-verify`.
 

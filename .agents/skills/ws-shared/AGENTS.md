@@ -119,7 +119,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 |-------|------|
 | `ws-check-harness` | [`../ws-check-harness/SKILL.md`](../ws-check-harness/SKILL.md) |
 | `ws-check-workflows` | [`../ws-check-workflows/SKILL.md`](../ws-check-workflows/SKILL.md) |
-| `ws-secrets-leak-review` | [`../ws-secrets-leak-review/SKILL.md`](../ws-secrets-leak-review/SKILL.md) |
+| `ws-secrets-leak-review` | [`../ws-secrets-leak-review/SKILL.md`](../ws-secrets-leak-review/SKILL.md) — scan + runtime-resolving pre-commit hook |
 | `ws-fable-judge` | [`../ws-fable-judge/SKILL.md`](../ws-fable-judge/SKILL.md) |
 
 ### Extra package (optional)

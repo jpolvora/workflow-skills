@@ -393,7 +393,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan |
+| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan + runtime-resolving pre-commit hook |
 | `ws-fable-judge` | `.agents/skills/ws-fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Layer 5 — Utility & meta
