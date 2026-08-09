@@ -161,8 +161,11 @@ These ship to consumers but are **not autoloaded** by default on consumer projec
 | Draft a spec | `ws-write-spec` → `{specsDir}/{slug}.spec.md` (not `{plansDir}`) or local `*.spec.md` + `ws-spec-format` |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
-| GitHub issue → spec / fix | `ws-github-provider` or orchestrator with issue URL |
+| GitHub issue → spec / fix | `ws-github-provider` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) or orchestrator with issue URL |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
+| Timesheet / activity hours | `ws-activity-report` |
+
+**Spec-of-record rule:** providers and standalone write-spec land the canonical file under `{specsDir}`; workflow `step-00` is always a registered copy under `{plansDir}/{slug}/`. Re-fetch uses `--force` on the converter first when the spec of record differs, then on register when `step-00` differs.
 
 Workflow artifacts: prefer `{specsDir}` from `config.json` → `plans.specsDir` (default `.agents/specs`; this upstream may also keep legacy repo-root `specs/`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
 
@@ -393,7 +396,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan + runtime-resolving pre-commit hook |
+| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan; optional pre-commit hook is user-requested only (not required by configure-project) |
 | `ws-fable-judge` | `.agents/skills/ws-fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Layer 5 — Utility & meta
@@ -411,7 +414,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
-| `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` |
+| `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` (may optionally suggest secrets pre-commit hook — never required) |
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |

@@ -3,14 +3,15 @@ id: 183
 slug: us-183
 title: "Fix broken ../ws-shared/ links in ws-classify-complexity/references/THRESHOLDS.md"
 source: github
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/183"
+status: completed
 specDate: 2026-08-08
 ---
 
 # Specification — Fix broken `../ws-shared/` links in `ws-classify-complexity/references/THRESHOLDS.md`
 
-**State:** open
+**State:** finished
 
 ## Description
 

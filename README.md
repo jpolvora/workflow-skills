@@ -188,13 +188,13 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 |-------|------|
 | [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | Orchestrators |
 | [`ws-write-spec`](.agents/skills/ws-write-spec/SKILL.md) … [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` / `ws-update-plan-implementation` (`ws-*`; FSM steps 0–9 + post) |
-| [`ws-github-provider`](.agents/skills/ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](.agents/skills/ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](.agents/skills/ws-local-spec-provider/SKILL.md) | Issue/WI → spec + PR ops |
+| [`ws-github-provider`](.agents/skills/ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](.agents/skills/ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](.agents/skills/ws-local-spec-provider/SKILL.md) | Issue/WI → **spec of record** under `{specsDir}` then workflow `step-00` under `{plansDir}` + PR ops |
 
 ### Review & audit
 
 | Skill | Role |
 |-------|------|
-| [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan; optional runtime-resolving pre-commit hook supports project-local, global, and hybrid installs |
+| [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan; optional pre-commit hook (`install-hook.sh`) is **user-requested only** — not required by configure-project or install |
 | [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Utility, meta & domain
@@ -207,6 +207,11 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration |
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, feature spec sync, format & goal loop |
+| [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (plan bootstrap start → latest PR thread comment or delivery commit) |
+
+### Spec → plan path (v0.3+)
+
+Standalone `/write-spec` and provider `fetch-to-spec` write the **spec of record** to `{specsDir}/{slug}.spec.md` first (`plans.specsDir`, default `.agents/specs`). Orchestrators then register a workflow copy as `{plansDir}/{slug}/step-00-{slug}.spec.md`. Re-fetch refuses to clobber a differing spec of record or `step-00` unless `--force` is passed (converter first, then register).
 
 ---
 
