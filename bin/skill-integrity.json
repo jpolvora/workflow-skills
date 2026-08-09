@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "5e79ffba2a61eeb9dbdd2f06fd2589a6421adb8cd163d5287b650e1030bbf0e6",
+  "fullPackageDigest": "da5ee451221e9a65d46a66a0bb3f0fb28c1bfc0bb53086a7bb4168b7d8a9efdb",
   "hub": {
     "files": {
       "AGENTS.md": "7f8a9e18259d1109484f1eecb01d4cf0fb89829a2a77b7b977ff9ab49aa35dc3",
@@ -200,12 +200,12 @@
       "files": {
         "evals/evals.json": "264a33fbefd71a1541b664f347a9d18ae39f07b542697bfbfe0bac8f0e78ecb4",
         "REFERENCE.md": "ff8f0930e8b962206843af3bded02a22640b74c7a233e672208a4957c4298250",
-        "scripts/install-hook.sh": "a6a14c4bbeaeab033488799bf8aed837c70f0582a8529859068471f45dfc01bc",
+        "scripts/install-hook.sh": "b5ab295f6ceedce1724415ca32683d5df42d0eaab4fd10a0ffd8fead005f33b3",
         "scripts/pre-commit.sh": "3d3e2dfe68a7b2eb2db5e629a70138eb779529721499c3d4e852cdfbfd73aa2f",
         "scripts/secrets_scanner.sh": "95f5a57a60c97bcec17d4f1fea0239d87f18cf03e5df200432fed2c8dab1633a",
         "SKILL.md": "27270047f7566ae6f7e34dac5c409cce7eab620a298e0ddf1ac0edf7804c42ab"
       },
-      "skillDigest": "e05771684352b2610219daa6a2afd01880b2bb3ddc4e1652a82ed8ed5a161bb5"
+      "skillDigest": "60106227e0436573156a0fb13c9ada774bccc5a9af9d4e8f131dc02eb6f37948"
     },
     "ws-self-learning": {
       "files": {

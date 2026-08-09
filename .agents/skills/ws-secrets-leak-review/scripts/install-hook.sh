@@ -37,7 +37,9 @@ if [ -e "$HOOK_DST" ] || [ -L "$HOOK_DST" ]; then
   if ! is_our_hook; then
     BACKUP="${HOOK_DST}.bak.$(date +%Y%m%d-%H%M%S)"
     echo "Backing up existing hook to $BACKUP"
-    cp -P "$HOOK_DST" "$BACKUP"
+    # Rename within .git/hooks instead of copying: this preserves regular files,
+    # valid symlinks, and dangling symlinks even when Windows cannot create links.
+    mv "$HOOK_DST" "$BACKUP"
   fi
 fi
 

@@ -866,6 +866,40 @@ child.on('close', async (code) => {
       fail('Reinstalling the generated secrets hook must not create another backup');
     }
     fs.rmSync(scratch, { recursive: true, force: true });
+
+    // Exercise foreign-symlink preservation where the host permits symlink creation.
+    const symlinkScratch = path.join(__dirname, '.tmp-secrets-hook-symlink');
+    const symlinkHooksDir = path.join(symlinkScratch, '.git', 'hooks');
+    const symlinkHook = path.join(symlinkHooksDir, 'pre-commit');
+    fs.rmSync(symlinkScratch, { recursive: true, force: true });
+    fs.mkdirSync(symlinkScratch, { recursive: true });
+    cp.spawnSync('git', ['init', '-q'], { encoding: 'utf8', cwd: symlinkScratch });
+    let symlinkCreated = false;
+    try {
+      fs.symlinkSync('missing-foreign-hook', symlinkHook, 'file');
+      symlinkCreated = fs.lstatSync(symlinkHook).isSymbolicLink();
+    } catch {
+      // Windows without Developer Mode cannot create symlinks; regular-hook coverage above applies.
+    }
+    if (symlinkCreated) {
+      const installOverSymlink = cp.spawnSync('bash', [installHook], {
+        encoding: 'utf8',
+        cwd: symlinkScratch
+      });
+      if (installOverSymlink.status !== 0) {
+        fail(`Secrets hook symlink replacement failed:\n${installOverSymlink.stderr}`);
+      }
+      const symlinkBackups = fs
+        .readdirSync(symlinkHooksDir)
+        .filter((name) => name.startsWith('pre-commit.bak.'));
+      if (
+        symlinkBackups.length !== 1 ||
+        !fs.lstatSync(path.join(symlinkHooksDir, symlinkBackups[0])).isSymbolicLink()
+      ) {
+        fail('Secrets hook installer must preserve a foreign symlink hook as a symlink backup');
+      }
+    }
+    fs.rmSync(symlinkScratch, { recursive: true, force: true });
     ok('Secrets hook preserves foreign hooks and resolves global installs at runtime');
   }
   // Spec-before-plan contract: register writes {specsDir} spec of record, then {plansDir} step-00
