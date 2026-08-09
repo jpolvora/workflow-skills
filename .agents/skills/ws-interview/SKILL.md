@@ -33,7 +33,7 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 |-----------|---------|-------|
 | `<plan-path>` | required | Path to `step-01-{slug}.plan.md` |
 | `spec` | inferred | Path to `step-00-{slug}.spec.md`, inferred from plan folder |
-| `softSkipEligible` | false | Orch hint: Open Questions empty; prefer defaults and exit fast if no blocking gaps |
+| `softSkipEligible` | false | Orch hint: Open Questions empty; skip escalation when `blocking_open == 0`, but still Resolve (sweep) non-blocking gaps before defaults |
 
 ## Grilling Protocol (hard rules)
 
@@ -65,7 +65,7 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 4. **Confirm shared understanding** — Workflow: treat as confirmed when the orchestrator already auto-confirmed via "End refinement and advance" (do not re-prompt); otherwise return `shared_understanding: pending`. Standalone: prompt the user to confirm.
    - Done when: `shared_understanding` is `confirmed`, or `pending` was returned to the orchestrator.
 
-**Fast exit:** when `softSkipEligible` and Step 1 finds `blocking_open == 0`, write the refined plan with defaults applied, set `shared_understanding: confirmed`, and return success without escalation (full sweep applies only when Resolve runs on registered gaps).
+**Fast exit:** when `softSkipEligible` and Step 1 finds `blocking_open == 0`, skip escalation and set `shared_understanding: confirmed`, but still run Resolve (project-context sweep) for any registered **non-blocking** gaps before applying defaults. Do not skip the sweep solely because no blocking gaps remain.
 
 ## Outputs
 

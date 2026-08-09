@@ -53,7 +53,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: workflow-cleanup-and-branch-protection.spec.md`)
 - [x] Skill Authoring Guidelines & Global Config Gate Rules (`spec: skill-authoring-and-config-gate-rules.spec.md`)
 - [x] Dual-Board Spec & Plan Management via `ws-spec-list` (`spec: ws-spec-list-and-board-management.spec.md`)
-- [x] Remove Consumer Requirement for `.agents/AGENTS.md` and Consolidate Context into `ws-shared/` (`spec: remove-consumer-agents-md-requirement.spec.md`)
+- [x] Remove Consumer Requirement for packaged `.agents/AGENTS.md`; consumer hub is `ws-shared/` (optional root `AGENTS.md` via autoload) (`spec: remove-consumer-agents-md-requirement.spec.md`)
 - [x] Shared `autoload.md` + configure-project root `AGENTS.md` generation (`spec: shared-autoload-md.spec.md`)
 - [x] Always-applied skills overlap audit & thin complementarity edits (`spec: autoload-skills-overlap-audit.spec.md`)
 
@@ -67,11 +67,11 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 4 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
 | 5 | `continuous-ai-verification-quality-gates` | `[ ]` todo | Phase 3 | Pre-PR fable-judge gate, workflow CI, complexity classifier, and telemetry |
 | 6 | `us-168-resolve-review-thread` | `[x]` done | Phase 3 | GraphQL thread resolution & pre-merge verification gates |
-| 7 | `src-sot-and-hybrid-global-install` | `[x]` done | Phase 3 | Refactor SoT to src/ and hybrid global mode |
+| 7 | `src-sot-and-hybrid-global-install` | `[x]` done | Phase 3 | Historical: SoT lived under src/; superseded by `.agents/skills` SoT (PR #181) |
 | 8 | `workflow-cleanup-and-branch-protection` | `[x]` done | Phase 3 | Post-run uswf cleanup & base branch protection |
 | 9 | `skill-authoring-and-config-gate-rules` | `[x]` done | Phase 3 | SKILL_AUTHORING guidelines & config check gate |
 | 10 | `ws-spec-list-and-board-management` | `[x]` done | Phase 3 | Dual board spec vs plan inventory management |
-| 11 | `remove-consumer-agents-md-requirement` | `[x]` done | Phase 3 | Remove consumer .agents/AGENTS.md requirement & relocate all context to ws-shared/ |
+| 11 | `remove-consumer-agents-md-requirement` | `[x]` done | Phase 3 | No packaged `.agents/AGENTS.md`; hub is ws-shared/; optional root AGENTS.md via autoload |
 | 12 | `shared-autoload-md` | `[x]` done | Phase 3 | autoload.md hub + configure-project root AGENTS.md + harness checks |
 | 13 | `autoload-skills-overlap-audit` | `[x]` done | Phase 3 | Thin complementarity for Always-applied set (PR #182) |
 
@@ -94,7 +94,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 2026-08-01 | `workflow-cleanup-and-branch-protection` | Mandatory Workflow Git Cleanup and Protected Branch Safeguards | Implemented |
 | 2026-08-07 | `skill-authoring-and-config-gate-rules` | Skill Authoring Guidelines and Global Skill Config Verification Gate | Implemented |
 | 2026-08-01 | `ws-spec-list-and-board-management` | Dual-Board Spec and Plan Inventory Management via ws-spec-list | Implemented |
-| 2026-08-07 | `remove-consumer-agents-md-requirement` | Remove Consumer Requirement for .agents/AGENTS.md | Implemented |
+| 2026-08-07 | `remove-consumer-agents-md-requirement` | Remove packaged `.agents/AGENTS.md` requirement; hub is ws-shared/ | Implemented |
 | 2026-08-08 | `autoload-skills-overlap-audit` | Always-applied skills overlap audit & thin complementarity | PR #182 |
 | 2026-08-08 | `shared-autoload-md` | Shared autoload.md + configure-project root AGENTS.md generation | Implemented |
 

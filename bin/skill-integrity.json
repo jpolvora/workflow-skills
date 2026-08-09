@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "da5ee451221e9a65d46a66a0bb3f0fb28c1bfc0bb53086a7bb4168b7d8a9efdb",
+  "fullPackageDigest": "7c2b925b8952c4180bb7e5b5880313e74c93688b1c2ef4bb04859339a4a348d4",
   "hub": {
     "files": {
       "AGENTS.md": "7f8a9e18259d1109484f1eecb01d4cf0fb89829a2a77b7b977ff9ab49aa35dc3",
@@ -45,12 +45,12 @@
     },
     "ws-check-harness": {
       "files": {
-        "evals/evals.json": "ce38c0d26016208ae27eb944d21de285fdb3bd486bbb23ec5074b17d315b4b32",
-        "PHASES.md": "f8f4bd1435c5c2c899743fd40a6c3c5c3bbb525c71e4330e9b45651edf618416",
+        "evals/evals.json": "8b5e01d5b9d12b5b6fdd94e8d1958fd1e53cd6aad1ab77675637ab83fe431f8e",
+        "PHASES.md": "63bf328bf32e46894387ca731233d56ad1b9759b0ff44812ced261b40045f821",
         "REPORT-FORMAT.md": "c4ebf7fdccf0469cd4be21c65b1905b44eeacd874c7028791062f2d244543e69",
         "SKILL.md": "d9c0f17f408dc1ebba9fbbedba31d22fbae555105a7a396faca4ceead2cf94af"
       },
-      "skillDigest": "0dc63f47481dc50fadabccee3203427fc6154fe6e0a68345df2e8301ab58617d"
+      "skillDigest": "3481d760b6d93cf2328151ddffea92e0dbf0ca81cf7f5d1b26cdd0cf382086cd"
     },
     "ws-check-workflows": {
       "files": {
@@ -79,10 +79,10 @@
       "files": {
         "evals/evals.json": "7e32b122c4bbc76caaf64a0764260a8e757fdaf6f2ffa8232b6d3ee7caf9790b",
         "INTERVIEW.md": "dc96c38ac4840d5305d924e195356ef940c2b61b776469b8060e4f18a6257c90",
-        "scripts/configure_autoload.py": "28d0289395a96d2fabe315abe614b95bbe5c364a338aba3e76b6d1d6f121b6b8",
+        "scripts/configure_autoload.py": "81bc491014757f5e488f2c20d96668e967af606fb55ad0915879c0694c4beb0e",
         "SKILL.md": "a96de48c1b4db9cb6ae8aefee2f33e0f8174eaab9f0d614a767a93de8476590d"
       },
-      "skillDigest": "9ee7f333e8fc1d07e50060550d3f861b25b0781055316e001848983e6215e818"
+      "skillDigest": "7b2ea9151aa7ddba3a78b4d12642deb1810f80f97a7020abacdc768c258690ba"
     },
     "ws-fable-domain": {
       "files": {
@@ -158,10 +158,10 @@
     },
     "ws-interview": {
       "files": {
-        "evals/evals.json": "133230f940ef2198dd48c3894ec5b1313b2de58339dd5aeb7cace11b1c2ac676",
-        "SKILL.md": "faec7ac338a833bf36d037573533ab66cb211dc819b08c65bb6b30fe2b20623b"
+        "evals/evals.json": "7946befa8e5b21d3efcc9ac4ee3adf3b78cf7a77d45676aa474e3934c6b60582",
+        "SKILL.md": "62a6b2d848acd06a7c1f3deff44e0afce4e30095e511c86df1b946dc5a3f64c9"
       },
-      "skillDigest": "0ad22855aeec5666378559a5bec7842b26990f8319ed16d3fed0cd12ce882d90"
+      "skillDigest": "ac2acb98aefdc9a2888270bda56933e7732c7fea7141a027ae8aee790499cb00"
     },
     "ws-karpathy-guidelines": {
       "files": {

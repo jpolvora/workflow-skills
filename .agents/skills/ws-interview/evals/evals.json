@@ -31,6 +31,17 @@
         "In autoMode, marks resolutionSource model-inferred (or equivalent) instead of needs_user",
         "Registry records evidence path(s) when project-sourced, or model-inferred rationale when not"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "softSkipEligible interview: Audit found only non-blocking gaps; no blocking_open. Apply defaults and confirm shared understanding.",
+      "expected_output": "Refined plan with shared_understanding confirmed; non-blocking gaps resolved after project-context sweep (project-sourced when found, else assumed-default).",
+      "assertions": [
+        "Agent still runs project-context sweep for registered non-blocking gaps before defaults",
+        "Does not escalate non-blocking gaps to user-gate",
+        "Does not skip Resolve solely because softSkipEligible and blocking_open == 0",
+        "Marks resolutionSource project or assumed-default for each closed non-blocking gap"
+      ]
     }
   ]
 }
