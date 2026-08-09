@@ -111,6 +111,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 | `ws-spec-index` | [`../ws-spec-index/SKILL.md`](../ws-spec-index/SKILL.md) |
 | `ws-spec-list` | [`../ws-spec-list/SKILL.md`](../ws-spec-list/SKILL.md) |
 | `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
+| `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
 
 ### Harness & review (Workflows package)
@@ -119,7 +120,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 |-------|------|
 | `ws-check-harness` | [`../ws-check-harness/SKILL.md`](../ws-check-harness/SKILL.md) |
 | `ws-check-workflows` | [`../ws-check-workflows/SKILL.md`](../ws-check-workflows/SKILL.md) |
-| `ws-secrets-leak-review` | [`../ws-secrets-leak-review/SKILL.md`](../ws-secrets-leak-review/SKILL.md) — scan + runtime-resolving pre-commit hook |
+| `ws-secrets-leak-review` | [`../ws-secrets-leak-review/SKILL.md`](../ws-secrets-leak-review/SKILL.md) — scan; optional pre-commit hook is user-requested only |
 | `ws-fable-judge` | [`../ws-fable-judge/SKILL.md`](../ws-fable-judge/SKILL.md) |
 
 ### Extra package (optional)
@@ -148,13 +149,14 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| Timesheet / activity hours for a delivery day | `ws-activity-report` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
 | Engineering delivery gate / Code review proof | `ws-senior-developer` (default on-demand; opt in via `rules.seniorDeveloper`; root `AGENTS.md` may autoload — see § Consumer root override) |
-| Fill / update `config.json` | `ws-configure-project` |
+| Fill / update `config.json` | `ws-configure-project` (optional suggestion only for secrets pre-commit hook — never required) |
 | Audit harness | `ws-check-harness` |
 | Check workflows | `ws-check-workflows` |
 | Secrets / leaks | `ws-secrets-leak-review` |
