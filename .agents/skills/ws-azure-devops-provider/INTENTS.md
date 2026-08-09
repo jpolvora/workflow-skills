@@ -36,7 +36,7 @@ python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
 | Note | Detail |
 |------|--------|
 | Raw snapshot JSON | Audit artifact only — stays under `{us-dir}`; downstream steps never read it |
-| Re-fetch over an existing run | Step 2 refuses to overwrite a differing `step-00`; re-run with `--force` after confirming |
+| Re-fetch over an existing run | The converter (Step 1) refuses first when the spec of record differs (`--force` on the converter), and Step 2 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
 | Explicit paths | `--output` (converter) / `--specs-dir` / `--plans-dir` (register) override the config-resolved defaults |
 | Promotion owner | `register_local_spec.py` from [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) is the single promotion primitive for every provider |
 
