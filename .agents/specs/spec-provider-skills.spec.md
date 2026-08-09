@@ -70,8 +70,8 @@ Pipeline skills call these intents by **loading the active provider skill**, not
 
 - **Detect** existing specs directory: prefer `config.plans.specsDir`, else `specs/` at repo root, else ask once and write config.
 - **Configure** default: `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/` when present). Support nested layout e.g. `{specsDir}/{slug}.spec.md` and/or `{specsDir}/{slug}/README.spec.md` — workflow copy remains `{us-dir}/step-00-{slug}.spec.md`.
-- **Read / register:** copy/normalize hand-written or `{specsDir}` markdown into `{us-dir}/step-00-{slug}.spec.md` (`source: local`). Used after `ws-write-spec` when a workflow needs a plan copy (`--register` / orch Step 0).
-- **Write / mirror:** `--mirror` refreshes `{specsDir}/{slug}.spec.md` when registering from a non-specsDir input. Standalone `ws-write-spec` drafts **only** under `{specsDir}` and never creates `{plansDir}` artifacts by default.
+- **Read / register:** normalize any `*.spec.md` into the spec of record `{specsDir}/{slug}.spec.md` (in place when the input already lives there), then copy it to `{us-dir}/step-00-{slug}.spec.md`. Used after `ws-write-spec` when a workflow needs a plan copy (`--register` / orch Step 0).
+- **Shared promotion primitive:** `register_local_spec.py` is the single promotion path for all providers; `--source` stamps the real origin (`local` default, `github` / `azure-devops` for tracker fetches) so the `{specsDir}` copy always exists before any `{plansDir}` artifact. Standalone `ws-write-spec` drafts **only** under `{specsDir}` and never creates `{plansDir}` artifacts by default.
 - **PR/threads:** local provider does **not** talk to a remote tracker. For ship/fix-pr when only local provider is active:
   - Either require an explicit remote provider for PR operations, **or**
   - Document that `create-pr` / `fix-pr` fall back to the **VCS host of `project.repoUrl`** (GitHub vs Azure) while specs remain local — **decision: hybrid allowed**. Specs stay `source: local`; PR host is selected from `project.repoUrl` / enabled tracker for SCM only.

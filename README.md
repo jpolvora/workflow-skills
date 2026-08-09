@@ -14,8 +14,8 @@ Portable **agent skills** and **end-to-end workflows** for coding assistants. Th
 |-----|--------------|----------------|
 | **`README.md`** (this file) | Humans | Install, update, uninstall, safety, contribute, high-level catalog |
 | **[`AGENTS.md`](AGENTS.md)** | Agents (upstream) | Full skill router, layers, verification, portability |
-| **[`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)** | Agents (after install) | Consumer hub: config, gates, external dependencies (installed with `shared/`) |
-| **[`.agents/AGENTS.md`](.agents/AGENTS.md)** | Agents (upstream authoring) | Workflows-package index for dual-hub drift checks — **not** copied to consumers |
+| **[`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)** | Agents (after install) | Consumer hub: config, gates, external dependencies (installed with `ws-shared/`) |
+| **[`.agents/skills/ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md)** | Agents (every session) | Always-applied skill set + specs progressive-disclosure router |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to `AGENTS.md` if your IDE needs one — not required by skills |
 
 ---
@@ -40,7 +40,7 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 1. Change this repo → PR to `develop`
 2. After merge, in the consumer: `npx --yes github:jpolvora/workflow-skills update`
 
-**Always preserved** under `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). The installer does **not** copy `.agents/AGENTS.md`; consumer agent contract is [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md). Do not treat in-place skill edits in a consumer as permanent.
+**Always preserved** under `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). The consumer agent contract is [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) — the installer ships no separate packaged index and never writes repo-root files. Do not treat in-place skill edits in a consumer as permanent.
 
 ---
 
@@ -194,7 +194,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 
 | Skill | Role |
 |-------|------|
-| [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan |
+| [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | Secrets / PII / credential leak scan; optional runtime-resolving pre-commit hook supports project-local, global, and hybrid installs |
 | [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | Adversarial audit, fraud detection & diff-grounded verification |
 
 ### Utility, meta & domain

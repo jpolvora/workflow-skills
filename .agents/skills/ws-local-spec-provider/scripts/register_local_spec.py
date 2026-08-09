@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """
-Register / normalize / optionally mirror a local *.spec.md into the workflow canonical path.
+Register / normalize a *.spec.md: spec of record in {specsDir}, then workflow copy in {plansDir}.
 
 Usage:
   python register_local_spec.py --input path/to/foo.spec.md [--slug SLUG]
-  python register_local_spec.py --input specs/foo.spec.md --mirror
   python register_local_spec.py --input specs/foo/README.spec.md --force
+  python register_local_spec.py --input {specsDir}/us-42.spec.md --source github
 
-Writes: {plansDir}/{slug}/step-00-{slug}.spec.md with source: local.
-Optional mirror: {specsDir}/{slug}.spec.md (flat human-browsable copy).
+Always writes two artifacts, in this order:
+  1. Spec of record: {specsDir}/{slug}.spec.md  (normalized in place when the
+     input already lives under specsDir, including nested layouts)
+  2. Workflow copy:  {plansDir}/{slug}/step-00-{slug}.spec.md
+
+`--source` stamps frontmatter `source:` (default `local`); tracker providers pass
+`github` / `azure-devops` so promotion does not overwrite the real origin.
 
 Supported input layouts under specsDir:
   Flat:    {specsDir}/{slug}.spec.md
@@ -45,8 +50,25 @@ def ensure_utf8_stdio() -> None:
 ensure_utf8_stdio()
 
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
+HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
+
+
+def resolve_repo_root(override: str | None = None) -> Path:
+    """Project root owning config.json: --repo-root → CWD when it has a hub → script tree.
+
+    The CWD probe keeps global skill installs ($HOME/.agents/skills) writing into the
+    consumer project instead of the user's home directory.
+    """
+    if override:
+        return Path(override).expanduser().resolve()
+    cwd = Path.cwd().resolve()
+    if (cwd / HUB_REL).is_file():
+        return cwd
+    return Path(__file__).resolve().parents[4]
+
+
+REPO_ROOT = resolve_repo_root()
+CONFIG_PATH = REPO_ROOT / HUB_REL
 DEFAULT_PLANS_DIR = ".agents/plans"
 DEFAULT_SPECS_DIR = ".agents/specs"
 
@@ -138,8 +160,8 @@ def infer_title(text: str, slug: str) -> str:
     return slug.replace("-", " ").title()
 
 
-def normalize_spec(text: str, slug: str, title: str | None = None) -> str:
-    """Ensure frontmatter has slug, title, source: local, and prefer today for missing specDate."""
+def normalize_spec(text: str, slug: str, title: str | None = None, source: str = "local") -> str:
+    """Ensure frontmatter has slug, title, source, and prefer today for missing specDate."""
     text = text.replace("\r\n", "\n")
     if not text.endswith("\n"):
         text += "\n"
@@ -161,11 +183,11 @@ def normalize_spec(text: str, slug: str, title: str | None = None) -> str:
             fm = _TITLE_LINE.sub(f'title: "{safe_title}"', fm, count=1)
         else:
             fm = f'title: "{safe_title}"\n' + fm
-        # source: local (always for this provider)
+        # source: origin of the spec (local by default; trackers pass their own)
         if _SOURCE_LINE.search(fm):
-            fm = _SOURCE_LINE.sub("source: local", fm, count=1)
+            fm = _SOURCE_LINE.sub(f"source: {source}", fm, count=1)
         else:
-            fm = fm.rstrip() + "\nsource: local\n"
+            fm = fm.rstrip() + f"\nsource: {source}\n"
         # specDate if missing
         if not _SPECDATE_LINE.search(fm):
             fm = fm.rstrip() + f"\nspecDate: {date.today().isoformat()}\n"
@@ -180,7 +202,7 @@ def normalize_spec(text: str, slug: str, title: str | None = None) -> str:
         "id: null",
         f"slug: {slug}",
         f'title: "{safe_title}"',
-        "source: local",
+        f"source: {source}",
         f"specDate: {date.today().isoformat()}",
         "---",
         "",
@@ -221,24 +243,48 @@ def resolve_input(path: Path, cfg: dict) -> Path:
     )
 
 
+def conflicts(dest: Path, content: str, force: bool) -> bool:
+    """True when dest exists with different content and overwriting is not allowed."""
+    if force or not dest.exists():
+        return False
+    existing = dest.read_text(encoding="utf-8").replace("\r\n", "\n")
+    return existing != content.replace("\r\n", "\n")
+
+
+def refuse(dest: Path) -> None:
+    raise SystemExit(
+        f"ERROR: destination exists and differs: {dest}\n"
+        "Re-run with --force to overwrite, or confirm manually."
+    )
+
+
 def write_if_allowed(dest: Path, content: str, force: bool) -> str:
+    if conflicts(dest, content, force):
+        refuse(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     existed = dest.exists()
     if existed and not force:
-        existing = dest.read_text(encoding="utf-8")
-        if existing.replace("\r\n", "\n") == content.replace("\r\n", "\n"):
-            return "unchanged"
-        raise SystemExit(
-            f"ERROR: destination exists and differs: {dest}\n"
-            "Re-run with --force to overwrite, or confirm manually."
-        )
+        return "unchanged"
     dest.write_text(content, encoding="utf-8")
     return "overwritten" if existed else "written"
 
 
+def is_within(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
 def main() -> int:
+    global REPO_ROOT, CONFIG_PATH
+
     parser = argparse.ArgumentParser(
-        description="Register local *.spec.md into {us-dir}/step-00-{slug}.spec.md (source: local)."
+        description=(
+            "Register *.spec.md: spec of record under {specsDir}, then workflow copy "
+            "at {us-dir}/step-00-{slug}.spec.md."
+        )
     )
     parser.add_argument(
         "--input",
@@ -253,22 +299,30 @@ def main() -> int:
     )
     parser.add_argument(
         "--specs-dir",
-        help="Override plans.specsDir for slug lookup / mirror (default from config).",
+        help="Override plans.specsDir for slug lookup / spec of record (default from config).",
     )
     parser.add_argument(
-        "--mirror",
-        action="store_true",
-        help="Also write flat mirror {specsDir}/{slug}.spec.md.",
+        "--source",
+        default="local",
+        help="Frontmatter source: origin (default local; e.g. github, azure-devops).",
+    )
+    parser.add_argument(
+        "--repo-root",
+        help="Project root owning ws-shared/config.json (default: CWD when it has a hub).",
     )
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite destination if it exists and differs.",
+        help="Overwrite destinations that exist and differ.",
     )
     parser.add_argument("--json", action="store_true", help="Machine-readable JSON output.")
     args = parser.parse_args()
 
     ensure_utf8_stdio()
+
+    if args.repo_root:
+        REPO_ROOT = resolve_repo_root(args.repo_root)
+        CONFIG_PATH = REPO_ROOT / HUB_REL
 
     cfg = load_config()
     if args.plans_dir:
@@ -279,41 +333,49 @@ def main() -> int:
     src = resolve_input(Path(args.input), cfg)
     raw = src.read_text(encoding="utf-8")
     slug = resolve_slug(raw, src, args.slug)
-    normalized = normalize_spec(raw, slug)
+    normalized = normalize_spec(raw, slug, source=args.source)
 
+    sdir = specs_dir(cfg)
     us_dir = plans_dir(cfg) / slug
     dest = us_dir / f"step-00-{slug}.spec.md"
-    # When input is already the canonical step-00 path, allow in-place
-    # normalize rewrite so --mirror happy path works without --force.
-    same_as_dest = src.resolve() == dest.resolve()
-    action = write_if_allowed(dest, normalized, force=args.force or same_as_dest)
 
-    mirror_path = None
-    mirror_action = None
-    if args.mirror:
-        mirror_path = specs_dir(cfg) / f"{slug}.spec.md"
-        mirror_action = write_if_allowed(mirror_path, normalized, force=args.force)
+    # Inputs already under specsDir (flat or nested) are normalized in place, so no
+    # duplicate flat twin is created. In-place rewrite of the step-00 path is allowed
+    # when the input *is* that path.
+    in_specs_dir = is_within(src, sdir)
+    specs_path = src if in_specs_dir else sdir / f"{slug}.spec.md"
+    specs_force = args.force or in_specs_dir
+    dest_force = args.force or src.resolve() == dest.resolve()
+
+    # Refuse before writing anything, so a rejected workflow copy never leaves a
+    # half-updated spec of record behind.
+    for target, allowed in ((specs_path, specs_force), (dest, dest_force)):
+        if conflicts(target, normalized, allowed):
+            refuse(target)
+
+    # 1. Spec of record under specsDir, then 2. workflow copy under plansDir.
+    specs_action = write_if_allowed(specs_path, normalized, force=specs_force)
+    action = write_if_allowed(dest, normalized, force=dest_force)
 
     payload = {
         "input": str(src),
         "slug": slug,
+        "specsPath": str(specs_path),
+        "specsAction": specs_action,
         "specPath": str(dest),
         "usDir": str(us_dir),
-        "source": "local",
+        "source": args.source,
         "action": action,
-        "mirror": str(mirror_path) if mirror_path else None,
-        "mirrorAction": mirror_action,
     }
 
     if args.json:
         print(json.dumps(payload, indent=2, ensure_ascii=False))
     else:
         print(f"slug: {slug}")
+        print(f"specsPath: {specs_path} ({specs_action})")
         print(f"specPath: {dest}")
-        print(f"source: local")
+        print(f"source: {args.source}")
         print(f"action: {action}")
-        if mirror_path:
-            print(f"mirror: {mirror_path} ({mirror_action})")
 
     return 0
 

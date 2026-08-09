@@ -1,6 +1,6 @@
 # ws-azure-devops-provider — Intent procedures
 
-Load when executing an intent from [`SKILL.md`](SKILL.md). Expand `{plansDir}` from config. Resolve `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` from `issueTrackers.azureDevOps` — never consumer literals.
+Load when executing an intent from [`SKILL.md`](SKILL.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` from `issueTrackers.azureDevOps` — never consumer literals.
 
 ## `validate-auth`
 
@@ -17,14 +17,28 @@ Load when executing an intent from [`SKILL.md`](SKILL.md). Expand `{plansDir}` f
 | `{org}/{project}#{id}` | parsed (must match tracker) | `us-{id}` |
 | ADO work-item URL | parsed from URL | `us-{id}` |
 
+**Two ordered phases — the spec of record always lands in `{specsDir}` first, then the workflow copy in `{plansDir}`.** Never write `step-00` directly from the converter.
+
 ```bash
 mkdir -p {plansDir}/us-{id}
+
+# 1. Spec of record → {specsDir}/us-{id}.spec.md (default output; resolves plans.specsDir)
 python .agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py \
   --org {org} --project {project} --id {id} \
   --api-base {apiBase} --pat-env {patEnvVar} \
-  --snapshot {plansDir}/us-{id}/step-00-us-{id}.issue.json \
-  --output {plansDir}/us-{id}/step-00-us-{id}.spec.md
+  --snapshot {plansDir}/us-{id}/step-00-us-{id}.issue.json
+
+# 2. Workflow copy → {plansDir}/us-{id}/step-00-us-{id}.spec.md (keeps source: azure-devops)
+python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
+  --input {specsDir}/us-{id}.spec.md --source azure-devops
 ```
+
+| Note | Detail |
+|------|--------|
+| Raw snapshot JSON | Audit artifact only — stays under `{us-dir}`; downstream steps never read it |
+| Re-fetch over an existing run | The converter (Step 1) refuses first when the spec of record differs (`--force` on the converter), and Step 2 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
+| Explicit paths | `--output` (converter) / `--specs-dir` / `--plans-dir` (register) override the config-resolved defaults |
+| Promotion owner | `register_local_spec.py` from [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) is the single promotion primitive for every provider |
 
 ## `create-pr`
 

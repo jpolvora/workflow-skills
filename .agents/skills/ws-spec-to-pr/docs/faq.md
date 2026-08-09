@@ -107,9 +107,9 @@ flowchart TD
 ### Step 0: Spec Creation
 *   **Executor**: Orchestrator (dispatches provider skill or `ws-write-spec`).
 *   **Role**: Resolves the input description or ticket ID into a canonical spec:
-    *   **GitHub ID**: Dispatches [`ws-github-provider`](../../ws-github-provider/SKILL.md) to fetch issue and write `step-00-{slug}.spec.md`.
-    *   **Azure DevOps ID**: Dispatches [`ws-azure-devops-provider`](../../ws-azure-devops-provider/SKILL.md) to fetch work item and write `step-00-{slug}.spec.md`.
-    *   **Local Spec**: Normalizes spec format using [`ws-local-spec-provider`](../../ws-local-spec-provider/SKILL.md).
+    *   **GitHub ID**: Dispatches [`ws-github-provider`](../../ws-github-provider/SKILL.md) to fetch the issue into `{specsDir}/{slug}.spec.md`, then register `step-00-{slug}.spec.md`.
+    *   **Azure DevOps ID**: Dispatches [`ws-azure-devops-provider`](../../ws-azure-devops-provider/SKILL.md) to fetch the work item into `{specsDir}/{slug}.spec.md`, then register `step-00-{slug}.spec.md`.
+    *   **Local Spec**: Normalizes into `{specsDir}`, then registers `step-00-{slug}.spec.md` using [`ws-local-spec-provider`](../../ws-local-spec-provider/SKILL.md).
     *   **Free-text**: Invokes `ws-write-spec` → `{specsDir}/{slug}.spec.md`, then registers into `{us-dir}/step-00-` before planning.
 
 ### Step 1: Planning and Brainstorm

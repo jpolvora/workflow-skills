@@ -743,9 +743,13 @@ child.on('close', async (code) => {
   if (!fs.existsSync(path.join(testSkillsDir, 'ws-check-harness', 'SKILL.md'))) {
     fail('ws-check-harness/SKILL.md missing after install/update');
   }
-  const packagedAgents = path.join(__dirname, '.agents', 'AGENTS.md');
-  if (fs.existsSync(packagedAgents)) {
-    fail('Installer must not copy .agents/AGENTS.md into consumer projects');
+  const consumerAgentsDir = path.join(__dirname, '.agents');
+  const strayDocs = fs
+    .readdirSync(consumerAgentsDir, { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.md'))
+    .map((e) => e.name);
+  if (strayDocs.length) {
+    fail(`Installer must only write under .agents/skills/; found stray docs: ${strayDocs.join(', ')}`);
   }
   const sharedAgents = path.join(testSkillsDir, 'ws-shared', 'AGENTS.md');
   if (!fs.existsSync(sharedAgents)) {
@@ -761,7 +765,7 @@ child.on('close', async (code) => {
   if (!/ws-check-harness/i.test(sharedAgentsBody) || !/ws-check-workflows/i.test(sharedAgentsBody)) {
     fail('Consumer ws-shared/AGENTS.md must route ws-check-harness and ws-check-workflows');
   }
-  ok('ws-check-harness + ws-shared/AGENTS.md hub shipped to consumer (no .agents/AGENTS.md)');
+  ok('ws-check-harness + ws-shared/AGENTS.md hub shipped to consumer (no stray docs above .agents/skills/)');
   for (const name of ['ws-github-provider', 'ws-azure-devops-provider', 'ws-local-spec-provider']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
@@ -804,6 +808,153 @@ child.on('close', async (code) => {
       fail(`Consumer CJS shim forward smoke failed:\n${cjsOut}`);
     }
     ok('Consumer shim forward smoke passed');
+  }
+  // Secrets hook must remain runtime-resolved for global-only installs and
+  // preserve a foreign hook exactly once across idempotent reinstalls.
+  {
+    const scratch = path.join(__dirname, '.tmp-secrets-hook');
+    const hooksDir = path.join(scratch, '.git', 'hooks');
+    const hook = path.join(hooksDir, 'pre-commit');
+    const installHook = path.join(
+      testSkillsDir,
+      'ws-secrets-leak-review',
+      'scripts',
+      'install-hook.sh'
+    );
+    fs.rmSync(scratch, { recursive: true, force: true });
+    fs.mkdirSync(scratch, { recursive: true });
+    const init = cp.spawnSync('git', ['init', '-q'], { encoding: 'utf8', cwd: scratch });
+    if (init.status !== 0) fail(`Secrets hook scratch git init failed:\n${init.stderr}`);
+
+    fs.writeFileSync(hook, '#!/usr/bin/env bash\necho foreign-hook\n', { mode: 0o755 });
+    const install = cp.spawnSync('bash', [installHook], { encoding: 'utf8', cwd: scratch });
+    if (install.status !== 0) {
+      fail(`Secrets hook install failed: status=${install.status}\n${install.stderr || install.stdout}`);
+    }
+    if (!/ws-secrets-leak-review-hook/.test(fs.readFileSync(hook, 'utf8'))) {
+      fail('Secrets pre-commit hook must be a runtime-resolving generated shim');
+    }
+    const backups = fs
+      .readdirSync(hooksDir)
+      .filter((name) => name.startsWith('pre-commit.bak.'));
+    if (backups.length !== 1 || !/foreign-hook/.test(fs.readFileSync(path.join(hooksDir, backups[0]), 'utf8'))) {
+      fail('Secrets hook installer must back up a foreign hook exactly once');
+    }
+
+    // Construct at runtime so this test source does not itself match the scanner.
+    const syntheticAwsKey = ['AKIA', '3JQ7BZ2LMWX9QTRV'].join('');
+    fs.writeFileSync(path.join(scratch, 'leak.txt'), `aws_access_key_id = ${syntheticAwsKey}\n`);
+    cp.spawnSync('git', ['add', 'leak.txt'], { encoding: 'utf8', cwd: scratch });
+    const hookRun = cp.spawnSync('bash', [hook], {
+      encoding: 'utf8',
+      cwd: scratch,
+      env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: testSkillsDir }
+    });
+    const hookOutput = `${hookRun.stdout || ''}${hookRun.stderr || ''}`;
+    if (hookRun.status !== 1 || !/COMMIT BLOCKED/.test(hookOutput) || !/AWS Access Key/.test(hookOutput)) {
+      fail(
+        `Global-only hook must invoke the scanner and block a synthetic HIGH finding:\n${hookOutput}`
+      );
+    }
+
+    const reinstall = cp.spawnSync('bash', [installHook], { encoding: 'utf8', cwd: scratch });
+    if (reinstall.status !== 0) fail(`Secrets hook reinstall failed:\n${reinstall.stderr}`);
+    const backupsAfter = fs
+      .readdirSync(hooksDir)
+      .filter((name) => name.startsWith('pre-commit.bak.'));
+    if (backupsAfter.length !== 1) {
+      fail('Reinstalling the generated secrets hook must not create another backup');
+    }
+    fs.rmSync(scratch, { recursive: true, force: true });
+
+    // Exercise foreign-symlink preservation where the host permits symlink creation.
+    const symlinkScratch = path.join(__dirname, '.tmp-secrets-hook-symlink');
+    const symlinkHooksDir = path.join(symlinkScratch, '.git', 'hooks');
+    const symlinkHook = path.join(symlinkHooksDir, 'pre-commit');
+    fs.rmSync(symlinkScratch, { recursive: true, force: true });
+    fs.mkdirSync(symlinkScratch, { recursive: true });
+    cp.spawnSync('git', ['init', '-q'], { encoding: 'utf8', cwd: symlinkScratch });
+    let symlinkCreated = false;
+    try {
+      fs.symlinkSync('missing-foreign-hook', symlinkHook, 'file');
+      symlinkCreated = fs.lstatSync(symlinkHook).isSymbolicLink();
+    } catch {
+      // Windows without Developer Mode cannot create symlinks; regular-hook coverage above applies.
+    }
+    if (symlinkCreated) {
+      const installOverSymlink = cp.spawnSync('bash', [installHook], {
+        encoding: 'utf8',
+        cwd: symlinkScratch
+      });
+      if (installOverSymlink.status !== 0) {
+        fail(`Secrets hook symlink replacement failed:\n${installOverSymlink.stderr}`);
+      }
+      const symlinkBackups = fs
+        .readdirSync(symlinkHooksDir)
+        .filter((name) => name.startsWith('pre-commit.bak.'));
+      if (
+        symlinkBackups.length !== 1 ||
+        !fs.lstatSync(path.join(symlinkHooksDir, symlinkBackups[0])).isSymbolicLink()
+      ) {
+        fail('Secrets hook installer must preserve a foreign symlink hook as a symlink backup');
+      }
+    }
+    fs.rmSync(symlinkScratch, { recursive: true, force: true });
+    ok('Secrets hook preserves foreign hooks and resolves global installs at runtime');
+  }
+  // Spec-before-plan contract: register writes {specsDir} spec of record, then {plansDir} step-00
+  {
+    const py = process.platform === 'win32' ? 'python' : 'python3';
+    const scratch = path.join(__dirname, '.tmp-specs-first');
+    fs.rmSync(scratch, { recursive: true, force: true });
+    fs.mkdirSync(path.join(scratch, '.agents', 'skills', 'ws-shared'), { recursive: true });
+    fs.mkdirSync(path.join(scratch, 'inbox'), { recursive: true });
+    fs.writeFileSync(
+      path.join(scratch, '.agents', 'skills', 'ws-shared', 'config.json'),
+      JSON.stringify({ plans: { dir: '.agents/plans', specsDir: '.agents/specs' } }, null, 2)
+    );
+    fs.writeFileSync(
+      path.join(scratch, 'inbox', 'us-7.spec.md'),
+      '# Specification — Demo\n\n## Description\n\nDemo.\n'
+    );
+    const register = path.join(
+      testSkillsDir,
+      'ws-local-spec-provider',
+      'scripts',
+      'register_local_spec.py'
+    );
+    const run = cp.spawnSync(
+      py,
+      [register, '--input', path.join('inbox', 'us-7.spec.md'), '--source', 'github'],
+      { encoding: 'utf8', cwd: scratch }
+    );
+    const specOfRecord = path.join(scratch, '.agents', 'specs', 'us-7.spec.md');
+    const workflowCopy = path.join(
+      scratch,
+      '.agents',
+      'plans',
+      'us-7',
+      'step-00-us-7.spec.md'
+    );
+    if (run.status !== 0) {
+      fail(`register_local_spec.py failed: status=${run.status}\n${run.stderr || run.stdout}`);
+    }
+    if (!fs.existsSync(specOfRecord)) {
+      fail('register must write the spec of record under {specsDir} first');
+    }
+    if (!fs.existsSync(workflowCopy)) {
+      fail('register must write the workflow copy {us-dir}/step-00-*.spec.md');
+    }
+    for (const [label, target] of [
+      ['spec of record', specOfRecord],
+      ['workflow copy', workflowCopy]
+    ]) {
+      if (!/^source: github$/m.test(fs.readFileSync(target, 'utf8'))) {
+        fail(`--source origin must be preserved in the ${label} (expected source: github)`);
+      }
+    }
+    fs.rmSync(scratch, { recursive: true, force: true });
+    ok('Spec-before-plan contract: {specsDir} spec of record then {plansDir} step-00');
   }
   ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
   // --- Phase 3: packed file smoke (local only) ---

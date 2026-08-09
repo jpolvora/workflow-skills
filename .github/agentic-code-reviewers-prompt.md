@@ -4,7 +4,7 @@ Focus review on this repository’s real stack: Cursor/agent skill markdown, Nod
 
 ## 1. Agent skills and harness integrity
 
-* **Skill structure:** `SKILL.md` frontmatter must keep a unique `name:`. Paths referenced from hubs (`AGENTS.md`, `.agents/AGENTS.md`) must match real folders under `.agents/skills/`.
+* **Skill structure:** `SKILL.md` frontmatter must keep a unique `name:`. Paths referenced from hubs (root `AGENTS.md`, `.agents/skills/ws-shared/AGENTS.md`) must match real folders under `.agents/skills/`.
 * **Progressive disclosure:** Do not paste entire skill bodies into hubs or sibling skills. Prefer links to the canonical skill.
 * **Portability:** Skills under `.agents/skills/` must stay project-agnostic. Flag hardcoded org/repo names, absolute machine paths, or consumer-specific build/test commands inside skill bodies. Parameterize via `config.json` / `stack.md` / `tools.md`.
 * **Language:** Skill content, gates, banners, and pipeline output must stay **en-us**. Flag Portuguese (or other locales) in skill files.
@@ -14,10 +14,10 @@ Focus review on this repository’s real stack: Cursor/agent skill markdown, Nod
 * **Root seeds:** Installer create-if-missing for `.cursorrules` / `CHANGELOG.md` must never overwrite existing consumer files.
 * **Skill folder naming:** Folder id must equal frontmatter `name:`. Pipeline folders use `ws-*` (e.g. `ws-write-spec`). **Forbidden:** numeric `NN-*` prefixes (`00-write-spec`, `01-write-plan`, …). Flag any new or revived `NN-skillname` folder, path, or install id.
 * **Invocation names:** Allowed forms are the folder id and optional bare short id — e.g. `ws-write-spec` and `write-spec`, or `check-harness` and `check-harness`. `invocation_names` / hub triggers may list `ws-skillname` and `skillname` only. Do **not** accept retired `NN-*` aliases as invocation or path ids.
-* **Skill inventory drift:** When skills are added, removed, or renamed, require an updated skill list in root `AGENTS.md`, `.agents/AGENTS.md` (Workflows vs Extra scope), and site catalog (`docs/index.html` via `node bin/build-site.js` when applicable). Disk folders, hub tables, and package skill lists must stay aligned.
+* **Skill inventory drift:** When skills are added, removed, or renamed, require an updated skill list in root `AGENTS.md`, `ws-shared/AGENTS.md` (consumer routes; Workflows vs Extra scope), `bin/skill-dependencies.json`, and site catalog (`docs/index.html` via `node bin/build-site.js` when applicable). Disk folders, hub tables, and package skill lists must stay aligned.
 * **Dependency graph:** If skills are added/removed/renamed or orchestrator dispatch changes, `bin/skill-dependencies.json` must be updated. Every dispatched skill id (pipeline `ws-*`, providers, fix-pr loop) must appear in the orchestrator dependency closure (direct or transitive). Missing graph edges are critical.
 * **Harness gates (must pass):** Package / harness-affecting PRs must leave **`check-harness`** and **`check-workflows`** with **0 critical** findings. Flag PRs that change skills, hubs, dispatch, or installer inputs without evidence these audits were run (or without noting the obligation).
-* **check-harness awareness:** Changes that add/rename/remove skills or routing tables should note the need to update root `AGENTS.md`, `.agents/AGENTS.md`, and regenerate `docs/index.html` via `node bin/build-site.js` when applicable.
+* **check-harness awareness:** Changes that add/rename/remove skills or routing tables should note the need to update root `AGENTS.md`, `ws-shared/AGENTS.md` (+ `ws-shared/autoload.md` when the Always-applied set changes), and regenerate `docs/index.html` via `node bin/build-site.js` when applicable.
 
 ## 2. Installer / CLI (`bin/`, `npx github:…`)
 

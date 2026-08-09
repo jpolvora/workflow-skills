@@ -6,10 +6,10 @@ us: check-harness-upstream-sot
 title: "ws-check-harness: SoT-aware upstream vs consumer skills scan root"
 specSource: local
 specPath: .agents/plans/check-harness-upstream-sot/step-00-check-harness-upstream-sot.spec.md
-status: active
+status: completed
 startedAt: "2026-08-08T02:06:02Z"
-endedAt: null
-currentStep: 8
+endedAt: "2026-08-08T22:34:00Z"
+currentStep: 9
 completedSteps:
   - 0
   - 1
@@ -19,6 +19,8 @@ completedSteps:
   - 5
   - 6
   - 7
+  - 8
+  - 9
 skippedSteps: []
 autoMode: true
 dryRun: false
@@ -32,7 +34,9 @@ execMode: parallel
 finalPipeline: standard
 complexityClass: standard
 recommendedPipeline: standard
-currentModel: Cursor Grok 4.5
+currentModel: Composer
+prUrl: "https://github.com/jpolvora/workflow-skills/pull/179"
+prNumber: 179
 branch: develop
 baseBranch: main
 baselineCommit: e2e9455750c00f9fbcc61ecc0167eafbd2ded038
@@ -65,6 +69,8 @@ stepStatus:
   5: completed
   6: completed
   7: completed
+  8: completed
+  9: completed
 stepDispatches:
   - { step: 0, dispatched: "2026-08-08T02:09:04Z" }
   - { step: 1, dispatched: "2026-08-08T02:12:37Z" }
@@ -122,6 +128,11 @@ telemetry:
 | Step 7 | Testing | Cursor Grok 4.5 | 180s | 0 |
 
 ## Gate history
+- model-change | step 8 | Cursor Grok 4.5 → Composer | 2026-08-08T22:34:00Z
+- resume | step 8 | user:resume_2 | 2026-08-08T22:34:00Z
+- ship-complete | step 8 | PR #179 merged | 2026-08-08T22:34:00Z
+- fix-pr-converged | step 9 | activeThreads=0 | 2026-08-08T22:34:00Z
+- phase-a-cleanup | step 9 | cleanup_workflow_git exit 0 | 2026-08-08T22:34:00Z
 - auto-gate | step 7 | Advance to Step 8 | 2026-08-08T02:31:08Z
 - auto-gate | step 6 | review-fix|round=1/3|clean | 2026-08-08T02:28:50Z
 - auto-gate | step 5 | Advance to Step 6 | 2026-08-08T02:24:24Z

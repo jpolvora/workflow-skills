@@ -1,10 +1,11 @@
 ---
 
 
+
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.0.120
+version: 0.3.0
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -73,7 +74,7 @@ Load the token map from project `{sharedDir}/config.json` when present. **Instal
 
 | Install mode | Detection (first match) | Primary hub | Skills scan root |
 |--------------|-------------------------|-------------|------------------|
-| **upstream** | Package markers (`bin/skill-dependencies.json` + `.agents/AGENTS.md`) **and** SoT evidence (≥1 `.agents/skills/ws-*/SKILL.md`) | Root `AGENTS.md` (+ dual-hub drift vs `.agents/AGENTS.md`) | `.agents/skills` |
+| **upstream** | Package markers (`bin/skill-dependencies.json` + `bin/cli.js`) **and** SoT evidence (≥1 `.agents/skills/ws-*/SKILL.md`) | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` |
 | **consumer** | Else (including markers present but SoT absent) | `{sharedDir}/AGENTS.md` | `{skillsRoot}` (+ `{globalSkillsRoot}` hybrid) |
 
 **Detection notes:**

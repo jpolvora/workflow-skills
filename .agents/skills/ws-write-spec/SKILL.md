@@ -1,8 +1,9 @@
 ---
 
+
 name: ws-write-spec
 description: Local spec authoring — drafts structured *.spec.md feature specifications under {specsDir} from free-text user requirements.
-version: 0.0.120
+version: 0.3.0
 disable-model-invocation: true
 invocation_names:
   - write-spec
@@ -60,7 +61,7 @@ Workflow (ws-spec-to-pr / lite Step 0 free-text): orchestrator runs this skill (
      --input "{specsDir}/{slug}.spec.md"
    ```
 
-   That script normalizes `source: local` and writes `{us-dir}/step-00-{slug}.spec.md`. Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
+   That script keeps the `{specsDir}` spec of record normalized (`source: local` by default) and then writes `{us-dir}/step-00-{slug}.spec.md`. Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
    - Done when: command succeeded, or this step was skipped.
 
 5. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: local`.

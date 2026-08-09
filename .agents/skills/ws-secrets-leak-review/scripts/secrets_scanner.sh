@@ -155,9 +155,21 @@ check_names 'secrets\.ya?ml$' 'Secrets YAML file' high
 check_names 'credentials\.json$|credentials\.toml$' 'Credentials file' high
 check_names 'id_rsa$|id_ecdsa$|id_ed25519$' 'SSH private key file' high
 
+# Literal whole-line compare: entries like *.pem are globs, not regexes, and Windows
+# checkouts leave a trailing CR that would defeat an anchored pattern match.
+gitignore_has() {
+  local entry="$1" line
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%$'\r'}"
+    line="${line#/}"
+    [ "$line" = "$entry" ] && return 0
+  done < .gitignore
+  return 1
+}
+
 if [ -f .gitignore ]; then
   for entry in '.env' '.env.*' '*.pem' '*.key' '*.pfx' 'secrets.yml' 'credentials.json' '.aws/'; do
-    if ! rg -q "^${entry}$|^/${entry}$" .gitignore 2>/dev/null; then
+    if ! gitignore_has "$entry"; then
       echo "$entry" >> "$IGNORE_FILE"
     fi
   done

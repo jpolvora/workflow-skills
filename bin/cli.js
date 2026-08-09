@@ -914,7 +914,7 @@ Notes:
   - Path tokens: config.json pathTokens.skillsRoot / sharedDir (defaults .agents/skills, .agents/skills/ws-shared). Agents expand {skillsRoot}/{sharedDir}/{plansDir} per ws-shared/tools.md before Read/Grep/Shell. Not relocatable.
   - Optional host pointer files are consumer-owned. Changelog defaults to rules.changelogFile under ws-shared/ (not repo root).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
-  - Consumer agent contract: skills/ws-shared/AGENTS.md (installed with the ws-shared hub; no .agents/AGENTS.md copy).
+  - Consumer agent contract: skills/ws-shared/AGENTS.md (installed with the ws-shared hub; no separate packaged index is copied).
   - After installing or updating, run the "ws-check-harness" skill to validate the harness.
   - Optional: run the "ws-configure-project" skill to interview/detect and fill ws-shared/config.json placeholders.
   - Install copies skip __pycache__ / *.pyc (not part of the skill surface).

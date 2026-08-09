@@ -10,10 +10,10 @@ Detect **Install mode** and **Skills scan root** before routing audits (summary 
 
 | Install mode | Detection (required evidence) | Primary hub | Skills scan root | Integrity gate |
 |--------------|------------------------------|-------------|------------------|----------------|
-| **upstream** | `bin/skill-dependencies.json` **and** `.agents/AGENTS.md` **and** at least one `.agents/skills/ws-*/SKILL.md` | Root `AGENTS.md` (+ dual-hub drift vs `.agents/AGENTS.md`) | `.agents/skills` | Required (Phase 3 item 7) |
+| **upstream** | `bin/skill-dependencies.json` **and** `bin/cli.js` **and** at least one `.agents/skills/ws-*/SKILL.md` | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` | Required (Phase 3 item 7) |
 | **consumer** | Upstream evidence incomplete (markers and/or SoT absent); typically `{sharedDir}/AGENTS.md` present | `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) | `{skillsRoot}` (+ optional `{globalSkillsRoot}` hybrid) | Skip / not required |
 
-**Hard rule:** Package markers (`bin/skill-dependencies.json` + `.agents/AGENTS.md`) **without** `.agents/skills` SoT ⇒ **Install mode: consumer** for skills inventory. Optional one-line informational note only (markers present, SoT absent) — not a problem-count item. Do **not** select `.agents/skills` as upstream skills scan root without SoT evidence.
+**Hard rule:** Package markers (`bin/skill-dependencies.json` + `bin/cli.js`) **without** `.agents/skills` SoT ⇒ **Install mode: consumer** for skills inventory. Optional one-line informational note only (markers present, SoT absent) — not a problem-count item. Do **not** select `.agents/skills` as upstream skills scan root without SoT evidence.
 
 **Consumer ignores stray `src/skills`:** When Install mode is consumer, do not scan a folder named `src/skills` for Phase 4 inventory even if it exists.
 
@@ -264,8 +264,8 @@ For each internal reference (post-expansion when applicable):
 | Bare relative link resolution | Link `docs/faq.md` inside a skill directory resolved from repo root (`docs/faq.md`) instead of containing folder (`.agents/skills/.../docs/faq.md`) → **warning**; resolution must use containing directory |
 | Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
 | Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
-| Step ↔ folder drift | Root / packaged `AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
-| Dual-hub path parity | Root `AGENTS.md` and packaged `.agents/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
+| Step ↔ folder drift | Root / `{sharedDir}/AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
+| Dual-hub path parity | Root `AGENTS.md` and `{sharedDir}/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
 | Consumer `config.json` | Missing while `config.json.example` exists → **warning** (seed/copy); placeholders after seed → **suggestion** (`ws-configure-project`), not a broken-link warning |
 | `autoload.md` Always-applied paths | Absolute path → **critical**; non-portable path form → **warning**; skill id missing under `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (install or remove row). Helper: `configure_autoload.py --check` |
@@ -296,7 +296,7 @@ ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement
 # Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ)
 # Install mode upstream:
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
-  AGENTS.md .agents/AGENTS.md .agents/skills/ bin/skill-dependencies.json \
+  AGENTS.md .agents/skills/ bin/skill-dependencies.json \
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md'
 # Install mode consumer (guard missing hubs / skills root):
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
@@ -363,8 +363,7 @@ Go through **all** tables that route skills or docs in the **primary hub** (§ H
 |-------|---------------|
 | `§ Skill loading (mandatory)` | auto-load and per-task skills |
 | Layer / Skill index / Promoted tables | skill ids and paths |
-| Packaged `.agents/AGENTS.md` Skill index (upstream only) | same — compare to root hub when both exist (dual-hub drift) |
-| Consumer `.agents/skills/ws-shared/AGENTS.md` | always extract when present (consumer primary hub) |
+| `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) Skill loading / Promoted / Task router tables | always extract when present (consumer primary hub); compare to root hub when both exist (dual-hub drift) |
 | `§ Task router` | skills and project docs per task |
 | Layer 3 / External deps / project docs | links to project docs (e.g., CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
 | Upstream `bin/skill-dependencies.json` (when present) | workflow package skill **folder** ids must exist under skills scan root: `.agents/skills/` (upstream) or `{skillsRoot}` / `.agents/skills/` (consumer) |

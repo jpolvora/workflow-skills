@@ -47,8 +47,14 @@ DEFAULT_ALWAYS_APPLIED: list[tuple[str, str]] = [
     ("ws-tdah", "Every prompt — action-first shape + judgment"),
 ]
 
+# Author-machine absolute paths (Windows drive, UNC, POSIX home/opt). Never emit these.
+# Do not treat URL schemes (https://) as Windows drives — require a non-letter before the drive letter.
 ABS_PATH_RE = re.compile(
-    r"(?:^[A-Za-z]:\\|/Users/|/home/|\\\\)",
+    r"(?:"
+    r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]"  # C:\… or C:/… (not https://)
+    r"|\\\\[^\\\s`\"']+"  # UNC \\server\share
+    r"|/(?:Users|home|opt)/"  # common author-machine POSIX roots
+    r")"
 )
 SKILL_ROW_RE = re.compile(
     r"^\|\s*`(?P<id>ws-[a-z0-9-]+)`\s*\|\s*(?P<path>[^|]+)\|\s*(?P<trigger>[^|]+)\|\s*$",
@@ -93,22 +99,45 @@ def emit_skill_path(
     return f"{{skillsRoot}}/{skill_id}/SKILL.md", True
 
 
+def default_always_applied_membership() -> list[dict]:
+    """Default Always-applied skill ids + triggers (membership seed)."""
+    return [{"skill": skill_id, "trigger": trigger} for skill_id, trigger in DEFAULT_ALWAYS_APPLIED]
+
+
+def membership_from_existing_rows(rows: list[dict]) -> list[dict]:
+    """Preserve consumer membership/triggers; drop empty/invalid rows."""
+    out: list[dict] = []
+    seen: set[str] = set()
+    for row in rows:
+        skill_id = (row.get("skill") or "").strip()
+        if not skill_id.startswith("ws-") or skill_id in seen:
+            continue
+        seen.add(skill_id)
+        trigger = (row.get("trigger") or "").strip() or "Every prompt"
+        out.append({"skill": skill_id, "trigger": trigger})
+    return out
+
+
 def build_always_applied_table(
     repo_root: Path,
     *,
     global_skills_root: Path | None = None,
+    membership: list[dict] | None = None,
 ) -> tuple[str, list[dict]]:
     rows: list[str] = [
         "| Skill | Path | Trigger |",
         "|-------|------|---------|",
     ]
     meta: list[dict] = []
-    for skill_id, trigger in DEFAULT_ALWAYS_APPLIED:
+    members = membership if membership is not None else default_always_applied_membership()
+    for member in members:
+        skill_id = member["skill"]
+        trigger = member["trigger"]
         path_form, missing = emit_skill_path(
             repo_root, skill_id, global_skills_root=global_skills_root
         )
         rows.append(f"| `{skill_id}` | `{path_form}` | {trigger} |")
-        meta.append({"skill": skill_id, "path": path_form, "missing": missing})
+        meta.append({"skill": skill_id, "path": path_form, "missing": missing, "trigger": trigger})
     return "\n".join(rows) + "\n", meta
 
 
@@ -124,15 +153,20 @@ def ensure_autoload_md(
         raise SystemExit(f"ERROR: missing {autoload_path} (install hub / copy template)")
 
     text = autoload_path.read_text(encoding="utf-8")
+    existing = parse_always_applied_rows(text)
+    preserved = membership_from_existing_rows(existing)
+    membership = preserved if preserved else default_always_applied_membership()
     table, meta = build_always_applied_table(
-        repo_root, global_skills_root=global_skills_root
+        repo_root,
+        global_skills_root=global_skills_root,
+        membership=membership,
     )
 
     # Replace Always-applied markdown table (first table after heading).
+    # Do not use DOTALL on row matches — otherwise `|.*|` can span past the table.
     pattern = re.compile(
-        r"(## Always-applied skills\n.*?\n)"
-        r"(\| Skill \| Path \| Trigger \|\n\|[-| ]+\|\n(?:\|.*\|\n)+)",
-        re.DOTALL,
+        r"(## Always-applied skills\r?\n(?:.*\r?\n)*?)"
+        r"(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n(?:\|[^\r\n]*\|\r?\n)+)",
     )
     match = pattern.search(text)
     if not match:
@@ -155,6 +189,7 @@ def ensure_autoload_md(
         "written": written,
         "changed": new_text != text,
         "skills": meta,
+        "preservedMembership": bool(preserved),
     }
 
 
@@ -192,12 +227,23 @@ def write_root_agents(
     dry_run: bool = False,
     force: bool = False,
 ) -> dict:
+    # Prefer Always-applied membership from autoload.md when present.
+    shared_autoload = repo_root / ".agents" / "skills" / "ws-shared" / "autoload.md"
+    membership = default_always_applied_membership()
+    if shared_autoload.is_file():
+        preserved = membership_from_existing_rows(
+            parse_always_applied_rows(shared_autoload.read_text(encoding="utf-8"))
+        )
+        if preserved:
+            membership = preserved
+
     table_lines = [
         "| Skill | Path |",
         "|-------|------|",
     ]
     meta: list[dict] = []
-    for skill_id, _trigger in DEFAULT_ALWAYS_APPLIED:
+    for member in membership:
+        skill_id = member["skill"]
         path_form, missing = emit_skill_path(
             repo_root, skill_id, global_skills_root=global_skills_root
         )
@@ -236,17 +282,21 @@ def write_root_agents(
 
 
 def contains_absolute_path(text: str) -> bool:
-    """Detect author-machine absolute paths in markdown (Windows drive or /Users|/home)."""
+    """Detect author-machine absolute paths in markdown (Windows, UNC, POSIX roots)."""
     for line in text.splitlines():
-        if re.search(r"[A-Za-z]:\\", line):
-            return True
-        if re.search(r"(?:^|[\s`\"'(])/Users/", line):
-            return True
-        if re.search(r"(?:^|[\s`\"'(])/home/", line):
-            return True
-        if ABS_PATH_RE.search(line) and ("SKILL.md" in line or "agents" in line.lower()):
+        if ABS_PATH_RE.search(line):
             return True
     return False
+
+
+def path_targets_skill(path_form: str, skill_id: str) -> bool:
+    """True when the portable path form names the same skill id as the row."""
+    normalized = path_form.strip().replace("\\", "/").rstrip("/")
+    # Accept …/ws-<id>/SKILL.md or …/ws-<id> (folder form).
+    if normalized.endswith("/SKILL.md"):
+        normalized = normalized[: -len("/SKILL.md")]
+    leaf = normalized.rsplit("/", 1)[-1]
+    return leaf == skill_id
 
 
 def parse_always_applied_rows(text: str) -> list[dict]:
@@ -265,7 +315,8 @@ def parse_always_applied_rows(text: str) -> list[dict]:
             continue
         skill_id = m.group("id")
         path_raw = m.group("path").strip().strip("`").strip()
-        rows.append({"skill": skill_id, "path": path_raw})
+        trigger = m.group("trigger").strip()
+        rows.append({"skill": skill_id, "path": path_raw, "trigger": trigger})
     return rows
 
 
@@ -277,18 +328,6 @@ def path_form_ok(path_form: str) -> bool:
     if path_form.startswith(".agents/skills/"):
         return True
     return False
-
-
-def skill_resolves(
-    repo_root: Path,
-    skill_id: str,
-    *,
-    global_skills_root: Path | None = None,
-) -> bool:
-    path_form, missing = emit_skill_path(
-        repo_root, skill_id, global_skills_root=global_skills_root
-    )
-    return not missing or path_form.startswith("{")
 
 
 def check_autoload(
@@ -328,6 +367,21 @@ def check_autoload(
                     "file": ".agents/skills/ws-shared/autoload.md",
                     "message": f"Always-applied path for `{row['skill']}` is not portable: {row['path']}",
                     "fix": "Use `.agents/skills/...` or `{skillsRoot}` / `{globalSkillsRoot}` tokens",
+                }
+            )
+        elif not path_targets_skill(row["path"], row["skill"]):
+            findings.append(
+                {
+                    "severity": "warning",
+                    "file": ".agents/skills/ws-shared/autoload.md",
+                    "message": (
+                        f"Always-applied path for `{row['skill']}` points at a different skill: "
+                        f"{row['path']}"
+                    ),
+                    "fix": (
+                        f"Point the path at `{row['skill']}/SKILL.md` "
+                        "(or run configure_autoload.py --write-autoload)"
+                    ),
                 }
             )
         local = repo_root / ".agents" / "skills" / row["skill"] / "SKILL.md"

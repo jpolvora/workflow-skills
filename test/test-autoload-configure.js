@@ -147,6 +147,14 @@ function parseJsonOut(result) {
       !/\/Users\//.test(autoText) && !/\/Users\//.test(rootText),
       'no /Users absolute paths in emitted markdown',
     );
+    assert(
+      !/[A-Za-z]:\//.test(autoText) && !/[A-Za-z]:\//.test(rootText),
+      'no Windows forward-slash absolute paths in emitted markdown',
+    );
+    assert(
+      !/\/opt\//.test(autoText) && !/\/opt\//.test(rootText),
+      'no /opt absolute paths in emitted markdown',
+    );
   }
 }
 
@@ -247,6 +255,18 @@ function parseJsonOut(result) {
     /autoload\.md/.test(skill) && /Missing root `AGENTS\.md` is OK/i.test(skill),
     'ws-check-harness SKILL.md: missing root OK + autoload override',
   );
+  assert(
+    /Install mode.*upstream/i.test(skill) &&
+      /Skills scan root/i.test(skill) &&
+      /\.agents\/skills/.test(skill) &&
+      !/Skills scan root.*src\/skills/i.test(skill),
+    'ws-check-harness SKILL.md: upstream Skills scan root is .agents/skills (not src/skills)',
+  );
+  assert(
+    /Install mode.*consumer/i.test(phases) &&
+      /Ignore stray `src\/skills`/i.test(phases),
+    'PHASES.md: consumer mode ignores stray src/skills',
+  );
   const cfg = fs.readFileSync(
     path.join(REPO_ROOT, '.agents/skills/ws-configure-project/SKILL.md'),
     'utf8',
@@ -254,6 +274,26 @@ function parseJsonOut(result) {
   assert(
     /--section autoload/.test(cfg) && /configure_autoload\.py/.test(cfg),
     'ws-configure-project documents --section autoload + helper',
+  );
+  const harnessEvals = JSON.parse(
+    fs.readFileSync(
+      path.join(REPO_ROOT, '.agents/skills/ws-check-harness/evals/evals.json'),
+      'utf8',
+    ),
+  );
+  assert(
+    (harnessEvals.evals || []).some(
+      (e) =>
+        /Install mode: upstream/i.test(e.expected_output || '') &&
+        /\.agents\/skills/.test(e.expected_output || ''),
+    ),
+    'ws-check-harness evals cover upstream Install mode + .agents/skills scan root',
+  );
+  assert(
+    (harnessEvals.evals || []).some((e) =>
+      /Install mode: consumer/i.test(e.expected_output || ''),
+    ),
+    'ws-check-harness evals cover consumer Install mode',
   );
 }
 
@@ -285,6 +325,105 @@ function parseJsonOut(result) {
     assert(
       fs.existsSync(path.join(root, 'AGENTS.md.bak')),
       'forced overwrite creates AGENTS.md.bak',
+    );
+  }
+}
+
+{
+  // Preserve consumer-customized Always-applied membership + triggers; only refresh paths.
+  const root = mkTmp('ws-autoload-preserve-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  const autoPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+  let autoText = fs.readFileSync(autoPath, 'utf8');
+  autoText = autoText.replace(
+    /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)(?:\|.*\|\r?\n)+/,
+    '$1| `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Custom trigger keep me |\n| `ws-changelog` | `{skillsRoot}/ws-changelog/SKILL.md` | Custom changelog trigger |\n',
+  );
+  fs.writeFileSync(autoPath, autoText, 'utf8');
+  // Ensure only those two skills exist so path emission stays valid.
+  for (const id of ['ws-tdah', 'ws-changelog']) {
+    const d = path.join(root, '.agents', 'skills', id);
+    fs.mkdirSync(d, { recursive: true });
+    fs.writeFileSync(path.join(d, 'SKILL.md'), `# ${id}\n`, 'utf8');
+  }
+  const result = runPy(['--repo-root', root, '--write-autoload', '--json']);
+  const data = parseJsonOut(result);
+  if (data) {
+    const after = fs.readFileSync(autoPath, 'utf8');
+    assert(
+      after.includes('Custom trigger keep me') && after.includes('Custom changelog trigger'),
+      'write-autoload preserves custom triggers',
+    );
+    assert(
+      after.includes('ws-tdah') && after.includes('ws-changelog'),
+      'write-autoload preserves custom membership',
+    );
+    const tableOnly = after.slice(
+      after.indexOf('| Skill | Path | Trigger |'),
+      after.search(/\r?\n## /),
+    );
+    assert(
+      !/`ws-senior-developer`/.test(tableOnly),
+      'write-autoload does not reintroduce default skills when customized',
+    );
+    assert(
+      /ws-senior-developer/.test(after),
+      'write-autoload keeps non-table mentions of default skills intact',
+    );
+    assert(
+      after.includes('.agents/skills/ws-tdah/SKILL.md'),
+      'write-autoload refreshes portable local paths for preserved rows',
+    );
+    assert(data.autoload?.preservedMembership === true, 'reports preservedMembership');
+  }
+}
+
+{
+  // Swapped skill/path must warn even when both skills exist and path is portable.
+  const root = mkTmp('ws-autoload-mismatch-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  const autoPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+  let autoText = fs.readFileSync(autoPath, 'utf8');
+  autoText = autoText.replace(
+    /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)(?:\|.*\|\r?\n)+/,
+    '$1| `ws-tdah` | `.agents/skills/ws-changelog/SKILL.md` | Every prompt |\n',
+  );
+  fs.writeFileSync(autoPath, autoText, 'utf8');
+  const result = runPy(['--repo-root', root, '--check', '--json']);
+  const data = parseJsonOut(result);
+  if (data) {
+    const warnings = (data.check?.findings || []).filter((f) => f.severity === 'warning');
+    assert(
+      warnings.some((w) => /different skill/i.test(w.message)),
+      'check warns when Always-applied path targets a different skill id',
+    );
+  }
+}
+
+{
+  // Absolute-path detection covers Windows forward-slash and POSIX /opt roots.
+  const root = mkTmp('ws-autoload-abspath-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  const autoPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+  let autoText = fs.readFileSync(autoPath, 'utf8');
+  autoText = autoText.replace(
+    /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)(?:\|.*\|\r?\n)+/,
+    [
+      '$1| `ws-tdah` | `C:/Users/me/.agents/skills/ws-tdah/SKILL.md` | Every prompt |',
+      '| `ws-changelog` | `/opt/agents/skills/ws-changelog/SKILL.md` | Every prompt |',
+      '',
+    ].join('\n'),
+  );
+  fs.writeFileSync(autoPath, autoText, 'utf8');
+  const result = runPy(['--repo-root', root, '--check', '--json']);
+  const data = parseJsonOut(result);
+  if (data) {
+    assert(result.status !== 0, 'check exits non-zero on absolute paths');
+    assert(data.check?.ok === false, 'check.ok false when absolute paths present');
+    const criticals = (data.check?.findings || []).filter((f) => f.severity === 'critical');
+    assert(
+      criticals.some((c) => /Absolute filesystem path/i.test(c.message)),
+      'check reports critical for C:/ and /opt absolute paths',
     );
   }
 }

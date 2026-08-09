@@ -47,8 +47,8 @@ Use these terms exactly. Do not treat a **plan** as a **spec**.
 | **Plan / workflow run** | Artifacts under `{us-dir}` = `{plansDir}/{slug}/` (`plans.dir`, default `.agents/plans`) |
 | **`step-00-{slug}.spec.md`** | Workflow copy of the spec inside `{us-dir}` after register/provider fetch — **plan artifact**, not a Spec-board row |
 | **`index.PRD`** | Project feature index at `{specsDir}/index.PRD` (phases, next-specs, inbox) — owned by `ws-spec-index` |
-| **Register** | Copy/normalize a `{specsDir}` (or other) `*.spec.md` into `{us-dir}/step-00-*.spec.md` via `ws-local-spec-provider` |
-| **Mirror** | Refresh `{specsDir}/{slug}.spec.md` from a non-specsDir input during register (`--mirror`) |
+| **Register** | Two-phase promotion via `ws-local-spec-provider`: write/normalize the spec of record `{specsDir}/{slug}.spec.md`, then the workflow copy `{us-dir}/step-00-*.spec.md` |
+| **Spec of record** | The `{specsDir}` copy every entry path produces first — providers never write `step-00` without it |
 | **Classify** | Recommend `lite` vs `standard` orch (`ws-classify-complexity`) after a workflow spec exists |
 | **Drift sync** | Update existing `*.spec.md` bodies to match code (`ws-sync-spec`) — not the same as `ws-spec-index sync` (index status) |
 | **Batch** | Sequential multi-spec delivery (`ws-multi-spec`) |
@@ -56,8 +56,9 @@ Use these terms exactly. Do not treat a **plan** as a **spec**.
 ### Path rules (mandatory)
 
 1. Standalone `/write-spec` / brainstorm → write **only** `{specsDir}/{slug}.spec.md`. Never mkdir `{plansDir}/{slug}/` for that ask.
-2. Workflow planning and later steps read **`{us-dir}/step-00-{slug}.spec.md`** (after register or tracker fetch).
-3. Spec board (`ws-spec-list --specs`) lists `{specsDir}` only. Plan board lists `{plansDir}` state — never merge the two inventories.
+2. Every provider (`local`, `github`, `azure-devops`) writes the spec of record under `{specsDir}` **before** any `{plansDir}` artifact.
+3. Workflow planning and later steps read **`{us-dir}/step-00-{slug}.spec.md`** (after register or tracker fetch).
+4. Spec board (`ws-spec-list --specs`) lists `{specsDir}` only. Plan board lists `{plansDir}` state — never merge the two inventories.
 
 ---
 
@@ -69,7 +70,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 |-----------------------------|------|-----------------|
 | Draft a new local spec from free text | [`ws-write-spec`](../ws-write-spec/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch |
 | Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../ws-spec-format/FORMAT.md) |
-| Register local `*.spec.md` → workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) | Not for free-text draft (use write-spec first); PR ops delegate to `providers.scm` |
+| Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) | Not for free-text draft (use write-spec first); PR ops delegate to `providers.scm` |
 | List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |
 | Init / sync / promote `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence |
 | Spec text drifted from implemented code after prompts | [`ws-sync-spec`](../ws-sync-spec/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
@@ -84,7 +85,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 |--------------------|--------|
 | write a spec, draft spec, brainstorm feature spec | `ws-write-spec` |
 | format spec, validate AC, spec-format, missing acceptance criteria | `ws-spec-format` |
-| register local spec, fetch-to-spec (file), normalize `source: local` | `ws-local-spec-provider` |
+| register spec, fetch-to-spec (file), promote spec into a workflow run | `ws-local-spec-provider` |
 | list specs, list plans, dual board, unlinked specs, manage workflows | `ws-spec-list` |
 | index.PRD, promote inbox, sync index status, init PRD | `ws-spec-index` |
 | sync spec to code, spec drift, update AC after code change | `ws-sync-spec` |
@@ -103,6 +104,12 @@ ideas / free text
     → ws-spec-format         → validate / reshape same file
     → ws-spec-index promote  → optional index.PRD row + stub
 
+tracker issue / work item
+    → ws-github-provider / ws-azure-devops-provider fetch-to-spec
+                             → {specsDir}/us-{id}.spec.md   (spec of record, phase 1)
+                             → ws-local-spec-provider register --source {origin}
+                                                       → {us-dir}/step-00-us-{id}.spec.md
+
 {specsDir}/*.spec.md
     → ws-spec-list           → browse / start orch / remove
     → ws-local-spec-provider → {us-dir}/step-00-{slug}.spec.md
@@ -119,12 +126,12 @@ after ship / delivery evidence
 
 **Complement rules**
 
-1. `ws-write-spec` owns **creation** under `{specsDir}`; `ws-local-spec-provider` owns **promotion** into `{us-dir}`.
+1. `ws-write-spec` owns **creation** under `{specsDir}`; `ws-local-spec-provider` owns **promotion** into `{us-dir}` — for local *and* tracker specs.
 2. `ws-spec-format` is the only format SoT; write-spec / providers / sync-spec **follow** it — they do not redefine frontmatter.
 3. `ws-spec-list` is the UX board; `ws-spec-index` is the PRD index; do not use one for the other's job.
 4. `ws-sync-spec` (body ↔ code) ≠ `ws-spec-index sync` (index ↔ delivery evidence).
 5. `ws-multi-spec` dispatches `ws-spec-to-pr` / `ws-spec-to-pr-lite` workers; it does not replace `ws-spec-list` for interactive pick-one.
-6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` `fetch-to-spec` (write `step-00` directly); local files enter via local-spec-provider.
+6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` `fetch-to-spec`: converter → `{specsDir}` spec of record, then local-spec-provider register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly.
 
 ---
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.0.120",
+  "packageVersion": "0.3.0",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -126,13 +126,16 @@
       "ws-senior-developer"
     ],
     "ws-write-spec": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-local-spec-provider"
     ],
     "ws-github-provider": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-local-spec-provider"
     ],
     "ws-azure-devops-provider": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-local-spec-provider"
     ],
     "ws-local-spec-provider": [
       "ws-spec-format"

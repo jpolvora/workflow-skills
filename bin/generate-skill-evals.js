@@ -18,10 +18,11 @@ const EVALS = {
         id: 1,
         prompt: 'Draft a spec for adding OAuth login with Google and GitHub. Feature slug: oauth-login.',
         expected_output:
-          'A canonical step-00-oauth-login.spec.md under {plansDir}/oauth-login/ with acceptance criteria per spec-format.',
+          'A local oauth-login.spec.md under {specsDir}/ with acceptance criteria per spec-format. No {plansDir} folder or step-00 file created.',
         assertions: [
           'Agent loads ws-write-spec or write-spec before drafting',
-          'Output path uses {plansDir} or plans.dir token, not a hardcoded consumer path',
+          'Output path uses {specsDir} or plans.specsDir token, not {plansDir}',
+          'Agent does not create {plansDir}/{slug}/ or step-00-*.spec.md unless --register',
           'Spec includes testable acceptance criteria',
           'Spec follows spec-format structure (not a freeform essay)',
         ],
@@ -30,11 +31,11 @@ const EVALS = {
         id: 2,
         prompt: 'hey can you write a spec for dark mode toggle in settings',
         expected_output:
-          'Casual prompt still yields a structured spec with slug, scope, and acceptance criteria.',
+          'Casual prompt still yields a structured spec under {specsDir} with slug, scope, and acceptance criteria.',
         assertions: [
           'Agent loads the write-spec skill despite informal phrasing',
           'Spec sets source: local and id: null per spec-format',
-          'Slug is derived and used in the artifact filename',
+          'Slug is derived and used in the artifact filename under {specsDir}',
         ],
       },
       {
@@ -43,8 +44,9 @@ const EVALS = {
         expected_output:
           'Agent pushes back or adds acceptance criteria per spec-format rather than shipping a vague paragraph-only spec.',
         assertions: [
-          'Response does not treat paragraph-only text as a complete canonical spec',
+          'Response does not treat paragraph-only text as a complete local spec',
           'Agent references spec-format or acceptance criteria requirements',
+          'Uses path tokens ({skillsRoot}, {sharedDir}, {specsDir}) instead of hardcoded consumer paths',
         ],
       },
     ],
@@ -85,6 +87,7 @@ const EVALS = {
           'Agent loads ws-interview',
           'Does not jump straight to implementation without plan review',
           'Surfaces ambiguities or missing decisions from the plan',
+          'Runs project-context sweep (specs, MEMORY, codebase, architecture, rules) before asking the user',
         ],
       },
       {
@@ -95,6 +98,32 @@ const EVALS = {
         assertions: [
           'Agent does not silently skip interview obligations when orchestrated at Step 2',
           'If proceeding, documents assumption or uses user-gate when available',
+          'Uses path tokens ({skillsRoot}, {sharedDir}, {plansDir}) instead of hardcoded consumer paths',
+        ],
+      },
+      {
+        id: 3,
+        prompt:
+          'autoMode interview: a blocking gap remains after searching the repo; no project source answers it.',
+        expected_output:
+          'Agent applies model-inferred default with rationale; does not block on user-gate for that gap.',
+        assertions: [
+          'Agent attempts project-context sweep before falling back',
+          'In autoMode, marks resolutionSource model-inferred (or equivalent) instead of needs_user',
+          'Registry records evidence path(s) when project-sourced, or model-inferred rationale when not',
+        ],
+      },
+      {
+        id: 4,
+        prompt:
+          'softSkipEligible interview: Audit found only non-blocking gaps; no blocking_open. Apply defaults and confirm shared understanding.',
+        expected_output:
+          'Refined plan with shared_understanding confirmed; non-blocking gaps resolved after project-context sweep (project-sourced when found, else assumed-default).',
+        assertions: [
+          'Agent still runs project-context sweep for registered non-blocking gaps before defaults',
+          'Does not escalate non-blocking gaps to user-gate',
+          'Does not skip Resolve solely because softSkipEligible and blocking_open == 0',
+          'Marks resolutionSource project or assumed-default for each closed non-blocking gap',
         ],
       },
     ],
@@ -332,7 +361,7 @@ const EVALS = {
       },
     ],
   },
-  'spec-to-pr': {
+  'ws-spec-to-pr': {
     evals: [
       {
         id: 1,
@@ -364,7 +393,7 @@ const EVALS = {
       },
     ],
   },
-  'spec-to-pr-lite': {
+  'ws-spec-to-pr-lite': {
     evals: [
       {
         id: 1,
@@ -387,14 +416,15 @@ const EVALS = {
       },
     ],
   },
-  'github-provider': {
+  'ws-github-provider': {
     evals: [
       {
         id: 1,
         prompt: 'Convert GitHub issue #42 to a local spec for oauth-login.',
-        expected_output: 'fetch-to-spec via github-issue-to-spec.py; step-00 artifact under {plansDir}.',
+        expected_output:
+          'fetch-to-spec via github-issue-to-spec.py writes {specsDir}/us-{n}.spec.md, then register_local_spec.py copies to step-00 under {plansDir}.',
         assertions: [
-          'Agent loads github-provider',
+          'Agent loads ws-github-provider',
           'Uses scripts/github-issue-to-spec.py with python launcher',
           'Does not hardcode org/repo names',
         ],
@@ -410,14 +440,15 @@ const EVALS = {
       },
     ],
   },
-  'azure-devops-provider': {
+  'ws-azure-devops-provider': {
     evals: [
       {
         id: 1,
         prompt: 'Fetch ADO work item 1234 to spec for slug ado-feature.',
-        expected_output: 'ado-workitem-to-spec.py output under {plansDir}/ado-feature/.',
+        expected_output:
+          'ado-workitem-to-spec.py writes {specsDir}/us-{id}.spec.md, then register_local_spec.py copies to step-00 under {plansDir}.',
         assertions: [
-          'Agent loads azure-devops-provider',
+          'Agent loads ws-azure-devops-provider',
           'Reads org/project from config.json issueTrackers.azureDevOps',
           'Uses python launcher on scripts/ado-workitem-to-spec.py',
         ],
@@ -433,30 +464,32 @@ const EVALS = {
       },
     ],
   },
-  'local-spec-provider': {
+  'ws-local-spec-provider': {
     evals: [
       {
         id: 1,
-        prompt: 'Register specs/features/oauth.spec.md into the workflow artifact tree.',
-        expected_output: 'register_local_spec.py mirrors to step-00-{slug}.spec.md under {plansDir}.',
+        prompt: 'Use @ws-local-spec-provider for a typical local-spec-provider task in this project.',
+        expected_output: 'Agent loads ws-local-spec-provider and follows its skill contract.',
         assertions: [
-          'Agent loads local-spec-provider',
-          'Uses detect_specs_dir.py or register_local_spec.py with python',
-          'Respects plans.specsDir from config',
+          'Agent loads ws-local-spec-provider before acting',
+          'Follows skill steps and Done when criteria',
+          'Uses path tokens from tools.md instead of hardcoded consumer paths',
+          'Output is en-us and harness-neutral',
         ],
       },
       {
         id: 2,
-        prompt: 'where should specs live in this repo?',
-        expected_output: 'detect_specs_dir guidance; prefers existing repo-root specs/ when present.',
+        prompt: '/local-spec-provider — edge case: missing or incomplete config.json',
+        expected_output: 'Agent stops or bootstraps via configure-project/setup, not silent guessing.',
         assertions: [
-          'Does not invent hardcoded specs path',
-          'References config.json plans.specsDir',
+          'Recognizes ws-local-spec-provider trigger from slash or @ invocation',
+          'References ws-shared/config.json or configure-project when config missing',
+          'Does not invent project-specific metadata',
         ],
       },
     ],
   },
-  'spec-format': {
+  'ws-spec-format': {
     evals: [
       {
         id: 1,
@@ -479,30 +512,56 @@ const EVALS = {
       },
     ],
   },
-  'check-harness': {
+  'ws-check-harness': {
     evals: [
       {
         id: 1,
-        prompt: '/check-harness on this repo after skill edits.',
-        expected_output: 'Phases 0–5c audit report; critical findings listed with paths.',
+        prompt: 'Use @ws-check-harness for a typical check-harness task in this project.',
+        expected_output: 'Agent loads ws-check-harness and follows its skill contract.',
         assertions: [
-          'Agent loads check-harness',
-          'Checks routing, links, portability, en-us',
-          'Does not claim zero critical without running phases',
+          'Agent loads ws-check-harness before acting',
+          'Follows skill steps and Done when criteria',
+          'Uses path tokens from tools.md instead of hardcoded consumer paths',
+          'Output is en-us and harness-neutral',
         ],
       },
       {
         id: 2,
-        prompt: 'check-harness dry-run only',
-        expected_output: 'Report without Phase 7 auto-fixes unless approved.',
+        prompt: '/check-harness — edge case: missing or incomplete config.json',
+        expected_output: 'Agent stops or bootstraps via configure-project/setup, not silent guessing.',
         assertions: [
-          'Respects --dry-run report-only mode when requested',
-          'Cites verified paths in findings',
+          'Recognizes ws-check-harness trigger from slash or @ invocation',
+          'References ws-shared/config.json or configure-project when config missing',
+          'Does not invent project-specific metadata',
+        ],
+      },
+      {
+        id: 3,
+        prompt: 'Dry-run ws-check-harness at this upstream package root and report Install mode + Skills scan root.',
+        expected_output:
+          'Install mode: upstream; Skills scan root: .agents/skills; Mode reported separately from Install mode.',
+        assertions: [
+          'Detects package markers (bin/skill-dependencies.json + bin/cli.js) and SoT under .agents/skills/ws-*/SKILL.md',
+          'Reports Install mode upstream with Skills scan root .agents/skills',
+          'Does not select src/skills as the upstream skills scan root',
+          'Does not conflate execution Mode (normal|dry-run) with Install mode',
+        ],
+      },
+      {
+        id: 4,
+        prompt:
+          'Dry-run ws-check-harness in a consumer tree that has only .agents/skills (no bin/skill-dependencies.json package markers).',
+        expected_output:
+          'Install mode: consumer; Skills scan root under {skillsRoot} (default .agents/skills) and/or {globalSkillsRoot}; missing root AGENTS.md is OK.',
+        assertions: [
+          'Reports Install mode consumer when upstream markers/SoT evidence is incomplete',
+          'Scans {skillsRoot} (and optional global) rather than inventing inventory from stray src/skills',
+          'Treats missing root AGENTS.md as OK; audits ws-shared/AGENTS.md as the consumer hub',
         ],
       },
     ],
   },
-  'check-workflows': {
+  'ws-check-workflows': {
     evals: [
       {
         id: 1,
@@ -525,30 +584,44 @@ const EVALS = {
       },
     ],
   },
-  'configure-project': {
+  'ws-configure-project': {
     evals: [
       {
         id: 1,
-        prompt: 'Set up workflow config for a new Node + React monorepo.',
-        expected_output: 'Interview/detect fills ws-shared/config.json from example template.',
+        prompt: 'Use @ws-configure-project for a typical configure-project task in this project.',
+        expected_output: 'Agent loads ws-configure-project and follows its skill contract.',
         assertions: [
-          'Agent loads configure-project',
-          'Writes config.json under {sharedDir}, not repo root',
-          'Does not overwrite consumer data on update semantics',
+          'Agent loads ws-configure-project before acting',
+          'Follows skill steps and Done when criteria',
+          'Uses path tokens from tools.md instead of hardcoded consumer paths',
+          'Output is en-us and harness-neutral',
         ],
       },
       {
         id: 2,
-        prompt: 'config.json is missing — bootstrap before spec-to-pr',
-        expected_output: 'Seeds from config.json.example and prompts for stack/verification.',
+        prompt: '/configure-project — edge case: missing or incomplete config.json',
+        expected_output: 'Agent stops or bootstraps via configure-project/setup, not silent guessing.',
         assertions: [
-          'Uses config.json.example as source',
-          'References configure-project or setup.md bootstrap',
+          'Recognizes ws-configure-project trigger from slash or @ invocation',
+          'References ws-shared/config.json or configure-project when config missing',
+          'Does not invent project-specific metadata',
+        ],
+      },
+      {
+        id: 3,
+        prompt: '/ws-configure-project --section autoload',
+        expected_output:
+          'Agent refreshes autoload.md Always-applied paths and offers Generate/Refresh root AGENTS.md via user-gate; uses configure_autoload.py; no absolute paths.',
+        assertions: [
+          'Loads --section autoload flow from SKILL.md / INTERVIEW.md',
+          'Offers Generate/Refresh / Keep current / Skip for root AGENTS.md',
+          'Uses configure_autoload.py helper with portable path forms only',
+          'Does not invent absolute filesystem paths',
         ],
       },
     ],
   },
-  'secrets-leak-review': {
+  'ws-secrets-leak-review': {
     evals: [
       {
         id: 1,
@@ -571,7 +644,7 @@ const EVALS = {
       },
     ],
   },
-  'fable-judge': {
+  'ws-fable-judge': {
     evals: [
       {
         id: 1,
@@ -594,7 +667,7 @@ const EVALS = {
       },
     ],
   },
-  'fable-method': {
+  'ws-fable-method': {
     evals: [
       {
         id: 1,
@@ -617,7 +690,7 @@ const EVALS = {
       },
     ],
   },
-  'fable-domain': {
+  'ws-fable-domain': {
     evals: [
       {
         id: 1,
@@ -640,7 +713,7 @@ const EVALS = {
       },
     ],
   },
-  'goal-loop': {
+  'ws-goal-loop': {
     evals: [
       {
         id: 1,
@@ -697,7 +770,7 @@ const EVALS = {
       },
     ],
   },
-  'karpathy-guidelines': {
+  'ws-karpathy-guidelines': {
     evals: [
       {
         id: 1,
@@ -720,7 +793,7 @@ const EVALS = {
       },
     ],
   },
-  'self-learning': {
+  'ws-self-learning': {
     evals: [
       {
         id: 1,
@@ -743,7 +816,7 @@ const EVALS = {
       },
     ],
   },
-  'changelog': {
+  'ws-changelog': {
     evals: [
       {
         id: 1,
@@ -766,7 +839,7 @@ const EVALS = {
       },
     ],
   },
-  'write-a-skill': {
+  'ws-write-a-skill': {
     evals: [
       {
         id: 1,
@@ -789,7 +862,7 @@ const EVALS = {
       },
     ],
   },
-  'show-harness': {
+  'ws-show-harness': {
     evals: [
       {
         id: 1,
