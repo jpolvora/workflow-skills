@@ -16,7 +16,11 @@ cd "$REPO_ROOT"
 # (WORKFLOW_SKILLS_GLOBAL_DIR / $HOME/.agents/skills) so hybrid installs work and
 # a skill folder rename cannot leave the hook silently pointing at a dead path.
 SCANNER=""
-for skills_root in "$REPO_ROOT/.agents/skills" "${WORKFLOW_SKILLS_GLOBAL_DIR:-${HOME:-/nonexistent}/.agents/skills}"; do
+for skills_root in \
+  "$REPO_ROOT/.agents/skills" \
+  "${WORKFLOW_SKILLS_GLOBAL_DIR:-}" \
+  "${HOME:-/nonexistent}/.agents/skills"; do
+  [ -n "$skills_root" ] || continue
   candidate="$skills_root/ws-secrets-leak-review/scripts/secrets_scanner.sh"
   if [ -f "$candidate" ]; then
     SCANNER="$candidate"

@@ -224,6 +224,11 @@ def main() -> int:
         help="Project root owning ws-shared/config.json (default: CWD when it has a hub)",
     )
     parser.add_argument("--repo", default="", help="owner/repo (for issueUrl when missing in JSON)")
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite an existing spec of record when content differs",
+    )
     args = parser.parse_args()
 
     if args.input == "-":
@@ -250,6 +255,15 @@ def main() -> int:
         output_path = resolve_specs_dir(repo_root, args.specs_dir) / f"{issue_slug(issue)}.spec.md"
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    if output_path.exists() and not args.force:
+        existing = output_path.read_text(encoding="utf-8").replace("\r\n", "\n")
+        if existing != spec_md.replace("\r\n", "\n"):
+            print(
+                f"ERROR: spec of record exists and differs: {output_path}\n"
+                "Preserve your edits or pass --force to overwrite.",
+                file=sys.stderr,
+            )
+            return 1
     output_path.write_text(spec_md, encoding="utf-8")
     print(f"Spec written to: {output_path}")
     print("Next: register into the workflow copy via ws-local-spec-provider")
