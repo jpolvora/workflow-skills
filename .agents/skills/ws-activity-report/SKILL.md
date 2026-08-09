@@ -1,0 +1,73 @@
+---
+name: ws-activity-report
+version: 0.3.0
+description: >-
+  Timesheet entries (date, start, end, description) for ws-spec-to-pr /
+  ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
+  the plan folder; end = latest of last PR thread comment or last delivery
+  commit. Trigger on activity-report {date}, log hours, timesheet, or
+  activities for a day.
+invocation_names:
+  - activity-report
+  - ws-activity-report
+---
+
+# ws-activity-report
+
+> When this skill is loaded, output "ws-activity-report loaded."
+
+Read-only timesheet builder for a civil day. Emits **entries** + **technical table** + **summary**. Does not commit, push, or post PR comments.
+
+**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md).
+
+## Invocation
+
+```text
+/ws-activity-report 2026-08-05
+/ws-activity-report 2026-08-05 --tz America/Manaus
+activity-report yesterday
+log hours for 2026-08-05
+timesheet US 183, 150
+```
+
+| Arg | Rule |
+|-----|------|
+| `{date}` | Civil day `YYYY-MM-DD` or `DD/MM/YYYY`. If omitted → **yesterday** in report timezone. |
+| `--tz` | IANA zone or fixed offset (`UTC-4`). Default: **UTC**. |
+| US ids | Optional filter (`US 183`, `183`). Else discover plans that **overlap** the target day. |
+
+Output language: **en-us**. Clock rules: [`references/TIMING.md`](references/TIMING.md). Form fields: [`references/OUTPUT.md`](references/OUTPUT.md).
+
+## Steps
+
+1. **Resolve day** — Parse `{date}` + `--tz`. Expand `{plansDir}` / `{sharedDir}` / `{skillsRoot}` from config + [`../ws-shared/tools.md`](../ws-shared/tools.md).
+   - Done when: target civil day and timezone are fixed.
+
+2. **Discover plans** — Glob `{plansDir}/**/*.state.md` (include archives). Keep folders with state or `step-00-*`. Include if interval crosses target day, or if user listed ids.
+   - Done when: candidate `{us-dir}` list is known (may be empty → report and stop).
+
+3. **Start clock** — Per `{us-dir}`, run:
+   ```bash
+   python {skillsRoot}/ws-activity-report/scripts/bootstrap_start.py {us-dir}
+   ```
+   Start = script `startIso`. Cross-check `startedAt` in state YAML for audit only (script applies bulk-sync override when needed). Do **not** use PR merge or mtime of steps 01+.
+   - Done when: each candidate has `startIso` or a documented gap.
+
+4. **End clock** — Resolve PR from state (`prNumber` / `prId` / `prUrl`) or provider. Load threads via active SCM provider `list-threads` ([`ws-github-provider`](../ws-github-provider/SKILL.md) / [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md)). Compute `endIso` = **max** of:
+   - latest non-deleted thread comment time (`publishedDate` / equivalent; fallback content-updated)
+   - latest delivery commit time (PR head / state `commits[]` / `git log` on working branch)
+   Prefer TIMING § End. Without auth → local commit/artifacts only + **Gaps**.
+   - Done when: each candidate has `endIso` + end-event kind (`thread` | `commit` | `gap`).
+
+5. **Short title** — One line ≤ ~120 chars: WI/issue title → cleaned PR title → spec `#` / branch (OUTPUT § Short title).
+   - Done when: title + source (`WI` | `issue` | `PR` | `spec`) set per US.
+
+6. **Clip & emit** — Multi-day intervals → one entry per civil day (00:00 / 23:59 cuts) or clip to target day only. Real wall times always; warn overlaps (repack only if user asks). Emit OUTPUT § Entries + mandatory technical table (incl. **Short title**) + summary. Invent nothing.
+   - Done when: entries + table + summary printed; skill stops.
+
+## Rules
+
+- Path tokens only — never hardcode `{plansDir}` or consumer org/repo names.
+- Reuse provider `list-threads`; do not duplicate SCM auth recipes here.
+- Entry description ≤ **2 lines**; short title ≤ ~120 chars.
+- Positive enclosure: report measured clocks and gaps — never fabricate times or titles.

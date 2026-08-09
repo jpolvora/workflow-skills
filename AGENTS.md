@@ -345,7 +345,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 
 ## Skill catalog (layers)
 
-> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 36 skills, `extra` = 2) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
+> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 37 skills, `extra` = 2) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per § [Progressive disclosure](#progressive-disclosure-load-on-demand).
 
@@ -415,6 +415,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |
+| `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries from plan bootstrap start → latest PR thread comment or delivery commit |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -444,6 +445,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| Timesheet / activity hours for a delivery day | `ws-activity-report` |
 | Session autoload set (which skills load every prompt) | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied skills |
 | Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |

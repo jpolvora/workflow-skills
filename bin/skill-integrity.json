@@ -5,10 +5,10 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f212f7ccb0c0e9e3e457c2c21d6a73b49bb4929ce9786ef3afd64b6d9d8a55e9",
+  "fullPackageDigest": "83d4f47bd0949487153db9c433ba0245c040ee7a204c2179dcff03bd0d4c1e06",
   "hub": {
     "files": {
-      "AGENTS.md": "7f8a9e18259d1109484f1eecb01d4cf0fb89829a2a77b7b977ff9ab49aa35dc3",
+      "AGENTS.md": "f04e34e002b750b213581ffea06681a346d3756263119d8568bef4a739305de1",
       "autoload.md": "c91c5fcc6b10c281a67863ff663f05e075d1cdfe69295e5c6c4d62f26033504f",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "config-resolution.md": "25055adc47f97d364cb5fb32f5112bb3837223e4db56b904ca85528ca6f84a72",
@@ -18,14 +18,24 @@
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "0eeb41a64215f3966d4733fab25a2d5b8ca0603efc8a281d5d2e03fcba263cf0",
       "setup.md": "941fb0130be4da1afd8852e465d95cc674943eebf969345f4579a221cfec154e",
-      "skill-dependencies.json": "f263395acc8f00fe49ca051ea1d923925168c34edccde322d96596c200819b29",
+      "skill-dependencies.json": "1774bccf47041cfe415827d5c5044ad8d4f7469134f366689a79e43f4381baf7",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "3bd8a8deedc7077fead961183b10fafe2260d88c96879336fbf7d2cabf8a04e9"
     },
-    "skillDigest": "dc16c9c5aca1a6e20c1c98bce6230cf6417dbd9db889ee4b5868647dfab8af0b"
+    "skillDigest": "7f7c6fd43623204b20e3807789583af04a97e2deff1511d1ab5909db6ad68f6e"
   },
   "packageVersion": "0.3.0",
   "skills": {
+    "ws-activity-report": {
+      "files": {
+        "evals/evals.json": "f69e5755c8e0e0e0f275a4abbc71ce5e0505ea0a758d807f9ed04891e12c876b",
+        "references/OUTPUT.md": "d69c6af7da4cc5fa3a7bfba593b317bf42d0d6abab0f9fd10caf652565151b6e",
+        "references/TIMING.md": "b37ea75de37035a8cba202245cd680d55bcfe55b81ced58210c90e706a853a32",
+        "scripts/bootstrap_start.py": "77be7c93fc40d5242007a87294830221cdfd882be32427417095cfe7c7b6a673",
+        "SKILL.md": "4b816ac69f093f55a5bc160a99639346a67dd68412fb9a3c8f39ea118fe1b5f4"
+      },
+      "skillDigest": "f55e5b977f1f4e7599678ed0087c1cfe0d8959e0883ee9559f1367e53e08b736"
+    },
     "ws-azure-devops-provider": {
       "files": {
         "evals/evals.json": "4cca994e08d6af3886f689571ac106b206d1646d8d86f88ef6b6f93ac5e17078",

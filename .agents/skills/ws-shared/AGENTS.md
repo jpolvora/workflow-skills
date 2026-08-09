@@ -111,6 +111,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 | `ws-spec-index` | [`../ws-spec-index/SKILL.md`](../ws-spec-index/SKILL.md) |
 | `ws-spec-list` | [`../ws-spec-list/SKILL.md`](../ws-spec-list/SKILL.md) |
 | `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
+| `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
 
 ### Harness & review (Workflows package)
@@ -148,6 +149,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| Timesheet / activity hours for a delivery day | `ws-activity-report` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
