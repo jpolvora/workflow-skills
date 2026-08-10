@@ -98,11 +98,11 @@ flowchart TD
   Skip -->|no| Plan[testing.plan.md]
   Plan --> Run[Unit + integration/E2E + coverage + feature quality]
   Run --> MutSkip{mutation configured and not skipMutationTesting?}
-  MutSkip -->|no| Report[testing.report.md Mutation skipped|passed|failed]
+  MutSkip -->|no| Report["testing.report.md Mutation skipped|passed|failed"]
   MutSkip -->|yes| Mut[Run verification.mutationTest]
   Mut --> MutGate{score >= threshold?}
   MutGate -->|yes| Report
-  MutGate -->|no| ReportFail[testing.report.md Mutation failed]
+  MutGate -->|no| ReportFail["testing.report.md Mutation failed"]
   ReportFail --> Fix[ws-implement-tasks fix mode]
   Fix -->|revalidate max 3| Plan
   Report --> Ship
