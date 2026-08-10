@@ -257,7 +257,7 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
 | `ws-verify-plan` | 5 | Check-implementation (spec score) |
 | `ws-code-review` | 6 | Local review (fix → re-review, max 3) |
-| `ws-testing` | 7 | Testing (unit/integration/coverage) |
+| `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Delivery commit + push/PR |
 | `ws-fix-pr` | 9 | PR thread fix |
 | `ws-goal-fix-pr` | 9 | Fix until zero threads |

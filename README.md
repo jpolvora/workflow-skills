@@ -114,7 +114,7 @@ Edit under `.agents/skills/ws-shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/ws-configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit |
+| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/ws-configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit. Optional Step 7 mutation: set `verification.mutationTest` (runner command) and `defaults.skipMutationTesting: false`; score gated by `verification.mutationThreshold` (default 80). Lite orch has no Testing step — mutation is standard-only. |
 | `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
 | `MEMORY.md` | Anti-regression index (`ws-self-learning`) |
 | `memory/*.md` | Individual memory entries |

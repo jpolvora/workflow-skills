@@ -99,6 +99,7 @@ flowchart TD
 *   `auto` (`autoMode: true`): Disables interactive menus. Auto-selects options (index 0). Workflow pauses only on hard stops or if a verify score falls below 7.
 *   `skip-testing`: Skips standard Step 7 Testing entirely, moving directly to Step 8 Ship.
 *   `skip-tests`: Skips the execution of testing suites (e.g. `npm run test` or `pytest`) in STACK.md. Build checks are still enforced.
+*   Mutation (inside Step 7): not a CLI flag by default — configure `verification.mutationTest` and set `defaults.skipMutationTesting: false` to opt in. Empty `mutationTest` or `skipMutationTesting: true` skips mutation without failing.
 
 ---
 
@@ -144,7 +145,7 @@ flowchart TD
 
 ### Step 7: Testing
 *   **Executor**: Verifier subagent (`ws-testing` / `ws-testing`).
-*   **Role**: Writes a test plan and executes unit, integration, and optionally browser verification.
+*   **Role**: Writes a test plan and executes unit, integration, and optionally browser verification. Optional **mutation testing** runs after green suite checks when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; score below `verification.mutationThreshold` fails Step 7 (strengthen tests before Advance). Lite has no Step 7 — mutation is standard-only.
 
 ### Step 8: Ship
 *   **Executor**: Orchestrator + ship subagent (`ws-ship-pr` / `ws-ship-pr`).

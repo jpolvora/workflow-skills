@@ -1,9 +1,10 @@
 ---
 
 
+
 name: ws-testing
-description: Pre-PR test suite executor — plans and executes unit, integration, and E2E test batteries with coverage and quality verification.
-version: 0.3.1
+description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
+version: 0.3.2
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -16,7 +17,7 @@ invocation_names:
 
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
-Plan and execute the pre-PR **testing** battery: unit tests, integration/E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), and feature quality against acceptance criteria. 
+Plan and execute the pre-PR **testing** battery: unit tests, integration/E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), feature quality against acceptance criteria, and an optional **mutation testing** substep (kill/survive score vs threshold).
 
 **Canonical outputs:** `step-07-{slug}.testing.plan.md`, `step-07-{slug}.testing.report.md`. Do not write retired artifact names (`step-11-*.integration-test.*`).
 
@@ -28,7 +29,7 @@ Standalone:
 /testing <plan-path> [spec=<spec-path>] [skip-browser]
 ```
 
-Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from orchestrator state. The orchestrator, not this skill, decides skip when `skipTesting` is set or when there is no meaningful test surface and unit tests are already green. UI browser testing requires explicit authorization.
+Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from orchestrator state. The orchestrator, not this skill, decides skip when `skipTesting` is set or when there is no meaningful test surface and unit tests are already green. UI browser testing requires explicit authorization. Mutation is **standard Step 7 only** — lite orch does not dispatch this skill.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -41,10 +42,22 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 - `config.json` resolves local dev server URLs (`apiHost`, `devHost`), locales, and DB seed keys.
 - `config.json.verification` build aliases exit 0 before Step 3; DB migrations applied when required.
 
+## Mutation config
+
+| Key | Role |
+|-----|------|
+| `verification.mutationTest` | Shell command for the consumer's runner (Stryker, PIT, mutmut, …). Empty/unset → mutation **skipped**. |
+| `verification.mutationThreshold` | Minimum score percent `killed/(killed+survived)*100` (default **80** when mutation runs and key omitted). |
+| `defaults.skipMutationTesting` | Default **true** (opt-in). When true → mutation **skipped** even if `mutationTest` is set. |
+
+**Skip mutation (log `status: skipped`, do not fail)** when any of: orch/`defaults.skipTesting`; Step 7 auto-skip (no test surface + unit green); `defaults.skipMutationTesting` true; or `verification.mutationTest` empty/unset.
+
+**Score parse:** Prefer runner-reported percent. Else compute from killed/survived counts in stdout/JSON when present. Record both counts in the report when available.
+
 ## Steps
 
-1. **Plan**: write `step-07-{slug}.testing.plan.md` covering unit & coverage commands (from `config.json.verification`) and gaps vs changed files; target hosts/ports and credentials; DB seed datasets and rollback per AC; API contracts (status codes, Bearer JWT, error shapes); RBAC and tenancy isolation checks; integration/E2E paths (cross-service, UI routes, translations); a feature-quality AC checklist mapped to observable outcomes (not just happy-path 200s); and defect-threshold pass/fail metrics.
-   - Done when: the plan file exists covering all areas above.
+1. **Plan**: write `step-07-{slug}.testing.plan.md` covering unit & coverage commands (from `config.json.verification`) and gaps vs changed files; target hosts/ports and credentials; DB seed datasets and rollback per AC; API contracts (status codes, Bearer JWT, error shapes); RBAC and tenancy isolation checks; integration/E2E paths (cross-service, UI routes, translations); a feature-quality AC checklist mapped to observable outcomes (not just happy-path 200s); defect-threshold pass/fail metrics; and when mutation is enabled for the run, a **Mutation** section (command, threshold, scope: changed files / project default).
+   - Done when: the plan file exists covering all areas above (Mutation section present when enabled).
 
 2. **Verify base build**: run build and core test commands from `config.json.verification`.
    - Done when: applicable verification commands exit 0 (failures listed in report with `status: failed`).
@@ -61,10 +74,15 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 6. **Run UI/E2E validation**: run browser automation or visual checks unless `skip-browser` is set.
    - Done when: UI/E2E checks ran or were explicitly skipped.
 
-7. **Report**: write `step-07-{slug}.testing.report.md` with results from Steps 2-6, including an accessibility/contrast check on form validation errors and alert indicators.
-   - Done when: the report file exists with results for every planned area.
+7. **Mutation testing** (optional): only after Steps 2–3 (and other planned suite checks that apply) succeed. If skip rules apply → record Mutation `skipped` + reason and continue to Report. Else run `verification.mutationTest` with an explicit launcher per [`tools.md`](../ws-shared/tools.md) § Script launchers; compare score to threshold.
+   - **Pass:** score ≥ threshold → Mutation `status: passed` (include score; killed/survived when known).
+   - **Fail:** score &lt; threshold or non-zero exit → Mutation `status: failed`; **do not** treat Step 7 as complete for Advance — orch/`user-gate` offers handoff to [`ws-implement-tasks`](../ws-implement-tasks/SKILL.md) fix mode to strengthen tests (kill survivors). This skill does not edit product or test code.
+   - Done when: Mutation recorded as `passed` | `failed` | `skipped`.
+
+8. **Report**: write `step-07-{slug}.testing.report.md` with results from Steps 2–7, including an accessibility/contrast check on form validation errors and alert indicators. Always include a **Mutation** section (`passed` | `failed` | `skipped` + reason; score/counts when run). Final pass verdict only when Mutation is not `failed` and other planned areas passed (or were skipped per policy).
+   - Done when: the report file exists with results for every planned area including Mutation.
 
 ## Rules of engagement
 
-- No code fixes: report gaps and hand off to [ws-implement-tasks (fix mode)](../ws-implement-tasks/SKILL.md) rather than editing code.
-
+- No code fixes: report gaps (including surviving mutants) and hand off to [ws-implement-tasks (fix mode)](../ws-implement-tasks/SKILL.md) rather than editing code.
+- Do not vendor a mutation engine — consumers own `verification.mutationTest`.

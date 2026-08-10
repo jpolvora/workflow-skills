@@ -106,7 +106,11 @@
     "frontendBuild": "<e.g. cd web && npm run build>",
     "frontendTest": "<e.g. cd web && npm test>",
     "migrationsAdd": "<e.g. dotnet ef migrations add {Name} -p src/Infrastructure -s src/Api>",
-    "migrationsApply": "<e.g. dotnet ef database update -p src/Infrastructure -s src/Api>"
+    "migrationsApply": "<e.g. dotnet ef database update -p src/Infrastructure -s src/Api>",
+    "mutationTest": "",
+    "_comment_mutationTest": "Optional mutation runner (e.g. npx stryker run, mvn org.pitest:pitest-maven:mutationCoverage). Empty = skip mutation substep in ws-testing Step 7.",
+    "mutationThreshold": 80,
+    "_comment_mutationThreshold": "Minimum mutation score percent (killed/(killed+survived)*100). Used when mutationTest is set and skipMutationTesting is false."
   },
 
   "dagThresholds": {
@@ -120,6 +124,8 @@
     "autoMode": false,
     "dryRun": false,
     "skipTesting": false,
+    "skipMutationTesting": true,
+    "_comment_skipMutationTesting": "When true (default), skip Step 7 mutation substep even if verification.mutationTest is set. Opt in by setting false and providing mutationTest.",
     "skipTests": false,
     "fullMode": false,
     "scoreAndRefine": false,

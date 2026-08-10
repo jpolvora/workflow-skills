@@ -205,7 +205,7 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
 | Check-implementation < 7 | Pause (no auto-approve) |
 | Review findings (full Step 6 / lite Step 3) | Autofix → re-review (max 3); Pause on residual Critical/Warning |
-| Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`) |
+| Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`); mutation runs only when configured and not `skipMutationTesting` |
 
 ---
 
@@ -229,5 +229,6 @@ Ship/PREPARE nuances (row 5 visibility): [`../ws-ship-pr/PREPARE-CHECKLIST.md`](
 | Flag | Meaning |
 |------|---------|
 | `skipTesting` | Skip Step 7 Testing (auto-skip when no test surface + unit tests green) |
+| `skipMutationTesting` | Skip optional mutation substep inside Step 7 (`ws-testing`); default true (opt-in). Also skipped when `verification.mutationTest` empty |
 | `scoreAndRefine` | Enable Pass 1 Task Scoring & 2nd Pass Refinement loop (aliases: `analyze-second-pass`, `score-refine`) |
 

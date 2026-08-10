@@ -170,9 +170,11 @@ Before G2-code commit: `config.json.rules.stackFile` → build (+ tests unless `
 
 `ws-testing` via **`dispatch-agent`** (label **Testing** — broader than integration-only). `skipTesting` → skip to Step 8. `autoMode`/`dryRun` → `dispatch-agent` without browser.
 
+Optional **mutation** substep (inside `ws-testing`, not a new FSM step): runs after green unit/integration/coverage when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; otherwise log Mutation `skipped`. Score &lt; `verification.mutationThreshold` (default 80) or runner failure → fail-closed (no Advance); hand off to `ws-implement-tasks` fix mode to strengthen tests. Lite orch does not run Step 7 / mutation.
+
 Gates (normal): **Approve and run test battery** (rec) / **Run without browser** / **Adjust test plan** / **Skip validation** / **Pause workflow**.
 
-Failure (max 3): **Apply fixes and revalidate** (rec) / **Accept with reservations** / **Re-run without fixes** / **Pause**. Fix: G2-code commit only.
+Failure (max 3): **Apply fixes and revalidate** (rec) / **Accept with reservations** / **Re-run without fixes** / **Pause**. Fix: G2-code commit only. Mutation survivors count as Step 7 failure (same fix gate).
 
 ### Workflow Artifact Commit Protocol
 
@@ -240,6 +242,8 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 5 score < 7 | Pause (fail closed — no auto-approve) |
 | Step 7 skipTesting / no API-UI | skip step |
 | Step 7 plan | **Approve and run test battery without browser** |
+| Step 7 mutation skip (`skipMutationTesting` / empty `mutationTest`) | log skipped; continue report |
+| Step 7 mutation fail (score &lt; threshold) | **Apply fixes and revalidate** (strengthen tests) |
 | Step 7 failure | **Apply fixes and revalidate** |
 | Step 8 combined gate (`fullMode`) | **Commit plan + result, then create PR** |
 | Step 8 combined gate (not `fullMode`) | **Commit plan + result, skip PR** |
@@ -268,7 +272,7 @@ Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `b
 ```yaml
 workflowId, slug, us, specSource, specPath
 startedAt, endedAt, status: active|completed|cancelled|failed
-currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode, scoreAndRefine
+currentStep, dryRun, autoMode, skipTesting, skipTests, skipMutationTesting, fullMode, scoreAndRefine
 execMode: sequential|parallel|null  # set after Step 3
 branch, baselineCommit, preExistingDirty: []
 checkpoints, workflowManifest, commits: [{sha, step, message}]

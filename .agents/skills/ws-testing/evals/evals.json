@@ -20,6 +20,17 @@
         "Records testing report artifact when orchestrated",
         "Uses path tokens ({skillsRoot}, {sharedDir}, {plansDir}) instead of hardcoded consumer paths"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run Step 7 testing with mutationTest configured and skipMutationTesting false.",
+      "expected_output": "Mutation substep after green unit/coverage; report Mutation passed|failed|skipped vs threshold.",
+      "assertions": [
+        "Runs verification.mutationTest only when configured and not skipMutationTesting",
+        "Skips mutation (not fail) when mutationTest empty or skipMutationTesting true",
+        "On score below mutationThreshold, does not Advance; hands off to implement-tasks fix mode",
+        "Does not invent a new FSM step for mutation"
+      ]
     }
   ]
 }
