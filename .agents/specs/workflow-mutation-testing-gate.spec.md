@@ -78,4 +78,3 @@ Rationale:
 - **Related specs (do not merge):** `continuous-ai-verification-quality-gates` (fable/CI/classifier/telemetry); `fable-skills-integration` (adversarial audit points). Mutation is test-effectiveness only.
 - **Rejected placements:** Step 5 (wrong metric), Step 6 (wrong tool), Step 8-only gate (too late for first failure), new FSM step (harness churn).
 - **Next after this draft:** register via `ws-local-spec-provider` when starting a workflow; classify with `ws-classify-complexity` (likely standard given orch/skill/config surface).
-)
