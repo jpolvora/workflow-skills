@@ -1,9 +1,10 @@
 ---
 
 
+
 name: ws-check-workflows
 description: Workflow FSM simulation runner — validates step continuity, state isolation, provider dispatch, and artifact transitions across standard, lite, and multi-spec pipelines.
-version: 0.3.1
+version: 0.3.2
 disable-model-invocation: true
 invocation_names:
   - check-workflows
@@ -45,8 +46,8 @@ python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py --fix --yes
 The validation process performs end-to-end simulation across both orchestrators:
 
 ### 1. Workflow Simulation & Step Continuity
-- **Standard (`ws-spec-to-pr`) Simulation**: Simulates stepping through Steps 0 to 9 (`ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-verify-plan`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`).
-- **Lite (`ws-spec-to-pr-lite`) Simulation**: Simulates stepping through Steps 0 to 5 (`ws-write-spec`, `ws-write-plan`, `ws-implement-tasks`, `ws-code-review`, `ws-ship-pr`, `ws-fix-pr`).
+- **Standard (`ws-spec-to-pr`) Simulation**: Simulates stepping through Steps 0 to 9 (`ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-verify-plan`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`). Step 7 (`ws-testing`) may include optional mutation skip/pass/fail branches documented in `ws-testing` / `DIAGRAM.md` — FSM step count stays 0–9 (mutation is not a separate step).
+- **Lite (`ws-spec-to-pr-lite`) Simulation**: Simulates stepping through Steps 0 to 5 (`ws-write-spec`, `ws-write-plan`, `ws-implement-tasks`, `ws-code-review`, `ws-ship-pr`, `ws-fix-pr`). Does **not** require `ws-testing` or mutation.
 - **Linked Skill Check**: Verifies that every step links to an existing skill under `{skillsRoot}/<skill>/SKILL.md` (upstream SoT is `.agents/skills/`).
 
 ### 2. Script Syntax & Execution Check

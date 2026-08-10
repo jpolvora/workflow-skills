@@ -70,7 +70,7 @@ Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/set
 @[ws-spec-to-pr] soft-delete for suppliers
 ```
 
-State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`, `scoreAndRefine`).
+State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`, `scoreAndRefine`). Mutation opt-in is **config-only** (`defaults.skipMutationTesting` + `verification.mutationTest`) — not a state.md field.
 
 ### Flags
 
@@ -111,7 +111,7 @@ Post-workflow QA deltas: `ws-update-plan-implementation` (`ws-update-plan-implem
 
 ### Step 7 — Testing (summary)
 
-Unit + integration/E2E + coverage + feature-quality checks. Auto-skip when `skipTesting` or no meaningful test surface and unit suite already green. Browser gated; skipped in auto/dry-run.
+Unit + integration/E2E + coverage + feature-quality checks, plus optional **mutation testing** (kill/survive score vs `verification.mutationThreshold`) when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false. Auto-skip whole step when `skipTesting` or no meaningful test surface and unit suite already green. Mutation failures fail-closed (no Advance to 8; fix tests via implement-tasks). Browser gated; skipped in auto/dry-run. Lite orch has no Step 7 — mutation is standard-only.
 
 ### Golden rule
 

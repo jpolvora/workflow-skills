@@ -69,7 +69,18 @@
         "frontendBuild": { "type": "string" },
         "frontendTest": { "type": "string" },
         "migrationsAdd": { "type": "string" },
-        "migrationsApply": { "type": "string" }
+        "migrationsApply": { "type": "string" },
+        "mutationTest": {
+          "type": "string",
+          "description": "Optional mutation-testing command (Stryker, PIT, mutmut, etc.). Empty/unset skips the ws-testing mutation substep."
+        },
+        "mutationThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 80,
+          "description": "Minimum mutation score percent (killed/(killed+survived)*100) required to pass Step 7 when mutation runs."
+        }
       }
     },
     "dagThresholds": {
@@ -88,6 +99,11 @@
         "skipTesting": {
           "type": "boolean",
           "description": "Skip Step 7 Testing (standard orch)."
+        },
+        "skipMutationTesting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Skip the Step 7 mutation substep inside ws-testing (opt-in when false and verification.mutationTest is set)."
         },
         "skipTests": { "type": "boolean" },
         "fullMode": { "type": "boolean" },

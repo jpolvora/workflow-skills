@@ -275,7 +275,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
           </div>
-          <p class="stepper-desc">Runs pre-PR automated test suites, validating unit tests, integration tests, and code coverage requirements specified in project config.</p>
+          <p class="stepper-desc">Runs pre-PR automated test suites (unit, integration/E2E, coverage) plus an optional mutation-testing gate (kill/survive score vs threshold) when configured in project config.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-testing/SKILL.md">ws-testing</span>
@@ -914,14 +914,14 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-ship-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-testing/SKILL.md" data-name="ws-testing" data-slug="ws-testing" data-desc="pre-pr test suite executor — plans and executes unit, integration, and e2e test batteries with coverage and quality verification." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-testing/SKILL.md" data-name="ws-testing" data-slug="ws-testing" data-desc="pre-pr test suite executor — plans and executes unit, integration, e2e, coverage, and optional mutation-testing batteries with quality verification." data-deps="" data-layer="layer-2" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-testing</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
         </div>
         </div>
-        <div class="desc">Pre-PR test suite executor — plans and executes unit, integration, and E2E test batteries with coverage and quality verification.</div>
+        <div class="desc">Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-testing/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
@@ -1563,7 +1563,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.1 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.2 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

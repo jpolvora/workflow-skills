@@ -2,8 +2,9 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.3.1
+version: 0.3.2
 description: Fast sequential Spec-to-PR lite orchestrator (Steps 0–5). Trigger when user requests lite/fast spec-to-PR delivery.
 invocation_names:
   - spec-to-pr-lite
@@ -43,6 +44,8 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 | 3 | Review | `ws-code-review` (+ fix) | `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops) |
 | 4 | Ship | orch + `ws-ship-pr` | `step-08-{slug}.result.md` created + PR created/skipped per menu |
 | 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` | PR merged or zero active threads (`activeThreads == 0`) |
+
+**No Step 7 Testing:** lite does not dispatch `ws-testing`. Optional **mutation testing** (kill/survive gate) is **standard-orch Step 7 only** — out of scope for lite.
 
 ## Post-Mutating Transition Sequence (Steps 0–4 → 1–5)
 

@@ -5,7 +5,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.3.1
+version: 0.3.2
 invocation_names:
   - check-harness
   - ws-check-harness
