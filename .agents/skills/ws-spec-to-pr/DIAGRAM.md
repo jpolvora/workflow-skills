@@ -98,16 +98,17 @@ flowchart TD
   Skip -->|no| Plan[testing.plan.md]
   Plan --> Run[Unit + integration/E2E + coverage + feature quality]
   Run --> MutSkip{mutation configured and not skipMutationTesting?}
-  MutSkip -->|no| Report[testing.report.md Mutation skipped]
+  MutSkip -->|no| Report[testing.report.md Mutation skipped|passed|failed]
   MutSkip -->|yes| Mut[Run verification.mutationTest]
   Mut --> MutGate{score >= threshold?}
-  MutGate -->|yes| ReportPass[testing.report.md Mutation passed]
-  MutGate -->|no| Fail[Fail-closed: handoff implement-tasks fix]
+  MutGate -->|yes| Report
+  MutGate -->|no| ReportFail[testing.report.md Mutation failed]
+  ReportFail --> Fix[ws-implement-tasks fix mode]
+  Fix -->|revalidate max 3| Plan
   Report --> Ship
-  ReportPass --> Ship
 ```
 
-Artifacts: `step-07-{slug}.testing.plan.md`, `step-07-{slug}.testing.report.md` (always include Mutation `passed` \| `failed` \| `skipped`).
+Artifacts: `step-07-{slug}.testing.plan.md`, `step-07-{slug}.testing.report.md` (always write; Mutation `passed` \| `failed` \| `skipped`). Mutation fail → report then fail-closed fix/revalidate (no Advance until passed or skipped).
 
 ---
 
