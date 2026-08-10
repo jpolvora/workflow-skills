@@ -70,7 +70,7 @@ Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/set
 @[ws-spec-to-pr] soft-delete for suppliers
 ```
 
-State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipMutationTesting`, `skipTests`, `fullMode`, `scoreAndRefine`).
+State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`, `scoreAndRefine`). Mutation opt-in is **config-only** (`defaults.skipMutationTesting` + `verification.mutationTest`) — not a state.md field.
 
 ### Flags
 

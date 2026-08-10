@@ -242,7 +242,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 5 score < 7 | Pause (fail closed — no auto-approve) |
 | Step 7 skipTesting / no API-UI | skip step |
 | Step 7 plan | **Approve and run test battery without browser** |
-| Step 7 mutation skip (`skipMutationTesting` / empty `mutationTest`) | log skipped; continue report |
+| Step 7 mutation skip (`defaults.skipMutationTesting` / empty `mutationTest`) | log skipped; continue report |
 | Step 7 mutation fail (score &lt; threshold) | **Apply fixes and revalidate** (strengthen tests) |
 | Step 7 failure | **Apply fixes and revalidate** |
 | Step 8 combined gate (`fullMode`) | **Commit plan + result, then create PR** |
@@ -272,7 +272,7 @@ Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `b
 ```yaml
 workflowId, slug, us, specSource, specPath
 startedAt, endedAt, status: active|completed|cancelled|failed
-currentStep, dryRun, autoMode, skipTesting, skipTests, skipMutationTesting, fullMode, scoreAndRefine
+currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode, scoreAndRefine
 execMode: sequential|parallel|null  # set after Step 3
 branch, baselineCommit, preExistingDirty: []
 checkpoints, workflowManifest, commits: [{sha, step, message}]

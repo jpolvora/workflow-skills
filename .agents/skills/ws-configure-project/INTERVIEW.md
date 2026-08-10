@@ -47,10 +47,10 @@ Scan consumer **repo root** (not this skill package alone):
 1. `project` (name, org, repoUrl, baseBranch, workingBranch)
 2. `providers` + matching `issueTrackers` slice
 3. `plans.dir` / `plans.specsDir` / optional `reviews.dir`
-4. `verification` (+ `orchestration` if detected)
+4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `defaults` — optional (autoMode, dryRun, skipTesting, scoreAndRefine) + **LLM model preferences for autoMode phase switching**:
+7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting** (default true — set false to opt into Step 7 mutation when `mutationTest` is set), scoreAndRefine) + **LLM model preferences for autoMode phase switching**:
    - `plannerModel` (Planning phase: Steps 0–3)
    - `executionModel` (Execution phase: Step 4)
    - `reviewerModel` (Review & Verification phase: Steps 5–7)
