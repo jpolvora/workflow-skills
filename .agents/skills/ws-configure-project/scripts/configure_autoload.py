@@ -609,17 +609,12 @@ def main() -> int:
 
     out: dict = {"repoRoot": str(repo_root.as_posix())}
 
-    if args.set_autoload is not None:
-        out["setAutoload"] = set_autoload(
-            repo_root,
-            args.set_autoload == "true",
-            dry_run=args.dry_run,
-        )
-
     if args.emit_paths:
         _, meta = build_always_applied_table(repo_root, global_skills_root=groot)
         out["skills"] = meta
 
+    # Root write before --set-autoload true so a refused overwrite cannot leave
+    # defaults.autoload=true with a missing/incomplete root (harness critical).
     if args.write_autoload:
         out["autoload"] = ensure_autoload_md(
             repo_root, global_skills_root=groot, dry_run=args.dry_run
@@ -631,6 +626,13 @@ def main() -> int:
             global_skills_root=groot,
             dry_run=args.dry_run,
             force=args.force,
+        )
+
+    if args.set_autoload is not None:
+        out["setAutoload"] = set_autoload(
+            repo_root,
+            args.set_autoload == "true",
+            dry_run=args.dry_run,
         )
 
     if args.check:

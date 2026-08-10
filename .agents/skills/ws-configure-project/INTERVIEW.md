@@ -85,7 +85,7 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 | Skill only under global skills root | Path `{globalSkillsRoot}/ws-<id>/SKILL.md` |
 | Skill missing both places | Keep `{skillsRoot}/…` token; harness `--check` warns |
 | Enable consumer root autoload? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
-| User chooses Yes (`true`) | Write `defaults.autoload: true`; `--write-autoload`; create/refresh root `AGENTS.md` |
+| User chooses Yes (`true`) | Root write **first** (`--write-autoload` + `--write-root-agents`); persist `defaults.autoload: true` only after root succeeds. Non-generated root → user-gate overwrite/`--force` (Recommended: No → leave flag false) |
 | User chooses No / Skip / Keep false | Write or leave `defaults.autoload: false`; root `AGENTS.md` optional (do not require) |
 
 **Enablement gate options:** No (`false`, **Recommended**) / Yes (`true`) / Keep current / Skip.
@@ -93,13 +93,14 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 **Helper (agents and tests):**
 
 ```bash
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload true|false
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-root-agents
+# Yes path order (root before flag). Script also runs write-root before --set-autoload true when combined.
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload --write-root-agents [--force]
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload true
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload false
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check --json
 ```
 
-Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd is not the target project. Use `--force` only when overwriting a non-generated root `AGENTS.md` (creates `AGENTS.md.bak`). Combine `--set-autoload true` with `--write-autoload` / `--write-root-agents` on the Yes path.
+Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd is not the target project. Use `--force` only when overwriting a non-generated root `AGENTS.md` (creates `AGENTS.md.bak`). Never persist `defaults.autoload: true` if root write was refused.
 
 **Path rules:** never write absolute paths (`C:\…`, `/Users/…`). Markdown links use real relative targets; prose may use `{skillsRoot}` / `{globalSkillsRoot}` / `{sharedDir}` tokens.
 

@@ -330,6 +330,43 @@ function parseJsonOut(result) {
 }
 
 {
+  // Yes path + pre-existing non-generated root: refuse before persisting defaults.autoload
+  const root = mkTmp('ws-autoload-yes-refuse-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  fs.writeFileSync(path.join(root, 'AGENTS.md'), '# Product-owned root hub\n', 'utf8');
+  const refused = runPy([
+    '--repo-root',
+    root,
+    '--set-autoload',
+    'true',
+    '--write-autoload',
+    '--write-root-agents',
+    '--json',
+  ]);
+  assert(refused.status !== 0, 'AC11: Yes+non-generated root refuses without --force');
+  const cfgPath = path.join(root, '.agents/skills/ws-shared/config.json');
+  if (fs.existsSync(cfgPath)) {
+    const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+    assert(
+      cfg.defaults?.autoload !== true,
+      'AC11: refused Yes path does not leave defaults.autoload true',
+    );
+  } else {
+    ok('AC11: refused Yes path left config.json absent (flag not persisted)');
+  }
+  const check = runPy(['--repo-root', root, '--check', '--json']);
+  const checkData = parseJsonOut(check);
+  if (checkData) {
+    assert(
+      checkData.check?.effectiveAutoload === false,
+      'AC11: effectiveAutoload false after refused Yes path',
+    );
+    assert(check.status === 0, 'AC11: check OK after refused Yes (flag not true)');
+  }
+}
+
+{
   // Preserve consumer-customized Always-applied membership + triggers; only refresh paths.
   const root = mkTmp('ws-autoload-preserve-');
   seedConsumerTree(root, { withLocalSkills: true });
