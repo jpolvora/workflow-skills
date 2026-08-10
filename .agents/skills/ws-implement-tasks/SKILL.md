@@ -3,7 +3,7 @@
 
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.2
+version: 0.3.3
 disable-model-invocation: true
 invocation_names:
   - implement-tasks

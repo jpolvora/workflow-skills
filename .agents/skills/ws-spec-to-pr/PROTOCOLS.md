@@ -13,7 +13,7 @@ Sibling protocol files under [`protocols/`](protocols/) remain authoritative for
 | G0 | Read, RO reports | — |
 | G1 | Edit WT, plans, impl (no commit) | Transition gate |
 | G2-code | `git commit` **code only** (`src/`, `web/`, `tests/`) | Step 4 / 6 fix substep / 7 fix |
-| G2-delivery | `git commit` **plan + `step-08-{slug}.result.md` only** | Step 8 combined delivery+ship gate |
+| G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 combined delivery+ship gate |
 | G3 | `git push`, PR create/merge | Step 8 **ship action** (within combined gate) |
 
 ```text
@@ -182,7 +182,7 @@ Failure (max 3): **Apply fixes and revalidate** (rec) / **Accept with reservatio
 |------|---------|
 | Steps 0–7 | **Code only** under `src/`, `web/`, `tests/` at Steps 4, 6 fix, 7 fix |
 | Steps 0–7 | **Forbidden:** `{plansDir}/**`, exec/dag/report/state/issue files |
-| Step 8 | Plan + `step-08-{slug}.result.md` — delivery commit via G2-delivery gate |
+| Step 8 | Configured delivery artifacts (`defaults.deliveryCommitArtifacts`) — delivery commit via G2-delivery gate |
 | Pause | No commit; no delete |
 
 Orch `git add` must be path-scoped — never `git add .` on code-commit steps.
@@ -203,9 +203,9 @@ Do **not** invoke Phase A at both Step 8 and Step 9. Phase B stays optional (del
 
 **Combined gate** ([`gates.md`](../ws-shared/gates.md) + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
 
-1. **Commit plan + result, then create PR** (Recommended when `fullMode`)
-2. **Commit plan + result, push only**
-3. **Commit plan + result, skip PR**
+1. **Commit configured delivery artifacts, then create PR** (Recommended when `fullMode`)
+2. **Commit configured delivery artifacts, push only**
+3. **Commit configured delivery artifacts, skip PR**
 4. **Skip delivery commit and skip shipping**
 5. **Pause**
 
@@ -245,8 +245,8 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 7 mutation skip (`defaults.skipMutationTesting` / empty `mutationTest`) | log skipped; continue report |
 | Step 7 mutation fail (score &lt; threshold) | **Apply fixes and revalidate** (strengthen tests) |
 | Step 7 failure | **Apply fixes and revalidate** |
-| Step 8 combined gate (`fullMode`) | **Commit plan + result, then create PR** |
-| Step 8 combined gate (not `fullMode`) | **Commit plan + result, skip PR** |
+| Step 8 combined gate (`fullMode`) | **Commit configured delivery artifacts, then create PR** |
+| Step 8 combined gate (not `fullMode`) | **Commit configured delivery artifacts, skip PR** |
 | Step 9 fix-pr | **Run ws-goal-fix-pr loop** |
 
 Shared defaults: [`gates.md`](../ws-shared/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.

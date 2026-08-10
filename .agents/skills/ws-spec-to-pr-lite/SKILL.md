@@ -3,8 +3,9 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.3.2
+version: 0.3.3
 description: Fast sequential Spec-to-PR lite orchestrator (Steps 0–5). Trigger when user requests lite/fast spec-to-PR delivery.
 invocation_names:
   - spec-to-pr-lite
@@ -29,7 +30,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 2. **Execution:** Inline in main session (no subagent dispatch).
 3. **State & Telemetry:** Run `python {skillsRoot}/ws-spec-to-pr-lite/scripts/update_state.py` each step with measured `--elapsed` and `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. Missing telemetry → **HS-5**.
 4. **Artifacts:** `step-00` spec · `step-01` plan · `step-08` result (shared names with standard).
-5. **Commits & Cleanup:** Code in implement/review-fix; plan+result at Step 4 G2-delivery. On `status → completed`, run Phase A git cleanup: `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
+5. **Commits & Cleanup:** Code in implement/review-fix; configured delivery artifacts at Step 4 G2-delivery (`defaults.deliveryCommitArtifacts` / [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8). On `status → completed`, run Phase A git cleanup: `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
 6. **Auto Mode Models:** In `autoMode: true`, switch models per phase if `config.json` → `defaults` defines `plannerModel` (Steps 0–1), `executionModel` (Step 2), `reviewerModel` (Step 3). Fallback to active model if switch fails.
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).

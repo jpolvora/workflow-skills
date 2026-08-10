@@ -84,13 +84,13 @@ Telemetry/`--elapsed` still required under `autoMode`/`fullMode` (State Hygiene 
 
 **Combined gate** ([`gates.md`](../ws-shared/gates.md)):
 
-1. **Commit plan + result, then create PR** (Recommended when `fullMode`)
-2. **Commit plan + result, push only**
-3. **Commit plan + result, skip PR**
+1. **Commit configured delivery artifacts, then create PR** (Recommended when `fullMode`)
+2. **Commit configured delivery artifacts, push only**
+3. **Commit configured delivery artifacts, skip PR**
 4. **Skip delivery commit and skip shipping**
 5. **Pause**
 
-G2-delivery stages plan (refined if present) + `step-08-{slug}.result.md` only.
+G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8.
 
 Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no goal-fix loop inside ship**; orch Advance to 9 when PR created.
 After delivery commit / PR creation, auto-run [`ws-spec-index`](../ws-spec-index/SKILL.md) `sync` with `{slug}` and `shipEvidence`.

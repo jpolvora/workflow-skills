@@ -1,9 +1,10 @@
 ---
 
 
+
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.2
+version: 0.3.3
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -70,7 +71,15 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
 3. **Code-review loop**: skip if already reviewed under `ws-spec-to-pr` Step 6 or `ws-spec-to-pr-lite` Step 3 (record on board). Otherwise load [ws-code-review](../ws-code-review/SKILL.md) against `base` and run the fix → re-review loop for Critical/Warning (max 3 rounds; Pause on residual).
    - Done when: review clean, Pause after 3-iteration cap with residual documented, or skipped with evidence.
 
-4. **Commit & push**: only after Step 2 is green. Commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {workingBranch}`. Skip push when `shipAction: skip` or `dry-run`.
+4. **Commit & push**: only after Step 2 is green. When performing a **delivery commit** of plan-dir artifacts (standalone `/ship-pr` or `workflowMode`), stage **only** paths resolved from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8:
+   - Read `{sharedDir}/config.json` → `defaults.deliveryCommitArtifacts`; missing object/keys merge to AC1 defaults (`includeRefinedPlan: true`, `includeDeliveryResult: false`, all opt-ins `false`).
+   - When `includeRefinedPlan` is true: stage `step-02-{slug}.plan.refined.md` if present, else `step-01-{slug}.plan.md`; if **neither** exists → **STOP** with a clear error.
+   - When `includeDeliveryResult` is false: do **not** `git add` `step-08-{slug}.result.md` (file may still exist / be written earlier for orch evidence).
+   - Opt-in toggles (`includeSpec`, `includeCheckReport`, `includeCodeReview`, `includeTestingReport`): stage only when toggle is true **and** the file exists; otherwise skip and note on the prepare board / result prose.
+   - If the resolved stage set is empty → **STOP** (no empty plan-artifact delivery commit).
+   - Never invent missing artifact content. Product/source staging (`commit-code` / ship-scope product files) is unchanged and separate from this delivery set.
+   - Commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
+   Then commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {workingBranch}`. Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
 5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {workingBranch} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.

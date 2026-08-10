@@ -129,6 +129,15 @@
     "skipTests": false,
     "fullMode": false,
     "scoreAndRefine": false,
+    "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
+    "deliveryCommitArtifacts": {
+      "includeRefinedPlan": true,
+      "includeDeliveryResult": false,
+      "includeSpec": false,
+      "includeCheckReport": false,
+      "includeCodeReview": false,
+      "includeTestingReport": false
+    },
     "_comment_models": "Optional model preferences for autoMode phase switching (e.g. claude-3-5-sonnet, gpt-4o, gemini-1.5-pro, gemini-2.0-flash). Fallback to active model if empty or switch fails.",
     "plannerModel": "",
     "executionModel": "",

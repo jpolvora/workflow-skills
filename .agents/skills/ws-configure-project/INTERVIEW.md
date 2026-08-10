@@ -50,11 +50,21 @@ Scan consumer **repo root** (not this skill package alone):
 4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting** (default true — set false to opt into Step 7 mutation when `mutationTest` is set), scoreAndRefine) + **LLM model preferences for autoMode phase switching**:
+7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting** (default true — set false to opt into Step 7 mutation when `mutationTest` is set), scoreAndRefine) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + **LLM model preferences for autoMode phase switching**:
    - `plannerModel` (Planning phase: Steps 0–3)
    - `executionModel` (Execution phase: Step 4)
    - `reviewerModel` (Review & Verification phase: Steps 5–7)
    - Offer canonical host model choices or custom string; fallback to active model if empty or switch fails.
+
+   **Delivery commit artifacts** (subsection of `defaults` / `--section defaults`; writes `defaults.deliveryCommitArtifacts`). Staging SoT: [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8. `autoMode`: accept Recommended on all three gates without prompting.
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | A — Include refined plan (or plan fallback) in delivery commit? | `includeRefinedPlan` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
+   | B — Include delivery result (`step-08-*.result.md`)? | `includeDeliveryResult` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+   | C — Opt-in extras | `includeSpec`, `includeCheckReport`, `includeCodeReview`, `includeTestingReport` | Multi-select or sequential per-toggle; **Recommended = none** (all `false`); Keep current / Skip |
+
+   Merge-write into `config.json` without deleting unknown keys; preserve `_comment*` keys.
 8. `domain` / `rules` — optional
 9. `autoload` — optional (or standalone `--section autoload`)
 

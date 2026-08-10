@@ -150,12 +150,12 @@ flowchart TD
 ### Step 8: Ship
 *   **Executor**: Orchestrator + ship subagent (`ws-ship-pr` / `ws-ship-pr`).
 *   **Role**: Compiles the delivery summary in `step-08-{slug}.result.md` (including benchmark telemetry) and presents the **Combined Ship Gate**:
-    1.  Commit plan + result, then create PR
-    2.  Commit plan + result, push only
-    3.  Commit plan + result, skip PR
+    1.  Commit configured delivery artifacts, then create PR
+    2.  Commit configured delivery artifacts, push only
+    3.  Commit configured delivery artifacts, skip PR
     4.  Skip delivery commit and skip shipping
     5.  Pause
-*   **Artifact commits**: Only `step-01-*.plan.md` (or `step-02-*.refined.md`) and `step-08-*.result.md` are added to the delivery commit. Mid-workflow plan files are ignored.
+*   **Artifact commits**: Stage only artifacts enabled by `defaults.deliveryCommitArtifacts` (see `ARTIFACTS.md` § Step 8). Mid-workflow plan files remain forbidden until Step 8.
 
 ### Step 9: Fix-PR
 *   **Executor**: PR fixing subagent (`ws-fix-pr` / `ws-goal-fix-pr`).
@@ -171,7 +171,7 @@ flowchart TD
 | **G0** | Read codebase, fetch issue metadata, output reports | Steps 0, 1, 2, 3, 5, 6, 7 (plan) |
 | **G1** | Modify workspace files, update state files, draft plans | Step 4, Step 6 (fix), Step 7 (fix) |
 | **G2-code** | Commit code changes only under `src/`, `web/`, `tests/` | Step 4, 6 fix, 7 fix boundary |
-| **G2-delivery** | Commit plan and result summary files only | Step 8 delivery checkpoint |
+| **G2-delivery** | Commit configured delivery artifacts only (`defaults.deliveryCommitArtifacts`) | Step 8 delivery checkpoint |
 | **G3** | Run `git push`, create remote PR, merge PR | Step 8 ship action / Step 9 |
 
 ### Hard Stops (HS-1 to HS-5)
