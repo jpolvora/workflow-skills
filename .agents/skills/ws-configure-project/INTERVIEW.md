@@ -13,7 +13,7 @@ Disclosed detail for [`SKILL.md`](SKILL.md). Load when detecting or interviewing
 
 ## Optional (offer once, skippable)
 
-`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (root `AGENTS.md` + Always-applied path refresh; not a `config.json` key).
+`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (persists `defaults.autoload` + Always-applied path refresh; optional root `AGENTS.md` when enabled).
 
 ## Detection heuristics
 
@@ -72,7 +72,11 @@ Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit�
 
 ## Autoload
 
-Not a `config.json` section. Refreshes `{sharedDir}/autoload.md` and optionally generates repo-root `AGENTS.md`.
+Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective false) and refreshes `{sharedDir}/autoload.md`. When enabled (`true`), also creates/refreshes repo-root `AGENTS.md`.
+
+| Key | Type | Default | Meaning |
+|-----|------|---------|---------|
+| `defaults.autoload` | boolean | `false` | When `true`, consumer intends root `AGENTS.md` to autoload Always-applied skills from `{sharedDir}/autoload.md` |
 
 | Signal | Suggest |
 |--------|---------|
@@ -80,20 +84,22 @@ Not a `config.json` section. Refreshes `{sharedDir}/autoload.md` and optionally 
 | Always-applied skill has `SKILL.md` under project `.agents/skills/` | Path `.agents/skills/ws-<id>/SKILL.md` |
 | Skill only under global skills root | Path `{globalSkillsRoot}/ws-<id>/SKILL.md` |
 | Skill missing both places | Keep `{skillsRoot}/…` token; harness `--check` warns |
-| Root `AGENTS.md` absent | **Generate/Refresh root `AGENTS.md` (Recommended)** |
-| Root `AGENTS.md` present | Refresh (**Recommended**) / Keep current / Skip |
+| Enable consumer root autoload? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+| User chooses Yes (`true`) | Write `defaults.autoload: true`; `--write-autoload`; create/refresh root `AGENTS.md` |
+| User chooses No / Skip / Keep false | Write or leave `defaults.autoload: false`; root `AGENTS.md` optional (do not require) |
 
-**Root gate options:** Generate/Refresh root `AGENTS.md` (**Recommended**) / Keep current root `AGENTS.md` / Skip.
+**Enablement gate options:** No (`false`, **Recommended**) / Yes (`true`) / Keep current / Skip.
 
 **Helper (agents and tests):**
 
 ```bash
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload true|false
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-root-agents
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check --json
 ```
 
-Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd is not the target project. Use `--force` only when overwriting a non-generated root `AGENTS.md` (creates `AGENTS.md.bak`).
+Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd is not the target project. Use `--force` only when overwriting a non-generated root `AGENTS.md` (creates `AGENTS.md.bak`). Combine `--set-autoload true` with `--write-autoload` / `--write-root-agents` on the Yes path.
 
 **Path rules:** never write absolute paths (`C:\…`, `/Users/…`). Markdown links use real relative targets; prose may use `{skillsRoot}` / `{globalSkillsRoot}` / `{sharedDir}` tokens.
 
@@ -102,4 +108,4 @@ Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
 - After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.
-- Autoload writes: `{sharedDir}/autoload.md` (Always-applied paths) and optional repo-root `AGENTS.md` only after user-gate Generate/Refresh — installer never creates root `AGENTS.md`.
+- Autoload writes: `defaults.autoload` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`.

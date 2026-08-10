@@ -129,6 +129,8 @@
     "skipTests": false,
     "fullMode": false,
     "scoreAndRefine": false,
+    "autoload": false,
+    "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
     "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
     "deliveryCommitArtifacts": {
       "includeRefinedPlan": true,

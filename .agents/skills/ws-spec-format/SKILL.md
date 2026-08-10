@@ -3,7 +3,7 @@
 
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
-version: 0.3.3
+version: 0.3.4
 invocation_names:
   - spec-format
   - ws-spec-format
