@@ -330,6 +330,43 @@ function parseJsonOut(result) {
 }
 
 {
+  // Yes path + pre-existing non-generated root: refuse before persisting defaults.autoload
+  const root = mkTmp('ws-autoload-yes-refuse-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  fs.writeFileSync(path.join(root, 'AGENTS.md'), '# Product-owned root hub\n', 'utf8');
+  const refused = runPy([
+    '--repo-root',
+    root,
+    '--set-autoload',
+    'true',
+    '--write-autoload',
+    '--write-root-agents',
+    '--json',
+  ]);
+  assert(refused.status !== 0, 'AC11: Yes+non-generated root refuses without --force');
+  const cfgPath = path.join(root, '.agents/skills/ws-shared/config.json');
+  if (fs.existsSync(cfgPath)) {
+    const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+    assert(
+      cfg.defaults?.autoload !== true,
+      'AC11: refused Yes path does not leave defaults.autoload true',
+    );
+  } else {
+    ok('AC11: refused Yes path left config.json absent (flag not persisted)');
+  }
+  const check = runPy(['--repo-root', root, '--check', '--json']);
+  const checkData = parseJsonOut(check);
+  if (checkData) {
+    assert(
+      checkData.check?.effectiveAutoload === false,
+      'AC11: effectiveAutoload false after refused Yes path',
+    );
+    assert(check.status === 0, 'AC11: check OK after refused Yes (flag not true)');
+  }
+}
+
+{
   // Preserve consumer-customized Always-applied membership + triggers; only refresh paths.
   const root = mkTmp('ws-autoload-preserve-');
   seedConsumerTree(root, { withLocalSkills: true });
@@ -425,6 +462,155 @@ function parseJsonOut(result) {
       criticals.some((c) => /Absolute filesystem path/i.test(c.message)),
       'check reports critical for C:/ and /opt absolute paths',
     );
+  }
+}
+
+function seedConfigExample(root) {
+  const shared = path.join(root, '.agents', 'skills', 'ws-shared');
+  fs.mkdirSync(shared, { recursive: true });
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/config.json.example'),
+    path.join(shared, 'config.json.example'),
+  );
+}
+
+{
+  // AC11 (1): omitted / missing config → effective false
+  const rootMissing = mkTmp('ws-autoload-eff-missing-');
+  seedConsumerTree(rootMissing, { withLocalSkills: true });
+  const checkMissing = runPy(['--repo-root', rootMissing, '--check', '--json']);
+  const dataMissing = parseJsonOut(checkMissing);
+  if (dataMissing) {
+    assert(
+      dataMissing.check?.effectiveAutoload === false,
+      'AC11: missing config → effectiveAutoload false',
+    );
+    assert(checkMissing.status === 0, 'AC11: missing config + missing root check exits 0');
+  }
+
+  const rootOmitted = mkTmp('ws-autoload-eff-omitted-');
+  seedConsumerTree(rootOmitted, { withLocalSkills: true });
+  seedConfigExample(rootOmitted);
+  const cfgPath = path.join(rootOmitted, '.agents/skills/ws-shared/config.json');
+  const example = JSON.parse(
+    fs.readFileSync(
+      path.join(rootOmitted, '.agents/skills/ws-shared/config.json.example'),
+      'utf8',
+    ),
+  );
+  if (example.defaults && 'autoload' in example.defaults) {
+    delete example.defaults.autoload;
+  }
+  fs.writeFileSync(cfgPath, JSON.stringify(example, null, 2) + '\n', 'utf8');
+  const checkOmitted = runPy(['--repo-root', rootOmitted, '--check', '--json']);
+  const dataOmitted = parseJsonOut(checkOmitted);
+  if (dataOmitted) {
+    assert(
+      dataOmitted.check?.effectiveAutoload === false,
+      'AC11: omitted defaults.autoload → effectiveAutoload false',
+    );
+  }
+}
+
+{
+  // AC11 (2): set true + root
+  const root = mkTmp('ws-autoload-set-true-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  const result = runPy([
+    '--repo-root',
+    root,
+    '--set-autoload',
+    'true',
+    '--write-autoload',
+    '--write-root-agents',
+    '--json',
+  ]);
+  const data = parseJsonOut(result);
+  if (data) {
+    const cfg = JSON.parse(
+      fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+    );
+    assert(cfg.defaults?.autoload === true, 'AC11: --set-autoload true writes defaults.autoload');
+    assert(fs.existsSync(path.join(root, 'AGENTS.md')), 'AC11: true path writes root AGENTS.md');
+    assert(
+      fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf8').includes('autoload.md'),
+      'AC11: root AGENTS.md references autoload.md',
+    );
+    const check = runPy(['--repo-root', root, '--check', '--json']);
+    const checkData = parseJsonOut(check);
+    if (checkData) {
+      assert(checkData.check?.effectiveAutoload === true, 'AC11: effectiveAutoload true after set');
+      assert(check.status === 0 && checkData.check?.ok === true, 'AC11: check OK when true + root');
+    }
+  }
+}
+
+{
+  // AC11 (3): set false without requiring root
+  const root = mkTmp('ws-autoload-set-false-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  const result = runPy(['--repo-root', root, '--set-autoload', 'false', '--json']);
+  const data = parseJsonOut(result);
+  if (data) {
+    const cfg = JSON.parse(
+      fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+    );
+    assert(cfg.defaults?.autoload === false, 'AC11: --set-autoload false writes defaults.autoload');
+    assert(!fs.existsSync(path.join(root, 'AGENTS.md')), 'AC11: false path does not require root');
+  }
+}
+
+{
+  // AC11 (4): check critical when true + missing/incomplete root
+  const rootMissing = mkTmp('ws-autoload-true-noroot-');
+  seedConsumerTree(rootMissing, { withLocalSkills: true });
+  seedConfigExample(rootMissing);
+  runPy(['--repo-root', rootMissing, '--set-autoload', 'true', '--json']);
+  const checkMissing = runPy(['--repo-root', rootMissing, '--check', '--json']);
+  const dataMissing = parseJsonOut(checkMissing);
+  if (dataMissing) {
+    assert(checkMissing.status !== 0, 'AC11: true + missing root → non-zero exit');
+    assert(dataMissing.check?.ok === false, 'AC11: true + missing root → check.ok false');
+    assert(
+      (dataMissing.check?.findings || []).some(
+        (f) => f.severity === 'critical' && /missing/i.test(f.message),
+      ),
+      'AC11: critical when true + missing root',
+    );
+  }
+
+  const rootIncomplete = mkTmp('ws-autoload-true-incomplete-');
+  seedConsumerTree(rootIncomplete, { withLocalSkills: true });
+  seedConfigExample(rootIncomplete);
+  runPy(['--repo-root', rootIncomplete, '--set-autoload', 'true', '--json']);
+  fs.writeFileSync(path.join(rootIncomplete, 'AGENTS.md'), '# Custom hub without autoload ref\n', 'utf8');
+  const checkIncomplete = runPy(['--repo-root', rootIncomplete, '--check', '--json']);
+  const dataIncomplete = parseJsonOut(checkIncomplete);
+  if (dataIncomplete) {
+    assert(checkIncomplete.status !== 0, 'AC11: true + incomplete root → non-zero exit');
+    assert(
+      (dataIncomplete.check?.findings || []).some(
+        (f) => f.severity === 'critical' && /autoload\.md/i.test(f.message),
+      ),
+      'AC11: critical when true + root lacks autoload.md instruction',
+    );
+  }
+}
+
+{
+  // AC11 (5): check OK when false + missing root
+  const root = mkTmp('ws-autoload-false-noroot-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  runPy(['--repo-root', root, '--set-autoload', 'false', '--json']);
+  const check = runPy(['--repo-root', root, '--check', '--json']);
+  const data = parseJsonOut(check);
+  if (data) {
+    assert(data.check?.effectiveAutoload === false, 'AC11: effectiveAutoload false after set false');
+    assert(check.status === 0 && data.check?.ok === true, 'AC11: false + missing root check OK');
+    assert(data.check?.rootAgentsPresent === false, 'AC11: root still absent when false');
   }
 }
 
