@@ -24,18 +24,18 @@ Never write workflow state under `.agents/`.
 |----------|----------|-------------|-------------|
 | State | `{workflow-id}.state.md` | Orchestrator | No |
 | Issue snapshot | `step-00-{slug}.issue.json` | Step 0 / issue fetch | No |
-| **Spec (canonical)** | `step-00-{slug}.spec.md` | Step 0 / issue→spec / local register | No |
+| **Spec (canonical)** | `step-00-{slug}.spec.md` | Step 0 / issue→spec / local register | **Yes (Step 8)** when `includeSpec` |
 | Complexity classification | `step-00-{slug}.classify.md` | Step 0 (`ws-classify-complexity`) | No |
-| Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 8)** if no refined plan |
-| Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 8)** if present (replaces plan) |
+| Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 8)** when `includeRefinedPlan` and no refined plan |
+| Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 8)** when `includeRefinedPlan` and present (replaces plan) |
 | Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 | No |
 | DAG | `step-03-{slug}.exec.dag.json` | Step 3 | No |
-| Check-implementation report | `step-05-{slug}.plan.report.md` | Step 5 | No |
-| Code review | `step-06-{slug}.review.md` | Step 6 | No |
+| Check-implementation report | `step-05-{slug}.plan.report.md` | Step 5 | **Yes (Step 8)** when `includeCheckReport` |
+| Code review | `step-06-{slug}.review.md` | Step 6 | **Yes (Step 8)** when `includeCodeReview` |
 | Review fix report | `step-06-{slug}.fix.report.md` | Step 6 fix → re-review loop | No |
 | Testing plan | `step-07-{slug}.testing.plan.md` | Step 7 | No |
-| Testing report | `step-07-{slug}.testing.report.md` | Step 7 | No |
-| Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** |
+| Testing report | `step-07-{slug}.testing.report.md` | Step 7 | **Yes (Step 8)** when `includeTestingReport` |
+| Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** when `includeDeliveryResult` |
 
 **Do not write obsolete names:** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md`.
 
@@ -61,12 +61,42 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 
 ## Step 8 delivery commit
 
-Stage **only**:
+**SoT for delivery staging.** `gates.md` G2-delivery, `tools.md` `commit-delivery`, and `ws-ship-pr` follow this section — do not fork rules.
 
-1. `step-02-{slug}.plan.refined.md` if it exists, else `step-01-{slug}.plan.md`
-2. `step-08-{slug}.result.md`
+Stage **only** artifacts enabled by `config.json` → `defaults.deliveryCommitArtifacts`. Missing object or omitted keys merge to AC1 defaults at read time:
 
-**Not staged:** `step-00-{slug}.classify.md`, `{us-dir}/telemetry/`, and other runtime artifacts.
+| Key | Default |
+|-----|---------|
+| `includeRefinedPlan` | `true` |
+| `includeDeliveryResult` | `false` |
+| `includeSpec` | `false` |
+| `includeCheckReport` | `false` |
+| `includeCodeReview` | `false` |
+| `includeTestingReport` | `false` |
+
+### Toggle → filename map
+
+| Toggle | Stages when true and file exists |
+|--------|----------------------------------|
+| `includeRefinedPlan` | `step-02-{slug}.plan.refined.md` if present, else `step-01-{slug}.plan.md` |
+| `includeDeliveryResult` | `step-08-{slug}.result.md` |
+| `includeSpec` | `step-00-{slug}.spec.md` |
+| `includeCheckReport` | `step-05-{slug}.plan.report.md` |
+| `includeCodeReview` | `step-06-{slug}.review.md` |
+| `includeTestingReport` | `step-07-{slug}.testing.report.md` |
+
+### Resolution algorithm
+
+1. Read `{sharedDir}/config.json` → `defaults.deliveryCommitArtifacts` (missing object/key → AC1 default above).
+2. Build ordered stage list from enabled toggles using the map.
+3. For each path: if missing and toggle is `includeRefinedPlan` → **STOP** with a clear error; if missing and any other toggle → skip that path and log a note on the prepare board / delivery result (do not invent content).
+4. If the resolved stage list is empty → **STOP** (no empty plan-artifact delivery commit).
+5. `git add` only resolved paths under `{us-dir}`; commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
+6. Product/source staging remains separate (`commit-code` / ship-scope product files).
+
+**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
+
+Result file may still be **written** for orch evidence when `includeDeliveryResult` is false — it simply is not staged.
 
 ## Spec entry rules
 

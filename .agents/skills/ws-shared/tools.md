@@ -65,7 +65,7 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | Tool | Action | Native |
 |------|--------|--------|
 | `commit-code` | Commit src/web/tests only | `Shell` `git add src/ web/ tests/ && git commit -m "..."` |
-| `commit-delivery` | Commit plan + result (Step 8) | `Shell` stage `step-02-{slug}.plan.refined.md` **or** `step-01-{slug}.plan.md`, plus `step-08-{slug}.result.md` |
+| `commit-delivery` | Commit configured delivery artifacts (Step 8) | Resolve stage list from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8; `Shell` `git add` only resolved `{us-dir}` paths then `git commit` (message may say “configured delivery artifacts”) |
 | `push-branch` | Push working branch | `Shell` `git push {gitRemote} {workingBranch}` — from `config.project` |
 | `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`ws-github-provider`](../ws-github-provider/SKILL.md) or [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
 | `list-threads` / `resolve-thread` / `merge-pr` | PR review + merge intents | Same SCM provider skill as `create-pr` |

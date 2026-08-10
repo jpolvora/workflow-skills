@@ -35,7 +35,7 @@ Before combined delivery+ship gate. `dryRun`: simulate result + plan edits + ben
 6. **Render Step 8 final board** Telemetry block from [`progress-board.md`](progress-board.md) (Total time + tokens + LOC). Same for auto.
 7. **Update plan checkmarks:** `[x]` per verify report + `completedTasks` + `completedSteps` ≥4.
 8. Register `resultSnapshot` + `telemetry.workflowEndedAt` in state `## Artifacts`.
-9. **G2-delivery** (inside combined Step 8 gate) → stage plan + result → `git commit -m "docs({slug}): delivery plan and result"`.
+9. **G2-delivery** (inside combined Step 8 gate) → resolve stage list from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ARTIFACTS.md) § Step 8 → `git commit -m "docs({slug}): configured delivery artifacts"`.
 10. Log `step-8-delivery-commit | {sha}` in `## Gate history` and `commits[]`.
 
 **HS-5:** If any non-skipped completed step lacks a numeric `elapsedSec` in `telemetry.steps[]`, or Benchmark omits **Total wall-clock time**, STOP before final board / ship gate.

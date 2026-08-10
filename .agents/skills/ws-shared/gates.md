@@ -135,15 +135,15 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 Replaces the old separate delivery (Step 12) and ship (Step 13) gates. Presented by the orchestrator at **standard Step 8** / **lite Step 4**:
 
-1. **Commit plan + result, then create PR** (Recommended when `fullMode`)
-2. **Commit plan + result, push only**
-3. **Commit plan + result, skip PR**
+1. **Commit configured delivery artifacts, then create PR** (Recommended when `fullMode`)
+2. **Commit configured delivery artifacts, push only**
+3. **Commit configured delivery artifacts, skip PR**
 4. **Skip delivery commit and skip shipping**
 5. **Pause** (to change model: switch in IDE/agent host, then resume)
 
-When `fullMode` is false, Recommended = **Skip delivery commit and skip shipping** (option 4) unless user explicitly wants push-only. When `fullMode` is true, Recommended = **Commit plan + result, then create PR** (option 1).
+When `fullMode` is false, Recommended = **Skip delivery commit and skip shipping** (option 4) unless user explicitly wants push-only. When `fullMode` is true, Recommended = **Commit configured delivery artifacts, then create PR** (option 1).
 
-G2-delivery stages `step-02-{slug}.plan.refined.md` if present, else `step-01-{slug}.plan.md`, plus `step-08-{slug}.result.md` only.
+G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
 
 MEMORY.md / ws-self-learning sweep runs automatically after a successful delivery commit (no separate §Doc gate).
 
@@ -199,7 +199,7 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 | Context | Index 0 |
 |---------|---------|
 | Transition | Next (Advance) |
-| Combined delivery + ship (`fullMode`) | Commit plan + result, then create PR |
+| Combined delivery + ship (`fullMode`) | Commit configured delivery artifacts, then create PR |
 | Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
 | Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
