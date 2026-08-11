@@ -17,9 +17,11 @@ If WI/issue and PR differ materially, prefer WI/issue; optional abbreviated `PR:
 ```text
 ### US {id} — {short title}
 Date: {YYYY-MM-DD}
-Start: {HH:mm}
-End: {HH:mm}
-Duration: {H:MM}
+Wall Clock: {HH:mm} – {HH:mm} ({wallClockDuration})
+Human Work Duration: {humanDuration} (Billable)
+Human Breakdown: Reviewing/Deciding {reviewingDuration} | Editing Specs/Plans {editingDuration} | Prompting {promptingDuration}
+Agent Execution (Wait Time): {agentWaitDuration}
+Idle / AFK Gap: {idleDuration}
 Description:
 {line1}
 {line2 optional}
@@ -28,34 +30,57 @@ Description:
 | Field | Rule |
 |-------|------|
 | **Date** | Civil day of the segment (report timezone) |
-| **Start** | `HH:mm` of start, or `00:00` if continuation clip |
-| **End** | `HH:mm` of end event, or `23:59` if mid-span clip |
-| **Description** | ≤ **2 lines**, en-us; `US {id}` + what shipped + `PR {n}` when known |
+| **Wall Clock** | `HH:mm` start to `HH:mm` end event (`{wallClockDuration}`) |
+| **Human Work Duration** | Total active human duration ({H:MM}) |
+| **Human Breakdown** | Breakdown of active human time (Reviewing/Deciding, Editing Specs/Plans, Prompting) |
+| **Agent Execution (Wait Time)** | Total time human spent waiting for active agent tool execution/turn completion |
+| **Idle / AFK Gap** | Non-work inactive gaps > 30 minutes |
+| **Description** | ≤ **2–3 lines**, en-us; `US {id}` + what shipped + human work summary + `PR {n}` |
 
 ### Description examples
 
 ```text
 US 183 — fixed broken ws-shared link paths in THRESHOLDS.md.
+Human Work: 0:45 (Reviewing & Deciding: 0:25, Editing Specs: 0:20). Agent Wait: 0:15.
 PR 42 — closed after review / fix-pr.
 ```
 
 ## Technical table (mandatory)
 
-Every run must include **Short title**:
+Every run must include **Short title**, **Human Time**, and **Agent Wait**:
 
-| US | Short title | Start | End | End kind | PR | Last event | Thread | Author |
-|----|-------------|-------|-----|----------|-----|------------|--------|--------|
+| US | Short title | Start | End | Human Time | Agent Wait | Idle Gap | Main Human Activity | Data Sources | End kind | PR |
+|----|-------------|-------|-----|------------|------------|----------|---------------------|--------------|----------|----|
 
 Optional audit columns when space allows:
 
-| US | Short title | Title source | First bootstrap file | Start | End | End kind | PR | Last event | Thread | Author | Merge PR (ref.) |
-|----|-------------|----------------|----------------------|-------|-----|----------|-----|------------|--------|--------|-----------------|
+| US | Short title | Title source | First bootstrap file | Start | End | Human Time | Agent Wait | Idle Gap | Main Human Activity | Data Sources | End kind | PR | Author |
+|----|-------------|----------------|----------------------|-------|-----|------------|------------|----------|---------------------|--------------|----------|----|--------|
 
 `End kind` ∈ `thread` | `commit` | `gap`. `Title source` ∈ `WI` | `issue` | `PR` | `spec`.
 
+## Invoice & Payment Summary
+
+```text
+### Activity Report — Invoice & Payment Summary
+Target Date: {date} ({tz})
+Total Billable Human Work Time: {totalHumanTime}
+  - Reviewing & Deciding: {totalReviewingTime}
+  - Editing Specs & Plans: {totalEditingTime}
+  - Prompting & Iterating: {totalPromptingTime}
+Total Agent Execution (Wait) Time: {totalAgentWaitTime}
+Total Wall Clock Duration: {totalWallClockSpan}
+
+Invoice Line Items:
+| Spec / Task ID | Title | Billable Human Hours | Main Activity |
+|----------------|-------|----------------------|---------------|
+| US {id} | {short title} | {humanDuration} | {mainHumanActivity} |
+```
+
 ## Summary
 
-- Sum of entry durations
+- Sum of active human work durations (Billable)
+- Sum of agent execution wait times
 - Wall-clock min→max across entries
 - PR ids covered
 - Gaps (missing PR, auth, comments, bootstrap files)

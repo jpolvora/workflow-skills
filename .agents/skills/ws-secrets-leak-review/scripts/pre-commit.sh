@@ -21,10 +21,17 @@ for skills_root in \
   "${WORKFLOW_SKILLS_GLOBAL_DIR:-}" \
   "${HOME:-/nonexistent}/.agents/skills"; do
   [ -n "$skills_root" ] || continue
+  skills_root="${skills_root//\\//}"
   candidate="$skills_root/ws-secrets-leak-review/scripts/secrets_scanner.sh"
   if [ -f "$candidate" ]; then
     SCANNER="$candidate"
     break
+  elif command -v wslpath &>/dev/null; then
+    wsl_cand=$(wslpath -u "$candidate" 2>/dev/null || true)
+    if [ -n "$wsl_cand" ] && [ -f "$wsl_cand" ]; then
+      SCANNER="$wsl_cand"
+      break
+    fi
   fi
 done
 

@@ -66,3 +66,20 @@ If start and end fall on different civil days in the report timezone:
 ## Overlap
 
 Always emit **real** clocks (start → end). Warn when entries overlap on the target day. Repack without overlap **only** if the user asks.
+
+## Inferred Human Work Duration & Billing Telemetry
+
+Run `python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-dir}` to compute active human work time, agent execution wait time, idle gaps, and activity category breakdowns.
+
+### Human Work Categories
+
+1. **Reviewing / Deciding / Gating**: Time spent reading plans, specs, diffs, answering `user-gate` prompts, reviewing PR threads, and approving step transitions.
+2. **Editing Specs / Plans / Code**: Time spent by human writing/editing `.spec.md`, `.plan.md`, `AGENTS.md`, or manual code edits (human git commits and file modifications).
+3. **Prompting & Directing**: Active human prompt authoring and task direction time.
+
+### Telemetry & Inactivity Thresholds
+
+- **Agent Execution (Wait Time)**: Active intervals where the agent/LLM was running tools, implementing tasks, or generating automated outputs while the human waited.
+- **Idle / AFK Gaps**: Non-work gaps > 30 minutes of zero human/agent interaction (e.g., overnight, away from desk).
+- **Data Sources Evaluated**: Local git commit logs, workflow state files (`*.state.md`, `exec.dag.json`), SCM PR threads/comments, and local session transcript telemetry (`transcript.jsonl`).
+
