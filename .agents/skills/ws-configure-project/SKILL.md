@@ -4,8 +4,9 @@
 
 
 
+
 name: ws-configure-project
-version: 0.3.4
+version: 0.3.5
 description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
 invocation_names:
   - configure-project
@@ -62,9 +63,13 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
       2. `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload --write-root-agents [--force]` — refreshes Always-applied paths and writes thin repo-root `AGENTS.md` that (a) points at `{sharedDir}/AGENTS.md`, (b) instructs agents to load Always-applied from `autoload.md`, (c) notes root autoload overrides shared-hub on-demand defaults. Paths: project-local `.agents/skills/ws-<id>/SKILL.md` when present; else `{globalSkillsRoot}/ws-<id>/SKILL.md`. Never absolute author-machine paths. Default `--repo-root` is **cwd**. Helper refuses non-generated root without `--force` (writes `AGENTS.md.bak` when forced).
       3. Only after root write succeeds: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload true`. On any failure after a premature flag write, roll back with `--set-autoload false`.
    3. On **No (`false`)** / Keep current (when already false) / Skip: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload false` (or leave false); optionally `--write-autoload` to refresh paths; do **not** require creating root `AGENTS.md`.
-   - Done when: `defaults.autoload` persisted; if true, root + autoload paths resolved; if false, root remains optional.
+7. **Security pre-commit hook** — Ask via `user-gate`: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
+   - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
+   - On **Yes (`true`)**: run `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.
+   - Never auto-installed or enforced on install; presented strictly as an optional interview gate.
+   - Done when: user selection handled; hook installed if explicitly requested.
 
-7. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`.
+8. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`.
    - Done when: summary shown; `--detect-only` ends after step 2 with no write.
 
 ## Rules

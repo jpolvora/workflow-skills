@@ -827,7 +827,8 @@ child.on('close', async (code) => {
     if (init.status !== 0) fail(`Secrets hook scratch git init failed:\n${init.stderr}`);
 
     fs.writeFileSync(hook, '#!/usr/bin/env bash\necho foreign-hook\n', { mode: 0o755 });
-    const install = cp.spawnSync('bash', [installHook], { encoding: 'utf8', cwd: scratch });
+    const relHook = path.relative(scratch, installHook).replace(/\\/g, '/');
+    const install = cp.spawnSync('bash', [relHook], { encoding: 'utf8', cwd: scratch });
     if (install.status !== 0) {
       fail(`Secrets hook install failed: status=${install.status}\n${install.stderr || install.stdout}`);
     }
@@ -845,10 +846,11 @@ child.on('close', async (code) => {
     const syntheticAwsKey = ['AKIA', '3JQ7BZ2LMWX9QTRV'].join('');
     fs.writeFileSync(path.join(scratch, 'leak.txt'), `aws_access_key_id = ${syntheticAwsKey}\n`);
     cp.spawnSync('git', ['add', 'leak.txt'], { encoding: 'utf8', cwd: scratch });
-    const hookRun = cp.spawnSync('bash', [hook], {
+    const relHookRunPath = path.relative(scratch, hook).replace(/\\/g, '/');
+    const hookRun = cp.spawnSync('bash', [relHookRunPath], {
       encoding: 'utf8',
       cwd: scratch,
-      env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: testSkillsDir }
+      env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: testSkillsDir, WSLENV: 'WORKFLOW_SKILLS_GLOBAL_DIR/p' }
     });
     const hookOutput = `${hookRun.stdout || ''}${hookRun.stderr || ''}`;
     if (hookRun.status !== 1 || !/COMMIT BLOCKED/.test(hookOutput) || !/AWS Access Key/.test(hookOutput)) {
@@ -857,7 +859,7 @@ child.on('close', async (code) => {
       );
     }
 
-    const reinstall = cp.spawnSync('bash', [installHook], { encoding: 'utf8', cwd: scratch });
+    const reinstall = cp.spawnSync('bash', [relHook], { encoding: 'utf8', cwd: scratch });
     if (reinstall.status !== 0) fail(`Secrets hook reinstall failed:\n${reinstall.stderr}`);
     const backupsAfter = fs
       .readdirSync(hooksDir)
@@ -865,7 +867,9 @@ child.on('close', async (code) => {
     if (backupsAfter.length !== 1) {
       fail('Reinstalling the generated secrets hook must not create another backup');
     }
-    fs.rmSync(scratch, { recursive: true, force: true });
+    try {
+      fs.rmSync(scratch, { recursive: true, force: true });
+    } catch {}
 
     // Exercise foreign-symlink preservation where the host permits symlink creation.
     const symlinkScratch = path.join(__dirname, '.tmp-secrets-hook-symlink');
@@ -882,7 +886,8 @@ child.on('close', async (code) => {
       // Windows without Developer Mode cannot create symlinks; regular-hook coverage above applies.
     }
     if (symlinkCreated) {
-      const installOverSymlink = cp.spawnSync('bash', [installHook], {
+      const relSymlinkHookPath = path.relative(symlinkScratch, installHook).replace(/\\/g, '/');
+      const installOverSymlink = cp.spawnSync('bash', [relSymlinkHookPath], {
         encoding: 'utf8',
         cwd: symlinkScratch
       });
@@ -899,7 +904,9 @@ child.on('close', async (code) => {
         fail('Secrets hook installer must preserve a foreign symlink hook as a symlink backup');
       }
     }
-    fs.rmSync(symlinkScratch, { recursive: true, force: true });
+    try {
+      fs.rmSync(symlinkScratch, { recursive: true, force: true });
+    } catch {}
     ok('Secrets hook preserves foreign hooks and resolves global installs at runtime');
   }
   // Spec-before-plan contract: register writes {specsDir} spec of record, then {plansDir} step-00

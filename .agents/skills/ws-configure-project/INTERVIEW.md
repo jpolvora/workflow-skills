@@ -67,8 +67,21 @@ Scan consumer **repo root** (not this skill package alone):
    Merge-write into `config.json` without deleting unknown keys; preserve `_comment*` keys.
 8. `domain` / `rules` — optional
 9. `autoload` — optional (or standalone `--section autoload`)
+10. `security` — optional pre-commit hook enablement gate:
+    - User-gate: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
+    - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
+    - Execution on Yes: `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.
 
 Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.
+
+## Security & Pre-Commit Hook
+
+Optional interview gate to install secrets leak scanning into consumer `.git/hooks/pre-commit`.
+
+| Signal | Suggest | Action |
+|--------|---------|--------|
+| `.git/hooks/pre-commit` contains `ws-secrets-leak-review-hook` | Hook already active | Keep current / Skip |
+| Hook missing | **No (`false`, Recommended)** / Yes (`true`) / Skip | On **Yes**: run `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh` |
 
 ## Autoload
 
