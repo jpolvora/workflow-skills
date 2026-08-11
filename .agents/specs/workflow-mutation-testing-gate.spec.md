@@ -4,6 +4,7 @@ slug: workflow-mutation-testing-gate
 title: "Mutation testing gate in Spec-to-PR (Step 7)"
 source: local
 specDate: 2026-08-10
+status: completed
 ---
 
 # Specification — Mutation testing gate in Spec-to-PR (Step 7)

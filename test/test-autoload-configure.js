@@ -78,6 +78,8 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
   const skills = [
     'ws-senior-developer',
     'ws-self-learning',
+    'ws-patterns-backend',
+    'ws-patterns-frontend',
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',
@@ -165,6 +167,8 @@ function parseJsonOut(result) {
   for (const id of [
     'ws-senior-developer',
     'ws-self-learning',
+    'ws-patterns-backend',
+    'ws-patterns-frontend',
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',

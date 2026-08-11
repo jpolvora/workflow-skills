@@ -4,6 +4,7 @@ slug: configurable-delivery-commit-artifacts
 title: "Configurable delivery-commit artifacts (config + ws-configure-project)"
 source: local
 specDate: 2026-08-10
+status: completed
 ---
 
 # Specification — Configurable delivery-commit artifacts (config + ws-configure-project)

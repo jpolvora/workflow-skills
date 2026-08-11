@@ -16,6 +16,8 @@ When root `AGENTS.md` points here, load these every prompt (unless the user opte
 |-------|------|---------|
 | `ws-senior-developer` | `{skillsRoot}/ws-senior-developer/SKILL.md` | Every prompt — delivery gate / Code review proof |
 | `ws-self-learning` | `{skillsRoot}/ws-self-learning/SKILL.md` | Every mutating task — MEMORY consult + trap write |
+| `ws-patterns-backend` | `{skillsRoot}/ws-patterns-backend/SKILL.md` | Backend tasks — backend.md consult + pattern write |
+| `ws-patterns-frontend` | `{skillsRoot}/ws-patterns-frontend/SKILL.md` | Frontend tasks — frontend.md consult + pattern write |
 | `ws-changelog` | `{skillsRoot}/ws-changelog/SKILL.md` | Every task completion — append-only history |
 | `ws-fable-method` | `{skillsRoot}/ws-fable-method/SKILL.md` | Every prompt — structured investigate/act/verify when non-trivial |
 | `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
@@ -27,10 +29,11 @@ Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win
 1. Explicit user instructions (current turn)
 2. Design / spec / architecture constraints
 3. `ws-karpathy-guidelines` (shared-hub mandatory; surgical scope — not listed in the table above)
-4. `ws-senior-developer` (delivery gate + Code review proof; opt out `stop ws-senior-developer`)
-5. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
-6. `ws-tdah` (reply shape; does not override senior proof depth)
-7. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
+4. `ws-patterns-backend` / `ws-patterns-frontend` (Backend / Frontend pattern consultation & rules enforcement)
+5. `ws-senior-developer` (delivery gate + Code review proof; opt out `stop ws-senior-developer`)
+6. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
+7. `ws-tdah` (reply shape; does not override senior proof depth)
+8. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
 
 **Fable vs senior (single rule):** Orch or confirmed senior plan → no fable Plan-First / competing plan ceremony. Fable Verify does not replace senior Code review proof.
 
