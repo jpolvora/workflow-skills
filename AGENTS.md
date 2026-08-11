@@ -348,7 +348,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 
 ## Skill catalog (layers)
 
-> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 37 skills, `extra` = 2) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
+> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 39 skills, `extra` = 2) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per § [Progressive disclosure](#progressive-disclosure-load-on-demand).
 
@@ -413,6 +413,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Specs |
 | `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
+| `ws-patterns-backend` | `.agents/skills/ws-patterns-backend/SKILL.md` | Consult backend.md before write; record patterns after → `{sharedDir}/backend.md` |
+| `ws-patterns-frontend` | `.agents/skills/ws-patterns-frontend/SKILL.md` | Consult frontend.md before write; record patterns after → `{sharedDir}/frontend.md` |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
 | `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` (may optionally suggest secrets pre-commit hook — never required) |
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
@@ -440,6 +442,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
+| Backend patterns & rules | `ws-patterns-backend` |
+| Frontend UI/UX patterns & rules | `ws-patterns-frontend` |
 | Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship PR | `ws-ship-pr` |

@@ -3,7 +3,7 @@
 
 name: ws-azure-devops-provider
 description: Azure DevOps work-item→spec and PR ops (PAT auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is azure-devops or user invokes /ws-azure-devops-provider.
-version: 0.3.6
+version: 0.3.7
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider

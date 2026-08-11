@@ -6,7 +6,7 @@
 
 
 name: ws-configure-project
-version: 0.3.6
+version: 0.3.7
 description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
 invocation_names:
   - configure-project

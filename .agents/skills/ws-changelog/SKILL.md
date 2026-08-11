@@ -2,7 +2,7 @@
 
 
 name: ws-changelog
-version: 0.3.6
+version: 0.3.7
 description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
 invocation_names:
   - changelog
