@@ -44,6 +44,8 @@
 | `STACK.md` | Human-readable companion to `config.json` (edit freely) |
 | `MEMORY.md` | Compiled anti-regression index (`ws-self-learning` skill) |
 | `memory/*.md` | Individual memory entries (compile into `MEMORY.md`) |
+| `backend.md` | Consumer-owned backend architectural patterns & rules (`ws-patterns-backend` skill) |
+| `frontend.md` | Consumer-owned frontend UI/UX patterns & rules (`ws-patterns-frontend` skill) |
 | `CHANGELOG.md` | Append-only history (`ws-changelog` skill; default `rules.changelogFile`) |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` (installer-written) |
 
@@ -113,6 +115,8 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 | `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
 | `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
+| `ws-patterns-backend` | [`../ws-patterns-backend/SKILL.md`](../ws-patterns-backend/SKILL.md) |
+| `ws-patterns-frontend` | [`../ws-patterns-frontend/SKILL.md`](../ws-patterns-frontend/SKILL.md) |
 
 ### Harness & review (Workflows package)
 
@@ -156,6 +160,8 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
 | Engineering delivery gate / Code review proof | `ws-senior-developer` (default on-demand; opt in via `rules.seniorDeveloper`; root `AGENTS.md` may autoload — see § Consumer root override) |
+| Backend patterns & architectural preferences | `ws-patterns-backend` |
+| Frontend UI/UX patterns & component preferences | `ws-patterns-frontend` |
 | Fill / update `config.json` | `ws-configure-project` (optional suggestion only for secrets pre-commit hook — never required) |
 | Audit harness | `ws-check-harness` |
 | Check workflows | `ws-check-workflows` |

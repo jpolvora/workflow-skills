@@ -4,6 +4,7 @@ slug: configurable-consumer-autoload
 title: "Configurable consumer autoload (config flag + root AGENTS.md + harness)"
 source: local
 specDate: 2026-08-10
+status: completed
 ---
 
 # Specification — Configurable consumer autoload (config flag + root AGENTS.md + harness)

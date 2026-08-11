@@ -116,6 +116,16 @@
           "default": false,
           "description": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted or missing config → effective false."
         },
+        "patternsBackend": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true, ws-patterns-backend is enabled in autoload.md and consulted during backend implementations."
+        },
+        "patternsFrontend": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true, ws-patterns-frontend is enabled in autoload.md and consulted during frontend implementations."
+        },
         "deliveryCommitArtifacts": {
           "type": "object",
           "description": "Which {us-dir} artifacts to stage in the Step 8 delivery commit. Missing object or omitted keys merge to AC1 defaults at read time (includeRefinedPlan true; includeDeliveryResult and all opt-ins false). Never silently fall back to legacy always plan+result.",

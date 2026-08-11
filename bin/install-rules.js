@@ -22,6 +22,8 @@ export const HUB_WHITELIST = [
   'hub.gitignore',
   'MEMORY.md.template',
   'CHANGELOG.md.template',
+  'backend.md.template',
+  'frontend.md.template',
   'skill-dependencies.json',
 ];
 
@@ -43,6 +45,8 @@ export const CONSUMER_OWNED_HUB_FILES = new Set([
   'MEMORY.md',
   'STACK.md',
   'CHANGELOG.md',
+  'backend.md',
+  'frontend.md',
   INSTALLED_SKILLS_FILE,
   SKILL_INTEGRITY_LOCAL_FILE,
 ]);

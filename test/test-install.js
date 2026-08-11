@@ -31,11 +31,15 @@ const ignoredPatterns = [
   /(^|[\\/])ws-shared[\\/]stack\.md$/,
   /(^|[\\/])ws-shared[\\/]MEMORY\.md$/,
   /(^|[\\/])ws-shared[\\/]CHANGELOG\.md$/,
+  /(^|[\\/])ws-shared[\\/]backend\.md$/,
+  /(^|[\\/])ws-shared[\\/]frontend\.md$/,
   /(^|[\\/])ws-shared[\\/]installed-skills\.json$/,
   /(^|[\\/])ws-shared[\\/]skill-integrity-local\.json$/,
   /(^|[\\/])ws-shared[\\/]memory([\\/]|$)/,
   /(^|[\\/])ws-shared[\\/]MEMORY\.md\.template$/,
   /(^|[\\/])ws-shared[\\/]CHANGELOG\.md\.template$/,
+  /(^|[\\/])ws-shared[\\/]backend\.md\.template$/,
+  /(^|[\\/])ws-shared[\\/]frontend\.md\.template$/,
   /(^|[\\/])ws-self-learning[\\/]MEMORY\.md$/,
   /(^|[\\/])ws-self-learning[\\/]memory([\\/]|$)/
 ];

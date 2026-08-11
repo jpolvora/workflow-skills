@@ -41,6 +41,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 ### Phase 1: Core Foundation & Provider Abstractions
 - [x] Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) (`spec: spec-provider-skills.spec.md`)
 - [x] Promote shared skills to first-class installable packages (`spec: promote-shared-skills.spec.md`)
+- [x] Skill install checksum integrity (SHA-256 digests + install gate) (`spec: skill-install-checksums/step-00-skill-install-checksums.spec.md`)
 
 ### Phase 2: System Quality & Integration
 - [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: consolidated-gh-issues.spec.md`)
@@ -56,25 +57,35 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Remove Consumer Requirement for packaged `.agents/AGENTS.md`; consumer hub is `ws-shared/` (optional root `AGENTS.md` via autoload) (`spec: remove-consumer-agents-md-requirement.spec.md`)
 - [x] Shared `autoload.md` + configure-project root `AGENTS.md` generation (`spec: shared-autoload-md.spec.md`)
 - [x] Always-applied skills overlap audit & thin complementarity edits (`spec: autoload-skills-overlap-audit.spec.md`)
+- [x] Fix broken `../ws-shared/` links in classify THRESHOLDS.md (`spec: us-183.spec.md`)
+- [x] Opt-in mutation testing gate in Spec-to-PR Step 7 (`spec: workflow-mutation-testing-gate.spec.md`)
+- [x] Configurable delivery-commit artifacts (`defaults.deliveryCommitArtifacts`) (`spec: configurable-delivery-commit-artifacts.spec.md`)
+- [x] Configurable consumer autoload flag (`defaults.autoload` + harness enforce) (`spec: configurable-consumer-autoload.spec.md`)
+- [x] Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) (`spec: project-patterns-memory-skills.spec.md`)
 
 ## 8. Next specs
 
 | # | Spec | Status | Target Phase | Notes |
 |---|------|--------|--------------|-------|
-| 1 | `spec-provider-skills` | `[x]` done | Phase 1 | GitHub, ADO, and local spec provider skills |
-| 2 | `promote-shared-skills` | `[x]` done | Phase 1 | Top-level skill promotion for utilities |
-| 3 | `consolidated-gh-issues` | `[x]` done | Phase 2 | Fixes #106, #109, #110 |
-| 4 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
-| 5 | `continuous-ai-verification-quality-gates` | `[ ]` todo | Phase 3 | Pre-PR fable-judge gate, workflow CI, complexity classifier, and telemetry |
-| 6 | `us-168-resolve-review-thread` | `[x]` done | Phase 3 | GraphQL thread resolution & pre-merge verification gates |
-| 7 | `src-sot-and-hybrid-global-install` | `[x]` done | Phase 3 | Historical: SoT lived under src/; superseded by `.agents/skills` SoT (PR #181) |
-| 8 | `workflow-cleanup-and-branch-protection` | `[x]` done | Phase 3 | Post-run uswf cleanup & base branch protection |
-| 9 | `skill-authoring-and-config-gate-rules` | `[x]` done | Phase 3 | SKILL_AUTHORING guidelines & config check gate |
-| 10 | `ws-spec-list-and-board-management` | `[x]` done | Phase 3 | Dual board spec vs plan inventory management |
-| 11 | `remove-consumer-agents-md-requirement` | `[x]` done | Phase 3 | No packaged `.agents/AGENTS.md`; hub is ws-shared/; optional root AGENTS.md via autoload |
-| 12 | `shared-autoload-md` | `[x]` done | Phase 3 | autoload.md hub + configure-project root AGENTS.md + harness checks |
-| 13 | `autoload-skills-overlap-audit` | `[x]` done | Phase 3 | Thin complementarity for Always-applied set (PR #182) |
-
+| 1 | `continuous-ai-verification-quality-gates` | `[ ]` todo | Phase 3 | Pre-PR fable-judge gate, workflow CI, complexity classifier, and telemetry — **only open Phase 3 next-spec** |
+| 2 | `spec-provider-skills` | `[x]` done | Phase 1 | GitHub, ADO, and local spec provider skills |
+| 3 | `promote-shared-skills` | `[x]` done | Phase 1 | Top-level skill promotion for utilities |
+| 4 | `skill-install-checksums` | `[x]` done | Phase 1 | Install SHA-256 integrity (PR #88) |
+| 5 | `consolidated-gh-issues` | `[x]` done | Phase 2 | Fixes #106, #109, #110 |
+| 6 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
+| 7 | `us-168-resolve-review-thread` | `[x]` done | Phase 3 | GraphQL thread resolution & pre-merge verification gates |
+| 8 | `src-sot-and-hybrid-global-install` | `[x]` done | Phase 3 | Historical: SoT lived under src/; superseded by `.agents/skills` SoT (PR #181) |
+| 9 | `workflow-cleanup-and-branch-protection` | `[x]` done | Phase 3 | Post-run uswf cleanup & base branch protection |
+| 10 | `skill-authoring-and-config-gate-rules` | `[x]` done | Phase 3 | SKILL_AUTHORING guidelines & config check gate |
+| 11 | `ws-spec-list-and-board-management` | `[x]` done | Phase 3 | Dual board spec vs plan inventory management |
+| 12 | `remove-consumer-agents-md-requirement` | `[x]` done | Phase 3 | No packaged `.agents/AGENTS.md`; hub is ws-shared/; optional root AGENTS.md via autoload |
+| 13 | `shared-autoload-md` | `[x]` done | Phase 3 | autoload.md hub + configure-project root AGENTS.md + harness checks |
+| 14 | `autoload-skills-overlap-audit` | `[x]` done | Phase 3 | Thin complementarity for Always-applied set (PR #182) |
+| 15 | `us-183` | `[x]` done | Phase 3 | Fix classify THRESHOLDS.md relative links (PR #184) |
+| 16 | `workflow-mutation-testing-gate` | `[x]` done | Phase 3 | Opt-in Step 7 mutation substep (PR #186) |
+| 17 | `configurable-delivery-commit-artifacts` | `[x]` done | Phase 3 | Config-driven G2-delivery staging (PR #187) |
+| 18 | `configurable-consumer-autoload` | `[x]` done | Phase 3 | `defaults.autoload` + configure + harness (PR #188) |
+| 19 | `project-patterns-memory-skills` | `[x]` done | Phase 3 | `ws-patterns-backend` & `ws-patterns-frontend` skills |
 
 ## 9. Inbox (unscheduled ideas)
 
@@ -87,6 +98,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 |------|------|-------|-------------|
 | 2026-07-13 | `spec-provider-skills` | Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) | Implemented |
 | 2026-07-16 | `promote-shared-skills` | Promote shared skills to first-class installable packages | Implemented |
+| 2026-07-20 | `skill-install-checksums` | Skill install checksum integrity (SHA-256) | [PR #88](https://github.com/jpolvora/workflow-skills/pull/88) |
 | 2026-07-23 | `consolidated-gh-issues` | Consolidated GitHub Issues Fix: #106, #109, and #110 | Implemented |
 | 2026-07-24 | `fable-skills-integration` | Opt-in Integration of fable-* Skills with spec-to-pr Workflows | Implemented |
 | 2026-08-01 | `us-168-resolve-review-thread` | fix(ws-goal-fix-pr): execute resolveReviewThread GraphQL mutation | Implemented |
@@ -95,13 +107,19 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 2026-08-07 | `skill-authoring-and-config-gate-rules` | Skill Authoring Guidelines and Global Skill Config Verification Gate | Implemented |
 | 2026-08-01 | `ws-spec-list-and-board-management` | Dual-Board Spec and Plan Inventory Management via ws-spec-list | Implemented |
 | 2026-08-07 | `remove-consumer-agents-md-requirement` | Remove packaged `.agents/AGENTS.md` requirement; hub is ws-shared/ | Implemented |
-| 2026-08-08 | `autoload-skills-overlap-audit` | Always-applied skills overlap audit & thin complementarity | PR #182 |
+| 2026-08-08 | `autoload-skills-overlap-audit` | Always-applied skills overlap audit & thin complementarity | [PR #182](https://github.com/jpolvora/workflow-skills/pull/182) |
 | 2026-08-08 | `shared-autoload-md` | Shared autoload.md + configure-project root AGENTS.md generation | Implemented |
+| 2026-08-09 | `us-183` | Fix broken ../ws-shared/ links in classify THRESHOLDS.md | [PR #184](https://github.com/jpolvora/workflow-skills/pull/184) |
+| 2026-08-10 | `workflow-mutation-testing-gate` | Opt-in mutation testing gate in Step 7 | [PR #186](https://github.com/jpolvora/workflow-skills/pull/186) |
+| 2026-08-10 | `configurable-delivery-commit-artifacts` | Configurable delivery-commit artifacts | [PR #187](https://github.com/jpolvora/workflow-skills/pull/187) |
+| 2026-08-10 | `configurable-consumer-autoload` | Configurable consumer autoload (`defaults.autoload`) | [PR #188](https://github.com/jpolvora/workflow-skills/pull/188) |
+| 2026-08-11 | `project-patterns-memory-skills` | Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) | Implemented |
 
 ## 11. Maintenance checklist
 
 - [x] All completed features logged in Done log.
 - [x] Linked `*.spec.md` files exist for active Next specs.
+- [x] Open Next-specs todos reviewed (only `continuous-ai-verification-quality-gates` remains `[ ]`).
 
 ## 12. Related docs
 
