@@ -103,8 +103,8 @@ function testBaseBranchResolution() {
     setup.replace(/main.*master|master.*main/g, ''),
   );
   assert(
-    !soleMasterOnly || /never treat `master` as the sole/.test(setup),
-    'testBaseBranchResolution: master not the only base example without guard',
+    !soleMasterOnly,
+    'testBaseBranchResolution: no base example hardcodes only master without guard',
   );
 }
 
@@ -213,10 +213,11 @@ function testResumeSkipAndMismatch() {
     /skip bootstrap[\s\S]*5b Feature branch gate[\s\S]*do not re-run/i.test(setup),
     'testResumeSkipAndMismatch: resume skips 5b feature branch gate',
   );
+  const resumeSection = setup.split('Branch resume')[1] ?? '';
   assert(
-    /Check out `\{state\.branch\}` \(Recommended\)/.test(setup) &&
-      /Cancel \(HS-1\)/.test(setup.split('Branch resume')[1] || setup),
-    'testResumeSkipAndMismatch: HEAD mismatch STOP with checkout-recorded / cancel',
+    resumeSection.includes('Check out `{state.branch}` (Recommended)') &&
+      resumeSection.includes('Cancel (HS-1)'),
+    'testResumeSkipAndMismatch: HEAD mismatch STOP offers checkout-recorded / cancel in 4b',
   );
   assert(
     /Feature branch resume mismatch.*Check out `state\.branch`/s.test(gates),
