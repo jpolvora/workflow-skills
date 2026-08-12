@@ -112,7 +112,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - **Cancel (HS-1)**
    Never `git reset`, never `git branch -D`, never overwrite an existing feature branch.
 
-   **`autoMode`:** no `user-gate`; **stay** on current HEAD (no git mutation). Set `state.branch` = `{currentBranch}`, `branchStrategy: stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay | {branch} | ISO`.
+   **`autoMode`:** no `user-gate`. If `{currentBranch}` is `HEAD` (detached): do **not** stay — create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`); if that ref already exists, check it out (`checkout-existing`). Never persist the literal `HEAD` as `state.branch`. Otherwise **stay** on current HEAD (no git mutation), `branchStrategy: stay`. Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|checkout-existing | {branch} | ISO`.
 
    **`dryRun`:** prefix `[DRY-RUN]`; show the gate choices (or auto default) and the git commands that **would** run; **no ref mutation** (do not run `git checkout -b`, `git checkout`, or `git fetch`).
 
@@ -134,7 +134,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    | Choice | Git action | `branchStrategy` |
    |--------|------------|------------------|
    | Create from current HEAD (option 1) | `git checkout -b {name}` from HEAD. Uncommitted files come along. | `from-current` |
-   | Create from `{baseBranch}` (option 2) | If `{gitRemote}` exists: `git fetch {gitRemote} {baseBranch}` then `git checkout -b {name} {gitRemote}/{baseBranch}`. Else: `git checkout -b {name} {baseBranch}`. If fetch fails: STOP; offer retry with local `{baseBranch}` / cancel. | `from-base` |
+   | Create from `{baseBranch}` (option 2) | If `{gitRemote}` exists: `git fetch {gitRemote} {baseBranch}` then `git checkout -b {name} {gitRemote}/{baseBranch} --no-track` (`--no-track` so the new branch does not auto-track `{baseBranch}`; `@{u}` must not look like a first-push upstream). Else: `git checkout -b {name} {baseBranch}`. If fetch fails: STOP; offer retry with local `{baseBranch}` / cancel. | `from-base` |
    | Stay on current (option 3) | No checkout/create. Invalid when detached. | `stay` |
    | Check out existing `feat/{slug}` | `git checkout {name}` only. Never `reset`, never `-D`. | `checkout-existing` |
 

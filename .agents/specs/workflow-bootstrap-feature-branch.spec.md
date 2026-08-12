@@ -64,7 +64,7 @@ If HEAD is detached: treat "stay" as invalid; require create-from-current (names
 - Write `state.branch` to the chosen/created branch name (existing `state.md` field).
 - Record `branchStrategy: from-current | from-base | stay` and `baseBranch` in state frontmatter (or an equivalent documented key) so resume and ship do not re-ask.
 - Init banner already lists `branch` / `baseBranch`; keep those rows in sync with the gate result.
-- **Workflow-mode** `ws-ship-pr` (standard Step 8 / lite Step 4) MUST use `state.branch` as PR **head**, not blindly `config.project.workingBranch`. Preflight "confirm active branch is workingBranch" becomes "confirm active branch is `state.branch`". Standalone `/ship-pr` without a workflow state file is unchanged (`head` still defaults to `workingBranch`).
+- **Workflow-mode** `ws-ship-pr` (standard Step 8 / lite Step 4) MUST use `state.branch` as PR **head**, not blindly `config.project.workingBranch`. Preflight "confirm active branch is workingBranch" becomes "confirm active branch is `state.branch`". Skip `git pull` when `git ls-remote --heads` does not show that head (first-push local `feat/{slug}`); do not trust `@{u}`. Standalone `/ship-pr` without a workflow state file is unchanged (`head` still defaults to `workingBranch`).
 - Do **not** rewrite `config.project.workingBranch` for this run.
 
 ### When the gate is skipped
@@ -72,7 +72,7 @@ If HEAD is detached: treat "stay" as invalid; require create-from-current (names
 | Situation | Behavior |
 |-----------|----------|
 | Resume of `active` / `paused` workflow | Skip. Use existing `state.branch`. If HEAD ≠ `state.branch`, STOP and offer checkout of `state.branch` / cancel. |
-| `autoMode` | No prompt. Default: **stay on current** (no git mutation). Log `branch-gate \| auto \| stay \| {branch} \| ISO`. |
+| `autoMode` | No prompt. Default: **stay on current** (no git mutation) except when detached (`HEAD`): create `feat/{slug}` from HEAD (`from-current`); never persist the literal `HEAD`. Log `branch-gate \| auto \| stay\|from-current\|checkout-existing \| {branch} \| ISO`. |
 | `dryRun` | Show the gate (or auto default) and the git commands that **would** run; do not create or switch branches. |
 | `ws-multi-spec` worker | Same as any new orch bootstrap (per-spec gate, or stay-on-current in `autoMode`). No batch-level override in v1. |
 
@@ -93,8 +93,8 @@ If HEAD is detached: treat "stay" as invalid; require create-from-current (names
 - AC5: Choosing stay-on-current performs no branch create/switch; `state.branch` equals the pre-gate HEAD name. Detached HEAD cannot use stay.
 - AC6: If `feat/{slug}` already exists, the agent does not reset it; it offers checkout-existing / different name / stay / cancel.
 - AC7: Resume skips the feature-branch gate and keeps `state.branch`. If HEAD differs from `state.branch`, STOP with checkout-recorded / cancel (no silent switch).
-- AC8: `autoMode` skips the prompt and stays on current HEAD; the choice is logged. `dryRun` does not mutate git refs.
-- AC9: Workflow-mode `ws-ship-pr` uses `state.branch` as PR head and preflight current-branch check. Standalone `/ship-pr` without workflow state still defaults head to `config.project.workingBranch`. Config `workingBranch` is not rewritten.
+- AC8: `autoMode` skips the prompt and stays on current HEAD except when detached (`HEAD`): then create `feat/{slug}` from HEAD (`from-current`) and never persist the literal `HEAD`. The choice is logged. `dryRun` does not mutate git refs.
+- AC9: Workflow-mode `ws-ship-pr` uses `state.branch` as PR head and preflight current-branch check. Skip `git pull` when `git ls-remote --heads {gitRemote} {shipHead}` does not show the ref (first-push `feat/{slug}`). Do not treat `@{u}` as proof the head exists on the remote (create-from-base can auto-track `{baseBranch}`). Standalone `/ship-pr` without workflow state still defaults head to `config.project.workingBranch`. Config `workingBranch` is not rewritten.
 - AC10: Shared bootstrap docs (`ws-shared/setup.md`) and the init banner `branch` / `baseBranch` rows describe this gate; both standard and lite orchs share the same behavior (no orch-specific fork of the gate).
 - AC11: Protected/long-lived names (`main`, `master`, `develop`, configured base/working) remain valid **stay** targets with an explicit warning in the gate copy that ship will use that branch as PR head; the agent still does not create a feature branch unless the user picks option 1 or 2.
 

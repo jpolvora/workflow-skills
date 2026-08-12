@@ -144,6 +144,10 @@ function testCreateFromBaseAndDirtyStop() {
     'testCreateFromBaseAndDirtyStop: fetch remote base documented',
   );
   assert(
+    /--no-track/.test(setup),
+    'testCreateFromBaseAndDirtyStop: create-from-base uses --no-track so @{u} does not track base',
+  );
+  assert(
     /git checkout -b \{name\} \{baseBranch\}/.test(setup),
     'testCreateFromBaseAndDirtyStop: local base checkout documented',
   );
@@ -231,8 +235,10 @@ function testResumeSkipAndMismatch() {
 function testAutoModeStayAndDryRun() {
   assert(
     /`autoMode`[\s\S]*?stay[\s\S]*?current HEAD/i.test(setup) &&
-      /branch-gate \| auto \| stay/.test(setup),
-    'testAutoModeStayAndDryRun: autoMode stay + branch-gate | auto | stay log',
+      /branch-gate \| auto \| stay/.test(setup) &&
+      /Never persist the literal `HEAD`/.test(setup) &&
+      /detached[\s\S]*?create `feat\/\{slug\}` from HEAD/.test(setup),
+    'testAutoModeStayAndDryRun: autoMode stay + detached creates feat/{slug}; never persist HEAD',
   );
   assert(
     /`dryRun`:.*no ref mutation/i.test(setup) &&
@@ -265,9 +271,9 @@ function testShipPrWorkflowHead() {
     /pull only when upstream exists/i.test(ship) &&
       /skip pull/i.test(ship) &&
       /skipped \(no upstream\)/i.test(ship) &&
-      (/git rev-parse --abbrev-ref @\{u\}/.test(ship) ||
-        /git ls-remote --heads/.test(ship)),
-    'testShipPrWorkflowHead: skip pull when no upstream documented',
+      /git ls-remote --heads/.test(ship) &&
+      /Do \*\*not\*\* trust `@\{u\}`/.test(ship),
+    'testShipPrWorkflowHead: skip pull when ls-remote misses head; do not trust @{u}',
   );
 }
 
