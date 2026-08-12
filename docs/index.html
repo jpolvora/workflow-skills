@@ -95,7 +95,7 @@
 
   <div class="hero-metrics">
     <div class="metric-card">
-      <div class="metric-val cyan">30+</div>
+      <div class="metric-val cyan">40+</div>
       <div class="metric-lbl">Shipped Skills</div>
     </div>
     <div class="metric-card">
@@ -135,7 +135,7 @@
       </button>
       <button type="button" class="how-tab-btn" data-target="panel-matrix">
         <span>Skill Role Matrix</span>
-        <span class="tab-badge">35+ Skills</span>
+        <span class="tab-badge">40+ Skills</span>
       </button>
     </div>
 
@@ -152,7 +152,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 1: Spec & Architecture</span>
           </div>
-          <p class="stepper-desc">Transforms free-text user intent, issue description, or context into a canonical <code>*.spec.md</code> with crisp section hierarchy and mandatory acceptance criteria.</p>
+          <p class="stepper-desc">Transforms free-text user intent, issue description, or context into a canonical <code>*.spec.md</code> with crisp section hierarchy and mandatory acceptance criteria. New runs also ask a feature-branch strategy gate (stay on current, or create <code>feat/{slug}</code> from HEAD or from <code>baseBranch</code>).</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-spec/SKILL.md">ws-write-spec</span>
@@ -275,7 +275,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
           </div>
-          <p class="stepper-desc">Runs pre-PR automated test suites (unit, integration/E2E, coverage) plus an optional mutation-testing gate (kill/survive score vs threshold) when configured in project config.</p>
+          <p class="stepper-desc">Runs pre-PR automated test suites (unit, integration/E2E, coverage) plus an optional mutation-testing gate (kill/survive score vs threshold) when configured in project config. Optional <code>defaults.testingModel</code> selects a dedicated test-executor model for this step (falls back to <code>executionModel</code>).</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-testing/SKILL.md">ws-testing</span>
@@ -548,13 +548,15 @@
             <div class="role-card-icon">🔍</div>
             <h4 class="role-card-title">Verifiers & Auditors</h4>
           </div>
-          <p class="role-card-desc">Spec compliance scoring, multi-pass code reviews, adversarial AI fraud detection, secrets scanning, and test verification.</p>
+          <p class="role-card-desc">Spec compliance scoring, multi-pass code reviews, adversarial AI fraud detection, secrets scanning, install diagnose, runtime orch audit, and test verification.</p>
           <div class="role-card-skills">
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-testing/SKILL.md">ws-testing</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-secrets-leak-review/SKILL.md">ws-secrets-leak-review</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-fable-judge/SKILL.md">ws-fable-judge</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-doctor/SKILL.md">ws-doctor</span>
+            <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-audit/SKILL.md">ws-audit</span>
           </div>
         </div>
 
@@ -610,11 +612,12 @@
       <p>A comprehensive Finite State Machine orchestrator designed for end-to-end software lifecycle delivery from initial spec brainstorming down to PR shipping.</p>
       <div class="workflow-steps-title">Pipeline Execution Steps:</div>
       <ul class="workflow-steps-list">
-        <li>Collaborative Spec Brainstorming (Step 0)</li>
+        <li>Feature-branch strategy gate at bootstrap, then spec (Step 0)</li>
         <li>Architectural Review & Interview (Steps 1–2)</li>
         <li>DAG Task Decomposition (Step 3)</li>
         <li>Implement, verify & local code review (Steps 4–6)</li>
-        <li>Pre-PR testing, shipping & ws-goal-fix-pr (Steps 7–9)</li>
+        <li>Pre-PR testing (optional <code>testingModel</code>), shipping & ws-goal-fix-pr (Steps 7–9)</li>
+        <li>Optional runtime audit via <code>defaults.enableAuditing</code></li>
       </ul>
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">
         View spec-to-pr workflow &rarr;
@@ -630,6 +633,7 @@
       <p>A streamlined alternative designed to run planning, sequential coding, code review, and shipping in a rapid direct feedback loop.</p>
       <div class="workflow-steps-title">Pipeline Execution Steps:</div>
       <ul class="workflow-steps-list">
+        <li>Feature-branch strategy gate at bootstrap (same as standard)</li>
         <li>Planning & brainstorm from existing spec</li>
         <li>Direct sequential coding (no complex DAG required)</li>
         <li>Quick local code review & automatic fix cycles</li>
@@ -1536,6 +1540,8 @@
             <li><strong><code>ws-senior-developer</code></strong>: Delivery gate enforcing surgical diff footprints, anti-reinvention checks, and pre-ship verification proof.</li>
             <li><strong><code>ws-fable-judge</code></strong>: Adversarial audit engine performing diff-grounded verification to detect 4 classic AI code frauds (weakened unit tests, false verification claims, unauthorized side effects, and scope creep).</li>
             <li><strong><code>ws-secrets-leak-review</code></strong>: Pre-PR scanner checking diffs for hardcoded API tokens, private keys, passwords, and sensitive credentials.</li>
+            <li><strong><code>ws-doctor</code></strong>: Read-only install/runtime diagnose of path errors, script recipes, config switches, and missing skill references.</li>
+            <li><strong><code>ws-audit</code></strong>: Opt-in runtime observer (<code>defaults.enableAuditing</code>) that logs orch anomalies and can draft an upstream GitHub issue for skill execution errors.</li>
           </ul>
         </div>
       </div>
@@ -1572,9 +1578,11 @@
           <p>You can run <code>ws-configure-project</code> or edit <code>.agents/skills/ws-shared/config.json</code> directly. Key configurable options include:</p>
           <ul>
             <li><code>plans.dir</code>: Target folder for workflow plans and execution artifacts (default: <code>.agents/plans</code>).</li>
-            <li><code>providers.scm</code>: Active SCM provider (<code>github</code> via <code>gh</code> CLI, <code>azure-devops</code> via ADO PAT, or <code>local</code>).</li>
+            <li><code>providers.scm</code>: Active SCM provider (<code>github</code> via <code>gh</code> CLI, <code>azure-devops</code> via ADO PAT). Hybrid: <code>providers.active: local</code> with <code>scm: github</code>.</li>
             <li><code>rules.stackFile</code>: Path to project technology stack guidance (default: <code>.agents/skills/ws-shared/STACK.md</code>).</li>
-            <li><code>testRunner</code> & <code>buildCommands</code>: Automated verification and test execution commands.</li>
+            <li><code>verification.*</code>: Build, test, format, and optional mutation commands.</li>
+            <li><code>defaults.enableAuditing</code>: When <code>true</code>, wrap orch runs with <code>ws-audit</code> (default <code>false</code>).</li>
+            <li><code>defaults.testingModel</code>: Optional test-executor model for standard Step 7 (falls back to <code>executionModel</code>).</li>
           </ul>
         </div>
       </div>
@@ -1593,6 +1601,56 @@
         <div class="faq-answer-content">
           <p>Yes! To author a new skill, use our meta-skill <strong><code>ws-write-a-skill</code></strong>. It guides you through defining standard YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>), applying progressive disclosure principles, and structuring helper scripts.</p>
           <p>Lasting skill improvements can be submitted via Pull Request to the canonical upstream repository: <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="faq-item" data-faq-cat="quality" data-search="ws-doctor diagnose install runtime missing refs config switches skill recipes">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Quality & Safety</span>
+          <span>When should I run <code>ws-doctor</code> vs <code>ws-check-harness</code>?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p><code>ws-doctor</code> is a read-only install/runtime diagnose: path errors, tool/script recipes, config switches, and missing references across installed <code>ws-*</code> skills. Use it after install/update or when a skill recipe fails.</p>
+          <p><code>ws-check-harness</code> is the meta-harness integrity audit (routing, links, portability, integrity digests). <code>ws-audit</code> is different again: a live observer during orch runs when <code>defaults.enableAuditing</code> is true.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="feature branch bootstrap feat slug stay on current create from baseBranch">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows</span>
+          <span>How does the feature-branch strategy gate work at workflow bootstrap?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>On a <strong>new</strong> <code>ws-spec-to-pr</code> / lite start (not resume), bootstrap asks how to isolate the run: stay on the current branch, create <code>feat/{slug}</code> from HEAD, or create it from <code>baseBranch</code> (after fetch). Resume skips this gate and checks out <code>state.branch</code>.</p>
+          <p>The gate never rewrites <code>config.project.workingBranch</code>. It will not <code>git reset</code>, delete branches, or overwrite an existing feature branch.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="faq-item" data-faq-cat="config" data-search="testingModel test executor step 7 executionModel plannerModel reviewerModel">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Configuration</span>
+          <span>What is <code>defaults.testingModel</code>?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Optional model preference for <strong>standard Step 7</strong> (testing). When set, the orchestrator prefers that model for the test executor subagent. Empty or omitted falls back to <code>defaults.executionModel</code>, then the active session model. Lite has no Testing step and does not read <code>testingModel</code>.</p>
         </div>
       </div>
     </div>
@@ -1615,7 +1673,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.11 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.12 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

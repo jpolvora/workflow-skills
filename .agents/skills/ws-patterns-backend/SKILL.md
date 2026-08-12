@@ -2,8 +2,9 @@
 
 
 
+
 name: ws-patterns-backend
-version: 0.3.11
+version: 0.3.12
 description: Backend patterns & architectural preferences engine — consults backend.md before backend tasks and records learned backend conventions after implementation or user corrections.
 invocation_names:
   - ws-patterns-backend
