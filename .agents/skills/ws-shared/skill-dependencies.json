@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.7",
+  "packageVersion": "0.3.9",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -43,6 +43,8 @@
         "ws-local-spec-provider",
         "ws-check-harness",
         "ws-check-workflows",
+        "ws-doctor",
+        "ws-audit",
         "ws-tdah",
         "ws-karpathy-guidelines",
         "ws-spec-format",
@@ -103,6 +105,7 @@
       "ws-goal-loop",
       "ws-self-learning",
       "ws-changelog",
+      "ws-audit",
       "ws-configure-project",
       "ws-spec-index",
       "ws-senior-developer",
@@ -126,6 +129,7 @@
       "ws-spec-format",
       "ws-self-learning",
       "ws-changelog",
+      "ws-audit",
       "ws-configure-project",
       "ws-spec-index",
       "ws-senior-developer",
@@ -186,7 +190,8 @@
       "ws-ship-pr",
       "ws-goal-fix-pr",
       "ws-tdah",
-      "ws-karpathy-guidelines"
+      "ws-karpathy-guidelines",
+      "ws-audit"
     ],
     "ws-spec-list": [
       "ws-spec-to-pr",
@@ -197,7 +202,9 @@
       "ws-github-provider",
       "ws-azure-devops-provider",
       "ws-configure-project"
-    ]
+    ],
+    "ws-audit": [],
+    "ws-doctor": []
   },
   "autoloadOnly": [],
   "selectOffRule": "no-cascade-deselect"

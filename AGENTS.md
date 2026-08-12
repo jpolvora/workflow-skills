@@ -348,7 +348,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 
 ## Skill catalog (layers)
 
-> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 39 skills, `extra` = 2) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
+> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 40 skills, `extra` = 2) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per § [Progressive disclosure](#progressive-disclosure-load-on-demand).
 
@@ -358,6 +358,8 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 |-------|------|-------------|
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation (Full/Lite) |
+| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Workflow skills install/runtime diagnose (read-only report) |
+| `ws-audit` | `.agents/skills/ws-audit/SKILL.md` | Runtime orch audit log + upstream issue proposal when enabled |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |
@@ -465,6 +467,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | New skill / skill rewrite | `ws-write-a-skill` |
 | Show active harness | `ws-show-harness` |
 | Audit harness | `ws-check-harness` |
+| Diagnose skills / doctor the harness | `ws-doctor` |
+| Runtime workflow audit (when `defaults.enableAuditing`) | `ws-audit` |
 | Check workflows | `ws-check-workflows` |
 | Grill plan vs docs | `grill-with-docs` |
 | Record learning | `ws-self-learning` |

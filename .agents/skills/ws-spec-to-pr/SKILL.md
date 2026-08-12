@@ -2,8 +2,10 @@
 
 
 
+
+
 name: ws-spec-to-pr
-version: 0.3.7
+version: 0.3.9
 description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
 invocation_names:
   - spec-to-pr
@@ -72,6 +74,17 @@ After `step-00-{slug}.spec.md` exists and before Step 1:
 ## Quality Gate Bypass (`skipQualityGates`)
 
 See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
+
+## Runtime audit (`defaults.enableAuditing`)
+
+When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), load [`ws-audit`](../ws-audit/SKILL.md) at bootstrap:
+
+1. **Init** audit session under `{us-dir}` after identity/bootstrap (store `auditSession` in state).
+2. **Append** findings on script/tool/I/O/dispatch anomalies each step (including `recovered: true` when the model papers over skill-body defects).
+3. **Finalize** before claiming workflow complete.
+4. **End-of-run:** if actionable `error` findings exist, `user-gate` proposes opening a GitHub issue on the package upstream repo (`skill-dependencies.json` → `upstream.repo`) — not a consumer fix PR for managed skill content.
+
+When `false` or omitted: no audit obligation; behavior unchanged.
 
 ## Triggers
 
