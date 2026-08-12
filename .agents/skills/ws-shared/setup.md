@@ -97,6 +97,59 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 5. **Identity**: `workflow-id`, `slug`, `us-dir`.
    - **[ws-spec-to-pr]**: Inject `workflowType: standard` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
    - **[ws-spec-to-pr-lite]**: Inject `workflowType: lite`.
+5b. **Feature branch gate (new workflow only)** — runs after Identity when this is a **new** start (not resume). Resume paths skip 5b entirely (see [Resume / reset](#resume--reset) § branch resume). Do not stage or commit at bootstrap (`git add -A` forbidden).
+
+   **Resolve `{baseBranch}`** (before the gate): read `config.json` → `project.baseBranch` when set; else `Shell` `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh`. Gate copy uses `{baseBranch}` — never treat `master` as the sole hardcoded base example.
+
+   **Resolve `{currentBranch}`:** `git rev-parse --abbrev-ref HEAD`. Detached HEAD (`HEAD`): **stay is invalid**; require create-from-current (names a branch at HEAD) or create-from-base.
+
+   **Protected set** (exact branch names): `main`, `master`, `develop`, `config.project.baseBranch`, `config.project.workingBranch` (omit empty/unset config values).
+
+   **Default new branch name:** `feat/{slug}`. Before any create, check existence without trusting stale remote-tracking refs: if `git branch --list feat/{slug}` shows the branch locally, **or** `git ls-remote --heads {gitRemote} feat/{slug}` (when `{gitRemote}` is configured) prints the ref → STOP and `user-gate`:
+   - **Check out existing `feat/{slug}`** (Recommended when that branch is the intended target)
+   - **Enter a different branch name**
+   - **Stay on `{currentBranch}`**
+   - **Cancel (HS-1)**
+   Never `git reset`, never `git branch -D`, never overwrite an existing feature branch. Re-run the same local + `ls-remote` check on a user-entered alternate name before any `git checkout -b {name}`. If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), STOP and `user-gate`: **Retry** / **Proceed with local check only** / **Cancel (HS-1)**. Never infer "branch absent" from a failed `ls-remote`.
+
+   **`autoMode`:** no `user-gate`. If `{currentBranch}` is `HEAD` (detached): do **not** stay — if `feat/{slug}` exists locally or `ls-remote` shows it, check it out (`checkout-existing`); else create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`). If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), fall back to **local check only**: create `feat/{slug}` from HEAD only when `git branch --list feat/{slug}` is empty, and log `branch-gate | auto | local-check-only | {branch} | ISO`; never infer "branch absent" from a failed `ls-remote`. Never persist the literal `HEAD` as `state.branch`. Otherwise **stay** on current HEAD (no git mutation), `branchStrategy: stay`. Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|checkout-existing|local-check-only | {branch} | ISO`.
+
+   **`dryRun`:** prefix `[DRY-RUN]`; show the gate choices (or auto default) and the git commands that **would** run; **no ref mutation** (do not run `git checkout -b`, `git checkout`, or `git fetch`).
+
+   **Normal mode — primary `user-gate`** (portable alias `user-gate`; native structured choice when available; markdown fallback; log `user-gate-fallback | feature-branch | ISO` when fallback used). Mark **exactly one** Recommended:
+   - Option **2** when `{currentBranch}` is in the protected set.
+   - Option **1** otherwise.
+   Cancel / dismiss → **HS-1** (STOP, re-present; never infer yes).
+
+   ```text
+   Git branch for this workflow (HEAD: {currentBranch}; base: {baseBranch}):
+
+   1. Create feature branch from current HEAD (Recommended when HEAD is already the intended starting point)
+   2. Create feature branch from {baseBranch} (Recommended when HEAD is a protected/long-lived branch)
+   3. Stay on {currentBranch} (already on the branch I want)
+   ```
+
+   When `{currentBranch}` is in the protected set, option 3 copy **must** include the AC11 warning: ship will use `{currentBranch}` as the PR head.
+
+   | Choice | Git action | `branchStrategy` |
+   |--------|------------|------------------|
+   | Create from current HEAD (option 1) | `git checkout -b {name}` from HEAD. Uncommitted files come along. | `from-current` |
+   | Create from `{baseBranch}` (option 2) | If `{gitRemote}` exists: `git fetch {gitRemote} {baseBranch}` then `git checkout -b {name} {gitRemote}/{baseBranch} --no-track` (`--no-track` so the new branch does not auto-track `{baseBranch}`; `@{u}` must not look like a first-push upstream). Else: `git checkout -b {name} {baseBranch}`. If fetch fails: STOP; offer retry with local `{baseBranch}` / cancel. | `from-base` |
+   | Stay on current (option 3) | No checkout/create. Invalid when detached. | `stay` |
+   | Check out existing `feat/{slug}` | `git checkout {name}` only. Never `reset`, never `-D`. | `checkout-existing` |
+
+   **Dirty tree on create-from-base:** when `git status --porcelain` is non-empty and checkout from base would not be a no-op → STOP and `user-gate`:
+   - **Stash then continue** — `git stash push -m "ws-spec-to-pr feature-branch-gate"`, run create-from-base, then `git stash pop` onto the new branch. Never `git reset --hard`.
+   - **Switch to create-from-current instead**
+   - **Cancel (HS-1)**
+
+   **State write (mandatory before step 6):** persist in `{us-dir}/{workflow-id}.state.md` frontmatter:
+   - `branch` — final branch name (created, checked-out existing, or current HEAD name for stay)
+   - `branchStrategy` — `from-current` | `from-base` | `stay` | `checkout-existing`
+   - `baseBranch` — resolved `{baseBranch}`
+
+   **Banner sync:** after 5b completes, re-print the init banner `branch` / `baseBranch` rows (step 3 table) or a short **Feature branch gate result** table so displayed values match state.
+
 6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit`.
 7. **LOC baseline**: `Shell` capture → `telemetry.loc.baseline`. Store ISO → `telemetry.workflowStartedAt`.
 8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-0`.
@@ -139,9 +192,13 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      - Cancel for now
      ```
    - **Non-Existent State:** If no matching completed or unfinished workflow exists, start fresh from **Zero** (Step 0).
-4. Resume: load state, `status: active`, skip bootstrap, jump to `currentStep` gate.
+4. Resume: load state, `status: active`, skip bootstrap (including **5b Feature branch gate** — do not re-run), jump to `currentStep` gate.
+4b. **Branch resume (HEAD mismatch):** after skip-bootstrap, if `git rev-parse --abbrev-ref HEAD` ≠ `state.branch` → STOP. `user-gate`:
+   - **Check out `{state.branch}` (Recommended)**
+   - **Cancel (HS-1)**
+   No silent checkout in normal mode. On checkout: `git checkout {state.branch}` only (never `reset`, never `-D`).
+   **`autoMode`:** index 0 = checkout-recorded; run `git checkout {state.branch}`; log `branch-resume | auto | checkout | {branch} | ISO` in `## Gate history`.
 5a. **Session model refresh (mandatory on every resume):** Re-read the executing session model → update `currentModel`. If changed vs prior frontmatter value, log `model-change | step {currentStep} | {old} → {new} | ISO` in ## Gate history. Ignore leftover `modelChain` keys in old state files.
-6. Paused: resume at same step (checkpoint revert M=currentStep → hygiene → board → gate)..
 6. Paused: resume at same step (checkpoint revert M=currentStep → hygiene → board → gate).
 7. No unfinished workflows: skip list, proceed to bootstrap.
 
