@@ -5,8 +5,9 @@
 
 
 
+
 name: ws-spec-to-pr
-version: 0.3.10
+version: 0.3.11
 description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
 invocation_names:
   - spec-to-pr
@@ -47,7 +48,7 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 2. **Auth:** Gate required for G1+. Cancel → HS-1. Commit → G2 + menu (HS-2).
 3. **Isolation:** Subagent per step. Checkpoint tag `uswf/{id}/before-step-{N}`. Branch-direct default; worktree when `plans.useWorktrees=true`.
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `state.md` short-term; `{sharedDir}/MEMORY.md` generalizable.
-5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0, phase model switch via `plannerModel`/`executionModel`/`reviewerModel`); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR).
+5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0, phase model switch via `plannerModel`/`executionModel`/`reviewerModel`/`testingModel` — Step 7 uses non-empty `testingModel`, else `executionModel`, else the active session model; `reviewerModel` is Steps 5–6 only); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR).
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
 7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset.
 

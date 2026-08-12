@@ -145,10 +145,11 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Optional model preferences for autoMode phase switching (e.g. claude-3-5-sonnet, gpt-4o, gemini-1.5-pro, gemini-2.0-flash). Fallback to active model if empty or switch fails.",
+    "_comment_models": "Optional model preferences for autoMode phase switching (e.g. claude-3-5-sonnet, gpt-4o, gemini-1.5-pro, gemini-2.0-flash). Fallback to active model if empty or switch fails. testingModel is the test executor for standard Step 7; empty/omitted uses executionModel. reviewerModel covers standard Steps 5-6 only.",
     "plannerModel": "",
     "executionModel": "",
-    "reviewerModel": ""
+    "reviewerModel": "",
+    "testingModel": ""
   },
 
   "plans": {
