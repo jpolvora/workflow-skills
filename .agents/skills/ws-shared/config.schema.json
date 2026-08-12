@@ -116,6 +116,11 @@
           "default": false,
           "description": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted or missing config → effective false."
         },
+        "enableAuditing": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, ws-spec-to-pr* orchestrators activate ws-audit runtime observer and may propose an upstream GitHub issue at run end. Omitted or missing config → effective false."
+        },
         "patternsBackend": {
           "type": "boolean",
           "default": true,

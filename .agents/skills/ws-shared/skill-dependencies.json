@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.8",
+  "packageVersion": "0.3.9",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -44,6 +44,7 @@
         "ws-check-harness",
         "ws-check-workflows",
         "ws-doctor",
+        "ws-audit",
         "ws-tdah",
         "ws-karpathy-guidelines",
         "ws-spec-format",

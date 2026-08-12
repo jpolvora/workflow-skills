@@ -359,6 +359,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation (Full/Lite) |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Workflow skills install/runtime diagnose (read-only report) |
+| `ws-audit` | `.agents/skills/ws-audit/SKILL.md` | Runtime orch audit log + upstream issue proposal when enabled |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |
@@ -467,6 +468,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Show active harness | `ws-show-harness` |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
+| Runtime workflow audit (when `defaults.enableAuditing`) | `ws-audit` |
 | Check workflows | `ws-check-workflows` |
 | Grill plan vs docs | `grill-with-docs` |
 | Record learning | `ws-self-learning` |
