@@ -246,11 +246,13 @@ def infer_timing(us_dir: Path, bootstrap_start_iso: str | None = None, end_overr
             reviewing_deciding_sec += delta
 
     if not all_events or wall_clock_seconds <= 0:
-        active_sec = max(0.0, wall_clock_seconds)
-        agent_running_sec = active_sec * 0.55
-        reviewing_deciding_sec = agent_running_sec
-        editing_specs_sec = active_sec * 0.25
-        prompting_sec = active_sec * 0.20
+        # No telemetry: do not fabricate billable time (TIMING.md Idle / AFK Gaps).
+        # Report the wall span as idle/unknown instead of inventing 55/25/20 splits.
+        agent_running_sec = 0.0
+        reviewing_deciding_sec = 0.0
+        editing_specs_sec = 0.0
+        prompting_sec = 0.0
+        idle_sec = max(0.0, wall_clock_seconds)
     else:
         current_time = start_dt
         last_kind = "reviewing_deciding"

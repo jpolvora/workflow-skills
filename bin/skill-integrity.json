@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "c35432e92f92ab3619b84ac4118143aad7e42d3534279467d842a071d2ba9f69",
+  "fullPackageDigest": "e6d955b9c06351e4e45dc04e2f8d5e41afad97977fda6b1b2d039308f31eedd3",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -34,10 +34,10 @@
         "references/OUTPUT.md": "2a5682ce8ff43592c8567595cd19d594fa0d2b93c09c016666734cd7e7a76c5d",
         "references/TIMING.md": "aa5fc0dd459103c9e711cbe73e736cdc06f45a62002d30cc2ad90d79ba47a6ee",
         "scripts/bootstrap_start.py": "77be7c93fc40d5242007a87294830221cdfd882be32427417095cfe7c7b6a673",
-        "scripts/infer_human_timing.py": "a3d5904afb71000be895ff4daff5776a1856303be9e1e03471fc30687b0badb1",
+        "scripts/infer_human_timing.py": "51b6947e3f563317bc77362c4ef9597887c229542d0b7a899bed2e3be27bc700",
         "SKILL.md": "829e9aef3e178f77c1c5d3e9d3fa249840894ace2d896dee5e12516cfbcbd4e7"
       },
-      "skillDigest": "5d507f7b15ff36cbd64005935de8714c8d1c0922cfe952f6e9df052beb362628"
+      "skillDigest": "06fd7def9f8ecd679ba1a40c260733b0fa215224cd81e999d2f42041dac8a22e"
     },
     "ws-audit": {
       "files": {

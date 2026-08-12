@@ -15,6 +15,7 @@ const SCRIPT = path.join(
   REPO_ROOT,
   '.agents/skills/ws-activity-report/scripts/infer_human_timing.py',
 );
+const PYTHON = process.env.PYTHON || 'python';
 
 const tmpRoots = [];
 let failures = 0;
@@ -50,7 +51,7 @@ function cleanup() {
 }
 
 function runPython(args, cwd = REPO_ROOT) {
-  return cp.spawnSync('python', args, {
+  return cp.spawnSync(PYTHON, args, {
     cwd,
     encoding: 'utf8',
     env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
@@ -133,9 +134,48 @@ function testHumanGteAgentRunning() {
   }
 }
 
+function testNoEventsReportsIdleNotFabricated() {
+  console.log('\n--- testNoEventsReportsIdleNotFabricated ---');
+  const usDir = mkTmp('ws-ar-idle-');
+  // Empty plan folder (no state / transcript / commits) — only a placeholder ignore file.
+  fs.writeFileSync(path.join(usDir, '.keep'), '', 'utf8');
+
+  const start = '2026-08-12T22:00:00Z';
+  const end = '2026-08-13T06:00:00Z';
+  const res = runPython([
+    SCRIPT,
+    usDir,
+    '--start-iso',
+    start,
+    '--end-iso',
+    end,
+  ]);
+  assert(res.status === 0, `script exit 0 (stderr: ${res.stderr?.trim()})`);
+
+  let payload;
+  try {
+    payload = JSON.parse(res.stdout.trim());
+  } catch {
+    fail(`invalid JSON: ${res.stdout}`);
+    return;
+  }
+
+  assert(payload.ok === true, 'ok true');
+  assert(payload.humanSeconds === 0, `humanSeconds is 0 (got ${payload.humanSeconds})`);
+  assert(
+    payload.agentRunningSeconds === 0,
+    `agentRunningSeconds is 0 (got ${payload.agentRunningSeconds})`,
+  );
+  assert(
+    payload.idleSeconds === 28800,
+    `idleSeconds is full wall span 28800 (got ${payload.idleSeconds})`,
+  );
+}
+
 function main() {
   testScriptExists();
   testHumanGteAgentRunning();
+  testNoEventsReportsIdleNotFabricated();
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);
