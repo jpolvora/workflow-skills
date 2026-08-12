@@ -71,22 +71,22 @@ function testHumanGteAgentRunning() {
   const runtimeDir = path.join(usDir, '.runtime');
   fs.mkdirSync(runtimeDir, { recursive: true });
 
-  const start = '2026-08-12T10:00:00Z';
-  const end = '2026-08-12T11:00:00Z';
+  const start = '2024-01-15T10:00:00Z';
+  const end = '2024-01-15T11:00:00Z';
 
   fs.writeFileSync(
     path.join(usDir, 'fixture.state.md'),
-    `---\nstartedAt: "${start}"\nupdatedAt: "2026-08-12T10:20:00Z"\n---\n`,
+    `---\nstartedAt: "${start}"\nupdatedAt: "2024-01-15T10:20:00Z"\n---\n`,
     'utf8',
   );
 
   const transcript = path.join(runtimeDir, 'transcript.jsonl');
   const lines = [
-    { type: 'USER_INPUT', timestamp: '2026-08-12T10:05:00Z' },
-    { type: 'agent_tool', timestamp: '2026-08-12T10:06:00Z' },
-    { type: 'agent_tool', timestamp: '2026-08-12T10:25:00Z' },
-    { type: 'USER_INPUT', timestamp: '2026-08-12T10:40:00Z' },
-    { type: 'agent_tool', timestamp: '2026-08-12T10:41:00Z' },
+    { type: 'USER_INPUT', timestamp: '2024-01-15T10:05:00Z' },
+    { type: 'agent_tool', timestamp: '2024-01-15T10:06:00Z' },
+    { type: 'agent_tool', timestamp: '2024-01-15T10:25:00Z' },
+    { type: 'USER_INPUT', timestamp: '2024-01-15T10:40:00Z' },
+    { type: 'agent_tool', timestamp: '2024-01-15T10:41:00Z' },
   ];
   fs.writeFileSync(
     transcript,
@@ -140,8 +140,8 @@ function testNoEventsReportsIdleNotFabricated() {
   // Empty plan folder (no state / transcript / commits) — only a placeholder ignore file.
   fs.writeFileSync(path.join(usDir, '.keep'), '', 'utf8');
 
-  const start = '2026-08-12T22:00:00Z';
-  const end = '2026-08-13T06:00:00Z';
+  const start = '2024-01-15T22:00:00Z';
+  const end = '2024-01-16T06:00:00Z';
   const res = runPython([
     SCRIPT,
     usDir,
@@ -178,13 +178,14 @@ function testLongGapBetweenAgentEventsIsIdle() {
   const runtimeDir = path.join(usDir, '.runtime');
   fs.mkdirSync(runtimeDir, { recursive: true });
 
-  const start = '2026-08-12T10:00:00Z';
-  const end = '2026-08-12T11:10:00Z';
+  // Past fixture date so local file ctimes fall outside the sampled window.
+  const start = '2024-01-15T10:00:00Z';
+  const end = '2024-01-15T11:10:00Z';
   // 35-min silence between agent_tool events → Idle; post-gap agent→prompt is active.
   const lines = [
-    { type: 'agent_tool', timestamp: '2026-08-12T10:05:00Z' },
-    { type: 'agent_tool', timestamp: '2026-08-12T10:40:00Z' },
-    { type: 'USER_INPUT', timestamp: '2026-08-12T10:55:00Z' },
+    { type: 'agent_tool', timestamp: '2024-01-15T10:05:00Z' },
+    { type: 'agent_tool', timestamp: '2024-01-15T10:40:00Z' },
+    { type: 'USER_INPUT', timestamp: '2024-01-15T10:55:00Z' },
   ];
   fs.writeFileSync(
     path.join(runtimeDir, 'transcript.jsonl'),
