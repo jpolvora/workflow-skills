@@ -19,7 +19,7 @@ invocation_names:
 
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
-Ship from `config.project.workingBranch` (default `develop`) to `config.project.baseBranch`: prepare board → push/create PR via configured SCM → wait for CI → `ws-goal-fix-pr` → merge when clean.
+Ship from the resolved PR **head** to `config.project.baseBranch`: prepare board → push/create PR via configured SCM → wait for CI → `ws-goal-fix-pr` → merge when clean. Standalone: head defaults to `config.project.workingBranch`. Workflow (`workflowMode: true` with readable `{us-dir}` state): head is `state.branch`. Never rewrite `config.project.workingBranch`.
 
 ## SCM Independence & Configuration
 
@@ -45,7 +45,7 @@ Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with
 |-----------|---------|-------|
 | `commit-title` | (optional) | Message for any uncommitted changes |
 | `base` | `config.project.baseBranch` | Auto-detect `main`/`master` if unset |
-| `head` | `config.project.workingBranch` (`develop`) | Branch to push and use as PR head |
+| `head` | Standalone: `config.project.workingBranch` (`develop`). Workflow: `state.branch` when `{us-dir}` state is readable. | Standalone: branch to push and use as PR head; explicit `head=` overrides default. Workflow: ignored — always `state.branch`. |
 | `dry-run` | `false` | Simulate; no commits/push/real PR API calls |
 | `no-merge` | `false` | Create PR and run checks; stop before merge |
 | `skip-gates` | `false` | Sets `skipQualityGates: true` — see § Quality gate bypass |
@@ -55,7 +55,18 @@ Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with
 | `stopBeforeFixPr` | `false` | Skip Step 6; orchestrator owns fix-PR at Step 9 |
 | `skipQualityGates` | `false` | Orchestrator-set from `--skip-gates` or `config.json` → `invariants.skipQualityGates` |
 
-Before executing, restate commit title, head/base, SCM provider (read from `config.json`), mode, `skipQualityGates`, `stopBeforeFixPr`, max, and `shipAction`. When `skipQualityGates` is active, prefix banners with **`[GATES BYPASSED]`**. Resolve branches and provider from `{sharedDir}/config.json` only.
+Before executing, restate commit title, resolved PR head (`shipHead`), base, SCM provider (read from `config.json`), mode, `skipQualityGates`, `stopBeforeFixPr`, max, and `shipAction`. When `skipQualityGates` is active, prefix banners with **`[GATES BYPASSED]`**. Resolve base branch and provider from `{sharedDir}/config.json`; resolve `shipHead` per § PR head resolution.
+
+### PR head resolution
+
+Resolve **`shipHead`** once before Step 1. Do **not** rewrite `config.project.workingBranch`.
+
+| Context | `shipHead` |
+|---------|------------|
+| `workflowMode: true` and readable `{us-dir}/*.state.md` | `state.branch` from workflow state frontmatter |
+| Standalone `/ship-pr` (no workflow state) | explicit `head=` param when set, else `config.project.workingBranch` |
+
+Use `shipHead` for the active-branch check (Step 1), conditional `git pull` (only when upstream exists — see Step 1), `git push -u`, and `create-pr --head`. When `workflowMode: true` and workflow state is unreadable or missing `state.branch`, STOP.
 
 ## Quality gate bypass (`skipQualityGates`)
 
@@ -63,9 +74,9 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
 
 ## Steps
 
-1. **Preflight**: resolve `workingBranch`/`baseBranch`/`gitRemote` and SCM provider (`providers.scm` in `config.json`); confirm active branch is `workingBranch`; check `git status` and tracking drift; `git pull {gitRemote} {workingBranch}`; auto-detect base via `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
+1. **Preflight**: resolve `shipHead` per § PR head resolution; resolve `baseBranch`/`gitRemote` and SCM provider (`providers.scm` in `config.json`); confirm active branch is `shipHead` (workflow: `state.branch`; standalone: `workingBranch` or explicit `head=`); check `git status` and tracking drift; **pull only when upstream exists** — after the active-branch check, run `git pull {gitRemote} {shipHead}` only when `git rev-parse --abbrev-ref @{u}` succeeds **or** `git ls-remote --heads {gitRemote} {shipHead}` shows the ref; if neither applies (first-push branch, e.g. new local `feat/{slug}` from bootstrap), **skip pull** and proceed to Step 4 `git push -u {gitRemote} {shipHead}`; auto-detect base via `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
    - Optional `fable` integration (safety floor — **never** bypassed by `skipQualityGates`): If `config.json.fable.enabled`, `autoAudit`, and `auditVerdictsBlockShip` are `true`, verify [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audit verdict is not `REFUTED`. If `REFUTED`, stop delivery and require remediation before pushing or creating PR.
-   - Done when: branches and SCM provider resolved; working tree clean enough to ship and pulled.
+   - Done when: `shipHead`, `baseBranch`, and SCM provider resolved; active branch matches `shipHead`; working tree clean enough to ship; pulled **or skipped (no upstream)**.
 
 2. **Prepare to PR (goal)**: load [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Drive coverage → build → tests → security → **fable-judge verdict (row 5)** → **consumer prepare discovery** (row 6; scan local `AGENTS.md` / `{sharedDir}/AGENTS.md` / `rules.*` / ship docs for prepare or before-push/publish/deliver steps; **wait** until those obligations complete) until every required row is ✅/⏭. **Always show row 5** on the board; under `skipQualityGates` it may credit ⏭ for visibility only — **`REFUTED` still ❌ STOP** when `auditVerdictsBlockShip` applies. Show the board to the user after each item and before shipping. Credit orch Steps 6–7 only with cited evidence for the **current** tree. STOP on any ❌ — including unfinished discovered local prepare steps.
    - Done when: board shown; scan evidence recorded for row 6; all required rows ✅/⏭.
@@ -81,17 +92,17 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
    - If the resolved stage set is empty → **STOP** (no empty plan-artifact delivery commit).
    - Never invent missing artifact content. Product/source staging (`commit-code` / ship-scope product files) is unchanged and separate from this delivery set.
    - Commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
-   Then commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {workingBranch}`. Skip push when `shipAction: skip` or `dry-run`.
+   Then commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {shipHead}`. Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
-5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {workingBranch} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
+5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
    - Done when: PR id/URL captured or reused. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).
 
 6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action / CI workflows to start on SCM infrastructure), then start [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks and `list-threads` via the configured SCM provider, and dispatch `ws-goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `ws-goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
    - Done when: `activeThreads == 0` and required checks green, or run stopped with PR URL reported.
 
-7. **Merge**: only when Step 6 converged and checks green. Configured SCM provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. Never delete `{workingBranch}`.
-   - Done when: merged via configured SCM provider or explicitly skipped; `{workingBranch}` intact.
+7. **Merge**: only when Step 6 converged and checks green. Configured SCM provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. Never delete the resolved PR head (`shipHead`: workflow `state.branch`; standalone `workingBranch` or explicit `head=`).
+   - Done when: merged via configured SCM provider or explicitly skipped; `shipHead` intact.
 
 8. **Telemetry aggregate** (post-delivery, non-blocking): after successful ship completion — PR created (`stopBeforeFixPr` / workflow Step 8 handoff), merge done (standalone or full convergence), or `shipAction: skip` with workflow delivery marked complete — run `node bin/generate-telemetry-aggregate.cjs` (writes `{plansDir}/telemetry/aggregate.json`). When `stopBeforeFixPr`, orchestrator Step 9 also runs this after `ws-goal-fix-pr` convergence (idempotent). On failure: **warn and continue** — do not block ship, merge, or PR handoff.
    - Done when: aggregate script ran or failure warned; delivery outcome already reported.

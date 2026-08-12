@@ -274,7 +274,7 @@ workflowId, slug, us, specSource, specPath
 startedAt, endedAt, status: active|completed|cancelled|failed
 currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode, scoreAndRefine
 execMode: sequential|parallel|null  # set after Step 3
-branch, baselineCommit, preExistingDirty: []
+branch, branchStrategy: from-current | from-base | stay | checkout-existing, baseBranch, baselineCommit, preExistingDirty: []
 checkpoints, workflowManifest, commits: [{sha, step, message}]
 completedSteps, stepStatus, skippedSteps, completedTasks, stepDispatches
 pass1Scores, pass2Scores, scoreGateChoice
@@ -289,6 +289,8 @@ telemetry:
   totalTokens: int|null
   steps: [{ N, label, dispatchedAt, finishedAt, elapsedSec, promptTokens, completionTokens, estimated, model, filesTouched }]
 ```
+
+`branchStrategy` and `baseBranch` are written at bootstrap 5b; resume trusts them; workflow-mode `ws-ship-pr` reads `branch`.
 
 Sections: Workflow baseline, manifest, Step file log, Refinement registry, Context, Artifacts, Step outputs, Step model log, Workflow memory, Accumulated decisions, Doc consolidation log, Open items, Gate history.
 
