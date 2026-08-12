@@ -385,7 +385,7 @@ function listSkillDirs(skillsRootAbs, skillFilter) {
 function normalizeSkillId(id) {
   const s = String(id).trim();
   if (!s) return s;
-  return s.startsWith('ws-') ? s : s;
+  return s.startsWith('ws-') ? s : `ws-${s}`;
 }
 
 function collectMarkdownFiles(skillDir) {
