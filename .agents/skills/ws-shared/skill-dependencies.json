@@ -203,7 +203,8 @@
       "ws-azure-devops-provider",
       "ws-configure-project"
     ],
-    "ws-audit": []
+    "ws-audit": [],
+    "ws-doctor": []
   },
   "autoloadOnly": [],
   "selectOffRule": "no-cascade-deselect"
