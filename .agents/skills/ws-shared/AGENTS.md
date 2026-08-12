@@ -125,6 +125,7 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 | `ws-check-harness` | [`../ws-check-harness/SKILL.md`](../ws-check-harness/SKILL.md) |
 | `ws-check-workflows` | [`../ws-check-workflows/SKILL.md`](../ws-check-workflows/SKILL.md) |
 | `ws-doctor` | [`../ws-doctor/SKILL.md`](../ws-doctor/SKILL.md) |
+| `ws-audit` | [`../ws-audit/SKILL.md`](../ws-audit/SKILL.md) |
 | `ws-secrets-leak-review` | [`../ws-secrets-leak-review/SKILL.md`](../ws-secrets-leak-review/SKILL.md) — scan; optional pre-commit hook is user-requested only |
 | `ws-fable-judge` | [`../ws-fable-judge/SKILL.md`](../ws-fable-judge/SKILL.md) |
 
@@ -166,6 +167,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Fill / update `config.json` | `ws-configure-project` (optional suggestion only for secrets pre-commit hook — never required) |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
+| Runtime workflow audit (`defaults.enableAuditing`) | `ws-audit` |
 | Check workflows | `ws-check-workflows` |
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Format/review spec | `ws-spec-format` |

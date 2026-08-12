@@ -19,6 +19,7 @@ const DEFAULT_SWITCH_KEYS = [
   'fullMode',
   'scoreAndRefine',
   'autoload',
+  'enableAuditing',
 ];
 
 const DELIVERY_ARTIFACT_KEYS = [
@@ -223,7 +224,7 @@ function isTemplateOrGlobPath(s) {
   if (/\[[^\]]+\]/.test(t)) return true; // [slug], [Name]
   if (/YYYY|MM-DD|<[^>]+>/.test(t)) return true;
   if (/(^|\/)\.runtime\//.test(t.replace(/\\/g, '/'))) return true;
-  if (t.includes('...') || t.includes('\u2026') || t.includes('\u2026')) return true;
+  if (t.includes('...') || t.includes('\u2026')) return true;
   if (/\{[^}]+,[^}]+\}/.test(t)) return true; // {a,b,c} brace expansion examples
   if (/=/.test(t) && /\{[A-Za-z0-9_-]+\}/.test(t)) return true; // {skillsRoot}=...
   return false;
@@ -305,6 +306,8 @@ function looksLikeBacktickPath(s) {
 }
 
 function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
+  // Token-expanded citations are project-root relative; plain markdown links stay file-relative.
+  const hadToken = /\{[A-Za-z0-9_-]+\}/.test(cited);
   const expanded = expandTokens(cited.trim(), tokenMap);
   const braces = remainingBraces(expanded);
   if (braces.length > 0) {
@@ -352,8 +355,10 @@ function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
       candidate = `${tokenMap.skillsRoot}/${candidate}`.replace(/\/+/g, '/');
     }
     abs = path.resolve(projectRoot, candidate);
+  } else if (hadToken) {
+    abs = path.resolve(projectRoot, candidate);
   } else {
-    // Relative to citing file
+    // Relative to citing file (markdown companion links)
     abs = path.resolve(path.dirname(sourceFile), candidate);
   }
 

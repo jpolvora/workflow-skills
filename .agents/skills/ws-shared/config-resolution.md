@@ -90,3 +90,25 @@ Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to
    - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-verify-plan` (Step 5) run adversarial audit via `ws-fable-judge`.
    - `autoDetectDomain` (default `true`): `ws-write-plan` (Step 1) auto-detects specialized stack files and applies `ws-fable-domain` evidence rules.
    - `auditVerdictsBlockShip` (default `true`): `REFUTED` verdict from `ws-fable-judge` caps verification scores and blocks `ws-ship-pr` (Step 8) PR creation until resolved via fix loop.
+
+---
+
+## Runtime audit resolution (`defaults.enableAuditing`)
+
+Optional runtime observer for `ws-spec-to-pr` / `ws-spec-to-pr-lite` / `ws-multi-spec` (via [`ws-audit`](../ws-audit/SKILL.md)).
+
+| Condition | Effective `enableAuditing` |
+|-----------|----------------------------|
+| No project `{sharedDir}/config.json` | `false` |
+| Key omitted / null / unreadable | `false` |
+| Explicit `true` / `false` | that value |
+
+When `true`: orch initializes audit log under `{us-dir}`, appends findings for script/tool/I/O/dispatch anomalies (including recovered skill defects), finalizes at run end. Actionable `error` findings trigger `user-gate` proposing a GitHub issue on the package upstream repo — not a consumer fix PR for managed skill content.
+
+When `false`: no audit log obligation; no end-of-run issue gate from this feature.
+
+Resolve helper:
+
+```bash
+node {skillsRoot}/ws-audit/scripts/audit_log.js resolve [--config "{sharedDir}/config.json"]
+```

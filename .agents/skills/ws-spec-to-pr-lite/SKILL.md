@@ -5,8 +5,9 @@
 
 
 
+
 name: ws-spec-to-pr-lite
-version: 0.3.8
+version: 0.3.9
 description: Fast sequential Spec-to-PR lite orchestrator (Steps 0–5). Trigger when user requests lite/fast spec-to-PR delivery.
 invocation_names:
   - spec-to-pr-lite
@@ -35,6 +36,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 6. **Auto Mode Models:** In `autoMode: true`, switch models per phase if `config.json` → `defaults` defines `plannerModel` (Steps 0–1), `executionModel` (Step 2), `reviewerModel` (Step 3). Fallback to active model if switch fails.
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
+9. **Runtime audit:** When `defaults.enableAuditing` is `true`, follow [`ws-audit`](../ws-audit/SKILL.md) (init at bootstrap, append per step, finalize + upstream issue gate at end). When `false`, skip.
 
 ## Steps 0–5 Index
 

@@ -131,6 +131,8 @@
     "scoreAndRefine": false,
     "autoload": false,
     "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
+    "enableAuditing": false,
+    "_comment_enableAuditing": "When true, ws-spec-to-pr* orch runs under ws-audit runtime observer; writes {us-dir}/audit-*.log.md; end-of-run may propose upstream GitHub issue for skill execution errors. Default false.",
     "patternsBackend": true,
     "patternsFrontend": true,
     "_comment_patterns": "When true, ws-patterns-backend and ws-patterns-frontend are active for consulting backend.md and frontend.md during development.",

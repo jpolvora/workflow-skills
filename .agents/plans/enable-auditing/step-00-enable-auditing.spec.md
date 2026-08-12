@@ -87,7 +87,7 @@ Do not commit audit logs unless the consumer explicitly includes them; default g
 
 ## Notes
 
-- Related: [`ws-doctor.spec.md`](../specs/ws-doctor.spec.md) (static diagnose), `ws-check-harness`, `ws-fable-judge`, `ws-multi-spec`, `ws-github-provider` (issue creation via `gh` when user accepts).
+- Related: `ws-doctor.spec.md` under `{specsDir}` (static diagnose; SoT `.agents/specs/ws-doctor.spec.md`), `ws-check-harness`, `ws-fable-judge`, `ws-multi-spec`, `ws-github-provider` (issue creation via `gh` when user accepts).
 - Prefer implementing the observer as a small dedicated skill or shared protocol referenced by orch SKILL.md / STEP-DISPATCH (plan decides package shape); keep default-off so consumers pay zero cost unless they opt in.
 - Upstream dogfood: maintainers may set `defaults.enableAuditing: true` when authoring skills to catch body defects that models paper over.
 - Target issue repo for managed skill findings: package upstream (`jpolvora/workflow-skills` / skill-dependencies `upstream` block), not ad-hoc consumer forks. Consumer-owned config/project bugs may stay local; managed skill defects always prefer the original upstream issue.

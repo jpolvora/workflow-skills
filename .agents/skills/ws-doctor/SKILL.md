@@ -2,7 +2,7 @@
 
 name: ws-doctor
 description: Workflow skills diagnostic inspector — read-only diagnose of path errors, tool/script recipes, config switches, and missing references across installed ws-* skills.
-version: 0.3.8
+version: 0.3.9
 disable-model-invocation: true
 invocation_names:
   - doctor
@@ -25,7 +25,7 @@ Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-s
 |-------|----------|
 | **This skill** | Broken paths after token expand, missing launchers / scripts, parse failures, live `config.json` summary, missing companion refs |
 | [`ws-check-harness`](../ws-check-harness/SKILL.md) | Phases 0–5c integrity, routing, portability, digests, topology |
-| [`ws-show-harness`](../ws-show-harness/SKILL.md) | What is active in the **current session** |
+| `ws-show-harness` (Extra package) | What is active in the **current session** |
 
 Do not re-run check-harness phases or invent a session autoload snapshot inside doctor.
 
