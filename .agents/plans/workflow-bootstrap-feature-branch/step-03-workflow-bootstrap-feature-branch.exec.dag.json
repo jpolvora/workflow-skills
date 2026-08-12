@@ -1,0 +1,151 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "reason": "8 plan steps A–H (> maxImplementationSteps 3), ≥8 expected files (> maxExpectedFiles 6), 3 layers (> maxLayers 2)",
+  "planPath": ".agents/plans/workflow-bootstrap-feature-branch/step-01-workflow-bootstrap-feature-branch.plan.md",
+  "metrics": {
+    "implementationSteps": 8,
+    "expectedFiles": 8,
+    "layers": 3,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Feature branch gate + resume mismatch in setup.md",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-shared/setup.md"
+      ],
+      "acceptance": "5b after Identity and before Baseline; three-choice user-gate with recommended flag, AC11 warning, detached-HEAD, existence, dirty stash/from-current/cancel; git recipes; autoMode stay+log; dryRun no mutation; state.branch/branchStrategy/baseBranch before checkpoint; resume skip 5b with HEAD-mismatch STOP.",
+      "coderPrompt": "Edit only .agents/skills/ws-shared/setup.md per plan §3 Steps A and B (combined; both edit this file). Insert 5b Feature branch gate after Identity and before Baseline with the plan §2 user-gate copy, recommended-option rule (option 2 when HEAD is protected else option 1), protected set main/master/develop plus configured baseBranch/workingBranch, AC11 stay warning, detached-HEAD stay invalid, existing feat/{slug} checkout-existing/different name/stay/cancel (never reset/-D), dirty create-from-base STOP stash/from-current/cancel, git command table, autoMode stay + log branch-gate | auto | stay, dryRun show-only (skip fetch), state keys, and banner branch/baseBranch sync. Resolve baseBranch from config.project.baseBranch else bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh; never hardcode only master. In Resume/Reset after skip-bootstrap: if HEAD != state.branch STOP checkout-recorded (Recommended)/cancel; autoMode index 0 checkout-recorded logged branch-resume | auto | checkout. Never git reset --hard; never git add -A; no auto-push; no worktree; no new helper script; do not copy the gate into orch SKILL bodies.",
+      "acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7", "AC8", "AC10", "AC11"],
+      "planSteps": ["A", "B"]
+    },
+    {
+      "id": "T2",
+      "title": "gates.md auto-gate rows for feature branch",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-shared/gates.md"
+      ],
+      "acceptance": "Auto-gate defaults: Feature branch (new start) → Stay on current (index 0); Feature branch resume mismatch → Check out state.branch. HS-1 unchanged.",
+      "coderPrompt": "Edit only .agents/skills/ws-shared/gates.md Auto-gate defaults table. Add Feature branch (new start) index 0 = Stay on current, and Feature branch resume mismatch index 0 = Check out state.branch. Do not change HS-1 wording. Do not edit setup.md (T1 owns it). en-us; no new host product names.",
+      "acs": ["AC1", "AC7", "AC8"],
+      "planSteps": ["C"]
+    },
+    {
+      "id": "T3",
+      "title": "PROTOCOLS.md state YAML branchStrategy and baseBranch",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-spec-to-pr/PROTOCOLS.md"
+      ],
+      "acceptance": "state.md YAML lists branchStrategy and baseBranch beside branch; one sentence that 5b writes them, resume trusts them, ship reads branch. validate_state.py REQUIRED_KEYS unchanged.",
+      "coderPrompt": "Edit only .agents/skills/ws-spec-to-pr/PROTOCOLS.md state.md YAML block. Add branchStrategy: from-current | from-base | stay | checkout-existing and baseBranch beside existing branch. One sentence: written at bootstrap 5b; resume trusts them; workflow-mode ship-pr reads branch. Do not edit validate_state.py or REQUIRED_KEYS. Do not duplicate git recipes from setup.md.",
+      "acs": ["AC3", "AC4", "AC5", "AC7", "AC9"],
+      "planSteps": ["D"]
+    },
+    {
+      "id": "T4",
+      "title": "Workflow-mode ws-ship-pr uses state.branch as head",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-ship-pr/SKILL.md"
+      ],
+      "acceptance": "workflowMode true: preflight/push/create-pr --head/pull use state.branch; standalone still workingBranch; do not rewrite workingBranch; merge never deletes resolved head.",
+      "coderPrompt": "Edit only .agents/skills/ws-ship-pr/SKILL.md Steps 1, 4, 5, 7 (head/preflight/push/create-pr/merge). When workflowMode is true with readable {us-dir} state, resolve head from state.branch; confirm active branch is that name; git pull / git push -u / create-pr --head use it. Standalone /ship-pr still defaults to config.project.workingBranch. Do not rewrite workingBranch. Merge never-delete applies to the resolved head (workflow: state.branch; standalone: workingBranch). Do not edit PREPARE-CHECKLIST.md. Do not bump package version.",
+      "acs": ["AC9"],
+      "planSteps": ["E"]
+    },
+    {
+      "id": "T5",
+      "title": "Lite orch on-demand load of setup.md",
+      "parallelGroup": "L1",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md"
+      ],
+      "acceptance": "ws-spec-to-pr-lite/SKILL.md on-demand-loads {sharedDir}/setup.md (one sentence; 5b pointer OK). No forked three-choice gate. Standard SKILL.md unchanged.",
+      "coderPrompt": "Edit only .agents/skills/ws-spec-to-pr-lite/SKILL.md. Add at most one on-demand sentence to load {sharedDir}/setup.md before Step 0 (Feature branch gate is setup.md 5b). Do not copy the gate into the SKILL body. Do not edit ws-spec-to-pr/SKILL.md (already loads setup.md). Do not edit ws-multi-spec, README, AGENTS hubs, or catalog.",
+      "acs": ["AC10"],
+      "planSteps": ["F"]
+    },
+    {
+      "id": "T6",
+      "title": "Feature-branch-gate markdown contract tests",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T2", "T4", "T5"],
+      "files": [
+        "test/test-feature-branch-gate.js",
+        "package.json",
+        ".agents/skills/ws-check-workflows/scripts/check_workflows.py"
+      ],
+      "acceptance": "test/test-feature-branch-gate.js implements plan §5 AC1–AC11 grep contracts; wired into package.json tests and tests:remote without version bump; UTF-8 and CRLF-aware; optional check_workflows.py bootstrap-order assertion.",
+      "coderPrompt": "After T1/T2/T4/T5 prose exists, add test/test-feature-branch-gate.js implementing plan §5 functions (testGateThreeChoicesAndHs1 through testProtectedStayWarning). Follow test/test-quality-gates.js grep-contract style. Wire into package.json scripts.tests and scripts.tests:remote only; do not bump package version. Use encoding utf8 and \\r?\\n-aware regex. Optionally add a small assertion in .agents/skills/ws-check-workflows/scripts/check_workflows.py that setup.md has Feature branch gate after Identity and before Baseline and both orch SKILL.md reference setup.md. Do not edit other skill bodies. No live git-mutation E2E; never git add -A.",
+      "acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7", "AC8", "AC9", "AC10", "AC11"],
+      "planSteps": ["G"]
+    },
+    {
+      "id": "T7",
+      "title": "Regenerate integrity and run harness/tests",
+      "parallelGroup": "L3",
+      "dependsOn": ["T1", "T2", "T3", "T4", "T5", "T6"],
+      "files": [
+        "bin/skill-integrity.json"
+      ],
+      "acceptance": "generate-integrity + verify-integrity exit 0; ws-check-harness 0 critical; npm run test passes including new contract tests; no package version bump; no commit.",
+      "coderPrompt": "After T1–T6 content is landed, run npm run generate-integrity && npm run verify-integrity (exit 0), ws-check-harness Phases 0–5c to 0 critical, and npm run test. Update only bin/skill-integrity.json for digest drift. Do not bump package.json version. Do not run build-site:bump. Do not commit (commitPlanFilesOnlyAtStep8). Fix only integrity drift from prior tasks.",
+      "acs": [],
+      "planSteps": ["H"]
+    }
+  ],
+  "levels": [
+    ["T1", "T2", "T3"],
+    ["T4", "T5"],
+    ["T6"],
+    ["T7"]
+  ],
+  "optionalExcluded": [
+    {
+      "planStep": "H package version bump / build-site:bump",
+      "note": "Ship Step 8 owns bump + catalog footer"
+    },
+    {
+      "planStep": "F standard orch SKILL.md one-liner",
+      "note": "ws-spec-to-pr/SKILL.md already on-demand-loads setup.md"
+    },
+    {
+      "planStep": "E PREPARE-CHECKLIST.md",
+      "note": "No required row that says confirm workingBranch"
+    },
+    {
+      "planStep": "F README / AGENTS hubs / catalog",
+      "note": "Plan: no router or install-narrative change"
+    },
+    {
+      "planStep": "F ws-multi-spec override",
+      "note": "Out of scope v1"
+    },
+    {
+      "planStep": "A new helper script",
+      "note": "Recipes stay in setup.md unless proven insufficient"
+    },
+    {
+      "planStep": "cleanup_workflow_git.py",
+      "note": "Out of scope; HEAD skip already protects checked-out branch"
+    },
+    {
+      "planStep": "D validate_state.py REQUIRED_KEYS",
+      "note": "Must stay unchanged for old in-flight states"
+    }
+  ]
+}
