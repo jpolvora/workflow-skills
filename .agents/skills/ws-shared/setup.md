@@ -105,14 +105,14 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
    **Protected set** (exact branch names): `main`, `master`, `develop`, `config.project.baseBranch`, `config.project.workingBranch` (omit empty/unset config values).
 
-   **Default new branch name:** `feat/{slug}`. Before any create, if `refs/heads/feat/{slug}` exists locally **or** `refs/remotes/{gitRemote}/feat/{slug}` exists when `{gitRemote}` is configured → STOP and `user-gate`:
+   **Default new branch name:** `feat/{slug}`. Before any create, check existence without trusting stale remote-tracking refs: if `git branch --list feat/{slug}` shows the branch locally, **or** `git ls-remote --heads {gitRemote} feat/{slug}` (when `{gitRemote}` is configured) prints the ref → STOP and `user-gate`:
    - **Check out existing `feat/{slug}`** (Recommended when that branch is the intended target)
    - **Enter a different branch name**
    - **Stay on `{currentBranch}`**
    - **Cancel (HS-1)**
-   Never `git reset`, never `git branch -D`, never overwrite an existing feature branch.
+   Never `git reset`, never `git branch -D`, never overwrite an existing feature branch. Re-run the same local + `ls-remote` check on a user-entered alternate name before any `git checkout -b {name}`.
 
-   **`autoMode`:** no `user-gate`. If `{currentBranch}` is `HEAD` (detached): do **not** stay — create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`); if that ref already exists, check it out (`checkout-existing`). Never persist the literal `HEAD` as `state.branch`. Otherwise **stay** on current HEAD (no git mutation), `branchStrategy: stay`. Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|checkout-existing | {branch} | ISO`.
+   **`autoMode`:** no `user-gate`. If `{currentBranch}` is `HEAD` (detached): do **not** stay — if `feat/{slug}` exists locally or `ls-remote` shows it, check it out (`checkout-existing`); else create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`). Never persist the literal `HEAD` as `state.branch`. Otherwise **stay** on current HEAD (no git mutation), `branchStrategy: stay`. Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|checkout-existing | {branch} | ISO`.
 
    **`dryRun`:** prefix `[DRY-RUN]`; show the gate choices (or auto default) and the git commands that **would** run; **no ref mutation** (do not run `git checkout -b`, `git checkout`, or `git fetch`).
 

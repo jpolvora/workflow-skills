@@ -195,6 +195,12 @@ function testExistingFeatSlug() {
     'testExistingFeatSlug: existing feat/{slug} offers checkout-existing / different / stay / cancel',
   );
   assert(
+    /git branch --list feat\/\{slug\}/.test(setup) &&
+      /git ls-remote --heads \{gitRemote\} feat\/\{slug\}/.test(setup) &&
+      /alternate name[\s\S]*ls-remote/.test(setup),
+    'testExistingFeatSlug: existence uses local list + ls-remote; re-check alternate names',
+  );
+  assert(
     /Never `git reset`/.test(setup) && /never `git branch -D`/i.test(setup),
     'testExistingFeatSlug: no reset / -D on existing branch',
   );
