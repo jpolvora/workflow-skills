@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "5c7c79505ad14098c4eed40d97c31546e933fb859aacfa7e79d40a58ca596ac2",
+  "fullPackageDigest": "4cf8a3b3aba2e215bbbb8d6e4ea6f31ddd2cfd558006a82fb1e1401e4e594841",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -16,15 +16,15 @@
       "config.json.example": "1e266159ae7afcd8c5b9c86526070782221cf546a8644999bef9a3b3e45eb660",
       "config.schema.json": "75f22a3e45a85aff950f936d332325ff21896922cfd6de8dc4a0fdf2fc7d6882",
       "frontend.md.template": "f049da53cc917f55e11913dc9e356e89a117243ba8a8af04688ca99cdcc5baab",
-      "gates.md": "8fe4df87a8181ec58897bd98a02baf00f918756ff52214dcf5feac60ca98a325",
+      "gates.md": "26784cf152fea332665cc5b7778c2342e8cca965ed1445c3631c3baabf9c48f3",
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "0eeb41a64215f3966d4733fab25a2d5b8ca0603efc8a281d5d2e03fcba263cf0",
-      "setup.md": "5c7dc5c2756cfebdbef682ab42e40197b510b99282856b29c7b1a49d92e4033a",
+      "setup.md": "bacf6bb0f55bb7505f0f5727d9ff5299dc86f782a0abe2d321f52308698fc8bc",
       "skill-dependencies.json": "854bb036278fc18a0de836a87c1a85a57eb5038bd921f61b3e973edfef03f0c0",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "6b34cd4fa07c32c077f83bc4f681ddda7a937749a07d29d80f10652232fec985"
     },
-    "skillDigest": "0f2c55feeaa6e290f34bebe997cfb51a974b6981e55c689c4ee3d78e92a9adc1"
+    "skillDigest": "c26413f354deac254a13d18c7c03c3f368f87b4d39fa3ff8f30320c264fc155a"
   },
   "packageVersion": "0.3.11",
   "skills": {

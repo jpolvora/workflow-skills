@@ -253,6 +253,11 @@ function testAutoModeStayAndDryRun() {
     'testAutoModeStayAndDryRun: autoMode stay + detached creates feat/{slug}; never persist HEAD',
   );
   assert(
+    /local-check-only/.test(setup) &&
+      /never infer "branch absent" from a failed `ls-remote`/.test(setup),
+    'testAutoModeStayAndDryRun: autoMode ls-remote auth/network falls back to local-check-only',
+  );
+  assert(
     /`dryRun`:.*no ref mutation/i.test(setup) &&
       /do not run `git checkout -b`/.test(setup),
     'testAutoModeStayAndDryRun: dryRun documents no git ref mutation',
