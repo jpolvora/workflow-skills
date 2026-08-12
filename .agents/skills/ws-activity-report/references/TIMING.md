@@ -69,7 +69,11 @@ Always emit **real** clocks (start → end). Warn when entries overlap on the ta
 
 ## Inferred Human Work Duration & Billing Telemetry
 
-Run `python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-dir}` to compute active human work time, agent execution wait time, idle gaps, and activity category breakdowns.
+Run `python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-dir}` to compute billable human work time, agent running time, idle gaps, and activity category breakdowns.
+
+### Invariant (billable)
+
+When `agentRunningSeconds > 0`, **Human Total** (`humanSeconds`) must be **≥ Agent Running Total** (`agentRunningSeconds`). Agent-running intervals are concurrent human supervision/review and count toward Human Total — not exclusive idle wait that reduces billable hours below agent run duration.
 
 ### Human Work Categories
 
@@ -79,7 +83,7 @@ Run `python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-di
 
 ### Telemetry & Inactivity Thresholds
 
-- **Agent Execution (Wait Time)**: Active intervals where the agent/LLM was running tools, implementing tasks, or generating automated outputs while the human waited.
-- **Idle / AFK Gaps**: Non-work gaps > 30 minutes of zero human/agent interaction (e.g., overnight, away from desk).
+- **Agent Running Total**: Active intervals where the agent/LLM (or subagents) ran tools, implemented tasks, or generated automated outputs, **up to the 30-minute idle threshold**. Any inter-event silence ≥ 30 minutes is Idle/AFK (not Agent Running), even when bracketed by `agent_tool` events. Reported separately for transparency; included in Human Total as supervision/review when counted as active.
+- **Idle / AFK Gaps**: Non-work gaps ≥ 30 minutes of zero human/agent interaction (e.g., overnight, away from desk, or long silent stretches between telemetry events). Excluded from Human Total and Agent Running Total.
 - **Data Sources Evaluated**: Local git commit logs, workflow state files (`*.state.md`, `exec.dag.json`), SCM PR threads/comments, and local session transcript telemetry (`transcript.jsonl`).
 

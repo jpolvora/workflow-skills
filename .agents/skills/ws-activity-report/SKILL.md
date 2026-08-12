@@ -2,8 +2,9 @@
 
 
 
+
 name: ws-activity-report
-version: 0.3.9
+version: 0.3.10
 description: >-
   Timesheet entries (date, start, end, description) for ws-spec-to-pr /
   ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
@@ -66,13 +67,13 @@ Output language: **en-us**. Clock rules: [`references/TIMING.md`](references/TIM
    ```bash
    python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-dir} --start-iso {startIso} --end-iso {endIso}
    ```
-   Extracts active human work duration, agent execution wait time, idle gaps (>30m), and human activity breakdown (Reviewing/Deciding vs Editing Specs/Plans vs Prompting) from commits, state, PR threads, and transcript telemetry.
-   - Done when: active human work duration and category breakdown are resolved per candidate.
+   Extracts Human Total (billable), Agent Running Total (active agent intervals below the 30m idle threshold), idle gaps (≥30m, including silence between agent events), and human activity breakdown (Reviewing/Deciding vs Editing Specs/Plans vs Prompting) from commits, state, PR threads, and transcript telemetry. Human Total must be ≥ Agent Running Total when agent running > 0 (TIMING § Invariant).
+   - Done when: Human Total, Agent Running Total, and category breakdown are resolved per candidate.
 
 6. **Short title** — One line ≤ ~120 chars: WI/issue title → cleaned PR title → spec `#` / branch (OUTPUT § Short title).
    - Done when: title + source (`WI` | `issue` | `PR` | `spec`) set per US.
 
-7. **Clip & emit** — Multi-day intervals → one entry per civil day (00:00 / 23:59 cuts) or clip to target day only. Emit OUTPUT § Entries (with **Human Work Duration** & breakdown) + mandatory technical table (incl. **Human Time**, **Agent Wait**, **Main Activity**) + **Invoice & Payment Summary**. Invent nothing.
+7. **Clip & emit** — Multi-day intervals → one entry per civil day (00:00 / 23:59 cuts) or clip to target day only. Emit OUTPUT § Entries (with **Human Total** & breakdown) + mandatory technical table (incl. **Human Total**, **Agent Running Total**, **Main Activity**) + **Invoice & Payment Summary**. Invent nothing.
    - Done when: entries + table + invoice summary printed; skill stops.
 
 ## Rules

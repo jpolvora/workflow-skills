@@ -18,9 +18,9 @@ If WI/issue and PR differ materially, prefer WI/issue; optional abbreviated `PR:
 ### US {id} — {short title}
 Date: {YYYY-MM-DD}
 Wall Clock: {HH:mm} – {HH:mm} ({wallClockDuration})
-Human Work Duration: {humanDuration} (Billable)
+Human Total: {humanDuration} (Billable)
 Human Breakdown: Reviewing/Deciding {reviewingDuration} | Editing Specs/Plans {editingDuration} | Prompting {promptingDuration}
-Agent Execution (Wait Time): {agentWaitDuration}
+Agent Running Total: {agentRunningDuration}
 Idle / AFK Gap: {idleDuration}
 Description:
 {line1}
@@ -31,31 +31,31 @@ Description:
 |-------|------|
 | **Date** | Civil day of the segment (report timezone) |
 | **Wall Clock** | `HH:mm` start to `HH:mm` end event (`{wallClockDuration}`) |
-| **Human Work Duration** | Total active human duration ({H:MM}) |
-| **Human Breakdown** | Breakdown of active human time (Reviewing/Deciding, Editing Specs/Plans, Prompting) |
-| **Agent Execution (Wait Time)** | Total time human spent waiting for active agent tool execution/turn completion |
-| **Idle / AFK Gap** | Non-work inactive gaps > 30 minutes |
+| **Human Total** | Billable human work duration ({H:MM}); must be ≥ Agent Running Total when agent running > 0 |
+| **Human Breakdown** | Breakdown of Human Total (Reviewing/Deciding includes supervision during agent runs) |
+| **Agent Running Total** | Duration of agent/subagent execution intervals (tools, turns, automated implementation), capped by the 30-minute idle threshold between events |
+| **Idle / AFK Gap** | Non-work inactive gaps ≥ 30 minutes (including long silence between agent events) |
 | **Description** | ≤ **2–3 lines**, en-us; `US {id}` + what shipped + human work summary + `PR {n}` |
 
 ### Description examples
 
 ```text
 US 183 — fixed broken ws-shared link paths in THRESHOLDS.md.
-Human Work: 0:45 (Reviewing & Deciding: 0:25, Editing Specs: 0:20). Agent Wait: 0:15.
+Human Total: 0:45 (Reviewing & Deciding: 0:30, Editing Specs: 0:15). Agent Running: 0:20.
 PR 42 — closed after review / fix-pr.
 ```
 
 ## Technical table (mandatory)
 
-Every run must include **Short title**, **Human Time**, and **Agent Wait**:
+Every run must include **Short title**, **Human Total**, and **Agent Running Total**:
 
-| US | Short title | Start | End | Human Time | Agent Wait | Idle Gap | Main Human Activity | Data Sources | End kind | PR |
-|----|-------------|-------|-----|------------|------------|----------|---------------------|--------------|----------|----|
+| US | Short title | Start | End | Human Total | Agent Running Total | Idle Gap | Main Human Activity | Data Sources | End kind | PR |
+|----|-------------|-------|-----|-------------|---------------------|----------|---------------------|--------------|----------|----|
 
 Optional audit columns when space allows:
 
-| US | Short title | Title source | First bootstrap file | Start | End | Human Time | Agent Wait | Idle Gap | Main Human Activity | Data Sources | End kind | PR | Author |
-|----|-------------|----------------|----------------------|-------|-----|------------|------------|----------|---------------------|--------------|----------|----|--------|
+| US | Short title | Title source | First bootstrap file | Start | End | Human Total | Agent Running Total | Idle Gap | Main Human Activity | Data Sources | End kind | PR | Author |
+|----|-------------|----------------|----------------------|-------|-----|-------------|---------------------|----------|---------------------|--------------|----------|----|--------|
 
 `End kind` ∈ `thread` | `commit` | `gap`. `Title source` ∈ `WI` | `issue` | `PR` | `spec`.
 
@@ -68,7 +68,7 @@ Total Billable Human Work Time: {totalHumanTime}
   - Reviewing & Deciding: {totalReviewingTime}
   - Editing Specs & Plans: {totalEditingTime}
   - Prompting & Iterating: {totalPromptingTime}
-Total Agent Execution (Wait) Time: {totalAgentWaitTime}
+Total Agent Running Time: {totalAgentRunningTime}
 Total Wall Clock Duration: {totalWallClockSpan}
 
 Invoice Line Items:
@@ -77,10 +77,12 @@ Invoice Line Items:
 | US {id} | {short title} | {humanDuration} | {mainHumanActivity} |
 ```
 
+Billable column uses **Human Total** only. Agent Running Total is informational (transparency), not a separate billable line.
+
 ## Summary
 
-- Sum of active human work durations (Billable)
-- Sum of agent execution wait times
+- Sum of Human Total durations (Billable)
+- Sum of Agent Running Total durations
 - Wall-clock min→max across entries
 - PR ids covered
 - Gaps (missing PR, auth, comments, bootstrap files)

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Infer active human work duration, agent execution (wait) time, idle gaps,
+Infer billable human work duration, agent running time, idle gaps,
 and human activity breakdown for ws-activity-report.
+
+Human Total includes concurrent supervision during agent runs and must be
+>= Agent Running Total when agent running time is positive.
 """
 
 from __future__ import annotations
@@ -219,30 +222,42 @@ def infer_timing(us_dir: Path, bootstrap_start_iso: str | None = None, end_overr
 
     wall_clock_seconds = (end_dt - start_dt).total_seconds()
 
-    # Time breakdown logic:
-    # Segment timeline between start_dt and end_dt
-    # Classify intervals into: Human Work (Reviewing/Deciding, Editing Specs, Prompting), Agent Wait Time, Idle Gap
+    # Segment timeline: idle, agent-running (concurrent human supervision), exclusive human work.
     reviewing_deciding_sec = 0.0
     editing_specs_sec = 0.0
     prompting_sec = 0.0
-    agent_wait_sec = 0.0
+    agent_running_sec = 0.0
     idle_sec = 0.0
 
-    if not all_events or wall_clock_seconds <= 0:
-        # Default minimum heuristic for 1-step cycle if no detailed events
-        human_sec = min(15 * 60.0, wall_clock_seconds)
-        reviewing_deciding_sec = human_sec * 0.4
-        editing_specs_sec = human_sec * 0.4
-        prompting_sec = human_sec * 0.2
-        agent_wait_sec = max(0.0, wall_clock_seconds - human_sec)
-    else:
-        # Process timeline events
-        current_time = start_dt
-        # Default active state tracking
-        active_human_kind = "reviewing_deciding"  # default initial state for human start
+    def _is_agent_kind(kind: str) -> bool:
+        return "agent" in kind or kind in ("log_entry", "updatedAt")
 
-        for i in range(len(all_events)):
-            ev = all_events[i]
+    def _allocate_active_interval(delta: float, preceding_kind: str) -> None:
+        nonlocal reviewing_deciding_sec, editing_specs_sec, prompting_sec, agent_running_sec
+        if _is_agent_kind(preceding_kind):
+            agent_running_sec += delta
+            # Agent runs are concurrent human supervision / review (billable).
+            reviewing_deciding_sec += delta
+        elif preceding_kind in ("human_spec_edit", "edit_spec_plan"):
+            editing_specs_sec += delta
+        elif preceding_kind == "human_prompt":
+            prompting_sec += delta
+        else:
+            reviewing_deciding_sec += delta
+
+    if not all_events or wall_clock_seconds <= 0:
+        # No telemetry: do not fabricate billable time (TIMING.md Idle / AFK Gaps).
+        # Report the wall span as idle/unknown instead of inventing 55/25/20 splits.
+        agent_running_sec = 0.0
+        reviewing_deciding_sec = 0.0
+        editing_specs_sec = 0.0
+        prompting_sec = 0.0
+        idle_sec = max(0.0, wall_clock_seconds)
+    else:
+        current_time = start_dt
+        last_kind = "reviewing_deciding"
+
+        for ev in all_events:
             ev_dt = ev["date"]
             if ev_dt < start_dt or ev_dt > end_dt:
                 continue
@@ -252,33 +267,29 @@ def infer_timing(us_dir: Path, bootstrap_start_iso: str | None = None, end_overr
                 if delta >= IDLE_GAP_THRESHOLD:
                     idle_sec += delta
                 else:
-                    # Allocate interval based on preceding event kind
-                    preceding_kind = ev.get("kind", "")
-                    if "agent" in preceding_kind or preceding_kind in ("log_entry", "updatedAt"):
-                        agent_wait_sec += delta
-                    elif preceding_kind in ("human_spec_edit", "edit_spec_plan"):
-                        editing_specs_sec += delta
-                    elif preceding_kind == "human_prompt":
-                        prompting_sec += delta
-                    else:
-                        # Human reviewing/deciding/gating window
-                        reviewing_deciding_sec += delta
+                    _allocate_active_interval(delta, last_kind)
             current_time = ev_dt
+            last_kind = ev.get("kind", last_kind)
 
-        # Tail end interval (from last event to end_dt)
         tail_delta = (end_dt - current_time).total_seconds()
         if tail_delta > 0:
             if tail_delta >= IDLE_GAP_THRESHOLD:
                 idle_sec += tail_delta
             else:
-                reviewing_deciding_sec += tail_delta
+                _allocate_active_interval(tail_delta, last_kind)
 
     total_human_sec = reviewing_deciding_sec + editing_specs_sec + prompting_sec
 
-    # Normalize summary breakdown to ensure non-negative totals match wall clock
-    if total_human_sec + agent_wait_sec + idle_sec < wall_clock_seconds:
-        # Fill unallocated active wall time into reviewing/deciding
-        diff = wall_clock_seconds - (total_human_sec + agent_wait_sec + idle_sec)
+    # Fill unallocated active wall time into reviewing/deciding (exclusive human work).
+    allocated_active = total_human_sec + idle_sec
+    if allocated_active < wall_clock_seconds:
+        diff = wall_clock_seconds - allocated_active
+        reviewing_deciding_sec += diff
+        total_human_sec += diff
+
+    # Invariant: billable human time covers agent running (supervision model).
+    if agent_running_sec > 0 and total_human_sec < agent_running_sec:
+        diff = agent_running_sec - total_human_sec
         reviewing_deciding_sec += diff
         total_human_sec += diff
 
@@ -307,8 +318,8 @@ def infer_timing(us_dir: Path, bootstrap_start_iso: str | None = None, end_overr
             "promptingSeconds": round(prompting_sec, 1),
             "promptingFormatted": format_duration(prompting_sec),
         },
-        "agentWaitSeconds": round(agent_wait_sec, 1),
-        "agentWaitFormatted": format_duration(agent_wait_sec),
+        "agentRunningSeconds": round(agent_running_sec, 1),
+        "agentRunningFormatted": format_duration(agent_running_sec),
         "idleSeconds": round(idle_sec, 1),
         "idleFormatted": format_duration(idle_sec),
         "mainHumanActivity": main_activity,
