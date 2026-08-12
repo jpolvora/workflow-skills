@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "b421539f02a4d2d698da605b8008aff0df511eabd60a1c2347c8c1d6d917ea72",
+  "fullPackageDigest": "5c7c79505ad14098c4eed40d97c31546e933fb859aacfa7e79d40a58ca596ac2",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -19,12 +19,12 @@
       "gates.md": "8fe4df87a8181ec58897bd98a02baf00f918756ff52214dcf5feac60ca98a325",
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "0eeb41a64215f3966d4733fab25a2d5b8ca0603efc8a281d5d2e03fcba263cf0",
-      "setup.md": "fa9442c9ce0ee8ff946e16669ebee9a7cfb30b31b459d012fe2477707050f0e1",
+      "setup.md": "5c7dc5c2756cfebdbef682ab42e40197b510b99282856b29c7b1a49d92e4033a",
       "skill-dependencies.json": "854bb036278fc18a0de836a87c1a85a57eb5038bd921f61b3e973edfef03f0c0",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "6b34cd4fa07c32c077f83bc4f681ddda7a937749a07d29d80f10652232fec985"
     },
-    "skillDigest": "d4ecbded0e1e33efc897e9f2c3cd2427f91cf5fcbd27f1056301fa1172393b10"
+    "skillDigest": "0f2c55feeaa6e290f34bebe997cfb51a974b6981e55c689c4ee3d78e92a9adc1"
   },
   "packageVersion": "0.3.11",
   "skills": {
@@ -270,9 +270,9 @@
         "PREPARE-CHECKLIST.md": "52fc9e5c2b57646c4cdbbe78a13b30ad4c93bc13057cd899eff021acfa7036f1",
         "scripts/detect-base-branch.sh": "8435a94884d1ce3653159f2ffdee12829b758c8eb69cb9481d51ff8916c756fd",
         "scripts/verify.sh": "6d4599feb7a67f8f74aab3ce8c5191d3b6bee31fea5d3993ff667a3e13ef8c88",
-        "SKILL.md": "41273260b7c46101ecb9aa956534af2516d005641896a4c0764ca4bcd8914c45"
+        "SKILL.md": "3f3076d8daf837765651e6550bf07d137a2754d262f18fa66285ef1cf17bbab7"
       },
-      "skillDigest": "dfa6a5168523001966538e89bc75560d5763024616c6c012124bb97e7b67cf5d"
+      "skillDigest": "503abd78595981364e22ec40d13c62b9783361861d9cad49d0151e326485d2dc"
     },
     "ws-show-harness": {
       "files": {

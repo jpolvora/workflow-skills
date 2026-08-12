@@ -201,6 +201,11 @@ function testExistingFeatSlug() {
     'testExistingFeatSlug: existence uses local list + ls-remote; re-check alternate names',
   );
   assert(
+    /fails for auth\/network/.test(setup) &&
+      /Never infer "branch absent"/.test(setup),
+    'testExistingFeatSlug: ls-remote auth/network failure does not infer absent',
+  );
+  assert(
     /Never `git reset`/.test(setup) && /never `git branch -D`/i.test(setup),
     'testExistingFeatSlug: no reset / -D on existing branch',
   );

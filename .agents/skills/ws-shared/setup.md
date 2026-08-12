@@ -110,7 +110,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - **Enter a different branch name**
    - **Stay on `{currentBranch}`**
    - **Cancel (HS-1)**
-   Never `git reset`, never `git branch -D`, never overwrite an existing feature branch. Re-run the same local + `ls-remote` check on a user-entered alternate name before any `git checkout -b {name}`.
+   Never `git reset`, never `git branch -D`, never overwrite an existing feature branch. Re-run the same local + `ls-remote` check on a user-entered alternate name before any `git checkout -b {name}`. If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), STOP and `user-gate`: **Retry** / **Proceed with local check only** / **Cancel (HS-1)**. Never infer "branch absent" from a failed `ls-remote`.
 
    **`autoMode`:** no `user-gate`. If `{currentBranch}` is `HEAD` (detached): do **not** stay — if `feat/{slug}` exists locally or `ls-remote` shows it, check it out (`checkout-existing`); else create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`). Never persist the literal `HEAD` as `state.branch`. Otherwise **stay** on current HEAD (no git mutation), `branchStrategy: stay`. Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|checkout-existing | {branch} | ISO`.
 
