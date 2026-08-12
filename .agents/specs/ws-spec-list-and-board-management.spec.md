@@ -4,6 +4,7 @@ slug: ws-spec-list-and-board-management
 title: "Dual-Board Spec and Plan Inventory Management via ws-spec-list"
 source: local
 specDate: 2026-08-01
+status: completed
 ---
 
 # Specification — Dual-Board Spec and Plan Inventory Management via ws-spec-list

@@ -1,0 +1,1 @@
+{"timestamp":"2026-08-12T18:27:41Z","step":1,"label":"Planning","elapsedSec":120,"promptTokens":0,"completionTokens":0,"filesTouched":1,"model":"cursor-grok-4.6-high","verificationScore":null,"fableVerdict":null,"gateDecision":"user-gate-auto:next","errors":[],"bypassed":false}

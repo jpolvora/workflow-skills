@@ -6,8 +6,9 @@
 
 
 
+
 name: ws-spec-to-pr
-version: 0.3.11
+version: 0.3.12
 description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
 invocation_names:
   - spec-to-pr

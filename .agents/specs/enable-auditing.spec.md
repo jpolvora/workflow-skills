@@ -4,6 +4,7 @@ slug: enable-auditing
 title: "defaults.enableAuditing — runtime workflow audit wrapper for ws-spec-to-pr*"
 source: local
 specDate: 2026-08-11
+status: completed
 ---
 
 # Specification — defaults.enableAuditing — runtime workflow audit wrapper for ws-spec-to-pr*

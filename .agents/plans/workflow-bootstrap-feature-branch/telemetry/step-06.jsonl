@@ -1,0 +1,1 @@
+{"timestamp":"2026-08-12T18:47:21Z","step":6,"label":"Code review","elapsedSec":300,"promptTokens":0,"completionTokens":0,"filesTouched":4,"model":"cursor-grok-4.6-high","verificationScore":null,"fableVerdict":null,"gateDecision":"review-fix | round=1/3 | fixed=W1 | remaining=0","errors":[],"bypassed":false}

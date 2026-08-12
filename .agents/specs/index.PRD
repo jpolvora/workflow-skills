@@ -42,13 +42,16 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) (`spec: spec-provider-skills.spec.md`)
 - [x] Promote shared skills to first-class installable packages (`spec: promote-shared-skills.spec.md`)
 - [x] Skill install checksum integrity (SHA-256 digests + install gate) (`spec: skill-install-checksums/step-00-skill-install-checksums.spec.md`)
+- [x] Fix skill integrity mismatch (source digests vs `bin/skill-integrity.json`) (`spec: us-90/step-00-us-90.spec.md`)
+- [x] check-workflows consumer dependency closure (`spec: us-95/step-00-us-95.spec.md`)
+- [x] Immediate UTF-8 stdio reconfiguration (`spec: immediate-utf8-stdio-reconfiguration/step-00-immediate-utf8-stdio-reconfiguration.spec.md`)
 
 ### Phase 2: System Quality & Integration
 - [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: consolidated-gh-issues.spec.md`)
 - [x] Opt-in Integration of fable-* Skills with spec-to-pr Workflows (`spec: fable-skills-integration.spec.md`)
 
 ### Phase 3: Continuous Verification & Advanced Quality Gates
-- [ ] Continuous AI Verification & Quality Gates Engine (`spec: continuous-ai-verification-quality-gates.spec.md`)
+- [x] Continuous AI Verification & Quality Gates Engine (`spec: continuous-ai-verification-quality-gates.spec.md`)
 - [x] GraphQL Thread Resolution & Verification in `ws-goal-fix-pr` (`spec: us-168-resolve-review-thread.spec.md`)
 - [x] Source-of-Truth Refactoring to `src/` & Hybrid Global Mode (`spec: src-sot-and-hybrid-global-install.spec.md`)
 - [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: workflow-cleanup-and-branch-protection.spec.md`)
@@ -63,29 +66,46 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Configurable consumer autoload flag (`defaults.autoload` + harness enforce) (`spec: configurable-consumer-autoload.spec.md`)
 - [x] Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) (`spec: project-patterns-memory-skills.spec.md`)
 
+### Phase 4: Runtime diagnostics, audit, timing, and bootstrap
+- [x] `ws-doctor` read-only skills diagnostic inspector (`spec: ws-doctor.spec.md`)
+- [x] `defaults.enableAuditing` runtime workflow audit wrapper (`spec: enable-auditing.spec.md`)
+- [x] Refine `ws-activity-report` human vs agent duration (`spec: refine-ws-activity-report-human-timing.spec.md`)
+- [x] `defaults.testingModel` test executor for standard Step 7 (`spec: testing-executor-model.spec.md`)
+- [x] Feature-branch strategy gate at workflow bootstrap (`spec: workflow-bootstrap-feature-branch.spec.md`)
+
 ## 8. Next specs
 
 | # | Spec | Status | Target Phase | Notes |
 |---|------|--------|--------------|-------|
-| 1 | `continuous-ai-verification-quality-gates` | `[ ]` todo | Phase 3 | Pre-PR fable-judge gate, workflow CI, complexity classifier, and telemetry — **only open Phase 3 next-spec** |
-| 2 | `spec-provider-skills` | `[x]` done | Phase 1 | GitHub, ADO, and local spec provider skills |
-| 3 | `promote-shared-skills` | `[x]` done | Phase 1 | Top-level skill promotion for utilities |
-| 4 | `skill-install-checksums` | `[x]` done | Phase 1 | Install SHA-256 integrity (PR #88) |
-| 5 | `consolidated-gh-issues` | `[x]` done | Phase 2 | Fixes #106, #109, #110 |
-| 6 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
-| 7 | `us-168-resolve-review-thread` | `[x]` done | Phase 3 | GraphQL thread resolution & pre-merge verification gates |
-| 8 | `src-sot-and-hybrid-global-install` | `[x]` done | Phase 3 | Historical: SoT lived under src/; superseded by `.agents/skills` SoT (PR #181) |
-| 9 | `workflow-cleanup-and-branch-protection` | `[x]` done | Phase 3 | Post-run uswf cleanup & base branch protection |
-| 10 | `skill-authoring-and-config-gate-rules` | `[x]` done | Phase 3 | SKILL_AUTHORING guidelines & config check gate |
-| 11 | `ws-spec-list-and-board-management` | `[x]` done | Phase 3 | Dual board spec vs plan inventory management |
-| 12 | `remove-consumer-agents-md-requirement` | `[x]` done | Phase 3 | No packaged `.agents/AGENTS.md`; hub is ws-shared/; optional root AGENTS.md via autoload |
-| 13 | `shared-autoload-md` | `[x]` done | Phase 3 | autoload.md hub + configure-project root AGENTS.md + harness checks |
-| 14 | `autoload-skills-overlap-audit` | `[x]` done | Phase 3 | Thin complementarity for Always-applied set (PR #182) |
-| 15 | `us-183` | `[x]` done | Phase 3 | Fix classify THRESHOLDS.md relative links (PR #184) |
-| 16 | `workflow-mutation-testing-gate` | `[x]` done | Phase 3 | Opt-in Step 7 mutation substep (PR #186) |
-| 17 | `configurable-delivery-commit-artifacts` | `[x]` done | Phase 3 | Config-driven G2-delivery staging (PR #187) |
-| 18 | `configurable-consumer-autoload` | `[x]` done | Phase 3 | `defaults.autoload` + configure + harness (PR #188) |
-| 19 | `project-patterns-memory-skills` | `[x]` done | Phase 3 | `ws-patterns-backend` & `ws-patterns-frontend` skills |
+| 1 | `spec-provider-skills` | `[x]` done | Phase 1 | GitHub, ADO, and local spec provider skills |
+| 2 | `promote-shared-skills` | `[x]` done | Phase 1 | Top-level skill promotion for utilities |
+| 3 | `skill-install-checksums` | `[x]` done | Phase 1 | Install SHA-256 integrity (PR #88) |
+| 4 | `us-90` | `[x]` done | Phase 1 | Integrity digest mismatch (PR #91) |
+| 5 | `us-95` | `[x]` done | Phase 1 | check-workflows consumer deps (PR #96) |
+| 6 | `immediate-utf8-stdio-reconfiguration` | `[x]` done | Phase 1 | UTF-8 stdio (PR #98) |
+| 7 | `consolidated-gh-issues` | `[x]` done | Phase 2 | Fixes #106, #109, #110 |
+| 8 | `fable-skills-integration` | `[x]` done | Phase 2 | Fable judge & domain integration |
+| 9 | `continuous-ai-verification-quality-gates` | `[x]` done | Phase 3 | Quality gates, classifier, telemetry (PR #164) |
+| 10 | `us-168-resolve-review-thread` | `[x]` done | Phase 3 | GraphQL thread resolution & pre-merge verification gates |
+| 11 | `src-sot-and-hybrid-global-install` | `[x]` done | Phase 3 | Historical: SoT lived under src/; superseded by `.agents/skills` SoT (PR #181) |
+| 12 | `workflow-cleanup-and-branch-protection` | `[x]` done | Phase 3 | Post-run uswf cleanup & base branch protection |
+| 13 | `skill-authoring-and-config-gate-rules` | `[x]` done | Phase 3 | SKILL_AUTHORING guidelines & config check gate |
+| 14 | `ws-spec-list-and-board-management` | `[x]` done | Phase 3 | Dual board spec vs plan inventory management |
+| 15 | `remove-consumer-agents-md-requirement` | `[x]` done | Phase 3 | No packaged `.agents/AGENTS.md`; hub is ws-shared/; optional root AGENTS.md via autoload |
+| 16 | `shared-autoload-md` | `[x]` done | Phase 3 | autoload.md hub + configure-project root AGENTS.md + harness checks |
+| 17 | `autoload-skills-overlap-audit` | `[x]` done | Phase 3 | Thin complementarity for Always-applied set (PR #182) |
+| 18 | `us-183` | `[x]` done | Phase 3 | Fix classify THRESHOLDS.md relative links (PR #184) |
+| 19 | `workflow-mutation-testing-gate` | `[x]` done | Phase 3 | Opt-in Step 7 mutation substep (PR #186) |
+| 20 | `configurable-delivery-commit-artifacts` | `[x]` done | Phase 3 | Config-driven G2-delivery staging (PR #187) |
+| 21 | `configurable-consumer-autoload` | `[x]` done | Phase 3 | `defaults.autoload` + configure + harness (PR #188) |
+| 22 | `project-patterns-memory-skills` | `[x]` done | Phase 3 | `ws-patterns-backend` & `ws-patterns-frontend` skills (PR #190) |
+| 23 | `ws-doctor` | `[x]` done | Phase 4 | Read-only skills diagnostic inspector (PR #191) |
+| 24 | `enable-auditing` | `[x]` done | Phase 4 | `defaults.enableAuditing` + `ws-audit` (`2cec03f` on main) |
+| 25 | `refine-ws-activity-report-human-timing` | `[x]` done | Phase 4 | Human Total ≥ Agent Running (PR #192) |
+| 26 | `testing-executor-model` | `[x]` done | Phase 4 | `defaults.testingModel` Step 7 executor (PR #195) |
+| 27 | `workflow-bootstrap-feature-branch` | `[x]` done | Phase 4 | Feature-branch gate at bootstrap (PR #194) |
+
+No open Next-specs todos. New work goes to Inbox, then promote.
 
 ## 9. Inbox (unscheduled ideas)
 
@@ -99,12 +119,16 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 2026-07-13 | `spec-provider-skills` | Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) | Implemented |
 | 2026-07-16 | `promote-shared-skills` | Promote shared skills to first-class installable packages | Implemented |
 | 2026-07-20 | `skill-install-checksums` | Skill install checksum integrity (SHA-256) | [PR #88](https://github.com/jpolvora/workflow-skills/pull/88) |
+| 2026-07-20 | `us-90` | Fix skill integrity mismatch | [PR #91](https://github.com/jpolvora/workflow-skills/pull/91) |
+| 2026-07-22 | `us-95` | check-workflows consumer dependency closure | [PR #96](https://github.com/jpolvora/workflow-skills/pull/96) |
+| 2026-07-22 | `immediate-utf8-stdio-reconfiguration` | Immediate UTF-8 stdio reconfiguration | [PR #98](https://github.com/jpolvora/workflow-skills/pull/98) |
 | 2026-07-23 | `consolidated-gh-issues` | Consolidated GitHub Issues Fix: #106, #109, and #110 | Implemented |
 | 2026-07-24 | `fable-skills-integration` | Opt-in Integration of fable-* Skills with spec-to-pr Workflows | Implemented |
+| 2026-07-28 | `continuous-ai-verification-quality-gates` | Continuous AI Verification & Advanced Quality Gates Engine | [PR #164](https://github.com/jpolvora/workflow-skills/pull/164) |
 | 2026-08-01 | `us-168-resolve-review-thread` | fix(ws-goal-fix-pr): execute resolveReviewThread GraphQL mutation | Implemented |
 | 2026-08-01 | `src-sot-and-hybrid-global-install` | Source-of-Truth Refactoring to src/ and Hybrid Global Mode | Implemented |
 | 2026-08-01 | `workflow-cleanup-and-branch-protection` | Mandatory Workflow Git Cleanup and Protected Branch Safeguards | Implemented |
-| 2026-08-07 | `skill-authoring-and-config-gate-rules` | Skill Authoring Guidelines and Global Skill Config Verification Gate | Implemented |
+| 2026-08-07 | `skill-authoring-and-config-gate-rules` | Skill Authoring Guidelines and Global Config Verification Gate | Implemented |
 | 2026-08-01 | `ws-spec-list-and-board-management` | Dual-Board Spec and Plan Inventory Management via ws-spec-list | Implemented |
 | 2026-08-07 | `remove-consumer-agents-md-requirement` | Remove packaged `.agents/AGENTS.md` requirement; hub is ws-shared/ | Implemented |
 | 2026-08-08 | `autoload-skills-overlap-audit` | Always-applied skills overlap audit & thin complementarity | [PR #182](https://github.com/jpolvora/workflow-skills/pull/182) |
@@ -113,13 +137,18 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 2026-08-10 | `workflow-mutation-testing-gate` | Opt-in mutation testing gate in Step 7 | [PR #186](https://github.com/jpolvora/workflow-skills/pull/186) |
 | 2026-08-10 | `configurable-delivery-commit-artifacts` | Configurable delivery-commit artifacts | [PR #187](https://github.com/jpolvora/workflow-skills/pull/187) |
 | 2026-08-10 | `configurable-consumer-autoload` | Configurable consumer autoload (`defaults.autoload`) | [PR #188](https://github.com/jpolvora/workflow-skills/pull/188) |
-| 2026-08-11 | `project-patterns-memory-skills` | Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) | Implemented |
+| 2026-08-11 | `project-patterns-memory-skills` | Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) | [PR #190](https://github.com/jpolvora/workflow-skills/pull/190) |
+| 2026-08-12 | `ws-doctor` | ws-doctor — Workflow skills diagnostic inspector | [PR #191](https://github.com/jpolvora/workflow-skills/pull/191) |
+| 2026-08-12 | `enable-auditing` | defaults.enableAuditing runtime audit wrapper | `2cec03f` (on main) |
+| 2026-08-12 | `refine-ws-activity-report-human-timing` | Refine ws-activity-report human vs agent duration | [PR #192](https://github.com/jpolvora/workflow-skills/pull/192) |
+| 2026-08-12 | `testing-executor-model` | Add testingModel (test executor) to LLM model config | [PR #195](https://github.com/jpolvora/workflow-skills/pull/195) |
+| 2026-08-12 | `workflow-bootstrap-feature-branch` | Ask for feature-branch strategy at workflow bootstrap | [PR #194](https://github.com/jpolvora/workflow-skills/pull/194) |
 
 ## 11. Maintenance checklist
 
 - [x] All completed features logged in Done log.
 - [x] Linked `*.spec.md` files exist for active Next specs.
-- [x] Open Next-specs todos reviewed (only `continuous-ai-verification-quality-gates` remains `[ ]`).
+- [x] Disk `{specsDir}` specs of record are indexed (no open Next-specs todos).
 
 ## 12. Related docs
 

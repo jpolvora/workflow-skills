@@ -4,6 +4,7 @@ slug: shared-autoload-md
 title: "Shared autoload.md and configure-project root AGENTS.md generation"
 source: local
 specDate: 2026-08-08
+status: completed
 ---
 
 # Specification — Shared autoload.md and configure-project root AGENTS.md generation

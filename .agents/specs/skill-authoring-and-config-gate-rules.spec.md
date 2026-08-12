@@ -4,6 +4,7 @@ slug: skill-authoring-and-config-gate-rules
 title: "Skill Authoring Guidelines and Global Skill Config Verification Gate"
 source: local
 specDate: 2026-08-07
+status: completed
 ---
 
 # Specification — Skill Authoring Guidelines and Global Skill Config Verification Gate

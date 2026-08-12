@@ -1,0 +1,110 @@
+{
+  "execMode": "parallel",
+  "targetModel": "coder",
+  "reason": "6 plan steps (> maxImplementationSteps 3), ≥10 expected files (> maxExpectedFiles 6), 3+ layers (> maxLayers 2)",
+  "planPath": ".agents/plans/ws-doctor/step-01-ws-doctor.plan.md",
+  "metrics": {
+    "implementationSteps": 6,
+    "expectedFiles": 10,
+    "layers": 3,
+    "thresholds": {
+      "maxImplementationSteps": 3,
+      "maxExpectedFiles": 6,
+      "maxLayers": 2
+    }
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Scaffold ws-doctor SKILL.md",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-doctor/SKILL.md"
+      ],
+      "acceptance": "SKILL.md with required frontmatter (doctor/ws-doctor), banner ws-doctor loaded., report contract, --skill/--json, read-only default, hybrid roots, boundary vs check-harness/show-harness, user-gate for missing config; en-us portable; no upstream: frontmatter.",
+      "coderPrompt": "Create only .agents/skills/ws-doctor/SKILL.md per plan Step 1 and Agent protocol. Align version with package.json / packageVersion. Include banner, four-section report contract, CLI flags, hybrid path rules, explicit node launcher for scripts/doctor.js, boundary vs ws-check-harness and ws-show-harness. No fix-apply mode. Do not create doctor.js (T2). Do not edit hubs or dependency graphs.",
+      "acs": ["AC1", "AC8", "AC10"],
+      "planSteps": ["1", "3", "6"]
+    },
+    {
+      "id": "T2",
+      "title": "Implement doctor.js diagnostic engine",
+      "parallelGroup": "L0",
+      "dependsOn": [],
+      "files": [
+        ".agents/skills/ws-doctor/scripts/doctor.js"
+      ],
+      "acceptance": "doctor.js passes node --check; markdown default + --json + --skill; Path/Tool-script/Configuration/Missing-refs sections; missing config unavailable without inventing values; read-only; UTF-8 I/O; soft-skip missing launchers; no URL-as-drive false positives.",
+      "coderPrompt": "Create only .agents/skills/ws-doctor/scripts/doctor.js per plan Step 2. Resolve skillsRoot independently from project sharedDir/config.json. Implement path errors, tool/script diagnostics (py_compile/node --check/bash -n), configuration summary or unavailable+configure-project tip, missing references. Support --skill and --json. No filesystem writes. Do not edit SKILL.md, hubs, or deps.",
+      "acs": ["AC2", "AC3", "AC4", "AC5", "AC6", "AC7"],
+      "planSteps": ["2", "6"]
+    },
+    {
+      "id": "T3",
+      "title": "Register deps graph and AGENTS hubs",
+      "parallelGroup": "L1",
+      "dependsOn": ["T1"],
+      "files": [
+        "bin/skill-dependencies.json",
+        ".agents/skills/ws-shared/skill-dependencies.json",
+        "AGENTS.md",
+        ".agents/skills/ws-shared/AGENTS.md"
+      ],
+      "acceptance": "ws-doctor in Workflows skills list (bin + packaged ws-shared graph when shipped); root and ws-shared AGENTS catalog + task-router rows; not in autoload; optional peer one-liners skipped unless zero duplication risk.",
+      "coderPrompt": "Register ws-doctor in bin/skill-dependencies.json Workflows list and mirror .agents/skills/ws-shared/skill-dependencies.json if present. Add catalog + task-router rows to root AGENTS.md and ws-shared/AGENTS.md for diagnose/doctor intents. Do not autoload. Prefer hubs over peer SKILL edits. Do not regenerate integrity (T5). Do not edit ws-doctor package files.",
+      "acs": ["AC9"],
+      "planSteps": ["4", "3"]
+    },
+    {
+      "id": "T4",
+      "title": "Focused doctor fixture/unit tests",
+      "parallelGroup": "L1",
+      "dependsOn": ["T1", "T2"],
+      "files": [
+        "test/"
+      ],
+      "acceptance": "Minimal focused tests under test/ for doctor report behaviors where cheap, or thin smoke + defer heavy coverage to T5 npm run test; fixtures local; doctor stays read-only under assertion.",
+      "coderPrompt": "Add minimal focused tests under test/ for ws-doctor (AC2-AC7) only if cheap; otherwise thin existence/flag smoke and rely on T5. Do not modify skill bodies, hubs, or integrity manifests.",
+      "acs": ["AC2", "AC3", "AC4", "AC5", "AC6", "AC7"],
+      "planSteps": ["5"]
+    },
+    {
+      "id": "T5",
+      "title": "Integrity, catalog, harness, install, smoke",
+      "parallelGroup": "L2",
+      "dependsOn": ["T1", "T2", "T3", "T4"],
+      "files": [
+        "bin/skill-integrity.json",
+        "docs/index.html"
+      ],
+      "acceptance": "generate-integrity + verify-integrity exit 0; ws-check-harness 0 critical; npm run test passes; catalog lists ws-doctor via node bin/build-site.js; smoke doctor default/--skill/--json and missing-config path; no doctor mutations; no commit.",
+      "coderPrompt": "Regenerate integrity (npm run generate-integrity && npm run verify-integrity), rebuild catalog with node bin/build-site.js (no bump unless shipping), run ws-check-harness to 0 critical, run npm run test, smoke-run doctor.js (default, --skill ws-doctor, --json, missing-config). Do not commit. Fix only integrity/catalog drift from prior tasks.",
+      "acs": ["AC11", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7", "AC10"],
+      "planSteps": ["5", "6"]
+    }
+  ],
+  "levels": [
+    ["T1", "T2"],
+    ["T3", "T4"],
+    ["T5"]
+  ],
+  "optionalExcluded": [
+    {
+      "planStep": "README mention",
+      "note": "Optional human install narrative; not AC-blocking"
+    },
+    {
+      "planStep": "build-site:bump",
+      "note": "Version/catalog bump deferred to ship Step 8"
+    },
+    {
+      "planStep": "3 peer SKILL one-liners",
+      "note": "Optional; hubs satisfy AC9 — folded into T3 as skip-preferred"
+    },
+    {
+      "planStep": "fix-apply mode",
+      "note": "Out of scope v1"
+    }
+  ]
+}

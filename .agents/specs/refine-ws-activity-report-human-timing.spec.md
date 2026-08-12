@@ -4,6 +4,7 @@ slug: refine-ws-activity-report-human-timing
 title: "Refine ws-activity-report human vs agent duration for invoice accuracy"
 source: local
 specDate: 2026-08-12
+status: completed
 ---
 
 # Specification — Refine ws-activity-report human vs agent duration for invoice accuracy

@@ -4,6 +4,7 @@ slug: consolidated-gh-issues
 title: "Consolidated GitHub Issues Fix: #106, #109, and #110"
 source: local
 specDate: 2026-07-23
+status: completed
 ---
 
 # Specification — Consolidated GitHub Issues Fix: #106, #109, and #110

@@ -4,6 +4,7 @@ slug: ws-doctor
 title: "ws-doctor — Workflow skills diagnostic inspector"
 source: local
 specDate: 2026-08-11
+status: completed
 ---
 
 # Specification — ws-doctor — Workflow skills diagnostic inspector

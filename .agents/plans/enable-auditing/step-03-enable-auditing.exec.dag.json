@@ -1,0 +1,7 @@
+{
+  "execMode": "sequential",
+  "reason": "5 steps, 12+ files, 3 layers",
+  "planPath": ".agents/plans/enable-auditing/step-02-enable-auditing.plan.refined.md",
+  "tasks": [],
+  "levels": []
+}

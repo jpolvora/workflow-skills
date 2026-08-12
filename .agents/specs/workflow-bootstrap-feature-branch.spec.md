@@ -4,6 +4,7 @@ slug: workflow-bootstrap-feature-branch
 title: "Ask for feature-branch strategy at workflow bootstrap"
 source: local
 specDate: 2026-08-12
+status: completed
 ---
 
 # Specification — Ask for feature-branch strategy at workflow bootstrap

@@ -4,6 +4,7 @@ slug: skill-install-checksums
 title: "Skill install checksum integrity (dependency graph + full package)"
 source: local
 specDate: 2026-07-20
+status: completed
 ---
 
 # Specification — Skill install checksum integrity (dependency graph + full package)
