@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "aff292336dc98daab45f080506dacc1c141c23f33bc4baadb82ccb10e0294913",
+  "fullPackageDigest": "7f7a9286926d01019dde375423d28ac4406c1b25ca0e2870440ed33c5abc425f",
   "hub": {
     "files": {
       "AGENTS.md": "660119d100e4ef9271a601f190e7e324a0f65256909a6c12921eeb0252a9f788",
@@ -31,13 +31,13 @@
     "ws-activity-report": {
       "files": {
         "evals/evals.json": "f69e5755c8e0e0e0f275a4abbc71ce5e0505ea0a758d807f9ed04891e12c876b",
-        "references/OUTPUT.md": "8ebb31598005e1bf3aad24a7d8305e237d2fff0902e421194b9ab298d465dba7",
-        "references/TIMING.md": "4fb7befe9ca2718eceec2f975dafd2b06b897bd3b979ec795a9060a3b2aab7bc",
+        "references/OUTPUT.md": "2a5682ce8ff43592c8567595cd19d594fa0d2b93c09c016666734cd7e7a76c5d",
+        "references/TIMING.md": "aa5fc0dd459103c9e711cbe73e736cdc06f45a62002d30cc2ad90d79ba47a6ee",
         "scripts/bootstrap_start.py": "77be7c93fc40d5242007a87294830221cdfd882be32427417095cfe7c7b6a673",
-        "scripts/infer_human_timing.py": "9d4c9be654a56d6a5a28efec239e7baa35324b505fbe6a70847a15c9a214fcd6",
-        "SKILL.md": "04e24a89176cb16f8dffdd19bb9822f01e8dbca8ab9e1392b3c4720815ac7c3f"
+        "scripts/infer_human_timing.py": "a3d5904afb71000be895ff4daff5776a1856303be9e1e03471fc30687b0badb1",
+        "SKILL.md": "3d904f8eb3383a2857426803544abb2ffcbe8d2ef1a43a318b54c597db906446"
       },
-      "skillDigest": "8727c9b18307064479e569f85be423bec5d96a02bf2c4def5d1c87782bf1dd59"
+      "skillDigest": "a92789d191baba73d755e93b509abbc962dea89beafc6b91791e7c13274d1251"
     },
     "ws-azure-devops-provider": {
       "files": {
@@ -99,10 +99,10 @@
     },
     "ws-doctor": {
       "files": {
-        "scripts/doctor.js": "e9313d701dff0fa512f7fb7198dc2e6648e5b37516358d8226715078cef1e1ab",
+        "scripts/doctor.js": "c71e5f979b40d75e69c6e50ff067370b3d000000b519dd2b01e47678dc3c1122",
         "SKILL.md": "e6ed8d527425bb3c00a1c9b43541fc9b8088418ae5891826f3e38860e3983509"
       },
-      "skillDigest": "aac18253a1af9d63973b198ee8dc044db99c869300f2a1a8df5e748223d38c59"
+      "skillDigest": "67399facbab2d07ee30515fd2490eda48ed9e6644ab7ccd6d27b43059c7317bf"
     },
     "ws-fable-domain": {
       "files": {
