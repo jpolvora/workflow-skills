@@ -42,6 +42,49 @@ Scan consumer **repo root** (not this skill package alone):
 | Top-level `.cursor/`, `.opencode/`, `.gemini/` or IDE env | Detect host IDE (Cursor / OpenCode / Antigravity) to suggest canonical model strings for `defaults.plannerModel`, `defaults.executionModel`, `defaults.reviewerModel` (Cursor: `claude-3-5-sonnet` / `gpt-4o`; OpenCode: `claude-3-5-sonnet` / `gemini-2.0-flash`; Antigravity: `gemini-3.6-flash` / `claude-3-5-sonnet`) |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
+## Mode gate
+
+Full `/ws-configure-project` only (after Detect + Gap list, before Interview). Skip when `--detect-only` or `--section`.
+
+`user-gate` (host structured-choice UI when available; markdown fallback + log `user-gate-fallback`):
+
+| Option | Effect |
+|--------|--------|
+| **AutoConfig and save (Recommended)** | One merge-write of the Detect map plus reasonable defaults. No per-section Accept / Keep / Edit / Skip gates. Then Validate & handoff. |
+| **Ask user confirmations** | Existing interview order below. |
+
+Cancel / dismiss → HS-1 (STOP, re-present, never infer AutoConfig, never write).
+
+### AutoConfig write rules
+
+Helper (agents and tests):
+
+```bash
+python {skillsRoot}/ws-configure-project/scripts/configure_autoconfig.py \
+  --apply --suggestions suggestions.json [--force] [--repo-root DIR] [--json]
+```
+
+Write `suggestions.json` as a nested JSON object matching `config.json` keys (Detect map). `--force` overwrites filled non-placeholder values.
+
+| Rule | Detail |
+|------|--------|
+| Merge | Do not delete unknown keys. Preserve `_comment*` keys. |
+| Fill | Placeholders (`<…>`) and missing/empty keys from suggestions, then INTERVIEW.md / example reasonable defaults (`plans.dir`, `plans.specsDir`, `reviews.dir`, `workingBranch`, `gitRemote`, `rules.stackFile`, `rules.changelogFile`, delivery-commit Recommended). |
+| Do not clobber | Already-filled non-placeholder values stay unless `--force`. |
+| `providers.scm` | Never `local`. Coerce to `github` or matching `providers.active`. Hybrid `active=local` + `scm=github\|azure-devops` is valid. |
+| Secrets | Never write PAT/password/token values. `patEnvVar` env-var names only. |
+| `defaults.autoload` | Never write `true`. Do not `--write-root-agents`. Optional `--write-autoload` path refresh only. |
+| Secrets hook | Do not install (Recommended = No). |
+| Stack companion | If `{sharedDir}/STACK.md` exists, set `rules.stackFile` when that key is a gap. If missing, generate under `{sharedDir}/` (setup 1b). No repo-root `STACK.md`. |
+| Commit | Never commit `config.json` (gitignored). |
+
+### Mode gate skip table
+
+| Situation | Behavior |
+|-----------|----------|
+| `--detect-only` | No mode gate. Print detections. No write. |
+| `--section <name>` | No mode gate. Interview that section only (including `autoload` / `patterns` / `defaults`). |
+
 ## Interview order
 
 1. `project` (name, org, repoUrl, baseBranch, workingBranch)
@@ -122,4 +165,5 @@ Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
 - After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.
-- Autoload writes: `defaults.autoload` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`.
+- AutoConfig writes: `configure_autoconfig.py --apply` (one batch). Confirm-by-group writes after each section.
+- Autoload writes: `defaults.autoload` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. AutoConfig never writes root `AGENTS.md`.

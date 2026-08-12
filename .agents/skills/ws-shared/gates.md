@@ -199,6 +199,8 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 | Context | Index 0 |
 |---------|---------|
 | Transition | Next (Advance) |
+| Feature branch (new start) | Stay on current |
+| Feature branch resume mismatch | Check out `state.branch` |
 | Combined delivery + ship (`fullMode`) | Commit configured delivery artifacts, then create PR |
 | Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
 | Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |

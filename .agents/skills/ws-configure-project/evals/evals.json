@@ -32,6 +32,17 @@
         "Uses configure_autoload.py helper with portable path forms only",
         "Does not invent absolute filesystem paths"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "/ws-configure-project",
+      "expected_output": "After detect, user-gate AutoConfig and save (Recommended) vs Ask user confirmations; AutoConfig uses configure_autoconfig.py; no per-section gates on A.",
+      "assertions": [
+        "Presents mode gate with AutoConfig and save first (Recommended) and Ask user confirmations",
+        "Skips mode gate on --detect-only and --section",
+        "AutoConfig merge-writes via configure_autoconfig.py without per-section confirmation gates",
+        "Does not enable autoload, write root AGENTS.md, install secrets hook, or commit config.json"
+      ]
     }
   ]
 }
