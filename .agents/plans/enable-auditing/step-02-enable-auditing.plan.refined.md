@@ -18,4 +18,4 @@ status: "plan refined ok"
 
 ## 1–8. (unchanged from step-01)
 
-See `step-01-enable-auditing.plan.md` for full sections 1–8. Open questions: all resolved.
+Full sections 1–8 live in `step-01-enable-auditing.plan.md` (and SoT `.agents/specs/enable-auditing.spec.md`). Open questions: all resolved.

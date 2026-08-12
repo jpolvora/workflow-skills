@@ -50,10 +50,10 @@ Resolution: missing config, omitted key, null, or unreadable → `false`. See [`
 
 2. **Append** after each notable event (script failure/retry, tool mismatch, missing handoff artifact, unusual dispatch):
 
+   Write finding JSON with the host file-writing tool (never inline shell JSON), then:
+
    ```bash
-   node {skillsRoot}/ws-audit/scripts/audit_log.js append \
-     --session '{...}' \
-     --finding '{"step":"4","skill":"ws-implement-tasks","category":"script","severity":"error","summary":"...","evidence":"...","recovered":true}'
+   node {skillsRoot}/ws-audit/scripts/audit_log.js append      --session-file "{us-dir}/.audit-session-{slug}.json"      --finding-file "{us-dir}/.finding-step-4.json"
    ```
 
    Log skill-content defects **even when recovered**.
@@ -61,14 +61,14 @@ Resolution: missing config, omitted key, null, or unreadable → `false`. See [`
 3. **Finalize** at workflow end (before or after Step 8 delivery result):
 
    ```bash
-   node {skillsRoot}/ws-audit/scripts/audit_log.js finalize --session '{...}'
+   node {skillsRoot}/ws-audit/scripts/audit_log.js finalize      --session-file "{us-dir}/.audit-session-{slug}.json"
    ```
 
 4. **Upstream issue gate** when `has-errors` is true:
 
    ```bash
-   node {skillsRoot}/ws-audit/scripts/audit_log.js has-errors --session '{...}'
-   node {skillsRoot}/ws-audit/scripts/audit_log.js draft-issue --session '{...}'
+   node {skillsRoot}/ws-audit/scripts/audit_log.js has-errors      --session-file "{us-dir}/.audit-session-{slug}.json"
+   node {skillsRoot}/ws-audit/scripts/audit_log.js draft-issue      --session-file "{us-dir}/.audit-session-{slug}.json"
    ```
 
    Present `user-gate`:

@@ -25,10 +25,10 @@ function usage() {
   console.log(`Usage:
   node audit_log.js resolve [--config <path>]
   node audit_log.js init --us-dir <path> --slug <slug> [--workflow-id <id>]
-  node audit_log.js append --session <json> --finding <json>
-  node audit_log.js finalize --session <json>
-  node audit_log.js has-errors --session <json>
-  node audit_log.js draft-issue --session <json> [--upstream <owner/repo>]`);
+  node audit_log.js append (--session <json>|--session-file <path>) (--finding <json>|--finding-file <path>)
+  node audit_log.js finalize (--session <json>|--session-file <path>)
+  node audit_log.js has-errors (--session <json>|--session-file <path>)
+  node audit_log.js draft-issue (--session <json>|--session-file <path>) [--upstream <owner/repo>]`);
 }
 
 function readJsonArg(raw, label) {
@@ -40,6 +40,20 @@ function readJsonArg(raw, label) {
     return JSON.parse(raw);
   } catch (e) {
     console.error(`Error: invalid --${label} JSON: ${e.message}`);
+    process.exit(2);
+  }
+}
+
+function readJsonFile(filePath, label) {
+  if (!filePath) {
+    console.error(`Error: --${label} required`);
+    process.exit(2);
+  }
+  try {
+    const raw = fs.readFileSync(path.resolve(filePath), 'utf-8');
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error(`Error: invalid --${label} file: ${e.message}`);
     process.exit(2);
   }
 }
@@ -106,6 +120,22 @@ function loadSession(sessionArg) {
     process.exit(2);
   }
   return session;
+}
+
+function resolveSessionInput(opts) {
+  const raw = opts.sessionFile
+    ? readJsonFile(opts.sessionFile, 'session-file')
+    : readJsonArg(opts.session, 'session');
+  if (!raw.usDir || !raw.slug) {
+    console.error('Error: session must include usDir and slug');
+    process.exit(2);
+  }
+  return raw;
+}
+
+function resolveFindingInput(opts) {
+  if (opts.findingFile) return readJsonFile(opts.findingFile, 'finding-file');
+  return readJsonArg(opts.finding, 'finding');
 }
 
 function formatFinding(f) {
@@ -251,7 +281,9 @@ function parseCli(argv) {
     else if (a === '--slug') opts.slug = args[++i];
     else if (a === '--workflow-id') opts.workflowId = args[++i];
     else if (a === '--session') opts.session = args[++i];
+    else if (a === '--session-file') opts.sessionFile = args[++i];
     else if (a === '--finding') opts.finding = args[++i];
+    else if (a === '--finding-file') opts.findingFile = args[++i];
     else if (a === '--config') opts.config = args[++i];
     else if (a === '--upstream') opts.upstream = args[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
@@ -292,22 +324,22 @@ function main() {
   }
 
   if (cmd === 'append') {
-    const session = loadSession(opts.session);
-    const finding = readJsonArg(opts.finding, 'finding');
+    const session = resolveSessionInput(opts);
+    const finding = resolveFindingInput(opts);
     appendFinding(session, finding);
     console.log(JSON.stringify({ status: 'success', session }));
     return;
   }
 
   if (cmd === 'finalize') {
-    const session = loadSession(opts.session);
+    const session = resolveSessionInput(opts);
     finalizeAudit(session);
     console.log(JSON.stringify({ status: 'success', session }));
     return;
   }
 
   if (cmd === 'has-errors') {
-    const session = loadSession(opts.session);
+    const session = resolveSessionInput(opts);
     console.log(
       JSON.stringify({
         hasErrors: hasActionableErrors(session),
@@ -318,7 +350,7 @@ function main() {
   }
 
   if (cmd === 'draft-issue') {
-    const session = loadSession(opts.session);
+    const session = resolveSessionInput(opts);
     const draft = draftIssueBody(session, opts.upstream);
     console.log(JSON.stringify({ status: 'success', draft }));
     return;
