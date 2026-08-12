@@ -67,7 +67,7 @@ Output language: **en-us**. Clock rules: [`references/TIMING.md`](references/TIM
    ```bash
    python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-dir} --start-iso {startIso} --end-iso {endIso}
    ```
-   Extracts Human Total (billable), Agent Running Total, idle gaps (>30m), and human activity breakdown (Reviewing/Deciding vs Editing Specs/Plans vs Prompting) from commits, state, PR threads, and transcript telemetry. Human Total must be ≥ Agent Running Total when agent running > 0 (TIMING § Invariant).
+   Extracts Human Total (billable), Agent Running Total (active agent intervals below the 30m idle threshold), idle gaps (≥30m, including silence between agent events), and human activity breakdown (Reviewing/Deciding vs Editing Specs/Plans vs Prompting) from commits, state, PR threads, and transcript telemetry. Human Total must be ≥ Agent Running Total when agent running > 0 (TIMING § Invariant).
    - Done when: Human Total, Agent Running Total, and category breakdown are resolved per candidate.
 
 6. **Short title** — One line ≤ ~120 chars: WI/issue title → cleaned PR title → spec `#` / branch (OUTPUT § Short title).

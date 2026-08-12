@@ -83,7 +83,7 @@ When `agentRunningSeconds > 0`, **Human Total** (`humanSeconds`) must be **≥ A
 
 ### Telemetry & Inactivity Thresholds
 
-- **Agent Running Total**: Active intervals where the agent/LLM (or subagents) ran tools, implemented tasks, or generated automated outputs. Reported separately for transparency; included in Human Total as supervision/review.
-- **Idle / AFK Gaps**: Non-work gaps > 30 minutes of zero human/agent interaction (e.g., overnight, away from desk). Excluded from Human Total and Agent Running Total.
+- **Agent Running Total**: Active intervals where the agent/LLM (or subagents) ran tools, implemented tasks, or generated automated outputs, **up to the 30-minute idle threshold**. Any inter-event silence ≥ 30 minutes is Idle/AFK (not Agent Running), even when bracketed by `agent_tool` events. Reported separately for transparency; included in Human Total as supervision/review when counted as active.
+- **Idle / AFK Gaps**: Non-work gaps ≥ 30 minutes of zero human/agent interaction (e.g., overnight, away from desk, or long silent stretches between telemetry events). Excluded from Human Total and Agent Running Total.
 - **Data Sources Evaluated**: Local git commit logs, workflow state files (`*.state.md`, `exec.dag.json`), SCM PR threads/comments, and local session transcript telemetry (`transcript.jsonl`).
 

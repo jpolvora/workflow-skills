@@ -33,8 +33,8 @@ Description:
 | **Wall Clock** | `HH:mm` start to `HH:mm` end event (`{wallClockDuration}`) |
 | **Human Total** | Billable human work duration ({H:MM}); must be ≥ Agent Running Total when agent running > 0 |
 | **Human Breakdown** | Breakdown of Human Total (Reviewing/Deciding includes supervision during agent runs) |
-| **Agent Running Total** | Duration of agent/subagent execution intervals (tools, turns, automated implementation) |
-| **Idle / AFK Gap** | Non-work inactive gaps > 30 minutes |
+| **Agent Running Total** | Duration of agent/subagent execution intervals (tools, turns, automated implementation), capped by the 30-minute idle threshold between events |
+| **Idle / AFK Gap** | Non-work inactive gaps ≥ 30 minutes (including long silence between agent events) |
 | **Description** | ≤ **2–3 lines**, en-us; `US {id}` + what shipped + human work summary + `PR {n}` |
 
 ### Description examples

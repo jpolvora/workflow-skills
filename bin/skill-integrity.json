@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "e6d955b9c06351e4e45dc04e2f8d5e41afad97977fda6b1b2d039308f31eedd3",
+  "fullPackageDigest": "3d0aae403918fdc494b8a6bf7b0581ab094a287400294f819a45e5036aa049ce",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -31,13 +31,13 @@
     "ws-activity-report": {
       "files": {
         "evals/evals.json": "f69e5755c8e0e0e0f275a4abbc71ce5e0505ea0a758d807f9ed04891e12c876b",
-        "references/OUTPUT.md": "2a5682ce8ff43592c8567595cd19d594fa0d2b93c09c016666734cd7e7a76c5d",
-        "references/TIMING.md": "aa5fc0dd459103c9e711cbe73e736cdc06f45a62002d30cc2ad90d79ba47a6ee",
+        "references/OUTPUT.md": "dbbf4c8b643f087a95443aeaf4f718cbb883b7f981a6c86a19ab98816646599c",
+        "references/TIMING.md": "504805638eb45f26547d66efc6ed2b0e96ce95e2ae79c879fc149075f50d6fda",
         "scripts/bootstrap_start.py": "77be7c93fc40d5242007a87294830221cdfd882be32427417095cfe7c7b6a673",
         "scripts/infer_human_timing.py": "51b6947e3f563317bc77362c4ef9597887c229542d0b7a899bed2e3be27bc700",
-        "SKILL.md": "829e9aef3e178f77c1c5d3e9d3fa249840894ace2d896dee5e12516cfbcbd4e7"
+        "SKILL.md": "522a2a7489580a2059d635fd961a792d9f9d47dc181dc841e7e273003368c0c9"
       },
-      "skillDigest": "06fd7def9f8ecd679ba1a40c260733b0fa215224cd81e999d2f42041dac8a22e"
+      "skillDigest": "85c1a9ac4142564f7b2b908408260595a295e887c364c7562f3c2f8fde21e1bd"
     },
     "ws-audit": {
       "files": {

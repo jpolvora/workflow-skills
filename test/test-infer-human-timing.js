@@ -172,10 +172,57 @@ function testNoEventsReportsIdleNotFabricated() {
   );
 }
 
+function testLongGapBetweenAgentEventsIsIdle() {
+  console.log('\n--- testLongGapBetweenAgentEventsIsIdle ---');
+  const usDir = mkTmp('ws-ar-idlegap-');
+  const runtimeDir = path.join(usDir, '.runtime');
+  fs.mkdirSync(runtimeDir, { recursive: true });
+
+  const start = '2026-08-12T10:00:00Z';
+  const end = '2026-08-12T11:10:00Z';
+  // 35-min silence between agent_tool events → Idle; post-gap agent→prompt is active.
+  const lines = [
+    { type: 'agent_tool', timestamp: '2026-08-12T10:05:00Z' },
+    { type: 'agent_tool', timestamp: '2026-08-12T10:40:00Z' },
+    { type: 'USER_INPUT', timestamp: '2026-08-12T10:55:00Z' },
+  ];
+  fs.writeFileSync(
+    path.join(runtimeDir, 'transcript.jsonl'),
+    lines.map((o) => JSON.stringify(o)).join('\n') + '\n',
+    'utf8',
+  );
+
+  const res = runPython([SCRIPT, usDir, '--start-iso', start, '--end-iso', end]);
+  assert(res.status === 0, `script exit 0 (stderr: ${res.stderr?.trim()})`);
+
+  let payload;
+  try {
+    payload = JSON.parse(res.stdout.trim());
+  } catch {
+    fail(`invalid JSON: ${res.stdout}`);
+    return;
+  }
+
+  assert(payload.idleSeconds === 2100, `35-min gap reported as idle (got ${payload.idleSeconds})`);
+  assert(
+    payload.agentRunningSeconds === 900,
+    `only post-gap agent interval counted as agent running (got ${payload.agentRunningSeconds})`,
+  );
+  assert(
+    payload.humanSeconds === 2100,
+    `human = pre-gap review + agent supervision + prompting (got ${payload.humanSeconds})`,
+  );
+  assert(
+    payload.humanSeconds >= payload.agentRunningSeconds,
+    'humanSeconds >= agentRunningSeconds',
+  );
+}
+
 function main() {
   testScriptExists();
   testHumanGteAgentRunning();
   testNoEventsReportsIdleNotFabricated();
+  testLongGapBetweenAgentEventsIsIdle();
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);
