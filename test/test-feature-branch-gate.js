@@ -213,6 +213,11 @@ function testExistingFeatSlug() {
     /checkout-existing/.test(setup),
     'testExistingFeatSlug: checkout-existing branchStrategy documented',
   );
+  assert(
+    /git fetch \{gitRemote\} \{name\}/.test(setup) &&
+      /git checkout \{name\}/.test(setup),
+    'testExistingFeatSlug: remote-only feat/{slug} fetch then checkout',
+  );
 }
 
 // ---------------------------------------------------------------------------
