@@ -178,7 +178,11 @@
         },
         "reviewerModel": {
           "type": "string",
-          "description": "Preferred LLM model name for review and verification phase (Steps 5-7) in autoMode."
+          "description": "Preferred LLM model name for check-implementation and code-review (standard Steps 5-6) in autoMode."
+        },
+        "testingModel": {
+          "type": "string",
+          "description": "Preferred LLM model name for the test executor (standard Step 7) in autoMode. Empty or omitted resolves to executionModel at dispatch time."
         }
       }
     },

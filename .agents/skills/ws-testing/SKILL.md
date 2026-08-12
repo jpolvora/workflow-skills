@@ -4,9 +4,10 @@
 
 
 
+
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
-version: 0.3.10
+version: 0.3.11
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -31,7 +32,7 @@ Standalone:
 /testing <plan-path> [spec=<spec-path>] [skip-browser]
 ```
 
-Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from orchestrator state. The orchestrator, not this skill, decides skip when `skipTesting` is set or when there is no meaningful test surface and unit tests are already green. UI browser testing requires explicit authorization. Mutation is **standard Step 7 only** — lite orch does not dispatch this skill.
+Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from orchestrator state. The orchestrator, not this skill, decides skip when `skipTesting` is set or when there is no meaningful test surface and unit tests are already green. UI browser testing requires explicit authorization. Mutation is **standard Step 7 only** — lite orch does not dispatch this skill. On Step 7 `autoMode` dispatch, the orchestrator supplies the resolved test-executor model (`defaults.testingModel` when non-empty, else `executionModel`, else the active session model). This skill does not pick a different model on its own. Standalone `/testing` (no orch) uses the current session model and does not switch.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|

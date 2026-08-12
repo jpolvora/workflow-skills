@@ -86,10 +86,11 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 
 ### Auto-mode subagent model preferences & host IDE switching
 
-When `autoMode: true` and `config.json` → `defaults` defines model preferences (`plannerModel`, `executionModel`, `reviewerModel`), the orchestrator applies phase-matched model overrides during step dispatches:
+When `autoMode: true` and `config.json` → `defaults` defines model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), the orchestrator applies phase-matched model overrides during step dispatches:
 - **Planning Phase**: `defaults.plannerModel` (standard Steps 0–3 / lite Steps 0–1)
 - **Execution Phase**: `defaults.executionModel` (standard Step 4 / lite Step 2)
-- **Review & Verification Phase**: `defaults.reviewerModel` (standard Steps 5–7 / lite Step 3)
+- **Review Phase**: `defaults.reviewerModel` (standard Steps 5–6 / lite Step 3)
+- **Testing Phase (standard Step 7 only)**: non-empty `defaults.testingModel`, else `defaults.executionModel`, else the active session model. Lite does not read or apply `testingModel`.
 
 **Host IDE Subagent Model Parameterization:**
 - **OpenCode**: Pass subagent option `model: "{modelName}"` or agent config override.

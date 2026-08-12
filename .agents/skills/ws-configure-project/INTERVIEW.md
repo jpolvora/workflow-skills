@@ -39,7 +39,7 @@ Scan consumer **repo root** (not this skill package alone):
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
 | Fable skills in `.agents/skills/` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: true` |
-| Top-level `.cursor/`, `.opencode/`, `.gemini/` or IDE env | Detect host IDE (Cursor / OpenCode / Antigravity) to suggest canonical model strings for `defaults.plannerModel`, `defaults.executionModel`, `defaults.reviewerModel` (Cursor: `claude-3-5-sonnet` / `gpt-4o`; OpenCode: `claude-3-5-sonnet` / `gemini-2.0-flash`; Antigravity: `gemini-3.6-flash` / `claude-3-5-sonnet`) |
+| Top-level `.cursor/`, `.opencode/`, `.gemini/` or IDE env | Detect host IDE (Cursor / OpenCode / Antigravity) to suggest canonical model strings for `defaults.plannerModel`, `defaults.executionModel`, `defaults.reviewerModel`, `defaults.testingModel` (Cursor: `claude-3-5-sonnet` / `gpt-4o`; OpenCode: `claude-3-5-sonnet` / `gemini-2.0-flash`; Antigravity: `gemini-3.6-flash` / `claude-3-5-sonnet`) |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
 ## Interview order
@@ -53,7 +53,8 @@ Scan consumer **repo root** (not this skill package alone):
 7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting** (default true — set false to opt into Step 7 mutation when `mutationTest` is set), scoreAndRefine, **patternsBackend** (default true), **patternsFrontend** (default true)) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + **LLM model preferences for autoMode phase switching**:
    - `plannerModel` (Planning phase: Steps 0–3)
    - `executionModel` (Execution phase: Step 4)
-   - `reviewerModel` (Review & Verification phase: Steps 5–7)
+   - `reviewerModel` (Review phase: standard Steps 5–6)
+   - `testingModel` (test executor, standard Step 7). **Recommended:** leave empty (same as `executionModel`). Same host canonical strings as the other model keys.
    - Offer canonical host model choices or custom string; fallback to active model if empty or switch fails.
 
    **Delivery commit artifacts** (subsection of `defaults` / `--section defaults`; writes `defaults.deliveryCommitArtifacts`). Staging SoT: [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8. `autoMode`: accept Recommended on all three gates without prompting.
