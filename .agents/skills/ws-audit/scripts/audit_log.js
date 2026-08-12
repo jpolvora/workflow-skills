@@ -230,12 +230,8 @@ export function finalizeAudit(session) {
   session.finalized = true;
   session.finalizedAt = isoNow();
   session.errorCount = errorCount;
+  // Keep session file so has-errors / draft-issue --session-file still works after finalize.
   writeSession(session);
-  try {
-    fs.unlinkSync(sessionPath(session));
-  } catch {
-    /* session file optional cleanup */
-  }
   return session;
 }
 
