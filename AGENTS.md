@@ -62,9 +62,10 @@ Always apply this layout and resolution order. **`.agents/skills/ws-*` is the ON
 | **`AGENTS.md`** (this file) | Agents | Skill loading, task router, layers, verification, harness rules |
 | **`README.md`** | Humans | What this repo is, how to install/update/uninstall, contribute, safety |
 | **`SKILL_AUTHORING.md`** | Agents & Skill Authors | Mandatory guidelines for designing, pruning, and maintaining lean skills |
+| **`.agents/dev-harness/SKILL.md`** | Agents (this repo only) | Frozen session operating contract; **not** packaged; do not ship |
 | **`ws-shared/AGENTS.md`** | Agents (consumers) | Installed hub: config, gates, consumer task router, external dependencies |
-| **`ws-shared/autoload.md`** | Agents (every session) | Always-applied skill set + specs progressive-disclosure router — see § [Progressive disclosure](#progressive-disclosure-load-on-demand) |
-| **`.agents/skills/ws-*/SKILL.md`** | Agents (upstream SoT) | Skill bodies under development / publish — load on demand via router |
+| **`ws-shared/autoload.md`** | Agents (consumers + specs router) | Consumer Always-applied set + specs progressive-disclosure router. This repo does **not** follow its Always-applied table (live `ws-*` bodies). Specs vocabulary/router still load on keywords. |
+| **`.agents/skills/ws-*/SKILL.md`** | Agents (upstream SoT) | Skill bodies under development / publish — load on demand via router when **authoring or testing** that skill |
 | **Installed `…/skills/*/SKILL.md`** | Agents (consumers) | Progressive disclosure after project-local or global install |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to this hub if the consumer’s IDE needs one — not required by skills; not a portable dependency |
 
@@ -144,21 +145,17 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 
 #### Recommended DX autoload (upstream dogfood)
 
-In **this repo only** (development), load every session for authoring quality:
+In **this repo only**, load [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) every session. It is a frozen, non-packaged operating contract (surgical scope, delivery gate, fable loop, reply shape, memory/changelog, on-demand write-spec) so authoring does **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-write-spec` SKILL.md at runtime.
 
-| Skill | Why |
-|-------|-----|
-| `ws-karpathy-guidelines` | Surgical scope; no drive-by refactors |
-| `ws-tdah` (`/ws-tdah`) | Action-first replies + operational judgment (opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`; retired `stop ws-gabarito` / `sem ws-gabarito`) |
-| `ws-senior-developer` | Engineering delivery gate and pre-ship proof |
+Those live skills still ship to consumers. Consumer hubs autoload them (or keep them on-demand) from installed `.agents/skills/ws-*`. Load a live body here only when the task is to author or test that skill.
 
-These ship to consumers but are **not autoloaded** by default on consumer projects (`ws-shared` keeps `ws-tdah` / `ws-senior-developer` on-demand).
+Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are defined in the harness file.
 
 #### Start work
 
 | Intent | Load |
 |--------|------|
-| Draft a spec | `ws-write-spec` → `{specsDir}/{slug}.spec.md` (not `{plansDir}`) or local `*.spec.md` + `ws-spec-format` |
+| Draft a spec | [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) § Write a spec → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-write-spec` / `ws-spec-format` only when authoring those skills. |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
 | GitHub issue → spec / fix | `ws-github-provider` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) or orchestrator with issue URL |
@@ -272,23 +269,18 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 
 ## Skill loading (mandatory)
 
-**Session start — load the autoload hub first:** read [`ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md) (token form `{sharedDir}/autoload.md`) before acting on the first prompt. It owns two things this file deliberately does not duplicate:
+**Session start — load the upstream harness first:** read [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) before acting on the first prompt. That file is the **frozen operating contract** for this repo (surgical scope, delivery gate, fable loop, reply shape, memory/changelog, on-demand write-spec). Do **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-write-spec` / `ws-spec-format` SKILL.md for session autoload.
 
-1. § **Always-applied skills** — the development skill set to load every prompt (`ws-senior-developer`, `ws-self-learning`, `ws-changelog`, `ws-fable-method`, `ws-tdah`) plus their precedence among themselves.
-2. § **Specs vocabulary** and § **Specs skill router** — the progressive-disclosure map for spec/plan work.
+[`ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md) still owns **specs vocabulary** and **specs skill router**. Load those sections when the user mentions specs / plans / Spec-to-PR without naming a skill. Do **not** follow `autoload.md` § Always-applied in this repo (those rows point at live `ws-*` bodies).
 
-The table below is the root-hub set that always loads in **this** repo; where it overlaps `autoload.md`, the root hub wins on membership (see § [Dual-hub precedence](#dual-hub-precedence-root-override)).
+The table below is the root-hub set that always loads in **this** repo.
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Every prompt — `/ws-tdah` action-first shape + judgment (**upstream development only**) |
-| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Every prompt — surgical scope |
-| `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Every task completion |
-| `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
-| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Every prompt — engineering delivery gate (upstream dogfood) |
+| `upstream-dev-harness` | [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) | Every prompt — frozen dogfood contract (**this repo only; not packaged**) |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
-**Upstream dogfood (this repo only):** Autoload `/ws-tdah` + `ws-karpathy-guidelines` (+ `ws-senior-developer`) every session when authoring here — see § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only). Consumers get the skills on install but **do not** autoload `ws-tdah` from [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) (on-demand via `/ws-tdah` / `start ws-tdah`).
+**Upstream dogfood (this repo only):** Autoload the harness file above. Consumers still load installed `ws-*` skills from their hub (`ws-shared` keeps `ws-tdah` / `ws-senior-developer` on-demand). Load a live `ws-*` body here only when authoring or testing that skill.
 
 ### Progressive disclosure (load on demand)
 
@@ -296,9 +288,9 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 
 | Situation | Do this |
 |-----------|---------|
-| Session start | Load this file + [`ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied. Nothing else. |
-| Task with a clear intent | Match one row in § [Task router](#task-router) → load that single skill. Do not preload sibling or downstream skills. |
-| Spec / plan / `index.PRD` / Spec-to-PR wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs vocabulary + § Specs skill router (or § Keyword → skill) → load **only** the matching skill. Never load the whole specs family. |
+| Session start | Load this file + [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md). Nothing else. Do not load `autoload.md` § Always-applied. |
+| Task with a clear intent | Match one row in § [Task router](#task-router) → load that single skill (or use the harness write-spec section). Do not preload sibling or downstream skills. |
+| Spec / plan / `index.PRD` / Spec-to-PR wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs vocabulary + § Specs skill router (or § Keyword → skill) → load **only** the matching skill, except standalone draft-spec uses the harness § Write a spec. Never load the whole specs family. |
 | Orchestrated run (`ws-spec-to-pr` / lite / `ws-multi-spec`) | The orchestrator owns loading. Load step skills via its dispatch table, one step at a time. |
 | Need config, tokens, or gate wording | Read `{sharedDir}/config.json` (shape: [`config.json.example`](.agents/skills/ws-shared/config.json.example)) + [`tools.md`](.agents/skills/ws-shared/tools.md) / [`gates.md`](.agents/skills/ws-shared/gates.md) — not a skill body. |
 | A skill names a companion file (`PHASES.md`, `STEP-DISPATCH.md`, `FORMAT.md`, …) | Read it **when that skill says to**, not upfront. |
@@ -308,7 +300,7 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 
 ### Dual-hub precedence (root override)
 
-This **root** hub autoloads `ws-tdah` and `ws-senior-developer` for upstream development dogfood. The installed **ws-shared** hub ([`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)) treats both as **on-demand** by default (`ws-tdah` via invoke; `ws-senior-developer` via `rules.seniorDeveloper`).
+This **root** hub autoloads [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) (frozen dogfood contract) instead of live `ws-tdah` / `ws-senior-developer` SKILL.md. The installed **ws-shared** hub ([`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)) still treats those packaged skills as **on-demand** by default (`ws-tdah` via invoke; `ws-senior-developer` via `rules.seniorDeveloper`).
 
 Consumers may add their own root `AGENTS.md` with the same override pattern. When root and ws-shared hubs both load, **root hub** skill-loading and precedence sections win for autoload decisions. This is intentional — not a harness drift defect. See ws-shared § Consumer root override.
 
@@ -317,10 +309,10 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 1. Explicit user instructions (current turn)
 2. This root `AGENTS.md` when present (skill loading + precedence — overrides ws-shared opt-in defaults; see § Dual-hub precedence)
 3. Design / spec / architecture constraints
-4. `ws-karpathy-guidelines`
-5. `ws-senior-developer` (delivery gate; opt out via `rules.seniorDeveloper` unset or `stop ws-senior-developer`)
-6. `ws-fable-method` when autoloaded (defer Plan-First when orch owns session or senior plan already confirmed; see `{sharedDir}/autoload.md`)
-7. `ws-tdah` (action-first shape + judgment; still below karpathy/senior/fable)
+4. Surgical scope (harness §1; live `ws-karpathy-guidelines` only when authoring that skill)
+5. Delivery gate (harness §2; opt out `stop ws-senior-developer`)
+6. Investigate loop (harness §3; defer Plan-First when orch owns session or senior plan already confirmed)
+7. Reply shape (harness §4; opt out `stop ws-tdah` / `stop verbosity` / `normal mode`)
 
 ### Opt-out
 
@@ -405,8 +397,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Notes |
 |-------|------|-------|
-| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Autoload upstream only (`/ws-tdah`; consumer on-demand) |
-| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Autoload |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Packaged; consumer on-demand. This repo uses harness § Reply shape |
+| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Packaged; this repo uses harness § Surgical scope |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |
 | `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Sequential smart multi-spec batch delivery orchestrator |
@@ -433,16 +425,16 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Intent | Load |
 |--------|------|
-| Write a spec | `ws-write-spec` |
+| Write a spec | [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) § Write a spec (live `ws-write-spec` only when authoring that skill) |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
-| Engineering delivery gate / Code review proof | `ws-senior-developer` (autoload in this root hub; ws-shared default on-demand — see § Dual-hub precedence) |
+| Engineering delivery gate / Code review proof | [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) § Delivery gate (live `ws-senior-developer` only when authoring that skill) |
 | Verify | `ws-verify-plan` |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
-| Fable Method 7-step loop | `ws-fable-method` |
+| Fable Method 7-step loop | [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) § Investigate loop (live `ws-fable-method` only when authoring that skill) |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
 | Backend patterns & rules | `ws-patterns-backend` |
 | Frontend UI/UX patterns & rules | `ws-patterns-frontend` |
@@ -455,7 +447,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Timesheet / activity hours for a delivery day | `ws-activity-report` |
-| Session autoload set (which skills load every prompt) | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied skills |
+| Session autoload set (which skills load every prompt) | This repo: [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md). Consumers: [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
@@ -471,9 +463,9 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Runtime workflow audit (when `defaults.enableAuditing`) | `ws-audit` |
 | Check workflows | `ws-check-workflows` |
 | Grill plan vs docs | `grill-with-docs` |
-| Record learning | `ws-self-learning` |
+| Record learning | [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) § Memory + changelog (live `ws-self-learning` only when authoring that skill) |
 | Convergence loop | `ws-goal-loop` |
-| Record ws-changelog | `ws-changelog` |
+| Record ws-changelog | [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) § Memory + changelog (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 
@@ -520,8 +512,8 @@ Not shipped in the hub package (except where noted). Resolve each dependency in 
 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` (default `.agents/skills/ws-senior-developer/SKILL.md`; set `""` to disable) → local skill (`senior-developer/SKILL.md`) → global/user skill |
-| `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/ws-karpathy-guidelines/SKILL.md` → global skill |
+| `senior-developer` | **This repo:** harness § Delivery gate. **Consumers:** `config.json` → `rules.seniorDeveloper` (default `.agents/skills/ws-senior-developer/SKILL.md`; set `""` to disable) → local skill (`senior-developer/SKILL.md`) → global/user skill |
+| `ws-karpathy-guidelines` | **This repo:** harness § Surgical scope. **Consumers:** `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/ws-karpathy-guidelines/SKILL.md` → global skill |
 | Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/ws-shared/STACK.md`) — consumer-owned under `ws-shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) — create under that path only; repo-root `CHANGELOG.md` only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
@@ -533,4 +525,6 @@ Packaged consumer mirror: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENT
 
 ### Code review proof
 
-When skills ask for **Code review proof**, use the checklist / verification obligations from the **resolved** `rules.seniorDeveloper` skill (local/global `senior-developer` equivalent after the table above). Do **not** paste or duplicate that checklist here.
+**This repo:** use [`.agents/dev-harness/SKILL.md`](.agents/dev-harness/SKILL.md) § Delivery gate. Do not load live `ws-senior-developer/SKILL.md` for session proof.
+
+**Consumers:** use the checklist from the **resolved** `rules.seniorDeveloper` skill (local/global `senior-developer` equivalent after the table above). Do **not** paste or duplicate that checklist in hubs.
