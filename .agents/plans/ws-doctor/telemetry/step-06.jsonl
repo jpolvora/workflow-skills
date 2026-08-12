@@ -1,1 +1,0 @@
-{"timestamp":"2026-08-12T02:42:30Z","step":6,"label":"Code review","elapsedSec":300,"promptTokens":0,"completionTokens":0,"filesTouched":5,"model":"Cursor Grok 4.5","verificationScore":null,"fableVerdict":null,"gateDecision":"user-gate-auto:next","errors":[],"bypassed":false}
