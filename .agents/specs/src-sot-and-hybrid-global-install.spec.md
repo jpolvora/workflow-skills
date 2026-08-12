@@ -4,6 +4,7 @@ slug: src-sot-and-hybrid-global-install
 title: "Source-of-Truth Refactoring to src/ and Hybrid Global/Local Installation Scopes"
 source: local
 specDate: 2026-08-01
+status: completed
 ---
 
 # Specification — Source-of-Truth Refactoring to src/ and Hybrid Global/Local Installation Scopes

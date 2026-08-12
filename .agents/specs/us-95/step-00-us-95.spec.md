@@ -3,9 +3,10 @@ id: 95
 slug: us-95
 title: "fix(check-workflows): dependency closure audit fails in consumer repos (missing bin/skill-dependencies.json)"
 source: github
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/95"
 specDate: 2026-07-22
+status: completed
 ---
 
 # Specification — fix(check-workflows): dependency closure audit fails in consumer repos (missing bin/skill-dependencies.json)

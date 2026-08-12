@@ -4,6 +4,7 @@ slug: promote-shared-skills
 title: "Promote shared skills to first-class installable packages"
 source: local
 specDate: 2026-07-16
+status: completed
 ---
 
 # Specification — Promote shared skills to first-class installable packages

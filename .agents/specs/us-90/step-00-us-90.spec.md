@@ -3,9 +3,10 @@ id: 90
 slug: us-90
 title: "Fix skill integrity mismatch: source package digests out of sync with bin/skill-integrity.json"
 source: github
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/90"
 specDate: 2026-07-20
+status: completed
 ---
 
 # Specification — Fix skill integrity mismatch: source package digests out of sync with bin/skill-integrity.json

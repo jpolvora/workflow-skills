@@ -4,6 +4,7 @@ slug: testing-executor-model
 title: "Add testingModel (test executor) to LLM model config"
 source: local
 specDate: 2026-08-12
+status: completed
 ---
 
 # Specification — Add testingModel (test executor) to LLM model config

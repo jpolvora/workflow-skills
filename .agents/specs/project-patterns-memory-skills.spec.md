@@ -4,6 +4,7 @@ slug: project-patterns-memory-skills
 title: "Project Patterns Memory Skills (ws-patterns-backend & ws-patterns-frontend)"
 source: local
 specDate: 2026-08-11
+status: completed
 ---
 
 # Specification — Project Patterns Memory Skills (ws-patterns-backend & ws-patterns-frontend)

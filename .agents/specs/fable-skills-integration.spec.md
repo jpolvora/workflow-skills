@@ -4,6 +4,7 @@ slug: fable-skills-integration
 title: "Opt-in Integration of fable-* Skills with spec-to-pr Workflows"
 source: local
 specDate: 2026-07-24
+status: completed
 ---
 
 # Specification — Opt-in Integration of fable-* Skills with spec-to-pr Workflows

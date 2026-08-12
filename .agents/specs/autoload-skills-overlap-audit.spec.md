@@ -4,6 +4,7 @@ slug: autoload-skills-overlap-audit
 title: "Overlap audit and simplification of autoload utility skills"
 source: local
 specDate: 2026-08-08
+status: completed
 ---
 
 # Specification — Overlap audit and simplification of autoload utility skills

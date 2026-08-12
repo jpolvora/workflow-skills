@@ -4,6 +4,7 @@ slug: immediate-utf8-stdio-reconfiguration
 title: "Additional Fix: Immediate UTF-8 Stdio Reconfiguration"
 source: free-text
 specDate: 2026-07-22
+status: completed
 ---
 
 # Specification — Additional Fix: Immediate UTF-8 Stdio Reconfiguration

@@ -4,6 +4,7 @@ slug: spec-provider-skills
 title: "Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs)"
 source: local
 specDate: 2026-07-13
+status: completed
 ---
 
 # Specification — Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs)

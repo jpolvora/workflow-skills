@@ -4,6 +4,7 @@ slug: workflow-cleanup-and-branch-protection
 title: "Mandatory Workflow Git Cleanup and Protected Branch Safeguards"
 source: local
 specDate: 2026-08-01
+status: completed
 ---
 
 # Specification — Mandatory Workflow Git Cleanup and Protected Branch Safeguards

@@ -3,9 +3,10 @@ id: 168
 slug: us-168-resolve-review-thread
 title: "fix(ws-goal-fix-pr): execute resolveReviewThread GraphQL mutation after posting thread fix replies"
 source: github
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/168"
 specDate: 2026-07-29
+status: completed
 ---
 
 # Specification — fix(ws-goal-fix-pr): execute resolveReviewThread GraphQL mutation after posting thread fix replies
