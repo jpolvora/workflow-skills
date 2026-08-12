@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "72c352ba80a0c22c3963ea4d359d4e4b4ef8f4ed80778f9163a2504a47ec2d8f",
+  "fullPackageDigest": "fbac8ea46cea1c82eb3a6ac89ce334410612866f22636ce37666c76e4335dbd6",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -20,11 +20,11 @@
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "0eeb41a64215f3966d4733fab25a2d5b8ca0603efc8a281d5d2e03fcba263cf0",
       "setup.md": "941fb0130be4da1afd8852e465d95cc674943eebf969345f4579a221cfec154e",
-      "skill-dependencies.json": "eb5b23b2c22a4b495cb9c87f1c44ee752c1d3d1bdcea8d077593e21e0a83da4c",
+      "skill-dependencies.json": "3305c61cf5f7ef4667b176518bcaa2b8b00a4a3cd44e1992ad413f90d5370fbe",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "fe412f6e34708549df51300e2923adabd6e08a2434cccc675221e43c208b47c7"
     },
-    "skillDigest": "d0c6a9540ef6958d28e4324bf7b0348f64f7a48078df8d7d3359c8fbccc89d4a"
+    "skillDigest": "5e7ada959daef5b0897f92c91e94170e7c811c58f2ef34e7de676ad69e41acf2"
   },
   "packageVersion": "0.3.9",
   "skills": {
@@ -42,10 +42,10 @@
     "ws-audit": {
       "files": {
         "AUDIT-FORMAT.md": "8d219f093914e80d4bf92002be6c3fa54ade1aebd30c4ca56d45d09e4e892d78",
-        "scripts/audit_log.js": "49e264beb9e4ccd27ebecad612677344bd4f560b6c9f3e6f64badb6b90e69bad",
+        "scripts/audit_log.js": "5bbf789f624ce4b36063c570db63cfb23cefc539e042be0adaf7e048cae09932",
         "SKILL.md": "db3928b8a3e841beb75ffa4284b5480e1f10cf8d1d3b0f5d27a90681982c5631"
       },
-      "skillDigest": "4bfcfc39a41dc976547dc8ca1dd3bc265700ca10efbb4ccbd46ee55d9f4bb1a3"
+      "skillDigest": "fd43a5bde1e43982aa42a693c41cd9ded9427f0d8278283e4a980fa3ec17d27e"
     },
     "ws-azure-devops-provider": {
       "files": {

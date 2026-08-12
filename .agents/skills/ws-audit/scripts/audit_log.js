@@ -49,6 +49,25 @@ function resolveConfigPath(explicit) {
   return path.resolve(process.cwd(), '.agents/skills/ws-shared/config.json');
 }
 
+function resolveUpstreamRepo() {
+  const candidates = [
+    path.resolve(process.cwd(), 'bin/skill-dependencies.json'),
+    path.resolve(process.cwd(), '.agents/skills/ws-shared/skill-dependencies.json'),
+    path.resolve(__dirname, '../../ws-shared/skill-dependencies.json'),
+  ];
+  for (const cand of candidates) {
+    try {
+      if (!fs.existsSync(cand)) continue;
+      const data = JSON.parse(fs.readFileSync(cand, 'utf-8'));
+      const repo = data?.upstream?.repo;
+      if (repo && typeof repo === 'string' && repo.includes('/')) return repo;
+    } catch {
+      /* try next */
+    }
+  }
+  return 'jpolvora/workflow-skills';
+}
+
 export function resolveEnableAuditing(configPath) {
   const p = resolveConfigPath(configPath);
   if (!fs.existsSync(p)) return false;
@@ -194,7 +213,7 @@ export function hasActionableErrors(session) {
   return session.findings.some((x) => x.severity === 'error');
 }
 
-export function draftIssueBody(session, upstream = 'jpolvora/workflow-skills') {
+export function draftIssueBody(session, upstream = resolveUpstreamRepo()) {
   const errors = session.findings.filter((x) => x.severity === 'error');
   const title = `[runtime-audit] ${session.slug}: ${errors.length} skill execution error(s)`;
   const lines = [
