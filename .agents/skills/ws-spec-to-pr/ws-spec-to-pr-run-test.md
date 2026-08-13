@@ -78,7 +78,7 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
 | **0** | Spec Creation | Skipped — spec file provided directly |
 | **1** | Planning | Complexity gate; if simple → stub plan + jump to 4; else `ws-write-plan` |
 | **2** | Plan Refinement | Conditional skip or `ws-interview` (End refinement auto-confirms 2e) |
-| **3** | Execution Plan & DAG | `ws-plan-to-tasks` — sequential may skip empty DAG artifacts |
+| **3** | Execution Plan & DAG | `ws-plan-to-tasks` — sequential writes exec.md + dag.json (empty task groups) |
 | **4** | Implementation | `ws-implement-tasks` mode build |
 | **5** | Check-implementation | `ws-verify-plan` quick-score; auto pauses if score &lt; 7 |
 | **6** | Code Review (+ fix → re-review) | `ws-code-review`; on Critical/Warning: fix → re-review max 3; Pause on residual |
@@ -99,7 +99,7 @@ After the workflow completes (`status: completed`), confirm:
 | `step-01-test-workflow.plan.md` | Present |
 | `step-02-test-workflow.plan.refined.md` | Present (or skipped if Step 2 bypassed) |
 | `step-03-test-workflow.plan.exec.md` | Present (unless Simple path) |
-| `step-03-test-workflow.exec.dag.json` | Present (or skipped if `execMode: sequential`) |
+| `step-03-test-workflow.exec.dag.json` | Present (both modes; task groups only when `execMode: parallel`) |
 | `step-05-test-workflow.plan.report.md` | Present |
 | `step-06-test-workflow.review.md` | Present |
 | `step-06-test-workflow.fix.report.md` | Present only if fix substep ran |
