@@ -1,3 +1,5 @@
 # Enforce LF (Unix) line endings for shell and python scripts to avoid execution failures on Windows bash environments
 *.sh text eol=lf
 *.py text eol=lf
+# SKILL.md is rewritten by build-site --bump; keep WT LF so CRLF cannot accumulate blank lines after ---
+.agents/skills/**/SKILL.md text eol=lf

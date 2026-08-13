@@ -13,6 +13,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { rewriteSkillMarkdown } from './skill-frontmatter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,20 +48,8 @@ if (shouldBump) {
     const skillMd = path.join(skillRoot, ent.name, 'SKILL.md');
     if (!fs.existsSync(skillMd)) continue;
     const text = fs.readFileSync(skillMd, 'utf-8');
-    const match = text.match(/\r?\n---\r?\n/);
-    if (!match) continue;
-    const end = match.index;
-    let fm = text.slice(4, end);
-    const body = text.slice(end + match[0].length);
-    if (/^version:\s*/m.test(fm)) {
-      fm = fm.replace(/^version:\s*.*$/m, `version: ${siteVersion}`);
-    } else if (/^name:\s*/m.test(fm)) {
-      fm = fm.replace(/^(name:\s*.*)$/m, `$1\nversion: ${siteVersion}`);
-    } else {
-      fm = `version: ${siteVersion}\n${fm}`;
-    }
-    const next = `---\n${fm}\n---\n${body}`;
-    if (next !== text) {
+    const next = rewriteSkillMarkdown(text, siteVersion);
+    if (next && next !== text) {
       fs.writeFileSync(skillMd, next);
       skillVerUpdates += 1;
     }
