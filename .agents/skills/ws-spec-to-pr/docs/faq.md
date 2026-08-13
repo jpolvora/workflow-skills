@@ -82,7 +82,7 @@ flowchart TD
 ```bash
 # Standard interactive start
 /ws-spec-to-pr US 1234
-@[ws-spec-to-pr] specs/feature.spec.md
+/ws-spec-to-pr specs/feature.spec.md
 
 # Non-interactive automated dry-run
 /ws-spec-to-pr auto dry-run US 1234

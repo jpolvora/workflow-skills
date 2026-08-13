@@ -42,7 +42,7 @@ Script also:
 
 ```yaml
 - Refresh currentModel from executing session model (unknown if unavailable). If changed vs prior, log model-change | step {N} | {old} → {new} | ISO in ## Gate history. Ignore leftover modelChain.
-- Pass session model into --model {modelName} when calling update_state.py (recorder only; not a user override flag)
+- Pass resolved phase model (or executing session model) into --model {modelName} when calling update_state.py (recorder only; not a user override flag)
 - Append ## Step outputs ### Step N (include model: {modelName} in block)
 - Append step-output.learning → ## Workflow memory (dedupe)
 - Merge files_touched → ## Step file log ### Step N

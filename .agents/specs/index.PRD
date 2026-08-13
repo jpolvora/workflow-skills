@@ -72,6 +72,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Refine `ws-activity-report` human vs agent duration (`spec: refine-ws-activity-report-human-timing.spec.md`)
 - [x] `defaults.testingModel` test executor for standard Step 7 (`spec: testing-executor-model.spec.md`)
 - [x] Feature-branch strategy gate at workflow bootstrap (`spec: workflow-bootstrap-feature-branch.spec.md`)
+- [x] Phase-specific subagent LLM model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) (`spec: auto-mode-model-preferences.spec.md`)
 
 ## 8. Next specs
 
@@ -104,6 +105,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 25 | `refine-ws-activity-report-human-timing` | `[x]` done | Phase 4 | Human Total ≥ Agent Running (PR #192) |
 | 26 | `testing-executor-model` | `[x]` done | Phase 4 | `defaults.testingModel` Step 7 executor (PR #195) |
 | 27 | `workflow-bootstrap-feature-branch` | `[x]` done | Phase 4 | Feature-branch gate at bootstrap (PR #194) |
+| 28 | `auto-mode-model-preferences` | `[x]` done | Phase 4 | Phase-specific subagent LLM model preferences (PR #200) |
 
 No open Next-specs todos. New work goes to Inbox, then promote.
 
@@ -143,6 +145,7 @@ No open Next-specs todos. New work goes to Inbox, then promote.
 | 2026-08-12 | `refine-ws-activity-report-human-timing` | Refine ws-activity-report human vs agent duration | [PR #192](https://github.com/jpolvora/workflow-skills/pull/192) |
 | 2026-08-12 | `testing-executor-model` | Add testingModel (test executor) to LLM model config | [PR #195](https://github.com/jpolvora/workflow-skills/pull/195) |
 | 2026-08-12 | `workflow-bootstrap-feature-branch` | Ask for feature-branch strategy at workflow bootstrap | [PR #194](https://github.com/jpolvora/workflow-skills/pull/194) |
+| 2026-08-13 | `auto-mode-model-preferences` | Reinforce LLM phase model switching across orchestrators, state scripts, and protocols | [PR #200](https://github.com/jpolvora/workflow-skills/pull/200) |
 
 ## 11. Maintenance checklist
 

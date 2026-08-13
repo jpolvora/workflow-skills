@@ -8,14 +8,14 @@
 
 > **Consistency:** the Skill map in `SKILL.md` (`ws-verify-plan` → Step 5, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
 
-> **autoMode Model Switching:** When `autoMode: true` and `config.json` → `defaults` defines model preferences, the orchestrator applies the phase model override during `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). **Step 7 resolve:** non-empty `defaults.testingModel` → else `defaults.executionModel` → else the active session model. Empty or omitted `testingModel` is valid (same as `executionModel`). On switch failure or unconfigured model, gracefully maintain the current active model.
+> **Subagent Model Switching:** The orchestrator session ALWAYS runs under the active session model (`currentModel`). When `config.json` → `defaults` defines phase model preferences, those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). The orchestrator resolves and passes the subagent phase model parameter during `dispatch-agent` and `--model` to `update_state.py`. **Step 7 resolve:** non-empty `defaults.testingModel` → else `defaults.executionModel` → else the active session model. Empty or omitted `testingModel` is valid (same as `executionModel`). On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
 
 | Step | Action | Artifact |
 |------|--------|----------|
 | 0 | Entry gate (user-gate). US/spec provided → provider `fetch-to-spec` (→ `{specsDir}` spec of record, then register). No args → free-text → `dispatch-agent` `ws-write-spec` (writes `{specsDir}/{slug}.spec.md` only) → register via `ws-local-spec-provider` into `{us-dir}`. Optional soft clarify if AC empty. | `{specsDir}/{slug}.spec.md` **then** `step-00-{slug}.spec.md` (after register) |
 | 1 | Complexity gate → if simple: stub plan + skip to 4. Else `dispatch-agent` `ws-write-plan`. | `step-01-{slug}.plan.md` |
 | 2 | Conditional: skip if eligible; else `dispatch-agent` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
-| 3 | `dispatch-agent` `ws-plan-to-tasks`; sequential → skip empty DAG artifacts (log only). Parallel → DAG. | `step-03-*` when parallel |
+| 3 | `dispatch-agent` `ws-plan-to-tasks`; `defaults.enableDag: false` (default) forces `execMode: sequential` (sequential subagent tasks, no parallel DAG groups). `defaults.enableDag: true` evaluates `dagThresholds` for parallel DAG tasks. | `step-03-{slug}.plan.exec.md` + `step-03-{slug}.exec.dag.json` (both modes; DAG task groups only when parallel) |
 | 4 | `dispatch-agent` `ws-implement-tasks` mode build; branch-direct default | verification |
 | 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve) | `step-05-{slug}.plan.report.md` |
 | 6 | `dispatch-agent` `ws-code-review`; Critical/Warning → **fix → re-review** via `ws-implement-tasks` (max 3; not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |

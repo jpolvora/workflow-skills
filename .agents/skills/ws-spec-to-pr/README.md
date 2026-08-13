@@ -4,7 +4,7 @@
 >
 > **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/tools.md). Config: `.agents/skills/ws-shared/config.json`.
 >
-> **Identity:** `/ws-spec-to-pr` / `@[ws-spec-to-pr]`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
+> **Identity:** `/ws-spec-to-pr`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
 End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared state, and confirmation gates (session model on each transition; switch via Pause → IDE/agent host → Resume).
 
@@ -58,16 +58,16 @@ Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/set
 ## How to start
 
 ```text
-@[ws-spec-to-pr] 2338
-@[ws-spec-to-pr] contoso/MyProject#2338
-@[ws-spec-to-pr] ADO 2338
-@[ws-spec-to-pr] specs/my-feature.spec.md
-@[ws-spec-to-pr] dry-run 2338
-@[ws-spec-to-pr] auto 2338
-@[ws-spec-to-pr] auto dry-run full 2338
-@[ws-spec-to-pr] auto skip-testing 2338
-@[ws-spec-to-pr] auto skip-tests skip-testing 2338
-@[ws-spec-to-pr] soft-delete for suppliers
+/ws-spec-to-pr 2338
+/ws-spec-to-pr contoso/MyProject#2338
+/ws-spec-to-pr ADO 2338
+/ws-spec-to-pr specs/my-feature.spec.md
+/ws-spec-to-pr dry-run 2338
+/ws-spec-to-pr auto 2338
+/ws-spec-to-pr auto dry-run full 2338
+/ws-spec-to-pr auto skip-testing 2338
+/ws-spec-to-pr auto skip-tests skip-testing 2338
+/ws-spec-to-pr soft-delete for suppliers
 ```
 
 State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`, `scoreAndRefine`). Mutation opt-in is **config-only** (`defaults.skipMutationTesting` + `verification.mutationTest`) — not a state.md field.
@@ -88,7 +88,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 
 ### Model selection
 
-Session model only. Pause → switch in IDE/agent host → Resume. No `--model` / `--model-chain`.
+The orchestrator session always executes under the active session model (`currentModel`). Subagent phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in `config.json` → `defaults` apply exclusively to subagents spawned via `dispatch-agent`. Manual switching of the orchestrator session via Pause → IDE/agent host → Resume is supported when desired. Fallback to active session model if a subagent model switch fails.
 
 ---
 

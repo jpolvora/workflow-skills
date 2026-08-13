@@ -112,3 +112,15 @@ Resolve helper:
 ```bash
 node {skillsRoot}/ws-audit/scripts/audit_log.js resolve [--config "{sharedDir}/config.json"]
 ```
+
+---
+
+## Parallel DAG task execution resolution (`defaults.enableDag`)
+
+Optional setting in `defaults.enableDag` for task execution mode in `ws-spec-to-pr` / `ws-plan-to-tasks` / `ws-implement-tasks`.
+
+| Condition | Effective `enableDag` | Execution Behavior |
+|-----------|------------------------|--------------------|
+| Key omitted / `false` (default) | `false` | Tasks execute sequentially one by one in serial order using subagents (no parallel tasks/DAG). |
+| Explicit `true` | `true` | Tasks break into parallel DAG execution groups (up to 3 concurrent per level) evaluated against `config.json.dagThresholds`. |
+

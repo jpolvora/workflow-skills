@@ -43,11 +43,11 @@ Both workflows expose the same control vocabulary at **every** step transition. 
 **Banner (always, before options):**
 
 ````text
-Current model: {currentModel}
-To use a different model for the next step: Pause → switch model in IDE/agent host → resume workflow.
+Orchestrator session model: {currentModel} | Subagent phase model: {targetSubagentModel}
+To use a different model for the orchestrator session: Pause → switch model in IDE/agent host → resume workflow.
 ````
 
-Resolve `{currentModel}` from the **executing session model** (agent identity / runtime). If unknown, use `unknown` and still show the Pause path. Log `model | step {N} | {name} | ISO`. On change vs prior state value, also log `model-change | step {N} | {old} → {new} | ISO`.
+The orchestrator session ALWAYS runs under the active session model (`{currentModel}`). If `config.json` → `defaults` defines phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), resolve `{targetSubagentModel}` for the subagent spawned at Step N; otherwise `{targetSubagentModel}` defaults to `{currentModel}`. If unknown, use `unknown`. Log `model | step {N} | {name} | ISO`. On change vs prior state value, also log `model-change | step {N} | {old} → {new} | ISO`.
 
 **Primary options (always shown):**
 

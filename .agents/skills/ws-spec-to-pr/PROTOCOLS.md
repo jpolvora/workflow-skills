@@ -89,7 +89,9 @@ Every completed/failed step: pass measured `--elapsed` into `update_state.py` (r
 
 ### Model readiness
 
-No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → IDE/agent host → Resume).
+No in-gate model picker. At every transition, show the gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume).
+
+The orchestrator session ALWAYS executes under the active session model (`currentModel`). When `autoMode: true` or phase models are configured in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). Subagent models are recorded in `stepModels` via `update_state.py`. On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
 
 When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
@@ -108,8 +110,8 @@ dispatch-agent:
 Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree via `Shell`: `worktree add` → merge → `worktree remove` → `branch -d`. Max 1 active. Audit: `Write` `stepDispatches[]`. No per-DAG-task worktree.
 
 **Step 4 dispatch:**
-- `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `step-01-*.plan.md` directly (no DAG).
-- `execMode: parallel` → DAG: `dispatch-agent` per level, ≤3 concurrent, no file overlap within level.
+- `defaults.enableDag: false` (default) or `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `step-01-*.plan.md` directly (sequential subagent task execution, no DAG).
+- `defaults.enableDag: true` & `execMode: parallel` → DAG: `dispatch-agent` per level, ≤3 concurrent, no file overlap within level.
 
 ### Check-implementation score gate (Step 5)
 
@@ -236,7 +238,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 0 entry gate | **I have a US/issue number** (user must provide in invocation) |
 | Complexity ambiguous | **Standard path** |
 | Transition 0–6, 9 | **Advance to Step N+1** |
-| Transition / phase model | **Advance** with session `currentModel` (no `--model-chain`) |
+| Transition / phase model | **Advance** with resolved phase model (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`; fallback to session `currentModel`) |
 | Step 2 needs_user | first option; early → **End refinement and advance** (auto-confirms 2e) |
 | Step 2e (only if shown) | **I confirm shared understanding — advance to Step 3** |
 | Step 5 score < 7 | Pause (fail closed — no auto-approve) |
@@ -304,11 +306,11 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 # Subagent — Step {STEP} — {Label}
 Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
-Orch: SKILL.md § Step {STEP} · model {currentModel} · {modeFlags}
+Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
 Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
 Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
-Role: fresh; no resume. files_touched required (revert). model: {currentModel}.
+Role: fresh; no resume. files_touched required (revert). model: {resolvedSubagentModel}.
 Rules: no `{plansDir}/` in git-add except Step 8 G2-delivery; needs_user: ≥2 choices, recommended first.
 Learning: read ## Workflow memory + ## Step outputs (all prior steps) for traps/errors. Do NOT repeat broken approaches. Record own mistakes in step-output.learning.
 Telemetry required: elapsedSec, promptTokens + completionTokens (from LLM metadata if available, else estimate chars/3.5 with estimated: true).
@@ -325,7 +327,7 @@ Post-step: `update_state` (+ JSONL) → checkpoint (`Shell` tag) → pre-advance
 | auto | auto-gate table → immediate `dispatch-agent`/`Shell` |
 | normal | Prefer `user-gate`; slim menu per [`gates.md`](../ws-shared/gates.md) |
 
-Shows gates.md banner (`Current model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only.
+Shows gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only.
 
 ---
 
