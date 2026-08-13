@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "34222a37000f66d6763a69ffb7aed8dd9d0482b56f4ec4995b34f2dc32ba340c",
+  "fullPackageDigest": "acaf5900f39785fa4dd6dd13b659bc1816ff3daf682d1e99d7893741cea046f0",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -315,7 +315,7 @@
         "PROTOCOLS.md": "9d9530eb9699073ccab531c99ab174a9242e44444ad328df80b09c9274157f7a",
         "protocols/artifact-cleanup.md": "b1a344a931294d1b7d5bd66ce6c429c43364176da2e1728b2cd68960ea82e7ac",
         "protocols/delivery-result.md": "31055799e966567a4a038316c1fe78cefc7368236424d6ee50987ece499d4f7c",
-        "protocols/progress-board.md": "22cb673fa2562738905a85d151828f800778aea3ae5bd2338b2e4b0f2c456213",
+        "protocols/progress-board.md": "5734a27d8fa63ec4178d3842e2dc623d62b7d385d61f8cfa1f17b1b8f8abe514",
         "protocols/state-hygiene.md": "354c29f0d78aaa3ab1629a31a2113ba710fb77771a2764b1b149e8f9ba9d5d6b",
         "README.md": "b76e5b05251266355b12689b497c33aee764d29c125a0c6e27beadbc64703112",
         "scripts/ado-workitem-to-spec.py": "29ffee588e070359a020b1a23990a756b4a31dc9ed82cafc4d124b7c51047825",
@@ -328,7 +328,7 @@
         "STEP-DISPATCH.md": "286e31ea1aaf7d48de6fd2caf82a36b39e995b44c6a422ba9ca2b6c0bea57e83",
         "ws-spec-to-pr-run-test.md": "b822380eeacd53443a85a6ed0f980c008f0b586091838c45d01b1042f82e6d28"
       },
-      "skillDigest": "1413326f4a6744c75bf4ac6a9ab0ead2c19d54f43556030c9b9aa1d3f77eac48"
+      "skillDigest": "7d238de9120a76d983362f2f45e512ecacd648f0b3cf7e354ec999a18c7c5359"
     },
     "ws-spec-to-pr-lite": {
       "files": {
