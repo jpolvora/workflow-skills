@@ -1,16 +1,6 @@
 ---
-
-
-
-
-
-
-
-
-
-
 name: ws-spec-to-pr-lite
-version: 0.3.14
+version: 0.3.15
 description: Fast sequential Spec-to-PR lite orchestrator (Steps 0–5). Trigger when user requests lite/fast spec-to-PR delivery.
 disable-model-invocation: true
 invocation_names:

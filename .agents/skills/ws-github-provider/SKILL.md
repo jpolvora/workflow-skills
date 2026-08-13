@@ -1,13 +1,7 @@
 ---
-
-
-
-
-
-
 name: ws-github-provider
 description: GitHub issue→spec and PR ops (auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is github or user invokes /ws-github-provider.
-version: 0.3.14
+version: 0.3.15
 disable-model-invocation: true
 invocation_names:
   - github-provider
