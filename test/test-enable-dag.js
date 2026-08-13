@@ -28,9 +28,10 @@ function read(relPath) {
 const example = JSON.parse(
   fs.readFileSync(path.join(SHARED, 'config.json.example'), 'utf8'),
 );
-const config = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.json'), 'utf8'),
-);
+const configPath = path.join(SHARED, 'config.json');
+const config = fs.existsSync(configPath)
+  ? JSON.parse(fs.readFileSync(configPath, 'utf8'))
+  : null;
 const schema = JSON.parse(
   fs.readFileSync(path.join(SHARED, 'config.schema.json'), 'utf8'),
 );
@@ -45,14 +46,18 @@ assert(
   defaultsProps.enableDag?.default === false,
   'schema defaults.enableDag defaults to false',
 );
-assert(
-  Object.prototype.hasOwnProperty.call(config.defaults || {}, 'enableDag'),
-  'config.json has defaults.enableDag',
-);
-assert(
-  config.defaults.enableDag === false,
-  'config.json enableDag defaults to false',
-);
+if (config) {
+  assert(
+    Object.prototype.hasOwnProperty.call(config.defaults || {}, 'enableDag'),
+    'config.json has defaults.enableDag',
+  );
+  assert(
+    config.defaults.enableDag === false,
+    'config.json enableDag defaults to false',
+  );
+} else {
+  console.log('SKIP config.json assertions (file absent in fresh clone/CI)');
+}
 assert(
   Object.prototype.hasOwnProperty.call(example.defaults || {}, 'enableDag'),
   'config.json.example has defaults.enableDag',
