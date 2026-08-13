@@ -306,11 +306,11 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 # Subagent — Step {STEP} — {Label}
 Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
-Orch: SKILL.md § Step {STEP} · model {currentModel} · {modeFlags}
+Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
 Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
 Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
-Role: fresh; no resume. files_touched required (revert). model: {currentModel}.
+Role: fresh; no resume. files_touched required (revert). model: {resolvedSubagentModel}.
 Rules: no `{plansDir}/` in git-add except Step 8 G2-delivery; needs_user: ≥2 choices, recommended first.
 Learning: read ## Workflow memory + ## Step outputs (all prior steps) for traps/errors. Do NOT repeat broken approaches. Record own mistakes in step-output.learning.
 Telemetry required: elapsedSec, promptTokens + completionTokens (from LLM metadata if available, else estimate chars/3.5 with estimated: true).
@@ -327,7 +327,7 @@ Post-step: `update_state` (+ JSONL) → checkpoint (`Shell` tag) → pre-advance
 | auto | auto-gate table → immediate `dispatch-agent`/`Shell` |
 | normal | Prefer `user-gate`; slim menu per [`gates.md`](../ws-shared/gates.md) |
 
-Shows gates.md banner (`Current model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only.
+Shows gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only.
 
 ---
 
