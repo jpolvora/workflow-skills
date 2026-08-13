@@ -175,6 +175,16 @@ function testLiteSerializerMirrorsNestedDictFix() {
     ),
     'lite serialize_yaml nested-dict branch uses format_inline_dict(subv)',
   );
+  // AC1/AC2: format_val must never str() a dict in either copy.
+  for (const [label, src] of [
+    ['standard', fs.readFileSync(UPDATE_STANDARD, 'utf8')],
+    ['lite', liteSrc],
+  ]) {
+    assert(
+      /if isinstance\(v, dict\):[\s\S]*?return format_inline_dict\(v\)/.test(src),
+      `${label} format_val has dict -> format_inline_dict branch`,
+    );
+  }
 
   const dir = mkTmp('ws-update-state-lite-loc-');
   const statePath = writeLocFixture(dir);
