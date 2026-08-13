@@ -1,10 +1,4 @@
 ---
-
-
-
-
-
-
 name: ws-plan-to-tasks
 description: Task DAG breakdown generator — transforms approved implementation plans into atomic, dependency-mapped task execution graphs.
 version: 0.3.12
@@ -41,7 +35,9 @@ Workflow (ws-spec-to-pr Step 3): orchestrator passes `planPath` (`step-02-*.plan
 
 ## Steps
 
-1. **Detect size** — Evaluate the plan against `config.json.dagThresholds` (default: steps ≤3, files ≤6, layers ≤2). All within threshold → `execMode: sequential`. Any exceeded, or the step breakdown is ambiguous → `execMode: parallel`.
+1. **Detect size & mode** — Check `config.json` -> `defaults.enableDag`:
+   - If `enableDag` is `false` (or omitted/default): set `execMode: sequential` (forces sequential task execution by subagents one by one, skipping parallel DAG generation).
+   - If `enableDag` is `true`: evaluate the plan against `config.json.dagThresholds` (default: steps ≤3, files ≤6, layers ≤2). All within threshold → `execMode: sequential`. Any exceeded, or the step breakdown is ambiguous → `execMode: parallel`.
    - Done when: `execMode` is set with its counted metrics (steps, files, layers).
 
 2. **Write sequential output** (when `execMode: sequential`) — Write `step-03-{slug}.plan.exec.md` noting the reason and thresholds, and `step-03-{slug}.exec.dag.json`:
@@ -75,4 +71,3 @@ Workflow (ws-spec-to-pr Step 3): orchestrator passes `planPath` (`step-02-*.plan
 - Do not write product code: only structure the plan into tasks.
 - Strict isolation: tasks in the same parallel level never share files (prevents worktree merge conflicts).
 - Consult `config.json` for layer boundaries and project paths.
-

@@ -1,33 +1,22 @@
 ---
-
-
-
-
-
-
-
-
 name: ws-spec-to-pr
+description: End-to-end Spec-to-PR orchestrator (Steps 0–9).
 version: 0.3.12
-description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
+disable-model-invocation: true
 invocation_names:
   - spec-to-pr
   - ws-spec-to-pr
 ---
 
-# Spec-to-PR — Orchestrator
+# ws-spec-to-pr
 
 > When this skill is loaded, output "ws-spec-to-pr loaded."
 
-Deterministic FSM orchestrating Steps 0–9 via **`dispatch-agent`**.
-
 **Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-write-spec` (`{specsDir}`) then `ws-local-spec-provider` register; existing `*.spec.md` → local-spec-provider; tracker id → SCM provider. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
-## Audience & Load
-
-- **Always-on load:** This file + current step skill.
-- **On-demand:** [`setup.md`](../ws-shared/setup.md) · [`gates.md`](../ws-shared/gates.md) · [`config-resolution.md`](../ws-shared/config-resolution.md) · [`tools.md`](../ws-shared/tools.md) · [`ARTIFACTS.md`](ARTIFACTS.md) · [`STEP-DISPATCH.md`](STEP-DISPATCH.md) (when advancing) · [`PROTOCOLS.md`](PROTOCOLS.md) · [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md).
 - **Dual-mode:** Shared pipeline skills stay interchangeable with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
+
+Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap (Feature branch gate: §5b).
 
 ## Native Tool Contract
 
@@ -49,7 +38,7 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 2. **Auth:** Gate required for G1+. Cancel → HS-1. Commit → G2 + menu (HS-2).
 3. **Isolation:** Subagent per step. Checkpoint tag `uswf/{id}/before-step-{N}`. Branch-direct default; worktree when `plans.useWorktrees=true`.
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `state.md` short-term; `{sharedDir}/MEMORY.md` generalizable.
-5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0, phase model switch via `plannerModel`/`executionModel`/`reviewerModel`/`testingModel` — Step 7 uses non-empty `testingModel`, else `executionModel`, else the active session model; `reviewerModel` is Steps 5–6 only); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR).
+5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0, phase model switch via `plannerModel`/`executionModel`/`reviewerModel`/`testingModel` — Step 7 uses non-empty `testingModel`, else `executionModel`, else the active session model; `reviewerModel` is Steps 5–6 only); `enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR).
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
 7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset.
 
@@ -59,13 +48,13 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 |-------|-------|----------|------------------|
 | F0 Bootstrap | 0 | Orch + spec subagent | 0 |
 | F1 Planning | 1–3 | Planner | 1–3 |
-| F2 Implementation | 4 | Coder (DAG ≤3 parallel) | 4 |
+| F2 Implementation | 4 | Coder (sequential default; DAG ≤3 parallel when `enableDag: true`) | 4 |
 | F3 Verification | 5 | Verifier (readonly) | 5 |
 | F4 Review + Fix | 6 (+ fix) | Reviewer + Coder | 6 |
 | F5 Testing | 7 | Verifier + optional browser | 7 |
 | F6 Ship + Fix-PR | 8–9 | Orch + shell (+ fix-pr) | 8 (ship) / 9 (fix-pr complete) |
 
-Worktree & complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). Dispatch bodies: [`STEP-DISPATCH.md`](STEP-DISPATCH.md). Filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
+Worktree & complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). Setup: [`setup.md`](../ws-shared/setup.md). Dispatch bodies: [`STEP-DISPATCH.md`](STEP-DISPATCH.md). Filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
 
 ## Step 0 — Pipeline Classifier
 
@@ -81,19 +70,16 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--sk
 ## Runtime audit (`defaults.enableAuditing`)
 
 When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), load [`ws-audit`](../ws-audit/SKILL.md) at bootstrap:
+- Wrap each step's `update_state` with audit log appends.
+- Run the upstream GitHub issue gate at workflow end when `has-errors` is true.
 
-1. **Init** audit session under `{us-dir}` after identity/bootstrap (store `auditSession` in state).
-2. **Append** findings on script/tool/I/O/dispatch anomalies each step (including `recovered: true` when the model papers over skill-body defects).
-3. **Finalize** before claiming workflow complete.
-4. **End-of-run:** if actionable `error` findings exist, `user-gate` proposes opening a GitHub issue on the package upstream repo (`skill-dependencies.json` → `upstream.repo`) — not a consumer fix PR for managed skill content.
-
-When `false` or omitted: no audit obligation; behavior unchanged.
-
-## Triggers
+## Invocation
 
 ```
 @[ws-spec-to-pr] [auto|dry-run|skip-testing|skip-tests|skip-gates|full|strict] [US {issue_id} | {name}.spec.md | "description"]
 /ws-spec-to-pr [flags] [US {issue_id} | {name}.spec.md | "description"]
-/status | progress | where am I? → Progress Board
-go back | back to step X → Backward Navigation
 ```
+
+## Exit & Handoff
+
+Complete when Step 8 (or Step 9 PR merge) outputs `status: completed`.

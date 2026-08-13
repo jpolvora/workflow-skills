@@ -121,6 +121,11 @@
           "default": false,
           "description": "When true, ws-spec-to-pr* orchestrators activate ws-audit runtime observer and may propose an upstream GitHub issue at run end. Omitted or missing config → effective false."
         },
+        "enableDag": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, break execution plans into multiple parallel tasks executed concurrently by subagents. When false (default), execute tasks sequentially one by one in serial order."
+        },
         "patternsBackend": {
           "type": "boolean",
           "default": true,
