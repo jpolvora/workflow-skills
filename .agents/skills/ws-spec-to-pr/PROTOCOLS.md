@@ -89,9 +89,9 @@ Every completed/failed step: pass measured `--elapsed` into `update_state.py` (r
 
 ### Model readiness
 
-No in-gate model picker. At every transition, show the gates.md banner (`Current model` + target phase model when configured in `config.json` + Pause → IDE/agent host → Resume).
+No in-gate model picker. At every transition, show the gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume).
 
-When `autoMode: true` or phase models are configured in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), the orchestrator resolves the phase model for Step N and applies it during `dispatch-agent` and `update_state.py` `--model`. On switch failure or unconfigured model, gracefully maintain the current active model.
+The orchestrator session ALWAYS executes under the active session model (`currentModel`). When `autoMode: true` or phase models are configured in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). Subagent models are recorded in `stepModels` via `update_state.py`. On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
 
 When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 

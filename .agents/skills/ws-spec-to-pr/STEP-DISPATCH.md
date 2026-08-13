@@ -8,7 +8,7 @@
 
 > **Consistency:** the Skill map in `SKILL.md` (`ws-verify-plan` → Step 5, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
 
-> **autoMode Model Switching:** When `autoMode: true` and `config.json` → `defaults` defines model preferences, the orchestrator MUST resolve and pass the phase model override parameter during `dispatch-agent` and `--model` to `update_state.py` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). **Step 7 resolve:** non-empty `defaults.testingModel` → else `defaults.executionModel` → else the active session model. Empty or omitted `testingModel` is valid (same as `executionModel`). On switch failure or unconfigured model, gracefully maintain the current active model.
+> **autoMode Model Switching:** The orchestrator session ALWAYS runs under the active session model (`currentModel`). When `autoMode: true` and `config.json` → `defaults` defines model preferences, those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). The orchestrator resolves and passes the subagent phase model parameter during `dispatch-agent` and `--model` to `update_state.py`. **Step 7 resolve:** non-empty `defaults.testingModel` → else `defaults.executionModel` → else the active session model. Empty or omitted `testingModel` is valid (same as `executionModel`). On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
 
 | Step | Action | Artifact |
 |------|--------|----------|

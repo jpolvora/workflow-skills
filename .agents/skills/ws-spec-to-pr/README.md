@@ -88,7 +88,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 
 ### Model selection
 
-Phase-specific model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in `config.json` → `defaults` are automatically applied during `autoMode` or step dispatches. Manual switching via Pause → IDE/agent host → Resume is supported when models are unconfigured or in interactive mode. Fallback to active session model if switch fails.
+The orchestrator session always executes under the active session model (`currentModel`). Subagent phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in `config.json` → `defaults` apply exclusively to subagents spawned via `dispatch-agent`. Manual switching of the orchestrator session via Pause → IDE/agent host → Resume is supported when desired. Fallback to active session model if a subagent model switch fails.
 
 ---
 

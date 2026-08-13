@@ -158,14 +158,14 @@ assert(
 
 const protocols = read('.agents/skills/ws-spec-to-pr/PROTOCOLS.md');
 assert(
-  protocols.includes('applies it during `dispatch-agent` and `update_state.py`'),
-  'PROTOCOLS.md documents phase model application and update_state.py passing',
+  protocols.includes('EXCLUSIVELY to subagents spawned via `dispatch-agent`'),
+  'PROTOCOLS.md documents subagent model preferences',
 );
 
 const gates = read('.agents/skills/ws-shared/gates.md');
 assert(
-  gates.includes('Target phase model: {targetPhaseModel}'),
-  'gates.md documents Target phase model in banner',
+  gates.includes('Subagent phase model: {targetSubagentModel}'),
+  'gates.md documents Subagent phase model in banner',
 );
 
 const stateHygiene = read('.agents/skills/ws-spec-to-pr/protocols/state-hygiene.md');

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "71101e4391c7c78b3450040e79fa063e237fbbf9cc11edb8a585e42f7e78effb",
+  "fullPackageDigest": "43ff0c2695d7ddb813dc88fb02bb619041d987b3058e506410668961e622c277",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -16,15 +16,15 @@
       "config.json.example": "9476734d9c9031b7a2b152a214e8d4fa4ac9443a8b53103145d31dfe220a3262",
       "config.schema.json": "1da69c2a872d6ef0a6d3e4feab4e8a6a4cea1e57c5bff5fdeed3ee39ba6407b5",
       "frontend.md.template": "f049da53cc917f55e11913dc9e356e89a117243ba8a8af04688ca99cdcc5baab",
-      "gates.md": "cd5eab6f30104a8308d03e68fac8ccb275ccf6a97f269a8ad6731d729ad3f7d7",
+      "gates.md": "423c8ccfa97cd0caf9f26068144b8222b1f7b045f1c47316b3d22ef3fdc84962",
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
       "MEMORY.md.template": "358174cd427cbc853a8e00cb17853da93462260058a1c1f3d8d6e33288f010b5",
       "setup.md": "47f99f29a1b1e1f06e077aeff968557a2dc0f3e3d0e3e40fdbb9f74cde182fc0",
       "skill-dependencies.json": "eba55cf828306e1e790706764f37749223620bc39cfb696f30e46163c253b4dd",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
-      "tools.md": "6b34cd4fa07c32c077f83bc4f681ddda7a937749a07d29d80f10652232fec985"
+      "tools.md": "986209b836bbf71edd5e2e2a63f4b8adb29194427d67e729388df2b73ef44978"
     },
-    "skillDigest": "92fec05331a3fecae1657c21fe3ee224a89959003116bff4ffc1324c81e5983e"
+    "skillDigest": "07711adc418b3e0d9b8891c9e9d2dc620da03be0db3465481c6c501a80e3d06e"
   },
   "packageVersion": "0.3.14",
   "skills": {
@@ -312,12 +312,12 @@
         "DIAGRAM.md": "ae077f8da412026f5f4b7a7b38c0d0a083f41831707254b7955ba527af0e2fc6",
         "docs/faq.md": "1f0a67421653ddbf053d67bf34d2317a3827026356b7857b3970c93a2854337c",
         "evals/evals.json": "0de4d6e2a47141ce29b6b30aec23585c6f44added20dfe5a7b0f476750af9b59",
-        "PROTOCOLS.md": "bd67473735caed65ffec91de13b74c524ba8131da90dc1dcb6dca55fd395ce31",
+        "PROTOCOLS.md": "e87c3e57402591dde16570e2a9eb0e8133d88d2649899411ccda497a43c418e7",
         "protocols/artifact-cleanup.md": "b1a344a931294d1b7d5bd66ce6c429c43364176da2e1728b2cd68960ea82e7ac",
         "protocols/delivery-result.md": "31055799e966567a4a038316c1fe78cefc7368236424d6ee50987ece499d4f7c",
         "protocols/progress-board.md": "22cb673fa2562738905a85d151828f800778aea3ae5bd2338b2e4b0f2c456213",
         "protocols/state-hygiene.md": "354c29f0d78aaa3ab1629a31a2113ba710fb77771a2764b1b149e8f9ba9d5d6b",
-        "README.md": "4bc8d4fb4dd981815bc4fbcfcfa447249b8a20a5b0c95539610792e2c3308a2a",
+        "README.md": "a1983b2ff119686f825be58894139bb8a5ed3c45ff28eb0fefde6edfc859f5e5",
         "scripts/ado-workitem-to-spec.py": "29ffee588e070359a020b1a23990a756b4a31dc9ed82cafc4d124b7c51047825",
         "scripts/check_memory_conflict.py": "f9361863756fc8292c04da79df28420256282370f06d7e20a731173036f9b33a",
         "scripts/cleanup_workflow_git.py": "d1994a50c5ff75eabab3428d524b1f0e0faa56d3162355a33952090137007fdd",
@@ -325,10 +325,10 @@
         "scripts/update_state.py": "7bc9ed28e85bcb4a49ad3a197d61c4039acc5a58ae54bddaba543de93d0ff4da",
         "scripts/validate_state.py": "ba234db8f06dae6ff1e03f71b256c483e999bdeb3265517cd196d4f54dd083f8",
         "SKILL.md": "16db3898f8026d8b33108f7b1457ab82383ab62883b77e4d3f3718240ca6244c",
-        "STEP-DISPATCH.md": "0d971ce16ef99aea21dabbddd29ea142208f5f02bad286afc75a68cc25b75ced",
+        "STEP-DISPATCH.md": "90467182078985be81c8aafdce10b9991c3276c0d2ae283e2724546c084dcd16",
         "ws-spec-to-pr-run-test.md": "b822380eeacd53443a85a6ed0f980c008f0b586091838c45d01b1042f82e6d28"
       },
-      "skillDigest": "eb751088eaf8af3b070ed82ed5d32e149cf58682ac2e6f1f5bd2347048e7e688"
+      "skillDigest": "30c9c8da9ef5dc835085a1669950d4ffb1b698c283c050db314bce94fc27fa70"
     },
     "ws-spec-to-pr-lite": {
       "files": {
