@@ -7,7 +7,7 @@
 
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.13
+version: 0.3.14
 disable-model-invocation: true
 invocation_names:
   - code-review

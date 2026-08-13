@@ -104,6 +104,51 @@ def parse_errors_arg(value: str | None) -> list:
     return [sanitize_telemetry_string(part) for part in raw.split(",") if part.strip()]
 
 
+def resolve_phase_model(step: int, state_path: Path, provided_model: str | None, fallback_model: str) -> str:
+    """Resolve target phase model from config.json defaults if provided_model is empty."""
+    if provided_model and provided_model.strip():
+        return provided_model.strip()
+
+    candidates = [
+        state_path.parent.parent.parent / "ws-shared" / "config.json",
+        Path.cwd() / ".agents" / "skills" / "ws-shared" / "config.json",
+        state_path.parent / "config.json",
+    ]
+    defaults = None
+    for cand in candidates:
+        if cand.is_file():
+            try:
+                with open(cand, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    defaults = cfg.get("defaults", {})
+                    if isinstance(defaults, dict):
+                        break
+            except Exception:
+                pass
+
+    if isinstance(defaults, dict):
+        key = None
+        if step in (0, 1, 2, 3):
+            key = "plannerModel"
+        elif step == 4:
+            key = "executionModel"
+        elif step in (5, 6):
+            key = "reviewerModel"
+        elif step == 7:
+            key = "testingModel"
+
+        if key:
+            val = defaults.get(key)
+            if isinstance(val, str) and val.strip():
+                return val.strip()
+            if step == 7:
+                exec_val = defaults.get("executionModel")
+                if isinstance(exec_val, str) and exec_val.strip():
+                    return exec_val.strip()
+
+    return fallback_model or "unknown"
+
+
 def append_jsonl_record(jsonl_path: Path, record: dict) -> None:
     """Append one flat JSON object per line; create parent dirs lazily."""
     jsonl_path.parent.mkdir(parents=True, exist_ok=True)
@@ -463,7 +508,7 @@ def main():
         step_dispatches.append({"step": step, "dispatched": iso_now})
     data["stepDispatches"] = step_dispatches
 
-    current_model = args.model or data.get("currentModel", "unknown")
+    current_model = resolve_phase_model(step, state_path, args.model, data.get("currentModel", "unknown"))
     step_models = data.get("stepModels", [])
     if not isinstance(step_models, list):
         step_models = []
