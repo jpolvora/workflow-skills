@@ -136,4 +136,4 @@ flowchart LR
 
 ## Triggers
 
-`/ws-spec-to-pr` · `@[ws-spec-to-pr]`.
+`/ws-spec-to-pr`.
