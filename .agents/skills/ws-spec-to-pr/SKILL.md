@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR orchestrator (Steps 0–9).
-version: 0.3.12
+version: 0.3.13
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
