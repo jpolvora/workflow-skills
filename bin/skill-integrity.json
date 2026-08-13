@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "838d0d3fe7e0f5025295253e17b0798cf2e3f52a34fa48fcef7306c28e333f5b",
+  "fullPackageDigest": "8a309bd7f6c960a5aa3ef02f17130201a4a08a8abec745b0f18724a1834695df",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -324,11 +324,11 @@
         "scripts/github-issue-to-spec.py": "b8bc4b3f2ead8817a17e8d172f7fe51285e9aaed077cb1a2de7ee6d69f2ddccc",
         "scripts/update_state.py": "0df6d051b74f0562635bb11b4aa1945831e86796b806b87257c78c3412aee4f4",
         "scripts/validate_state.py": "ba234db8f06dae6ff1e03f71b256c483e999bdeb3265517cd196d4f54dd083f8",
-        "SKILL.md": "08fd1b9004d37804273a5454bc0bf312b0bc4b2746342c5f6978137ca6a35ad5",
+        "SKILL.md": "aec28c836ea1c3883a800cc9ce719cbece60476a51bebe985eb2551e93573d99",
         "STEP-DISPATCH.md": "73a792cd261afebd3d875b18e29a81b4513df04247d381bcd27a676a3729a5f5",
         "ws-spec-to-pr-run-test.md": "b822380eeacd53443a85a6ed0f980c008f0b586091838c45d01b1042f82e6d28"
       },
-      "skillDigest": "9f6669d1e0a7ef4abb999ab1fea92180cff379157869cbf8f247c831379cd3a9"
+      "skillDigest": "fd9ec5bc4379cac6ab00cfa55d463161e56d9631d79c48f4c5e9b818a0dc2a1f"
     },
     "ws-spec-to-pr-lite": {
       "files": {
