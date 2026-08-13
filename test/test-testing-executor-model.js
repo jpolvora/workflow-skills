@@ -144,6 +144,36 @@ assert(
   'resolve: both empty/omitted keeps session model',
 );
 
+const updateStatePy = read('.agents/skills/ws-spec-to-pr/scripts/update_state.py');
+assert(
+  updateStatePy.includes('def resolve_phase_model'),
+  'ws-spec-to-pr update_state.py contains resolve_phase_model helper',
+);
+
+const updateStateLitePy = read('.agents/skills/ws-spec-to-pr-lite/scripts/update_state.py');
+assert(
+  updateStateLitePy.includes('def resolve_phase_model'),
+  'ws-spec-to-pr-lite update_state.py contains resolve_phase_model helper',
+);
+
+const protocols = read('.agents/skills/ws-spec-to-pr/PROTOCOLS.md');
+assert(
+  protocols.includes('applies it during `dispatch-agent` and `update_state.py`'),
+  'PROTOCOLS.md documents phase model application and update_state.py passing',
+);
+
+const gates = read('.agents/skills/ws-shared/gates.md');
+assert(
+  gates.includes('Target phase model: {targetPhaseModel}'),
+  'gates.md documents Target phase model in banner',
+);
+
+const stateHygiene = read('.agents/skills/ws-spec-to-pr/protocols/state-hygiene.md');
+assert(
+  stateHygiene.includes('Pass resolved phase model'),
+  'state-hygiene.md documents passing resolved phase model into update_state.py',
+);
+
 if (failures > 0) {
   console.error(`\n${failures} failure(s)`);
   process.exit(1);

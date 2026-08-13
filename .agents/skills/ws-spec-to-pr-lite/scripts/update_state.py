@@ -102,6 +102,45 @@ def append_jsonl_record(jsonl_path: Path, record: dict) -> None:
         handle.write(json.dumps(record, separators=(",", ":"), ensure_ascii=False) + "\n")
 
 
+def resolve_phase_model(step: int, state_path: Path, provided_model: str | None, fallback_model: str) -> str:
+    """Resolve target phase model from config.json defaults if provided_model is empty (lite mapping)."""
+    if provided_model and provided_model.strip():
+        return provided_model.strip()
+
+    candidates = [
+        state_path.parent.parent.parent / "ws-shared" / "config.json",
+        Path.cwd() / ".agents" / "skills" / "ws-shared" / "config.json",
+        state_path.parent / "config.json",
+    ]
+    defaults = None
+    for cand in candidates:
+        if cand.is_file():
+            try:
+                with open(cand, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    defaults = cfg.get("defaults", {})
+                    if isinstance(defaults, dict):
+                        break
+            except Exception:
+                pass
+
+    if isinstance(defaults, dict):
+        key = None
+        if step in (0, 1):
+            key = "plannerModel"
+        elif step == 2:
+            key = "executionModel"
+        elif step == 3:
+            key = "reviewerModel"
+
+        if key:
+            val = defaults.get(key)
+            if isinstance(val, str) and val.strip():
+                return val.strip()
+
+    return fallback_model or "unknown"
+
+
 def format_val(v):
     if isinstance(v, bool):
         return str(v).lower()
@@ -454,7 +493,7 @@ def main():
         step_dispatches.append({"step": step, "dispatched": iso_now})
     data["stepDispatches"] = step_dispatches
 
-    current_model = args.model or data.get("currentModel", "unknown")
+    current_model = resolve_phase_model(step, state_path, args.model, data.get("currentModel", "unknown"))
     step_models = data.get("stepModels", [])
     if not isinstance(step_models, list):
         step_models = []

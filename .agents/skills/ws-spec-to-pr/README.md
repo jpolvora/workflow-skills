@@ -88,7 +88,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 
 ### Model selection
 
-Session model only. Pause → switch in IDE/agent host → Resume. No `--model` / `--model-chain`.
+Phase-specific model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in `config.json` → `defaults` are automatically applied during `autoMode` or step dispatches. Manual switching via Pause → IDE/agent host → Resume is supported when models are unconfigured or in interactive mode. Fallback to active session model if switch fails.
 
 ---
 

@@ -89,7 +89,9 @@ Every completed/failed step: pass measured `--elapsed` into `update_state.py` (r
 
 ### Model readiness
 
-No in-gate model picker. At every transition, show the gates.md banner (`Current model` + Pause → IDE/agent host → Resume).
+No in-gate model picker. At every transition, show the gates.md banner (`Current model` + target phase model when configured in `config.json` + Pause → IDE/agent host → Resume).
+
+When `autoMode: true` or phase models are configured in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), the orchestrator resolves the phase model for Step N and applies it during `dispatch-agent` and `update_state.py` `--model`. On switch failure or unconfigured model, gracefully maintain the current active model.
 
 When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
@@ -236,7 +238,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 0 entry gate | **I have a US/issue number** (user must provide in invocation) |
 | Complexity ambiguous | **Standard path** |
 | Transition 0–6, 9 | **Advance to Step N+1** |
-| Transition / phase model | **Advance** with session `currentModel` (no `--model-chain`) |
+| Transition / phase model | **Advance** with resolved phase model (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`; fallback to session `currentModel`) |
 | Step 2 needs_user | first option; early → **End refinement and advance** (auto-confirms 2e) |
 | Step 2e (only if shown) | **I confirm shared understanding — advance to Step 3** |
 | Step 5 score < 7 | Pause (fail closed — no auto-approve) |
