@@ -17,7 +17,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-write-a-skill loaded."
 
-Root virtue: **predictability** (same process every run, not the same tokens). Authoring guidelines → `SKILL_AUTHORING.md`. Bold terms → [`GLOSSARY.md`](GLOSSARY.md).
+Root virtue: **predictability** (same process every run, not the same tokens). Authoring guidelines → [`SKILL_AUTHORING.md`](SKILL_AUTHORING.md). Bold terms → [`GLOSSARY.md`](GLOSSARY.md).
 
 ## Steps
 

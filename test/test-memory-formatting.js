@@ -51,6 +51,17 @@ try {
   if (!compiledContent.includes("- **INSTEAD DO**: State explicit DO NOT and INSTEAD DO actionable instructions")) {
     throw new Error("Compiled MEMORY.md missing INSTEAD DO field");
   }
+  if (!compiledContent.includes("under `{sharedDir}/memory/`")) {
+    throw new Error("Compiled MEMORY.md header missing `{sharedDir}/memory/` canonical path token");
+  }
+  if (compiledContent.includes("under `shared/memory/`") || compiledContent.includes("under `ws-shared/memory/`")) {
+    throw new Error("Compiled MEMORY.md header contains obsolete memory directory shorthand");
+  }
+
+  const templateContent = fs.readFileSync(path.join(sharedDir, "MEMORY.md.template"), "utf-8");
+  if (!templateContent.includes("under `{sharedDir}/memory/`")) {
+    throw new Error("MEMORY.md.template missing `{sharedDir}/memory/` canonical path token");
+  }
 
   console.log("✅ Memory formatting test PASSED successfully!");
 } finally {
