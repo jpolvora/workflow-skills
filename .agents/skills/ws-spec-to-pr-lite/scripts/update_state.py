@@ -152,6 +152,8 @@ def format_val(v):
         if "\n" in v or ":" in v or "#" in v or "," in v:
             return f'"{v}"'
         return v
+    if isinstance(v, dict):
+        return format_inline_dict(v)
     return str(v)
 
 
@@ -183,7 +185,7 @@ def serialize_yaml(data: dict) -> str:
                         if not subv:
                             lines.append(f"  {subk}: {{}}")
                         else:
-                            lines.append(f"  {subk}: {format_val(subv)}")
+                            lines.append(f"  {subk}: {format_inline_dict(subv)}")
                     else:
                         lines.append(f"  {subk}: {format_val(subv)}")
         elif isinstance(v, list):
@@ -235,6 +237,35 @@ def _coerce_scalar(val: str):
     return v
 
 
+def _as_step_ints(val):
+    if isinstance(val, list):
+        out = []
+        for x in val:
+            if isinstance(x, bool):
+                continue
+            if isinstance(x, int):
+                out.append(x)
+            elif isinstance(x, str) and re.match(r"^\d+$", x.strip()):
+                out.append(int(x.strip()))
+        return out
+    if isinstance(val, bool):
+        return []
+    if isinstance(val, int):
+        return [val]
+    if isinstance(val, str) and re.match(r"^\d+$", val.strip()):
+        return [int(val.strip())]
+    return []
+
+
+def set_top_level(data, key, value):
+    if key == "completedSteps" and key in data:
+        merged = sorted(set(_as_step_ints(data[key])) | set(_as_step_ints(value)))
+        print("Warning: duplicate completedSteps keys; unioned unique ints", file=sys.stderr)
+        data[key] = merged
+        return
+    data[key] = value
+
+
 def parse_nested_mapping(block_lines: list) -> dict:
     """Parse an indented mapping that may contain nested lists of inline dicts."""
     result = {}
@@ -259,7 +290,11 @@ def parse_nested_mapping(block_lines: list) -> dict:
             result[key] = {}
             continue
         if val != "":
-            result[key] = _coerce_scalar(val)
+            stripped = val.strip()
+            if stripped.startswith("{") and stripped.endswith("}"):
+                result[key] = parse_inline_dict(val)
+            else:
+                result[key] = _coerce_scalar(val)
             continue
 
         nested_list = []
@@ -363,9 +398,10 @@ def parse_state_yaml(fm: str) -> dict:
 
         if val.startswith("[") and val.endswith("]"):
             inner = val[1:-1].strip()
-            data[key] = [x.strip().strip('"').strip("'") for x in inner.split(",") if x.strip()] if inner else []
-            if data[key] and all(re.match(r"^\d+$", x) for x in data[key]):
-                data[key] = [int(x) for x in data[key]]
+            parsed = [x.strip().strip('"').strip("'") for x in inner.split(",") if x.strip()] if inner else []
+            if parsed and all(re.match(r"^\d+$", x) for x in parsed):
+                parsed = [int(x) for x in parsed]
+            set_top_level(data, key, parsed)
             continue
 
         if val == "" or val == "|":
@@ -383,19 +419,23 @@ def parse_state_yaml(fm: str) -> dict:
                         parsed_block.append(parse_inline_dict(item))
                     else:
                         parsed_block.append(_coerce_scalar(item))
-                data[key] = parsed_block
+                set_top_level(data, key, parsed_block)
             else:
-                data[key] = parse_nested_mapping(block_lines)
+                set_top_level(data, key, parse_nested_mapping(block_lines))
             continue
 
         if val == "{}":
-            data[key] = {}
+            set_top_level(data, key, {})
             continue
         if val == "[]":
-            data[key] = []
+            set_top_level(data, key, [])
             continue
 
-        data[key] = _coerce_scalar(val)
+        stripped_val = val.strip()
+        if stripped_val.startswith("{") and stripped_val.endswith("}"):
+            set_top_level(data, key, parse_inline_dict(val))
+        else:
+            set_top_level(data, key, _coerce_scalar(val))
     return data
 
 
