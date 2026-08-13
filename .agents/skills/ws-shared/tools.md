@@ -86,11 +86,13 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 
 ### Auto-mode subagent model preferences & host IDE switching
 
-The orchestrator session ALWAYS runs under the active session model (`currentModel`). Model preferences in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) apply EXCLUSIVELY to subagents spawned via `dispatch-agent`:
-- **Planning Phase**: `defaults.plannerModel` (standard Steps 0–3 / lite Steps 0–1)
-- **Execution Phase**: `defaults.executionModel` (standard Step 4 / lite Step 2)
-- **Review Phase**: `defaults.reviewerModel` (standard Steps 5–6 / lite Step 3)
+The orchestrator session ALWAYS runs under the active session model (`currentModel`). Model preferences in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) apply EXCLUSIVELY to subagents spawned via `dispatch-agent` in the **standard** orchestrator:
+- **Planning Phase**: `defaults.plannerModel` (standard Steps 0–3)
+- **Execution Phase**: `defaults.executionModel` (standard Step 4)
+- **Review Phase**: `defaults.reviewerModel` (standard Steps 5–6)
 - **Testing Phase (standard Step 7 only)**: non-empty `defaults.testingModel`, else `defaults.executionModel`, else the active session model. Lite does not read or apply `testingModel`.
+
+**Lite (`ws-spec-to-pr-lite`):** executes inline in the main orchestrator session with no `dispatch-agent` subagents, so phase model preferences do not apply — the session stays under `{currentModel}`. Resolve them only for telemetry recording, never to switch the session model.
 
 **Host IDE Subagent Model Parameterization:**
 - **OpenCode**: Pass subagent option `model: "{modelName}"` or agent config override.

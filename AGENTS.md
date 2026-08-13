@@ -236,7 +236,7 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 
 - Config: `.agents/skills/ws-shared/config.json` only — [`config-resolution.md`](.agents/skills/ws-shared/config-resolution.md)
 - Gates: [`gates.md`](.agents/skills/ws-shared/gates.md) — prefer `user-gate` (native structured choice when available; markdown fallback)
-- **Session model:** `currentModel` = executing session model; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Optional review-model soft tip at Advance into Step 6 (full orch only)
+- **Session model:** orchestrator session always runs under `currentModel`; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Subagent phase model preferences (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`) apply exclusively to `dispatch-agent` subagents (standard orch only; lite is inline). `defaults.enableDag` (default `false`) forces sequential task execution; `true` restores threshold-based parallel DAG. Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.

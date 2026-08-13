@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "19ff5a02a614d075c4606e2cd0d1f88381844f7c42521257944410fd1ccf3b0a",
+  "fullPackageDigest": "bdcc98123fe5e9b3ce1068514b981cf812a2b074c690fa02f0d767e91a78ea0d",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -22,9 +22,9 @@
       "setup.md": "47f99f29a1b1e1f06e077aeff968557a2dc0f3e3d0e3e40fdbb9f74cde182fc0",
       "skill-dependencies.json": "eba55cf828306e1e790706764f37749223620bc39cfb696f30e46163c253b4dd",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
-      "tools.md": "986209b836bbf71edd5e2e2a63f4b8adb29194427d67e729388df2b73ef44978"
+      "tools.md": "6e730dc160e52bcd1871ebb3a2d92c1d977658908f98b9afb89eb9eec74b7b0d"
     },
-    "skillDigest": "07711adc418b3e0d9b8891c9e9d2dc620da03be0db3465481c6c501a80e3d06e"
+    "skillDigest": "595ff984327533a4ee8240ab4faccaaa75ac28b035f7f58f290f3be6026c5bc9"
   },
   "packageVersion": "0.3.14",
   "skills": {
@@ -335,9 +335,9 @@
         "evals/evals.json": "7a1a75266c30f85177109e0e684df58aae4286e684cbd5d4ea9275e4411f4a26",
         "scripts/update_state.py": "8212a6f02b91c4efb314463268208937b82baaa935a536d149fcd7ba5c418327",
         "scripts/validate_state.py": "7e1d2aa0512d4507818e3535e2cc35f4f4eabacbde26118350e7935f5fd1abbf",
-        "SKILL.md": "b6ce371720f808462b62fb7fbd038a97662b3f1c49e4b0f64e6cba9dda1c8a0f"
+        "SKILL.md": "7a1898540f4ea41a2196567722d85413b6df4f9687cc1b9dea4e44d6a4803514"
       },
-      "skillDigest": "b6413a1e343d73c87c2ddb384e5df4a61e8d0a74c1705a3fbeabb3dcdb82edb9"
+      "skillDigest": "df17b7e5fe7d753ffa63550d3866c8343a982d3d19ac2ab583922839ca6399a9"
     },
     "ws-sync-spec": {
       "files": {
