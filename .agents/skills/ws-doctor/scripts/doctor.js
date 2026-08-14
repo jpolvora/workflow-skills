@@ -305,6 +305,28 @@ function looksLikeBacktickPath(s) {
   );
 }
 
+function posixRelToRoot(rootAbs, fileAbs) {
+  const rel = toPosix(path.relative(path.resolve(rootAbs), path.resolve(fileAbs)));
+  if (!rel || rel === '..' || rel.startsWith('../')) return '';
+  if (path.isAbsolute(rel) || WIN_DRIVE_RE.test(rel)) return '';
+  return rel;
+}
+
+function isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap) {
+  const abs = tokenMap._abs || {};
+  const roots = [abs.skillsRoot, abs.globalSkillsRoot].filter(Boolean);
+  if (roots.length === 0 && tokenMap.skillsRoot) {
+    roots.push(path.resolve(projectRoot, tokenMap.skillsRoot));
+  }
+  const absSource = path.resolve(sourceFile);
+  for (const rootAbs of roots) {
+    const rel = posixRelToRoot(rootAbs, absSource);
+    const m = rel.match(/^(ws-[^/]+)\//);
+    if (m && m[1] !== 'ws-shared') return true;
+  }
+  return false;
+}
+
 function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
   // Token-expanded citations are project-root relative; plain markdown links stay file-relative.
   const hadToken = /\{[A-Za-z0-9_-]+\}/.test(cited);
@@ -346,7 +368,8 @@ function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
     candidate.startsWith('AGENTS.md') ||
     candidate.startsWith('README.md') ||
     candidate.startsWith('bin/') ||
-    candidate.startsWith('docs/') ||
+    (candidate.startsWith('docs/') &&
+      !isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap)) ||
     candidate.startsWith('specs/') ||
     candidate.startsWith('test/') ||
     /^ws-[a-z0-9-]+(\/|$)/i.test(candidate)
@@ -699,6 +722,17 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
         if (resolved.kind === 'template') continue;
         if (isTemplateOrGlobPath(resolved.expanded)) continue;
         if (resolved.kind === 'path' && !resolved.exists) {
+          // Skill-folder prose (backtick) citations of docs/... often describe
+          // the audited project's docs layout, not skill companions. Accept a
+          // project-root match before reporting a missing path (markdown links
+          // keep strict file-relative resolution).
+          if (
+            pathCandidate.startsWith('docs/') &&
+            isCitingFromPublishedSkillFolder(fileAbs, projectRoot, tokenMap) &&
+            exists(path.resolve(projectRoot, pathCandidate))
+          ) {
+            continue;
+          }
           pathErrors.push({
             skillId,
             source: sourceRel,
