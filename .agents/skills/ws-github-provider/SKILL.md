@@ -1,7 +1,7 @@
 ---
 name: ws-github-provider
 description: GitHub issue→spec and PR ops (auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is github or user invokes /ws-github-provider.
-version: 0.3.16
+version: 0.3.17
 disable-model-invocation: true
 invocation_names:
   - github-provider
@@ -69,7 +69,7 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Script | Path |
 |--------|------|
 | Issue → spec of record | `{skillsRoot}/ws-github-provider/scripts/github-issue-to-spec.py` (default output `{specsDir}/us-{n}.spec.md`) |
-| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source github` |
+| Spec of record → workflow copy | `python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source github` |
 | List threads | `{skillsRoot}/ws-github-provider/scripts/fetch_threads.cjs` |
 | Resolve thread | `{skillsRoot}/ws-github-provider/scripts/resolve_thread.cjs` |
 

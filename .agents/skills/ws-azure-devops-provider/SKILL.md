@@ -1,7 +1,7 @@
 ---
 name: ws-azure-devops-provider
 description: Azure DevOps work-item→spec and PR ops (PAT auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is azure-devops or user invokes /ws-azure-devops-provider.
-version: 0.3.16
+version: 0.3.17
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider
@@ -68,7 +68,7 @@ Auth/config failure → **STOP**. No silent provider fallback.
 | Script | Path |
 |--------|------|
 | Work item → spec of record | `{skillsRoot}/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` (default output `{specsDir}/us-{id}.spec.md`) |
-| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops` |
+| Spec of record → workflow copy | `python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops` |
 | Thread ops | `{skillsRoot}/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
 
 ## Config keys

@@ -305,6 +305,17 @@ function looksLikeBacktickPath(s) {
   );
 }
 
+function escapeRegExp(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap) {
+  const rel = toPosix(path.relative(projectRoot, sourceFile));
+  const root = toPosix(tokenMap.skillsRoot).replace(/\/+$/, '');
+  const m = rel.match(new RegExp(`^${escapeRegExp(root)}/(ws-[^/]+)/`));
+  return Boolean(m && m[1] !== 'ws-shared');
+}
+
 function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
   // Token-expanded citations are project-root relative; plain markdown links stay file-relative.
   const hadToken = /\{[A-Za-z0-9_-]+\}/.test(cited);
@@ -346,7 +357,8 @@ function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
     candidate.startsWith('AGENTS.md') ||
     candidate.startsWith('README.md') ||
     candidate.startsWith('bin/') ||
-    candidate.startsWith('docs/') ||
+    (candidate.startsWith('docs/') &&
+      !isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap)) ||
     candidate.startsWith('specs/') ||
     candidate.startsWith('test/') ||
     /^ws-[a-z0-9-]+(\/|$)/i.test(candidate)

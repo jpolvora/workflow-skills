@@ -197,6 +197,212 @@ function listRelFiles(dir) {
   return out;
 }
 
+function runDoctorJson(args, opts = {}) {
+  const doctorPath = opts.doctor || DOCTOR;
+  const r = run('node', [doctorPath, '--json', ...args], opts);
+  if (r.status !== 0) {
+    return { ok: false, error: (r.stderr || r.stdout || '').trim(), report: null };
+  }
+  try {
+    return { ok: true, report: JSON.parse((r.stdout || '').trim()), error: null };
+  } catch (err) {
+    return { ok: false, error: err.message, report: null };
+  }
+}
+
+function citedMatches(findings, pattern) {
+  if (!Array.isArray(findings)) return false;
+  const re = pattern instanceof RegExp ? pattern : new RegExp(pattern);
+  return findings.some((f) => re.test(String(f.cited || '')));
+}
+
+function setupTmpDoctorProject(root) {
+  fs.writeFileSync(path.join(root, 'package.json'), '{"type":"module"}\n', 'utf8');
+  const skillsRoot = path.join(root, '.agents', 'skills');
+  const sharedDir = path.join(skillsRoot, 'ws-shared');
+  fs.mkdirSync(sharedDir, { recursive: true });
+  const doctorDir = path.join(skillsRoot, 'ws-doctor');
+  const scriptsDir = path.join(doctorDir, 'scripts');
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.writeFileSync(path.join(doctorDir, 'SKILL.md'), '# ws-doctor\n', 'utf8');
+  fs.copyFileSync(DOCTOR, path.join(scriptsDir, 'doctor.js'));
+  return {
+    skillsRoot,
+    sharedDir,
+    doctorScript: path.join(scriptsDir, 'doctor.js'),
+  };
+}
+
+function testGithubCanonicalRegisterRowHasPythonLauncher() {
+  console.log('\n--- testGithubCanonicalRegisterRowHasPythonLauncher ---');
+  const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-github-provider/SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const expected =
+    '`python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source github`';
+  assert(content.includes(expected), 'GitHub Canonical scripts row has python launcher prefix');
+  assert(
+    !content.includes(
+      '| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source github` |',
+    ),
+    'GitHub Canonical scripts row no longer has unprefixed launcher cell',
+  );
+}
+
+function testAzureCanonicalRegisterRowHasPythonLauncher() {
+  console.log('\n--- testAzureCanonicalRegisterRowHasPythonLauncher ---');
+  const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-azure-devops-provider/SKILL.md');
+  const content = fs.readFileSync(skillPath, 'utf8');
+  const expected =
+    '`python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops`';
+  assert(content.includes(expected), 'Azure Canonical scripts row has python launcher prefix');
+  assert(
+    !content.includes(
+      '| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops` |',
+    ),
+    'Azure Canonical scripts row no longer has unprefixed launcher cell',
+  );
+}
+
+function testProviderRegisterRowsNotMissingLaunchers() {
+  console.log('\n--- testProviderRegisterRowsNotMissingLaunchers ---');
+  for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
+    const { ok, report, error } = runDoctorJson(['--skill', skillId]);
+    assert(ok, `${skillId} --json exits 0: ${error || ''}`);
+    if (!report) continue;
+    const ml = report.sections.toolScriptDiagnostics.missingLaunchers || [];
+    assert(
+      !citedMatches(ml, /register_local_spec\.py --source (github|azure-devops)/),
+      `${skillId} missingLaunchers does not include register_local_spec.py --source rows`,
+    );
+  }
+}
+
+function testSkillFolderDocsFileRelative() {
+  console.log('\n--- testSkillFolderDocsFileRelative ---');
+  const root = mkTmp('ws-doctor-skill-docs-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(path.join(fixtureDir, 'docs'), { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'README.md'),
+    '# Fixture\n\nSee [faq](docs/faq.md).\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(fixtureDir, 'docs', 'faq.md'), '# FAQ\n', 'utf8');
+  fs.writeFileSync(path.join(fixtureDir, 'SKILL.md'), '# ws-fixture\n', 'utf8');
+
+  const { ok, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(ok, `fixture skill --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    !citedMatches(pe, /docs\/faq\.md/) && !citedMatches(mr, /docs\/faq\.md/),
+    'skill-folder docs/faq.md resolves file-relative when companion exists under skill',
+  );
+}
+
+function testSkillFolderDocsDoesNotUseProjectRoot() {
+  console.log('\n--- testSkillFolderDocsDoesNotUseProjectRoot ---');
+  const root = mkTmp('ws-doctor-skill-docs-trap-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'README.md'),
+    '# Fixture\n\nSee [faq](docs/faq.md).\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(fixtureDir, 'SKILL.md'), '# ws-fixture\n', 'utf8');
+  fs.mkdirSync(path.join(root, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'docs', 'faq.md'), '# Project FAQ\n', 'utf8');
+
+  const { ok, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(ok, `fixture trap --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    citedMatches(pe, /docs\/faq\.md/) || citedMatches(mr, /docs\/faq\.md/),
+    'skill-folder docs/faq.md still missing when only project-root docs/faq.md exists',
+  );
+}
+
+function testHubDocsStaysProjectRoot() {
+  console.log('\n--- testHubDocsStaysProjectRoot ---');
+  const root = mkTmp('ws-doctor-hub-docs-');
+  const { sharedDir, doctorScript } = setupTmpDoctorProject(root);
+  fs.writeFileSync(
+    path.join(sharedDir, 'AGENTS.md'),
+    '# Hub\n\nCatalog: [catalog](docs/catalog.md).\n',
+    'utf8',
+  );
+  fs.mkdirSync(path.join(root, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'docs', 'catalog.md'), '# Catalog\n', 'utf8');
+
+  const { ok, report, error } = runDoctorJson([], { cwd: root, doctor: doctorScript });
+  assert(ok, `hub docs diagnose --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    !citedMatches(pe, /docs\/catalog\.md/) && !citedMatches(mr, /docs\/catalog\.md/),
+    'hub AGENTS.md docs/catalog.md resolves against project root when companion exists',
+  );
+}
+
+function testLiveSpecToPrDocsFaqNotMissing() {
+  console.log('\n--- testLiveSpecToPrDocsFaqNotMissing ---');
+  const faqPath = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/docs/faq.md');
+  assert(fs.existsSync(faqPath), 'live ws-spec-to-pr/docs/faq.md exists for AC6');
+  const { ok, report, error } = runDoctorJson(['--skill', 'ws-spec-to-pr']);
+  assert(ok, `live ws-spec-to-pr --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    !citedMatches(pe, /^docs\/faq\.md$/) && !citedMatches(mr, /^docs\/faq\.md$/),
+    'live ws-spec-to-pr does not report docs/faq.md missing when skill companion exists',
+  );
+}
+
+function testSkillFolderDocsCompanionsWhenPresent() {
+  console.log('\n--- testSkillFolderDocsCompanionsWhenPresent ---');
+  const root = mkTmp('ws-doctor-skill-docs-companions-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(path.join(fixtureDir, 'docs', 'specs'), { recursive: true });
+  fs.mkdirSync(path.join(fixtureDir, 'docs', 'testing'), { recursive: true });
+  fs.writeFileSync(path.join(fixtureDir, 'docs', 'faq.md'), '# FAQ\n', 'utf8');
+  fs.writeFileSync(
+    path.join(fixtureDir, 'PHASES.md'),
+    '# Phases\n\nRefs: `docs/specs/`, `docs/testing/`, `docs/faq.md`.\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(fixtureDir, 'SKILL.md'), '# ws-fixture\n', 'utf8');
+
+  const { ok, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(ok, `fixture companions --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  for (const cited of [/docs\/specs\//, /docs\/testing\//, /docs\/faq\.md/]) {
+    assert(
+      !citedMatches(pe, cited) && !citedMatches(mr, cited),
+      `skill-folder companion ${cited} not reported missing when present`,
+    );
+  }
+}
+
 function main() {
   console.log('Running ws-doctor thin smoke tests...');
   try {
@@ -204,6 +410,14 @@ function main() {
     testHelp();
     testJsonReportShape();
     testMissingConfigDoesNotInventValues();
+    testGithubCanonicalRegisterRowHasPythonLauncher();
+    testAzureCanonicalRegisterRowHasPythonLauncher();
+    testProviderRegisterRowsNotMissingLaunchers();
+    testSkillFolderDocsFileRelative();
+    testSkillFolderDocsDoesNotUseProjectRoot();
+    testHubDocsStaysProjectRoot();
+    testLiveSpecToPrDocsFaqNotMissing();
+    testSkillFolderDocsCompanionsWhenPresent();
   } finally {
     cleanup();
   }
