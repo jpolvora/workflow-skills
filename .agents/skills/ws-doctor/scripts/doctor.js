@@ -722,6 +722,17 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
         if (resolved.kind === 'template') continue;
         if (isTemplateOrGlobPath(resolved.expanded)) continue;
         if (resolved.kind === 'path' && !resolved.exists) {
+          // Skill-folder prose (backtick) citations of docs/... often describe
+          // the audited project's docs layout, not skill companions. Accept a
+          // project-root match before reporting a missing path (markdown links
+          // keep strict file-relative resolution).
+          if (
+            pathCandidate.startsWith('docs/') &&
+            isCitingFromPublishedSkillFolder(fileAbs, projectRoot, tokenMap) &&
+            exists(path.resolve(projectRoot, pathCandidate))
+          ) {
+            continue;
+          }
           pathErrors.push({
             skillId,
             source: sourceRel,

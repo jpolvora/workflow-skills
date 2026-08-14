@@ -433,6 +433,38 @@ function testGlobalSkillFolderDocsDoesNotUseProjectRoot() {
   );
 }
 
+function testSkillFolderBacktickDocsFallsBackToProjectRoot() {
+  console.log('\n--- testSkillFolderBacktickDocsFallsBackToProjectRoot ---');
+  const root = mkTmp('ws-doctor-skill-docs-prose-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'PHASES.md'),
+    '# Phases\n\nSearch: `docs/specs/`, `docs/testing/`, `docs/faq.md`.\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(fixtureDir, 'SKILL.md'), '# ws-fixture\n', 'utf8');
+  fs.mkdirSync(path.join(root, 'docs', 'specs'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'docs', 'testing'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'docs', 'faq.md'), '# Project FAQ\n', 'utf8');
+
+  const { ok, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(ok, `fixture prose fallback --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  for (const cited of [/docs\/specs\//, /docs\/testing\//, /docs\/faq\.md/]) {
+    assert(
+      !citedMatches(pe, cited) && !citedMatches(mr, cited),
+      `skill-folder backtick ${cited} accepted when project-root docs exist`,
+    );
+  }
+}
+
 function testSkillFolderDocsCompanionsWhenPresent() {
   console.log('\n--- testSkillFolderDocsCompanionsWhenPresent ---');
   const root = mkTmp('ws-doctor-skill-docs-companions-');
@@ -479,6 +511,7 @@ function main() {
     testHubDocsStaysProjectRoot();
     testLiveSpecToPrDocsFaqNotMissing();
     testSkillFolderDocsCompanionsWhenPresent();
+    testSkillFolderBacktickDocsFallsBackToProjectRoot();
     testGlobalSkillFolderDocsFileRelative();
     testGlobalSkillFolderDocsDoesNotUseProjectRoot();
   } finally {

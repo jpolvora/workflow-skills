@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "3576d77e01cffa5e66261d6f985156ff17472cd72033881254fae863d30dd823",
+  "fullPackageDigest": "2700501ed23223e2d9a4fc37e8e3f89d0a2fcc3174a535acb6eb3e1ee2939525",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -107,10 +107,10 @@
     },
     "ws-doctor": {
       "files": {
-        "scripts/doctor.js": "0d856dd095d035751ce31881c8fdf92b87f5824a440f9769bb6a1dea118a6acc",
+        "scripts/doctor.js": "5724e2a8a369ecaf7212f20b04aa428e3f54a4693e8cc0749f77ae40d1b17480",
         "SKILL.md": "0eca353dca8ed56d092e04f05f0e52cbcc64c995b8a495716ffa15695f6a6777"
       },
-      "skillDigest": "0776206f04d81db35156f3a17928374ac4bb8808e2e990228653b152a867a8e0"
+      "skillDigest": "72731a4b3889d43f1242a510ae8526d08a4c37801332a00d6d0e1c01335db8e9"
     },
     "ws-fable-domain": {
       "files": {
