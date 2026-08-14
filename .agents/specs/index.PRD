@@ -73,6 +73,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] `defaults.testingModel` test executor for standard Step 7 (`spec: testing-executor-model.spec.md`)
 - [x] Feature-branch strategy gate at workflow bootstrap (`spec: workflow-bootstrap-feature-branch.spec.md`)
 - [x] Phase-specific subagent LLM model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) (`spec: auto-mode-model-preferences.spec.md`)
+- [x] `defaults.enableDag` sequential-by-default task execution (`spec: add-enable-dag-config.spec.md`)
+- [x] `update_state.py` nested `telemetry.loc` + `completedSteps` union (`spec: us-202.spec.md`)
+- [x] Fix `ws-doctor` GitHub issues #204 and #205 (`spec: ws-doctor-204-205.spec.md`)
+- [ ] Skill catalog cleanup: Extra demotion and patterns merge (`spec: skill-catalog-cleanup.spec.md`)
 
 ## 8. Next specs
 
@@ -106,8 +110,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 26 | `testing-executor-model` | `[x]` done | Phase 4 | `defaults.testingModel` Step 7 executor (PR #195) |
 | 27 | `workflow-bootstrap-feature-branch` | `[x]` done | Phase 4 | Feature-branch gate at bootstrap (PR #194) |
 | 28 | `auto-mode-model-preferences` | `[x]` done | Phase 4 | Phase-specific subagent LLM model preferences (PR #200) |
+| 29 | `skill-catalog-cleanup` | `[ ]` todo | Phase 4 | Demote niche skills to Extra; merge `ws-patterns-*` into `ws-patterns` |
+| 30 | `add-enable-dag-config` | `[x]` done | Phase 4 | `defaults.enableDag` sequential default (PR #199) |
+| 31 | `us-202` | `[x]` done | Phase 4 | `update_state.py` loc YAML + completedSteps union (PR #203) |
+| 32 | `ws-doctor-204-205` | `[x]` done | Phase 4 | Doctor launcher docs + skill-folder `docs/` resolution (PR #206) |
 
-No open Next-specs todos. New work goes to Inbox, then promote.
+Open Next-spec: `skill-catalog-cleanup`. Other new work goes to Inbox, then promote.
 
 ## 9. Inbox (unscheduled ideas)
 
@@ -146,12 +154,15 @@ No open Next-specs todos. New work goes to Inbox, then promote.
 | 2026-08-12 | `testing-executor-model` | Add testingModel (test executor) to LLM model config | [PR #195](https://github.com/jpolvora/workflow-skills/pull/195) |
 | 2026-08-12 | `workflow-bootstrap-feature-branch` | Ask for feature-branch strategy at workflow bootstrap | [PR #194](https://github.com/jpolvora/workflow-skills/pull/194) |
 | 2026-08-13 | `auto-mode-model-preferences` | Reinforce LLM phase model switching across orchestrators, state scripts, and protocols | [PR #200](https://github.com/jpolvora/workflow-skills/pull/200) |
+| 2026-08-13 | `add-enable-dag-config` | Add enableDag configuration option for parallel execution control | [PR #199](https://github.com/jpolvora/workflow-skills/pull/199) |
+| 2026-08-13 | `us-202` | ws-spec-to-pr update_state.py loc YAML + completedSteps union | [PR #203](https://github.com/jpolvora/workflow-skills/pull/203) |
+| 2026-08-14 | `ws-doctor-204-205` | Fix ws-doctor GitHub issues #204 and #205 | [PR #206](https://github.com/jpolvora/workflow-skills/pull/206) |
 
 ## 11. Maintenance checklist
 
 - [x] All completed features logged in Done log.
 - [x] Linked `*.spec.md` files exist for active Next specs.
-- [x] Disk `{specsDir}` specs of record are indexed (no open Next-specs todos).
+- [x] Every `{specsDir}` `*.spec.md` of record has a Feature map bullet and Next-specs row.
 
 ## 12. Related docs
 

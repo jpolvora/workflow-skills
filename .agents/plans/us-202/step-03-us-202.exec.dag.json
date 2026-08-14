@@ -1,0 +1,7 @@
+{
+  "execMode": "sequential",
+  "reason": "defaults.enableDag is false — sequential forced; plan steps A-E serial",
+  "planPath": ".agents/plans/us-202/step-02-us-202.plan.refined.md",
+  "tasks": [],
+  "levels": []
+}
