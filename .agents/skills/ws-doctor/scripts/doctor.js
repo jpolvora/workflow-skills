@@ -305,15 +305,26 @@ function looksLikeBacktickPath(s) {
   );
 }
 
-function escapeRegExp(s) {
-  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function posixRelToRoot(rootAbs, fileAbs) {
+  const rel = toPosix(path.relative(path.resolve(rootAbs), path.resolve(fileAbs)));
+  if (!rel || rel === '..' || rel.startsWith('../')) return '';
+  if (path.isAbsolute(rel) || WIN_DRIVE_RE.test(rel)) return '';
+  return rel;
 }
 
 function isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap) {
-  const rel = toPosix(path.relative(projectRoot, sourceFile));
-  const root = toPosix(tokenMap.skillsRoot).replace(/\/+$/, '');
-  const m = rel.match(new RegExp(`^${escapeRegExp(root)}/(ws-[^/]+)/`));
-  return Boolean(m && m[1] !== 'ws-shared');
+  const abs = tokenMap._abs || {};
+  const roots = [abs.skillsRoot, abs.globalSkillsRoot].filter(Boolean);
+  if (roots.length === 0 && tokenMap.skillsRoot) {
+    roots.push(path.resolve(projectRoot, tokenMap.skillsRoot));
+  }
+  const absSource = path.resolve(sourceFile);
+  for (const rootAbs of roots) {
+    const rel = posixRelToRoot(rootAbs, absSource);
+    const m = rel.match(/^(ws-[^/]+)\//);
+    if (m && m[1] !== 'ws-shared') return true;
+  }
+  return false;
 }
 
 function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {

@@ -372,6 +372,67 @@ function testLiveSpecToPrDocsFaqNotMissing() {
   );
 }
 
+function testGlobalSkillFolderDocsFileRelative() {
+  console.log('\n--- testGlobalSkillFolderDocsFileRelative ---');
+  const project = mkTmp('ws-doctor-global-proj-');
+  const globalRoot = mkTmp('ws-doctor-global-skills-');
+  const { doctorScript } = setupTmpDoctorProject(project);
+  const fixtureDir = path.join(globalRoot, 'ws-fixture');
+  fs.mkdirSync(path.join(fixtureDir, 'docs'), { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'README.md'),
+    '# Fixture\n\nSee [faq](docs/faq.md).\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(fixtureDir, 'docs', 'faq.md'), '# FAQ\n', 'utf8');
+  fs.writeFileSync(path.join(fixtureDir, 'SKILL.md'), '# ws-fixture\n', 'utf8');
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: project,
+    doctor: doctorScript,
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  assert(exitedOk, `global skill --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    !citedMatches(pe, /docs\/faq\.md/) && !citedMatches(mr, /docs\/faq\.md/),
+    'global-skill docs/faq.md resolves file-relative when companion exists under global skill',
+  );
+}
+
+function testGlobalSkillFolderDocsDoesNotUseProjectRoot() {
+  console.log('\n--- testGlobalSkillFolderDocsDoesNotUseProjectRoot ---');
+  const project = mkTmp('ws-doctor-global-trap-');
+  const globalRoot = mkTmp('ws-doctor-global-trap-skills-');
+  const { doctorScript } = setupTmpDoctorProject(project);
+  const fixtureDir = path.join(globalRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'README.md'),
+    '# Fixture\n\nSee [faq](docs/faq.md).\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(fixtureDir, 'SKILL.md'), '# ws-fixture\n', 'utf8');
+  fs.mkdirSync(path.join(project, 'docs'), { recursive: true });
+  fs.writeFileSync(path.join(project, 'docs', 'faq.md'), '# Project FAQ\n', 'utf8');
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: project,
+    doctor: doctorScript,
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  assert(exitedOk, `global trap --json exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    citedMatches(pe, /docs\/faq\.md/) || citedMatches(mr, /docs\/faq\.md/),
+    'global-skill docs/faq.md still missing when only project-root docs/faq.md exists',
+  );
+}
+
 function testSkillFolderDocsCompanionsWhenPresent() {
   console.log('\n--- testSkillFolderDocsCompanionsWhenPresent ---');
   const root = mkTmp('ws-doctor-skill-docs-companions-');
@@ -418,6 +479,8 @@ function main() {
     testHubDocsStaysProjectRoot();
     testLiveSpecToPrDocsFaqNotMissing();
     testSkillFolderDocsCompanionsWhenPresent();
+    testGlobalSkillFolderDocsFileRelative();
+    testGlobalSkillFolderDocsDoesNotUseProjectRoot();
   } finally {
     cleanup();
   }
