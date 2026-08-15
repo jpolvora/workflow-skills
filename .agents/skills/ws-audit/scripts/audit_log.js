@@ -239,6 +239,9 @@ export function appendFinding(session, finding) {
 }
 
 export function finalizeAudit(session) {
+  if (session.finalized) {
+    return session;
+  }
   const errorCount = session.findings.filter((x) => x.severity === 'error').length;
   const unusualCount = session.findings.filter((x) => x.severity === 'unusual').length;
   const suggestionCount = session.findings.filter(
@@ -421,6 +424,64 @@ export function draftSuggestionsIssueBody(session, upstream = resolveUpstreamRep
   return { title, body: lines.join('\n'), upstream, logPath: session.logPath };
 }
 
+export function draftCombinedIssueBody(session, upstream = resolveUpstreamRepo()) {
+  const errors = session.findings.filter((x) => x.severity === 'error');
+  const suggestions = session.findings.filter(
+    (x) =>
+      x.severity === 'suggestion' ||
+      x.severity === 'opportunity' ||
+      ['disposable-script', 'performance', 'correctness', 'optimization'].includes(x.category),
+  );
+
+  const title = `[runtime-audit] ${session.slug}: ${errors.length} error(s), ${suggestions.length} suggestion(s)`;
+  const lines = [
+    '## Summary',
+    '',
+    `Runtime audit wrapper recorded **${errors.length}** error(s) and **${suggestions.length}** suggestion/tooling opportunity(ies) during \`${session.slug}\` execution.`,
+    '',
+    `**Audit log:** ${session.logPath}`,
+    '',
+  ];
+
+  if (errors.length > 0) {
+    lines.push('## Execution Errors', '');
+    for (const f of errors) {
+      lines.push(
+        `### ${f.category} — step ${f.step}${f.skill ? ` (${f.skill})` : ''}`,
+        '',
+        `- **summary:** ${f.summary}`,
+        `- **recovered:** ${f.recovered}`,
+      );
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  if (suggestions.length > 0) {
+    lines.push('## Improvement & Tooling Opportunities', '');
+    for (const f of suggestions) {
+      lines.push(
+        `### [${f.category}] ${f.summary} (step ${f.step}${f.skill ? ` / ${f.skill}` : ''})`,
+        '',
+      );
+      if (f.language) lines.push(`- **language:** ${f.language}`);
+      if (f.targetAbstraction) lines.push(`- **target abstraction:** ${f.targetAbstraction}`);
+      if (f.recommendation) lines.push(`- **recommendation:** ${f.recommendation}`);
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  lines.push(
+    '## Suggested action',
+    '',
+    'Review execution errors and consider upstream script additions in the package.',
+    '',
+  );
+
+  return { title, body: lines.join('\n'), upstream, logPath: session.logPath };
+}
+
 function parseCli(argv) {
   const args = argv.slice(2);
   const cmd = args[0];
@@ -521,6 +582,11 @@ function main() {
     const session = resolveSessionInput(opts);
     if (opts.type === 'suggestion') {
       const draft = draftSuggestionsIssueBody(session, opts.upstream);
+      console.log(JSON.stringify({ status: 'success', draft }));
+      return;
+    }
+    if (opts.type === 'all') {
+      const draft = draftCombinedIssueBody(session, opts.upstream);
       console.log(JSON.stringify({ status: 'success', draft }));
       return;
     }

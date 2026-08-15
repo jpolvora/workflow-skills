@@ -268,6 +268,14 @@ function main() {
   currentSession = JSON.parse(appendFileRes.stdout).session;
   sessionJson = JSON.stringify(currentSession);
 
+  // Verify draft-issue with --type all
+  const draftTypeAll = runNode(['draft-issue', '--session-file', sessionFile, '--type', 'all']);
+  assert(draftTypeAll.status === 0, 'draft-issue --type all exits 0');
+  const typeAllObj = JSON.parse(draftTypeAll.stdout);
+  assert(typeAllObj.draft.title.includes('error(s)'), 'type all title has errors and suggestions');
+  assert(typeAllObj.draft.body.includes('## Execution Errors'), 'type all body has errors section');
+  assert(typeAllObj.draft.body.includes('## Improvement & Tooling Opportunities'), 'type all body has suggestions section');
+
   // Finalize via --session-file
   const fin = runNode(['finalize', '--session-file', sessionFile]);
   assert(fin.status === 0, 'finalize exits 0');
@@ -275,7 +283,14 @@ function main() {
   assert(finalizedSession.disposableScriptCount === 1, 'disposableScriptCount is 1');
   assert(finalizedSession.suggestionCount >= 4, 'suggestionCount recorded in session');
 
-  const logText = fs.readFileSync(currentSession.logPath, 'utf-8');
+  // Verify finalize idempotence (calling finalize a second time does not duplicate content)
+  const logTextBeforeSecondFin = fs.readFileSync(currentSession.logPath, 'utf-8');
+  const finSecond = runNode(['finalize', '--session-file', sessionFile]);
+  assert(finSecond.status === 0, 'second finalize exits 0');
+  const logTextAfterSecondFin = fs.readFileSync(currentSession.logPath, 'utf-8');
+  assert(logTextBeforeSecondFin === logTextAfterSecondFin, 'finalize is idempotent (log text identical)');
+
+  const logText = logTextAfterSecondFin;
   assert(logText.includes('recovered:** true'), 'log contains recovered flag');
   assert(
     logText.includes('## Improvement Opportunities & Reusable Tooling'),
@@ -300,4 +315,5 @@ function main() {
 }
 
 main();
+
 

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "24dc70d4a77f6a0ec9e3ae2323fe112466cb0491c22496bbd1289b416027a949",
+  "fullPackageDigest": "caf7fdbdfcde3b866a5e9169961524a40813baeba0d89d9a1902de41d2960422",
   "hub": {
     "files": {
       "AGENTS.md": "71a204ed87905bca283fbaf19da21e7e2a580fe10ff6b353269f5f9d36d7bb35",
@@ -42,10 +42,10 @@
     "ws-audit": {
       "files": {
         "AUDIT-FORMAT.md": "d70b826a54de55285ada79a8a4c5bbdd04b8b0b6dc9eedcf3b62f88325424eec",
-        "scripts/audit_log.js": "8a4251be156914fe9e2380b68a79dd72f72340efe50dad770ff728755019e010",
+        "scripts/audit_log.js": "fb3dbd077fcf62ad285eb94afe4b99bf561884ffe2164c9adfb9787ac5105719",
         "SKILL.md": "3eba9923bf159e17e7f9aa547a7fbd19ce0081b3416ac50cf0fa06ca13ed2085"
       },
-      "skillDigest": "379fde3e67c313b81d00c17f85a5956bc67fabea112f33f773a6522549dd3d1d"
+      "skillDigest": "33fe54bb6957f6dded0832dfc80babb14355ab74696ab655b4e1e8c548eb7850"
     },
     "ws-azure-devops-provider": {
       "files": {
