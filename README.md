@@ -114,7 +114,7 @@ Edit under `.agents/skills/ws-shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/ws-configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit. Optional Step 7 mutation: set `verification.mutationTest` (runner command) and `defaults.skipMutationTesting: false`; score gated by `verification.mutationThreshold` (default 80). Lite orch has no Testing step — mutation is standard-only. Optional `defaults.enableAuditing: true` wraps orch runs with [`ws-audit`](.agents/skills/ws-audit/SKILL.md) (runtime log + end-of-run upstream issue draft). Optional `defaults.testingModel` selects the standard Step 7 test executor. |
+| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/ws-configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit. Optional Step 7 mutation: set `verification.mutationTest` (runner command) and `defaults.skipMutationTesting: false`; score gated by `verification.mutationThreshold` (default 80). Lite orch has no Testing step — mutation is standard-only. Optional `defaults.enableAuditing: true` wraps orch runs with [`ws-audit`](.agents/skills/ws-audit/SKILL.md) (runtime log + performance/correctness/disposable script diagnosis + upstream issue / reusable tooling drafts). Optional `defaults.testingModel` selects the standard Step 7 test executor. |
 | `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
 | `MEMORY.md` | Anti-regression index (`ws-self-learning`) |
 | `memory/*.md` | Individual memory entries |
@@ -180,7 +180,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | Audit routing, links, portability |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs) |
-| [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | Runtime orch observer when `defaults.enableAuditing` is true; may draft upstream issues |
+| [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | Runtime orch observer when `defaults.enableAuditing` is true; logs anomalies/performance/correctness/disposable scripts and drafts upstream issues / reusable tooling |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 
