@@ -1,0 +1,22 @@
+{
+  "usDir": "l:\\source\\workflow-skills\\.agents\\plans\\us-202",
+  "slug": "us-202",
+  "workflowId": "us-202-20260813T181505Z",
+  "startedAt": "2026-08-13T18:17:03.087Z",
+  "finalized": true,
+  "findings": [
+    {
+      "timestamp": "2026-08-13T18:18:00Z",
+      "step": 0,
+      "skill": null,
+      "category": "script",
+      "severity": "unusual",
+      "summary": "update_state.py serialize_yaml wrote telemetry.loc as Python dict repr (the US 202 defect)",
+      "evidence": "loc: {'baseline': 32118, 'final': None, 'added': None, 'removed': None, 'netDelta': None}",
+      "recovered": true
+    }
+  ],
+  "logPath": "l:\\source\\workflow-skills\\.agents\\plans\\us-202\\audit-us-202-2026-08-13T18-17-03-087Z.log.md",
+  "finalizedAt": "2026-08-13T19:20:14.134Z",
+  "errorCount": 0
+}

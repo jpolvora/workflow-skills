@@ -103,7 +103,7 @@ Optional runtime observer for `ws-spec-to-pr` / `ws-spec-to-pr-lite` / `ws-multi
 | Key omitted / null / unreadable | `false` |
 | Explicit `true` / `false` | that value |
 
-When `true`: orch initializes audit log under `{us-dir}`, appends findings for script/tool/I/O/dispatch anomalies (including recovered skill defects), finalizes at run end. Actionable `error` findings trigger `user-gate` proposing a GitHub issue on the package upstream repo — not a consumer fix PR for managed skill content.
+When `true`: orch initializes audit log under `{us-dir}`, appends findings for script/tool/I/O/dispatch anomalies (including recovered skill defects), performance bottlenecks, correctness risks, and disposable scratch scripts, and finalizes at run end. Actionable `error` findings trigger `user-gate` proposing a GitHub issue on the package upstream repo; actionable reusable tooling suggestions / disposable script detections trigger `user-gate` proposing upstream script pre-generation.
 
 When `false`: no audit log obligation; no end-of-run issue gate from this feature.
 

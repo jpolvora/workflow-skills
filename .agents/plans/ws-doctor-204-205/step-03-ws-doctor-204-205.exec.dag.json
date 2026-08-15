@@ -1,0 +1,7 @@
+{
+  "execMode": "sequential",
+  "reason": "enableDag=false (config default); sequential A-C from plan",
+  "planPath": ".agents/plans/ws-doctor-204-205/step-01-ws-doctor-204-205.plan.md",
+  "tasks": [],
+  "levels": []
+}

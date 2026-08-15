@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-08-13T18:18:00Z",
+  "step": 0,
+  "category": "script",
+  "severity": "unusual",
+  "recovered": true,
+  "summary": "update_state.py serialize_yaml wrote telemetry.loc as Python dict repr (the US 202 defect)",
+  "evidence": "loc: {'baseline': 32118, 'final': None, 'added': None, 'removed': None, 'netDelta': None}"
+}

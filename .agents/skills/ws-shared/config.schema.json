@@ -119,7 +119,7 @@
         "enableAuditing": {
           "type": "boolean",
           "default": false,
-          "description": "When true, ws-spec-to-pr* orchestrators activate ws-audit runtime observer and may propose an upstream GitHub issue at run end. Omitted or missing config → effective false."
+          "description": "When true, ws-spec-to-pr* orchestrators activate ws-audit runtime observer to log execution anomalies, diagnose performance/correctness, detect disposable scripts, and propose upstream GitHub issues/reusable tooling at run end. Omitted or missing config → effective false."
         },
         "enableDag": {
           "type": "boolean",

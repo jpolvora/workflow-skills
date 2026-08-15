@@ -2,7 +2,7 @@
 /**
  * ws-audit — runtime audit log helper for ws-spec-to-pr* orchestrators.
  * CLI: node audit_log.js <command> [options]
- * Commands: init | append | finalize | has-errors | draft-issue | resolve
+ * Commands: init | append | finalize | has-errors | has-suggestions | draft-issue | draft-suggestions-issue | resolve
  */
 
 import fs from 'fs';
@@ -17,9 +17,19 @@ const VALID_CATEGORIES = new Set([
   'tool',
   'io-validation',
   'dispatch',
+  'disposable-script',
+  'performance',
+  'correctness',
+  'optimization',
   'other',
 ]);
-const VALID_SEVERITIES = new Set(['error', 'unusual', 'info']);
+const VALID_SEVERITIES = new Set([
+  'error',
+  'unusual',
+  'suggestion',
+  'opportunity',
+  'info',
+]);
 
 function usage() {
   console.log(`Usage:
@@ -28,7 +38,9 @@ function usage() {
   node audit_log.js append (--session <json>|--session-file <path>) (--finding <json>|--finding-file <path>)
   node audit_log.js finalize (--session <json>|--session-file <path>)
   node audit_log.js has-errors (--session <json>|--session-file <path>)
-  node audit_log.js draft-issue (--session <json>|--session-file <path>) [--upstream <owner/repo>]`);
+  node audit_log.js has-suggestions (--session <json>|--session-file <path>)
+  node audit_log.js draft-issue (--session <json>|--session-file <path>) [--type error|suggestion|all] [--upstream <owner/repo>]
+  node audit_log.js draft-suggestions-issue (--session <json>|--session-file <path>) [--upstream <owner/repo>]`);
 }
 
 function readJsonArg(raw, label) {
@@ -150,6 +162,15 @@ function formatFinding(f) {
     `- **recovered:** ${f.recovered === true ? 'true' : 'false'}`,
     `- **summary:** ${f.summary}`,
   ];
+  if (f.language) {
+    lines.push(`- **language:** ${f.language}`);
+  }
+  if (f.targetAbstraction) {
+    lines.push(`- **targetAbstraction:** ${f.targetAbstraction}`);
+  }
+  if (f.recommendation) {
+    lines.push(`- **recommendation:** ${f.recommendation}`);
+  }
   if (f.evidence) {
     lines.push(`- **evidence:** ${f.evidence}`);
   }
@@ -200,6 +221,9 @@ export function appendFinding(session, finding) {
     severity: finding.severity || 'unusual',
     summary: finding.summary || '(no summary)',
     evidence: finding.evidence ?? null,
+    language: finding.language ?? null,
+    targetAbstraction: finding.targetAbstraction ?? null,
+    recommendation: finding.recommendation ?? null,
     recovered: finding.recovered === true,
   };
   if (!VALID_CATEGORIES.has(f.category)) {
@@ -215,21 +239,56 @@ export function appendFinding(session, finding) {
 }
 
 export function finalizeAudit(session) {
+  if (session.finalized) {
+    return session;
+  }
   const errorCount = session.findings.filter((x) => x.severity === 'error').length;
   const unusualCount = session.findings.filter((x) => x.severity === 'unusual').length;
-  const footer = [
+  const suggestionCount = session.findings.filter(
+    (x) =>
+      x.severity === 'suggestion' ||
+      x.severity === 'opportunity' ||
+      ['disposable-script', 'performance', 'correctness', 'optimization'].includes(x.category),
+  ).length;
+  const disposableScriptCount = session.findings.filter((x) => x.category === 'disposable-script').length;
+
+  const suggestions = session.findings.filter(
+    (x) =>
+      x.severity === 'suggestion' ||
+      x.severity === 'opportunity' ||
+      ['disposable-script', 'performance', 'correctness', 'optimization'].includes(x.category),
+  );
+
+  const sections = [];
+
+  if (suggestions.length > 0) {
+    sections.push('## Improvement Opportunities & Reusable Tooling', '');
+    for (const s of suggestions) {
+      sections.push(
+        `- [${s.category}] **step ${s.step}**: ${s.summary}${s.recommendation ? ` — *Recommendation:* ${s.recommendation}` : ''}`,
+      );
+    }
+    sections.push('');
+  }
+
+  sections.push(
     '## Summary',
     '',
     `- **errors:** ${errorCount}`,
     `- **unusual:** ${unusualCount}`,
+    `- **suggestions/opportunities:** ${suggestionCount}`,
+    `- **disposable scripts detected:** ${disposableScriptCount}`,
     `- **total findings:** ${session.findings.length}`,
     `- **finalizedAt:** ${isoNow()}`,
     '',
-  ].join('\n');
-  fs.appendFileSync(session.logPath, footer, 'utf-8');
+  );
+
+  fs.appendFileSync(session.logPath, sections.join('\n'), 'utf-8');
   session.finalized = true;
   session.finalizedAt = isoNow();
   session.errorCount = errorCount;
+  session.suggestionCount = suggestionCount;
+  session.disposableScriptCount = disposableScriptCount;
   // Keep session file so has-errors / draft-issue --session-file still works after finalize.
   writeSession(session);
   return session;
@@ -237,6 +296,15 @@ export function finalizeAudit(session) {
 
 export function hasActionableErrors(session) {
   return session.findings.some((x) => x.severity === 'error');
+}
+
+export function hasActionableSuggestions(session) {
+  return session.findings.some(
+    (x) =>
+      x.severity === 'suggestion' ||
+      x.severity === 'opportunity' ||
+      ['disposable-script', 'performance', 'correctness', 'optimization'].includes(x.category),
+  );
 }
 
 export function draftIssueBody(session, upstream = resolveUpstreamRepo()) {
@@ -267,6 +335,153 @@ export function draftIssueBody(session, upstream = resolveUpstreamRepo()) {
   return { title, body: lines.join('\n'), upstream, logPath: session.logPath };
 }
 
+export function draftSuggestionsIssueBody(session, upstream = resolveUpstreamRepo()) {
+  const suggestions = session.findings.filter(
+    (x) =>
+      x.severity === 'suggestion' ||
+      x.severity === 'opportunity' ||
+      ['disposable-script', 'performance', 'correctness', 'optimization'].includes(x.category),
+  );
+  const disposableScripts = suggestions.filter((x) => x.category === 'disposable-script');
+  const performanceIssues = suggestions.filter((x) => x.category === 'performance');
+  const correctnessIssues = suggestions.filter((x) => x.category === 'correctness');
+  const otherSuggestions = suggestions.filter(
+    (x) => !['disposable-script', 'performance', 'correctness'].includes(x.category),
+  );
+
+  const title = `[upstream-suggestion] ${session.slug}: ${suggestions.length} workflow optimization & reusable tooling opportunity(ies)`;
+  const lines = [
+    '## Summary',
+    '',
+    `Runtime audit observer identified **${suggestions.length}** workflow improvement and upstream tooling opportunity(ies) during \`${session.slug}\` execution.`,
+    '',
+    `**Audit log:** ${session.logPath}`,
+    '',
+  ];
+
+  if (disposableScripts.length > 0) {
+    lines.push('## Disposable Script Opportunities (Pre-generation candidates)', '');
+    lines.push('The agent created or executed ad-hoc/scratch scripts that could be standardized into permanent upstream tools/scripts:', '');
+    for (const f of disposableScripts) {
+      lines.push(
+        `### ${f.summary} (step ${f.step}${f.skill ? ` / ${f.skill}` : ''})`,
+        '',
+        `- **language:** ${f.language ?? '(unspecified)'}`,
+        `- **target abstraction:** ${f.targetAbstraction ?? '(proposed upstream script/utility)'}`,
+      );
+      if (f.recommendation) lines.push(`- **recommendation:** ${f.recommendation}`);
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  if (performanceIssues.length > 0) {
+    lines.push('## Performance Bottlenecks & Inefficiencies', '');
+    for (const f of performanceIssues) {
+      lines.push(
+        `### ${f.summary} (step ${f.step}${f.skill ? ` / ${f.skill}` : ''})`,
+        '',
+      );
+      if (f.recommendation) lines.push(`- **recommendation:** ${f.recommendation}`);
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  if (correctnessIssues.length > 0) {
+    lines.push('## Correctness & Fragility Warnings', '');
+    for (const f of correctnessIssues) {
+      lines.push(
+        `### ${f.summary} (step ${f.step}${f.skill ? ` / ${f.skill}` : ''})`,
+        '',
+      );
+      if (f.recommendation) lines.push(`- **recommendation:** ${f.recommendation}`);
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  if (otherSuggestions.length > 0) {
+    lines.push('## General Optimization Opportunities', '');
+    for (const f of otherSuggestions) {
+      lines.push(
+        `### ${f.summary} (step ${f.step}${f.skill ? ` / ${f.skill}` : ''})`,
+        '',
+      );
+      if (f.recommendation) lines.push(`- **recommendation:** ${f.recommendation}`);
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  lines.push(
+    '## Suggested action',
+    '',
+    'Consider adding pre-built companion scripts, CLI subcommands, or prompt tuning in the upstream package to prevent redundant ad-hoc script generation and improve execution efficiency.',
+    '',
+  );
+
+  return { title, body: lines.join('\n'), upstream, logPath: session.logPath };
+}
+
+export function draftCombinedIssueBody(session, upstream = resolveUpstreamRepo()) {
+  const errors = session.findings.filter((x) => x.severity === 'error');
+  const suggestions = session.findings.filter(
+    (x) =>
+      x.severity === 'suggestion' ||
+      x.severity === 'opportunity' ||
+      ['disposable-script', 'performance', 'correctness', 'optimization'].includes(x.category),
+  );
+
+  const title = `[runtime-audit] ${session.slug}: ${errors.length} error(s), ${suggestions.length} suggestion(s)`;
+  const lines = [
+    '## Summary',
+    '',
+    `Runtime audit wrapper recorded **${errors.length}** error(s) and **${suggestions.length}** suggestion/tooling opportunity(ies) during \`${session.slug}\` execution.`,
+    '',
+    `**Audit log:** ${session.logPath}`,
+    '',
+  ];
+
+  if (errors.length > 0) {
+    lines.push('## Execution Errors', '');
+    for (const f of errors) {
+      lines.push(
+        `### ${f.category} — step ${f.step}${f.skill ? ` (${f.skill})` : ''}`,
+        '',
+        `- **summary:** ${f.summary}`,
+        `- **recovered:** ${f.recovered}`,
+      );
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  if (suggestions.length > 0) {
+    lines.push('## Improvement & Tooling Opportunities', '');
+    for (const f of suggestions) {
+      lines.push(
+        `### [${f.category}] ${f.summary} (step ${f.step}${f.skill ? ` / ${f.skill}` : ''})`,
+        '',
+      );
+      if (f.language) lines.push(`- **language:** ${f.language}`);
+      if (f.targetAbstraction) lines.push(`- **target abstraction:** ${f.targetAbstraction}`);
+      if (f.recommendation) lines.push(`- **recommendation:** ${f.recommendation}`);
+      if (f.evidence) lines.push(`- **evidence:** ${f.evidence}`);
+      lines.push('');
+    }
+  }
+
+  lines.push(
+    '## Suggested action',
+    '',
+    'Review execution errors and consider upstream script additions in the package.',
+    '',
+  );
+
+  return { title, body: lines.join('\n'), upstream, logPath: session.logPath };
+}
+
 function parseCli(argv) {
   const args = argv.slice(2);
   const cmd = args[0];
@@ -282,6 +497,7 @@ function parseCli(argv) {
     else if (a === '--finding-file') opts.findingFile = args[++i];
     else if (a === '--config') opts.config = args[++i];
     else if (a === '--upstream') opts.upstream = args[++i];
+    else if (a === '--type') opts.type = args[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
     else {
       console.error(`Unknown arg: ${a}`);
@@ -345,9 +561,43 @@ function main() {
     return;
   }
 
+  if (cmd === 'has-suggestions') {
+    const session = resolveSessionInput(opts);
+    const suggestionCount = session.findings.filter(
+      (x) =>
+        x.severity === 'suggestion' ||
+        x.severity === 'opportunity' ||
+        ['disposable-script', 'performance', 'correctness', 'optimization'].includes(x.category),
+    ).length;
+    console.log(
+      JSON.stringify({
+        hasSuggestions: hasActionableSuggestions(session),
+        suggestionCount,
+      }),
+    );
+    return;
+  }
+
   if (cmd === 'draft-issue') {
     const session = resolveSessionInput(opts);
+    if (opts.type === 'suggestion') {
+      const draft = draftSuggestionsIssueBody(session, opts.upstream);
+      console.log(JSON.stringify({ status: 'success', draft }));
+      return;
+    }
+    if (opts.type === 'all') {
+      const draft = draftCombinedIssueBody(session, opts.upstream);
+      console.log(JSON.stringify({ status: 'success', draft }));
+      return;
+    }
     const draft = draftIssueBody(session, opts.upstream);
+    console.log(JSON.stringify({ status: 'success', draft }));
+    return;
+  }
+
+  if (cmd === 'draft-suggestions-issue') {
+    const session = resolveSessionInput(opts);
+    const draft = draftSuggestionsIssueBody(session, opts.upstream);
     console.log(JSON.stringify({ status: 'success', draft }));
     return;
   }
@@ -360,3 +610,4 @@ function main() {
 if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
   main();
 }
+

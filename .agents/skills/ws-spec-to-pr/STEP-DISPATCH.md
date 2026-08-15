@@ -43,7 +43,7 @@ On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, 
 
 4. **Progress Board** → **Transition Gate** → dispatch step N+1 (or auto-gate + dispatch in `autoMode`).
 
-**Runtime audit (`defaults.enableAuditing`):** When effective `true`, after each step's `update_state` (before Transition Gate), append audit findings for script/tool/I/O/dispatch anomalies observed during the step via [`ws-audit`](../ws-audit/SKILL.md). At workflow end (after Step 8 delivery result or on failure), finalize the audit log and run the upstream GitHub issue gate when `has-errors` is true.
+**Runtime audit (`defaults.enableAuditing`):** When effective `true`, after each step's `update_state` (before Transition Gate), append audit findings for script/tool/I/O/dispatch anomalies, performance bottlenecks, correctness risks, and disposable scratch scripts observed during the step via [`ws-audit`](../ws-audit/SKILL.md). At workflow end (after Step 8 delivery result or on failure), finalize the audit log and run the upstream GitHub issue / suggestion gates when `has-errors` or `has-suggestions` is true.
 
 ### Step 5 — Check-implementation (score gate)
 

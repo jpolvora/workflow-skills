@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
-version: 0.3.17
+version: 0.3.18
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -70,8 +70,8 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--sk
 ## Runtime audit (`defaults.enableAuditing`)
 
 When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), load [`ws-audit`](../ws-audit/SKILL.md) at bootstrap:
-- Wrap each step's `update_state` with audit log appends.
-- Run the upstream GitHub issue gate at workflow end when `has-errors` is true.
+- Wrap each step's `update_state` with audit log appends (errors, anomalies, performance bottlenecks, correctness risks, and disposable scratch scripts).
+- Run the upstream GitHub issue / suggestion gates at workflow end when `has-errors` or `has-suggestions` is true.
 
 ## Invocation
 
