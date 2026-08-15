@@ -1,0 +1,13 @@
+{
+  "usDir": "l:\\source\\workflow-skills\\.agents\\plans\\testing-executor-model",
+  "slug": "testing-executor-model",
+  "workflowId": "testing-executor-model-20260812T192105Z",
+  "startedAt": "2026-08-15T16:49:04.524Z",
+  "finalized": true,
+  "findings": [],
+  "logPath": "l:\\source\\workflow-skills\\.agents\\plans\\testing-executor-model\\audit-testing-executor-model-2026-08-15T16-49-04-524Z.log.md",
+  "finalizedAt": "2026-08-15T16:55:30.644Z",
+  "errorCount": 0,
+  "suggestionCount": 0,
+  "disposableScriptCount": 0
+}
