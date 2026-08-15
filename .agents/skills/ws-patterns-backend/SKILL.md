@@ -1,6 +1,6 @@
 ---
 name: ws-patterns-backend
-version: 0.3.19
+version: 0.3.20
 description: Backend patterns & architectural preferences engine — consults backend.md before backend tasks and records learned backend conventions after implementation or user corrections.
 invocation_names:
   - ws-patterns-backend
@@ -24,7 +24,7 @@ Consumer-owned backend patterns live in `{sharedDir}/backend.md` (never overwrit
 | Moment | Action |
 |--------|--------|
 | **Before backend code / feature / review** | **Consult:** Read `{sharedDir}/backend.md` for backend rules, entity validations, DTO conventions, query standards, and response formats. Enforce matching patterns strictly. |
-| **After implementation or user correction** | **Record:** If a new backend pattern, architectural preference, or user correction was identified, prompt the user via `user-gate`: `Deseja registrar esta preferência no padrão backend? ("<description>")`. On approval, append the entry to `{sharedDir}/backend.md`. |
+| **After implementation or user correction** | **Record:** If a new backend pattern, architectural preference, or user correction was identified, prompt the user via `user-gate`: `Register this preference in backend.md? ("<short summary of preference>")`. On approval, append the entry to `{sharedDir}/backend.md`. |
 | **No new pattern identified** | Proof line: `Backend Patterns: Consulted ({sharedDir}/backend.md)` |
 
 ## Consult protocol (Mandatory before backend code)
@@ -38,7 +38,7 @@ Consumer-owned backend patterns live in `{sharedDir}/backend.md` (never overwrit
 When completing backend tasks or receiving backend corrections from the user:
 1. Identify if a new backend preference/rule was established (e.g. "Always validate DTOs with FluentValidation", "Prefer paginated autocomplete for FK selects", "Use global query filters for tenancy").
 2. Prompt the user via `user-gate`:
-   - **Question**: `Deseja registrar esta preferência no padrão backend? ("<short summary of preference>")`
+   - **Question**: `Register this preference in backend.md? ("<short summary of preference>")`
    - **Options**: `Yes (Register preference)` / `No (Skip)`
 3. If approved, append to `{sharedDir}/backend.md`:
    ```markdown
