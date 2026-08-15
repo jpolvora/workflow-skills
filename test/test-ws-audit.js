@@ -225,12 +225,55 @@ function main() {
   const typeSugDraftObj = JSON.parse(draftTypeSug.stdout);
   assert(typeSugDraftObj.draft.title.includes('upstream-suggestion'), 'type suggestion title');
 
-  // Finalize
-  const fin = runNode(['finalize', '--session', sessionJson]);
+  // Verify file-based contract and --upstream override
+  const sessionFile = path.join(usDir, `.audit-session-${currentSession.slug}.json`);
+  assert(fs.existsSync(sessionFile), 'session file exists on disk');
+
+  const fileSug = runNode(['has-suggestions', '--session-file', sessionFile]);
+  assert(fileSug.status === 0 && JSON.parse(fileSug.stdout).hasSuggestions === true, 'has-suggestions via --session-file');
+
+  const fileDraftSug = runNode([
+    'draft-suggestions-issue',
+    '--session-file',
+    sessionFile,
+    '--upstream',
+    'custom/upstream-repo',
+  ]);
+  assert(fileDraftSug.status === 0, 'draft-suggestions-issue via --session-file exits 0');
+  const fileDraftObj = JSON.parse(fileDraftSug.stdout);
+  assert(fileDraftObj.draft.upstream === 'custom/upstream-repo', 'draft-suggestions-issue honors --upstream');
+
+  // Verify append via --finding-file
+  const findingFile = path.join(usDir, '.finding-test.json');
+  fs.writeFileSync(
+    findingFile,
+    JSON.stringify({
+      step: '7',
+      skill: 'ws-testing',
+      category: 'optimization',
+      severity: 'suggestion',
+      summary: 'parallelize independent test files',
+      recommendation: 'Enable test concurrency across suites',
+    }),
+    'utf-8',
+  );
+  const appendFileRes = runNode([
+    'append',
+    '--session-file',
+    sessionFile,
+    '--finding-file',
+    findingFile,
+  ]);
+  assert(appendFileRes.status === 0, 'append via --session-file and --finding-file exits 0');
+  currentSession = JSON.parse(appendFileRes.stdout).session;
+  sessionJson = JSON.stringify(currentSession);
+
+  // Finalize via --session-file
+  const fin = runNode(['finalize', '--session-file', sessionFile]);
   assert(fin.status === 0, 'finalize exits 0');
   const finalizedSession = JSON.parse(fin.stdout).session;
   assert(finalizedSession.disposableScriptCount === 1, 'disposableScriptCount is 1');
-  assert(finalizedSession.suggestionCount >= 3, 'suggestionCount recorded in session');
+  assert(finalizedSession.suggestionCount >= 4, 'suggestionCount recorded in session');
 
   const logText = fs.readFileSync(currentSession.logPath, 'utf-8');
   assert(logText.includes('recovered:** true'), 'log contains recovered flag');
