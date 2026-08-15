@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-15 16:09] Agent: GPT-5.6 Sol
+- **Prompt**: /ws-ship-pr
+- **Done**: Prepared, committed hero assets, pushed `develop`, created PR 215, waited for review/CI, merged with `develop` intact.
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/215 merged. Tests, integrity, and Agentic Code Review passed. `activeThreads == 0`.
+
 ### [2026-08-15 15:32] Agent: GPT-5.6 Sol
 - **Prompt**: Add the supplied animation above the top hero title with responsive phone and desktop embedding.
 - **Done**: Added a cinematic responsive video hero with muted autoplay, WebM/MP4 sources, a WebP poster, and mobile styling.
