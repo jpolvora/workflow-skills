@@ -55,9 +55,14 @@ def ensure_utf8_stdio() -> None:
 
 ensure_utf8_stdio()
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root  # noqa: E402
+
 
 AGENT_ROOT = Path(__file__).resolve().parent.parent          # .../ws-spec-to-pr
-REPO_ROOT = Path(__file__).resolve().parents[4]              # repo root (.agents/skills/ws-spec-to-pr/scripts → 4 up)
+REPO_ROOT = resolve_repo_root(script_file=__file__)
 PLANS_DIR = None  # resolved lazily via load_plans_dir()
 
 def load_plans_dir() -> Path:

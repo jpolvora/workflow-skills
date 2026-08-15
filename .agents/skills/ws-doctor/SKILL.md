@@ -1,7 +1,7 @@
 ---
 name: ws-doctor
 description: Workflow skills diagnostic inspector — read-only diagnose of path errors, tool/script recipes, config switches, and missing references across installed ws-* skills.
-version: 0.3.18
+version: 0.3.21
 disable-model-invocation: true
 invocation_names:
   - doctor

@@ -86,6 +86,14 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills ws-tdah --global --
 
 **After install/update:** ask your agent to run `ws-check-harness` (load `.agents/skills/ws-check-harness/SKILL.md`, Phases 0–5c). Optional: `/ws-configure-project` to fill `ws-shared/config.json`.
 
+#### Hybrid / global installs
+
+When skills live under `$HOME/.agents/skills` (global) or a mix of global + project-local trees, managed scripts still read and write **consumer** data from the open project — not from the global hub beside the script on disk.
+
+- **Consumer root:** `$PWD/.agents/skills/ws-shared/config.json` (or `config.json.example`) when present; otherwise pass `--repo-root <dir>` to target the project explicitly.
+- **Skill scripts:** recipes expand `{skillsRoot}/ws-<id>/scripts/...` when that path exists in the project, then fall back to `{globalSkillsRoot}` (see [`tools.md`](.agents/skills/ws-shared/tools.md) rule 10).
+- **Project-local scripts** (installed under the consumer `.agents/skills/`, not under the global root) resolve the consumer via `parents[4]` from the script path when cwd has no hub.
+
 #### Troubleshooting
 
 | Symptom | Fix |
@@ -184,6 +192,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | Runtime orch observer when `defaults.enableAuditing` is true; logs anomalies/performance/correctness/disposable scripts and drafts upstream issues / reusable tooling |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
+| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Pipeline review dry-run via external reviewer (Extra) |
 
 ### Pipeline & providers
 

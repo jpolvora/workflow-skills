@@ -35,6 +35,7 @@
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
 | [`CHANGELOG.md.template`](CHANGELOG.md.template) | Empty ws-changelog stub — seeds `CHANGELOG.md` |
 | [`skill-dependencies.json`](skill-dependencies.json) | Install graph + **`packageVersion`** + single **`upstream`** ownership block (no per-skill `upstream:` in SKILL.md) |
+| [`scripts/`](scripts/) | Resolver helpers for hybrid/global installs: `resolve_consumer_root.py` / `resolve_consumer_root.cjs` (`--repo-root` → cwd hub probe → `parents[4]` when script is project-local) |
 
 ## Consumer-owned (local only)
 
@@ -137,6 +138,7 @@ Present only after Extra or Full install. If a path is missing, treat as intenti
 |-------|------|
 | `ws-write-a-skill` | [`../ws-write-a-skill/SKILL.md`](../ws-write-a-skill/SKILL.md) |
 | `ws-show-harness` | [`../ws-show-harness/SKILL.md`](../ws-show-harness/SKILL.md) |
+| `ws-preview` | [`../ws-preview/SKILL.md`](../ws-preview/SKILL.md) |
 
 ### Intentionally orch-only (not duplicated here)
 
@@ -176,6 +178,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Record ws-changelog | `ws-changelog` |
 | Create / rewrite a skill | `ws-write-a-skill` (Extra) |
 | Show active harness | `ws-show-harness` (Extra) |
+| Pipeline review / preview CI review | `ws-preview` (Extra) |
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
 

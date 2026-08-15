@@ -27,6 +27,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 7. `{skillsRoot}` / `{sharedDir}` are **fixed install layout**, not relocatable consumer knobs (unlike `plans.dir` / `plans.specsDir` / `reviews.dir`).
 8. Spec skills: standalone drafts under `{specsDir}`; workflow copy under `{us-dir}/step-00-*.spec.md` after register/provider. Specs intent without a named skill → load [`autoload.md`](autoload.md) § Specs skill router first (progressive disclosure).
 9. Consumer root autoload: `ws-configure-project --section autoload` (helper `configure_autoload.py`) may emit `.agents/skills/...` or `{globalSkillsRoot}/...` into `autoload.md` / root `AGENTS.md` — never absolute filesystem paths. Harness Phase 2 validates Always-applied path forms when `autoload.md` is present.
+10. **Skill-script path expand (hybrid):** for managed script recipes, resolve `{skillsRoot}/ws-<id>/scripts/...` when that path exists under the consumer project; otherwise `{globalSkillsRoot}/ws-<id>/scripts/...` (same local-first rule as `configure_autoload.py` `emit_skill_path`). Runtime consumer data (`config.json`, `MEMORY.md`, `STACK.md`) always comes from `$PWD/{sharedDir}` — never from `../ws-shared/` relative links inside a globally installed `SKILL.md` (those point at the global hub on disk).
 
 ## Core tools
 

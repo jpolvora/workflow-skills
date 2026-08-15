@@ -242,6 +242,12 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (depMap.packages?.extra?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json Extra must not include workflow orchestrators');
   }
+  if (!depMap.packages?.extra?.skills?.includes('ws-preview')) {
+    fail('bin/skill-dependencies.json Extra package missing ws-preview');
+  }
+  if (!sharedDepMap.packages?.extra?.skills?.includes('ws-preview')) {
+    fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-preview');
+  }
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('ws-testing')) fail('ARTIFACTS.md missing Step 7 Testing ownership');
@@ -650,7 +656,8 @@ child.on('close', async (code) => {
       s === 'ws-azure-devops-provider' ||
       s === 'ws-secrets-leak-review' ||
       s === 'ws-write-a-skill' ||
-      s === 'ws-show-harness'
+      s === 'ws-show-harness' ||
+      s === 'ws-preview'
   );
   let removedForIncludeNew = null;
   if (removable) {

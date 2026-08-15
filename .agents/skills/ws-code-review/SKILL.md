@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.18
+version: 0.3.21
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-code-review loaded."
 
-Review modified files vs the base branch for correctness, security, policy, and diff quality. Clear Critical/Warning via fix → re-review before Advance.
+Review modified files vs the base branch for correctness, security, policy, and diff quality. Clear Critical/Warning via fix → re-review before Advance. For external CI-shaped dry-run preview (no PR threads), use [`ws-preview`](../ws-preview/SKILL.md) instead.
 
 **Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
 
