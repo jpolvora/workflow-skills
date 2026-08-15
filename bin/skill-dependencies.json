@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.20",
+  "packageVersion": "0.3.21",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -72,7 +72,8 @@
     "extra": {
       "skills": [
         "ws-write-a-skill",
-        "ws-show-harness"
+        "ws-show-harness",
+        "ws-preview"
       ],
       "ensureHub": false,
       "shortcut": "e",

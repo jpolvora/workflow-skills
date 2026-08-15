@@ -191,6 +191,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | Runtime orch observer when `defaults.enableAuditing` is true; logs anomalies/performance/correctness/disposable scripts and drafts upstream issues / reusable tooling |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
+| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Pipeline review dry-run via external reviewer (Extra) |
 
 ### Pipeline & providers
 
