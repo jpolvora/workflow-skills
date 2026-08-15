@@ -24,7 +24,7 @@ Consumer-owned frontend patterns live in `{sharedDir}/frontend.md` (never overwr
 | Moment | Action |
 |--------|--------|
 | **Before frontend code / UI component / review** | **Consult:** Read `{sharedDir}/frontend.md` for UI/UX rules, validation styling, i18n requirements, form components, and dropdown behavior. Enforce matching patterns strictly. |
-| **After implementation or user correction** | **Record:** If a new frontend UI/UX pattern or user correction was identified, prompt the user via `user-gate`: `Deseja registrar esta preferência no padrão frontend? ("<description>")`. On approval, append the entry to `{sharedDir}/frontend.md`. |
+| **After implementation or user correction** | **Record:** If a new frontend UI/UX pattern or user correction was identified, prompt the user via `user-gate`: `Register this preference in frontend.md? ("<short summary of preference>")`. On approval, append the entry to `{sharedDir}/frontend.md`. |
 | **No new pattern identified** | Proof line: `Frontend Patterns: Consulted ({sharedDir}/frontend.md)` |
 
 ## Consult protocol (Mandatory before frontend code)
@@ -42,7 +42,7 @@ Consumer-owned frontend patterns live in `{sharedDir}/frontend.md` (never overwr
 When completing frontend tasks or receiving UI/frontend corrections from the user:
 1. Identify if a new frontend preference/rule was established (e.g. "Validation error messages must always appear in red below input component", "Use i18n for all visible text", "Use searchable autocomplete dropdowns for foreign keys").
 2. Prompt the user via `user-gate`:
-   - **Question**: `Deseja registrar esta preferência no padrão frontend? ("<short summary of preference>")`
+   - **Question**: `Register this preference in frontend.md? ("<short summary of preference>")`
    - **Options**: `Yes (Register preference)` / `No (Skip)`
 3. If approved, append to `{sharedDir}/frontend.md`:
    ```markdown
