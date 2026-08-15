@@ -351,7 +351,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation (Full/Lite) |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Workflow skills install/runtime diagnose (read-only report) |
-| `ws-audit` | `.agents/skills/ws-audit/SKILL.md` | Runtime orch audit log + upstream issue proposal when enabled |
+| `ws-audit` | `.agents/skills/ws-audit/SKILL.md` | Runtime orch audit log, performance/correctness/disposable script diagnosis, and upstream issue/tooling proposal |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |
