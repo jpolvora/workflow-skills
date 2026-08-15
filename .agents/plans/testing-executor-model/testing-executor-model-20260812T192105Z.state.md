@@ -7,9 +7,9 @@ title: "Add testingModel (test executor) to LLM model config"
 specSource: local
 specsPath: .agents/specs/testing-executor-model.spec.md
 specPath: .agents/plans/testing-executor-model/step-00-testing-executor-model.spec.md
-status: active
+status: completed
 startedAt: "2026-08-12T19:21:05Z"
-endedAt: "2026-08-12T19:27:50Z"
+endedAt: "2026-08-15T16:55:00Z"
 currentStep: 8
 completedSteps:
   - 0
@@ -35,6 +35,12 @@ shipAction: create-pr
 stopBeforeFixPr: true
 execMode: sequential
 currentModel: Cursor Grok 4.6
+auditSession:
+  usDir: .agents/plans/testing-executor-model
+  slug: testing-executor-model
+  workflowId: testing-executor-model-20260812T192105Z
+  startedAt: "2026-08-15T16:49:04.524Z"
+  logPath: .agents/plans/testing-executor-model/audit-testing-executor-model-2026-08-15T16-49-04-524Z.log.md
 branch: feature/testing-executor-model
 baseBranch: main
 branchStrategy: from-base
@@ -42,7 +48,7 @@ baselineCommit: 6740b136d470265036013f3a0b7c97fa942f1055
 preExistingDirty: []
 telemetry:
   workflowStartedAt: "2026-08-12T19:21:05Z"
-  workflowEndedAt: null
+  workflowEndedAt: "2026-08-15T16:55:00Z"
   totalElapsedSec: 0
   loc:
     baseline: null
@@ -79,6 +85,10 @@ stepStatus:
 - branch-gate | auto | stay | feature/testing-executor-model | from-base | 2026-08-12T19:21:05Z
 - interview | skipped | not-complex + no-open-questions | 2026-08-12T19:21:05Z
 - plan-to-tasks | sequential | skip-empty-DAG | 2026-08-12T19:21:05Z
+- user-gate | unfinished | resume-testing-executor | 2026-08-15T16:44:00Z
+- branch-resume | checkout | feature/testing-executor-model | 2026-08-15T16:50:00Z
+- resume | restore-plan-artifacts-from-develop | 2026-08-15T16:51:00Z
+- user-gate | mark-complete | already-merged-into-develop | 2026-08-15T16:55:00Z
 
 ## Artifacts
 

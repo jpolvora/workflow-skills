@@ -19,6 +19,7 @@ This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0�
 | 3. [Start Options & Modes](#3-start-options--modes) | Command triggers, free-text vs. tracker IDs, dry-run, auto-mode |
 | 4. [FSM Steps 0–9 Breakdown](#4-fsm-steps-09-breakdown) | Deep-dive into each individual step of the standard workflow |
 | 5. [Gates & Universal Controls](#5-gates--universal-controls) | G0-G3 Authorization ladder, HS-1 to HS-5 Hard Stops |
+| 5a. [When does the pipeline commit?](#when-does-the-pipeline-commit-code) | Product commits after verify and after review-fix |
 | 6. [Artifacts & State Lifecycle](#6-artifacts--state-lifecycle) | state.md structure, plansDir artifacts, git checkpoints |
 | 7. [Troubleshooting](#7-troubleshooting) | Handling HS pauses, worktree issues, and retry loops |
 
@@ -27,12 +28,12 @@ This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0�
 ## 1. Overview
 
 ### What is Spec-to-PR?
-Spec-to-PR is a deterministic **orchestrated software delivery pipeline** designed to automate the entire lifecycle of a User Story or feature request: from initial spec bootstrap, through plan formulation, implementation, check-implementation verification, local code review, testing, shipping (commits/PR), and resolving PR threads.
+Spec-to-PR is a deterministic **orchestrated software delivery pipeline** designed to automate the entire lifecycle of a User Story or feature request: from initial spec bootstrap, through plan formulation, implementation, check-implementation verification, a **product commit** of workflow-touched files, local code review of that committed diff vs the base branch, a **second product commit** for review fixes, testing, shipping (delivery artifacts + push/PR), and resolving PR threads.
 
 ### Standard vs. Lite Modes
 The hub supports two workflows depending on target speed and project complexity:
-*   **Standard (`ws-spec-to-pr`)**: Detailed 10-step lifecycle (0 to 9) containing plan refinement interviews, sequential or parallel DAG execution, read-only verify gates, separate code reviews, and testing batteries.
-*   **Lite (`ws-spec-to-pr-lite`)**: Fast-track 6-step lifecycle (0 to 5) skipping Plan Refinement interviews, DAG creation, verify gates, and step-7 testing. Steps are executed inline in a single session.
+*   **Standard (`ws-spec-to-pr`)**: Detailed 10-step lifecycle (0 to 9) containing plan refinement interviews, sequential or parallel DAG execution, read-only verify gates, a required product commit after verify, local code review of `{base}...HEAD`, a second product commit for review fixes, and testing batteries.
+*   **Lite (`ws-spec-to-pr-lite`)**: Fast-track 6-step lifecycle (0 to 5) skipping Plan Refinement interviews, DAG creation, verify gates, and step-7 testing. Product commit after implement (before review), then a second commit for review fixes. Steps are executed inline in a single session.
 
 ### Who is responsible for what?
 *   **Orchestrator Agent**: Manages FSM state, checkpoints, user gates, state hygiene, and dispatches. It **never** writes or edits code directly.
@@ -52,12 +53,14 @@ flowchart TD
   S2 --> S3[3 Plan-to-tasks]
   S3 --> S4[4 Implement]
   S4 --> S5[5 Check-implementation]
-  S5 -->|score ≥ 7| S6[6 Code-review]
+  S5 -->|score ≥ 7| C1[G2-code verified implementation]
   S5 -->|score < 7| G5{Refine / Replan / Respec / Approve}
   G5 --> S4
-  G5 -->|approve| S6
+  G5 -->|approve| C1
+  C1 --> S6[6 Code-review]
   S6 -->|findings| Fix[Fix substep<br/>ws-implement-tasks]
-  Fix --> S7[7 Testing]
+  Fix --> C2[G2-code review fixes]
+  C2 --> S7[7 Testing]
   S6 -->|clean| S7
   S7 --> S8[8 Ship<br/>delivery + push/PR]
   S8 --> S9[9 Fix-PR]
@@ -69,8 +72,11 @@ flowchart TD
 flowchart TD
   L0[0 Spec] --> L1[1 Plan]
   L1 --> L2[2 Implement]
-  L2 --> L3[3 Review]
-  L3 --> L4[4 Ship]
+  L2 --> C1[G2-code implementation]
+  C1 --> L3[3 Review]
+  L3 -->|findings| C2[G2-code review fixes]
+  C2 --> L4[4 Ship]
+  L3 -->|clean| L4
   L4 --> L5[5 Fix-PR]
 ```
 
@@ -133,18 +139,20 @@ flowchart TD
 
 ### Step 4: Implementation
 *   **Executor**: Coder subagent (`ws-implement-tasks` / `ws-implement-tasks`).
-*   **Role**: Writes code to target paths inside a git worktree (if enabled) or directly on the branch. If parallel, spins up up to 3 parallel subagents per DAG level. No commits are made yet.
+*   **Role**: Writes code to target paths inside a git worktree (if enabled) or directly on the branch. If parallel, spins up up to 3 parallel subagents per DAG level. The **required** product commit is after Step 5 (optional G2-code under More options only).
 
 ### Step 5: Check-implementation
 *   **Executor**: Verifier subagent (read-only) (`ws-verify-plan` / `ws-verify-plan`).
 *   **Role**: Evaluates the written code against the spec/plan and publishes an integer score (0–10).
-    *   **Score ≥ 7**: Passes gate.
-    *   **Score < 7**: Halts. Requires manual repair, replanning, or explicit override.
+    *   **Score ≥ 7**: Passes gate, then **required G2-code** of workflow-touched product files (skip if the stage set is empty; never empty commit).
+    *   **Score < 7**: Halts. Requires manual repair, replanning, or explicit override. Product commit runs only after score ≥ 7 or Approve-and-continue.
+    *   Do not dispatch Step 6 while workflow product files remain uncommitted.
 
 ### Step 6: Code Review
 *   **Executor**: Reviewer subagent (`ws-code-review` / `ws-code-review`).
-*   **Role**: Runs local static analysis on changed code compared to the base branch.
+*   **Role**: Reviews the **committed** diff vs `config.project.baseBranch` (`git diff {base}...HEAD`). Uncommitted workflow product files → STOP (do not dispatch review).
     *   **Fix → re-review**: If Critical or Warning findings are present, runs `ws-implement-tasks` `mode=fix`, then re-reviews (max 3 rounds; `autoMode` autofix). Records traps/gaps in state/memory each round. Advance only when clean; Pause on residual after max rounds.
+    *   **Review-fix commit**: After the loop, a **second** G2-code commit of workflow-touched product files if any changed (one commit for all fix rounds). Skip if review was clean with no extra product files.
 
 ### Step 7: Testing
 *   **Executor**: Verifier subagent (`ws-testing` / `ws-testing`).
@@ -158,7 +166,7 @@ flowchart TD
     3.  Commit configured delivery artifacts, skip PR
     4.  Skip delivery commit and skip shipping
     5.  Pause
-*   **Artifact commits**: Stage only artifacts enabled by `defaults.deliveryCommitArtifacts` (see `ARTIFACTS.md` § Step 8). Mid-workflow plan files remain forbidden until Step 8.
+*   **Artifact commits**: Stage only artifacts enabled by `defaults.deliveryCommitArtifacts` (see `ARTIFACTS.md` § Step 8). Mid-workflow plan files remain forbidden until Step 8. Product/source files were already committed after verify and after review-fix.
 
 ### Step 9: Fix-PR
 *   **Executor**: PR fixing subagent (`ws-fix-pr` / `ws-goal-fix-pr`).
@@ -173,9 +181,19 @@ flowchart TD
 | :--- | :--- | :--- |
 | **G0** | Read codebase, fetch issue metadata, output reports | Steps 0, 1, 2, 3, 5, 6, 7 (plan) |
 | **G1** | Modify workspace files, update state files, draft plans | Step 4, Step 6 (fix), Step 7 (fix) |
-| **G2-code** | Commit code changes only under `src/`, `web/`, `tests/` | Step 4, 6 fix, 7 fix boundary |
+| **G2-code** | Commit workflow-touched product files only (`files_touched`; never `{plansDir}`, never `git add -A`) | After Step 5 (required); after Step 6 review-fix if files remain; Step 7 fix. Lite: after Step 2 and after Step 3 fixes. |
 | **G2-delivery** | Commit configured delivery artifacts only (`defaults.deliveryCommitArtifacts`) | Step 8 delivery checkpoint |
 | **G3** | Run `git push`, create remote PR, merge PR | Step 8 ship action / Step 9 |
+
+### When does the pipeline commit code?
+
+Two **required** product commits (G2-code), then ship:
+
+1. **After verify (standard Step 5)** / **after implement (lite Step 2)** — workflow-touched created/updated/deleted product files only. Code review then diffs `{base}...HEAD` (`config.project.baseBranch`, usually `main`/`master`).
+2. **After review-fix** — a second commit if the fix loop changed product files (one commit for all fix rounds). Skip if review was clean.
+3. **Step 8 / lite Step 4** — configured `{plansDir}` delivery artifacts + push/PR. Not the first product save.
+
+Never `git add -A`. Never stage `{plansDir}` before Step 8. Unrelated dirty files stay unstaged. Empty commits are forbidden. `dryRun` simulates commits only.
 
 ### Hard Stops (HS-1 to HS-5)
 If any of these conditions are met, the workflow immediately pauses and exits:
@@ -191,7 +209,7 @@ Every step transition exposes:
 *   **Next (Advance)**: Advance to the next step.
 *   **Previous**: Rollback state to an earlier step (restores matching checkpoint).
 *   **Replay / Refine**: Re-dispatch the current step.
-*   **Commit**: G2-code commit menu for code changes.
+*   **Commit**: G2-code menu (required after verify / after review-fix when product files remain; optional under More options at other boundaries).
 *   **Undo**: Revert to the checkpoint taken before the current step started.
 *   **Pause**: Saves workspace state and pauses.
 

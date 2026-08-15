@@ -38,6 +38,7 @@ __pycache__/
 *.pyo
 check-workflows-report.md
 
-# Consumer-owned hub data under .agents/skills/ws-shared/ is ignored via
-# .agents/skills/ws-shared/.gitignore (and shipped hub.gitignore). Skill bodies
-# under .agents/skills/ws-* are tracked Source of Truth.
+# ws-shared hub: consumer installs get hub.gitignore written as .gitignore (config.json,
+# STACK.md, MEMORY.md, CHANGELOG.md, memory/* stay local-only in consumer repos).
+# This upstream repo tracks those dogfood files in git; package.json still excludes
+# them from the npm tarball. Skill bodies under .agents/skills/ws-* are tracked SoT.

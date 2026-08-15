@@ -60,7 +60,7 @@
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) | Every task completion |
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md`; on completion: write traps → compile |
 
-`ws-tdah` is **on-demand** here (invoke `/ws-tdah` · `/tdah` · `start ws-tdah`). Upstream root `AGENTS.md` may autoload it for development dogfood only — not the consumer default.
+`ws-tdah` is **on-demand** here (invoke `/ws-tdah` · `/tdah` · `start ws-tdah`). Upstream root `AGENTS.md` inlines a compact session contract for dogfood (does not `Read` live `ws-tdah`); that is not the consumer default.
 
 ### Consumer root override (dual-hub)
 
@@ -72,7 +72,7 @@ Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (ins
 
 When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
 
-See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGENTS.md` (dogfood example of root autoload).
+See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGENTS.md` § Upstream session contract (dogfood; not live skill autoload).
 
 ### Precedence (highest first)
 
@@ -181,6 +181,8 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Pipeline review / preview CI review | `ws-preview` (Extra) |
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
+
+**Product-commit order (both orch):** after verify (standard Step 5) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
 
 ---
 

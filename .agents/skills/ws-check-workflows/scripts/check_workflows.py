@@ -497,12 +497,126 @@ class WorkflowChecker:
                     "Update script to reference ws-shared/config.json.",
                 )
 
+    def check_g2_code_contract(self) -> None:
+        """Required product commits after verify/implement, before code-review."""
+
+        def _read(rel: str) -> str:
+            path = SKILLS_DIR / rel
+            if not path.exists():
+                self.add_issue(
+                    "CRITICAL",
+                    "G2-code Contract",
+                    rel,
+                    f"Missing file required for G2-code contract check: {rel}.",
+                    f"Restore .agents/skills/{rel} from upstream.",
+                )
+                return ""
+            return path.read_text(encoding="utf-8", errors="replace")
+
+        protocols = _read("ws-spec-to-pr/PROTOCOLS.md")
+        dispatch = _read("ws-spec-to-pr/STEP-DISPATCH.md")
+        lite = _read("ws-spec-to-pr-lite/SKILL.md")
+        tools = _read("ws-shared/tools.md")
+        gates = _read("ws-shared/gates.md")
+        review = _read("ws-code-review/SKILL.md")
+        std_text = protocols + "\n" + dispatch
+
+        if "G2-code after Step 5 before Step 6" not in std_text:
+            self.add_issue(
+                "CRITICAL",
+                "G2-code Contract",
+                "ws-spec-to-pr/PROTOCOLS.md + STEP-DISPATCH.md",
+                "Standard orch must require G2-code after Step 5 before Step 6.",
+                "Document required G2-code after Step 5 before Step 6 in PROTOCOLS.md and STEP-DISPATCH.md.",
+            )
+
+        if "G2-code after Step 2 before Step 3" not in lite:
+            self.add_issue(
+                "CRITICAL",
+                "G2-code Contract",
+                "ws-spec-to-pr-lite/SKILL.md",
+                "Lite orch must require G2-code after Step 2 before Step 3.",
+                "Document required G2-code after Step 2 before Step 3 in ws-spec-to-pr-lite/SKILL.md.",
+            )
+
+        if "git add src/ web/ tests/" in tools:
+            self.add_issue(
+                "CRITICAL",
+                "G2-code Contract",
+                "ws-shared/tools.md",
+                "commit-code still uses directory-wide git add src/ web/ tests/.",
+                "Stage explicit workflow files_touched paths only (never git add src/ web/ tests/).",
+            )
+
+        if "Post-verify G2-code" not in gates or "Post-review-fix G2-code" not in gates:
+            self.add_issue(
+                "CRITICAL",
+                "G2-code Contract",
+                "ws-shared/gates.md",
+                "gates.md auto-gate table is missing Post-verify G2-code / Post-review-fix G2-code save points.",
+                "Add auto-gate rows for Post-verify G2-code and Post-review-fix G2-code.",
+            )
+
+        leftover_files = {
+            "ws-shared/tools.md": tools,
+            "ws-shared/gates.md": gates,
+            "ws-spec-to-pr/PROTOCOLS.md": protocols,
+            "ws-spec-to-pr/STEP-DISPATCH.md": dispatch,
+            "ws-spec-to-pr-lite/SKILL.md": lite,
+            "ws-code-review/SKILL.md": review,
+        }
+        leftover_add = re.compile(r"git add src/\s*web/\s*tests/")
+        leftover_first = re.compile(r"first (product )?commit at Step 8", re.I)
+        for loc, text in leftover_files.items():
+            if leftover_add.search(text):
+                self.add_issue(
+                    "CRITICAL",
+                    "G2-code Contract",
+                    loc,
+                    "Leftover G2-code recipe git add src/ web/ tests/.",
+                    "Replace with path-scoped files_touched staging.",
+                )
+            if leftover_first.search(text):
+                self.add_issue(
+                    "CRITICAL",
+                    "G2-code Contract",
+                    loc,
+                    "Leftover product-save rule 'first commit at Step 8'.",
+                    "First required product commit is post-verify / post-implement G2-code; Step 8 remains G2-delivery.",
+                )
+
+        if "{base}...HEAD" not in review:
+            self.add_issue(
+                "CRITICAL",
+                "G2-code Contract",
+                "ws-code-review/SKILL.md",
+                "ws-code-review must review git diff {base}...HEAD (committed range).",
+                "Set the primary diff to git diff {base}...HEAD; do not review the dirty working tree.",
+            )
+        if "config.project.baseBranch" not in review:
+            self.add_issue(
+                "CRITICAL",
+                "G2-code Contract",
+                "ws-code-review/SKILL.md",
+                "ws-code-review must resolve base from config.project.baseBranch.",
+                "Default base to config.project.baseBranch then auto-detect main/master.",
+            )
+        if "Do not commit" not in review and "does **not** run `git commit`" not in review:
+            self.add_issue(
+                "WARNING",
+                "G2-code Contract",
+                "ws-code-review/SKILL.md",
+                "ws-code-review should state that the skill does not commit.",
+                "Keep 'do not commit'; orchestrator owns G2-code.",
+            )
+
     def run_all(self) -> None:
         self.simulate_standard_workflow()
         self.simulate_lite_workflow()
         self.simulate_multi_spec_workflow()
         self.check_scripts_syntax()
         self.check_state_isolation_and_config()
+        self.check_g2_code_contract()
 
     def generate_report(self) -> str:
         lines = []

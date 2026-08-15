@@ -10,7 +10,7 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 
 ## Core Goals
 
-1. **End-to-End Delivery:** Spec → plan → interview → implement → check → review → testing → ship → fix-pr (steps **0–9**).
+1. **End-to-End Delivery:** Spec → plan → interview → implement → check → product commit → review → review-fix commit → testing → ship → fix-pr (steps **0–9**).
 2. **Context Isolation:** Fresh `dispatch-agent` per step where practical; shared `state.md` + `MEMORY.md`.
 3. **Safety & Gates:** Explicit transitions; combined delivery+ship at Step 8; Fix-PR at Step 9.
 4. **Portability:** Stack-agnostic; metadata from `config.json` / `STACK.md`.
@@ -34,21 +34,22 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 | **F0** | Bootstrap | 0 | Spec / providers / free-text |
 | **F1** | Planning | 1–3 | Plan → interview → plan-to-tasks |
 | **F2** | Implement | 4 | `ws-implement-tasks` build |
-| **F3** | Check | 5 | Score 0–10 vs refined ‖ spec; &lt;7 gate |
-| **F4** | Review | 6 | Code-review + **conditional fix** substep |
+| **F3** | Check | 5 | Score 0–10 vs refined ‖ spec; &lt;7 gate; then **required G2-code** of workflow product files |
+| **F4** | Review | 6 | Code-review of committed diff vs base + **conditional fix** substep; then G2-code of review fixes if any |
 | **F5** | Testing | 7 | `ws-testing` (skippable) |
 | **F6** | Ship + Fix-PR | 8–9 | Combined delivery+ship; then fix-pr |
 
-Lite: 0 Spec → 1 Plan → 2 Implement → 3 Review → 4 Ship → 5 Fix-PR (no Testing / interview / DAG / check).
+Lite: 0 Spec → 1 Plan → 2 Implement → G2-code → 3 Review → G2-code (fixes if any) → 4 Ship → 5 Fix-PR (no Testing / interview / DAG / check).
 
 ### Happy path
 
 ```text
 /ws-spec-to-pr 2416
   → 0 Spec → 1 Plan → 2 Interview → 3 Tasks
-  → 4 Implement → 5 Check (≥7 or approve-below-7)
-  → 6 Review (fix → re-review, max 3) → 7 Testing
-  → 8 Ship (delivery commit + push/PR) → 9 Fix-PR
+  → 4 Implement → 5 Check (≥7 or approve-below-7) → G2-code (verified implementation)
+  → 6 Review (committed diff vs base; fix → re-review, max 3) → G2-code (review fixes if any)
+  → 7 Testing
+  → 8 Ship (delivery artifacts + push/PR) → 9 Fix-PR
 ```
 
 Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/setup.md).
@@ -101,10 +102,10 @@ The orchestrator session always executes under the active session model (`curren
 | **2** | Interview | `ws-interview` | `step-02-{slug}.plan.refined.md` |
 | **3** | Plan-to-tasks | `ws-plan-to-tasks` | exec + DAG |
 | **4** | Implement | `ws-implement-tasks` | Code |
-| **5** | Check-implementation | `ws-verify-plan` | Score 0–10; &lt;7 gate |
-| **6** | Code-review | `ws-code-review` (+ fix → re-review, max 3) | `step-06-{slug}.review.md` |
+| **5** | Check-implementation | `ws-verify-plan` | Score 0–10; &lt;7 gate; then required G2-code of workflow product files |
+| **6** | Code-review | `ws-code-review` (+ fix → re-review, max 3) | Committed `{base}...HEAD`; then G2-code of review fixes if any |
 | **7** | Testing | `ws-testing` | `step-07-{slug}.testing.*` |
-| **8** | Ship | `ws-ship-pr` | Delivery + push/PR → `step-08-{slug}.result.md` |
+| **8** | Ship | `ws-ship-pr` | Delivery artifacts + push/PR → `step-08-{slug}.result.md` (product already committed) |
 | **9** | Fix-PR | `ws-fix-pr` / `ws-goal-fix-pr` | Threads → merge policy |
 
 Post-workflow QA deltas: `ws-update-plan-implementation` (`ws-update-plan-implementation`).

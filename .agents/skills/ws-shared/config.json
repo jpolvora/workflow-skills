@@ -1,0 +1,189 @@
+{
+  "$schema": "./config.schema.json",
+  "_comment": "Fresh install seeds this file as config.json (gitignored — never commit). Fill via ws-configure-project. toolsFile points to the tool vocabulary all agents use.",
+  "toolsFile": "tools.md",
+  "pathTokens": {
+    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
+    "skillsRoot": ".agents/skills",
+    "sharedDir": ".agents/skills/ws-shared"
+  },
+  "project": {
+    "name": "workflow-skills",
+    "org": "jpolvora",
+    "repoUrl": "https://github.com/jpolvora/workflow-skills",
+    "baseBranch": "main",
+    "workingBranch": "develop",
+    "gitRemote": "origin"
+  },
+  "stack": {
+    "id": "node-skills-package",
+    "description": "Node 22 skill package / agent harness (workflow-skills upstream)",
+    "backend": {
+      "framework": "Node 22",
+      "language": "JavaScript",
+      "solutionFile": "package.json",
+      "srcDir": ".agents/skills",
+      "layers": [
+        {
+          "name": "skills-sot",
+          "path": ".agents/skills",
+          "role": "Published skill bodies (upstream SoT)"
+        },
+        {
+          "name": "installer-cli",
+          "path": "bin",
+          "role": "Upstream authoring CLI, integrity, site builder"
+        },
+        {
+          "name": "tests",
+          "path": "test",
+          "role": "Install, integrity, and quality-gate tests"
+        }
+      ],
+      "testProject": "test/",
+      "apiHost": "",
+      "apiPort": 0
+    },
+    "frontend": {
+      "framework": "none",
+      "language": "",
+      "sourceDir": "",
+      "buildDir": "docs",
+      "devHost": "",
+      "devPort": 0,
+      "i18n": {
+        "framework": "none",
+        "localesDir": "",
+        "locales": []
+      }
+    },
+    "database": {
+      "type": "none",
+      "orm": "",
+      "migrationsProject": "",
+      "startupProject": "",
+      "seedScript": ""
+    },
+    "orchestration": {
+      "devCommand": "",
+      "startCommand": "",
+      "stopCommand": "",
+      "composeCommand": ""
+    }
+  },
+  "domain": {
+    "model": "Agent skill harness — portable SKILL.md workflows, providers, and shared hub",
+    "tenancyField": "",
+    "platformPrefix": "",
+    "glossaryFile": "",
+    "designTokens": "",
+    "architectureSpec": ""
+  },
+  "providers": {
+    "_comment": "active = work-item/spec source (github | azure-devops | local). scm = PR/thread host (github | azure-devops only; never local). Hybrid example: active=local + scm=github (local specs, GitHub PRs). If scm omitted: when active is github|azure-devops → scm=active; when active=local → infer from project.repoUrl host (github.com → github; dev.azure.com|visualstudio.com → azure-devops) or STOP and set scm explicitly. LEGACY: omit this entire providers block to infer active from issueTrackers.*.enabled (GitHub if enabled, else Azure DevOps, else local).",
+    "active": "local",
+    "scm": "github"
+  },
+  "issueTrackers": {
+    "github": {
+      "enabled": true,
+      "owner": "jpolvora",
+      "repo": "workflow-skills",
+      "cli": "gh",
+      "issueToSpecScript": ".agents/skills/ws-github-provider/scripts/github-issue-to-spec.py"
+    },
+    "azureDevOps": {
+      "enabled": false,
+      "_comment": "Set enabled: true and fill org/project. Put token in ADO_PAT (or AZURE_DEVOPS_PAT) — never commit it.",
+      "org": "",
+      "project": "",
+      "patEnvVar": "ADO_PAT",
+      "apiBase": "https://dev.azure.com",
+      "workItemToSpecScript": ".agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py"
+    }
+  },
+  "verification": {
+    "backendBuild": "",
+    "backendTest": "npm run test",
+    "backendFormat": "",
+    "frontendBuild": "",
+    "frontendTest": "",
+    "migrationsAdd": "",
+    "migrationsApply": "",
+    "mutationTest": "",
+    "mutationThreshold": 80
+  },
+  "dagThresholds": {
+    "_comment": "If ALL criteria are within limits, execMode is sequential (skip DAG).",
+    "maxImplementationSteps": 3,
+    "maxExpectedFiles": 6,
+    "maxLayers": 2
+  },
+  "defaults": {
+    "autoMode": false,
+    "dryRun": false,
+    "skipTesting": false,
+    "skipMutationTesting": true,
+    "skipTests": false,
+    "fullMode": false,
+    "scoreAndRefine": false,
+    "autoload": false,
+    "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
+    "enableAuditing": true,
+    "_comment_enableAuditing": "When true, ws-spec-to-pr* orch runs under ws-audit runtime observer; writes {us-dir}/audit-*.log.md; end-of-run may propose upstream GitHub issue for skill execution errors. Default false. Upstream dogfood: true.",
+    "enableDag": false,
+    "_comment_enableDag": "When true, break plan into parallel tasks executed by subagents. When false (default), execute tasks sequentially one by one in serial order.",
+    "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
+    "deliveryCommitArtifacts": {
+      "includeRefinedPlan": true,
+      "includeDeliveryResult": false,
+      "includeSpec": false,
+      "includeCheckReport": false,
+      "includeCodeReview": false,
+      "includeTestingReport": false
+    },
+    "_comment_models": "Optional model preferences for autoMode phase switching (e.g. claude-3-5-sonnet, gpt-4o, gemini-1.5-pro, gemini-2.0-flash). Fallback to active model if empty or switch fails.",
+    "plannerModel": "cursor-grok-4.6-high",
+    "executionModel": "composer-2.5",
+    "reviewerModel": "cursor-grok-4.6-high",
+    "testingModel": ""
+  },
+  "plans": {
+    "dir": ".agents/plans",
+    "_comment_plansDir": "Resolve skill token {plansDir} from plans.dir (there is no separate plansDir key).",
+    "_comment_specsDir": "Human-facing local specs dir. Skill token {specsDir} ← plans.specsDir (default .agents/specs). Prefer existing repo-root specs/ when already present. ws-write-spec writes here only; workflow step-00 copies under {plansDir}/{slug}/ come from providers or ws-local-spec-provider register.",
+    "specsDir": ".agents/specs",
+    "worktreesDir": ".agents/plans/{slug}/worktrees",
+    "useWorktrees": false
+  },
+  "reviews": {
+    "_comment": "Optional local review artifact root (fix-pr / ws-goal-fix-pr round reports).",
+    "dir": ".agents/codereviews"
+  },
+  "rules": {
+    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). seniorDeveloper = Code review proof checklist source (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = surgical-change skill; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
+    "harness": ".agents/skills/ws-shared/AGENTS.md",
+    "seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md",
+    "karpathyGuidelines": ".agents/skills/ws-karpathy-guidelines/SKILL.md",
+    "viewPatterns": "",
+    "efMigrations": "",
+    "stackFile": ".agents/skills/ws-shared/STACK.md",
+    "changelogFile": ".agents/skills/ws-shared/CHANGELOG.md"
+  },
+  "invariants": {
+    "entitiesAreClassNotRecord": false,
+    "migrationsCliOnly": false,
+    "tenancyViaGlobalQueryFilters": false,
+    "efOnlyInInfrastructure": false,
+    "noInlineHandWrittenMigrations": false,
+    "commitPlanFilesOnlyAtStep8": true,
+    "skipQualityGates": false
+  },
+  "fable": {
+    "_comment": "Opt-in integration for fable-* skills within ws-spec-to-pr / ws-spec-to-pr-lite workflows. Master toggle must be true to enable automatic calls.",
+    "enabled": true,
+    "autoAudit": true,
+    "autoDetectDomain": true,
+    "auditVerdictsBlockShip": true
+  }
+}
