@@ -34,12 +34,12 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 
 ## Goals & Invariants
 
-1. **Scope:** Steps 0–7 local; Step 8 delivery+ship; Step 9 fix-pr. No push before Step 8 ship action.
+1. **Scope:** Steps 0–7 local (first **required** product commit is G2-code after Step 5, not Step 8); Step 8 delivery+ship; Step 9 fix-pr. No push before Step 8 ship action.
 2. **Auth:** Gate required for G1+. Cancel → HS-1. Commit → G2 + menu (HS-2).
 3. **Isolation:** Subagent per step. Checkpoint tag `uswf/{id}/before-step-{N}`. Branch-direct default; worktree when `plans.useWorktrees=true`.
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `state.md` short-term; `{sharedDir}/MEMORY.md` generalizable.
 5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR). Subagent phase model preferences (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel` — Step 7 uses non-empty `testingModel`, else `executionModel`, else the active session model; `reviewerModel` is Steps 5–6 only) apply to `dispatch-agent` subagents when configured. **Config switches (not invocation flags):** `defaults.enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `defaults.enableAuditing` (runtime audit observer).
-6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
+6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Product G2-code after Step 5 and after Step 6 review-fix uses path-scoped `files_touched` only. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
 7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset.
 
 ## Phases F0–F6 & Step Index

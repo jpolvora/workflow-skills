@@ -58,6 +58,13 @@ The validation process performs end-to-end simulation across both orchestrators:
 - Verifies that all provider scripts and state handlers target `ws-shared/config.json`.
 - Confirms state handlers serialize `workflowType` (`standard` vs `lite`).
 
+### 5. G2-code timing & path-scoped staging
+- Standard dispatch/protocols require **G2-code after Step 5 before Step 6**.
+- Lite SKILL requires **G2-code after Step 2 before Step 3**.
+- `tools.md` `commit-code` is path-scoped `files_touched` (no `git add src/ web/ tests/`).
+- `gates.md` auto-gate rows cover post-verify and post-review-fix save points.
+- `ws-code-review` reviews committed `{base}...HEAD` vs `config.project.baseBranch` and does not commit.
+
 ---
 
 ## Report & Confirmation Flow

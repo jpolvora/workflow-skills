@@ -61,7 +61,7 @@ The orchestrator session ALWAYS runs under the active session model (`{currentMo
 | **Previous** | Go back to an earlier completed step (sub-menu by phase / step list) |
 | **Replay** | Re-run the current step from its checkpoint |
 | **Refine** | Alias → **Replay** (same behavior; preferred label when user wants iteration) |
-| **Commit** | G2-code: commit code changes only (`src/` / `web/` / `tests/`) when the step produced them |
+| **Commit** | G2-code: commit workflow `files_touched` product paths only (see [Required G2-code save points](#required-g2-code-save-points-both-orch)); never `git add -A` / `git add .` / `{plansDir}/**` |
 | **Undo** | Checkpoint revert to `uswf/{workflow-id}/before-step-{N}` for the current step |
 | **Pause workflow** | Keeps all artifacts — after pause, switch model in IDE/agent host, then resume |
 | Cancel without revert / Cancel and revert | HS-1 / revert per orch policy |
@@ -124,10 +124,36 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ 7 | Complete Step 5; **Next** → Step 6 |
-| < 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`) |
+| ≥ 7 | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
+| < 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`). Approve → same G2-code then Step 6. Refine/replan/respec run **before** the product commit. |
 
 `autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
+
+---
+
+## Required G2-code save points (both orch)
+
+Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-code-review`](../ws-code-review/SKILL.md) does **not** commit. `skipQualityGates` does **not** skip these save points or the dirty-tree STOP.
+
+**Staging:** union of workflow `files_touched` (created/updated/deleted) still dirty in `git status`. Drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`. `git add -- <paths>` and `git add -u --` for those deletes. Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty staged set → skip, log `g2-code | skip | empty-stage | ISO`, continue. Before add/commit: `HEAD` must equal `state.branch` (checkout `state.branch` only if drifted; never reset / `-D`).
+
+| Mode | After | Before | Message | `commits[].step` |
+|------|-------|--------|---------|------------------|
+| standard | Step 5 score ≥ 7 or Approve and continue | Step 6 | `feat({slug}): verified implementation` | `5` |
+| lite | Step 2 implement (build/tests already in exit criteria) | Step 3 | same | `2` |
+| both | Review-fix loop if product files remain (one commit for all ≤3 rounds) | Advance (std 7 / lite 4) | `fix({slug}): code-review fixes` | `6` / `3` |
+
+Optional More-options **Commit** at Step 4 / other boundaries does not replace these points. If Step 4 already committed the full set, post-verify / post-implement is a skip. Step 7 testing G2-code (extra product files after review-fix) stays optional/required as today. Step 8 G2-delivery / G3 unchanged.
+
+**Interactive (stage set non-empty):** (1) **Commit then advance** (Recommended) (2) **Pause**. Do not offer Next-without-commit that dispatches review while product files are dirty. Cancel → HS-1.
+
+**Interactive (empty):** skip G2-code; normal Next.
+
+**`dryRun`:** print message + path list; no `git commit`. Do not dispatch review if the simulated stage set is non-empty and no prior real commit exists.
+
+**Fail-closed review preflight:** If uncommitted workflow product files remain when standard Step 6 / lite Step 3 would start → **STOP**. Offer pending G2-code / Pause. Do not dispatch `ws-code-review`. `{base}` = `config.project.baseBranch` (auto-detect `main` then `master`; never hardcode `master`). Review snapshot is `git diff {base}...HEAD` only.
+
+**Checkpoint:** G2-code after `update_state` for the completed step and **before** tagging `before-step-{next}` so the next checkpoint is the committed snapshot. Append each real commit to `state.commits[]` (`sha`, step, message). Log `g2-code | step={N} | {sha} | {kind} | ISO`.
 
 ---
 
@@ -187,7 +213,7 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 | Gate | Where |
 |------|-------|
 | HS-1 / HS-2 / HS-2a | Both orch |
-| G2-code | Full Steps 4 / 6 fix; lite after implement if committing mid-flow |
+| G2-code | Required: **G2-code after Step 5 before Step 6** (standard) / **G2-code after Step 2 before Step 3** (lite); post-review-fix when product files remain. Optional: Step 4 / Step 7 fix More-options Commit |
 | G2-delivery | Inside combined delivery + ship gate above |
 | Review findings | Lite Step 3; full Step 6 — fix → re-review until clean (max 3); Pause on residual Critical/Warning |
 | Active Resume | `setup.md` |
@@ -208,6 +234,8 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 | Check-implementation < 7 | Pause (no auto-approve) |
 | Review findings (full Step 6 / lite Step 3) | Autofix → re-review (max 3); Pause on residual Critical/Warning |
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`); mutation runs only when configured and not `skipMutationTesting` |
+| Post-verify G2-code (standard after Step 5 / lite after Step 2) | Commit when stage set non-empty; skip when empty |
+| Post-review-fix G2-code | Commit when stage set non-empty; skip when empty |
 
 ---
 
@@ -220,7 +248,7 @@ Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`. Or
 | Classifier user-gate | Build / test / leak scans |
 | Fable quality visibility (except REFUTED + `auditVerdictsBlockShip`) | SCM resolution and auth |
 | Pre-advance CI (`validate_state`) | Safety floor (REFUTED) |
-| Telemetry soft gates | HS-1–HS-4 stops |
+| Telemetry soft gates | HS-1–HS-4 stops; required G2-code save points; review dirty-tree STOP |
 
 **Telemetry:** Append `{"type":"gate-bypass","gate":"{name}","reason":"skip-gates|config","timestamp":"ISO"}` to step JSONL. Pass `--bypassed` to `update_state`. Banner: **`[GATES BYPASSED]`**.
 

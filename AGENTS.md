@@ -249,8 +249,8 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 
 | Workflow | Path | Role |
 |----------|------|------|
-| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → review → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
-| `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → review → ship → fix-pr (steps 0–5) |
+| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → product commit → review → review-fix commit → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
+| `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → product commit → review → review-fix commit → ship → fix-pr (steps 0–5) |
 
 ### Dual-mode
 
@@ -259,6 +259,7 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 - **Session model:** orchestrator session always runs under `currentModel`; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Subagent phase model preferences (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`) apply exclusively to `dispatch-agent` subagents (standard orch only; lite is inline). `defaults.enableDag` (default `false`) forces sequential task execution; `true` restores threshold-based parallel DAG. Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
+- **Product commits:** standard after Step 5 (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 / lite Step 4). Review uses `git diff {base}...HEAD`. No push before ship.
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
@@ -272,10 +273,10 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 | `ws-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
-| `ws-verify-plan` | 5 | Check-implementation (spec score) |
-| `ws-code-review` | 6 | Local review (fix → re-review, max 3) |
+| `ws-verify-plan` | 5 | Check-implementation (spec score); required product commit follows before review |
+| `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit of fixes) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
-| `ws-ship-pr` | 8 | Delivery commit + push/PR |
+| `ws-ship-pr` | 8 | Delivery artifacts + push/PR (product already committed) |
 | `ws-fix-pr` | 9 | PR thread fix |
 | `ws-goal-fix-pr` | 9 | Fix until zero threads |
 | `ws-update-plan-implementation` | Post | Plan deltas |

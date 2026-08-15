@@ -12,7 +12,7 @@ Sibling protocol files under [`protocols/`](protocols/) remain authoritative for
 |-------|-----|------|
 | G0 | Read, RO reports | — |
 | G1 | Edit WT, plans, impl (no commit) | Transition gate |
-| G2-code | `git commit` **code only** (`src/`, `web/`, `tests/`) | Step 4 / 6 fix substep / 7 fix |
+| G2-code | `git commit` workflow product `files_touched` only (path-scoped; never `{plansDir}`) | Required: **G2-code after Step 5 before Step 6**; after Step 6 review-fix if dirty. Optional: Step 4 / Step 7 fix |
 | G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 combined delivery+ship gate |
 | G3 | `git push`, PR create/merge | Step 8 **ship action** (within combined gate) |
 
@@ -28,9 +28,9 @@ Auto: HS-3/4/5 apply; HS-1/2 N/A.
 
 ### Transition Discipline
 
-**Normal:** N done → `update_state` (+ `--jsonl-out`) → checkpoint `before-step-{N+1}` → `validate_state --pre-advance {N+1}` (shell; skip when `skipQualityGates` / `--skip-gates`) → Board → summary → Transition Gate → dispatch N+1.
+**Normal:** N done → `update_state` (+ `--jsonl-out`) → **required G2-code after Step 5 before Step 6** (and after Step 6 review-fix if dirty; skip if empty stage) → checkpoint `before-step-{N+1}` → `validate_state --pre-advance {N+1}` (shell; skip when `skipQualityGates` / `--skip-gates`) → Board → summary → Transition Gate → dispatch N+1. G2-code algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. `dryRun` prints message + paths and does not call `git commit`; do not dispatch review if the simulated stage set is non-empty.
 
-**Auto:** auto-gate + dispatch N+1 same turn.
+**Auto:** auto-gate + dispatch N+1 same turn (`autoMode` commits G2-code when the stage set is non-empty).
 
 **Forbidden:** mutating step or commit without gate.
 
@@ -44,7 +44,7 @@ Available at **every** transition gate (normal mode; under **More options…** w
 | **Previous** | Go back to an earlier completed step (backward nav) |
 | **Replay** | Re-dispatch current step from checkpoint |
 | **Refine** | Replay with refinement intent (maps to Replay + log `refine-replay`) |
-| **Commit** | When step produced uncommitted code changes — explicit G2-code menu (never implicit) |
+| **Commit** | Explicit G2-code (`commit-code` / `files_touched`). Required after Step 5 and after Step 6 review-fix when product files remain; optional under More options at other boundaries |
 | **Undo** | Revert to checkpoint before current step (manifest algorithm) |
 
 `autoMode`: only **Next** (auto-gate index 0). Backward/Replay/Refine/Commit/Undo disabled.
@@ -166,7 +166,7 @@ Store `specPath` in state `## Artifacts`.
 
 ### Build & Test Validation (4, 6-fix, 7)
 
-Before G2-code commit: `config.json.rules.stackFile` → build (+ tests unless `skipTests`) → Coder fix loop. Stage **only** `src/`, `web/`, `tests/` — never `{plansDir}/`. `skipTests`: `verification.tests: skipped`.
+Before G2-code commit: `config.json.rules.stackFile` → build (+ tests unless `skipTests`) → Coder fix loop. Stage **only** workflow `files_touched` product paths (`commit-code`) — never `{plansDir}/`, never `git add -A` / `git add .`. `skipTests`: `verification.tests: skipped`.
 
 ### Testing (Step 7)
 
@@ -182,12 +182,12 @@ Failure (max 3): **Apply fixes and revalidate** (rec) / **Accept with reservatio
 
 | When | Allowed |
 |------|---------|
-| Steps 0–7 | **Code only** under `src/`, `web/`, `tests/` at Steps 4, 6 fix, 7 fix |
-| Steps 0–7 | **Forbidden:** `{plansDir}/**`, exec/dag/report/state/issue files |
+| Steps 0–7 | **Product files** from workflow `files_touched` via G2-code: required after Step 5 and after Step 6 review-fix if dirty; optional at Step 4 / Step 7 fix |
+| Steps 0–7 | **Forbidden:** `{plansDir}/**`, exec/dag/report/state/issue files, `git add -A`, `git add .`, empty commits |
 | Step 8 | Configured delivery artifacts (`defaults.deliveryCommitArtifacts`) — delivery commit via G2-delivery gate |
 | Pause | No commit; no delete |
 
-Orch `git add` must be path-scoped — never `git add .` on code-commit steps.
+Orch `git add` must be path-scoped — never `git add .` / `git add -A` on code-commit steps. Messages: `feat({slug}): verified implementation` then `fix({slug}): code-review fixes`. Record `{sha, step, message}` in `commits[]`.
 
 ### Ship — delivery + push/PR (Step 8)
 
@@ -242,6 +242,8 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 2 needs_user | first option; early → **End refinement and advance** (auto-confirms 2e) |
 | Step 2e (only if shown) | **I confirm shared understanding — advance to Step 3** |
 | Step 5 score < 7 | Pause (fail closed — no auto-approve) |
+| Post-verify G2-code (after Step 5) | Commit when stage set non-empty; skip when empty |
+| Post-review-fix G2-code (after Step 6) | Commit when stage set non-empty; skip when empty |
 | Step 7 skipTesting / no API-UI | skip step |
 | Step 7 plan | **Approve and run test battery without browser** |
 | Step 7 mutation skip (`defaults.skipMutationTesting` / empty `mutationTest`) | log skipped; continue report |
@@ -277,7 +279,7 @@ startedAt, endedAt, status: active|completed|cancelled|failed
 currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode, scoreAndRefine
 execMode: sequential|parallel|null  # set after Step 3
 branch, branchStrategy: from-current | from-base | stay | checkout-existing, baseBranch, baselineCommit, preExistingDirty: []
-checkpoints, workflowManifest, commits: [{sha, step, message}]
+checkpoints, workflowManifest, commits: [{sha, step, message}]  # G2-code and G2-delivery append here
 completedSteps, stepStatus, skippedSteps, completedTasks, stepDispatches
 pass1Scores, pass2Scores, scoreGateChoice
 refineRound, currentModel  # session-derived; refresh on resume
@@ -341,7 +343,7 @@ Shows gates.md banner (`Orchestrator session model` + `Subagent phase model` + P
 
 ## Error policy
 
-Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct: orch never implements code; fresh `dispatch-agent`/step; branch-direct default; G2-code steps 4/6-fix/7; G2-delivery step 8; G3 step 8 push/PR; HS-2a blocks plan-dir commits mid-workflow.
+Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct: orch never implements code; fresh `dispatch-agent`/step; branch-direct default; **G2-code after Step 5 before Step 6** and after review-fix if dirty (optional 4 / 7-fix); G2-delivery step 8; G3 step 8 push/PR; HS-2a blocks plan-dir commits mid-workflow.
 
 ## Post-workflow (outside this agent)
 

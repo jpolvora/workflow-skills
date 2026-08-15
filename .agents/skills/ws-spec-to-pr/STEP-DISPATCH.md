@@ -17,8 +17,8 @@
 | 2 | Conditional: skip if eligible; else `dispatch-agent` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
 | 3 | `dispatch-agent` `ws-plan-to-tasks`; `defaults.enableDag: false` (default) forces `execMode: sequential` (sequential subagent tasks, no parallel DAG groups). `defaults.enableDag: true` evaluates `dagThresholds` for parallel DAG tasks. | `step-03-{slug}.plan.exec.md` + `step-03-{slug}.exec.dag.json` (both modes; DAG task groups only when parallel) |
 | 4 | `dispatch-agent` `ws-implement-tasks` mode build; branch-direct default | verification |
-| 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve) | `step-05-{slug}.plan.report.md` |
-| 6 | `dispatch-agent` `ws-code-review`; Critical/Warning → **fix → re-review** via `ws-implement-tasks` (max 3; not a separate step); soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
+| 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve); then **G2-code after Step 5 before Step 6** (skip if empty) | `step-05-{slug}.plan.report.md` |
+| 6 | Fail-closed dirty preflight; `dispatch-agent` `ws-code-review` (`git diff {base}...HEAD`); Critical/Warning → **fix → re-review** via `ws-implement-tasks` (max 3; not a separate step); then G2-code of review fixes if dirty; soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
 | 7 | Auto-skip if `skipTesting` or (no test surface + unit tests green); else `dispatch-agent` `ws-testing` (Testing). Inside Step 7, optional **mutation** substep runs only when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; skip (log) otherwise. Mutation score &lt; `verification.mutationThreshold` (default 80) or runner non-zero → Step 7 **fail-closed** (no Advance to 8); hand off to `ws-implement-tasks` fix mode. FSM stays 0–9 (no new step). | `step-07-{slug}.testing.*` |
 | 8 | Delivery result + **combined ship gate** ([`gates.md`](../ws-shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
 | 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists | PR threads / merge |
@@ -28,8 +28,9 @@
 **Order (mandatory):**
 
 1. **`update_state.py`** — merge `files_touched` → Step file log; record telemetry; advance `currentStep`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl` (zero-padded `NN`; lazy-create `telemetry/`). When `--skip-gates` or `config.json.invariants.skipQualityGates` is active, add `--bypassed` on this call.
-2. **Checkpoint** — `Shell` tag `uswf/{workflow-id}/before-step-{N+1}` @ HEAD (skip tag write in `dryRun`; log only). Pre-advance soft-passes missing tags when `dryRun: true`.
-3. **Pre-advance validation** — **shell command** (not `dispatch-agent`):
+2. **G2-code (Steps 5 and 6 only)** — After Step 5 (score ≥ 7 or approve): **G2-code after Step 5 before Step 6** (skip if empty stage). After Step 6 review-fix: one G2-code if product files remain. Algorithm and messages: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. Uncommitted workflow product files → **STOP**; do not dispatch `ws-code-review`. `dryRun` simulates only. Other steps: skip this item.
+3. **Checkpoint** — `Shell` tag `uswf/{workflow-id}/before-step-{N+1}` @ HEAD **after** any G2-code (skip tag write in `dryRun`; log only). Pre-advance soft-passes missing tags when `dryRun: true`.
+4. **Pre-advance validation** — **shell command** (not `dispatch-agent`):
 
 ```bash
 python {skillsRoot}/ws-spec-to-pr/scripts/validate_state.py \
@@ -39,9 +40,9 @@ python {skillsRoot}/ws-spec-to-pr/scripts/validate_state.py \
 
 On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, no dispatch to step N+1.
 
-**Skip (pre-advance gate only):** When `--skip-gates` or `skipQualityGates` is active, **omit** step 3; log gate-bypass in JSONL (`type: gate-bypass`, `gate: pre-advance`, `reason: skip-gates|config`). Does **not** skip `update_state`, checkpoint, build/test/security, or HS-1–HS-4.
+**Skip (pre-advance gate only):** When `--skip-gates` or `skipQualityGates` is active, **omit** step 4; log gate-bypass in JSONL (`type: gate-bypass`, `gate: pre-advance`, `reason: skip-gates|config`). Does **not** skip `update_state`, G2-code, checkpoint, build/test/security, or HS-1–HS-4.
 
-4. **Progress Board** → **Transition Gate** → dispatch step N+1 (or auto-gate + dispatch in `autoMode`).
+5. **Progress Board** → **Transition Gate** → dispatch step N+1 (or auto-gate + dispatch in `autoMode`).
 
 **Runtime audit (`defaults.enableAuditing`):** When effective `true`, after each step's `update_state` (before Transition Gate), append audit findings for script/tool/I/O/dispatch anomalies, performance bottlenecks, correctness risks, and disposable scratch scripts observed during the step via [`ws-audit`](../ws-audit/SKILL.md). At workflow end (after Step 8 delivery result or on failure), finalize the audit log and run the upstream GitHub issue / suggestion gates when `has-errors` or `has-suggestions` is true.
 
@@ -58,8 +59,8 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 
 | Score | Behavior |
 |-------|----------|
-| ≥ 7 | Complete step 5; Advance to 6 |
-| &lt; 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`) |
+| ≥ 7 | Complete step 5; **G2-code after Step 5 before Step 6** (skip if empty); then dispatch 6 |
+| &lt; 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`). Approve → same G2-code then 6. Refine/replan/respec run **before** the product commit. |
 
 `autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
 
@@ -67,12 +68,13 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 
 | Case | Behavior |
 |------|----------|
-| Clean (no Critical/Warning) | Complete step 6; Advance to 7 |
+| Clean (no Critical/Warning) | Complete step 6; skip review-fix G2-code; Advance to 7 |
 | Critical/Warning findings | Fix → re-review rounds via `ws-implement-tasks` mode fix (max **3**); state/memory each round; Advance only when clean |
+| After loop, product files remain | One **G2-code** commit for all fix rounds (`fix({slug}): code-review fixes`); then Advance |
 | Residual after 3 rounds | **Pause** (fail closed) — do not Advance with open Critical/Warning |
-| `autoMode` | Autofix (no ask); same max 3; Pause on residual |
+| `autoMode` | Autofix (no ask); same max 3; Pause on residual; G2-code when stage set non-empty |
 
-Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3` in gate history. Contract: [`ws-code-review`](../ws-code-review/SKILL.md) § Fix → re-review loop.
+Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3` in gate history. Contract: [`ws-code-review`](../ws-code-review/SKILL.md) § Fix → re-review loop. **Do not dispatch** review while uncommitted workflow product files remain.
 
 ### Step 8 — Ship (delivery + push/PR)
 

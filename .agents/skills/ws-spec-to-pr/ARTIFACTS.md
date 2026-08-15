@@ -92,7 +92,7 @@ Stage **only** artifacts enabled by `config.json` → `defaults.deliveryCommitAr
 3. For each path: if missing and toggle is `includeRefinedPlan` → **STOP** with a clear error; if missing and any other toggle → skip that path and log a note on the prepare board / delivery result (do not invent content).
 4. If the resolved stage list is empty → **STOP** (no empty plan-artifact delivery commit).
 5. `git add` only resolved paths under `{us-dir}`; commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
-6. Product/source staging remains separate (`commit-code` / ship-scope product files).
+6. Product/source staging remains separate (`commit-code`: path-scoped workflow `files_touched`, not directory roots).
 
 **Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
 

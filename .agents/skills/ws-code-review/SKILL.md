@@ -30,8 +30,10 @@ Workflow (ws-spec-to-pr Step 6 / lite Step 3): dispatched automatically, receive
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
-| `base` | `origin/main`/`origin/master` (auto-detected) | Git ref to diff against |
+| `base` | `config.project.baseBranch`, then auto-detect `main`/`master` (prefer `origin/{name}` when that remote-tracking ref exists) | Git ref to diff against. Never hardcode `master`. |
 | `plan` | (optional) | `step-02-*.plan.refined.md` or `step-01-*.plan.md` to cross-reference planned changes |
+
+**Committed snapshot:** Primary diff is `git diff --name-status {base}...HEAD`. Do not treat the dirty working tree as the review snapshot. Workflow: orchestrator **STOP**s if uncommitted workflow product files remain — do not dispatch this skill. Standalone `/code-review`: warn if dirty product files exist; still review `{base}...HEAD` only. This skill does **not** run `git commit` (orchestrator owns G2-code).
 
 ## Fix → re-review loop (workflow)
 
@@ -63,7 +65,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 ## Steps
 
-1. **Detect stack & diff**: read `config.json.stack` to scope backend/frontend layers; exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Run `git diff --name-status {base}...HEAD` over in-scope paths.
+1. **Detect stack & diff**: read `config.json.stack` to scope backend/frontend layers; exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
    - Done when: the in-scope modified file list is known.
 
 2. **Triage**: flag lines with defect hypotheses; discard cosmetic nits, untouched pre-existing code, and low-risk UI without security surface.
@@ -92,4 +94,4 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 - Include only findings with complete Investigate proof (all four steps); no speculative comments.
 - Clear Critical/Warning before Advance via fix → re-review (max 3).
-- Do not commit: changes stay in the working tree for the orchestrator or developer to stage.
+- Do not commit: changes stay in the working tree for the orchestrator or developer to stage. Do not treat uncommitted files as the review snapshot.

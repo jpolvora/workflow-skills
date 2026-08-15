@@ -221,7 +221,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
           </div>
-          <p class="stepper-desc">Executes DAG tasks sequentially using subagent isolation. Enforces surgical diff hygiene, memory trap consulting before edits, and action-first execution.</p>
+          <p class="stepper-desc">Executes DAG tasks sequentially using subagent isolation. Enforces surgical diff hygiene, memory trap consulting before edits, and action-first execution. Product files stay uncommitted until after Step 05 verification.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill exec view-skill" data-path=".agents/skills/ws-implement-tasks/SKILL.md">ws-implement-tasks</span>
@@ -240,7 +240,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
           </div>
-          <p class="stepper-desc">Evaluates code changes against spec acceptance criteria, calculating an objective completeness score (0–10) and generating a verification report.</p>
+          <p class="stepper-desc">Evaluates code changes against spec acceptance criteria, calculating an objective completeness score (0–10) and generating a verification report. After a passing (or approved) score, the orchestrator commits workflow-touched product files so local review can diff committed work vs the base branch.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
@@ -256,7 +256,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
           </div>
-          <p class="stepper-desc">Executes a two-phase code review (Security/Bugs & Senior Standards), triggering automatic fix sub-cycles when review findings are surfaced.</p>
+          <p class="stepper-desc">Reviews the committed diff vs <code>baseBranch</code> (<code>git diff {base}...HEAD</code>). Runs a two-phase code review (Security/Bugs &amp; Senior Standards) with automatic fix sub-cycles, then a second product commit for review fixes if any.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
@@ -292,7 +292,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
           </div>
-          <p class="stepper-desc">Commits code changes, pushes feature branch to remote origin, and opens Pull Request via configured SCM provider (GitHub CLI / Azure DevOps / Local SCM).</p>
+          <p class="stepper-desc">Commits configured plan-dir delivery artifacts (product code is already committed after verify and after review-fix), pushes the feature branch, and opens a Pull Request via the configured SCM provider (GitHub CLI / Azure DevOps).</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-ship-pr/SKILL.md">ws-ship-pr</span>
@@ -368,7 +368,7 @@
             </div>
             <span class="stepper-fsm-tag">Lite Pipeline</span>
           </div>
-          <p class="stepper-desc">Executes code changes sequentially in place, bypassing complex JSON DAG file generation for rapid feature delivery.</p>
+          <p class="stepper-desc">Executes code changes sequentially in place, bypassing complex JSON DAG file generation for rapid feature delivery. Then commits workflow-touched product files before local review.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill exec view-skill" data-path=".agents/skills/ws-implement-tasks/SKILL.md">ws-implement-tasks</span>
@@ -385,7 +385,7 @@
             </div>
             <span class="stepper-fsm-tag">Lite Pipeline</span>
           </div>
-          <p class="stepper-desc">Performs a single-pass local code review, verifying quality standards and auto-fixing minor issues prior to delivery.</p>
+          <p class="stepper-desc">Reviews the committed diff vs the base branch, verifying quality standards and auto-fixing issues, then a second product commit for review fixes if any.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
@@ -401,7 +401,7 @@
             </div>
             <span class="stepper-fsm-tag">Lite Pipeline</span>
           </div>
-          <p class="stepper-desc">Pushes feature branch and creates Pull Request immediately upon review completion.</p>
+          <p class="stepper-desc">Pushes the feature branch and creates the Pull Request (product already committed after implement and after review-fix).</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-ship-pr/SKILL.md">ws-ship-pr</span>
@@ -615,7 +615,7 @@
         <li>Feature-branch strategy gate at bootstrap, then spec (Step 0)</li>
         <li>Architectural Review & Interview (Steps 1–2)</li>
         <li>DAG Task Decomposition (Step 3)</li>
-        <li>Implement, verify & local code review (Steps 4–6)</li>
+        <li>Implement, verify, product commit, local code review, review-fix commit (Steps 4–6)</li>
         <li>Pre-PR testing (optional <code>testingModel</code>), shipping & ws-goal-fix-pr (Steps 7–9)</li>
         <li>Optional runtime audit via <code>defaults.enableAuditing</code></li>
       </ul>
@@ -635,9 +635,9 @@
       <ul class="workflow-steps-list">
         <li>Feature-branch strategy gate at bootstrap (same as standard)</li>
         <li>Planning & brainstorm from existing spec</li>
-        <li>Direct sequential coding (no complex DAG required)</li>
-        <li>Quick local code review & automatic fix cycles</li>
-        <li>Fast consolidation & PR delivery</li>
+        <li>Direct sequential coding, then product commit</li>
+        <li>Local code review of committed diff vs base; second commit for fixes</li>
+        <li>Fast consolidation & PR delivery (plan-dir artifacts at ship)</li>
         <li>Zero setup/config duplication in dual-mode</li>
       </ul>
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md">
@@ -1483,9 +1483,31 @@
         <div class="faq-answer-content">
           <p>The choice depends on task complexity and scope:</p>
           <ul>
-            <li><strong>Standard (<code>ws-spec-to-pr</code>)</strong>: A comprehensive 10-step pipeline (Steps 0–9). Includes deep architectural planning, interactive plan audit interviews, JSON DAG task graph decomposition, isolated subagent task execution, 2-phase local code review, pre-PR automated testing, and autonomous PR thread fixing.</li>
-            <li><strong>Lite (<code>ws-spec-to-pr-lite</code>)</strong>: A streamlined 6-step pipeline (Steps 0–5). Designed for direct sequential coding without complex DAG generation overhead, offering rapid feature delivery while maintaining code review and PR shipping gates.</li>
+            <li><strong>Standard (<code>ws-spec-to-pr</code>)</strong>: A comprehensive 10-step pipeline (Steps 0–9). Includes deep architectural planning, interactive plan audit interviews, JSON DAG task graph decomposition, isolated subagent task execution, a product commit after verify, local code review of the committed diff vs base, a second commit for review fixes, pre-PR automated testing, and autonomous PR thread fixing.</li>
+            <li><strong>Lite (<code>ws-spec-to-pr-lite</code>)</strong>: A streamlined 6-step pipeline (Steps 0–5). Direct sequential coding without DAG overhead: product commit after implement, code review of <code>{base}...HEAD</code>, optional review-fix commit, then PR shipping.</li>
           </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2b -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="when commit product files after verify before code-review G2-code review-fix base branch diff">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows</span>
+          <span>When does Spec-to-PR commit code?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Product files are committed <strong>before</strong> local code review, not first at ship:</p>
+          <ul>
+            <li><strong>Standard:</strong> after Step 5 verify (passing or approved score), then Step 6 reviews <code>git diff {base}...HEAD</code>. Review fixes get a second product commit.</li>
+            <li><strong>Lite:</strong> after Step 2 implement, then Step 3 review; second commit after review fixes if any.</li>
+            <li><strong>Ship (Step 8 / lite Step 4):</strong> configured plan-dir delivery artifacts + push/PR. Plan files stay uncommitted until then.</li>
+          </ul>
+          <p>Only workflow-touched created/updated/deleted product paths are staged. Never <code>git add -A</code>. Review fails closed if those files are still uncommitted.</p>
         </div>
       </div>
     </div>

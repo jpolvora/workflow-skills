@@ -179,6 +179,8 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
 
+**Product-commit order (both orch):** after verify (standard Step 5) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
+
 ---
 
 ## Managed skills — no silent local refactors

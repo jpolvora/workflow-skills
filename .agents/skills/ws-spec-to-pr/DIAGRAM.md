@@ -10,13 +10,13 @@
 flowchart LR
   F0[F0 Bootstrap<br/>step 0] --> F1[F1 Planning<br/>steps 1–3]
   F1 --> F2[F2 Implement<br/>step 4]
-  F2 --> F3[F3 Check<br/>step 5]
-  F3 --> F4[F4 Review<br/>step 6 fix→re-review]
+  F2 --> F3[F3 Check<br/>step 5 then G2-code]
+  F3 --> F4[F4 Review<br/>step 6 fix→re-review then G2-code]
   F4 --> F5[F5 Testing<br/>step 7]
   F5 --> F6[F6 Ship + Fix-PR<br/>steps 8–9]
 ```
 
-Lite: F0=0 · F1=1 · F2=2 · F3=3 · F4=4 · F5=5 (no Testing / interview / DAG / check).
+Lite: F0=0 · F1=1 · F2=2 then G2-code · F3=3 then G2-code (fixes if any) · F4=4 · F5=5 (no Testing / interview / DAG / check).
 
 ---
 
@@ -29,12 +29,14 @@ flowchart TD
   S2 --> S3[3 Plan-to-tasks]
   S3 --> S4[4 Implement]
   S4 --> S5[5 Check-implementation]
-  S5 -->|score ≥ 7| S6[6 Code-review]
+  S5 -->|score ≥ 7| C1[G2-code verified implementation]
   S5 -->|score < 7| G5{Refine / Replan / Respec / Approve}
   G5 --> S4
-  G5 -->|approve| S6
+  G5 -->|approve| C1
+  C1 --> S6[6 Code-review]
   S6 -->|findings| Fix[Fix substep<br/>ws-implement-tasks]
-  Fix --> S7[7 Testing]
+  Fix --> C2[G2-code review fixes]
+  C2 --> S7[7 Testing]
   S6 -->|clean| S7
   S7 --> S8[8 Ship<br/>delivery + push/PR]
   S8 --> S9[9 Fix-PR]
@@ -48,8 +50,11 @@ flowchart TD
 flowchart TD
   L0[0 Spec — same entry as standard] --> L1[1 Plan]
   L1 --> L2[2 Implement]
-  L2 --> L3[3 Review fix→re-review]
-  L3 --> L4[4 Ship]
+  L2 --> C1[G2-code implementation]
+  C1 --> L3[3 Review fix→re-review]
+  L3 -->|fixes| C2[G2-code review fixes]
+  C2 --> L4[4 Ship]
+  L3 -->|clean| L4
   L4 --> L5[5 Fix-PR]
 ```
 
