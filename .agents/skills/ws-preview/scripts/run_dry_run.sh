@@ -14,15 +14,18 @@ INCLUDE_UNCOMMITTED=1
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --stack)
-      STACK="${2:---stack requires a value}"
+      [[ -n "${2:-}" ]] || { echo "error: --stack requires a value" >&2; exit 2; }
+      STACK="$2"
       shift 2
       ;;
     --target-branch)
-      TARGET_BRANCH="${2:---target-branch requires a value}"
+      [[ -n "${2:-}" ]] || { echo "error: --target-branch requires a value" >&2; exit 2; }
+      TARGET_BRANCH="$2"
       shift 2
       ;;
     --model)
-      MODEL="${2:---model requires a value}"
+      [[ -n "${2:-}" ]] || { echo "error: --model requires a value" >&2; exit 2; }
+      MODEL="$2"
       shift 2
       ;;
     --committed-only)
