@@ -329,6 +329,26 @@ nav .brand-icon {
   border-color: var(--accent-cyan);
 }
 
+.hero-animation-wrap {
+  width: min(100%, 900px);
+  aspect-ratio: 64 / 25;
+  margin: 0 auto 34px;
+  overflow: hidden;
+  background: #dbe6ec;
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  border-radius: 24px;
+  box-shadow:
+    0 24px 70px rgba(2, 6, 23, 0.45),
+    0 0 44px rgba(56, 189, 248, 0.14);
+}
+
+.hero-animation {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .hero h1 {
   font-size: clamp(2.4rem, 5.5vw, 4.2rem);
   font-weight: 800;
@@ -2021,6 +2041,10 @@ footer a:hover {
   nav .nav-inner { padding: 0; }
   .nav-links { display: none; }
   .hero { padding: 56px 16px 40px; }
+  .hero-animation-wrap {
+    margin-bottom: 24px;
+    border-radius: 16px;
+  }
   .hero h1 { font-size: 2.2rem; }
   .terminal-body { flex-direction: column; align-items: flex-start; }
 }

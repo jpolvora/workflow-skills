@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-15 15:32] Agent: GPT-5.6 Sol
+- **Prompt**: Add the supplied animation above the top hero title with responsive phone and desktop embedding.
+- **Done**: Added a cinematic responsive video hero with muted autoplay, WebM/MP4 sources, a WebP poster, and mobile styling.
+- **Result**: The optimized 1280x500 animation plays above “Workflow Skills” without horizontal overflow and keeps the title visible on desktop and phone viewports.
+
 ### [2026-08-15 12:55] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-to-pr https://github.com/jpolvora/workflow-skills/issues/211
 - **Done**: Entry resume of leftover `testing-executor-model` (user chose resume, then mark-complete). Confirmed feature commits already in develop (0 unique; 51 behind). Restored HEAD to `develop`; Phase A cleanup CLEAN; state `status: completed`.
