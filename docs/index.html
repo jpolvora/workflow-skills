@@ -1589,7 +1589,7 @@
     </div>
 
     <!-- Q8 -->
-    <div class="faq-item" data-faq-cat="getting-started" data-search="create custom skills write a skill contribute upstream yaml frontmatter">
+    <div class="faq-item" data-faq-cat="getting-started" data-search="create custom skills write a skill contribute upstream yaml frontmatter global install clone">
       <button type="button" class="faq-question" aria-expanded="false">
         <div class="faq-question-text">
           <span class="faq-cat-tag">Getting Started</span>
@@ -1600,7 +1600,7 @@
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p>Yes! To author a new skill, use our meta-skill <strong><code>ws-write-a-skill</code></strong>. It guides you through defining standard YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>), applying progressive disclosure principles, and structuring helper scripts.</p>
-          <p>Lasting skill improvements can be submitted via Pull Request to the canonical upstream repository: <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a>.</p>
+          <p>Lasting skill improvements can be submitted via Pull Request to the canonical upstream repository: <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a>. When that clone and a global <code>~/.agents/skills</code> install both exist, edit only the clone; see README § This clone vs a global install.</p>
         </div>
       </div>
     </div>
@@ -1664,6 +1664,9 @@
   <div class="contribute-box">
     <p>
       Skills live in <code>.agents/skills/&lt;name&gt;/SKILL.md</code> with standard YAML frontmatter (<code>name</code>, <code>description</code>, <code>version</code>).
+    </p>
+    <p style="margin-top: 12px;">
+      If this clone and a global install (<code>~/.agents/skills</code>) both exist, edit only <code>.agents/skills/ws-*</code> in the clone. Do not edit the global copies from this repo. There is no IDE toggle that hides the duplicate; agents follow <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md" target="_blank" rel="noopener">AGENTS.md</a> § Global vs local <code>ws-*</code>.
     </p>
     <p style="margin-top: 12px;">
       Agents: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md" target="_blank" rel="noopener">AGENTS.md</a> for the full routing contract.<br>

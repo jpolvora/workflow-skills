@@ -146,6 +146,7 @@ The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-
 - **Local CLI:** [`bin/cli.js`](./bin/cli.js) — zero runtime npm dependencies; copies from the downloaded package.
 - **No remote shell install path:** curl only downloads the shim; work is done by Node/`npx`.
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
+- **This clone vs a global install:** you may have `ws-*` both here (`.agents/skills/`) and under `~/.agents/skills` (`WORKFLOW_SKILLS_GLOBAL_DIR` if set). Edit only this clone. Do not edit, uninstall, or “sync” the global copies from a session in this repo. Details: [This clone vs a global install](#this-clone-vs-a-global-install).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
 - **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `ws-shared/` hub templates. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `ws-shared/skill-integrity-local.json` from actual digests).
 - **Upstream regenerate (authors):** any change to hashed skill/hub/install inputs must run `npm run generate-integrity` and commit `bin/skill-integrity.json` in the same change; `npm run verify-integrity` must pass before claim complete / PR (see root `AGENTS.md`). `ws-check-harness` and install tests fail closed on a stale manifest.
@@ -239,7 +240,17 @@ version: 1.0
 ---
 ```
 
-Agent obligations (portability, ws-check-harness before `main`): see [`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) after install and root [`AGENTS.md`](AGENTS.md) when contributing upstream.
+### This clone vs a global install
+
+This package’s skill source of truth is `.agents/skills/ws-*`. A machine-wide install may also exist at `~/.agents/skills` (or `WORKFLOW_SKILLS_GLOBAL_DIR`). Agent hosts often list **both** copies of the same `ws-*` id.
+
+- **Edit** only this clone’s `.agents/skills/ws-*`. Never edit or uninstall global `ws-*` from a session here (`update` overwrites that tree; other projects use it).
+- **Do not** run `npx … install` / `update` against this package root (blocked except under `test/`).
+- There is **no IDE setting** that hides the duplicate. Agents follow root [`AGENTS.md`](AGENTS.md) § Global vs local `ws-*`: invoke the global copy when it exists; author, test, or review a skill against the local tree only.
+
+Consumer projects are unchanged: project-local skills override global; project `ws-shared/config.json` always wins.
+
+Agent obligations (portability, ws-check-harness before `main`): see [`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) after install and root [`AGENTS.md`](AGENTS.md) when contributing upstream. Session operating rules for agents in this clone are inlined in root `AGENTS.md` § Upstream session contract (not a separate skill file).
 
 After harness or catalog changes: regenerate the site with `node bin/build-site.js` when layers/routing change. That stamps the footer from `package.json` (no auto-bump). For an intentional release bump + site rebuild: `npm run build-site:bump` (or `node bin/build-site.js --bump`), then sync `test/package.json`’s `file:../workflow-skills-<version>.tgz` reference. CI site deploy never bumps — install/`--version`/`--check` stay aligned with the footer.
 
