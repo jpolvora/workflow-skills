@@ -38,8 +38,17 @@ def ensure_utf8_stdio() -> None:
 
 ensure_utf8_stdio()
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root  # noqa: E402
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+
+def _repo_root(override: str | None = None) -> Path:
+    return resolve_repo_root(override, script_file=__file__)
+
+
+REPO_ROOT = _repo_root()
 CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
 DEFAULT_SPECS_DIR = ".agents/specs"
 LEGACY_SPECS_DIR = "specs"
@@ -226,9 +235,19 @@ def main() -> int:
         help="With --detect: create missing specsDir and write default plans.specsDir.",
     )
     parser.add_argument("--json", action="store_true", help="Machine-readable JSON output.")
+    parser.add_argument(
+        "--repo-root",
+        type=str,
+        default=None,
+        help="Consumer project root (default: cwd hub probe)",
+    )
     args = parser.parse_args()
 
     ensure_utf8_stdio()
+
+    global REPO_ROOT, CONFIG_PATH
+    REPO_ROOT = _repo_root(args.repo_root)
+    CONFIG_PATH = REPO_ROOT / ".agents" / "skills" / "ws-shared" / "config.json"
 
     if args.detect:
         if args.ensure:
