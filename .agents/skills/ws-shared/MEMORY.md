@@ -22,6 +22,8 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Create a PR or rebase/implement on a resumed feature branch without `git log origin/develop..HEAD` / `git rev-list --left-right --count origin/develop...HEAD`. Do not assume `{us-dir}` files survive `git checkout {state.branch}` when they are tracked on the starting branch.
 - **INSTEAD DO**: If the feature tip has 0 commits not in develop/main, mark the leftover workflow `completed` (already merged) and start new work from develop. Before checkout, copy or restore plan artifacts if they live only on the current branch. Restore HEAD to `develop` after closing the leftover run.
 
+### [2026-08-15] Hybrid/global scripts must not resolve consumer ws-shared from __file__
+
 ### [2026-08-15] Global vs local ws-* duplicates in this upstream repo
 - **Layer**: `Infrastructure`
 - **Module**: `AGENTS.md / upstream-dev-harness`

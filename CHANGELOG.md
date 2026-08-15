@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-15 15:12] Agent: Cursor Composer
+- **Prompt**: `/ws-multi-spec` sequential lite full auto for GH #211, #209, #210 then ship + goal-fix-pr until merge
+- **Done**: Shipped 3/3 — PR 212 (#211 hybrid consumer-root), PR 213 (#209 en-us patterns + autoload), PR 214 (#210 ws-preview Extra skill, v0.3.21)
+- **Result**: All merged to `main` (`ff7e93c`, `af32fc4`, `b3ce293`)
+
 ### [2026-08-01 02:56] Agent: Antigravity AI (Gemini 3.6 Flash)
 - **Prompt**: update website, readme, agents.md, installer npx, dependencies, checksum, then commit all and ws-ship-pr (bump version)
 - **Done**: Bumped package to `0.0.113`; updated site catalog (`docs/index.html`); updated `README.md`, `AGENTS.md`, `.agents/AGENTS.md` for `--global` (`-g`) and `--project` (`-p`) CLI scope options; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified full test suite (`npm run tests`, 100% green).
