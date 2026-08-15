@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "7ca5a80d74985877297e7b15474abac2aeb6d8ca797adc430ad0fef67f219886",
+  "fullPackageDigest": "53ddd52d08fc352ff545fcc762332ed79ebc4c333dac5ab93376726a52318db0",
   "hub": {
     "files": {
       "AGENTS.md": "f7f3d04840707a6ff5e9a5d7f79909cb6e9b2b2a2e27c198e2efdbc1cb11f7c1",
@@ -240,10 +240,10 @@
     },
     "ws-preview": {
       "files": {
-        "scripts/run_dry_run.sh": "98cfb4b7748f607be470af9e3d700f6dcb6789b399401fef570824e0b36972f6",
+        "scripts/run_dry_run.sh": "7a5533af8b271ff6cf008020af04970873f14da8c7cdb84428db33bbff32eb0e",
         "SKILL.md": "6f82e261e1b7971915a992f44c8692e23dce79dfd8a0ca19f1591b8cdec1824f"
       },
-      "skillDigest": "decd0506b4ecd153f325181544d0e641dca171ff8851b59d838a7041bbc39775"
+      "skillDigest": "3783759baac216370f9012b9f7038e58bf02fa7d63c2a4654a58d7e06c4437c2"
     },
     "ws-secrets-leak-review": {
       "files": {

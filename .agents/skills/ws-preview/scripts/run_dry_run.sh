@@ -14,15 +14,15 @@ INCLUDE_UNCOMMITTED=1
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --stack)
-      STACK="$2"
+      STACK="${2:---stack requires a value}"
       shift 2
       ;;
     --target-branch)
-      TARGET_BRANCH="$2"
+      TARGET_BRANCH="${2:---target-branch requires a value}"
       shift 2
       ;;
     --model)
-      MODEL="$2"
+      MODEL="${2:---model requires a value}"
       shift 2
       ;;
     --committed-only)
