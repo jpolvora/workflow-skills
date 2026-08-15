@@ -49,9 +49,19 @@ process.stdout.write(JSON.stringify({ stack, baseBranch: base, gitRemote: remote
 " "$CONFIG_PATH"
 }
 
-if [[ -z "$STACK" || -z "$TARGET_BRANCH" ]]; then
-  CFG_JSON="$(read_config)"
+REMOTE="origin"
+CFG_JSON="$(read_config)"
+if [[ -z "$CFG_JSON" ]]; then
+  if [[ -z "$STACK" ]]; then
+    echo "ws-preview: config missing or unreadable ($CONFIG_PATH); stack id required (pass --stack or set stack.id / preview.stack)" >&2
+    exit 2
+  fi
+  if [[ -z "$TARGET_BRANCH" ]]; then
+    TARGET_BRANCH="refs/heads/main"
+  fi
+else
   [[ -z "$STACK" ]] && STACK="$(node -e "const c=JSON.parse(process.argv[1]); process.stdout.write(c.stack||'');" "$CFG_JSON")"
+  REMOTE="$(node -e "const c=JSON.parse(process.argv[1]); process.stdout.write(c.gitRemote||'origin');" "$CFG_JSON")"
   if [[ -z "$TARGET_BRANCH" ]]; then
     BASE="$(node -e "const c=JSON.parse(process.argv[1]); process.stdout.write(c.baseBranch||'main');" "$CFG_JSON")"
     TARGET_BRANCH="refs/heads/$BASE"
@@ -60,6 +70,13 @@ fi
 
 if [[ -z "$STACK" ]]; then
   echo "ws-preview: stack id required (set stack.id or preview.stack in config, or pass --stack)" >&2
+  exit 2
+fi
+
+BRANCH_REF="${TARGET_BRANCH#refs/heads/}"
+if ! git rev-parse --verify "${REMOTE}/${BRANCH_REF}" >/dev/null 2>&1 \
+  && ! git rev-parse --verify "$BRANCH_REF" >/dev/null 2>&1; then
+  echo "ws-preview: target branch ref not found (${REMOTE}/${BRANCH_REF} or ${BRANCH_REF})" >&2
   exit 2
 fi
 

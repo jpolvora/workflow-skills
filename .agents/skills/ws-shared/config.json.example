@@ -168,6 +168,12 @@
     "dir": ".agents/codereviews"
   },
 
+  "preview": {
+    "_comment": "Optional ws-preview dry-run overrides. preview.backend is not required for v1 (defaults to cursor-reviewer).",
+    "stack": "",
+    "backend": "cursor-reviewer"
+  },
+
   "rules": {
     "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). seniorDeveloper = Code review proof checklist source (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = surgical-change skill; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
     "harness": ".agents/skills/ws-shared/AGENTS.md",

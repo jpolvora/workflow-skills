@@ -40,14 +40,14 @@ User-invoked **pipeline review dry-run** via the public cursor-reviewer `run.sh`
    echo "CURSOR_API_KEY set: ${CURSOR_API_KEY:+yes}"
    node -v
    ```
-   Resolve stack and target branch from config (table above) or flags. Verify the target ref exists:
+   Resolve stack and target branch from config (table above) or flags.    Verify the target ref exists (use `project.gitRemote` from config, default `origin`):
    ```bash
-   git rev-parse --verify origin/<baseBranch> || git rev-parse --verify <baseBranch>
+   git rev-parse --verify {gitRemote}/<baseBranch> || git rev-parse --verify <baseBranch>
    ```
    - Done when: key status is known, Node is ≥ 22.13, and the target branch ref resolves.
    - If the key is unset: stop and tell the user to export `CURSOR_API_KEY`. Print `yes`/`empty` only.
 
-2. **Run** — From repo root, Shell `block_until_ms` ≥ 600000 (clone + `npm ci` + LLM). Keep `--dry-run` on every invocation.
+2. **Run** — From repo root, use a long-lived Shell call; set the block timeout to at least 600000 ms (10 minutes) so clone + `npm ci` + LLM is not killed. Keep `--dry-run` on every invocation.
    ```bash
    bash {skillsRoot}/ws-preview/scripts/run_dry_run.sh [--stack <id>] [--target-branch refs/heads/<branch>] [--model <id>] [--committed-only]
    ```

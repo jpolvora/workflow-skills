@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "02baa09021e0174a2cbda0cfd37880006a79bd33e4b00974f52885686c9ea387",
+  "fullPackageDigest": "7ca5a80d74985877297e7b15474abac2aeb6d8ca797adc430ad0fef67f219886",
   "hub": {
     "files": {
       "AGENTS.md": "f7f3d04840707a6ff5e9a5d7f79909cb6e9b2b2a2e27c198e2efdbc1cb11f7c1",
@@ -13,8 +13,8 @@
       "backend.md.template": "9ac8ac8b1dd4dccf357fd3bc11b6668d852bfc5d0c5fb93e94444a08bf05c769",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "config-resolution.md": "47cc8a56f2a7974f4a9a21a90d09c6e040c08cab4a36767cb78c4c3b2df7f415",
-      "config.json.example": "797e169d1d88418edd5c0c4c2fb285c4d8546adba2494bd7140f2eece2473db2",
-      "config.schema.json": "886ff4d8ea4bdf765b10b88f55cd4ddc5b344e72de2cfcd7ea73f6a54bc4c28b",
+      "config.json.example": "3040d36a40b23ebfc6927e8cfc87c93d9eab9524c25521a0d5a626163932a462",
+      "config.schema.json": "a81d3e917259b6480b695f24495b09d2fe407d2f32dce20290dcd67a0a272444",
       "frontend.md.template": "f049da53cc917f55e11913dc9e356e89a117243ba8a8af04688ca99cdcc5baab",
       "gates.md": "423c8ccfa97cd0caf9f26068144b8222b1f7b045f1c47316b3d22ef3fdc84962",
       "hub.gitignore": "3c2d9e142e6a53c3fa2c68b9098a0eff4186883872743d2b75c33912d25004c0",
@@ -26,7 +26,7 @@
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "190f911218a3158064210eb0cb63ab12963e3540355f118e78e44dab05192237"
     },
-    "skillDigest": "22d959ddbdf5524a9ba25e75121410b461b7e856b91a992ce8266010b8a4689e"
+    "skillDigest": "081e1c5e814ef44c282c7f9d8503a9389828a65615f8ae928748af5a52ecf112"
   },
   "packageVersion": "0.3.21",
   "skills": {
@@ -240,10 +240,10 @@
     },
     "ws-preview": {
       "files": {
-        "scripts/run_dry_run.sh": "e92c669a3f3406ab2823e01e9744c9cabf7403a2224bf00ca3d0b673c9d70792",
-        "SKILL.md": "c8c864ea8646b1d76f33cf226e3065bf4e71f076896f7b7246e329b2664cfe54"
+        "scripts/run_dry_run.sh": "98cfb4b7748f607be470af9e3d700f6dcb6789b399401fef570824e0b36972f6",
+        "SKILL.md": "6f82e261e1b7971915a992f44c8692e23dce79dfd8a0ca19f1591b8cdec1824f"
       },
-      "skillDigest": "0e0a6ff6b8eace58586b433e1af48702f12d63ad06aae670655bcf54da5e25ce"
+      "skillDigest": "decd0506b4ecd153f325181544d0e641dca171ff8851b59d838a7041bbc39775"
     },
     "ws-secrets-leak-review": {
       "files": {
