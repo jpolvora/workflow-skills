@@ -169,6 +169,132 @@ Small change.
   );
 }
 
+function scaffoldProjectLocalSelfLearning(projectRoot) {
+  const skillScripts = path.join(
+    projectRoot,
+    '.agents',
+    'skills',
+    'ws-self-learning',
+    'scripts',
+  );
+  const sharedScripts = path.join(
+    projectRoot,
+    '.agents',
+    'skills',
+    'ws-shared',
+    'scripts',
+  );
+  fs.mkdirSync(skillScripts, { recursive: true });
+  fs.mkdirSync(sharedScripts, { recursive: true });
+  fs.copyFileSync(
+    path.join(GLOBAL_SKILLS, 'ws-shared', 'scripts', 'resolve_consumer_root.py'),
+    path.join(sharedScripts, 'resolve_consumer_root.py'),
+  );
+  fs.copyFileSync(
+    path.join(GLOBAL_SKILLS, 'ws-self-learning', 'scripts', 'self_learning.py'),
+    path.join(skillScripts, 'self_learning.py'),
+  );
+  return path.join(skillScripts, 'self_learning.py');
+}
+
+function seedMemoryProbe(sharedDir, marker) {
+  const memoryDir = path.join(sharedDir, 'memory');
+  fs.mkdirSync(memoryDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(memoryDir, '2026-08-15-hybrid-trap.md'),
+    `### [2026-08-15] ${marker}\n\n- **Trap avoided:** global MEMORY\n- **Solution:** consumer hub wins\n`,
+    'utf8',
+  );
+}
+
+function testRepoRootOverrideWins() {
+  console.log('\n--- testRepoRootOverrideWins ---');
+  const globalScript = path.join(
+    GLOBAL_SKILLS,
+    'ws-self-learning',
+    'scripts',
+    'self_learning.py',
+  );
+
+  const consumer = mkTmp('ws-hybrid-override-');
+  const shared = writeConsumerHub(consumer);
+  seedMemoryProbe(shared, 'repo-root override no-hub cwd');
+
+  const noHubCwd = mkTmp('ws-hybrid-nohub-cwd-');
+  const noHubResult = run(
+    PYTHON,
+    [globalScript, '--compile', '--repo-root', consumer],
+    { cwd: noHubCwd },
+  );
+  assert(
+    noHubResult.status === 0,
+    `--repo-root wins when cwd has no hub (${noHubResult.stderr || noHubResult.stdout})`,
+  );
+  const noHubMemory = fs.readFileSync(path.join(shared, 'MEMORY.md'), 'utf8');
+  assert(
+    noHubMemory.includes('repo-root override no-hub cwd'),
+    'compile with --repo-root writes consumer hub when cwd lacks hub',
+  );
+
+  const cwdConsumer = mkTmp('ws-hybrid-cwd-hub-');
+  const cwdShared = writeConsumerHub(cwdConsumer);
+  seedMemoryProbe(cwdShared, 'cwd hub marker should not win');
+
+  const targetConsumer = mkTmp('ws-hybrid-target-');
+  const targetShared = writeConsumerHub(targetConsumer);
+  seedMemoryProbe(targetShared, 'repo-root override beats cwd hub');
+
+  const hubResult = run(
+    PYTHON,
+    [globalScript, '--compile', '--repo-root', targetConsumer],
+    { cwd: cwdConsumer },
+  );
+  assert(
+    hubResult.status === 0,
+    `--repo-root wins when cwd also has hub (${hubResult.stderr || hubResult.stdout})`,
+  );
+  const targetMemory = fs.readFileSync(path.join(targetShared, 'MEMORY.md'), 'utf8');
+  assert(
+    targetMemory.includes('repo-root override beats cwd hub'),
+    'compile with --repo-root writes target hub, not cwd hub',
+  );
+  assert(
+    !fs.existsSync(path.join(cwdShared, 'MEMORY.md')) ||
+      !fs.readFileSync(path.join(cwdShared, 'MEMORY.md'), 'utf8').includes(
+        'repo-root override beats cwd hub',
+      ),
+    'cwd hub MEMORY not updated when --repo-root points elsewhere',
+  );
+}
+
+function testProjectLocalScriptParents4Resolves() {
+  console.log('\n--- testProjectLocalScriptParents4Resolves ---');
+  const projectRoot = mkTmp('ws-hybrid-project-local-');
+  const shared = writeConsumerHub(projectRoot);
+  seedMemoryProbe(shared, 'project-local parents4 probe');
+
+  const localScript = scaffoldProjectLocalSelfLearning(projectRoot);
+  const foreignCwd = mkTmp('ws-hybrid-foreign-cwd-');
+
+  const result = run(PYTHON, [localScript, '--compile'], { cwd: foreignCwd });
+  assert(
+    result.status === 0,
+    `project-local script --compile exit 0 (${result.stderr || result.stdout})`,
+  );
+
+  const memoryPath = path.join(shared, 'MEMORY.md');
+  assert(fs.existsSync(memoryPath), 'MEMORY.md written under project-local hub');
+  const content = fs.readFileSync(memoryPath, 'utf8');
+  assert(
+    content.includes('project-local parents4 probe'),
+    'project-local script resolves parents[4] hub, not foreign cwd',
+  );
+  assert(
+    !fs.existsSync(path.join(foreignCwd, '.agents', 'skills', 'ws-shared', 'MEMORY.md')),
+    'foreign cwd hub not created or updated by project-local script',
+  );
+}
+
 function testValidateStateResolvesConsumerPlansDir() {
   console.log('\n--- testValidateStateResolvesConsumerPlansDir ---');
   const consumer = mkTmp('ws-hybrid-validate-');
@@ -222,6 +348,8 @@ commits: []
 
 function main() {
   testSelfLearningCompileTargetsConsumer();
+  testRepoRootOverrideWins();
+  testProjectLocalScriptParents4Resolves();
   testClassifyUsesConsumerThresholds();
   testValidateStateResolvesConsumerPlansDir();
   cleanup();
