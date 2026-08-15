@@ -16,8 +16,10 @@ const DEFAULT_THRESHOLDS = {
 };
 
 const SCRIPT_DIR = __dirname;
-const SKILLS_ROOT = path.resolve(SCRIPT_DIR, '..', '..');
-const SHARED_DIR = path.join(SKILLS_ROOT, 'ws-shared');
+const {
+  resolveRepoRoot,
+  sharedDir,
+} = require(path.resolve(SCRIPT_DIR, '..', '..', 'ws-shared', 'scripts', 'resolve_consumer_root.cjs'));
 
 function usage() {
   console.error(
@@ -110,12 +112,21 @@ function loadJsonIfExists(filePath) {
 }
 
 function loadConfig() {
-  const configPath = path.join(SHARED_DIR, 'config.json');
-  const examplePath = path.join(SHARED_DIR, 'config.json.example');
+  const repoRoot = resolveRepoRoot(process.env.WS_REPO_ROOT || null, {
+    scriptFile: __filename,
+  });
+  const sharedDirPath = sharedDir(repoRoot);
+  const configPath = path.join(sharedDirPath, 'config.json');
+  const examplePath = path.join(sharedDirPath, 'config.json.example');
   const config = loadJsonIfExists(configPath) || loadJsonIfExists(examplePath) || {};
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(config.dagThresholds || {}) };
   const scoreAndRefine = Boolean(config.defaults && config.defaults.scoreAndRefine);
-  return { config, thresholds, scoreAndRefine, configSource: fs.existsSync(configPath) ? configPath : examplePath };
+  return {
+    config,
+    thresholds,
+    scoreAndRefine,
+    configSource: fs.existsSync(configPath) ? configPath : examplePath,
+  };
 }
 
 function countSections(body) {

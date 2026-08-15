@@ -25,6 +25,7 @@ export const HUB_WHITELIST = [
   'backend.md.template',
   'frontend.md.template',
   'skill-dependencies.json',
+  'scripts',
 ];
 
 /** Dest name when whitelist source name differs (pack vs consumer layout). */

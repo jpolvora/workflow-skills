@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.3.18",
+  "version": "0.3.19",
   "description": "Centralized agent skills and multi-workflow hub for Cursor (spec-to-pr and related pipeline skills)",
   "license": "MIT",
   "author": "Jone Polvora",
@@ -18,8 +18,8 @@
   "scripts": {
     "pretests": "npm pack",
     "test": "npm run tests",
-    "tests": "node test/test-install.js --local && node test/test-quality-gates.js && node test/test-update-state-yaml.js && node test/test-memory-formatting.js && node test/test-autoload-configure.js && node test/test-delivery-commit-artifacts.js && node test/test-ws-doctor.js && node test/test-ws-audit.js && node test/test-infer-human-timing.js && node test/test-feature-branch-gate.js && node test/test-testing-executor-model.js && node test/test-enable-dag.js && node test/test-skill-frontmatter.js",
-    "tests:remote": "node test/test-install.js && node test/test-quality-gates.js && node test/test-update-state-yaml.js && node test/test-autoload-configure.js && node test/test-delivery-commit-artifacts.js && node test/test-ws-doctor.js && node test/test-ws-audit.js && node test/test-infer-human-timing.js && node test/test-feature-branch-gate.js && node test/test-testing-executor-model.js && node test/test-enable-dag.js && node test/test-skill-frontmatter.js",
+    "tests": "node test/test-install.js --local && node test/test-quality-gates.js && node test/test-update-state-yaml.js && node test/test-memory-formatting.js && node test/test-autoload-configure.js && node test/test-delivery-commit-artifacts.js && node test/test-ws-doctor.js && node test/test-ws-audit.js && node test/test-infer-human-timing.js && node test/test-feature-branch-gate.js && node test/test-testing-executor-model.js && node test/test-enable-dag.js && node test/test-skill-frontmatter.js && node test/test-hybrid-consumer-root.js",
+    "tests:remote": "node test/test-install.js && node test/test-quality-gates.js && node test/test-update-state-yaml.js && node test/test-autoload-configure.js && node test/test-delivery-commit-artifacts.js && node test/test-ws-doctor.js && node test/test-ws-audit.js && node test/test-infer-human-timing.js && node test/test-feature-branch-gate.js && node test/test-testing-executor-model.js && node test/test-enable-dag.js && node test/test-skill-frontmatter.js && node test/test-hybrid-consumer-root.js",
     "build-site": "node bin/build-site.js",
     "build-site:bump": "node bin/build-site.js --bump",
     "generate-integrity": "node bin/generate-skill-integrity.js",

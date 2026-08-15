@@ -14,6 +14,11 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root, shared_dir  # noqa: E402
+
 
 def ensure_utf8_stdio() -> None:
     """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
@@ -33,15 +38,8 @@ def ensure_utf8_stdio() -> None:
 
 ensure_utf8_stdio()
 
-SKILL_DIR = Path(__file__).resolve().parent.parent  # ws-self-learning/ (script lives in scripts/)
-# Consumer-owned memory lives in the shared hub (not inside this skill package).
-SHARED_DIR = SKILL_DIR.parent / "ws-shared"
-# Find active project .agents/skills/ws-shared from {skillsRoot} / .agents/skills/
-repo_agents_shared = SKILL_DIR.parent.parent.parent / ".agents" / "skills" / "ws-shared"
-if repo_agents_shared.exists():
-    SHARED_DIR = repo_agents_shared
-elif (SKILL_DIR.parent.parent / ".agents" / "skills" / "ws-shared").exists():
-    SHARED_DIR = SKILL_DIR.parent.parent / ".agents" / "skills" / "ws-shared"
+_REPO_ROOT = resolve_repo_root(script_file=__file__)
+SHARED_DIR = shared_dir(_REPO_ROOT)
 MEMORY_DIR = SHARED_DIR / "memory"
 COMPILED_MEMORY_PATH = SHARED_DIR / "MEMORY.md"
 
@@ -203,12 +201,23 @@ def query_memory(keyword: str) -> None:
 
 
 def main():
+    global _REPO_ROOT, SHARED_DIR, MEMORY_DIR, COMPILED_MEMORY_PATH
     parser = argparse.ArgumentParser(description="Self-learning memory compilation and query utility.")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--compile", "-c", action="store_true", help="Compile separate memory files into MEMORY.md")
     group.add_argument("--query", "-q", type=str, help="Query memory entries for matching keywords")
-    
+    parser.add_argument(
+        "--repo-root",
+        type=str,
+        default=None,
+        help="Consumer project root (default: cwd hub probe; never global ws-shared sibling)",
+    )
+
     args = parser.parse_args()
+    _REPO_ROOT = resolve_repo_root(args.repo_root, script_file=__file__)
+    SHARED_DIR = shared_dir(_REPO_ROOT)
+    MEMORY_DIR = SHARED_DIR / "memory"
+    COMPILED_MEMORY_PATH = SHARED_DIR / "MEMORY.md"
     
     if args.compile:
         compile_memory()
