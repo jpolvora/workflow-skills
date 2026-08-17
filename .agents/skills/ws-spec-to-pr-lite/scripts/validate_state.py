@@ -500,8 +500,9 @@ def validate(state_path: Path, pre_advance: int | None = None) -> dict:
                 msg = f"manifest file missing on disk: {path}"
                 (warnings if closed else errors).append(msg)
 
+    # Match block (`- sha: abc`) and inline-dict (`- { sha: "abc", ... }`) forms.
     commit_shas = []
-    for m in re.finditer(r"^\s*-?\s*sha:\s*['\"]?([0-9a-f]{7,40})", fm_raw, re.MULTILINE):
+    for m in re.finditer(r"\bsha:\s*['\"]?([0-9a-f]{7,40})", fm_raw):
         if m.group(1) not in commit_shas:
             commit_shas.append(m.group(1))
     if not dry_run:

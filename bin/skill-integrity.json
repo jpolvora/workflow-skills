@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "27321a2880a274580a5aee8f449ef2b9bb76c6b38c3fd3e6d9aed94649fa2a62",
+  "fullPackageDigest": "6819f3b74de9df91b2de6c1f23baffd91a1f497e5d3cc25fe3291525d0e7cd48",
   "hub": {
     "files": {
       "AGENTS.md": "88718c90964c67c060862dff6ed959127ae4684764922233c23fd97176effbf3",
@@ -332,21 +332,21 @@
         "scripts/cleanup_workflow_git.py": "d1994a50c5ff75eabab3428d524b1f0e0faa56d3162355a33952090137007fdd",
         "scripts/github-issue-to-spec.py": "b8bc4b3f2ead8817a17e8d172f7fe51285e9aaed077cb1a2de7ee6d69f2ddccc",
         "scripts/update_state.py": "d8fc4c07165b6b6ccbd3f1205f74f7a7c1d8a73f33dade090fbe4127488b10e6",
-        "scripts/validate_state.py": "346d2e7da174e0eb66116c8cdb82230700e391515c0d256270678b36b0207f30",
+        "scripts/validate_state.py": "139b6dafa930bdc911888e260356950f47eae93839784f6c992e07ecea1c0c6f",
         "SKILL.md": "7df75de748b8d57e3e69d33c6df65598fec5c4444bdc977340a5e4c18e668e3b",
         "STEP-DISPATCH.md": "d9b9aca7f17d61818593a69fc693abcd3ac464003548eb4ded7a96c03a55b47c",
         "ws-spec-to-pr-run-test.md": "2594a72651f38ae4ab5464e4de0d9df99edd8305019443d6d9bb9343e1d2ba62"
       },
-      "skillDigest": "830e8795b3f4df5b281c54c4b0d7d9726685421a0860f69f064ab8ff5dfe2cf9"
+      "skillDigest": "acbd61090dc71c685e89735696cd293bb5f7a6f2715436b7ca5a038ab06b60c2"
     },
     "ws-spec-to-pr-lite": {
       "files": {
         "evals/evals.json": "7a1a75266c30f85177109e0e684df58aae4286e684cbd5d4ea9275e4411f4a26",
         "scripts/update_state.py": "715bb71577e68561c1d562892771a2311f8353edaf73542b9fecb67dc70b6463",
-        "scripts/validate_state.py": "eeb3fda2e926cd8e0b6fe1eda706d67b631f04af82e9212c931323accc29d907",
+        "scripts/validate_state.py": "2a4be7b64d8d9251b33a3d4275fefe37dcdcdfd1f4ba65311fc44f7089dfaceb",
         "SKILL.md": "fbb6f2dad4822128cde97ab79419942f5437bf31075bddc1afb97478af4ed763"
       },
-      "skillDigest": "74e3d8ede0c0eddea9e75bec7825453224d77720c792b85aeb0cc764ba9589ef"
+      "skillDigest": "cfa304894470062b799beba11c8ee628dbb7ed081ff7d65525c4e9c2ea6c89bb"
     },
     "ws-sync-spec": {
       "files": {

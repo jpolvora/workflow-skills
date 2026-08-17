@@ -476,6 +476,102 @@ function testArtifactReproducibilityPreAdvance() {
   );
 }
 
+function writeInlineCommitFixture(dir, commitsYaml, dryRun, label) {
+  const statePath = path.join(dir, 'commits-' + label + '.state.md');
+  const content =
+    '---' + NL +
+    'workflowId: commits-' + label + NL +
+    'us: us' + NL +
+    'slug: commits-' + label + NL +
+    'status: active' + NL +
+    'currentStep: 5' + NL +
+    'stateVersion: 1' + NL +
+    'dryRun: ' + (dryRun ? 'true' : 'false') + NL +
+    'completedSteps: [0, 1, 2, 3, 4, 5]' + NL +
+    'skippedSteps: []' + NL +
+    'workflowManifest:' + NL +
+    '  created: []' + NL +
+    '  artifacts: []' + NL +
+    'commits:' + NL +
+    commitsYaml +
+    'telemetry:' + NL +
+    '  steps: []' + NL +
+    '  totalElapsedSec: 0' + NL +
+    'currentModel: test-model' + NL +
+    '---' + NL +
+    '# Spec-to-PR Workflow: commits-' + label + NL;
+  fs.writeFileSync(statePath, content, 'utf8');
+  return statePath;
+}
+
+function parseValidateJson(stdout) {
+  try {
+    return JSON.parse(stdout);
+  } catch {
+    return null;
+  }
+}
+
+function testInlineDictCommitShaScan() {
+  const inlineYaml =
+    '  - { sha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", step: 5, message: "product" }' + NL +
+    '  - { sha: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", step: 6, message: "review-fix" }' + NL;
+  const blockYaml =
+    '  - sha: cccccccccccccccccccccccccccccccccccccccc' + NL +
+    '    step: 5' + NL +
+    '    message: product' + NL;
+
+  for (const [validatorLabel, validatorScript] of [
+    ['standard', VALIDATE_STANDARD],
+    ['lite', VALIDATE_LITE],
+  ]) {
+    const dir = mkTmp('ws-inline-sha-');
+    const inlinePath = writeInlineCommitFixture(dir, inlineYaml, true, validatorLabel + '-inline');
+    const rInline = runPython(validatorScript, [inlinePath, '--json']);
+    assert(rInline.status === 0, validatorLabel + ' inline-dict sha scan: exit 0');
+    const inlineJson = parseValidateJson(rInline.stdout);
+    assert(!!inlineJson, validatorLabel + ' inline-dict sha scan: --json parses');
+    const inlineShas = (inlineJson && inlineJson.commits_checked) || [];
+    assert(
+      inlineShas.includes('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') &&
+        inlineShas.includes('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'),
+      validatorLabel + ' inline-dict sha scan: commits_checked has both SHAs (got ' + JSON.stringify(inlineShas) + ')',
+    );
+
+    const blockPath = writeInlineCommitFixture(dir, blockYaml, true, validatorLabel + '-block');
+    const rBlock = runPython(validatorScript, [blockPath, '--json']);
+    assert(rBlock.status === 0, validatorLabel + ' block sha scan: exit 0');
+    const blockJson = parseValidateJson(rBlock.stdout);
+    const blockShas = (blockJson && blockJson.commits_checked) || [];
+    assert(
+      blockShas.includes('cccccccccccccccccccccccccccccccccccccccc'),
+      validatorLabel + ' block sha scan: commits_checked has SHA (got ' + JSON.stringify(blockShas) + ')',
+    );
+  }
+
+  const head = run('git', ['rev-parse', 'HEAD']);
+  const realSha = (head.stdout || '').trim();
+  assert(/^[0-9a-f]{7,40}$/.test(realSha), 'HEAD sha available for git_commit_exists check');
+  if (/^[0-9a-f]{7,40}$/.test(realSha)) {
+    const dir = mkTmp('ws-inline-sha-git-');
+    const goodYaml =
+      '  - { sha: "' + realSha + '", step: 5, message: "product" }' + NL;
+    const goodPath = writeInlineCommitFixture(dir, goodYaml, false, 'git-good');
+    const rGood = runPython(VALIDATE_STANDARD, [goodPath, '--json']);
+    assert(rGood.status === 0, 'inline-dict existing SHA: validate_state exits 0');
+
+    const badYaml =
+      '  - { sha: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef", step: 5, message: "forged" }' + NL;
+    const badPath = writeInlineCommitFixture(dir, badYaml, false, 'git-bad');
+    const rBad = runPython(VALIDATE_STANDARD, [badPath, '--json']);
+    assert(rBad.status === 1, 'inline-dict forged SHA: validate_state exits 1');
+    assert(
+      /does not exist in git/i.test(rBad.stderr || rBad.stdout || ''),
+      'inline-dict forged SHA: stderr names missing commit',
+    );
+  }
+}
+
 
 function main() {
   console.log('test-update-state-yaml.js\n');
@@ -484,6 +580,7 @@ function main() {
   testDuplicateCompletedStepsUnion();
   testStateVersionStampAndReject();
   testArtifactReproducibilityPreAdvance();
+  testInlineDictCommitShaScan();
 
   cleanup();
 

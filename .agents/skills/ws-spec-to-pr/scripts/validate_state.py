@@ -608,8 +608,10 @@ def validate(state_path: Path) -> dict:
 
     # commits exist in git (best-effort) — scan raw frontmatter for `sha:` to
     # survive nested YAML list formats the mini-parser does not flatten.
+    # Serializer writes inline dicts (`- { sha: "...", step: N, ... }`); a
+    # line-anchored `^\s*-?\s*sha:` never matches that form.
     commit_shas = []
-    for m in re.finditer(r"^\s*-?\s*sha:\s*['\"]?([0-9a-f]{7,40})", fm_raw, re.MULTILINE):
+    for m in re.finditer(r"\bsha:\s*['\"]?([0-9a-f]{7,40})", fm_raw):
         if m.group(1) not in commit_shas:
             commit_shas.append(m.group(1))
     if not dry_run:
