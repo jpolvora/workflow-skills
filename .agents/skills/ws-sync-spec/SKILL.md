@@ -1,7 +1,7 @@
 ---
 name: ws-sync-spec
 description: Feature spec synchronizer — auto-updates feature specifications after prompt-driven code changes to prevent spec drift.
-version: 0.3.21
+version: 0.3.22
 invocation_names:
   - sync-spec
   - ws-sync-spec
