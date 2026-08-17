@@ -72,8 +72,8 @@ STEP_LABELS = {
 }
 
 # Current state schema version stamped into the state.yaml frontmatter.
-# Monotonic (never decreases across a workflow's life); validate_state.py
-# rejects any stateVersion that is missing, older, or unknown (reject loud).
+# This writer always emits _STATE_VERSION (never an unknown higher value).
+# validate_state.py rejects missing/older/unknown versions (reject loud).
 # Keep in sync with the lite copy and with CURRENT_STATE_VERSION in validate_state.py.
 _STATE_VERSION = 1
 
@@ -292,12 +292,15 @@ def set_top_level(data, key, value):
 
 
 def stamp_state_version(data: dict) -> dict:
-    """Stamp a monotonic stateVersion (never decreases below the current schema)."""
-    try:
-        current = int(data.get("stateVersion", 0))
-    except (TypeError, ValueError):
-        current = 0
-    data["stateVersion"] = max(current, _STATE_VERSION)
+    """Stamp the supported stateVersion.
+
+    Missing, non-integer, and older values upgrade to _STATE_VERSION.
+    Values above the supported schema are clamped to _STATE_VERSION so this
+    writer never emits an unknown version. max(current, _STATE_VERSION) would
+    keep e.g. 7 on disk; post-write validation then fails and every retry
+    re-stamps 7, blocking recovery without a manual edit.
+    """
+    data["stateVersion"] = _STATE_VERSION
     return data
 
 

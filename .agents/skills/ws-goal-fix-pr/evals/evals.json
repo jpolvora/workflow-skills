@@ -52,6 +52,17 @@
         "Re-initializes the blocked/counter round state on resume",
         "Continues the loop from the current PR state"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Fix-pr loop has repeated the same concrete failure reason for 3 consecutive rounds; decide the verdict.",
+      "expected_output": "Blocked (escalated): after >= 3 consecutive rounds with the same concrete reason, the loop is blocked and escalated.",
+      "assertions": [
+        "Tracks the concrete reason across consecutive fix-pr rounds",
+        "Marks blocked (escalated) at 3 consecutive identical reasons",
+        "Does not continue iterating once the blocked threshold is met",
+        "en-us and harness-neutral wording"
+      ]
     }
   ]
 }

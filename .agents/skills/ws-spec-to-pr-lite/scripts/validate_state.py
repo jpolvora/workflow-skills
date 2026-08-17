@@ -82,11 +82,12 @@ def load_plans_dir() -> Path:
 REQUIRED_KEYS = ["workflowId", "us", "status", "currentStep"]
 PHASE_SOFT_TIP_STEPS = set()  # No phase soft-tip steps in ws-spec-to-pr-lite
 
-# Current state schema version. update_state.py stamps a monotonic stateVersion
-# (never decreases); any stateVersion that is missing, older, or unknown is
-# rejected loudly (no compat shims) — old/non-versioned state is unsupported.
-# Keep in sync with CURRENT_STATE_VERSION in the standard
-# ws-spec-to-pr/scripts/validate_state.py and both _STATE_VERSION stamps below.
+# Current state schema version. update_state.py always stamps this value
+# (clamps unknown highs so post-write validation can succeed). On-disk
+# state that is missing, older, or unknown is rejected loudly (no compat
+# shims) until a writer rewrite. Keep in sync with CURRENT_STATE_VERSION
+# in the standard ws-spec-to-pr/scripts/validate_state.py and both
+# _STATE_VERSION stamps below.
 CURRENT_STATE_VERSION = 1
 
 

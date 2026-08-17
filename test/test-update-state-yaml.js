@@ -24,6 +24,10 @@ const VALIDATE_STANDARD = path.join(
   REPO_ROOT,
   '.agents/skills/ws-spec-to-pr/scripts/validate_state.py',
 );
+const VALIDATE_LITE = path.join(
+  REPO_ROOT,
+  '.agents/skills/ws-spec-to-pr-lite/scripts/validate_state.py',
+);
 
 const PYTHON = process.env.PYTHON || 'python';
 const NL = '\n';
@@ -327,6 +331,28 @@ function testStateVersionStampAndReject() {
     assert(/^stateVersion:\s*1\s*$/m.test(fm), copy + ': stateVersion: 1 stamped after first write');
   }
 
+  // Unknown-high clamp: update_state must not keep stateVersion: 7 (post-write
+  // validate would fail and retries would re-stamp 7).
+  for (const [copy, script] of [
+    ['standard', UPDATE_STANDARD],
+    ['lite', UPDATE_LITE],
+  ]) {
+    const dir = mkTmp('ws-stateversion-clamp-');
+    const statePath = writeStateVersionFixture(dir, 'stateVersion: 7', copy);
+    const r1 = runPython(script, [statePath, '--step', '1', '--elapsed', '1']);
+    if (r1.status !== 0) {
+      console.error(r1.stdout);
+      console.error(r1.stderr);
+    }
+    assert(r1.status === 0, copy + ': update_state clamps unknown stateVersion 7 (exit 0)');
+    let fm = extractFrontmatter(statePath);
+    assert(/^stateVersion:\s*1\s*$/m.test(fm), copy + ': unknown 7 clamped to stateVersion: 1');
+    const r2 = runPython(script, [statePath, '--step', '2', '--elapsed', '1']);
+    assert(r2.status === 0, copy + ': retry after clamp still exit 0');
+    fm = extractFrontmatter(statePath);
+    assert(/^stateVersion:\s*1\s*$/m.test(fm), copy + ': retry keeps stateVersion: 1');
+  }
+
   const dir = mkTmp('ws-stateversion-reject-');
   const cases = [
     { label: 'missing', line: '' },
@@ -334,16 +360,48 @@ function testStateVersionStampAndReject() {
     { label: 'unknown', line: 'stateVersion: 7' },
     { label: 'nonint', line: 'stateVersion: "abc"' },
   ];
-  for (const c of cases) {
-    const p = writeStateVersionFixture(dir, c.line, c.label);
-    const r = runPython(VALIDATE_STANDARD, [p]);
-    assert(r.status === 1, c.label + ': validate_state exits 1 (status=' + r.status + ')');
-    assert(/[Ss]tate[Vv]ersion/.test(r.stderr || ''), c.label + ': stderr mentions stateVersion');
+  for (const [validatorLabel, validatorScript] of [
+    ['standard', VALIDATE_STANDARD],
+    ['lite', VALIDATE_LITE],
+  ]) {
+    for (const c of cases) {
+      const p = writeStateVersionFixture(dir, c.line, c.label + '-' + validatorLabel);
+      const r = runPython(validatorScript, [p]);
+      assert(
+        r.status === 1,
+        validatorLabel + ' ' + c.label + ': validate_state exits 1 (status=' + r.status + ')',
+      );
+      assert(
+        /[Ss]tate[Vv]ersion/.test(r.stderr || ''),
+        validatorLabel + ' ' + c.label + ': stderr mentions stateVersion',
+      );
+    }
   }
 
   const good = writeStateVersionFixture(dir, 'stateVersion: 1', 'good');
   const rGood = runPython(VALIDATE_STANDARD, [good]);
   assert(rGood.status === 0, 'current stateVersion: validate_state exits 0');
+
+  const rGoodLite = runPython(VALIDATE_LITE, [good]);
+  assert(rGoodLite.status === 0, 'lite current stateVersion: validate_state exits 0');
+
+  const versionSources = [
+    ['std _STATE_VERSION', UPDATE_STANDARD, '_STATE_VERSION'],
+    ['lite _STATE_VERSION', UPDATE_LITE, '_STATE_VERSION'],
+    ['std CURRENT_STATE_VERSION', VALIDATE_STANDARD, 'CURRENT_STATE_VERSION'],
+    ['lite CURRENT_STATE_VERSION', VALIDATE_LITE, 'CURRENT_STATE_VERSION'],
+  ];
+  const versionValues = versionSources.map(([label, scriptPath, constName]) => {
+    const src = fs.readFileSync(scriptPath, 'utf8');
+    const m = src.match(new RegExp('^' + constName + '\\s*=\\s*(\\d+)', 'm'));
+    assert(m, label + ': constant ' + constName + ' found in ' + scriptPath);
+    return parseInt(m[1], 10);
+  });
+  const [stdStamp, liteStamp, stdCurrent, liteCurrent] = versionValues;
+  assert(
+    stdStamp === liteStamp && stdStamp === stdCurrent && stdStamp === liteCurrent,
+    'schema version constants equal: std/lite _STATE_VERSION and CURRENT_STATE_VERSION all ' + stdStamp,
+  );
 }
 
 function writeArtifactFixture(dir, slug) {
