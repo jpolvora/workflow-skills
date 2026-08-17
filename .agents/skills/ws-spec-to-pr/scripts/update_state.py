@@ -28,6 +28,11 @@ import argparse
 from pathlib import Path
 import subprocess
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root, shared_dir  # noqa: E402
+
 
 def ensure_utf8_stdio() -> None:
     """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
@@ -104,15 +109,14 @@ def parse_errors_arg(value: str | None) -> list:
     return [sanitize_telemetry_string(part) for part in raw.split(",") if part.strip()]
 
 
-def resolve_phase_model(step: int, state_path: Path, provided_model: str | None, fallback_model: str) -> str:
+def resolve_phase_model(step: int, provided_model: str | None, fallback_model: str) -> str:
     """Resolve target phase model from config.json defaults if provided_model is empty."""
     if provided_model and provided_model.strip():
         return provided_model.strip()
 
     candidates = [
-        state_path.parent.parent.parent / "ws-shared" / "config.json",
-        Path.cwd() / ".agents" / "skills" / "ws-shared" / "config.json",
-        state_path.parent / "config.json",
+        shared_dir(resolve_repo_root(script_file=__file__)) / "config.json",
+        shared_dir(resolve_repo_root(script_file=__file__)) / "config.json.example",
     ]
     defaults = None
     for cand in candidates:
@@ -548,7 +552,7 @@ def main():
         step_dispatches.append({"step": step, "dispatched": iso_now})
     data["stepDispatches"] = step_dispatches
 
-    current_model = resolve_phase_model(step, state_path, args.model, data.get("currentModel", "unknown"))
+    current_model = resolve_phase_model(step, args.model, data.get("currentModel", "unknown"))
     step_models = data.get("stepModels", [])
     if not isinstance(step_models, list):
         step_models = []
