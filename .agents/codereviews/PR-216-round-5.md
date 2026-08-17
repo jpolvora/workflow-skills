@@ -5,8 +5,8 @@
 | PR | [#216](https://github.com/jpolvora/workflow-skills/pull/216) |
 | Revision | 5 |
 | Threads handled | 1 |
-| Commit | pending |
-| Push | pending |
+| Commit | 5662862 |
+| Push | yes (`origin/develop`) |
 
 ## Threads resolved
 

@@ -2,6 +2,26 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-17 03:21] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr (standalone, merge when clean)
+- **Done**: Bumped 0.3.22; reused PR 216; sibling-fixed inline-dict SHA scan (af351ae) and AC9 fetch-before-count (774c1d3); wait/converge until checks green and activeThreads 0; merged without deleting develop.
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/216 merged (`de8ddd0` on main). `develop` intact.
+
+### [2026-08-17 05:12] Agent: Cursor Grok 4.6
+- **Prompt**: CONTINUE /ws-goal-fix-pr PR 216
+- **Done**: Round 5 initAudit repo-root us-dir (5662862); round 6 evals generator + resolveConfigPath (dd3544a); waited until review pass.
+- **Result**: activeThreads []. Checks green. PR 216 MERGEABLE. This skill does not merge.
+
+### [2026-08-17 03:50] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 216 round 4)
+- **Done**: stay-on-integration skip-check; audit paths vs repo root; goal-loop runtime `{us-dir}/.runtime` only.
+- **Result**: Commit e3fbe57 pushed. Threads resolved. npm run test exit 0.
+
+### [2026-08-17 03:40] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 216 round 3)
+- **Done**: Fixed 3 review threads: audit session paths repo-relative; resumeGate(null) proceeds; classify pass-1 stats aligned.
+- **Result**: Commit 0d47c4c pushed to origin/develop. npm run test exit 0. Threads resolved.
+
 ### [2026-08-17 02:40] Agent: Composer
 - **Prompt**: Verify/fix stamp_state_version keeping unknown highs (e.g. 7) so post-write validation deadlocks
 - **Done**: Confirmed max(current, _STATE_VERSION) preserves 7; both std/lite stamp now always emit _STATE_VERSION; validate still reject-loud on unread files; test clamps 7 then retry.
