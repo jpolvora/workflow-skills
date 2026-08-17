@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "a4dcb13ab1e95d099e80ac0a594a8fa8ef70fdf1ffa48cb82d344657f964870b",
+  "fullPackageDigest": "f3d2cf8416dca9360f54c7ce621a6ce33dc349dc89a71ed341df8a73f054d4fe",
   "hub": {
     "files": {
       "AGENTS.md": "88718c90964c67c060862dff6ed959127ae4684764922233c23fd97176effbf3",
@@ -21,12 +21,12 @@
       "MEMORY.md.template": "358174cd427cbc853a8e00cb17853da93462260058a1c1f3d8d6e33288f010b5",
       "scripts/resolve_consumer_root.cjs": "1b7cb1e56d811276d1ad12d50b1e2de99c9db23c9e237a6ab57d27abeb648b0a",
       "scripts/resolve_consumer_root.py": "97e987ee8da8aa2576123292df7d6f297c38b0835a28cff4a596a83f79926924",
-      "setup.md": "1ac3b1a01871eab5105115b0005234b0b17e5ab4ec721a4adc3a73504e025d09",
+      "setup.md": "92c101868646727739ba68997daeea28ae4100cba5f44c501f1143f2c249e479",
       "skill-dependencies.json": "3ed68ce864d1253aa1c9347629e5a63b07f4a771daabb1c7ffae54d7f3de8c47",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "67c5039f3ffd01cdcd7423e194b2212a85feba8d6a98cd3521d21b7d0cc4a1e7"
     },
-    "skillDigest": "78ebb43a4d5b7441bed661704cfab2c9e09739ade99c8cec59e39070f9c482a3"
+    "skillDigest": "6b8bce91d4d47091130c7b96871ef0214f35353cb8392d4c25a385733e5635d6"
   },
   "packageVersion": "0.3.21",
   "skills": {
@@ -167,9 +167,9 @@
       "files": {
         "evals/evals.json": "7768891f8085e5e62d4589afab7b78fd47cb2e5810113ea2e0f70e50e453c3d7",
         "examples.md": "5b556ba1020dcfb084e1d3c83fc81232e048a207c6706e5ec0627b9bfbe48e76",
-        "SKILL.md": "cce7573ed7e37fc55727860e26ab3a761552135fb12a86383a8605cc65741956"
+        "SKILL.md": "84f7e27b33ac5f8c73d7fd501893a33bd7c6bc26a5a4c60ac4be81f16c5cd85d"
       },
-      "skillDigest": "3dacd3e77315901df99b971a7c6f68dc324baf9241fea50701d94f812e1f55c8"
+      "skillDigest": "6fc964bd9719269a104ba538e9b3207ca07afea5c633582773b552b53b886587"
     },
     "ws-goal-loop": {
       "files": {
