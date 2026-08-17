@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "b1b07ea617e18b9ac8d1f658659c91daf10f3927d1e90b6cb953453146eec94a",
+  "fullPackageDigest": "33884951f8ef4b26d8dcca706ddb39e73e7ff7e9f8b1b6d0371302387edfdf4c",
   "hub": {
     "files": {
       "AGENTS.md": "88718c90964c67c060862dff6ed959127ae4684764922233c23fd97176effbf3",
@@ -21,12 +21,12 @@
       "MEMORY.md.template": "358174cd427cbc853a8e00cb17853da93462260058a1c1f3d8d6e33288f010b5",
       "scripts/resolve_consumer_root.cjs": "1b7cb1e56d811276d1ad12d50b1e2de99c9db23c9e237a6ab57d27abeb648b0a",
       "scripts/resolve_consumer_root.py": "97e987ee8da8aa2576123292df7d6f297c38b0835a28cff4a596a83f79926924",
-      "setup.md": "47f99f29a1b1e1f06e077aeff968557a2dc0f3e3d0e3e40fdbb9f74cde182fc0",
+      "setup.md": "da797f0910f6912016b2a835db742675b00717ad058047f1ca8bf0e4fe193275",
       "skill-dependencies.json": "3ed68ce864d1253aa1c9347629e5a63b07f4a771daabb1c7ffae54d7f3de8c47",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "67c5039f3ffd01cdcd7423e194b2212a85feba8d6a98cd3521d21b7d0cc4a1e7"
     },
-    "skillDigest": "184c13466caa0e6921a5729bd1e96ac8f0e2f65908cf6e41ea1e88f005d29d66"
+    "skillDigest": "9fdfa06cc64b63d0b96c26295d0c3141aa15d3371f6b60ccc1fa30cfc5878389"
   },
   "packageVersion": "0.3.21",
   "skills": {
@@ -167,17 +167,17 @@
       "files": {
         "evals/evals.json": "7b901c239e025ebe3b52fed16d77ffc30911391ba07691b06a9aeba06eb14547",
         "examples.md": "5b556ba1020dcfb084e1d3c83fc81232e048a207c6706e5ec0627b9bfbe48e76",
-        "SKILL.md": "a6f74516df135a77868128cce847f4cad7ccaf9594d51e6e0eafedd2161f4b8c"
+        "SKILL.md": "782e6dff2ec0f8a42b95aaae82dae22d3c9daddbfb00d47e06a2a1b48d56d50e"
       },
-      "skillDigest": "49ec28139549d74201147fe531dc5fae86e5723ae5c45cf82db00ae360f50d6a"
+      "skillDigest": "e6b4acb1e2938ccb9abe5ee657e151d2a81ff0f017e226e294377a7f07eb405c"
     },
     "ws-goal-loop": {
       "files": {
-        "evals/evals.json": "53bab73fd80d3db6062509ddf21dc2c39487a9f6e1a5aaec7ebcbdcc60ef7894",
-        "SKILL.md": "a9edb2f90b34ccce33b46b4cae0cf1eaf43374e3fcfa8702eca8815bf6d3e894",
+        "evals/evals.json": "4b7af0a5c19a93d0210dea3b03f5d201efc9dfd52470b2536416dbff0318a7c4",
+        "SKILL.md": "eb3202bf18b92e8da332f3ccc8a023e196f7cd773f4948f62f7688eae7d98d47",
         "TEMPLATES.md": "7c1d18e69cf00fee0c0eb52959bbd7a60d825dee058cb1aeaa6e6f78a1bfff60"
       },
-      "skillDigest": "fbc5d165437bed20b1f17c97fd7abfbcf11e8bb2c1dd0960bd381428c252fd18"
+      "skillDigest": "2882645e0a418529e50891cda24fc2b72cdd6ea690f9f0783c7508ed7d3afbce"
     },
     "ws-implement-tasks": {
       "files": {
@@ -240,10 +240,10 @@
     },
     "ws-preview": {
       "files": {
-        "scripts/run_dry_run.sh": "e19ce0d1db7b92f8141f9e4330089e8d4e6d4bc1544ea8c01ed19b7f1073c993",
+        "scripts/run_dry_run.sh": "906f933abfaf9cf3eb5112da61d052a93ccdc4b951ae83a69b81f6f9d6fb15f4",
         "SKILL.md": "6f82e261e1b7971915a992f44c8692e23dce79dfd8a0ca19f1591b8cdec1824f"
       },
-      "skillDigest": "af6f17316f352532968476c4f570238bf8b53a2eb9db5a72e93591e2fcbe338c"
+      "skillDigest": "cbd2117ae5a3bf1d9ac99d6dc030189d58312baace8537ae499c12863045546e"
     },
     "ws-secrets-leak-review": {
       "files": {
@@ -259,10 +259,10 @@
     "ws-self-learning": {
       "files": {
         "evals/evals.json": "6c87967d6e4be4a1c18968b482ceb83cbb2097c5da4b063715bc96cc593f7644",
-        "scripts/self_learning.py": "7cc3a8c23f5e8698e93faa688f03c771abfb628d589e706de6499e922a00b81a",
+        "scripts/self_learning.py": "a28e1f1ac1bf14bf25ee012c89d7fd16e9e7a14948b217efa38acdc12e91c127",
         "SKILL.md": "c8650d97834c315b90304a085cd8fd4368fdb817cd7f5e074fd941a0a9444f49"
       },
-      "skillDigest": "9d9ad715f7fba2435c0327407499d428874cc2fea732ab0b2c2991ff982d9afd"
+      "skillDigest": "a16454a35b490977327d16d96079eb71a6a29a7b77b969b32d142d58ed29e793"
     },
     "ws-senior-developer": {
       "files": {
@@ -331,22 +331,22 @@
         "scripts/check_memory_conflict.py": "f9361863756fc8292c04da79df28420256282370f06d7e20a731173036f9b33a",
         "scripts/cleanup_workflow_git.py": "d1994a50c5ff75eabab3428d524b1f0e0faa56d3162355a33952090137007fdd",
         "scripts/github-issue-to-spec.py": "b8bc4b3f2ead8817a17e8d172f7fe51285e9aaed077cb1a2de7ee6d69f2ddccc",
-        "scripts/update_state.py": "983076d704e7e32c004db9507f268a415c5afbb80876868906bcb1901fd431ed",
-        "scripts/validate_state.py": "2152e918b709ea2220858c02ed40212b2a8c3cf8a68485fc1fadfac9157a07ca",
-        "SKILL.md": "b62feead0bbb8727a17696eba22ba8a31f4e268bd6e8772f6140f4a13527e2d1",
+        "scripts/update_state.py": "888e755c946004c3c9e535029a098442f3401133a61f68ffce544c63d3b97c67",
+        "scripts/validate_state.py": "50c012233d4e1e02d4664fff750fad7e6c03e662753a93ab0816c1e1c079bdf8",
+        "SKILL.md": "4e85631fcff2d09fe180b0faf1270b665b1290e514cc3e5573da0de78049d0f1",
         "STEP-DISPATCH.md": "d9b9aca7f17d61818593a69fc693abcd3ac464003548eb4ded7a96c03a55b47c",
         "ws-spec-to-pr-run-test.md": "2594a72651f38ae4ab5464e4de0d9df99edd8305019443d6d9bb9343e1d2ba62"
       },
-      "skillDigest": "b8bad72921b36b515635a53b3499326372481e80bdf5db60c2b9add91fab42d4"
+      "skillDigest": "5332e4fa03a2dfd7ac2160c98b886e821ad45cbddd3167f6fb380b88c868bfac"
     },
     "ws-spec-to-pr-lite": {
       "files": {
         "evals/evals.json": "7a1a75266c30f85177109e0e684df58aae4286e684cbd5d4ea9275e4411f4a26",
-        "scripts/update_state.py": "675d2dc15fa6b0816c8d7242d230bef893d5f02ed28494123bde101ed9973d7a",
+        "scripts/update_state.py": "f098413fc1554ef8ced39220cb7ff79ec54ab8d140d4230f26f2fc4b4f7bcd1d",
         "scripts/validate_state.py": "8230023a9b14be27eb7885c87a684ac04fde42d322e45f4d5f63c9df9d34a1f1",
         "SKILL.md": "b2e48aa9d820e6e7ce130a0f4c88236003046daf26dffee236d08f3eb839898d"
       },
-      "skillDigest": "ca2b4cf36c9205cfa4757d6bc41f5306ea9c77104ea3af8e25b2314a52a6e04b"
+      "skillDigest": "3fe207e39c9eb53b18aad529bf7d5894ea00e81ba1ff79f53d55c57b3e182f48"
     },
     "ws-sync-spec": {
       "files": {

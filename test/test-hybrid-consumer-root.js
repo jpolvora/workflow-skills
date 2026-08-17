@@ -310,6 +310,7 @@ us: us-hybrid
 slug: us-hybrid
 status: in_progress
 currentStep: 1
+stateVersion: 1
 completedSteps: [0]
 dryRun: true
 workflowManifest:

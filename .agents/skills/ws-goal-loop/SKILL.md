@@ -41,6 +41,16 @@ Project-local runtime only (never OS temp). Templates: [`TEMPLATES.md`](TEMPLATE
 | Stop/abort | Kill + remove PID file |
 | Wake regex | `^GOAL_LOOP_WAKE_<ID>` for `notify_on_output` |
 
+## Goal contract guards (AC7–AC8)
+
+Enforcement is **contract wording + orchestration-driver checks + evals** — no runtime loop engine (this skill is a contract skeleton).
+
+| Guard | Contract |
+|-------|----------|
+| **Revision-guarded updates (AC7)** | A goal carries a `revision` that increments once per accepted update. Any update carrying a **stale revision** (does not match the current goal revision) **conflicts loudly and is never silently overwritten**: stop and surface the conflict to the caller instead of applying the stale value. Never take last-wins on a conflicting revision. |
+| **Blocked verdict (AC8)** | A **blocked** goal verdict is allowed only after **>= 3 consecutive rounds** with the **same concrete reason**, never before. Record the concrete reason each round; if the reason changes, the consecutive-round count resets to 0. Fewer than 3 identical rounds → do not mark blocked; keep re-arming/evaluating. |
+| **Resume re-arms objective (AC8)** | Resuming a goal (after pause/stop) **re-arms the objective** so the loop continues from the current state with the objective re-stated, and re-initializes the blocked-round counter. |
+
 ## Loop (Done when each stage completes)
 
 1. **Collect + evaluate** — Run `COLLECT_CMD` vs `SUCCESS_CRITERION`. Met → final report, kill sentinel, stop. Fail → stop (no improvised APIs).

@@ -103,6 +103,7 @@ us: null
 slug: ${slug}
 status: active
 currentStep: 0
+stateVersion: 1
 dryRun: ${dryRun}
 completedSteps: []
 skippedSteps: []

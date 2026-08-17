@@ -62,6 +62,11 @@ STEP_LABELS = {
     5: "Ship & PR",
 }
 
+# Current state schema version stamped into the state.yaml frontmatter.
+# Monotonic (never decreases across a workflow's life); validate_state.py
+# rejects any stateVersion that is missing, older, or unknown (reject loud).
+_STATE_VERSION = 1
+
 _SECRET_PATTERNS = [
     (re.compile(r"\b(sk-[a-zA-Z0-9]{10,})\b"), "[REDACTED]"),
     (re.compile(r"\b(AKIA[0-9A-Z]{16})\b"), "[REDACTED]"),
@@ -268,6 +273,16 @@ def set_top_level(data, key, value):
         data[key] = merged
         return
     data[key] = value
+
+
+def stamp_state_version(data: dict) -> dict:
+    """Stamp a monotonic stateVersion (never decreases below the current schema)."""
+    try:
+        current = int(data.get("stateVersion", 0))
+    except (TypeError, ValueError):
+        current = 0
+    data["stateVersion"] = max(current, _STATE_VERSION)
+    return data
 
 
 def parse_nested_mapping(block_lines: list) -> dict:
@@ -641,6 +656,8 @@ def main():
     data["workflowType"] = "lite"
 
     gate_choice = args.gate_choice or f"Advance to Step {next_step}"
+
+    stamp_state_version(data)
 
     serialized_fm = serialize_yaml(data)
     new_content = f"---\n{serialized_fm}\n---\n{body_text}"

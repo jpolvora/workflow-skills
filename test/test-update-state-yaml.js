@@ -20,8 +20,13 @@ const UPDATE_LITE = path.join(
   REPO_ROOT,
   '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.py',
 );
+const VALIDATE_STANDARD = path.join(
+  REPO_ROOT,
+  '.agents/skills/ws-spec-to-pr/scripts/validate_state.py',
+);
 
 const PYTHON = process.env.PYTHON || 'python';
+const NL = '\n';
 const tmpRoots = [];
 let failures = 0;
 
@@ -275,11 +280,78 @@ function testDuplicateCompletedStepsUnion() {
   assertDuplicateUnion(litePath, 'lite', rLite.stderr);
 }
 
+function writeStateVersionFixture(dir, stateVersionLine, label) {
+  const statePath = path.join(dir, 'sv-' + label + '.state.md');
+  const content =
+    '---' + NL +
+    'workflowId: sv-' + label + NL +
+    'us: us' + NL +
+    'slug: sv-' + label + NL +
+    'status: active' + NL +
+    'currentStep: 1' + NL +
+    (stateVersionLine ? stateVersionLine + NL : '') +
+    'dryRun: true' + NL +
+    'completedSteps: [0]' + NL +
+    'skippedSteps: []' + NL +
+    'workflowManifest:' + NL +
+    '  created: []' + NL +
+    '  artifacts: []' + NL +
+    'commits: []' + NL +
+    'telemetry:' + NL +
+    '  steps: []' + NL +
+    '  totalElapsedSec: 0' + NL +
+    'currentModel: test-model' + NL +
+    '---' + NL +
+    '# Spec-to-PR Workflow: sv-' + label + NL +
+    NL +
+    '## Telemetry log' + NL +
+    NL +
+    '| Step | Label | Model | Elapsed | Tokens |' + NL +
+    '|------|-------|-------|---------|--------|' + NL +
+    NL +
+    '## Gate history' + NL;
+  fs.writeFileSync(statePath, content, 'utf8');
+  return statePath;
+}
+
+function testStateVersionStampAndReject() {
+  for (const [copy, script] of [
+    ['standard', UPDATE_STANDARD],
+    ['lite', UPDATE_LITE],
+  ]) {
+    const dir = mkTmp('ws-stateversion-stamp-');
+    const statePath = writeStateVersionFixture(dir, '', copy);
+    const r = runPython(script, [statePath, '--step', '1', '--elapsed', '1']);
+    assert(r.status === 0, copy + ': update_state stamps stateVersion (exit 0)');
+    const fm = extractFrontmatter(statePath);
+    assert(/^stateVersion:\s*1\s*$/m.test(fm), copy + ': stateVersion: 1 stamped after first write');
+  }
+
+  const dir = mkTmp('ws-stateversion-reject-');
+  const cases = [
+    { label: 'missing', line: '' },
+    { label: 'older', line: 'stateVersion: 0' },
+    { label: 'unknown', line: 'stateVersion: 7' },
+    { label: 'nonint', line: 'stateVersion: "abc"' },
+  ];
+  for (const c of cases) {
+    const p = writeStateVersionFixture(dir, c.line, c.label);
+    const r = runPython(VALIDATE_STANDARD, [p]);
+    assert(r.status === 1, c.label + ': validate_state exits 1 (status=' + r.status + ')');
+    assert(/[Ss]tate[Vv]ersion/.test(r.stderr || ''), c.label + ': stderr mentions stateVersion');
+  }
+
+  const good = writeStateVersionFixture(dir, 'stateVersion: 1', 'good');
+  const rGood = runPython(VALIDATE_STANDARD, [good]);
+  assert(rGood.status === 0, 'current stateVersion: validate_state exits 0');
+}
+
 function main() {
   console.log('test-update-state-yaml.js\n');
   testLocNestedMappingRoundTrip();
   testLiteSerializerMirrorsNestedDictFix();
   testDuplicateCompletedStepsUnion();
+  testStateVersionStampAndReject();
 
   cleanup();
 

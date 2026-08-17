@@ -40,7 +40,7 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `state.md` short-term; `{sharedDir}/MEMORY.md` generalizable.
 5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR). Subagent phase model preferences (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel` — Step 7 uses non-empty `testingModel`, else `executionModel`, else the active session model; `reviewerModel` is Steps 5–6 only) apply to `dispatch-agent` subagents when configured. **Config switches (not invocation flags):** `defaults.enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `defaults.enableAuditing` (runtime audit observer).
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Product G2-code after Step 5 and after Step 6 review-fix uses path-scoped `files_touched` only. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
-7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset.
+7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset. **Resume pre-check (AC9):** on resume, before re-implementing, the orchestrator verifies `git rev-list --count origin/{baseBranch}..HEAD > 0`; if the feature tip has zero unique commits vs base, mark the leftover workflow `completed` (already merged) and stop instead of re-implementing (see [`setup.md`](../ws-shared/setup.md) § Resume / Reset).
 
 ## Phases F0–F6 & Step Index
 
