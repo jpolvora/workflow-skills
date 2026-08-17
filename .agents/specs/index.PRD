@@ -76,6 +76,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] `defaults.enableDag` sequential-by-default task execution (`spec: add-enable-dag-config.spec.md`)
 - [x] `update_state.py` nested `telemetry.loc` + `completedSteps` union (`spec: us-202.spec.md`)
 - [x] Fix `ws-doctor` GitHub issues #204 and #205 (`spec: ws-doctor-204-205.spec.md`)
+- [x] en-us patterns user-gate prompts + autoload consult-vs-load wording (`spec: us-209.spec.md`)
+- [x] `ws-preview` Extra pipeline-review dry-run skill (`spec: us-210.spec.md`)
+- [x] Hybrid/global consumer-root resolver for helper scripts (`spec: us-211.spec.md`)
+- [x] Commit workflow product files before code-review (`spec: commit-before-code-review.spec.md`)
 - [ ] Skill catalog cleanup: Extra demotion and patterns merge (`spec: skill-catalog-cleanup.spec.md`)
 
 ## 8. Next specs
@@ -114,6 +118,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 30 | `add-enable-dag-config` | `[x]` done | Phase 4 | `defaults.enableDag` sequential default (PR #199) |
 | 31 | `us-202` | `[x]` done | Phase 4 | `update_state.py` loc YAML + completedSteps union (PR #203) |
 | 32 | `ws-doctor-204-205` | `[x]` done | Phase 4 | Doctor launcher docs + skill-folder `docs/` resolution (PR #206) |
+| 33 | `us-209` | `[x]` done | Phase 4 | en-us patterns gates + autoload consult wording (PR #213) |
+| 34 | `us-210` | `[x]` done | Phase 4 | ws-preview Extra pipeline-review dry-run (PR #214) |
+| 35 | `us-211` | `[x]` done | Phase 4 | Hybrid/global consumer-root resolvers (PR #212) |
+| 36 | `commit-before-code-review` | `[x]` done | Phase 4 | Product commit before Step 6 / lite Step 3 review (`3adbb3b`) |
 
 Open Next-spec: `skill-catalog-cleanup`. Other new work goes to Inbox, then promote.
 
@@ -157,6 +165,10 @@ Open Next-spec: `skill-catalog-cleanup`. Other new work goes to Inbox, then prom
 | 2026-08-13 | `add-enable-dag-config` | Add enableDag configuration option for parallel execution control | [PR #199](https://github.com/jpolvora/workflow-skills/pull/199) |
 | 2026-08-13 | `us-202` | ws-spec-to-pr update_state.py loc YAML + completedSteps union | [PR #203](https://github.com/jpolvora/workflow-skills/pull/203) |
 | 2026-08-14 | `ws-doctor-204-205` | Fix ws-doctor GitHub issues #204 and #205 | [PR #206](https://github.com/jpolvora/workflow-skills/pull/206) |
+| 2026-08-15 | `us-209` | en-us patterns user-gate prompts + autoload consult-vs-load wording | [PR #213](https://github.com/jpolvora/workflow-skills/pull/213) |
+| 2026-08-15 | `us-210` | ws-preview Extra pipeline-review dry-run skill | [PR #214](https://github.com/jpolvora/workflow-skills/pull/214) |
+| 2026-08-15 | `us-211` | Hybrid/global consumer-root resolver (`resolve_consumer_root` + script ports) | [PR #212](https://github.com/jpolvora/workflow-skills/pull/212) |
+| 2026-08-15 | `commit-before-code-review` | Required product commit before local code review | `3adbb3b` |
 
 ## 11. Maintenance checklist
 

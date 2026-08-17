@@ -71,8 +71,8 @@ function readJsonFile(filePath, label) {
 }
 
 function resolveConfigPath(explicit) {
-  if (explicit) return path.resolve(explicit);
-  return path.resolve(process.cwd(), '.agents/skills/ws-shared/config.json');
+  if (explicit) return resolveMaybeRelative(explicit);
+  return path.join(repoRoot(), '.agents/skills/ws-shared/config.json');
 }
 
 function resolveUpstreamRepo() {
@@ -110,23 +110,65 @@ function isoNow() {
   return new Date().toISOString();
 }
 
+function repoRoot(start = process.cwd()) {
+  let dir = path.resolve(start);
+  for (;;) {
+    if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, 'AGENTS.md'))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) return path.resolve(start);
+    dir = parent;
+  }
+}
+
+function toPosixRelative(p) {
+  const rel = path.relative(repoRoot(), path.resolve(p));
+  const posix = rel.split(path.sep).join('/');
+  return posix === '' ? '.' : posix;
+}
+
+function resolveMaybeRelative(p) {
+  if (!p || typeof p !== 'string') return p;
+  if (path.isAbsolute(p)) return path.resolve(p);
+  return path.resolve(repoRoot(), p);
+}
+
+function hydrateSession(session) {
+  return {
+    ...session,
+    usDir: resolveMaybeRelative(session.usDir),
+    logPath: resolveMaybeRelative(session.logPath),
+  };
+}
+
+function persistSession(session) {
+  return {
+    ...session,
+    usDir: toPosixRelative(session.usDir),
+    logPath: toPosixRelative(session.logPath),
+  };
+}
+
 function sessionPath(session) {
-  return path.join(session.usDir, `.audit-session-${session.slug}.json`);
+  const usDir = resolveMaybeRelative(session.usDir);
+  return path.join(usDir, `.audit-session-${session.slug}.json`);
 }
 
 function logPath(session) {
-  if (session.logPath) return session.logPath;
+  if (session.logPath) return resolveMaybeRelative(session.logPath);
   const stamp = session.startedAt.replace(/[:.]/g, '-');
-  return path.join(session.usDir, `audit-${session.slug}-${stamp}.log.md`);
+  return path.join(resolveMaybeRelative(session.usDir), `audit-${session.slug}-${stamp}.log.md`);
 }
 
 function writeSession(session) {
-  fs.mkdirSync(session.usDir, { recursive: true });
-  fs.writeFileSync(sessionPath(session), JSON.stringify(session, null, 2), 'utf-8');
+  const hydrated = hydrateSession(session);
+  fs.mkdirSync(hydrated.usDir, { recursive: true });
+  fs.writeFileSync(sessionPath(hydrated), JSON.stringify(persistSession(hydrated), null, 2) + '\n', 'utf-8');
 }
 
 function loadSession(sessionArg) {
-  const session = readJsonArg(sessionArg, 'session');
+  const session = hydrateSession(readJsonArg(sessionArg, 'session'));
   if (!session.usDir || !session.slug) {
     console.error('Error: session must include usDir and slug');
     process.exit(2);
@@ -142,7 +184,7 @@ function resolveSessionInput(opts) {
     console.error('Error: session must include usDir and slug');
     process.exit(2);
   }
-  return raw;
+  return hydrateSession(raw);
 }
 
 function resolveFindingInput(opts) {
@@ -180,19 +222,21 @@ function formatFinding(f) {
 
 export function initAudit({ usDir, slug, workflowId }) {
   const startedAt = isoNow();
+  const absUsDir = resolveMaybeRelative(usDir);
+  const absLog = path.join(
+    absUsDir,
+    `audit-${slug}-${startedAt.replace(/[:.]/g, '-')}.log.md`,
+  );
   const session = {
-    usDir: path.resolve(usDir),
+    usDir: absUsDir,
     slug,
     workflowId: workflowId || null,
     startedAt,
     finalized: false,
     findings: [],
-    logPath: path.join(
-      path.resolve(usDir),
-      `audit-${slug}-${startedAt.replace(/[:.]/g, '-')}.log.md`,
-    ),
+    logPath: absLog,
   };
-  fs.mkdirSync(session.usDir, { recursive: true });
+  fs.mkdirSync(absUsDir, { recursive: true });
   const header = [
     '---',
     `slug: ${slug}`,
@@ -207,7 +251,7 @@ export function initAudit({ usDir, slug, workflowId }) {
     '## Findings',
     '',
   ].join('\n');
-  fs.writeFileSync(session.logPath, header, 'utf-8');
+  fs.writeFileSync(absLog, header, 'utf-8');
   writeSession(session);
   return session;
 }
@@ -233,7 +277,7 @@ export function appendFinding(session, finding) {
     f.severity = 'unusual';
   }
   session.findings.push(f);
-  fs.appendFileSync(session.logPath, formatFinding(f), 'utf-8');
+  fs.appendFileSync(resolveMaybeRelative(session.logPath), formatFinding(f), 'utf-8');
   writeSession(session);
   return f;
 }
@@ -283,7 +327,7 @@ export function finalizeAudit(session) {
     '',
   );
 
-  fs.appendFileSync(session.logPath, sections.join('\n'), 'utf-8');
+  fs.appendFileSync(resolveMaybeRelative(session.logPath), sections.join('\n'), 'utf-8');
   session.finalized = true;
   session.finalizedAt = isoNow();
   session.errorCount = errorCount;

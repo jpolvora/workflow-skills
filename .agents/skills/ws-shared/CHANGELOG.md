@@ -2,6 +2,26 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-17 02:40] Agent: Composer
+- **Prompt**: Verify/fix stamp_state_version keeping unknown highs (e.g. 7) so post-write validation deadlocks
+- **Done**: Confirmed max(current, _STATE_VERSION) preserves 7; both std/lite stamp now always emit _STATE_VERSION; validate still reject-loud on unread files; test clamps 7 then retry.
+- **Result**: node test/test-update-state-yaml.js exit 0 (unknown 7 clamped, retry stays 1).
+
+### [2026-08-17 02:35] Agent: Composer
+- **Prompt**: Verify/fix resume pre-check comparing origin/{baseBranch} instead of integration branch (AC9 / stale-orch-resume)
+- **Done**: Confirmed bug (origin/main..HEAD=6 vs origin/develop..HEAD=0 on develop); retargeted setup.md 4c + ws-spec-to-pr SKILL.md AC9 to `{integrationBranch}` = workingBranch else baseBranch; extended test-resume-gate.js with merged-into-develop-while-base-is-main case.
+- **Result**: node test/test-resume-gate.js exit 0; gate now matches stale-orch-resume trap.
+
+### [2026-08-16 20:33] Agent: deepseek-v4-flash
+- **Prompt**: /ws-code-review over the last 20 commits + fix round
+- **Done**: Reviewed fa703c1..HEAD (312 files); cross-checked index.PRD/plans; found 2 Warnings (index.PRD drift; resolve_phase_model dead config path), 2 Suggestions (ws-preview branch hardcode; self_learning hardcoded recipe); applied surgical fixes for all four.
+- **Result**: W1: index.PRD now lists us-209/210/211 + commit-before-code-review (feature map, next specs, done log). W2: update_state.py std+lite resolve models via resolve_consumer_root (probe: step4/7 → composer-2.5; CLI round-trip exit 0, loc mapping + completedSteps union [0,1,2] verified). S1: run_dry_run.sh errors when target branch unset instead of hardcoding refs/heads/main. S2: MEMORY.md header uses {skillsRoot}/... token. Review: .agents/plans/last-20-commits/step-06-last-20-commits.review.md (+fix.report.md). Fixes left uncommitted in working tree.
+
+### [2026-08-15 16:09] Agent: GPT-5.6 Sol
+- **Prompt**: /ws-ship-pr
+- **Done**: Prepared, committed hero assets, pushed `develop`, created PR 215, waited for review/CI, merged with `develop` intact.
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/215 merged. Tests, integrity, and Agentic Code Review passed. `activeThreads == 0`.
+
 ### [2026-08-15 15:32] Agent: GPT-5.6 Sol
 - **Prompt**: Add the supplied animation above the top hero title with responsive phone and desktop embedding.
 - **Done**: Added a cinematic responsive video hero with muted autoplay, WebM/MP4 sources, a WebP poster, and mobile styling.

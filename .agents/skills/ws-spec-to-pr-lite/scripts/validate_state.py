@@ -82,6 +82,38 @@ def load_plans_dir() -> Path:
 REQUIRED_KEYS = ["workflowId", "us", "status", "currentStep"]
 PHASE_SOFT_TIP_STEPS = set()  # No phase soft-tip steps in ws-spec-to-pr-lite
 
+# Current state schema version. update_state.py always stamps this value
+# (clamps unknown highs so post-write validation can succeed). On-disk
+# state that is missing, older, or unknown is rejected loudly (no compat
+# shims) until a writer rewrite. Keep in sync with CURRENT_STATE_VERSION
+# in the standard ws-spec-to-pr/scripts/validate_state.py and both
+# _STATE_VERSION stamps below.
+CURRENT_STATE_VERSION = 1
+
+
+def verify_state_version(data: dict, errors: list[str]) -> None:
+    """Reject a missing/older/unknown stateVersion with a clear message."""
+    raw = data.get("stateVersion")
+    try:
+        version = int(str(raw).strip()) if raw is not None else None
+    except (TypeError, ValueError):
+        version = None
+    if version is None:
+        errors.append(
+            "stateVersion missing or non-integer in frontmatter; "
+            "state format is not versioned / unsupported (reject loud, no compat shims)"
+        )
+    elif version < CURRENT_STATE_VERSION:
+        errors.append(
+            f"stateVersion {version} is older than the supported schema "
+            f"{CURRENT_STATE_VERSION}; state format not supported (reject loud, no compat shims)"
+        )
+    elif version > CURRENT_STATE_VERSION:
+        errors.append(
+            f"stateVersion {version} is unknown/unrecognized (expected "
+            f"{CURRENT_STATE_VERSION}); state format not supported (reject loud, no compat shims)"
+        )
+
 
 def resolve_state_path(arg: str) -> Path:
     p = Path(arg)
@@ -428,6 +460,10 @@ def validate(state_path: Path, pre_advance: int | None = None) -> dict:
         if k not in data:
             errors.append(f"mandatory key missing in frontmatter: {k}")
 
+    # Enforced in the shared validate() body covered by both the plain and
+    # pre-advance validation paths (lite dispatches pre-advance through here).
+    verify_state_version(data, errors)
+
     dry_run = str(data.get("dryRun", "false")).lower() == "true"
     status = str(data.get("status", "")).strip().lower()
     closed = status in ("completed", "cancelled", "failed")
@@ -464,8 +500,9 @@ def validate(state_path: Path, pre_advance: int | None = None) -> dict:
                 msg = f"manifest file missing on disk: {path}"
                 (warnings if closed else errors).append(msg)
 
+    # Match block (`- sha: abc`) and inline-dict (`- { sha: "abc", ... }`) forms.
     commit_shas = []
-    for m in re.finditer(r"^\s*-?\s*sha:\s*['\"]?([0-9a-f]{7,40})", fm_raw, re.MULTILINE):
+    for m in re.finditer(r"\bsha:\s*['\"]?([0-9a-f]{7,40})", fm_raw):
         if m.group(1) not in commit_shas:
             commit_shas.append(m.group(1))
     if not dry_run:

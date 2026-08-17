@@ -1,7 +1,7 @@
 ---
 name: ws-goal-loop
 description: Generic convergence loop primitive — stateful loop engine providing sentinel management, heartbeat/settle timers, and re-check convergence control.
-version: 0.3.21
+version: 0.3.22
 disable-model-invocation: true
 invocation_names:
   - goal-loop
@@ -28,7 +28,7 @@ Goal → collect+evaluate → [act → verify → report → wait]×N → done
 | `WAIT_SECONDS` | Post-push wait before re-collect (default **300**) |
 | `COLLECT_CMD` / `ACT_CMD` / `VERIFY_CMD` | Collect / act / verify commands |
 | `DRY_RUN` | Skip push, resolve, destructive actions |
-| `RUNTIME_DIR` | Sentinel dir (default `{us-dir}/.runtime` or skill `runs/`) |
+| `RUNTIME_DIR` | Sentinel dir (default `{us-dir}/.runtime`) |
 
 ## Sentinel
 
@@ -40,6 +40,17 @@ Project-local runtime only (never OS temp). Templates: [`TEMPLATES.md`](TEMPLATE
 | Track | `$RUNTIME_DIR/sentinel.pid` |
 | Stop/abort | Kill + remove PID file |
 | Wake regex | `^GOAL_LOOP_WAKE_<ID>` for `notify_on_output` |
+
+## Goal contract guards (AC7–AC8)
+
+Enforcement is **contract wording + orchestration-driver checks + evals** — no runtime loop engine (this skill is a contract skeleton).
+
+| Guard | Contract |
+|-------|----------|
+| **Revision-guarded updates (AC7)** | A goal carries a `revision` that increments once per accepted update. Any update carrying a **stale revision** (does not match the current goal revision) **conflicts loudly and is never silently overwritten**: stop and surface the conflict to the caller instead of applying the stale value. Never take last-wins on a conflicting revision. |
+| **Blocked verdict (AC8)** | A **blocked** goal verdict is allowed only after **>= 3 consecutive rounds** with the **same concrete reason**, never before. Record the concrete reason each round; if the reason changes, the consecutive-round count resets to 0. Fewer than 3 identical rounds → do not mark blocked; keep re-arming/evaluating. |
+| **Resume re-arms objective (AC8)** | Resuming a goal (after pause/stop) **re-arms the objective** so the loop continues from the current state with the objective re-stated, and re-initializes the blocked-round counter. |
+| **Runtime storage (AC7–AC8)** | Persist `$RUNTIME_DIR/revision` and `$RUNTIME_DIR/blocked-reason` each round (see [`TEMPLATES.md`](TEMPLATES.md)); revision increments once per accepted update; blocked reason tracks consecutive identical failure reasons for the >= 3-round escalate threshold. |
 
 ## Loop (Done when each stage completes)
 

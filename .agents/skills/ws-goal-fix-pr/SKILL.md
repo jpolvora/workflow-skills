@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.3.21
+version: 0.3.22
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -58,6 +58,17 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** 
 | Commit + resolve + push gate | Auto: execute unless `dry-run` |
 | Escalate threads | Stop iteration; block until user resolves ambiguity |
 | CI Auto-Fix `in_progress` | Inform user; do not auto-block |
+
+## Goal contract guards (AC7–AC8)
+
+This loop applies the same revision-guarded / fail-closed / resume contract as [`ws-goal-loop`](../ws-goal-loop/SKILL.md) (contract + evals; no runtime loop engine).
+
+| Guard | Contract |
+|-------|----------|
+| **Revision-guarded updates (AC7)** | The fix loop carries a `revision` that increments once per accepted round. Any update carrying a **stale revision** (does not match the current round) **conflicts loudly and is never silently overwritten**: stop and surface the conflict rather than applying a stale thread/round state. Never take last-wins on a conflicting revision. |
+| **Blocked verdict (AC8)** | A **blocked** (escalated) verdict is allowed only after **>= 3 consecutive rounds** with the **same concrete reason**, never before. Record the concrete reason each round; a changed reason resets the consecutive-round counter. Fewer than 3 identical rounds → keep iterating, do not escalate-blocked. |
+| **Resume re-arms objective (AC8)** | Resuming the fix loop (after pause/stop) **re-arms the objective** (re-state PR number + success criterion) and **re-initializes the blocked/counter round state**, continuing from the current PR state. |
+| **Runtime storage (AC7–AC8)** | Use the same `$RUNTIME_DIR/revision` and `$RUNTIME_DIR/blocked-reason` contract as [`ws-goal-loop`](../ws-goal-loop/TEMPLATES.md): prefer `{us-dir}/.runtime` (`{plansDir}/{slug}/.runtime/`). Never OS temp. Never skill-folder `runs/` under `{skillsRoot}` or `{globalSkillsRoot}` (hybrid overwrite + SoT leak). Fix-round revision increments once per accepted round; blocked reason tracks consecutive identical failure reasons. |
 
 ## Steps
 

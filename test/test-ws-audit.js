@@ -306,6 +306,55 @@ function main() {
   );
   assert(logText.includes('## Summary'), 'log has summary section');
 
+  const portableUsDir = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-portable-'));
+  tmpRoots.push(portableUsDir);
+  const portableInit = runNode([
+    'init',
+    '--us-dir',
+    portableUsDir,
+    '--slug',
+    'portable-slug',
+  ]);
+  assert(portableInit.status === 0, 'portable init exits 0');
+  const portableSessionFile = path.join(portableUsDir, '.audit-session-portable-slug.json');
+  const portableDisk = JSON.parse(fs.readFileSync(portableSessionFile, 'utf-8'));
+  assert(!path.isAbsolute(portableDisk.usDir), 'persisted usDir is repo-relative');
+  assert(!path.isAbsolute(portableDisk.logPath), 'persisted logPath is repo-relative');
+  assert(!/^[A-Za-z]:/.test(portableDisk.usDir), 'persisted usDir has no drive letter');
+  assert(!portableDisk.usDir.includes('\\'), 'persisted usDir uses posix separators');
+  assert(!portableDisk.logPath.includes('\\'), 'persisted logPath uses posix separators');
+  const portableReloaded = runNode(['has-errors', '--session-file', portableSessionFile]);
+  assert(portableReloaded.status === 0, 'reload relative session file exits 0');
+
+  const tokenUsDir = '.tmp-audit-rel-us';
+  const tokenAbs = path.join(REPO_ROOT, tokenUsDir);
+  tmpRoots.push(tokenAbs);
+  const fromNestedCwd = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-from-cwd-'));
+  tmpRoots.push(fromNestedCwd);
+  const relTokenInit = runNode(
+    ['init', '--us-dir', tokenUsDir, '--slug', 'rel-token-slug'],
+    fromNestedCwd,
+  );
+  assert(relTokenInit.status === 0, 'init with repo-relative us-dir from nested cwd exits 0');
+  const tokenSessionFile = path.join(tokenAbs, '.audit-session-rel-token-slug.json');
+  assert(fs.existsSync(tokenSessionFile), 'session created under repo-root token path');
+  assert(
+    !fs.existsSync(path.join(fromNestedCwd, tokenUsDir, '.audit-session-rel-token-slug.json')),
+    'session is not created under the nested cwd',
+  );
+  const tokenDisk = JSON.parse(fs.readFileSync(tokenSessionFile, 'utf-8'));
+  assert(tokenDisk.usDir === tokenUsDir, 'persisted usDir keeps the repo-relative token');
+  const tokenReloaded = runNode(['has-errors', '--session-file', tokenSessionFile], REPO_ROOT);
+  assert(tokenReloaded.status === 0, 'reload token session from repo root exits 0');
+
+  const resolveFromNested = runNode(['resolve'], fromNestedCwd);
+  assert(resolveFromNested.status === 0, 'resolve from nested cwd exits 0');
+  const nestedResolve = JSON.parse(resolveFromNested.stdout.trim());
+  assert(
+    nestedResolve.enableAuditing === true,
+    'resolve without --config from nested cwd reads repo-root config',
+  );
+
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);

@@ -60,7 +60,8 @@ if [[ -z "$CFG_JSON" ]]; then
     exit 2
   fi
   if [[ -z "$TARGET_BRANCH" ]]; then
-    TARGET_BRANCH="refs/heads/main"
+    echo "ws-preview: config missing or unreadable ($CONFIG_PATH); target branch required (pass --target-branch or set project.baseBranch)" >&2
+    exit 2
   fi
 else
   [[ -z "$STACK" ]] && STACK="$(node -e "const c=JSON.parse(process.argv[1]); process.stdout.write(c.stack||'');" "$CFG_JSON")"

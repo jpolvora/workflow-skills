@@ -83,6 +83,37 @@ def load_plans_dir() -> Path:
 
 REQUIRED_KEYS = ["workflowId", "us", "status", "currentStep"]
 
+# Current state schema version. update_state.py always stamps this value
+# (clamps unknown highs so post-write validation can succeed). On-disk
+# state that is missing, older, or unknown is rejected loudly (no compat
+# shims) until a writer rewrite. Keep in sync with CURRENT_STATE_VERSION
+# in the lite validate_state.py and both _STATE_VERSION stamps below.
+CURRENT_STATE_VERSION = 1
+
+
+def verify_state_version(data: dict, errors: list[str]) -> None:
+    """Reject a missing/older/unknown stateVersion with a clear message (AC4)."""
+    raw = data.get("stateVersion")
+    try:
+        version = int(str(raw).strip()) if raw is not None else None
+    except (TypeError, ValueError):
+        version = None
+    if version is None:
+        errors.append(
+            "stateVersion missing or non-integer in frontmatter; "
+            "state format is not versioned / unsupported (reject loud, no compat shims)"
+        )
+    elif version < CURRENT_STATE_VERSION:
+        errors.append(
+            f"stateVersion {version} is older than the supported schema "
+            f"{CURRENT_STATE_VERSION}; state format not supported (reject loud, no compat shims)"
+        )
+    elif version > CURRENT_STATE_VERSION:
+        errors.append(
+            f"stateVersion {version} is unknown/unrecognized (expected "
+            f"{CURRENT_STATE_VERSION}); state format not supported (reject loud, no compat shims)"
+        )
+
 
 
 def resolve_state_path(arg: str) -> Path:
@@ -487,6 +518,8 @@ def validate_pre_advance(state_path: Path, step_n: int) -> dict:
     if not slug:
         errors.append("mandatory key missing in frontmatter: slug")
 
+    verify_state_version(data, errors)
+
     completed = _as_int_list(data.get("completedSteps", []))
     skipped = _parse_skipped_steps(data, fm)
     dry_run = str(data.get("dryRun", "false")).lower() == "true"
@@ -528,6 +561,8 @@ def validate(state_path: Path) -> dict:
     for k in REQUIRED_KEYS:
         if k not in data:
             errors.append(f"mandatory key missing in frontmatter: {k}")
+
+    verify_state_version(data, errors)
 
     dry_run = str(data.get("dryRun", "false")).lower() == "true"
     status = str(data.get("status", "")).strip().lower()
@@ -573,8 +608,10 @@ def validate(state_path: Path) -> dict:
 
     # commits exist in git (best-effort) — scan raw frontmatter for `sha:` to
     # survive nested YAML list formats the mini-parser does not flatten.
+    # Serializer writes inline dicts (`- { sha: "...", step: N, ... }`); a
+    # line-anchored `^\s*-?\s*sha:` never matches that form.
     commit_shas = []
-    for m in re.finditer(r"^\s*-?\s*sha:\s*['\"]?([0-9a-f]{7,40})", fm_raw, re.MULTILINE):
+    for m in re.finditer(r"\bsha:\s*['\"]?([0-9a-f]{7,40})", fm_raw):
         if m.group(1) not in commit_shas:
             commit_shas.append(m.group(1))
     if not dry_run:
