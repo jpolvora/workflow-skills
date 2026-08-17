@@ -1,0 +1,131 @@
+{
+  "execMode": "sequential",
+  "reason": "config.json defaults.enableDag=false (default) - forced sequential; P1 scope only",
+  "planPath": ".agents/plans/deepseek-harness-improvements/step-02-deepseek-harness-improvements.plan.refined.md",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Add monotonic stateVersion + reject-old in validate_state.py",
+      "files": [
+        ".agents/skills/ws-spec-to-pr/scripts/update_state.py",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.py"
+      ],
+      "acceptance": "state.yaml carries a monotonic stateVersion; validate_state.py rejects unknown/older versions with exit code 1 and a clear message (AC4).",
+      "acs": [
+        "AC4"
+      ],
+      "parallelGroup": null,
+      "dependsOn": [],
+      "verification": "python validate_state.py on a bad-version fixture exits 1 with clear stderr.",
+      "testCases": [
+        "test/test-update-state-yaml.js - stateVersion reject (exit 1)"
+      ],
+      "coderPrompt": "Implement the T1 plan step exactly as the exec.md describes: add a monotonic stateVersion to state.yaml, and add a reject-old/unknown-version guard in validate_state.py that exits 1 with a clear message."
+    },
+    {
+      "id": "T2",
+      "title": "Fix nested-dict serialization + completedSteps union (standard + lite)",
+      "files": [
+        ".agents/skills/ws-spec-to-pr/scripts/update_state.py",
+        ".agents/skills/ws-spec-to-pr-lite/scripts/update_state.py"
+      ],
+      "acceptance": "nested dicts round-trip through format_inline_dict/parse_inline_dict without corruption (mem trap [2026-08-13]); duplicate completedSteps unioned to unique ints with a stderr warning, not last-wins (AC5), in both standard and lite copies.",
+      "acs": [
+        "AC5"
+      ],
+      "parallelGroup": null,
+      "dependsOn": [],
+      "verification": "node test/test-update-state-yaml.js - nested-dict round-trip + duplicates-union cases pass.",
+      "testCases": [
+        "test/test-update-state-yaml.js - nested-dict round-trip, duplicates union"
+      ],
+      "coderPrompt": "Implement the T2 plan step exactly as the exec.md describes: harden update_state.py (standard + lite) serialization of nested dicts and union duplicate completedSteps with a stderr warning."
+    },
+    {
+      "id": "T3",
+      "title": "Resume pre-check (unique commits vs base) in orchestrator resume flow",
+      "files": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/README.md",
+        ".agents/skills/ws-spec-to-pr/scripts/"
+      ],
+      "acceptance": "on resume, before re-implementing, git rev-list --count origin/{base}..HEAD must be > 0; if 0 unique commits, mark-complete/stop instead of re-implementing (AC9).",
+      "acs": [
+        "AC9"
+      ],
+      "parallelGroup": null,
+      "dependsOn": [],
+      "verification": "test/test-resume-gate.js - 0 unique commits -> mark-complete/stop path.",
+      "testCases": [
+        "test/test-resume-gate.js - 0 unique commits -> mark-complete/stop"
+      ],
+      "coderPrompt": "Implement the T3 plan step exactly as the exec.md describes: add the resume pre-check (unique commits vs base) to the orchestrator resume flow, with mark-complete/stop when there are 0 unique commits."
+    },
+    {
+      "id": "T4",
+      "title": "Goal-loop revision-guarded contract + evals",
+      "files": [
+        ".agents/skills/ws-goal-loop/SKILL.md",
+        ".agents/skills/ws-goal-loop/evals/evals.json"
+      ],
+      "acceptance": "ws-goal-loop updates are revision-guarded; a stale revision conflicts loudly and never silently overwrites (AC7), enforced via SKILL.md contract wording + evals (no runtime loop code).",
+      "acs": [
+        "AC7"
+      ],
+      "parallelGroup": null,
+      "dependsOn": [],
+      "verification": "ws-goal-loop/evals run passes; stale-revision conflict eval fails when a stale revision would be silently applied.",
+      "testCases": [
+        "ws-goal-loop/evals/evals.json - stale-revision conflict"
+      ],
+      "coderPrompt": "Implement the T4 plan step exactly as the exec.md describes: add revision-guarded contract wording to ws-goal-loop SKILL.md and a stale-revision-conflict eval case in evals.json."
+    },
+    {
+      "id": "T5",
+      "title": "Goal-loop >=3-round blocked + resume re-arm contract + evals",
+      "files": [
+        ".agents/skills/ws-goal-loop/SKILL.md",
+        ".agents/skills/ws-goal-loop/evals/evals.json"
+      ],
+      "acceptance": "a blocked goal verdict is allowed only after >=3 consecutive rounds with the same concrete reason, never before; resume re-arms the objective (AC8), enforced via SKILL.md contract wording + evals.",
+      "acs": [
+        "AC8"
+      ],
+      "parallelGroup": null,
+      "dependsOn": [],
+      "verification": "ws-goal-loop/evals run passes; 3-round-blocked and resume-re-arm eval cases behave as specified.",
+      "testCases": [
+        "ws-goal-loop/evals/evals.json - 3-round blocked, resume re-arm"
+      ],
+      "coderPrompt": "Implement the T5 plan step exactly as the exec.md describes: add the >=3-consecutive-same-reason blocked contract and resume re-arm wording to ws-goal-loop SKILL.md, with matching eval cases in evals.json."
+    },
+    {
+      "id": "T6",
+      "title": "Goal-fix-pr revision + blocked/resume contract + evals",
+      "files": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-fix-pr/evals/evals.json"
+      ],
+      "acceptance": "ws-goal-fix-pr adopts the same revision-guarded, >=3-round-blocked, resume-re-arms objective contract as ws-goal-loop (AC7-AC8), enforced via SKILL.md wording + evals; no runtime loop code.",
+      "acs": [
+        "AC7",
+        "AC8"
+      ],
+      "parallelGroup": null,
+      "dependsOn": [],
+      "verification": "ws-goal-fix-pr/evals run passes; stale-revision conflict, 3-round blocked, resume re-arm evals pass.",
+      "testCases": [
+        "ws-goal-fix-pr/evals/evals.json - stale-revision conflict, 3-round blocked, resume re-arm"
+      ],
+      "coderPrompt": "Implement the T6 plan step exactly as the exec.md describes: apply the revision-guarded, >=3-round-blocked, resume-re-arms contract to ws-goal-fix-pr SKILL.md and matching eval cases in evals.json."
+    }
+  ],
+  "levels": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6"
+  ]
+}

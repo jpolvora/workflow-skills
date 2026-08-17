@@ -143,10 +143,14 @@
       "includeTestingReport": false
     },
     "_comment_models": "Optional model preferences for autoMode phase switching (e.g. claude-3-5-sonnet, gpt-4o, gemini-1.5-pro, gemini-2.0-flash). Fallback to active model if empty or switch fails.",
+    "_plannerModel": "opencode-go/deepseek-v4-pro",
+    "_executionModel": "opencode-go/deepseek-v4-flash",
+    "_reviewerModel": "opencode-go/deepseek-v4-pro",
+    "_testingModel": "opencode-go/deepseek-v4-flash",
     "plannerModel": "opencode-go/deepseek-v4-pro",
-    "executionModel": "opencode-go/deepseek-v4-flash",
-    "reviewerModel": "opencode-go/deepseek-v4-pro",
-    "testingModel": "opencode-go/deepseek-v4-flash"
+    "executionModel": "composer-2.5",
+    "reviewerModel": "cursor-grok-4.6-high",
+    "testingModel": "composer-2.5"
   },
   "plans": {
     "dir": ".agents/plans",
