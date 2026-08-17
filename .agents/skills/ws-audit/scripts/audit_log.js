@@ -222,7 +222,7 @@ function formatFinding(f) {
 
 export function initAudit({ usDir, slug, workflowId }) {
   const startedAt = isoNow();
-  const absUsDir = path.resolve(usDir);
+  const absUsDir = resolveMaybeRelative(usDir);
   const absLog = path.join(
     absUsDir,
     `audit-${slug}-${startedAt.replace(/[:.]/g, '-')}.log.md`,

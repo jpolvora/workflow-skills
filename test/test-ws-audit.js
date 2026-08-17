@@ -326,18 +326,26 @@ function main() {
   const portableReloaded = runNode(['has-errors', '--session-file', portableSessionFile]);
   assert(portableReloaded.status === 0, 'reload relative session file exits 0');
 
-  const nestedInit = runNode(
-    ['init', '--us-dir', '.', '--slug', 'nested-cwd-slug'],
-    portableUsDir,
+  const tokenUsDir = '.tmp-audit-rel-us';
+  const tokenAbs = path.join(REPO_ROOT, tokenUsDir);
+  tmpRoots.push(tokenAbs);
+  const fromNestedCwd = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-from-cwd-'));
+  tmpRoots.push(fromNestedCwd);
+  const relTokenInit = runNode(
+    ['init', '--us-dir', tokenUsDir, '--slug', 'rel-token-slug'],
+    fromNestedCwd,
   );
-  assert(nestedInit.status === 0, 'init from nested cwd exits 0');
-  const nestedFile = path.join(portableUsDir, '.audit-session-nested-cwd-slug.json');
-  const nestedDisk = JSON.parse(fs.readFileSync(nestedFile, 'utf-8'));
-  const expectedRel = path.relative(REPO_ROOT, portableUsDir).split(path.sep).join('/');
-  assert(nestedDisk.usDir === expectedRel, 'nested cwd usDir is repo-root-relative, not cwd-relative');
-  assert(!nestedDisk.logPath.includes('\\'), 'nested cwd logPath uses posix separators');
-  const nestedReloaded = runNode(['has-errors', '--session-file', nestedFile], REPO_ROOT);
-  assert(nestedReloaded.status === 0, 'reload nested-cwd session from repo root exits 0');
+  assert(relTokenInit.status === 0, 'init with repo-relative us-dir from nested cwd exits 0');
+  const tokenSessionFile = path.join(tokenAbs, '.audit-session-rel-token-slug.json');
+  assert(fs.existsSync(tokenSessionFile), 'session created under repo-root token path');
+  assert(
+    !fs.existsSync(path.join(fromNestedCwd, tokenUsDir, '.audit-session-rel-token-slug.json')),
+    'session is not created under the nested cwd',
+  );
+  const tokenDisk = JSON.parse(fs.readFileSync(tokenSessionFile, 'utf-8'));
+  assert(tokenDisk.usDir === tokenUsDir, 'persisted usDir keeps the repo-relative token');
+  const tokenReloaded = runNode(['has-errors', '--session-file', tokenSessionFile], REPO_ROOT);
+  assert(tokenReloaded.status === 0, 'reload token session from repo root exits 0');
 
   cleanup();
   if (failures > 0) {
