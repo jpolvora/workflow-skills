@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "6819f3b74de9df91b2de6c1f23baffd91a1f497e5d3cc25fe3291525d0e7cd48",
+  "fullPackageDigest": "a861ac8f3b8e28ddb803d70e393735e14a95d0d7f584a0e68b868a09e2fc7c60",
   "hub": {
     "files": {
       "AGENTS.md": "88718c90964c67c060862dff6ed959127ae4684764922233c23fd97176effbf3",
@@ -21,12 +21,12 @@
       "MEMORY.md.template": "358174cd427cbc853a8e00cb17853da93462260058a1c1f3d8d6e33288f010b5",
       "scripts/resolve_consumer_root.cjs": "1b7cb1e56d811276d1ad12d50b1e2de99c9db23c9e237a6ab57d27abeb648b0a",
       "scripts/resolve_consumer_root.py": "97e987ee8da8aa2576123292df7d6f297c38b0835a28cff4a596a83f79926924",
-      "setup.md": "29cc9efa00e3cb5664556835bb27b0951977c978cd08714f67086297262d31b4",
+      "setup.md": "992e4f550a100a36391b343840c89e9c38eb17a54f41a91b7cbaa5d93d6a51e2",
       "skill-dependencies.json": "81755ab6cf012ed62cd8770d696b0ddfceceb5c2520ac5bf5bda08da3ba4a100",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "67c5039f3ffd01cdcd7423e194b2212a85feba8d6a98cd3521d21b7d0cc4a1e7"
     },
-    "skillDigest": "a0511cef74cd79080b8cac88fe551690d0fcd8366cbc7d0d46ebc30c78d41055"
+    "skillDigest": "0190cf4ce8d202b81fa9c99aa753ff56890e9339b1099c0fd27ff35268cea8da"
   },
   "packageVersion": "0.3.22",
   "skills": {
@@ -333,11 +333,11 @@
         "scripts/github-issue-to-spec.py": "b8bc4b3f2ead8817a17e8d172f7fe51285e9aaed077cb1a2de7ee6d69f2ddccc",
         "scripts/update_state.py": "d8fc4c07165b6b6ccbd3f1205f74f7a7c1d8a73f33dade090fbe4127488b10e6",
         "scripts/validate_state.py": "139b6dafa930bdc911888e260356950f47eae93839784f6c992e07ecea1c0c6f",
-        "SKILL.md": "7df75de748b8d57e3e69d33c6df65598fec5c4444bdc977340a5e4c18e668e3b",
+        "SKILL.md": "f9fdfe63954fdc7a026309c5cf99f6b8256efa461fea36ea70a8e16711d1cf28",
         "STEP-DISPATCH.md": "d9b9aca7f17d61818593a69fc693abcd3ac464003548eb4ded7a96c03a55b47c",
         "ws-spec-to-pr-run-test.md": "2594a72651f38ae4ab5464e4de0d9df99edd8305019443d6d9bb9343e1d2ba62"
       },
-      "skillDigest": "acbd61090dc71c685e89735696cd293bb5f7a6f2715436b7ca5a038ab06b60c2"
+      "skillDigest": "07ac3af11cd35e35347d893af7c0bee1d6675f22672c9e8a3c4dd11f481d3d85"
     },
     "ws-spec-to-pr-lite": {
       "files": {

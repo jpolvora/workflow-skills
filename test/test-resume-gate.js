@@ -107,10 +107,32 @@ function currentBranch(dir) {
   return r.status === 0 ? (r.stdout || '').trim() : '';
 }
 
+function gitRemoteExists(dir, gitRemote = 'origin') {
+  const r = git(dir, ['remote']);
+  if (r.status !== 0) return false;
+  return (r.stdout || '').split(/\s+/).filter(Boolean).includes(gitRemote);
+}
+
+/** Refresh origin/{integrationBranch} like setup.md §4c / §5b. */
+function fetchIntegrationRef(dir, integrationBranch, gitRemote = 'origin') {
+  if (!gitRemoteExists(dir, gitRemote)) {
+    return { ok: false, reason: 'no-remote' };
+  }
+  const r = git(dir, ['fetch', gitRemote, integrationBranch]);
+  if (r.status !== 0) {
+    return { ok: false, reason: 'fetch-failed' };
+  }
+  return { ok: true };
+}
+
 function resumePreCheck(dir, integrationBranch, state, workflowType = 'standard') {
   const branch = (state?.branch || currentBranch(dir) || '').trim();
   if (branch && integrationBranch && branch === integrationBranch) {
     return { action: 'skip-check-continue', gate: 'proceed', reason: 'stay-on-integration' };
+  }
+  const fetched = fetchIntegrationRef(dir, integrationBranch);
+  if (fetched.reason === 'fetch-failed') {
+    return { action: 'skip-check-continue', gate: 'proceed', reason: 'fetch-failed' };
   }
   if (!originIntegrationRefExists(dir, integrationBranch)) {
     return { action: 'skip-check-continue', gate: 'proceed' };
@@ -307,6 +329,75 @@ function testContractEncoded() {
     /stay-on-integration/i.test(setup) && /stay-on-integration/i.test(skill),
     'setup.md and SKILL.md encode stay-on-integration skip-check'
   );
+  assert(
+    /git fetch \{gitRemote\} \{integrationBranch\}/.test(setup),
+    'setup.md fetches integrationBranch before the resume rev-list count'
+  );
+  assert(
+    /fetch-failed/.test(setup) && /never mark completed on an unverifiable count/.test(setup),
+    'setup.md skip-check on fetch failure never mark-completes'
+  );
+  assert(
+    /git fetch \{gitRemote\} \{integrationBranch\}/.test(skill) && /fetch-failed/.test(skill),
+    'ws-spec-to-pr SKILL.md encodes fetch-before-count and fetch-failed skip-check'
+  );
+}
+
+function testStaleOriginIntegrationRefFetchesBeforeCount() {
+  const dir = initRepo();
+  const bare = mkTmp('ws-resume-bare-');
+  assert(git(bare, ['init', '--bare']).status === 0, 'bare origin init');
+  git(dir, ['remote', 'add', 'origin', bare]);
+  assert(git(dir, ['push', '-u', 'origin', 'main']).status === 0, 'push main to bare origin');
+  const baseline = headSha(dir);
+
+  git(dir, ['checkout', '-b', 'develop', 'main']);
+  fs.writeFileSync(path.join(dir, 'develop.txt'), 'on develop\n');
+  git(dir, ['add', 'develop.txt']);
+  assert(git(dir, ['commit', '-m', 'develop ahead of main']).status === 0, 'develop commit succeeds');
+  pushBranchToOrigin(dir, 'develop');
+  const staleDevelopSha = headSha(dir);
+
+  git(dir, ['checkout', '-b', 'feat/stale-ref', 'main']);
+  fs.writeFileSync(path.join(dir, 'feat.txt'), 'feat\n');
+  git(dir, ['add', 'feat.txt']);
+  assert(git(dir, ['commit', '-m', 'feature work']).status === 0, 'feat commit succeeds');
+  const featHead = headSha(dir);
+  git(dir, ['checkout', 'develop']);
+  const merge = git(dir, ['merge', '--no-ff', '-m', 'merge feat into develop', 'feat/stale-ref']);
+  assert(merge.status === 0, 'merge feat into develop');
+  pushBranchToOrigin(dir, 'develop');
+  git(dir, ['checkout', 'feat/stale-ref']);
+  git(dir, ['update-ref', 'refs/remotes/origin/develop', staleDevelopSha]);
+  assert(
+    uniqueCommitCount(dir, 'origin/develop') >= 1,
+    'stale origin/develop tracking ref still shows unique commits (false proceed without fetch)'
+  );
+
+  const state = {
+    branch: 'feat/stale-ref',
+    baselineCommit: baseline,
+    commits: [{ sha: featHead }],
+    completedSteps: [5],
+  };
+  const preCheck = resumePreCheck(dir, 'develop', state, 'standard');
+  assert(preCheck.action === 'count', 'fetch refreshes origin/develop then counts');
+  assert(preCheck.gate === 'mark-complete-stop', 'after fetch, merged tip mark-complete/stop');
+  assert(uniqueCommitCount(dir, 'origin/develop') === 0, 'fetch updated origin/develop to merged tip');
+}
+
+function testFetchFailedSkipCheck() {
+  const dir = initRepo();
+  git(dir, ['remote', 'add', 'origin', path.join(dir, 'missing-origin.git')]);
+  git(dir, ['checkout', '-b', 'feat/fetch-fail', 'main']);
+  const preCheck = resumePreCheck(dir, 'develop', {
+    branch: 'feat/fetch-fail',
+    commits: [{ sha: 'x' }],
+    completedSteps: [5],
+  });
+  assert(preCheck.action === 'skip-check-continue', 'fetch failure uses skip-check');
+  assert(preCheck.gate === 'proceed', 'fetch failure proceeds (never mark completed)');
+  assert(preCheck.reason === 'fetch-failed', 'reason is fetch-failed');
 }
 
 function main() {
@@ -316,6 +407,8 @@ function main() {
   testSkipCheckWhenOriginIntegrationRefAbsent();
   testStayOnIntegrationProceeds();
   testLiteG2StepSignal();
+  testStaleOriginIntegrationRefFetchesBeforeCount();
+  testFetchFailedSkipCheck();
   testContractEncoded();
   cleanup();
   if (failures > 0) { console.error(failures + ' failure(s)'); process.exit(1); }
