@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "33884951f8ef4b26d8dcca706ddb39e73e7ff7e9f8b1b6d0371302387edfdf4c",
+  "fullPackageDigest": "5c99f2a715841a4159902306f86387498bc15cc1189b2051b49b87f53288d303",
   "hub": {
     "files": {
       "AGENTS.md": "88718c90964c67c060862dff6ed959127ae4684764922233c23fd97176effbf3",
@@ -165,11 +165,11 @@
     },
     "ws-goal-fix-pr": {
       "files": {
-        "evals/evals.json": "7b901c239e025ebe3b52fed16d77ffc30911391ba07691b06a9aeba06eb14547",
+        "evals/evals.json": "fdb19986a5385ecdf1d8ca096a37122f5eb653037640f90ebb9f5af6c9a7156e",
         "examples.md": "5b556ba1020dcfb084e1d3c83fc81232e048a207c6706e5ec0627b9bfbe48e76",
         "SKILL.md": "782e6dff2ec0f8a42b95aaae82dae22d3c9daddbfb00d47e06a2a1b48d56d50e"
       },
-      "skillDigest": "e6b4acb1e2938ccb9abe5ee657e151d2a81ff0f017e226e294377a7f07eb405c"
+      "skillDigest": "4afbe2e18f0b0ac98f2d8694e75925c666a241d872230af8b40236f814a2ad52"
     },
     "ws-goal-loop": {
       "files": {
@@ -331,22 +331,22 @@
         "scripts/check_memory_conflict.py": "f9361863756fc8292c04da79df28420256282370f06d7e20a731173036f9b33a",
         "scripts/cleanup_workflow_git.py": "d1994a50c5ff75eabab3428d524b1f0e0faa56d3162355a33952090137007fdd",
         "scripts/github-issue-to-spec.py": "b8bc4b3f2ead8817a17e8d172f7fe51285e9aaed077cb1a2de7ee6d69f2ddccc",
-        "scripts/update_state.py": "888e755c946004c3c9e535029a098442f3401133a61f68ffce544c63d3b97c67",
-        "scripts/validate_state.py": "50c012233d4e1e02d4664fff750fad7e6c03e662753a93ab0816c1e1c079bdf8",
-        "SKILL.md": "4e85631fcff2d09fe180b0faf1270b665b1290e514cc3e5573da0de78049d0f1",
+        "scripts/update_state.py": "f9be48530af5c38f4a6b5dec5a0cff8b50b9ff4336d77f467fc0e888e21daa04",
+        "scripts/validate_state.py": "9927841aefbd2dda32822d6dcd379a5719dd68ab965f4312fead347889cef6e3",
+        "SKILL.md": "2be472381fad30157661b88e77888cd5d7d4aa730aa484bf002d40914ee6f153",
         "STEP-DISPATCH.md": "d9b9aca7f17d61818593a69fc693abcd3ac464003548eb4ded7a96c03a55b47c",
         "ws-spec-to-pr-run-test.md": "2594a72651f38ae4ab5464e4de0d9df99edd8305019443d6d9bb9343e1d2ba62"
       },
-      "skillDigest": "5332e4fa03a2dfd7ac2160c98b886e821ad45cbddd3167f6fb380b88c868bfac"
+      "skillDigest": "8fd2f1861d4fd4fef758c141caa74f330d2db4204f22444b8cccfab31c7eb868"
     },
     "ws-spec-to-pr-lite": {
       "files": {
         "evals/evals.json": "7a1a75266c30f85177109e0e684df58aae4286e684cbd5d4ea9275e4411f4a26",
-        "scripts/update_state.py": "f098413fc1554ef8ced39220cb7ff79ec54ab8d140d4230f26f2fc4b4f7bcd1d",
-        "scripts/validate_state.py": "8230023a9b14be27eb7885c87a684ac04fde42d322e45f4d5f63c9df9d34a1f1",
+        "scripts/update_state.py": "1233a1b16efc27ff3e831cdd32a2c2c1c1bb709bdc984791fa3308f137e55e45",
+        "scripts/validate_state.py": "f9db1a2638deea6ef4e71a117c9cc40a2ac8ebefb59ba1b2e6f2ea948014bf53",
         "SKILL.md": "b2e48aa9d820e6e7ce130a0f4c88236003046daf26dffee236d08f3eb839898d"
       },
-      "skillDigest": "3fe207e39c9eb53b18aad529bf7d5894ea00e81ba1ff79f53d55c57b3e182f48"
+      "skillDigest": "3833f65fdc8fcd3715b976268d4f26987c62ccaa0c859483a7b2b973bba49b88"
     },
     "ws-sync-spec": {
       "files": {

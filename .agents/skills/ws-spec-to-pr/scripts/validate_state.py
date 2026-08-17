@@ -86,6 +86,8 @@ REQUIRED_KEYS = ["workflowId", "us", "status", "currentStep"]
 # Current state schema version. update_state.py stamps a monotonic stateVersion
 # (never decreases); any stateVersion that is missing, older, or unknown is
 # rejected loudly (no compat shims) — old/non-versioned state is unsupported.
+# Keep in sync with CURRENT_STATE_VERSION in the lite validate_state.py and both
+# _STATE_VERSION stamps below.
 CURRENT_STATE_VERSION = 1
 
 

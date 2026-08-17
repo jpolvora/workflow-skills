@@ -346,12 +346,86 @@ function testStateVersionStampAndReject() {
   assert(rGood.status === 0, 'current stateVersion: validate_state exits 0');
 }
 
+function writeArtifactFixture(dir, slug) {
+  const usDir = path.join(dir, slug);
+  fs.mkdirSync(usDir, { recursive: true });
+  const statePath = path.join(usDir, slug + '.state.md');
+  const content = '---' + NL +
+    'workflowId: ' + slug + NL +
+    'us: ' + slug + NL +
+    'slug: ' + slug + NL +
+    'status: active' + NL +
+    'currentStep: 0' + NL +
+    'stateVersion: 1' + NL +
+    'dryRun: true' + NL +
+    'completedSteps: [0]' + NL +
+    'skippedSteps: []' + NL +
+    'workflowManifest:' + NL +
+    '  created: []' + NL +
+    '  artifacts: []' + NL +
+    'commits: []' + NL +
+    'telemetry:' + NL +
+    '  steps: []' + NL +
+    '  totalElapsedSec: 0' + NL +
+    'currentModel: test-model' + NL +
+    '---' + NL +
+    '# Spec-to-PR Workflow: ' + slug + NL +
+    NL +
+    '## Telemetry log' + NL +
+    NL +
+    '| Step | Label | Model | Elapsed | Tokens |' + NL +
+    '|------|-------|-------|---------|--------|' + NL +
+    NL +
+    '## Gate history' + NL;
+  fs.writeFileSync(statePath, content, 'utf8');
+  return { usDir, statePath };
+}
+
+// AC6 reproducible-artifact invariant: pre-advance validate_state exits non-zero
+// when a required artifact for step N is missing (fail closed).
+function testArtifactReproducibilityPreAdvance() {
+  const slug = 'us-ac6';
+  const step = 2; // advance to step 2 requires step-00 spec + step-01 plan
+  const dir = mkTmp('ws-artifact-repro-');
+  const { usDir, statePath } = writeArtifactFixture(dir, slug);
+
+  // No artifacts created yet -> pre-advance 2 must fail.
+  const rMiss = runPython(VALIDATE_STANDARD, [statePath, '--pre-advance', String(step)]);
+  assert(
+    rMiss.status !== 0,
+    'AC6: pre-advance ' + step + ' exits non-zero when required artifact missing (status=' + rMiss.status + ')',
+  );
+  assert(
+    /artifact missing/i.test(rMiss.stderr || '') || /artifact missing/i.test(rMiss.stdout || ''),
+    'AC6: stderr/stdout names the missing artifact',
+  );
+
+  // Create both required artifacts -> pre-advance 2 passes (dryRun soft-passes tag).
+  fs.writeFileSync(
+    path.join(usDir, 'step-00-' + slug + '.spec.md'),
+    '# Spec' + NL + '## Acceptance Criteria' + NL + '- AC: reproduces' + NL,
+    'utf8',
+  );
+  fs.writeFileSync(
+    path.join(usDir, 'step-01-' + slug + '.plan.md'),
+    '# Plan' + NL + '1. Step' + NL,
+    'utf8',
+  );
+  const rOk = runPython(VALIDATE_STANDARD, [statePath, '--pre-advance', String(step)]);
+  assert(
+    rOk.status === 0,
+    'AC6: pre-advance ' + step + ' exits 0 when required artifacts present (status=' + rOk.status + ')',
+  );
+}
+
+
 function main() {
   console.log('test-update-state-yaml.js\n');
   testLocNestedMappingRoundTrip();
   testLiteSerializerMirrorsNestedDictFix();
   testDuplicateCompletedStepsUnion();
   testStateVersionStampAndReject();
+  testArtifactReproducibilityPreAdvance();
 
   cleanup();
 

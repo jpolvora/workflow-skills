@@ -74,6 +74,7 @@ STEP_LABELS = {
 # Current state schema version stamped into the state.yaml frontmatter.
 # Monotonic (never decreases across a workflow's life); validate_state.py
 # rejects any stateVersion that is missing, older, or unknown (reject loud).
+# Keep in sync with the lite copy and with CURRENT_STATE_VERSION in validate_state.py.
 _STATE_VERSION = 1
 
 _SECRET_PATTERNS = [
