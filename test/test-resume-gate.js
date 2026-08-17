@@ -39,6 +39,19 @@ function resolveIntegrationBranch(workingBranch, baseBranch) {
   return w || baseBranch;
 }
 
+/** First required G2-code step: 5 standard, 2 lite (AC9 product-commit signal). */
+function firstG2CodeStep(workflowType) {
+  return workflowType === 'lite' ? 2 : 5;
+}
+
+function workflowHasProductCommits(state, workflowType) {
+  const commits = state?.commits;
+  if (Array.isArray(commits) && commits.length > 0) return true;
+  const completed = state?.completedSteps;
+  if (!Array.isArray(completed)) return false;
+  return completed.includes(firstG2CodeStep(workflowType));
+}
+
 function initRepo() {
   const dir = mkTmp('ws-resume-gate-');
   let r = git(dir, ['init']);
@@ -51,6 +64,11 @@ function initRepo() {
   r = git(dir, ['commit', '-m', 'base']);
   if (r.status !== 0) throw new Error('base commit failed: ' + (r.stderr || r.stdout));
   return dir;
+}
+
+function headSha(dir) {
+  const r = git(dir, ['rev-parse', 'HEAD']);
+  return r.status === 0 ? (r.stdout || '').trim() : '';
 }
 
 function uniqueCommitCount(dir, ref) {
@@ -67,7 +85,23 @@ function originIntegrationRefExists(dir, integrationBranch) {
   return r.status === 0;
 }
 
-function resumePreCheck(dir, integrationBranch, branch) {
+/**
+ * AC9 resume gate: count==0 marks complete only when workflow has product commits
+ * and HEAD != baselineCommit; early workflows with bare count==0 proceed.
+ */
+function resumeGate(uniqueCount, state, head, workflowType = 'standard') {
+  if (uniqueCount > 0) return 'proceed';
+  if (uniqueCount === null) return 'mark-complete-stop';
+  const baseline = (state?.baselineCommit || '').trim();
+  const headTrim = (head || '').trim();
+  const hasProduct = workflowHasProductCommits(state, workflowType);
+  if (hasProduct && headTrim && baseline && headTrim !== baseline) {
+    return 'mark-complete-stop';
+  }
+  return 'proceed';
+}
+
+function resumePreCheck(dir, integrationBranch, state, workflowType = 'standard') {
   if (!originIntegrationRefExists(dir, integrationBranch)) {
     return { action: 'skip-check-continue', gate: 'proceed' };
   }
@@ -75,7 +109,11 @@ function resumePreCheck(dir, integrationBranch, branch) {
   if (count === null) {
     return { action: 'skip-check-continue', gate: 'proceed' };
   }
-  return { action: 'count', gate: resumeGate(count), count };
+  return {
+    action: 'count',
+    gate: resumeGate(count, state, headSha(dir), workflowType),
+    count,
+  };
 }
 
 function setupOriginRemote(dir) {
@@ -90,33 +128,35 @@ function pushBranchToOrigin(dir, branch) {
   if (r.status !== 0) throw new Error('push ' + branch + ' failed: ' + (r.stderr || r.stdout));
 }
 
-function resumeGate(uniqueCount) {
-  return uniqueCount > 0 ? 'proceed' : 'mark-complete-stop';
-}
-
-function testZeroUniqueCommitsStops() {
+function testEarlyWorkflowZeroCommitsProceeds() {
   const dir = initRepo();
   git(dir, ['checkout', '-b', 'feat/slug', 'main']);
+  const baseline = headSha(dir);
   const count = uniqueCommitCount(dir, 'main');
   assert(count === 0, 'feature from main has 0 unique commits vs main');
-  assert(resumeGate(count) === 'mark-complete-stop', '0 unique commits -> mark-complete + stop');
+  const earlyState = { baselineCommit: baseline, commits: [], completedSteps: [] };
+  assert(
+    resumeGate(count, earlyState, baseline) === 'proceed',
+    '0 unique commits on early workflow (no product commits) -> proceed'
+  );
   fs.writeFileSync(path.join(dir, 'work.txt'), 'work\n');
   git(dir, ['add', 'work.txt']);
   const commit = git(dir, ['commit', '-m', 'feature work']);
   assert(commit.status === 0, 'feature commit succeeds');
   const count2 = uniqueCommitCount(dir, 'main');
   assert(count2 >= 1, 'feature with work has >= 1 unique commit vs main');
-  assert(resumeGate(count2) === 'proceed', '>= 1 unique commits -> proceed / re-implement');
+  assert(resumeGate(count2, earlyState, headSha(dir)) === 'proceed', '>= 1 unique commits -> proceed');
 }
 
 /**
  * Stale-orch-resume trap: feature already merged into develop while baseBranch is main.
  * Comparing only to main keeps uniqueCount > 0 and wrongly allows re-implement.
- * Comparing to workingBranch (develop) yields 0 and must mark-complete/stop.
+ * Comparing to workingBranch (develop) yields 0 and must mark-complete/stop when product commits exist.
  */
 function testMergedIntoDevelopWhileBaseIsMain() {
   const dir = initRepo();
   setupOriginRemote(dir);
+  const baseline = headSha(dir);
   // Integration line ahead of main
   git(dir, ['checkout', '-b', 'develop', 'main']);
   fs.writeFileSync(path.join(dir, 'develop.txt'), 'on develop\n');
@@ -129,6 +169,7 @@ function testMergedIntoDevelopWhileBaseIsMain() {
   fs.writeFileSync(path.join(dir, 'feat.txt'), 'feat\n');
   git(dir, ['add', 'feat.txt']);
   assert(git(dir, ['commit', '-m', 'feature work']).status === 0, 'feat commit succeeds');
+  const featHead = headSha(dir);
   git(dir, ['checkout', 'develop']);
   const merge = git(dir, ['merge', '--no-ff', '-m', 'merge feat into develop', 'feat/stale']);
   assert(merge.status === 0, 'merge feat into develop (non-ff ok; branches diverged from main)');
@@ -145,10 +186,18 @@ function testMergedIntoDevelopWhileBaseIsMain() {
   const rightRef = resolveIntegrationBranch('develop', 'main');
   assert(wrongRef === 'main', 'fallback integrationBranch is baseBranch when workingBranch empty');
   assert(rightRef === 'develop', 'integrationBranch prefers workingBranch when set');
-  assert(resumeGate(uniqueCommitCount(dir, 'origin/' + wrongRef)) === 'proceed', 'baseBranch-only count would wrongly proceed');
-  const preCheck = resumePreCheck(dir, rightRef, 'feat/stale');
+  assert(
+    resumeGate(vsDevelop, { baselineCommit: baseline, commits: [{ sha: featHead }] }, featHead) === 'mark-complete-stop',
+    '0 vs develop with product commits and HEAD != baseline -> mark-complete/stop'
+  );
+  assert(
+    resumeGate(uniqueCommitCount(dir, 'origin/' + wrongRef), { baselineCommit: baseline, commits: [{ sha: featHead }] }, featHead) === 'proceed',
+    'baseBranch-only count would wrongly proceed without integrationBranch'
+  );
+  const mergedState = { baselineCommit: baseline, commits: [{ sha: featHead }], completedSteps: [5] };
+  const preCheck = resumePreCheck(dir, rightRef, mergedState, 'standard');
   assert(preCheck.action === 'count', 'origin/develop present -> count path (not skip-check)');
-  assert(preCheck.gate === 'mark-complete-stop', 'workingBranch count correctly mark-complete/stop');
+  assert(preCheck.gate === 'mark-complete-stop', 'workingBranch count correctly mark-complete/stop when merged');
 }
 
 function testSkipCheckWhenOriginIntegrationRefAbsent() {
@@ -160,15 +209,28 @@ function testSkipCheckWhenOriginIntegrationRefAbsent() {
   assert(git(dir, ['commit', '-m', 'feature work']).status === 0, 'feature commit succeeds');
 
   assert(!originIntegrationRefExists(dir, 'develop'), 'origin/develop absent without remote');
-  const preCheck = resumePreCheck(dir, 'develop', 'feat/no-origin');
+  const preCheck = resumePreCheck(dir, 'develop', { commits: [{ sha: 'x' }] });
   assert(preCheck.action === 'skip-check-continue', 'missing origin ref -> skip-check path');
   assert(preCheck.gate === 'proceed', 'skip-check continues resume (never blocks dry-run/git-less)');
 
   // rev-list against missing origin ref also fails; must not mark-complete-stop
   const count = uniqueCommitCount(dir, 'origin/develop');
   assert(count === null, 'rev-list fails when origin/develop missing');
-  assert(resumeGate(count) === 'mark-complete-stop', 'null count alone would wrongly stop');
+  assert(resumeGate(count, { commits: [{ sha: 'x' }] }, headSha(dir)) === 'mark-complete-stop', 'null count alone would wrongly stop');
   assert(preCheck.gate === 'proceed', 'skip-check overrides null-count stop');
+}
+
+function testLiteG2StepSignal() {
+  const baseline = 'abc123';
+  const head = 'def456';
+  assert(
+    resumeGate(0, { baselineCommit: baseline, completedSteps: [2] }, head, 'lite') === 'mark-complete-stop',
+    'lite completedSteps includes Step 2 G2 -> mark-complete when count==0 and HEAD != baseline'
+  );
+  assert(
+    resumeGate(0, { baselineCommit: baseline, completedSteps: [1] }, head, 'lite') === 'proceed',
+    'lite without G2 step in completedSteps -> proceed on count==0'
+  );
 }
 
 function testContractEncoded() {
@@ -183,6 +245,14 @@ function testContractEncoded() {
   );
   assert(/0-unique-commits|NOT > 0|already merged/i.test(setup), 'setup.md encodes mark-complete/stop on zero unique commits');
   assert(
+    /state\.commits|completedSteps[\s\S]*?G2-code|baselineCommit/i.test(setup),
+    'setup.md encodes product-commit guard before mark-complete on count==0'
+  );
+  assert(
+    /pre-first-commit|do \*\*not\*\* mark completed/i.test(setup),
+    'setup.md encodes proceed on bare count==0 early workflow'
+  );
+  assert(
     /skip-check/i.test(setup) && /dry-run\/git-less never blocks/i.test(setup),
     'setup.md encodes skip-check when origin/{integrationBranch} unavailable'
   );
@@ -195,13 +265,18 @@ function testContractEncoded() {
     /workingBranch/i.test(skill) && /do \*\*not\*\* compare only to `origin\/\{baseBranch\}`/i.test(skill),
     'ws-spec-to-pr SKILL.md warns against baseBranch-only comparison when workingBranch is set'
   );
+  assert(
+    /state\.commits|baselineCommit|pre-first-commit/i.test(skill),
+    'ws-spec-to-pr SKILL.md encodes product-commit guard for count==0 mark-complete'
+  );
 }
 
 function main() {
   console.log('test-resume-gate.js');
-  testZeroUniqueCommitsStops();
+  testEarlyWorkflowZeroCommitsProceeds();
   testMergedIntoDevelopWhileBaseIsMain();
   testSkipCheckWhenOriginIntegrationRefAbsent();
+  testLiteG2StepSignal();
   testContractEncoded();
   cleanup();
   if (failures > 0) { console.error(failures + ' failure(s)'); process.exit(1); }
