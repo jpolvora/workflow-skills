@@ -71,8 +71,8 @@ function readJsonFile(filePath, label) {
 }
 
 function resolveConfigPath(explicit) {
-  if (explicit) return path.resolve(explicit);
-  return path.resolve(process.cwd(), '.agents/skills/ws-shared/config.json');
+  if (explicit) return resolveMaybeRelative(explicit);
+  return path.join(repoRoot(), '.agents/skills/ws-shared/config.json');
 }
 
 function resolveUpstreamRepo() {

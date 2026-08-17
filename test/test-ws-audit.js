@@ -347,6 +347,14 @@ function main() {
   const tokenReloaded = runNode(['has-errors', '--session-file', tokenSessionFile], REPO_ROOT);
   assert(tokenReloaded.status === 0, 'reload token session from repo root exits 0');
 
+  const resolveFromNested = runNode(['resolve'], fromNestedCwd);
+  assert(resolveFromNested.status === 0, 'resolve from nested cwd exits 0');
+  const nestedResolve = JSON.parse(resolveFromNested.stdout.trim());
+  assert(
+    nestedResolve.enableAuditing === true,
+    'resolve without --config from nested cwd reads repo-root config',
+  );
+
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);
