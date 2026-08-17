@@ -306,6 +306,26 @@ function main() {
   );
   assert(logText.includes('## Summary'), 'log has summary section');
 
+  const portableUsDir = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-portable-'));
+  tmpRoots.push(portableUsDir);
+  const portableInit = runNode([
+    'init',
+    '--us-dir',
+    portableUsDir,
+    '--slug',
+    'portable-slug',
+  ]);
+  assert(portableInit.status === 0, 'portable init exits 0');
+  const portableSessionFile = path.join(portableUsDir, '.audit-session-portable-slug.json');
+  const portableDisk = JSON.parse(fs.readFileSync(portableSessionFile, 'utf-8'));
+  assert(!path.isAbsolute(portableDisk.usDir), 'persisted usDir is repo-relative');
+  assert(!path.isAbsolute(portableDisk.logPath), 'persisted logPath is repo-relative');
+  assert(!/^[A-Za-z]:/.test(portableDisk.usDir), 'persisted usDir has no drive letter');
+  assert(!portableDisk.usDir.includes('\\'), 'persisted usDir uses posix separators');
+  assert(!portableDisk.logPath.includes('\\'), 'persisted logPath uses posix separators');
+  const portableReloaded = runNode(['has-errors', '--session-file', portableSessionFile]);
+  assert(portableReloaded.status === 0, 'reload relative session file exits 0');
+
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);

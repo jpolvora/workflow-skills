@@ -3,7 +3,7 @@ slug: deepseek-harness-improvements
 recommendedPipeline: standard
 thresholdPipeline: standard
 classifiedAt: 2026-08-17T02:49:44.734Z
-scoreAndRefine: false
+scoreAndRefine: true
 ---
 
 # Pipeline Classification — Implement DeepSeek Harness suggestions to improve workflow-skills
@@ -46,9 +46,8 @@ Pass 1 score distribution (from score-analysis artifact):
 
 | Stat | Value |
 |------|-------|
-| Task scores parsed | 5 |
-| Mean | 9.4 |
-| Variance | 0.24 |
+| Task scores parsed | 6 |
+| Mean | 9.17 |
 | Min / Max | 9 / 10 |
 | Low scores (<7) | 0 |
 

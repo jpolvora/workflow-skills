@@ -91,7 +91,8 @@ function originIntegrationRefExists(dir, integrationBranch) {
  */
 function resumeGate(uniqueCount, state, head, workflowType = 'standard') {
   if (uniqueCount > 0) return 'proceed';
-  if (uniqueCount === null) return 'mark-complete-stop';
+  if (uniqueCount === null) return 'proceed';
+
   const baseline = (state?.baselineCommit || '').trim();
   const headTrim = (head || '').trim();
   const hasProduct = workflowHasProductCommits(state, workflowType);
@@ -216,8 +217,8 @@ function testSkipCheckWhenOriginIntegrationRefAbsent() {
   // rev-list against missing origin ref also fails; must not mark-complete-stop
   const count = uniqueCommitCount(dir, 'origin/develop');
   assert(count === null, 'rev-list fails when origin/develop missing');
-  assert(resumeGate(count, { commits: [{ sha: 'x' }] }, headSha(dir)) === 'mark-complete-stop', 'null count alone would wrongly stop');
-  assert(preCheck.gate === 'proceed', 'skip-check overrides null-count stop');
+  assert(resumeGate(count, { commits: [{ sha: 'x' }] }, headSha(dir)) === 'proceed', 'null count proceeds (indeterminate; never auto-complete)');
+  assert(preCheck.gate === 'proceed', 'skip-check continues when origin ref is missing');
 }
 
 function testLiteG2StepSignal() {
