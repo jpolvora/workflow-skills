@@ -326,6 +326,19 @@ function main() {
   const portableReloaded = runNode(['has-errors', '--session-file', portableSessionFile]);
   assert(portableReloaded.status === 0, 'reload relative session file exits 0');
 
+  const nestedInit = runNode(
+    ['init', '--us-dir', '.', '--slug', 'nested-cwd-slug'],
+    portableUsDir,
+  );
+  assert(nestedInit.status === 0, 'init from nested cwd exits 0');
+  const nestedFile = path.join(portableUsDir, '.audit-session-nested-cwd-slug.json');
+  const nestedDisk = JSON.parse(fs.readFileSync(nestedFile, 'utf-8'));
+  const expectedRel = path.relative(REPO_ROOT, portableUsDir).split(path.sep).join('/');
+  assert(nestedDisk.usDir === expectedRel, 'nested cwd usDir is repo-root-relative, not cwd-relative');
+  assert(!nestedDisk.logPath.includes('\\'), 'nested cwd logPath uses posix separators');
+  const nestedReloaded = runNode(['has-errors', '--session-file', nestedFile], REPO_ROOT);
+  assert(nestedReloaded.status === 0, 'reload nested-cwd session from repo root exits 0');
+
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);

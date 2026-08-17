@@ -102,7 +102,16 @@ function resumeGate(uniqueCount, state, head, workflowType = 'standard') {
   return 'proceed';
 }
 
+function currentBranch(dir) {
+  const r = git(dir, ['rev-parse', '--abbrev-ref', 'HEAD']);
+  return r.status === 0 ? (r.stdout || '').trim() : '';
+}
+
 function resumePreCheck(dir, integrationBranch, state, workflowType = 'standard') {
+  const branch = (state?.branch || currentBranch(dir) || '').trim();
+  if (branch && integrationBranch && branch === integrationBranch) {
+    return { action: 'skip-check-continue', gate: 'proceed', reason: 'stay-on-integration' };
+  }
   if (!originIntegrationRefExists(dir, integrationBranch)) {
     return { action: 'skip-check-continue', gate: 'proceed' };
   }
@@ -221,6 +230,30 @@ function testSkipCheckWhenOriginIntegrationRefAbsent() {
   assert(preCheck.gate === 'proceed', 'skip-check continues when origin ref is missing');
 }
 
+function testStayOnIntegrationProceeds() {
+  const dir = initRepo();
+  const baseline = headSha(dir);
+  git(dir, ['checkout', '-b', 'develop']);
+  fs.writeFileSync(path.join(dir, 'work.txt'), 'work\n');
+  git(dir, ['add', 'work.txt']);
+  assert(git(dir, ['commit', '-m', 'product on develop']).status === 0, 'develop product commit succeeds');
+  setupOriginRemote(dir);
+  pushBranchToOrigin(dir, 'develop');
+  git(dir, ['checkout', 'develop']);
+  assert(currentBranch(dir) === 'develop', 'HEAD is develop');
+  assert(uniqueCommitCount(dir, 'origin/develop') === 0, 'pushed develop has 0 unique vs origin/develop');
+  const state = {
+    branch: 'develop',
+    baselineCommit: baseline,
+    commits: [{ sha: headSha(dir) }],
+    completedSteps: [5],
+  };
+  const preCheck = resumePreCheck(dir, 'develop', state, 'standard');
+  assert(preCheck.action === 'skip-check-continue', 'stay-on-integration skips rev-list');
+  assert(preCheck.gate === 'proceed', 'stay-on-integration proceeds (do not mark completed)');
+  assert(preCheck.reason === 'stay-on-integration', 'reason is stay-on-integration');
+}
+
 function testLiteG2StepSignal() {
   const baseline = 'abc123';
   const head = 'def456';
@@ -270,6 +303,10 @@ function testContractEncoded() {
     /state\.commits|baselineCommit|pre-first-commit/i.test(skill),
     'ws-spec-to-pr SKILL.md encodes product-commit guard for count==0 mark-complete'
   );
+  assert(
+    /stay-on-integration/i.test(setup) && /stay-on-integration/i.test(skill),
+    'setup.md and SKILL.md encode stay-on-integration skip-check'
+  );
 }
 
 function main() {
@@ -277,6 +314,7 @@ function main() {
   testEarlyWorkflowZeroCommitsProceeds();
   testMergedIntoDevelopWhileBaseIsMain();
   testSkipCheckWhenOriginIntegrationRefAbsent();
+  testStayOnIntegrationProceeds();
   testLiteG2StepSignal();
   testContractEncoded();
   cleanup();

@@ -28,7 +28,7 @@ Goal → collect+evaluate → [act → verify → report → wait]×N → done
 | `WAIT_SECONDS` | Post-push wait before re-collect (default **300**) |
 | `COLLECT_CMD` / `ACT_CMD` / `VERIFY_CMD` | Collect / act / verify commands |
 | `DRY_RUN` | Skip push, resolve, destructive actions |
-| `RUNTIME_DIR` | Sentinel dir (default `{us-dir}/.runtime` or skill `runs/`) |
+| `RUNTIME_DIR` | Sentinel dir (default `{us-dir}/.runtime`) |
 
 ## Sentinel
 

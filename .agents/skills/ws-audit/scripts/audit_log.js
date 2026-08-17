@@ -110,15 +110,28 @@ function isoNow() {
   return new Date().toISOString();
 }
 
+function repoRoot(start = process.cwd()) {
+  let dir = path.resolve(start);
+  for (;;) {
+    if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, 'AGENTS.md'))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) return path.resolve(start);
+    dir = parent;
+  }
+}
+
 function toPosixRelative(p) {
-  const rel = path.relative(process.cwd(), path.resolve(p));
+  const rel = path.relative(repoRoot(), path.resolve(p));
   const posix = rel.split(path.sep).join('/');
   return posix === '' ? '.' : posix;
 }
 
 function resolveMaybeRelative(p) {
   if (!p || typeof p !== 'string') return p;
-  return path.resolve(process.cwd(), p);
+  if (path.isAbsolute(p)) return path.resolve(p);
+  return path.resolve(repoRoot(), p);
 }
 
 function hydrateSession(session) {
