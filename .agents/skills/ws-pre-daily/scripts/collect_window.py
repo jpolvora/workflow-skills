@@ -240,6 +240,11 @@ def main() -> int:
     ensure_utf8_stdio()
     parser = argparse.ArgumentParser(description="Collect pre-daily window evidence")
     parser.add_argument("--hours", type=float, default=36)
+    parser.add_argument(
+        "--tz",
+        default="",
+        help="Label only; collector stays UTC ISO (parity with SKILL.md invocation)",
+    )
     parser.add_argument("--repo", default=".")
     parser.add_argument("--plans-dir", default="")
     parser.add_argument("--changelog", default="")
@@ -276,6 +281,7 @@ def main() -> int:
         "ok": True,
         "window": {
             "hours": args.hours,
+            "tz": (args.tz or "").strip() or "UTC",
             "sinceIso": iso_utc(since),
             "untilIso": iso_utc(until),
         },

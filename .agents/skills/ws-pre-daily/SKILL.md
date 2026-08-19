@@ -42,7 +42,7 @@ Timesheet clocks → [`ws-activity-report`](../ws-activity-report/SKILL.md). Out
    python {skillsRoot}/ws-pre-daily/scripts/collect_window.py --hours {hours} --repo {gitRoot} --plans-dir {plansDir} --changelog {changelogPath}
    ```
 
-   Add `--all-authors` when requested. Script exit 0 + `ok: true` required. Empty lists are valid.
+   Add `--all-authors` when requested, and optional `--tz {tz}`. Script exit 0 + `ok: true` required. Empty lists are valid.
    - Done when: JSON with `window`, `git`, `plans`, `changelog`, `gaps` is in context.
 
 3. **Enrich SCM (optional)** — If `providers.scm` is set, load that provider and list PRs/WIs **updated inside the window**. Auth failure → gap `scm-skipped`. Skip this step when config is missing.

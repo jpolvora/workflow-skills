@@ -209,6 +209,18 @@ pr: "https://github.com/example/repo/pull/123"
   assert(jsonMissing.gaps.includes('plans-dir-missing'), 'reports plans-dir-missing gap');
   assert(jsonMissing.gaps.includes('changelog-missing'), 'reports changelog-missing gap');
 
+  // Test 6: Timezone support
+  const resTz = runPython([
+    SCRIPT,
+    '--repo',
+    fixtureRepo,
+    '--tz',
+    'America/Manaus',
+  ]);
+  assert(resTz.status === 0, 'collect_window exits 0 with --tz');
+  const jsonTz = JSON.parse(resTz.stdout.trim());
+  assert(jsonTz.window.tz === 'America/Manaus', 'collect_window reflects window.tz');
+
 } finally {
   cleanup();
 }

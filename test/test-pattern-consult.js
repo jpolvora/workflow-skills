@@ -226,6 +226,14 @@ Files: src/Infrastructure/Logging/AppLogger.cs
   const cleanParsed = JSON.parse(cleanResult.stdout);
   assert.strictEqual(cleanParsed.results.traps.length, 0);
 
+  // Test missing MEMORY.md -> Exit code 0 with memory_missing: true
+  const missingMemResult = spawnSync('python', [scriptPath, cleanPlanPath, '--memory', path.join(tempDir, 'nonexistent-MEMORY.md'), '--json'], {
+    encoding: 'utf8',
+  });
+  assert.strictEqual(missingMemResult.status, 0, 'check_memory_conflict.py must exit 0 when MEMORY.md is missing');
+  const missingParsed = JSON.parse(missingMemResult.stdout);
+  assert.strictEqual(missingParsed.memory_missing, true, 'missingParsed.memory_missing must be true');
+
   console.log('✅ check_memory_conflict.py mock plan & trap assertions passed');
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });

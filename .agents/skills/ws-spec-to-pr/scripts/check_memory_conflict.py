@@ -10,7 +10,8 @@ Given a *.plan.md or *.exec.md, extracts layers, modules, entities and file path
 from the plan, then compares against structured entries in `.agents/skills/ws-shared/MEMORY.md`.
 
 Returns:
-  - Exit 0: no overlaps found
+  - Exit 0: no overlaps found, or MEMORY.md is absent (consult skipped)
+  - Exit 1: plan file missing
   - Exit 2: traps found that overlap the plan scope
 """
 
@@ -352,8 +353,17 @@ def main():
         repo_root=args.repo_root,
     )
     if not memory_path.exists():
-        print(f"Error: MEMORY.md not found at {memory_path}")
-        sys.exit(1)
+        if args.json:
+            plan = extract_plan_keywords(plan_path)
+            print(json.dumps({
+                "plan_keywords": plan,
+                "results": {"traps": [], "patterns": []},
+                "memory_path": str(memory_path),
+                "memory_missing": True,
+            }, ensure_ascii=False, indent=2))
+        else:
+            print(f"Notice: MEMORY.md not found at {memory_path} (skipping memory conflict check)")
+        sys.exit(0)
 
     memory = parse_memory(memory_path)
     plan = extract_plan_keywords(plan_path)
