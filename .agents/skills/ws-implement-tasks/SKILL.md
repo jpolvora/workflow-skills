@@ -64,8 +64,9 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
 1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
    - Done when: every finding is enumerated.
 
-2. **Consult MEMORY & pattern files** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths; consult `{sharedDir}/frontend.md` or `{sharedDir}/backend.md` if matching layers are affected; reuse known Solutions before inventing fixes.
+2. **Consult MEMORY & pattern files** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths; if matching layers are affected and `defaults.patternsFrontend` / `defaults.patternsBackend` are `true`, consult `{sharedDir}/frontend.md` or `{sharedDir}/backend.md`; reuse known Solutions before inventing fixes.
    - Done when: relevant entries noted or none found.
+
 
 3. **Correct** — Apply minimal, targeted fixes per [ws-karpathy-guidelines](../ws-karpathy-guidelines/SKILL.md).
    - Done when: every enumerated finding has a corresponding edit.
