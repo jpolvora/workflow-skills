@@ -1,0 +1,1 @@
+{"timestamp":"2026-08-19T13:32:05Z","step":6,"label":"Code review","elapsedSec":20,"promptTokens":0,"completionTokens":0,"filesTouched":1,"model":"gemini-3.7-flash","verificationScore":null,"fableVerdict":null,"gateDecision":"Advance to Step 7","errors":[],"bypassed":false}
