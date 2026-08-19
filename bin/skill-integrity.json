@@ -5,10 +5,10 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "3357e8072e17803195afef845b86847105f11c4d89b8cbdd3ad65d5baa91c27a",
+  "fullPackageDigest": "20316d2446f34aad70ddd165c3981df753092b9e9fd5599a496f9d8f4b5b2960",
   "hub": {
     "files": {
-      "AGENTS.md": "88718c90964c67c060862dff6ed959127ae4684764922233c23fd97176effbf3",
+      "AGENTS.md": "29aa67e7b76fe47060576a98232256bc872ebc89e9276c38bb44a586127d3df0",
       "autoload.md": "fec77defaf951d1c325f8c9c3d804f7352a4b48845989c163fd99ba4c77bd953",
       "backend.md.template": "9ac8ac8b1dd4dccf357fd3bc11b6668d852bfc5d0c5fb93e94444a08bf05c769",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
@@ -22,11 +22,11 @@
       "scripts/resolve_consumer_root.cjs": "1b7cb1e56d811276d1ad12d50b1e2de99c9db23c9e237a6ab57d27abeb648b0a",
       "scripts/resolve_consumer_root.py": "97e987ee8da8aa2576123292df7d6f297c38b0835a28cff4a596a83f79926924",
       "setup.md": "eebb8ce6e9396c26a788637551d1d493f9924ed4f65a4e129e5c283d69ca810b",
-      "skill-dependencies.json": "be804b8aa569924f717c462e8cc9366527b4a942f4ce66a9b77aeddf6c74c5ca",
+      "skill-dependencies.json": "3ed030b579df8a528d92c436ba8427d0d78aae44826a21fb9bb85498e2201831",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "92ac836285030b11c73de54f2d862ada4970911a1a7eaae73fae54684775daec"
     },
-    "skillDigest": "3e0403c2885caadbd44ece5619c3a8fb954b9bc1005ca0c4f47c2f42b6502805"
+    "skillDigest": "4653d91db8c774a9d9156f2ca6ab67040cac00fa2a6236087e2d4f6b53845680"
   },
   "packageVersion": "0.3.24",
   "skills": {
@@ -242,6 +242,14 @@
         "SKILL.md": "25fe70bbd32c34a6d663c40b68bed56bc7b714b18b067c66dc7e69dacbcaa592"
       },
       "skillDigest": "47a8c2964454947919d4418f705fe8c3aa1e44b852a9736925d4b7495853dce8"
+    },
+    "ws-pre-daily": {
+      "files": {
+        "references/OUTPUT.md": "15960b94dfd0bcf8b172e9d6e21ec6c70636cad6abea6b1ffe4bfdc13a22c290",
+        "scripts/collect_window.py": "04607d638a4fe06836093ba8d6d87f0d5bd6529907e6921c090c6ec69e130307",
+        "SKILL.md": "706cbdff4488dc05431672c8f1ea140bd90a19be5470e3fa5cff59840e04a8d8"
+      },
+      "skillDigest": "968e5cf2d3c17aed6af4c375f207b7c07830df5792314222b2adc76a0b187cb2"
     },
     "ws-preview": {
       "files": {
