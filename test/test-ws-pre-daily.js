@@ -145,11 +145,12 @@ branch: feat/test-feature
 `;
   fs.writeFileSync(path.join(usDir, 'us-100-state.state.md'), stateContent);
 
-  // Create changelog file
+  // Create changelog file with recent dynamic timestamp
+  const recentTime = new Date(Date.now() - 2 * 3600 * 1000).toISOString().slice(0, 16).replace('T', ' ');
   const changelogPath = path.join(fixtureRepo, 'CHANGELOG.md');
   const changelogContent = `# Changelog
 
-### [2026-08-19 12:00] us-100: Shipped Test Feature
+### [${recentTime}] us-100: Shipped Test Feature
 - Added feature implementation
 - Verified automated tests
 `;
@@ -188,7 +189,7 @@ branch: feat/test-feature
   assert(jsonFixture.plans[0].currentStep === '8', 'plan currentStep extracted');
 
   assert(jsonFixture.changelog.length === 1, 'changelog entries extracted');
-  assert(jsonFixture.changelog[0].heading.includes('2026-08-19 12:00'), 'changelog heading parsed');
+  assert(jsonFixture.changelog[0].heading.includes(recentTime), 'changelog heading parsed');
   assert(jsonFixture.gaps.length === 0, 'no gaps reported when all paths valid');
 
   // Test 5: Gap reporting when paths are missing
