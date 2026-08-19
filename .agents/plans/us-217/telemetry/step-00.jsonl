@@ -1,0 +1,1 @@
+{"timestamp":"2026-08-19T12:18:34Z","step":0,"label":"Spec","elapsedSec":30,"promptTokens":0,"completionTokens":0,"filesTouched":0,"model":"opencode-go/deepseek-v4-pro","verificationScore":null,"fableVerdict":null,"gateDecision":"Advance to Step 1","errors":[],"bypassed":false}
