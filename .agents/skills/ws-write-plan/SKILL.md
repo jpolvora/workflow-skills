@@ -18,7 +18,7 @@ Draft an implementation blueprint from the spec.
 
 **Canonical path:** `{us-dir}/step-01-{slug}.plan.md` (`{us-dir}` = `{plansDir}/{slug}/`).
 
-**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work.
+**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work; when `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md`; when `defaults.patternsBackend` is true, read `{sharedDir}/backend.md`.
 
 ## Invocation
 
@@ -38,9 +38,12 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 ## Steps
 
-1. **Load spec and stack context** — Read the spec input and `config.json` layers/invariants.
+1. **Load spec, stack & pattern context** — Read the spec input and `config.json` layers/invariants; grep `{sharedDir}/MEMORY.md` for plan keywords.
+   - If `defaults.patternsFrontend` is `true`, **Read** `{sharedDir}/frontend.md` to incorporate project UI/UX and styling conventions into the technical design.
+   - If `defaults.patternsBackend` is `true`, **Read** `{sharedDir}/backend.md` to incorporate domain, architecture, and API conventions.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true`, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6.
-   - Done when: stack (layers, db/ORM, frontend framework) is identified, or the step stops to ask for clarification when undetectable.
+   - Done when: stack, patterns, and relevant memory entries are identified.
+
 
 2. **Draft plan** — Write `{us-dir}/step-01-{slug}.plan.md` following [`references/PLAN-TEMPLATE.md`](references/PLAN-TEMPLATE.md) (sections 0–8).
    - Done when: every section 0–8 is filled; each requirement maps to ≥1 Step-by-Step Plan entry; every AC maps to ≥1 test case in section 5.

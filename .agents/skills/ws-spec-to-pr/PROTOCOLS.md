@@ -310,16 +310,21 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 Read state: `{us-dir}/{workflow-id}.state.md`
 Skill: {SKILL.md path} — read full.
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
-Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
+Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning, ws-patterns-frontend (if patternsFrontend), ws-patterns-backend (if patternsBackend)
 Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
+Patterns: if `config.json.defaults.patternsFrontend` then Read `{sharedDir}/frontend.md` and load `ws-patterns-frontend` before any Web/UI edit.
+Patterns: if `config.json.defaults.patternsBackend` then Read `{sharedDir}/backend.md` and load `ws-patterns-backend` before any Domain/Application/EF edit.
+MEMORY: Grep `{sharedDir}/MEMORY.md` for 3–8 keywords from the plan/spec (module, path, layer). Apply Severity Medium+ DO NOT / INSTEAD DO before inventing an approach.
+Proof: step-output must include `memory_consult` and `pattern_consult` (see schema).
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
 Role: fresh; no resume. files_touched required (revert). model: {resolvedSubagentModel}.
 Rules: no `{plansDir}/` in git-add except Step 8 G2-delivery; needs_user: ≥2 choices, recommended first.
 Learning: read ## Workflow memory + ## Step outputs (all prior steps) for traps/errors. Do NOT repeat broken approaches. Record own mistakes in step-output.learning.
 Telemetry required: elapsedSec, promptTokens + completionTokens (from LLM metadata if available, else estimate chars/3.5 with estimated: true).
-End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, model, telemetry{elapsedSec, promptTokens|null, completionTokens|null, estimated})
+End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, pattern_consult{frontend, backend}, memory_consult{keywords, hits}, model, telemetry{elapsedSec, promptTokens|null, completionTokens|null, estimated})
 ```
 ```
+
 
 ### Transition Gates
 

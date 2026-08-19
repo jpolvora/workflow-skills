@@ -18,7 +18,9 @@ import json
 import os
 import re
 import sys
+import argparse
 from pathlib import Path
+
 
 
 def ensure_utf8_stdio() -> None:
@@ -40,10 +42,48 @@ def ensure_utf8_stdio() -> None:
 ensure_utf8_stdio()
 
 
-SKILL_ROOT = Path(__file__).resolve().parent.parent
-MEMORY_PATH = SKILL_ROOT.parent / "ws-shared" / "MEMORY.md"
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+
+
+def resolve_memory_path(
+    explicit_memory: str | None = None,
+    explicit_shared_dir: str | None = None,
+    repo_root: str | None = None,
+) -> Path:
+    if explicit_memory:
+        return Path(explicit_memory).expanduser().resolve()
+    if explicit_shared_dir:
+        return Path(explicit_shared_dir).expanduser().resolve() / "MEMORY.md"
+
+    try:
+        from resolve_consumer_root import resolve_repo_root, shared_dir
+
+        root = resolve_repo_root(repo_root, script_file=__file__)
+        s_dir = shared_dir(root)
+        mem = s_dir / "MEMORY.md"
+        if mem.exists():
+            return mem
+    except Exception:
+        pass
+
+    cwd_mem = Path.cwd() / ".agents" / "skills" / "ws-shared" / "MEMORY.md"
+    if cwd_mem.exists():
+        return cwd_mem
+
+    env_shared = os.environ.get("WORKFLOW_SKILLS_SHARED_DIR")
+    if env_shared:
+        env_mem = Path(env_shared).expanduser().resolve() / "MEMORY.md"
+        if env_mem.exists():
+            return env_mem
+
+    sibling_mem = Path(__file__).resolve().parents[2] / "ws-shared" / "MEMORY.md"
+    return sibling_mem
+
 
 # Portable default: no project-specific domain vocabulary.
+
 # Consumers may extend matching via MEMORY.md content; do not hardcode org modules here.
 KNOWN_MODULES = []
 
@@ -293,32 +333,37 @@ def format_report(plan_path: Path, plan_keywords: dict, results: dict) -> str:
 def main():
     ensure_utf8_stdio()
 
-    as_json = False
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    if "--json" in sys.argv:
-        as_json = True
+    parser = argparse.ArgumentParser(description="Cross-reference a plan file against MEMORY.md entries")
+    parser.add_argument("plan_file", help="Path to plan file (*.plan.md or *.exec.md)")
+    parser.add_argument("--json", action="store_true", help="Output JSON instead of human-readable report")
+    parser.add_argument("--memory", default=None, help="Explicit path to MEMORY.md")
+    parser.add_argument("--shared-dir", default=None, help="Explicit path to ws-shared directory")
+    parser.add_argument("--repo-root", default=None, help="Explicit path to repository root")
+    args = parser.parse_args()
 
-    if len(args) < 1:
-        print("Usage: python check_memory_conflict.py <plan_file> [--json]")
-        sys.exit(1)
-
-    plan_path = Path(args[0])
+    plan_path = Path(args.plan_file)
     if not plan_path.exists():
         print(f"Error: file not found: {plan_path}")
         sys.exit(1)
 
-    if not MEMORY_PATH.exists():
-        print(f"Error: MEMORY.md not found at {MEMORY_PATH}")
+    memory_path = resolve_memory_path(
+        explicit_memory=args.memory,
+        explicit_shared_dir=args.shared_dir,
+        repo_root=args.repo_root,
+    )
+    if not memory_path.exists():
+        print(f"Error: MEMORY.md not found at {memory_path}")
         sys.exit(1)
 
-    memory = parse_memory(MEMORY_PATH)
+    memory = parse_memory(memory_path)
     plan = extract_plan_keywords(plan_path)
     results = cross_reference(memory, plan)
 
-    if as_json:
+    if args.json:
         print(json.dumps({
             "plan_keywords": plan,
             "results": results,
+            "memory_path": str(memory_path),
         }, ensure_ascii=False, indent=2))
     else:
         report = format_report(plan_path, plan, results)
@@ -326,6 +371,7 @@ def main():
 
     if len(results["traps"]) > 0:
         sys.exit(2)
+
 
 
 if __name__ == "__main__":
