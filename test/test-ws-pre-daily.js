@@ -140,6 +140,7 @@ us: us-100
 title: "Test Feature Delivery"
 currentStep: 8
 branch: feat/test-feature
+pr: "https://github.com/example/repo/pull/123"
 ---
 # Workflow State: us-100
 `;
@@ -187,6 +188,7 @@ branch: feat/test-feature
   assert(jsonFixture.plans[0].usId === 'us-100', 'plan usId extracted');
   assert(jsonFixture.plans[0].title === 'Test Feature Delivery', 'plan title extracted');
   assert(jsonFixture.plans[0].currentStep === '8', 'plan currentStep extracted');
+  assert(jsonFixture.plans[0].pr === 'https://github.com/example/repo/pull/123', 'plan pr extracted');
 
   assert(jsonFixture.changelog.length === 1, 'changelog entries extracted');
   assert(jsonFixture.changelog[0].heading.includes(recentTime), 'changelog heading parsed');

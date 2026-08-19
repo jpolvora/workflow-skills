@@ -17,7 +17,7 @@ USID_RE = re.compile(r"^(?:\*\*usId:\*\*|usId:|slug:|us:)\s*(.+)$", re.I | re.M)
 STEP_RE = re.compile(r"^(?:\*\*currentStep:\*\*|currentStep:)\s*(\S+)", re.I | re.M)
 BRANCH_RE = re.compile(r"^(?:\*\*branch:\*\*|branch:)\s*(.+)$", re.I | re.M)
 PR_RE = re.compile(
-    r"^(?:\*\*(?:pr(?:Number|Url|Id)|prUrl):\*\*|pr(?:Number|Url|Id)?:\s*(.+)$)",
+    r"^(?:\*\*(?:pr(?:Number|Url|Id)?|prUrl):\*\*|(?:pr(?:Number|Url|Id)?|prUrl):)\s*(.+)$",
     re.I | re.M,
 )
 CHANGELOG_RE = re.compile(
@@ -75,7 +75,11 @@ def git_ok(repo: Path, args: list[str]) -> str:
 def detect_base(repo: Path) -> str:
     code, out, _ = run_git(repo, ["symbolic-ref", "--quiet", "refs/remotes/origin/HEAD"])
     if code == 0 and out:
-        return out.split("/")[-1]
+        name = out.split("/")[-1]
+        for candidate in (name, f"origin/{name}"):
+            c, _, _ = run_git(repo, ["rev-parse", "--verify", candidate])
+            if c == 0:
+                return candidate
     for name in ("master", "main", "develop"):
         code, _, _ = run_git(repo, ["rev-parse", "--verify", name])
         if code == 0:
