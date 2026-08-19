@@ -39,8 +39,8 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 ## Steps
 
 1. **Load spec, stack & pattern context** — Read the spec input and `config.json` layers/invariants; grep `{sharedDir}/MEMORY.md` for plan keywords.
-   - If `defaults.patternsFrontend` is `true`, **Read** `{sharedDir}/frontend.md` (or seed from `{sharedDir}/frontend.md.template` if missing) to incorporate project UI/UX and styling conventions into the technical design.
-   - If `defaults.patternsBackend` is `true`, **Read** `{sharedDir}/backend.md` (or seed from `{sharedDir}/backend.md.template` if missing) to incorporate domain, architecture, and API conventions.
+   - If `defaults.patternsFrontend` is `true`, **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) to incorporate project UI/UX and styling conventions into the technical design.
+   - If `defaults.patternsBackend` is `true`, **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) to incorporate domain, architecture, and API conventions.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true`, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6.
    - Done when: stack, patterns, and relevant memory entries are identified.
 

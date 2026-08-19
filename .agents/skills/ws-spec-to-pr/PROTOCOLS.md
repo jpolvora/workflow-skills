@@ -312,8 +312,8 @@ Skill: {SKILL.md path} — read full.
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
 Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning, ws-patterns-frontend (if patternsFrontend), ws-patterns-backend (if patternsBackend)
 Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
-Patterns: if `config.json.defaults.patternsFrontend` is true and `{sharedDir}/frontend.md` exists, Read it before any Web/UI edit; if missing, seed from `{sharedDir}/frontend.md.template` before consulting `ws-patterns-frontend`.
-Patterns: if `config.json.defaults.patternsBackend` is true and `{sharedDir}/backend.md` exists, Read it before any Domain/Application/EF edit; if missing, seed from `{sharedDir}/backend.md.template` before consulting `ws-patterns-backend`.
+Patterns: if `config.json.defaults.patternsFrontend` is true and `{sharedDir}/frontend.md` exists, Read it before any Web/UI edit; if missing, fallback to reading `{sharedDir}/frontend.md.template` before consulting `ws-patterns-frontend`.
+Patterns: if `config.json.defaults.patternsBackend` is true and `{sharedDir}/backend.md` exists, Read it before any Domain/Application/EF edit; if missing, fallback to reading `{sharedDir}/backend.md.template` before consulting `ws-patterns-backend`.
 
 MEMORY: Grep `{sharedDir}/MEMORY.md` for 3–8 keywords from the plan/spec (module, path, layer). Apply Severity Medium+ DO NOT / INSTEAD DO before inventing an approach.
 Proof: step-output must include `memory_consult` and `pattern_consult` (see schema).
