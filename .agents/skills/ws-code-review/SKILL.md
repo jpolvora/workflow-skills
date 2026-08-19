@@ -79,9 +79,10 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 5. **Sweep known patterns & MEMORY**:
    - Read compiled `{sharedDir}/MEMORY.md` entries (titles, Module/Layer tags, and `DO NOT` / `INSTEAD DO` directives) against the in-scope modified file list and plan keywords; report confirmed violations as Warning or Critical by severity.
-   - If Web/UI files are in the diff and `config.json.defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` and check for project UI/UX pattern violations (e.g. missing Back button toolbar on subpages, hardcoded copy vs i18n, subscription cleanup, grid/table styling conventions).
-   - If Domain/Application/EF/backend files are in the diff and `config.json.defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` and check for domain/architectural pattern violations.
+   - If Web/UI files are in the diff and `config.json.defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or seed from `{sharedDir}/frontend.md.template` if missing) and check for project UI/UX pattern violations (e.g. missing Back button toolbar on subpages, hardcoded copy vs i18n, subscription cleanup, grid/table styling conventions).
+   - If Domain/Application/EF/backend files are in the diff and `config.json.defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or seed from `{sharedDir}/backend.md.template` if missing) and check for domain/architectural pattern violations.
    - Done when: memory entries and relevant pattern files have been swept against the diff, and any confirmed violations are listed.
+
 
 
 6. **Check invariants**: cross-check `config.json.invariants` / `config.json.rules`: tenancy filters, DB-migrations-CLI-only, domain rules, React hook cleanup/dependency arrays, and i18n keys present in every locale from `config.json.stack.frontend.i18n.locales[]`.
