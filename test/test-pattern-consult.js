@@ -175,7 +175,7 @@ Files: src/Web/Controllers/OrderController.cs
 - **Verification**: Concurrency stress tests.
 `, 'utf8');
 
-  // Test trap detection -> Exit code 2
+  // Test trap detection with explicit --memory -> Exit code 2
   const trapResult = spawnSync('python', [scriptPath, mockPlanPath, '--memory', mockMemoryPath, '--json'], {
     encoding: 'utf8',
   });
@@ -184,6 +184,30 @@ Files: src/Web/Controllers/OrderController.cs
   assert(trapParsed.results.traps.length > 0, 'Results must identify overlapping trap');
   assert(trapParsed.results.traps[0].title.includes('TRAP-001'), 'Trap title must contain TRAP-001');
 
+  // Exercise dynamic {sharedDir} resolution via --shared-dir (AC3)
+  const sharedDirResult = spawnSync('python', [scriptPath, mockPlanPath, '--shared-dir', tempDir, '--json'], {
+    encoding: 'utf8',
+  });
+  assert.strictEqual(sharedDirResult.status, 2, 'check_memory_conflict.py must resolve MEMORY.md from --shared-dir and detect traps');
+  const sharedParsed = JSON.parse(sharedDirResult.stdout);
+  assert.strictEqual(sharedParsed.memory_path, path.join(tempDir, 'MEMORY.md'), 'memory_path must resolve under --shared-dir');
+  assert(sharedParsed.results.traps.length > 0, 'Results must identify overlapping trap via --shared-dir');
+
+  // Exercise dynamic {sharedDir} resolution via --repo-root hub discovery (AC3)
+  const repoRootFixture = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-conflict-repo-'));
+  try {
+    const sharedHubDir = path.join(repoRootFixture, '.agents', 'skills', 'ws-shared');
+    fs.mkdirSync(sharedHubDir, { recursive: true });
+    fs.copyFileSync(mockMemoryPath, path.join(sharedHubDir, 'MEMORY.md'));
+    const repoRootResult = spawnSync('python', [scriptPath, mockPlanPath, '--repo-root', repoRootFixture, '--json'], {
+      encoding: 'utf8',
+    });
+    assert.strictEqual(repoRootResult.status, 2, 'check_memory_conflict.py must resolve MEMORY.md from --repo-root and detect traps');
+    const repoParsed = JSON.parse(repoRootResult.stdout);
+    assert.strictEqual(repoParsed.memory_path, path.join(sharedHubDir, 'MEMORY.md'), 'memory_path must resolve under --repo-root hub');
+  } finally {
+    fs.rmSync(repoRootFixture, { recursive: true, force: true });
+  }
 
   // Test clean plan -> Exit code 0
   const cleanPlanPath = path.join(tempDir, 'clean.plan.md');
