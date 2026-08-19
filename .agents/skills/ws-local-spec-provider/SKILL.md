@@ -1,7 +1,7 @@
 ---
 name: ws-local-spec-provider
 description: Local Markdown spec provider — detects, normalizes, and registers hand-written *.spec.md feature specifications into canonical pipeline artifacts.
-version: 0.3.22
+version: 0.3.23
 disable-model-invocation: true
 invocation_names:
   - local-spec-provider
@@ -16,9 +16,10 @@ invocation_names:
 
 Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/`), then register/normalize any `*.spec.md` into **two ordered artifacts** — spec of record `{specsDir}/{slug}.spec.md`, then workflow copy `{us-dir}/step-00-{slug}.spec.md`. No remote trackers.
 
-**Promotion primitive:** this skill's `register_local_spec.py` is the **single** promotion path for every provider. The SCM providers ([github](../ws-github-provider/SKILL.md) / [azure-devops](../ws-azure-devops-provider/SKILL.md)) write their spec of record into `{specsDir}` and then call it with `--source {origin}`, so `source:` reflects the real origin instead of being forced to `local`.
+**Promotion primitive:** this skill's `register_local_spec.py` is the **single** promotion path for every provider. Specs of record written under `{specsDir}` (drafted or enhanced via [`ws-write-spec`](../ws-write-spec/SKILL.md) for local or tracker origins) are promoted to the canonical workflow copy `{us-dir}/step-00-{slug}.spec.md` with `--source {origin}`, so `source:` reflects the real origin.
 
-**Specs family:** Role = bridge `{specsDir}` ↔ `{us-dir}` (register / fetch-to-spec). Drafts come from [`ws-write-spec`](../ws-write-spec/SKILL.md) or hand-written files; format SoT [`ws-spec-format`](../ws-spec-format/SKILL.md). Orch entry for local files. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = bridge `{specsDir}` ↔ `{us-dir}` (register / fetch-to-spec). Drafts and reformulations come from [`ws-write-spec`](../ws-write-spec/SKILL.md) or hand-written files; format SoT [`ws-spec-format`](../ws-spec-format/SKILL.md). Orch entry for local files. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+
 
 **PR/thread/merge:** hybrid — load `providers.scm` skill ([ws-github-provider](../ws-github-provider/SKILL.md) / [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)). Never no-op silently. Reject `scm: "local"`.
 

@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.22
+version: 0.3.23
 description: Fast sequential Spec-to-PR lite orchestrator (Steps 0–5). Trigger when user requests lite/fast spec-to-PR delivery.
 disable-model-invocation: true
 invocation_names:
@@ -14,7 +14,7 @@ invocation_names:
 
 Sequential spec→ship orchestrator executing inline steps (0–5) using the same pipeline skills as [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md). Do **not** use `STEP-DISPATCH.md` for lite step numbers.
 
-**Specs family:** Role = single-feature **lite** Spec→PR. Same entry rules as standard for specs (`{specsDir}` draft → register; or provider). Prefer when `ws-classify-complexity` recommends lite. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = single-feature **lite** Spec→PR. Same entry rules as standard for specs (`{specsDir}` draft → register; tracker fetch → `ws-write-spec` agentic reformulation → register). Downstream steps always read the enhanced local spec copy. Prefer when `ws-classify-complexity` recommends lite. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap (Feature branch gate: §5b; Resume pre-check vs `{integrationBranch}`: §4c).
 
@@ -38,7 +38,8 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` (+ register) | `{specsDir}/{slug}.spec.md` exists **and** `step-00-{slug}.spec.md` registered (spec of record always first, any provider) + classifier user-gate completed |
+| 0 | Spec | providers / `ws-write-spec` (+ register) | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** `step-00-{slug}.spec.md` registered + classifier user-gate completed |
+
 | 1 | Planning | `ws-write-plan` | `step-01-{slug}.plan.md` created & validated |
 | 2 | Implementation | `ws-implement-tasks` | Code modified + build/tests pass (`config.json.verification`); then required G2-code (skip if empty) |
 | 3 | Review | `ws-code-review` (+ fix) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |

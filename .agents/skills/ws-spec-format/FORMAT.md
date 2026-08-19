@@ -33,12 +33,16 @@ specDate: 2026-07-02
 
 ## Description
 
-(description text)
+(agentic technical scope, background, and system boundaries)
 
 ## Acceptance Criteria
 
-- AC1: …
-- AC2: …
+- AC1: (unambiguous, deterministic, testable criterion)
+- AC2: (clear pass/fail condition with edge cases)
+
+## Original Issue Context
+
+(optional / required for tracker issues — verbatim original human-authored issue description, comments, and audit context for human reading and traceability)
 
 ## Child Tasks
 
@@ -51,12 +55,14 @@ specDate: 2026-07-02
 
 ## Notes
 
-(optional links / dependencies)
+(technical considerations, dependencies, constraints)
 ```
 
 ## Validation
 
-1. ACs enumerable and testable — one line per AC.
-2. `source: local` → author owns complete ACs (no tracker fetch).
-3. `*.issue.json` is audit-only — downstream reads `spec.md` only.
-4. Local drafts (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
+1. ACs enumerable, deterministic, and testable — one line per AC (`- AC{N}: ...`).
+2. `source: local` → author drafts complete ACs from free-text requirements.
+3. `source: github` | `source: azure-devops` → `ws-write-spec` reformulates and enhances raw issue into agentic ACs while preserving human text in `## Original Issue Context`.
+4. `*.issue.json` is audit-only — downstream workflow skills read `step-00-*.spec.md` only.
+5. Local specs (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
+

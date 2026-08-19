@@ -6,6 +6,14 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-17] AC9 resume count must fetch integration ref first
+- **Layer**: `Infrastructure`
+- **Module**: `ws-spec-to-pr / setup.md §4c / resume pre-check`
+- **Severity**: `High`
+- **Scenario / Context**: AC9 counted `git rev-list --count origin/{integrationBranch}..HEAD` against the local remote-tracking ref with no fetch. After a remote merge, a stale `origin/develop` still showed uniqueCount > 0, so resume proceeded and could re-implement merged work.
+- **DO NOT**: Trust a local `origin/{integrationBranch}` tip for the resume unique-commit gate without refreshing it.
+- **INSTEAD DO**: If `{gitRemote}` exists, `git fetch {gitRemote} {integrationBranch}` (same as §5b) before the count. On auth/network failure, skip-check `fetch-failed` and proceed; never mark completed on an unverifiable count. Stay-on-integration still skips the count.
+
 ### [2026-08-16] stamp_state_version must not keep unknown highs
 - **Layer**: `Infrastructure`
 - **Module**: `ws-spec-to-pr* / update_state.py stamp_state_version`
@@ -13,6 +21,14 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: `stamp_state_version` used `max(current, _STATE_VERSION)`. A frontmatter `stateVersion: 7` stayed 7. `update_state.py` writes the file first, then runs `validate_state.py`, which rejects unknown versions. The unsupported value remains on disk; every retry re-stamps 7, so recovery needs a manual edit.
 - **DO NOT**: Stamp `stateVersion` with `max(current, schema)` (that preserves values above the supported schema).
 - **INSTEAD DO**: Always emit `_STATE_VERSION`. Clamp unknown highs so post-write validation can succeed. Keep `validate_state` reject-loud for on-disk missing/older/unknown until a writer rewrite.
+
+### [2026-08-16] audit session JSON must persist repo-relative paths
+- **Layer**: `Infrastructure`
+- **Module**: `ws-audit / audit_log.js initAudit`
+- **Severity**: `Medium`
+- **Scenario / Context**: `initAudit` stored `usDir` and `logPath` via `path.resolve`, so committed `.audit-session-*.json` files contained Windows absolute paths (`l:\source\...`). Other clones and CI cannot resume those sessions; the commit leaks a local filesystem layout.
+- **DO NOT**: Persist `path.resolve` absolute paths in audit session JSON that may be committed under `{us-dir}`.
+- **INSTEAD DO**: Write posix repo-relative `usDir`/`logPath` (hydrate to absolute only for fs I/O). Cover with `test/test-ws-audit.js` asserting the on-disk JSON is not absolute and has no drive letter.
 
 ### [2026-08-15] update_state model config: no state_path parents chain
 - **Layer**: `Infrastructure`

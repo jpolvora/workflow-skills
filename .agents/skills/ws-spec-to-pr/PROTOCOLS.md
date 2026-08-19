@@ -145,12 +145,12 @@ All recorded learnings and memory entries must use clear, direct, and actionable
 
 ### Specification Protocol
 
-[`ws-spec-format`](../ws-spec-format/SKILL.md). Canonical spec for planning: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. Every provider writes the spec of record `{specsDir}/{slug}.spec.md` **before** that workflow copy.
+[`ws-spec-format`](../ws-spec-format/SKILL.md). Canonical spec for planning: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. When entering from remote trackers (GitHub/ADO), `ws-write-spec` reformulates and enhances the fetched issue into an agentic spec of record `{specsDir}/{slug}.spec.md` (unambiguous ACs, technical boundaries, edge cases, while preserving human issue context in `## Original Issue Context`) before `ws-local-spec-provider` registers `{us-dir}/step-00-{slug}.spec.md`.
 
 | Input | Tracker / provider | Action | Uses Step 0? |
 |-------|--------------------|--------|--------------|
-| `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` → `{specsDir}/us-{n}.spec.md` → register `{us-dir}/step-00-us-{n}.spec.md` | No — skip to Step 1 |
-| `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-azure-devops-provider` | `fetch-to-spec` → `{specsDir}` → register `step-00` | No — skip to Step 1 |
+| `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` (snapshot → `ws-write-spec` enhancement → `{specsDir}/us-{n}.spec.md` → register `{us-dir}/step-00-us-{n}.spec.md`) | No — skip to Step 1 |
+| `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-azure-devops-provider` | `fetch-to-spec` (snapshot → `ws-write-spec` enhancement → `{specsDir}` → register `step-00`) | No — skip to Step 1 |
 | `*.spec.md` | `ws-local-spec-provider` | `fetch-to-spec` → `{specsDir}` → register `step-00` | No — skip to Step 1 |
 | free-text / no args | none | `ws-write-spec` → `{specsDir}/{slug}.spec.md`, then `ws-local-spec-provider` register → `{us-dir}/step-00-{slug}.spec.md` | Yes — `dispatch-agent` `ws-write-spec` (+ register before Step 1) |
 
@@ -158,11 +158,12 @@ Provider resolution and `fetch-to-spec` dispatch: load active provider skill; au
 
 ### Step 0 Entry Gate
 
-1. **Tracker id** → provider `fetch-to-spec` → skip Step 0 → Step 1 gate.
+1. **Tracker id** → provider `fetch-to-spec` (fetch snapshot + `ws-write-spec` agentic reformulation + register) → skip Step 0 → Step 1 gate.
 2. **Local `*.spec.md`** → `ws-local-spec-provider` → skip Step 0 → Step 1 gate.
 3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`ws-write-spec` → `{specsDir}` only, then register to `{us-dir}` before planning).
 
-Store `specPath` in state `## Artifacts`.
+Store `specPath` in state `## Artifacts` (always points to the registered `step-00-{slug}.spec.md`).
+
 
 ### Build & Test Validation (4, 6-fix, 7)
 

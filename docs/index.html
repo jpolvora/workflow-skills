@@ -833,7 +833,7 @@
       <span class="count">15 skills</span>
     </div>
     <div class="skill-grid">
-      <div class="skill-card" data-path=".agents/skills/ws-azure-devops-provider/SKILL.md" data-name="ws-azure-devops-provider" data-slug="ws-azure-devops-provider" data-desc="azure devops work-item→spec and pr ops (pat auth, create-pr, list/resolve threads, merge). trigger when providers.scm/active is azure-devops or user invokes /ws-azure-devops-provider." data-deps="ws-spec-format ws-local-spec-provider" data-layer="layer-2" data-full="true" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/ws-azure-devops-provider/SKILL.md" data-name="ws-azure-devops-provider" data-slug="ws-azure-devops-provider" data-desc="azure devops work-item→spec and pr ops (pat auth, create-pr, list/resolve threads, merge). trigger when providers.scm/active is azure-devops or user invokes /ws-azure-devops-provider." data-deps="ws-spec-format ws-write-spec ws-local-spec-provider" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-azure-devops-provider</div>
         <div class="skill-badges">
@@ -843,7 +843,7 @@
         </div>
         <div class="desc">Azure DevOps work-item→spec and PR ops (PAT auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is azure-devops or user invokes /ws-azure-devops-provider.</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (3):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-azure-devops-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -875,7 +875,7 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-fix-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-github-provider/SKILL.md" data-name="ws-github-provider" data-slug="ws-github-provider" data-desc="github issue→spec and pr ops (auth, create-pr, list/resolve threads, merge). trigger when providers.scm/active is github or user invokes /ws-github-provider." data-deps="ws-spec-format ws-local-spec-provider" data-layer="layer-2" data-full="true" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/ws-github-provider/SKILL.md" data-name="ws-github-provider" data-slug="ws-github-provider" data-desc="github issue→spec and pr ops (auth, create-pr, list/resolve threads, merge). trigger when providers.scm/active is github or user invokes /ws-github-provider." data-deps="ws-spec-format ws-write-spec ws-local-spec-provider" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-github-provider</div>
         <div class="skill-badges">
@@ -885,7 +885,7 @@
         </div>
         <div class="desc">GitHub issue→spec and PR ops (auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is github or user invokes /ws-github-provider.</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (3):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-github-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -1024,7 +1024,7 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-write-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-write-spec/SKILL.md" data-name="ws-write-spec" data-slug="ws-write-spec" data-desc="local spec authoring — drafts structured *.spec.md feature specifications under {specsdir} from free-text user requirements." data-deps="ws-spec-format ws-local-spec-provider" data-layer="layer-2" data-full="true" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/ws-write-spec/SKILL.md" data-name="ws-write-spec" data-slug="ws-write-spec" data-desc="local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsdir} from free-text requirements or remote tracker issues." data-deps="ws-spec-format ws-local-spec-provider" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-write-spec</div>
         <div class="skill-badges">
@@ -1032,7 +1032,7 @@
           <span class="skill-badge lite">lite</span>
         </div>
         </div>
-        <div class="desc">Local spec authoring — drafts structured *.spec.md feature specifications under {specsDir} from free-text user requirements.</div>
+        <div class="desc">Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-write-spec/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
@@ -1727,7 +1727,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.22 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.23 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

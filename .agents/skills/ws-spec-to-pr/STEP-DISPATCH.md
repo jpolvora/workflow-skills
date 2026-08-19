@@ -12,7 +12,8 @@
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (user-gate). US/spec provided → provider `fetch-to-spec` (→ `{specsDir}` spec of record, then register). No args → free-text → `dispatch-agent` `ws-write-spec` (writes `{specsDir}/{slug}.spec.md` only) → register via `ws-local-spec-provider` into `{us-dir}`. Optional soft clarify if AC empty. | `{specsDir}/{slug}.spec.md` **then** `step-00-{slug}.spec.md` (after register) |
+| 0 | Entry gate (user-gate). US/tracker provided → provider fetch snapshot → `dispatch-agent` `ws-write-spec` (reformulate & enhance to `{specsDir}/{slug}.spec.md` with agentic ACs + original human context) → register via `ws-local-spec-provider` into `{us-dir}/step-00-{slug}.spec.md`. No args → free-text → `dispatch-agent` `ws-write-spec` (writes `{specsDir}/{slug}.spec.md` only) → register via `ws-local-spec-provider` into `{us-dir}`. Existing `*.spec.md` → register via `ws-local-spec-provider`. Optional soft clarify if AC empty. | `{specsDir}/{slug}.spec.md` **then** `step-00-{slug}.spec.md` (after register) |
+
 | 1 | Complexity gate → if simple: stub plan + skip to 4. Else `dispatch-agent` `ws-write-plan`. | `step-01-{slug}.plan.md` |
 | 2 | Conditional: skip if eligible; else `dispatch-agent` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
 | 3 | `dispatch-agent` `ws-plan-to-tasks`; `defaults.enableDag: false` (default) forces `execMode: sequential` (sequential subagent tasks, no parallel DAG groups). `defaults.enableDag: true` evaluates `dagThresholds` for parallel DAG tasks. | `step-03-{slug}.plan.exec.md` + `step-03-{slug}.exec.dag.json` (both modes; DAG task groups only when parallel) |

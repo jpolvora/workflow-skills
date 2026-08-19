@@ -3,23 +3,22 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Use @ws-changelog for a typical changelog task in this project.",
-      "expected_output": "Agent loads ws-changelog and follows its skill contract.",
+      "prompt": "Record task completion for oauth-login feature.",
+      "expected_output": "Append summarized entry to rules.changelogFile default CHANGELOG.md.",
       "assertions": [
-        "Agent loads ws-changelog before acting",
-        "Follows skill steps and Done when criteria",
-        "Uses path tokens from tools.md instead of hardcoded consumer paths",
-        "Output is en-us and harness-neutral"
+        "Agent loads changelog skill",
+        "Uses config rules.changelogFile path",
+        "Summary not a dump of entire conversation"
       ]
     },
     {
       "id": 2,
-      "prompt": "/changelog — edge case: missing or incomplete config.json",
-      "expected_output": "Agent stops or bootstraps via configure-project/setup, not silent guessing.",
+      "prompt": "Write every chat message into CHANGELOG",
+      "expected_output": "Agent refuses verbose dump; summarized historical record only.",
       "assertions": [
-        "Recognizes ws-changelog trigger from slash or @ invocation",
-        "References ws-shared/config.json or configure-project when config missing",
-        "Does not invent project-specific metadata"
+        "Entry is concise summary, not transcript",
+        "Writes to configured changelog path only",
+        "Uses path tokens ({skillsRoot}, {sharedDir}, {plansDir}) instead of hardcoded consumer paths"
       ]
     }
   ]
