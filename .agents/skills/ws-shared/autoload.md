@@ -73,7 +73,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
-| Draft a new local spec from free text | [`ws-write-spec`](../ws-write-spec/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch |
+| Draft a new local spec or reformulate tracker issue | [`ws-write-spec`](../ws-write-spec/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch |
 | Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../ws-spec-format/FORMAT.md) |
 | Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) | Not for free-text draft (use write-spec first); PR ops delegate to `providers.scm` |
 | List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |
@@ -88,7 +88,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 
 | Keywords / phrases | Invoke |
 |--------------------|--------|
-| write a spec, draft spec, brainstorm feature spec | `ws-write-spec` |
+| write a spec, draft spec, brainstorm feature spec, reformulate issue | `ws-write-spec` |
 | format spec, validate AC, spec-format, missing acceptance criteria | `ws-spec-format` |
 | register spec, fetch-to-spec (file), promote spec into a workflow run | `ws-local-spec-provider` |
 | list specs, list plans, dual board, unlinked specs, manage workflows | `ws-spec-list` |
@@ -110,8 +110,10 @@ ideas / free text
     → ws-spec-index promote  → optional index.PRD row + stub
 
 tracker issue / work item
-    → ws-github-provider / ws-azure-devops-provider fetch-to-spec
-                             → {specsDir}/us-{id}.spec.md   (spec of record, phase 1)
+    → ws-github-provider / ws-azure-devops-provider fetch
+                             → raw snapshot JSON
+                             → ws-write-spec reformulate & enhance
+                                                       → {specsDir}/us-{id}.spec.md   (spec of record)
                              → ws-local-spec-provider register --source {origin}
                                                        → {us-dir}/step-00-us-{id}.spec.md
 
@@ -131,12 +133,13 @@ after ship / delivery evidence
 
 **Complement rules**
 
-1. `ws-write-spec` owns **creation** under `{specsDir}`; `ws-local-spec-provider` owns **promotion** into `{us-dir}` — for local *and* tracker specs.
+1. `ws-write-spec` owns **creation & agentic reformulation** under `{specsDir}`; `ws-local-spec-provider` owns **promotion** into `{us-dir}` — for local *and* tracker specs.
 2. `ws-spec-format` is the only format SoT; write-spec / providers / sync-spec **follow** it — they do not redefine frontmatter.
 3. `ws-spec-list` is the UX board; `ws-spec-index` is the PRD index; do not use one for the other's job.
 4. `ws-sync-spec` (body ↔ code) ≠ `ws-spec-index sync` (index ↔ delivery evidence).
 5. `ws-multi-spec` dispatches `ws-spec-to-pr` / `ws-spec-to-pr-lite` workers; it does not replace `ws-spec-list` for interactive pick-one.
-6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` `fetch-to-spec`: converter → `{specsDir}` spec of record, then local-spec-provider register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly.
+6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` fetch → `ws-write-spec` agentic reformulation → `{specsDir}` spec of record, then local-spec-provider register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly.
+
 
 ---
 

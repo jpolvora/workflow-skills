@@ -17,18 +17,22 @@ Load when executing an intent from [`SKILL.md`](SKILL.md). Expand `{plansDir}` (
 | `{org}/{project}#{id}` | parsed (must match tracker) | `us-{id}` |
 | ADO work-item URL | parsed from URL | `us-{id}` |
 
-**Two ordered phases — the spec of record always lands in `{specsDir}` first, then the workflow copy in `{plansDir}`.** Never write `step-00` directly from the converter.
+**Three ordered phases — fetch snapshot, reformulate & enhance via `ws-write-spec` to `{specsDir}`, then register workflow copy in `{plansDir}` via `ws-local-spec-provider`.** Never write `step-00` directly from the converter.
 
 ```bash
 mkdir -p {plansDir}/us-{id}
 
-# 1. Spec of record → {specsDir}/us-{id}.spec.md (default output; resolves plans.specsDir)
+# 1. Fetch raw work-item snapshot
 python .agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py \
   --org {org} --project {project} --id {id} \
   --api-base {apiBase} --pat-env {patEnvVar} \
   --snapshot {plansDir}/us-{id}/step-00-us-{id}.issue.json
 
-# 2. Workflow copy → {plansDir}/us-{id}/step-00-us-{id}.spec.md (keeps source: azure-devops)
+# 2. Spec of record → {specsDir}/us-{id}.spec.md (enhanced via ws-write-spec; resolves plans.specsDir)
+# Base converter or ws-write-spec parses the snapshot and builds an agentic-enhanced spec:
+# (ado-workitem-to-spec.py emits the base spec of record; ws-write-spec enhances with agentic ACs)
+
+# 3. Workflow copy → {plansDir}/us-{id}/step-00-us-{id}.spec.md (keeps source: azure-devops)
 python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
   --input {specsDir}/us-{id}.spec.md --source azure-devops
 ```
@@ -36,9 +40,11 @@ python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
 | Note | Detail |
 |------|--------|
 | Raw snapshot JSON | Audit artifact only — stays under `{us-dir}`; downstream steps never read it |
-| Re-fetch over an existing run | The converter (Step 1) refuses first when the spec of record differs (`--force` on the converter), and Step 2 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
+| Agentic Reformulation | `ws-write-spec` reformulates and enhances raw work item descriptions into unambiguous, testable ACs while preserving human text in `## Original Issue Context` |
+| Re-fetch over an existing run | The converter (Step 2) refuses first when the spec of record differs (`--force` on the converter), and Step 3 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
 | Explicit paths | `--output` (converter) / `--specs-dir` / `--plans-dir` (register) override the config-resolved defaults |
 | Promotion owner | `register_local_spec.py` from [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) is the single promotion primitive for every provider |
+
 
 ## `create-pr`
 

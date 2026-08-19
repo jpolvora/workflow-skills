@@ -1,7 +1,7 @@
 ---
 name: ws-azure-devops-provider
 description: Azure DevOps work-item→spec and PR ops (PAT auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is azure-devops or user invokes /ws-azure-devops-provider.
-version: 0.3.22
+version: 0.3.23
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider
@@ -49,7 +49,7 @@ Auth/config failure → **STOP**. No silent provider fallback.
 
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
-| `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/us-{id}.spec.md` (spec of record) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + optional JSON snapshot | `ado-workitem-to-spec.py` → `register_local_spec.py` |
+| `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/us-{id}.spec.md` (agentic spec of record via `ws-write-spec`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + optional JSON snapshot | `ado-workitem-to-spec.py` → `ws-write-spec` (reformulate/enhance) → `register_local_spec.py` |
 | `validate-auth` | none | Pass/fail + fixes | Org/project + PAT; optional WIT smoke |
 | `create-pr` | head, base, title/body | PR URL + id | Prefer `az repos pr create`; if `az` missing/fails → REST in INTENTS.md |
 | `list-threads` | PR id | Thread list | `fix_pr_azure_context.py collect` |
@@ -57,7 +57,7 @@ Auth/config failure → **STOP**. No silent provider fallback.
 | `resolve-thread` | thread id (+ PR id, comment) | Resolved (or dry-run) | `fix_pr_azure_context.py resolve-thread` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
-**Spec path rule:** `fetch-to-spec` **always** writes `{specsDir}/{slug}.spec.md` first, then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.py --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
+**Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched work item), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.py --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
 
 **Branch rule:** never delete `project.workingBranch` (default `develop`) after merge.
 
@@ -65,9 +65,11 @@ Auth/config failure → **STOP**. No silent provider fallback.
 
 ## Canonical scripts
 
+Prefer these paths (legacy orch/fix-pr shims may forward here):
+
 | Script | Path |
 |--------|------|
-| Work item → spec of record | `{skillsRoot}/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` (default output `{specsDir}/us-{id}.spec.md`) |
+| Work item snapshot / base conversion | `{skillsRoot}/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` (default output `{specsDir}/us-{id}.spec.md`) |
 | Spec of record → workflow copy | `python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops` |
 | Thread ops | `{skillsRoot}/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
 
@@ -83,10 +85,10 @@ Auth/config failure → **STOP**. No silent provider fallback.
 
 ## Dependencies
 
-[ws-spec-to-pr](../ws-spec-to-pr/SKILL.md) · [ws-ship-pr](../ws-ship-pr/SKILL.md) · [ws-fix-pr](../ws-fix-pr/SKILL.md) · [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · [ws-spec-format](../ws-spec-format/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) (spec registration)
+[ws-spec-to-pr](../ws-spec-to-pr/SKILL.md) · [ws-ship-pr](../ws-ship-pr/SKILL.md) · [ws-fix-pr](../ws-fix-pr/SKILL.md) · [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · [ws-spec-format](../ws-spec-format/SKILL.md) · [ws-write-spec](../ws-write-spec/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) (spec registration)
 
 ## Done when
 
 - Intent from the contract table completed with cited CLI/script exit 0 (or dry-run simulation recorded).
-- `fetch-to-spec`: `{specsDir}/{slug}.spec.md` exists **and** `{us-dir}/step-00-{slug}.spec.md` was registered with `source: azure-devops`.
+- `fetch-to-spec`: `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** `{us-dir}/step-00-{slug}.spec.md` was registered with `source: azure-devops`.
 - Auth/config failures STOP (no silent fallback).

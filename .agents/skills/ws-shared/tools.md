@@ -73,7 +73,8 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `create-checkpoint` | Tag before step N | `Shell` `git tag uswf/{id}/before-step-{N}` |
 | `revert-to-checkpoint` | Revert to tag M | `Shell` `git reset --mixed {tag}` + per-path restore |
 
-Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec`. Consumers who already installed `ws-spec-to-pr` before these folders existed: `npx github:jpolvora/workflow-skills update --include-new`.
+Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` (remote fetch → [`ws-write-spec`](../ws-write-spec/SKILL.md) agentic reformulation → local-spec register). Consumers who already installed `ws-spec-to-pr` before these folders existed: `npx github:jpolvora/workflow-skills update --include-new`.
+
 
 ## Agent dispatch tools
 

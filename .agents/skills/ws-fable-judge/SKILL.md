@@ -1,7 +1,7 @@
 ---
 name: ws-fable-judge
 description: Adversarial audit of claimed work against git diffs and re-run verifications. Trigger after claimed completion, during local review, or before merge.
-version: 0.3.22
+version: 0.3.23
 invocation_names:
   - ws-fable-judge
   - /ws-fable-judge

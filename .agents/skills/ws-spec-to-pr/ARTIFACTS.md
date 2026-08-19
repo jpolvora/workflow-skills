@@ -104,8 +104,8 @@ Every entry writes the **spec of record** under `{specsDir}` first, then the **w
 
 | Input | Action | Spec of record (1st) | Workflow copy (2nd) | `source` frontmatter |
 |-------|--------|----------------------|---------------------|----------------------|
-| GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) `fetch-to-spec` | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` | `github` |
-| ADO `{org}/{project}#{id}` or `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `fetch-to-spec` | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` | `azure-devops` |
+| GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) fetch → `ws-write-spec` reformulation | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` | `github` |
+| ADO `{org}/{project}#{id}` or `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) fetch → `ws-write-spec` reformulation | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` | `azure-devops` |
 | Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | `{specsDir}/{slug}.spec.md` (in place when the input already lives there) | `{us-dir}/step-00-{slug}.spec.md` | `local` |
 | Free-text brainstorm | `ws-write-spec` → `{specsDir}/{slug}.spec.md`; orch then `ws-local-spec-provider` register when entering a workflow | `{specsDir}/{slug}.spec.md` | `{us-dir}/step-00-{slug}.spec.md` after register (standalone: none) | `local` |
 
@@ -139,7 +139,8 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 
 | Step | Skill |
 |------|-------|
-| 0 | `ws-write-spec` (brainstorm only) |
+| 0 | `ws-write-spec` (brainstorm / tracker reformulation) |
+
 | 1 | `ws-write-plan` |
 | 2 | `ws-interview` |
 | 3 | `ws-plan-to-tasks` |

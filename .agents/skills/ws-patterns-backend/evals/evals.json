@@ -1,12 +1,12 @@
 {
-  "skill_name": "ws-spec-list",
+  "skill_name": "ws-patterns-backend",
   "evals": [
     {
       "id": 1,
-      "prompt": "Use @ws-spec-list for a typical spec-list task in this project.",
-      "expected_output": "Agent loads ws-spec-list and follows its skill contract.",
+      "prompt": "Use @ws-patterns-backend for a typical patterns-backend task in this project.",
+      "expected_output": "Agent loads ws-patterns-backend and follows its skill contract.",
       "assertions": [
-        "Agent loads ws-spec-list before acting",
+        "Agent loads ws-patterns-backend before acting",
         "Follows skill steps and Done when criteria",
         "Uses path tokens from tools.md instead of hardcoded consumer paths",
         "Output is en-us and harness-neutral"
@@ -14,10 +14,10 @@
     },
     {
       "id": 2,
-      "prompt": "/spec-list — edge case: missing or incomplete config.json",
+      "prompt": "/patterns-backend — edge case: missing or incomplete config.json",
       "expected_output": "Agent stops or bootstraps via configure-project/setup, not silent guessing.",
       "assertions": [
-        "Recognizes ws-spec-list trigger from slash or @ invocation",
+        "Recognizes ws-patterns-backend trigger from slash or @ invocation",
         "References ws-shared/config.json or configure-project when config missing",
         "Does not invent project-specific metadata"
       ]
