@@ -692,7 +692,7 @@
       <p class="section-subtitle">Discover production-grade agent skills across 4 modular layers.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">44</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">45</strong> skills available</span>
     </div>
   </div>
 
@@ -1081,7 +1081,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">19 skills</span>
+      <span class="count">20 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="ws-github-provider ws-azure-devops-provider ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1226,6 +1226,16 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-patterns-frontend/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <div class="skill-card" data-path=".agents/skills/ws-pre-daily/SKILL.md" data-name="ws-pre-daily" data-slug="ws-pre-daily" data-desc="standup briefing of the last 36 hours — delivered, made, ongoing, next." data-deps="ws-activity-report ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-pre-daily</div>
+        </div>
+        <div class="desc">Standup briefing of the last 36 hours — delivered, made, ongoing, next.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-activity-report">ws-activity-report</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-pre-daily/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
       <div class="skill-card" data-path=".agents/skills/ws-self-learning/SKILL.md" data-name="ws-self-learning" data-slug="ws-self-learning" data-desc="anti-regression memory engine — consults shared memory before planning/coding and records newly discovered traps into the project knowledge hub." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-self-learning</div>
@@ -1365,9 +1375,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 41 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 42 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+33)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+34)
       </div>
     </div>
 
@@ -1727,7 +1737,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.23 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.25 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

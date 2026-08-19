@@ -1,0 +1,7 @@
+{
+  "execMode": "sequential",
+  "reason": "defaults.enableDag is false",
+  "planPath": ".agents/plans/us-217/step-02-us-217.plan.refined.md",
+  "tasks": [],
+  "levels": []
+}

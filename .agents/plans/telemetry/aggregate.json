@@ -1,8 +1,8 @@
 {
-  "totalWorkflows": 38,
-  "completedWorkflows": 34,
-  "averageElapsedSec": 1555.58,
-  "averageVerificationScore": 9.13,
+  "totalWorkflows": 40,
+  "completedWorkflows": 35,
+  "averageElapsedSec": 1476.97,
+  "averageVerificationScore": 9.3,
   "fableVerdictDistribution": {
     "VERIFIED_WITH_CAVEATS": 4,
     "VERIFIED": 2

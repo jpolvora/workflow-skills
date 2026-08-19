@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.23",
+  "packageVersion": "0.3.25",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -62,6 +62,7 @@
         "ws-sync-spec",
         "ws-senior-developer",
         "ws-activity-report",
+        "ws-pre-daily",
         "ws-patterns-backend",
         "ws-patterns-frontend"
       ],
@@ -204,6 +205,10 @@
     "ws-activity-report": [
       "ws-github-provider",
       "ws-azure-devops-provider",
+      "ws-configure-project"
+    ],
+    "ws-pre-daily": [
+      "ws-activity-report",
       "ws-configure-project"
     ],
     "ws-audit": [],

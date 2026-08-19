@@ -473,7 +473,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
 
 ## Skill catalog (layers)
 
-> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 40 skills, `extra` = 3) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
+> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 41 skills, `extra` = 3) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per § [Progressive disclosure](#progressive-disclosure-load-on-demand).
 
@@ -549,6 +549,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries from plan bootstrap start → latest PR thread comment or delivery commit |
+| `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | Standup briefing of the last 36 hours — delivered, made, ongoing, next |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -572,6 +573,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
 | Backend patterns & rules | `ws-patterns-backend` |
 | Frontend UI/UX patterns & rules | `ws-patterns-frontend` |
+| Standup briefing (last 36 hours) | `ws-pre-daily` |
 | Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Ship PR | `ws-ship-pr` |

@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.23
+version: 0.3.25
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -77,8 +77,13 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 4. **Generalize defect class**: for each proven finding, search the full diff for sibling occurrences of the same pattern and report them together.
    - Done when: sibling occurrences are searched and reported (or none found).
 
-5. **Sweep known patterns**: grep each ID in `MEMORY.md → ## Review Patterns` against the modified file set; report confirmed violations.
-   - Done when: the pattern sweep ran and results are reported.
+5. **Sweep known patterns & MEMORY**:
+   - Read compiled `{sharedDir}/MEMORY.md` entries (titles, Module/Layer tags, and `DO NOT` / `INSTEAD DO` directives) against the in-scope modified file list and plan keywords; report confirmed violations as Warning or Critical by severity.
+   - If Web/UI files are in the diff and `config.json.defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and check for project UI/UX pattern violations (e.g. missing Back button toolbar on subpages, hardcoded copy vs i18n, subscription cleanup, grid/table styling conventions).
+   - If Domain/Application/EF/backend files are in the diff and `config.json.defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and check for domain/architectural pattern violations.
+   - Done when: memory entries and relevant pattern files have been swept against the diff, and any confirmed violations are listed.
+
+
 
 6. **Check invariants**: cross-check `config.json.invariants` / `config.json.rules`: tenancy filters, DB-migrations-CLI-only, domain rules, React hook cleanup/dependency arrays, and i18n keys present in every locale from `config.json.stack.frontend.i18n.locales[]`.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) for Weakened Checks, False Completion, Scope Creep, Unauthorized Action. Report detected frauds as Critical or Warning.
