@@ -1,6 +1,6 @@
 ---
 name: ws-patterns-frontend
-version: 0.3.23
+version: 0.3.24
 description: Frontend UI/UX patterns & component preferences engine — consults frontend.md before frontend tasks and records learned UI/UX conventions after implementation or user corrections.
 invocation_names:
   - ws-patterns-frontend
