@@ -10,6 +10,7 @@ Usage:
 import os
 import re
 import sys
+import fnmatch
 import argparse
 from pathlib import Path
 from datetime import datetime
@@ -74,6 +75,7 @@ def parse_memory_file(file_path: Path) -> dict:
     layer = ""
     module = ""
     severity = ""
+    path_pattern = ""
     scenario_context = ""
     do_not = ""
     instead_do = ""
@@ -88,6 +90,8 @@ def parse_memory_file(file_path: Path) -> dict:
             module = re.sub(r"^-\s*\*\*Module\*\*:\s*", "", line).strip().strip("`")
         elif line.startswith("- **Severity**:") or line.startswith("- **Severity**:"):
             severity = re.sub(r"^-\s*\*\*Severity\*\*:\s*", "", line).strip().strip("`")
+        elif line.startswith("- **PathPattern**:") or line.startswith("- **Path Pattern**:") or line.startswith("- **PathPatterns**:") or line.startswith("- **Path**:") or line.startswith("- **Paths**:"):
+            path_pattern = re.sub(r"^-\s*\*\*(?:PathPattern|Path Pattern|PathPatterns|Path|Paths)\*\*:\s*", "", line).strip().strip("`")
         elif line.startswith("- **Scenario / Context**:") or line.startswith("- **Scenario/Context**:") or line.startswith("- **Context**:") or line.startswith("- **Scenario**:"):
             scenario_context = re.sub(r"^-\s*\*\*(?:Scenario\s*/\s*Context|Scenario/Context|Context|Scenario)\*\*:\s*", "", line).strip()
         elif line.startswith("- **DO NOT**:") or line.startswith("- **Do Not**:") or line.startswith("- **DO_NOT**:") or line.startswith("- **Trap Avoided**:"):
@@ -102,6 +106,7 @@ def parse_memory_file(file_path: Path) -> dict:
         "layer": layer,
         "module": module,
         "severity": severity,
+        "path_pattern": path_pattern,
         "scenario_context": scenario_context,
         "do_not": do_not,
         "instead_do": instead_do,
@@ -146,6 +151,8 @@ def compile_memory() -> None:
             lines.append(f"- **Module**: `{entry['module']}`")
         if entry["severity"]:
             lines.append(f"- **Severity**: `{entry['severity']}`")
+        if entry.get("path_pattern"):
+            lines.append(f"- **PathPattern**: `{entry['path_pattern']}`")
         if entry.get("scenario_context"):
             lines.append(f"- **Scenario / Context**: {entry['scenario_context']}")
         if entry.get("do_not"):
@@ -158,6 +165,76 @@ def compile_memory() -> None:
     COMPILED_MEMORY_PATH.write_text("\n".join(body_parts) + "\n", encoding="utf-8")
     print(f"Successfully compiled {len(entries)} memory entries into {COMPILED_MEMORY_PATH}")
 
+
+def _matches_any_path_pattern(pattern_str: str, file_paths: list[str]) -> bool:
+    """Checks if any file path matches any pattern in pattern_str (comma/space separated globs)."""
+    if not pattern_str or pattern_str.strip().lower() in ("n/a", "none"):
+        return False
+    patterns = [p.strip().strip("`").strip("'").strip('"') for p in re.split(r"[,;]", pattern_str) if p.strip()]
+    for path in file_paths:
+        norm_path = path.replace("\\", "/").strip().lstrip("./")
+        path_name = Path(norm_path).name
+        for pat in patterns:
+            norm_pat = pat.replace("\\", "/").strip().lstrip("./")
+            if not norm_pat:
+                continue
+            if norm_pat == norm_path:
+                return True
+            if fnmatch.fnmatch(norm_path, norm_pat):
+                return True
+            if fnmatch.fnmatch(norm_path, f"*/{norm_pat.lstrip('/')}"):
+                return True
+            if fnmatch.fnmatch(norm_path, f"{norm_pat.rstrip('/')}/*"):
+                return True
+            if fnmatch.fnmatch(path_name, norm_pat):
+                return True
+            if norm_pat in norm_path:
+                return True
+    return False
+
+
+def match_paths(file_paths: list[str]) -> None:
+    """Searches memory entries whose PathPattern matches any of the given file paths."""
+    if not MEMORY_DIR.exists():
+        print("No memory directory found.")
+        return
+        
+    matches = []
+    for file in MEMORY_DIR.glob("*.md"):
+        if file.name.startswith("."):
+            continue
+        try:
+            entry = parse_memory_file(file)
+            if entry.get("path_pattern") and _matches_any_path_pattern(entry["path_pattern"], file_paths):
+                matches.append(entry)
+        except Exception:
+            pass
+            
+    matches.sort(key=lambda x: x["date"], reverse=True)
+    
+    if not matches:
+        print(f"No memory entries found matching touched paths: {', '.join(file_paths)}")
+        return
+        
+    print(f"Found {len(matches)} matching memory entry/entries for touched paths:")
+    for entry in matches:
+        print("=" * 60)
+        print(f"[{entry['date']}] {entry['title']} ({entry['file_name']})")
+        tags = []
+        if entry['layer']:
+            tags.append(f"Layer={entry['layer']}")
+        if entry['module']:
+            tags.append(f"Module={entry['module']}")
+        if entry['severity']:
+            tags.append(f"Severity={entry['severity']}")
+        if entry.get('path_pattern'):
+            tags.append(f"PathPattern={entry['path_pattern']}")
+        if tags:
+            print(f"Tags: {', '.join(tags)}")
+        print("-" * 60)
+        print(f"Trap Avoided: {entry['trap_avoided']}")
+        print(f"Solution: {entry['solution']}")
+    print("=" * 60)
 
 
 def query_memory(keyword: str) -> None:
@@ -177,7 +254,8 @@ def query_memory(keyword: str) -> None:
                     keyword_lower in entry["trap_avoided"].lower() or 
                     keyword_lower in entry["solution"].lower() or
                     keyword_lower in entry["layer"].lower() or
-                    keyword_lower in entry["module"].lower()):
+                    keyword_lower in entry["module"].lower() or
+                    keyword_lower in entry.get("path_pattern", "").lower()):
                 matches.append(entry)
         except Exception:
             pass
@@ -192,8 +270,17 @@ def query_memory(keyword: str) -> None:
     for entry in matches:
         print("=" * 60)
         print(f"[{entry['date']}] {entry['title']} ({entry['file_name']})")
-        if entry['layer'] or entry['module']:
-            print(f"Tags: Layer={entry['layer'] or 'N/A'}, Module={entry['module'] or 'N/A'}, Severity={entry['severity'] or 'N/A'}")
+        tags = []
+        if entry['layer']:
+            tags.append(f"Layer={entry['layer']}")
+        if entry['module']:
+            tags.append(f"Module={entry['module']}")
+        if entry['severity']:
+            tags.append(f"Severity={entry['severity']}")
+        if entry.get('path_pattern'):
+            tags.append(f"PathPattern={entry['path_pattern']}")
+        if tags:
+            print(f"Tags: {', '.join(tags)}")
         print("-" * 60)
         print(f"Trap Avoided: {entry['trap_avoided']}")
         print(f"Solution: {entry['solution']}")
@@ -206,6 +293,7 @@ def main():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--compile", "-c", action="store_true", help="Compile separate memory files into MEMORY.md")
     group.add_argument("--query", "-q", type=str, help="Query memory entries for matching keywords")
+    group.add_argument("--match-paths", "-m", nargs="+", help="Query memory entries matching touched file paths or globs")
     parser.add_argument(
         "--repo-root",
         type=str,
@@ -223,7 +311,10 @@ def main():
         compile_memory()
     elif args.query:
         query_memory(args.query)
+    elif args.match_paths:
+        match_paths(args.match_paths)
 
 
 if __name__ == "__main__":
     main()
+

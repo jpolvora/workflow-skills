@@ -1,7 +1,7 @@
 ---
 name: ws-write-spec
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.3.25
+version: 0.3.26
 disable-model-invocation: true
 invocation_names:
   - write-spec

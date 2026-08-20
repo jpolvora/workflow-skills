@@ -10,12 +10,13 @@ const memoryDir = path.join(sharedDir, "memory");
 
 console.log("Running memory formatting test...");
 
-// Create temp memory file with DO NOT / INSTEAD DO fields
+// Create temp memory file with DO NOT / INSTEAD DO fields and PathPattern
 const testMemoryPath = path.join(memoryDir, "2026-07-30-test-actionable-format.md");
 const testMemoryContent = `### 2026-07-30 Test Actionable Directives
 - **Layer**: Tests
 - **Module**: SelfLearning
 - **Severity**: High
+- **PathPattern**: src/Tests/SelfLearning/*, test/test-memory-formatting.js
 - **Scenario / Context**: When writing anti-regression memory entries
 - **DO NOT**: Use vague, passive, or overly complex descriptions of traps
 - **INSTEAD DO**: State explicit DO NOT and INSTEAD DO actionable instructions
@@ -42,6 +43,9 @@ try {
   const compiledContent = fs.readFileSync(compiledMemoryPath, "utf-8");
 
   // Assertions
+  if (!compiledContent.includes("- **PathPattern**: `src/Tests/SelfLearning/*, test/test-memory-formatting.js`")) {
+    throw new Error("Compiled MEMORY.md missing PathPattern field");
+  }
   if (!compiledContent.includes("- **Scenario / Context**: When writing anti-regression memory entries")) {
     throw new Error("Compiled MEMORY.md missing Scenario / Context field");
   }
@@ -58,12 +62,21 @@ try {
     throw new Error("Compiled MEMORY.md header contains obsolete memory directory shorthand");
   }
 
+  // Test --match-paths
+  const matchOutput = execSync(`python ${scriptPath} --match-paths test/test-memory-formatting.js`, {
+    cwd: rootDir,
+    encoding: "utf-8",
+  });
+  if (!matchOutput.includes("Test Actionable Directives") || !matchOutput.includes("PathPattern=src/Tests/SelfLearning/*, test/test-memory-formatting.js")) {
+    throw new Error(`--match-paths failed to match test file; output: ${matchOutput}`);
+  }
+
   const templateContent = fs.readFileSync(path.join(sharedDir, "MEMORY.md.template"), "utf-8");
   if (!templateContent.includes("under `{sharedDir}/memory/`")) {
     throw new Error("MEMORY.md.template missing `{sharedDir}/memory/` canonical path token");
   }
 
-  console.log("✅ Memory formatting test PASSED successfully!");
+  console.log("✅ Memory formatting and path-pattern tests PASSED successfully!");
 } finally {
   // Cleanup test entry & recompile to clean state
   if (createdFile && fs.existsSync(testMemoryPath)) {

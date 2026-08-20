@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-19] Missing MEMORY.md must not HS-5 the pipeline
+- **Layer**: `Infrastructure`
+- **Module**: `ws-spec-to-pr / check_memory_conflict.py / STEP-DISPATCH`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/check_memory_conflict.py, test/test-pattern-consult.js`
+- **Scenario / Context**: Wiring `check_memory_conflict.py` into Step 1/4 mapped exit 1 to HS-5 STOP. The script used exit 1 for both a missing plan and a missing MEMORY.md. Hybrid/global installs often have no project MEMORY.md, so every Step 1/4 aborted a valid plan.
+- **DO NOT**: Treat a missing MEMORY.md as a fatal pipeline error (exit 1 / HS-5) when the consult is advisory.
+- **INSTEAD DO**: Exit 0 with consult-skipped (empty traps) when MEMORY.md is absent. Keep exit 1 for a missing plan file only. Cover with `test-pattern-consult.js`.
+
 ### [2026-08-17] AC9 resume count must fetch integration ref first
 - **Layer**: `Infrastructure`
 - **Module**: `ws-spec-to-pr / setup.md §4c / resume pre-check`
@@ -68,6 +77,7 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Layer**: `Infrastructure`
 - **Module**: `ws-doctor / doctor.js resolveCitedPath`
 - **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-doctor/*, bin/doctor.js`
 - **Scenario / Context**: `--skill` scans on hybrid/global installs; `isCitingFromPublishedSkillFolder` compared `path.relative(projectRoot, sourceFile)` to the project-relative `tokenMap.skillsRoot` string. Global `{skillsRoot}` files did not match, so skill-folder `docs/` citations fell back to project-root and false-positive Missing references returned.
 - **DO NOT**: Detect published skill folders by matching a project-relative posix path against `tokenMap.skillsRoot` (or `startsWith('docs/')` always project-root).
 - **INSTEAD DO**: Compare `sourceFile` to absolute `_abs.skillsRoot` and `_abs.globalSkillsRoot`. Treat markdown `docs/` links as file-relative inside published `ws-*` (not `ws-shared`). For backtick prose `docs/` in skill folders, accept a project-root hit only when the skill companion is absent. Cover with `test/test-ws-doctor.js` fixtures including the trap (project-root file present, skill companion absent).
