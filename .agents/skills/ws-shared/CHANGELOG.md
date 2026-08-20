@@ -2,6 +2,16 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-20 14:26] Agent: Antigravity / Gemini 3.7 Flash
+- **Prompt**: Implement enhancements to self-learning (items 2, 3, 4) & /ws-ship-pr
+- **Done**: Added failure reflection hook in ws-self-learning & ws-senior-developer (forbidden Learning: N/A when session friction >= 2); added PathPattern parsing, compilation, and --match-paths querying in self_learning.py + tests in test-memory-formatting.js; added adversarial self-learning trigger to ws-fable-judge; bumped version to 0.3.26, rebuilt site, and updated integrity manifests.
+- **Result**: Tests 100% green; integrity verified; ready for PR.
+
+### [2026-08-19 11:10] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (inferred PR 219)
+- **Done**: Round 1 sibling-fixes for 5 threads: us-220 state body, `--tz` label on collect_window, missing MEMORY.md exit 0. Commit 1dcbf7c pushed.
+- **Result**: activeThreads []. Review + tests pass. PR 219 MERGEABLE. This skill does not merge.
+
 ### [2026-08-17 03:21] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr (standalone, merge when clean)
 - **Done**: Bumped 0.3.22; reused PR 216; sibling-fixed inline-dict SHA scan (af351ae) and AC9 fetch-before-count (774c1d3); wait/converge until checks green and activeThreads 0; merged without deleting develop.

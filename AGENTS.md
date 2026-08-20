@@ -317,7 +317,7 @@ Does not replace project policy or a named orch (`ws-spec-to-pr*` wins routing).
 
 Trivial / single-file → skip plan ceremony. Multi-file or multi-modification free-text → confirm a plan (`{plansDir}`). Implement the smallest change that satisfies that plan. Report a blocker; do not invent unconfigured commands.
 
-**Code review proof** (before branch / PR handoff): run non-empty `config.json.verification` aliases and cite exit codes; run configured secrets checking; assess docs / spec-index; review changed scope only; report evidence, risks, blockers. Use configured aliases; do not hardcode consumer commands.
+**Code review proof** (before branch / PR handoff): run non-empty `config.json.verification` aliases and cite exit codes; run configured secrets checking; assess docs / spec-index; review changed scope only; verify self-learning reflection (if $\ge 2$ tool/test/build failures occurred, `Learning: N/A` is forbidden and a memory trap must be recorded); report evidence, risks, blockers. Use configured aliases; do not hardcode consumer commands.
 
 ### 3. Investigate loop (`ws-fable-method`)
 
@@ -365,11 +365,15 @@ Opt-out: `stop ws-tdah` / `stop verbosity` / `normal mode` (retired `stop ws-gab
 
 MEMORY = anti-regression (input + output). Changelog = append-only history, not MEMORY.
 
-**Before** plan/code/fix (skip pure Q&A): 3–8 keywords → `Grep` / `Read` `{sharedDir}/MEMORY.md` → fold Medium+ **DO NOT** / **INSTEAD DO**.
+**Before** plan/code/fix (skip pure Q&A): 3–8 keywords + touched file paths → `Grep` / `Read` `{sharedDir}/MEMORY.md` or `python .agents/skills/ws-self-learning/scripts/self_learning.py --match-paths <files>` → fold Medium+ **DO NOT** / **INSTEAD DO**.
 
-**After** mutating work (required `Learning:` line): new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `python .agents/skills/ws-self-learning/scripts/self_learning.py --compile` (script path, not a skill load). No trap → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`. `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.
+**After** mutating work (required `Learning:` line):
+- **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Record Root Cause & Trap in `{sharedDir}/memory/YYYY-MM-DD-[slug].md` and compile.
+- **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory `Severity: High/Critical` memory entry.
+- **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `python .agents/skills/ws-self-learning/scripts/self_learning.py --compile` (script path, not a skill load). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
+- `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.
 
-Entry shape: `### [YYYY-MM-DD] [Topic]` plus Layer, Module, Severity, Scenario / Context, DO NOT, INSTEAD DO.
+Entry shape: `### [YYYY-MM-DD] [Topic]` plus Layer, Module, Severity, PathPattern, Scenario / Context, DO NOT, INSTEAD DO.
 
 Then changelog (`config.json` → `rules.changelogFile`, else `{sharedDir}/CHANGELOG.md`), insert under `# Changelog`:
 

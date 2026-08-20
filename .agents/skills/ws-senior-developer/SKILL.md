@@ -1,7 +1,7 @@
 ---
 name: ws-senior-developer
 description: Engineering delivery gate for scope control, anti-reinvention, ambiguity stops via user-gate, and pre-ship proof. Invoke via rules.seniorDeveloper or /senior-developer.
-version: 0.3.25
+version: 0.3.26
 invocation_names:
   - senior-developer
   - ws-senior-developer
@@ -61,6 +61,7 @@ Before branch or pull-request handoff, provide this Code review proof checklist:
 - [ ] Run configured secrets checking and resolve or report findings.
 - [ ] Assess relevant documentation and specification-index updates.
 - [ ] Review the changed scope for correctness, regressions, policy compliance, and requested scope only.
+- [ ] **Self-learning / Failure reflection**: If $\ge 2$ tool, build, or test failures occurred before passing, record a new memory entry in `{sharedDir}/memory/` with root cause and trap avoided; `Learning: N/A` is strictly forbidden when session friction $\ge 2$.
 - [ ] Report command evidence, outcomes, remaining risks, and blockers.
 
 Use configured aliases such as `build-backend`, `test-backend`, and `lint-backend`; do not hardcode consumer commands.

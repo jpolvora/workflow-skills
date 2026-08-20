@@ -1,7 +1,7 @@
 ---
 name: ws-fable-judge
 description: Adversarial audit of claimed work against git diffs and re-run verifications. Trigger after claimed completion, during local review, or before merge.
-version: 0.3.25
+version: 0.3.26
 invocation_names:
   - ws-fable-judge
   - /ws-fable-judge
@@ -61,6 +61,22 @@ Summarize audit results into one of three official verdicts:
 
 ---
 
+## Adversarial Self-Learning Trigger
+
+When an audit produces a **`REFUTED`** or **`VERIFIED WITH CAVEATS`** verdict (due to weakened checks, false completion, scope creep, unauthorized action, or divergence between claims and diffs):
+
+1. **Mandatory Memory Entry**: Create a new reflection file in `{sharedDir}/memory/YYYY-MM-DD-fable-[slug].md` via [`ws-self-learning`](../ws-self-learning/SKILL.md).
+2. **Severity**:
+   - `Severity: Critical` for `REFUTED` verdicts (frauds, broken assertions, regressions).
+   - `Severity: High` for `VERIFIED WITH CAVEATS` (unverified scope, boundary creep, friction).
+3. **Capture Root Cause**:
+   - **DO NOT**: Detail the exact trap or temptation (e.g. weakening assertions to match output, claiming completion before running tests, modifying files outside blast radius).
+   - **INSTEAD DO**: Detail the ground-truth requirement and verification pattern to enforce going forward.
+4. **Compile**: Run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile`.
+
+---
+
 ## Output
 
-Write the report using [`references/REPORT.md`](references/REPORT.md). Done when: file or chat report includes Verdict enum + all required sections.
+Write the report using [`references/REPORT.md`](references/REPORT.md). Done when: file or chat report includes Verdict enum + all required sections + self-learning action item when non-VERIFIED.
+

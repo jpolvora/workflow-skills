@@ -17,3 +17,4 @@
 
 ## Action Items
 - [Specific remediation required if REFUTED or CAVEATED]
+- **Self-Learning Action**: [Required for REFUTED / CAVEATS — record memory entry in `{sharedDir}/memory/YYYY-MM-DD-fable-[slug].md` and compile `MEMORY.md` | N/A if VERIFIED]
