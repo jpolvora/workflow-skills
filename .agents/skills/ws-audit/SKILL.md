@@ -44,7 +44,8 @@ Resolution: missing config, omitted key, null, or unreadable → `false`. See [`
    ```bash
    node {skillsRoot}/ws-audit/scripts/audit_log.js init \
      --us-dir "{us-dir}" --slug "{slug}" --workflow-id "{workflow-id}"
-   # In standalone runs, pass --us-dir "{plansDir}/{slug}"
+   # Standalone ws-fix-pr / ws-goal-fix-pr: --us-dir "{plansDir}/pr-{PR-NUMBER}"
+   # Standalone ws-ship-pr: --us-dir "{plansDir}/ship-{branch}"
    ```
 
    Persist returned `session` JSON in workflow state (`auditSession`) or active context.

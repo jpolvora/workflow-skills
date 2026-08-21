@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "1ad85b06fdd438fcb11bb88995a2557b67e1e82a6be043db8480510f053c86f6",
+  "fullPackageDigest": "c8f88d4bb20ee52182560bdbd8a5e7ba6a70b20f9c9642df9b35dcd66661e77d",
   "hub": {
     "files": {
       "AGENTS.md": "5f3e3fa5bfebaf4185739d8fba430cf31d3ecb0943f7ff9823c9dd0c69a9148d",
@@ -47,21 +47,21 @@
         "AUDIT-FORMAT.md": "d70b826a54de55285ada79a8a4c5bbdd04b8b0b6dc9eedcf3b62f88325424eec",
         "evals/evals.json": "81652d21f9c77570dd4a59e8c79bc65b858786dd0740b6f59d15345f706790c3",
         "scripts/audit_log.js": "0b43b9aa7a31cf4c29a439d27c4480e736041e70d116960be6a371a566304387",
-        "SKILL.md": "e57ca387211ead0c25fabb6a55d77dcc7ec2aad66bf683c9b10ee20bbe6893ba"
+        "SKILL.md": "e310fe94dfba4a2c11b5ecb78ce4f923c8e59026d0899fdadc3e4d045c73330a"
       },
-      "skillDigest": "4ee3808cf01c7667289739a9270d2f490f9acd31ca93dd17a7778e004371b8ab"
+      "skillDigest": "318cad501ae8e3e2c5a3e3d302daef6373aa34c26db52d27b9466c60b8c490bf"
     },
     "ws-azure-devops-provider": {
       "files": {
         "evals/evals.json": "4cca994e08d6af3886f689571ac106b206d1646d8d86f88ef6b6f93ac5e17078",
-        "INTENTS.md": "6ab57c147a825a3b64bf7a3bdde0bcfc30d284ae0da10651c2b484e53900e23c",
+        "INTENTS.md": "37466439f5912fdcb6f8b5f8e7822d3d9437d58ec592ea696af24bcb8d00248a",
         "scripts/ado-workitem-to-spec.py": "4af792f5015186096ca9b64f454286aa8e91cd164b5738c8df457d8dcc3d3688",
         "scripts/comment_issue.py": "fb0b795f520d1a77e0a1ea0ab0832cb543f1ed998da953fcd474ede0f1b78b6c",
         "scripts/fix_pr_azure_context.py": "f95119c6b1fb76bd017288c824221d0bf9e33895e2afe95924ec28fb620c673d",
         "scripts/sweep_prior_work.py": "3b67abd4387d187fb677a12129f2f2248d49815c901be601d16c168b5d562145",
         "SKILL.md": "38cb7e3e42589d7755ae65512c2956a63351fe16f8e61357c3ae147a3f623f63"
       },
-      "skillDigest": "68d039a5ce375adacad96268c0d21d4a3b73b7dfc821cbe382bb145f655f7871"
+      "skillDigest": "56db6af5d70f058986aa6c89061ca106e8379260f3903328f60c6cb85081d872"
     },
     "ws-changelog": {
       "files": {

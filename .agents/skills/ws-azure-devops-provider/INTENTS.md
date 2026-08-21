@@ -55,7 +55,8 @@ python .agents/skills/ws-azure-devops-provider/scripts/sweep_prior_work.py \
   --files path/to/file1
 ```
 
-- Run `validate-auth` first (org/project + PAT from config). Missing PAT → **STOP** (no silent GitHub fallback).
+- Run `validate-auth` first (org/project + PAT from config). Missing PAT without `--dry-run` → **STOP** (no silent GitHub fallback).
+- `--dry-run` without auth: print skip reason, exit 0 (advisory).
 - Search PRs by title/description text and related work-item links; `git log --oneline -20 -- <files>` when `--files` set.
 - stdout JSON (repo-relative paths only).
 
