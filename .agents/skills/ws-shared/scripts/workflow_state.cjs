@@ -273,6 +273,27 @@ function compactOutputs(body, step, output) {
   });
 }
 
+function syncAcCountsFromLedger(state, usDir) {
+  const ledgerFile = path.join(usDir, 'ac-ledger.json');
+  if (!fs.existsSync(ledgerFile)) return state;
+  try {
+    const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+    const rows = Array.isArray(ledger.acceptanceCriteria) ? ledger.acceptanceCriteria : [];
+    state.acTotal = rows.length;
+    state.acImplemented = rows.filter((row) => (
+      row.status === 'Implemented' || row.status === 'ImplementedDifferently'
+    )).length;
+  } catch {
+    /* keep existing counts when ledger is unreadable */
+  }
+  return state;
+}
+
+function dispatchTimestamp(entry) {
+  if (!entry || typeof entry !== 'object') return '';
+  return String(entry.dispatchedAt || entry.dispatched || '');
+}
+
 function estimatedSteps(context, pipeline, maxStep) {
   const aggregateFile = resolveConfiguredPath(
     context.repoRoot,
@@ -404,6 +425,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   if (!Number.isInteger(step) || step < 0 || step > maxStep) throw new Error(`step must be in range 0..${maxStep}`);
   const timestamp = String(options.timestamp || options.finishedAt || options.dispatchedAt || nowIso());
   const paths = statePaths(absoluteState, context);
+  syncAcCountsFromLedger(state, paths.usDir);
   state.stateVersion = STATE_VERSION;
   state.revision = Number(state.revision || 0) + 1;
   state.workflowType = pipeline;
@@ -426,7 +448,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     event.dispatchedAt = timestamp;
   } else if (operation === 'finish') {
     const dispatch = state.stepDispatches.find((item) => Number(item.step) === step);
-    const dispatchedAt = String(options.dispatchedAt || dispatch?.dispatchedAt || '');
+    const dispatchedAt = String(options.dispatchedAt || dispatchTimestamp(dispatch));
     const finishedAt = timestamp;
     const elapsedSec = dispatchedAt ? Math.max(0, Math.floor((Date.parse(finishedAt) - Date.parse(dispatchedAt)) / 1000)) : 0;
     const estimated = !dispatchedAt;
@@ -495,6 +517,18 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.nextAction ||= `Run step ${step}`;
   }
 
+  syncAcCountsFromLedger(state, paths.usDir);
+  if (Array.isArray(state.stepDispatches)) {
+    state.stepDispatches = state.stepDispatches
+      .map((item) => {
+        const dispatchedAt = dispatchTimestamp(item);
+        return dispatchedAt
+          ? { step: Number(item.step), dispatchedAt }
+          : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.step - b.step);
+  }
   const stateContent = `---\n${serializeFrontmatter(state)}\n---\n${body.replace(/^\n*/, '')}`;
   const stateHash = sha256(stateContent);
   const medians = estimatedSteps(context, pipeline, maxStep);

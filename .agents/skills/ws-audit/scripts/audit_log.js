@@ -334,6 +334,21 @@ export function finalizeAudit(session) {
   const packageVersion = fs.existsSync(packageFile) ? JSON.parse(fs.readFileSync(packageFile, 'utf-8')).version : 'unknown';
   const telemetryDir = path.join(resolveMaybeRelative(session.usDir), 'telemetry');
   fs.mkdirSync(telemetryDir, { recursive: true });
+  let acTotal = Number(session.acTotal || 0);
+  let acImplemented = Number(session.acImplemented || 0);
+  try {
+    const ledgerFile = path.join(resolveMaybeRelative(session.usDir), 'ac-ledger.json');
+    if (fs.existsSync(ledgerFile)) {
+      const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf-8'));
+      const rows = Array.isArray(ledger.acceptanceCriteria) ? ledger.acceptanceCriteria : [];
+      acTotal = rows.length;
+      acImplemented = rows.filter((row) => (
+        row.status === 'Implemented' || row.status === 'ImplementedDifferently'
+      )).length;
+    }
+  } catch {
+    /* keep session counts */
+  }
   fs.appendFileSync(path.join(telemetryDir, 'audit.jsonl'), `${JSON.stringify({
     schemaVersion: 1,
     type: 'audit-finalize',
@@ -347,8 +362,8 @@ export function finalizeAudit(session) {
     reviewRounds: Number(session.reviewRounds || 0),
     refineRounds: Number(session.refineRounds || 0),
     skipReason: null,
-    acTotal: Number(session.acTotal || 0),
-    acImplemented: Number(session.acImplemented || 0),
+    acTotal,
+    acImplemented,
     auditCounts: { errors: errorCount, unusual: unusualCount, suggestions: suggestionCount },
   })}\n`, 'utf-8');
   return session;

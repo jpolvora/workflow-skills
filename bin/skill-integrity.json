@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "93883b1613496e6964996777aa9ccb7cf7c3f8f3b29006673376b46fd6d4f805",
+  "fullPackageDigest": "9c270d0467199bace0135c2c3ef712c8ec355baa5d829a2ecece4cbe4c6a28c9",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "0ec6ec78ec9f6fae266afaf8affa67a0f4448efe4d3ee6e872d96911f7e32f84",
@@ -30,16 +30,16 @@
       "scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
       "scripts/resolve_consumer_root.cjs": "2f89f3d8f101795794c7a5e7182743a18e8b598533b1c444b81af76f7319338f",
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
-      "scripts/workflow_state.cjs": "9fd2c11db4091a9ac93cf0dbf70cdfd618fda1bcb5895dcf00457fba65d0e412",
+      "scripts/workflow_state.cjs": "c700822beca9ee429e21d41e6e7f68dc4b5c9a4150d58db59758a50f8ac0f40d",
       "setup.md": "eebb8ce6e9396c26a788637551d1d493f9924ed4f65a4e129e5c283d69ca810b",
       "skill-dependencies.json": "eaed9b26d366f6bb70f81302d7d4f3cc7b533fa7d416901407eead1b1bf2dbc5",
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
       "step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "telemetry.schema.json": "ea0fae1da61d60e3a32980fb4aa504e7c3bf91ffc1896ade2406343a7b8d278d",
       "tools.md": "3990ca90c3455b9e5fbfcb9aae2474d830a3782705ab9b26d343a99e848c830f",
-      "workflow-state.schema.json": "116e498165dcbb5f212c13dfe2a0f311e2b869736702006134ccabb2ead66701"
+      "workflow-state.schema.json": "cd0d1a3eb800bb7907aa0d6d1c20b15028888beb3c41b7e86261f5f13acf9a0d"
     },
-    "skillDigest": "d059d341b272851132adbf80e6bbe84ac7361fe6a9a0aea9425bc85e3544066c"
+    "skillDigest": "ae183f07e90c044f69b05ded7c46e839300a013e31097125a58d571b4dac04cb"
   },
   "packageVersion": "0.3.29",
   "skills": {
@@ -58,10 +58,10 @@
       "files": {
         "AUDIT-FORMAT.md": "d70b826a54de55285ada79a8a4c5bbdd04b8b0b6dc9eedcf3b62f88325424eec",
         "evals/evals.json": "81652d21f9c77570dd4a59e8c79bc65b858786dd0740b6f59d15345f706790c3",
-        "scripts/audit_log.js": "55741b5f00e8af38e83586a89b5ae415675179ffe84bad8d29bff3f2fc7a0c6b",
+        "scripts/audit_log.js": "b9c497e29e7a3ed30f327c4fd1d8185a91870058071751f76ac35a344b06f0b9",
         "SKILL.md": "ba359028dc13a458d1dd8a97335808e7bff73142d80648909e662e2e0f44bf36"
       },
-      "skillDigest": "7fe9ac370cb00dec7183f87791aef6b676e36407bd6862245350a663b7e63b46"
+      "skillDigest": "ec57e9f036c8ec1e97fb7301ffbeb9641f264c1885034460c08ea5b99ffac506"
     },
     "ws-azure-devops-provider": {
       "files": {

@@ -71,21 +71,23 @@ stepStatus:
   4: completed
   5: active
 stepDispatches:
-  - { step: 0, dispatched: "2026-08-21T19:52:00Z" }
-  - { step: 1, dispatched: "2026-08-21T20:09:32Z" }
-  - { step: 2, dispatched: "2026-08-21T20:19:35Z" }
-  - { step: 3, dispatched: "2026-08-21T20:31:44Z" }
+  - { step: 0, dispatchedAt: "2026-08-21T19:52:00Z" }
+  - { step: 1, dispatchedAt: "2026-08-21T20:09:32Z" }
+  - { step: 2, dispatchedAt: "2026-08-21T20:19:35Z" }
+  - { step: 3, dispatchedAt: "2026-08-21T20:31:44Z" }
   - { step: 4, dispatchedAt: "2026-08-21T21:29:44Z" }
-  - { step: 5, dispatchedAt: "2026-08-21T21:33:54Z" }
+  - { step: 5, dispatchedAt: "2026-08-21T22:57:27Z" }
 stepModels:
   - { step: 0, model: gpt-5.6-sol-xhigh, dispatched: "2026-08-21T19:52:00Z" }
   - { step: 1, model: gpt-5.6-sol-xhigh, dispatched: "2026-08-21T20:09:32Z" }
   - { step: 2, model: gpt-5.6-sol-xhigh, dispatched: "2026-08-21T20:19:35Z" }
   - { step: 3, model: gpt-5.6-sol-xhigh, dispatched: "2026-08-21T20:31:44Z" }
 stateVersion: 2
-revision: 3
+revision: 4
 statePath: .agents/plans/harness-efficiency-and-verifiability/harness-efficiency-and-verifiability-20260821T195820Z.state.md
 nextAction: Finish step 5
+acTotal: 76
+acImplemented: 0
 ---
 ## Workflow log
 

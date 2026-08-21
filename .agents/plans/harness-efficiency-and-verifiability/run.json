@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 3,
+  "revision": 4,
   "workflowId": "harness-efficiency-and-verifiability-20260821T195820Z",
   "slug": "harness-efficiency-and-verifiability",
   "pipeline": "standard",
@@ -8,10 +8,10 @@
   "currentStep": 5,
   "pendingGate": null,
   "nextAction": "Finish step 5",
-  "acTotal": 0,
+  "acTotal": 76,
   "acImplemented": 0,
   "score": null,
-  "estimatedRemainingSec": 0,
+  "estimatedRemainingSec": 2637.5,
   "steps": [
     {
       "step": 0,
@@ -47,33 +47,33 @@
       "step": 5,
       "status": "active",
       "skipReason": null,
-      "estimatedRemainingSec": 0
+      "estimatedRemainingSec": 127.5
     },
     {
       "step": 6,
       "status": "pending",
       "skipReason": null,
-      "estimatedRemainingSec": 0
+      "estimatedRemainingSec": 210
     },
     {
       "step": 7,
       "status": "pending",
       "skipReason": null,
-      "estimatedRemainingSec": 0
+      "estimatedRemainingSec": 140
     },
     {
       "step": 8,
       "status": "pending",
       "skipReason": null,
-      "estimatedRemainingSec": 0
+      "estimatedRemainingSec": 120
     },
     {
       "step": 9,
       "status": "pending",
       "skipReason": null,
-      "estimatedRemainingSec": 0
+      "estimatedRemainingSec": 2040
     }
   ],
   "statePath": ".agents/plans/harness-efficiency-and-verifiability/harness-efficiency-and-verifiability-20260821T195820Z.state.md",
-  "stateSha256": "07d7ffe80b8899b16e8b0a886959c3c03c86dfbbaefa9151557acdd918803603"
+  "stateSha256": "82916fd88cfa7d4b8be472c0b86d52c229ac0512c689b4daa82caa06275d0eea"
 }

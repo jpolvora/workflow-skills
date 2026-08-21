@@ -50,7 +50,18 @@
       }
     },
     "stepStatus": { "type": "object" },
-    "stepDispatches": { "type": "array" },
+    "stepDispatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["step", "dispatchedAt"],
+        "properties": {
+          "step": { "type": "integer", "minimum": 0, "maximum": 9 },
+          "dispatchedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
     "workflowManifest": { "type": "object" },
     "telemetry": { "type": "object" },
     "commits": { "type": "array" },
