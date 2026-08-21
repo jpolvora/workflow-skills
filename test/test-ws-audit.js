@@ -100,25 +100,35 @@ function main() {
     '.agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py',
   );
   if (fs.existsSync(pythonScript)) {
-    const pyRes = cp.spawnSync(
-      'python',
-      [
-        pythonScript,
-        'collect',
-        '--pr-id',
-        '909',
-        '--repo-root',
-        REPO_ROOT,
-        '--output',
-        path.join(mkTmp('py-out-'), 'test.json'),
-      ],
-      { cwd: REPO_ROOT, encoding: 'utf-8' },
-    );
-    // Even if Azure API auth fails in test environment, argparse must not fail with "unrecognized arguments"
-    assert(
-      !pyRes.stderr.includes('unrecognized arguments'),
-      'fix_pr_azure_context argparse accepts --repo-root after subcommand',
-    );
+    const pythonBin = ['python', 'python3'].find((bin) => {
+      const probe = cp.spawnSync(bin, ['--version'], { encoding: 'utf-8' });
+      return !probe.error && probe.status === 0;
+    });
+
+    if (!pythonBin) {
+      console.warn('python not found; skipping fix_pr_azure_context argparse regression check');
+    } else {
+      const pyRes = cp.spawnSync(
+        pythonBin,
+        [
+          pythonScript,
+          'collect',
+          '--pr-id',
+          '909',
+          '--repo-root',
+          REPO_ROOT,
+          '--output',
+          path.join(mkTmp('py-out-'), 'test.json'),
+        ],
+        { cwd: REPO_ROOT, encoding: 'utf-8' },
+      );
+      assert(!pyRes.error, 'python execution succeeded without spawn error');
+      // Even if Azure API auth fails in test environment, argparse must not fail with "unrecognized arguments"
+      assert(
+        !pyRes.stderr.includes('unrecognized arguments'),
+        'fix_pr_azure_context argparse accepts --repo-root after subcommand',
+      );
+    }
   }
 
   const resolveMissing = runNode(['resolve', '--config', path.join(mkTmp('no-cfg-'), 'nope.json')]);
