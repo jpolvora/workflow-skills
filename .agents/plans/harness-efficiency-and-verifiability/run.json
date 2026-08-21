@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "revision": 3,
+  "workflowId": "harness-efficiency-and-verifiability-20260821T195820Z",
+  "slug": "harness-efficiency-and-verifiability",
+  "pipeline": "standard",
+  "status": "active",
+  "currentStep": 5,
+  "pendingGate": null,
+  "nextAction": "Finish step 5",
+  "acTotal": 0,
+  "acImplemented": 0,
+  "score": null,
+  "estimatedRemainingSec": 0,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 6,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 7,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 8,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 9,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    }
+  ],
+  "statePath": ".agents/plans/harness-efficiency-and-verifiability/harness-efficiency-and-verifiability-20260821T195820Z.state.md",
+  "stateSha256": "07d7ffe80b8899b16e8b0a886959c3c03c86dfbbaefa9151557acdd918803603"
+}
