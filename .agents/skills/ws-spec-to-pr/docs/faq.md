@@ -219,6 +219,10 @@ Every step transition exposes:
 
 ## 6. Artifacts & State Lifecycle
 
+### Which machine-readable artifacts prove progress?
+
+The Node state runtime writes the frontmatter state atomically, then publishes `run.json`, `run.md`, and the repo-level plans index from that committed snapshot. Per-step JSONL records contain dispatch, finish, and bypass evidence. `plan.index.json` hash-checks plan slices, while `ac-ledger.json` links every acceptance criterion to observed files, tests, commits, findings, and sabotage results. The Step 5 score is derived from that ledger and cannot be overridden.
+
 ### Path Tokens
 All file references in workflow logs use bracketed path tokens which are resolved against `.agents/skills/ws-shared/config.json`:
 *   `{skillsRoot}`: Path to installation folder (default `.agents/skills`).
@@ -240,7 +244,9 @@ If you rollback, Nav Backward, or Undo, the orchestrator resets the working tree
 An HS-5 indicates that `state.md` YAML parsing or schema validation failed.
 1.  Open the state file in your editor: `{plansDir}/us-{id}/{workflow-id}.state.md`.
 2.  Fix any malformed YAML characters (e.g. unquoted colons, unresolved strings, or syntax errors).
-3.  Type `/ws-spec-to-pr US {id}` to resume.
+3.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
+
+For comparable environment reports, run `ws-doctor --persist` or persist the harness report under `plans.diagnosticsDir`. Use `workflow-skills telemetry report` to inspect per-run audit counts and median elapsed time by pipeline and step.
 
 ### Step 4/6/7 failed to write files (HS-4)
 If the subagent claims to have written files but they are not present:
@@ -250,7 +256,7 @@ If the subagent claims to have written files but they are not present:
 ### How do I change models mid-workflow?
 Workflows do not provide an in-gate model selector.
 1.  Select **Pause workflow** at the transition gate.
-2.  Switch your model in the IDE / Agent host panel.
+2.  Switch your model in the session host.
 3.  Resume the workflow: `/ws-spec-to-pr US {id}`.
 4.  The orchestrator detects the new session model, updates `currentModel` in state, and logs the transition.
 

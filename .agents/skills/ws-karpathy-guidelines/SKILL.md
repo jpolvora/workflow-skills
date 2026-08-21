@@ -72,3 +72,11 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+## Subagent contract
+
+- Restate the assigned goal, allowed paths, and named verification before mutation.
+- Make the smallest diff that satisfies the assigned acceptance criteria.
+- Preserve unrelated dirty files and the repository's established style.
+- Escalate ambiguity that changes behavior instead of broadening scope.
+- Return exact touched paths and observed verification exit codes.

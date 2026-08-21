@@ -85,13 +85,13 @@ Any step **may** use a worktree when `useWorktrees=true`. **Preferred** for code
 
 → [`protocols/state-hygiene.md`](protocols/state-hygiene.md)
 
-Every completed/failed step: pass measured `--elapsed` into `update_state.py` (required; script rejects omit). Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. Upserts `## Telemetry log`. After checkpoint, run pre-advance validation (shell; see [`state-hygiene.md`](protocols/state-hygiene.md)). Missing step-output telemetry, hygiene fail, or pre-advance exit ≠ 0 → **HS-5**.
+Every step: call `update_state.cjs dispatch` before execution and `finish` afterward. The helper derives elapsed time and rejects authored `--elapsed`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. After checkpoint, run the Node pre-advance validator (see [`state-hygiene.md`](protocols/state-hygiene.md)). Missing boundary telemetry, hygiene failure, or pre-advance exit ≠ 0 → **HS-5**.
 
 ### Model readiness
 
 No in-gate model picker. At every transition, show the gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume).
 
-The orchestrator session ALWAYS executes under the active session model (`currentModel`). When `autoMode: true` or phase models are configured in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). Subagent models are recorded in `stepModels` via `update_state.py`. On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
+The orchestrator session ALWAYS executes under the active session model (`currentModel`). When `autoMode: true` or phase models are configured in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). Subagent models are recorded through `update_state.cjs`. On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
 
 When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
@@ -137,11 +137,11 @@ Fix substep is **not** its own `completedSteps` entry — log `review-fix | roun
 
 ### Learning & Memory Protocol
 
-At step start, subagent reads `state.md` (`## Workflow memory`, `## Accumulated decisions`, `## Step outputs`) and `{sharedDir}/MEMORY.md` index. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
+At step start, the subagent uses the injected MEMORY slice (orchestrator path-scoped query, ≤ 4,000 B) plus `## Step outputs (compact)` and at most two recent full outputs. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
 
 All recorded learnings and memory entries must use clear, direct, and actionable directives (e.g. "When dealing with X: DO NOT use Y because Z; INSTEAD DO W"). Avoid vague or passive descriptions so that humans and agents instantly understand what pattern to avoid and what pattern to execute.
 
-**Step 8 sweep:** Promote generalizable patterns to `{sharedDir}/memory/*.md` + run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
+**Step 8 sweep:** Promote generalizable patterns to `{sharedDir}/memory/*.md` + run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
 
 ### Specification Protocol
 
@@ -307,22 +307,22 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 
 ```markdown
 # Subagent — Step {STEP} — {Label}
-Read state: `{us-dir}/{workflow-id}.state.md`
-Skill: {SKILL.md path} — read full.
+Read state: `{us-dir}/{workflow-id}.state.md` — `## Step outputs (compact)` plus at most the two most recent full step outputs.
+Skill: {SKILL.md path} — required sections: `## Subagent contract` and the step sections named by STEP-DISPATCH (never the full skill body).
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
-Enhancing skills (mandatory): ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning, ws-patterns-frontend (if patternsFrontend), ws-patterns-backend (if patternsBackend)
-Read: state workflow memory + decisions + doc log; MEMORY.md index; `config.json.rules.stackFile`.
-Patterns: if `config.json.defaults.patternsFrontend` is true and `{sharedDir}/frontend.md` exists, Read it before any Web/UI edit; if missing, fallback to reading `{sharedDir}/frontend.md.template` before consulting `ws-patterns-frontend`.
-Patterns: if `config.json.defaults.patternsBackend` is true and `{sharedDir}/backend.md` exists, Read it before any Domain/Application/EF edit; if missing, fallback to reading `{sharedDir}/backend.md.template` before consulting `ws-patterns-backend`.
+Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning, ws-patterns-frontend (if patternsFrontend), ws-patterns-backend (if patternsBackend)
+Read: compact state outputs; injected MEMORY slice (orchestrator path-scoped query, ≤ 4,000 B — do not read the MEMORY.md index); `config.json.rules.stackFile` slices when provided.
+Patterns: if `config.json.defaults.patternsFrontend` is true and `{sharedDir}/frontend.md` exists, Read the injected frontend slice before any Web/UI edit.
+Patterns: if `config.json.defaults.patternsBackend` is true and `{sharedDir}/backend.md` exists, Read the injected backend slice before any Domain/Application/EF edit.
 
-MEMORY: Grep `{sharedDir}/MEMORY.md` for 3–8 keywords from the plan/spec (module, path, layer). Apply Severity Medium+ DO NOT / INSTEAD DO before inventing an approach.
+MEMORY: apply the injected slice (Severity Medium+ DO NOT / INSTEAD DO). Empty slice is valid when MEMORY.md is absent.
 Proof: step-output must include `memory_consult` and `pattern_consult` (see schema).
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
 Role: fresh; no resume. files_touched required (revert). model: {resolvedSubagentModel}.
 Rules: no `{plansDir}/` in git-add except Step 8 G2-delivery; needs_user: ≥2 choices, recommended first.
-Learning: read ## Workflow memory + ## Step outputs (all prior steps) for traps/errors. Do NOT repeat broken approaches. Record own mistakes in step-output.learning.
-Telemetry required: elapsedSec, promptTokens + completionTokens (from LLM metadata if available, else estimate chars/3.5 with estimated: true).
-End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, pattern_consult{frontend, backend}, memory_consult{keywords, hits}, model, telemetry{elapsedSec, promptTokens|null, completionTokens|null, estimated})
+Learning: use ## Step outputs (compact) plus at most two prior full outputs. Do NOT repeat broken approaches.
+Telemetry is stamped by the orchestrator (`dispatchedAt`/`finishedAt`); do not author elapsedSec.
+End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, pattern_consult{frontend, backend}, memory_consult{keywords, hits}, model)
 ```
 ```
 

@@ -55,11 +55,11 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `read-state` | Read workflow state | `Read` `{us-dir}/{workflow-id}.state.md` |
 | `write-state` | Write/append state | `Write` / `StrReplace` (hygiene before board) |
 | `read-config` | Load project config | `Read` `{sharedDir}/config.json` |
-| `read-artifacts-registry` | Canonical artifact names | `Read` `{skillsRoot}/ws-spec-to-pr/ARTIFACTS.md` |
+| `read-artifacts-registry` | Resolve one artifact from the Artifact map | `Read` `{skillsRoot}/ws-spec-to-pr/ARTIFACTS.md` heading `## Artifact map` for the named row/anchor only. Do not read ARTIFACTS.md in full. |
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `{sharedDir}/STACK.md`) |
 | `read-memory` | Load learned knowledge **before** plan/code/fix | `Grep` / `Read` `{sharedDir}/MEMORY.md` (keywords from the task). Mandatory for mutating work — see [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
-| `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `python {skillsRoot}/ws-spec-to-pr/scripts/{name}.py`. Converters/thread helpers: prefer `{skillsRoot}/{github,azure-devops,local-spec}-provider/scripts/` (shims may still live under `ws-spec-to-pr/scripts/` / `ws-fix-pr/scripts/`) |
+| `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `node {skillsRoot}/ws-spec-to-pr/scripts/{name}.cjs` (`update_state`, `validate_state`). Frozen Python helpers remain for converters/thread shims: prefer `{skillsRoot}/{github,azure-devops,local-spec}-provider/scripts/` |
 
 ## Source control tools
 
@@ -89,7 +89,7 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
 | `browser-mcp` | Browser integration test | Host browser MCP when available (only normal mode, non-dry-run, gated) |
 
-### Auto-mode subagent model preferences & host IDE switching
+### Subagent model preferences
 
 The orchestrator session ALWAYS runs under the active session model (`currentModel`). Model preferences in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) apply EXCLUSIVELY to subagents spawned via `dispatch-agent` in the **standard** orchestrator:
 - **Planning Phase**: `defaults.plannerModel` (standard Steps 0–3)
@@ -97,20 +97,17 @@ The orchestrator session ALWAYS runs under the active session model (`currentMod
 - **Review Phase**: `defaults.reviewerModel` (standard Steps 5–6)
 - **Testing Phase (standard Step 7 only)**: non-empty `defaults.testingModel`, else `defaults.executionModel`, else the active session model. Lite does not read or apply `testingModel`.
 
-**Lite (`ws-spec-to-pr-lite`):** executes inline in the main orchestrator session with no `dispatch-agent` subagents, so phase model preferences do not apply — the session stays under `{currentModel}`. Resolve them only for telemetry recording, never to switch the session model.
+**Lite (`ws-spec-to-pr-lite`):** executes inline in the main orchestrator session with no `dispatch-agent` subagents, so phase model preferences do not apply. The session stays under `{currentModel}`. Resolve them only for telemetry recording, never to switch the session model.
 
-**Host IDE Subagent Model Parameterization:**
-- **OpenCode**: Pass subagent option `model: "{modelName}"` or agent config override.
-- **Antigravity**: Pass tool parameter `model: "{modelName}"` or prompt header directive `Model: {modelName}`.
-- **Cursor**: Pass subagent parameter `model: "{modelName}"` or step prompt model hint.
+**Portable parameterization:** when `dispatch-agent` exposes a model field, pass the configured identifier through that field. Otherwise include `Model: {modelName}` in the dispatch header when the host supports model hints.
 
-**Non-blocking Fallback Guarantee:** If a configured model string is empty, rejected by the provider/API, or dynamic model switching is unsupported in the host IDE environment, the orchestrator and subagent **must seamlessly maintain execution using the active session model** (standard mode behavior) without interrupting workflow execution.
+**Non-blocking fallback:** if a configured model string is empty, rejected, or unsupported by the session host, the orchestrator and subagent continue under the active session model without interrupting workflow execution.
 
 ## Knowledge tools
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `update-memory` | Write learned pattern | Create unique file in `{sharedDir}/memory/` and run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile` |
+| `update-memory` | Write learned pattern | Create unique file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` |
 | `update-ws-changelog` | Append historical log | `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
 ## Script launchers

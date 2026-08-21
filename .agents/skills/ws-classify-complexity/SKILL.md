@@ -11,9 +11,9 @@ invocation_names:
 
 > When this skill is loaded, output "ws-classify-complexity loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-Analyze a feature spec and recommend **`lite`** or **`standard`** pipeline (`workflowType`) by comparing counted metrics to `config.json` → `dagThresholds`. Writes `{us-dir}/step-00-{slug}.classify.md`.
+Analyze a feature spec and emit a reasoned execution profile for pipeline, execution mode, interview, testing, and estimated elapsed time. Writes `{us-dir}/step-00-{slug}.classify.md`.
 
 **Specs family:** Role = orch chooser after a workflow `step-00` exists (or classify a `{specsDir}` file once registered). Used by Step 0 and [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
@@ -65,7 +65,7 @@ node {skillsRoot}/ws-classify-complexity/scripts/classify.cjs <spec-path> [--out
    - Writes `step-00-{slug}.classify.md` with recommendation, metrics table, threshold comparison, and reasoning
    - Done when: classify artifact exists on disk.
 
-3. **Present user gate** — Unless `autoMode` or `--skip-gates` / `skipQualityGates` (quality gate only):
+3. **Present user gate** — Show the complete `pipeline`, `execMode`, `runInterview`, `runTesting`, and `estimatedElapsedSec` profile with each reason. Unless `autoMode` or `--skip-gates` / `skipQualityGates` (quality gate only):
 
    | # | Option |
    |---|--------|
@@ -103,6 +103,7 @@ step-output:
   status: success|failed
   recommendedPipeline: lite|standard
   finalPipeline: lite|standard
+  executionProfile: "{pipeline, execMode, runInterview, runTesting, estimatedElapsedSec; each value has a reason}"
   classifyPath: "{us-dir}/step-00-{slug}.classify.md"
   notes: "..."
 ```

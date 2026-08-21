@@ -80,6 +80,12 @@
           "maximum": 100,
           "default": 80,
           "description": "Minimum mutation score percent (killed/(killed+survived)*100) required to pass Step 7 when mutation runs."
+        },
+        "testGlobs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "default": ["test/**/*.js", "tests/**/*", "**/*.test.*", "**/*.spec.*"],
+          "description": "Machine test-surface patterns. Testing auto-skip requires no non-empty test alias and no matching file."
         }
       }
     },
@@ -125,6 +131,33 @@
           "type": "boolean",
           "default": false,
           "description": "When true, break execution plans into multiple parallel tasks executed concurrently by subagents. When false (default), execute tasks sequentially one by one in serial order."
+        },
+        "contextBudget": {
+          "type": "integer",
+          "minimum": 18000,
+          "default": 32000,
+          "description": "Maximum UTF-8 bytes in one complete standard subagent dispatch."
+        },
+        "parallelVerifyReview": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow standard Steps 5 and 6 to run concurrently as read-only reviewers after an immutable product commit."
+        },
+        "gateGranularity": {
+          "type": "string",
+          "enum": ["step", "phase"],
+          "default": "step"
+        },
+        "convergence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "initialDelaySec": { "type": "integer", "minimum": 0, "default": 0 },
+            "minPollSec": { "type": "integer", "minimum": 0, "default": 30 },
+            "maxPollSec": { "type": "integer", "minimum": 0, "default": 300 },
+            "backoff": { "type": "number", "minimum": 1, "default": 1.5 },
+            "maxIterations": { "type": "integer", "minimum": 1, "default": 20 }
+          }
         },
         "patternsBackend": {
           "type": "boolean",
@@ -205,6 +238,11 @@
           "default": ".agents/specs",
           "description": "Repo-relative directory for human-facing local specs. Skill token {specsDir} ← plans.specsDir (default: .agents/specs). Prefer existing repo-root specs/ when already present. ws-write-spec writes here only; used by ws-local-spec-provider, ws-spec-index, ws-spec-list, ws-multi-spec, ws-sync-spec; workflow step-00 copies under plans.dir come from providers or register"
         },
+        "diagnosticsDir": {
+          "type": "string",
+          "default": ".agents/plans/diagnostics",
+          "description": "Configured root for explicitly persisted dated doctor and harness reports."
+        },
         "worktreesDir": {
           "type": "string",
           "default": ".agents/plans/{slug}/worktrees",
@@ -254,6 +292,20 @@
           "type": "boolean",
           "default": false,
           "description": "When true, same effect as the --skip-gates CLI flag: bypass quality gates (classifier enforcement, fable quality visibility except auditVerdictsBlockShip + REFUTED, pre-advance CI, telemetry soft gates). Does not skip build, test, security, SCM, or HS-1..HS-4."
+        }
+      }
+    },
+    "fable": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "autoAudit": { "type": "boolean" },
+        "autoDetectDomain": { "type": "boolean" },
+        "auditVerdictsBlockShip": {
+          "enum": [false, "refuted", "caveats"],
+          "default": "refuted",
+          "description": "REFUTED always blocks. caveats additionally blocks VERIFIED WITH CAVEATS."
         }
       }
     }

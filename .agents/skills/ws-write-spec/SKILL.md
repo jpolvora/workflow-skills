@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-write-spec loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Author or reformulate a **local** `*.spec.md` into the project specs directory only.
 
@@ -81,7 +81,7 @@ When writing a spec derived from a remote tracker issue or raw human description
 5. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy. Delegate to `ws-local-spec-provider`:
 
    ```bash
-   python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py \
+   node {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs \
      --input "{specsDir}/{slug}.spec.md" --source {source}
    ```
 
@@ -90,4 +90,11 @@ When writing a spec derived from a remote tracker issue or raw human description
 
 6. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
    - Done when: caller has the specsDir path (and plan path only when registered).
+
+## Subagent contract
+
+- Transform the assigned source into one canonical, testable specification.
+- Preserve tracker context and map each requirement to a numbered atomic AC.
+- Write only the requested spec path and return its repo-relative location.
+- Do not register or advance workflow state unless the caller assigns that operation.
 

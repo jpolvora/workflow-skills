@@ -17,6 +17,11 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
+
 
 def ensure_utf8_stdio() -> None:
     os.environ["PYTHONIOENCODING"] = "utf-8"
@@ -35,20 +40,8 @@ def ensure_utf8_stdio() -> None:
 
 ensure_utf8_stdio()
 
-HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
-
-
-def resolve_repo_root(override: str | None = None) -> Path:
-    if override:
-        return Path(override).expanduser().resolve()
-    cwd = Path.cwd().resolve()
-    if (cwd / HUB_REL).is_file():
-        return cwd
-    return Path(__file__).resolve().parents[4]
-
-
 def load_ado_config(repo_root: Path) -> dict[str, Any]:
-    cfg_path = repo_root / HUB_REL
+    cfg_path = resolve_config_path(repo_root)
     if not cfg_path.is_file():
         return {}
     try:
@@ -130,7 +123,7 @@ def main() -> int:
         print(json.dumps({"status": "dry-run", "workItemId": work_item_id, "body": body.strip()}))
         return 0
 
-    repo_root = resolve_repo_root(args.repo_root)
+    repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
     ado = load_ado_config(repo_root)
     ok, msg = validate_auth(ado)
     if not ok:

@@ -7,10 +7,13 @@
 
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 const VALID_CATEGORIES = new Set([
   'script',
@@ -72,7 +75,7 @@ function readJsonFile(filePath, label) {
 
 function resolveConfigPath(explicit) {
   if (explicit) return resolveMaybeRelative(explicit);
-  return path.join(repoRoot(), '.agents/skills/ws-shared/config.json');
+  return resolveConsumerContext({ repoRoot: repoRoot(), scriptFile: __filename }).configPath;
 }
 
 function resolveUpstreamRepo() {
@@ -110,22 +113,12 @@ function isoNow() {
   return new Date().toISOString();
 }
 
-function repoRoot(start = process.cwd()) {
-  let dir = path.resolve(start);
-  for (;;) {
-    if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, 'AGENTS.md'))) {
-      return dir;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) return path.resolve(start);
-    dir = parent;
-  }
+function repoRoot() {
+  return resolveConsumerContext({ scriptFile: __filename }).repoRoot;
 }
 
 function toPosixRelative(p) {
-  const rel = path.relative(repoRoot(), path.resolve(p));
-  const posix = rel.split(path.sep).join('/');
-  return posix === '' ? '.' : posix;
+  return toRepoRelative(repoRoot(), path.resolve(p));
 }
 
 function resolveMaybeRelative(p) {
@@ -331,10 +324,33 @@ export function finalizeAudit(session) {
   session.finalized = true;
   session.finalizedAt = isoNow();
   session.errorCount = errorCount;
+  session.unusualCount = unusualCount;
   session.suggestionCount = suggestionCount;
   session.disposableScriptCount = disposableScriptCount;
   // Keep session file so has-errors / draft-issue --session-file still works after finalize.
   writeSession(session);
+  const root = repoRoot();
+  const packageFile = path.join(root, 'package.json');
+  const packageVersion = fs.existsSync(packageFile) ? JSON.parse(fs.readFileSync(packageFile, 'utf-8')).version : 'unknown';
+  const telemetryDir = path.join(resolveMaybeRelative(session.usDir), 'telemetry');
+  fs.mkdirSync(telemetryDir, { recursive: true });
+  fs.appendFileSync(path.join(telemetryDir, 'audit.jsonl'), `${JSON.stringify({
+    schemaVersion: 1,
+    type: 'audit-finalize',
+    timestamp: session.finalizedAt,
+    workflowId: session.workflowId || session.slug,
+    pipeline: session.workflowType === 'lite' ? 'lite' : 'standard',
+    packageVersion,
+    step: Number(session.step || 9),
+    model: String(session.model || 'unknown'),
+    retries: Number(session.retries || 0),
+    reviewRounds: Number(session.reviewRounds || 0),
+    refineRounds: Number(session.refineRounds || 0),
+    skipReason: null,
+    acTotal: Number(session.acTotal || 0),
+    acImplemented: Number(session.acImplemented || 0),
+    auditCounts: { errors: errorCount, unusual: unusualCount, suggestions: suggestionCount },
+  })}\n`, 'utf-8');
   return session;
 }
 

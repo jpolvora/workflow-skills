@@ -170,8 +170,8 @@ assert(
 
 const stateHygiene = read('.agents/skills/ws-spec-to-pr/protocols/state-hygiene.md');
 assert(
-  stateHygiene.includes('Pass resolved phase model'),
-  'state-hygiene.md documents passing resolved phase model into update_state.py',
+  /pass the resolved phase model/i.test(stateHygiene) && stateHygiene.includes('update_state.cjs'),
+  'state-hygiene.md documents passing resolved phase model into update_state.cjs',
 );
 
 if (failures > 0) {

@@ -11,7 +11,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-patterns-backend loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 **Bidirectional pattern engine** — `{sharedDir}/backend.md` is both input (consult before backend tasks) and output (record learned preferences after work or user corrections).
 
@@ -52,3 +52,11 @@ When completing backend tasks or receiving backend corrections from the user:
 
 - Pre-work: `{sharedDir}/backend.md` read and applied to backend edits.
 - Completion: User prompted via `user-gate` if new preference identified, and entry appended to `{sharedDir}/backend.md` if approved; or proof line `Backend Patterns: Consulted`.
+
+## Subagent contract
+
+- Read the configured backend pattern file before changing service or data paths.
+- Enforce only matching architecture and domain rules.
+- Prefer established response, validation, persistence, and tenancy patterns.
+- Ask before persisting a newly inferred convention.
+- Return `pattern_consult` with the source path and matched rules.

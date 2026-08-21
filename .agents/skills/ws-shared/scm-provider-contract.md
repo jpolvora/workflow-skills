@@ -39,7 +39,7 @@ Every implementer `SKILL.md` intent table and `INTENTS.md` `## \`intent\`` headi
 
 ## Shared rules
 
-1. **Entry check:** `$PWD/.agents/skills/ws-shared/config.json` present and configured, or `user-gate` → `ws-configure-project`.
+1. **Entry check:** Follow [`config-resolution.md`](config-resolution.md) § Entry check.
 2. **Spec path order:** `fetch-to-spec` always writes `{specsDir}/{slug}.spec.md` first, then `{us-dir}/step-00-{slug}.spec.md`.
 3. **No silent fallback:** auth or SCM resolution failure → STOP. Do not switch GitHub ↔ Azure without the user.
 4. **Working branch:** never delete `project.workingBranch` (default `develop`) after merge.

@@ -39,6 +39,11 @@ import urllib.request
 from datetime import date
 from pathlib import Path
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
+
 
 def ensure_utf8_stdio() -> None:
     """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
@@ -59,30 +64,14 @@ def ensure_utf8_stdio() -> None:
 ensure_utf8_stdio()
 
 
-HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
 DEFAULT_SPECS_DIR = ".agents/specs"
-
-
-def resolve_repo_root(override: str | None = None) -> Path:
-    """Project root owning config.json: --repo-root → CWD when it has a hub → script tree.
-
-    The CWD probe keeps global skill installs ($HOME/.agents/skills) writing into the
-    consumer project instead of the user's home directory.
-    """
-    if override:
-        return Path(override).expanduser().resolve()
-    cwd = Path.cwd().resolve()
-    if (cwd / HUB_REL).is_file():
-        return cwd
-    return Path(__file__).resolve().parents[4]
-
 
 def resolve_specs_dir(repo_root: Path, override: str | None = None) -> Path:
     """Absolute specsDir from --specs-dir, else plans.specsDir, else the portable default."""
     rel = (override or "").strip()
     if not rel:
         cfg: dict = {}
-        cfg_path = repo_root / HUB_REL
+        cfg_path = resolve_config_path(repo_root)
         if cfg_path.is_file():
             try:
                 cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
@@ -374,7 +363,7 @@ def main() -> int:
     if args.output:
         output_path = Path(args.output)
     else:
-        repo_root = resolve_repo_root(args.repo_root)
+        repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
         output_path = resolve_specs_dir(repo_root, args.specs_dir) / f"{work_item_slug(work_item)}.spec.md"
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

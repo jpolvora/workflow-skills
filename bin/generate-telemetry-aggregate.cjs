@@ -9,9 +9,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveConsumerContext } = require('../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
-const SHARED_DIR = path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared');
 const DEFAULT_PLANS_REL = '.agents/plans';
 
 function loadJsonIfExists(filePath) {
@@ -25,12 +25,11 @@ function loadJsonIfExists(filePath) {
 }
 
 /** Resolve plans.dir from ws-shared config (default .agents/plans). */
-function resolvePlansDir() {
-  const configPath = path.join(SHARED_DIR, 'config.json');
-  const examplePath = path.join(SHARED_DIR, 'config.json.example');
-  const config = loadJsonIfExists(configPath) || loadJsonIfExists(examplePath) || {};
+function resolvePlansDir(repoRoot = process.cwd()) {
+  const context = resolveConsumerContext({ repoRoot, scriptFile: __filename });
+  const config = context.config || {};
   const rel = (config.plans && config.plans.dir) || DEFAULT_PLANS_REL;
-  const plansPath = path.isAbsolute(rel) ? rel : path.join(REPO_ROOT, rel);
+  const plansPath = path.isAbsolute(rel) ? rel : path.join(context.repoRoot, rel);
   return path.resolve(plansPath);
 }
 
@@ -257,7 +256,22 @@ function createAccumulator() {
     /** Workflow dirs that already contributed scores/verdicts from state.md (dedupe vs JSONL). */
     workflowsWithStateScores: new Set(),
     errorTypeDistribution: {},
+    runs: new Map(),
   };
+}
+
+function ensureRun(acc, workflowId, pipeline = 'standard') {
+  const key = String(workflowId || 'unknown');
+  const existing = acc.runs.get(key) || {
+    workflowId: key,
+    pipeline: pipeline === 'lite' ? 'lite' : 'standard',
+    status: 'active',
+    elapsedSec: 0,
+    steps: {},
+    auditCounts: { errors: 0, unusual: 0, suggestions: 0 },
+  };
+  acc.runs.set(key, existing);
+  return existing;
 }
 
 /** Dedupe key for typed gate-bypass events and step records with bypassed:true. */
@@ -312,7 +326,6 @@ function ingestJsonlRecord(acc, record, opts = {}) {
 
   if (record.type === 'gate-bypass') {
     noteGateBypass(acc, record);
-    return;
   }
 
   if (record.bypassed === true) {
@@ -324,6 +337,22 @@ function ingestJsonlRecord(acc, record, opts = {}) {
     ingestFableVerdict(acc, record.fableVerdict);
   }
   ingestErrors(acc, record.errors);
+  if (record.workflowId) {
+    const run = ensureRun(acc, record.workflowId, record.pipeline);
+    if (record.type === 'finish') {
+      const step = String(record.step);
+      run.steps[step] = {
+        step: Number(record.step),
+        elapsedSec: Number(record.elapsedSec || 0),
+        estimated: record.estimated === true,
+        retries: Number(record.retries || 0),
+        reviewRounds: Number(record.reviewRounds || 0),
+        refineRounds: Number(record.refineRounds || 0),
+      };
+      run.elapsedSec = Object.values(run.steps).reduce((sum, item) => sum + item.elapsedSec, 0);
+    }
+    if (record.type === 'audit-finalize' && record.auditCounts) run.auditCounts = { ...record.auditCounts };
+  }
 }
 
 /**
@@ -347,6 +376,8 @@ function ingestStateFile(acc, statePath) {
   if (String(meta.status || '').toLowerCase() === 'completed') {
     acc.completedWorkflows += 1;
   }
+  const run = ensureRun(acc, meta.workflowId || path.basename(path.dirname(statePath)), meta.workflowType);
+  run.status = String(meta.status || 'active');
 
   const wfDir = path.resolve(path.dirname(statePath));
   const telemetry = meta.telemetry;
@@ -354,6 +385,7 @@ function ingestStateFile(acc, statePath) {
     const elapsed = Number(telemetry.totalElapsedSec);
     if (Number.isFinite(elapsed)) {
       acc.elapsedValues.push(elapsed);
+      run.elapsedSec = elapsed;
     }
     const steps = telemetry.steps;
     if (Array.isArray(steps)) {
@@ -376,6 +408,17 @@ function ingestStateFile(acc, statePath) {
             step: step.N ?? step.step,
             bypassed: true,
           });
+        }
+        const number = Number(step.N ?? step.step);
+        if (Number.isInteger(number)) {
+          run.steps[String(number)] = {
+            step: number,
+            elapsedSec: Number(step.elapsedSec || step.elapsed || 0),
+            estimated: step.estimated === true,
+            retries: Number(step.retries || 0),
+            reviewRounds: Number(step.reviewRounds || 0),
+            refineRounds: Number(step.refineRounds || 0),
+          };
         }
       }
       if (contributedScore) {
@@ -437,7 +480,29 @@ function average(values) {
   return Math.round((sum / values.length) * 100) / 100;
 }
 
+function median(values) {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : Math.round(((sorted[middle - 1] + sorted[middle]) / 2) * 100) / 100;
+}
+
 function finalizeAggregate(acc) {
+  const runs = [...acc.runs.values()]
+    .map((run) => ({ ...run, steps: Object.values(run.steps).sort((a, b) => a.step - b.step) }))
+    .sort((a, b) => a.workflowId.localeCompare(b.workflowId));
+  const medians = {};
+  for (const pipeline of ['standard', 'lite']) {
+    const selected = runs.filter((run) => run.pipeline === pipeline);
+    const perStep = {};
+    for (const run of selected) {
+      for (const step of run.steps) (perStep[step.step] ||= []).push(step.elapsedSec);
+    }
+    medians[pipeline] = {
+      runElapsedSec: median(selected.map((run) => run.elapsedSec)),
+      steps: Object.fromEntries(Object.entries(perStep).sort(([a], [b]) => Number(a) - Number(b)).map(([step, values]) => [step, median(values)])),
+    };
+  }
   return {
     totalWorkflows: acc.totalWorkflows,
     completedWorkflows: acc.completedWorkflows,
@@ -446,11 +511,12 @@ function finalizeAggregate(acc) {
     fableVerdictDistribution: acc.fableVerdictDistribution,
     gateBypassCount: acc.gateBypassCount,
     errorTypeDistribution: acc.errorTypeDistribution,
+    runs,
+    medians,
   };
 }
 
-function main() {
-  const plansDir = resolvePlansDir();
+function generateAggregate({ repoRoot = process.cwd(), plansDir = resolvePlansDir(repoRoot), write = true } = {}) {
   const acc = createAccumulator();
 
   const stateFiles = walkFiles(plansDir, (_full, name) => name.endsWith('.state.md'));
@@ -463,14 +529,46 @@ function main() {
   ingestJsonlFiles(acc, plansDir);
 
   const aggregate = finalizeAggregate(acc);
-  const outDir = path.join(plansDir, 'telemetry');
-  const outPath = path.join(outDir, 'aggregate.json');
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(outPath, `${JSON.stringify(aggregate, null, 2)}\n`, 'utf8');
+  if (write) {
+    const outDir = path.join(plansDir, 'telemetry');
+    const outPath = path.join(outDir, 'aggregate.json');
+    fs.mkdirSync(outDir, { recursive: true });
+    fs.writeFileSync(outPath, `${JSON.stringify(aggregate, null, 2)}\n`, 'utf8');
+    console.log(`Wrote ${path.relative(repoRoot, outPath)} (${aggregate.totalWorkflows} workflows, ${aggregate.completedWorkflows} completed)`);
+  }
+  return aggregate;
+}
 
-  console.log(
-    `Wrote ${path.relative(REPO_ROOT, outPath)} (${aggregate.totalWorkflows} workflows, ${aggregate.completedWorkflows} completed)`,
-  );
+function renderReport(aggregate) {
+  const lines = [
+    '# Workflow telemetry report',
+    '',
+    `Runs: ${aggregate.runs.length}`,
+    `Completed: ${aggregate.completedWorkflows}`,
+    `Average elapsed: ${aggregate.averageElapsedSec}s`,
+    '',
+    '| Pipeline | Median run | Step medians |',
+    '|---|---:|---|',
+  ];
+  for (const pipeline of ['standard', 'lite']) {
+    const item = aggregate.medians[pipeline];
+    const steps = Object.entries(item.steps).map(([step, value]) => `${step}: ${value}s`).join(', ') || 'none';
+    lines.push(`| ${pipeline} | ${item.runElapsedSec}s | ${steps} |`);
+  }
+  lines.push('', '## Runs', '');
+  for (const run of aggregate.runs) {
+    lines.push(`- \`${run.workflowId}\` (${run.pipeline}): ${run.status}, ${run.elapsedSec}s; audit errors=${run.auditCounts.errors}, unusual=${run.auditCounts.unusual}, suggestions=${run.auditCounts.suggestions}`);
+  }
+  return `${lines.join('\n')}\n`;
+}
+
+function main() {
+  const argv = process.argv.slice(2);
+  const report = argv[0] === 'report';
+  const repoIndex = argv.indexOf('--repo-root');
+  const repoRoot = repoIndex >= 0 ? path.resolve(argv[repoIndex + 1]) : process.cwd();
+  const aggregate = generateAggregate({ repoRoot, write: !report });
+  if (report) process.stdout.write(renderReport(aggregate));
 }
 
 if (require.main === module) {
@@ -496,5 +594,8 @@ module.exports = {
   workflowDirsWithJsonl,
   ingestJsonlFiles,
   finalizeAggregate,
+  median,
+  generateAggregate,
+  renderReport,
   main,
 };

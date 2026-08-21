@@ -18,7 +18,9 @@
 
 Never write workflow state under `.agents/`.
 
-## Canonical artifacts (under `{us-dir}`)
+## Artifact map
+
+Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one named row from this table; do not read the rest of this file unless a later section is explicitly required.
 
 | Artifact | Filename | Produced by | Committable |
 |----------|----------|-------------|-------------|
@@ -41,7 +43,7 @@ Never write workflow state under `.agents/`.
 
 ## Step input prerequisites
 
-Minimum on-disk artifacts required before **advance to step N** (standard FSM). Consumed by `validate_state.py --pre-advance <N>` after checkpoint tag `uswf/{workflow-id}/before-step-{N}`.
+Minimum on-disk artifacts required before **advance to step N** (standard FSM). Consumed by `validate_state.cjs --pre-advance <N>` after checkpoint tag `uswf/{workflow-id}/before-step-{N}`.
 
 | Advance to step N | Required on disk (minimum) |
 |-------------------|----------------------------|

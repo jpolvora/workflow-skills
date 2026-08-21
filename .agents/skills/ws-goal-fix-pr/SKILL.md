@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-goal-fix-pr loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
 
@@ -74,7 +74,7 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 1. **Initialize**: restate parameters (above) and resolve `providers.scm`.
    - Done when: PR number, mode, and provider are confirmed.
 
-2. **Initial heartbeat check**: call `list-threads` and check active SCM CI/code-review run status. If `activeThreads == 0` and actions/pipelines are completed on this first check, do not exit immediately: arm the ws-goal-loop 300s heartbeat timer, wait, and re-collect once. If review actions are still `pending` or `in_progress`, wait until they complete before evaluating thread convergence.
+2. **Initial convergence check**: call `list-threads` and check active SCM CI/code-review run status, then apply [`ws-goal-loop`](../ws-goal-loop/SKILL.md)'s configured convergence helper. If a fresh read has `activeThreads == 0` and every required check concluded successfully, exit without arming a heartbeat. Running checks poll at `defaults.convergence.minPollSec`; queued or absent runs poll at `maxPollSec`; record observed state and chosen interval in every round log.
    - Done when: `activeThreads` is confirmed either still 0 and actions completed (stop, converged) or > 0 / actions in progress (proceed to Act or wait).
 
 3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads via the configured SCM provider intent `resolve-thread`, and `git push origin HEAD` (skip push when `dry-run`).
@@ -99,4 +99,11 @@ When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`confi
 - **Catch script errors:** whenever any provider script (`fix_pr_azure_context.py`, `fetch_threads.cjs`, `resolve_thread.cjs`, SCM CLI helpers) or verification script fails or exits non-zero, append a finding (`category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`).
 - **Finalize & gate:** when running standalone, finalize the audit session at loop completion/stop and present the upstream issue gate if errors occurred.
 
+## Subagent contract
+
+- Re-collect provider threads and required-check state before every decision.
+- Use the configured adaptive interval and record observed state plus chosen wait.
+- Exit immediately on a fresh clean result; do not arm a redundant heartbeat.
+- Keep fixes, resolutions, commits, and pushes inside the explicitly authorized loop.
+- Return rounds, stop condition, final active-thread evidence, and remaining blockers.
 

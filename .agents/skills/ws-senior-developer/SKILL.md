@@ -68,6 +68,14 @@ Use configured aliases such as `build-backend`, `test-backend`, and `lint-backen
 
 **Done when:** every applicable checklist item has command evidence (exit code) or an explicit blocker.
 
+## Subagent contract
+
+- Refuse unapproved extra scope and name any ambiguity that changes the result.
+- Reuse configured project helpers and verification aliases before adding machinery.
+- Keep implementation inside the assigned path set.
+- Report build, test, format, and security evidence that applies to the changed layer.
+- Return blockers honestly; never convert a failed check into a pass.
+
 ## Opt-out
 
 | Phrase | Effect |

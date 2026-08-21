@@ -97,7 +97,7 @@ Step ↔ Phase: Step 1 = Phases 0–5c · Step 2 = Phase 6 · Step 3 = Phase 7.
 
 ## Output
 
-Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REPORT-FORMAT.md`](REPORT-FORMAT.md). Optional persist: `{plansDir}/harness-audit/harness-audit-{YYYYMMDD}.report.md`.
+Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REPORT-FORMAT.md`](REPORT-FORMAT.md). On explicit persist, write the completed report to a temporary input file and run `node {skillsRoot}/ws-shared/scripts/persist_diagnostic.cjs --kind harness --input <report>`; the helper stores a timestamped comparable artifact under `plans.diagnosticsDir` (default `.agents/plans/diagnostics`). Default audit remains read-only.
 
 ## Guardrails
 

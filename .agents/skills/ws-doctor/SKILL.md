@@ -31,7 +31,7 @@ Do not re-run check-harness phases or invent a session autoload snapshot inside 
 ## Invocation
 
 ```
-/ws-doctor [--skill <id>] [--json]
+/ws-doctor [--skill <id>] [--json] [--persist]
 ```
 
 Also: `@ws-doctor`, “diagnose skills”, “doctor the harness”.
@@ -41,6 +41,7 @@ Also: `@ws-doctor`, “diagnose skills”, “doctor the harness”.
 | *(none)* | Full diagnose → human markdown report; **read-only** |
 | `--skill <id>` | Limit skill-tree scan to one `ws-*` folder (config section still summarized when available) |
 | `--json` | Machine-readable report with the same four sections |
+| `--persist` | Explicitly save the same report as a timestamped artifact under `plans.diagnosticsDir` (default `.agents/plans/diagnostics`) so runs can be compared; omitted remains read-only |
 
 ## Hybrid & config
 
@@ -59,7 +60,7 @@ Also: `@ws-doctor`, “diagnose skills”, “doctor the harness”.
 **Launcher (mandatory):**
 
 ```bash
-node {skillsRoot}/ws-doctor/scripts/doctor.js [--skill <id>] [--json]
+node {skillsRoot}/ws-doctor/scripts/doctor.js [--skill <id>] [--json] [--persist]
 ```
 
 Parse checks inside the engine are syntax-only (Python `ast.parse` with UTF-8 read and no `.pyc` write, `node --check`, `bash -n` when available). Soft-skip when a launcher binary is missing on PATH (report skip, do not fail the doctor process itself).

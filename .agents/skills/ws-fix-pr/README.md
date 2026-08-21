@@ -42,6 +42,8 @@ Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should c
 8. Report (`{reviewsDir}/PR-XXX-round-N.md`)
 9. Resolve threads via scm provider (`resolve-thread`) + commit + push
 
+`ws-goal-fix-pr` wraps this flow with `ws-goal-loop/scripts/convergence.cjs`. Polling is adaptive: running checks use the configured minimum, queued checks use the maximum, concluded checks use exponential backoff, and a fresh clean result exits immediately without arming another heartbeat.
+
 ## Thread scoring
 
 | Score | Urgency | Action |

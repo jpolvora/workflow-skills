@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-interview loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants.
 
@@ -87,4 +87,11 @@ needs_user:
   context: string
   design_branch: string         # e.g., "Authorization / tenant"
 ```
+
+## Subagent contract
+
+- Audit the plan against the supplied spec, memory traps, and project evidence.
+- Resolve project-observable gaps before escalating one blocking question.
+- Preserve every AC mapping and record resolution source.
+- Write only the refined plan and return the closed/open registry.
 

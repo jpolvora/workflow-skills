@@ -136,7 +136,8 @@ function main() {
   const resolved = JSON.parse(resolveMissing.stdout.trim());
   assert(resolved.enableAuditing === false, 'resolve false when config missing');
 
-  const usDir = mkTmp('ws-audit-');
+  const usDir = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-main-'));
+  tmpRoots.push(usDir);
   const init = runNode([
     'init',
     '--us-dir',

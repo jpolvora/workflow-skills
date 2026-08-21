@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-write-plan loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Draft an implementation blueprint from the spec.
 
@@ -59,4 +59,11 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 - Every AC maps to ≥1 plan step and ≥1 §5 test mapping.
 - Do not write product code: this skill is strictly for planning and documentation.
 - If the project stack cannot be detected from `config.json`, stop and ask for clarification.
+
+## Subagent contract
+
+- Read only the supplied spec and named project context.
+- Map every AC to implementation work, expected files, and a named test.
+- Record unresolved design choices explicitly instead of choosing silently.
+- Write only the assigned plan artifact and return its path.
 

@@ -2,6 +2,21 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 15:40] Agent: Claude Opus 5
+- **Prompt**: Read FEATURES.md, find improvements per feature (speed, tokens, subagent context, orchestrator intelligence, quality gates, communication, auditing, 10/10 scoring, portability, hybrid), produce a detailed spec for later execution.
+- **Done**: Audited the suite with four parallel explorations (context/token inventory, telemetry+installer, quality machinery, FSM latency) and wrote `.agents/specs/harness-efficiency-and-verifiability.spec.md` — 76 atomic ACs across 10 selectable workstreams, with a measured baseline table and design intent. No skill or config files changed.
+- **Result**: Spec of record written; awaiting maintainer selection of workstreams before implementation.
+
+### [2026-08-21 12:30] Agent: Cursor Grok 4.6
+- **Prompt**: set mode to full auto ws-ship-pr and ws-goal-fix-pr
+- **Done**: Merged PR 222 after goal-fix-pr convergence (activeThreads 0, CI green). Workflow hermes-spec-to-pr-enhancements completed.
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/222 MERGED (`e0f0249`)
+
+### [2026-08-21 12:24] Agent: Cursor Grok 4.6
+- **Prompt**: Step 9 ws-goal-fix-pr PR 222 (hermes-spec-to-pr-enhancements)
+- **Done**: Two live fix rounds; FAQ 9 SCM intents; audit standalone us-dir comment; ADO sweep --dry-run docs. Pushed 538055e and 8dfac87. Did not merge.
+- **Result**: activeThreads 0; review and both CI tests completed pass
+
 ### [2026-08-21 11:36] Agent: Cursor Grok 4.6
 - **Prompt**: Step 8 ws-ship-pr hermes-spec-to-pr-enhancements create-pr stopBeforeFixPr
 - **Done**: Bumped package 0.3.27 → 0.3.28; regenerated catalog + integrity; delivery commit of refined plan; push develop and reuse PR 222

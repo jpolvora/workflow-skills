@@ -43,10 +43,11 @@ const PLACEHOLDER_RE = /^<[^>]+>$/;
 
 function usage() {
   const lines = [
-    'Usage: node doctor.js [--skill <id>] [--json] [--help]',
+    'Usage: node doctor.js [--skill <id>] [--json] [--persist [dir]] [--help]',
     '',
     '  --skill <id>  Limit path/tool/ref scan to one ws-* skill folder',
     '  --json        Machine-readable JSON report',
+    '  --persist     Save a dated comparable artifact under plans.diagnosticsDir',
     '  --help        Show this help',
     '',
     'Read-only diagnose of skillsRoot + project ws-shared config.',
@@ -55,7 +56,7 @@ function usage() {
 }
 
 function parseArgs(argv) {
-  const args = { skill: null, json: false, help: false };
+  const args = { skill: null, json: false, help: false, persist: false };
   const rest = argv.slice(2);
   for (let i = 0; i < rest.length; i += 1) {
     const a = rest[i];
@@ -65,6 +66,10 @@ function parseArgs(argv) {
     }
     if (a === '--json') {
       args.json = true;
+      continue;
+    }
+    if (a === '--persist') {
+      args.persist = rest[i + 1] && !rest[i + 1].startsWith('-') ? rest[++i] : true;
       continue;
     }
     if (a === '--skill') {
@@ -1175,6 +1180,7 @@ function main() {
     configuration,
     missingReferences: missingRefs,
     meta: {
+      generatedAt: new Date().toISOString(),
       projectRoot: toPosix(projectRoot),
       skillsRoot: tokenMap.skillsRoot,
       sharedDir: tokenMap.sharedDir,
@@ -1187,6 +1193,19 @@ function main() {
     console.log(JSON.stringify(report, null, 2));
   } else {
     console.log(asciiSafe(formatMarkdown(report)));
+  }
+  if (args.persist) {
+    const configured = typeof args.persist === 'string'
+      ? args.persist
+      : config?.plans?.diagnosticsDir || '.agents/plans/diagnostics';
+    const directory = path.resolve(projectRoot, configured);
+    const stamp = report.meta.generatedAt.replace(/[:.]/g, '-');
+    const extension = args.json ? 'json' : 'md';
+    const output = path.join(directory, `doctor-${stamp}.${extension}`);
+    fs.mkdirSync(directory, { recursive: true });
+    const content = args.json ? `${JSON.stringify(report, null, 2)}\n` : `${asciiSafe(formatMarkdown(report))}\n`;
+    fs.writeFileSync(output, content, 'utf8');
+    console.error(`Persisted ${toPosix(path.relative(projectRoot, output))}`);
   }
 }
 

@@ -6,12 +6,12 @@
 >
 > **Identity:** `/ws-spec-to-pr`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
-End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared state, and confirmation gates (session model on each transition; switch via Pause → IDE/agent host → Resume).
+End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared state, and confirmation gates (session model on each transition; switch via Pause → session host → Resume).
 
 ## Core Goals
 
 1. **End-to-End Delivery:** Spec → plan → interview → implement → check → product commit → review → review-fix commit → testing → ship → fix-pr (steps **0–9**).
-2. **Context Isolation:** Fresh `dispatch-agent` per step where practical; shared `state.md` + `MEMORY.md`.
+2. **Context Isolation:** Fresh `dispatch-agent` per step with bounded contracts, indexed plan slices, and matched MEMORY entries.
 3. **Safety & Gates:** Explicit transitions; combined delivery+ship at Step 8; Fix-PR at Step 9.
 4. **Portability:** Stack-agnostic; metadata from `config.json` / `STACK.md`.
 
@@ -89,7 +89,11 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 
 ### Model selection
 
-The orchestrator session always executes under the active session model (`currentModel`). Subagent phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in `config.json` → `defaults` apply exclusively to subagents spawned via `dispatch-agent`. Manual switching of the orchestrator session via Pause → IDE/agent host → Resume is supported when desired. Fallback to active session model if a subagent model switch fails.
+The orchestrator session always executes under the active session model (`currentModel`). Subagent phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in `config.json` → `defaults` apply exclusively to subagents spawned via `dispatch-agent`. Manual switching of the orchestrator session via Pause → session host → Resume is supported when desired. Fallback to the active model if a subagent model switch fails.
+
+### Evidence runtime
+
+Node state helpers update the workflow atomically and publish deterministic `run.json`, `run.md`, plans-index, and JSONL telemetry artifacts. `plan.index.json` provides hash-checked plan slices. `ac-ledger.json` is the sole source of the derived verification score and links ACs to files, tests, commits, findings, Fable verdicts, and sabotage results.
 
 ---
 

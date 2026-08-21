@@ -15,6 +15,11 @@ import sys
 import tempfile
 from pathlib import Path
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root  # noqa: E402
+
 
 def ensure_utf8_stdio() -> None:
     import os
@@ -34,18 +39,6 @@ def ensure_utf8_stdio() -> None:
 
 
 ensure_utf8_stdio()
-
-HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
-
-
-def resolve_repo_root(override: str | None = None) -> Path:
-    if override:
-        return Path(override).expanduser().resolve()
-    cwd = Path.cwd().resolve()
-    if (cwd / HUB_REL).is_file():
-        return cwd
-    return Path(__file__).resolve().parents[4]
-
 
 def validate_auth(repo_root: Path) -> bool:
     proc = subprocess.run(
@@ -92,7 +85,7 @@ def main() -> int:
         print("Missing --body-file or --body", file=sys.stderr)
         return 1
 
-    repo_root = resolve_repo_root(args.repo_root)
+    repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
     if args.dry_run:
         print(json.dumps({"status": "dry-run", "issueId": issue_id, "body": body.strip()}))
         return 0

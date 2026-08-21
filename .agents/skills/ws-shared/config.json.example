@@ -110,7 +110,9 @@
     "mutationTest": "",
     "_comment_mutationTest": "Optional mutation runner (e.g. npx stryker run, mvn org.pitest:pitest-maven:mutationCoverage). Empty = skip mutation substep in ws-testing Step 7.",
     "mutationThreshold": 80,
-    "_comment_mutationThreshold": "Minimum mutation score percent (killed/(killed+survived)*100). Used when mutationTest is set and skipMutationTesting is false."
+    "_comment_mutationThreshold": "Minimum mutation score percent (killed/(killed+survived)*100). Used when mutationTest is set and skipMutationTesting is false.",
+    "testGlobs": ["test/**/*.js", "tests/**/*", "**/*.test.*", "**/*.spec.*"],
+    "_comment_testGlobs": "Machine test-surface probe patterns. Step 7 auto-skip requires no non-empty test alias and no matching file."
   },
 
   "dagThresholds": {
@@ -136,6 +138,19 @@
     "_comment_enableAuditing": "When true, ws-spec-to-pr* orch runs under ws-audit runtime observer; writes {us-dir}/audit-*.log.md; logs anomalies/performance/correctness/disposable scripts; end-of-run may propose upstream GitHub issues or reusable tooling. Default false.",
     "enableDag": false,
     "_comment_enableDag": "When true, break execution plan into multiple parallel tasks. When false (default), execute tasks sequentially one by one in serial order.",
+    "contextBudget": 32000,
+    "_comment_contextBudget": "Maximum UTF-8 bytes in one complete standard subagent dispatch; fixed contract preamble remains capped at 18000 and MEMORY at 4000.",
+    "parallelVerifyReview": false,
+    "_comment_parallelVerifyReview": "When true, standard Steps 5 and 6 may run concurrently as read-only reviewers after an immutable product commit; default false.",
+    "gateGranularity": "step",
+    "_comment_gateGranularity": "step prompts at every boundary; phase uses at most five blocking gates in a normal standard run without weakening hard stops.",
+    "convergence": {
+      "initialDelaySec": 0,
+      "minPollSec": 30,
+      "maxPollSec": 300,
+      "backoff": 1.5,
+      "maxIterations": 20
+    },
     "patternsBackend": true,
     "patternsFrontend": true,
     "_comment_patterns": "When true, ws-patterns-backend and ws-patterns-frontend are active for consulting backend.md and frontend.md during development.",
@@ -148,7 +163,7 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Optional model preferences for autoMode phase switching (e.g. claude-3-5-sonnet, gpt-4o, gemini-1.5-pro, gemini-2.0-flash). Fallback to active model if empty or switch fails. testingModel is the test executor for standard Step 7; empty/omitted uses executionModel. reviewerModel covers standard Steps 5-6 only.",
+    "_comment_models": "Optional portable model identifiers for subagents. Fallback to the active session model if empty or unavailable. testingModel is the test executor for standard Step 7; empty/omitted uses executionModel. reviewerModel covers standard Steps 5-6 only.",
     "plannerModel": "",
     "executionModel": "",
     "reviewerModel": "",
@@ -160,6 +175,7 @@
     "_comment_plansDir": "Resolve skill token {plansDir} from plans.dir (there is no separate plansDir key).",
     "_comment_specsDir": "Human-facing local specs dir. Skill token {specsDir} ← plans.specsDir (default .agents/specs). Prefer existing repo-root specs/ when already present. ws-write-spec writes here only; workflow step-00 copies under {plansDir}/{slug}/ come from providers or ws-local-spec-provider register.",
     "specsDir": ".agents/specs",
+    "diagnosticsDir": ".agents/plans/diagnostics",
     "worktreesDir": ".agents/plans/{slug}/worktrees",
     "useWorktrees": false
   },
@@ -201,6 +217,6 @@
     "enabled": true,
     "autoAudit": true,
     "autoDetectDomain": true,
-    "auditVerdictsBlockShip": true
+    "auditVerdictsBlockShip": "refuted"
   }
 }

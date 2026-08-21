@@ -18,7 +18,7 @@ invocation_names:
 
 Read-only timesheet builder for a civil day. Emits **entries** + **technical table** + **summary**. Does not commit, push, or post PR comments.
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 ## Invocation
 

@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-list loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Interactive **two-board + menu** for the current project. **Specs ≠ plans** — never merge them into one inventory.
 
