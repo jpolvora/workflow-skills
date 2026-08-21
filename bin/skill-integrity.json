@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "4c823d1b9fbfe4f4bad84f21c5cd4801f1fe74405ac604df535b89ea32ef99c5",
+  "fullPackageDigest": "cf6deb363c41f4303a7f114c090deb2aac7593d7c9613dab09547c3c367b40c3",
   "hub": {
     "files": {
       "AGENTS.md": "02fa9853647fe98f900c7d7cd5fd0db9f572b8bbccc29aa421103a66d0553afd",
@@ -151,9 +151,9 @@
         "scripts/fetch_threads.cjs": "5c20d7ffc17d175fabce85853a69c23f18f95968c7bc51782d978f58855cb5e0",
         "scripts/fix_pr_azure_context.py": "d6ece5f1864a89be0c82fc2f415621e6f6d98bcda3d219f2c24a488a9623cbd8",
         "scripts/resolve_thread.cjs": "31f8f979dfe0d02a1ada1138ca5d6f14e687e5f6027a3015d808ca4572baf585",
-        "SKILL.md": "b92cf530e1d139ddec5b2d7b915ac8482ad014a7128ec864654b002a14d64b11"
+        "SKILL.md": "c0da9f1c6b9ca982f32f4b23ab592af10e7cc6b39cc2b49c1f0eb2f1f22941e5"
       },
-      "skillDigest": "64f235ebace23f225b33553812938fe937ee3d64fae7c9aaff71a3cd7004a326"
+      "skillDigest": "f14f32ac0fb9bfcc9d6eb62238867d45c9b6eefd72f1d3c6983564ab5cf4f4e3"
     },
     "ws-github-provider": {
       "files": {
