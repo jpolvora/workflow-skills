@@ -86,9 +86,40 @@ function main() {
     'ws-goal-fix-pr declares ws-audit dependency',
   );
   assert(
+    deps.dependencies['ws-fix-pr']?.includes('ws-audit'),
+    'ws-fix-pr declares ws-audit dependency',
+  );
+  assert(
     deps.dependencies['ws-spec-to-pr']?.includes('ws-audit'),
     'ws-spec-to-pr declares ws-audit dependency',
   );
+
+  // Test Python fix_pr_azure_context argument parsing before and after subcommand
+  const pythonScript = path.join(
+    REPO_ROOT,
+    '.agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py',
+  );
+  if (fs.existsSync(pythonScript)) {
+    const pyRes = cp.spawnSync(
+      'python',
+      [
+        pythonScript,
+        'collect',
+        '--pr-id',
+        '909',
+        '--repo-root',
+        REPO_ROOT,
+        '--output',
+        path.join(mkTmp('py-out-'), 'test.json'),
+      ],
+      { cwd: REPO_ROOT, encoding: 'utf-8' },
+    );
+    // Even if Azure API auth fails in test environment, argparse must not fail with "unrecognized arguments"
+    assert(
+      !pyRes.stderr.includes('unrecognized arguments'),
+      'fix_pr_azure_context argparse accepts --repo-root after subcommand',
+    );
+  }
 
   const resolveMissing = runNode(['resolve', '--config', path.join(mkTmp('no-cfg-'), 'nope.json')]);
   assert(resolveMissing.status === 0, 'resolve exits 0');

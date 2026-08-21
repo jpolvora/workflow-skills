@@ -155,6 +155,9 @@
     "ws-local-spec-provider": [
       "ws-spec-format"
     ],
+    "ws-fix-pr": [
+      "ws-audit"
+    ],
     "ws-goal-fix-pr": [
       "ws-fix-pr",
       "ws-goal-loop",

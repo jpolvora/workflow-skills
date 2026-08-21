@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "5417c92c74cbbffc325a36bda3c2e37801e800d4ae02f426b1e4e04ddc853933",
+  "fullPackageDigest": "4c823d1b9fbfe4f4bad84f21c5cd4801f1fe74405ac604df535b89ea32ef99c5",
   "hub": {
     "files": {
       "AGENTS.md": "02fa9853647fe98f900c7d7cd5fd0db9f572b8bbccc29aa421103a66d0553afd",
@@ -22,11 +22,11 @@
       "scripts/resolve_consumer_root.cjs": "1b7cb1e56d811276d1ad12d50b1e2de99c9db23c9e237a6ab57d27abeb648b0a",
       "scripts/resolve_consumer_root.py": "97e987ee8da8aa2576123292df7d6f297c38b0835a28cff4a596a83f79926924",
       "setup.md": "eebb8ce6e9396c26a788637551d1d493f9924ed4f65a4e129e5c283d69ca810b",
-      "skill-dependencies.json": "0162a0ce9ec542811510edd123553afff375058cb6601524b44e09cfe68599d5",
+      "skill-dependencies.json": "cee5e6a097d7b75ccd506980db5fa60a3d0be5b3ce5953b048812053346aed0c",
       "STACK.md.example": "d638ceb2b361cc8a0b2d9329f836f4f8a6665057b324e4d181ba974c2154538e",
       "tools.md": "92ac836285030b11c73de54f2d862ada4970911a1a7eaae73fae54684775daec"
     },
-    "skillDigest": "b38190aa634802ef74a9ad521d303206d252ba88a08623679d010aca3289bf8a"
+    "skillDigest": "90f7121c68af1546e4000d91b50100d7b8b1b495803ce953221b3371f0a805fa"
   },
   "packageVersion": "0.3.27",
   "skills": {
