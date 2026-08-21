@@ -49,7 +49,10 @@ try {
   fs.mkdirSync(shared, { recursive: true });
   fs.writeFileSync(
     path.join(shared, 'config.json'),
-    JSON.stringify({ plans: { dir: '.agents/plans' } }, null, 2),
+    JSON.stringify({
+      plans: { dir: '.agents/plans' },
+      reviews: { dir: '.agents/codereviews' },
+    }, null, 2),
     'utf8',
   );
 
@@ -70,6 +73,11 @@ try {
     'status: active\nslug: active-slug\n',
     'utf8',
   );
+
+  const reviews = path.join(tmp, '.agents', 'codereviews');
+  fs.mkdirSync(reviews, { recursive: true });
+  fs.writeFileSync(path.join(reviews, 'PR-222-round-1.md'), '# review\n', 'utf8');
+  fs.writeFileSync(path.join(reviews, 'notes.md'), 'keep\n', 'utf8');
 
   // tracked product file must never appear as candidate
   fs.mkdirSync(path.join(tmp, 'src'), { recursive: true });
@@ -94,12 +102,25 @@ try {
     paths.includes('.agents/plans/active-slug/.runtime'),
     'active plan scratch listed',
   );
+  assert(
+    paths.includes('.agents/codereviews/PR-222-round-1.md'),
+    'codereview PR*.md listed',
+  );
+  assert(
+    !paths.includes('.agents/codereviews/notes.md'),
+    'non-PR review file not listed',
+  );
   assert(!paths.some((p) => p.startsWith('src/')), 'no product paths');
 
   const pathsFile = path.join(tmp, 'approved.json');
   fs.writeFileSync(
     pathsFile,
-    JSON.stringify({ paths: ['.agents/plans/active-slug/.runtime'] }),
+    JSON.stringify({
+      paths: [
+        '.agents/plans/active-slug/.runtime',
+        '.agents/codereviews/PR-222-round-1.md',
+      ],
+    }),
     'utf8',
   );
   const applied = run(
@@ -110,7 +131,10 @@ try {
   assert(applied.status === 0, 'apply_cleanup exit 0');
   const appliedJson = JSON.parse(applied.stdout);
   assert(appliedJson.deleted.includes('.agents/plans/active-slug/.runtime'), 'runtime deleted');
+  assert(appliedJson.deleted.includes('.agents/codereviews/PR-222-round-1.md'), 'PR review deleted');
   assert(!fs.existsSync(path.join(active, '.runtime')), 'runtime gone on disk');
+  assert(!fs.existsSync(path.join(reviews, 'PR-222-round-1.md')), 'PR review gone on disk');
+  assert(fs.existsSync(path.join(reviews, 'notes.md')), 'non-PR review kept');
 
   // refuse without --confirm
   const refused = run('node', [APPLY, '--repo-root', tmp, '--paths-file', pathsFile], tmp);

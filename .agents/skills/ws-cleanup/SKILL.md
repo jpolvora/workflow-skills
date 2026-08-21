@@ -4,9 +4,9 @@ version: 0.3.29
 disable-model-invocation: true
 description: >-
   Lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps,
-  shipped plan dirs), confirms via user-gate, then deletes only approved
-  untracked paths. Suggests missing .gitignore patterns. Trigger on
-  /ws-cleanup, cleanup workflow, or clean plan leftovers.
+  codereview PR*.md, shipped plan dirs), confirms via user-gate, then deletes
+  only approved untracked paths. Suggests missing .gitignore patterns. Trigger
+  on /ws-cleanup, cleanup workflow, or clean plan leftovers.
 invocation_names:
   - ws-cleanup
   - cleanup
@@ -45,7 +45,7 @@ cleanup workflow leftovers
 
 2. **List candidates** — Run:
    ```bash
-   node {skillsRoot}/ws-cleanup/scripts/list_disposable.cjs --repo-root {repoRoot} --plans-dir {plansDir}
+   node {skillsRoot}/ws-cleanup/scripts/list_disposable.cjs --repo-root {repoRoot} --plans-dir {plansDir} --reviews-dir {reviewsDir}
    ```
    Add `--scratch-only` and/or `--slug {slug}` when requested. Require exit 0 and `ok: true`.
    - Done when: JSON with `candidates`, `skipped`, `gitignoreSuggestions` is in context.

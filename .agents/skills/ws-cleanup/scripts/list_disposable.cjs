@@ -14,17 +14,29 @@ const { spawnSync } = require('child_process');
 const { resolveConsumerContext } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 function parseArgs(argv) {
-  const opts = { scratchOnly: false, json: true, slug: null, repoRoot: null, plansDir: null };
+  const opts = {
+    scratchOnly: false,
+    json: true,
+    slug: null,
+    repoRoot: null,
+    plansDir: null,
+    reviewsDir: null,
+  };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--scratch-only') opts.scratchOnly = true;
     else if (a === '--json') opts.json = true;
     else if (a === '--repo-root') opts.repoRoot = argv[++i];
     else if (a === '--plans-dir') opts.plansDir = argv[++i];
+    else if (a === '--reviews-dir') opts.reviewsDir = argv[++i];
     else if (a === '--slug') opts.slug = argv[++i];
     else throw new Error(`unknown argument: ${a}`);
   }
   return opts;
+}
+
+function isReviewPrMarkdown(name) {
+  return /^PR.+\.md$/i.test(name);
 }
 
 function runGit(repo, args) {
@@ -179,87 +191,117 @@ function main() {
     opts.plansDir ||
     (config.plans && config.plans.dir) ||
     '.agents/plans';
+  const reviewsDirRel =
+    opts.reviewsDir ||
+    (config.reviews && config.reviews.dir) ||
+    '.agents/codereviews';
   const plansAbs = path.isAbsolute(plansDirRel)
     ? plansDirRel
     : path.join(repoRoot, plansDirRel);
+  const reviewsAbs = path.isAbsolute(reviewsDirRel)
+    ? reviewsDirRel
+    : path.join(repoRoot, reviewsDirRel);
   const plansPosix = toPosix(path.relative(repoRoot, plansAbs)) || toPosix(plansDirRel);
+  const reviewsPosix = toPosix(path.relative(repoRoot, reviewsAbs)) || toPosix(reviewsDirRel);
 
   const candidates = [];
   const skipped = [];
 
   if (!fs.existsSync(plansAbs)) {
-    const out = {
-      ok: true,
-      repoRoot,
-      plansDir: plansPosix,
-      candidates: [],
-      skipped: [{ path: plansPosix, reason: 'plans-dir-missing' }],
-      gitignoreSuggestions: [],
-    };
-    process.stdout.write(`${JSON.stringify(out, null, 2)}\n`);
-    return;
+    skipped.push({ path: plansPosix, reason: 'plans-dir-missing' });
   }
 
-  // Cross-plan telemetry aggregate
-  const agg = path.join(plansAbs, 'telemetry');
-  if (fs.existsSync(agg)) {
-    if (anyTrackedUnder(repoRoot, agg, repoRoot)) {
-      skipped.push({ path: `${plansPosix}/telemetry`, reason: 'tracked' });
-    } else {
+  if (fs.existsSync(plansAbs)) {
+    // Cross-plan telemetry aggregate
+    const agg = path.join(plansAbs, 'telemetry');
+    if (fs.existsSync(agg)) {
+      if (anyTrackedUnder(repoRoot, agg, repoRoot)) {
+        skipped.push({ path: `${plansPosix}/telemetry`, reason: 'tracked' });
+      } else {
+        pushCandidate(candidates, {
+          path: `${plansPosix}/telemetry`,
+          kind: 'scratch',
+          reason: 'aggregate telemetry',
+          bytes: dirSize(agg),
+          tracked: false,
+        });
+      }
+    }
+
+    const entries = fs.readdirSync(plansAbs).filter((n) => {
+      if (opts.slug) return n === opts.slug || n === `${opts.slug}.archive`;
+      return true;
+    });
+
+    for (const name of entries) {
+      if (name === 'telemetry') continue;
+      const abs = path.join(plansAbs, name);
+      let st;
+      try {
+        st = fs.statSync(abs);
+      } catch {
+        continue;
+      }
+      if (!st.isDirectory()) continue;
+
+      collectScratch(repoRoot, abs, plansPosix, candidates, skipped);
+
+      if (opts.scratchOnly) continue;
+
+      const status = readStateStatus(abs);
+      const isArchive = /\.archive$/i.test(name);
+      const shipped =
+        isArchive || status === 'completed' || status === 'cancelled' || status === 'failed';
+      if (!shipped) {
+        if (status === 'active' || status === 'paused') {
+          skipped.push({
+            path: `${plansPosix}/${name}`,
+            reason: `active-workflow:${status || 'unknown'}`,
+          });
+        }
+        continue;
+      }
+      if (anyTrackedUnder(repoRoot, abs, repoRoot)) {
+        skipped.push({ path: `${plansPosix}/${name}`, reason: 'tracked' });
+        continue;
+      }
       pushCandidate(candidates, {
-        path: `${plansPosix}/telemetry`,
-        kind: 'scratch',
-        reason: 'aggregate telemetry',
-        bytes: dirSize(agg),
+        path: `${plansPosix}/${name}`,
+        kind: 'shipped-plan',
+        reason: isArchive ? 'archive folder' : `status:${status}`,
+        bytes: dirSize(abs),
         tracked: false,
       });
     }
   }
 
-  const entries = fs.readdirSync(plansAbs).filter((n) => {
-    if (opts.slug) return n === opts.slug || n === `${opts.slug}.archive`;
-    return true;
-  });
-
-  for (const name of entries) {
-    if (name === 'telemetry') continue;
-    const abs = path.join(plansAbs, name);
-    let st;
-    try {
-      st = fs.statSync(abs);
-    } catch {
-      continue;
-    }
-    if (!st.isDirectory()) continue;
-
-    collectScratch(repoRoot, abs, plansPosix, candidates, skipped);
-
-    if (opts.scratchOnly) continue;
-
-    const status = readStateStatus(abs);
-    const isArchive = /\.archive$/i.test(name);
-    const shipped =
-      isArchive || status === 'completed' || status === 'cancelled' || status === 'failed';
-    if (!shipped) {
-      if (status === 'active' || status === 'paused') {
-        skipped.push({
-          path: `${plansPosix}/${name}`,
-          reason: `active-workflow:${status || 'unknown'}`,
-        });
+  // Local code-review round artifacts: {reviewsDir}/PR*.md
+  if (fs.existsSync(reviewsAbs)) {
+    for (const name of fs.readdirSync(reviewsAbs)) {
+      if (!isReviewPrMarkdown(name)) continue;
+      const abs = path.join(reviewsAbs, name);
+      let st;
+      try {
+        st = fs.statSync(abs);
+      } catch {
+        continue;
       }
-      continue;
+      if (!st.isFile()) continue;
+      const rel = `${reviewsPosix}/${name}`;
+      if (isTracked(repoRoot, rel)) {
+        skipped.push({ path: rel, reason: 'tracked' });
+        continue;
+      }
+      pushCandidate(candidates, {
+        path: rel,
+        kind: 'scratch',
+        reason: 'codereview PR*.md',
+        bytes: dirSize(abs),
+        tracked: false,
+      });
     }
-    if (anyTrackedUnder(repoRoot, abs, repoRoot)) {
-      skipped.push({ path: `${plansPosix}/${name}`, reason: 'tracked' });
-      continue;
-    }
-    pushCandidate(candidates, {
-      path: `${plansPosix}/${name}`,
-      kind: 'shipped-plan',
-      reason: isArchive ? 'archive folder' : `status:${status}`,
-      bytes: dirSize(abs),
-      tracked: false,
-    });
+  } else {
+    skipped.push({ path: reviewsPosix, reason: 'reviews-dir-missing' });
   }
 
   // Repo-root temps
@@ -294,6 +336,7 @@ function main() {
     `${plansPosix}/**/.finding-*.json`,
     `${plansPosix}/**/.audit-session-*.json`,
     `${plansPosix}/**/*.baseline/`,
+    `${reviewsPosix}/PR*.md`,
     '.tmp-*/',
   ];
   const gitignoreSuggestions = suggestPatterns.map((pattern) => ({
@@ -306,6 +349,7 @@ function main() {
     ok: true,
     repoRoot,
     plansDir: plansPosix,
+    reviewsDir: reviewsPosix,
     scratchOnly: opts.scratchOnly,
     slug: opts.slug,
     candidates: deduped,

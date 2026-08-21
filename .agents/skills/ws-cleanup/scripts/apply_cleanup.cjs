@@ -58,11 +58,15 @@ function loadPaths(file) {
   throw new Error('paths-file must be a JSON array or { "paths": [...] }');
 }
 
-function isAllowedEnclosure(relPosix, plansDirPosix) {
+function isAllowedEnclosure(relPosix, plansDirPosix, reviewsDirPosix) {
   if (!relPosix || relPosix.startsWith('..') || path.isAbsolute(relPosix)) return false;
   if (relPosix.startsWith('.tmp-') || /\.bak_/i.test(relPosix.split('/')[0])) return true;
   if (plansDirPosix && (relPosix === plansDirPosix || relPosix.startsWith(`${plansDirPosix}/`))) {
     return true;
+  }
+  if (reviewsDirPosix && relPosix.startsWith(`${reviewsDirPosix}/`)) {
+    const base = relPosix.slice(reviewsDirPosix.length + 1);
+    return /^PR.+\.md$/i.test(base) && !base.includes('/');
   }
   return false;
 }
@@ -77,18 +81,15 @@ function main() {
   const repoRoot = ctx.repoRoot;
   const config = ctx.config || {};
   const plansDirRel = (config.plans && config.plans.dir) || '.agents/plans';
+  const reviewsDirRel = (config.reviews && config.reviews.dir) || '.agents/codereviews';
   const plansAbs = path.isAbsolute(plansDirRel)
     ? plansDirRel
     : path.join(repoRoot, plansDirRel);
+  const reviewsAbs = path.isAbsolute(reviewsDirRel)
+    ? reviewsDirRel
+    : path.join(repoRoot, reviewsDirRel);
   const plansPosix = toPosix(path.relative(repoRoot, plansAbs)) || toPosix(plansDirRel);
-
-  const forbiddenPrefixes = [
-    toPosix(path.join('.agents', 'skills')),
-    'src/',
-    'bin/',
-    'test/',
-    'docs/',
-  ];
+  const reviewsPosix = toPosix(path.relative(repoRoot, reviewsAbs)) || toPosix(reviewsDirRel);
 
   const paths = loadPaths(opts.pathsFile);
   const deleted = [];
@@ -96,22 +97,22 @@ function main() {
 
   for (const relRaw of paths) {
     const rel = toPosix(String(relRaw).replace(/\\/g, '/'));
-    if (!isAllowedEnclosure(rel, plansPosix)) {
+    if (!isAllowedEnclosure(rel, plansPosix, reviewsPosix)) {
       skipped.push({ path: rel, reason: 'outside-enclosure' });
       continue;
     }
-    if (forbiddenPrefixes.some((p) => rel === p.replace(/\/$/, '') || rel.startsWith(p))) {
-      // allow .agents/plans under .agents/ but not .agents/skills
-      if (rel.startsWith('.agents/skills')) {
-        skipped.push({ path: rel, reason: 'skill-body' });
-        continue;
-      }
-      if (!rel.startsWith(`${plansPosix}/`) && rel !== plansPosix && !rel.startsWith('.agents/plans')) {
-        if (rel.startsWith('src/') || rel.startsWith('bin/') || rel.startsWith('test/') || rel.startsWith('docs/')) {
-          skipped.push({ path: rel, reason: 'product-tree' });
-          continue;
-        }
-      }
+    if (rel.startsWith('.agents/skills')) {
+      skipped.push({ path: rel, reason: 'skill-body' });
+      continue;
+    }
+    if (
+      rel.startsWith('src/') ||
+      rel.startsWith('bin/') ||
+      rel.startsWith('test/') ||
+      rel.startsWith('docs/')
+    ) {
+      skipped.push({ path: rel, reason: 'product-tree' });
+      continue;
     }
     const abs = path.join(repoRoot, ...rel.split('/'));
     if (!fs.existsSync(abs)) {

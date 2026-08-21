@@ -1,6 +1,6 @@
 # Disposable patterns — ws-cleanup
 
-Scan enclosure: `{plansDir}` (required), optional repo-root temp globs. Never product `src/` / app trees.
+Scan enclosure: `{plansDir}` (required), `{reviewsDir}` (code-review rounds), optional repo-root temp globs. Never product `src/` / app trees.
 
 ## Scratch (always eligible when untracked)
 
@@ -15,6 +15,7 @@ Scan enclosure: `{plansDir}` (required), optional repo-root temp globs. Never pr
 | `{plansDir}/**/step-03-*.plan.exec.md` | Exec dump |
 | `{plansDir}/**/step-03-*.exec.dag.json` | DAG dump |
 | `{plansDir}/**/step-00-*.issue.json` | Issue fetch temp |
+| `{reviewsDir}/PR*.md` | Local code-review round artifacts (`PR-NNN-round-K.md`) |
 | Repo root `.tmp-*/` | Agent temp dirs |
 | Repo root `*.bak_*` | Backup leftovers |
 
@@ -46,7 +47,8 @@ Suggest when matching debris exists or patterns are recommended and absent from 
 .agents/plans/**/.finding-*.json
 .agents/plans/**/.audit-session-*.json
 .agents/plans/**/*.baseline/
+.agents/codereviews/PR*.md
 .tmp-*/
 ```
 
-Use configured `{plansDir}` segment when it differs from `.agents/plans`.
+Use configured `{plansDir}` / `{reviewsDir}` segments when they differ from the defaults.
