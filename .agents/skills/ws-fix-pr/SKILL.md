@@ -76,9 +76,6 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 ## Runtime audit (`defaults.enableAuditing`)
 
 When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), follow [`ws-audit`](../ws-audit/SKILL.md):
-- **Inherit or Init:** in workflow mode, inherit the active orchestrator audit session (`{us-dir}`); in standalone mode, initialize a session under `{plansDir}/pr-{PR-ID}`.
+- **Inherit or Init:** in workflow mode, inherit the active orchestrator audit session (`{us-dir}`); in standalone mode, initialize a session under `{plansDir}/pr-{PR-NUMBER}`.
 - **Catch script errors:** whenever any provider script (`fix_pr_azure_context.py`, `fetch_threads.cjs`, `resolve_thread.cjs`, SCM CLI helpers) or verification script fails or exits non-zero, append a finding (`category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`).
 - **Finalize & gate:** when running standalone, finalize the audit session at completion/stop and present the upstream issue gate if errors occurred.
-
-
-
