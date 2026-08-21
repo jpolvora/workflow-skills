@@ -25,7 +25,7 @@ Portable **agent skills** that take a feature spec to a reviewed pull request. I
 
 | You get | How it works |
 |---------|--------------|
-| **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads (steps 0–9). |
+| **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads including same-class siblings (steps 0–9). |
 | **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
 | **A derived 9/10 verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ 9**. Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. |
 | **Verifiable runtime artifacts** | Atomic Node state updates publish deterministic `run.json` / `run.md`, a repo plans index, per-step JSONL telemetry, and a machine-readable AC ledger. |

@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Change a shipped runtime recipe without migrating its focused launcher/fixture assertions, or count parents from a script file without testing the project-local installed layout.
 - **INSTEAD DO**: Update the runtime and its focused tests in the same batch, use syntactically valid invert patches, and prove resolver precedence from nested and project-local fixture roots.
 
+### [2026-08-21] Cooperative fix must sweep the defect class
+- **Layer**: `Harness`
+- **Module**: `ws-fix-pr / COOPERATIVE_FIX`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-fix-pr/**, .agents/skills/ws-goal-fix-pr/SKILL.md`
+- **Scenario / Context**: Reviewer threads often flag one file:line plus similar occurrences. Resolving after patching only the anchor left the same false-green or untyped-schema class elsewhere, so the next review round re-opened siblings.
+- **DO NOT**: Close a review thread after fixing only the anchored instance when the body names extra paths or a grep would find the same class.
+- **INSTEAD DO**: Name the defect class, grep repo-wide (and every path the thread already listed), fix in-scope hits in the same round, and record path+reason for any skip.
+
 ### [2026-08-19] Missing MEMORY.md must not HS-5 the pipeline
 - **Layer**: `Infrastructure`
 - **Module**: `ws-spec-to-pr / check_memory_conflict.py / STEP-DISPATCH`

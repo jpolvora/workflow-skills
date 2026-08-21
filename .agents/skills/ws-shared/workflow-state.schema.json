@@ -64,7 +64,19 @@
     },
     "workflowManifest": { "type": "object" },
     "telemetry": { "type": "object" },
-    "commits": { "type": "array" },
+    "commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sha", "step"],
+        "properties": {
+          "sha": { "type": "string", "minLength": 7 },
+          "step": { "type": "integer", "minimum": 0, "maximum": 9 },
+          "message": { "type": "string" }
+        }
+      }
+    },
     "currentModel": { "type": "string" },
     "nextAction": { "type": "string" },
     "pendingGate": { "type": ["object", "null"] },

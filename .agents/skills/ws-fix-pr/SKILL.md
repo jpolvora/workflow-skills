@@ -67,8 +67,8 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 4. **Confirmation gate**: save the proposed fix checklist to `{skillsRoot}/ws-fix-pr/runs/pr-<PR-ID>/plan-gate.md` (uncommitted) and ask: "Proceed with fixes for threads [ID1, ID2]?" Under [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md), auto-yes (save gate file and proceed).
    - Done when: checklist confirmed by user, or auto-approved by the goal loop.
 
-5. **Surgical fix**: for each blocking thread, analyze call sites and adjacent logic, then apply minimal edits (Karpathy guidelines) that fix the defect class, not just the reported instance.
-   - Done when: all approved threads have code changes or a resolution comment drafted.
+5. **Surgical fix (defect class)**: for each blocking thread, name the defect class, then follow [`scripts/COOPERATIVE_FIX.md`](scripts/COOPERATIVE_FIX.md) sibling sweep (repo-wide grep; include paths the thread already named). Apply minimal edits that fix every in-scope occurrence, not only the anchored `file:line`. Record `siblingsFixed` / `siblingsSkipped` (path + reason) on the plan-gate and in the resolution comment.
+   - Done when: all approved threads have class-wide fixes or a resolution comment that names remaining exemptions.
 
 6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via provider intent `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: verification passed, report exists, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).

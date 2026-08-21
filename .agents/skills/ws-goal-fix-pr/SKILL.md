@@ -77,7 +77,7 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 2. **Initial convergence check**: call `list-threads` and check active SCM CI/code-review run status, then apply [`ws-goal-loop`](../ws-goal-loop/SKILL.md)'s configured convergence helper. If a fresh read has `activeThreads == 0` and every required check concluded successfully, exit without arming a heartbeat. Running checks poll at `defaults.convergence.minPollSec`; queued or absent runs poll at `maxPollSec`; record observed state and chosen interval in every round log.
    - Done when: `activeThreads` is confirmed either still 0 and actions completed (stop, converged) or > 0 / actions in progress (proceed to Act or wait).
 
-3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads via the configured SCM provider intent `resolve-thread`, and `git push origin HEAD` (skip push when `dry-run`).
+3. **Act round**: dispatch [ws-fix-pr](../ws-fix-pr/SKILL.md) for `<PR-NUMBER>` with overrides active. Each round must run the cooperative sibling sweep (defect class, not only the anchored line) before resolve. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve fixed threads via the configured SCM provider intent `resolve-thread`, and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: the round's approved threads are fixed or resolved, and pushed (unless `dry-run`).
 
 4. **Verify**: run `config.json.verification` commands plus a `ws-code-review` diff check. Three consecutive verification failures stop the loop and escalate.

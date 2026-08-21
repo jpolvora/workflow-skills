@@ -2,6 +2,16 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 19:20] Agent: Cursor Grok 4.6
+- **Prompt**: Improve cooperative fix; find more of the same issue in code
+- **Done**: Sibling-sweep contract in COOPERATIVE_FIX/AUTO_FIX/ws-fix-pr/ws-goal-fix-pr; eval #3; untyped `commits` array in workflow-state.schema.json; schema-array `items` gate in test-evals-schema.js
+- **Result**: Cooperative fix now requires class-wide grep before resolve; remaining untyped schema array closed
+
+### [2026-08-21 19:10] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 223)
+- **Done**: Made `bin/validate-evals.cjs` load and apply `evals.schema.json`; added missing-schema test
+- **Result**: Thread PRRT_kwDOTFajc86bUNDl fixed in cdecc11; waiting on next review heartbeat
+
 ### [2026-08-21 18:35] Agent: Composer
 - **Prompt**: Expand ws-cleanup patterns for leftovers found after shipped/partially tracked plan triage
 - **Done**: Listed `audit-*.log.md`, `post-bootstrap-commits.md`, root `.tmp-*` files; shipped-orphan walk when plan root is tracked-partial; PATTERNS + tests + root `.gitignore`
