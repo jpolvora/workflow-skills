@@ -74,6 +74,22 @@ function main() {
   );
   assert(schema.includes('"enableAuditing"'), 'config schema has enableAuditing');
 
+  const deps = JSON.parse(
+    fs.readFileSync(path.join(REPO_ROOT, 'bin/skill-dependencies.json'), 'utf-8'),
+  );
+  assert(
+    deps.dependencies['ws-ship-pr']?.includes('ws-audit'),
+    'ws-ship-pr declares ws-audit dependency',
+  );
+  assert(
+    deps.dependencies['ws-goal-fix-pr']?.includes('ws-audit'),
+    'ws-goal-fix-pr declares ws-audit dependency',
+  );
+  assert(
+    deps.dependencies['ws-spec-to-pr']?.includes('ws-audit'),
+    'ws-spec-to-pr declares ws-audit dependency',
+  );
+
   const resolveMissing = runNode(['resolve', '--config', path.join(mkTmp('no-cfg-'), 'nope.json')]);
   assert(resolveMissing.status === 0, 'resolve exits 0');
   const resolved = JSON.parse(resolveMissing.stdout.trim());

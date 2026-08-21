@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.3.26
+version: 0.3.27
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -72,4 +72,9 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 
 6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via provider intent `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: verification passed, report exists, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).
+
+## Runtime audit (`defaults.enableAuditing`)
+
+When `defaults.enableAuditing` is `true`, catch and log all script execution anomalies (provider script failures, verification errors) to the active audit session via [`ws-audit`](../ws-audit/SKILL.md).
+
 

@@ -1,7 +1,7 @@
 ---
 name: ws-audit
 description: Runtime workflow audit observer — logs script/tool/I/O/dispatch anomalies, diagnoses performance bottlenecks, detects disposable scratch scripts, and proposes upstream GitHub issues and reusable tooling.
-version: 0.3.26
+version: 0.3.27
 disable-model-invocation: true
 invocation_names:
   - audit
@@ -14,7 +14,7 @@ invocation_names:
 
 **Leading word:** *observe* — live runtime anomalies, performance bottlenecks, correctness risks, and disposable script opportunities during orchestration, not static install diagnose (`ws-doctor`) or harness integrity (`ws-check-harness`).
 
-Opt-in via `defaults.enableAuditing` (`boolean`, default `false`). When effective `true`, orchestrators wrap `ws-spec-to-pr`, `ws-spec-to-pr-lite`, and `ws-multi-spec` child runs with this protocol.
+Opt-in via `defaults.enableAuditing` (`boolean`, default `false`). When effective `true`, all workflows and orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`, `ws-ship-pr`, `ws-goal-fix-pr`, `ws-fix-pr`) wrap executions with this protocol.
 
 Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-shared/tools.md) only.
 
@@ -22,7 +22,7 @@ Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-s
 
 | Skill | Use when |
 |-------|----------|
-| **This skill** | Live script/tool/I/O/dispatch anomalies, command bottlenecks, and disposable scratch script opportunities during an orch run; log even when the model recovers |
+| **This skill** | Live script execution errors, tool/I/O/dispatch anomalies, command bottlenecks, and disposable scratch script opportunities across any workflow run; log even when the model recovers |
 | [`ws-doctor`](../ws-doctor/SKILL.md) | Static install diagnose (paths, parse, config summary, missing refs) |
 | [`ws-check-harness`](../ws-check-harness/SKILL.md) | Meta-harness integrity Phases 0–5c |
 | [`ws-fable-judge`](../ws-fable-judge/SKILL.md) | Adversarial claim vs git diff |
@@ -35,19 +35,22 @@ Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-s
 
 Resolution: missing config, omitted key, null, or unreadable → `false`. See [`config-resolution.md`](../ws-shared/config-resolution.md) § Runtime audit.
 
-## Orchestrator obligations (when enabled)
+## Workflow & orchestrator obligations (when enabled)
 
-1. **Init** at bootstrap (after `{us-dir}` known):
+1. **Init** at bootstrap:
+   - In orchestrator runs: initialize once `{us-dir}` is known.
+   - In standalone workflow runs (`ws-ship-pr`, `ws-goal-fix-pr`, `ws-fix-pr`): initialize under the target plan dir `{plansDir}/{slug}` (e.g. `{plansDir}/pr-{prId}` or `{plansDir}/ship-{branch}`).
 
    ```bash
    node {skillsRoot}/ws-audit/scripts/audit_log.js init \
      --us-dir "{us-dir}" --slug "{slug}" --workflow-id "{workflow-id}"
    ```
 
-   Persist returned `session` JSON in workflow state (`auditSession`).
+   Persist returned `session` JSON in workflow state (`auditSession`) or active context.
 
 2. **Append** after notable events:
-   - **Anomalies / Errors:** script failure/retry, tool mismatch, missing handoff artifact, unusual dispatch.
+   - **Script execution errors (mandatory):** whenever any managed script, provider helper (e.g. `fix_pr_azure_context.py`, `fetch_threads.cjs`, `ado-workitem-to-spec.py`), SCM wrapper, state manager (`update_state.py`, `validate_state.py`), or verification script fails with a non-zero exit code, unhandled exception, bad CLI argument/option, or stderr error. Log with `category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`.
+   - **Anomalies / Errors:** tool mismatch, missing handoff artifact, unusual dispatch.
    - **Opportunities / Suggestions:** agent writing disposable scratch scripts (`scratch/*`, `tmp/*`, inline helpers for parsing/filtering/querying that could be pre-generated upstream), redundant command executions, inefficient polling loops, unhandled stderr warnings or fragile shell pipelines.
 
    Write finding JSON with the host file-writing tool (never inline shell JSON), then:
@@ -58,7 +61,7 @@ Resolution: missing config, omitted key, null, or unreadable → `false`. See [`
      --finding-file "{us-dir}/.finding-step-4.json"
    ```
 
-   Log skill-content defects **even when recovered**.
+   Log skill-content and script defects **even when recovered**.
 
 3. **Finalize** at workflow end (before or after Step 8 delivery result):
 
