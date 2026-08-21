@@ -282,6 +282,7 @@ Upstream-only verification helper (not part of the portable skill contract). Req
 # Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.
 curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh \
   -o /tmp/agentic-code-reviewers-run.sh
+AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS=".agents/plans/**,.agents/specs/**" \
 bash /tmp/agentic-code-reviewers-run.sh \
   --dry-run \
   --gh \

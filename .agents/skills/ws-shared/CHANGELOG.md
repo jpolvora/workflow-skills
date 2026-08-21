@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 19:40] Agent: Cursor Grok 4.6
+- **Prompt**: Configure agentic-code-reviewer CI to ignore {plansDir} and {specsDir}; check ignore support
+- **Done**: Set AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS for .agents/plans/** and .agents/specs/** in code-review.yml; mirrored in CATALOG local dry-run; closed include-patterns quote so cjs/py/prd stay in the glob list
+- **Result**: Reviewer has no --exclude-patterns CLI; extra exclude is env-only and now drops workflow plan/spec trees from the PR diff
+
 ### [2026-08-21 19:34] Agent: Cursor Grok 4.6
 - **Prompt**: fix website layout
 - **Done**: Kept top-nav labels on one line (nowrap, no flex-shrink) and hid the link row below 1100px
