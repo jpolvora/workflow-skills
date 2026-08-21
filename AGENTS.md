@@ -116,23 +116,7 @@ Authoring + Before-ship checklist: [`CATALOG.md`](CATALOG.md) § Upstream develo
 
 ### Consumer CLI (install / update / uninstall)
 
-Human narrative: [`README.md`](README.md) § Install, update, and uninstall. Agents in a **consumer** project (not this package root):
-
-```bash
-npx --yes github:jpolvora/workflow-skills              # interactive install (prompts for scope)
-npx --yes github:jpolvora/workflow-skills install --package workflows --yes
-npx --yes github:jpolvora/workflow-skills install --package workflows --global --yes
-npx --yes github:jpolvora/workflow-skills update       # uses ws-shared/installed-skills.json
-npx --yes github:jpolvora/workflow-skills update --global
-npx --yes github:jpolvora/workflow-skills update --include-new
-npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --yes
-npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> --global --yes
-```
-
-Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected` roots). Missing on first update → bootstrap from disk. Uninstall preserves `shared/` (config, MEMORY, stack, manifest rewrite).
-
-**This source repo:** do not run remote `npx github:jpolvora/workflow-skills` against the package root (except under `test/`). Prefer local `node bin/cli.js` / `./install-skills.sh`.
-
+Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`npx --yes github:jpolvora/workflow-skills …`). Manifest: `.agents/skills/ws-shared/installed-skills.json`. **This source repo:** use local `node bin/cli.js` / `./install-skills.sh` (not remote `npx` against package root, except under `test/`).
 ---
 
 ## Workflows
@@ -378,26 +362,11 @@ On demand: [`CATALOG.md`](CATALOG.md). Package membership: [`bin/skill-dependenc
 
 ## Task router
 
-Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`autoload.md`](.agents/skills/ws-shared/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
-
-| Intent (utility shortcuts) | Load |
-|----------------------------|------|
-| Explain spec / US status & delivery panorama | `ws-spec-explain` |
-| Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
-| Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
+Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
 
 ## Verification (before claim complete / commit)
 
-Full ordered checklist: [`CATALOG.md`](CATALOG.md) § Upstream developer workflow. Summary:
-
-1. **Harness:** load `.agents/skills/ws-check-harness/SKILL.md` → Phases 0–5c
-2. **Install tests:** `npm run test` · `npm run tests`
-3. **Dependency graph:** if skills added/removed/renamed or orch dispatch changed → update `bin/skill-dependencies.json`; `ws-check-harness` Phase 3/4b must pass
-4. **Skill integrity:** if package-hashed content changed → `npm run generate-integrity` && `npm run verify-integrity` (must exit 0) before claim complete / PR
-5. **Workflow simulation:** `ws-check-workflows` when orch/gates/simulations changed
-6. **Site (optional):** `gh api repos/jpolvora/workflow-skills/pages`
-7. **Catalog / version:** if shipping package changes → `npm run build-site:bump`; else catalog-only → `node bin/build-site.js`. `package.json` ↔ footer must match; CI deploy never bumps.
-8. **FEATURES sync:** update [`FEATURES.md`](FEATURES.md) when shipped capabilities or the skill inventory change.
+Full ordered checklist (harness → tests → deps → integrity → workflows → site → FEATURES): [`CATALOG.md`](CATALOG.md) § Upstream developer workflow. Integrity regenerate obligation stays in that section and § [Harness change protocol](#harness-change-protocol).
 ---
 
 ## Local dry-run: agentic code reviewers
