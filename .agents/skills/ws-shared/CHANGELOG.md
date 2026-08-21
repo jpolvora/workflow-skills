@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 11:36] Agent: Cursor Grok 4.6
+- **Prompt**: Step 8 ws-ship-pr hermes-spec-to-pr-enhancements create-pr stopBeforeFixPr
+- **Done**: Bumped package 0.3.27 → 0.3.28; regenerated catalog + integrity; delivery commit of refined plan; push develop and reuse PR 222
+- **Result**: Prepare board green; PR develop → main; stop before goal-fix-pr
+
 ### [2026-08-21 10:55] Agent: Cursor Grok 4.6
 - **Prompt**: update improving website info, syncing skills features and simplifying and enhancing the marketing ideas describing better, commit again
 - **Done**: Site hero, Features grid, workflow/package/FAQ copy. SKILL.md descriptions for orch + verify + SCM providers; catalog rebuild. README Features table in "you get" language.

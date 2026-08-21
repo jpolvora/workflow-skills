@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ 9 before review. Trigger for full/standard delivery.
-version: 0.3.27
+version: 0.3.28
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
