@@ -2,6 +2,12 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 19:34] Agent: Cursor Grok 4.6
+- **Prompt**: fix website layout
+- **Done**: Kept top-nav labels on one line (nowrap, no flex-shrink) and hid the link row below 1100px
+- **Result**: "How It Works" no longer wraps taller than the other nav items
+
+
 ### [2026-08-21 19:32] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr (PR 223)
 - **Done**: Untracked mid-run harness plan artifacts and gitignored telemetry from the PR; wired check_duplicates.cjs and measure_harness.cjs into ws-check-harness Phase 5a

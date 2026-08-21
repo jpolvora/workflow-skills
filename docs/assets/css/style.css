@@ -181,11 +181,11 @@ nav {
 }
 
 nav .nav-inner {
-  max-width: 1180px;
+  max-width: 1280px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
   height: 70px;
 }
 
@@ -197,6 +197,8 @@ nav .brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 nav .brand-icon {
@@ -215,16 +217,19 @@ nav .brand-icon {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 20px;
+  flex-wrap: nowrap;
+  gap: 8px;
 }
 
 .nav-links a {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-muted);
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: var(--radius-xs);
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-links a:hover {
@@ -241,6 +246,7 @@ nav .brand-icon {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 /* Theme Toggle Button */
@@ -2037,9 +2043,12 @@ footer a:hover {
   .role-matrix-grid { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 1100px) {
+  .nav-links { display: none; }
+}
+
 @media (max-width: 768px) {
   nav .nav-inner { padding: 0; }
-  .nav-links { display: none; }
   .hero { padding: 56px 16px 40px; }
   .hero-animation-wrap {
     margin-bottom: 24px;
