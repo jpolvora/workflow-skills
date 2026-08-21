@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "13a575f5a84a76caa491273a3a963cf5b17f19b3a635ad8bc38ee8aca65c553d",
+  "fullPackageDigest": "1c89806b58130cb1dbf3121137f4ad2a4ac7dd56c21ef4a821b22acf04eea626",
   "hub": {
     "files": {
       "AGENTS.md": "5f3e3fa5bfebaf4185739d8fba430cf31d3ecb0943f7ff9823c9dd0c69a9148d",
@@ -58,10 +58,10 @@
         "scripts/ado-workitem-to-spec.py": "4af792f5015186096ca9b64f454286aa8e91cd164b5738c8df457d8dcc3d3688",
         "scripts/comment_issue.py": "fb0b795f520d1a77e0a1ea0ab0832cb543f1ed998da953fcd474ede0f1b78b6c",
         "scripts/fix_pr_azure_context.py": "f95119c6b1fb76bd017288c824221d0bf9e33895e2afe95924ec28fb620c673d",
-        "scripts/sweep_prior_work.py": "502ed2addcc712cf464fdde0142cc8eb7b98e4a8d06d404c350f1e484ecb52cd",
+        "scripts/sweep_prior_work.py": "3b67abd4387d187fb677a12129f2f2248d49815c901be601d16c168b5d562145",
         "SKILL.md": "d3737ab342721f713f1caae6211bd23039a700316259670bcb5db2eac5ccc0f7"
       },
-      "skillDigest": "c243f1908a3ded45d620bd37006640f55e3bfbfd53e03ded191065044c0faa29"
+      "skillDigest": "204c7aa914beb530f546fe2956194767799affe7d626df58678f04495d3160c9"
     },
     "ws-changelog": {
       "files": {
@@ -386,10 +386,10 @@
     "ws-testing": {
       "files": {
         "evals/evals.json": "b05e7fb7b7a3aa4d4e1baad7c1f265872245b909fa800a8f5e57be3341d6f6a2",
-        "scripts/run_sabotage.py": "4bf0ce5495abfbd19838130bca2e371d78ebcb69b5acc9299761f93f4e899d25",
-        "SKILL.md": "6617adc39b97f6b66681a4d1c5fb76ea7a205ced4e65037bf791a3694c77f31e"
+        "scripts/run_sabotage.py": "ac03c16a8c4b9cbd5dcc7aadeac413ef12a650c3e124a22d3cfefb8a5194e76b",
+        "SKILL.md": "e183384d151007490352c66510bb957b6a5a8f94ab81e51227dc6dc10ea5d548"
       },
-      "skillDigest": "f22b0158191050d674862d721d50f6139f9de0b25219ffa9442d0a47eb863e10"
+      "skillDigest": "795ad62c150062a89fb3ef5373b815187a88f051f9d2fb513be348f642664128"
     },
     "ws-update-plan-implementation": {
       "files": {

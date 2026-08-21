@@ -76,7 +76,7 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
    - **Fail:** score &lt; threshold or non-zero exit → Mutation `status: failed`; **do not** treat Step 7 as complete for Advance — orch/`user-gate` offers handoff to [`ws-implement-tasks`](../ws-implement-tasks/SKILL.md) fix mode to strengthen tests (kill survivors). This skill does not edit product or test code.
    - Done when: Mutation recorded as `passed` | `failed` | `skipped`.
 
-8. **Regression sabotage** (when mutation skipped/unset): after unit tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` on newly added regression assertions (caller-authored invert patch). Expect test **non-zero** with inverted code; restore must leave tree clean (`git diff --exit-code`). Restore failure → abort Step 7. When full mutation ran, log sabotage `skipped` (superseded).
+8. **Regression sabotage** (when mutation skipped/unset): after unit tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` on newly added regression assertions (caller-authored invert patch). Expect test **non-zero** with inverted code; restore must match the pre-invert snapshot bytes on `--paths` only (other dirty tracked files do not fail restore). Restore failure → abort Step 7. When full mutation ran, log sabotage `skipped` (superseded).
    - Done when: sabotage recorded as `passed` | `failed` | `skipped` + reason.
 
 9. **Report**: write `step-07-{slug}.testing.report.md` with results from Steps 2–8, including an accessibility/contrast check on form validation errors and alert indicators. Always include **Mutation** and **Regression Sabotage** sections. Final pass verdict only when neither is `failed` and other planned areas passed (or were skipped per policy).

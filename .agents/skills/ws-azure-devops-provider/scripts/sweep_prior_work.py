@@ -4,6 +4,9 @@ Prior-work sweep for Azure DevOps: search PRs and recent commits.
 
 Usage:
   python sweep_prior_work.py --keywords auth login [--issue 1234] [--files path/a]
+  python sweep_prior_work.py --dry-run --keywords test
+
+stdout: JSON with repo-relative paths only. validate-auth first.
 """
 from __future__ import annotations
 
@@ -50,6 +53,18 @@ def resolve_repo_root(override: str | None = None) -> Path:
     return Path(__file__).resolve().parents[4]
 
 
+def to_repo_relative(repo_root: Path, path: str | Path) -> str:
+    p = Path(path)
+    try:
+        rel = p.resolve().relative_to(repo_root.resolve())
+        return rel.as_posix()
+    except ValueError:
+        s = str(path).replace("\\", "/")
+        if re.match(r"^[A-Za-z]:/", s):
+            return Path(s).name
+        return s.lstrip("/")
+
+
 def load_ado_config(repo_root: Path) -> dict[str, Any]:
     cfg_path = repo_root / HUB_REL
     if not cfg_path.is_file():
@@ -71,15 +86,25 @@ def resolve_pat(pat_env_var: str) -> str:
     return ""
 
 
-def validate_auth(ado: dict[str, Any]) -> tuple[bool, str]:
+def validate_auth(ado: dict[str, Any], dry_run: bool) -> tuple[bool, str]:
     org = (ado.get("org") or "").strip()
     project = (ado.get("project") or "").strip()
     pat_env = (ado.get("patEnvVar") or "ADO_PAT").strip()
     pat = resolve_pat(pat_env)
     if not org or not project:
-        return False, "Missing issueTrackers.azureDevOps org/project in config.json"
+        msg = "Missing issueTrackers.azureDevOps org/project in config.json"
+        if dry_run:
+            return False, msg
+        print(msg, file=sys.stderr)
+        print("Fix: configure issueTrackers.azureDevOps (validate-auth)", file=sys.stderr)
+        return False, msg
     if not pat:
-        return False, f"Missing PAT: set {pat_env} or ADO_PAT (validate-auth)"
+        msg = f"Missing PAT: set {pat_env} or ADO_PAT (validate-auth)"
+        if dry_run:
+            return False, msg
+        print(msg, file=sys.stderr)
+        print("Fix: configure issueTrackers.azureDevOps and set ADO_PAT (validate-auth)", file=sys.stderr)
+        return False, msg
     return True, ""
 
 
@@ -92,47 +117,102 @@ def api_get(url: str, pat: str) -> Any:
         return json.loads(resp.read().decode("utf-8"))
 
 
-def search_prs(ado: dict[str, Any], pat: str, search_text: str) -> list[dict[str, Any]]:
+def pr_row(pr: dict[str, Any], search_text: str) -> dict[str, Any]:
+    return {
+        "pullRequestId": pr.get("pullRequestId"),
+        "title": pr.get("title") or "",
+        "status": pr.get("status"),
+        "sourceRefName": pr.get("sourceRefName"),
+        "searchText": search_text,
+    }
+
+
+def list_project_prs(ado: dict[str, Any], pat: str, top: int = 100) -> list[dict[str, Any]]:
     org = ado["org"]
     project = ado["project"]
     api_base = (ado.get("apiBase") or "https://dev.azure.com").rstrip("/")
-    q = urllib.parse.quote(search_text)
     url = (
         f"{api_base}/{org}/{project}/_apis/git/pullrequests"
-        f"?searchCriteria.status=all&$top=20&api-version=7.1"
+        f"?searchCriteria.status=all&$top={top}&api-version=7.1"
     )
     try:
         data = api_get(url, pat)
     except (urllib.error.URLError, json.JSONDecodeError, KeyError):
         return []
-    rows = []
-    for pr in data.get("value") or []:
+    return list(data.get("value") or [])
+
+
+def fetch_pr_by_id(ado: dict[str, Any], pat: str, pull_request_id: int) -> dict[str, Any] | None:
+    org = ado["org"]
+    project = ado["project"]
+    api_base = (ado.get("apiBase") or "https://dev.azure.com").rstrip("/")
+    url = f"{api_base}/{org}/{project}/_apis/git/pullrequests/{pull_request_id}?api-version=7.1"
+    try:
+        return api_get(url, pat)
+    except (urllib.error.URLError, json.JSONDecodeError, KeyError):
+        return None
+
+
+def parse_pr_id_from_relation(url: str) -> int | None:
+    if "PullRequestId" not in url:
+        return None
+    decoded = urllib.parse.unquote(url)
+    match = re.search(r"PullRequestId[/\\](?:[^/%\\]+[/\\]){2}(\d+)\b", decoded, re.I)
+    if match:
+        return int(match.group(1))
+    match = re.search(r"PullRequestId[/\\](\d+)\b", decoded, re.I)
+    if match:
+        return int(match.group(1))
+    return None
+
+
+def search_prs_by_work_item(ado: dict[str, Any], pat: str, work_item_id: int) -> list[dict[str, Any]]:
+    org = ado["org"]
+    project = ado["project"]
+    api_base = (ado.get("apiBase") or "https://dev.azure.com").rstrip("/")
+    url = (
+        f"{api_base}/{org}/{project}/_apis/wit/workitems/{work_item_id}"
+        f"?$expand=relations&api-version=7.1"
+    )
+    try:
+        data = api_get(url, pat)
+    except (urllib.error.URLError, json.JSONDecodeError, KeyError):
+        return []
+    rows: list[dict[str, Any]] = []
+    seen: set[int] = set()
+    search_text = str(work_item_id)
+    for rel in data.get("relations") or []:
+        rel_url = rel.get("url") or ""
+        pr_id = parse_pr_id_from_relation(rel_url)
+        if pr_id is None or pr_id in seen:
+            continue
+        pr = fetch_pr_by_id(ado, pat, pr_id)
+        if not pr:
+            continue
+        seen.add(pr_id)
+        rows.append(pr_row(pr, search_text))
+    return rows
+
+
+def search_prs(ado: dict[str, Any], pat: str, search_text: str) -> list[dict[str, Any]]:
+    needle = search_text.strip().lower()
+    if not needle:
+        return []
+    rows: list[dict[str, Any]] = []
+    for pr in list_project_prs(ado, pat):
         title = (pr.get("title") or "")
         desc = (pr.get("description") or "")
-        if search_text.lower() not in f"{title} {desc}".lower() and not search_text.isdigit():
+        hay = f"{title} {desc}".lower()
+        if needle not in hay:
             continue
-        rows.append(
-            {
-                "pullRequestId": pr.get("pullRequestId"),
-                "title": title,
-                "status": pr.get("status"),
-                "sourceRefName": pr.get("sourceRefName"),
-                "searchText": search_text,
-            }
-        )
+        rows.append(pr_row(pr, search_text))
     return rows
 
 
 def git_log(repo_root: Path, files: list[str]) -> list[dict[str, str]]:
     if not files:
         return []
-    rel_files = []
-    for f in files:
-        p = Path(f)
-        try:
-            rel_files.append(p.resolve().relative_to(repo_root.resolve()).as_posix())
-        except ValueError:
-            rel_files.append(str(f).replace("\\", "/"))
+    rel_files = [to_repo_relative(repo_root, f) for f in files]
     proc = subprocess.run(
         ["git", "log", "--oneline", "-20", "--", *rel_files],
         cwd=repo_root,
@@ -159,22 +239,38 @@ def main() -> int:
     parser.add_argument("--keywords", nargs="+", default=[])
     parser.add_argument("--files", nargs="*", default=[])
     parser.add_argument("--repo-root", default=None)
-    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--dry-run", action="store_true", help="Advisory mode; skip remote when auth missing")
     args = parser.parse_args()
 
     repo_root = resolve_repo_root(args.repo_root)
     ado = load_ado_config(repo_root)
-    ok, msg = validate_auth(ado)
-    if not ok:
-        print(msg, file=sys.stderr)
-        print("Fix: configure issueTrackers.azureDevOps and set ADO_PAT (validate-auth)", file=sys.stderr)
+    auth_ok, auth_msg = validate_auth(ado, args.dry_run)
+    if not auth_ok and not args.dry_run:
         return 1
+    if not auth_ok and args.dry_run:
+        payload = {
+            "status": "skipped",
+            "reason": auth_msg or "ADO auth not configured",
+            "provider": "azure-devops",
+            "issue": args.issue,
+            "keywords": args.keywords,
+            "pullRequests": [],
+            "commits": git_log(repo_root, args.files),
+            "repoRoot": ".",
+        }
+        print(json.dumps(payload, indent=2))
+        return 0
 
     pat_env = (ado.get("patEnvVar") or "ADO_PAT").strip()
     pat = resolve_pat(pat_env)
     prs: list[dict[str, Any]] = []
     seen: set[int | None] = set()
     if args.issue is not None:
+        for row in search_prs_by_work_item(ado, pat, args.issue):
+            pid = row.get("pullRequestId")
+            if pid not in seen:
+                seen.add(pid)
+                prs.append(row)
         for row in search_prs(ado, pat, str(args.issue)):
             pid = row.get("pullRequestId")
             if pid not in seen:

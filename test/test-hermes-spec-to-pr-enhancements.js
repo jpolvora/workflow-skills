@@ -45,6 +45,7 @@ const fixPr = read('.agents/skills/ws-fix-pr/SKILL.md');
 const goalFix = read('.agents/skills/ws-goal-fix-pr/SKILL.md');
 const tools = read('.agents/skills/ws-shared/tools.md');
 const readme = read('README.md');
+const catalog = read('docs/index.html');
 
 for (const id of ['sweep-prior-work', 'comment-issue']) {
   assert(contract.includes(`\`${id}\``), `contract Required intents includes ${id}`);
@@ -91,7 +92,10 @@ assert(/close-loop/i.test(tools), 'tools.md close-loop alias');
 assert(readme.includes('Hermes delivery disciplines'), 'README Hermes feature bullets');
 assert(/prior-work|sabotage|check-pr-status|comment-issue/i.test(readme), 'README Hermes keywords');
 
-// sweep_prior_work dry-run JSON paths
+assert(catalog.includes('Hermes delivery disciplines'), 'catalog Hermes feature card');
+assert(/prior-work|sabotage|check-pr-status|comment-issue/i.test(catalog), 'catalog Hermes keywords');
+
+// sweep_prior_work dry-run JSON paths (GitHub)
 const sweepDry = spawnSync(
   'python',
   [
@@ -102,10 +106,32 @@ const sweepDry = spawnSync(
   ],
   { cwd: REPO, encoding: 'utf8' },
 );
-assert(sweepDry.status === 0, 'sweep_prior_work.py --dry-run exits 0');
+assert(sweepDry.status === 0, 'GitHub sweep_prior_work.py --dry-run exits 0');
 const sweepJson = JSON.parse(sweepDry.stdout || '{}');
-assert(sweepJson.repoRoot === '.', 'sweep JSON repoRoot relative');
-assert(!/^[A-Za-z]:/.test(JSON.stringify(sweepJson)), 'sweep JSON no drive letters');
+assert(sweepJson.repoRoot === '.', 'GitHub sweep JSON repoRoot relative');
+assert(!/^[A-Za-z]:/.test(JSON.stringify(sweepJson)), 'GitHub sweep JSON no drive letters');
+
+// sweep_prior_work dry-run JSON paths (ADO parity)
+const adoSweepDry = spawnSync(
+  'python',
+  [
+    path.join(SKILLS, 'ws-azure-devops-provider/scripts/sweep_prior_work.py'),
+    '--dry-run',
+    '--keywords',
+    'hermes',
+    '--files',
+    path.join(REPO, 'README.md'),
+  ],
+  { cwd: REPO, encoding: 'utf8' },
+);
+assert(adoSweepDry.status === 0, 'ADO sweep_prior_work.py --dry-run exits 0');
+const adoSweepJson = JSON.parse(adoSweepDry.stdout || '{}');
+assert(adoSweepJson.repoRoot === '.', 'ADO sweep JSON repoRoot relative');
+assert(!/^[A-Za-z]:/.test(JSON.stringify(adoSweepJson)), 'ADO sweep JSON no drive letters');
+assert(
+  !(adoSweepJson.commits || []).some((c) => (c.files || []).some((f) => /^[A-Za-z]:/.test(f))),
+  'ADO sweep commit file paths repo-relative',
+);
 
 // comment_issue skip + dry-run
 const commentSkip = spawnSync(
@@ -116,20 +142,39 @@ const commentSkip = spawnSync(
 assert(commentSkip.status === 0, 'comment_issue null id skipped');
 assert(/skipped/.test(commentSkip.stdout || ''), 'comment_issue skipped status');
 
-// sabotage fixture
+// sabotage fixture (git repo; test fails only when invert bites)
 const fixtureDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-sabotage-'));
 const relFixture = 'sample.txt';
 const fixtureFile = path.join(fixtureDir, relFixture);
+const otherFile = path.join(fixtureDir, 'other.txt');
 fs.writeFileSync(fixtureFile, 'PASS', 'utf8');
+fs.writeFileSync(otherFile, 'clean', 'utf8');
 const patchFile = path.join(fixtureDir, 'invert.patch');
 fs.writeFileSync(patchFile, '--- a/sample.txt\n+++ b/sample.txt\n@@ -1 +1 @@\n-PASS\n+FAIL\n', 'utf8');
+
+const gitInit = spawnSync('git', ['init'], { cwd: fixtureDir, encoding: 'utf8' });
+assert(gitInit.status === 0, 'sabotage fixture git init');
+spawnSync('git', ['config', 'user.email', 'test@example.com'], { cwd: fixtureDir, encoding: 'utf8' });
+spawnSync('git', ['config', 'user.name', 'test'], { cwd: fixtureDir, encoding: 'utf8' });
+spawnSync('git', ['config', 'core.autocrlf', 'false'], { cwd: fixtureDir, encoding: 'utf8' });
+spawnSync('git', ['add', relFixture, 'other.txt'], { cwd: fixtureDir, encoding: 'utf8' });
+spawnSync('git', ['commit', '-m', 'init'], { cwd: fixtureDir, encoding: 'utf8' });
+fs.writeFileSync(otherFile, 'dirty', 'utf8');
+
+const checkScript = path.join(fixtureDir, 'check_pass.py');
+fs.writeFileSync(
+  checkScript,
+  "import pathlib, sys\nsys.exit(0 if pathlib.Path('sample.txt').read_text(encoding='utf-8').strip() == 'PASS' else 1)\n",
+  'utf8',
+);
+const passTest = 'python check_pass.py';
 
 const sabotage = spawnSync(
   'python',
   [
     path.join(SKILLS, 'ws-testing/scripts/run_sabotage.py'),
     '--test',
-    process.platform === 'win32' ? 'exit /b 1' : 'false',
+    passTest,
     '--paths',
     relFixture,
     '--invert-patch',
@@ -141,6 +186,7 @@ const sabotage = spawnSync(
 );
 assert(sabotage.status === 0, 'run_sabotage bites then restores');
 assert(fs.readFileSync(fixtureFile, 'utf8') === 'PASS', 'fixture restored after sabotage');
+assert(fs.readFileSync(otherFile, 'utf8') === 'dirty', 'other dirty tracked file untouched by restore proof');
 
 const sabotageFail = spawnSync(
   'python',
