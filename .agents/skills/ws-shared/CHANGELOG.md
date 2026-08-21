@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 19:32] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 223)
+- **Done**: Untracked mid-run harness plan artifacts and gitignored telemetry from the PR; wired check_duplicates.cjs and measure_harness.cjs into ws-check-harness Phase 5a
+- **Result**: Review threads on plansDir-before-Step-8 and dead mechanical gates addressed in this round
+
 ### [2026-08-21 19:25] Agent: Cursor Grok 4.6
 - **Prompt**: Improve cooperative fix; find more of the same issue in code
 - **Done**: Shared schema walker + AC-count helper; run.json validates against run.schema.json; typed ac-ledger commits/tests/verdicts/findings; default class-grep table in COOPERATIVE_FIX

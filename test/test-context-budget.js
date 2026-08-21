@@ -55,6 +55,12 @@ try {
   write(path.join(fixture, 'one.md'), repeated);
   write(path.join(fixture, 'two.md'), repeated);
   assert.notStrictEqual(run(duplicateScript, ['--path', `${relative}/one.md`, '--path', `${relative}/two.md`, '--repo-root', repoRoot]).status, 0);
+  const phases = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-check-harness/PHASES.md'), 'utf8');
+  const skill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-check-harness/SKILL.md'), 'utf8');
+  assert.match(phases, /check_duplicates\.cjs/);
+  assert.match(phases, /measure_harness\.cjs/);
+  assert.match(skill, /check_duplicates\.cjs/);
+  assert.match(skill, /measure_harness\.cjs/);
   console.log('test-context-budget: ok');
 } finally {
   fs.rmSync(fixture, { recursive: true, force: true });
