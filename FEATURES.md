@@ -179,6 +179,8 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 |-------|--------|
 | `ws-activity-report` | Timesheet entries for a delivery day. Start is the earliest bootstrap file in the plan folder; end is the later of the last PR thread comment or the last delivery commit. Splits human versus agent duration |
 | `ws-pre-daily` | Standup briefing covering the last 36 hours: delivered, made, ongoing, next |
+| `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
+| `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, shipped plan dirs), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
 
 ---
 
@@ -226,7 +228,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (44 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -240,12 +242,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.28)
+## 12. Recent evolution (0.3.22 → 0.3.29)
 
 Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.29** | Aug 21 | Added `ws-spec-explain` (spec/US delivery panorama) and `ws-cleanup` (confirm-gated workflow leftover cleanup + `.gitignore` suggestions) to the Workflows package |
 | **0.3.22** | Aug 17 | DeepSeek harness hardening (PR #216): inline-dict commit SHA scanning in `validate_state`, the AC9 resume gate retargeted from the base branch to the integration branch, audit config resolved from the repo root, goal-loop runtime confined to `{us-dir}/.runtime` |
 | **0.3.23** | Aug 19 | Remote tracker issues now enter through `ws-write-spec` agentic reformulation instead of a raw converter dump, so a GitHub issue or Azure work item becomes a structured spec with real acceptance criteria |
 | **0.3.24** | Aug 19 | Subagents must prove they consulted `backend.md`, `frontend.md`, and `MEMORY.md`; fix-mode consults gate on `defaults` flags; pattern templates fall back in memory rather than mutating disk |
@@ -260,7 +263,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 
 ## 13. Full skill catalog
 
-45 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+47 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -346,6 +349,8 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 | [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | W | Generic convergence loop primitive |
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | W | Timesheet entries for a delivery day |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | W | 36-hour standup briefing |
+| [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | W | Spec/US status & delivery panorama |
+| [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | W | Workflow leftover cleanup with confirm gate |
 
 ### Hub (not a skill)
 

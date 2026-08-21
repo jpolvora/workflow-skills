@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 17:55] Agent: Composer
+- **Prompt**: /ws-write-a-skill create ws-spec-explain and ws-cleanup; register in website, deps, installer, checksums, AGENTS routers
+- **Done**: Added user-invoked `ws-spec-explain` + `ws-cleanup` (list/apply Node scripts, tests); registered in Workflows package, hubs, CATALOG, FEATURES, README, autoload; bumped to 0.3.29; regenerated integrity and site catalog
+- **Result**: Skills discoverable via /ws-spec-explain, /explain, /ws-cleanup; package 0.3.29
+
 ### [2026-08-21 15:40] Agent: Claude Opus 5
 - **Prompt**: Read FEATURES.md, find improvements per feature (speed, tokens, subagent context, orchestrator intelligence, quality gates, communication, auditing, 10/10 scoring, portability, hybrid), produce a detailed spec for later execution.
 - **Done**: Audited the suite with four parallel explorations (context/token inventory, telemetry+installer, quality machinery, FSM latency) and wrote `.agents/specs/harness-efficiency-and-verifiability.spec.md` — 76 atomic ACs across 10 selectable workstreams, with a measured baseline table and design intent. No skill or config files changed.

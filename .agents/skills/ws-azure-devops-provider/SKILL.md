@@ -1,7 +1,7 @@
 ---
 name: ws-azure-devops-provider
 description: Azure DevOps work-item→spec and PR ops. Same required intents as GitHub (scm-provider-contract). Trigger when providers.scm is azure-devops.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider

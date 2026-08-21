@@ -380,6 +380,11 @@ On demand: [`CATALOG.md`](CATALOG.md). Package membership: [`bin/skill-dependenc
 
 Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`autoload.md`](.agents/skills/ws-shared/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
 
+| Intent (utility shortcuts) | Load |
+|----------------------------|------|
+| Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
+
 ## Verification (before claim complete / commit)
 
 Full ordered checklist: [`CATALOG.md`](CATALOG.md) § Upstream developer workflow. Summary:

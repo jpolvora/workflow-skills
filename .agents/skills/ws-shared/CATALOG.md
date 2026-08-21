@@ -23,6 +23,8 @@
 | `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
 | `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-pre-daily` | [`../ws-pre-daily/SKILL.md`](../ws-pre-daily/SKILL.md) |
+| `ws-spec-explain` | [`../ws-spec-explain/SKILL.md`](../ws-spec-explain/SKILL.md) |
+| `ws-cleanup` | [`../ws-cleanup/SKILL.md`](../ws-cleanup/SKILL.md) |
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
 | `ws-patterns-backend` | [`../ws-patterns-backend/SKILL.md`](../ws-patterns-backend/SKILL.md) |
 | `ws-patterns-frontend` | [`../ws-patterns-frontend/SKILL.md`](../ws-patterns-frontend/SKILL.md) |
@@ -67,6 +69,8 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Timesheet / activity hours for a delivery day | `ws-activity-report` |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
+| Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |

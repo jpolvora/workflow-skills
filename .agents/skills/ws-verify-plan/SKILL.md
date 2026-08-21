@@ -1,7 +1,7 @@
 ---
 name: ws-verify-plan
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ 9; below 9 runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - verify-plan

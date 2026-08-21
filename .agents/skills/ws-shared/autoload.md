@@ -83,6 +83,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
 | Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
 | Deliver **many** specs sequentially (auto lite/standard workers) | [`ws-multi-spec`](../ws-multi-spec/SKILL.md) | Master orch only — does not edit product code itself |
+| Explain status / what a spec delivered (read-only panorama) | [`ws-spec-explain`](../ws-spec-explain/SKILL.md) | Does not implement, ship, or edit specs |
 
 ### Keyword → skill (quick map)
 
@@ -98,6 +99,8 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | lite / fast spec to pr | `ws-spec-to-pr-lite` |
 | classify complexity, lite or standard? | `ws-classify-complexity` |
 | multi-spec, batch specs, run all specs | `ws-multi-spec` |
+| explain spec, spec status, what did US deliver, /explain | `ws-spec-explain` |
+| cleanup workflow, clean plan leftovers, delete telemetry/.runtime | `ws-cleanup` |
 
 ---
 
