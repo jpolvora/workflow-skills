@@ -49,7 +49,7 @@ jobs:
           bash /tmp/agentic-code-reviewers-run.sh \
             --engine opencode \
             --model opencode-go/deepseek-v4-flash \
-            --variant high
+            --variant high \
             --gh \
             --stack Custom \
             --custom-prompt .github/agentic-code-reviewers-prompt.md \
