@@ -285,7 +285,7 @@ function scoreStats(scores) {
   const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
   const variance =
     scores.reduce((acc, s) => acc + (s - mean) ** 2, 0) / scores.length;
-  const lowCount = scores.filter((s) => s < 7).length;
+  const lowCount = scores.filter((s) => s < 9).length;
   return {
     count: scores.length,
     mean: Math.round(mean * 100) / 100,
@@ -541,7 +541,7 @@ function main() {
         `| Mean | ${stats.mean ?? 'n/a'} |`,
         `| Variance | ${stats.variance ?? 'n/a'} |`,
         `| Min / Max | ${stats.min ?? 'n/a'} / ${stats.max ?? 'n/a'} |`,
-        `| Low scores (<7) | ${stats.lowCount} |`,
+        `| Low scores (<9) | ${stats.lowCount} |`,
         '',
         scoreResult.reason,
       ].join('\n');

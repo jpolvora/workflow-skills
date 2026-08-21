@@ -19,7 +19,7 @@
 | 3 | `dispatch-agent` `ws-plan-to-tasks`; `defaults.enableDag: false` (default) forces `execMode: sequential` (sequential subagent tasks, no parallel DAG groups). `defaults.enableDag: true` evaluates `dagThresholds` for parallel DAG tasks. | `step-03-{slug}.plan.exec.md` + `step-03-{slug}.exec.dag.json` (both modes; DAG task groups only when parallel) |
 | 4 | Pre-implement check: run `python {skillsRoot}/ws-spec-to-pr/scripts/check_memory_conflict.py {targetPlan} --json` (where `{targetPlan}` is `step-03-{slug}.plan.exec.md` if present, else `step-02-{slug}.plan.refined.md` or `step-01-{slug}.plan.md`; exit 0 → proceed, including missing MEMORY.md consult-skipped; exit 2 → pass trap DO NOT / INSTEAD DO guidance into subagent prompt; exit 1 → HS-5 STOP for a missing plan file); `dispatch-agent` `ws-implement-tasks` mode build; verify `pattern_consult`/`memory_consult` proof in step-output; branch-direct default | verification |
 
-| 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 7 or `--strict`; **&lt;7 gate** (refine/replan/respec/approve); then **G2-code after Step 5 before Step 6** (skip if empty) | `step-05-{slug}.plan.report.md` |
+| 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score < 9 or `--strict`; **&lt;9 gate** (`scoreAndRefine` until ≥ 9); then **G2-code after Step 5 before Step 6** (skip if empty) | `step-05-{slug}.plan.report.md` |
 | 6 | Fail-closed dirty preflight; `dispatch-agent` `ws-code-review` (`git diff {base}...HEAD`); Critical/Warning → **fix → re-review** via `ws-implement-tasks` (max 3; not a separate step); then G2-code of review fixes if dirty; soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
 | 7 | Auto-skip if `skipTesting` or (no test surface + unit tests green); else `dispatch-agent` `ws-testing` (Testing). Inside Step 7, optional **mutation** substep runs only when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; skip (log) otherwise. Mutation score &lt; `verification.mutationThreshold` (default 80) or runner non-zero → Step 7 **fail-closed** (no Advance to 8); hand off to `ws-implement-tasks` fix mode. FSM stays 0–9 (no new step). | `step-07-{slug}.testing.*` |
 | 8 | Delivery result + **combined ship gate** ([`gates.md`](../ws-shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
@@ -30,7 +30,7 @@
 **Order (mandatory):**
 
 1. **`update_state.py`** — merge `files_touched` → Step file log; record telemetry; advance `currentStep`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl` (zero-padded `NN`; lazy-create `telemetry/`). When `--skip-gates` or `config.json.invariants.skipQualityGates` is active, add `--bypassed` on this call.
-2. **G2-code (Steps 5 and 6 only)** — After Step 5 (score ≥ 7 or approve): **G2-code after Step 5 before Step 6** (skip if empty stage). After Step 6 review-fix: one G2-code if product files remain. Algorithm and messages: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. Uncommitted workflow product files → **STOP**; do not dispatch `ws-code-review`. `dryRun` simulates only. Other steps: skip this item.
+2. **G2-code (Steps 5 and 6 only)** — After Step 5 (score ≥ 9): **G2-code after Step 5 before Step 6** (skip if empty stage). After Step 6 review-fix: one G2-code if product files remain. Algorithm and messages: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. Uncommitted workflow product files → **STOP**; do not dispatch `ws-code-review`. `dryRun` simulates only. Other steps: skip this item.
 3. **Checkpoint** — `Shell` tag `uswf/{workflow-id}/before-step-{N+1}` @ HEAD **after** any G2-code (skip tag write in `dryRun`; log only). Pre-advance soft-passes missing tags when `dryRun: true`.
 4. **Pre-advance validation** — **shell command** (not `dispatch-agent`):
 
@@ -52,19 +52,21 @@ On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, 
 
 Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.md`**. Publish integer **score 0–10** in Progress Board + report.
 
-When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows):
+When overall score is `< 9`, run `scoreAndRefine` even if `defaults.scoreAndRefine` is false. When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows) **or** score is `< 9`:
 - Evaluates each plan task in `step-01-{slug}.plan.md` on criteria fulfillment, code quality, edge-cases, and test coverage.
 - Outputs `step-05-{slug}.score-analysis.md` containing task-by-task scores (0–10) and specific enhancement recommendations.
 - **Optional (AC6):** When `step-05-{slug}.score-analysis.md` exists, re-invoke `ws-classify-complexity` with `--score-analysis` before the score gate — advisory only; does not block Advance.
-- Prompts **Pass 1 Score Analysis Gate** via `user-gate` (Option 1: Proceed with Second Pass Refinement; Option 2: Accept Pass 1 As-Is & Ship; Option 3: Selective Refinement).
-- Option 1 or 3 re-dispatches `ws-implement-tasks` for flagged tasks with scoring feedback, followed by 2nd pass verification.
+- If overall score `< 9`: do **not** offer Accept Pass 1 As-Is. Re-dispatch `ws-implement-tasks` for tasks scoring `< 9`, then re-verify, until overall `≥ 9` (max 3 rounds; log `score-refine | round={n}/3`). After 3 rounds still `< 9`: Pause. Resume continues the loop.
+- If overall score already `≥ 9` and `scoreAndRefine` flag: prompt **Pass 1 Score Analysis Gate** via `user-gate` (Option 1: Proceed with Second Pass Refinement; Option 2: Accept Pass 1 As-Is & Ship; Option 3: Selective Refinement). Option 1 or 3 re-dispatches `ws-implement-tasks` for flagged tasks.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ 7 | Complete step 5; **G2-code after Step 5 before Step 6** (skip if empty); then dispatch 6 |
-| &lt; 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`). Approve → same G2-code then 6. Refine/replan/respec run **before** the product commit. |
+| ≥ 9 | Complete step 5; **G2-code after Step 5 before Step 6** (skip if empty); then dispatch 6 |
+| &lt; 9 | **scoreAndRefine** until ≥ 9 (max 3 rounds, then Pause). Never Advance or auto-approve below 9. Refine runs **before** the product commit. |
 
-`autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
+`autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below 9 — Pause only after max rounds still < 9.
+
+Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate and § Score & Refine gate.
 
 ### Step 6 — Code-review + fix → re-review loop (substep)
 

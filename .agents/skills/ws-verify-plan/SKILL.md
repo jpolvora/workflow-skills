@@ -28,7 +28,7 @@ Standalone:
 /verify-plan [spec-input] [plan-dir=<path>]
 ```
 
-Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optional `mode=quick|full`. Default `mode=quick`; escalate to `full` when quick score < 7, orchestrator passes `mode=full`, or user passed `--strict`.
+Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optional `mode=quick|full`. Default `mode=quick`; escalate to `full` when quick score < 9, orchestrator passes `mode=full`, or user passed `--strict`.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -46,14 +46,14 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: every planned feature/AC has a situation and evidence, and Quick Score's three metrics are each scored.
 
 3. **Score**: compute the integer **0-10** score (weighted average for Quick Score; overall adherence for US Verification).
-   - Optional `fable` integration: If `ws-fable-judge` returned `REFUTED` and `config.json.fable.auditVerdictsBlockShip` is `true`, cap score at < 7 to require remediation.
+   - Optional `fable` integration: If `ws-fable-judge` returned `REFUTED` and `config.json.fable.auditVerdictsBlockShip` is `true`, cap score at < 9 to require remediation.
    - Done when: an integer score 0-10 is set.
 
 4. **Write report**: save `{us-dir}/step-05-{slug}.plan.report.md` using [`TEMPLATE.md`](TEMPLATE.md) shape (frontmatter: `us`, `reportDate`, `score`, `sourcePlans`, `evalSource`; body sections Result by Feature, Additional Features, Gaps and Next Steps). Do not edit the reference plan/spec files.
    - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
 5. **Handoff**: return the score and report path.
-   - Workflow: the orchestrator owns the gate after reading the report: score `>= 7` advances to Step 6; score `< 7` triggers user-gate (Refine / Replan / Respec / Approve-and-continue) and must not auto-approve below 7.
-   - Standalone: apply the same `>= 7` / `< 7` threshold; recommend re-implementation or a full matrix when below 7.
+   - Workflow: the orchestrator owns the gate after reading the report: score `>= 9` advances to Step 6; score `< 9` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= 9` (max 3 rounds per visit, then Pause). Do not auto-approve below 9.
+   - Standalone: apply the same `>= 9` / `< 9` threshold; recommend `scoreAndRefine` until `>= 9` when below 9.
    - Done when: the caller has the score and report path.
 

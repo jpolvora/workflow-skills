@@ -1,6 +1,6 @@
 # ws-github-provider — Intent procedures
 
-Load when executing an intent from [`SKILL.md`](SKILL.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{owner}/{repo}` from config — never literals.
+Load when executing an intent from [`SKILL.md`](SKILL.md). Shared intent ids: [`../ws-shared/scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{owner}/{repo}` from config — never literals.
 
 ## `validate-auth`
 
@@ -72,12 +72,12 @@ gh pr checks {PR_ID}
 ## `resolve-thread`
 
 ```bash
-node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{resolution note}"
+node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{resolution note}" [--dry-run]
 ```
 
 > **IMPORTANT**: Never call `addPullRequestReviewThreadReply` alone. Always use `resolve_thread.cjs`, which calls both `addPullRequestReviewThreadReply` AND `resolveReviewThread` atomically in one GraphQL mutation. Posting the `<!-- resolution-reply -->` marker comment without the `resolveReviewThread` mutation is **not** a resolved thread — `isResolved` will remain `false` until the mutation fires.
 
-Skip remote mutation when the parent skill is in `dry-run`.
+Pass `--dry-run` when the parent skill is in `dry-run` (prints the planned resolve; no GraphQL).
 
 ## `merge-pr`
 

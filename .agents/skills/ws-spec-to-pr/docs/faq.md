@@ -53,10 +53,10 @@ flowchart TD
   S2 --> S3[3 Plan-to-tasks]
   S3 --> S4[4 Implement]
   S4 --> S5[5 Check-implementation]
-  S5 -->|score ≥ 7| C1[G2-code verified implementation]
-  S5 -->|score < 7| G5{Refine / Replan / Respec / Approve}
-  G5 --> S4
-  G5 -->|approve| C1
+  S5 -->|score ≥ 9| C1[G2-code verified implementation]
+  S5 -->|score < 9| G5[scoreAndRefine until ≥ 9]
+  G5 -->|score ≥ 9| C1
+  G5 -->|max 3 still < 9| P[Pause]
   C1 --> S6[6 Code-review]
   S6 -->|findings| Fix[Fix substep<br/>ws-implement-tasks]
   Fix --> C2[G2-code review fixes]
@@ -102,7 +102,7 @@ flowchart TD
 
 ### Modes & Flags
 *   `dry-run` (`dryRun: true`): Simulates all operations. Prevents source edits, git commits, remote pushes, browser automation, and memory updates.
-*   `auto` (`autoMode: true`): Disables interactive menus. Auto-selects options (index 0). Workflow pauses only on hard stops or if a verify score falls below 7.
+*   `auto` (`autoMode: true`): Disables interactive menus. Auto-selects options (index 0). Workflow pauses only on hard stops or if a verify score stays below 9 after max scoreAndRefine rounds.
 *   `skip-testing`: Skips standard Step 7 Testing entirely, moving directly to Step 8 Ship.
 *   `skip-tests`: Skips the execution of testing suites (e.g. `npm run test` or `pytest`) in STACK.md. Build checks are still enforced.
 *   Mutation (inside Step 7): not a CLI flag by default — configure `verification.mutationTest` and set `defaults.skipMutationTesting: false` to opt in. Empty `mutationTest` or `skipMutationTesting: true` skips mutation without failing.
@@ -144,8 +144,8 @@ flowchart TD
 ### Step 5: Check-implementation
 *   **Executor**: Verifier subagent (read-only) (`ws-verify-plan` / `ws-verify-plan`).
 *   **Role**: Evaluates the written code against the spec/plan and publishes an integer score (0–10).
-    *   **Score ≥ 7**: Passes gate, then **required G2-code** of workflow-touched product files (skip if the stage set is empty; never empty commit).
-    *   **Score < 7**: Halts. Requires manual repair, replanning, or explicit override. Product commit runs only after score ≥ 7 or Approve-and-continue.
+    *   **Score ≥ 9**: Passes gate, then **required G2-code** of workflow-touched product files (skip if the stage set is empty; never empty commit).
+    *   **Score < 9**: Runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ 9 (max 3 rounds, then Pause). Product commit runs only after score ≥ 9. Never auto-approve below 9.
     *   Do not dispatch Step 6 while workflow product files remain uncommitted.
 
 ### Step 6: Code Review

@@ -16,6 +16,7 @@ export const HUB_WHITELIST = [
   'setup.md',
   'gates.md',
   'config-resolution.md',
+  'scm-provider-contract.md',
   'AGENTS.md',
   'autoload.md',
   // npm cannot pack a file named .gitignore; ship hub.gitignore → install as .gitignore

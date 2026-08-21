@@ -259,7 +259,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
           </div>
-          <p class="stepper-desc">Evaluates code changes against spec acceptance criteria, calculating an objective completeness score (0–10) and generating a verification report. After a passing (or approved) score, the orchestrator commits workflow-touched product files so local review can diff committed work vs the base branch.</p>
+          <p class="stepper-desc">Evaluates code changes against spec acceptance criteria, calculating an objective completeness score (0–10) and generating a verification report. Advance requires score <strong>≥ 9</strong>; below 9 the orchestrator runs <code>scoreAndRefine</code> (re-implement flagged tasks and re-verify) until that bar. After a passing score, the orchestrator commits workflow-touched product files so local review can diff committed work vs the base branch.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
@@ -567,7 +567,7 @@
             <div class="role-card-icon">🔍</div>
             <h4 class="role-card-title">Verifiers & Auditors</h4>
           </div>
-          <p class="role-card-desc">Spec compliance scoring, multi-pass code reviews, adversarial AI fraud detection, secrets scanning, install diagnose, runtime orch audit, and test verification.</p>
+          <p class="role-card-desc">Spec compliance scoring (advance at ≥ 9, scoreAndRefine until then), multi-pass code reviews, adversarial AI fraud detection, secrets scanning, install diagnose, runtime orch audit, and test verification.</p>
           <div class="role-card-skills">
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
@@ -584,7 +584,7 @@
             <div class="role-card-icon">🚀</div>
             <h4 class="role-card-title">SCM Delivery & PR Fixers</h4>
           </div>
-          <p class="role-card-desc">Branch management, git commits, PR creation across GitHub / Azure DevOps / Local SCM, and goal loops for PR thread fixing.</p>
+          <p class="role-card-desc">Branch management, git commits, PR creation across GitHub / Azure DevOps with a shared intent contract, Local spec register, and goal loops for PR thread fixing.</p>
           <div class="role-card-skills">
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-ship-pr/SKILL.md">ws-ship-pr</span>
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>
@@ -634,7 +634,7 @@
         <li>Feature-branch strategy gate at bootstrap, then spec (Step 0)</li>
         <li>Architectural Review & Interview (Steps 1–2)</li>
         <li>DAG Task Decomposition (Step 3)</li>
-        <li>Implement, verify, product commit, local code review, review-fix commit (Steps 4–6)</li>
+        <li>Implement, verify (score ≥ 9 or scoreAndRefine), product commit, local code review, review-fix commit (Steps 4–6)</li>
         <li>Pre-PR testing (optional <code>testingModel</code>), shipping & ws-goal-fix-pr (Steps 7–9)</li>
         <li>Optional runtime audit via <code>defaults.enableAuditing</code></li>
       </ul>
@@ -1586,7 +1586,7 @@
     </div>
 
     <!-- Q5 -->
-    <div class="faq-item" data-faq-cat="quality" data-search="quality gates adversarial audit ws-fable-judge ws-senior-developer code review security leak">
+    <div class="faq-item" data-faq-cat="quality" data-search="quality gates adversarial audit ws-fable-judge ws-senior-developer ws-verify-plan score 9 scoreAndRefine code review security leak">
       <button type="button" class="faq-question" aria-expanded="false">
         <div class="faq-question-text">
           <span class="faq-cat-tag">Quality & Safety</span>
@@ -1598,6 +1598,7 @@
         <div class="faq-answer-content">
           <p>Workflow Skills includes multiple layers of automated defense:</p>
           <ul>
+            <li><strong><code>ws-verify-plan</code></strong>: Spec compliance score 0–10. Standard Step 5 advances only at ≥ 9; below 9 runs <code>scoreAndRefine</code> until that bar (max 3 rounds).</li>
             <li><strong><code>ws-senior-developer</code></strong>: Delivery gate enforcing surgical diff footprints, anti-reinvention checks, and pre-ship verification proof.</li>
             <li><strong><code>ws-fable-judge</code></strong>: Adversarial audit engine performing diff-grounded verification to detect 4 classic AI code frauds (weakened unit tests, false verification claims, unauthorized side effects, and scope creep).</li>
             <li><strong><code>ws-secrets-leak-review</code></strong>: Pre-PR scanner checking diffs for hardcoded API tokens, private keys, passwords, and sensitive credentials.</li>
@@ -1626,7 +1627,7 @@
     </div>
 
     <!-- Q7 -->
-    <div class="faq-item" data-faq-cat="config" data-search="customize project settings test runner scm provider github azure devops local config.json">
+    <div class="faq-item" data-faq-cat="config" data-search="customize project settings test runner scm provider github azure devops local config.json scm-provider-contract parity">
       <button type="button" class="faq-question" aria-expanded="false">
         <div class="faq-question-text">
           <span class="faq-cat-tag">Configuration</span>
@@ -1639,7 +1640,7 @@
           <p>You can run <code>ws-configure-project</code> or edit <code>.agents/skills/ws-shared/config.json</code> directly. Key configurable options include:</p>
           <ul>
             <li><code>plans.dir</code>: Target folder for workflow plans and execution artifacts (default: <code>.agents/plans</code>).</li>
-            <li><code>providers.scm</code>: Active SCM provider (<code>github</code> via <code>gh</code> CLI, <code>azure-devops</code> via ADO PAT). Hybrid: <code>providers.active: local</code> with <code>scm: github</code>.</li>
+            <li><code>providers.scm</code>: Active SCM provider (<code>github</code> via <code>gh</code> CLI, <code>azure-devops</code> via ADO PAT). Both implement the same required intents in <code>scm-provider-contract.md</code> (parity checked in <code>npm run test</code>). Hybrid: <code>providers.active: local</code> with <code>scm: github</code>.</li>
             <li><code>rules.stackFile</code>: Path to project technology stack guidance (default: <code>.agents/skills/ws-shared/STACK.md</code>).</li>
             <li><code>verification.*</code>: Build, test, format, and optional mutation commands.</li>
             <li><code>defaults.enableAuditing</code>: When <code>true</code>, wrap orch runs with <code>ws-audit</code> (default <code>false</code>).</li>

@@ -1,6 +1,6 @@
 # ws-azure-devops-provider — Intent procedures
 
-Load when executing an intent from [`SKILL.md`](SKILL.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` from `issueTrackers.azureDevOps` — never consumer literals.
+Load when executing an intent from [`SKILL.md`](SKILL.md). Shared intent ids: [`../ws-shared/scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` from `issueTrackers.azureDevOps` — never consumer literals.
 
 ## `validate-auth`
 
@@ -61,7 +61,7 @@ az repos pr create \
   --description "{body}"
 ```
 
-`{repository}` from remote / project config. Reuse open PR for same source→target when present. REST equivalent OK when `az` unavailable (same PAT + org/project).
+`{repository}` from remote / project config. Reuse open PR for same source→target when present. REST equivalent OK when `az` unavailable (same PAT + org/project). On Windows / PowerShell prefer a description file or single-quoted body (same quoting trap as GitHub `--body-file`).
 
 ## `list-threads`
 

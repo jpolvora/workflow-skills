@@ -63,6 +63,8 @@ Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install lay
 | `github` | [`ws-github-provider`](../ws-github-provider/SKILL.md) |
 | `azure-devops` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) |
 
+Intent names, outputs, and shared rules: [`scm-provider-contract.md`](scm-provider-contract.md). GitHub and Azure DevOps must implement the same required intents. Callers use intent names only.
+
 ---
 
 ## Workflow mode flag

@@ -255,6 +255,7 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 ### Dual-mode
 
 - Config: `.agents/skills/ws-shared/config.json` only — [`config-resolution.md`](.agents/skills/ws-shared/config-resolution.md)
+- SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — GitHub and Azure DevOps must implement the same required intents
 - Gates: [`gates.md`](.agents/skills/ws-shared/gates.md) — prefer `user-gate` (native structured choice when available; markdown fallback)
 - **Session model:** orchestrator session always runs under `currentModel`; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Subagent phase model preferences (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`) apply exclusively to `dispatch-agent` subagents (standard orch only; lite is inline). `defaults.enableDag` (default `false`) forces sequential task execution; `true` restores threshold-based parallel DAG. Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)

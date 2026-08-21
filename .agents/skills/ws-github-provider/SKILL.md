@@ -46,6 +46,8 @@ Auth failure → **STOP** with `validate-auth` fixes. No silent provider fallbac
 
 ## Intent contract
 
+Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). This table is the GitHub mapping. Do not add an intent here without the same intent on [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) (or an allowlist row).
+
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
 | `fetch-to-spec` | Issue id / URL | **1.** `{specsDir}/us-{n}.spec.md` (agentic spec of record via `ws-write-spec`) → **2.** `{us-dir}/step-00-us-{n}.spec.md` (workflow copy, `source: github`) + optional `*.issue.json` snapshot | `gh issue view` → `ws-write-spec` (reformulate/enhance) → `register_local_spec.py` |

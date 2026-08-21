@@ -1272,12 +1272,14 @@ child.on('close', async (code) => {
     const destConfig = path.join(memDir, '.agents', 'skills', 'ws-shared', 'config.json');
     const destChangelog = path.join(memDir, '.agents', 'skills', 'ws-shared', 'CHANGELOG.md');
     const destAutoload = path.join(memDir, '.agents', 'skills', 'ws-shared', 'autoload.md');
+    const destScmContract = path.join(memDir, '.agents', 'skills', 'ws-shared', 'scm-provider-contract.md');
     const destRootAgents = path.join(memDir, 'AGENTS.md');
     if (!fs.existsSync(destMem)) fail('Fresh install must seed ws-shared/MEMORY.md');
     if (!fs.existsSync(destStack)) fail('Fresh install must seed ws-shared/STACK.md');
     if (!fs.existsSync(destConfig)) fail('Fresh install must seed ws-shared/config.json');
     if (!fs.existsSync(destChangelog)) fail('Fresh install must seed ws-shared/CHANGELOG.md');
     if (!fs.existsSync(destAutoload)) fail('Fresh install must copy ws-shared/autoload.md from hub whitelist');
+    if (!fs.existsSync(destScmContract)) fail('Fresh install must copy ws-shared/scm-provider-contract.md from hub whitelist');
     if (fs.existsSync(destRootAgents)) {
       fail('Installer must not write consumer root AGENTS.md');
     }

@@ -47,6 +47,8 @@ Auth/config failure → **STOP**. No silent provider fallback.
 
 ## Intent contract
 
+Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). This table is the Azure DevOps mapping. Do not add an intent here without the same intent on [`ws-github-provider`](../ws-github-provider/SKILL.md) (or an allowlist row).
+
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
 | `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/us-{id}.spec.md` (agentic spec of record via `ws-write-spec`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + optional JSON snapshot | `ado-workitem-to-spec.py` → `ws-write-spec` (reformulate/enhance) → `register_local_spec.py` |

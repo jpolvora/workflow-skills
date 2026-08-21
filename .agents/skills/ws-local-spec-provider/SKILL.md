@@ -21,7 +21,7 @@ Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agen
 **Specs family:** Role = bridge `{specsDir}` ↔ `{us-dir}` (register / fetch-to-spec). Drafts and reformulations come from [`ws-write-spec`](../ws-write-spec/SKILL.md) or hand-written files; format SoT [`ws-spec-format`](../ws-spec-format/SKILL.md). Orch entry for local files. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 
-**PR/thread/merge:** hybrid — load `providers.scm` skill ([ws-github-provider](../ws-github-provider/SKILL.md) / [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)). Never no-op silently. Reject `scm: "local"`.
+**PR/thread/merge:** hybrid — load `providers.scm` skill ([ws-github-provider](../ws-github-provider/SKILL.md) / [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)) and call the shared intents in [`scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). Never no-op silently. Reject `scm: "local"`.
 
 ## Invocation
 

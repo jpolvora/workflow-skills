@@ -27,6 +27,7 @@
 | [`config.json.example`](config.json.example) | Project config template — seeded to `config.json` on fresh install; fill via [`ws-configure-project`](../ws-configure-project/SKILL.md); never commit |
 | [`config.schema.json`](config.schema.json) | JSON Schema for `config.json` validation |
 | [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
+| [`scm-provider-contract.md`](scm-provider-contract.md) | Required SCM intents (`ws-github-provider` ↔ `ws-azure-devops-provider` parity) |
 | [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
 | [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys), **Path tokens** (`{skillsRoot}` / `{sharedDir}` / `{plansDir}`), script launchers (`python` / `node` / `bash`). Load with `config.json` before tool calls. |
 | [`autoload.md`](autoload.md) | Always-applied skill list + **specs vocabulary / progressive-disclosure router** (which specs skill to load) |

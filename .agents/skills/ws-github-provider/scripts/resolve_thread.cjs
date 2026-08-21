@@ -45,12 +45,20 @@ function buildResolutionBody(note) {
 async function main() {
   loadDotEnv();
 
-  const threadId = process.argv[2];
-  const note = process.argv[3];
+  const args = process.argv.slice(2);
+  const dryRun = args.includes('--dry-run');
+  const positional = args.filter((a) => a !== '--dry-run');
+  const threadId = positional[0];
+  const note = positional[1];
 
   if (!threadId) {
-    console.error('Usage: node resolve_thread.cjs <THREAD_ID> "<resolution note>"');
+    console.error('Usage: node resolve_thread.cjs <THREAD_ID> "<resolution note>" [--dry-run]');
     process.exit(1);
+  }
+
+  if (dryRun) {
+    console.log(`[dry-run] would resolve thread ${threadId} (no GraphQL).`);
+    process.exit(0);
   }
 
   const token = resolveToken();
