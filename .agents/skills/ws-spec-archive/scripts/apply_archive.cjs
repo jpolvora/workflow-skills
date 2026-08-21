@@ -226,6 +226,18 @@ function inside(child, parent) {
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
 }
 
+function runGit(repo, args) {
+  const r = spawnSync('git', args, {
+    cwd: repo,
+    encoding: 'utf8',
+    env: { ...process.env, LC_ALL: 'C' },
+  });
+  return {
+    code: r.status == null ? 1 : r.status,
+    out: (r.stdout || '').replace(/\r\n/g, '\n').trim(),
+  };
+}
+
 function prunePlansIndex(abs, removeSlugs) {
   if (!fs.existsSync(abs)) return false;
   let data;
@@ -310,6 +322,11 @@ function main() {
       const abs = path.resolve(repoRoot, plan.relPath || path.join(plansDir, plan.slug));
       if (!inside(abs, plansDir)) {
         skipped.push({ slug: plan.slug, reason: 'outside-plans-dir' });
+        continue;
+      }
+      const tracked = runGit(repoRoot, ['ls-files', '--', toPosix(path.relative(repoRoot, abs))]);
+      if (tracked.code === 0 && tracked.out.length > 0) {
+        skipped.push({ slug: plan.slug, reason: 'tracked-partial' });
         continue;
       }
       if (!fs.existsSync(abs)) {

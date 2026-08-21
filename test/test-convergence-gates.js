@@ -28,6 +28,19 @@ assert.strictEqual(clean.intervalSec, 0);
 assert.strictEqual(observe('running', { activeThreads: [{}], checks: [{ state: 'in_progress' }] }).intervalSec, 30);
 assert.strictEqual(observe('queued', { activeThreads: [{}], checks: [{ state: 'queued' }] }).intervalSec, 300);
 
+const roundLog = path.join(root, '.agents/plans/pr-fixture/.runtime/round-1-verify.md');
+write(path.join(root, 'round-input.json'), JSON.stringify({ activeThreads: [{}], checks: [{ state: 'success' }] }));
+const withLog = run(convergence, [
+  '--input', 'round-input.json',
+  '--repo-root', root,
+  '--round', '1',
+  '--round-log', path.relative(root, roundLog).split(path.sep).join('/'),
+], { cwd: root });
+assert.strictEqual(withLog.status, 0, withLog.stderr);
+assert.ok(fs.existsSync(roundLog), 'round-log written after fsync');
+assert.match(fs.readFileSync(roundLog, 'utf8'), /Active threads: 1/);
+assert.ok(!fs.readdirSync(path.dirname(roundLog)).some((name) => name.includes('.tmp-')), 'tmp round-log not left behind');
+
 assert.strictEqual(run(fingerprint, ['write', '--repo-root', root]).status, 0);
 assert.strictEqual(run(fingerprint, ['check', '--repo-root', root]).status, 0);
 fs.appendFileSync(path.join(root, 'package.json'), ' ');

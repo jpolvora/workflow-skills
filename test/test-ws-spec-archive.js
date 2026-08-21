@@ -235,6 +235,57 @@ try {
     plansIndex.workflows.some((w) => w.slug === 'active-slug'),
     'plans index keeps active slug',
   );
+
+  const trackedSlug = 'tracked-slug';
+  const trackedDir = path.join(plans, trackedSlug);
+  fs.mkdirSync(trackedDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(trackedDir, `${trackedSlug}-20260101T000000Z.state.md`),
+    [
+      '---',
+      `slug: ${trackedSlug}`,
+      'title: "Tracked shipped"',
+      'status: completed',
+      'currentStep: 8',
+      '---',
+      '',
+    ].join('\n'),
+    'utf8',
+  );
+  git(tmp, 'add', '-A');
+  git(tmp, 'commit', '-q', '-m', 'track plan artifacts');
+  const trackedInv = {
+    plansDir: '.agents/plans',
+    specsDir: '.agents/specs',
+    indexPath: '.agents/specs/index.PRD',
+    plans: [
+      {
+        slug: trackedSlug,
+        eligible: true,
+        status: 'completed',
+        relPath: `.agents/plans/${trackedSlug}`,
+      },
+    ],
+  };
+  const trackedInvFile = path.join(tmp, 'tracked-inventory.json');
+  fs.writeFileSync(trackedInvFile, JSON.stringify(trackedInv), 'utf8');
+  const trackedSlugsFile = path.join(tmp, 'tracked-approved.json');
+  fs.writeFileSync(trackedSlugsFile, JSON.stringify({ slugs: [trackedSlug] }), 'utf8');
+  const trackedDelete = run('node', [
+    APPLY,
+    '--repo-root', tmp,
+    '--inventory-file', trackedInvFile,
+    '--delete-plans',
+    '--slugs-file', trackedSlugsFile,
+    '--confirm',
+  ], tmp);
+  assert(trackedDelete.status === 0, 'tracked delete-plans exit 0');
+  const trackedJson = JSON.parse(trackedDelete.stdout);
+  assert(
+    trackedJson.skipped.some((s) => s.slug === trackedSlug && s.reason === 'tracked-partial'),
+    'tracked plan skipped as tracked-partial',
+  );
+  assert(fs.existsSync(trackedDir), 'tracked plan dir kept');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

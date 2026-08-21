@@ -446,7 +446,7 @@ function main() {
     process.exit(1);
   }
 
-  const context = resolveConsumerContext({ repoRoot: process.env.WS_REPO_ROOT || process.cwd(), scriptFile: __filename });
+  const context = resolveConsumerContext({ repoRoot: process.env.WS_REPO_ROOT || undefined, scriptFile: __filename });
   const specPath = path.resolve(context.repoRoot, args.specPath);
   if (!fs.existsSync(specPath)) {
     console.error(`Error: spec file not found: ${specPath}`);

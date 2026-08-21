@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 19:56] Agent: Cursor Grok 4.6
+- **Prompt**: fix ERROR: EPERM: operation not permitted, fsync
+- **Done**: `atomicWrite` now opens the temp file for write and treats Windows `EPERM`/`EINVAL` from `fsync` as non-fatal
+- **Result**: `convergence.cjs --round-log` completes; same guard on `workflow_state.cjs`
+
 ### [2026-08-21 19:40] Agent: Cursor Grok 4.6
 - **Prompt**: Configure agentic-code-reviewer CI to ignore {plansDir} and {specsDir}; check ignore support
 - **Done**: Set AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS for .agents/plans/** and .agents/specs/** in code-review.yml; mirrored in CATALOG local dry-run; closed include-patterns quote so cjs/py/prd stay in the glob list

@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { resolveConsumerContext } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, inside } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 function parseArgs(argv) {
   const opts = { confirm: false, repoRoot: null, pathsFile: null };
@@ -58,14 +58,19 @@ function loadPaths(file) {
   throw new Error('paths-file must be a JSON array or { "paths": [...] }');
 }
 
-function isAllowedEnclosure(relPosix, plansDirPosix, reviewsDirPosix) {
-  if (!relPosix || relPosix.startsWith('..') || path.isAbsolute(relPosix)) return false;
-  if (relPosix.startsWith('.tmp-') || /\.bak_/i.test(relPosix.split('/')[0])) return true;
-  if (plansDirPosix && (relPosix === plansDirPosix || relPosix.startsWith(`${plansDirPosix}/`))) {
+function isAllowedEnclosure(relPosix, repoRoot, plansDirPosix, reviewsDirPosix) {
+  if (!relPosix || path.isAbsolute(relPosix)) return false;
+  const abs = path.resolve(repoRoot, relPosix);
+  if (!inside(abs, repoRoot)) return false;
+  const normalized = toPosix(path.relative(repoRoot, abs));
+  if (!normalized || normalized.startsWith('..')) return false;
+  const first = normalized.split('/')[0];
+  if (first.startsWith('.tmp-') || /\.bak_/i.test(first)) return true;
+  if (plansDirPosix && (normalized === plansDirPosix || normalized.startsWith(`${plansDirPosix}/`))) {
     return true;
   }
-  if (reviewsDirPosix && relPosix.startsWith(`${reviewsDirPosix}/`)) {
-    const base = relPosix.slice(reviewsDirPosix.length + 1);
+  if (reviewsDirPosix && normalized.startsWith(`${reviewsDirPosix}/`)) {
+    const base = normalized.slice(reviewsDirPosix.length + 1);
     return /^PR.+\.md$/i.test(base) && !base.includes('/');
   }
   return false;
@@ -97,24 +102,25 @@ function main() {
 
   for (const relRaw of paths) {
     const rel = toPosix(String(relRaw).replace(/\\/g, '/'));
-    if (!isAllowedEnclosure(rel, plansPosix, reviewsPosix)) {
+    if (!isAllowedEnclosure(rel, repoRoot, plansPosix, reviewsPosix)) {
       skipped.push({ path: rel, reason: 'outside-enclosure' });
       continue;
     }
-    if (rel.startsWith('.agents/skills')) {
+    const abs = path.resolve(repoRoot, rel);
+    const normalized = toPosix(path.relative(repoRoot, abs));
+    if (normalized.startsWith('.agents/skills')) {
       skipped.push({ path: rel, reason: 'skill-body' });
       continue;
     }
     if (
-      rel.startsWith('src/') ||
-      rel.startsWith('bin/') ||
-      rel.startsWith('test/') ||
-      rel.startsWith('docs/')
+      normalized.startsWith('src/') ||
+      normalized.startsWith('bin/') ||
+      normalized.startsWith('test/') ||
+      normalized.startsWith('docs/')
     ) {
       skipped.push({ path: rel, reason: 'product-tree' });
       continue;
     }
-    const abs = path.join(repoRoot, ...rel.split('/'));
     if (!fs.existsSync(abs)) {
       skipped.push({ path: rel, reason: 'missing' });
       continue;

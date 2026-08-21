@@ -19,10 +19,14 @@ function parseArgs(argv) {
 function atomicWrite(file, content) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const temporary = `${file}.tmp-${process.pid}`;
-  fs.writeFileSync(temporary, content, 'utf8');
-  const descriptor = fs.openSync(temporary, 'r');
+  const descriptor = fs.openSync(temporary, 'w');
   try {
-    fs.fsyncSync(descriptor);
+    fs.writeFileSync(descriptor, content, 'utf8');
+    try {
+      fs.fsyncSync(descriptor);
+    } catch (error) {
+      if (!error || !['EPERM', 'EINVAL'].includes(error.code)) throw error;
+    }
   } finally {
     fs.closeSync(descriptor);
   }

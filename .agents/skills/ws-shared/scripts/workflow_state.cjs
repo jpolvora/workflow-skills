@@ -184,7 +184,11 @@ function atomicWrite(file, content) {
   const handle = fs.openSync(temporary, 'w');
   try {
     fs.writeFileSync(handle, content, 'utf8');
-    fs.fsyncSync(handle);
+    try {
+      fs.fsyncSync(handle);
+    } catch (error) {
+      if (!error || !['EPERM', 'EINVAL'].includes(error.code)) throw error;
+    }
   } finally {
     fs.closeSync(handle);
   }

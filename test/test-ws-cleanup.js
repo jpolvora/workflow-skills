@@ -186,6 +186,32 @@ try {
     }),
     'utf8',
   );
+  const hubConfig = path.join(shared, 'config.json');
+  const traversalFile = path.join(tmp, 'approved-traversal.json');
+  fs.writeFileSync(
+    traversalFile,
+    JSON.stringify({
+      paths: [
+        '.tmp-x/../../.agents/skills/ws-shared/config.json',
+        '.agents/plans/../../.agents/skills/ws-shared/config.json',
+      ],
+    }),
+    'utf8',
+  );
+  const traversal = run(
+    'node',
+    [APPLY, '--repo-root', tmp, '--confirm', '--paths-file', traversalFile],
+    tmp,
+  );
+  assert(traversal.status === 0, 'traversal apply_cleanup exit 0');
+  const traversalJson = JSON.parse(traversal.stdout);
+  assert(traversalJson.deleted.length === 0, 'traversal paths not deleted');
+  assert(
+    traversalJson.skipped.every((s) => s.reason === 'outside-enclosure'),
+    'traversal skipped as outside-enclosure',
+  );
+  assert(fs.existsSync(hubConfig), 'hub config survives traversal paths');
+
   const applied = run(
     'node',
     [APPLY, '--repo-root', tmp, '--confirm', '--paths-file', pathsFile],
