@@ -14,6 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
 const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { syncAcCountsFromLedger } = require('../../ws-shared/scripts/ac_counts.cjs');
 
 const VALID_CATEGORIES = new Set([
   'script',
@@ -334,21 +335,12 @@ export function finalizeAudit(session) {
   const packageVersion = fs.existsSync(packageFile) ? JSON.parse(fs.readFileSync(packageFile, 'utf-8')).version : 'unknown';
   const telemetryDir = path.join(resolveMaybeRelative(session.usDir), 'telemetry');
   fs.mkdirSync(telemetryDir, { recursive: true });
-  let acTotal = Number(session.acTotal || 0);
-  let acImplemented = Number(session.acImplemented || 0);
-  try {
-    const ledgerFile = path.join(resolveMaybeRelative(session.usDir), 'ac-ledger.json');
-    if (fs.existsSync(ledgerFile)) {
-      const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf-8'));
-      const rows = Array.isArray(ledger.acceptanceCriteria) ? ledger.acceptanceCriteria : [];
-      acTotal = rows.length;
-      acImplemented = rows.filter((row) => (
-        row.status === 'Implemented' || row.status === 'ImplementedDifferently'
-      )).length;
-    }
-  } catch {
-    /* keep session counts */
-  }
+  const sessionCounts = {
+    acTotal: Number(session.acTotal || 0),
+    acImplemented: Number(session.acImplemented || 0),
+  };
+  syncAcCountsFromLedger(sessionCounts, resolveMaybeRelative(session.usDir));
+  const { acTotal, acImplemented } = sessionCounts;
   fs.appendFileSync(path.join(telemetryDir, 'audit.jsonl'), `${JSON.stringify({
     schemaVersion: 1,
     type: 'audit-finalize',

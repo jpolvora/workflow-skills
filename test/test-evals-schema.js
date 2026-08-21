@@ -24,4 +24,8 @@ for (const name of fs.readdirSync(schemaDir).filter((file) => file.endsWith('.sc
   walkSchema(JSON.parse(fs.readFileSync(path.join(schemaDir, name), 'utf8')), name);
 }
 assert.deepStrictEqual(untyped, [], `schema arrays missing items: ${untyped.join(', ')}`);
+assert.match(
+  fs.readFileSync(path.join(repoRoot, 'bin/validate-evals.cjs'), 'utf8'),
+  /validate_json_schema\.cjs/,
+);
 console.log('test-evals-schema: ok');

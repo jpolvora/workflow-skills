@@ -75,10 +75,60 @@
             }
           }
         },
-        "commits": { "type": "array", "items": { "type": "object" } },
-        "tests": { "type": "array", "items": { "type": "object" } },
-        "verdicts": { "type": "array", "items": { "type": "object" } },
-        "findings": { "type": "array", "items": { "type": "object" } },
+        "commits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sha", "step"],
+            "properties": {
+              "sha": { "type": "string", "minLength": 7 },
+              "step": { "type": "integer", "minimum": 0, "maximum": 9 }
+            }
+          }
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "sourceFile", "phase"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "sourceFile": { "$ref": "#/$defs/path" },
+              "phase": { "enum": ["planned", "observed"] },
+              "alias": { "type": ["string", "null"] },
+              "exitCode": { "type": ["integer", "null"] },
+              "timestamp": { "type": "string" }
+            }
+          }
+        },
+        "verdicts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["verdict", "evidence"],
+            "properties": {
+              "verdict": { "type": "string", "minLength": 1 },
+              "evidence": { "type": "string", "minLength": 1 },
+              "timestamp": { "type": "string" }
+            }
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "severity", "state", "evidence"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "severity": { "enum": ["Critical", "Warning", "Suggestion"] },
+              "state": { "enum": ["open", "closed"] },
+              "evidence": { "type": "string", "minLength": 1 },
+              "round": { "type": "integer", "minimum": 1 }
+            }
+          }
+        },
         "sabotage": {
           "type": "object",
           "additionalProperties": false,

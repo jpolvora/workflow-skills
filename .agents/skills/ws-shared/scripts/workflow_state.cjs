@@ -11,6 +11,8 @@ const {
   toRepoRelative,
 } = require('./resolve_consumer_root.cjs');
 const { scoreLedger } = require('../../ws-spec-to-pr/scripts/ac_ledger.cjs');
+const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
+const { loadJsonSchema, validateNode } = require('./validate_json_schema.cjs');
 
 const STATE_VERSION = 2;
 const SCHEMA_VERSION = 1;
@@ -271,22 +273,6 @@ function compactOutputs(body, step, output) {
     rows.sort((a, b) => Number(a.match(/Step (\d+)/)?.[1] || 0) - Number(b.match(/Step (\d+)/)?.[1] || 0));
     return `${prefix}${rows.join('\n')}\n`;
   });
-}
-
-function syncAcCountsFromLedger(state, usDir) {
-  const ledgerFile = path.join(usDir, 'ac-ledger.json');
-  if (!fs.existsSync(ledgerFile)) return state;
-  try {
-    const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
-    const rows = Array.isArray(ledger.acceptanceCriteria) ? ledger.acceptanceCriteria : [];
-    state.acTotal = rows.length;
-    state.acImplemented = rows.filter((row) => (
-      row.status === 'Implemented' || row.status === 'ImplementedDifferently'
-    )).length;
-  } catch {
-    /* keep existing counts when ledger is unreadable */
-  }
-  return state;
 }
 
 function dispatchTimestamp(entry) {
@@ -591,6 +577,8 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
   if (fs.existsSync(runFile)) {
     const run = JSON.parse(fs.readFileSync(runFile, 'utf8'));
     if (run.revision !== Number(state.revision) || run.stateSha256 !== actualHash) errors.push('run.json revision/state hash mismatch');
+    const runSchema = path.join(__dirname, '..', 'run.schema.json');
+    errors.push(...validateNode(run, loadJsonSchema(runSchema, 'run schema'), 'run.json'));
   }
   if (fs.existsSync(indexFile)) {
     const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));

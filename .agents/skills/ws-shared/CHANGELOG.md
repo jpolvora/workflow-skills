@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 19:25] Agent: Cursor Grok 4.6
+- **Prompt**: Improve cooperative fix; find more of the same issue in code
+- **Done**: Shared schema walker + AC-count helper; run.json validates against run.schema.json; typed ac-ledger commits/tests/verdicts/findings; default class-grep table in COOPERATIVE_FIX
+- **Result**: Same-class copies of the evals/schema and acTotal defects share one implementation
+
 ### [2026-08-21 19:20] Agent: Cursor Grok 4.6
 - **Prompt**: Improve cooperative fix; find more of the same issue in code
 - **Done**: Sibling-sweep contract in COOPERATIVE_FIX/AUTO_FIX/ws-fix-pr/ws-goal-fix-pr; eval #3; untyped `commits` array in workflow-state.schema.json; schema-array `items` gate in test-evals-schema.js

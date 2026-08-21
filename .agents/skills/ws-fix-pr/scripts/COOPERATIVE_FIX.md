@@ -31,6 +31,16 @@ After analyzing a thread, name the defect class in one line (example: "gate clai
 
 Do not close a thread whose description listed extra paths until those paths are fixed or explicitly exempted. Reviewer "similar occurrence" notes are extra search seeds, not a cap.
 
+Always run these class greps even when the thread named one file:
+
+| Defect class | Search |
+|--------------|--------|
+| Schema claim without loading the file | `Validated` / `against` `schema.json` vs actual `readFile`/`loadJsonSchema` of that path |
+| Untyped arrays | `"type": "array"` with no `"items"` under `*.schema.json` |
+| Untyped object items | `"items": { "type": "object" }` with no `properties` |
+| Copied AC counters | `acTotal` / `acImplemented` writers outside `ac_counts.cjs` |
+| Legacy dispatch key | `dispatched:` on `stepDispatches` vs writer `dispatchedAt` |
+
 Aligns with [`ws-implement-tasks`](../../ws-implement-tasks/SKILL.md) Fix the Entire Defect Class.
 
 ---
