@@ -20,6 +20,12 @@ Canonical skill: [`SKILL.md`](SKILL.md).
 | **Correctness & Style** (35%) | | [Any bugs, styling issues, tenancy issues?] |
 | **Testing** (25%) | | [Were tests written, ran, and did they pass?] |
 
+## Regression Sabotage Check
+
+| Status | pass / fail / skipped |
+| Reason | (when skipped: no new regression test, invert not possible, or mutation superseded) |
+| Evidence | invert patch path, test command exit code, restore clean |
+
 ## Recommendation
 - [ ] **SCORE AND REFINE**: Score < 9. Re-implement flagged tasks and re-verify until >= 9.
 - [ ] **APPROVE & COMMIT**: Score >= 9. Proceed to code review and commit.

@@ -28,7 +28,7 @@ Infer mode or ask. Triggers: `/ws-spec-format`, `@ws-spec-format`, create/review
 ## Review (Done when report emitted; no edit without approval)
 
 1. Read `*.spec.md` (or `{us-dir}/`).
-2. Validate frontmatter, required sections, AC quality per [`FORMAT.md`](FORMAT.md).
+2. Validate frontmatter, required sections, AC quality per [`FORMAT.md`](FORMAT.md). Tracker specs (`github` / `azure-devops`) must include `### Prior Work Sweep` when sweep ran. Modification/bugfix specs must include `### Design Intent` or documented greenfield skip.
 3. Cross-check architecture docs when present (`CONTEXT.md`, stack file, `config.json.domain`).
 4. Emit check table (Frontmatter / Description / ACs → OK|FAIL + fix).
 5. Edit only on explicit `apply fixes` / `format`.

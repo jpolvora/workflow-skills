@@ -52,11 +52,13 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
 | `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/us-{id}.spec.md` (agentic spec of record via `ws-write-spec`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + optional JSON snapshot | `ado-workitem-to-spec.py` → `ws-write-spec` (reformulate/enhance) → `register_local_spec.py` |
+| `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.py` |
 | `validate-auth` | none | Pass/fail + fixes | Org/project + PAT; optional WIT smoke |
 | `create-pr` | head, base, title/body | PR URL + id | Prefer `az repos pr create`; if `az` missing/fails → REST in INTENTS.md |
 | `list-threads` | PR id | Thread list | `fix_pr_azure_context.py collect` |
-| `check-pr-status` | PR id | Status of build pipelines & policy checks | `az repos pr policy list` / build API |
+| `check-pr-status` | PR id | CI status + per-failed-check triage | `az repos pr policy list`; build log via REST or `az pipelines runs show`; classify diff/baseline/flake |
 | `resolve-thread` | thread id (+ PR id, comment) | Resolved (or dry-run) | `fix_pr_azure_context.py resolve-thread` |
+| `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.py` → WIT Comments `api-version=7.1` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched work item), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.py --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
@@ -74,6 +76,8 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Work item snapshot / base conversion | `{skillsRoot}/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` (default output `{specsDir}/us-{id}.spec.md`) |
 | Spec of record → workflow copy | `python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops` |
 | Thread ops | `{skillsRoot}/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
+| Prior-work sweep | `{skillsRoot}/ws-azure-devops-provider/scripts/sweep_prior_work.py` |
+| Comment on work item | `{skillsRoot}/ws-azure-devops-provider/scripts/comment_issue.py` |
 
 ## Config keys
 

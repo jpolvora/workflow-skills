@@ -45,13 +45,13 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 
 | `providers.scm` | Skill | Intents used here |
 |-----------------|-------|-------------------|
-| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `resolve-thread` |
-| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `resolve-thread` |
+| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
+| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
 
 ## Steps
 
-1. **Sync & CI check**: `git pull origin <sourceRefName>`; refuse dirty worktrees; recommend waiting if CI is active.
-   - Done when: worktree is clean and current with the source branch.
+1. **Sync & CI check**: `git pull origin <sourceRefName>`; refuse dirty worktrees; dispatch provider **`check-pr-status`** and inspect failed-check logs before formulating CI-driven fixes. Do not "fix" baseline noise reproduced on `project.baseBranch`; route diff-regression to surgical fixes. One infra-flake rerun only (via `check-pr-status` output).
+   - Done when: worktree is clean and current with the source branch; CI triage recorded.
 
 2. **Fetch active threads**: resolve `providers.scm` and call `list-threads` for `<PR-ID>`. Parse `threadId`, `filePath`, `lineNumber`, `comments`. Use the payload's `activeThreads` count directly; do not re-filter raw statuses. If reading any collect `--output` file, open with UTF-8 explicitly (bare `open(path)` on Windows raises `UnicodeDecodeError` on review text).
    - Done when: every active thread has parsed file/line/comment context.

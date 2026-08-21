@@ -51,11 +51,13 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
 | `fetch-to-spec` | Issue id / URL | **1.** `{specsDir}/us-{n}.spec.md` (agentic spec of record via `ws-write-spec`) → **2.** `{us-dir}/step-00-us-{n}.spec.md` (workflow copy, `source: github`) + optional `*.issue.json` snapshot | `gh issue view` → `ws-write-spec` (reformulate/enhance) → `register_local_spec.py` |
+| `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.py` |
 | `validate-auth` | none | Pass/fail + fixes | `gh auth status` + thread token note |
 | `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base) |
 | `list-threads` | PR id | Thread list | `fetch_threads.cjs` |
-| `check-pr-status` | PR id | Status of CI & code-review runs | `gh pr checks` / GitHub Actions API |
+| `check-pr-status` | PR id | CI status + per-failed-check triage | `gh pr checks`; on fail `gh run view --log-failed`; classify diff/baseline/flake; one flake rerun |
 | `resolve-thread` | thread id (+ comment) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation) | `resolve_thread.cjs` |
+| `comment-issue` | issue id, body | Public issue comment (alias `close-loop`) | `comment_issue.py` → `gh issue comment` |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched issue), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.py --source github`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
@@ -74,6 +76,8 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Spec of record → workflow copy | `python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source github` |
 | List threads | `{skillsRoot}/ws-github-provider/scripts/fetch_threads.cjs` |
 | Resolve thread | `{skillsRoot}/ws-github-provider/scripts/resolve_thread.cjs` |
+| Prior-work sweep | `{skillsRoot}/ws-github-provider/scripts/sweep_prior_work.py` |
+| Comment on issue | `{skillsRoot}/ws-github-provider/scripts/comment_issue.py` |
 
 Optional: `issueTrackers.github.issueToSpecScript` must still resolve to the converter.
 

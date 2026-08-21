@@ -88,7 +88,7 @@ const contractMd = read(CONTRACT);
 assert(fs.existsSync(CONTRACT), 'scm-provider-contract.md exists');
 
 const required = firstColumnBacktickIds(sectionAfterHeading(contractMd, 'Required intents'));
-assert(required.length >= 7, `required intents count >= 7 (got ${required.length})`);
+assert(required.length >= 9, `required intents count >= 9 (got ${required.length})`);
 for (const id of [
   'validate-auth',
   'fetch-to-spec',
@@ -97,6 +97,8 @@ for (const id of [
   'check-pr-status',
   'resolve-thread',
   'merge-pr',
+  'sweep-prior-work',
+  'comment-issue',
 ]) {
   assert(required.includes(id), `required includes ${id}`);
 }

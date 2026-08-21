@@ -46,8 +46,7 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
 
 Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** `check-pr-status` from the configured SCM provider reports all active code reviews and CI pipelines have completed (status is completed, not `pending`, `in_progress`, or `queued`).
 
-- **If `providers.scm: "github"`**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-github-provider](../ws-github-provider/SKILL.md) (verifies via `gh pr checks` / Actions API that all automated code-review workflows and CI checks have ended).
-- **If `providers.scm: "azure-devops"` (or `"ado"`)**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) (verifies via Azure DevOps status policies / build pipeline API that active code reviews and build pipelines are completed).
+- Dispatch **`check-pr-status <PR-NUMBER>`** to the configured SCM provider only (no raw `gh`/`az` in this skill). Classify failed checks: **diff-regression** vs **baseline** (reproduced on `project.baseBranch`) vs **infra-flake**. One flake rerun; do not count baseline as loop progress. Baseline failures do not block convergence when reproduced on default branch and recorded.
 - If any code-review or CI action is still running, continue waiting in the heartbeat loop (`wait <n>`).
 
 ## Automation overrides (vs fix-pr defaults)

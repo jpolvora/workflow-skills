@@ -46,6 +46,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: every planned feature/AC has a situation and evidence, and Quick Score's three metrics are each scored.
 
 3. **Score**: compute the integer **0-10** score (weighted average for Quick Score; overall adherence for US Verification).
+   - **Regression Sabotage Check:** For bug-fix/regression tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` with caller-authored invert patch. Record pass/fail/skipped+reason in the report. Missing **required** sabotage → fail-closed overall score **< 9** (never Advance; triggers `scoreAndRefine` / Pause per `gates.md`). Restore failure aborts this step (exit 1).
    - Optional `fable` integration: If `ws-fable-judge` returned `REFUTED` and `config.json.fable.auditVerdictsBlockShip` is `true`, cap score at < 9 to require remediation.
    - Done when: an integer score 0-10 is set.
 

@@ -29,8 +29,10 @@ Every implementer `SKILL.md` intent table and `INTENTS.md` `## \`intent\`` headi
 | `fetch-to-spec` | Tracker id / URL | `{specsDir}` spec of record, then `{us-dir}/step-00` workflow copy | Write `{specsDir}` first via `ws-write-spec`. Register with `ws-local-spec-provider`. Never write `step-00` from the converter. |
 | `create-pr` | head, base, title/body | PR URL + id | Reuse an existing open PR for the same head→base when present. |
 | `list-threads` | PR id | Structured threads | Include thread id, path, line, comments, and an active count for `ws-fix-pr` / `ws-goal-fix-pr`. |
-| `check-pr-status` | PR id | CI / policy / review-run status | Finished when none are pending, in progress, or queued. |
+| `sweep-prior-work` | issue id (optional), keywords, files (optional) | Prior PR hits + recent commits JSON | Run before plan/code; stdout uses repo-relative paths only; `validate-auth` first; advisory `dry-run` when auth missing (GitHub). |
+| `check-pr-status` | PR id | CI / policy / review-run status + triage | Finished when none are pending, in progress, or queued. On failure: fetch failed-check logs (`gh run view --log-failed` or ADO build log), classify each failed check as `diff-regression`, `baseline` (reproduced on `project.baseBranch`), or `infra-flake`; at most one flake rerun; record classification and whether rerun was used. |
 | `resolve-thread` | thread id (+ comment; PR id when the host requires it) | Resolved | Skip remote mutation when the caller is `dry-run`. |
+| `comment-issue` | tracker id, body (PR URL + summary) | Comment posted (alias `close-loop` in tools.md only) | Skip when `id` is null / `source: local` (exit 0 `skipped`). `dry-run` prints body, no POST. WIT Comments `api-version=7.1` on ADO (not PR threads). |
 | `merge-pr` | PR id | Merged | Wait for required checks or policies, then merge. Never delete `project.workingBranch`. |
 
 ---

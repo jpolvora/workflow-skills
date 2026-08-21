@@ -46,6 +46,19 @@ python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
 | Promotion owner | `register_local_spec.py` from [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) is the single promotion primitive for every provider |
 
 
+## `sweep-prior-work`
+
+```bash
+python .agents/skills/ws-azure-devops-provider/scripts/sweep_prior_work.py \
+  --issue {id} \
+  --keywords {k1} {k2} \
+  --files path/to/file1
+```
+
+- Run `validate-auth` first (org/project + PAT from config). Missing PAT → **STOP** (no silent GitHub fallback).
+- Search PRs by title/description text and related work-item links; `git log --oneline -20 -- <files>` when `--files` set.
+- stdout JSON (repo-relative paths only).
+
 ## `create-pr`
 
 Prefer Azure CLI:
@@ -81,6 +94,24 @@ az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}
 
 - Evaluates build pipelines and status policies for `{PR_ID}`.
 - Finished when all status policies and build pipelines report completed status (`approved`/`succeeded`/`failed`, not active/running).
+- On failed build/policy: fetch build log via REST or `az pipelines runs show --id {runId}`.
+- Classify each failed check: **`diff-regression`**, **`baseline`** (reproduced on `project.baseBranch`), **`infra-flake`** (one rerun only).
+- Record classification for callers. Baseline failures do not block merge only when reproduced on default branch and recorded.
+
+## `comment-issue`
+
+Alias in [`tools.md`](../ws-shared/tools.md): `close-loop`.
+
+```bash
+python .agents/skills/ws-azure-devops-provider/scripts/comment_issue.py \
+  --id {id} \
+  --body-file {plansDir}/close-loop-body.md \
+  [--dry-run]
+```
+
+- POST `{apiBase}/{org}/{project}/_apis/wit/workItems/{id}/comments?api-version=7.1` (WIT comment, not PR thread).
+- Skip when tracker `id` is null. `--dry-run` prints body, no POST.
+- `validate-auth` before mutating.
 
 ## `resolve-thread`
 

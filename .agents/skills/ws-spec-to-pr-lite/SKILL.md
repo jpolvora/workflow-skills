@@ -41,15 +41,15 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` (+ register) | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** `step-00-{slug}.spec.md` registered + classifier user-gate completed |
+| 0 | Spec | providers / `ws-write-spec` (+ register); **prior-work sweep** before plan/code | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** `step-00-{slug}.spec.md` registered + classifier user-gate completed |
 
-| 1 | Planning | `ws-write-plan` | `step-01-{slug}.plan.md` created & validated |
-| 2 | Implementation | `ws-implement-tasks` | Code modified + build/tests pass (`config.json.verification`); then required G2-code (skip if empty) |
-| 3 | Review | `ws-code-review` (+ fix) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |
-| 4 | Ship | orch + `ws-ship-pr` | `step-08-{slug}.result.md` created + PR created/skipped per menu |
-| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` | PR merged or zero active threads (`activeThreads == 0`) |
+| 1 | Planning | `ws-write-plan` (design-intent git log for modifications) | `step-01-{slug}.plan.md` created & validated |
+| 2 | Implementation | `ws-implement-tasks` (**defect-class repo-wide sweep**) | Code modified + build/tests pass (`config.json.verification`); then required G2-code (skip if empty) |
+| 3 | Review | `ws-code-review` (+ fix; sibling modules beyond diff) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |
+| 4 | Ship | orch + `ws-ship-pr` (`check-pr-status` CI triage + **`comment-issue`** on create) | `step-08-{slug}.result.md` created + PR created/skipped per menu |
+| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` (`check-pr-status` baseline vs diff) | PR merged or zero active threads (`activeThreads == 0`) |
 
-**No Step 7 Testing:** lite does not dispatch `ws-testing`. Optional **mutation testing** (kill/survive gate) is **standard-orch Step 7 only** — out of scope for lite.
+**No Step 5/7 verify or testing:** lite does not dispatch `ws-verify-plan` or `ws-testing`. **Regression sabotage** and **mutation testing** are **standard-orch Steps 5 and 7 only** — out of scope for lite.
 
 ## Post-Mutating Transition Sequence (Steps 0–4 → 1–5)
 
