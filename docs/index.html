@@ -1734,7 +1734,7 @@
     </div>
 
     <!-- Q7b -->
-    <div class="faq-item" data-faq-cat="config" data-search="scm provider parity github azure devops intents create-pr list-threads resolve-thread merge-pr scm-provider-contract">
+    <div class="faq-item" data-faq-cat="config" data-search="scm provider parity github azure devops intents create-pr list-threads sweep-prior-work check-pr-status resolve-thread comment-issue merge-pr scm-provider-contract">
       <button type="button" class="faq-question" aria-expanded="false">
         <div class="faq-question-text">
           <span class="faq-cat-tag">Configuration</span>
@@ -1744,7 +1744,7 @@
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p>Yes. Both SCM providers implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, and <code>merge-pr</code>.</p>
+          <p>Yes. Both SCM providers implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, and <code>merge-pr</code>.</p>
           <p>The contract lives in <code>.agents/skills/ws-shared/scm-provider-contract.md</code>. Host CLI recipes stay inside each provider. An extra intent on one side without the other (and without an allowlist row) fails <code>npm run test</code> via <code>test/test-provider-parity.js</code>.</p>
           <p>The local spec provider is not an SCM implementer. It registers specs and delegates PR intents to <code>providers.scm</code>.</p>
         </div>
