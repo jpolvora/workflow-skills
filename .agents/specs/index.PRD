@@ -81,6 +81,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Hybrid/global consumer-root resolver for helper scripts (`spec: us-211.spec.md`)
 - [x] Commit workflow product files before code-review (`spec: commit-before-code-review.spec.md`)
 - [ ] Skill catalog cleanup: Extra demotion and patterns merge (`spec: skill-catalog-cleanup.spec.md`)
+- [ ] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: hermes-spec-to-pr-enhancements.spec.md`)
 
 ## 8. Next specs
 
@@ -122,8 +123,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 34 | `us-210` | `[x]` done | Phase 4 | ws-preview Extra pipeline-review dry-run (PR #214) |
 | 35 | `us-211` | `[x]` done | Phase 4 | Hybrid/global consumer-root resolvers (PR #212) |
 | 36 | `commit-before-code-review` | `[x]` done | Phase 4 | Product commit before Step 6 / lite Step 3 review (`3adbb3b`) |
+| 37 | `hermes-spec-to-pr-enhancements` | `[ ]` todo | Phase 4 | Duplicate sweep, design intent, class fixes, sabotage verification, CI triage, issue close-loop |
 
-Open Next-spec: `skill-catalog-cleanup`. Other new work goes to Inbox, then promote.
+Open Next-spec: `skill-catalog-cleanup`, `hermes-spec-to-pr-enhancements`. Other new work goes to Inbox, then promote.
 
 ## 9. Inbox (unscheduled ideas)
 
