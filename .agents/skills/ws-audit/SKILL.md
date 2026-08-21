@@ -38,12 +38,13 @@ Resolution: missing config, omitted key, null, or unreadable → `false`. See [`
 ## Workflow & orchestrator obligations (when enabled)
 
 1. **Init** at bootstrap:
-   - In orchestrator runs: initialize once `{us-dir}` is known.
-   - In standalone workflow runs (`ws-ship-pr`, `ws-goal-fix-pr`, `ws-fix-pr`): initialize under the target plan dir `{plansDir}/{slug}` (e.g. `{plansDir}/pr-{prId}` or `{plansDir}/ship-{branch}`).
+   - In orchestrator runs: initialize once `{us-dir}` is known (`--us-dir "{us-dir}"`).
+   - In standalone workflow runs (`ws-ship-pr`, `ws-goal-fix-pr`, `ws-fix-pr`): initialize under the target plan dir (`--us-dir "{plansDir}/pr-{PR-NUMBER}"` or `--us-dir "{plansDir}/ship-{branch}"`).
 
    ```bash
    node {skillsRoot}/ws-audit/scripts/audit_log.js init \
      --us-dir "{us-dir}" --slug "{slug}" --workflow-id "{workflow-id}"
+   # In standalone runs, pass --us-dir "{plansDir}/{slug}"
    ```
 
    Persist returned `session` JSON in workflow state (`auditSession`) or active context.
