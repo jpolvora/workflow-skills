@@ -77,7 +77,8 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../ws-spec-format/FORMAT.md) |
 | Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) | Not for free-text draft (use write-spec first); PR ops delegate to `providers.scm` |
 | List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |
-| Init / sync / promote `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence |
+| Init / sync / promote `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence; does not harvest `{plansDir}` history (`ws-spec-archive`) |
+| Harvest plan-folder facts into `index.PRD` Archive, then propose shipped-plan cleanup | [`ws-spec-archive`](../ws-spec-archive/SKILL.md) | Does not delete untracked scratch (that is `ws-cleanup`); does not rewrite AC bodies |
 | Spec text drifted from implemented code after prompts | [`ws-sync-spec`](../ws-sync-spec/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
 | Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
 | Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
@@ -94,6 +95,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | register spec, fetch-to-spec (file), promote spec into a workflow run | `ws-local-spec-provider` |
 | list specs, list plans, dual board, unlinked specs, manage workflows | `ws-spec-list` |
 | index.PRD, promote inbox, sync index status, init PRD | `ws-spec-index` |
+| archive plans, archive index.PRD, harvest plan history | `ws-spec-archive` |
 | sync spec to code, spec drift, update AC after code change | `ws-sync-spec` |
 | spec to pr, full pipeline, standard orch | `ws-spec-to-pr` |
 | lite / fast spec to pr | `ws-spec-to-pr-lite` |
@@ -148,17 +150,20 @@ after code changes outside orch
 
 after ship / delivery evidence
     → ws-spec-index sync     → index.PRD checkboxes / Done log
+
+harvest {plansDir} history (manual)
+    → ws-spec-archive        → index.PRD Archive + optional plan-dir cleanup
 ```
 
 **Complement rules**
 
 1. `ws-write-spec` owns **creation & agentic reformulation** under `{specsDir}`; `ws-local-spec-provider` owns **promotion** into `{us-dir}` — for local *and* tracker specs.
 2. `ws-spec-format` is the only format SoT; write-spec / providers / sync-spec **follow** it — they do not redefine frontmatter.
-3. `ws-spec-list` is the UX board; `ws-spec-index` is the PRD index; do not use one for the other's job.
+3. `ws-spec-list` is the UX board; `ws-spec-index` is the PRD index; `ws-spec-archive` harvests `{plansDir}` history into that index so plan folders can go. Do not use one for the other's job.
 4. `ws-sync-spec` (body ↔ code) ≠ `ws-spec-index sync` (index ↔ delivery evidence).
 5. `ws-multi-spec` dispatches `ws-spec-to-pr` / `ws-spec-to-pr-lite` workers; it does not replace `ws-spec-list` for interactive pick-one.
 6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` fetch → `ws-write-spec` agentic reformulation → `{specsDir}` spec of record, then local-spec-provider register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly.
-7. GitHub and Azure share required intents in [`scm-provider-contract.md`](scm-provider-contract.md). Compare that file, not both provider `SKILL.md` bodies. Standard Step 5 advances only at verify score ≥ 9.
+8. `ws-spec-archive` (manual) harvests `{plansDir}` into `index.PRD` Archive then proposes plan-dir cleanup. `ws-cleanup` deletes untracked scratch only. Archive first when history must survive.
 
 ---
 

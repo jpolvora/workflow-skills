@@ -84,6 +84,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries from plan bootstrap start → latest PR thread comment or delivery commit |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | Standup briefing of the last 36 hours — delivered, made, ongoing, next |
 | `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Read-only panorama: spec/US status, what it delivers, how to check & test |
+| `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan-folder facts into `index.PRD` Archive, then propose cleanup of shipped `{plansDir}` folders |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | List + confirm delete of workflow leftovers (telemetry, .runtime, shipped plans); suggest .gitignore |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `grill-with-docs` | `(global)` | Docs grill |
@@ -111,6 +112,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Frontend UI/UX patterns & rules | `ws-patterns-frontend` |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
@@ -122,6 +124,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Timesheet / activity hours for a delivery day | `ws-activity-report` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
@@ -224,6 +227,7 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in § [Ups
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Timesheet / activity hours | `ws-activity-report` |
 | Explain spec / US status | `ws-spec-explain` |
+| Archive plans into `index.PRD` | `ws-spec-archive` |
 | Clean workflow leftovers | `ws-cleanup` |
 
 **Spec-of-record rule:** providers and standalone write-spec land the canonical file under `{specsDir}`; workflow `step-00` is always a registered copy under `{plansDir}/{slug}/`. Re-fetch uses `--force` on the converter first when the spec of record differs, then on register when `step-00` differs.

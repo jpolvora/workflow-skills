@@ -111,6 +111,7 @@ Intent → skill table: [`CATALOG.md`](CATALOG.md) § Task router (consumer). Sp
 | Intent (utility shortcuts) | Load |
 |----------------------------|------|
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 
 **Product-commit order (both orch):** after verify (standard Step 5, score ≥ 9) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.

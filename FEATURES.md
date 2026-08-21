@@ -128,6 +128,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox | `ws-spec-index` |
+| Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
 
@@ -180,6 +181,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-activity-report` | Timesheet entries for a delivery day. Start is the earliest bootstrap file in the plan folder; end is the later of the last PR thread comment or the last delivery commit. Splits human versus agent duration |
 | `ws-pre-daily` | Standup briefing covering the last 36 hours: delivered, made, ongoing, next |
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
+| `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, shipped plan dirs), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
 
 ---
@@ -306,6 +308,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 |-------|-----|------|
 | [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) | W | Canonical spec schema and validator |
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | W | `index.PRD` lifecycle: init, sync, promote |
+| [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Harvest plan history into `index.PRD` Archive; propose shipped-plan cleanup |
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
 | [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
 
@@ -350,6 +353,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | W | Timesheet entries for a delivery day |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | W | 36-hour standup briefing |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | W | Spec/US status & delivery panorama |
+| [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Archive plan history into `index.PRD`; propose plan-dir cleanup |
 | [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | W | Workflow leftover cleanup with confirm gate |
 
 ### Hub (not a skill)

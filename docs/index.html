@@ -790,7 +790,7 @@
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">47</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">48</strong> skills available</span>
     </div>
   </div>
 
@@ -1179,7 +1179,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">22 skills</span>
+      <span class="count">23 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="ws-github-provider ws-azure-devops-provider ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1220,11 +1220,11 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-classify-complexity/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-cleanup/SKILL.md" data-name="ws-cleanup" data-slug="ws-cleanup" data-desc="lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps, shipped plan dirs), confirms via user-gate, then deletes only approved untracked paths. suggests missing .gitignore patterns. trigger on /ws-cleanup, cleanup workflow, or clean plan leftovers." data-deps="ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-cleanup/SKILL.md" data-name="ws-cleanup" data-slug="ws-cleanup" data-desc="lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps, codereview pr*.md, shipped plan dirs), confirms via user-gate, then deletes only approved untracked paths. suggests missing .gitignore patterns. trigger on /ws-cleanup, cleanup workflow, or clean plan leftovers." data-deps="ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-cleanup</div>
         </div>
-        <div class="desc">Lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps, shipped plan dirs), confirms via user-gate, then deletes only approved untracked paths. Suggests missing .gitignore patterns. Trigger on /ws-cleanup, cleanup workflow, or clean plan leftovers.</div>
+        <div class="desc">Lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps, codereview PR*.md, shipped plan dirs), confirms via user-gate, then deletes only approved untracked paths. Suggests missing .gitignore patterns. Trigger on /ws-cleanup, cleanup workflow, or clean plan leftovers.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-cleanup/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
@@ -1356,6 +1356,16 @@
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-self-learning/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-archive/SKILL.md" data-name="ws-spec-archive" data-slug="ws-spec-archive" data-desc="harvests plansdir delivery facts into specsdir/index.prd, then proposes cleanup of shipped plan folders. trigger on /ws-spec-archive, archive plans, archive index.prd." data-deps="ws-configure-project ws-spec-index ws-github-provider ws-azure-devops-provider" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-archive</div>
+        </div>
+        <div class="desc">Harvests plansDir delivery facts into specsDir/index.PRD, then proposes cleanup of shipped plan folders. Trigger on /ws-spec-archive, archive plans, archive index.PRD.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (4):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-github-provider">ws-github-provider</span><span class="dep-pill" data-dep="ws-azure-devops-provider">ws-azure-devops-provider</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-archive/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-explain/SKILL.md" data-name="ws-spec-explain" data-slug="ws-spec-explain" data-desc="read-only panorama of a spec or us/issue — status, what it does, what it delivers or delivered, how to check in the project/ui, and how to test. trigger on /ws-spec-explain, /explain, spec explain, or after ship/fix-pr." data-deps="ws-configure-project ws-github-provider ws-azure-devops-provider" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1493,9 +1503,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 44 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 45 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+36)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+37)
       </div>
     </div>
 

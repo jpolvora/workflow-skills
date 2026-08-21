@@ -383,6 +383,7 @@ Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`a
 | Intent (utility shortcuts) | Load |
 |----------------------------|------|
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 
 ## Verification (before claim complete / commit)

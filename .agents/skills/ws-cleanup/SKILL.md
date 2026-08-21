@@ -17,7 +17,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-cleanup loaded."
 
-Interactive cleanup of **workflow disposable** files. Never deletes product source, tracked git files, skill bodies, or consumer hub data (`config.json`, MEMORY, STACK).
+Interactive cleanup of **workflow disposable** files. Never deletes product source, tracked git files, skill bodies, or consumer hub data (`config.json`, MEMORY, STACK). History-preserving removal of shipped `{plansDir}` folders (after `index.PRD` Archive) is [`ws-spec-archive`](../ws-spec-archive/SKILL.md).
 
 Phase A git runtime (`uswf/` worktrees/tags) stays in [`ws-spec-to-pr/protocols/artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md) — this skill does **not** replace it.
 
