@@ -79,11 +79,42 @@ try {
   fs.writeFileSync(path.join(reviews, 'PR-222-round-1.md'), '# review\n', 'utf8');
   fs.writeFileSync(path.join(reviews, 'notes.md'), 'keep\n', 'utf8');
 
-  // tracked product file must never appear as candidate
+  // Active plan: new scratch names
+  fs.writeFileSync(
+    path.join(active, 'audit-active-slug-20260101T000000Z.log.md'),
+    '# audit\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(active, 'post-bootstrap-commits.md'), 'c1\n', 'utf8');
+
+  // Partially tracked shipped plan: refined plan committed, leftovers untracked
+  const partial = path.join(plans, 'partial-shipped');
+  fs.mkdirSync(partial, { recursive: true });
+  fs.writeFileSync(
+    path.join(partial, 'partial-shipped-20260101T000000Z.state.md'),
+    'status: completed\nslug: partial-shipped\n',
+    'utf8',
+  );
+  fs.writeFileSync(
+    path.join(partial, 'step-02-partial-shipped.plan.refined.md'),
+    '# refined\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(partial, 'step-08-partial-shipped.result.md'), 'done\n', 'utf8');
+  fs.writeFileSync(
+    path.join(partial, 'audit-partial-shipped-20260101T000000Z.log.md'),
+    '# audit\n',
+    'utf8',
+  );
+
+  // tracked product + partial refined plan
   fs.mkdirSync(path.join(tmp, 'src'), { recursive: true });
   fs.writeFileSync(path.join(tmp, 'src', 'app.js'), 'console.log(1)\n', 'utf8');
-  git(tmp, 'add', 'src/app.js');
+  git(tmp, 'add', 'src/app.js', '.agents/plans/partial-shipped/step-02-partial-shipped.plan.refined.md');
   git(tmp, 'commit', '-m', 'init', '-q');
+
+  // root cleanup temp file
+  fs.writeFileSync(path.join(tmp, '.tmp-ws-cleanup-approved.json'), '{"paths":[]}\n', 'utf8');
 
   const listed = run('node', [LIST, '--repo-root', tmp, '--plans-dir', '.agents/plans'], tmp);
   assert(listed.status === 0, 'list_disposable exit 0');
@@ -103,6 +134,30 @@ try {
     'active plan scratch listed',
   );
   assert(
+    paths.includes('.agents/plans/active-slug/audit-active-slug-20260101T000000Z.log.md'),
+    'audit log scratch listed',
+  );
+  assert(
+    paths.includes('.agents/plans/active-slug/post-bootstrap-commits.md'),
+    'post-bootstrap scratch listed',
+  );
+  assert(
+    !paths.includes('.agents/plans/partial-shipped'),
+    'partially tracked shipped root not deleted wholesale',
+  );
+  assert(
+    paths.includes('.agents/plans/partial-shipped/step-08-partial-shipped.result.md'),
+    'shipped orphan result listed',
+  );
+  assert(
+    paths.includes('.agents/plans/partial-shipped/partial-shipped-20260101T000000Z.state.md'),
+    'shipped orphan state listed',
+  );
+  assert(
+    !paths.includes('.agents/plans/partial-shipped/step-02-partial-shipped.plan.refined.md'),
+    'tracked refined plan not listed',
+  );
+  assert(
     paths.includes('.agents/codereviews/PR-222-round-1.md'),
     'codereview PR*.md listed',
   );
@@ -110,7 +165,15 @@ try {
     !paths.includes('.agents/codereviews/notes.md'),
     'non-PR review file not listed',
   );
+  assert(
+    paths.includes('.tmp-ws-cleanup-approved.json'),
+    'tmp cleanup approved file listed',
+  );
   assert(!paths.some((p) => p.startsWith('src/')), 'no product paths');
+  assert(
+    json.gitignoreSuggestions.some((g) => g.pattern.endsWith('audit-*.log.md')),
+    'gitignore suggests audit log pattern',
+  );
 
   const pathsFile = path.join(tmp, 'approved.json');
   fs.writeFileSync(

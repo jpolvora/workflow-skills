@@ -107,9 +107,34 @@ function pushCandidate(list, item) {
   list.push(item);
 }
 
-function collectScratch(repoRoot, planAbs, plansRelPosix, candidates, skipped) {
-  const relPlan = toPosix(path.relative(repoRoot, planAbs));
+function isScratchName(name) {
+  if (name === 'telemetry' || name === '.runtime') return true;
+  if (name.startsWith('.finding-') && name.endsWith('.json')) return true;
+  if (name.startsWith('.audit-session-') && name.endsWith('.json')) return true;
+  if (/\.baseline$/i.test(name)) return true;
+  if (/^step-03-.+\.plan\.exec\.md$/.test(name) || /^step-03-.+\.exec\.dag\.json$/.test(name)) {
+    return true;
+  }
+  if (/^step-00-.+\.issue\.json$/.test(name)) return true;
+  if (/^audit-.+\.log\.md$/i.test(name)) return true;
+  if (name === 'post-bootstrap-commits.md') return true;
+  return false;
+}
 
+function scratchReason(name) {
+  if (name === 'telemetry') return 'plan telemetry';
+  if (name === '.runtime') return 'plan .runtime';
+  if (name.startsWith('.finding-')) return 'finding scratch';
+  if (name.startsWith('.audit-session-')) return 'audit-session scratch';
+  if (/\.baseline$/i.test(name)) return 'baseline snapshot';
+  if (/^step-03-/.test(name)) return 'exec dump';
+  if (/^step-00-.+\.issue\.json$/.test(name)) return 'issue fetch temp';
+  if (/^audit-.+\.log\.md$/i.test(name)) return 'audit log';
+  if (name === 'post-bootstrap-commits.md') return 'bootstrap commits scratch';
+  return 'plan scratch';
+}
+
+function collectScratch(repoRoot, planAbs, plansRelPosix, candidates, skipped) {
   const addPath = (abs, kind, reason) => {
     if (!fs.existsSync(abs)) return;
     const rel = toPosix(path.relative(repoRoot, abs));
@@ -130,41 +155,70 @@ function collectScratch(repoRoot, planAbs, plansRelPosix, candidates, skipped) {
     });
   };
 
-  addPath(path.join(planAbs, 'telemetry'), 'scratch', 'plan telemetry');
-  addPath(path.join(planAbs, '.runtime'), 'scratch', 'plan .runtime');
-
   if (!fs.existsSync(planAbs)) return;
   for (const name of fs.readdirSync(planAbs)) {
-    const abs = path.join(planAbs, name);
-    if (name.startsWith('.finding-') && name.endsWith('.json')) {
-      addPath(abs, 'scratch', 'finding scratch');
-    } else if (name.startsWith('.audit-session-') && name.endsWith('.json')) {
-      addPath(abs, 'scratch', 'audit-session scratch');
-    } else if (name.endsWith('.baseline') || name.endsWith('.baseline/')) {
-      addPath(abs, 'scratch', 'baseline snapshot');
-    } else if (/^step-03-.+\.plan\.exec\.md$/.test(name) || /^step-03-.+\.exec\.dag\.json$/.test(name)) {
-      addPath(abs, 'scratch', 'exec dump');
-    } else if (/^step-00-.+\.issue\.json$/.test(name)) {
-      addPath(abs, 'scratch', 'issue fetch temp');
-    } else if (fs.statSync(abs).isDirectory() && name.endsWith('.baseline')) {
-      addPath(abs, 'scratch', 'baseline snapshot');
-    }
+    if (!isScratchName(name)) continue;
+    addPath(path.join(planAbs, name), 'scratch', scratchReason(name));
   }
 
-  // workflow-id.baseline directories
-  for (const name of fs.readdirSync(planAbs)) {
-    const abs = path.join(planAbs, name);
-    try {
-      if (fs.statSync(abs).isDirectory() && /\.baseline$/i.test(name)) {
-        addPath(abs, 'scratch', 'baseline snapshot');
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-
-  void relPlan;
   void plansRelPosix;
+}
+
+/**
+ * When a shipped/cancelled/failed plan has some tracked files, list each
+ * fully-untracked child (file or dir) so leftovers can still be cleaned.
+ */
+function collectShippedOrphans(repoRoot, planAbs, candidates, skipped) {
+  const walk = (abs) => {
+    if (!fs.existsSync(abs)) return;
+    let names;
+    try {
+      names = fs.readdirSync(abs);
+    } catch {
+      return;
+    }
+    for (const name of names) {
+      const child = path.join(abs, name);
+      let st;
+      try {
+        st = fs.lstatSync(child);
+      } catch {
+        continue;
+      }
+      const rel = toPosix(path.relative(repoRoot, child));
+      if (!rel || rel.startsWith('..')) {
+        skipped.push({ path: rel || child, reason: 'outside-enclosure' });
+        continue;
+      }
+      if (st.isDirectory()) {
+        if (anyTrackedUnder(repoRoot, child, repoRoot)) {
+          walk(child);
+          continue;
+        }
+        pushCandidate(candidates, {
+          path: rel,
+          kind: 'shipped-orphan',
+          reason: 'untracked under shipped plan',
+          bytes: dirSize(child),
+          tracked: false,
+        });
+        continue;
+      }
+      if (!st.isFile()) continue;
+      if (isTracked(repoRoot, rel)) {
+        skipped.push({ path: rel, reason: 'tracked' });
+        continue;
+      }
+      pushCandidate(candidates, {
+        path: rel,
+        kind: 'shipped-orphan',
+        reason: 'untracked under shipped plan',
+        bytes: dirSize(child),
+        tracked: false,
+      });
+    }
+  };
+  walk(planAbs);
 }
 
 function readGitignore(repoRoot) {
@@ -262,7 +316,8 @@ function main() {
         continue;
       }
       if (anyTrackedUnder(repoRoot, abs, repoRoot)) {
-        skipped.push({ path: `${plansPosix}/${name}`, reason: 'tracked' });
+        skipped.push({ path: `${plansPosix}/${name}`, reason: 'tracked-partial' });
+        collectShippedOrphans(repoRoot, abs, candidates, skipped);
         continue;
       }
       pushCandidate(candidates, {
@@ -322,11 +377,23 @@ function main() {
     }
   }
 
-  // Prefer shipped-plan roots over nested scratch under the same folder.
+  // Prefer shipped-plan roots over nested scratch/orphans under the same folder.
+  // Prefer parent orphan dirs over nested orphan files.
   const shippedRoots = candidates.filter((c) => c.kind === 'shipped-plan').map((c) => c.path);
+  const orphanPaths = candidates
+    .filter((c) => c.kind === 'shipped-orphan')
+    .map((c) => c.path)
+    .sort((a, b) => a.length - b.length);
+  const coveredByOrphanParent = (p) =>
+    orphanPaths.some((root) => root !== p && (p === root || p.startsWith(`${root}/`)));
   const deduped = candidates.filter((c) => {
     if (c.kind === 'shipped-plan') return true;
-    return !shippedRoots.some((root) => c.path === root || c.path.startsWith(`${root}/`));
+    if (shippedRoots.some((root) => c.path === root || c.path.startsWith(`${root}/`))) {
+      return false;
+    }
+    if (c.kind === 'shipped-orphan' && coveredByOrphanParent(c.path)) return false;
+    if (c.kind === 'scratch' && coveredByOrphanParent(c.path)) return false;
+    return true;
   });
 
   const gi = readGitignore(repoRoot);
@@ -335,9 +402,12 @@ function main() {
     `${plansPosix}/**/.runtime/`,
     `${plansPosix}/**/.finding-*.json`,
     `${plansPosix}/**/.audit-session-*.json`,
+    `${plansPosix}/**/audit-*.log.md`,
+    `${plansPosix}/**/post-bootstrap-commits.md`,
     `${plansPosix}/**/*.baseline/`,
     `${reviewsPosix}/PR*.md`,
     '.tmp-*/',
+    '.tmp-ws-cleanup-approved.json',
   ];
   const gitignoreSuggestions = suggestPatterns.map((pattern) => ({
     pattern,

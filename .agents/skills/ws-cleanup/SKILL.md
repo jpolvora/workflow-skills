@@ -34,8 +34,8 @@ cleanup workflow leftovers
 
 | Arg | Rule |
 |-----|------|
-| (default) | Scratch **and** shipped/cancelled/failed plan dirs |
-| `--scratch-only` | Telemetry / `.runtime` / temps only (keep plan roots) |
+| (default) | Scratch, shipped/cancelled/failed plan dirs, and untracked orphans under partially tracked shipped plans |
+| `--scratch-only` | Telemetry / `.runtime` / audit logs / temps only (keep plan roots and shipped orphans) |
 | `--slug {slug}` | Limit scan to `{plansDir}/{slug}/` |
 
 ## Steps

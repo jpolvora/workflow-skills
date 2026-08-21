@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 18:35] Agent: Composer
+- **Prompt**: Expand ws-cleanup patterns for leftovers found after shipped/partially tracked plan triage
+- **Done**: Listed `audit-*.log.md`, `post-bootstrap-commits.md`, root `.tmp-*` files; shipped-orphan walk when plan root is tracked-partial; PATTERNS + tests + root `.gitignore`
+- **Result**: `/ws-cleanup` finds hermes-style untracked leftovers under completed plans that still have a tracked refined plan
+
 ### [2026-08-21 18:15] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-write-a-skill create ws-spec-archive — harvest plansDir into index.PRD, then propose cleanup commit
 - **Done**: Added user-invoked `ws-spec-archive` (scan/apply Node scripts, tests); registered in Workflows package, hubs, CATALOG, FEATURES, README, autoload; Archive section on spec-index template

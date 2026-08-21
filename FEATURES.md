@@ -182,7 +182,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-pre-daily` | Standup briefing covering the last 36 hours: delivered, made, ongoing, next |
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
-| `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, shipped plan dirs), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
+| `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
 
 ---
 
