@@ -1,10 +1,10 @@
 {
-  "totalWorkflows": 40,
+  "totalWorkflows": 41,
   "completedWorkflows": 35,
-  "averageElapsedSec": 1476.97,
-  "averageVerificationScore": 9.3,
+  "averageElapsedSec": 1624.56,
+  "averageVerificationScore": 9.27,
   "fableVerdictDistribution": {
-    "VERIFIED_WITH_CAVEATS": 4,
+    "VERIFIED_WITH_CAVEATS": 5,
     "VERIFIED": 2
   },
   "gateBypassCount": 0,
