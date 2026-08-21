@@ -1,6 +1,6 @@
 ---
 name: ws-github-provider
-description: GitHub issue→spec and PR ops (auth, create-pr, list/resolve threads, merge). Trigger when providers.scm/active is github or user invokes /ws-github-provider.
+description: GitHub issue→spec and PR ops. Same required intents as Azure DevOps (scm-provider-contract). Trigger when providers.scm is github.
 version: 0.3.27
 disable-model-invocation: true
 invocation_names:

@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr
-description: End-to-end Spec-to-PR orchestrator (Steps 0–9). Trigger when user requests full/standard spec-to-PR delivery.
+description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ 9 before review. Trigger for full/standard delivery.
 version: 0.3.27
 disable-model-invocation: true
 invocation_names:

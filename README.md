@@ -8,15 +8,30 @@
 [![npx](https://img.shields.io/badge/npx-github:jpolvora/workflow--skills-blue?logo=npm)](https://github.com/jpolvora/workflow-skills)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-site-success?logo=github)](https://jpolvora.github.io/workflow-skills)
 
-Portable **agent skills** and **end-to-end workflows** for coding assistants. This repo is the upstream source: install into a consumer project, keep project config/memory local, and contribute lasting skill changes here via PR.
+Portable **agent skills** that take a feature spec to a reviewed pull request. Install into a project, keep config and memory local, contribute lasting skill changes here via PR.
 
 | Doc | Who reads it | What it covers |
 |-----|--------------|----------------|
 | **`README.md`** (this file) | Humans | Install, update, uninstall, safety, contribute, high-level catalog |
 | **[`AGENTS.md`](AGENTS.md)** | Agents (upstream) | Full skill router, layers, verification, portability |
 | **[`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)** | Agents (after install) | Consumer hub: config, gates, external dependencies (installed with `ws-shared/`) |
-| **[`.agents/skills/ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md)** | Agents (every session) | Always-applied skill set + specs progressive-disclosure router |
+| **[`.agents/skills/ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md)** | Agents (every session) | Always-applied skill set + specs progressive-disclosure router + hub contracts (SCM parity, verify score) |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to `AGENTS.md` if your IDE needs one — not required by skills |
+
+---
+
+## Features
+
+| You get | How it works |
+|---------|--------------|
+| **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads (steps 0–9). |
+| **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
+| **A 9/10 verify bar** | Standard Step 5 advances only at score **≥ 9**. Below 9 it re-implements flagged work and re-scores (max 3 rounds, then Pause). Never auto-approves a weak score. |
+| **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
+| **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until ship. |
+| **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |
+| **Two speeds, one config** | Standard and lite share `config.json`. Isolated state (`workflowType`); no cross-resume. New runs ask stay-on-branch or `feat/{slug}`. |
+| **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Orchestrator model: Pause, switch in the IDE, Resume. |
 
 ---
 
@@ -31,7 +46,7 @@ Two delivery workflows (install independently; both share `.agents/skills/ws-sha
 | **[`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue execution with smart flow auto-detection (`ws-spec-to-pr` vs `ws-spec-to-pr-lite` per spec complexity) |
 | **[`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
 
-They run in **dual mode** in the same repo: shared config and pipeline skills, isolated state (`workflowType: standard` vs `lite`). New runs ask a **feature-branch strategy** gate at bootstrap (stay on current, create `feat/{slug}` from HEAD or from `baseBranch`). **Product commits** happen before local code review (after Step 5 verify on standard; after Step 2 implement on lite) so review diffs committed work vs `baseBranch` (`main`/`master`); review fixes land in a second product commit. Plan-dir artifacts still commit at ship only. **Verify score:** standard Step 5 advances only at score **≥ 9**; below 9 the orch runs `scoreAndRefine` until that bar (max 3 rounds, then Pause). **SCM parity:** GitHub and Azure DevOps implement the same required intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)); `npm run test` includes `test/test-provider-parity.js`. User gates prefer a native structured choice UI when available; otherwise the same options as a markdown list ([`gates.md`](.agents/skills/ws-shared/gates.md)). **Model:** the orchestrator session always runs under the active session model. The step banner shows `Orchestrator session model` + `Subagent phase model`; phase model preferences (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel` in `config.json` → `defaults`) apply only to standard-orchestrator `dispatch-agent` subagents. To change the orchestrator model: Pause → switch in your IDE/agent host → resume (no `--model` / `--model-chain` flags). **Task execution:** `defaults.enableDag` (default `false`) forces sequential task execution one by one; set `true` to restore threshold-based parallel DAG tasks. Skills stay **host-neutral** — artifact dirs come from `config.json` (`plans.dir` default `.agents/plans`; optional `reviews.dir` default `.agents/codereviews`). Agents also expand fixed **path tokens** (`pathTokens.skillsRoot` / `sharedDir`, defaults `.agents/skills` and `.agents/skills/ws-shared`) per [`tools.md`](.agents/skills/ws-shared/tools.md) § Path tokens. Details for agents: [`AGENTS.md`](AGENTS.md) § Portability. Standard orch step dispatch lives in [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) (not used as lite step numbers). Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md).
+See **Features** above for the operating model. Gates: [`gates.md`](.agents/skills/ws-shared/gates.md). Agent contract: [`AGENTS.md`](AGENTS.md) § Dual-mode. Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md). Site FAQ: [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills#faq).
 
 ### Contribution policy
 

@@ -5,6 +5,7 @@ This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0�
 > **Architecture:**
 > - Shared config: [`.agents/skills/ws-shared/config.json`](../../ws-shared/config.json) (see [`config-resolution.md`](../../ws-shared/config-resolution.md))
 > - Shared gates: [`gates.md`](../../ws-shared/gates.md)
+> - SCM intents: [`scm-provider-contract.md`](../../ws-shared/scm-provider-contract.md) (GitHub and Azure DevOps implement the same required intents)
 > - Dynamic paths: [Path tokens](../../ws-shared/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
 > - Model Selection: Switch model only via **Pause → IDE/Agent model picker → Resume** (no in-gate model picker or CLI flags).
 
@@ -22,6 +23,7 @@ This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0�
 | 5a. [When does the pipeline commit?](#when-does-the-pipeline-commit-code) | Product commits after verify and after review-fix |
 | 6. [Artifacts & State Lifecycle](#6-artifacts--state-lifecycle) | state.md structure, plansDir artifacts, git checkpoints |
 | 7. [Troubleshooting](#7-troubleshooting) | Handling HS pauses, worktree issues, and retry loops |
+| 8. [Verify score & SCM providers](#8-verify-score--scm-providers) | Step 5 bar ≥ 9; GitHub/Azure intent parity |
 
 ---
 
@@ -32,7 +34,7 @@ Spec-to-PR is a deterministic **orchestrated software delivery pipeline** design
 
 ### Standard vs. Lite Modes
 The hub supports two workflows depending on target speed and project complexity:
-*   **Standard (`ws-spec-to-pr`)**: Detailed 10-step lifecycle (0 to 9) containing plan refinement interviews, sequential or parallel DAG execution, read-only verify gates, a required product commit after verify, local code review of `{base}...HEAD`, a second product commit for review fixes, and testing batteries.
+*   **Standard (`ws-spec-to-pr`)**: Detailed 10-step lifecycle (0 to 9) containing plan refinement interviews, sequential or parallel DAG execution, read-only verify gates (advance at score ≥ 9), a required product commit after verify, local code review of `{base}...HEAD`, a second product commit for review fixes, and testing batteries.
 *   **Lite (`ws-spec-to-pr-lite`)**: Fast-track 6-step lifecycle (0 to 5) skipping Plan Refinement interviews, DAG creation, verify gates, and step-7 testing. Product commit after implement (before review), then a second commit for review fixes. Steps are executed inline in a single session.
 
 ### Who is responsible for what?
@@ -266,3 +268,14 @@ This is **mandatory** even if you chose **Keep all artifacts** (that choice only
 *   **Dirty worktrees:** default `--dirty-policy force` logs dirty paths then `git worktree remove --force`. Use `--dirty-policy stop` to exit 1 without removing (no half-registered worktree).
 *   **Protected branches:** cleanup never deletes `main`, `master`, or `develop` (exact names), nor `project.baseBranch` / `project.workingBranch` from `config.json`. The primary worktree is never removed.
 *   **dryRun:** pass `--dry-run` to log intended removals with zero git mutations.
+
+---
+
+## 8. Verify score & SCM providers
+
+### What score is required to leave Step 5?
+Standard check-implementation advances only at overall score **≥ 9**. Score **< 9** always runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ 9. Max **3** rounds per Step 5 visit, then Pause (fail closed). Resume continues. Never auto-approve below 9, including in `autoMode`. Optional polish (Accept As-Is) only when the score is already ≥ 9 and the `scoreAndRefine` flag is on. Lite has no Step 5 verify gate.
+
+### Do GitHub and Azure DevOps support the same PR operations?
+Yes. Both implement the required intents in [`scm-provider-contract.md`](../../ws-shared/scm-provider-contract.md): `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `check-pr-status`, `resolve-thread`, `merge-pr`. Host CLI recipes stay inside each provider `INTENTS.md`. An extra intent on one side without the other (and without an allowlist row) fails `npm run test` (`test/test-provider-parity.js`). [`ws-local-spec-provider`](../../ws-local-spec-provider/SKILL.md) is not an SCM implementer; it delegates PR intents to `providers.scm`.
+

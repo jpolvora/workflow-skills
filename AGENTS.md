@@ -260,7 +260,7 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 - **Session model:** orchestrator session always runs under `currentModel`; switch via Pause → IDE/agent host → Resume (no `--model` / `--model-chain`). Subagent phase model preferences (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`) apply exclusively to `dispatch-agent` subagents (standard orch only; lite is inline). `defaults.enableDag` (default `false`) forces sequential task execution; `true` restores threshold-based parallel DAG. Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
-- **Product commits:** standard after Step 5 (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 / lite Step 4). Review uses `git diff {base}...HEAD`. No push before ship.
+- **Product commits:** standard after Step 5 when score ≥ 9 (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 / lite Step 4). Review uses `git diff {base}...HEAD`. No push before ship.
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
@@ -274,15 +274,15 @@ Manifest: `.agents/skills/ws-shared/installed-skills.json` (`skills` + `selected
 | `ws-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
-| `ws-verify-plan` | 5 | Check-implementation (spec score); required product commit follows before review |
+| `ws-verify-plan` | 5 | Check-implementation (advance at score ≥ 9; `scoreAndRefine` below); required product commit follows before review |
 | `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit of fixes) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Delivery artifacts + push/PR (product already committed) |
 | `ws-fix-pr` | 9 | PR thread fix |
 | `ws-goal-fix-pr` | 9 | Fix until zero threads |
 | `ws-update-plan-implementation` | Post | Plan deltas |
-| `ws-github-provider` | Provider | GitHub issue→spec + PR ops |
-| `ws-azure-devops-provider` | Provider | ADO WI→spec + PR ops |
+| `ws-github-provider` | Provider | GitHub issue→spec + PR ops (same intents as Azure) |
+| `ws-azure-devops-provider` | Provider | ADO WI→spec + PR ops (same intents as GitHub) |
 | `ws-local-spec-provider` | Provider | Local `*.spec.md` |
 | `ws-spec-format` | Protocol | Spec format |
 | `ws-goal-loop` | Primitive | Convergence loop |
@@ -409,7 +409,7 @@ Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devop
 
 **Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. Do **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-write-spec` / `ws-spec-format` SKILL.md for session autoload. Do not `Read` a separate harness skill.
 
-[`ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md) still owns **specs vocabulary** and **specs skill router**. Load those sections when the user mentions specs / plans / Spec-to-PR without naming a skill. Do **not** follow `autoload.md` § Always-applied in this repo (those rows point at live `ws-*` bodies).
+[`ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md) still owns **specs vocabulary**, **specs skill router**, and **hub contracts** (SCM parity, verify score). Load those sections when the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill. Do **not** follow `autoload.md` § Always-applied in this repo (those rows point at live `ws-*` bodies).
 
 The table below is the root-hub set that always loads in **this** repo.
 
@@ -429,12 +429,15 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 | Session start | This file (including § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only)). Nothing else. Do not load `autoload.md` § Always-applied. |
 | Task with a clear intent | Match one row in § [Task router](#task-router) → load that single skill (or use § [6. Write a spec](#6-write-a-spec-on-demand)). Do not preload sibling or downstream skills. Duplicate `ws-*` paths: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory). |
 | Spec / plan / `index.PRD` / Spec-to-PR wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs vocabulary + § Specs skill router (or § Keyword → skill) → load **only** the matching skill, except standalone draft-spec uses § [6. Write a spec](#6-write-a-spec-on-demand). Never load the whole specs family. |
+| SCM / verify-score wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/autoload.md) § Hub contracts → then that hub file or one skill. |
 | Orchestrated run (`ws-spec-to-pr` / lite / `ws-multi-spec`) | The orchestrator owns loading. Load step skills via its dispatch table, one step at a time. |
 | Need config, tokens, or gate wording | Read `{sharedDir}/config.json` (shape: [`config.json.example`](.agents/skills/ws-shared/config.json.example)) + [`tools.md`](.agents/skills/ws-shared/tools.md) / [`gates.md`](.agents/skills/ws-shared/gates.md) — not a skill body. |
-| A skill names a companion file (`PHASES.md`, `STEP-DISPATCH.md`, `FORMAT.md`, …) | Read it **when that skill says to**, not upfront. |
+| Check-implementation / verify score / `scoreAndRefine` | Orchestrated: Step 5 via orch dispatch (`ws-verify-plan` only). Standalone: `ws-verify-plan`. Gate copy: `{sharedDir}/gates.md`. Advance only at score ≥ 9; do not load `ws-implement-tasks` until scoreAndRefine says to. |
+| SCM intents / GitHub vs Azure parity / `scm-provider-contract` | Read [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md). Load **one** provider `SKILL.md` when executing that SCM. Do not load both provider bodies to compare intents. |
+| A skill names a companion file (`PHASES.md`, `STEP-DISPATCH.md`, `FORMAT.md`, `scm-provider-contract.md`, …) | Read it **when that skill says to**, not upfront. |
 | No route matches | Ask via `user-gate` (or `find-skills` / `using-superpowers` to discover) instead of loading the catalog. |
 
-**Anti-patterns:** loading § [Skill catalog](#skill-catalog-layers) rows as a batch · reading every `ws-spec-*` body to decide which applies · loading `ws-check-harness` / `ws-check-workflows` before a change exists to audit · re-reading a skill already loaded this session · `Read`ing both copies of a duplicate `ws-*` id · editing `{globalSkillsRoot}/ws-*` from this package root.
+**Anti-patterns:** loading § [Skill catalog](#skill-catalog-layers) rows as a batch · reading every `ws-spec-*` body to decide which applies · loading both `ws-github-provider` and `ws-azure-devops-provider` SKILL.md to compare intents (use `scm-provider-contract.md`) · loading `ws-check-harness` / `ws-check-workflows` before a change exists to audit · re-reading a skill already loaded this session · `Read`ing both copies of a duplicate `ws-*` id · editing `{globalSkillsRoot}/ws-*` from this package root.
 
 ### Dual-hub precedence (root override)
 
@@ -538,9 +541,9 @@ Install via `using-superpowers` / `find-skills` until routed here.
 |-------|------|-------|
 | `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Packaged; consumer on-demand. This repo uses § [4. Reply shape](#4-reply-shape-ws-tdah) |
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Packaged; this repo uses § [1. Surgical scope](#1-surgical-scope-ws-karpathy-guidelines) |
-| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | End-to-end delivery orchestrator FSM |
-| `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential delivery orchestrator |
-| `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Sequential smart multi-spec batch delivery orchestrator |
+| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9); verify ≥ 9 before review |
+| `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
+| `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Batch: classify each spec, then standard or lite |
 | `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
 | `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
 | `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Specs |
@@ -570,7 +573,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
 | Engineering delivery gate / Code review proof | This file § [2. Delivery gate](#2-delivery-gate-ws-senior-developer) (live `ws-senior-developer` only when authoring that skill) |
-| Verify | `ws-verify-plan` |
+| Verify / check-implementation / verify score | `ws-verify-plan` (advance at score ≥ 9; `scoreAndRefine` below) |
+| SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — then one provider skill |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
