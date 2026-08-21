@@ -250,7 +250,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
-| **0.3.29** | Aug 21 | Added `ws-spec-explain` (spec/US delivery panorama) and `ws-cleanup` (confirm-gated workflow leftover cleanup + `.gitignore` suggestions) to the Workflows package |
+| **0.3.29** | Aug 21 | Added `ws-spec-explain` (spec/US delivery panorama), `ws-cleanup` (confirm-gated leftover cleanup + `.gitignore` suggestions), and `ws-spec-archive` (harvest `{plansDir}` into `index.PRD` Archive + propose shipped-plan cleanup) to the Workflows package |
 | **0.3.22** | Aug 17 | DeepSeek harness hardening (PR #216): inline-dict commit SHA scanning in `validate_state`, the AC9 resume gate retargeted from the base branch to the integration branch, audit config resolved from the repo root, goal-loop runtime confined to `{us-dir}/.runtime` |
 | **0.3.23** | Aug 19 | Remote tracker issues now enter through `ws-write-spec` agentic reformulation instead of a raw converter dump, so a GitHub issue or Azure work item becomes a structured spec with real acceptance criteria |
 | **0.3.24** | Aug 19 | Subagents must prove they consulted `backend.md`, `frontend.md`, and `MEMORY.md`; fix-mode consults gate on `defaults` flags; pattern templates fall back in memory rather than mutating disk |
