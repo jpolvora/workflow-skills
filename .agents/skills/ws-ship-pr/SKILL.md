@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.26
+version: 0.3.28
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -90,17 +90,24 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
    Then commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {shipHead}`. Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
-5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL.
-   - Done when: PR id/URL captured or reused. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).
+5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL. When workflow state or spec frontmatter has tracker `id`, dispatch provider **`comment-issue`** (alias `close-loop`) with PR URL + one-paragraph summary (`dry-run` when parent is dry-run). Skip when `id` is null / `source: local`.
+   - Done when: PR id/URL captured or reused; close-loop dispatched or skipped with reason. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).
 
-6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action / CI workflows to start on SCM infrastructure), then start [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks and `list-threads` via the configured SCM provider, and dispatch `ws-goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `ws-goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
+6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action / CI workflows to start on SCM infrastructure), then start [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks via provider **`check-pr-status`** (classify diff-regression vs baseline vs infra-flake; one flake rerun; baseline does not block merge only when reproduced on default branch and recorded) and `list-threads` via the configured SCM provider, and dispatch `ws-goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `ws-goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
    - Done when: `activeThreads == 0` and required checks green, or run stopped with PR URL reported.
 
-7. **Merge**: only when Step 6 converged and checks green. Configured SCM provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. Never delete the resolved PR head (`shipHead`: workflow `state.branch`; standalone `workingBranch` or explicit `head=`).
+7. **Merge**: only when Step 6 converged and checks green. Configured SCM provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. When merge runs in-session and tracker `id` is present, dispatch **`comment-issue`** again (merged follow-up). Never delete the resolved PR head (`shipHead`: workflow `state.branch`; standalone `workingBranch` or explicit `head=`).
    - Done when: merged via configured SCM provider or explicitly skipped; `shipHead` intact.
 
 8. **Telemetry aggregate** (post-delivery, non-blocking): after successful ship completion — PR created (`stopBeforeFixPr` / workflow Step 8 handoff), merge done (standalone or full convergence), or `shipAction: skip` with workflow delivery marked complete — run `node bin/generate-telemetry-aggregate.cjs` (writes `{plansDir}/telemetry/aggregate.json`). When `stopBeforeFixPr`, orchestrator Step 9 also runs this after `ws-goal-fix-pr` convergence (idempotent). On failure: **warn and continue** — do not block ship, merge, or PR handoff.
    - Done when: aggregate script ran or failure warned; delivery outcome already reported.
+
+## Runtime audit (`defaults.enableAuditing`)
+
+When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), follow [`ws-audit`](../ws-audit/SKILL.md):
+- **Inherit or Init:** in workflow mode, inherit the active orchestrator audit session (`{us-dir}`); in standalone mode, initialize a session under `{plansDir}/ship-{shipHead}`.
+- **Catch script errors:** whenever any script or helper (`detect-base-branch.sh`, `verify.sh`, provider scripts `fix_pr_azure_context.py` / `fetch_threads.cjs` / `resolve_thread.cjs`, SCM CLI commands, or telemetry scripts) fails or exits non-zero, append a finding (`category: "script"`, `severity: "error"`).
+- **Finalize & gate:** when running standalone, finalize the audit session at completion/stop and present the upstream issue gate if errors occurred.
 
 ## Output
 
@@ -115,6 +122,7 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 - Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `bash {skillsRoot}/ws-ship-pr/scripts/verify.sh`
 - SCM Providers (configured via `config.json` `providers.scm`): [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md)
 - Security: [ws-secrets-leak-review](../ws-secrets-leak-review/SKILL.md)
-- Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md)
+- Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md) · Audit: [ws-audit](../ws-audit/SKILL.md)
 - Base detection: `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../ws-spec-to-pr/ARTIFACTS.md)
+
 

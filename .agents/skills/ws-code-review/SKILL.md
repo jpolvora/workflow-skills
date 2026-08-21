@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.26
+version: 0.3.28
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -74,8 +74,8 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 3. **Investigate**: for each hypothesis, complete all four proof steps: Evidence Read, Failure Scenario, Missing Protection, Discards. Drop any hypothesis that cannot complete all four.
    - Done when: every retained finding has all four proof steps documented.
 
-4. **Generalize defect class**: for each proven finding, search the full diff for sibling occurrences of the same pattern and report them together.
-   - Done when: sibling occurrences are searched and reported (or none found).
+4. **Generalize defect class**: for each proven finding, search the full diff **and sibling modules beyond the diff** for the same vulnerability/pattern; report as a class finding or named exemption (path + reason). Critical if an unfixed sibling of a proven defect remains without exemption.
+   - Done when: sibling occurrences beyond the diff are searched and reported (or none found).
 
 5. **Sweep known patterns & MEMORY**:
    - Read compiled `{sharedDir}/MEMORY.md` entries (titles, Module/Layer tags, and `DO NOT` / `INSTEAD DO` directives) against the in-scope modified file list and plan keywords; report confirmed violations as Warning or Critical by severity.

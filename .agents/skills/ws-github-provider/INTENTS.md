@@ -1,6 +1,6 @@
 # ws-github-provider — Intent procedures
 
-Load when executing an intent from [`SKILL.md`](SKILL.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{owner}/{repo}` from config — never literals.
+Load when executing an intent from [`SKILL.md`](SKILL.md). Shared intent ids: [`../ws-shared/scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{owner}/{repo}` from config — never literals.
 
 ## `validate-auth`
 
@@ -44,6 +44,20 @@ python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
 | Promotion owner | `register_local_spec.py` from [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) is the single promotion primitive for every provider |
 
 
+## `sweep-prior-work`
+
+```bash
+python .agents/skills/ws-github-provider/scripts/sweep_prior_work.py \
+  --issue {n} \
+  --keywords {k1} {k2} \
+  --files path/to/file1 path/to/file2
+```
+
+- Run `validate-auth` first (`gh auth status`). Non-zero without `--dry-run` → **STOP**.
+- `--dry-run` without auth: print skip reason, exit 0 (advisory).
+- Searches: `gh pr list --search "#{n}" --state all`; keyword open search; `git log --oneline -20 -- <files>` when `--files` set.
+- stdout JSON (repo-relative paths only). Exact open PR for the **same tracker id** → caller `user-gate`.
+
 ## `create-pr`
 
 ```bash
@@ -68,16 +82,35 @@ gh pr checks {PR_ID}
 
 - Evaluates CI checks and automated code-review action status.
 - Finished when all checks/runs have completed status (none `pending`, `in_progress`, or `queued`).
+- On failed checks: `gh run view {RUN_ID} --log-failed` (or documented equivalent) for each failed workflow run.
+- Classify each failed check: **`diff-regression`** (introduced on PR head), **`baseline`** (reproduced on `project.baseBranch`), **`infra-flake`** (transient infra; one rerun only).
+- Record classification JSON for callers (`ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`). Baseline failures do not block merge only when reproduced on default branch and recorded. Do not count baseline as fix-loop progress.
+
+## `comment-issue`
+
+Alias in [`tools.md`](../ws-shared/tools.md): `close-loop` (same intent id).
+
+```bash
+python .agents/skills/ws-github-provider/scripts/comment_issue.py \
+  --id {n} \
+  --body-file {plansDir}/close-loop-body.md \
+  [--dry-run]
+```
+
+- Body: PR URL + one-paragraph summary. No secrets, no absolute machine paths.
+- Skip when tracker `id` is null (`--id null` → exit 0 `skipped`).
+- `--dry-run`: print body JSON, no POST.
+- `validate-auth` before mutating.
 
 ## `resolve-thread`
 
 ```bash
-node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{resolution note}"
+node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{resolution note}" [--dry-run]
 ```
 
 > **IMPORTANT**: Never call `addPullRequestReviewThreadReply` alone. Always use `resolve_thread.cjs`, which calls both `addPullRequestReviewThreadReply` AND `resolveReviewThread` atomically in one GraphQL mutation. Posting the `<!-- resolution-reply -->` marker comment without the `resolveReviewThread` mutation is **not** a resolved thread — `isResolved` will remain `false` until the mutation fires.
 
-Skip remote mutation when the parent skill is in `dry-run`.
+Pass `--dry-run` when the parent skill is in `dry-run` (prints the planned resolve; no GraphQL).
 
 ## `merge-pr`
 

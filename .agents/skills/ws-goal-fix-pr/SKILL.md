@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.3.26
+version: 0.3.28
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -46,8 +46,7 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
 
 Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** `check-pr-status` from the configured SCM provider reports all active code reviews and CI pipelines have completed (status is completed, not `pending`, `in_progress`, or `queued`).
 
-- **If `providers.scm: "github"`**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-github-provider](../ws-github-provider/SKILL.md) (verifies via `gh pr checks` / Actions API that all automated code-review workflows and CI checks have ended).
-- **If `providers.scm: "azure-devops"` (or `"ado"`)**: Dispatch `check-pr-status <PR-NUMBER>` to [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) (verifies via Azure DevOps status policies / build pipeline API that active code reviews and build pipelines are completed).
+- Dispatch **`check-pr-status <PR-NUMBER>`** to the configured SCM provider only (no raw `gh`/`az` in this skill). Classify failed checks: **diff-regression** vs **baseline** (reproduced on `project.baseBranch`) vs **infra-flake**. One flake rerun; do not count baseline as loop progress. Baseline failures do not block convergence when reproduced on default branch and recorded.
 - If any code-review or CI action is still running, continue waiting in the heartbeat loop (`wait <n>`).
 
 ## Automation overrides (vs fix-pr defaults)
@@ -92,4 +91,12 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 
 7. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence from step 6; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
    - Done when: the report is presented to the user.
+
+## Runtime audit (`defaults.enableAuditing`)
+
+When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), follow [`ws-audit`](../ws-audit/SKILL.md):
+- **Inherit or Init:** in workflow mode (Step 9 / Step 5), inherit the active orchestrator audit session (`{us-dir}`); in standalone mode, initialize a session under `{plansDir}/pr-{PR-NUMBER}`.
+- **Catch script errors:** whenever any provider script (`fix_pr_azure_context.py`, `fetch_threads.cjs`, `resolve_thread.cjs`, SCM CLI helpers) or verification script fails or exits non-zero, append a finding (`category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`).
+- **Finalize & gate:** when running standalone, finalize the audit session at loop completion/stop and present the upstream issue gate if errors occurred.
+
 

@@ -1,7 +1,7 @@
 ---
 name: ws-write-spec
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.3.26
+version: 0.3.28
 disable-model-invocation: true
 invocation_names:
   - write-spec
@@ -66,15 +66,19 @@ When writing a spec derived from a remote tracker issue or raw human description
 ## Steps
 
 1. **Parse & Ingest** — Infer or parse title, url-safe `slug`, and origin (`source`). For tracker issues, extract metadata (`id`, `url`, `labels`, `workItemType`).
-   - Done when: title, `slug`, `source`, and metadata are identified.
+   - **Prior-work sweep (before plan/code):** When `source` is `github` or `azure-devops`, dispatch provider `sweep-prior-work` (`--issue {id}`, keywords from title/body). When `source: local` / `id: null`: keyword + `git log` on inferred paths; if `providers.scm` is github or azure-devops, also search PRs by title keywords via that provider (not via `ws-local-spec-provider`). Record findings under `## Original Issue Context` → `### Prior Work Sweep`. Exact open PR for the **same tracker id** → `user-gate` (Recommended: stop/reuse). Related hits: record and continue; `autoMode`: continue unless exact same-issue open PR (then Pause).
+   - Done when: title, `slug`, `source`, metadata, and prior-work sweep (when required) are identified.
 
-2. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol.
+2. **Design intent (modification tasks)** — Before treating a behavior gap as a bug, inspect `git log -p -S "<symbol>"` and/or `git log -L :<func>:<file>`. Record `### Design Intent` under Notes or Original Issue Context (intentional constraint vs accidental gap). Greenfield new files: skip with reason. Mandatory for "fix bug / restore behavior" wording.
+   - Done when: design-intent recorded or skip reason documented.
+
+3. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol.
    - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
 
-3. **Write** — Save `{specsDir}/{slug}.spec.md` (or `{output-dir}/{slug}.spec.md` when overridden). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`.
+4. **Write** — Save `{specsDir}/{slug}.spec.md` (or `{output-dir}/{slug}.spec.md` when overridden). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`.
    - Done when: that specsDir file exists on disk.
 
-4. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy. Delegate to `ws-local-spec-provider`:
+5. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy. Delegate to `ws-local-spec-provider`:
 
    ```bash
    python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py \
@@ -84,6 +88,6 @@ When writing a spec derived from a remote tracker issue or raw human description
    That script keeps the `{specsDir}` spec of record normalized and writes `{us-dir}/step-00-{slug}.spec.md`. Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
    - Done when: command succeeded, or this step was skipped.
 
-5. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
+6. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
    - Done when: caller has the specsDir path (and plan path only when registered).
 

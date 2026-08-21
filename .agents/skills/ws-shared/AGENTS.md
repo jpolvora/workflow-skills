@@ -27,9 +27,10 @@
 | [`config.json.example`](config.json.example) | Project config template — seeded to `config.json` on fresh install; fill via [`ws-configure-project`](../ws-configure-project/SKILL.md); never commit |
 | [`config.schema.json`](config.schema.json) | JSON Schema for `config.json` validation |
 | [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
+| [`scm-provider-contract.md`](scm-provider-contract.md) | Required SCM intents (`ws-github-provider` ↔ `ws-azure-devops-provider` parity) |
 | [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
 | [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys), **Path tokens** (`{skillsRoot}` / `{sharedDir}` / `{plansDir}`), script launchers (`python` / `node` / `bash`). Load with `config.json` before tool calls. |
-| [`autoload.md`](autoload.md) | Always-applied skill list + **specs vocabulary / progressive-disclosure router** (which specs skill to load) |
+| [`autoload.md`](autoload.md) | Always-applied skill list + **specs vocabulary / progressive-disclosure router** (which specs skill to load) + **hub contracts** (SCM parity, verify score) |
 | [`STACK.md.example`](STACK.md.example) | Template for human-readable stack companion — seeds `STACK.md` |
 | [`setup.md`](setup.md) | Bootstrap & entry logic shared by `ws-spec-to-pr` and `ws-spec-to-pr-lite` |
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
@@ -69,6 +70,8 @@ Default **shared hub only** (typical consumer install): `ws-tdah` and `ws-senior
 Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (installer never writes it; generate via [`ws-configure-project`](../ws-configure-project/SKILL.md) `--section autoload`) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an **intentional consumer override**, not a shared-hub defect. Effective autoload is **false** when `config.json` is missing, the key is omitted, or the value is not explicit `true`. **`ws-karpathy-guidelines` remains in this hub's mandatory Skill loading table** and is not part of the Always-applied promotion set (see `autoload.md` complement note).
 
 **Specs progressive disclosure:** when the user mentions specs, plans, Spec-to-PR, `index.PRD`, or related keywords without naming a skill, load [`autoload.md`](autoload.md) § Specs vocabulary and § Specs skill router — then load **only** the matching skill.
+
+**Hub contracts (load on demand):** SCM intents / GitHub vs Azure parity → [`scm-provider-contract.md`](scm-provider-contract.md) (one provider `SKILL.md` only when executing that SCM). Check-implementation / verify score / `scoreAndRefine` → orch Step 5 or [`ws-verify-plan`](../ws-verify-plan/SKILL.md); gate copy in [`gates.md`](gates.md) (advance at score ≥ 9). Config / tokens / gates → `config.json` + [`tools.md`](tools.md) / [`gates.md`](gates.md) — not a skill body.
 
 When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
 
@@ -176,6 +179,8 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Format/review spec | `ws-spec-format` |
 | Specs vocabulary / which specs skill to load | [`autoload.md`](autoload.md) § Specs skill router |
+| Verify / check-implementation / verify score | `ws-verify-plan` (advance at score ≥ 9; `scoreAndRefine` below) |
+| SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](scm-provider-contract.md) — then one provider skill |
 | Record learning | `ws-self-learning` |
 | Record ws-changelog | `ws-changelog` |
 | Create / rewrite a skill | `ws-write-a-skill` (Extra) |
@@ -184,7 +189,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
 
-**Product-commit order (both orch):** after verify (standard Step 5) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
+**Product-commit order (both orch):** after verify (standard Step 5, score ≥ 9) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
 
 ---
 

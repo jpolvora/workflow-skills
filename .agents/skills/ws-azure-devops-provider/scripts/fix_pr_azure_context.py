@@ -66,11 +66,13 @@ ensure_utf8_stdio()
 
 
 def find_repo_root(start: Path) -> Path:
-    current = start.resolve()
+    current = start.expanduser().resolve()
     for candidate in [current, *current.parents]:
-        if (candidate / ".agents").is_dir():
+        if (candidate / ".agents").is_dir() or (candidate / ".git").exists():
             return candidate
-    raise SystemExit("Could not locate repository root containing .agents/.")
+    if current.is_dir():
+        return current
+    raise SystemExit("Could not locate repository root containing .agents/ or .git.")
 
 
 def resolve_pat(pat_env_var: str, secret_path: Path | None = None) -> str:
@@ -106,8 +108,14 @@ def resolve_azdo_legacy_paths(repo_root: Path) -> tuple[Path, Path]:
 
 
 def load_spec_to_pr_ado_config(repo_root: Path) -> dict[str, Any] | None:
-    config_path = repo_root / ".agents" / "skills" / "shared" / "config.json"
-    if not config_path.exists():
+    for rel_path in (
+        Path(".agents") / "skills" / "ws-shared" / "config.json",
+        Path(".agents") / "skills" / "shared" / "config.json",
+    ):
+        config_path = repo_root / rel_path
+        if config_path.exists():
+            break
+    else:
         return None
     try:
         config = json.loads(config_path.read_text(encoding="utf-8"))
@@ -432,21 +440,38 @@ def resolve_thread(
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Azure DevOps helper for fix-pr.")
-    parser.add_argument("--repo-root", default="", help="Repository root. Default: autodetect.")
-    parser.add_argument(
+    common_parser = argparse.ArgumentParser(add_help=False)
+    common_parser.add_argument(
+        "--repo-root",
+        default=argparse.SUPPRESS,
+        help="Repository root. Default: autodetect.",
+    )
+    common_parser.add_argument(
         "--repository",
-        default="",
+        default=argparse.SUPPRESS,
         help="Azure DevOps repository name. Default: autodetect.",
+    )
+
+    parser = argparse.ArgumentParser(
+        description="Azure DevOps helper for fix-pr.",
+        parents=[common_parser],
     )
     sub = parser.add_subparsers(dest="action", required=True)
 
-    collect = sub.add_parser("collect", help="Collect PR, threads, comments, and work items.")
+    collect = sub.add_parser(
+        "collect",
+        help="Collect PR, threads, comments, and work items.",
+        parents=[common_parser],
+    )
     collect.add_argument("--pr-id", type=int, required=True)
     collect.add_argument("--include-system", action="store_true")
     collect.add_argument("--output", default="", help="Output JSON file. Default: stdout.")
 
-    resolve = sub.add_parser("resolve-thread", help="Comment and mark a thread as fixed.")
+    resolve = sub.add_parser(
+        "resolve-thread",
+        help="Comment and mark a thread as fixed.",
+        parents=[common_parser],
+    )
     resolve.add_argument("--pr-id", type=int, required=True)
     resolve.add_argument("--thread-id", type=int, required=True)
     resolve.add_argument("--comment", required=True)
@@ -461,7 +486,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Simulate resolution locally without posting a comment or changing status in Azure DevOps.",
     )
 
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if not hasattr(args, "repo_root"):
+        args.repo_root = ""
+    if not hasattr(args, "repository"):
+        args.repository = ""
+    return args
 
 
 def print_collect_summary(payload: dict[str, Any]) -> None:

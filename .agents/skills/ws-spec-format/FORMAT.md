@@ -44,6 +44,16 @@ specDate: 2026-07-02
 
 (optional / required for tracker issues — verbatim original human-authored issue description, comments, and audit context for human reading and traceability)
 
+### Prior Work Sweep
+
+(required when `source` is `github` or `azure-devops`; optional for `local` — record keyword/git findings when run)
+
+- Related PRs, commits, and duplicate-risk notes from provider `sweep-prior-work` or local keyword/git sweep.
+
+### Design Intent
+
+(optional — required for modification / bugfix tasks after `git log -p -S` or `git log -L`; skip greenfield with reason)
+
 ## Child Tasks
 
 (optional — when tracker had sub-tasks)
@@ -62,7 +72,8 @@ specDate: 2026-07-02
 
 1. ACs enumerable, deterministic, and testable — one line per AC (`- AC{N}: ...`).
 2. `source: local` → author drafts complete ACs from free-text requirements.
-3. `source: github` | `source: azure-devops` → `ws-write-spec` reformulates and enhances raw issue into agentic ACs while preserving human text in `## Original Issue Context`.
-4. `*.issue.json` is audit-only — downstream workflow skills read `step-00-*.spec.md` only.
-5. Local specs (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
+3. `source: github` | `source: azure-devops` → `ws-write-spec` reformulates and enhances raw issue into agentic ACs while preserving human text in `## Original Issue Context`; **`### Prior Work Sweep` required** after sweep before plan/code.
+4. Modification / bugfix specs → `### Design Intent` required (or documented skip for greenfield).
+5. `*.issue.json` is audit-only — downstream workflow skills read `step-00-*.spec.md` only.
+6. Local specs (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
 

@@ -374,7 +374,7 @@ const newSection =
   <div class="catalog-header-wrap">
     <div>
       <h2>Skill Catalog</h2>
-      <p class="section-subtitle">Discover production-grade agent skills across 4 modular layers.</p>
+      <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
       <span class="catalog-counter"><strong id="visible-skills-count">${totalSkills || 30}</strong> skills available</span>

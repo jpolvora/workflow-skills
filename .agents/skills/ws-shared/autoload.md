@@ -1,6 +1,6 @@
 # Autoload & progressive disclosure
 
-**Audience: agents.** Load this file when the project root `AGENTS.md` references it, or whenever the user mentions specs / plans / Spec-to-PR without naming a skill.
+**Audience: agents.** Load this file when the project root `AGENTS.md` references it, or whenever the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill.
 
 Path tokens: expand via [`tools.md`](tools.md) before tool calls (`{skillsRoot}`, `{sharedDir}`, `{specsDir}`, `{plansDir}`).
 
@@ -101,6 +101,22 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 
 ---
 
+## Hub contracts (progressive disclosure)
+
+Load the named hub file or one skill. Do not load both SCM provider bodies to compare intents.
+
+| When the user / task means… | Load | Does **not** do |
+|-----------------------------|------|-----------------|
+| SCM parity / GitHub vs Azure intents / `scm-provider-contract` | [`scm-provider-contract.md`](scm-provider-contract.md) then **one** provider | Do not load both provider `SKILL.md` bodies to compare intents |
+| Check-implementation / verify score / `scoreAndRefine` | Orch Step 5; standalone [`ws-verify-plan`](../ws-verify-plan/SKILL.md); gates in [`gates.md`](gates.md) | Do not auto-approve below 9; do not load `ws-implement-tasks` until scoreAndRefine says to |
+
+| Keywords / phrases | Invoke |
+|--------------------|--------|
+| SCM parity, github vs azure intents, provider contract | `{sharedDir}/scm-provider-contract.md` then one provider |
+| verify score, check-implementation, scoreAndRefine | orch Step 5 / `ws-verify-plan` |
+
+---
+
 ## How the family fits together
 
 ```text
@@ -139,10 +155,10 @@ after ship / delivery evidence
 4. `ws-sync-spec` (body ↔ code) ≠ `ws-spec-index sync` (index ↔ delivery evidence).
 5. `ws-multi-spec` dispatches `ws-spec-to-pr` / `ws-spec-to-pr-lite` workers; it does not replace `ws-spec-list` for interactive pick-one.
 6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` fetch → `ws-write-spec` agentic reformulation → `{specsDir}` spec of record, then local-spec-provider register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly.
-
+7. GitHub and Azure share required intents in [`scm-provider-contract.md`](scm-provider-contract.md). Compare that file, not both provider `SKILL.md` bodies. Standard Step 5 advances only at verify score ≥ 9.
 
 ---
 
 ## Seed note
 
-Shipped by install/update as hub template. Prefer keeping the Specs vocabulary and router sections aligned with upstream. Customize the Always-applied table per project when needed (or via `ws-configure-project --section autoload`).
+Shipped by install/update as hub template. Prefer keeping the Specs vocabulary, router, and Hub contracts sections aligned with upstream. Customize the Always-applied table per project when needed (or via `ws-configure-project --section autoload`).

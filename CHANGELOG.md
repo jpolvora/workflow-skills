@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-08-21 10:55] Agent: Cursor Grok 4.6
+- **Prompt**: update improving website info, syncing skills features and simplifying and enhancing the marketing ideas describing better, commit again
+- **Done**: Site hero, Features grid, workflow/package/FAQ copy. SKILL.md descriptions for orch + verify + SCM providers; catalog rebuild. README Features table in "you get" language.
+- **Result**: Marketing matches verify ≥ 9 and GitHub/Azure parity. Ready to commit.
+
+### [2026-08-21 10:50] Agent: Cursor Grok 4.6
+- **Prompt**: update AGENTS.md progressive disclosure, update README.md features, update docs/faqs
+- **Done**: Progressive disclosure rows for verify score ≥ 9 and SCM contract (root AGENTS.md + ws-shared + autoload hub contracts). README Features table. Site FAQ Q2c/Q7b; spec-to-pr FAQ § 8.
+- **Result**: Agents route to one hub file or skill; humans see Features + FAQs for both contracts.
+
+### [2026-08-21 10:40] Agent: Cursor Grok 4.6
+- **Prompt**: Raise verify-plan min score to 9 with scoreAndRefine until pass; add GitHub/Azure SCM intent parity contract; document in changelog and feature list; commit
+- **Done**: Step 5 advances only at score >= 9 (`scoreAndRefine` loop otherwise). Shared `scm-provider-contract.md` plus `test-provider-parity.js`. GitHub `resolve_thread.cjs --dry-run` matches Azure. Site/README/FAQ updated.
+- **Result**: Product changes on `develop`, ready for review. Integrity regenerated. `npm run test` green.
+
 ### [2026-08-15 15:12] Agent: Cursor Composer
 - **Prompt**: `/ws-multi-spec` sequential lite full auto for GH #211, #209, #210 then ship + goal-fix-pr until merge
 - **Done**: Shipped 3/3 — PR 212 (#211 hybrid consumer-root), PR 213 (#209 en-us patterns + autoload), PR 214 (#210 ws-preview Extra skill, v0.3.21)

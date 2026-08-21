@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.3.26
+version: 0.3.28
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -45,13 +45,13 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 
 | `providers.scm` | Skill | Intents used here |
 |-----------------|-------|-------------------|
-| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `resolve-thread` |
-| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `resolve-thread` |
+| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
+| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
 
 ## Steps
 
-1. **Sync & CI check**: `git pull origin <sourceRefName>`; refuse dirty worktrees; recommend waiting if CI is active.
-   - Done when: worktree is clean and current with the source branch.
+1. **Sync & CI check**: `git pull origin <sourceRefName>`; refuse dirty worktrees; dispatch provider **`check-pr-status`** and inspect failed-check logs before formulating CI-driven fixes. Do not "fix" baseline noise reproduced on `project.baseBranch`; route diff-regression to surgical fixes. One infra-flake rerun only (via `check-pr-status` output).
+   - Done when: worktree is clean and current with the source branch; CI triage recorded.
 
 2. **Fetch active threads**: resolve `providers.scm` and call `list-threads` for `<PR-ID>`. Parse `threadId`, `filePath`, `lineNumber`, `comments`. Use the payload's `activeThreads` count directly; do not re-filter raw statuses. If reading any collect `--output` file, open with UTF-8 explicitly (bare `open(path)` on Windows raises `UnicodeDecodeError` on review text).
    - Done when: every active thread has parsed file/line/comment context.
@@ -73,3 +73,9 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via provider intent `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
    - Done when: verification passed, report exists, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).
 
+## Runtime audit (`defaults.enableAuditing`)
+
+When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), follow [`ws-audit`](../ws-audit/SKILL.md):
+- **Inherit or Init:** in workflow mode, inherit the active orchestrator audit session (`{us-dir}`); in standalone mode, initialize a session under `{plansDir}/pr-{PR-NUMBER}`.
+- **Catch script errors:** whenever any provider script (`fix_pr_azure_context.py`, `fetch_threads.cjs`, `resolve_thread.cjs`, SCM CLI helpers) or verification script fails or exits non-zero, append a finding (`category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`).
+- **Finalize & gate:** when running standalone, finalize the audit session at completion/stop and present the upstream issue gate if errors occurred.

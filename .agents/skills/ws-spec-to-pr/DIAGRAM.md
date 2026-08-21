@@ -29,10 +29,10 @@ flowchart TD
   S2 --> S3[3 Plan-to-tasks]
   S3 --> S4[4 Implement]
   S4 --> S5[5 Check-implementation]
-  S5 -->|score ≥ 7| C1[G2-code verified implementation]
-  S5 -->|score < 7| G5{Refine / Replan / Respec / Approve}
-  G5 --> S4
-  G5 -->|approve| C1
+  S5 -->|score ≥ 9| C1[G2-code verified implementation]
+  S5 -->|score < 9| G5[scoreAndRefine until ≥ 9]
+  G5 -->|score ≥ 9| C1
+  G5 -->|max 3 still < 9| P[Pause]
   C1 --> S6[6 Code-review]
   S6 -->|findings| Fix[Fix substep<br/>ws-implement-tasks]
   Fix --> C2[G2-code review fixes]

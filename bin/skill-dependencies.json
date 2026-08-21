@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.26",
+  "packageVersion": "0.3.28",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -155,9 +155,13 @@
     "ws-local-spec-provider": [
       "ws-spec-format"
     ],
+    "ws-fix-pr": [
+      "ws-audit"
+    ],
     "ws-goal-fix-pr": [
       "ws-fix-pr",
-      "ws-goal-loop"
+      "ws-goal-loop",
+      "ws-audit"
     ],
     "ws-write-plan": [
       "ws-fable-domain"
@@ -168,7 +172,8 @@
     "ws-ship-pr": [
       "ws-secrets-leak-review",
       "ws-fable-judge",
-      "ws-spec-index"
+      "ws-spec-index",
+      "ws-audit"
     ],
     "ws-code-review": [
       "ws-karpathy-guidelines",

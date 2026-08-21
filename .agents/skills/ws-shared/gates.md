@@ -124,10 +124,10 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ 7 | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
-| < 7 | User-gate: **Refine** (replay implement + re-check) / **Replan** (back to 1) / **Respec** (back to 0) / **Approve and continue** (log `check-approve-below-7`). Approve → same G2-code then Step 6. Refine/replan/respec run **before** the product commit. |
+| ≥ 9 | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
+| < 9 | Run **scoreAndRefine** until overall score ≥ 9 (even when `defaults.scoreAndRefine` is false). Write `step-05-{slug}.score-analysis.md`, re-dispatch `ws-implement-tasks` for tasks scoring < 9, re-run `ws-verify-plan`. Max **3** rounds per Step 5 visit; log `score-refine round={n}/3`. After 3 rounds still < 9: **Pause** (fail closed). Resume continues the loop. Refine runs **before** the product commit. Never Advance or auto-approve below 9. |
 
-`autoMode`: do **not** auto-approve below 7 — Pause with score (fail closed).
+`autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below 9 — Pause only after max rounds still < 9.
 
 ---
 
@@ -139,7 +139,7 @@ Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-
 
 | Mode | After | Before | Message | `commits[].step` |
 |------|-------|--------|---------|------------------|
-| standard | Step 5 score ≥ 7 or Approve and continue | Step 6 | `feat({slug}): verified implementation` | `5` |
+| standard | Step 5 score ≥ 9 | Step 6 | `feat({slug}): verified implementation` | `5` |
 | lite | Step 2 implement (build/tests already in exit criteria) | Step 3 | same | `2` |
 | both | Review-fix loop if product files remain (one commit for all ≤3 rounds) | Advance (std 7 / lite 4) | `fix({slug}): code-review fixes` | `6` / `3` |
 
@@ -190,9 +190,13 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 
 ## Score & Refine gate (`scoreAndRefine`)
 
-When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows):
+Step 5 overall score **must be ≥ 9** to Advance. A score `< 9` **always** runs this loop, even when `defaults.scoreAndRefine` is false.
 
-1. **Pass 1 Score Analysis Gate:** After scoring plan tasks against acceptance criteria (`step-05-{slug}.score-analysis.md`), present findings via `user-gate`:
+When the loop is active (score `< 9`, or `scoreAndRefine` mode / completed-workflow bootstrap):
+
+1. **Pass 1 Score Analysis:** Score plan tasks against acceptance criteria (`step-05-{slug}.score-analysis.md`). Flag tasks scoring `< 9`.
+2. **Below-9 loop (mandatory):** If overall score `< 9`, do **not** offer Accept First Pass As-Is. Re-dispatch `ws-implement-tasks` for flagged tasks with scoring context, then re-run `ws-verify-plan`. Repeat until overall score `≥ 9`. Max **3** rounds per Step 5 visit; log `score-refine | round={n}/3`. After 3 rounds still `< 9`: **Pause** (fail closed). Resume continues the loop. Never Advance or auto-approve below 9.
+3. **Optional polish (overall already ≥ 9 and `scoreAndRefine` flag):** present `user-gate`:
    ```text
    Score Analysis Complete:
    - Overall Score: {score}/10
@@ -203,8 +207,8 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
    2. Accept First Pass As-Is & Ship
    3. Selective Refinement (choose specific tasks)
    ```
-2. **Second Pass Execution:** Re-run implementation for flagged tasks with Pass 1 scoring context, followed by 2nd pass verification and comparative reporting (`step-08-{slug}.second-pass-report.md`).
-3. **Comparative Delivery Gate:** Final delivery gate comparing Pass 1 vs Pass 2 scores, LOC deltas, and test metrics before ship/commit.
+4. **Second Pass Execution:** Re-run implementation for flagged tasks with Pass 1 scoring context, followed by 2nd pass verification and comparative reporting (`step-08-{slug}.second-pass-report.md`).
+5. **Comparative Delivery Gate:** When a 2nd pass ran, compare Pass 1 vs Pass 2 scores, LOC deltas, and test metrics before ship/commit.
 
 ---
 
@@ -231,7 +235,7 @@ When `scoreAndRefine` mode is active (or triggered at bootstrap on completed wor
 | Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
 | Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
-| Check-implementation < 7 | Pause (no auto-approve) |
+| Check-implementation < 9 | scoreAndRefine until ≥ 9 (max 3); Pause on residual (no auto-approve) |
 | Review findings (full Step 6 / lite Step 3) | Autofix → re-review (max 3); Pause on residual Critical/Warning |
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`); mutation runs only when configured and not `skipMutationTesting` |
 | Post-verify G2-code (standard after Step 5 / lite after Step 2) | Commit when stage set non-empty; skip when empty |
@@ -260,5 +264,5 @@ Ship/PREPARE nuances (row 5 visibility): [`../ws-ship-pr/PREPARE-CHECKLIST.md`](
 |------|---------|
 | `skipTesting` | Skip Step 7 Testing (auto-skip when no test surface + unit tests green) |
 | `skipMutationTesting` | **Config** `defaults.skipMutationTesting` (not workflow state): skip optional mutation substep inside Step 7; default true (opt-in). Also skipped when `verification.mutationTest` empty |
-| `scoreAndRefine` | Enable Pass 1 Task Scoring & 2nd Pass Refinement loop (aliases: `analyze-second-pass`, `score-refine`) |
+| `scoreAndRefine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`). Score `< 9` always runs this loop until ≥ 9 |
 

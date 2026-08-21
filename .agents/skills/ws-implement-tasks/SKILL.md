@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.26
+version: 0.3.28
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -53,10 +53,13 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
 5. **Implement** — Write minimal, modular code matching the requirements without scope creep.
    - Done when: every planned file is created or modified per its AC.
 
-6. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
+6. **Fix the Entire Defect Class** — After Implement (build mode), repo-wide search/grep for the same defect pattern or vulnerability class (not style-only). Fix same-class siblings in scope; list remaining hits or exemptions (path + reason) in `step-output.summary`. Fix mode step 4 widens sibling sweep from modified directories to **repo-wide same pattern** with the same exemption rule.
+   - Done when: search performed; remaining hits listed or justified.
+
+7. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
    - Done when: applicable verification commands exit 0 (or failures are listed in step-output with `status: failed`).
 
-7. **Report** — Return the modified/created file lists and test output details.
+8. **Report** — Return the modified/created file lists and test output details.
    - Done when: the step-output below is populated.
 
 ## Fix mode
@@ -72,8 +75,8 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
 3. **Correct** — Apply minimal, targeted fixes per [ws-karpathy-guidelines](../ws-karpathy-guidelines/SKILL.md).
    - Done when: every enumerated finding has a corresponding edit.
 
-4. **Sweep siblings** — Search modified directories for the same defect class and fix simultaneously.
-   - Done when: no sibling occurrence of the fixed defect class remains in modified directories.
+4. **Sweep siblings (repo-wide defect class)** — Search **beyond modified directories** (repo-wide grep of the same defect/pattern) for the same vulnerability/pattern; fix simultaneously or name exemptions (path + reason).
+   - Done when: no same-class sibling occurrence remains unfixed without a named exemption.
 
 5. **Anti-regression test** — Write a unit test covering the corrected defect scenario.
    - Done when: each fixed finding has a covering test.

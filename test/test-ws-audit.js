@@ -74,6 +74,63 @@ function main() {
   );
   assert(schema.includes('"enableAuditing"'), 'config schema has enableAuditing');
 
+  const deps = JSON.parse(
+    fs.readFileSync(path.join(REPO_ROOT, 'bin/skill-dependencies.json'), 'utf-8'),
+  );
+  assert(
+    deps.dependencies['ws-ship-pr']?.includes('ws-audit'),
+    'ws-ship-pr declares ws-audit dependency',
+  );
+  assert(
+    deps.dependencies['ws-goal-fix-pr']?.includes('ws-audit'),
+    'ws-goal-fix-pr declares ws-audit dependency',
+  );
+  assert(
+    deps.dependencies['ws-fix-pr']?.includes('ws-audit'),
+    'ws-fix-pr declares ws-audit dependency',
+  );
+  assert(
+    deps.dependencies['ws-spec-to-pr']?.includes('ws-audit'),
+    'ws-spec-to-pr declares ws-audit dependency',
+  );
+
+  // Test Python fix_pr_azure_context argument parsing before and after subcommand
+  const pythonScript = path.join(
+    REPO_ROOT,
+    '.agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py',
+  );
+  if (fs.existsSync(pythonScript)) {
+    const pythonBin = ['python', 'python3'].find((bin) => {
+      const probe = cp.spawnSync(bin, ['--version'], { encoding: 'utf-8' });
+      return !probe.error && probe.status === 0;
+    });
+
+    if (!pythonBin) {
+      console.warn('python not found; skipping fix_pr_azure_context argparse regression check');
+    } else {
+      const pyRes = cp.spawnSync(
+        pythonBin,
+        [
+          pythonScript,
+          'collect',
+          '--pr-id',
+          '909',
+          '--repo-root',
+          REPO_ROOT,
+          '--output',
+          path.join(mkTmp('py-out-'), 'test.json'),
+        ],
+        { cwd: REPO_ROOT, encoding: 'utf-8' },
+      );
+      assert(!pyRes.error, 'python execution succeeded without spawn error');
+      // Even if Azure API auth fails in test environment, argparse must not fail with "unrecognized arguments"
+      assert(
+        !pyRes.stderr.includes('unrecognized arguments'),
+        'fix_pr_azure_context argparse accepts --repo-root after subcommand',
+      );
+    }
+  }
+
   const resolveMissing = runNode(['resolve', '--config', path.join(mkTmp('no-cfg-'), 'nope.json')]);
   assert(resolveMissing.status === 0, 'resolve exits 0');
   const resolved = JSON.parse(resolveMissing.stdout.trim());

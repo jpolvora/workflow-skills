@@ -2,6 +2,41 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 11:36] Agent: Cursor Grok 4.6
+- **Prompt**: Step 8 ws-ship-pr hermes-spec-to-pr-enhancements create-pr stopBeforeFixPr
+- **Done**: Bumped package 0.3.27 → 0.3.28; regenerated catalog + integrity; delivery commit of refined plan; push develop and reuse PR 222
+- **Result**: Prepare board green; PR develop → main; stop before goal-fix-pr
+
+### [2026-08-21 10:55] Agent: Cursor Grok 4.6
+- **Prompt**: update improving website info, syncing skills features and simplifying and enhancing the marketing ideas describing better, commit again
+- **Done**: Site hero, Features grid, workflow/package/FAQ copy. SKILL.md descriptions for orch + verify + SCM providers; catalog rebuild. README Features table in "you get" language.
+- **Result**: Marketing matches verify ≥ 9 and GitHub/Azure parity. Ready to commit.
+
+### [2026-08-21 10:50] Agent: Cursor Grok 4.6
+- **Prompt**: update AGENTS.md progressive disclosure, update README.md features, update docs/faqs
+- **Done**: Progressive disclosure rows for verify score ≥ 9 and SCM contract (root AGENTS.md + ws-shared + autoload hub contracts). README Features table. Site FAQ Q2c/Q7b; spec-to-pr FAQ § 8.
+- **Result**: Agents route to one hub file or skill; humans see Features + FAQs for both contracts.
+
+### [2026-08-21 10:40] Agent: Cursor Grok 4.6
+- **Prompt**: add it to change log and feature list, then commit
+- **Done**: Root `CHANGELOG.md`; README dual-mode highlights (verify ≥ 9 + SCM parity); site Step 5, verifier/SCM cards, workflow list, FAQ
+- **Result**: Human changelog and feature list cover min-score 9 and GitHub/Azure intent contract
+
+### [2026-08-21 10:35] Agent: Cursor Grok 4.6
+- **Prompt**: Add a parity check for features between ws-azure-devops-provider and ws-github-provider; mirror when possible; add a feature contract
+- **Done**: Added `scm-provider-contract.md` (required intents + allowlist). Wired `test/test-provider-parity.js` into npm test. Hub whitelist + install copy. GitHub `resolve_thread.cjs` gained `--dry-run` to match Azure. Azure create-pr documents Windows quoting parity.
+- **Result**: Both SCM providers declare the same seven intents. Extra intent on one side fails CI unless allowlisted.
+
+### [2026-08-21 10:20] Agent: Cursor Grok 4.6
+- **Prompt**: Change min score when verifying plan; accept and advance only at >= 9; if less than 9, scoreAndRefine until >= 9
+- **Done**: Raised Step 5 check-implementation bar from 7 to 9. Score < 9 now runs scoreAndRefine (flagged tasks + re-verify) until >= 9 (max 3 rounds, then Pause). Removed approve-below-threshold. Aligned ws-verify-plan, gates, orch dispatch/docs, classify low-score cluster (<9).
+- **Result**: Contract updated in skills/hubs. Advance requires score >= 9; no auto-approve below 9.
+
+### [2026-08-21 10:16] Agent: Cursor Grok 4.6
+- **Prompt**: ws-spec-to-pr Step 1 write-plan for hermes-spec-to-pr-enhancements (AC1–AC6)
+- **Done**: Canonical `step-01-hermes-spec-to-pr-enhancements.plan.md` sections 0–8; folded user-supplied plan; MEMORY Medium+ traps applied
+- **Result**: Plan of record ready for interview; no skill/product code
+
 ### [2026-08-20 14:26] Agent: Antigravity / Gemini 3.7 Flash
 - **Prompt**: Implement enhancements to self-learning (items 2, 3, 4) & /ws-ship-pr
 - **Done**: Added failure reflection hook in ws-self-learning & ws-senior-developer (forbidden Learning: N/A when session friction >= 2); added PathPattern parsing, compilation, and --match-paths querying in self_learning.py + tests in test-memory-formatting.js; added adversarial self-learning trigger to ws-fable-judge; bumped version to 0.3.26, rebuilt site, and updated integrity manifests.
