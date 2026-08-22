@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, resolveSkillMdPath } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 const BASELINE_HARNESS = 962298;
 const BASELINE_REREADS = 368038;
@@ -77,14 +77,14 @@ function main() {
   const options = argsOf(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const sources = ENHANCING.map((skill) => {
-    const file = path.join(context.skillsRoot, skill, 'SKILL.md');
+    const file = resolveSkillMdPath(context, skill);
     return { skill, bytes: bytes(section(fs.readFileSync(file, 'utf8'), 'Subagent contract')) };
   });
   const targetSkills = options.scenario === 'standard'
     ? ['ws-write-spec', 'ws-write-plan', 'ws-interview', 'ws-implement-tasks', 'ws-verify-plan', 'ws-code-review', 'ws-testing', 'ws-ship-pr', 'ws-goal-fix-pr']
     : [];
   const targetSources = targetSkills.map((skill) => {
-    const file = path.join(context.skillsRoot, skill, 'SKILL.md');
+    const file = resolveSkillMdPath(context, skill);
     return { skill, bytes: bytes(skillPayload(file)) };
   });
   const dispatches = targetSources.length;

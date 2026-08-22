@@ -347,12 +347,38 @@ commits: []
   );
 }
 
+function testMeasureHarnessReadsGlobalWhenLocalHubExists() {
+  console.log('\n--- testMeasureHarnessReadsGlobalWhenLocalHubExists ---');
+  const consumer = mkTmp('ws-hybrid-measure-');
+  writeConsumerHub(consumer);
+  const measure = path.join(GLOBAL_SKILLS, 'ws-check-harness', 'scripts', 'measure_harness.cjs');
+  const result = run(process.execPath, [measure, '--scenario', 'standard', '--json', '--repo-root', consumer], {
+    cwd: consumer,
+  });
+  assert(
+    result.status === 0,
+    `measure_harness exit 0 on hybrid consumer (${result.stderr || result.stdout})`,
+  );
+  let report;
+  try {
+    report = JSON.parse(result.stdout);
+  } catch {
+    report = null;
+  }
+  assert(report && Array.isArray(report.sources), 'measure_harness prints JSON sources');
+  assert(
+    (report.sources || []).some((row) => row.skill === 'ws-karpathy-guidelines'),
+    'measure_harness loaded ws-karpathy-guidelines from global skills root',
+  );
+}
+
 function main() {
   testSelfLearningCompileTargetsConsumer();
   testRepoRootOverrideWins();
   testProjectLocalScriptParents4Resolves();
   testClassifyUsesConsumerThresholds();
   testValidateStateResolvesConsumerPlansDir();
+  testMeasureHarnessReadsGlobalWhenLocalHubExists();
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);
