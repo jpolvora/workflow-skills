@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "1c0f1bd60bbbab483115cf4b4806fe79a51e3d07b0260487ff369be4a5214013",
+  "fullPackageDigest": "3915f40f1823724c419bae3bada3c36875f88240036122b795dc6418478d2e45",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -34,6 +34,7 @@
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "scripts/workflow_state.cjs": "632eab3aed22b2ccbeb4650f868fe8ac6e7f27a27159c083e0767aa9f2d7bdae",
+      "session-lease.schema.json": "4b473bb47830e88d459ad69752289568f721fbd495ac47bf705ffb3a1804c25e",
       "setup.md": "f7ff4ad3e2029b091ac0aea6aebbfab2ccb476dbaede116dcbe241097e753873",
       "skill-dependencies.json": "206b0585ad03e604b137eee8737c0182c16c32ffb84dba369d4d8029ec340baa",
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
@@ -42,7 +43,7 @@
       "tools.md": "f16c086cad08458590f2ebb653c75f2163fd45fe1111fdc0ea1fb9c917ac29af",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "13e48ed690f00e83abb067a32f0f40ad0038ad84b8e1a8eec13171812dab27de"
+    "skillDigest": "cf024d29acacdf22220561d1b79c19ff9b4f88c8a5ab4e0e702121d665b5dc37"
   },
   "packageVersion": "0.3.32",
   "skills": {
