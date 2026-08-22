@@ -440,10 +440,12 @@ Run these scripts as mechanical gates during Step 1 (Phases 0–5c). Fail the sc
 ```bash
 node {skillsRoot}/ws-check-harness/scripts/check_duplicates.cjs --json --repo-root {repoRoot}
 node {skillsRoot}/ws-check-harness/scripts/measure_harness.cjs --scenario standard --json --repo-root {repoRoot}
+node {skillsRoot}/ws-check-harness/scripts/check_shell_quoting.cjs --json --repo-root {repoRoot}
 ```
 
 - `check_duplicates.cjs`: exit 1 when any normative block (≥ 6 lines) repeats across tracked files outside the allowlist.
 - `measure_harness.cjs`: exit 1 when `fixedPreambleBytes > 18000`, harness reduction is under 45%, artifact-read reduction is under 40%, or `defaults.gateGranularity` is `phase` with more than 5 blocking gates.
+- `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `ws-shared/scripts/extract_frontmatter_field.cjs`.
 - Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
 
 On `--json`, keep the stdout payloads in the scan evidence. Skip neither script in upstream Install mode.

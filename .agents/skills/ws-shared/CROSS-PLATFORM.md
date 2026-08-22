@@ -15,6 +15,8 @@ Applies to shipped recipes and temporary scripts on Windows, Linux, and macOS.
 3. In bash, use a quoted heredoc delimiter when a heredoc is unavoidable.
 4. Do not paste shell-specific operators into another shell dialect.
 5. Keep each uncertain shell call to one simple invocation.
+6. Never put both `"` and `'` inside a single `python -c` / `node -e` payload (including character classes like `["']`). Prefer a permanent companion script. For YAML frontmatter fields use `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs`.
+7. When `defaults.enableAuditing` is true, log `-c`/`-e` `SyntaxError` and nested-quote failures via `ws-audit` `classify-shell-failure` even if the agent recovers.
 
 ## Managed scripts
 

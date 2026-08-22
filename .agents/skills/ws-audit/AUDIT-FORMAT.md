@@ -26,6 +26,29 @@ Referenced by [`SKILL.md`](SKILL.md). Finding schema for `{us-dir}/audit-{slug}-
 
 **Critical rule:** `recovered: true` does **not** suppress the finding when skill content was wrong.
 
+## Mandatory shell / quoting failures
+
+Treat as mandatory audit events (even when the agent recovers and retries successfully):
+
+| Signal | Classify as |
+|--------|-------------|
+| `python -c` / `node -e` / `node --eval` exits with `SyntaxError` | `script` + `error`, and `disposable-script` + `suggestion` |
+| Nested both-quote character class in `-c` payload (e.g. `["']`) | same pair |
+| Mixed `"` and `'` inside a single `-c`/`-e` payload that breaks under shell quoting | same pair |
+
+Helper:
+
+```bash
+node {skillsRoot}/ws-audit/scripts/audit_log.js classify-shell-failure \
+  --command "..." --stderr-file "..." --step "4" --skill "ws-implement-tasks"
+```
+
+Frontmatter field extraction SoT (avoid inventing one-liners):
+
+```bash
+node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs --file "{path}" --field slug
+```
+
 ## Markdown body template
 
 Each finding is a `### Finding` subsection with a bullet list of fields.
@@ -34,8 +57,8 @@ At workflow finalization, the audit log appends:
 1. `## Improvement Opportunities & Reusable Tooling` (when `suggestion`, `disposable-script`, `performance`, `correctness`, or `optimization` findings exist)
 2. `## Summary` with totals for errors, unusual findings, suggestions/opportunities, disposable scripts detected, and overall findings.
 
-## Issue drafts
+## Issue / PR / todo drafts (user-gate)
 
 - **Execution errors:** When `severity: error` count ≥ 1 at finalize, `draftIssueBody` builds a GitHub issue title + body for skill defect fixes on the upstream repo (`skill-dependencies.json` → `upstream.repo`).
 - **Reusable tooling & performance suggestions:** When actionable suggestions or disposable scripts exist, `draftSuggestionsIssueBody` (CLI: `draft-suggestions-issue` or `draft-issue --type suggestion`) builds a structured GitHub issue proposing pre-generated upstream scripts and orchestrator optimizations.
-
+- **Remediation menu:** `draft-remediation` returns structured options for `user-gate`: open issue, open draft PR, create session todo/goal, copy draft, or skip. Never create without explicit acceptance.

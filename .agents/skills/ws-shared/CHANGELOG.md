@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 12:33] Agent: Composer
+- **Prompt**: Audit must catch nested-quote python -c SyntaxErrors; create issue/PR/todo via user-gate (1B + 2Gate)
+- **Done**: Added classify-shell-failure + draft-remediation to ws-audit; extract_frontmatter_field.cjs; check_shell_quoting.cjs Phase 5a gate; orch + CROSS-PLATFORM wiring; tests
+- **Result**: Runtime + static capture path; remediation stays user-gate only
+
 ### [2026-08-22 11:35] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-write-spec harness benchmark for fictitious spec dry-runs + TLC scoring + snapshot compare
 - **Done**: Wrote `.agents/specs/harness-spec-benchmark.spec.md` (not registered); validate_spec PASS (27 ACs)
