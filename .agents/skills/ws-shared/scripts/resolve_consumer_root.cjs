@@ -58,6 +58,16 @@ function normalizeConfig(config) {
   return normalized;
 }
 
+function resolveSkillMdPath(context, skillId) {
+  const local = path.join(context.repoRoot, '.agents', 'skills', skillId, 'SKILL.md');
+  if (fs.existsSync(local)) return local;
+  const global = path.join(context.globalSkillsRoot, skillId, 'SKILL.md');
+  if (fs.existsSync(global)) return global;
+  throw new Error(
+    `SKILL.md not found for ${skillId} under ${path.join('.agents', 'skills', skillId)} or ${context.globalSkillsRoot}`,
+  );
+}
+
 function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
   const root = resolveRepoRoot(repoRoot, { scriptFile });
   const localSkillsRoot = path.join(root, '.agents', 'skills');
@@ -117,6 +127,7 @@ module.exports = {
   resolveRepoRoot,
   sharedDir,
   resolveConsumerContext,
+  resolveSkillMdPath,
   resolveConfiguredPath,
   toRepoRelative,
   reportResolved,

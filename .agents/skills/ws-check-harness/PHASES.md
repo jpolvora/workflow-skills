@@ -268,6 +268,8 @@ For each internal reference (post-expansion when applicable):
 | Step ↔ folder drift | Root / `{sharedDir}/AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and `{sharedDir}/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
+| Hybrid skill body | Hub Markdown `../ws-<id>/SKILL.md` from `{sharedDir}`: existence is **OK** when `SKILL.md` is under consumer `{skillsRoot}` **or** `{globalSkillsRoot}` (do not flag phantom solely because the sibling folder is missing locally) |
+| Upstream-only package docs | Hub maintainer checklist citing package-root `FEATURES.md` — missing in a consumer clone is **intentional omission** (not a broken hub link) |
 | Consumer `config.json` | Missing while `config.json.example` exists → **warning** (seed/copy); placeholders after seed → **suggestion** (`ws-configure-project`), not a broken-link warning |
 | `autoload.md` Always-applied paths | Absolute path → **critical**; non-portable path form → **warning**; skill id missing under `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (install or remove row). Helper: `configure_autoload.py --check` |
 | Root `AGENTS.md` + `autoload.md` | When root references `autoload.md`, Always-applied vs shared-hub on-demand mismatch is **intentional override** (not drift). Missing root remains **OK** when `defaults.autoload` effective false |
@@ -444,7 +446,7 @@ node {skillsRoot}/ws-check-harness/scripts/check_shell_quoting.cjs --json --repo
 ```
 
 - `check_duplicates.cjs`: exit 1 when any normative block (≥ 6 lines) repeats across tracked files outside the allowlist.
-- `measure_harness.cjs`: exit 1 when `fixedPreambleBytes > 18000`, harness reduction is under 45%, artifact-read reduction is under 40%, or `defaults.gateGranularity` is `phase` with more than 5 blocking gates.
+- `measure_harness.cjs`: exit 1 when `fixedPreambleBytes > 18000`, harness reduction is under 45%, artifact-read reduction is under 40%, or `defaults.gateGranularity` is `phase` with more than 5 blocking gates. Resolve each measured skill via `resolveSkillMdPath` (local `.agents/skills/<id>/SKILL.md`, else `{globalSkillsRoot}/<id>/SKILL.md`). Do **not** use wholesale `context.skillsRoot` when a consumer hub folder exists but workflow skills live only globally.
 - `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `ws-shared/scripts/extract_frontmatter_field.cjs`.
 - Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
 

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 18:40] Agent: Composer
+- **Prompt**: Upstream check-harness false ENOENT on hybrid consumers; FEATURES.md hub link
+- **Done**: `resolveSkillMdPath` (local then global); `measure_harness.cjs` uses it; PHASES hybrid/FEATURES omission; hub maintainer checklist drops consumer-broken link
+- **Result**: Phase 5a measure passes when only the hub lives under consumer `.agents/skills`
+
 ### [2026-08-22 17:20] Agent: Cursor Grok 4.6
 - **Prompt**: goal-fix-pr #231 round 2 (empty Assumptions table)
 - **Done**: authoring fails when Assumptions has zero data rows; compat warns; FORMAT + test
