@@ -383,9 +383,9 @@ MODEL_FOOTER_PREFIX = "LLM model:"
 
 def format_resolution_comment(comment: str, model: str) -> str:
     body = comment.strip()
-    model = model.strip()
+    model = (model or "").strip()
     if not model:
-        raise ValueError("The --model parameter is required and cannot be empty.")
+        return body
     if MODEL_FOOTER_PREFIX.lower() in body.lower():
         return body
     return f"{body}\n\n---\n{MODEL_FOOTER_PREFIX} {model}"
@@ -477,8 +477,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     resolve.add_argument("--comment", required=True)
     resolve.add_argument(
         "--model",
-        required=True,
-        help="Active LLM model id for this session (e.g. composer-2.5, gpt-5.4-medium).",
+        default="",
+        help="Optional session model id for the resolution footer (host metadata, not a new intent).",
     )
     resolve.add_argument(
         "--dry-run",

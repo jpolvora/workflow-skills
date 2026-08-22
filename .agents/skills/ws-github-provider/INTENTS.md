@@ -72,7 +72,7 @@ On Windows / PowerShell prefer `--body-file` (or single-quoted body) to avoid ba
 node .agents/skills/ws-github-provider/scripts/fetch_threads.cjs {PR_ID} [--json]
 ```
 
-Return structured threads (`threadId`, path, line, comments) to `ws-fix-pr` / `ws-goal-fix-pr`.
+Return structured threads (`threadId`, path, line, comments) and an **active count** (`activeThreads`) to `ws-fix-pr` / `ws-goal-fix-pr`.
 
 ## `check-pr-status`
 

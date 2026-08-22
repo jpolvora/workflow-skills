@@ -103,10 +103,13 @@ def search_prs(repo_root: Path, query: str, dry_run: bool, auth_ok: bool) -> lis
         result.append(
             {
                 "number": row.get("number"),
+                "pullRequestId": row.get("number"),
                 "title": row.get("title"),
                 "state": row.get("state"),
+                "status": row.get("state"),
                 "url": row.get("url"),
                 "headRefName": row.get("headRefName"),
+                "sourceRefName": row.get("headRefName"),
                 "searchQuery": query,
             }
         )

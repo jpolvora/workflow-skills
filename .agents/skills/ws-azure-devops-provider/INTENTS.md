@@ -58,7 +58,7 @@ python .agents/skills/ws-azure-devops-provider/scripts/sweep_prior_work.py \
 - Run `validate-auth` first (org/project + PAT from config). Missing PAT without `--dry-run` → **STOP** (no silent GitHub fallback).
 - `--dry-run` without auth: print skip reason, exit 0 (advisory).
 - Search PRs by title/description text and related work-item links; `git log --oneline -20 -- <files>` when `--files` set.
-- stdout JSON (repo-relative paths only).
+- stdout JSON (repo-relative paths only). Exact open PR for the **same tracker id** → caller `user-gate`.
 
 ## `create-pr`
 
@@ -120,11 +120,12 @@ python .agents/skills/ws-azure-devops-provider/scripts/comment_issue.py \
 python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py resolve-thread \
   --pr-id {PR_ID} \
   --thread-id {THREAD_ID} \
-  --model {model} \
-  --comment "{resolution note}"
+  --comment "{resolution note}" \
+  [--model {model}] \
+  [--dry-run]
 ```
 
-Pass `--dry-run` when parent is dry-run; skip remote mutation.
+`--model` is optional host metadata (footer). Omit it when the caller does not have a session model id. Pass `--dry-run` when parent is dry-run; skip remote mutation.
 
 ## `merge-pr`
 

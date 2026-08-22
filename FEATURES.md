@@ -97,7 +97,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 GitHub and Azure DevOps are interchangeable backends. Orchestrators call intents **by name** and never embed `gh` or `az` directly; host CLI recipes live inside each provider's `INTENTS.md`.
 
-Nine required intents, enforced by `node test/test-provider-parity.js` in `npm run test`:
+Nine required intents, enforced by `node test/test-provider-parity.js` in `npm run test` (tables, INTENTS headings, and implementation: sweep/comment CLI + JSON aliases, local-spec SCM delegates, `resolve-thread --dry-run`, optional Azure `--model`):
 
 | Intent | Guarantee |
 |--------|-----------|

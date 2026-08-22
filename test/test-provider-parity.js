@@ -190,6 +190,91 @@ assert(
   'Azure resolve-thread documents --dry-run',
 );
 
+const adoDryNoModel = spawnSync(
+  'python',
+  [
+    adoScript,
+    'resolve-thread',
+    '--dry-run',
+    '--pr-id',
+    '1',
+    '--thread-id',
+    '1',
+    '--comment',
+    'parity note',
+  ],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(adoDryNoModel.status === 0, 'Azure resolve-thread --dry-run works without --model');
+assert(
+  !/required|cannot be empty/i.test(`${adoDryNoModel.stdout || ''}${adoDryNoModel.stderr || ''}`),
+  'Azure --model is optional host metadata',
+);
+
+const delegated = required.filter((id) => id !== 'validate-auth' && id !== 'fetch-to-spec');
+const localSkill = read(path.join(SKILLS, 'ws-local-spec-provider/SKILL.md'));
+assert(/providers\.scm/.test(localSkill), 'ws-local-spec-provider delegates PR intents to providers.scm');
+assert(localSkill.includes('scm: "local"'), 'ws-local-spec-provider rejects scm local');
+for (const id of delegated) {
+  assert(localSkill.includes(`\`${id}\``) || localSkill.includes(id), `ws-local-spec-provider documents delegate ${id}`);
+}
+
+const sweepFlags = ['--issue', '--keywords', '--files', '--dry-run', '--repo-root'];
+const commentFlags = ['--id', '--body-file', '--body', '--dry-run', '--repo-root'];
+const sweepKeys = ['status', 'provider', 'issue', 'keywords', 'pullRequests', 'commits', 'repoRoot'];
+const rowAliases = ['number', 'pullRequestId', 'title', 'state', 'status', 'url', 'headRefName', 'sourceRefName'];
+
+for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
+  const sweepSrc = read(path.join(SKILLS, skillId, 'scripts/sweep_prior_work.py'));
+  const commentSrc = read(path.join(SKILLS, skillId, 'scripts/comment_issue.py'));
+  const intentsMd = read(path.join(SKILLS, skillId, 'INTENTS.md'));
+  for (const flag of sweepFlags) {
+    assert(sweepSrc.includes(flag), `${skillId} sweep_prior_work.py has ${flag}`);
+  }
+  for (const key of sweepKeys) {
+    assert(sweepSrc.includes(`"${key}"`), `${skillId} sweep JSON envelope has ${key}`);
+  }
+  for (const key of rowAliases) {
+    assert(sweepSrc.includes(`"${key}"`), `${skillId} sweep PR row has alias ${key}`);
+  }
+  for (const flag of commentFlags) {
+    assert(commentSrc.includes(flag), `${skillId} comment_issue.py has ${flag}`);
+  }
+  assert(commentSrc.includes('"skipped"'), `${skillId} comment_issue.py skips null tracker id`);
+  for (const term of ['diff-regression', 'baseline', 'infra-flake']) {
+    assert(intentsMd.includes(term), `${skillId} INTENTS.md check-pr-status has ${term}`);
+  }
+  assert(/user-gate/.test(intentsMd), `${skillId} INTENTS.md sweep exact-open-PR user-gate`);
+}
+
+const ghThreads = read(path.join(SKILLS, 'ws-github-provider/scripts/fetch_threads.cjs'));
+const adoThreads = read(path.join(SKILLS, 'ws-azure-devops-provider/scripts/fix_pr_azure_context.py'));
+assert(ghThreads.includes('activeThreads'), 'GitHub fetch_threads.cjs returns activeThreads');
+assert(adoThreads.includes('activeThreads'), 'Azure collect returns activeThreads');
+
+const ghSweepDry = spawnSync(
+  'python',
+  [path.join(SKILLS, 'ws-github-provider/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(ghSweepDry.status === 0, 'GitHub sweep_prior_work.py --dry-run exits 0');
+const adoSweepDry = spawnSync(
+  'python',
+  [path.join(SKILLS, 'ws-azure-devops-provider/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(adoSweepDry.status === 0, 'Azure sweep_prior_work.py --dry-run exits 0');
+
+for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
+  const skip = spawnSync(
+    'python',
+    [path.join(SKILLS, skillId, 'scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
+    { encoding: 'utf8', cwd: REPO },
+  );
+  assert(skip.status === 0, `${skillId} comment_issue.py --id null exits 0`);
+  assert(/skipped/.test(skip.stdout || ''), `${skillId} comment_issue.py --id null prints skipped`);
+}
+
 const { HUB_WHITELIST } = await import(pathToFileURL(path.join(REPO, 'bin/install-rules.js')).href);
 assert(
   HUB_WHITELIST.includes('scm-provider-contract.md'),

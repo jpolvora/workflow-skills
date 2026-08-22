@@ -118,11 +118,18 @@ def api_get(url: str, pat: str) -> Any:
 
 
 def pr_row(pr: dict[str, Any], search_text: str) -> dict[str, Any]:
+    pid = pr.get("pullRequestId")
+    status = pr.get("status")
+    src = pr.get("sourceRefName")
     return {
-        "pullRequestId": pr.get("pullRequestId"),
+        "number": pid,
+        "pullRequestId": pid,
         "title": pr.get("title") or "",
-        "status": pr.get("status"),
-        "sourceRefName": pr.get("sourceRefName"),
+        "state": status,
+        "status": status,
+        "url": pr.get("url") or "",
+        "headRefName": src,
+        "sourceRefName": src,
         "searchText": search_text,
     }
 
