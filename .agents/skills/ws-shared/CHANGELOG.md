@@ -2,6 +2,17 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 22:55] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-write-spec skill family naming (ws-spec-write, ws-spec-update, regroup ws-{family}-{skill})
+- **Done**: Wrote local spec `.agents/specs/skill-family-naming.spec.md` (not registered)
+- **Result**: Spec of record ready for classify / spec-to-pr; no plan folder created
+
+### [2026-08-22 02:09] Agent: Cursor Grok 4.6
+- **Prompt**: update website, bump version, ws-ship-pr + ws-goal-fix-pr
+- **Done**: Shipped 0.3.30, created PR 224, fixed CI dry-run and ADO sweep alias threads, merged
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/224 MERGED; develop kept
+
+
 ### [2026-08-21 21:55] Agent: Cursor Grok 4.6
 - **Prompt**: update website, bump version, ws-ship-pr + ws-goal-fix-pr
 - **Done**: Bumped package to 0.3.30; rebuilt docs catalog; trimmed CATALOG.md under the 24 KB budget; regenerated integrity
