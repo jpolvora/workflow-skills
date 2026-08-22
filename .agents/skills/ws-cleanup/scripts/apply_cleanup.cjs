@@ -66,6 +66,7 @@ function isAllowedEnclosure(relPosix, repoRoot, plansDirPosix, reviewsDirPosix) 
   if (!normalized || normalized.startsWith('..')) return false;
   const first = normalized.split('/')[0];
   if (first.startsWith('.tmp-') || /\.bak_/i.test(first)) return true;
+  if (plansDirPosix && normalized === `${plansDirPosix}/index.json`) return false;
   if (plansDirPosix && (normalized === plansDirPosix || normalized.startsWith(`${plansDirPosix}/`))) {
     return true;
   }

@@ -212,6 +212,27 @@ try {
   );
   assert(fs.existsSync(hubConfig), 'hub config survives traversal paths');
 
+  fs.writeFileSync(path.join(plans, 'index.json'), '{"schemaVersion":1,"workflows":[]}\n', 'utf8');
+  const indexFile = path.join(tmp, 'approved-index.json');
+  fs.writeFileSync(
+    indexFile,
+    JSON.stringify({ paths: ['.agents/plans/index.json'] }),
+    'utf8',
+  );
+  const indexGuard = run(
+    'node',
+    [APPLY, '--repo-root', tmp, '--confirm', '--paths-file', indexFile],
+    tmp,
+  );
+  assert(indexGuard.status === 0, 'index.json apply_cleanup exit 0');
+  const indexJson = JSON.parse(indexGuard.stdout);
+  assert(indexJson.deleted.length === 0, 'plans index not deleted');
+  assert(
+    indexJson.skipped.some((s) => s.path === '.agents/plans/index.json' && s.reason === 'outside-enclosure'),
+    'plans index skipped as outside-enclosure',
+  );
+  assert(fs.existsSync(path.join(plans, 'index.json')), 'plans index survives cleanup');
+
   const applied = run(
     'node',
     [APPLY, '--repo-root', tmp, '--confirm', '--paths-file', pathsFile],
