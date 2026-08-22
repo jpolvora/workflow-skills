@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "70640be7681f4d1b325656eb599f544bacc9c4134dc36dd76d5751222bdd4b1e",
+  "fullPackageDigest": "93ebd780e502cee10a62d3af6784b084b80deeb00e02e4333191309564978455",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -401,13 +401,13 @@
         "scripts/ac_ledger.cjs": "f99ad651548d61d605771e8a3ca03f88469294536ad6fb54a9925a568a0bcdf6",
         "scripts/ado-workitem-to-spec.py": "29ffee588e070359a020b1a23990a756b4a31dc9ed82cafc4d124b7c51047825",
         "scripts/build_dispatch_context.cjs": "6306af1469e9397f83fe8ab90cc3dced702ab1c504b721d3437da2bd1d82f7e8",
-        "scripts/check_memory_conflict.py": "a68b8240193237d55af184d9d2793db502feb06e9f00641e85d7bcf874c6386a",
+        "scripts/check_memory_conflict.py": "8a113216094230682f7e30c55878466dc85fa467c28973a546ef03eb6b97c151",
         "scripts/cleanup_workflow_git.py": "d1994a50c5ff75eabab3428d524b1f0e0faa56d3162355a33952090137007fdd",
         "scripts/github-issue-to-spec.py": "b8bc4b3f2ead8817a17e8d172f7fe51285e9aaed077cb1a2de7ee6d69f2ddccc",
         "scripts/merge_verify_review.cjs": "053205c7778dce0466579684b5a95262b66f978e9faaf409f013dc55b38d82a8",
         "scripts/plan_index.cjs": "ac13d9a9384bfb247997788d16365cbe2d99801a5fcdfbf203cde028241e2787",
         "scripts/search_plan_history.cjs": "fb8bb59416962cbddd22120b461274a651f4486ca634f891f2db58bb377e5c01",
-        "scripts/session_lease.cjs": "4f1ab1f892a3a1201c9352fe9a241ce3f096dfd4cc7eb8bd9cb9dfa574fb8c83",
+        "scripts/session_lease.cjs": "00c856d71eb9daa604b30580ab7eb30839a6df6a2e155798eac48a7d2e922f73",
         "scripts/update_state.cjs": "c11330e9bfa02e4bd9806fe97779652bc3fa6fba355d1712d32fdadde8236658",
         "scripts/update_state.py": "907afcc1199decc0494dde5701b4b7d438296cd9958baa6178fb0fa96f880c8d",
         "scripts/validate_state.cjs": "a548517237dee8462f3ab070a1c7f4a3c79961ee1c7e00f0d4dfc26935da189a",
@@ -417,7 +417,7 @@
         "STEP-DISPATCH.md": "9a7300aed7f4e61194f264b7f26621ec00546c7cd82106fac9ca4c68f01bb8d4",
         "ws-spec-to-pr-run-test.md": "455a7ffd47f23c66a31d5ea30d9d5ed38113b62730181e3571021ce67e88e865"
       },
-      "skillDigest": "34bb4f08eb27c90ff6a34ed66cae2b592d384eaa99f5b3f349a89051ac1b172e"
+      "skillDigest": "f6e29480d23078487f93fe5e34811a1c601e726c013ff4fa7f52b794689a6cec"
     },
     "ws-spec-to-pr-lite": {
       "files": {

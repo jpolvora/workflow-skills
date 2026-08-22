@@ -187,7 +187,42 @@ function main() {
   assert(afterHb.heartbeatAt >= refreshed.lease.heartbeatAt, 'heartbeatAt refreshed');
   assert(afterHb.expiresAt >= refreshed.lease.expiresAt, 'expiresAt refreshed');
 
-  const leasePath = path.join(plans, '.runtime', 'leases', `${first.lease.leaseId}.json`);
+  const rel = run([
+    'release',
+    '--lease-id',
+    first.lease.leaseId,
+    '--status',
+    'completed',
+    '--plans-dir',
+    plans,
+    '--config',
+    cfg,
+  ]);
+  assert(rel.status === 0, 'release exits 0');
+  const relOut = JSON.parse(rel.stdout);
+  assert(relOut.lease.status === 'completed', 'release marks completed');
+  assert(relOut.slugLockRemoved === true, 'release removes slug lock');
+  assert(
+    !fs.existsSync(path.join(plans, '.runtime', 'leases', 'slug-demo.lock')),
+    'slug lock gone after release',
+  );
+
+  // Re-acquire for prune / git-lock coverage
+  const a4 = run([
+    'acquire',
+    '--slug',
+    'demo',
+    '--plans-dir',
+    plans,
+    '--config',
+    cfg,
+    '--worktree',
+    root,
+  ]);
+  assert(a4.status === 0, 're-acquire after release exits 0');
+  const second = JSON.parse(a4.stdout);
+
+  const leasePath = path.join(plans, '.runtime', 'leases', `${second.lease.leaseId}.json`);
   const leaseObj = JSON.parse(fs.readFileSync(leasePath, 'utf8'));
   leaseObj.expiresAt = new Date(Date.now() - 1000).toISOString();
   fs.writeFileSync(leasePath, JSON.stringify(leaseObj, null, 2));
@@ -195,7 +230,7 @@ function main() {
   assert(pruned.status === 0, 'prune exits 0');
   const pruneOut = JSON.parse(pruned.stdout);
   assert(
-    pruneOut.pruned.some((p) => p.leaseId === first.lease.leaseId),
+    pruneOut.pruned.some((p) => p.leaseId === second.lease.leaseId),
     'prune lists lease',
   );
   assert(JSON.parse(fs.readFileSync(leasePath, 'utf8')).status === 'stale', 'expired lease marked stale');

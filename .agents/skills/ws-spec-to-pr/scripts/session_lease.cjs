@@ -211,6 +211,25 @@ function forceWriteSlugLock(plansDir, slug, leaseId) {
   atomicWrite(slugLockFile(plansDir, slug), `${JSON.stringify({ leaseId })}\n`);
 }
 
+/** Ensure slug lock names leaseId; refuse to steal from a different live holder. */
+function ensureSlugLock(plansDir, slug, leaseId) {
+  if (writeSlugLock(plansDir, slug, leaseId)) return { ok: true };
+  const holder = readSlugLock(plansDir, slug);
+  const holderLease = holder ? tryReadJson(leaseFile(plansDir, holder)) : null;
+  if (holder && holder !== leaseId && isLive(holderLease, Date.now())) {
+    return {
+      ok: false,
+      conflict: 'same-slug',
+      holderLeaseId: holder,
+      holderStatus: holderLease?.status || 'unknown',
+      holderExpiresAt: holderLease?.expiresAt,
+      leaseId,
+    };
+  }
+  forceWriteSlugLock(plansDir, slug, leaseId);
+  return { ok: true };
+}
+
 function removeSlugLockIfHolder(plansDir, slug, leaseId) {
   const file = slugLockFile(plansDir, slug);
   if (!fs.existsSync(file)) return false;
@@ -364,7 +383,11 @@ function cmdAcquire(options) {
     if (options.label) existing.label = String(options.label);
     if (options.workflowId) existing.workflowId = String(options.workflowId);
     atomicWrite(file, `${JSON.stringify(existing, null, 2)}\n`);
-    if (!writeSlugLock(plansDir, slug, leaseId)) forceWriteSlugLock(plansDir, slug, leaseId);
+    const lockResult = ensureSlugLock(plansDir, slug, leaseId);
+    if (!lockResult.ok) {
+      console.log(JSON.stringify(lockResult));
+      return 1;
+    }
     console.log(
       JSON.stringify({
         ok: true,
@@ -446,7 +469,11 @@ function cmdHeartbeat(options) {
   stamp(lease);
   if (lease.status === 'stale') lease.status = 'active';
   atomicWrite(file, `${JSON.stringify(lease, null, 2)}\n`);
-  if (!writeSlugLock(plansDir, lease.slug, leaseId)) forceWriteSlugLock(plansDir, lease.slug, leaseId);
+  const lockResult = ensureSlugLock(plansDir, lease.slug, leaseId);
+  if (!lockResult.ok) {
+    console.log(JSON.stringify(lockResult));
+    return 1;
+  }
   console.log(JSON.stringify({ ok: true, lease }));
   return 0;
 }
