@@ -3,3 +3,5 @@
 *.py text eol=lf
 # SKILL.md is rewritten by build-site --bump; keep WT LF so CRLF cannot accumulate blank lines after ---
 .agents/skills/**/SKILL.md text eol=lf
+# Integrity --check compares raw file bytes to LF stable-stringify
+bin/skill-integrity.json text eol=lf

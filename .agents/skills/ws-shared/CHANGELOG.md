@@ -2,6 +2,22 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 21:55] Agent: Cursor Grok 4.6
+- **Prompt**: update website, bump version, ws-ship-pr + ws-goal-fix-pr
+- **Done**: Bumped package to 0.3.30; rebuilt docs catalog; trimmed CATALOG.md under the 24 KB budget; regenerated integrity
+- **Result**: Site/footer/skill frontmatter aligned at 0.3.30; `npm run test` exit 0
+
+
+### [2026-08-21 21:48] Agent: Cursor Grok 4.6
+- **Prompt**: add implementation provider parity to test-provider-parity.js (dev-only, not check-workflows)
+- **Done**: Sweep JSON aliases, local-spec SCM delegates, optional Azure --model; extended node test/test-provider-parity.js
+- **Result**: Development CI gate covers implementation, not the shipped workflow checker
+
+### [2026-08-21 21:40] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-check-harness
+- **Done**: Full Phases 0–5c audit; applied critical integrity EOL pin (`.gitattributes` + LF regenerate)
+- **Result**: `npm run verify-integrity` exit 0; remaining work is commit if desired
+
 ### [2026-08-21 21:15] Agent: Cursor Grok 4.6
 - **Prompt**: Enable only cursor-code-review.yml for now; commit and push
 - **Done**: OpenCode workflow is workflow_dispatch only; Cursor remains on pull_request to main

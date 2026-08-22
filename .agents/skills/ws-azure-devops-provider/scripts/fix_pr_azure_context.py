@@ -172,6 +172,14 @@ def base_url(organization: str, project: str) -> str:
     return f"https://dev.azure.com/{organization}/{urllib.parse.quote(project)}"
 
 
+def pr_web_url(pr: dict[str, Any]) -> str:
+    links = pr.get("_links") or {}
+    web = (links.get("web") or {}).get("href")
+    if web:
+        return str(web)
+    return str(pr.get("url") or "")
+
+
 def git_url(organization: str, project: str, repository: str, suffix: str) -> str:
     return (
         f"{base_url(organization, project)}/_apis/git/repositories/"
@@ -254,8 +262,12 @@ def detect_repository(repo_root: Path) -> str:
         if match:
             return urllib.parse.unquote(match.group(1))
     for url in urls:
-        if url.rstrip().endswith(".git"):
-            return Path(url.rstrip()[:-4]).name
+        cleaned = url.strip().rstrip("/")
+        if cleaned.endswith(".git"):
+            cleaned = cleaned[:-4]
+        match = re.search(r"(?:[:/])([^/:]+)$", cleaned)
+        if match:
+            return urllib.parse.unquote(match.group(1))
 
     raise SystemExit("Pass --repository; Azure DevOps remote not found in .git/config.")
 
@@ -370,7 +382,7 @@ def get_pr_context(repo_root: Path, pr_id: int, repository: str, include_system:
             "sourceRefName": pr.get("sourceRefName"),
             "targetRefName": pr.get("targetRefName"),
             "createdBy": (pr.get("createdBy") or {}).get("displayName"),
-            "url": pr.get("url"),
+            "url": pr_web_url(pr),
         },
         "workItems": work_items,
         "threads": threads,
@@ -383,9 +395,9 @@ MODEL_FOOTER_PREFIX = "LLM model:"
 
 def format_resolution_comment(comment: str, model: str) -> str:
     body = comment.strip()
-    model = model.strip()
+    model = (model or "").strip()
     if not model:
-        raise ValueError("The --model parameter is required and cannot be empty.")
+        return body
     if MODEL_FOOTER_PREFIX.lower() in body.lower():
         return body
     return f"{body}\n\n---\n{MODEL_FOOTER_PREFIX} {model}"
@@ -477,8 +489,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     resolve.add_argument("--comment", required=True)
     resolve.add_argument(
         "--model",
-        required=True,
-        help="Active LLM model id for this session (e.g. composer-2.5, gpt-5.4-medium).",
+        default="",
+        help="Optional session model id for the resolution footer (host metadata, not a new intent).",
     )
     resolve.add_argument(
         "--dry-run",
@@ -516,7 +528,10 @@ def main(argv: list[str]) -> int:
     ensure_utf8_stdio()
     args = parse_args(argv)
     repo_root = find_repo_root(Path(args.repo_root) if args.repo_root else Path.cwd())
-    repository = args.repository or detect_repository(repo_root)
+    if args.action == "resolve-thread" and args.dry_run:
+        repository = args.repository or "dry-run"
+    else:
+        repository = args.repository or detect_repository(repo_root)
 
     if args.action == "collect":
         payload = get_pr_context(repo_root, args.pr_id, repository, include_system=args.include_system)

@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.3.29",
+  "version": "0.3.30",
   "description": "Portable agent skills that take a feature spec to a reviewed pull request",
   "license": "MIT",
   "author": "Jone Polvora",
