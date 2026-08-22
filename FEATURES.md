@@ -123,11 +123,11 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria | `ws-write-spec` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
 | Canonical `*.spec.md` schema, section hierarchy, and AC rules | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
-| Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox | `ws-spec-index` |
+| Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |

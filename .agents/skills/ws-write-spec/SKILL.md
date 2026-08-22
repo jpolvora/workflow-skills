@@ -22,7 +22,7 @@ Author or reformulate a **local** `*.spec.md` into the project specs directory o
 
 **Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` (free-text) or keep tracker origin `source: github` | `source: azure-devops`.
 
-**Specs family:** Role = draft / reformulate under `{specsDir}` only. Router / vocabulary: [`../ws-shared/autoload.md`](../ws-shared/autoload.md). Next: format → `ws-spec-format`; start workflow → `ws-local-spec-provider` register; browse → `ws-spec-list`.
+**Specs family:** Role = draft / reformulate under `{specsDir}` only. Router / vocabulary: [`../ws-shared/autoload.md`](../ws-shared/autoload.md). Next: format → `ws-spec-format`; standalone → `index.PRD` user-gate (`ws-spec-index` `track`); start workflow → `ws-local-spec-provider` register; browse → `ws-spec-list`.
 
 ## Invocation
 
@@ -88,7 +88,14 @@ When writing a spec derived from a remote tracker issue or raw human description
    That script keeps the `{specsDir}` spec of record normalized and writes `{us-dir}/step-00-{slug}.spec.md`. Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
    - Done when: command succeeded, or this step was skipped.
 
-6. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
+6. **Standalone `index.PRD` gate** — When the **user** invoked `/write-spec` or `/ws-write-spec` (not orch Step 0), after the spec file exists, present `user-gate` (recommended first):
+   1. **Add to index.PRD (Recommended)** — track `{slug}` on the spec board
+   2. **Skip tracking**
+   Cancel / dismiss → HS-1 STOP (never infer yes). `autoMode`: take option 1. Orch Step 0 / provider fetch that called this skill: **skip this gate**.
+   On Add: load [`ws-spec-index`](../ws-spec-index/SKILL.md) and run `track {slug}`. That edits `{specsDir}/index.PRD` only (Feature map `[ ]` + Next-specs row). It is **not** `ws-local-spec-provider` `--register` and must not create `{plansDir}` artifacts.
+   - Done when: the gate is resolved (tracked, skipped, or already present), or this step was skipped because orch owns the call.
+
+7. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. Mention whether `index.PRD` was updated. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
    - Done when: caller has the specsDir path (and plan path only when registered).
 
 ## Subagent contract
@@ -96,5 +103,6 @@ When writing a spec derived from a remote tracker issue or raw human description
 - Transform the assigned source into one canonical, testable specification.
 - Preserve tracker context and map each requirement to a numbered atomic AC.
 - Write only the requested spec path and return its repo-relative location.
-- Do not register or advance workflow state unless the caller assigns that operation.
+- After a standalone user invoke, stop at the `index.PRD` user-gate; on Add, `track` via `ws-spec-index` only.
+- Do not register a workflow `step-00` or advance orch state unless the caller assigns `--register` / Step 0.
 

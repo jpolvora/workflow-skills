@@ -249,7 +249,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 
 ### Spec → plan path (v0.3+)
 
-Standalone `/write-spec` and provider `fetch-to-spec` write the **spec of record** to `{specsDir}/{slug}.spec.md` first (`plans.specsDir`, default `.agents/specs`). Orchestrators then register a workflow copy as `{plansDir}/{slug}/step-00-{slug}.spec.md`. Re-fetch refuses to clobber a differing spec of record or `step-00` unless `--force` is passed (converter first, then register).
+Standalone `/write-spec` and provider `fetch-to-spec` write the **spec of record** to `{specsDir}/{slug}.spec.md` first (`plans.specsDir`, default `.agents/specs`). After a **manual** `/write-spec`, the agent asks whether to add that slug to `{specsDir}/index.PRD` (`ws-spec-index track`). Orchestrators then register a workflow copy as `{plansDir}/{slug}/step-00-{slug}.spec.md`. Re-fetch refuses to clobber a differing spec of record or `step-00` unless `--force` is passed (converter first, then register).
 
 ---
 

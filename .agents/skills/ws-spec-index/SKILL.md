@@ -23,6 +23,7 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 /ws-spec-index init [sourcePath]       Bootstrap index + specsDir from README/PRD/SPECS or free text
 /ws-spec-index sync [slug]             Sync shipped work to index status, checkboxes, and Done log
 /ws-spec-index promote <inboxItem>     Promote an inbox idea to a phase bullet + next-specs row
+/ws-spec-index track <slug>            Add an existing `{specsDir}/{slug}.spec.md` to Feature map + Next-specs
 ```
 
 ## Modes
@@ -51,6 +52,17 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 - Move item from Inbox section to relevant Feature map phase bullet (`- [ ]`) and Next specs row.
 - Optional: create stub `*.spec.md` (`source: local`, `id: null`).
 - **Done when:** item moved from Inbox to phase bullet + next-specs table.
+
+### 4. `track`
+
+- Require `{specsDir}/{slug}.spec.md` (spec of record). Title from frontmatter `title`.
+- If `{specsDir}/index.PRD` is missing: `skipped: "index.PRD missing"` (tell the user to `init`; do not invent an index).
+- If the slug already appears in Feature map or Next-specs: `skipped: "already tracked"`.
+- Else append `- [ ] {title} (\`spec: {slug}.spec.md\`)` under the last `### Phase` heading (or under Feature map if no phase headings).
+- Append a Next-specs row with the next `#`, status `` `[ ]` todo ``, last phase label, and a one-line note from the spec title.
+- If an `Open Next-spec:` line exists, append the slug there.
+- Never create `{plansDir}` / `step-00` artifacts. Never treat this as workflow `--register`.
+- **Done when:** Feature map bullet and Next-specs row exist for `{slug}`, or skipped cleanly.
 
 ## Contract summary
 

@@ -2,6 +2,26 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 13:10] Agent: Composer
+- **Prompt**: continue on same branch + commit for fix-pr-proactive-class-sweep
+- **Done**: Adopted `feat/nested-quote-python-c-audit`; restored/committed proactive sweep (`96afe3f`) + `tests:remote` fix (`262bdea`); Steps 6–8 done; ship skipped
+- **Result**: Workflow completed on feature branch (ahead 2); Phase A CLEAN
+
+### [2026-08-22 12:56] Agent: Cursor Grok 4.6
+- **Prompt**: Add to index.PRD (Recommended) for workflow-session-leases
+- **Done**: `ws-spec-index track workflow-session-leases` (Phase 4 Feature map + Next-specs row 38)
+- **Result**: Spec board lists the slug; no `{plansDir}` workflow created
+
+### [2026-08-22 12:55] Agent: Cursor Grok 4.6
+- **Prompt**: ws-write-spec should always ask after a manual invoke whether to register the spec into local index.PRD
+- **Done**: Standalone `index.PRD` user-gate on `ws-write-spec`; `ws-spec-index track`; hubs/FEATURES/README/dogfood §6; doc-sync asserts
+- **Result**: Orch Step 0 still skips the gate; Add is not workflow `--register`
+
+### [2026-08-22 12:33] Agent: Composer
+- **Prompt**: Audit must catch nested-quote python -c SyntaxErrors; create issue/PR/todo via user-gate (1B + 2Gate)
+- **Done**: Added classify-shell-failure + draft-remediation to ws-audit; extract_frontmatter_field.cjs; check_shell_quoting.cjs Phase 5a gate; orch + CROSS-PLATFORM wiring; tests
+- **Result**: Runtime + static capture path; remediation stays user-gate only
+
 ### [2026-08-22 12:26] Agent: Composer
 - **Prompt**: add existing specs/plans to index.PRD with actual status (shipped vs open)
 - **Done**: Reconciled `.agents/specs/index.PRD` Feature map, Next-specs, and Done log for 10 previously unmapped specs + DeepSeek P1 plan; marked shipped vs partial vs todo from PR evidence

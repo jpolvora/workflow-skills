@@ -46,7 +46,7 @@ On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, 
 
 5. **Progress Board** → **Transition Gate** → dispatch step N+1 (or auto-gate + dispatch in `autoMode`).
 
-**Runtime audit (`defaults.enableAuditing`):** When effective `true`, after each step's `update_state` (before Transition Gate), append audit findings for script execution errors (non-zero exits, missing/unrecognized options, unhandled exceptions), tool/I/O/dispatch anomalies, performance bottlenecks, correctness risks, and disposable scratch scripts observed during the step via [`ws-audit`](../ws-audit/SKILL.md). At workflow end (after Step 8 delivery result, Step 9 fix-PR, or on failure), finalize the audit log and run the upstream GitHub issue / suggestion gates when `has-errors` or `has-suggestions` is true.
+**Runtime audit (`defaults.enableAuditing`):** When effective `true`, after each step's `update_state` (before Transition Gate), append audit findings for script execution errors (non-zero exits, missing/unrecognized options, unhandled exceptions), **inline `python -c` / `node -e` SyntaxError and nested-quote failures** (via `classify-shell-failure`), tool/I/O/dispatch anomalies, performance bottlenecks, correctness risks, and disposable scratch scripts observed during the step via [`ws-audit`](../ws-audit/SKILL.md). At workflow end (after Step 8 delivery result, Step 9 fix-PR, or on failure), finalize the audit log and run the remediation `user-gate` (`draft-remediation`: open issue / draft PR / create todo / copy / skip) when `has-errors` or `has-suggestions` is true. Never auto-create.
 
 ### Step 5 — Check-implementation (score gate)
 
