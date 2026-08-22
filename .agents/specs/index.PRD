@@ -201,6 +201,9 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchm
 | 2026-08-19 | `us-220` | Port `ws-pre-daily` Extra skill to upstream | [PR #219](https://github.com/jpolvora/workflow-skills/pull/219) |
 | 2026-08-21 | `harness-efficiency-and-verifiability` | Harness efficiency/verifiability + explain/cleanup/archive skills | [PR #223](https://github.com/jpolvora/workflow-skills/pull/223) |
 | 2026-08-22 | `models-preset-and-per-step` | Config model presets and per-step / substep model preferences | [PR #226](https://github.com/jpolvora/workflow-skills/pull/226) |
+| 2026-08-22 | `skill-catalog-cleanup` | Extra demotion + merge `ws-patterns-*` into `ws-patterns` | `89e7c96` |
+| 2026-08-22 | `fix-pr-proactive-class-sweep` | Proactive same-defect-class sweep in cooperative fix | `89e7c96` (already in tree; index closed) |
+| 2026-08-22 | `specify-closure-pack` | Specify-time closure pack for score-10 spec delivery | `89e7c96` |
 
 ## 11. Maintenance checklist
 

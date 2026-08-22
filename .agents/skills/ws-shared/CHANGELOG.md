@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 16:45] Agent: Cursor Grok 4.6
+- **Prompt**: Stamp 0.3.34 for combined next PR
+- **Done**: `npm run build-site:bump` + FEATURES evolution + integrity regenerate; index Done log SHA `89e7c96`
+- **Result**: Single extra version stamp on develop for catalog Extra, ws-patterns, and specify-time closure
+
 ### [2026-08-22 16:40] Agent: Cursor Grok 4.6
 - **Prompt**: Execute combined_next_pr plan (catalog Extra + ws-patterns + specify-time closure; close fix-pr index)
 - **Done**: Demoted 3 skills to Extra; merged patterns; FORMAT/validate --mode authoring; write-spec lookup + context.md; Step 0 skip-register; lite >5-step valve; MEMORY trap for orch closure
