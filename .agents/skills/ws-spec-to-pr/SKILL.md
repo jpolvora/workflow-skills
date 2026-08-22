@@ -72,8 +72,8 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--sk
 ## Runtime audit (`defaults.enableAuditing`)
 
 When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), load [`ws-audit`](../ws-audit/SKILL.md) at bootstrap:
-- Wrap each step's `update_state` with audit log appends (errors, anomalies, performance bottlenecks, correctness risks, and disposable scratch scripts).
-- Run the upstream GitHub issue / suggestion gates at workflow end when `has-errors` or `has-suggestions` is true.
+- Wrap each step's `update_state` with audit log appends (errors, anomalies, performance bottlenecks, correctness risks, disposable scratch scripts, and inline `-c`/`-e` quoting failures).
+- Run the remediation `user-gate` at workflow end (`draft-remediation`: issue / draft PR / todo / copy / skip) when `has-errors` or `has-suggestions` is true. Never auto-create.
 
 ## Invocation
 
