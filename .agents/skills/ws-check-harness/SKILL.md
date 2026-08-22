@@ -2,7 +2,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.3.28
+version: 0.3.29
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -34,7 +34,7 @@ flowchart LR
 
 | Step | Do | Done when |
 |------|-----|-----------|
-| **1 Scan** | Load [`PHASES.md`](PHASES.md); run Phases 0–5c; collect evidence | Findings table ready; **no edits** |
+| **1 Scan** | Load [`PHASES.md`](PHASES.md); run Phases 0–5c including Phase 5a (`check_duplicates.cjs`, `measure_harness.cjs`); collect evidence | Findings table ready; mechanical gates exit 0; **no edits** |
 | **2 Plan** | Emit report per [`REPORT-FORMAT.md`](REPORT-FORMAT.md); `user-gate` unless dry-run | Report delivered; dry-run ends here |
 | **3 Execute** | Apply approved items only; re-run Phase 2 on touched files | User informed of applied vs pending |
 
@@ -97,7 +97,7 @@ Step ↔ Phase: Step 1 = Phases 0–5c · Step 2 = Phase 6 · Step 3 = Phase 7.
 
 ## Output
 
-Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REPORT-FORMAT.md`](REPORT-FORMAT.md). Optional persist: `{plansDir}/harness-audit/harness-audit-{YYYYMMDD}.report.md`.
+Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REPORT-FORMAT.md`](REPORT-FORMAT.md). On explicit persist, write the completed report to a temporary input file and run `node {skillsRoot}/ws-shared/scripts/persist_diagnostic.cjs --kind harness --input <report>`; the helper stores a timestamped comparable artifact under `plans.diagnosticsDir` (default `.agents/plans/diagnostics`). Default audit remains read-only.
 
 ## Guardrails
 
@@ -107,7 +107,7 @@ Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REP
 
 ## Definition of Done
 
-**Scan:** path token map loaded from `{sharedDir}/config.json` when present; Install mode + Skills scan root resolved; Phases 0–5c done; § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
+**Scan:** path token map loaded from `{sharedDir}/config.json` when present; Install mode + Skills scan root resolved; Phases 0–5c done (Phase 5a ran `check_duplicates.cjs` and `measure_harness.cjs` to exit 0); § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
 
 **Plan:** severity + evidence + proposed correction; report format; dry-run stops; else `user-gate`.
 

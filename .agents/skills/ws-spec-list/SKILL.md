@@ -1,6 +1,6 @@
 ---
 name: ws-spec-list
-version: 0.3.28
+version: 0.3.29
 description: Dual board for specs vs plan workflows plus manage menu. Trigger when listing, picking, or managing specs/plans.
 disable-model-invocation: true
 invocation_names:
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-list loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Interactive **two-board + menu** for the current project. **Specs ≠ plans** — never merge them into one inventory.
 
@@ -21,7 +21,7 @@ Interactive **two-board + menu** for the current project. **Specs ≠ plans** �
 | **Spec** | `{specsDir}` ← `plans.specsDir` (default `.agents/specs`) | Human-facing `*.spec.md` (and optional `index.PRD`) |
 | **Plan** | `{plansDir}` ← `plans.dir` (default `.agents/plans`) | Workflow run under `{us-dir}/` — `*.state.md`, step artifacts, canonical `step-00-*.spec.md` copy |
 
-Canonical `step-00-*.spec.md` under `{plansDir}` is a **plan artifact**, not a Spec-board row. Not `ws-spec-index` (that owns `index.PRD` content). Action details: [`ACTIONS.md`](ACTIONS.md).
+Canonical `step-00-*.spec.md` under `{plansDir}` is a **plan artifact**, not a Spec-board row. Not `ws-spec-index` / `ws-spec-archive` (those own `index.PRD` content). Action details: [`ACTIONS.md`](ACTIONS.md).
 
 **Specs family:** Role = dual board + manage menu (Specs ≠ Plans). Start/Continue hands off to orch; does not rewrite AC bodies (`ws-sync-spec`) or `index.PRD` (`ws-spec-index`). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 

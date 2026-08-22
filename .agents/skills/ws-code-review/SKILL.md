@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -14,7 +14,7 @@ invocation_names:
 
 Review modified files vs the base branch for correctness, security, policy, and diff quality. Clear Critical/Warning via fix → re-review before Advance. For external CI-shaped dry-run preview (no PR threads), use [`ws-preview`](../ws-preview/SKILL.md) instead.
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 **Canonical output:** `{us-dir}/step-06-{slug}.review.md`. Optional fix summary: `{us-dir}/step-06-{slug}.fix.report.md`.
 
@@ -50,7 +50,7 @@ Fix is not its own workflow step. **Do not advance with open Critical/Warning** 
 
 1. Dispatch [ws-implement-tasks](../ws-implement-tasks/SKILL.md) `mode=fix` against current findings (include Suggestions in the same surgical pass when fixing).
 2. Targeted re-review of touched scope (Steps 1–6 below, focused on prior findings + new regressions).
-3. Update `step-06-{slug}.review.md` (and append round notes to `step-06-{slug}.fix.report.md`).
+3. Write the immutable round through `node {skillsRoot}/ws-code-review/scripts/write_review_round.cjs --input <draft> --output-dir "{us-dir}" --slug "{slug}" --round {n}`. The helper retains `step-06-{slug}.review.r{n}.md` and updates canonical `step-06-{slug}.review.md`.
 4. **State / memory each round:** log `review-fix | round={n}/3 | fixed=… | remaining=…` in gate history; append traps/gaps to `## Workflow memory` in state; when a durable anti-regression trap appears, write via [ws-self-learning](../ws-self-learning/SKILL.md) (or `Learning: N/A` if none).
 5. Exit when no Critical/Warning remain, else continue until round 3.
 
@@ -89,7 +89,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) for Weakened Checks, False Completion, Scope Creep, Unauthorized Action. Report detected frauds as Critical or Warning.
    - Done when: each applicable checklist item is checked.
 
-7. **Write report**: save `step-06-{slug}.review.md`. No findings: write `No feedback` and stop (clean). Findings: use severity sections Critical / Warning / Suggestion, each with `path:L#`, description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?** (workflow: answer follows the loop table above).
+7. **Write report**: draft the report, then persist it with `write_review_round.cjs` (stamps step-artifact metadata: `step`, `slug`, `workflowId`, `status`, `startedAt`, `endedAt`, `acRefs`). No findings: write `No feedback` and stop (clean). Every finding heading is `### CR-NNN [Critical|Warning|Suggestion] open|closed path:Lstart-Lend`; retain the same stable id in later rounds and close it only after an earlier round opened it. An ineffective assertion, test, gate, or check is minimum Warning. Include description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?** (workflow: answer follows the loop table above).
    - Done when: the report file matches the format described above.
 
 8. **Apply fixes + re-review**: under workflow (and standalone after YES), run the fix → re-review loop (max 3). Each round: surgical fixes via `ws-implement-tasks` `mode=fix`, run `config.json.verification` build/test aliases for touched layers, re-review, update `step-06-{slug}.fix.report.md`, record state/memory. Stop when clean or after round 3 with Pause on residual Critical/Warning.
@@ -100,3 +100,11 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 - Include only findings with complete Investigate proof (all four steps); no speculative comments.
 - Clear Critical/Warning before Advance via fix → re-review (max 3).
 - Do not commit: changes stay in the working tree for the orchestrator or developer to stage. Do not treat uncommitted files as the review snapshot.
+
+## Subagent contract
+
+- Review only the pinned committed diff and read-only sibling evidence.
+- Give each proven finding a stable id, severity, evidence range, and state.
+- Treat ineffective assertions, tests, gates, and checks as minimum Warning.
+- Write only the assigned review draft; the orchestrator persists rounds and ledger links.
+- Return findings sorted by severity, path, line, and id.

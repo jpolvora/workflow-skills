@@ -1,7 +1,7 @@
 ---
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-testing loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Plan and execute the pre-PR **testing** battery: unit tests, integration/E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), feature quality against acceptance criteria, and an optional **mutation testing** substep (kill/survive score vs threshold).
 
@@ -76,7 +76,7 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
    - **Fail:** score &lt; threshold or non-zero exit → Mutation `status: failed`; **do not** treat Step 7 as complete for Advance — orch/`user-gate` offers handoff to [`ws-implement-tasks`](../ws-implement-tasks/SKILL.md) fix mode to strengthen tests (kill survivors). This skill does not edit product or test code.
    - Done when: Mutation recorded as `passed` | `failed` | `skipped`.
 
-8. **Regression sabotage** (when mutation skipped/unset): after unit tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` on newly added regression assertions (caller-authored invert patch). Expect test **non-zero** with inverted code; restore must match the pre-invert snapshot bytes on `--paths` only (other dirty tracked files do not fail restore). Restore failure → abort Step 7. When full mutation ran, log sabotage `skipped` (superseded).
+8. **Regression sabotage** (when mutation skipped/unset): after unit tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` on newly added regression assertions (caller-authored invert patch) using a non-empty configured verification alias. Expect test **non-zero** with inverted code; every declared path must change bytes and restoration must match the pre-invert snapshot bytes on `--paths` only (other dirty tracked files do not fail restore). Restore failure → abort Step 7. Link the helper exit code to the AC ledger; the ledger derives pass/fail and the score cap. When full mutation ran, log sabotage `skipped` (superseded).
    - Done when: sabotage recorded as `passed` | `failed` | `skipped` + reason.
 
 9. **Report**: write `step-07-{slug}.testing.report.md` with results from Steps 2–8, including an accessibility/contrast check on form validation errors and alert indicators. Always include **Mutation** and **Regression Sabotage** sections. Final pass verdict only when neither is `failed` and other planned areas passed (or were skipped per policy).
@@ -85,3 +85,11 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 
 - No code fixes: report gaps (including surviving mutants) and hand off to [ws-implement-tasks (fix mode)](../ws-implement-tasks/SKILL.md) rather than editing code.
 - Do not vendor a mutation engine — consumers own `verification.mutationTest`.
+
+## Subagent contract
+
+- Execute only configured test commands and authorized integration surfaces.
+- Capture test names, source files, aliases, timestamps, and exit codes for ledger linkage.
+- Derive sabotage status from the helper exit code and preserve byte-identical restoration.
+- Write only testing plan/report artifacts; hand product fixes back to implementation.
+- Return observed tests or machine skip evidence.

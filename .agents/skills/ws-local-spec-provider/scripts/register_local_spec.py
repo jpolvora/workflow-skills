@@ -30,6 +30,11 @@ import sys
 from datetime import date
 from pathlib import Path
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
+
 
 def ensure_utf8_stdio() -> None:
     """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
@@ -50,25 +55,8 @@ def ensure_utf8_stdio() -> None:
 ensure_utf8_stdio()
 
 
-HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
-
-
-def resolve_repo_root(override: str | None = None) -> Path:
-    """Project root owning config.json: --repo-root → CWD when it has a hub → script tree.
-
-    The CWD probe keeps global skill installs ($HOME/.agents/skills) writing into the
-    consumer project instead of the user's home directory.
-    """
-    if override:
-        return Path(override).expanduser().resolve()
-    cwd = Path.cwd().resolve()
-    if (cwd / HUB_REL).is_file():
-        return cwd
-    return Path(__file__).resolve().parents[4]
-
-
-REPO_ROOT = resolve_repo_root()
-CONFIG_PATH = REPO_ROOT / HUB_REL
+REPO_ROOT = resolve_repo_root(script_file=__file__)
+CONFIG_PATH = resolve_config_path(REPO_ROOT)
 DEFAULT_PLANS_DIR = ".agents/plans"
 DEFAULT_SPECS_DIR = ".agents/specs"
 
@@ -321,8 +309,8 @@ def main() -> int:
     ensure_utf8_stdio()
 
     if args.repo_root:
-        REPO_ROOT = resolve_repo_root(args.repo_root)
-        CONFIG_PATH = REPO_ROOT / HUB_REL
+        REPO_ROOT = resolve_repo_root(args.repo_root, script_file=__file__)
+        CONFIG_PATH = resolve_config_path(REPO_ROOT)
 
     cfg = load_config()
     if args.plans_dir:

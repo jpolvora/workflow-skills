@@ -1,3 +1,7 @@
+---
+stackFingerprint: <generated-sha256>
+stackFingerprintVersion: 1
+---
 # Stack Definition
 
 Human-readable companion to `config.json`. Agents read `config.json` for machine-readable values; this doc explains structure and conventions.

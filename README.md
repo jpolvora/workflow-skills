@@ -14,6 +14,7 @@ Portable **agent skills** that take a feature spec to a reviewed pull request. I
 |-----|--------------|----------------|
 | **`README.md`** (this file) | Humans | Install, update, uninstall, safety, contribute, high-level catalog |
 | **[`AGENTS.md`](AGENTS.md)** | Agents (upstream) | Full skill router, layers, verification, portability |
+| **[`CATALOG.md`](CATALOG.md)** | Agents + site generator | On-demand skill inventory, task router, and upstream maintenance commands |
 | **[`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)** | Agents (after install) | Consumer hub: config, gates, external dependencies (installed with `ws-shared/`) |
 | **[`.agents/skills/ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md)** | Agents (every session) | Always-applied skill set + specs progressive-disclosure router + hub contracts (SCM parity, verify score) |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to `AGENTS.md` if your IDE needs one — not required by skills |
@@ -24,15 +25,17 @@ Portable **agent skills** that take a feature spec to a reviewed pull request. I
 
 | You get | How it works |
 |---------|--------------|
-| **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads (steps 0–9). |
+| **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads including same-class siblings (steps 0–9). |
 | **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
-| **A 9/10 verify bar** | Standard Step 5 advances only at score **≥ 9**. Below 9 it re-implements flagged work and re-scores (max 3 rounds, then Pause). Never auto-approves a weak score. |
+| **A derived 9/10 verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ 9**. Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. |
+| **Verifiable runtime artifacts** | Atomic Node state updates publish deterministic `run.json` / `run.md`, a repo plans index, per-step JSONL telemetry, and a machine-readable AC ledger. |
+| **Smaller dispatch context** | Bounded subagent contracts and indexed plan slices replace repeated full-document payloads. Context and MEMORY budgets fail closed when exceeded. |
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
 | **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; tracker close-loop via `comment-issue`. |
 | **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until ship. |
 | **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |
 | **Two speeds, one config** | Standard and lite share `config.json`. Isolated state (`workflowType`); no cross-resume. New runs ask stay-on-branch or `feat/{slug}`. |
-| **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Orchestrator model: Pause, switch in the IDE, Resume. |
+| **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
 
 ---
 
@@ -97,6 +100,8 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills ws-tdah --global --
 |-------|---------|
 | Compare to latest | `npx --yes github:jpolvora/workflow-skills --check` |
 | Audit installed digests | `npx --yes github:jpolvora/workflow-skills integrity` |
+| Rebuild telemetry aggregate | `npx --yes github:jpolvora/workflow-skills telemetry aggregate` |
+| Render telemetry report | `npx --yes github:jpolvora/workflow-skills telemetry report` |
 | Installed version | `npx --yes github:jpolvora/workflow-skills --version` |
 | Help | `npx --yes github:jpolvora/workflow-skills --help` |
 
@@ -138,7 +143,7 @@ Edit under `.agents/skills/ws-shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers, optional `pathTokens` (`skillsRoot` / `sharedDir`). **Fresh install seeds** from `config.json.example`. Fill via `/ws-configure-project` (also offered during workflow setup and suggested after install). Gitignored — never commit. Optional Step 7 mutation: set `verification.mutationTest` (runner command) and `defaults.skipMutationTesting: false`; score gated by `verification.mutationThreshold` (default 80). Lite orch has no Testing step — mutation is standard-only. Optional `defaults.enableAuditing: true` wraps orch runs with [`ws-audit`](.agents/skills/ws-audit/SKILL.md) (runtime log + performance/correctness/disposable script diagnosis + upstream issue / reusable tooling drafts). Optional `defaults.testingModel` selects the standard Step 7 test executor. |
+| `config.json` | Project identity, stack, verification, providers, and optional path tokens. **Fresh install seeds** from `config.json.example`; fill via `/ws-configure-project`. New runtime controls include test globs, context budget, optional parallel verify/review, step or phase gates, adaptive convergence, diagnostics storage, and portable phase-model identifiers. `fable.auditVerdictsBlockShip` defaults to `"refuted"`; `"caveats"` is an explicit stricter policy. Gitignored and never committed. |
 | `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
 | `MEMORY.md` | Anti-regression index (`ws-self-learning`) |
 | `memory/*.md` | Individual memory entries |
@@ -235,8 +240,12 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration |
 | [`ws-patterns-backend`](.agents/skills/ws-patterns-backend/SKILL.md) · [`ws-patterns-frontend`](.agents/skills/ws-patterns-frontend/SKILL.md) | Backend & Frontend persistent patterns memory engines |
-| [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, feature spec sync, format & goal loop |
+| [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) · [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, plan-history archive, feature spec sync, format & goal loop |
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (plan bootstrap start → latest PR thread comment or delivery commit; human vs agent duration split) |
+| [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | Standup briefing of the last 36 hours |
+| [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | Spec/US status panorama — what it does, what it delivered, how to check & test |
+| [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | Archive `{plansDir}` delivery facts into `index.PRD`, then propose cleanup of shipped plan folders |
+| [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | Confirm-gated cleanup of workflow leftovers (telemetry, `.runtime`, shipped plans) + `.gitignore` suggestions |
 
 ### Spec → plan path (v0.3+)
 

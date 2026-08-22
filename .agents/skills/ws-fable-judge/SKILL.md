@@ -1,7 +1,7 @@
 ---
 name: ws-fable-judge
 description: Adversarial audit of claimed work against git diffs and re-run verifications. Trigger after claimed completion, during local review, or before merge.
-version: 0.3.28
+version: 0.3.29
 invocation_names:
   - ws-fable-judge
   - /ws-fable-judge
@@ -59,6 +59,8 @@ Summarize audit results into one of three official verdicts:
 - **`VERIFIED WITH CAVEATS`**: Core claims match and verifications pass, but ≥1 item is UNVERIFIABLE or listed under Action Items (non-fraud).
 - **`REFUTED`**: One or more classic frauds detected, verifications failed, or implementation contradicts ground truth diff.
 
+The shipping policy is a strict tri-state: `false`, `"refuted"` (packaged default), or `"caveats"`. `REFUTED` is an unconditional safety floor and always blocks. `"caveats"` additionally blocks `VERIFIED WITH CAVEATS`; `false` and `"refuted"` do not block caveated outcomes. Callers consume the normalized policy from the shared workflow runtime rather than reimplementing legacy boolean checks.
+
 ---
 
 ## Adversarial Self-Learning Trigger
@@ -72,7 +74,7 @@ When an audit produces a **`REFUTED`** or **`VERIFIED WITH CAVEATS`** verdict (d
 3. **Capture Root Cause**:
    - **DO NOT**: Detail the exact trap or temptation (e.g. weakening assertions to match output, claiming completion before running tests, modifying files outside blast radius).
    - **INSTEAD DO**: Detail the ground-truth requirement and verification pattern to enforce going forward.
-4. **Compile**: Run `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile`.
+4. **Compile**: Run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`.
 
 ---
 

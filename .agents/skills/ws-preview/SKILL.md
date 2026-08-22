@@ -1,7 +1,7 @@
 ---
 name: ws-preview
 description: External pipeline code-review dry-run on the current branch (optional uncommitted changes) without publishing PR threads.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - ws-preview
@@ -18,7 +18,7 @@ User-invoked **pipeline review dry-run** via the public cursor-reviewer `run.sh`
 
 **Always `--dry-run`.** Never publish PR threads. Default includes uncommitted changes; omit `--include-uncommitted` only when the user asks for committed-only.
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 ## Invocation
 

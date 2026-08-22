@@ -1,6 +1,6 @@
 ---
 name: ws-karpathy-guidelines
-version: 0.3.28
+version: 0.3.29
 description: Micro code diff hygiene guidelines — reduces LLM coding mistakes through surgical changes, minimal diff footprints, and surfacing assumptions.
 license: MIT
 invocation_names:
@@ -72,3 +72,11 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+## Subagent contract
+
+- Restate the assigned goal, allowed paths, and named verification before mutation.
+- Make the smallest diff that satisfies the assigned acceptance criteria.
+- Preserve unrelated dirty files and the repository's established style.
+- Escalate ambiguity that changes behavior instead of broadening scope.
+- Return exact touched paths and observed verification exit codes.

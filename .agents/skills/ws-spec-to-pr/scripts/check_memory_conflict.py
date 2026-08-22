@@ -20,6 +20,7 @@ import os
 import re
 import sys
 import argparse
+import fnmatch
 from pathlib import Path
 
 
@@ -58,29 +59,10 @@ def resolve_memory_path(
     if explicit_shared_dir:
         return Path(explicit_shared_dir).expanduser().resolve() / "MEMORY.md"
 
-    try:
-        from resolve_consumer_root import resolve_repo_root, shared_dir
+    from resolve_consumer_root import resolve_repo_root, shared_dir
 
-        root = resolve_repo_root(repo_root, script_file=__file__)
-        s_dir = shared_dir(root)
-        mem = s_dir / "MEMORY.md"
-        if mem.exists():
-            return mem
-    except Exception:
-        pass
-
-    cwd_mem = Path.cwd() / ".agents" / "skills" / "ws-shared" / "MEMORY.md"
-    if cwd_mem.exists():
-        return cwd_mem
-
-    env_shared = os.environ.get("WORKFLOW_SKILLS_SHARED_DIR")
-    if env_shared:
-        env_mem = Path(env_shared).expanduser().resolve() / "MEMORY.md"
-        if env_mem.exists():
-            return env_mem
-
-    sibling_mem = Path(__file__).resolve().parents[2] / "ws-shared" / "MEMORY.md"
-    return sibling_mem
+    root = resolve_repo_root(repo_root, script_file=__file__)
+    return shared_dir(root) / "MEMORY.md"
 
 
 # Portable default: no project-specific domain vocabulary.
@@ -172,6 +154,7 @@ def parse_memory(path: Path) -> dict:
                 "layers": [],
                 "modules": [],
                 "severity": None,
+                "path_patterns": [],
                 "text": line,
             }
             continue
@@ -192,6 +175,10 @@ def parse_memory(path: Path) -> dict:
         m = re.match(r"-\s*\*\*Severity\*\*:\s*(.*)", line)
         if m:
             current["severity"] = m.group(1).strip().strip("`").strip()
+
+        m = re.match(r"-\s*\*\*PathPattern\*\*:\s*(.*)", line)
+        if m:
+            current["path_patterns"] = _clean_list(m.group(1))
 
     if current:
         (traps if current["type"] == "trap" else patterns).append(current)
@@ -253,7 +240,11 @@ def cross_reference(memory: dict, plan: dict) -> dict:
             layer_overlap = plan_layers & entry_layers
             module_overlap = plan_modules & entry_modules
             entity_hit = any(e in entry["text"].lower() for e in plan_entities)
-            path_hit = any(p in entry["text"].lower() for p in plan_file_paths)
+            path_hit = any(
+                fnmatch.fnmatch(plan_path, pattern.lower().replace("\\", "/"))
+                for plan_path in plan_file_paths
+                for pattern in entry.get("path_patterns", [])
+            ) or any(p in entry["text"].lower() for p in plan_file_paths)
 
             if layer_overlap or module_overlap or entity_hit or path_hit:
                 results[entry_type].append({
@@ -264,6 +255,11 @@ def cross_reference(memory: dict, plan: dict) -> dict:
                     "matched_modules": sorted(module_overlap),
                     "entity_match": entity_hit,
                     "path_match": path_hit,
+                    "force_interview": (
+                        entry_type == "traps"
+                        and path_hit
+                        and str(entry.get("severity") or "").lower() in {"high", "critical"}
+                    ),
                 })
 
     return results
@@ -360,6 +356,7 @@ def main():
                 "results": {"traps": [], "patterns": []},
                 "memory_path": str(memory_path),
                 "memory_missing": True,
+                "force_interview": False,
             }, ensure_ascii=False, indent=2))
         else:
             print(f"Notice: MEMORY.md not found at {memory_path} (skipping memory conflict check)")
@@ -374,6 +371,9 @@ def main():
             "plan_keywords": plan,
             "results": results,
             "memory_path": str(memory_path),
+            "force_interview": any(
+                item.get("force_interview", False) for item in results["traps"]
+            ),
         }, ensure_ascii=False, indent=2))
     else:
         report = format_report(plan_path, plan, results)

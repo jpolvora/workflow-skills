@@ -233,31 +233,31 @@ function setupTmpDoctorProject(root) {
   };
 }
 
-function testGithubCanonicalRegisterRowHasPythonLauncher() {
-  console.log('\n--- testGithubCanonicalRegisterRowHasPythonLauncher ---');
+function testGithubCanonicalRegisterRowHasNodeLauncher() {
+  console.log('\n--- testGithubCanonicalRegisterRowHasNodeLauncher ---');
   const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-github-provider/SKILL.md');
   const content = fs.readFileSync(skillPath, 'utf8');
   const expected =
-    '`python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source github`';
-  assert(content.includes(expected), 'GitHub Canonical scripts row has python launcher prefix');
+    '`node {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs --source github`';
+  assert(content.includes(expected), 'GitHub Canonical scripts row has Node launcher prefix');
   assert(
     !content.includes(
-      '| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source github` |',
+      '| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs --source github` |',
     ),
     'GitHub Canonical scripts row no longer has unprefixed launcher cell',
   );
 }
 
-function testAzureCanonicalRegisterRowHasPythonLauncher() {
-  console.log('\n--- testAzureCanonicalRegisterRowHasPythonLauncher ---');
+function testAzureCanonicalRegisterRowHasNodeLauncher() {
+  console.log('\n--- testAzureCanonicalRegisterRowHasNodeLauncher ---');
   const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-azure-devops-provider/SKILL.md');
   const content = fs.readFileSync(skillPath, 'utf8');
   const expected =
-    '`python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops`';
-  assert(content.includes(expected), 'Azure Canonical scripts row has python launcher prefix');
+    '`node {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs --source azure-devops`';
+  assert(content.includes(expected), 'Azure Canonical scripts row has Node launcher prefix');
   assert(
     !content.includes(
-      '| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops` |',
+      '| Spec of record → workflow copy | `{skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs --source azure-devops` |',
     ),
     'Azure Canonical scripts row no longer has unprefixed launcher cell',
   );
@@ -271,8 +271,8 @@ function testProviderRegisterRowsNotMissingLaunchers() {
     if (!report) continue;
     const ml = report.sections.toolScriptDiagnostics.missingLaunchers || [];
     assert(
-      !citedMatches(ml, /register_local_spec\.py --source (github|azure-devops)/),
-      `${skillId} missingLaunchers does not include register_local_spec.py --source rows`,
+      !citedMatches(ml, /register_local_spec\.cjs --source (github|azure-devops)/),
+      `${skillId} missingLaunchers does not include register_local_spec.cjs --source rows`,
     );
   }
 }
@@ -503,8 +503,8 @@ function main() {
     testHelp();
     testJsonReportShape();
     testMissingConfigDoesNotInventValues();
-    testGithubCanonicalRegisterRowHasPythonLauncher();
-    testAzureCanonicalRegisterRowHasPythonLauncher();
+    testGithubCanonicalRegisterRowHasNodeLauncher();
+    testAzureCanonicalRegisterRowHasNodeLauncher();
     testProviderRegisterRowsNotMissingLaunchers();
     testSkillFolderDocsFileRelative();
     testSkillFolderDocsDoesNotUseProjectRoot();

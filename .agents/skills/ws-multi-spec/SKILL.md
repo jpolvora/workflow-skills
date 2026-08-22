@@ -1,6 +1,6 @@
 ---
 name: ws-multi-spec
-version: 0.3.28
+version: 0.3.29
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-multi-spec loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Sequential multi-spec batch delivery orchestrator with **smart complexity & flow auto-detection**.
 

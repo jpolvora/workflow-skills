@@ -1,7 +1,7 @@
 ---
 name: ws-verify-plan
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ 9; below 9 runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-verify-plan loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Audit implementation deliverables against the specification and plan. 
 
@@ -45,9 +45,9 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) against `git diff` ground truth. Record verdict (`VERIFIED`, `VERIFIED WITH CAVEATS`, `REFUTED`) and fraud findings in the report.
    - Done when: every planned feature/AC has a situation and evidence, and Quick Score's three metrics are each scored.
 
-3. **Score**: compute the integer **0-10** score (weighted average for Quick Score; overall adherence for US Verification).
+3. **Score**: link semantic/file/test/alias/sabotage evidence to `{us-dir}/ac-ledger.json`, then run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <path> --boundary step5`. This derived integer **0-10** is the only score; never author or override a numeric score in a report or state update.
    - **Regression Sabotage Check:** For bug-fix/regression tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` with caller-authored invert patch. Record pass/fail/skipped+reason in the report. Missing **required** sabotage → fail-closed overall score **< 9** (never Advance; triggers `scoreAndRefine` / Pause per `gates.md`). Restore failure aborts this step (exit 1).
-   - Optional `fable` integration: If `ws-fable-judge` returned `REFUTED` and `config.json.fable.auditVerdictsBlockShip` is `true`, cap score at < 9 to require remediation.
+   - Optional `fable` integration: use the normalized tri-state policy from the shared workflow runtime. `REFUTED` always blocks as the safety floor; `"refuted"` blocks `REFUTED`; `"caveats"` also blocks `VERIFIED WITH CAVEATS`; `false` never relaxes the `REFUTED` floor. Link the verdict and finding evidence before scoring.
    - Done when: an integer score 0-10 is set.
 
 4. **Write report**: save `{us-dir}/step-05-{slug}.plan.report.md` using [`TEMPLATE.md`](TEMPLATE.md) shape (frontmatter: `us`, `reportDate`, `score`, `sourcePlans`, `evalSource`; body sections Result by Feature, Additional Features, Gaps and Next Steps). Do not edit the reference plan/spec files.
@@ -57,4 +57,11 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Workflow: the orchestrator owns the gate after reading the report: score `>= 9` advances to Step 6; score `< 9` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= 9` (max 3 rounds per visit, then Pause). Do not auto-approve below 9.
    - Standalone: apply the same `>= 9` / `< 9` threshold; recommend `scoreAndRefine` until `>= 9` when below 9.
    - Done when: the caller has the score and report path.
+
+## Subagent contract
+
+- Inspect the immutable product snapshot and supplied AC ledger without changing product files.
+- Link only observed semantic, file-line, test, alias, sabotage, and verdict evidence.
+- Derive the score through `ac_ledger.cjs`; never author or override it.
+- Write only the assigned verification report and return score plus findings.
 

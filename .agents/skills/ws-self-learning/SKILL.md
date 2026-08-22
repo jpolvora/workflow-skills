@@ -1,6 +1,6 @@
 ---
 name: ws-self-learning
-version: 0.3.28
+version: 0.3.29
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 invocation_names:
   - self-learning
@@ -11,7 +11,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-self-learning loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 **Bidirectional gate** — MEMORY is both input (avoid known traps) and output (record new ones).
 
@@ -26,8 +26,8 @@ Consumer-owned memory lives in the shared hub (never overwritten by install/upda
 
 | Moment | Action |
 |--------|--------|
-| **Before plan / before code / before fix** | **Consult:** `Grep` / `Read` `{sharedDir}/MEMORY.md` for task keywords AND query touched paths with `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --match-paths <files>`. Apply matching **DO NOT** and **INSTEAD DO** directives. |
-| Implementation hit a trap/pitfall/race | **Write:** new file in `{sharedDir}/memory/`, then `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile` (expand tokens before shell) |
+| **Before plan / before code / before fix** | **Consult:** `Grep` / `Read` `{sharedDir}/MEMORY.md` for task keywords AND query touched paths with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`. Apply matching **DO NOT** and **INSTEAD DO** directives. |
+| Implementation hit a trap/pitfall/race | **Write:** new file in `{sharedDir}/memory/`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` (expand tokens before shell) |
 | Session had $\ge 2$ tool/test/build failures | **Write (Mandatory):** Failure Reflection Hook — record Root Cause & Trap in `{sharedDir}/memory/`; `Learning: N/A` is strictly forbidden |
 | `ws-fable-judge` audit yields `REFUTED` / `CAVEATS` | **Write (Mandatory):** Adversarial Reflection — record `Severity: High` or `Critical` trap explaining why claims diverged from ground truth |
 | Standard feature/bug fix, no new trap & $<2$ failures | Proof line: `Learning: N/A (standard implementation)` after confirming no new pitfall and session friction $<2$ |
@@ -39,8 +39,8 @@ Task is **not done** until the completion side runs (write or valid `Learning: N
 
 1. Identify 3–8 keywords and touched file paths from the task (e.g. `bash`, `CRLF`, `launcher`, `verify.sh`, `managed skill`, `encoding`, touched files like `src/Controllers/Auth.cs` or `bin/cli.js`).
 2. Query matching memories:
-   - Keyword grep: `Grep` terms in `{sharedDir}/MEMORY.md` or `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --query <keyword>`.
-   - File/path matching: `python {skillsRoot}/ws-self-learning/scripts/self_learning.py --match-paths <touched_files...>`.
+   - Keyword grep: `Grep` terms in `{sharedDir}/MEMORY.md` or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --query <keyword>`.
+   - File/path matching: `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <touched_files...>`.
 3. If a hit is Severity Medium+, fold its **DO NOT** / **INSTEAD DO** directives into the plan or first edit. Do not re-discover the same failure mode.
 4. For scripts/skills specifically, also apply the preflight in memory entry **Script/skill authoring preflight** (launchers, LF, Windows Python `\r\n`, no shell bridges).
 
@@ -64,7 +64,7 @@ When [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audits work and returns a ve
 2. **Write to `{sharedDir}/memory/`** — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
 3. **Compile `MEMORY.md`** — Expand tokens, then run:
    ```bash
-   python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile
+   node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
    ```
 4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` (only when valid per rules above) in the final proof; one-line summary in the reply.
 
@@ -72,7 +72,7 @@ When [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audits work and returns a ve
 
 If `MEMORY.md` merge-conflicts on pull/merge, **do not** resolve by hand. Run:
 ```bash
-python {skillsRoot}/ws-self-learning/scripts/self_learning.py --compile
+node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
 ```
 This rebuilds a clean index from `{sharedDir}/memory/` (per-file entries do not conflict).
 
@@ -96,4 +96,11 @@ Path tokens: [`tools.md`](../ws-shared/tools.md) § Path tokens.
 - Pre-work: Grep/path-match notes recorded or none found.
 - Completion: new `{sharedDir}/memory/*.md` compiled via script exit 0, or valid `Learning: N/A` proof line (permitted only when session friction $<2$ failures).
 
+## Subagent contract
+
+- Query MEMORY keywords and assigned file paths before planning or editing.
+- Inject matching DO NOT and INSTEAD DO guidance into the implementation context.
+- Record a new durable trap only when evidence is novel and reusable.
+- After two or more tool, build, or test failures, a failure-reflection memory entry is mandatory.
+- Return `memory_consult` and a valid `Learning:` result.
 

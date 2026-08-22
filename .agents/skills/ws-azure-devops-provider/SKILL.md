@@ -1,7 +1,7 @@
 ---
 name: ws-azure-devops-provider
 description: Azure DevOps work-item→spec and PR ops. Same required intents as GitHub (scm-provider-contract). Trigger when providers.scm is azure-devops.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-azure-devops-provider loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Integrate Azure DevOps Work Items and Pull Requests with workflow-skills. Pipeline skills (`ws-write-spec`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-spec-to-pr`) link here instead of embedding `az` / REST recipes.
 
@@ -51,7 +51,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
-| `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/us-{id}.spec.md` (agentic spec of record via `ws-write-spec`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + optional JSON snapshot | `ado-workitem-to-spec.py` → `ws-write-spec` (reformulate/enhance) → `register_local_spec.py` |
+| `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/us-{id}.spec.md` (agentic spec of record via `ws-write-spec`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + optional JSON snapshot | provider fetch → `ws-write-spec` (reformulate/enhance) → `register_local_spec.cjs` |
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.py` |
 | `validate-auth` | none | Pass/fail + fixes | Org/project + PAT; optional WIT smoke |
 | `create-pr` | head, base, title/body | PR URL + id | Prefer `az repos pr create`; if `az` missing/fails → REST in INTENTS.md |
@@ -61,7 +61,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.py` → WIT Comments `api-version=7.1` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
-**Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched work item), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.py --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
+**Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched work item), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.cjs --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
 
 **Branch rule:** never delete `project.workingBranch` (default `develop`) after merge.
 
@@ -74,7 +74,7 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Script | Path |
 |--------|------|
 | Work item snapshot / base conversion | `{skillsRoot}/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py` (default output `{specsDir}/us-{id}.spec.md`) |
-| Spec of record → workflow copy | `python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py --source azure-devops` |
+| Spec of record → workflow copy | `node {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs --source azure-devops` |
 | Thread ops | `{skillsRoot}/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
 | Prior-work sweep | `{skillsRoot}/ws-azure-devops-provider/scripts/sweep_prior_work.py` |
 | Comment on work item | `{skillsRoot}/ws-azure-devops-provider/scripts/comment_issue.py` |

@@ -1,7 +1,7 @@
 ---
 name: ws-goal-loop
 description: Generic convergence loop primitive — stateful loop engine providing sentinel management, heartbeat/settle timers, and re-check convergence control.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - goal-loop
@@ -25,7 +25,7 @@ Goal → collect+evaluate → [act → verify → report → wait]×N → done
 | `PR_NUMBER` | Target PR |
 | `SUCCESS_CRITERION` | Checkable expression (e.g. `activeThreads == 0`) |
 | `MAX_ITERATIONS` | Hard stop (default **20**) |
-| `WAIT_SECONDS` | Post-push wait before re-collect (default **300**) |
+| `defaults.convergence` | Shared `initialDelaySec`, `minPollSec`, `maxPollSec`, `backoff`, and `maxIterations` policy. No timer constant is authored by a caller. |
 | `COLLECT_CMD` / `ACT_CMD` / `VERIFY_CMD` | Collect / act / verify commands |
 | `DRY_RUN` | Skip push, resolve, destructive actions |
 | `RUNTIME_DIR` | Sentinel dir (default `{us-dir}/.runtime`) |
@@ -58,7 +58,7 @@ Enforcement is **contract wording + orchestration-driver checks + evals** — no
 2. **Act** — One `ACT_CMD` round (sync → investigate → fix → validate → commit → resolve → push, or dry-run sim).
 3. **Verify** — Fresh `VERIFY_CMD` / review / publish / resolve evidence. **3× identical failure** → stop and escalate.
 4. **Report** — `$RUNTIME_DIR/round-<N>.md` per [`TEMPLATES.md`](TEMPLATES.md).
-5. **Heartbeat** — Arm sentinel `WAIT_SECONDS`; on wake re-collect. `0` active → done. Else `n+1` or stop at `MAX_ITERATIONS`.
+5. **Heartbeat** — After every fresh provider read, run `node {skillsRoot}/ws-goal-loop/scripts/convergence.cjs --input <provider-status.json> --round {N} --round-log <round.md>`. Zero active threads plus concluded successful required checks exits immediately without arming a timer. Running checks use `minPollSec`; queued or absent runs use `maxPollSec`; every round records observed CI state and chosen interval. Else re-collect at `n+1` or stop at configured `maxIterations`.
 6. **Exit** — Criterion true · max iterations · user stop · escalation · collect failure.
 
 ## Stop conditions

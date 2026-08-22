@@ -11,6 +11,17 @@ src/skills/ws-shared/memory/**
 !src/skills/ws-shared/STACK.md.example
 !src/skills/ws-shared/config.json.example
 
+.agents/skills/ws-shared/config.json
+.agents/skills/ws-shared/config.local.json
+.agents/skills/ws-shared/STACK.md
+.agents/skills/ws-shared/MEMORY.md
+.agents/skills/ws-shared/CHANGELOG.md
+.agents/skills/ws-shared/memory/**
+.agents/skills/**/runs/**
+.agents/skills/**/.runtime/**
+.agents/skills/**/.audit-session-*.json
+.agents/skills/**/.finding-step-*.json
+
 **/__pycache__/
 **/*.py[cod]
 **/*.pyo

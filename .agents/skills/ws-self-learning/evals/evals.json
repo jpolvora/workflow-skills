@@ -4,11 +4,11 @@
     {
       "id": 1,
       "prompt": "After fixing CRLF launcher bug, record the trap.",
-      "expected_output": "memory entry + compile via scripts/self_learning.py.",
+      "expected_output": "memory entry + compile via scripts/self_learning.cjs.",
       "assertions": [
         "Agent loads self-learning",
         "Writes to {sharedDir}/memory/ not changelog",
-        "Uses python {skillsRoot}/self-learning/scripts/self_learning.py --compile"
+        "Uses node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile"
       ]
     },
     {

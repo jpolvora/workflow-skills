@@ -863,13 +863,13 @@ function fetchRemoteVersion() {
   });
 }
 
-function runTelemetryAggregate() {
+function runTelemetry(command = 'aggregate') {
   const scriptPath = path.join(__dirname, 'generate-telemetry-aggregate.cjs');
   if (!fs.existsSync(scriptPath)) {
     console.error(`Error: telemetry script not found at ${scriptPath}`);
     process.exit(1);
   }
-  const result = spawnSync(process.execPath, [scriptPath], {
+  const result = spawnSync(process.execPath, command === 'report' ? [scriptPath, 'report'] : [scriptPath], {
     stdio: 'inherit',
     cwd: targetDir,
     env: process.env,
@@ -897,6 +897,8 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills integrity    Audit installed skills vs local integrity record
   npx --yes github:jpolvora/workflow-skills telemetry aggregate
       Regenerate {plansDir}/telemetry/aggregate.json from workflow state files
+  npx --yes github:jpolvora/workflow-skills telemetry report
+      Render a read-only Markdown summary with run and median telemetry
   npx --yes github:jpolvora/workflow-skills --help
 
 Curl shim (same argv; requires Node.js):
@@ -1282,10 +1284,14 @@ async function main() {
       process.exit(0);
     }
     if (!sub || sub === 'aggregate') {
-      runTelemetryAggregate();
+      runTelemetry('aggregate');
       return;
     }
-    console.error(`Error: Unknown telemetry subcommand '${sub}'. Use: telemetry aggregate`);
+    if (sub === 'report') {
+      runTelemetry('report');
+      return;
+    }
+    console.error(`Error: Unknown telemetry subcommand '${sub}'. Use: telemetry aggregate|report`);
     process.exit(1);
   }
 

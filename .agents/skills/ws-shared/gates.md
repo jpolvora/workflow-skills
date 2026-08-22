@@ -25,14 +25,14 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 
 ## User gates (`user-gate`)
 
-Portable alias: `user-gate`. Invoke at every orchestration gate — step transitions, entry/resume/config, refinement, G2-code, delivery+ship, fix-pr. Do not skip gates in normal mode.
+Portable alias: `user-gate`. Gate placement follows `defaults.gateGranularity`; hard stops are unchanged.
 
 1. Every normal-mode gate: use `user-gate` with ≥2 options; recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
 2. If structured choice is unavailable → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 3. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
 4. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
 
-**Orchestrator obligation:** both [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) MUST run `user-gate` at **each** step boundary before advancing, replaying, refining, committing, shipping, or fix-pr — not only at entry or ship.
+**Orchestrator obligation:** both orchestrators resolve `defaults.gateGranularity` (`step` default, or `phase`). `step` runs `user-gate` at each step boundary. `phase` runs at most five blocking gates in a normal standard run: entry, plan approval, implementation approval, delivery, and fix-PR. Boundaries inside a phase advance after validation and state persistence without another blocking prompt. Hard stops, required save points, review findings, test failures, and safety checks never become implicit approvals.
 
 ---
 
@@ -44,7 +44,7 @@ Both workflows expose the same control vocabulary at **every** step transition. 
 
 ````text
 Orchestrator session model: {currentModel} | Subagent phase model: {targetSubagentModel}
-To use a different model for the orchestrator session: Pause → switch model in IDE/agent host → resume workflow.
+To use a different model for the orchestrator session: Pause → switch it in the session host → resume workflow.
 ````
 
 The orchestrator session ALWAYS runs under the active session model (`{currentModel}`). If `config.json` → `defaults` defines phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), resolve `{targetSubagentModel}` for the subagent spawned at Step N; otherwise `{targetSubagentModel}` defaults to `{currentModel}`. If unknown, use `unknown`. Log `model | step {N} | {name} | ISO`. On change vs prior state value, also log `model-change | step {N} | {old} → {new} | ISO`.
@@ -63,14 +63,14 @@ The orchestrator session ALWAYS runs under the active session model (`{currentMo
 | **Refine** | Alias → **Replay** (same behavior; preferred label when user wants iteration) |
 | **Commit** | G2-code: commit workflow `files_touched` product paths only (see [Required G2-code save points](#required-g2-code-save-points-both-orch)); never `git add -A` / `git add .` / `{plansDir}/**` |
 | **Undo** | Checkpoint revert to `uswf/{workflow-id}/before-step-{N}` for the current step |
-| **Pause workflow** | Keeps all artifacts — after pause, switch model in IDE/agent host, then resume |
+| **Pause workflow** | Keeps all artifacts; after pause, switch the model in the session host, then resume |
 | Cancel without revert / Cancel and revert | HS-1 / revert per orch policy |
 
-Do **not** offer Switch model / Choose model / concrete model-name menus. Model changes happen only via Pause → IDE/agent host model picker → Resume.
+Do **not** offer Switch model / Choose model / concrete model-name menus. Model changes happen only via Pause → session-host model selection → Resume.
 
 **Optional soft tip (standard orch only):** When advancing **into Step 6** (code review), add one hint line under the banner (no picker):
 
-- `Hint: review ahead — consider a Reviewer/Thinking-class model (Pause → switch model in IDE/agent host → Resume).`
+- `Hint: review ahead — consider a Reviewer/Thinking-class model (Pause → switch it in the session host → Resume).`
 
 Log `model-hint | before-step-6 | current={currentModel} | ISO`. Lite: banner only (no phase soft tips).
 
@@ -113,8 +113,9 @@ Skip Step 2 (mark skipped, log) when **all** hold:
 - Complexity ≠ complex
 - Plan Open Questions section empty or all marked resolved
 - No `blocking` gaps from a 30s orch skim / prior step-output
+- `check_memory_conflict.py --json` did not return `force_interview: true`
 
-Otherwise run `ws-interview` (project-context sweep before escalate; in `autoMode`, sweep-miss blocking gaps close as model-inferred — no `user-gate`). Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
+Otherwise run `ws-interview` (project-context sweep before escalate; in `autoMode`, sweep-miss blocking gaps close as model-inferred — no `user-gate`). A High or Critical MEMORY trap whose `PathPattern` matches a touched plan path forces this interview even when every other skip condition passes. Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
 
 ---
 

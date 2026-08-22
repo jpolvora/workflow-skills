@@ -7,7 +7,7 @@ Standard progressive-disclosure spec index scaffold.
 
 ## 1. How to use
 
-- **Index (this file):** High-level roadmap, phase feature map, next specs, done log.
+- **Index (this file):** High-level roadmap, phase feature map, next specs, done log, archive.
 - **Detail specs (`*.spec.md`):** Deep requirements and acceptance criteria in `{specsDir}/`.
 
 ## 2. Status legend
@@ -60,6 +60,13 @@ Key problem statements addressed by this project.
 
 | Date | Slug | Title | PR / Commit |
 |------|------|-------|-------------|
+
+## Archive
+
+Durable delivery records harvested from `{plansDir}` so plan folders can be removed without losing history.
+
+| Slug | Outcome | Last state | PR / Commit | Summary |
+|------|---------|------------|-------------|---------|
 
 ## 11. Maintenance checklist
 

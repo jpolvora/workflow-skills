@@ -8,11 +8,11 @@
 
 > **Consistency:** the Skill map in `SKILL.md` (`ws-verify-plan` → Step 5, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
 
-> **Subagent Model Switching:** The orchestrator session ALWAYS runs under the active session model (`currentModel`). When `config.json` → `defaults` defines phase model preferences, those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). The orchestrator resolves and passes the subagent phase model parameter during `dispatch-agent` and `--model` to `update_state.py`. **Step 7 resolve:** non-empty `defaults.testingModel` → else `defaults.executionModel` → else the active session model. Empty or omitted `testingModel` is valid (same as `executionModel`). On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
+> **Subagent Model Switching:** The orchestrator session ALWAYS runs under the active session model (`currentModel`). When `config.json` → `defaults` defines phase model preferences, those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent` (Steps 0–3 → `plannerModel`; Step 4 → `executionModel`; Steps 5–6 → `reviewerModel`; Step 7 → resolved test executor). The orchestrator resolves and passes the subagent phase model parameter during `dispatch-agent` and `--model` to `update_state.cjs`. **Step 7 resolve:** non-empty `defaults.testingModel` → else `defaults.executionModel` → else the active session model. Empty or omitted `testingModel` is valid (same as `executionModel`). On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (user-gate). US/tracker provided → provider fetch snapshot → **prior-work sweep** (`sweep-prior-work` or local keyword/git) recorded in `step-00` → `dispatch-agent` `ws-write-spec` (reformulate & enhance to `{specsDir}/{slug}.spec.md` with agentic ACs + original human context) → register via `ws-local-spec-provider` into `{us-dir}/step-00-{slug}.spec.md`. No args → free-text → `dispatch-agent` `ws-write-spec` (writes `{specsDir}/{slug}.spec.md` only) → register via `ws-local-spec-provider` into `{us-dir}`. Existing `*.spec.md` → register via `ws-local-spec-provider`. Optional soft clarify if AC empty. | `{specsDir}/{slug}.spec.md` **then** `step-00-{slug}.spec.md` (after register) |
+| 0 | Entry gate (user-gate). US/tracker provided → provider fetch snapshot → **prior-work sweep** (`sweep-prior-work` plus `node {skillsRoot}/ws-spec-to-pr/scripts/search_plan_history.cjs --slug {slug} --keyword <terms>`) recorded in `step-00`; surface matching completed local workflow artifacts. Then `dispatch-agent` `ws-write-spec` (reformulate & enhance to `{specsDir}/{slug}.spec.md` with agentic ACs + original human context) → register via `ws-local-spec-provider` into `{us-dir}/step-00-{slug}.spec.md`. No args → free-text → same local history sweep → `dispatch-agent` `ws-write-spec` → register. Existing `*.spec.md` → history sweep → register. Optional soft clarify if AC empty. | `{specsDir}/{slug}.spec.md` **then** `step-00-{slug}.spec.md` (after register) |
 
 | 1 | Complexity gate → if simple: stub plan + skip to 4. Else `dispatch-agent` `ws-write-plan`; then `python {skillsRoot}/ws-spec-to-pr/scripts/check_memory_conflict.py {us-dir}/step-01-{slug}.plan.md --json` (exit 0 → proceed, including missing MEMORY.md consult-skipped; exit 2 → record trap titles in state/context to apply DO NOT / INSTEAD DO; exit 1 → HS-5 STOP for a missing plan file). | `step-01-{slug}.plan.md` |
 | 2 | Conditional: skip if eligible; else `dispatch-agent` `ws-interview`; 2c End auto-confirms 2e | `step-02-{slug}.plan.refined.md` |
@@ -29,13 +29,13 @@
 
 **Order (mandatory):**
 
-1. **`update_state.py`** — merge `files_touched` → Step file log; record telemetry; advance `currentStep`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl` (zero-padded `NN`; lazy-create `telemetry/`). When `--skip-gates` or `config.json.invariants.skipQualityGates` is active, add `--bypassed` on this call.
+1. **`update_state.cjs`** — use `dispatch` before execution and `finish` after structured output; merge `files_touched`, record measured telemetry, and advance `currentStep`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl` (zero-padded `NN`; lazy-create `telemetry/`). When `--skip-gates` or `config.json.invariants.skipQualityGates` is active, run its `bypass` operation.
 2. **G2-code (Steps 5 and 6 only)** — After Step 5 (score ≥ 9): **G2-code after Step 5 before Step 6** (skip if empty stage). After Step 6 review-fix: one G2-code if product files remain. Algorithm and messages: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. Uncommitted workflow product files → **STOP**; do not dispatch `ws-code-review`. `dryRun` simulates only. Other steps: skip this item.
 3. **Checkpoint** — `Shell` tag `uswf/{workflow-id}/before-step-{N+1}` @ HEAD **after** any G2-code (skip tag write in `dryRun`; log only). Pre-advance soft-passes missing tags when `dryRun: true`.
 4. **Pre-advance validation** — **shell command** (not `dispatch-agent`):
 
 ```bash
-python {skillsRoot}/ws-spec-to-pr/scripts/validate_state.py \
+node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --pre-advance {N+1}
 ```
@@ -51,6 +51,8 @@ On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, 
 ### Step 5 — Check-implementation (score gate)
 
 Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.md`**. Publish integer **score 0–10** in Progress Board + report.
+
+When `defaults.parallelVerifyReview` is `true`, first run G2-code after Step 4 and pin that immutable commit. Dispatch Steps 5 and 6 concurrently as read-only product-tree reviewers; each may write only its own workflow report and neither may write state, ledger, or product files. After both finish, the orchestrator runs `merge_verify_review.cjs`, which sorts findings by severity, path, line, id, and source, then links results serially. Any score gap or Warning/Critical enters one fix, re-verify, and re-review loop. The default remains `false`, preserving sequential Step 5 then Step 6.
 
 When overall score is `< 9`, run `scoreAndRefine` even if `defaults.scoreAndRefine` is false. When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows) **or** score is `< 9`:
 - Evaluates each plan task in `step-01-{slug}.plan.md` on criteria fulfillment, code quality, edge-cases, and test coverage.

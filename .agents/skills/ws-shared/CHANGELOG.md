@@ -2,6 +2,92 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 21:15] Agent: Cursor Grok 4.6
+- **Prompt**: Enable only cursor-code-review.yml for now; commit and push
+- **Done**: OpenCode workflow is workflow_dispatch only; Cursor remains on pull_request to main
+- **Result**: PRs run Agentic Code Review (Cursor) only
+
+### [2026-08-21 21:13] Agent: Cursor Grok 4.6
+- **Prompt**: Backup code-review.yml as opencode-code-review.yml and create cursor-code-review.yml
+- **Done**: Split into OpenCode backup + Cursor workflow; removed shared code-review.yml to avoid duplicate jobs
+- **Result**: Both PRs-to-main workflows remain; distinct Action names for Cursor vs OpenCode
+
+### [2026-08-21 21:12] Agent: Cursor Grok 4.6
+- **Prompt**: Configure agentic-code-reviewers CI to cursor engine + composer 2.5; set CURSOR_API_KEY GitHub secret from env
+- **Done**: code-review.yml uses --engine cursor-sdk --model composer-2.5 and secrets.CURSOR_API_KEY; dropped OpenCode CLI install; CATALOG dry-run aligned
+- **Result**: Canonical IDs from agentic-code-reviewers release README; secret set via gh if env present
+
+### [2026-08-21 20:08] Agent: Cursor Grok 4.6
+- **Prompt**: commit, push, /ws-goal-fix-pr
+- **Done**: Pushed enclosure/classify/fsync fixes; stamp step-artifact metadata on register, review persist, and finish
+- **Result**: Pre-advance no longer HS-5s on spec/review files that only had domain frontmatter
+
+### [2026-08-21 19:56] Agent: Cursor Grok 4.6
+- **Prompt**: fix ERROR: EPERM: operation not permitted, fsync
+- **Done**: `atomicWrite` now opens the temp file for write and treats Windows `EPERM`/`EINVAL` from `fsync` as non-fatal
+- **Result**: `convergence.cjs --round-log` completes; same guard on `workflow_state.cjs`
+
+### [2026-08-21 19:40] Agent: Cursor Grok 4.6
+- **Prompt**: Configure agentic-code-reviewer CI to ignore {plansDir} and {specsDir}; check ignore support
+- **Done**: Set AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS for .agents/plans/** and .agents/specs/** in code-review.yml; mirrored in CATALOG local dry-run; closed include-patterns quote so cjs/py/prd stay in the glob list
+- **Result**: Reviewer has no --exclude-patterns CLI; extra exclude is env-only and now drops workflow plan/spec trees from the PR diff
+
+### [2026-08-21 19:34] Agent: Cursor Grok 4.6
+- **Prompt**: fix website layout
+- **Done**: Kept top-nav labels on one line (nowrap, no flex-shrink) and hid the link row below 1100px
+- **Result**: "How It Works" no longer wraps taller than the other nav items
+
+
+### [2026-08-21 19:32] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 223)
+- **Done**: Untracked mid-run harness plan artifacts and gitignored telemetry from the PR; wired check_duplicates.cjs and measure_harness.cjs into ws-check-harness Phase 5a
+- **Result**: Review threads on plansDir-before-Step-8 and dead mechanical gates addressed in this round
+
+### [2026-08-21 19:25] Agent: Cursor Grok 4.6
+- **Prompt**: Improve cooperative fix; find more of the same issue in code
+- **Done**: Shared schema walker + AC-count helper; run.json validates against run.schema.json; typed ac-ledger commits/tests/verdicts/findings; default class-grep table in COOPERATIVE_FIX
+- **Result**: Same-class copies of the evals/schema and acTotal defects share one implementation
+
+### [2026-08-21 19:20] Agent: Cursor Grok 4.6
+- **Prompt**: Improve cooperative fix; find more of the same issue in code
+- **Done**: Sibling-sweep contract in COOPERATIVE_FIX/AUTO_FIX/ws-fix-pr/ws-goal-fix-pr; eval #3; untyped `commits` array in workflow-state.schema.json; schema-array `items` gate in test-evals-schema.js
+- **Result**: Cooperative fix now requires class-wide grep before resolve; remaining untyped schema array closed
+
+### [2026-08-21 19:10] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 223)
+- **Done**: Made `bin/validate-evals.cjs` load and apply `evals.schema.json`; added missing-schema test
+- **Result**: Thread PRRT_kwDOTFajc86bUNDl fixed in cdecc11; waiting on next review heartbeat
+
+### [2026-08-21 18:35] Agent: Composer
+- **Prompt**: Expand ws-cleanup patterns for leftovers found after shipped/partially tracked plan triage
+- **Done**: Listed `audit-*.log.md`, `post-bootstrap-commits.md`, root `.tmp-*` files; shipped-orphan walk when plan root is tracked-partial; PATTERNS + tests + root `.gitignore`
+- **Result**: `/ws-cleanup` finds hermes-style untracked leftovers under completed plans that still have a tracked refined plan
+
+### [2026-08-21 18:15] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-write-a-skill create ws-spec-archive — harvest plansDir into index.PRD, then propose cleanup commit
+- **Done**: Added user-invoked `ws-spec-archive` (scan/apply Node scripts, tests); registered in Workflows package, hubs, CATALOG, FEATURES, README, autoload; Archive section on spec-index template
+- **Result**: Skill reachable via /ws-spec-archive; plansDir history can land in index.PRD before shipped folders are removed
+
+### [2026-08-21 17:55] Agent: Composer
+- **Prompt**: /ws-write-a-skill create ws-spec-explain and ws-cleanup; register in website, deps, installer, checksums, AGENTS routers
+- **Done**: Added user-invoked `ws-spec-explain` + `ws-cleanup` (list/apply Node scripts, tests); registered in Workflows package, hubs, CATALOG, FEATURES, README, autoload; bumped to 0.3.29; regenerated integrity and site catalog
+- **Result**: Skills discoverable via /ws-spec-explain, /explain, /ws-cleanup; package 0.3.29
+
+### [2026-08-21 15:40] Agent: Claude Opus 5
+- **Prompt**: Read FEATURES.md, find improvements per feature (speed, tokens, subagent context, orchestrator intelligence, quality gates, communication, auditing, 10/10 scoring, portability, hybrid), produce a detailed spec for later execution.
+- **Done**: Audited the suite with four parallel explorations (context/token inventory, telemetry+installer, quality machinery, FSM latency) and wrote `.agents/specs/harness-efficiency-and-verifiability.spec.md` — 76 atomic ACs across 10 selectable workstreams, with a measured baseline table and design intent. No skill or config files changed.
+- **Result**: Spec of record written; awaiting maintainer selection of workstreams before implementation.
+
+### [2026-08-21 12:30] Agent: Cursor Grok 4.6
+- **Prompt**: set mode to full auto ws-ship-pr and ws-goal-fix-pr
+- **Done**: Merged PR 222 after goal-fix-pr convergence (activeThreads 0, CI green). Workflow hermes-spec-to-pr-enhancements completed.
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/222 MERGED (`e0f0249`)
+
+### [2026-08-21 12:24] Agent: Cursor Grok 4.6
+- **Prompt**: Step 9 ws-goal-fix-pr PR 222 (hermes-spec-to-pr-enhancements)
+- **Done**: Two live fix rounds; FAQ 9 SCM intents; audit standalone us-dir comment; ADO sweep --dry-run docs. Pushed 538055e and 8dfac87. Did not merge.
+- **Result**: activeThreads 0; review and both CI tests completed pass
+
 ### [2026-08-21 11:36] Agent: Cursor Grok 4.6
 - **Prompt**: Step 8 ws-ship-pr hermes-spec-to-pr-enhancements create-pr stopBeforeFixPr
 - **Done**: Bumped package 0.3.27 → 0.3.28; regenerated catalog + integrity; delivery commit of refined plan; push develop and reuse PR 222

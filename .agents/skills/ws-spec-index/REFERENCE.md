@@ -37,6 +37,7 @@ Consumer repositories may evolve their `index.PRD` layout. `ws-spec-index` opera
 |------|--------------------------------|------------------------|
 | **Next specs table** | Template: `# \| Spec \| Status \| Target Phase \| Notes`<br/>Live: `# \| Status \| Spec file \| Scope` (or any table with Status + Spec/file) | Locate backtick `*.spec.md` or slug in table row; update status column cell (`[ ]` → `[x]`). |
 | **Done log table** | Template: `Date \| Slug \| Title \| PR / Commit`<br/>Live: `When \| Item \| Notes` (or Date/When + Item/Slug) | Append completed row using available column layout. |
+| **Archive table** | Template: `Slug \| Outcome \| Last state \| PR / Commit \| Summary` under `## Archive` or `## N. Delivery archive` | Owned by `ws-spec-archive`. `sync` must preserve existing Archive rows; do not delete the section. |
 | **Feature map** | Bullet lists `- [ ] Feature (\`spec: ...\`)` or nested bullets with separate `- **spec:** \`...\`` | Match backtick `*.spec.md` or slug; update checkbox `[ ]` → `[x]`. |
 | **Dual-path specs** | Normal after any run starts: `{specsDir}/{slug}.spec.md` (spec of record) plus `{plansDir}/{slug}/step-00-*.spec.md` (workflow copy) | `{specsDir}/{slug}.spec.md` path is primary for index status updates. |
 | **`init` Guard** | Non-empty `{specsDir}/index.PRD` exists | Refuse to overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"`. |

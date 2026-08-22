@@ -1,7 +1,7 @@
 ---
 name: ws-senior-developer
 description: Engineering delivery gate for scope control, anti-reinvention, ambiguity stops via user-gate, and pre-ship proof. Invoke via rules.seniorDeveloper or /senior-developer.
-version: 0.3.28
+version: 0.3.29
 invocation_names:
   - senior-developer
   - ws-senior-developer
@@ -67,6 +67,14 @@ Before branch or pull-request handoff, provide this Code review proof checklist:
 Use configured aliases such as `build-backend`, `test-backend`, and `lint-backend`; do not hardcode consumer commands.
 
 **Done when:** every applicable checklist item has command evidence (exit code) or an explicit blocker.
+
+## Subagent contract
+
+- Refuse unapproved extra scope and name any ambiguity that changes the result.
+- Reuse configured project helpers and verification aliases before adding machinery.
+- Keep implementation inside the assigned path set.
+- Report build, test, format, and security evidence that applies to the changed layer.
+- Return blockers honestly; never convert a failed check into a pass.
 
 ## Opt-out
 

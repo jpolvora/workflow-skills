@@ -38,7 +38,19 @@ __pycache__/
 *.pyo
 check-workflows-report.md
 
+# Workflow disposable scratch (ws-cleanup)
+.agents/plans/**/telemetry/
+.agents/plans/**/.runtime/
+.agents/plans/**/.finding-*.json
+.agents/plans/**/.audit-session-*.json
+.agents/plans/**/audit-*.log.md
+.agents/plans/**/post-bootstrap-commits.md
+.agents/plans/**/*.baseline/
+.agents/codereviews/PR*.md
+
 # ws-shared hub: consumer installs get hub.gitignore written as .gitignore (config.json,
 # STACK.md, MEMORY.md, CHANGELOG.md, memory/* stay local-only in consumer repos).
 # This upstream repo tracks those dogfood files in git; package.json still excludes
 # them from the npm tarball. Skill bodies under .agents/skills/ws-* are tracked SoT.
+.tmp-ws-cleanup-approved.json
+.tmp-*/

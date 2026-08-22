@@ -38,8 +38,8 @@ Scan consumer **repo root** (not this skill package alone):
 | Repo-root `CHANGELOG.md` | Only if user sets `rules.changelogFile: "CHANGELOG.md"` |
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
-| Fable skills in `.agents/skills/` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: true` |
-| Top-level `.cursor/`, `.opencode/`, `.gemini/` or IDE env | Detect host IDE (Cursor / OpenCode / Antigravity) to suggest canonical model strings for `defaults.plannerModel`, `defaults.executionModel`, `defaults.reviewerModel`, `defaults.testingModel` (Cursor: `claude-3-5-sonnet` / `gpt-4o`; OpenCode: `claude-3-5-sonnet` / `gemini-2.0-flash`; Antigravity: `gemini-3.6-flash` / `claude-3-5-sonnet`) |
+| Fable skills in `{skillsRoot}` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: "refuted"` |
+| Session host exposes subagent model identifiers | Offer those portable identifiers for `defaults.plannerModel`, `defaults.executionModel`, `defaults.reviewerModel`, and `defaults.testingModel`; otherwise recommend empty values and active-session fallback |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
 ## Interview order
@@ -50,12 +50,12 @@ Scan consumer **repo root** (not this skill package alone):
 4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting** (default true — set false to opt into Step 7 mutation when `mutationTest` is set), scoreAndRefine, **patternsBackend** (default true), **patternsFrontend** (default true)) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + **LLM model preferences for autoMode phase switching**:
+7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, **patternsBackend**, **patternsFrontend**, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, and `convergence`) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
    - `plannerModel` (Planning phase: Steps 0–3)
    - `executionModel` (Execution phase: Step 4)
    - `reviewerModel` (Review phase: standard Steps 5–6)
    - `testingModel` (test executor, standard Step 7). **Recommended:** leave empty (same as `executionModel`). Same host canonical strings as the other model keys.
-   - Offer canonical host model choices or custom string; fallback to active model if empty or switch fails.
+   - Offer model identifiers exposed by the session host or a custom string; fallback to the active session model if empty or unavailable.
 
    **Delivery commit artifacts** (subsection of `defaults` / `--section defaults`; writes `defaults.deliveryCommitArtifacts`). Staging SoT: [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8. `autoMode`: accept Recommended on all three gates without prompting.
 

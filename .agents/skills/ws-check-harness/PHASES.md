@@ -433,6 +433,21 @@ For each pair of files covering the same theme, verify:
 
 Prioritize **remove duplicate + link** over rewriting.
 
+### Phase 5a — Automated duplication and budget gates
+
+Run these scripts as mechanical gates during Step 1 (Phases 0–5c). Fail the scan when either exits non-zero. Do not treat qualitative Phase 5 / 5b / 5c.1 line counting as a substitute.
+
+```bash
+node {skillsRoot}/ws-check-harness/scripts/check_duplicates.cjs --json --repo-root {repoRoot}
+node {skillsRoot}/ws-check-harness/scripts/measure_harness.cjs --scenario standard --json --repo-root {repoRoot}
+```
+
+- `check_duplicates.cjs`: exit 1 when any normative block (≥ 6 lines) repeats across tracked files outside the allowlist.
+- `measure_harness.cjs`: exit 1 when `fixedPreambleBytes > 18000`, harness reduction is under 45%, artifact-read reduction is under 40%, or `defaults.gateGranularity` is `phase` with more than 5 blocking gates.
+- Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
+
+On `--json`, keep the stdout payloads in the scan evidence. Skip neither script in upstream Install mode.
+
 ### Phase 5b — Skill writing quality (optional)
 
 Run **after** Phase 5 and **only** if `ws-write-a-skill` is installed (detection: § 3 → *Skill writing quality*).

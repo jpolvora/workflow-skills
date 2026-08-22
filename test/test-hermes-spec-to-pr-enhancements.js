@@ -147,7 +147,7 @@ const fixtureDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-sabotage-'));
 const relFixture = 'sample.txt';
 const fixtureFile = path.join(fixtureDir, relFixture);
 const otherFile = path.join(fixtureDir, 'other.txt');
-fs.writeFileSync(fixtureFile, 'PASS', 'utf8');
+fs.writeFileSync(fixtureFile, 'PASS\n', 'utf8');
 fs.writeFileSync(otherFile, 'clean', 'utf8');
 const patchFile = path.join(fixtureDir, 'invert.patch');
 fs.writeFileSync(patchFile, '--- a/sample.txt\n+++ b/sample.txt\n@@ -1 +1 @@\n-PASS\n+FAIL\n', 'utf8');
@@ -160,6 +160,19 @@ spawnSync('git', ['config', 'core.autocrlf', 'false'], { cwd: fixtureDir, encodi
 spawnSync('git', ['add', relFixture, 'other.txt'], { cwd: fixtureDir, encoding: 'utf8' });
 spawnSync('git', ['commit', '-m', 'init'], { cwd: fixtureDir, encoding: 'utf8' });
 fs.writeFileSync(otherFile, 'dirty', 'utf8');
+
+const hubDir = path.join(fixtureDir, '.agents', 'skills', 'ws-shared');
+fs.mkdirSync(hubDir, { recursive: true });
+fs.writeFileSync(
+  path.join(hubDir, 'config.json'),
+  JSON.stringify({
+    verification: {
+      backendTest: 'python check_pass.py',
+      frontendTest: 'exit 0',
+    },
+  }),
+  'utf8',
+);
 
 const checkScript = path.join(fixtureDir, 'check_pass.py');
 fs.writeFileSync(
@@ -185,7 +198,7 @@ const sabotage = spawnSync(
   { cwd: fixtureDir, encoding: 'utf8' },
 );
 assert(sabotage.status === 0, 'run_sabotage bites then restores');
-assert(fs.readFileSync(fixtureFile, 'utf8') === 'PASS', 'fixture restored after sabotage');
+assert(fs.readFileSync(fixtureFile, 'utf8') === 'PASS\n', 'fixture restored after sabotage');
 assert(fs.readFileSync(otherFile, 'utf8') === 'dirty', 'other dirty tracked file untouched by restore proof');
 
 const sabotageFail = spawnSync(

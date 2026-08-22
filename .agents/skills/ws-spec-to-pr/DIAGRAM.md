@@ -83,12 +83,15 @@ flowchart TD
 ```mermaid
 flowchart LR
   Gate[Post-step gate] --> Advance[Next / Advance]
-  Advance --> Tip[Optional soft tip]
-  Tip --> Disp[dispatch-agent / inline]
-  Disp --> Ingest[Ingest step-output]
-  Ingest --> State[Update state.md]
-  State --> Gate
+  Advance --> Context[Bounded contract + indexed plan slices]
+  Context --> Disp[dispatch-agent / inline]
+  Disp --> Ingest[Validate step-output + AC evidence]
+  Ingest --> State[Atomic Node state update]
+  State --> Derived[run.json + run.md + plans index + telemetry]
+  Derived --> Gate
 ```
+
+Step 5 derives its score from `ac-ledger.json`. Review rounds remain immutable, and optional parallel verify/review uses one pinned product commit before deterministic finding merge.
 
 Universal controls ([`gates.md`](../ws-shared/gates.md)): **Next**, **Previous**, **Replay**, **Refine→Replay**, **Commit**, **Undo**.
 

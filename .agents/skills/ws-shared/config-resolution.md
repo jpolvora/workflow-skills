@@ -5,6 +5,12 @@ Used by `ws-spec-to-pr`, `ws-spec-to-pr-lite`, providers, `ws-fix-pr`, `ws-goal-
 
 ---
 
+## Entry check
+
+Resolve the project-local `{sharedDir}/config.json` before any config-dependent skill action. If it is missing or still contains required placeholders, use `user-gate` to recommend `ws-configure-project`; cancellation stops the action and never implies approval. Project config always overrides a global hub.
+
+---
+
 ## Config path (only)
 
 ```text
@@ -91,7 +97,7 @@ Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to
 3. When `fable.enabled: true`:
    - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-verify-plan` (Step 5) run adversarial audit via `ws-fable-judge`.
    - `autoDetectDomain` (default `true`): `ws-write-plan` (Step 1) auto-detects specialized stack files and applies `ws-fable-domain` evidence rules.
-   - `auditVerdictsBlockShip` (default `true`): `REFUTED` verdict from `ws-fable-judge` caps verification scores and blocks `ws-ship-pr` (Step 8) PR creation until resolved via fix loop.
+   - `auditVerdictsBlockShip` (default `"refuted"`): accepts `false`, `"refuted"`, or `"caveats"`. `REFUTED` is the unconditional safety floor and always blocks; `"caveats"` additionally blocks `VERIFIED WITH CAVEATS`.
 
 ---
 

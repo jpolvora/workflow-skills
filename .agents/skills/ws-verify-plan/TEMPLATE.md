@@ -7,7 +7,7 @@ Canonical skill: [`SKILL.md`](SKILL.md).
 
 - **Target Plan**: [Plan Name/Path]
 - **Date/Time**: [Timestamp]
-- **Score**: [0-10]/10
+- **Derived ledger score**: [0-10]/10
 
 ## Executive Summary
 [Brief description of what was implemented and overall assessment]
@@ -33,8 +33,4 @@ Canonical skill: [`SKILL.md`](SKILL.md).
 ### Details / Feedback
 [Specific files to fix or rewrite, if any]
 
-### Suggested Git Commands
-```bash
-git add .
-git commit -m "feat: [brief description]"
-```
+The orchestrator owns any later path-scoped commit. This verifier never stages or commits files.

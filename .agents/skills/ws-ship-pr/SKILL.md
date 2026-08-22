@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-ship-pr loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Ship from the resolved PR **head** to `config.project.baseBranch`: prepare board → push/create PR via configured SCM → wait for CI → `ws-goal-fix-pr` → merge when clean. Standalone: head defaults to `config.project.workingBranch`. Workflow (`workflowMode: true` with readable `{us-dir}` state): head is `state.branch`. Never rewrite `config.project.workingBranch`.
 
@@ -70,7 +70,7 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
 ## Steps
 
 1. **Preflight**: resolve `shipHead` per § PR head resolution; resolve `baseBranch`/`gitRemote` and SCM provider (`providers.scm` in `config.json`); confirm active branch is `shipHead` (workflow: `state.branch`; standalone: `workingBranch` or explicit `head=`); check `git status` and tracking drift; **pull only when upstream exists** — after the active-branch check, run `git pull {gitRemote} {shipHead}` only when `git ls-remote --heads {gitRemote} {shipHead}` shows the ref. Do **not** trust `@{u}`: setup.md §5b option 2 creates the branch with `git checkout -b {name} {gitRemote}/{baseBranch} --no-track`, so `@{u}` either fails (no upstream) or, without `--no-track`, would resolve to the base and look like a first-push upstream. Always gate `git pull` on `git ls-remote --heads {gitRemote} {shipHead}`. If the remote ref is absent (first-push branch, e.g. new local `feat/{slug}` from bootstrap), **skip pull** and proceed to Step 4 `git push -u {gitRemote} {shipHead}`. If `ls-remote` fails for auth/network (not a missing ref), STOP and offer retry / cancel. Auto-detect base via `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` if unset; stop on unexpected dirty files outside delivery scope.
-   - Optional `fable` integration (safety floor — **never** bypassed by `skipQualityGates`): If `config.json.fable.enabled`, `autoAudit`, and `auditVerdictsBlockShip` are `true`, verify [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audit verdict is not `REFUTED`. If `REFUTED`, stop delivery and require remediation before pushing or creating PR.
+   - Optional `fable` integration (safety floor — **never** bypassed by `skipQualityGates`): consume the normalized tri-state policy from the shared workflow runtime. `REFUTED` always stops delivery. `"caveats"` additionally stops on `VERIFIED WITH CAVEATS`; `false` and `"refuted"` preserve the REFUTED-only floor. Require remediation before pushing or creating a PR when blocked.
    - Done when: `shipHead`, `baseBranch`, and SCM provider resolved; active branch matches `shipHead`; working tree clean enough to ship; pulled **or skipped (no upstream)**.
 
 2. **Prepare to PR (goal)**: load [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Drive coverage → build → tests → security → **fable-judge verdict (row 5)** → **consumer prepare discovery** (row 6; scan local `AGENTS.md` / `{sharedDir}/AGENTS.md` / `rules.*` / ship docs for prepare or before-push/publish/deliver steps; **wait** until those obligations complete) until every required row is ✅/⏭. **Always show row 5** on the board; under `skipQualityGates` it may credit ⏭ for visibility only — **`REFUTED` still ❌ STOP** when `auditVerdictsBlockShip` applies. Show the board to the user after each item and before shipping. Credit orch Steps 6–7 only with cited evidence for the **current** tree. STOP on any ❌ — including unfinished discovered local prepare steps.
@@ -125,4 +125,11 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 - Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md) · Audit: [ws-audit](../ws-audit/SKILL.md)
 - Base detection: `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../ws-spec-to-pr/ARTIFACTS.md)
 
+## Subagent contract
+
+- Treat prepare checks, SCM authorization, and Fable safety policy as hard boundaries.
+- Stage only explicitly configured delivery artifacts and assigned product paths.
+- Stop before any external mutation unless the caller supplied the selected ship intent.
+- Return the prepare board, resulting refs/URL when applicable, and unresolved blockers.
+- Never weaken REFUTED handling or infer approval from cancellation.
 

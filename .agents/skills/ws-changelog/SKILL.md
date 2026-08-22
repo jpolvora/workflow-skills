@@ -1,6 +1,6 @@
 ---
 name: ws-changelog
-version: 0.3.28
+version: 0.3.29
 description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
 invocation_names:
   - changelog
@@ -11,7 +11,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-changelog loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 **Mandatory completion gate** — run after [ws-self-learning](../ws-self-learning/SKILL.md) at the end of implementation tasks.
 

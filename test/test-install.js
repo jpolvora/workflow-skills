@@ -316,17 +316,19 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     ok('package.json verify-integrity + generate-integrity scripts present');
 
     const agentsMd = fs.readFileSync(path.join(parentDir, 'AGENTS.md'), 'utf8');
+    const catalogMd = fs.readFileSync(path.join(parentDir, 'CATALOG.md'), 'utf8');
+    const integritySurface = `${agentsMd}\n${catalogMd}`;
     for (const needle of [
       'Upstream skill integrity regenerate',
       'npm run generate-integrity',
       'npm run verify-integrity',
       'bin/skill-integrity.json',
     ]) {
-      if (!agentsMd.includes(needle)) {
-        fail(`AGENTS.md missing integrity regenerate obligation marker: ${needle}`);
+      if (!integritySurface.includes(needle)) {
+        fail(`AGENTS.md/CATALOG.md missing integrity regenerate obligation marker: ${needle}`);
       }
     }
-    ok('AGENTS.md documents upstream skill integrity regenerate obligation');
+    ok('AGENTS.md/CATALOG.md documents upstream skill integrity regenerate obligation');
 
     const verifySh = fs.readFileSync(
       path.join(parentDir, '.agents', 'skills', 'ws-ship-pr', 'scripts', 'verify.sh'),

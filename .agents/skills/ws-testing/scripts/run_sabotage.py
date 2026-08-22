@@ -11,9 +11,19 @@ Restore success is proven against the pre-invert snapshot only (not HEAD-clean).
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
+
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import (  # noqa: E402
+    load_config,
+    resolve_repo_root,
+    to_repo_relative,
+)
 
 
 def ensure_utf8_stdio() -> None:
@@ -34,16 +44,6 @@ def ensure_utf8_stdio() -> None:
 
 
 ensure_utf8_stdio()
-
-
-def resolve_repo_root(override: str | None = None) -> Path:
-    hub = Path(".agents") / "skills" / "ws-shared" / "config.json"
-    if override:
-        return Path(override).expanduser().resolve()
-    cwd = Path.cwd().resolve()
-    if (cwd / hub).is_file() or (cwd / ".git").is_dir():
-        return cwd
-    return Path(__file__).resolve().parents[4]
 
 
 def apply_patch(repo_root: Path, patch_file: Path) -> None:
@@ -68,26 +68,24 @@ def is_tracked(repo_root: Path, rel_path: str) -> bool:
     return proc.returncode == 0
 
 
-def git_restore(repo_root: Path, rel_paths: list[str]) -> bool:
-    tracked = [rp for rp in rel_paths if is_tracked(repo_root, rp)]
-    if not tracked:
-        return True
-    proc = subprocess.run(
-        ["git", "restore", "--source=HEAD", "--", *rel_paths],
-        cwd=repo_root,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-    return proc.returncode == 0
-
-
-def snapshot_restored(abs_paths: list[Path], snapshots: dict[Path, str]) -> bool:
+def snapshot_restored(abs_paths: list[Path], snapshots: dict[Path, bytes]) -> bool:
     for p in abs_paths:
-        if p.read_text(encoding="utf-8") != snapshots[p]:
+        if p.read_bytes() != snapshots[p]:
             return False
     return True
+
+
+def configured_test_aliases(repo_root: Path) -> dict[str, str]:
+    verification = (load_config(repo_root).get("verification") or {})
+    return {
+        name: value
+        for name, value in verification.items()
+        if name.endswith("Test") and isinstance(value, str) and value.strip()
+    }
+
+
+def emit(payload: dict) -> None:
+    print(json.dumps(payload, ensure_ascii=True, sort_keys=True))
 
 
 def main() -> int:
@@ -99,30 +97,55 @@ def main() -> int:
     parser.add_argument("--simulate-restore-failure", action="store_true", help="Test hook only")
     args = parser.parse_args()
 
-    repo_root = resolve_repo_root(args.repo_root)
+    repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
     abs_paths = [(repo_root / p).resolve() for p in args.paths]
-    rel_paths = []
+    rel_paths: list[str] = []
     for p in abs_paths:
         try:
-            rel_paths.append(p.relative_to(repo_root.resolve()).as_posix())
+            rel_paths.append(to_repo_relative(repo_root, p))
         except ValueError:
-            rel_paths.append(str(p))
-
-    snapshots: dict[Path, str] = {}
-    for p in abs_paths:
-        if not p.is_file():
-            print(f"Missing path: {p}", file=sys.stderr)
+            emit({"status": "failed", "reason": "path-outside-repository", "path": str(p)})
             return 1
-        snapshots[p] = p.read_text(encoding="utf-8")
+
+    aliases = configured_test_aliases(repo_root)
+    matching_alias = next((name for name, command in aliases.items() if command == args.test), None)
+    if matching_alias is None:
+        emit({
+            "status": "failed",
+            "reason": "test-command-not-configured-alias",
+            "configuredAliases": sorted(aliases),
+        })
+        return 1
+
+    snapshots: dict[Path, bytes] = {}
+    for p, relative in zip(abs_paths, rel_paths):
+        if not p.is_file():
+            emit({"status": "failed", "reason": "missing-path", "path": relative})
+            return 1
+        if not is_tracked(repo_root, relative):
+            emit({"status": "failed", "reason": "path-not-tracked", "path": relative})
+            return 1
+        snapshots[p] = p.read_bytes()
 
     patch_file = Path(args.invert_patch).resolve()
     if not patch_file.is_file():
-        print(f"Missing invert patch: {patch_file}", file=sys.stderr)
+        emit({"status": "failed", "reason": "missing-invert-patch"})
         return 1
 
     exit_code = 0
+    reason = "test-failed-as-expected"
+    test_exit_code = None
     try:
         apply_patch(repo_root, patch_file)
+        unchanged = [
+            relative
+            for p, relative in zip(abs_paths, rel_paths)
+            if p.read_bytes() == snapshots[p]
+        ]
+        if unchanged:
+            reason = "invert-did-not-change-every-path"
+            exit_code = 1
+            return exit_code
         proc = subprocess.run(
             args.test,
             shell=True,
@@ -132,30 +155,32 @@ def main() -> int:
             encoding="utf-8",
             errors="replace",
         )
+        test_exit_code = proc.returncode
         if proc.returncode == 0:
-            print("Sabotage failed: test passed with inverted code (expected non-zero)", file=sys.stderr)
+            reason = "test-passed-with-inverted-code"
             exit_code = 1
     except RuntimeError as exc:
-        print(str(exc), file=sys.stderr)
-        return 1
+        reason = f"invert-apply-failed: {exc}"
+        exit_code = 1
     finally:
         for p, content in snapshots.items():
-            p.write_text(content, encoding="utf-8")
+            p.write_bytes(content)
         if args.simulate_restore_failure:
-            abs_paths[0].write_text("CORRUPT", encoding="utf-8")
+            abs_paths[0].write_bytes(b"CORRUPT")
         restored = snapshot_restored(abs_paths, snapshots)
-        tracked = [rp for rp in rel_paths if (repo_root / rp).exists() and is_tracked(repo_root, rp)]
         if not restored:
-            git_restore(repo_root, tracked)
             for p, content in snapshots.items():
-                p.write_text(content, encoding="utf-8")
-            restored = snapshot_restored(abs_paths, snapshots)
-        if not restored:
-            if args.simulate_restore_failure:
-                print("Restore failure: simulated abort", file=sys.stderr)
-            else:
-                print("Restore failure: byte mismatch after restore; aborted", file=sys.stderr)
-            return 1
+                p.write_bytes(content)
+            reason = "restore-failure-simulated" if args.simulate_restore_failure else "restore-byte-mismatch"
+            exit_code = 1
+        emit({
+            "status": "passed" if exit_code == 0 else "failed",
+            "reason": reason,
+            "testAlias": matching_alias,
+            "testExitCode": test_exit_code,
+            "paths": rel_paths,
+            "restored": snapshot_restored(abs_paths, snapshots),
+        })
 
     return exit_code
 

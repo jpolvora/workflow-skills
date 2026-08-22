@@ -21,6 +21,12 @@ const root = path.resolve(__dirname, '..');
 
 const args = process.argv.slice(2);
 const shouldBump = args.includes('--bump');
+const shouldCheck = args.includes('--check');
+const unknownArgs = args.filter((arg) => !['--bump', '--check'].includes(arg));
+if (unknownArgs.length || (shouldBump && shouldCheck)) {
+  console.error('Usage: node bin/build-site.js [--bump|--check]');
+  process.exit(1);
+}
 
 // --- Version (package.json is canonical) ---
 const pkgPath = path.join(root, 'package.json');
@@ -70,8 +76,18 @@ if (shouldBump) {
   console.log(`Using package.json version: ${siteVersion} (pass --bump to patch-bump)`);
 }
 
-// --- 1. Parse AGENTS.md layer tables ---
-const agentsMd = fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf-8');
+// --- 1. Parse the bounded catalog companion ---
+const catalogPath = path.join(root, 'CATALOG.md');
+const agentsMd = fs.readFileSync(catalogPath, 'utf-8').replace(/\r\n?/g, '\n');
+if (/^(?:<{7}|={7}|>{7})/m.test(agentsMd)) {
+  console.error('CATALOG.md contains merge-conflict markers');
+  process.exit(1);
+}
+const featuresMd = fs.readFileSync(path.join(root, 'FEATURES.md'), 'utf-8');
+if (/^(?:<{7}|={7}|>{7})/m.test(featuresMd)) {
+  console.error('FEATURES.md contains merge-conflict markers');
+  process.exit(1);
+}
 
 const layerSections = [];
 const layerHeaderRe = /^### (Layer \d+) — (.+)$/gm;
@@ -353,6 +369,58 @@ for (const [key, layer] of sorted) {
 const indexPath = path.join(root, 'docs', 'index.html');
 let html = fs.readFileSync(indexPath, 'utf-8');
 
+const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">KB</div>
+        <h4 class="role-card-title">Context budgets and progressive disclosure</h4>
+      </div>
+      <p class="role-card-desc">Dispatches use bounded subagent contracts and indexed plan slices: an 18 KB fixed preamble, a 4 KB matched MEMORY slice, and a configurable 32 KB total context budget.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">AC</div>
+        <h4 class="role-card-title">AC ledger and derived scoring</h4>
+      </div>
+      <p class="role-card-desc">A machine-readable acceptance-criteria ledger links evidence, tasks, files, tests, findings, and sabotage outcomes. Standard Step 5 derives its score from that ledger, so agents cannot author or override it.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">N</div>
+        <h4 class="role-card-title">Atomic Node state runtime</h4>
+      </div>
+      <p class="role-card-desc">Portable Node helpers update workflow state atomically and publish deterministic <code>run.json</code>, <code>run.md</code>, plans-index, and progress artifacts for reliable resume and inspection.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">T</div>
+        <h4 class="role-card-title">Telemetry and deterministic reporting</h4>
+      </div>
+      <p class="role-card-desc">Per-step JSONL telemetry captures lifecycle, gate, skip, revision, and timing evidence. Aggregate and report commands summarize audit counts and median elapsed time by pipeline and step.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">G</div>
+        <h4 class="role-card-title">Gate granularity and adaptive convergence</h4>
+      </div>
+      <p class="role-card-desc">Choose step or phase gates, with phase mode capped at five blocking decisions. Adaptive polling uses observed check and thread state while preserving fail-closed verification and review convergence.</p>
+    </div>
+  <!-- efficiency-verifiability:end -->
+`;
+html = html.replace(
+  /  <!-- efficiency-verifiability:start -->[\s\S]*?  <!-- efficiency-verifiability:end -->\r?\n?/,
+  ''
+);
+const featuresStart = html.indexOf('<section id="features">');
+const featuresEnd = html.indexOf('</section>', featuresStart);
+const featuresGrid = html.indexOf('<div class="role-matrix-grid">', featuresStart);
+const featuresInsertAt = html.indexOf('\n', featuresGrid) + 1;
+if (featuresStart < 0 || featuresEnd < '</section>'.length || featuresGrid < 0 || featuresGrid > featuresEnd || featuresInsertAt <= 0) {
+  console.error('docs/index.html is missing the features grid');
+  process.exit(1);
+}
+html = html.slice(0, featuresInsertAt) + efficiencyFeatureBlock + html.slice(featuresInsertAt);
+
 // Remove Portuguese section entirely
 const catPtStart = html.indexOf('<section id="catalogo">');
 if (catPtStart !== -1) {
@@ -408,6 +476,10 @@ ${catalogHtml}  </div>
   </div>
 </section>`;
 
+if (catStart < 0 || catEnd < '</section>'.length) {
+  console.error('docs/index.html is missing the catalog section');
+  process.exit(1);
+}
 html = html.slice(0, catStart) + newSection + html.slice(catEnd);
 
 // --- Installation packages section (from skill-dependencies.json) ---
@@ -508,7 +580,18 @@ html = html.replace(
   `$1 &mdash; v${siteVersion} &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>\n</footer>`
 );
 
-fs.writeFileSync(indexPath, html);
+html = html.replace(/\r\n?/g, '\n');
+if (/^(?:<{7}|={7}|>{7})/m.test(html)) {
+  console.error('generated docs/index.html contains merge-conflict markers');
+  process.exit(1);
+}
+const currentHtml = fs.readFileSync(indexPath, 'utf8').replace(/\r\n?/g, '\n');
+const changed = currentHtml !== html;
+if (shouldCheck && changed) {
+  console.error('docs/index.html is stale; run node bin/build-site.js');
+  process.exit(1);
+}
+if (!shouldCheck && changed) fs.writeFileSync(indexPath, html, 'utf8');
 
 // --- 6. Report ---
-console.log(`✅ Site updated: ${totalSkills} skills across ${layerCount} layers`);
+console.log(`${shouldCheck ? 'Site is current' : changed ? 'Site updated' : 'Site unchanged'}: ${totalSkills} skills across ${layerCount} layers`);

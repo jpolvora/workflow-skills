@@ -1,6 +1,6 @@
 ---
 name: ws-patterns-frontend
-version: 0.3.28
+version: 0.3.29
 description: Frontend UI/UX patterns & component preferences engine — consults frontend.md before frontend tasks and records learned UI/UX conventions after implementation or user corrections.
 invocation_names:
   - ws-patterns-frontend
@@ -11,7 +11,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-patterns-frontend loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 **Bidirectional pattern engine** — `{sharedDir}/frontend.md` is both input (consult before frontend tasks) and output (record learned preferences after work or user corrections).
 
@@ -56,3 +56,11 @@ When completing frontend tasks or receiving UI/frontend corrections from the use
 
 - Pre-work: `{sharedDir}/frontend.md` read and applied to frontend edits.
 - Completion: User prompted via `user-gate` if new preference identified, and entry appended to `{sharedDir}/frontend.md` if approved; or proof line `Frontend Patterns: Consulted`.
+
+## Subagent contract
+
+- Read the configured frontend pattern file before touching UI paths.
+- Apply only rules whose path or component context matches the assignment.
+- Do not invent a project preference when the pattern file is silent.
+- Ask before recording a newly observed preference.
+- Return `pattern_consult` with the source path and applied rule titles.

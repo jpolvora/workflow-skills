@@ -33,7 +33,7 @@ python .agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py \
 # (ado-workitem-to-spec.py emits the base spec of record; ws-write-spec enhances with agentic ACs)
 
 # 3. Workflow copy → {plansDir}/us-{id}/step-00-us-{id}.spec.md (keeps source: azure-devops)
-python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
+node .agents/skills/ws-local-spec-provider/scripts/register_local_spec.cjs \
   --input {specsDir}/us-{id}.spec.md --source azure-devops
 ```
 
@@ -43,7 +43,7 @@ python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
 | Agentic Reformulation | `ws-write-spec` reformulates and enhances raw work item descriptions into unambiguous, testable ACs while preserving human text in `## Original Issue Context` |
 | Re-fetch over an existing run | The converter (Step 2) refuses first when the spec of record differs (`--force` on the converter), and Step 3 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
 | Explicit paths | `--output` (converter) / `--specs-dir` / `--plans-dir` (register) override the config-resolved defaults |
-| Promotion owner | `register_local_spec.py` from [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) is the single promotion primitive for every provider |
+| Promotion owner | `register_local_spec.cjs` from [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) is the invoked promotion primitive for every provider; Python equivalent remains supported |
 
 
 ## `sweep-prior-work`

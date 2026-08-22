@@ -1,7 +1,7 @@
 ---
 name: ws-local-spec-provider
 description: Local Markdown spec provider — detects, normalizes, and registers hand-written *.spec.md feature specifications into canonical pipeline artifacts.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - local-spec-provider
@@ -12,11 +12,11 @@ invocation_names:
 
 > When this skill is loaded, output "ws-local-spec-provider loaded."
 
-**Entry check:** Verify `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) (or invoke it now).
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/`), then register/normalize any `*.spec.md` into **two ordered artifacts** — spec of record `{specsDir}/{slug}.spec.md`, then workflow copy `{us-dir}/step-00-{slug}.spec.md`. No remote trackers.
 
-**Promotion primitive:** this skill's `register_local_spec.py` is the **single** promotion path for every provider. Specs of record written under `{specsDir}` (drafted or enhanced via [`ws-write-spec`](../ws-write-spec/SKILL.md) for local or tracker origins) are promoted to the canonical workflow copy `{us-dir}/step-00-{slug}.spec.md` with `--source {origin}`, so `source:` reflects the real origin.
+**Promotion primitive:** this skill's `register_local_spec.cjs` is the **single invoked** promotion path for every provider. Specs of record written under `{specsDir}` (drafted or enhanced via [`ws-write-spec`](../ws-write-spec/SKILL.md) for local or tracker origins) are promoted to the canonical workflow copy `{us-dir}/step-00-{slug}.spec.md` with `--source {origin}`, so `source:` reflects the real origin. The Python helper remains a supported frozen equivalent.
 
 **Specs family:** Role = bridge `{specsDir}` ↔ `{us-dir}` (register / fetch-to-spec). Drafts and reformulations come from [`ws-write-spec`](../ws-write-spec/SKILL.md) or hand-written files; format SoT [`ws-spec-format`](../ws-spec-format/SKILL.md). Orch entry for local files. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
@@ -84,10 +84,10 @@ Registering never leaves a workflow copy without a spec of record.
 ## Scripts (Done when)
 
 ```bash
-python {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.py --validate   # validate-auth
-python {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.py --detect [--ensure]
-python {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.py --configure specs
-python {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.py \
+node {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.cjs --validate   # validate-auth
+node {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.cjs --detect [--ensure]
+node {skillsRoot}/ws-local-spec-provider/scripts/detect_specs_dir.cjs --configure specs
+node {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs \
   --input path/to/feature.spec.md [--slug feature] [--source github] [--force]
 ```
 

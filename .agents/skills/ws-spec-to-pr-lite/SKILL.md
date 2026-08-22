@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.28
+version: 0.3.29
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -26,9 +26,9 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 1. **Isolation:** `workflowType: lite` — never cross-resume with `standard`.
 2. **Execution:** Inline in main session (no subagent dispatch).
-3. **State & Telemetry:** Run `python {skillsRoot}/ws-spec-to-pr-lite/scripts/update_state.py` each step with measured `--elapsed` and `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. Missing telemetry → **HS-5**.
+3. **State & Telemetry:** Run `node {skillsRoot}/ws-spec-to-pr-lite/scripts/update_state.cjs dispatch` before each inline step and `finish` afterward with `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`; elapsed time is derived from those timestamps and authored `--elapsed` is rejected. Missing telemetry → **HS-5**.
 4. **Artifacts:** `step-00` spec · `step-01` plan · `step-08` result (shared names with standard).
-5. **Commits & Cleanup:** Required **G2-code after Step 2 before Step 3**; second G2-code after Step 3 review-fix if product files remain (`commit-code`, path-scoped `files_touched` — [`gates.md`](../ws-shared/gates.md) § Required G2-code save points). Configured delivery artifacts at Step 4 G2-delivery (`defaults.deliveryCommitArtifacts` / [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8). On `status → completed`, run Phase A git cleanup: `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
+5. **Commits & Cleanup:** Required **G2-code after Step 2 before Step 3**; second G2-code after Step 3 review-fix if product files remain (`commit-code`, path-scoped `files_touched` — [`gates.md`](../ws-shared/gates.md) § Required G2-code save points). Configured delivery artifacts at Step 4 G2-delivery (`defaults.deliveryCommitArtifacts` / [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8). On `status → completed`, follow [`artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md) Phase A: `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
 6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Phase model preferences (`plannerModel` [Steps 0–1], `executionModel` [Step 2], `reviewerModel` (Step 3)) are resolved only for telemetry recording. Do **not** read or apply `defaults.testingModel` (standard Step 7 only).
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
@@ -54,10 +54,10 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 ## Post-Mutating Transition Sequence (Steps 0–4 → 1–5)
 
 After completing step N (0..4), before step N+1:
-1. **State Hygiene:** `update_state.py` with measured `--elapsed`, file lists, `--gate-choice`, `--jsonl-out`, and `--bypassed` (if `skipQualityGates`).
+1. **State Hygiene:** `update_state.cjs` dispatch/finish with file lists, structured `--gate-decision`, and `--jsonl-out`; use its `bypass` operation when `skipQualityGates`.
 2. **G2-code after Step 2 before Step 3** (required; skip if empty stage). After Step 3 review-fix: G2-code if product files remain. Algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points / [`tools.md`](../ws-shared/tools.md) `commit-code`. Fail-closed: uncommitted workflow product files → do not dispatch Step 3 `ws-code-review`. `dryRun` simulates only. Other steps: skip.
 3. **Checkpoint:** `git tag uswf/{workflow-id}/before-step-{N+1}` @ HEAD **after** any G2-code.
-4. **Pre-Advance CI:** Unless `skipQualityGates`, run `python {skillsRoot}/ws-spec-to-pr-lite/scripts/validate_state.py {plansDir}/{slug}/{workflow-id}.state.md --pre-advance {N+1}`. Exit code > 0 → **HS-5** (STOP). Does **not** skip G2-code.
+4. **Pre-Advance CI:** Unless `skipQualityGates`, run `node {skillsRoot}/ws-spec-to-pr-lite/scripts/validate_state.cjs {plansDir}/{slug}/{workflow-id}.state.md --pre-advance {N+1}`. Exit code > 0 → **HS-5** (STOP). Does **not** skip G2-code.
 5. **Progress Board:** Display board → transition gate → proceed to step N+1.
 
 ## Step 0 — Pipeline Classifier

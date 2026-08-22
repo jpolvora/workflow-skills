@@ -191,6 +191,6 @@
     "enabled": true,
     "autoAudit": true,
     "autoDetectDomain": true,
-    "auditVerdictsBlockShip": true
+    "auditVerdictsBlockShip": "refuted"
   }
 }

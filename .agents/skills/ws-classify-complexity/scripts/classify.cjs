@@ -17,8 +17,8 @@ const DEFAULT_THRESHOLDS = {
 
 const SCRIPT_DIR = __dirname;
 const {
-  resolveRepoRoot,
-  sharedDir,
+  resolveConsumerContext,
+  toRepoRelative,
 } = require(path.resolve(SCRIPT_DIR, '..', '..', 'ws-shared', 'scripts', 'resolve_consumer_root.cjs'));
 
 function usage() {
@@ -84,23 +84,6 @@ function splitFrontmatter(content) {
   return { frontmatter: parseFrontmatter(match[1]), body: match[2] };
 }
 
-function findRepoRoot(startDir) {
-  let dir = path.resolve(startDir);
-  for (let depth = 0; depth < 12; depth += 1) {
-    if (
-      fs.existsSync(path.join(dir, '.git')) ||
-      fs.existsSync(path.join(dir, 'package.json')) ||
-      fs.existsSync(path.join(dir, '.agents'))
-    ) {
-      return dir;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return path.resolve(startDir);
-}
-
 function loadJsonIfExists(filePath) {
   if (!fs.existsSync(filePath)) return null;
   try {
@@ -111,14 +94,10 @@ function loadJsonIfExists(filePath) {
   }
 }
 
-function loadConfig() {
-  const repoRoot = resolveRepoRoot(process.env.WS_REPO_ROOT || null, {
-    scriptFile: __filename,
-  });
-  const sharedDirPath = sharedDir(repoRoot);
-  const configPath = path.join(sharedDirPath, 'config.json');
-  const examplePath = path.join(sharedDirPath, 'config.json.example');
-  const config = loadJsonIfExists(configPath) || loadJsonIfExists(examplePath) || {};
+function loadConfig(context) {
+  const configPath = context.configPath;
+  const examplePath = path.join(context.sharedDir, 'config.json.example');
+  const config = context.config || loadJsonIfExists(examplePath) || {};
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(config.dagThresholds || {}) };
   const scoreAndRefine = Boolean(config.defaults && config.defaults.scoreAndRefine);
   return {
@@ -383,6 +362,7 @@ function buildClassifyMarkdown({
   scoreAndRefine,
   scoreSection,
   reasoning,
+  executionProfile,
 }) {
   const now = new Date().toISOString();
   const lines = [
@@ -404,6 +384,12 @@ function buildClassifyMarkdown({
     '|--------------|------|',
     '| `lite` | `ws-spec-to-pr-lite` — fast sequential Steps 0–5 |',
     '| `standard` | `ws-spec-to-pr` — full Steps 0–9 |',
+    '',
+    '## Execution profile',
+    '',
+    '| Decision | Value | Reason |',
+    '|---|---|---|',
+    ...Object.entries(executionProfile).map(([key, item]) => `| ${key} | \`${item.value}\` | ${item.reason} |`),
     '',
     '## Metrics',
     '',
@@ -460,7 +446,8 @@ function main() {
     process.exit(1);
   }
 
-  const specPath = path.resolve(findRepoRoot(process.cwd()), args.specPath);
+  const context = resolveConsumerContext({ repoRoot: process.env.WS_REPO_ROOT || undefined, scriptFile: __filename });
+  const specPath = path.resolve(context.repoRoot, args.specPath);
   if (!fs.existsSync(specPath)) {
     console.error(`Error: spec file not found: ${specPath}`);
     process.exit(1);
@@ -471,7 +458,7 @@ function main() {
   const slug = inferSlug(specPath, frontmatter);
   const title = frontmatter.title || slug;
 
-  const { config, thresholds, scoreAndRefine, configSource } = loadConfig();
+  const { config, thresholds, scoreAndRefine, configSource } = loadConfig(context);
 
   const specLayers = countSpecLayers(body);
   const configLayers = countConfigLayers(config);
@@ -514,7 +501,7 @@ function main() {
   }
 
   if (args.scoreAnalysis) {
-    const analysisPath = path.resolve(findRepoRoot(process.cwd()), args.scoreAnalysis);
+    const analysisPath = path.resolve(context.repoRoot, args.scoreAnalysis);
     if (!fs.existsSync(analysisPath)) {
       console.error(`Warning: score-analysis file not found: ${analysisPath}`);
       scoreSection = 'deferred (score-analysis path provided but file missing)';
@@ -554,10 +541,38 @@ function main() {
   }
 
   const outputDir = args.outputDir
-    ? path.resolve(findRepoRoot(process.cwd()), args.outputDir)
+    ? path.resolve(context.repoRoot, args.outputDir)
     : path.dirname(specPath);
   fs.mkdirSync(outputDir, { recursive: true });
 
+  const execMode = config.defaults?.enableDag === true && recommendedPipeline === 'standard' && !thresholdResult.allWithin ? 'dag' : 'sequential';
+  const openQuestions = /##\s+Open Questions[\s\S]*?(?:^##\s+|$)/mi.test(body)
+    && !/##\s+Open Questions\s*\n\s*(?:none|n\/a|-\s*\[x\])/i.test(body);
+  const runInterview = recommendedPipeline === 'standard' && (metrics.layers > 2 || openQuestions);
+  const runTesting = config.defaults?.skipTesting !== true;
+  const aggregateFile = path.resolve(context.repoRoot, config.telemetry?.aggregateFile || path.join(config.plans?.dir || '.agents/plans', 'telemetry', 'aggregate.json'));
+  const aggregate = loadJsonIfExists(aggregateFile);
+  const storedEstimate = Number(aggregate?.medians?.[recommendedPipeline]?.runElapsedSec || 0);
+  const estimatedElapsedSec = storedEstimate || (recommendedPipeline === 'standard' ? 900 : 300);
+  const executionProfile = {
+    pipeline: { value: recommendedPipeline, reason: reasoningParts.join(' ') },
+    execMode: {
+      value: execMode,
+      reason: execMode === 'dag' ? 'DAG is enabled and the spec exceeds at least one configured threshold.' : 'DAG is disabled, the pipeline is lite, or all metrics fit the sequential threshold.',
+    },
+    runInterview: {
+      value: runInterview,
+      reason: runInterview ? 'Standard execution has open questions or more than two detected layers.' : 'No interview trigger was detected by the classifier; MEMORY may still force it later.',
+    },
+    runTesting: {
+      value: runTesting,
+      reason: runTesting ? 'Testing is enabled; the machine test-surface probe makes the final skip decision.' : 'Project defaults explicitly disable testing.',
+    },
+    estimatedElapsedSec: {
+      value: estimatedElapsedSec,
+      reason: storedEstimate ? 'Sourced from completed-run telemetry median.' : 'No stored median exists; using the published pipeline fallback.',
+    },
+  };
   const outPath = path.join(outputDir, `step-00-${slug}.classify.md`);
   const markdown = buildClassifyMarkdown({
     slug,
@@ -568,10 +583,11 @@ function main() {
     metrics,
     thresholds,
     within: thresholdResult.within,
-    configSource: path.relative(findRepoRoot(process.cwd()), configSource) || configSource,
+    configSource: toRepoRelative(context.repoRoot, configSource, { allowOutside: true }),
     scoreAndRefine,
     scoreSection,
     reasoning: reasoningParts.join(' '),
+    executionProfile,
   });
 
   fs.writeFileSync(outPath, markdown, 'utf8');
@@ -581,13 +597,14 @@ function main() {
     recommendedPipeline,
     thresholdPipeline: thresholdResult.pipeline,
     scoreAdjusted,
-    classifyPath: outPath,
+    classifyPath: toRepoRelative(context.repoRoot, outPath, { allowOutside: true }),
     metrics,
     thresholds,
+    executionProfile,
   };
 
   console.log(JSON.stringify(result, null, 2));
-  console.log(`Wrote ${outPath}`);
+  console.log(`Wrote ${toRepoRelative(context.repoRoot, outPath, { allowOutside: true })}`);
 }
 
 main();

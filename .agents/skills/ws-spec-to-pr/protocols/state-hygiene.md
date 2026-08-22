@@ -2,35 +2,41 @@
 
 After step N, before the progress board, the orchestrator MUST execute State Hygiene.
 
-**Applies in `autoMode` / `fullMode` / `dryRun` the same as normal.** Skipping hygiene or omitting `--elapsed` → **HS-5**.
+**Applies in `autoMode` / `fullMode` / `dryRun` the same as normal.** Skipping hygiene or a missing dispatch/finish boundary → **HS-5**.
 
 ## Automated update
 
 ```bash
-python {skillsRoot}/ws-spec-to-pr/scripts/update_state.py \
+node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs dispatch \
+  {plansDir}/{slug}/{workflow-id}.state.md \
+  --step {N} \
+  --model {modelName} \
+  --jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl
+
+node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --step {N} \
   --status {completed|failed|skipped} \
-  --elapsed {elapsedSec} \
-  --tokens {promptTokens}:{completionTokens} \
   --model {modelName} \
+  --prompt-tokens {promptTokens} \
+  --completion-tokens {completionTokens} \
   --created "{comma_separated_created_files}" \
   --modified "{comma_separated_modified_files}" \
   --deleted "{comma_separated_deleted_files}" \
-  --gate-choice "{gateChoice}" \
+  --gate-decision '{"gate":"transition","choice":"{choice}","reason":"{reason}","round":{round}}' \
   --jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl
 ```
 
-`--jsonl-out` is **mandatory** on every `update_state` call (zero-padded `NN` = step number). Creates `{plansDir}/{slug}/telemetry/` lazily. When `--skip-gates` or `config.json.invariants.skipQualityGates` is active, add `--bypassed`.
+`--jsonl-out` is **mandatory** on every call (zero-padded `NN` = step number). Creates `{plansDir}/{slug}/telemetry/` lazily. When quality gates are bypassed, run the `bypass` operation with `--gate` and `--reason`.
 
-### `--elapsed` (mandatory)
+### Measured elapsed time
 
 | Status | Rule |
 |--------|------|
-| `completed` / `failed` | `--elapsed` **required** (integer ≥ 0). Measure agent wall-clock for the step (dispatch → step-output). **Do not omit** (script rejects missing flag). **Do not invent 0** unless the step truly finished in under 1s. |
-| `skipped` | `--elapsed 0` allowed (script defaults to 0 when status is skipped). |
+| `completed` / `failed` | The helper derives `elapsedSec` from persisted dispatch and finish timestamps; authored `--elapsed` is rejected. |
+| `skipped` | Same derivation; use a closed `--reason` enum and machine evidence. |
 
-Source: `step-output.telemetry.elapsedSec`. Missing telemetry on a completed/failed step → **HS-5** before Progress Board.
+Missing dispatch or finish telemetry sets `estimated: true`; report that honestly and never author a duration.
 
 Script also:
 
@@ -38,11 +44,11 @@ Script also:
 - Upserts `## Telemetry log` table row in the state body
 - Appends `## Gate history` line
 
-## Manual fallback (if Python unavailable)
+## Manual fallback
 
 ```yaml
 - Refresh currentModel from executing session model (unknown if unavailable). If changed vs prior, log model-change | step {N} | {old} → {new} | ISO in ## Gate history. Ignore leftover modelChain.
-- Pass resolved phase model (or executing session model) into --model {modelName} when calling update_state.py (recorder only; not a user override flag)
+- Pass the resolved phase model (or executing session model) into `--model {modelName}` when calling `update_state.cjs` (recorder only; not a user override flag)
 - Append ## Step outputs ### Step N (include model: {modelName} in block)
 - Append step-output.learning → ## Workflow memory (dedupe)
 - Merge files_touched → ## Step file log ### Step N
@@ -59,7 +65,7 @@ Script also:
 After `update_state` and checkpoint tag `uswf/{workflow-id}/before-step-{N+1}`, run as a **shell command** (not `dispatch-agent`):
 
 ```bash
-python {skillsRoot}/ws-spec-to-pr/scripts/validate_state.py \
+node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --pre-advance {N+1}
 ```

@@ -1,7 +1,7 @@
 ---
 name: ws-audit
 description: Runtime workflow audit observer — logs script/tool/I/O/dispatch anomalies, diagnoses performance bottlenecks, detects disposable scratch scripts, and proposes upstream GitHub issues and reusable tooling.
-version: 0.3.28
+version: 0.3.29
 disable-model-invocation: true
 invocation_names:
   - audit
@@ -51,7 +51,7 @@ Resolution: missing config, omitted key, null, or unreadable → `false`. See [`
    Persist returned `session` JSON in workflow state (`auditSession`) or active context.
 
 2. **Append** after notable events:
-   - **Script execution errors (mandatory):** whenever any managed script, provider helper (e.g. `fix_pr_azure_context.py`, `fetch_threads.cjs`, `ado-workitem-to-spec.py`), SCM wrapper, state manager (`update_state.py`, `validate_state.py`), or verification script fails with a non-zero exit code, unhandled exception, bad CLI argument/option, or stderr error. Log with `category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`.
+   - **Script execution errors (mandatory):** whenever any managed script, provider helper, SCM wrapper, Node state manager (`update_state.cjs`, `validate_state.cjs`), or verification script fails with a non-zero exit code, unhandled exception, bad CLI argument/option, or stderr error. Log with `category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`.
    - **Anomalies / Errors:** tool mismatch, missing handoff artifact, unusual dispatch.
    - **Opportunities / Suggestions:** agent writing disposable scratch scripts (`scratch/*`, `tmp/*`, inline helpers for parsing/filtering/querying that could be pre-generated upstream), redundant command executions, inefficient polling loops, unhandled stderr warnings or fragile shell pipelines.
 

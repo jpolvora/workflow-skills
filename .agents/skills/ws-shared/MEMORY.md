@@ -6,6 +6,42 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-21] Windows fsync EPERM on read-only temp files
+- **Layer**: `Infrastructure`
+- **Module**: `ws-goal-loop / convergence.cjs atomicWrite`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/**/scripts/*.cjs, **atomicWrite**`
+- **Scenario / Context**: `atomicWrite` wrote the temp file then `openSync(..., 'r')` + `fsyncSync`. On Windows that read-only handle returns `EPERM: operation not permitted, fsync`, so round-log writes aborted and left `.tmp-<pid>` files.
+- **DO NOT**: `fsyncSync` a descriptor opened with `'r'`, or treat fsync `EPERM`/`EINVAL` as a fatal write failure on Windows/sandboxed volumes.
+- **INSTEAD DO**: Open the temp file with `'w'`, write, best-effort `fsyncSync` (ignore `EPERM`/`EINVAL`), close, then rename onto the destination.
+
+### [2026-08-21] Sabotage restore proof vs whole-tree HEAD
+- **Layer**: `Infrastructure`
+- **Module**: `ws-testing / run_sabotage.py`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-testing/scripts/run_sabotage.py, test/test-hermes-spec-to-pr-enhancements.js`
+- **Scenario / Context**: Proving sabotage restore with `git diff` vs HEAD on the whole working tree false-aborts when other tracked files are already dirty (typical Step 5 uncommitted product files). Invert tests that only run `false` / `exit /b 1` never bite production logic.
+- **DO NOT**: Treat whole-tree `git diff` vs HEAD as restore success, or use a no-op invert command as the only invert proof.
+- **INSTEAD DO**: Snapshot sabotaged `--paths` bytes, restore from that snapshot, and prove invert with a content-aware failing test. Fail closed on apply/restore errors without appending patch text into source files.
+
+### [2026-08-21] Node port tests must migrate with runtime recipes
+- **Layer**: `Harness`
+- **Module**: `Node helper ports and resolver tests`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/**, test/test-*.js`
+- **Scenario / Context**: Porting orchestrator surfaces from Python to Node left existing tests asserting Python launcher text, used an invalid no-newline sabotage patch, and exposed an off-by-one script-root traversal in the shared Node resolver.
+- **DO NOT**: Change a shipped runtime recipe without migrating its focused launcher/fixture assertions, or count parents from a script file without testing the project-local installed layout.
+- **INSTEAD DO**: Update the runtime and its focused tests in the same batch, use syntactically valid invert patches, and prove resolver precedence from nested and project-local fixture roots.
+
+### [2026-08-21] Cooperative fix must sweep the defect class
+- **Layer**: `Harness`
+- **Module**: `ws-fix-pr / COOPERATIVE_FIX`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-fix-pr/**, .agents/skills/ws-goal-fix-pr/SKILL.md`
+- **Scenario / Context**: Reviewer threads often flag one file:line plus similar occurrences. Resolving after patching only the anchor left the same false-green or untyped-schema class elsewhere, so the next review round re-opened siblings.
+- **DO NOT**: Close a review thread after fixing only the anchored instance when the body names extra paths or a grep would find the same class.
+- **INSTEAD DO**: Name the defect class, grep repo-wide (and every path the thread already listed), fix in-scope hits in the same round, and record path+reason for any skip.
+
 ### [2026-08-19] Missing MEMORY.md must not HS-5 the pipeline
 - **Layer**: `Infrastructure`
 - **Module**: `ws-spec-to-pr / check_memory_conflict.py / STEP-DISPATCH`

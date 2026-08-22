@@ -1,6 +1,6 @@
 ---
 name: ws-tdah
-version: 0.3.28
+version: 0.3.29
 description: Action-first reply shape and operational judgment. Trigger via /ws-tdah, /tdah, or start ws-tdah (autoload in upstream dogfood hubs).
 invocation_names:
   - tdah
@@ -68,3 +68,11 @@ Code, commits, PRs: normal prose. Skill bodies / gates / banners: en-us.
 ## Before send
 
 Action-first line; numbered steps if multi-step; state restated; one next step; ≤5 list items; no preamble/recap/closer/tangent; no em dash; challenge weak plans; verify risky facts; MEMORY via `ws-self-learning` when mutating work.
+
+## Subagent contract
+
+- Lead the handoff with outcome or blocker.
+- Use numbered items only when multiple actions remain.
+- Keep evidence concrete: paths, checks, and exit codes.
+- End with one next action owned by the caller.
+- Omit greetings, recap, filler, and speculative completion claims.

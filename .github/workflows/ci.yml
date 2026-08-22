@@ -25,7 +25,7 @@ jobs:
         run: npm run verify-integrity
 
       - name: Verify site generator
-        run: node bin/build-site.js
+        run: node bin/build-site.js --check
 
       - name: Install ripgrep
         run: |
@@ -34,4 +34,7 @@ jobs:
           rg --version
 
       - name: Run workflow skills test suite
-        run: npm run tests -- --local
+        run: npm run test
+
+      - name: Simulate workflow state machines
+        run: python .agents/skills/ws-check-workflows/scripts/check_workflows.py
