@@ -64,7 +64,7 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
    Do not pass `--limit` to list scripts (cap after skip).
    - Done when: stdout JSON parsed (empty array OK).
 
-3. **Skip existing** — Drop any id where `{specsDir}/us-{id}.spec.md` already exists. Then apply `--limit N` to the remaining set only.
+3. **Skip existing** — Drop any id when **either** `{specsDir}/us-{id}.spec.md` **or** `{plansDir}/us-{id}/step-00-us-{id}.spec.md` exists (already promoted / registered). Then apply `--limit N` to the remaining set only.
    - Done when: `to_import` and `skipped` lists are fixed.
 
 4. **Confirm** — Unless `--dry-run`: `user-gate` with count + up to 10 titles. **Import (Recommended)** / **Cancel**. Cancel → **STOP**. `--dry-run`: print `to_import` + `skipped`; **STOP** (no writes).
@@ -91,7 +91,7 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
 
 - en-us; path tokens only; explicit `python` / `node` launchers.
 - Never invent tracker ids; never embed tokens; never `git add` / commit.
-- Skip existing `{specsDir}` specs — no `--force` in this skill.
+- Skip when `{specsDir}/us-{id}.spec.md` or `{plansDir}/us-{id}/step-00-us-{id}.spec.md` exists — no `--force` in this skill.
 - Full register (1B): every successful import writes `{us-dir}/step-00-us-{id}.spec.md`.
 - Full write-spec (5B): every successful import is agentically enhanced, not converter-only.
 

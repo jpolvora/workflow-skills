@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 15:10] Agent: Composer
+- **Prompt**: goal-fix PR #230 remaining review threads (skip-existing / plan step-00)
+- **Done**: Skip filter also treats `{plansDir}/us-{id}/step-00-us-{id}.spec.md` as existing; evals aligned
+- **Result**: Ready to resolve threads and merge #230
+
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
 ### [2026-08-22 19:02] Agent: Composer

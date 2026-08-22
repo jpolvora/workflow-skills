@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "Import all open GitHub issues into local specs for later multi-spec.",
-      "expected_output": "Resolves github from config, lists via list_open_issues.py, skips existing {specsDir}/us-{id}.spec.md, write-spec enhance + register_local_spec per id.",
+      "expected_output": "Resolves github from config, lists via list_open_issues.py, skips existing {specsDir}/us-{id}.spec.md or {plansDir}/us-{id}/step-00-us-{id}.spec.md, write-spec enhance + register_local_spec per id.",
       "assertions": [
         "Agent loads ws-spec-from-provider",
         "Uses python launcher on scripts/list_open_issues.py",
