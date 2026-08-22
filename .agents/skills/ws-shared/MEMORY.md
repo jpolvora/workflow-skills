@@ -69,6 +69,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Call `detect_repository` (or require an ADO `_git` remote) on `--dry-run` resolve-thread.
 - **INSTEAD DO**: Skip remote detection when `dry_run` is set; parse a repo name from any `url=` remote; run the dry-run spawn with `python3` on non-Windows.
 
+### [2026-08-22] Authoring Assumptions table needs a data row
+- **Layer**: `Harness`
+- **Module**: `ws-spec-format / validate_spec.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-format/scripts/validate_spec.cjs, test/test-spec-validation.js, .agents/skills/ws-spec-format/FORMAT.md`
+- **Scenario / Context**: `--mode=authoring` already rejected an empty Out of Scope table but accepted a header-only Assumptions table
+- **DO NOT**: Treat a heading plus header row as closure when Chosen default / Rationale rows are absent
+- **INSTEAD DO**: Fail authoring (and warn in compat) when Assumptions has zero data rows; cover it in `test-spec-validation.js`
+
 ### [2026-08-21] Windows fsync EPERM on read-only temp files
 - **Layer**: `Infrastructure`
 - **Module**: `ws-goal-loop / convergence.cjs atomicWrite`

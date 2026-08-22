@@ -106,6 +106,9 @@ function closureFindings(text) {
     const rows = tableAfterHeading(text, '## Assumptions & Open Questions');
     const header = rows[0] || [];
     const data = rows.slice(1);
+    if (!data.length) {
+      errors.push({ code: 'assumptions-empty', message: 'Assumptions & Open Questions must include at least one data row.' });
+    }
     const defaultIdx = header.findIndex((cell) => /chosen default/i.test(cell));
     const rationaleIdx = header.findIndex((cell) => /^rationale$/i.test(cell));
     const chosenAt = defaultIdx >= 0 ? defaultIdx : 1;
@@ -157,6 +160,10 @@ function validate(text, options) {
     if (headingPresent(text, '## Out of Scope')) {
       const data = tableAfterHeading(text, '## Out of Scope').slice(1);
       if (!data.length) warnings.push({ code: 'out-of-scope-empty', message: 'Out of Scope has zero data rows.' });
+    }
+    if (headingPresent(text, '## Assumptions & Open Questions')) {
+      const data = tableAfterHeading(text, '## Assumptions & Open Questions').slice(1);
+      if (!data.length) warnings.push({ code: 'assumptions-empty', message: 'Assumptions & Open Questions has zero data rows.' });
     }
   }
   return { ok: errors.length === 0, mode: options.mode, errors, warnings, acceptanceCriteria: rows.map((row) => row[1]) };

@@ -90,7 +90,7 @@ Markdown table with columns **Feature** and **Reason**. At least one data row. N
 
 ### Assumptions & Open Questions
 
-Markdown table with columns **Assumption**, **Chosen default**, **Rationale**, and **Confirmed**. Every data row must have a non-empty, non-placeholder Chosen default and Rationale. Collapse dimensions that do not apply into one row whose Chosen default or Rationale starts with `N/A because`.
+Markdown table with columns **Assumption**, **Chosen default**, **Rationale**, and **Confirmed**. At least one data row. Every data row must have a non-empty, non-placeholder Chosen default and Rationale. Collapse dimensions that do not apply into one row whose Chosen default or Rationale starts with `N/A because`.
 
 ### Implicit-requirement dimensions
 

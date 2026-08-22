@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 17:20] Agent: Cursor Grok 4.6
+- **Prompt**: goal-fix-pr #231 round 2 (empty Assumptions table)
+- **Done**: authoring fails when Assumptions has zero data rows; compat warns; FORMAT + test
+- **Result**: Specify-time closure cannot skip defaults via a header-only Assumptions table
+
 ### [2026-08-22 17:15] Agent: Cursor Grok 4.6
 - **Prompt**: goal-fix-pr #231 review threads (MEMORY compile + patterns headers)
 - **Done**: self_learning.cjs heading separators and scenario backticks; dogfood backend.md/frontend.md consult `ws-patterns`; tests + compile

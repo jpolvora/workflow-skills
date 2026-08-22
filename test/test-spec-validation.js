@@ -76,6 +76,17 @@ const emptyOut = write(path.join(root, 'empty-out.spec.md'), `${fs.readFileSync(
 `);
 assert.notStrictEqual(run(script, [emptyOut, '--mode=authoring']).status, 0, 'authoring fails when Out of Scope has zero data rows');
 
+const emptyAssumeTable = write(path.join(root, 'empty-assume-table.spec.md'), `${fs.readFileSync(valid, 'utf8')}
+## Out of Scope
+| Feature | Reason |
+|---------|--------|
+| Shim folders | Latest layout only |
+## Assumptions & Open Questions
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+`);
+assert.notStrictEqual(run(script, [emptyAssumeTable, '--mode=authoring']).status, 0, 'authoring fails when Assumptions has zero data rows');
+
 const compat = run(script, [valid, '--modification']);
 assert.strictEqual(compat.status, 0, 'compat omits --mode and does not fail missing closure');
 assert.match(compat.stderr, /WARN:[\s\S]*Out of Scope/i);
