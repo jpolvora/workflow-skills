@@ -24,41 +24,11 @@
     {
       "id": 3,
       "prompt": "A review thread on validate-evals.cjs says the gate claims schema validation but never reads the schema, and notes the same pattern in a copied helper.",
-      "expected_output": "Defect class named; proactive discovery; both occurrences fixed or skipped with path+reason before resolve.",
+      "expected_output": "Defect class named; sibling grep; both occurrences fixed or skipped with path+reason before resolve.",
       "assertions": [
         "Agent names a defect class, not only the anchored file:line",
-        "Agent runs proactive discovery (code grep and context) before resolving the thread",
+        "Agent searches for sibling occurrences before resolving the thread",
         "Agent does not close the thread while named sibling paths remain unfixed without an exemption"
-      ]
-    },
-    {
-      "id": 4,
-      "prompt": "A review thread on src/auth/token.cjs flags missing null checks; grep finds the same unchecked access in src/auth/refresh.cjs (not named in the thread).",
-      "expected_output": "Second same-class path fixed or explicitly skipped with path+reason; proactive report fields recorded before resolve.",
-      "assertions": [
-        "Agent fixes refresh.cjs or records proactiveSkipped with path and reason",
-        "Agent records defectClass and proactiveFixed or proactiveSkipped on plan-gate or resolution",
-        "Agent does not resolve after fixing only token.cjs when refresh.cjs remains unfixed without a skip"
-      ]
-    },
-    {
-      "id": 5,
-      "prompt": "A review thread flags a small typo in one helper; proactive grep finds the same typo class in a large legacy module that would require a cross-package refactor.",
-      "expected_output": "Small hit fixed; large hit recorded under proactiveSkipped with path+reason; class not marked fully cleared.",
-      "assertions": [
-        "Agent applies the size gate: fixes the local hit and skips the large refactor with an explicit reason",
-        "Agent lists the skipped path under proactiveSkipped, not silent omission",
-        "Agent does not claim the defect class is fully cleared when a same-class hit was skipped"
-      ]
-    },
-    {
-      "id": 6,
-      "prompt": "Fix PR threads in a consumer repo with no MEMORY.md under ws-shared.",
-      "expected_output": "Fix-pr proceeds; MEMORY consult-skipped recorded in sourcesConsulted; not a fatal error.",
-      "assertions": [
-        "Agent does not abort fix-pr because MEMORY.md is missing",
-        "Agent records memory consult-skipped in sourcesConsulted",
-        "Agent still runs code and context proactive discovery before resolve"
       ]
     }
   ]

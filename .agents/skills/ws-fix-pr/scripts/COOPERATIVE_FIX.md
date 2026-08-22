@@ -18,55 +18,18 @@ These runtimes are **independent** (no code import or coupling). This contract a
 3. **Surgical, class-wide** — touch only what the defect requires, but fix the **defect class**, not just the anchored `file:line`. Do not stop at the first reported instance.
 4. **Tests when material** — run `npm test` (or stack equivalent) before committing when the fix touches executable logic.
 
-## Proactive discovery (mandatory — extends sibling sweep)
+## Sibling occurrence sweep (mandatory)
 
-After validating a thread (score 6–10 or equivalent), **name the defect class in one line** (example: "gate claims JSON Schema validation but never reads the schema file"). Then run **proactive discovery** across every source below before editing. This extends the sibling occurrence sweep; it does not replace validate → score → user/goal gate.
-
-### Discovery order (mandatory)
-
-| Step | Source | What to do |
-|------|--------|------------|
-| 1 | **Code** | Repo-wide grep / structural search for the same pattern (identifiers, schema shapes, copied helpers, false-green claims). Include every path the thread already named. |
-| 2 | **MEMORY** | Consult `{sharedDir}/MEMORY.md` and matching `memory/*` via [`ws-self-learning`](../../ws-self-learning/SKILL.md) pre-work (keywords + path match for the defect class and touched paths). Reuse known `INSTEAD DO` solutions. **Missing `MEMORY.md` is consult-skipped, not fatal** — record `memory: consult-skipped` in `sourcesConsulted` and continue. |
-| 3 | **Context** | Other **open** threads on the same PR that share the class; prior `{reviewsDir}/PR-<id>-round-*.md` findings when present; `check-pr-status` failed-log snippets for the same pattern; thread-body "similar occurrence" notes. **Missing prior round reports is advisory, not a failure.** |
-| 4 | **Patterns (when enabled)** | `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` only when those files exist, `defaults.patternsBackend` / `defaults.patternsFrontend` are true, and the layer matches. Record `patterns: consult-skipped` when a file is absent or the layer does not match. |
-
-Discovery findings that are the **same class** become candidate fixes in this round (not deferred to "hope CI finds them").
-
-### Size / surgical gate
-
-| Outcome | When |
-|---------|------|
-| **Fix now** | Same-class hit is local and surgical (same correction shape as the validated anchor; typically few files / small LOC; no new abstraction or cross-layer redesign) |
-| **Skip with reason** | Hit requires a large refactor, unrelated feature work, ambiguous ownership, or would expand the PR beyond the review scope — record `path + reason` under `proactiveSkipped`; do **not** mark the class "fully cleared" |
-
-Do not invent drive-by cleanups. Prefer fixing many small siblings over one speculative redesign.
-
-### Sweep actions (sibling sweep baseline — keep)
+After analyzing a thread, name the defect class in one line (example: "gate claims JSON Schema validation but never reads the schema file"). Then search the repo for the same pattern before editing.
 
 | Sweep | Do |
 |-------|----|
 | **Keywords** | Grep identifiers, log strings, untyped schema shapes, copied helpers, and sibling paths named in the thread |
 | **Fix** | Apply the same correction to every in-scope hit in this round |
 | **Exempt** | Leave a hit unfixed only with `path + reason` on the plan-gate and in the resolution comment |
-| **Report** | List proactive report fields (below) plus legacy `siblingsFixed` / `siblingsSkipped` in the resolution body |
+| **Report** | List `siblingsFixed` and `siblingsSkipped` in the resolution body |
 
-Do not close a thread whose description listed extra paths until those paths are fixed or explicitly exempted. Reviewer "similar occurrence" notes are extra search seeds, not a cap. **Do not resolve** after fixing only the anchored `file:line` when same-class surgical hits remain unfixed without a recorded skip.
-
-### Report fields (plan-gate + resolution + Auto-Fix explanation)
-
-For each resolved blocking thread, record:
-
-| Field | Content |
-|-------|---------|
-| `defectClass` | One-line class name |
-| `sourcesConsulted` | Which sources were actually searched (`code`, `memory`, `context`, `patterns` — include `consult-skipped` when MEMORY or patterns were absent) |
-| `proactiveFixed` | Paths fixed beyond the anchor |
-| `proactiveSkipped` | `path + reason` for each exempted same-class hit |
-
-Resolve is allowed only after the proactive pass completes (or every discovery source is explicitly skipped with reason, e.g. dry-run analysis-only).
-
-Legacy phrasing: `siblingsFixed` / `siblingsSkipped` remain valid aliases in resolution bodies where the cooperative contract already used them; map them to `proactiveFixed` / `proactiveSkipped` when writing plan-gate files.
+Do not close a thread whose description listed extra paths until those paths are fixed or explicitly exempted. Reviewer "similar occurrence" notes are extra search seeds, not a cap.
 
 Always run these class greps even when the thread named one file:
 
@@ -100,8 +63,8 @@ Do not close a thread without a corresponding fix listed explicitly (`resolvedTh
 0b. If `gh` available: check `gh pr checks <PR_ID>` and in_progress runs for agentic-code-review.yml + agentic-auto-fix.yml; inform user (do not auto-block)
 1. Fetch open threads (GraphQL via `node .agents/skills/ws-github-provider/scripts/fetch_threads.cjs`)
 2. Deeply analyze each description; name the defect class
-2b. Proactive discovery (code + MEMORY + same-PR context + patterns when present; see Proactive discovery section)
-3. Apply surgical fixes for the class (anchored instance + proactive hits per size gate)
+2b. Sibling sweep (repo-wide grep of the class; include paths the thread already named)
+3. Apply surgical fixes for the class (anchored instance + siblings)
 4. git add + local commit (`fix(#N): auto-fix issues from review threads [...])
 5. Execute validation (build/test per stack)
 6. Close each resolved thread via `node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs` (`<!-- resolution-reply -->`)
@@ -116,8 +79,8 @@ If step 5 or 6 fails: **do not push**. Local commit preserved for manual inspect
 ```
 1. Fetch open threads (file+line)
 2. Deeply analyze each description; name the defect class
-2b. Proactive discovery across **all open-thread files plus paths named in those descriptions** (code + MEMORY + context + patterns when present; see Proactive discovery section)
-3. Apply surgical fixes for the class (anchored instance + proactive hits per size gate)
+2b. Sibling sweep across **all open-thread files plus paths named in those descriptions**
+3. Apply surgical fixes for the class (anchored instance + siblings in scope)
 4. git add + local commit (`fix(#N): auto-fix issues from review threads [...])
 5. Execute validation build (`npm test` / `npm run build` or `AGENTIC_CODE_REVIEWERS_AUTO_FIX_BUILD_COMMAND`; failure = exit ≠ 0)
 6. Close each resolved thread with a detailed comment (root cause + what changed)
