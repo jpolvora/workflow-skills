@@ -63,6 +63,17 @@
         "Does not continue iterating once the blocked threshold is met",
         "en-us and harness-neutral wording"
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "Goal-fix-pr round 2: code-reviewer CI opened a valid thread on a mistake we made in round 1. Continue the loop.",
+      "expected_output": "Post-round learning writes a MEMORY trap (and pattern-file row when flags match) before waiting for the next re-check.",
+      "assertions": [
+        "Agent runs post-round learning after the Act/Verify round",
+        "Agent records the reviewer/CI mistake in memory so the next round does not repeat it",
+        "Agent does not use Learning: N/A for that accepted defect",
+        "en-us and harness-neutral wording"
+      ]
     }
   ]
 }

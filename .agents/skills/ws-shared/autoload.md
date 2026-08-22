@@ -17,7 +17,7 @@ When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unl
 | Skill | Path | Trigger |
 |-------|------|---------|
 | `ws-senior-developer` | `{skillsRoot}/ws-senior-developer/SKILL.md` | Every prompt — delivery gate / Code review proof |
-| `ws-self-learning` | `{skillsRoot}/ws-self-learning/SKILL.md` | Every mutating task — MEMORY consult + trap write |
+| `ws-self-learning` | `{skillsRoot}/ws-self-learning/SKILL.md` | Every mutating task — MEMORY consult + trap write; after each `ws-goal-fix-pr` / `ws-fix-pr` round, record reviewer/CI mistakes |
 | `ws-patterns-backend` | `{skillsRoot}/ws-patterns-backend/SKILL.md` | Every prompt — load SKILL.md; consult `{sharedDir}/backend.md` only on backend tasks |
 | `ws-patterns-frontend` | `{skillsRoot}/ws-patterns-frontend/SKILL.md` | Every prompt — load SKILL.md; consult `{sharedDir}/frontend.md` only on frontend tasks |
 | `ws-changelog` | `{skillsRoot}/ws-changelog/SKILL.md` | Every task completion — append-only history |

@@ -30,6 +30,7 @@ Consumer-owned memory lives in the shared hub (never overwritten by install/upda
 | Implementation hit a trap/pitfall/race | **Write:** new file in `{sharedDir}/memory/`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` (expand tokens before shell) |
 | Session had $\ge 2$ tool/test/build failures | **Write (Mandatory):** Failure Reflection Hook — record Root Cause & Trap in `{sharedDir}/memory/`; `Learning: N/A` is strictly forbidden |
 | `ws-fable-judge` audit yields `REFUTED` / `CAVEATS` | **Write (Mandatory):** Adversarial Reflection — record `Severity: High` or `Critical` trap explaining why claims diverged from ground truth |
+| **After each `ws-fix-pr` / `ws-goal-fix-pr` round** | **Write (when a reviewer or CI defect was a real agent mistake):** follow § Post fix-pr round. `Learning: N/A` is forbidden for those defects. |
 | Standard feature/bug fix, no new trap & $<2$ failures | Proof line: `Learning: N/A (standard implementation)` after confirming no new pitfall and session friction $<2$ |
 | Pure Q&A, no durable insight | Proof line: `Learning: N/A (no new project knowledge)` |
 
@@ -57,6 +58,17 @@ When [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audits work and returns a ve
 1. Create a mandatory reflection entry in `{sharedDir}/memory/YYYY-MM-DD-fable-[slug].md`.
 2. Set `Severity: High` (for caveats/scope creep) or `Severity: Critical` (for refuted fraud/regressions).
 3. Document the precise mechanism of divergence in **DO NOT** and the verified invariant in **INSTEAD DO**.
+
+## Post fix-pr round (`ws-goal-fix-pr` / `ws-fix-pr`)
+
+After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record mistakes the code-reviewer CI or PR threads caught so the next round does not repeat them.
+
+1. Collect **accepted defects**: threads scored 6–10 that received a code fix, plus `check-pr-status` **diff-regression** failures this round fixed.
+2. Skip: score 0–5 no-change threads, baseline noise, infra-flake, wrong reviewer claims justified with no code change, and classes already covered by a Medium+ MEMORY hit.
+3. For each remaining class: write `{sharedDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` with concrete **DO NOT** / **INSTEAD DO**, then compile.
+4. If the class is a reusable stack convention and `defaults.patternsBackend` / `defaults.patternsFrontend` is true, also record it in `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` (goal-fix-pr auto-yes; standalone `ws-fix-pr` uses those skills' user-gate).
+5. Round report `Learning:` must list new entry titles. **Forbidden:** `Learning: N/A` when step 1 had any accepted defect that was not already in MEMORY.
+6. `dry-run`: skip MEMORY and pattern writes (analysis-only).
 
 ## Process (write after)
 
@@ -102,5 +114,6 @@ Path tokens: [`tools.md`](../ws-shared/tools.md) § Path tokens.
 - Inject matching DO NOT and INSTEAD DO guidance into the implementation context.
 - Record a new durable trap only when evidence is novel and reusable.
 - After two or more tool, build, or test failures, a failure-reflection memory entry is mandatory.
+- After each fix-pr / goal-fix-pr round, record accepted reviewer/CI defects as MEMORY traps (and pattern-file rows when those flags are on).
 - Return `memory_consult` and a valid `Learning:` result.
 

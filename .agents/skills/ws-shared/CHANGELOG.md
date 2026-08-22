@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 16:20] Agent: Cursor Grok 4.6
+- **Prompt**: Add post fix-pr learning each goal-fix-pr loop so reviewer/CI mistakes go into memory/patterns
+- **Done**: ws-self-learning § Post fix-pr round; goal-fix-pr step 5 + fix-pr verify; deps, evals, tests, hubs
+- **Result**: Each fix-pr round records accepted reviewer/CI defects so the next round does not repeat them
+
 ### [2026-08-22 16:15] Agent: Cursor Grok 4.6
 - **Prompt**: Add test, bump version, commit
 - **Done**: Added `test/test-score-and-refine-second-pass.js`; stamped 0.3.33 (`build-site:bump` + integrity + FEATURES/README)

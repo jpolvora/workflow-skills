@@ -160,12 +160,14 @@
       "ws-spec-format"
     ],
     "ws-fix-pr": [
-      "ws-audit"
+      "ws-audit",
+      "ws-self-learning"
     ],
     "ws-goal-fix-pr": [
       "ws-fix-pr",
       "ws-goal-loop",
-      "ws-audit"
+      "ws-audit",
+      "ws-self-learning"
     ],
     "ws-write-plan": [
       "ws-fable-domain"

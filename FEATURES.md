@@ -299,8 +299,8 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
-| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; proactive same-class sweep (code, MEMORY, PR context) before resolve |
-| [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative fix-pr rounds until threads hit zero and checks pass |
+| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; proactive same-class sweep (code, MEMORY, PR context) before resolve; post-round MEMORY/pattern learning for accepted reviewer/CI defects |
+| [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative fix-pr rounds until threads hit zero and checks pass; each round records reviewer/CI mistakes into MEMORY (and pattern files when enabled) |
 | [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | W | Post-ship QA delta capture, planning, and execution |
 
 ### Providers
