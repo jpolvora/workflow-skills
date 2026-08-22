@@ -2,7 +2,7 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
-Package version: **0.3.30** · 48 skills (45 Workflows + 3 Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.31** · 48 skills (45 Workflows + 3 Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -244,12 +244,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.30)
+## 12. Recent evolution (0.3.22 → 0.3.31)
 
-Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
+Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.31** | Aug 22 | Nested-quote `python -c` / `node -e` audit classify + draft-remediation user-gate; `ws-fix-pr` / `ws-goal-fix-pr` proactive same-class sweep (multi-source discovery before resolve); standalone `ws-write-spec` gates `index.PRD` track via `ws-spec-index` |
 | **0.3.30** | Aug 21 | SCM provider parity tests, LF-pinned `bin/skill-integrity.json`, and a site/catalog stamp for the 48-skill inventory |
 | **0.3.29** | Aug 21 | Added `ws-spec-explain` (spec/US delivery panorama), `ws-cleanup` (confirm-gated leftover cleanup + `.gitignore` suggestions), and `ws-spec-archive` (harvest `{plansDir}` into `index.PRD` Archive + propose shipped-plan cleanup) to the Workflows package |
 | **0.3.22** | Aug 17 | DeepSeek harness hardening (PR #216): inline-dict commit SHA scanning in `validate_state`, the AC9 resume gate retargeted from the base branch to the integration branch, audit config resolved from the repo root, goal-loop runtime confined to `{us-dir}/.runtime` |
@@ -266,7 +267,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 
 ## 13. Full skill catalog
 
-47 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+48 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -291,7 +292,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
-| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; sibling sweep of the same defect class |
+| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; proactive same-class sweep (code, MEMORY, PR context) before resolve |
 | [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative fix-pr rounds until threads hit zero and checks pass |
 | [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | W | Post-ship QA delta capture, planning, and execution |
 

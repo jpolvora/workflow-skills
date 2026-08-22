@@ -2,6 +2,16 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 18:11] Agent: Composer
+- **Prompt**: update website, readme, agents, bump version, etc /ws-ship-pr /ws-goal-fix-pr
+- **Done**: Stamped release 0.3.31 (FEATURES/README/site/integrity + test-doc-sync pin); prepare board green
+- **Result**: Shipping develop→main (in progress)
+
+### [2026-08-22 18:04] Agent: Composer
+- **Prompt**: commit pending → checkout develop → merge feat/nested-quote-python-c-audit → push → /ws-ship-pr
+- **Done**: Merged feature into develop; shipped PR #228 to main (tests+review green; review threads driven to zero)
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/228 MERGED
+
 ### [2026-08-22 13:10] Agent: Composer
 - **Prompt**: continue on same branch + commit for fix-pr-proactive-class-sweep
 - **Done**: Adopted `feat/nested-quote-python-c-audit`; restored/committed proactive sweep (`96afe3f`) + `tests:remote` fix (`262bdea`); Steps 6–8 done; ship skipped

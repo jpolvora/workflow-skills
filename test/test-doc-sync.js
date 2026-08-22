@@ -33,5 +33,5 @@ for (const heading of [
 ]) assert.match(site, new RegExp(heading), `site documents ${heading}`);
 const build = run(path.join(repoRoot, 'bin/build-site.js'), ['--check']);
 assert.strictEqual(build.status, 0, build.stderr);
-assert.strictEqual(JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).version, '0.3.30');
+assert.strictEqual(JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).version, '0.3.31');
 console.log('test-doc-sync: ok');
