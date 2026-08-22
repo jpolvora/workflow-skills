@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "bbf30f2c6f129e32ec35ec00da692728d250686d5efe7e07d3082481e7f0ad83",
+  "fullPackageDigest": "ff2c0598bf9d037f6000717a1405144b743b852e773f9fd37ea949fde432f7f7",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -70,14 +70,14 @@
     "ws-azure-devops-provider": {
       "files": {
         "evals/evals.json": "7f2cf9cd59c0fd70d6f5cf6214a81db79eef7c81edbf561fb594d7ff17195c30",
-        "INTENTS.md": "01ce2b1ab99e99fdee883b518d4b2a7dc546ac1443e7ffa885662c0c3bbcc0df",
+        "INTENTS.md": "d793085ec9f681dcc8ae59be23750b3f5430c037c5b5d095e81e7a1b04ad9729",
         "scripts/ado-workitem-to-spec.py": "6003aed16835cb99dacd037083f175ab9af6a2deaecd2b402ed146070714b8a7",
-        "scripts/comment_issue.py": "950276ce9ab84855a3b4cab6eb9cb292b2309d3c5a1420fd2492abcb5a23fde5",
+        "scripts/comment_issue.py": "4493e8cbe8a471e129ba428495a5dfedcce8454a8acfc8d230c9feb609c3ed79",
         "scripts/fix_pr_azure_context.py": "13cfc0f723a388e23bd4d24cc582580cfd438fcbe20e6b6f1a0854adca87957b",
         "scripts/sweep_prior_work.py": "971b009a3394ebc74d92671a6b5391951f63548fa92e8481e38865a7e6e07729",
         "SKILL.md": "ab5e42e829e03f2d99dca8bd225c86521e5c8090ba964d29808db56c6df6c92c"
       },
-      "skillDigest": "bad97d4eb558b8fc19893116d7b9fca93fe1159c7d54b560d3c5750a7c394a78"
+      "skillDigest": "2d928e9a6818e85f58beac79bf2bcfb62ed5c807252770581fb381d70a20ab50"
     },
     "ws-changelog": {
       "files": {

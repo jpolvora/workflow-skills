@@ -87,6 +87,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Treat a heading plus header row as closure when Chosen default / Rationale rows are absent
 - **INSTEAD DO**: Fail authoring (and warn in compat) when Assumptions has zero data rows; cover it in `test-spec-validation.js`
 
+### [2026-08-22] ADO comment_issue accepts org/project CLI overrides
+- **Layer**: `Harness`
+- **Module**: `ws-azure-devops-provider / comment_issue.py`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-azure-devops-provider/scripts/comment_issue.py, .agents/skills/ws-azure-devops-provider/INTENTS.md, test/test-provider-parity.js`
+- **Scenario / Context**: Agents passed `--org`/`--project`/`--api-base`/`--pat-env` (same flags as `ado-workitem-to-spec.py`); argparse rejected them as unrecognized
+- **DO NOT**: Require tracker host fields only from config.json when sibling ADO scripts take CLI overrides
+- **INSTEAD DO**: Accept optional `--org` `--project` `--api-base` `--pat-env` that override `issueTrackers.azureDevOps`; keep config as the default
+
 ### [2026-08-21] Windows fsync EPERM on read-only temp files
 - **Layer**: `Infrastructure`
 - **Module**: `ws-goal-loop / convergence.cjs atomicWrite`

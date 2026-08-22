@@ -107,10 +107,12 @@ Alias in [`tools.md`](../ws-shared/tools.md): `close-loop`.
 python .agents/skills/ws-azure-devops-provider/scripts/comment_issue.py \
   --id {id} \
   --body-file {plansDir}/close-loop-body.md \
+  [--org {org} --project {project} --api-base {apiBase} --pat-env {patEnvVar}] \
   [--dry-run]
 ```
 
 - POST `{apiBase}/{org}/{project}/_apis/wit/workItems/{id}/comments?api-version=7.1-preview.4` (WIT comment, not PR thread). The comments resource is still preview; `api-version=7.1` returns `VssInvalidPreviewVersionException`.
+- `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` default from `issueTrackers.azureDevOps` in `{sharedDir}/config.json`. Optional CLI flags override (hybrid/global script runs).
 - Skip when tracker `id` is null. `--dry-run` prints body, no POST.
 - `validate-auth` before mutating.
 

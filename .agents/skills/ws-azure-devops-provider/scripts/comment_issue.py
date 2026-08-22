@@ -103,12 +103,29 @@ def post_comment(ado: dict[str, Any], work_item_id: int, body: str, pat: str) ->
     return parsed if isinstance(parsed, dict) else {}
 
 
+def apply_cli_overrides(ado: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
+    out = dict(ado)
+    if str(args.org or "").strip():
+        out["org"] = args.org.strip()
+    if str(args.project or "").strip():
+        out["project"] = args.project.strip()
+    if str(args.api_base or "").strip():
+        out["apiBase"] = args.api_base.strip()
+    if str(args.pat_env or "").strip():
+        out["patEnvVar"] = args.pat_env.strip()
+    return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Comment on ADO work item (comment-issue)")
     parser.add_argument("--id", required=True)
     parser.add_argument("--body-file", default=None)
     parser.add_argument("--body", default=None)
     parser.add_argument("--repo-root", default=None)
+    parser.add_argument("--org", default="", help="Override issueTrackers.azureDevOps.org")
+    parser.add_argument("--project", default="", help="Override issueTrackers.azureDevOps.project")
+    parser.add_argument("--api-base", default="", help="Override issueTrackers.azureDevOps.apiBase")
+    parser.add_argument("--pat-env", default="", help="Override issueTrackers.azureDevOps.patEnvVar")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -137,7 +154,7 @@ def main() -> int:
         return 0
 
     repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
-    ado = load_ado_config(repo_root)
+    ado = apply_cli_overrides(load_ado_config(repo_root), args)
     ok, msg = validate_auth(ado)
     if not ok:
         print(msg, file=sys.stderr)

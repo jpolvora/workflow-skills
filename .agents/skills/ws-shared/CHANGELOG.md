@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 19:45] Agent: Cursor Grok 4.6
+- **Prompt**: ADO `comment_issue.py` unrecognized `--org`/`--project`/`--api-base`/`--pat-env`
+- **Done**: Optional CLI overrides (config still default); INTENTS + parity dry-run spawn
+- **Result**: Fetch-style close-loop invocation parses; `--dry-run` still skips POST
+
 ### [2026-08-22 19:25] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr goal-fix-pr #233 usage omits --help
 - **Done**: usage() lists `[--help|-h]`; test asserts that token; integrity restamp
