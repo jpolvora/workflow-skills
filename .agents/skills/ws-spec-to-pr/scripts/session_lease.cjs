@@ -519,6 +519,11 @@ function gitLockExpired(lock, at = Date.now()) {
   return Number.isNaN(ts) || ts <= at;
 }
 
+function normalizeHolder(raw) {
+  if (typeof raw === 'string' && raw.trim()) return raw.trim();
+  return `pid-${process.pid}`;
+}
+
 function cmdGitLock(options) {
   const context = loadContext(options);
   if (!sessionLeasesEnabled(context.config)) {
@@ -529,7 +534,7 @@ function cmdGitLock(options) {
   fs.mkdirSync(path.dirname(gitLockFile(plansDir)), { recursive: true });
   const waitMs = Number(options.waitMs ?? GIT_LOCK_WAIT_MS);
   const ttlMs = Number(options.ttlMs ?? GIT_LOCK_TTL_MS);
-  const holder = options.holder || `pid-${process.pid}`;
+  const holder = normalizeHolder(options.holder);
   const started = Date.now();
 
   while (Date.now() - started <= waitMs) {
@@ -586,7 +591,11 @@ function cmdGitUnlock(options) {
     return 0;
   }
   const lock = readGitLock(plansDir);
-  if (!options.force && options.holder && lock && lock.holder !== options.holder) {
+  const holder =
+    typeof options.holder === 'string' && options.holder.trim()
+      ? options.holder.trim()
+      : null;
+  if (!options.force && holder && lock && lock.holder !== holder) {
     console.log(JSON.stringify({ ok: false, error: 'holder-mismatch', lock }));
     return 1;
   }

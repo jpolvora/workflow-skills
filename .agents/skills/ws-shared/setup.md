@@ -163,6 +163,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - `branch` — final branch name (created, checked-out existing, or current HEAD name for stay)
    - `branchStrategy` — `from-current` | `from-base` | `stay` | `checkout-existing`
    - `baseBranch` — resolved `{baseBranch}`
+   - `leaseId` — when session leases are enabled, the `lease.leaseId` from §5a `acquire` (required for every later `heartbeat` / `git-lock` / `git-unlock` / `release`)
 
    **Banner sync:** after 5b completes, re-print the init banner `branch` / `baseBranch` rows (step 3 table) or a short **Feature branch gate result** table so displayed values match state.
 

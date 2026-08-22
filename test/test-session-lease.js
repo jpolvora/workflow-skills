@@ -270,6 +270,27 @@ function main() {
     'git-unlock exits 0',
   );
 
+  const bareHolder = run([
+    'git-lock',
+    '--plans-dir',
+    plans,
+    '--config',
+    cfg,
+    '--holder',
+    '--wait-ms',
+    '200',
+  ]);
+  assert(bareHolder.status === 0, 'git-lock with bare --holder exits 0');
+  const bareLock = JSON.parse(bareHolder.stdout).lock;
+  assert(
+    typeof bareLock.holder === 'string' && bareLock.holder.startsWith('pid-'),
+    'bare --holder falls back to pid-* holder',
+  );
+  assert(
+    run(['git-unlock', '--plans-dir', plans, '--config', cfg, '--force']).status === 0,
+    'force unlock after bare-holder lock',
+  );
+
   assert(!fs.existsSync(path.join(REPO, '.ws.pid')), 'no tracked repo-root .ws.pid');
   assert(
     !fs.readFileSync(SCRIPT, 'utf8').includes('index.json'),
