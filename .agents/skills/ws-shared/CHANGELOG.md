@@ -2,6 +2,21 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 11:16] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 225
+- **Done**: Round 1 fixed WIT `commentId` key + whitespace audit test; resolved 2 threads; pushed `2e39202`; re-check `activeThreads: []` and CI green
+- **Result**: Converged; PR https://github.com/jpolvora/workflow-skills/pull/225 ready for caller merge (skill does not merge)
+
+### [2026-08-22 11:00] Agent: Cursor Grok 4.6
+- **Prompt**: Write a spec for later implementation with the best TLC spec-driven ideas (delivery quality, performance, score near 10)
+- **Done**: Wrote `.agents/specs/specify-closure-pack.spec.md` (not registered); `validate_spec.cjs` PASS (19 ACs)
+- **Result**: Specify-time closure pack scoped; Out of Scope / Assumptions / dimensions / authoring validator / lazy context.md / lite safety valve; TLC layout and SHALL left out
+
+### [2026-08-22 10:22] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr check gh issues to be fixed
+- **Done**: Confirmed 0 open GH issues and 0 open PRs; resumed deepseek-harness-improvements Step 9; PR #216 already merged with threads resolved; marked workflow completed; Phase A CLEAN
+- **Result**: No GitHub work remaining on that run; local specs still available for a new workflow
+
 ### [2026-08-21 23:54] Agent: Auto
 - **Prompt**: /ws-write-spec model presets + per-step/substep models in config.json
 - **Done**: Wrote `.agents/specs/models-preset-and-per-step.spec.md` (not registered)
