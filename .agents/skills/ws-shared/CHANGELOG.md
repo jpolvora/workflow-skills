@@ -2,6 +2,21 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 23:54] Agent: Auto
+- **Prompt**: /ws-write-spec model presets + per-step/substep models in config.json
+- **Done**: Wrote `.agents/specs/models-preset-and-per-step.spec.md` (not registered)
+- **Result**: Spec covers modelsPreset selector, modelPresets map, stepModels, refine/dag/reviewFix roles
+
+### [2026-08-21 23:31] Agent: Auto
+- **Prompt**: /ws-write-spec enhance ws-fix-pr cooperative fix with proactive same-category discovery
+- **Done**: Wrote `.agents/specs/fix-pr-proactive-class-sweep.spec.md` (not registered)
+- **Result**: Spec of record ready; extends COOPERATIVE_FIX beyond code-only sibling sweep
+
+### [2026-08-21 23:28] Agent: Auto
+- **Prompt**: update skill-family-naming.spec.md — group github/azure/local providers as ws-spec-provider-*
+- **Done**: In-scope rename table + ACs now require ws-spec-provider-github|azure-devops|local; config enums unchanged
+- **Result**: Spec of record updated; not committed
+
 ### [2026-08-21 22:55] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-write-spec skill family naming (ws-spec-write, ws-spec-update, regroup ws-{family}-{skill})
 - **Done**: Wrote local spec `.agents/specs/skill-family-naming.spec.md` (not registered)
