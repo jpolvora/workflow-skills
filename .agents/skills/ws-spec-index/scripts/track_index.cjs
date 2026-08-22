@@ -54,7 +54,10 @@ function nextRowNumber(indexText) {
 }
 
 function escapeInlineMarkdown(value) {
-  return String(value || '').replace(/`/g, "'");
+  return String(value || '')
+    .replace(/`/g, "'")
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')');
 }
 
 function escapeTableCell(value) {

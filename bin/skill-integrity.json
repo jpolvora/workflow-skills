@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f8025d041faece277c17168a623a3db1d908c6b1a8af5f93a814e38c5f27e8e3",
+  "fullPackageDigest": "0c7d6d6a0497de8f857f811850a75729be4e3b4c913c946ac7c9187325fe8b1b",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -61,10 +61,10 @@
       "files": {
         "AUDIT-FORMAT.md": "56eb8f3c5b0bdc4effa235e12e5cc3f4baeb4c7653ab5806e977ec58be6f076a",
         "evals/evals.json": "81652d21f9c77570dd4a59e8c79bc65b858786dd0740b6f59d15345f706790c3",
-        "scripts/audit_log.js": "0937fe11fc2b96848fbed7307995b591c066a3a23b911482c6658c6723fe10d4",
+        "scripts/audit_log.js": "514a2dbeaf8fd2e7a3e8978074065e2b7e578a8c2c726c8489bc65736dfaa611",
         "SKILL.md": "e103631cbe39e6e4b04a38127b6c8af53c5242b56e01535711f844f7e8dfb57b"
       },
-      "skillDigest": "65c714c042f8573ed866382e728724fa0023c38115753dfb0493ee064fd40c84"
+      "skillDigest": "0ba9a1cb1f9a4a99a4eb6ba4752e19be8f0b9649e0fa7a2c05f939cab5dbd6ac"
     },
     "ws-azure-devops-provider": {
       "files": {
@@ -372,10 +372,10 @@
         "evals/evals.json": "f61513b6d81eef55018c535da65143963bb41f51a1a37f95e65127c68e9fdd1e",
         "INDEX-TEMPLATE.md": "40fd1879ab56eabf8065be738b7e4c19df6d94086e9e84641fc90b978d46f453",
         "REFERENCE.md": "dfd27f9907b5d025a97fa9fbde675812e40691a8b128097111dd579335376b1d",
-        "scripts/track_index.cjs": "02e98583e4b6e576b184459c12f603c748f0a0ac278091d06becd9c9af0ddecc",
+        "scripts/track_index.cjs": "362659c39081d340d46e2769484887074b017cd709ebe8cba061dbb8c1c8d695",
         "SKILL.md": "44376485b11cb6667f4bcf83d38bcd7f613bdaea077e35ba66d2e6139221309e"
       },
-      "skillDigest": "74022849a4ec1ff5bb58e3c172a79c3a4332dc0c8be5fc14dde1de12480d7b73"
+      "skillDigest": "fd8aff37c204bd10f4f6b3b110ddf2687071b74ce59a1b6018121531c3e52668"
     },
     "ws-spec-list": {
       "files": {

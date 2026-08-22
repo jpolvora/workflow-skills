@@ -85,8 +85,7 @@ export function classifyShellFailure({
   const blob = `${err}\n${out}\n${cmd}`;
   const isDashC =
     /\bpython(?:3)?\s+-c\b/i.test(cmd) ||
-    /\bnode\s+(?:-e|--eval)\b/i.test(cmd) ||
-    /File "<string>"/.test(blob);
+    /\bnode\s+(?:-e|--eval)\b/i.test(cmd);
   const isSyntax =
     /SyntaxError/i.test(blob) ||
     /closing parenthesis .+ does not match/i.test(blob) ||
@@ -100,7 +99,7 @@ export function classifyShellFailure({
     /\(\[["']/.test(cmd);
 
   const findings = [];
-  // Contract: only classify failed inline -c/-e (or File "<string>") runs.
+  // Contract: only classify failed inline -c/-e runs (command must show python -c / node -e).
   // nestedQuoteSmell alone is never sufficient.
   if (!isDashC) {
     return { matched: false, findings };
