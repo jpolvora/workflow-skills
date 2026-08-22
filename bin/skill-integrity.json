@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "c87f85fca68989b9a2afca6293435c6e933508eda0431452e9853cfb7ebe4bdc",
+  "fullPackageDigest": "57260d3bf2b4fbd5051b220caa3b43fa8951e080fc15a0f3481a9541c444a81c",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -35,15 +35,15 @@
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "scripts/workflow_state.cjs": "632eab3aed22b2ccbeb4650f868fe8ac6e7f27a27159c083e0767aa9f2d7bdae",
       "session-lease.schema.json": "4b473bb47830e88d459ad69752289568f721fbd495ac47bf705ffb3a1804c25e",
-      "setup.md": "ee2782065cd2be6e1056a1a85fbe94210238b3899bbcb01f301abab30b065edb",
+      "setup.md": "96b741adc1afc5894ac9add17bc44d128c736f7a010606ded12f3a717db722d5",
       "skill-dependencies.json": "c4fca7e0f69207151beee1b73b2b4916c88d6a1bd68948f85524e6f9cbedf192",
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
       "step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "telemetry.schema.json": "ea0fae1da61d60e3a32980fb4aa504e7c3bf91ffc1896ade2406343a7b8d278d",
-      "tools.md": "810a0bc6f608695cb22064a51f7a6b7d6ae30ae88697f9678cdb8348b3d3d0ec",
+      "tools.md": "88294443742d997b98eabaed12d901e8faea4eaf200322ffb51e11d45e955c8d",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "36b009c715a5249d32ec6e5958162fd40ac6f9150b6518ca84af5a103dfe76f1"
+    "skillDigest": "b01381c0937dc9aa3291fe58d14c1a74165bd86a1508139679fbf20361095124"
   },
   "packageVersion": "0.3.32",
   "skills": {
@@ -422,11 +422,11 @@
         "scripts/validate_state.cjs": "a548517237dee8462f3ab070a1c7f4a3c79961ee1c7e00f0d4dfc26935da189a",
         "scripts/validate_state.py": "139b6dafa930bdc911888e260356950f47eae93839784f6c992e07ecea1c0c6f",
         "scripts/write_sequential_dag.cjs": "32f83f2cb95d85520a11015bff562a7efd18d97844fafe9ee3cb3c69681a679c",
-        "SKILL.md": "d5ed4a52a1e5cafe43ae0ca8ee620b22b052122ab9fe5076d5c3e50b5fb76601",
+        "SKILL.md": "3949e428678cc92d335660da91f6c74ec5c680de1e8efb718dd035ad4075691b",
         "STEP-DISPATCH.md": "9a7300aed7f4e61194f264b7f26621ec00546c7cd82106fac9ca4c68f01bb8d4",
         "ws-spec-to-pr-run-test.md": "455a7ffd47f23c66a31d5ea30d9d5ed38113b62730181e3571021ce67e88e865"
       },
-      "skillDigest": "f4cc345d72424ee01a92c8a185ed58945ce2253fc36c3353e2416d5d3b054e55"
+      "skillDigest": "65e3f9713c44d6091d30fc03beef078d2d5cf554e03d7e30d6ea5e6d13d6960a"
     },
     "ws-spec-to-pr-lite": {
       "files": {
@@ -435,9 +435,9 @@
         "scripts/update_state.py": "0f7967cc7d3b72ed024da616cc2b8a025bbc6cd681558937e75e353d124c999c",
         "scripts/validate_state.cjs": "506cf4dae9da6605843374733daedab8733548c36aa878ad37bf266905cc22fc",
         "scripts/validate_state.py": "2a4be7b64d8d9251b33a3d4275fefe37dcdcdfd1f4ba65311fc44f7089dfaceb",
-        "SKILL.md": "60367155de97de2a4e53a18345489ebf4e0bff68689feccf2cfda826714ba126"
+        "SKILL.md": "b4e514255fc63f4f6180eff475bfbd3b49492a4a5fb2df3a46a44061e42612e0"
       },
-      "skillDigest": "68496e0c3a931cf21abeed0e83e3f47d9fc2871ac4b1c5386870e79559e53737"
+      "skillDigest": "046be80b46fbb1b3d5a9ac70311ea32f11e5c8c2b581a00ffc0540a51f175e21"
     },
     "ws-sync-spec": {
       "files": {
