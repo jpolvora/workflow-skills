@@ -8,6 +8,8 @@ STACK.md
 stack.md
 MEMORY.md
 CHANGELOG.md
+backend.md
+frontend.md
 installed-skills.json
 skill-integrity-local.json
 memory/**
@@ -15,3 +17,5 @@ memory/**
 !CHANGELOG.md.template
 !STACK.md.example
 !config.json.example
+!backend.md.template
+!frontend.md.template

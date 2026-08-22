@@ -234,6 +234,47 @@ Files: src/Infrastructure/Logging/AppLogger.cs
   const missingParsed = JSON.parse(missingMemResult.stdout);
   assert.strictEqual(missingParsed.memory_missing, true, 'missingParsed.memory_missing must be true');
 
+  // Harness PathPattern: .agents paths + ws-* modules force interview
+  const harnessPlanPath = path.join(tempDir, 'harness.plan.md');
+  fs.writeFileSync(harnessPlanPath, `---
+slug: harness-path-pattern
+---
+## Technical Design
+Layer: Harness
+Touch: \`.agents/skills/ws-audit/scripts/check_shell.js\`
+Skill: ws-self-learning
+`, 'utf8');
+
+  const harnessMemoryPath = path.join(tempDir, 'harness-MEMORY.md');
+  fs.writeFileSync(harnessMemoryPath, `# Knowledge Hub
+
+## Anti-Regression Traps
+
+### [TRAP-HARNESS] Audit shell path pattern
+- **Severity**: High
+- **Layer**: Harness
+- **Module**: ws-self-learning
+- **PathPattern**: \`.agents/skills/ws-audit/**\`
+`, 'utf8');
+
+  const harnessResult = spawnSync('python', [scriptPath, harnessPlanPath, '--memory', harnessMemoryPath, '--json'], {
+    encoding: 'utf8',
+  });
+  assert.strictEqual(harnessResult.status, 2, 'harness PathPattern overlap must exit 2');
+  const harnessParsed = JSON.parse(harnessResult.stdout);
+  assert(harnessParsed.plan_keywords.layers.includes('Harness'), 'must extract Harness layer');
+  assert(
+    harnessParsed.plan_keywords.file_paths.some((p) => p.includes('.agents/')),
+    'must extract .agents path from plan'
+  );
+  assert(
+    harnessParsed.plan_keywords.modules.some((m) => /^ws-/.test(m)),
+    'must extract ws-* module from plan'
+  );
+  assert(harnessParsed.results.traps.length > 0, 'harness PathPattern must yield traps>0');
+  assert.strictEqual(harnessParsed.force_interview, true, 'harness High PathPattern must force_interview');
+
+
   console.log('✅ check_memory_conflict.py mock plan & trap assertions passed');
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });
