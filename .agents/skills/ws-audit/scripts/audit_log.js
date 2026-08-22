@@ -250,6 +250,14 @@ export function initAudit({ usDir, slug, workflowId }) {
   return session;
 }
 
+function requireFindingSummary(finding) {
+  const summary = typeof finding?.summary === 'string' ? finding.summary.trim() : '';
+  if (!summary) {
+    throw new Error('finding.summary is required');
+  }
+  return summary;
+}
+
 export function appendFinding(session, finding) {
   const f = {
     timestamp: finding.timestamp || isoNow(),
@@ -257,7 +265,7 @@ export function appendFinding(session, finding) {
     skill: finding.skill ?? null,
     category: finding.category || 'other',
     severity: finding.severity || 'unusual',
-    summary: finding.summary || '(no summary)',
+    summary: requireFindingSummary(finding),
     evidence: finding.evidence ?? null,
     language: finding.language ?? null,
     targetAbstraction: finding.targetAbstraction ?? null,
@@ -605,7 +613,12 @@ function main() {
   if (cmd === 'append') {
     const session = resolveSessionInput(opts);
     const finding = resolveFindingInput(opts);
-    appendFinding(session, finding);
+    try {
+      appendFinding(session, finding);
+    } catch (e) {
+      console.error(`Error: ${e.message}`);
+      process.exit(2);
+    }
     console.log(JSON.stringify({ status: 'success', session }));
     return;
   }

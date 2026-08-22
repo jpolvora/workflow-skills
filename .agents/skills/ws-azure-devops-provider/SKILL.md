@@ -58,7 +58,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | `list-threads` | PR id | Thread list | `fix_pr_azure_context.py collect` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `az repos pr policy list`; build log via REST or `az pipelines runs show`; classify diff/baseline/flake |
 | `resolve-thread` | thread id (+ PR id, comment) | Resolved (or dry-run) | `fix_pr_azure_context.py resolve-thread` |
-| `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.py` → WIT Comments `api-version=7.1` |
+| `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.py` → WIT Comments `api-version=7.1-preview.4` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched work item), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.cjs --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
