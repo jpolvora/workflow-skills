@@ -53,9 +53,14 @@ function nextRowNumber(indexText) {
   return max + 1;
 }
 
+function escapeInlineMarkdown(value) {
+  return String(value || '').replace(/`/g, "'");
+}
+
 function escapeTableCell(value) {
   return String(value || '')
     .replace(/\|/g, '\\|')
+    .replace(/`/g, "'")
     .replace(/[\r\n]+/g, ' ');
 }
 
@@ -124,7 +129,8 @@ function track({ specsDir, slug }) {
     return { status: 'skipped', reason: 'already tracked', slug, title };
   }
 
-  const bullet = '- [ ] ' + title + ' (`spec: ' + slug + '.spec.md`)';
+  const bullet =
+    '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + slug + '.spec.md`)';
   const phaseRe = /^###\s+Phase[^\n]*$/gm;
   const phases = [...indexText.matchAll(phaseRe)];
   if (phases.length) {

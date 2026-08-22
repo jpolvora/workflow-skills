@@ -193,7 +193,7 @@ export function draftRemediationOptions(session, upstream = resolveUpstreamRepo(
         id: 'draft-pr',
         label: 'Open draft PR with a permanent helper / recipe fix',
         guidance:
-          'After user acceptance only: implement the recommended permanent script or recipe fix on a feature branch, then gh pr create --draft targeting develop. Prefer extract_frontmatter_field.cjs or another {skillsRoot} companion over nested-quote python -c.',
+          'After user acceptance only: implement the recommended permanent script or recipe fix on a feature branch, then gh pr create --draft targeting the configured project baseBranch (config.json project.baseBranch / git.baseBranch — never hardcode develop/main). Prefer extract_frontmatter_field.cjs or another {skillsRoot} companion over nested-quote python -c.',
         draft: primary,
       },
       {

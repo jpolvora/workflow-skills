@@ -80,19 +80,33 @@ function scanLine(line) {
   return null;
 }
 
+function hasUnclosedDashCQuote(line) {
+  const m = line.match(/\b(?:python(?:3)?\s+-c|node\s+(?:-e|--eval))\s+(["'`])/i);
+  if (!m) return false;
+  const opener = m[1];
+  const after = line.slice(m.index + m[0].length);
+  return after.indexOf(opener) === -1;
+}
+
 function scanFile(abs, repoRoot) {
   const text = fs.readFileSync(abs, 'utf8');
   const rel = path.relative(repoRoot, abs).replace(/\\/g, '/');
   const hits = [];
-  const lines = text.split(/\r?\n/);
-  for (let i = 0; i < lines.length; i += 1) {
-    const reason = scanLine(lines[i]);
+  const rawLines = text.split(/\r?\n/);
+  for (let i = 0; i < rawLines.length; i += 1) {
+    let line = rawLines[i];
+    const startLine = i + 1;
+    while (hasUnclosedDashCQuote(line) && i + 1 < rawLines.length) {
+      i += 1;
+      line += '\n' + rawLines[i];
+    }
+    const reason = scanLine(line);
     if (!reason) continue;
     hits.push({
       file: rel,
-      line: i + 1,
+      line: startLine,
       reason: reason,
-      excerpt: lines[i].trim().slice(0, 200),
+      excerpt: line.trim().slice(0, 200),
     });
   }
   return hits;

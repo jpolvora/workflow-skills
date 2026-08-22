@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "564043c3b53a7d26a03459fa65695dfb49dfa844973ea574ead19e02b47b5b41",
+  "fullPackageDigest": "f8025d041faece277c17168a623a3db1d908c6b1a8af5f93a814e38c5f27e8e3",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -61,10 +61,10 @@
       "files": {
         "AUDIT-FORMAT.md": "56eb8f3c5b0bdc4effa235e12e5cc3f4baeb4c7653ab5806e977ec58be6f076a",
         "evals/evals.json": "81652d21f9c77570dd4a59e8c79bc65b858786dd0740b6f59d15345f706790c3",
-        "scripts/audit_log.js": "29a405df1e7fd63930e288e19818fb566a4aaf7395b214451d6124c37f3a54f0",
+        "scripts/audit_log.js": "0937fe11fc2b96848fbed7307995b591c066a3a23b911482c6658c6723fe10d4",
         "SKILL.md": "e103631cbe39e6e4b04a38127b6c8af53c5242b56e01535711f844f7e8dfb57b"
       },
-      "skillDigest": "b30137f59cc8cde06b6a798e2a8791ea38ffd896361553606e8f61ac28eab4ba"
+      "skillDigest": "65c714c042f8573ed866382e728724fa0023c38115753dfb0493ee064fd40c84"
     },
     "ws-azure-devops-provider": {
       "files": {
@@ -91,11 +91,11 @@
         "PHASES.md": "255d84c4f4b15150923f57b9e4d37957a49f6f4061c13df9e2ee0023cd299381",
         "REPORT-FORMAT.md": "c4ebf7fdccf0469cd4be21c65b1905b44eeacd874c7028791062f2d244543e69",
         "scripts/check_duplicates.cjs": "ff3737715f778a68a01a722668937cc9561b03b0337b3039979b22db758945dc",
-        "scripts/check_shell_quoting.cjs": "c88cb513662ee23f68be2e14663f083d99ac2e88a91e675da58a21f1a9657b9f",
+        "scripts/check_shell_quoting.cjs": "c65d46afe4e3c281e5c5aca698447aca14382d46325c8bc0bc493824ac7e3eab",
         "scripts/measure_harness.cjs": "6eb1c173ce44fc940253a8c508131bd4d311ba9cb41454598089bf49e882dfc6",
         "SKILL.md": "cd3153f938fc773ba599cb8e12f033c5f4ee65ae70751ef92304260b1e49f698"
       },
-      "skillDigest": "ee87dbdf4c9e8915275938342d4f5b0643c6374e11cb6a7367585cf1127fa740"
+      "skillDigest": "df41afb34f9fb7f2895e8d8a0776771b173dec2e7e12bdeb146580ef6132bc10"
     },
     "ws-check-workflows": {
       "files": {
@@ -372,10 +372,10 @@
         "evals/evals.json": "f61513b6d81eef55018c535da65143963bb41f51a1a37f95e65127c68e9fdd1e",
         "INDEX-TEMPLATE.md": "40fd1879ab56eabf8065be738b7e4c19df6d94086e9e84641fc90b978d46f453",
         "REFERENCE.md": "dfd27f9907b5d025a97fa9fbde675812e40691a8b128097111dd579335376b1d",
-        "scripts/track_index.cjs": "e129c8fbf384d25d58cbf9e8941e4a05428c0d6f3ef5a862bfa4dd463f9eef0e",
+        "scripts/track_index.cjs": "02e98583e4b6e576b184459c12f603c748f0a0ac278091d06becd9c9af0ddecc",
         "SKILL.md": "44376485b11cb6667f4bcf83d38bcd7f613bdaea077e35ba66d2e6139221309e"
       },
-      "skillDigest": "30318985873b5797415ea61a83f322549170de67c29ab637dd9a9152c71ada8e"
+      "skillDigest": "74022849a4ec1ff5bb58e3c172a79c3a4332dc0c8be5fc14dde1de12480d7b73"
     },
     "ws-spec-list": {
       "files": {
