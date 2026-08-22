@@ -2,6 +2,31 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 12:26] Agent: Composer
+- **Prompt**: add existing specs/plans to index.PRD with actual status (shipped vs open)
+- **Done**: Reconciled `.agents/specs/index.PRD` Feature map, Next-specs, and Done log for 10 previously unmapped specs + DeepSeek P1 plan; marked shipped vs partial vs todo from PR evidence
+- **Result**: All on-disk `*.spec.md` now have Feature map + Next-specs rows; open set listed in Open Next-spec line
+
+### [2026-08-22 12:17] Agent: Composer
+- **Prompt**: /ws-spec-to-pr score-and-refine on models-preset-and-per-step → Accept Pass 1
+- **Done**: Pass 1 score-analysis 10/10, 0 flagged; accepted as-is; no Second Pass; workflow re-completed
+- **Result**: PR 226 already merged; score-refine closed without code changes
+
+### [2026-08-22 12:11] Agent: Composer
+- **Prompt**: /ws-spec-to-pr resume HEV Step 5 → option 3 abandon
+- **Done**: Marked harness-efficiency-and-verifiability completed at Step 5; Phase A CLEAN; artifacts kept
+- **Result**: No unfinished standard workflows remaining; local skills root still in force
+
+### [2026-08-22 12:10] Agent: Composer
+- **Prompt**: use .agents/skills/* for next sessions (not installed globally anymore)
+- **Done**: Recorded High MEMORY trap; will invoke/author all `ws-*` from `$PWD/.agents/skills` only
+- **Result**: Compiled into MEMORY.md; resumed HEV Step 5 continues under local skills root
+
+### [2026-08-22 12:10] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr (resume unfinished standard workflow)
+- **Done**: Resumed us-217 at Step 9; stay-on-integration skip-check on develop; skipped Fix-PR (no PR; user chose complete-without-fix-pr); Phase A CLEAN
+- **Result**: Workflow us-217-20260819T121800Z status completed; Step 9 skipped as fix-pr-not-applicable
+
 ### [2026-08-22 11:35] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-write-spec harness benchmark for fictitious spec dry-runs + TLC scoring + snapshot compare
 - **Done**: Wrote `.agents/specs/harness-spec-benchmark.spec.md` (not registered); validate_spec PASS (27 ACs)
