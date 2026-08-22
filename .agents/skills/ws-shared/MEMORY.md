@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-22] CATALOG.md 24 KB context budget
+- **Layer**: `Harness`
+- **Module**: `CATALOG.md / test-context-budget.js`
+- **Severity**: `Medium`
+- **PathPattern**: `CATALOG.md, test/test-context-budget.js`
+- **Scenario / Context**: A membership-count edit plus existing CRLF pushed LF-normalized `CATALOG.md` over 24000 B, so `npm run test` failed at `test-context-budget.js` after the rest of the suite was green.
+- **DO NOT**: Grow CATALOG.md with long scope notes or duplicate `---` rules without measuring `utf8Size('CATALOG.md')` (CRLF stripped).
+- **INSTEAD DO**: Keep the root catalog under 24000 B UTF-8 LF; prune the scope note or duplicate separators before `npm run tests:harness-efficiency`.
+
+### [2026-08-22] Azure resolve-thread dry-run needs no remote
+- **Layer**: `Harness`
+- **Module**: `fix_pr_azure_context.py / test-provider-parity.js`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py, test/test-provider-parity.js`
+- **Scenario / Context**: `resolve-thread --dry-run` still called `detect_repository`. GitHub Actions remotes often omit a `.git` suffix, so the helper SystemExits while local Windows remotes pass. CI failed `Azure resolve-thread --dry-run works without --model` after local `npm test` was green.
+- **DO NOT**: Call `detect_repository` (or require an ADO `_git` remote) on `--dry-run` resolve-thread.
+- **INSTEAD DO**: Skip remote detection when `dry_run` is set; parse a repo name from any `url=` remote; run the dry-run spawn with `python3` on non-Windows.
+
 ### [2026-08-21] skill-integrity.json CRLF fails --check
 - **Layer**: `0`
 - **Module**: `bin/skill-integrity.json` / `generate-skill-integrity.js --check`

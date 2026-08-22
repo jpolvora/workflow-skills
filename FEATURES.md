@@ -212,13 +212,13 @@ Everything project-specific lives in one consumer-owned, gitignored file: `.agen
 | `issueTrackers` | GitHub and Azure DevOps credentials, CLI, converter scripts |
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
-| `defaults` | Execution mode, test globs, 32 KB context budget, optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, and portable per-phase model identifiers |
+| `defaults` | Execution mode, test globs, 32 KB context budget, optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, and legacy per-phase model identifiers |
 | `plans` / `reviews` / `preview` | Artifact roots, diagnostics root, and dry-run backend |
 | `rules` | Guardrail paths: harness, senior developer, karpathy, stack file, changelog file |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
 
-**Per-phase model switching:** the orchestrator session always runs under the active model; phase preferences apply only to subagents spawned via `dispatch-agent`, with graceful fallback when a switch fails.
+**Per-phase model switching:** the orchestrator session always runs under the active model. Named presets (`modelsPreset` / `modelPresets`), optional per-step `stepModels`, and legacy phase keys resolve the subagent model for standard `dispatch-agent` dispatches only, with graceful fallback when a switch fails.
 
 Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `backend.md`, `frontend.md`, `installed-skills.json`, `CHANGELOG.md`, `skill-integrity-local.json`.
 

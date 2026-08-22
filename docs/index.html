@@ -391,7 +391,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
           </div>
-          <p class="stepper-desc">Runs pre-PR automated test suites (unit, integration/E2E, coverage) plus an optional mutation-testing gate (kill/survive score vs threshold) when configured in project config. Optional <code>defaults.testingModel</code> selects a dedicated test-executor model for this step (falls back to <code>executionModel</code>).</p>
+          <p class="stepper-desc">Runs pre-PR automated test suites (unit, integration/E2E, coverage) plus an optional mutation-testing gate (kill/survive score vs threshold) when configured in project config. Optional <code>defaults.testingModel</code> selects a dedicated test-executor model for this step after <code>modelsPreset</code> / <code>stepModels</code> overrides (falls back to <code>executionModel</code>).</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-testing/SKILL.md">ws-testing</span>
@@ -1870,7 +1870,7 @@
     </div>
 
     <!-- Q11 -->
-    <div class="faq-item" data-faq-cat="config" data-search="testingModel test executor step 7 executionModel plannerModel reviewerModel">
+    <div class="faq-item" data-faq-cat="config" data-search="testingModel test executor step 7 executionModel plannerModel modelsPreset stepModels">
       <button type="button" class="faq-question" aria-expanded="false">
         <div class="faq-question-text">
           <span class="faq-cat-tag">Configuration</span>
@@ -1880,7 +1880,7 @@
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p>Optional model preference for <strong>standard Step 7</strong> (testing). When set, the orchestrator prefers that model for the test executor subagent. Empty or omitted falls back to <code>defaults.executionModel</code>, then the active session model. Lite has no Testing step and does not read <code>testingModel</code>.</p>
+          <p>Optional model preference for <strong>standard Step 7</strong> (testing). <code>modelsPreset</code> / <code>stepModels</code> overrides apply first. When set, the orchestrator prefers that model for the test executor subagent. Empty or omitted falls back to <code>defaults.executionModel</code>, then the active session model. Lite has no Testing step and does not read <code>testingModel</code>.</p>
         </div>
       </div>
     </div>

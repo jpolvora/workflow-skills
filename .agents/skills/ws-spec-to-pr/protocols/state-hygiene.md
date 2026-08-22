@@ -11,6 +11,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs dispatch \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --step {N} \
   --model {modelName} \
+  --substep {dag|scoreAndRefine|reviewFix} \
   --jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl
 
 node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
@@ -18,6 +19,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   --step {N} \
   --status {completed|failed|skipped} \
   --model {modelName} \
+  --substep {dag|scoreAndRefine|reviewFix} \
   --prompt-tokens {promptTokens} \
   --completion-tokens {completionTokens} \
   --created "{comma_separated_created_files}" \

@@ -89,7 +89,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 
 ### Model selection
 
-The orchestrator session always executes under the active session model (`currentModel`). Subagent phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in `config.json` → `defaults` apply exclusively to subagents spawned via `dispatch-agent`. Manual switching of the orchestrator session via Pause → session host → Resume is supported when desired. Fallback to the active model if a subagent model switch fails.
+The orchestrator session always executes under the active session model (`currentModel`). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels`, and legacy phase keys in `config.json` → `defaults`. Pass the resolved id on `dispatch-agent` and record with `--model` / optional `--substep` on `update_state.cjs`. Manual switching of the orchestrator session via Pause → session host → Resume is supported when desired. Fallback to the active model if a subagent model switch fails.
 
 ### Evidence runtime
 

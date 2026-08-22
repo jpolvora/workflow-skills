@@ -47,7 +47,7 @@ Orchestrator session model: {currentModel} | Subagent phase model: {targetSubage
 To use a different model for the orchestrator session: Pause → switch it in the session host → resume workflow.
 ````
 
-The orchestrator session ALWAYS runs under the active session model (`{currentModel}`). If `config.json` → `defaults` defines phase model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`), resolve `{targetSubagentModel}` for the subagent spawned at Step N; otherwise `{targetSubagentModel}` defaults to `{currentModel}`. If unknown, use `unknown`. Log `model | step {N} | {name} | ISO`. On change vs prior state value, also log `model-change | step {N} | {old} → {new} | ISO`.
+The orchestrator session ALWAYS runs under the active session model (`{currentModel}`). Resolve `{targetSubagentModel}` from `defaults.modelsPreset` / `modelPresets`, optional `stepModels`, and legacy phase keys for the subagent at Step N (or lite telemetry); otherwise `{targetSubagentModel}` defaults to `{currentModel}`. If unknown, use `unknown`. Log `model | step {N} | {name} | ISO`. On change vs prior state value, also log `model-change | step {N} | {old} → {new} | ISO`.
 
 **Primary options (always shown):**
 

@@ -91,13 +91,15 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 
 ### Subagent model preferences
 
-The orchestrator session ALWAYS runs under the active session model (`currentModel`). Model preferences in `config.json` → `defaults` (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) apply EXCLUSIVELY to subagents spawned via `dispatch-agent` in the **standard** orchestrator:
-- **Planning Phase**: `defaults.plannerModel` (standard Steps 0–3)
-- **Execution Phase**: `defaults.executionModel` (standard Step 4)
-- **Review Phase**: `defaults.reviewerModel` (standard Steps 5–6)
-- **Testing Phase (standard Step 7 only)**: non-empty `defaults.testingModel`, else `defaults.executionModel`, else the active session model. Lite does not read or apply `testingModel`.
+The orchestrator session ALWAYS runs under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels` (numeric `"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`), and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in **standard** `dispatch-agent` dispatches only:
 
-**Lite (`ws-spec-to-pr-lite`):** executes inline in the main orchestrator session with no `dispatch-agent` subagents, so phase model preferences do not apply. The session stays under `{currentModel}`. Resolve them only for telemetry recording, never to switch the session model.
+- **Resolve order (blank orch `--model`):** `stepModels[role|N]` → active preset `steps[role|N]` → top-level phase key → preset phase key → session. Token `"current"` uses session `currentModel` (no fallthrough). Unknown `modelsPreset` → preset `default` when present, else legacy four keys.
+- **Planning Phase**: `plannerModel` (standard Steps 0–3)
+- **Execution Phase**: `executionModel` (standard Step 4 sequential; role `dag` / `scoreAndRefine` / `reviewFix` when applicable)
+- **Review Phase**: `reviewerModel` (standard Steps 5–6)
+- **Testing Phase (standard Step 7 only)**: `testingModel` → `executionModel` → session **after** preset/`stepModels` overrides. Lite does not read or apply `testingModel`, `dag`, `scoreAndRefine`, or `reviewFix`.
+
+**Lite (`ws-spec-to-pr-lite`):** executes inline in the main orchestrator session with no `dispatch-agent` subagents, so models are resolved for telemetry / banner only. The session stays under `{currentModel}`. Apply `stepModels` `"0"`–`"5"` when set; phase buckets 0–1 / 2 / 3 / 4–5 session unless step override.
 
 **Portable parameterization:** when `dispatch-agent` exposes a model field, pass the configured identifier through that field. Otherwise include `Model: {modelName}` in the dispatch header when the host supports model hints.
 

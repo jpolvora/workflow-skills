@@ -115,48 +115,159 @@ def parse_errors_arg(value: str | None) -> list:
     return [sanitize_telemetry_string(part) for part in raw.split(",") if part.strip()]
 
 
-def resolve_phase_model(step: int, provided_model: str | None, fallback_model: str) -> str:
-    """Resolve target phase model from config.json defaults if provided_model is empty."""
-    if provided_model and provided_model.strip():
-        return provided_model.strip()
+def _is_non_empty_model(value) -> bool:
+    return isinstance(value, str) and bool(value.strip())
 
+
+KNOWN_SUBSTEPS = frozenset({"dag", "scoreAndRefine", "reviewFix"})
+
+
+def _normalize_substep(value: str | None) -> str | None:
+    if not _is_non_empty_model(value):
+        return None
+    role = value.strip()
+    return role if role in KNOWN_SUBSTEPS else None
+
+
+def _get_active_preset(defaults: dict) -> dict | None:
+    presets = defaults.get("modelPresets")
+    if not isinstance(presets, dict):
+        return None
+    selected = defaults.get("modelsPreset")
+    if _is_non_empty_model(selected) and selected.strip() in presets:
+        return presets[selected.strip()]
+    if "default" in presets:
+        return presets["default"]
+    return None
+
+
+def _resolve_step_override(defaults, preset, step_key: str, role: str | None, pipeline: str) -> str | None:
+    step_models = defaults.get("stepModels")
+    if isinstance(step_models, dict):
+        if pipeline != "lite" and role and _is_non_empty_model(step_models.get(role)):
+            return step_models[role].strip()
+        if _is_non_empty_model(step_models.get(step_key)):
+            step_num = int(step_key) if step_key.isdigit() else None
+            if pipeline != "lite" or (step_num is not None and 0 <= step_num <= 5):
+                return step_models[step_key].strip()
+    steps = preset.get("steps") if isinstance(preset, dict) else None
+    if isinstance(steps, dict):
+        if pipeline != "lite" and role and _is_non_empty_model(steps.get(role)):
+            return steps[role].strip()
+        if _is_non_empty_model(steps.get(step_key)):
+            step_num = int(step_key) if step_key.isdigit() else None
+            if pipeline != "lite" or (step_num is not None and 0 <= step_num <= 5):
+                return steps[step_key].strip()
+    return None
+
+
+def _resolve_phase_key_value(defaults, preset, phase_key: str | None) -> str | None:
+    if phase_key and _is_non_empty_model(defaults.get(phase_key)):
+        return defaults[phase_key].strip()
+    if phase_key and isinstance(preset, dict) and _is_non_empty_model(preset.get(phase_key)):
+        return preset[phase_key].strip()
+    return None
+
+
+def _resolve_standard_step7_chain(defaults, preset) -> str | None:
+    if _is_non_empty_model(defaults.get("testingModel")):
+        return defaults["testingModel"].strip()
+    if isinstance(preset, dict) and _is_non_empty_model(preset.get("testingModel")):
+        return preset["testingModel"].strip()
+    if _is_non_empty_model(defaults.get("executionModel")):
+        return defaults["executionModel"].strip()
+    if isinstance(preset, dict) and _is_non_empty_model(preset.get("executionModel")):
+        return preset["executionModel"].strip()
+    return None
+
+
+def _finalize_resolved_model(value: str, session_model: str) -> str:
+    if value == "current":
+        return session_model or "unknown"
+    if _is_non_empty_model(value):
+        return value.strip()
+    return session_model or "unknown"
+
+
+def _load_defaults_dict(injected: dict | None) -> dict:
+    if isinstance(injected, dict):
+        return injected
     candidates = [
         shared_dir(resolve_repo_root(script_file=__file__)) / "config.json",
         shared_dir(resolve_repo_root(script_file=__file__)) / "config.json.example",
     ]
-    defaults = None
     for cand in candidates:
         if cand.is_file():
             try:
-                with open(cand, "r", encoding="utf-8") as f:
-                    cfg = json.load(f)
+                with open(cand, "r", encoding="utf-8") as handle:
+                    cfg = json.load(handle)
                     defaults = cfg.get("defaults", {})
                     if isinstance(defaults, dict):
-                        break
+                        return defaults
             except Exception:
                 pass
+    return {}
 
-    if isinstance(defaults, dict):
-        key = None
-        if step in (0, 1, 2, 3):
-            key = "plannerModel"
-        elif step == 4:
-            key = "executionModel"
-        elif step in (5, 6):
-            key = "reviewerModel"
-        elif step == 7:
-            key = "testingModel"
 
-        if key:
-            val = defaults.get(key)
-            if isinstance(val, str) and val.strip():
-                return val.strip()
-            if step == 7:
-                exec_val = defaults.get("executionModel")
-                if isinstance(exec_val, str) and exec_val.strip():
-                    return exec_val.strip()
+def resolve_phase_model(
+    step: int,
+    provided_model: str | None,
+    fallback_model: str,
+    role: str | None = None,
+    pipeline: str = "standard",
+    defaults: dict | None = None,
+) -> str:
+    """Resolve target phase model from config.json defaults if provided_model is empty."""
+    if provided_model and provided_model.strip():
+        return provided_model.strip()
 
-    return fallback_model or "unknown"
+    defaults_dict = _load_defaults_dict(defaults)
+    session_model = fallback_model or "unknown"
+    step_key = str(step)
+    normalized_role = None if pipeline == "lite" else _normalize_substep(role)
+    preset = _get_active_preset(defaults_dict)
+    override = _resolve_step_override(defaults_dict, preset, step_key, normalized_role, pipeline)
+    if override:
+        return _finalize_resolved_model(override, session_model)
+
+    if pipeline == "lite":
+        if step in (0, 1):
+            phase_key = "plannerModel"
+        elif step == 2:
+            phase_key = "executionModel"
+        elif step == 3:
+            phase_key = "reviewerModel"
+        else:
+            phase_key = None
+        if phase_key:
+            phase_value = _resolve_phase_key_value(defaults_dict, preset, phase_key)
+            if phase_value:
+                return _finalize_resolved_model(phase_value, session_model)
+        return session_model or "unknown"
+
+    if normalized_role:
+        phase_key = "executionModel"
+    elif step in (0, 1, 2, 3):
+        phase_key = "plannerModel"
+    elif step == 4:
+        phase_key = "executionModel"
+    elif step in (5, 6):
+        phase_key = "reviewerModel"
+    elif step == 7:
+        phase_key = "step7-chain"
+    else:
+        phase_key = None
+
+    if phase_key == "step7-chain":
+        chain_value = _resolve_standard_step7_chain(defaults_dict, preset)
+        if chain_value:
+            return _finalize_resolved_model(chain_value, session_model)
+        return session_model or "unknown"
+    if phase_key:
+        phase_value = _resolve_phase_key_value(defaults_dict, preset, phase_key)
+        if phase_value:
+            return _finalize_resolved_model(phase_value, session_model)
+    return session_model or "unknown"
 
 
 def append_jsonl_record(jsonl_path: Path, record: dict) -> None:
@@ -491,6 +602,7 @@ def main():
     )
     parser.add_argument("--tokens", type=str, help="Tokens as prompt:completion (e.g. 1500:500)")
     parser.add_argument("--model", type=str, help="Model name used for the step")
+    parser.add_argument("--substep", type=str, help="Substep role (dag, scoreAndRefine, reviewFix)")
     parser.add_argument("--created", type=str, help="Comma-separated list of created files")
     parser.add_argument("--modified", type=str, help="Comma-separated list of modified files")
     parser.add_argument("--deleted", type=str, help="Comma-separated list of deleted files")
@@ -571,7 +683,13 @@ def main():
         step_dispatches.append({"step": step, "dispatched": iso_now})
     data["stepDispatches"] = step_dispatches
 
-    current_model = resolve_phase_model(step, args.model, data.get("currentModel", "unknown"))
+    current_model = resolve_phase_model(
+        step,
+        args.model,
+        data.get("currentModel", "unknown"),
+        role=args.substep,
+        pipeline="standard",
+    )
     step_models = data.get("stepModels", [])
     if not isinstance(step_models, list):
         step_models = []
