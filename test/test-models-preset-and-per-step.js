@@ -230,6 +230,58 @@ assert(dispatchRun.status === 0, `temp consumer dispatch: ${dispatchRun.stderr}`
 const updated = fs.readFileSync(stateFile, 'utf8');
 assert(/currentModel: cheap-planner/.test(updated), 'CJS --repo-root resolves preset from temp consumer hub');
 
+const roleCfg = JSON.parse(fs.readFileSync(path.join(tempShared, 'config.json'), 'utf8'));
+roleCfg.defaults.modelPresets.cheap.executionModel = 'sequential-exec';
+roleCfg.defaults.modelPresets.cheap.steps = { dag: 'dag-worker' };
+fs.writeFileSync(path.join(tempShared, 'config.json'), JSON.stringify(roleCfg));
+const roleState = path.join(tempStateDir, 'role.state.md');
+fs.writeFileSync(
+  roleState,
+  `---
+workflowId: wf-role
+slug: slug
+status: active
+currentStep: 4
+currentModel: temp-session
+revision: 0
+---
+`,
+);
+const dagDispatch = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'dispatch',
+    roleState,
+    '--step',
+    '4',
+    '--substep',
+    'dag',
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(dagDispatch.status === 0, `dag dispatch: ${dagDispatch.stderr}`);
+assert(/currentModel: dag-worker/.test(fs.readFileSync(roleState, 'utf8')), 'dispatch --substep dag records dag-worker');
+assert(/substep: dag/.test(fs.readFileSync(roleState, 'utf8')), 'dispatch persists substep on stepDispatches');
+const dagFinish = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'finish',
+    roleState,
+    '--step',
+    '4',
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(dagFinish.status === 0, `dag finish: ${dagFinish.stderr}`);
+assert(/currentModel: dag-worker/.test(fs.readFileSync(roleState, 'utf8')), 'finish without --substep keeps persisted dag role');
+assert(!/currentModel: sequential-exec/.test(fs.readFileSync(roleState, 'utf8')), 'finish does not fall back to step-4 execution bucket');
+
 if (failures) {
   console.error(`\n${failures} failure(s)`);
   process.exit(1);

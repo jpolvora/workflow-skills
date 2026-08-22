@@ -577,9 +577,14 @@ function resolvePhaseModel(defaults, { step, role, pipeline = 'standard', sessio
 
 function resolveRecordedModel(options, context, state, pipeline, step) {
   if (options.model && String(options.model).trim()) return String(options.model).trim();
+  let role = options.substep;
+  if (!role || !String(role).trim()) {
+    const prior = (state.stepDispatches || []).find((item) => Number(item.step) === Number(step));
+    role = prior?.substep;
+  }
   return resolvePhaseModel(context.config?.defaults || {}, {
     step,
-    role: options.substep,
+    role,
     pipeline,
     sessionModel: String(state.currentModel || 'unknown'),
   });
@@ -613,6 +618,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.currentStep = step;
     state.stepStatus[String(step)] = 'active';
     const dispatch = { step, dispatchedAt: timestamp };
+    if (options.substep && String(options.substep).trim()) {
+      dispatch.substep = String(options.substep).trim();
+    }
     state.stepDispatches = [...state.stepDispatches.filter((item) => Number(item.step) !== step), dispatch].sort((a, b) => a.step - b.step);
     state.currentModel = resolveRecordedModel(options, context, state, pipeline, step);
     options.model = state.currentModel;
@@ -697,9 +705,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.stepDispatches = state.stepDispatches
       .map((item) => {
         const dispatchedAt = dispatchTimestamp(item);
-        return dispatchedAt
-          ? { step: Number(item.step), dispatchedAt }
-          : null;
+        const row = { step: Number(item.step), dispatchedAt };
+        if (item.substep && String(item.substep).trim()) row.substep = String(item.substep).trim();
+        return dispatchedAt ? row : null;
       })
       .filter(Boolean)
       .sort((a, b) => a.step - b.step);
