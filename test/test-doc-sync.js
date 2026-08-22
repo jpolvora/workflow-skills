@@ -18,6 +18,11 @@ for (const relative of [
 ]) {
   assert.doesNotMatch(fs.readFileSync(path.join(repoRoot, relative), 'utf8'), /^(?:<{7}|={7}|>{7})/m, `${relative} has no conflict marker`);
 }
+const writeSpec = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-write-spec/SKILL.md'), 'utf8');
+assert.match(writeSpec, /Standalone `index\.PRD` gate/, 'write-spec standalone index.PRD gate');
+assert.match(writeSpec, /Add to index\.PRD \(Recommended\)/, 'write-spec index.PRD recommended option');
+const specIndex = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-index/SKILL.md'), 'utf8');
+assert.match(specIndex, /### 4\. `track`/, 'spec-index track mode');
 const site = fs.readFileSync(path.join(repoRoot, 'docs/index.html'), 'utf8');
 for (const heading of [
   'Context budgets and progressive disclosure',

@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Invent nested-quote `python -c` / `node -e` one-liners for frontmatter or YAML fields, or recover silently without an audit finding when `enableAuditing` is true.
 - **INSTEAD DO**: Use `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs`. On `-c`/`-e` SyntaxError, run `classify-shell-failure`, append both findings, and present `draft-remediation` user-gate (issue / draft PR / todo / copy / skip). Static gate: `check_shell_quoting.cjs` in Phase 5a.
 
+### [2026-08-22] Local skills only — no global install
+- **Layer**: `Harness`
+- **Module**: `AGENTS.md` Global vs local `ws-*` / skill invoke path`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-*/**, AGENTS.md`
+- **Scenario / Context**: Operator uninstalled the machine-wide `{globalSkillsRoot}` (`$HOME/.agents/skills`) copy. Sessions that still prefer global `Read`/`dispatch` paths fail with missing skill trees (e.g. `ws-spec-to-pr`, `ws-verify-plan`).
+- **DO NOT**: Prefer `{globalSkillsRoot}/ws-*` or assume a global install exists for invoke in this upstream package dogfood.
+- **INSTEAD DO**: Load and run all `ws-*` skills and scripts from `$PWD/.agents/skills/ws-*` (expand `{skillsRoot}` → `.agents/skills`). Author / invoke / hash / test from that tree only until a global install is restored intentionally.
+
 ### [2026-08-22] CATALOG.md 24 KB context budget
 - **Layer**: `Harness`
 - **Module**: `CATALOG.md / test-context-budget.js`
