@@ -178,6 +178,26 @@ function main() {
     'append without summary names the required field',
   );
 
+  const appendWhitespace = runNode([
+    'append',
+    '--session',
+    sessionJson,
+    '--finding',
+    JSON.stringify({
+      step: '4',
+      skill: 'ws-implement-tasks',
+      category: 'other',
+      severity: 'unusual',
+      summary: '   ',
+      recovered: true,
+    }),
+  ]);
+  assert(appendWhitespace.status === 2, 'append with whitespace-only summary exits 2');
+  assert(
+    /finding\.summary is required/.test(appendWhitespace.stderr || ''),
+    'append with whitespace-only summary names the required field',
+  );
+
   // Append error finding
   const appendError = runNode([
     'append',

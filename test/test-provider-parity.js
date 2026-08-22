@@ -251,6 +251,10 @@ for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
       !commentSrc.includes('?api-version=7.1"'),
       'ADO comment_issue.py does not POST comments with ga api-version=7.1',
     );
+    assert(
+      commentSrc.includes('posted.get("commentId")'),
+      'ADO comment_issue.py reads WIT commentId before fallback id',
+    );
   }
   for (const term of ['diff-regression', 'baseline', 'infra-flake']) {
     assert(intentsMd.includes(term), `${skillId} INTENTS.md check-pr-status has ${term}`);

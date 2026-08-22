@@ -156,7 +156,9 @@ def main() -> int:
         return 1
 
     result: dict[str, Any] = {"status": "ok", "workItemId": work_item_id}
-    comment_id = posted.get("id")
+    comment_id = posted.get("commentId")
+    if comment_id is None:
+        comment_id = posted.get("id")
     if comment_id is not None:
         result["commentId"] = comment_id
     print(json.dumps(result))
