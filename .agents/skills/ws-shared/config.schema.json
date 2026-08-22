@@ -127,6 +127,11 @@
           "default": false,
           "description": "When true, ws-spec-to-pr* orchestrators activate ws-audit runtime observer to log execution anomalies, diagnose performance/correctness, detect disposable scripts, and propose upstream GitHub issues/reusable tooling at run end. Omitted or missing config → effective false."
         },
+        "sessionLeases": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default when omitted), ws-spec-to-pr* bootstrap acquires a cooperative same-slug session lease under {plansDir}/.runtime/leases/ and orch git recipes take a short {plansDir}/.runtime/git.lock critical section. Explicit false disables acquire and git-lock (tests/nested helpers)."
+        },
         "enableDag": {
           "type": "boolean",
           "default": false,

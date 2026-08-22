@@ -2,10 +2,15 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 14:38] Agent: Composer
+- **Prompt**: implement audit-performance-correctness-and-reusable-scripts & workflow-session-leases in same PR on develop, then ws-ship-pr + ws-goal
+- **Done**: Confirmed audit suggestion categories/CLI already green; added session leases (schema, session_lease.cjs, config default-on, setup/orch/tools wiring, tests, FEATURES/index)
+- **Result**: Ready for ship on develop
+
 ### [2026-08-22 18:11] Agent: Composer
 - **Prompt**: update website, readme, agents, bump version, etc /ws-ship-pr /ws-goal-fix-pr
-- **Done**: Stamped release 0.3.31 (FEATURES/README/site/integrity + test-doc-sync pin); prepare board green
-- **Result**: Shipping develop→main (in progress)
+- **Done**: Stamped release 0.3.31 (FEATURES/README/site/integrity + test-doc-sync pin); prepare board green; goal-fix converged (0 threads); merged
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/229 MERGED
 
 ### [2026-08-22 18:04] Agent: Composer
 - **Prompt**: commit pending → checkout develop → merge feat/nested-quote-python-c-audit → push → /ws-ship-pr
