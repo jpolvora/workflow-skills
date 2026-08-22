@@ -165,14 +165,29 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Lite ignores testingModel, dag, scoreAndRefine, and reviewFix.",
+    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Lite ignores testingModel, dag, scoreAndRefine, and reviewFix. Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap) or copy a bundle's steps into stepModels. Empty numeric steps fall through to that preset's phase keys (lite 0-1 planner, 2 execution, 3 reviewer, 4-5 session).",
     "modelsPreset": "default",
     "modelPresets": {
       "default": {
         "plannerModel": "current",
         "executionModel": "current",
         "reviewerModel": "current",
-        "testingModel": "current"
+        "testingModel": "current",
+        "steps": {
+          "0": "current",
+          "1": "current",
+          "2": "current",
+          "3": "current",
+          "4": "",
+          "5": "",
+          "6": "current",
+          "7": "current",
+          "8": "current",
+          "9": "current",
+          "dag": "current",
+          "scoreAndRefine": "current",
+          "reviewFix": "current"
+        }
       },
       "cursor": {
         "plannerModel": "cursor-grok-4.6-xhigh",
@@ -180,7 +195,16 @@
         "testingModel": "composer-2.5",
         "reviewerModel": "cursor-grok-4.6-medium",
         "steps": {
+          "0": "",
+          "1": "",
           "2": "cursor-grok-4.6-xhigh",
+          "3": "",
+          "4": "",
+          "5": "",
+          "6": "",
+          "7": "",
+          "8": "current",
+          "9": "current",
           "dag": "composer-2.5",
           "scoreAndRefine": "composer-2.5",
           "reviewFix": "composer-2.5"
@@ -190,21 +214,67 @@
         "plannerModel": "opencode-go/deepseek-v4-pro",
         "executionModel": "opencode-go/deepseek-v4-flash",
         "testingModel": "composer-2.5",
-        "reviewerModel": "cursor-grok-4.6-medium"
+        "reviewerModel": "cursor-grok-4.6-medium",
+        "steps": {
+          "0": "",
+          "1": "",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
+          "6": "",
+          "7": "",
+          "8": "current",
+          "9": "current",
+          "dag": "opencode-go/deepseek-v4-flash",
+          "scoreAndRefine": "opencode-go/deepseek-v4-flash",
+          "reviewFix": "opencode-go/deepseek-v4-flash"
+        }
       },
       "opencode": {
         "plannerModel": "opencode-go/deepseek-v4-pro",
         "executionModel": "opencode-go/deepseek-v4-flash",
         "testingModel": "opencode-go/deepseek-v4-flash",
-        "reviewerModel": "opencode-go/deepseek-v4-pro"
+        "reviewerModel": "opencode-go/deepseek-v4-pro",
+        "steps": {
+          "0": "",
+          "1": "",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
+          "6": "",
+          "7": "",
+          "8": "current",
+          "9": "current",
+          "dag": "opencode-go/deepseek-v4-flash",
+          "scoreAndRefine": "opencode-go/deepseek-v4-flash",
+          "reviewFix": "opencode-go/deepseek-v4-flash"
+        }
       },
       "cheap": {
         "plannerModel": "composer-2.5",
         "executionModel": "composer-2.5",
         "testingModel": "composer-2.5",
-        "reviewerModel": "composer-2.5"
+        "reviewerModel": "composer-2.5",
+        "steps": {
+          "0": "",
+          "1": "",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
+          "6": "",
+          "7": "",
+          "8": "current",
+          "9": "current",
+          "dag": "composer-2.5",
+          "scoreAndRefine": "composer-2.5",
+          "reviewFix": "composer-2.5"
+        }
       }
     },
+    "_comment_stepModels": "Optional project-wide overrides (win over the active preset). Empty string = fall through. Keys 0-9 are standard steps; lite uses 0-5. Roles: dag, scoreAndRefine, reviewFix.",
     "stepModels": {
       "0": "",
       "1": "",

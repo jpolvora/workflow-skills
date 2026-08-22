@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 16:26] Agent: Cursor Grok 4.6
+- **Prompt**: Check model presets per step, then write defaults into config.json.example so new installs prefill preset templates
+- **Done**: Confirmed schema/resolver/interview already support modelsPreset + stepModels; filled per-step `steps` templates on shipped presets; aligned configure-project detection; copied templates into dogfood config.json
+- **Result**: Fresh consumer installs seed named presets with 0-9 + dag/scoreAndRefine/reviewFix slots
+
 ### [2026-08-22 16:20] Agent: Cursor Grok 4.6
 - **Prompt**: Add post fix-pr learning each goal-fix-pr loop so reviewer/CI mistakes go into memory/patterns
 - **Done**: ws-self-learning § Post fix-pr round; goal-fix-pr step 5 + fix-pr verify; deps, evals, tests, hubs

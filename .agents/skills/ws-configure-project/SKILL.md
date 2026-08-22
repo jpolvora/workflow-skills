@@ -25,7 +25,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 | Flag | Effect |
 |------|--------|
-| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`autoload`**, **`patterns`**). `defaults` includes delivery-commit artifacts and pattern tracking options. |
+| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`autoload`**, **`patterns`**). `defaults` includes delivery-commit artifacts, pattern tracking, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
 
@@ -73,3 +73,4 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - `providers.scm` never `local`; hybrid `active=local` + `scm=github|azure-devops` allowed.
 - Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/ws-shared/CHANGELOG.md` unless user picks otherwise.
 - Delivery commit artifacts (`defaults.deliveryCommitArtifacts`): interview under `defaults` / `--section defaults` per [`INTERVIEW.md`](INTERVIEW.md); recommended = refined plan on, delivery result off, opt-ins off (see [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8).
+- Models (`defaults` / `--section defaults`): pick `modelsPreset` from shipped `config.json.example` sample keys, then optional `stepModels` (`"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`); keep empty legacy phase keys unless the user wants an advanced override. Token `"current"` uses the session model.

@@ -39,7 +39,7 @@ Scan consumer **repo root** (not this skill package alone):
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
 | Fable skills in `{skillsRoot}` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: "refuted"` |
-| Session host exposes subagent model identifiers | Offer those portable identifiers for `defaults.plannerModel`, `defaults.executionModel`, `defaults.reviewerModel`, and `defaults.testingModel`; otherwise recommend empty values and active-session fallback |
+| Session host exposes subagent model identifiers | Offer those portable identifiers as `defaults.modelPresets` field values and optional `defaults.stepModels` overrides; still allow empty legacy phase keys. Mention `"current"` and unknown-`modelsPreset` fallback to preset `default`. If the host exposes no identifiers, recommend sample keys from `config.json.example` or Skip. |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
 
 ## Interview order
