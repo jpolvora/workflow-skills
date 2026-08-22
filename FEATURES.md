@@ -2,7 +2,7 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
-Package version: **0.3.28** · 45 skills + the `ws-shared` consumer hub.
+Package version: **0.3.30** · 48 skills (45 Workflows + 3 Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -244,12 +244,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.29)
+## 12. Recent evolution (0.3.22 → 0.3.30)
 
 Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.30** | Aug 21 | SCM provider parity tests, LF-pinned `bin/skill-integrity.json`, and a site/catalog stamp for the 48-skill inventory |
 | **0.3.29** | Aug 21 | Added `ws-spec-explain` (spec/US delivery panorama), `ws-cleanup` (confirm-gated leftover cleanup + `.gitignore` suggestions), and `ws-spec-archive` (harvest `{plansDir}` into `index.PRD` Archive + propose shipped-plan cleanup) to the Workflows package |
 | **0.3.22** | Aug 17 | DeepSeek harness hardening (PR #216): inline-dict commit SHA scanning in `validate_state`, the AC9 resume gate retargeted from the base branch to the integration branch, audit config resolved from the repo root, goal-loop runtime confined to `{us-dir}/.runtime` |
 | **0.3.23** | Aug 19 | Remote tracker issues now enter through `ws-write-spec` agentic reformulation instead of a raw converter dump, so a GitHub issue or Azure work item becomes a structured spec with real acceptance criteria |

@@ -2,6 +2,12 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 21:55] Agent: Cursor Grok 4.6
+- **Prompt**: update website, bump version, ws-ship-pr + ws-goal-fix-pr
+- **Done**: Bumped package to 0.3.30; rebuilt docs catalog; trimmed CATALOG.md under the 24 KB budget; regenerated integrity
+- **Result**: Site/footer/skill frontmatter aligned at 0.3.30; `npm run test` exit 0
+
+
 ### [2026-08-21 21:48] Agent: Cursor Grok 4.6
 - **Prompt**: add implementation provider parity to test-provider-parity.js (dev-only, not check-workflows)
 - **Done**: Sweep JSON aliases, local-spec SCM delegates, optional Azure --model; extended node test/test-provider-parity.js

@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** This root hub lists the **full upstream disk inventory** (Workflows + Extra + global discovery routes). Package membership is owned by [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 41 skills, `extra` = 3) — rows marked **(Extra)** below are absent from Workflows-only installs. The consumer-facing routes live in [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), which keeps Extra skills under its own `### Extra package (optional)` section so Workflows-only installs avoid phantom routes.
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 45, `extra` = 3). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -148,8 +148,6 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
-
----
 
 ---
 
