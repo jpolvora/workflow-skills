@@ -113,7 +113,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
    When `defaults.sessionLeases: false`, skip acquire/heartbeat/release/git-lock.
 
-5b. **Feature branch gate (new workflow only)** — runs after Identity when this is a **new** start (not resume). Resume paths skip 5b entirely (see [Resume / reset](#resume--reset) § branch resume). Do not stage or commit at bootstrap (`git add -A` forbidden).
+5b. **Feature branch gate (new workflow only)** — when session leases are enabled, wrap every destroyable git command in this gate (`checkout`, `fetch`+checkout, `stash` push/pop) with `session_lease.cjs git-lock --holder "{leaseId}"` … `git-unlock --holder "{leaseId}"`. — runs after Identity when this is a **new** start (not resume). Resume paths skip 5b entirely (see [Resume / reset](#resume--reset) § branch resume). Do not stage or commit at bootstrap (`git add -A` forbidden).
 
    **Resolve `{baseBranch}`** (before the gate): read `config.json` → `project.baseBranch` when set; else `Shell` `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh`. Gate copy uses `{baseBranch}` — never treat `master` as the sole hardcoded base example.
 

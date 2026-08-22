@@ -65,7 +65,7 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `commit-code` | Commit workflow product files from `files_touched` | When `defaults.sessionLeases` is not explicit `false`: run `node {skillsRoot}/ws-spec-to-pr/scripts/session_lease.cjs git-lock --plans-dir "{plansDir}"` before git and `git-unlock` after (success or fail). Path-scoped `Shell`: `HEAD` must equal `state.branch`; `git add -- <paths>` and `git add -u -- <deleted-paths>` from workflow `files_touched` (drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`). Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty `git diff --cached` → skip (no empty commit). Then `git commit -m "..."` |
+| `commit-code` | Commit workflow product files from `files_touched` | When `defaults.sessionLeases` is not explicit `false`: run `node {skillsRoot}/ws-spec-to-pr/scripts/session_lease.cjs git-lock --plans-dir "{plansDir}" --holder "{leaseId}"` before git and `git-unlock --holder "{leaseId}"` after (success or fail). Never unlock without the same holder. Path-scoped `Shell`: `HEAD` must equal `state.branch`; `git add -- <paths>` and `git add -u -- <deleted-paths>` from workflow `files_touched` (drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`). Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty `git diff --cached` → skip (no empty commit). Then `git commit -m "..."` |
 | `commit-delivery` | Commit configured delivery artifacts (Step 8) | Resolve stage list from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8; `Shell` `git add` only resolved `{us-dir}` paths then `git commit` (message may say “configured delivery artifacts”) |
 | `push-branch` | Push working branch | Same `git-lock` / `git-unlock` wrapper as `commit-code` when session leases enabled. `Shell` `git push {gitRemote} {workingBranch}` — from `config.project` |
 | `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`ws-github-provider`](../ws-github-provider/SKILL.md) or [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
@@ -143,3 +143,8 @@ Skill `.sh` dialect: Git Bash–compatible bash. Prefer Node/Python for new logi
 7. **Subagents: fresh per step** — never resume a subagent across steps.
 8. **Orch never edits code** — hard stop. Code changes spawn via `dispatch-agent`.
 9. **Paths via tokens** — expand [Path tokens](#path-tokens-load-first) before tool calls; never invent undeclared shorthands. `{plansDir}` / `{reviewsDir}` / `workingBranch` / `baseBranch` come from config; `{skillsRoot}` / `{sharedDir}` from `pathTokens` or defaults.
+
+
+### Session-lease git critical section
+
+When `defaults.sessionLeases` is not explicit `false`, wrap **every** destroyable git recipe (`checkout`, `reset`, `stash`, `merge`, `rebase`, `commit`, `push`) with `session_lease.cjs git-lock --holder "{leaseId}"` … command … `git-unlock --holder "{leaseId}"`. Feature-branch bootstrap (§5b) and resume checkouts use the same pair.
