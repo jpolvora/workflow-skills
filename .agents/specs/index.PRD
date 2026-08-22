@@ -151,7 +151,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 49 | `workflow-session-leases` | `[ ]` todo | Phase 4 | Cooperative session leases for parallel agents on one worktree |
 
 Open Next-spec: `skill-catalog-cleanup`, `hermes-spec-to-pr-enhancements` (partial), `audit-performance-correctness-and-reusable-scripts`, `fix-pr-proactive-class-sweep`, `harness-spec-benchmark`, `skill-family-naming`, `specify-closure-pack`, `unique-skill-script-runtime`, `workflow-session-leases`. Other new work goes to Inbox, then promote.
-s)
+
+## 9. Inbox
 
 - Advanced multi-repository orchestrator support
 - CI/CD workflow generator skill

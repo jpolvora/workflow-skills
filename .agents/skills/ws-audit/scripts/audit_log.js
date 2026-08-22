@@ -68,6 +68,8 @@ function detectLanguage(command = '', stderr = '') {
 /**
  * Classify shell / -c failures into mandatory audit findings.
  * Nested-quote python -c / node -e SyntaxErrors are always error + disposable-script.
+ * `nestedQuoteSmell` only sharpens messaging; it must not classify alone without a
+ * real `-c`/`-e` (or File "<string>") invocation plus failure evidence.
  */
 export function classifyShellFailure({
   command = '',
@@ -98,10 +100,12 @@ export function classifyShellFailure({
     /\(\[["']/.test(cmd);
 
   const findings = [];
-  if (!(isDashC || isSyntax || nestedQuoteSmell)) {
+  // Contract: only classify failed inline -c/-e (or File "<string>") runs.
+  // nestedQuoteSmell alone is never sufficient.
+  if (!isDashC) {
     return { matched: false, findings };
   }
-  if (!(isSyntax || nestedQuoteSmell || /Error|Traceback|Exception/i.test(blob))) {
+  if (!(isSyntax || /Error|Traceback|Exception/i.test(blob))) {
     return { matched: false, findings };
   }
 
@@ -122,8 +126,12 @@ export function classifyShellFailure({
     category: 'script',
     severity: 'error',
     summary: isSyntax
-      ? 'Inline -c/-e shell failed with SyntaxError (likely nested quoting)'
-      : 'Fragile inline -c/-e or nested-quote shell command failed',
+      ? (nestedQuoteSmell
+          ? 'Inline -c/-e shell failed with SyntaxError (likely nested quoting)'
+          : 'Inline -c/-e shell failed with SyntaxError')
+      : (nestedQuoteSmell
+          ? 'Fragile inline -c/-e shell failed (nested-quote smell present)'
+          : 'Fragile inline -c/-e shell command failed'),
     evidence,
     language,
     recommendation:

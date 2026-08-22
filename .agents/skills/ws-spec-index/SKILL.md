@@ -55,6 +55,12 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 
 ### 4. `track`
 
+Deterministic helper (preferred for tests/CI):
+
+```bash
+node {skillsRoot}/ws-spec-index/scripts/track_index.cjs --specs-dir {specsDir} --slug {slug}
+```
+
 - Require `{specsDir}/{slug}.spec.md` (spec of record). Title from frontmatter `title`.
 - If `{specsDir}/index.PRD` is missing: `skipped: "index.PRD missing"` (tell the user to `init`; do not invent an index).
 - If the slug already appears in Feature map or Next-specs: `skipped: "already tracked"`.

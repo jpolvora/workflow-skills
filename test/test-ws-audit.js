@@ -482,6 +482,20 @@ function main() {
     'classify includes disposable-script suggestion',
   );
 
+  // nestedQuoteSmell alone must NOT match (no -c/-e and no failure evidence)
+  const smellOnly = runNode([
+    'classify-shell-failure',
+    '--command',
+    `echo '["quoted"]'`,
+    '--stderr',
+    '',
+    '--step',
+    '4',
+  ]);
+  assert(smellOnly.status === 0, 'smell-only classify exits 0');
+  const smellClassified = JSON.parse(smellOnly.stdout.trim());
+  assert(smellClassified.matched === false, 'nestedQuoteSmell alone does not match');
+
   // Append classified findings into a fresh session and draft remediation options.
   // us-dir must stay inside the repo: audit_log persists repo-relative paths and rejects outside roots.
   const remUs = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-rem-'));
