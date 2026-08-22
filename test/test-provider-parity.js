@@ -180,7 +180,8 @@ assert(ghDry.status === 0, 'GitHub resolve_thread.cjs --dry-run exits 0');
 assert(/\[dry-run\]/.test(ghDry.stdout || ''), 'GitHub resolve_thread.cjs --dry-run prints dry-run (no GraphQL)');
 
 const adoScript = path.join(SKILLS, 'ws-azure-devops-provider/scripts/fix_pr_azure_context.py');
-const adoHelp = spawnSync('python', [adoScript, 'resolve-thread', '--help'], {
+const pythonBin = process.platform === 'win32' ? 'python' : 'python3';
+const adoHelp = spawnSync(pythonBin, [adoScript, 'resolve-thread', '--help'], {
   encoding: 'utf8',
   cwd: REPO,
 });
@@ -191,7 +192,7 @@ assert(
 );
 
 const adoDryNoModel = spawnSync(
-  'python',
+  pythonBin,
   [
     adoScript,
     'resolve-thread',

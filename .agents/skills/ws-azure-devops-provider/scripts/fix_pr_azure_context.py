@@ -254,8 +254,12 @@ def detect_repository(repo_root: Path) -> str:
         if match:
             return urllib.parse.unquote(match.group(1))
     for url in urls:
-        if url.rstrip().endswith(".git"):
-            return Path(url.rstrip()[:-4]).name
+        cleaned = url.strip().rstrip("/")
+        if cleaned.endswith(".git"):
+            cleaned = cleaned[:-4]
+        match = re.search(r"(?:[:/])([^/:]+)$", cleaned)
+        if match:
+            return urllib.parse.unquote(match.group(1))
 
     raise SystemExit("Pass --repository; Azure DevOps remote not found in .git/config.")
 
@@ -516,7 +520,10 @@ def main(argv: list[str]) -> int:
     ensure_utf8_stdio()
     args = parse_args(argv)
     repo_root = find_repo_root(Path(args.repo_root) if args.repo_root else Path.cwd())
-    repository = args.repository or detect_repository(repo_root)
+    if args.action == "resolve-thread" and args.dry_run:
+        repository = args.repository or "dry-run"
+    else:
+        repository = args.repository or detect_repository(repo_root)
 
     if args.action == "collect":
         payload = get_pr_context(repo_root, args.pr_id, repository, include_system=args.include_system)
