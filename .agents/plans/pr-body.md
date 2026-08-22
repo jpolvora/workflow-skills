@@ -1,16 +1,16 @@
 ## Summary
 
-Release **0.3.35** from `develop` → `main`.
+Release **0.3.36** from `develop` → `main`.
 
-- `validate_spec.cjs` `--help`/`-h` prints usage and exits 0 (was treated as a spec path → ENOENT on `cwd/--help`).
-- Unknown dash flags now fail with `unknown argument` instead of opening a file.
-- Package stamp 0.3.35 (site footer + skill frontmatter + integrity).
+- ADO `comment_issue.py` accepts optional `--org` / `--project` / `--api-base` / `--pat-env` (config remains the default). Close-loop matches work-item fetch CLI.
+- Package stamp 0.3.36.
 
 ## Test plan
 
-- [x] `node test/test-spec-lint.js` (includes `--help` / `--nope` assertions)
+- [x] `node test/test-provider-parity.js` (org/project dry-run spawn)
+- [x] `node test/test-hermes-spec-to-pr-enhancements.js`
 - [x] `npm run test` (exit 0)
-- [x] `npm run verify-integrity` (v0.3.35)
+- [x] `npm run verify-integrity` (v0.3.36)
 - [x] Leak scan: no HIGH findings
 - [ ] CI on this PR
 - [ ] `ws-goal-fix-pr` until review threads are 0

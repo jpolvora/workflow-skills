@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-08-22 19:55] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr collect now #234 review threads
+- **Done**: Mutating-path parity spawn (CLI org/project, empty PAT) asserts Missing PAT
+- **Result**: Dry-run-only override test cannot hide a broken apply_cli_overrides merge
+
+### [2026-08-22 19:50] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr + ws-goal-fix-pr (ADO comment_issue CLI)
+- **Done**: Merged main into develop; stamp 0.3.36; FEATURES + test-doc-sync pin
+- **Result**: Ready to PR develop→main as 0.3.36
+
+### [2026-08-22 19:45] Agent: Cursor Grok 4.6
+- **Prompt**: ADO `comment_issue.py` unrecognized `--org`/`--project`/`--api-base`/`--pat-env`
+- **Done**: Optional CLI overrides (config still default); INTENTS + parity dry-run spawn
+- **Result**: Fetch-style close-loop invocation parses; `--dry-run` still skips POST
+
 ### [2026-08-22 19:25] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr goal-fix-pr #233 usage omits --help
 - **Done**: usage() lists `[--help|-h]`; test asserts that token; integrity restamp
