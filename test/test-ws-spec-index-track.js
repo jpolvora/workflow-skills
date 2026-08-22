@@ -81,7 +81,6 @@ assert.match(after, /Open Next-spec:.*`lease-demo`/, 'open next-spec lists slug'
 const again = run(['--specs-dir', specs, '--slug', 'lease-demo']);
 assert.strictEqual(JSON.parse(again.stdout).reason, 'already tracked');
 
-// pipe in title must not break Next-specs columns
 fs.writeFileSync(
   path.join(specs, 'pipe-title.spec.md'),
   `---
@@ -96,6 +95,30 @@ source: local
 const piped = run(['--specs-dir', specs, '--slug', 'pipe-title']);
 assert.strictEqual(piped.status, 0, 'pipe-title track exits 0');
 const pipedIndex = fs.readFileSync(path.join(specs, 'index.PRD'), 'utf8');
-assert.match(pipedIndex, /Auth \| OAuth refactor/, 'title pipes escaped in table cell');
+assert.match(pipedIndex, /Auth \\\| OAuth refactor/, 'title pipes escaped in table cell');
+
+fs.writeFileSync(
+  path.join(specs, 'demo.spec.md'),
+  `---
+title: Demo
+source: local
+---
+
+# Demo
+`,
+  'utf8',
+);
+const demo = run(['--specs-dir', specs, '--slug', 'demo']);
+assert.strictEqual(JSON.parse(demo.stdout).status, 'tracked', 'substring slug must not skip');
+
+const trav = run(['--specs-dir', specs, '--slug', '../outside']);
+assert.strictEqual(trav.status, 2, 'traversal slug exits 2');
+assert.strictEqual(JSON.parse(trav.stdout).reason, 'invalid slug');
+
+const idxText = fs.readFileSync(path.join(specs, 'index.PRD'), 'utf8');
+assert.ok(
+  /\|\s*2\s*\|[^\n]*\n\|\s*3\s*\|/.test(idxText),
+  'next-specs rows contiguous',
+);
 
 console.log('All ws-spec-index track tests passed');

@@ -31,7 +31,11 @@ function readTitle(specPath) {
 
 function alreadyTracked(indexText, slug) {
   const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp('(?:spec:\\s*)?`?' + esc + '(?:\\.spec\\.md)?`?', 'i');
+  // Exact slug cell or `spec: slug.spec.md` — not a substring of another slug.
+  const re = new RegExp(
+    '(?:`spec:\\s*' + esc + '\\.spec\\.md`|\\|\\s*`' + esc + '`\\s*\\|)',
+    'i',
+  );
   return re.test(indexText);
 }
 
@@ -55,12 +59,59 @@ function escapeTableCell(value) {
     .replace(/[\r\n]+/g, ' ');
 }
 
+function isSafeSlug(slug) {
+  return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(slug);
+}
+
+function resolveUnder(specsDir, fileName) {
+  const root = path.resolve(specsDir);
+  const abs = path.resolve(root, fileName);
+  const rel = path.relative(root, abs);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    return null;
+  }
+  return abs;
+}
+
+function insertTableRow(indexText, row) {
+  const openIdx = indexText.search(/^Open Next-spec:/m);
+  if (openIdx !== -1) {
+    const before = indexText.slice(0, openIdx);
+    const after = indexText.slice(openIdx);
+    const lines = before.split(/\r?\n/);
+    let lastTableRow = -1;
+    for (let i = lines.length - 1; i >= 0; i--) {
+      if (/^\|.+\|\s*$/.test(lines[i])) {
+        lastTableRow = i;
+        break;
+      }
+    }
+    if (lastTableRow !== -1) {
+      lines.splice(lastTableRow + 1, 0, row);
+      // Keep a single blank line before Open Next-spec when present.
+      while (lines.length && lines[lines.length - 1] === '') lines.pop();
+      return lines.join('\n') + '\n\n' + after;
+    }
+    return before.replace(/\s*$/, '') + '\n' + row + '\n\n' + after;
+  }
+  if (/^##\s+9\.\s+Inbox/m.test(indexText)) {
+    return indexText.replace(/^##\s+9\.\s+Inbox/m, row + '\n\n## 9. Inbox');
+  }
+  return indexText.trimEnd() + '\n' + row + '\n';
+}
+
 function track({ specsDir, slug }) {
   if (!specsDir || !slug) {
     return { status: 'error', reason: 'missing --specs-dir or --slug' };
   }
-  const specPath = path.join(specsDir, slug + '.spec.md');
-  const indexPath = path.join(specsDir, 'index.PRD');
+  if (!isSafeSlug(slug)) {
+    return { status: 'error', reason: 'invalid slug', slug };
+  }
+  const specPath = resolveUnder(specsDir, slug + '.spec.md');
+  const indexPath = resolveUnder(specsDir, 'index.PRD');
+  if (!specPath || !indexPath) {
+    return { status: 'error', reason: 'slug escapes specs-dir', slug };
+  }
   if (!fs.existsSync(indexPath)) {
     return { status: 'skipped', reason: 'index.PRD missing', slug };
   }
@@ -123,13 +174,7 @@ function track({ specsDir, slug }) {
     });
   }
 
-  if (/^Open Next-spec:/m.test(indexText)) {
-    indexText = indexText.replace(/^Open Next-spec:/m, row + '\n\nOpen Next-spec:');
-  } else if (/^##\s+9\.\s+Inbox/m.test(indexText)) {
-    indexText = indexText.replace(/^##\s+9\.\s+Inbox/m, row + '\n\n## 9. Inbox');
-  } else {
-    indexText = indexText.trimEnd() + '\n' + row + '\n';
-  }
+  indexText = insertTableRow(indexText, row);
 
   fs.writeFileSync(indexPath, indexText, 'utf8');
   return { status: 'tracked', slug, title, row: n };
@@ -143,4 +188,12 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { track, alreadyTracked, readTitle, nextRowNumber, escapeTableCell };
+module.exports = {
+  track,
+  alreadyTracked,
+  readTitle,
+  nextRowNumber,
+  escapeTableCell,
+  isSafeSlug,
+  insertTableRow,
+};
