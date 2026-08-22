@@ -2,10 +2,75 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 13:10] Agent: Composer
+- **Prompt**: continue on same branch + commit for fix-pr-proactive-class-sweep
+- **Done**: Adopted `feat/nested-quote-python-c-audit`; restored/committed proactive sweep (`96afe3f`) + `tests:remote` fix (`262bdea`); Steps 6–8 done; ship skipped
+- **Result**: Workflow completed on feature branch (ahead 2); Phase A CLEAN
+
+### [2026-08-22 12:56] Agent: Cursor Grok 4.6
+- **Prompt**: Add to index.PRD (Recommended) for workflow-session-leases
+- **Done**: `ws-spec-index track workflow-session-leases` (Phase 4 Feature map + Next-specs row 38)
+- **Result**: Spec board lists the slug; no `{plansDir}` workflow created
+
+### [2026-08-22 12:55] Agent: Cursor Grok 4.6
+- **Prompt**: ws-write-spec should always ask after a manual invoke whether to register the spec into local index.PRD
+- **Done**: Standalone `index.PRD` user-gate on `ws-write-spec`; `ws-spec-index track`; hubs/FEATURES/README/dogfood §6; doc-sync asserts
+- **Result**: Orch Step 0 still skips the gate; Add is not workflow `--register`
+
+### [2026-08-22 12:33] Agent: Composer
+- **Prompt**: Audit must catch nested-quote python -c SyntaxErrors; create issue/PR/todo via user-gate (1B + 2Gate)
+- **Done**: Added classify-shell-failure + draft-remediation to ws-audit; extract_frontmatter_field.cjs; check_shell_quoting.cjs Phase 5a gate; orch + CROSS-PLATFORM wiring; tests
+- **Result**: Runtime + static capture path; remediation stays user-gate only
+
+### [2026-08-22 12:26] Agent: Composer
+- **Prompt**: add existing specs/plans to index.PRD with actual status (shipped vs open)
+- **Done**: Reconciled `.agents/specs/index.PRD` Feature map, Next-specs, and Done log for 10 previously unmapped specs + DeepSeek P1 plan; marked shipped vs partial vs todo from PR evidence
+- **Result**: All on-disk `*.spec.md` now have Feature map + Next-specs rows; open set listed in Open Next-spec line
+
+### [2026-08-22 12:17] Agent: Composer
+- **Prompt**: /ws-spec-to-pr score-and-refine on models-preset-and-per-step → Accept Pass 1
+- **Done**: Pass 1 score-analysis 10/10, 0 flagged; accepted as-is; no Second Pass; workflow re-completed
+- **Result**: PR 226 already merged; score-refine closed without code changes
+
+### [2026-08-22 12:11] Agent: Composer
+- **Prompt**: /ws-spec-to-pr resume HEV Step 5 → option 3 abandon
+- **Done**: Marked harness-efficiency-and-verifiability completed at Step 5; Phase A CLEAN; artifacts kept
+- **Result**: No unfinished standard workflows remaining; local skills root still in force
+
+### [2026-08-22 12:10] Agent: Composer
+- **Prompt**: use .agents/skills/* for next sessions (not installed globally anymore)
+- **Done**: Recorded High MEMORY trap; will invoke/author all `ws-*` from `$PWD/.agents/skills` only
+- **Result**: Compiled into MEMORY.md; resumed HEV Step 5 continues under local skills root
+
+### [2026-08-22 12:10] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr (resume unfinished standard workflow)
+- **Done**: Resumed us-217 at Step 9; stay-on-integration skip-check on develop; skipped Fix-PR (no PR; user chose complete-without-fix-pr); Phase A CLEAN
+- **Result**: Workflow us-217-20260819T121800Z status completed; Step 9 skipped as fix-pr-not-applicable
+
+### [2026-08-22 11:35] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-write-spec harness benchmark for fictitious spec dry-runs + TLC scoring + snapshot compare
+- **Done**: Wrote `.agents/specs/harness-spec-benchmark.spec.md` (not registered); validate_spec PASS (27 ACs)
+- **Result**: Upstream-only CLI spec: static/live prepare-collect, evidence-or-zero + discrimination sensor, baselines vs gitignored runs
+
+### [2026-08-22 11:23] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-write-spec unique Node-or-Python stack for all helper scripts + AGENTS.md/SKILL_AUTHORING rule
+- **Done**: Wrote `.agents/specs/unique-skill-script-runtime.spec.md` (not registered); locked Node 22; 26 ACs covering ports, dual deletion, docs/rules, harness gate
+- **Result**: Spec of record under `{specsDir}`; Python unique-stack and dual freeze rejected; ready to register / start workflow
+
 ### [2026-08-22 11:16] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 225
 - **Done**: Round 1 fixed WIT `commentId` key + whitespace audit test; resolved 2 threads; pushed `2e39202`; re-check `activeThreads: []` and CI green
 - **Result**: Converged; PR https://github.com/jpolvora/workflow-skills/pull/225 ready for caller merge (skill does not merge)
+
+### [2026-08-22 11:41] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr auto full models-preset + goal-fix-pr
+- **Done**: Shipped PR 226; fixed finish/--substep persist; merged to main; Phase A CLEAN
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/226 MERGED
+
+### [2026-08-22 11:30] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr auto full from models-preset-and-per-step.spec.md after GH issues empty
+- **Done**: Implemented presets + per-step resolve; score 10; review clean; tests + sabotage pass; product commit 79db57b
+- **Result**: Ready to push develop and open PR to main (stay-on-integration)
 
 ### [2026-08-22 11:00] Agent: Cursor Grok 4.6
 - **Prompt**: Write a spec for later implementation with the best TLC spec-driven ideas (delivery quality, performance, score near 10)

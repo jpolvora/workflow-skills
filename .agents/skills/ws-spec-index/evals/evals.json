@@ -14,12 +14,22 @@
     },
     {
       "id": 2,
-      "prompt": "/spec-index — edge case: missing or incomplete config.json",
+      "prompt": "/spec-index \u2014 edge case: missing or incomplete config.json",
       "expected_output": "Agent stops or bootstraps via configure-project/setup, not silent guessing.",
       "assertions": [
         "Recognizes ws-spec-index trigger from slash or @ invocation",
         "References ws-shared/config.json or configure-project when config missing",
         "Does not invent project-specific metadata"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/spec-index track lease-demo for an existing specsDir/lease-demo.spec.md into index.PRD",
+      "expected_output": "Feature map bullet + Next-specs row added, or skipped already tracked / missing index",
+      "assertions": [
+        "Uses track_index.cjs or follows track steps without creating plansDir artifacts",
+        "Appends Feature map checkbox and Next-specs row with next #",
+        "Skips when already tracked or index.PRD missing"
       ]
     }
   ]

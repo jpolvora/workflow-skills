@@ -73,11 +73,11 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
-| Draft a new local spec or reformulate tracker issue | [`ws-write-spec`](../ws-write-spec/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch |
+| Draft a new local spec or reformulate tracker issue | [`ws-write-spec`](../ws-write-spec/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch. Standalone: `user-gate` then `ws-spec-index` `track` |
 | Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../ws-spec-format/FORMAT.md) |
 | Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) | Not for free-text draft (use write-spec first); PR ops delegate to `providers.scm` |
 | List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |
-| Init / sync / promote `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence; does not harvest `{plansDir}` history (`ws-spec-archive`) |
+| Init / sync / promote / track `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence; `track` = add existing spec row; does not harvest `{plansDir}` history (`ws-spec-archive`) |
 | Harvest plan-folder facts into `index.PRD` Archive, then propose shipped-plan cleanup | [`ws-spec-archive`](../ws-spec-archive/SKILL.md) | Does not delete untracked scratch (that is `ws-cleanup`); does not rewrite AC bodies |
 | Spec text drifted from implemented code after prompts | [`ws-sync-spec`](../ws-sync-spec/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
 | Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
@@ -94,7 +94,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | format spec, validate AC, spec-format, missing acceptance criteria | `ws-spec-format` |
 | register spec, fetch-to-spec (file), promote spec into a workflow run | `ws-local-spec-provider` |
 | list specs, list plans, dual board, unlinked specs, manage workflows | `ws-spec-list` |
-| index.PRD, promote inbox, sync index status, init PRD | `ws-spec-index` |
+| index.PRD, promote inbox, sync index status, init PRD, track spec | `ws-spec-index` |
 | archive plans, archive index.PRD, harvest plan history | `ws-spec-archive` |
 | sync spec to code, spec drift, update AC after code change | `ws-sync-spec` |
 | spec to pr, full pipeline, standard orch | `ws-spec-to-pr` |

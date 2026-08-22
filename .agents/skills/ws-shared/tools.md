@@ -110,6 +110,7 @@ The orchestrator session ALWAYS runs under the active session model (`currentMod
 | Tool | Action | Native |
 |------|--------|--------|
 | `update-memory` | Write learned pattern | Create unique file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` |
+| `extract-frontmatter` | Read YAML frontmatter field(s) from markdown | `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs --file {path} --field slug` (prefer over `python -c` / nested-quote one-liners) |
 | `update-ws-changelog` | Append historical log | `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
 ## Script launchers

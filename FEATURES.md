@@ -123,11 +123,11 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria | `ws-write-spec` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
 | Canonical `*.spec.md` schema, section hierarchy, and AC rules | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
-| Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox | `ws-spec-index` |
+| Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
@@ -168,7 +168,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-preview` | External code-review dry-run on the current branch without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
 
-Harness dispatches use bounded `## Subagent contract` sections plus indexed plan slices. The fixed preamble is capped at 18 KB, matched MEMORY at 4 KB, and total dispatch context at `defaults.contextBudget` (32 KB by default). `measure_harness.cjs` reports the reduction against the measured baseline, while `check_duplicates.cjs` rejects duplicated normative blocks.
+Harness dispatches use bounded `## Subagent contract` sections plus indexed plan slices. The fixed preamble is capped at 18 KB, matched MEMORY at 4 KB, and total dispatch context at `defaults.contextBudget` (32 KB by default). `measure_harness.cjs` reports the reduction against the measured baseline, while `check_duplicates.cjs` rejects duplicated normative blocks. Phase 5a also runs `check_shell_quoting.cjs` to block nested-quote `python -c` / `node -e` one-liners.
 
 Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills telemetry report` renders per-run audit counts and median elapsed times by pipeline and step.
 
@@ -308,7 +308,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 | Skill | Pkg | Role |
 |-------|-----|------|
 | [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) | W | Canonical spec schema and validator |
-| [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | W | `index.PRD` lifecycle: init, sync, promote |
+| [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | W | `index.PRD` lifecycle: init, sync, promote, track |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Harvest plan history into `index.PRD` Archive; propose shipped-plan cleanup |
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
 | [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
@@ -330,7 +330,7 @@ Derived from the last 50 commits on `develop` (2026-08-16 → 2026-08-21).
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | W | Meta-harness integrity auditor |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | W | Workflow FSM simulation runner |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | W | Read-only install and runtime diagnosis |
-| [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | W | Runtime workflow observer and upstream issue drafter |
+| [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | W | Runtime observer; classify-shell-failure; draft-remediation user-gate (issue / draft PR / todo) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
 

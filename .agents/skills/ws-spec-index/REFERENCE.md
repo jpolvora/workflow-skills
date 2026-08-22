@@ -47,8 +47,8 @@ Consumer repositories may evolve their `index.PRD` layout. `ws-spec-index` opera
 
 ```yaml
 input:
-  mode: sync | init | promote
-  slug: string?                 # workflow slug when known
+  mode: sync | init | promote | track
+  slug: string?                 # workflow slug when known; required for track
   shipEvidence:                 # sync only
     deliveryCommit: boolean?
     prUrl: string?
@@ -57,6 +57,7 @@ input:
   indexFile: string?            # default index.PRD
   sourcePath: string?           # init: README/PRD/SPECS path or free text
   inboxItem: string?            # promote
+  # track: slug required; spec file `{specsDir}/{slug}.spec.md` must exist
 
 output:
   updated: string[]             # paths or row ids touched
@@ -68,6 +69,7 @@ output:
 1. `ws-spec-to-pr` Step 8: Call `sync` after successful delivery commit and/or create-PR ship action.
 2. `ws-spec-to-pr-lite` Step 4: Call `sync` on ship path with delivery evidence.
 3. `ws-ship-pr`: Call `sync` after successful ship action.
+4. `ws-write-spec` standalone (after user-gate **Add to index.PRD**): Call `track` with `{slug}`. Skip when orch Step 0 invoked write-spec.
 
 ## Out of Scope (v1)
 

@@ -2,7 +2,8 @@
 /**
  * ws-audit — runtime audit log helper for ws-spec-to-pr* orchestrators.
  * CLI: node audit_log.js <command> [options]
- * Commands: init | append | finalize | has-errors | has-suggestions | draft-issue | draft-suggestions-issue | resolve
+ * Commands: init | append | finalize | has-errors | has-suggestions |
+ *   draft-issue | draft-suggestions-issue | draft-remediation | classify-shell-failure | resolve
  */
 
 import fs from 'fs';
@@ -44,7 +45,175 @@ function usage() {
   node audit_log.js has-errors (--session <json>|--session-file <path>)
   node audit_log.js has-suggestions (--session <json>|--session-file <path>)
   node audit_log.js draft-issue (--session <json>|--session-file <path>) [--type error|suggestion|all] [--upstream <owner/repo>]
-  node audit_log.js draft-suggestions-issue (--session <json>|--session-file <path>) [--upstream <owner/repo>]`);
+  node audit_log.js draft-suggestions-issue (--session <json>|--session-file <path>) [--upstream <owner/repo>]
+  node audit_log.js draft-remediation (--session <json>|--session-file <path>) [--upstream <owner/repo>]
+  node audit_log.js classify-shell-failure [--command <text>] [--stderr <text>|--stderr-file <path>] [--stdout <text>|--stdout-file <path>] [--step <id>] [--skill <id>] [--recovered true|false]`);
+}
+
+function truncateEvidence(text, max = 800) {
+  const s = String(text || '').trim();
+  if (s.length <= max) return s;
+  return `${s.slice(0, max)}…`;
+}
+
+function detectLanguage(command = '', stderr = '') {
+  const blob = `${command}\n${stderr}`;
+  if (/python\b|File "<string>"|Traceback \(most recent call last\)/i.test(blob)) return 'python';
+  if (/\bnode\b|\bnodejs\b/i.test(blob)) return 'node';
+  if (/\bbash\b|\bsh\b/i.test(blob)) return 'bash';
+  if (/\bpowershell\b|\bpwsh\b/i.test(blob)) return 'powershell';
+  return null;
+}
+
+/**
+ * Classify shell / -c failures into mandatory audit findings.
+ * Nested-quote python -c / node -e SyntaxErrors are always error + disposable-script.
+ * `nestedQuoteSmell` only sharpens messaging; it must not classify alone without a
+ * real `-c`/`-e` (or File "<string>") invocation plus failure evidence.
+ */
+export function classifyShellFailure({
+  command = '',
+  stderr = '',
+  stdout = '',
+  step = 'other',
+  skill = null,
+  recovered = true,
+} = {}) {
+  const cmd = String(command || '');
+  const err = String(stderr || '');
+  const out = String(stdout || '');
+  const blob = `${err}\n${out}\n${cmd}`;
+  const isDashC =
+    /\bpython(?:3)?\s+-c\b/i.test(cmd) ||
+    /\bnode\s+(?:-e|--eval)\b/i.test(cmd);
+  const isSyntax =
+    /SyntaxError/i.test(blob) ||
+    /closing parenthesis .+ does not match/i.test(blob) ||
+    /unterminated (string|literal)/i.test(blob) ||
+    /unexpected EOF while parsing/i.test(blob);
+  const nestedQuoteSmell =
+    /\[["'`]/.test(cmd) ||
+    /\[[\\]*["']/.test(cmd) ||
+    /\[["']\]/.test(cmd) ||
+    /\[["']\?/.test(cmd) ||
+    /\(\[["']/.test(cmd);
+
+  const findings = [];
+  // Contract: only classify failed inline -c/-e runs (command must show python -c / node -e).
+  // nestedQuoteSmell alone is never sufficient.
+  if (!isDashC) {
+    return { matched: false, findings };
+  }
+  // AUDIT-FORMAT: SyntaxError / quoting failures only (not ModuleNotFoundError etc).
+  if (!(isSyntax || (nestedQuoteSmell && /SyntaxError|unterminated|closing parenthesis/i.test(blob)))) {
+    return { matched: false, findings };
+  }
+
+  const language = detectLanguage(cmd, err);
+  const evidence = truncateEvidence(
+    [cmd && `cmd: ${cmd}`, err && `stderr: ${err}`, out && `stdout: ${out}`]
+      .filter(Boolean)
+      .join('\n'),
+  );
+  const frontmatterHint = /slug\s*:|frontmatter|yaml/i.test(blob);
+  const targetAbstraction = frontmatterHint
+    ? 'ws-shared/scripts/extract_frontmatter_field.cjs'
+    : 'permanent companion script under {skillsRoot}/ws-*/scripts/ (see CROSS-PLATFORM.md)';
+
+  findings.push({
+    step,
+    skill,
+    category: 'script',
+    severity: 'error',
+    summary: isSyntax
+      ? (nestedQuoteSmell
+          ? 'Inline -c/-e shell failed with SyntaxError (likely nested quoting)'
+          : 'Inline -c/-e shell failed with SyntaxError')
+      : (nestedQuoteSmell
+          ? 'Fragile inline -c/-e shell failed (nested-quote smell present)'
+          : 'Fragile inline -c/-e shell command failed'),
+    evidence,
+    language,
+    recommendation:
+      'Do not recover silently. Prefer a permanent script file + explicit launcher. For YAML frontmatter fields use node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs.',
+    recovered: recovered === true,
+  });
+
+  findings.push({
+    step,
+    skill,
+    category: 'disposable-script',
+    severity: 'suggestion',
+    summary: 'Ad-hoc python -c / node -e one-liner should become a permanent helper',
+    evidence,
+    language,
+    targetAbstraction,
+    recommendation:
+      'Pre-generate the helper in the upstream package so agents do not invent nested-quote one-liners.',
+    recovered: recovered === true,
+  });
+
+  return { matched: true, findings };
+}
+
+/**
+ * Structured remediation gate payloads (issue / draft-PR / todo / copy / skip).
+ * Creation still requires user-gate acceptance — never auto-open.
+ */
+export function draftRemediationOptions(session, upstream = resolveUpstreamRepo()) {
+  const hasErrors = hasActionableErrors(session);
+  const hasSuggestions = hasActionableSuggestions(session);
+  const errorDraft = hasErrors ? draftIssueBody(session, upstream) : null;
+  const suggestionDraft = hasSuggestions ? draftSuggestionsIssueBody(session, upstream) : null;
+  const combined =
+    hasErrors && hasSuggestions ? draftCombinedIssueBody(session, upstream) : null;
+  const primary = combined || errorDraft || suggestionDraft;
+
+  const todoTitle = primary
+    ? primary.title
+    : `[runtime-audit] ${session.slug}: review audit findings`;
+  const todoBody = primary
+    ? primary.body
+    : `Review audit log ${session.logPath} and remediate findings.`;
+
+  return {
+    upstream,
+    logPath: session.logPath,
+    hasErrors,
+    hasSuggestions,
+    recommended: hasErrors ? 'open-issue' : hasSuggestions ? 'open-issue' : 'skip',
+    options: [
+      {
+        id: 'open-issue',
+        label: 'Open GitHub issue on upstream repo (Recommended when actionable)',
+        draft: primary,
+      },
+      {
+        id: 'draft-pr',
+        label: 'Open draft PR with a permanent helper / recipe fix',
+        guidance:
+          'After user acceptance only: implement the recommended permanent script or recipe fix on a feature branch, then gh pr create --draft targeting the configured project baseBranch (config.json project.baseBranch / git.baseBranch — never hardcode develop/main). Prefer extract_frontmatter_field.cjs or another {skillsRoot} companion over nested-quote python -c.',
+        draft: primary,
+      },
+      {
+        id: 'create-todo',
+        label: 'Create session todo / goal for remediation',
+        todo: {
+          title: todoTitle,
+          objective: todoBody.slice(0, 2000),
+        },
+      },
+      {
+        id: 'copy-draft',
+        label: 'Copy draft only',
+        draft: primary,
+      },
+      {
+        id: 'skip',
+        label: 'Skip',
+      },
+    ],
+  };
 }
 
 function readJsonArg(raw, label) {
@@ -573,6 +742,14 @@ function parseCli(argv) {
     else if (a === '--config') opts.config = args[++i];
     else if (a === '--upstream') opts.upstream = args[++i];
     else if (a === '--type') opts.type = args[++i];
+    else if (a === '--command') opts.command = args[++i];
+    else if (a === '--stderr') opts.stderr = args[++i];
+    else if (a === '--stderr-file') opts.stderrFile = args[++i];
+    else if (a === '--stdout') opts.stdout = args[++i];
+    else if (a === '--stdout-file') opts.stdoutFile = args[++i];
+    else if (a === '--step') opts.step = args[++i];
+    else if (a === '--skill') opts.skill = args[++i];
+    else if (a === '--recovered') opts.recovered = args[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
     else {
       console.error(`Unknown arg: ${a}`);
@@ -679,6 +856,46 @@ function main() {
     const session = resolveSessionInput(opts);
     const draft = draftSuggestionsIssueBody(session, opts.upstream);
     console.log(JSON.stringify({ status: 'success', draft }));
+    return;
+  }
+
+  if (cmd === 'draft-remediation') {
+    const session = resolveSessionInput(opts);
+    const remediation = draftRemediationOptions(session, opts.upstream);
+    console.log(JSON.stringify({ status: 'success', remediation }));
+    return;
+  }
+
+  if (cmd === 'classify-shell-failure') {
+    let stderr = opts.stderr || '';
+    let stdout = opts.stdout || '';
+    if (opts.stderrFile) {
+      try {
+        stderr = fs.readFileSync(path.resolve(opts.stderrFile), 'utf-8');
+      } catch (e) {
+        console.error(`Error: cannot read --stderr-file: ${e.message}`);
+        process.exit(2);
+      }
+    }
+    if (opts.stdoutFile) {
+      try {
+        stdout = fs.readFileSync(path.resolve(opts.stdoutFile), 'utf-8');
+      } catch (e) {
+        console.error(`Error: cannot read --stdout-file: ${e.message}`);
+        process.exit(2);
+      }
+    }
+    const recovered =
+      opts.recovered === undefined ? true : String(opts.recovered).toLowerCase() !== 'false';
+    const result = classifyShellFailure({
+      command: opts.command || '',
+      stderr,
+      stdout,
+      step: opts.step || 'other',
+      skill: opts.skill || null,
+      recovered,
+    });
+    console.log(JSON.stringify({ status: 'success', ...result }));
     return;
   }
 

@@ -265,7 +265,7 @@ Do not re-read or rewrite past changelog entries.
 
 When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-write-spec` / `ws-spec-format` unless authoring those skills.
 
-Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. When derived from a remote tracker issue, reformulate into explicit, testable agentic ACs while preserving the original human context in `## Original Issue Context` (`source: github` | `source: azure-devops`). For free-text: `source: local`, `id: null`. Optional `--register` / orch:
+Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. When derived from a remote tracker issue, reformulate into explicit, testable agentic ACs while preserving the original human context in `## Original Issue Context` (`source: github` | `source: azure-devops`). For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch:
 
 ```bash
 python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \

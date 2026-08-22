@@ -66,7 +66,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Spec → PR E2E | `ws-spec-to-pr` |
 | Spec → PR lite | `ws-spec-to-pr-lite` |
 | Batch spec delivery | `ws-multi-spec` |
-| Project spec index init/sync/promote | `ws-spec-index` |
+| Project spec index init/sync/promote/track | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Timesheet / activity hours for a delivery day | `ws-activity-report` |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |

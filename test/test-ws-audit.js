@@ -452,6 +452,116 @@ function main() {
     'resolve without --config from nested cwd reads repo-root config',
   );
 
+  // classify-shell-failure for nested-quote python -c SyntaxError
+  const classify = runNode([
+    'classify-shell-failure',
+    '--command',
+    `python -c "import re; re.search(r'^slug:\\\\s*[\\"']?([^\\"']+)', t)"`,
+    '--stderr',
+    'SyntaxError: closing parenthesis \']\' does not match opening parenthesis \'(\'\n  File "<string>", line 1',
+    '--step',
+    '4',
+    '--skill',
+    'ws-implement-tasks',
+    '--recovered',
+    'true',
+  ]);
+  assert(classify.status === 0, 'classify-shell-failure exits 0');
+  const classified = JSON.parse(classify.stdout.trim());
+  assert(classified.matched === true, 'classify-shell-failure matched nested-quote SyntaxError');
+  assert(
+    Array.isArray(classified.findings) && classified.findings.length === 2,
+    'classify returns error + disposable-script findings',
+  );
+  assert(
+    classified.findings.some((f) => f.category === 'script' && f.severity === 'error'),
+    'classify includes script error',
+  );
+  assert(
+    classified.findings.some((f) => f.category === 'disposable-script'),
+    'classify includes disposable-script suggestion',
+  );
+
+  // nestedQuoteSmell alone must NOT match (no -c/-e and no failure evidence)
+  const smellOnly = runNode([
+    'classify-shell-failure',
+    '--command',
+    `echo '["quoted"]'`,
+    '--stderr',
+    '',
+    '--step',
+    '4',
+  ]);
+  assert(smellOnly.status === 0, 'smell-only classify exits 0');
+  const smellClassified = JSON.parse(smellOnly.stdout.trim());
+  assert(smellClassified.matched === false, 'nestedQuoteSmell alone does not match');
+
+  // Non-quoting -c failures must not match this classifier
+  const modMissing = runNode([
+    'classify-shell-failure',
+    '--command',
+    'python -c "import missing_module_xyz"',
+    '--stderr',
+    'ModuleNotFoundError: No module named missing_module_xyz',
+    '--step',
+    '4',
+  ]);
+  assert(modMissing.status === 0, 'module-missing classify exits 0');
+  assert(
+    JSON.parse(modMissing.stdout.trim()).matched === false,
+    'ModuleNotFoundError must not match',
+  );
+
+  // Append classified findings into a fresh session and draft remediation options.
+  // us-dir must stay inside the repo: audit_log persists repo-relative paths and rejects outside roots.
+  const remUs = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-rem-'));
+  tmpRoots.push(remUs);
+  const remInit = runNode([
+    'init',
+    '--us-dir',
+    remUs,
+    '--slug',
+    'remediation-slug',
+  ]);
+  assert(remInit.status === 0, 'remediation init exits 0');
+  assert(Boolean(remInit.stdout && remInit.stdout.trim()), 'remediation init prints session JSON');
+  let remSession = JSON.parse(remInit.stdout).session;
+  for (const finding of classified.findings) {
+    const append = runNode([
+      'append',
+      '--session',
+      JSON.stringify(remSession),
+      '--finding',
+      JSON.stringify(finding),
+    ]);
+    assert(append.status === 0, 'append classified finding exits 0');
+    remSession = JSON.parse(append.stdout).session;
+  }
+  const remDraft = runNode([
+    'draft-remediation',
+    '--session',
+    JSON.stringify(remSession),
+  ]);
+  assert(remDraft.status === 0, 'draft-remediation exits 0');
+  const remObj = JSON.parse(remDraft.stdout.trim());
+  assert(remObj.remediation.hasErrors === true, 'remediation reports hasErrors');
+  assert(
+    remObj.remediation.options.some((o) => o.id === 'open-issue'),
+    'remediation includes open-issue',
+  );
+  assert(
+    remObj.remediation.options.some((o) => o.id === 'draft-pr'),
+    'remediation includes draft-pr',
+  );
+  assert(
+    remObj.remediation.options.some((o) => o.id === 'create-todo'),
+    'remediation includes create-todo',
+  );
+  assert(
+    remObj.remediation.options.some((o) => o.id === 'skip'),
+    'remediation includes skip',
+  );
+
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);

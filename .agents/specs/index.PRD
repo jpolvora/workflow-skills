@@ -72,7 +72,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Refine `ws-activity-report` human vs agent duration (`spec: refine-ws-activity-report-human-timing.spec.md`)
 - [x] `defaults.testingModel` test executor for standard Step 7 (`spec: testing-executor-model.spec.md`)
 - [x] Feature-branch strategy gate at workflow bootstrap (`spec: workflow-bootstrap-feature-branch.spec.md`)
-- [x] Phase-specific subagent LLM model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) (`spec: auto-mode-model-preferences.spec.md`)
+- [x] Phase-specific subagent LLM model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) (`plan: auto-mode-model-preferences/step-00-auto-mode-model-preferences.spec.md`)
 - [x] `defaults.enableDag` sequential-by-default task execution (`spec: add-enable-dag-config.spec.md`)
 - [x] `update_state.py` nested `telemetry.loc` + `completedSteps` union (`spec: us-202.spec.md`)
 - [x] Fix `ws-doctor` GitHub issues #204 and #205 (`spec: ws-doctor-204-205.spec.md`)
@@ -80,8 +80,20 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] `ws-preview` Extra pipeline-review dry-run skill (`spec: us-210.spec.md`)
 - [x] Hybrid/global consumer-root resolver for helper scripts (`spec: us-211.spec.md`)
 - [x] Commit workflow product files before code-review (`spec: commit-before-code-review.spec.md`)
+- [x] DeepSeek Harness-inspired P1: state versioning + resume/goal guards (`plan: deepseek-harness-improvements`)
+- [x] Enforce pattern/MEMORY consults in subagents (`spec: us-217.spec.md`)
+- [x] Port `ws-pre-daily` Extra skill to upstream (`spec: us-220.spec.md`)
+- [x] Harness efficiency, verifiability, and observability upgrade (`spec: harness-efficiency-and-verifiability.spec.md`)
+- [x] Config: model presets and per-step / substep model preferences (`spec: models-preset-and-per-step.spec.md`)
 - [ ] Skill catalog cleanup: Extra demotion and patterns merge (`spec: skill-catalog-cleanup.spec.md`)
-- [ ] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: hermes-spec-to-pr-enhancements.spec.md`)
+- [~] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: hermes-spec-to-pr-enhancements.spec.md`)
+- [ ] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: audit-performance-correctness-and-reusable-scripts.spec.md`)
+- [ ] `ws-fix-pr` proactive same-category discovery before resolve (`spec: fix-pr-proactive-class-sweep.spec.md`)
+- [ ] Harness spec-run benchmark with snapshot compare (`spec: harness-spec-benchmark.spec.md`)
+- [ ] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: skill-family-naming.spec.md`)
+- [ ] Specify-time closure pack for score-10 spec delivery (`spec: specify-closure-pack.spec.md`)
+- [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: unique-skill-script-runtime.spec.md`)
+- [ ] Cooperative session leases for parallel agents on one worktree (`spec: workflow-session-leases.spec.md`)
 
 ## 8. Next specs
 
@@ -123,11 +135,24 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 34 | `us-210` | `[x]` done | Phase 4 | ws-preview Extra pipeline-review dry-run (PR #214) |
 | 35 | `us-211` | `[x]` done | Phase 4 | Hybrid/global consumer-root resolvers (PR #212) |
 | 36 | `commit-before-code-review` | `[x]` done | Phase 4 | Product commit before Step 6 / lite Step 3 review (`3adbb3b`) |
-| 37 | `hermes-spec-to-pr-enhancements` | `[ ]` todo | Phase 4 | Duplicate sweep, design intent, class fixes, sabotage verification, CI triage, issue close-loop |
+| 37 | `deepseek-harness-improvements` | `[x]` done | Phase 4 | P1 state versioning + resume/goal guards (PR #216; plan-only, no `*.spec.md`) |
+| 38 | `us-217` | `[x]` done | Phase 4 | Pattern/MEMORY consult enforcement in subagents (PR #219) |
+| 39 | `us-220` | `[x]` done | Phase 4 | Port `ws-pre-daily` Extra skill (PR #219) |
+| 40 | `harness-efficiency-and-verifiability` | `[x]` done | Phase 4 | Efficiency/verifiability + explain/cleanup/archive skills (PR #223) |
+| 41 | `models-preset-and-per-step` | `[x]` done | Phase 4 | `modelsPreset` / `modelPresets` / `stepModels` (PR #226) |
+| 42 | `hermes-spec-to-pr-enhancements` | `[~]` partial | Phase 4 | Plan/result present; not shipped (no PR). Duplicate sweep, design intent, class fixes, sabotage, CI triage, close-loop |
+| 43 | `audit-performance-correctness-and-reusable-scripts` | `[ ]` todo | Phase 4 | Runtime audit suggestions for perf/correctness/reusable tooling |
+| 44 | `fix-pr-proactive-class-sweep` | `[ ]` todo | Phase 4 | Proactive same-defect-class sweep in cooperative fix |
+| 45 | `harness-spec-benchmark` | `[ ]` todo | Phase 4 | Upstream harness fixture benchmark + snapshot compare |
+| 46 | `skill-family-naming` | `[ ]` todo | Phase 4 | Regroup skill ids as `ws-{family}-{verb}` (spec family first) |
+| 47 | `specify-closure-pack` | `[ ]` todo | Phase 4 | Specify-time closure pack for score-10 delivery |
+| 48 | `unique-skill-script-runtime` | `[ ]` todo | Phase 4 | Node-only runtime for all packaged helper scripts |
 
-Open Next-spec: `skill-catalog-cleanup`, `hermes-spec-to-pr-enhancements`. Other new work goes to Inbox, then promote.
+| 49 | `workflow-session-leases` | `[ ]` todo | Phase 4 | Cooperative session leases for parallel agents on one worktree |
 
-## 9. Inbox (unscheduled ideas)
+Open Next-spec: `skill-catalog-cleanup`, `hermes-spec-to-pr-enhancements` (partial), `audit-performance-correctness-and-reusable-scripts`, `fix-pr-proactive-class-sweep`, `harness-spec-benchmark`, `skill-family-naming`, `specify-closure-pack`, `unique-skill-script-runtime`, `workflow-session-leases`. Other new work goes to Inbox, then promote.
+
+## 9. Inbox
 
 - Advanced multi-repository orchestrator support
 - CI/CD workflow generator skill
@@ -171,6 +196,11 @@ Open Next-spec: `skill-catalog-cleanup`, `hermes-spec-to-pr-enhancements`. Other
 | 2026-08-15 | `us-210` | ws-preview Extra pipeline-review dry-run skill | [PR #214](https://github.com/jpolvora/workflow-skills/pull/214) |
 | 2026-08-15 | `us-211` | Hybrid/global consumer-root resolver (`resolve_consumer_root` + script ports) | [PR #212](https://github.com/jpolvora/workflow-skills/pull/212) |
 | 2026-08-15 | `commit-before-code-review` | Required product commit before local code review | `3adbb3b` |
+| 2026-08-17 | `deepseek-harness-improvements` | DeepSeek Harness-inspired P1 (state versioning + resume/goal guards) | [PR #216](https://github.com/jpolvora/workflow-skills/pull/216) |
+| 2026-08-19 | `us-217` | Enforce pattern/MEMORY consults in subagents | [PR #219](https://github.com/jpolvora/workflow-skills/pull/219) |
+| 2026-08-19 | `us-220` | Port `ws-pre-daily` Extra skill to upstream | [PR #219](https://github.com/jpolvora/workflow-skills/pull/219) |
+| 2026-08-21 | `harness-efficiency-and-verifiability` | Harness efficiency/verifiability + explain/cleanup/archive skills | [PR #223](https://github.com/jpolvora/workflow-skills/pull/223) |
+| 2026-08-22 | `models-preset-and-per-step` | Config model presets and per-step / substep model preferences | [PR #226](https://github.com/jpolvora/workflow-skills/pull/226) |
 
 ## 11. Maintenance checklist
 
