@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-08-22 16:15] Agent: Cursor Grok 4.6
+- **Prompt**: Add test, bump version, commit
+- **Done**: Added `test/test-score-and-refine-second-pass.js`; stamped 0.3.33 (`build-site:bump` + integrity + FEATURES/README)
+- **Result**: Second-pass simplify contract is versioned and committed
+
+### [2026-08-22 16:10] Agent: Cursor Grok 4.6
+- **Prompt**: Add scoreAndRefine second-pass instruction to simplify overengineered ACs/tasks and remove unused workflow-introduced artifacts
+- **Done**: Canonical second-pass protocol in gates.md; STEP-DISPATCH / ws-implement-tasks / docs/FAQ/FEATURES aligned; contract test in test-quality-gates.js
+- **Result**: Optional polish now wide-context: simplify if possible, delete unused files/tests/methods/classes this workflow introduced
+
 ### [2026-08-22 15:10] Agent: Composer
 - **Prompt**: goal-fix PR #230 remaining review threads (skip-existing / plan step-00)
 - **Done**: Skip filter also treats `{plansDir}/us-{id}/step-00-us-{id}.spec.md` as existing; evals aligned

@@ -83,7 +83,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 | `skip-tests` | Skip implement-time test suite runs (build still runs) |
 | `full` | Step 8 Recommended = commit plan+result then create PR |
 | `strict` | Full verification matrix at Step 5 |
-| `score-and-refine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`). Score `< 9` always runs this loop until ≥ 9 |
+| `score-and-refine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score `< 9` always runs this loop until ≥ 9 |
 
 **Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/setup.md).
 

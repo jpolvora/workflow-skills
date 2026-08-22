@@ -1704,7 +1704,7 @@
           <ul>
             <li>Score <strong>&lt; 9</strong>: the orchestrator runs <code>scoreAndRefine</code> (re-implement flagged tasks, then re-verify) until ≥ 9.</li>
             <li>Max <strong>3</strong> rounds per Step 5 visit; then Pause (fail closed). Resume continues. Never auto-approve below 9, including in <code>autoMode</code>.</li>
-            <li>Optional polish (Accept As-Is) only when the score is already ≥ 9 and the <code>scoreAndRefine</code> flag is on.</li>
+            <li>Optional polish (Accept As-Is) only when the score is already ≥ 9 and the <code>scoreAndRefine</code> flag is on. Choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced files, tests, methods, and classes.</li>
           </ul>
           <p>Lite has no Step 5 verify gate. Product commit on standard runs only after score ≥ 9.</p>
         </div>
@@ -1916,7 +1916,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.32 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.33 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

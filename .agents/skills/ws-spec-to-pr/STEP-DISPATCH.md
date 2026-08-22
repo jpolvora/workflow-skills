@@ -59,7 +59,7 @@ When overall score is `< 9`, run `scoreAndRefine` even if `defaults.scoreAndRefi
 - Outputs `step-05-{slug}.score-analysis.md` containing task-by-task scores (0–10) and specific enhancement recommendations.
 - **Optional (AC6):** When `step-05-{slug}.score-analysis.md` exists, re-invoke `ws-classify-complexity` with `--score-analysis` before the score gate — advisory only; does not block Advance.
 - If overall score `< 9`: do **not** offer Accept Pass 1 As-Is. Re-dispatch `ws-implement-tasks` for tasks scoring `< 9`, then re-verify, until overall `≥ 9` (max 3 rounds; log `score-refine | round={n}/3`). After 3 rounds still `< 9`: Pause. Resume continues the loop.
-- If overall score already `≥ 9` and `scoreAndRefine` flag: prompt **Pass 1 Score Analysis Gate** via `user-gate` (Option 1: Proceed with Second Pass Refinement; Option 2: Accept Pass 1 As-Is & Ship; Option 3: Selective Refinement). Option 1 or 3 re-dispatches `ws-implement-tasks` for flagged tasks.
+- If overall score already `≥ 9` and `scoreAndRefine` flag: prompt **Pass 1 Score Analysis Gate** via `user-gate` (Option 1: Proceed with Second Pass Refinement; Option 2: Accept Pass 1 As-Is & Ship; Option 3: Selective Refinement). Option 1 or 3 re-dispatches `ws-implement-tasks` (role `scoreAndRefine`) for the **wide-context second pass** in [`gates.md`](../ws-shared/gates.md) § Score & Refine (item 4): full Pass 1 diff, overengineering sweep, unused workflow-introduced artifact removal. Option 1 runs even when zero tasks are flagged.
 
 | Score | Behavior |
 |-------|----------|
@@ -88,7 +88,7 @@ Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3`
 
 **Phase A git cleanup:** If this Step 8 ends the workflow with `status → completed` (no Step 9 / skip-PR), run Phase A **once** before claiming ended (`python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`). If advancing to Step 9, defer Phase A until Step 9 sets `completed` — never run Phase A at both steps. Exit 0 proceed; exit 2 surface leftovers (may claim ended); exit 1 do not claim ended.
 
-When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
+When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
 
 Telemetry/`--elapsed` still required under `autoMode`/`fullMode` (State Hygiene → HS-5 if missing).
 

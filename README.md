@@ -27,7 +27,7 @@ Portable **agent skills** that take a feature spec to a reviewed pull request. I
 |---------|--------------|
 | **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads with a proactive same-class sweep before resolve (steps 0–9). |
 | **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
-| **A derived 9/10 verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ 9**. Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. |
+| **A derived 9/10 verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ 9**. Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. Optional `scoreAndRefine` second pass then reviews the full diff for overengineering and unused workflow-introduced artifacts. |
 | **Verifiable runtime artifacts** | Atomic Node state updates publish deterministic `run.json` / `run.md`, a repo plans index, per-step JSONL telemetry, and a machine-readable AC ledger. |
 | **Smaller dispatch context** | Bounded subagent contracts and indexed plan slices replace repeated full-document payloads. Context and MEMORY budgets fail closed when exceeded. |
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |

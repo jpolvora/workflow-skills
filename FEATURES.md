@@ -2,7 +2,7 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
-Package version: **0.3.32** · 48 skills (45 Workflows + 3 Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.33** · 48 skills (45 Workflows + 3 Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -68,7 +68,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 | Gate | Rule | Owner |
 |------|------|-------|
 | **Derived verify score ≥ 9** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. Below 9 it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). | `ws-verify-plan` |
-| **Score & refine** | When a score is already ≥ 9 and `defaults.scoreAndRefine` is on, the user is offered a second polish pass with a task-by-task score analysis. | `ws-verify-plan` |
+| **Score & refine** | When a score is already ≥ 9 and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-verify-plan` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |
 | **Commit before review** | Product files must be committed before a review is dispatched, so the review always diffs a real `{base}...HEAD`. Uncommitted product files STOP the step. | `gates.md` (G2-code) |
 | **Regression sabotage** | When mutation testing is unset, Step 7 deliberately breaks assertions to confirm the suite actually catches regressions. | `ws-testing` (`run_sabotage.py`) |
@@ -249,12 +249,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.32)
+## 12. Recent evolution (0.3.22 → 0.3.33)
 
 Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.33** | Aug 22 | scoreAndRefine second pass (score already ≥ 9) reviews the full Pass 1 diff: simplify overengineered ACs/tasks; remove unused workflow-introduced files/tests/methods/classes |
 | **0.3.32** | Aug 22 | Runtime audit suggestion categories already shipped; cooperative session leases (`defaults.sessionLeases`, default on) with same-slug exclusive lock + short git critical section; schema/CLI/tests/docs |
 | **0.3.31** | Aug 22 | Nested-quote `python -c` / `node -e` audit classify + draft-remediation user-gate; `ws-fix-pr` / `ws-goal-fix-pr` proactive same-class sweep (multi-source discovery before resolve); standalone `ws-write-spec` gates `index.PRD` track via `ws-spec-index` |
 | **0.3.30** | Aug 21 | SCM provider parity tests, LF-pinned `bin/skill-integrity.json`, and a site/catalog stamp for the 48-skill inventory |

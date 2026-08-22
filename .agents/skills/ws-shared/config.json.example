@@ -131,7 +131,7 @@
     "skipTests": false,
     "fullMode": false,
     "scoreAndRefine": false,
-    "_comment_scoreAndRefine": "Optional extra polish when Step 5 score is already >= 9. Score < 9 always runs scoreAndRefine until >= 9 (max 3 rounds, then Pause).",
+    "_comment_scoreAndRefine": "Optional extra polish when Step 5 score is already >= 9 (wide-context overengineering sweep; unused workflow-introduced artifact removal). Score < 9 always runs scoreAndRefine until >= 9 (max 3 rounds, then Pause).",
     "autoload": false,
     "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
     "enableAuditing": false,

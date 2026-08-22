@@ -194,7 +194,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      2. Restart workflow from zero (overwrite/new run)
      3. View completed results & exit
      ```
-     Choosing Option 1 sets `scoreAndRefine: true` and dispatches Score Analysis / 2nd Pass execution.
+     Choosing Option 1 sets `scoreAndRefine: true` and dispatches Score Analysis / 2nd Pass execution (wide-context overengineering sweep per [`gates.md`](gates.md) § Score & Refine).
    - **Unfinished Workflow Check:** Filter `status: active` or `status: paused`. Present as **selectable list** via user-gate:
      ```text
      Found {N} unfinished workflow(s):

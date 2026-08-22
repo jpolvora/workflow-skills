@@ -1,7 +1,7 @@
 ---
 name: ws-goal-loop
 description: Generic convergence loop primitive — stateful loop engine providing sentinel management, heartbeat/settle timers, and re-check convergence control.
-version: 0.3.32
+version: 0.3.33
 disable-model-invocation: true
 invocation_names:
   - goal-loop
