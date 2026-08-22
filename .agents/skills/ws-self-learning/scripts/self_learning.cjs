@@ -26,7 +26,11 @@ function parseArgs(argv) {
 
 function field(text, names) {
   const escaped = names.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-  return text.match(new RegExp(`^- \\*\\*(?:${escaped})\\*\\*:\\s*(.*)$`, 'mi'))?.[1].trim().replace(/^`|`$/g, '') || '';
+  return text.match(new RegExp(`^- \\*\\*(?:${escaped})\\*\\*:\\s*(.*)$`, 'mi'))?.[1].trim() || '';
+}
+
+function unwrapTicks(value) {
+  return String(value || '').replace(/^`|`$/g, '');
 }
 
 function parseEntry(file) {
@@ -37,10 +41,10 @@ function parseEntry(file) {
     file: path.basename(file),
     date: header?.[1] || fallback?.[1] || '1970-01-01',
     title: header?.[2]?.trim() || fallback?.[2]?.replace(/[-_]/g, ' ') || path.basename(file, '.md'),
-    layer: field(text, ['Layer']),
-    module: field(text, ['Module']),
-    severity: field(text, ['Severity']),
-    pathPattern: field(text, ['PathPattern', 'Path Pattern', 'PathPatterns', 'Path', 'Paths']),
+    layer: unwrapTicks(field(text, ['Layer'])),
+    module: unwrapTicks(field(text, ['Module'])),
+    severity: unwrapTicks(field(text, ['Severity'])),
+    pathPattern: unwrapTicks(field(text, ['PathPattern', 'Path Pattern', 'PathPatterns', 'Path', 'Paths'])),
     scenario: field(text, ['Scenario / Context', 'Scenario/Context', 'Context', 'Scenario']),
     doNot: field(text, ['DO NOT', 'Do Not', 'DO_NOT', 'Trap Avoided']),
     instead: field(text, ['INSTEAD DO', 'Instead Do', 'INSTEAD_DO', 'Solution']),
@@ -68,7 +72,6 @@ function compile(context, memoryDir, output) {
     '---',
   ];
   const blocks = entries(memoryDir).map((entry) => [
-    '',
     `### [${entry.date}] ${entry.title}`,
     entry.layer && `- **Layer**: \`${entry.layer}\``,
     entry.module && `- **Module**: \`${entry.module}\``,
@@ -78,7 +81,7 @@ function compile(context, memoryDir, output) {
     entry.doNot && `- **DO NOT**: ${entry.doNot}`,
     entry.instead && `- **INSTEAD DO**: ${entry.instead}`,
   ].filter(Boolean).join('\n'));
-  fs.writeFileSync(output, `${header.join('\n')}${blocks.join('\n')}\n`, 'utf8');
+  fs.writeFileSync(output, `${header.join('\n')}\n\n${blocks.join('\n\n')}\n`, 'utf8');
   process.stdout.write(`Compiled ${blocks.length} memory entries into ${toRepoRelative(context.repoRoot, output, { allowOutside: true })}\n`);
 }
 

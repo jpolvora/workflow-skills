@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 17:15] Agent: Cursor Grok 4.6
+- **Prompt**: goal-fix-pr #231 review threads (MEMORY compile + patterns headers)
+- **Done**: self_learning.cjs heading separators and scenario backticks; dogfood backend.md/frontend.md consult `ws-patterns`; tests + compile
+- **Result**: Defect classes cleared for MEMORY compile formatting and retired pattern skill ids
+
 ### [2026-08-22 16:45] Agent: Cursor Grok 4.6
 - **Prompt**: Stamp 0.3.34 for combined next PR
 - **Done**: `npm run build-site:bump` + FEATURES evolution + integrity regenerate; index Done log SHA `89e7c96`

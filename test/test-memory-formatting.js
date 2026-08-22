@@ -11,15 +11,17 @@ const memoryDir = path.join(sharedDir, "memory");
 console.log("Running memory formatting test...");
 
 const testMemoryPath = path.join(memoryDir, "2026-07-30-test-actionable-format.md");
-const testMemoryContent = `### [2026-07-30] Test Actionable Directives
-- **Layer**: Tests
-- **Module**: SelfLearning
-- **Severity**: High
-- **PathPattern**: src/Tests/SelfLearning/*, test/test-memory-formatting.js
-- **Scenario / Context**: When writing anti-regression memory entries
-- **DO NOT**: Use vague, passive, or overly complex descriptions of traps
-- **INSTEAD DO**: State explicit DO NOT and INSTEAD DO actionable instructions
-`;
+const testMemoryContent = [
+  "### [2026-07-30] Test Actionable Directives",
+  "- **Layer**: Tests",
+  "- **Module**: SelfLearning",
+  "- **Severity**: High",
+  "- **PathPattern**: src/Tests/SelfLearning/*, test/test-memory-formatting.js",
+  "- **Scenario / Context**: `resolve-thread --dry-run` must not mutate remote threads",
+  "- **DO NOT**: Use vague, passive, or overly complex descriptions of traps",
+  "- **INSTEAD DO**: State explicit DO NOT and INSTEAD DO actionable instructions",
+  "",
+].join("\n");
 
 let createdFile = false;
 if (!fs.existsSync(memoryDir)) {
@@ -41,8 +43,11 @@ try {
   if (!compiledContent.includes("- **PathPattern**: `src/Tests/SelfLearning/*, test/test-memory-formatting.js`")) {
     throw new Error("Compiled MEMORY.md missing PathPattern field");
   }
-  if (!compiledContent.includes("- **Scenario / Context**: When writing anti-regression memory entries")) {
-    throw new Error("Compiled MEMORY.md missing Scenario / Context field");
+  if (!compiledContent.includes("---\n\n###")) {
+    throw new Error("Compiled MEMORY.md must separate the header closer from the first ### entry");
+  }
+  if (!compiledContent.includes("- **Scenario / Context**: `resolve-thread --dry-run` must not mutate remote threads")) {
+    throw new Error("Compiled MEMORY.md stripped scenario backticks");
   }
   if (!compiledContent.includes("- **DO NOT**: Use vague, passive, or overly complex descriptions of traps")) {
     throw new Error("Compiled MEMORY.md missing DO NOT field");
