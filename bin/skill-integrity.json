@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "d1c2ee81a3e7e5a7ed439463264b3d07d728d81c1eec4d6710dbee7a0c048ce6",
+  "fullPackageDigest": "0f6a864d1ef5bbe0c7f5b2288b356722d26ec660141adb93e6240baec307a23e",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -312,10 +312,10 @@
       "files": {
         "evals/evals.json": "42574f81b55d18f3523149dd048732e3d3dbe4da0bced7527fed87175c6cbf51",
         "scripts/self_learning.cjs": "c674bbe6d526ccbf0a0dcb47969ff83c0b5dc8dd35f342414981f19f86199e4d",
-        "scripts/self_learning.py": "cdfd62eea4aa37de05cc997121b1120c8abdb386ead3d2cac44b61be01637742",
+        "scripts/self_learning.py": "9647f4618d117a54ad333bbfb2fcab3753b1bf7742adf5d19ce9084b0976057c",
         "SKILL.md": "d074548b0092ab99da8fb3ab0a4a71311d17574f4877cb9ac4a01eb719e0d184"
       },
-      "skillDigest": "c1e1ac954958c75e3622226f8dbb8c1203fdeb611b4a935e465aa324478eb38d"
+      "skillDigest": "1c996848088188d38be3f5952ee8bd5136d521d6257926b5e09234a9f659d046"
     },
     "ws-senior-developer": {
       "files": {
