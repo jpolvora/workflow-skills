@@ -32,7 +32,7 @@ Every implementer `SKILL.md` intent table and `INTENTS.md` `## \`intent\`` headi
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | Prior PR hits + recent commits JSON | Run before plan/code; stdout uses repo-relative paths only; `validate-auth` first; advisory `dry-run` when auth missing (GitHub). |
 | `check-pr-status` | PR id | CI / policy / review-run status + triage | Finished when none are pending, in progress, or queued. On failure: fetch failed-check logs (`gh run view --log-failed` or ADO build log), classify each failed check as `diff-regression`, `baseline` (reproduced on `project.baseBranch`), or `infra-flake`; at most one flake rerun; record classification and whether rerun was used. |
 | `resolve-thread` | thread id (+ comment; PR id when the host requires it) | Resolved | Skip remote mutation when the caller is `dry-run`. |
-| `comment-issue` | tracker id, body (PR URL + summary) | Comment posted (alias `close-loop` in tools.md only) | Skip when `id` is null / `source: local` (exit 0 `skipped`). `dry-run` prints body, no POST. WIT Comments `api-version=7.1` on ADO (not PR threads). |
+| `comment-issue` | tracker id, body (PR URL + summary) | Comment posted (alias `close-loop` in tools.md only) | Skip when `id` is null / `source: local` (exit 0 `skipped`). `dry-run` prints body, no POST. WIT Comments `api-version=7.1-preview.4` on ADO (not PR threads). |
 | `merge-pr` | PR id | Merged | Wait for required checks or policies, then merge. Never delete `project.workingBranch`. |
 
 ---
