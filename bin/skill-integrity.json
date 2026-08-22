@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "dd81d8388ba4a3a4d943a6f7003629a900a3bf0360c9f4a8282bd0790ee6f813",
+  "fullPackageDigest": "3c8d1536bb47bb6305fbbecaa4d4c83168ce273959276c4fcd101d53d6b12106",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -26,7 +26,7 @@
       "plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
       "plans-index.schema.json": "7f40795ad30dd6deec567b7eb4f4758177da65b4c5633eebba59d44e989ed585",
       "run.schema.json": "d7b735086589e34c272bb14a3d0e895714aede0a3de6f1bf60be3c34116463f2",
-      "scm-provider-contract.md": "224727a8a6222f69ced309808111708b50cf4dab2e58c63bfb865cf8d3fb8e21",
+      "scm-provider-contract.md": "494864cb128157e3d4a5a722ce4f944fe0bf297a4d2c47e9f76a904d538ccdb3",
       "scripts/ac_counts.cjs": "8a91b1172476d805a90740231e96f8904e6dd045782b4ddb238a06818cedf0c5",
       "scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
       "scripts/resolve_consumer_root.cjs": "2f89f3d8f101795794c7a5e7182743a18e8b598533b1c444b81af76f7319338f",
@@ -41,7 +41,7 @@
       "tools.md": "3990ca90c3455b9e5fbfcb9aae2474d830a3782705ab9b26d343a99e848c830f",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "55e9e1cc49a7b16b4ceb69e8b5395be19890addde8e36e805798d7b2c3647b84"
+    "skillDigest": "670f15ffec4f27e2ac1b69050c2f52306b0a79ff539e56acc5ada01a5e706f7b"
   },
   "packageVersion": "0.3.30",
   "skills": {
@@ -60,22 +60,22 @@
       "files": {
         "AUDIT-FORMAT.md": "d70b826a54de55285ada79a8a4c5bbdd04b8b0b6dc9eedcf3b62f88325424eec",
         "evals/evals.json": "81652d21f9c77570dd4a59e8c79bc65b858786dd0740b6f59d15345f706790c3",
-        "scripts/audit_log.js": "3ea59f1e8d3b085a729d3e0b4608055c6678818383dccb0d082dc65131c3c204",
+        "scripts/audit_log.js": "565501242b4a03d4aca002853d1f3221a0f8270a4f63fede679f93aba1d3aab5",
         "SKILL.md": "55a7d9acfae73617cf96c91acd76c5b2024f978e69e8c2e3097b18266f7796d6"
       },
-      "skillDigest": "d34b1aa5d899d622df7c12b1629cc0be8cbac3c0ed9204366a6d143309318c30"
+      "skillDigest": "6f65fbdc6ab3f2885528b14ef843c669f2c204cc2a8bdd14946467fec8e8e587"
     },
     "ws-azure-devops-provider": {
       "files": {
         "evals/evals.json": "7f2cf9cd59c0fd70d6f5cf6214a81db79eef7c81edbf561fb594d7ff17195c30",
-        "INTENTS.md": "507633f4efa5fdefe749b7d8fd77395e8a29026890b75b473b901bfd459b9591",
+        "INTENTS.md": "01ce2b1ab99e99fdee883b518d4b2a7dc546ac1443e7ffa885662c0c3bbcc0df",
         "scripts/ado-workitem-to-spec.py": "6003aed16835cb99dacd037083f175ab9af6a2deaecd2b402ed146070714b8a7",
-        "scripts/comment_issue.py": "0082734e49cd684f69d537a0e1168f5318d9aa36fdf17d6f6f4b9984e0d1f160",
+        "scripts/comment_issue.py": "9867809bfd9ef22a1add91d727868c8bceb50c1d6f9c04ea9c86d042254c0781",
         "scripts/fix_pr_azure_context.py": "13cfc0f723a388e23bd4d24cc582580cfd438fcbe20e6b6f1a0854adca87957b",
         "scripts/sweep_prior_work.py": "971b009a3394ebc74d92671a6b5391951f63548fa92e8481e38865a7e6e07729",
-        "SKILL.md": "b1e9eadbb50335f34733be89bf3e15898cb2e0031a32b739a248076c2d786f70"
+        "SKILL.md": "4c4d5b521c6ffb80c2f02ac9eec13b73c9e1c884ba1924ede15dc99dd101ba5a"
       },
-      "skillDigest": "ec719bce1718d1a8795426fa62a4e9110ff4635e7edfa07fde6831f7b08c8cc0"
+      "skillDigest": "f288ceeff2dc9ed0573a54e4bd109f1ac3a71ac6cd4fb0d391611d1c3dfd7be4"
     },
     "ws-changelog": {
       "files": {

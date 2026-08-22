@@ -242,6 +242,16 @@ for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
     assert(commentSrc.includes(flag), `${skillId} comment_issue.py has ${flag}`);
   }
   assert(commentSrc.includes('"skipped"'), `${skillId} comment_issue.py skips null tracker id`);
+  if (skillId === 'ws-azure-devops-provider') {
+    assert(
+      commentSrc.includes('7.1-preview.4'),
+      'ADO comment_issue.py uses WIT Comments api-version=7.1-preview.4',
+    );
+    assert(
+      !commentSrc.includes('?api-version=7.1"'),
+      'ADO comment_issue.py does not POST comments with ga api-version=7.1',
+    );
+  }
   for (const term of ['diff-regression', 'baseline', 'infra-flake']) {
     assert(intentsMd.includes(term), `${skillId} INTENTS.md check-pr-status has ${term}`);
   }

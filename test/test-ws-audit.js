@@ -159,6 +159,25 @@ function main() {
   const initSugState = JSON.parse(initSuggestions.stdout);
   assert(initSugState.hasSuggestions === false, 'has-suggestions false initially');
 
+  const appendEmpty = runNode([
+    'append',
+    '--session',
+    sessionJson,
+    '--finding',
+    JSON.stringify({
+      step: '4',
+      skill: 'ws-implement-tasks',
+      category: 'other',
+      severity: 'unusual',
+      recovered: true,
+    }),
+  ]);
+  assert(appendEmpty.status === 2, 'append without summary exits 2');
+  assert(
+    /finding\.summary is required/.test(appendEmpty.stderr || ''),
+    'append without summary names the required field',
+  );
+
   // Append error finding
   const appendError = runNode([
     'append',

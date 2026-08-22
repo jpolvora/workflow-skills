@@ -2,7 +2,10 @@
 """
 Post a work-item comment on Azure DevOps (comment-issue intent).
 
-WIT Comments REST api-version=7.1 (not PR discussion threads).
+WIT Comments REST api-version=7.1-preview.4 (not PR discussion threads).
+
+The comments resource is still a preview API. `api-version=7.1` returns
+HTTP 400 VssInvalidPreviewVersionException ("The -preview flag must be supplied").
 """
 from __future__ import annotations
 
@@ -40,6 +43,9 @@ def ensure_utf8_stdio() -> None:
 
 ensure_utf8_stdio()
 
+WIT_COMMENTS_API_VERSION = "7.1-preview.4"
+
+
 def load_ado_config(repo_root: Path) -> dict[str, Any]:
     cfg_path = resolve_config_path(repo_root)
     if not cfg_path.is_file():
@@ -72,13 +78,13 @@ def validate_auth(ado: dict[str, Any]) -> tuple[bool, str]:
     return True, ""
 
 
-def post_comment(ado: dict[str, Any], work_item_id: int, body: str, pat: str) -> None:
+def post_comment(ado: dict[str, Any], work_item_id: int, body: str, pat: str) -> dict[str, Any]:
     org = ado["org"]
     project = ado["project"]
     api_base = (ado.get("apiBase") or "https://dev.azure.com").rstrip("/")
     url = (
         f"{api_base}/{org}/{project}/_apis/wit/workItems/{work_item_id}/comments"
-        f"?api-version=7.1"
+        f"?api-version={WIT_COMMENTS_API_VERSION}"
     )
     payload = json.dumps({"text": body}).encode("utf-8")
     req = urllib.request.Request(url, data=payload, method="POST")
@@ -87,7 +93,14 @@ def post_comment(ado: dict[str, Any], work_item_id: int, body: str, pat: str) ->
     req.add_header("Content-Type", "application/json")
     req.add_header("Accept", "application/json")
     with urllib.request.urlopen(req, timeout=60) as resp:
-        resp.read()
+        raw = resp.read().decode("utf-8")
+    if not raw.strip():
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
 
 
 def main() -> int:
@@ -133,12 +146,20 @@ def main() -> int:
     pat_env = (ado.get("patEnvVar") or "ADO_PAT").strip()
     pat = resolve_pat(pat_env)
     try:
-        post_comment(ado, work_item_id, body.strip(), pat)
+        posted = post_comment(ado, work_item_id, body.strip(), pat)
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        print(f"HTTP Error {exc.code}: {detail or exc.reason}", file=sys.stderr)
+        return 1
     except urllib.error.URLError as exc:
         print(str(exc), file=sys.stderr)
         return 1
 
-    print(json.dumps({"status": "ok", "workItemId": work_item_id}))
+    result: dict[str, Any] = {"status": "ok", "workItemId": work_item_id}
+    comment_id = posted.get("id")
+    if comment_id is not None:
+        result["commentId"] = comment_id
+    print(json.dumps(result))
     return 0
 
 

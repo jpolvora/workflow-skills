@@ -110,7 +110,7 @@ python .agents/skills/ws-azure-devops-provider/scripts/comment_issue.py \
   [--dry-run]
 ```
 
-- POST `{apiBase}/{org}/{project}/_apis/wit/workItems/{id}/comments?api-version=7.1` (WIT comment, not PR thread).
+- POST `{apiBase}/{org}/{project}/_apis/wit/workItems/{id}/comments?api-version=7.1-preview.4` (WIT comment, not PR thread). The comments resource is still preview; `api-version=7.1` returns `VssInvalidPreviewVersionException`.
 - Skip when tracker `id` is null. `--dry-run` prints body, no POST.
 - `validate-auth` before mutating.
 
