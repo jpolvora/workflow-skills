@@ -2,6 +2,21 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 21:15] Agent: Cursor Grok 4.6
+- **Prompt**: Enable only cursor-code-review.yml for now; commit and push
+- **Done**: OpenCode workflow is workflow_dispatch only; Cursor remains on pull_request to main
+- **Result**: PRs run Agentic Code Review (Cursor) only
+
+### [2026-08-21 21:13] Agent: Cursor Grok 4.6
+- **Prompt**: Backup code-review.yml as opencode-code-review.yml and create cursor-code-review.yml
+- **Done**: Split into OpenCode backup + Cursor workflow; removed shared code-review.yml to avoid duplicate jobs
+- **Result**: Both PRs-to-main workflows remain; distinct Action names for Cursor vs OpenCode
+
+### [2026-08-21 21:12] Agent: Cursor Grok 4.6
+- **Prompt**: Configure agentic-code-reviewers CI to cursor engine + composer 2.5; set CURSOR_API_KEY GitHub secret from env
+- **Done**: code-review.yml uses --engine cursor-sdk --model composer-2.5 and secrets.CURSOR_API_KEY; dropped OpenCode CLI install; CATALOG dry-run aligned
+- **Result**: Canonical IDs from agentic-code-reviewers release README; secret set via gh if env present
+
 ### [2026-08-21 20:08] Agent: Cursor Grok 4.6
 - **Prompt**: commit, push, /ws-goal-fix-pr
 - **Done**: Pushed enclosure/classify/fsync fixes; stamp step-artifact metadata on register, review persist, and finish

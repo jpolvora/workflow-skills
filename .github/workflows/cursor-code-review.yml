@@ -1,4 +1,4 @@
-name: Agentic Code Review
+name: Agentic Code Review (Cursor)
 
 on:
   pull_request:
@@ -18,28 +18,11 @@ jobs:
       - uses: actions/setup-node@v6
         with: { node-version: 22 }
 
-      # Pre-install with an authenticated release lookup. The opencode.ai installer
-      # otherwise hits unauthenticated api.github.com and fails with
-      # "Failed to fetch version information" on shared CI IPs (rate limit).
-      - name: Install OpenCode CLI
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          VERSION="$(gh api repos/anomalyco/opencode/releases/latest --jq '.tag_name' | sed 's/^v//')"
-          echo "Installing opencode v${VERSION}"
-          curl -fsSL https://opencode.ai/install -o /tmp/opencode-install.sh
-          bash /tmp/opencode-install.sh --version "$VERSION"
-          echo "${HOME}/.opencode/bin" >> "$GITHUB_PATH"
-          export PATH="${HOME}/.opencode/bin:${PATH}"
-          command -v opencode
-          opencode --version
-
       - name: Run code reviewer
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
-          # Default 600000 (10m) is tight for Custom-stack / large md+json diffs; OpenCode aborts with ERRO FATAL.
+          # Default 600000 (10m) is tight for Custom-stack / large md+json diffs.
           AGENTIC_CODE_REVIEWERS_TIMEOUT_MS: "1200000"
           # No --exclude-patterns CLI; extra globs merge into BASE_EXCLUDE (release dist/config.js).
           # Paths = config.json plans.dir / plans.specsDir ({plansDir} / {specsDir}).
@@ -50,8 +33,8 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh \
             -o /tmp/agentic-code-reviewers-run.sh
           bash /tmp/agentic-code-reviewers-run.sh \
-            --engine opencode \
-            --model opencode-go/deepseek-v4-flash \
+            --engine cursor-sdk \
+            --model composer-2.5 \
             --variant high \
             --gh \
             --stack Custom \
