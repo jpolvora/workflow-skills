@@ -85,13 +85,13 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Port `ws-pre-daily` Extra skill to upstream (`spec: us-220.spec.md`)
 - [x] Harness efficiency, verifiability, and observability upgrade (`spec: harness-efficiency-and-verifiability.spec.md`)
 - [x] Config: model presets and per-step / substep model preferences (`spec: models-preset-and-per-step.spec.md`)
-- [ ] Skill catalog cleanup: Extra demotion and patterns merge (`spec: skill-catalog-cleanup.spec.md`)
+- [x] Skill catalog cleanup: Extra demotion and patterns merge (`spec: skill-catalog-cleanup.spec.md`)
 - [~] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: hermes-spec-to-pr-enhancements.spec.md`)
 - [x] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: audit-performance-correctness-and-reusable-scripts.spec.md`)
-- [ ] `ws-fix-pr` proactive same-category discovery before resolve (`spec: fix-pr-proactive-class-sweep.spec.md`)
+- [x] `ws-fix-pr` proactive same-category discovery before resolve (`spec: fix-pr-proactive-class-sweep.spec.md`)
 - [ ] Harness spec-run benchmark with snapshot compare (`spec: harness-spec-benchmark.spec.md`)
 - [ ] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: skill-family-naming.spec.md`)
-- [ ] Specify-time closure pack for score-10 spec delivery (`spec: specify-closure-pack.spec.md`)
+- [x] Specify-time closure pack for score-10 spec delivery (`spec: specify-closure-pack.spec.md`)
 - [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: unique-skill-script-runtime.spec.md`)
 - [x] Cooperative session leases for parallel agents on one worktree (`spec: workflow-session-leases.spec.md`)
 
@@ -127,7 +127,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 26 | `testing-executor-model` | `[x]` done | Phase 4 | `defaults.testingModel` Step 7 executor (PR #195) |
 | 27 | `workflow-bootstrap-feature-branch` | `[x]` done | Phase 4 | Feature-branch gate at bootstrap (PR #194) |
 | 28 | `auto-mode-model-preferences` | `[x]` done | Phase 4 | Phase-specific subagent LLM model preferences (PR #200) |
-| 29 | `skill-catalog-cleanup` | `[ ]` todo | Phase 4 | Demote niche skills to Extra; merge `ws-patterns-*` into `ws-patterns` |
+| 29 | `skill-catalog-cleanup` | `[x]` done | Phase 4 | Demote niche skills to Extra; merge `ws-patterns-*` into `ws-patterns` |
 | 30 | `add-enable-dag-config` | `[x]` done | Phase 4 | `defaults.enableDag` sequential default (PR #199) |
 | 31 | `us-202` | `[x]` done | Phase 4 | `update_state.py` loc YAML + completedSteps union (PR #203) |
 | 32 | `ws-doctor-204-205` | `[x]` done | Phase 4 | Doctor launcher docs + skill-folder `docs/` resolution (PR #206) |
@@ -142,15 +142,15 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 41 | `models-preset-and-per-step` | `[x]` done | Phase 4 | `modelsPreset` / `modelPresets` / `stepModels` (PR #226) |
 | 42 | `hermes-spec-to-pr-enhancements` | `[~]` partial | Phase 4 | Plan/result present; not shipped (no PR). Duplicate sweep, design intent, class fixes, sabotage, CI triage, close-loop |
 | 43 | `audit-performance-correctness-and-reusable-scripts` | `[x]` done | Phase 4 | Runtime audit suggestions for perf/correctness/reusable tooling |
-| 44 | `fix-pr-proactive-class-sweep` | `[ ]` todo | Phase 4 | Proactive same-defect-class sweep in cooperative fix |
+| 44 | `fix-pr-proactive-class-sweep` | `[x]` done | Phase 4 | Proactive same-defect-class sweep in cooperative fix |
 | 45 | `harness-spec-benchmark` | `[ ]` todo | Phase 4 | Upstream harness fixture benchmark + snapshot compare |
 | 46 | `skill-family-naming` | `[ ]` todo | Phase 4 | Regroup skill ids as `ws-{family}-{verb}` (spec family first) |
-| 47 | `specify-closure-pack` | `[ ]` todo | Phase 4 | Specify-time closure pack for score-10 delivery |
+| 47 | `specify-closure-pack` | `[x]` done | Phase 4 | Specify-time closure pack for score-10 delivery |
 | 48 | `unique-skill-script-runtime` | `[ ]` todo | Phase 4 | Node-only runtime for all packaged helper scripts |
 
 | 49 | `workflow-session-leases` | `[x]` done | Phase 4 | Cooperative session leases for parallel agents on one worktree |
 
-Open Next-spec: `skill-catalog-cleanup`, `hermes-spec-to-pr-enhancements` (partial), `fix-pr-proactive-class-sweep`, `harness-spec-benchmark`, `skill-family-naming`, `specify-closure-pack`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote.
 
 ## 9. Inbox
 

@@ -66,7 +66,51 @@ specDate: 2026-07-02
 ## Notes
 
 (technical considerations, dependencies, constraints)
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| (named non-goal) | (why it is excluded) |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| (decision) | (value or `N/A because …`) | (why) | y/n |
 ```
+
+## Closure sections (required for new specs)
+
+`ws-write-spec` and Step 0 **authoring** validation require these headings. Historical specs may omit them; `validate_spec.cjs` default `--mode=compat` warns without failing.
+
+### Out of Scope
+
+Markdown table with columns **Feature** and **Reason**. At least one data row. Name work that will not ship in this spec.
+
+### Assumptions & Open Questions
+
+Markdown table with columns **Assumption**, **Chosen default**, **Rationale**, and **Confirmed**. Every data row must have a non-empty, non-placeholder Chosen default and Rationale. Collapse dimensions that do not apply into one row whose Chosen default or Rationale starts with `N/A because`.
+
+### Implicit-requirement dimensions
+
+Cover dimensions that are obviously present for the feature as ACs, or collapse the rest into one Assumptions `N/A because` row (do not invent ACs for absent dimensions).
+
+| Dimension | What to cover |
+|-----------|----------------|
+| Input validation and bounds | Limits, formats, sanitization |
+| Failure and partial-failure | Timeouts, partial saves, rollbacks |
+| Idempotency / retry / dedup | Safe retries, dedup keys |
+| Auth boundaries and rate limits | Who can call what, throttle rules |
+| Concurrency / ordering | Races, ordering guarantees |
+| Data lifecycle / expiry | TTL, archival, deletion |
+| Observability | Logging, metrics, tracing hooks |
+| External-dependency failure | Fallbacks, timeouts |
+| State-transition integrity | Valid transitions, guards |
+
+### Optional companion
+
+Gray area with two or more valid product options → `{specsDir}/{slug}.context.md` (Feature Boundary, Implementation Decisions, Deferred Ideas). Never write an empty companion. It is a spec companion, not a `{plansDir}` artifact.
 
 ## Validation
 
@@ -76,4 +120,5 @@ specDate: 2026-07-02
 4. Modification / bugfix specs → `### Design Intent` required (or documented skip for greenfield).
 5. `*.issue.json` is audit-only — downstream workflow skills read `step-00-*.spec.md` only.
 6. Local specs (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
+7. New specs: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring <spec>` must exit 0 (closure headings + tables). Omit `--mode` (compat) for historical files: same errors as before, plus warnings for missing closure.
 

@@ -4,16 +4,23 @@
 const fs = require('fs');
 const path = require('path');
 
+const PLACEHOLDER = /^(?:tbd|todo|placeholder|\?+|[-–—.]{1,3}|\.{3}|n\/?a)$/i;
+
 function parseArgs(argv) {
-  const options = { json: false, modification: false };
+  const options = { json: false, modification: false, mode: 'compat' };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--json' || token === '--modification') options[token.slice(2)] = true;
     else if (token === '--repo-root') options.repoRoot = argv[++index];
+    else if (token === '--mode') options.mode = String(argv[++index] || '').trim();
+    else if (token.startsWith('--mode=')) options.mode = token.slice('--mode='.length).trim();
     else if (!options.spec) options.spec = token;
     else throw new Error(`unknown argument: ${token}`);
   }
   if (!options.spec) throw new Error('spec path is required');
+  if (!['authoring', 'compat'].includes(options.mode)) {
+    throw new Error('--mode must be authoring or compat');
+  }
   return options;
 }
 
@@ -35,6 +42,84 @@ function compositeReason(text) {
   const openingImperative = /^(?:add|assert|build|check|create|emit|enforce|ensure|fail|implement|include|keep|make|persist|publish|record|reject|remove|render|report|require|run|search|store|support|update|validate|verify|write)\b/i.test(text.trim());
   if (openingImperative && joinedImperatives.length > 1) return 'more than one conjunction-joined imperative';
   return '';
+}
+
+function headingPresent(text, heading) {
+  return new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm').test(text);
+}
+
+function tableAfterHeading(text, heading) {
+  const start = text.search(new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm'));
+  if (start < 0) return [];
+  const rest = text.slice(start).split('\n').slice(1);
+  const rows = [];
+  let inTable = false;
+  for (const line of rest) {
+    if (/^##\s+/.test(line)) break;
+    if (!line.trim()) {
+      if (inTable) break;
+      continue;
+    }
+    if (!line.includes('|')) {
+      if (inTable) break;
+      continue;
+    }
+    inTable = true;
+    const cells = line.split('|').slice(1, -1).map((cell) => cell.trim());
+    if (!cells.length) continue;
+    if (cells.every((cell) => /^:?-{3,}:?$/.test(cell))) continue;
+    rows.push(cells);
+  }
+  return rows;
+}
+
+function isPlaceholder(value) {
+  const trimmed = String(value || '').trim();
+  if (!trimmed) return true;
+  if (/^n\/?a\s+because\b/i.test(trimmed)) return false;
+  return PLACEHOLDER.test(trimmed);
+}
+
+function closureFindings(text) {
+  const errors = [];
+  const warnings = [];
+  const hasOut = headingPresent(text, '## Out of Scope');
+  const hasAssumptions = headingPresent(text, '## Assumptions & Open Questions');
+  if (!hasOut) {
+    const item = { code: 'closure-heading', message: 'Required section is missing: ## Out of Scope' };
+    errors.push(item);
+    warnings.push(item);
+  }
+  if (!hasAssumptions) {
+    const item = { code: 'closure-heading', message: 'Required section is missing: ## Assumptions & Open Questions' };
+    errors.push(item);
+    warnings.push(item);
+  }
+  if (hasOut) {
+    const rows = tableAfterHeading(text, '## Out of Scope');
+    const data = rows.slice(1);
+    if (!data.length) {
+      errors.push({ code: 'out-of-scope-empty', message: 'Out of Scope must include at least one data row.' });
+    }
+  }
+  if (hasAssumptions) {
+    const rows = tableAfterHeading(text, '## Assumptions & Open Questions');
+    const header = rows[0] || [];
+    const data = rows.slice(1);
+    const defaultIdx = header.findIndex((cell) => /chosen default/i.test(cell));
+    const rationaleIdx = header.findIndex((cell) => /^rationale$/i.test(cell));
+    const chosenAt = defaultIdx >= 0 ? defaultIdx : 1;
+    const rationaleAt = rationaleIdx >= 0 ? rationaleIdx : 2;
+    data.forEach((cells, index) => {
+      if (isPlaceholder(cells[chosenAt]) || isPlaceholder(cells[rationaleAt])) {
+        errors.push({
+          code: 'assumption-placeholder',
+          message: `Assumptions row ${index + 1} has an empty or placeholder Chosen default or Rationale.`,
+        });
+      }
+    });
+  }
+  return { errors, warnings };
 }
 
 function validate(text, options) {
@@ -65,7 +150,16 @@ function validate(text, options) {
   const description = text.match(/## Description\s*\n([\s\S]*?)(?=\n## )/)?.[1] || '';
   const modification = options.modification || /\b(?:modify|modification|bug\s*fix|bugfix|existing\s+(?:feature|workflow|behavior)|refactor|upgrade)\b/i.test(description);
   if (modification && !/^### Design Intent\s*$/m.test(text)) errors.push({ code: 'design-intent', message: 'Modification specifications require ### Design Intent.' });
-  return { ok: errors.length === 0, errors, warnings, acceptanceCriteria: rows.map((row) => row[1]) };
+  const closure = closureFindings(text);
+  if (options.mode === 'authoring') errors.push(...closure.errors);
+  else {
+    for (const warning of closure.warnings) warnings.push(warning);
+    if (headingPresent(text, '## Out of Scope')) {
+      const data = tableAfterHeading(text, '## Out of Scope').slice(1);
+      if (!data.length) warnings.push({ code: 'out-of-scope-empty', message: 'Out of Scope has zero data rows.' });
+    }
+  }
+  return { ok: errors.length === 0, mode: options.mode, errors, warnings, acceptanceCriteria: rows.map((row) => row[1]) };
 }
 
 try {
@@ -74,6 +168,7 @@ try {
   const result = validate(fs.readFileSync(file, 'utf8').replace(/\r\n?/g, '\n'), options);
   if (options.json) process.stdout.write(`${JSON.stringify({ file: options.spec.replace(/\\/g, '/'), ...result }, null, 2)}\n`);
   else {
+    for (const warning of result.warnings) process.stderr.write(`WARN: ${warning.message}\n`);
     for (const error of result.errors) process.stderr.write(`${error.ac ? `${error.ac}: ` : ''}${error.message}\n`);
     if (result.ok) process.stdout.write(`PASS: ${options.spec} (${result.acceptanceCriteria.length} ACs)\n`);
   }

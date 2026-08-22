@@ -10,7 +10,7 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls (`{skillsRoot}`
 
 When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unless the user opted out for that skill). Paths are project-local defaults; hybrid installs may resolve the same id under `{globalSkillsRoot}` when missing locally.
 
-**Consult vs load:** Always-applied membership means the skill body loads each prompt when autoload is on. Skills that also maintain consumer pattern files (`ws-patterns-backend`, `ws-patterns-frontend`) **consult** `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` only when the current task is backend or frontend work — not on every prompt.
+**Consult vs load:** Always-applied membership means the skill body loads each prompt when autoload is on. `ws-patterns` **consults** `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` only when the current task is backend or frontend work — not on every prompt.
 
 **Complement (not duplicated here):** `ws-karpathy-guidelines` stays in the shared-hub **Skill loading (mandatory)** table — it is intentionally **not** part of this Always-applied promotion set (`shared-autoload-md` non-goal). Root override that loads this table still keeps karpathy via `{sharedDir}/AGENTS.md` mandatory load.
 
@@ -18,8 +18,7 @@ When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unl
 |-------|------|---------|
 | `ws-senior-developer` | `{skillsRoot}/ws-senior-developer/SKILL.md` | Every prompt — delivery gate / Code review proof |
 | `ws-self-learning` | `{skillsRoot}/ws-self-learning/SKILL.md` | Every mutating task — MEMORY consult + trap write; after each `ws-goal-fix-pr` / `ws-fix-pr` round, record reviewer/CI mistakes |
-| `ws-patterns-backend` | `{skillsRoot}/ws-patterns-backend/SKILL.md` | Every prompt — load SKILL.md; consult `{sharedDir}/backend.md` only on backend tasks |
-| `ws-patterns-frontend` | `{skillsRoot}/ws-patterns-frontend/SKILL.md` | Every prompt — load SKILL.md; consult `{sharedDir}/frontend.md` only on frontend tasks |
+| `ws-patterns` | `{skillsRoot}/ws-patterns/SKILL.md` | Every prompt — load SKILL.md; consult `{sharedDir}/backend.md` or `{sharedDir}/frontend.md` by task layer |
 | `ws-changelog` | `{skillsRoot}/ws-changelog/SKILL.md` | Every task completion — append-only history |
 | `ws-fable-method` | `{skillsRoot}/ws-fable-method/SKILL.md` | Every prompt — structured investigate/act/verify when non-trivial |
 | `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
@@ -31,7 +30,7 @@ Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win
 1. Explicit user instructions (current turn)
 2. Design / spec / architecture constraints
 3. `ws-karpathy-guidelines` (shared-hub mandatory; surgical scope — not listed in the table above)
-4. `ws-patterns-backend` / `ws-patterns-frontend` (Always-applied SKILL.md; consult `{sharedDir}/backend.md` / `frontend.md` only on matching tasks)
+4. `ws-patterns` (Always-applied SKILL.md; consult `{sharedDir}/backend.md` / `frontend.md` only on matching tasks)
 5. `ws-senior-developer` (delivery gate + Code review proof; opt out `stop ws-senior-developer`)
 6. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
 7. `ws-tdah` (reply shape; does not override senior proof depth)
@@ -54,6 +53,7 @@ Use these terms exactly. Do not treat a **plan** as a **spec**.
 | **`index.PRD`** | Project feature index at `{specsDir}/index.PRD` (phases, next-specs, inbox) — owned by `ws-spec-index` |
 | **Register** | Two-phase promotion via `ws-local-spec-provider`: write/normalize the spec of record `{specsDir}/{slug}.spec.md`, then the workflow copy `{us-dir}/step-00-*.spec.md` |
 | **Spec of record** | The `{specsDir}` copy every entry path produces first — providers never write `step-00` without it |
+| **`{specsDir}/{slug}.context.md`** | Optional spec companion from `ws-write-spec` when a user-facing gray area has ≥2 valid product options (Feature Boundary, Implementation Decisions, Deferred Ideas). Not a `{us-dir}` plan artifact |
 | **Classify** | Recommend `lite` vs `standard` orch (`ws-classify-complexity`) after a workflow spec exists |
 | **Drift sync** | Update existing `*.spec.md` bodies to match code (`ws-sync-spec`) — not the same as `ws-spec-index sync` (index status) |
 | **Batch** | Sequential multi-spec delivery (`ws-multi-spec`) |
@@ -64,6 +64,7 @@ Use these terms exactly. Do not treat a **plan** as a **spec**.
 2. Every provider (`local`, `github`, `azure-devops`) writes the spec of record under `{specsDir}` **before** any `{plansDir}` artifact.
 3. Workflow planning and later steps read **`{us-dir}/step-00-{slug}.spec.md`** (after register or tracker fetch).
 4. Spec board (`ws-spec-list --specs`) lists `{specsDir}` only. Plan board lists `{plansDir}` state — never merge the two inventories.
+5. `{specsDir}/{slug}.context.md` is an optional spec companion, never a plan artifact.
 
 ---
 

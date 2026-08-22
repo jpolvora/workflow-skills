@@ -48,8 +48,8 @@
 | `STACK.md` | Human-readable companion to `config.json` (edit freely) |
 | `MEMORY.md` | Compiled anti-regression index (`ws-self-learning` skill) |
 | `memory/*.md` | Individual memory entries (compile into `MEMORY.md`) |
-| `backend.md` | Consumer-owned backend architectural patterns & rules (`ws-patterns-backend` skill) |
-| `frontend.md` | Consumer-owned frontend UI/UX patterns & rules (`ws-patterns-frontend` skill) |
+| `backend.md` | Consumer-owned backend architectural patterns & rules (`ws-patterns` skill) |
+| `frontend.md` | Consumer-owned frontend UI/UX patterns & rules (`ws-patterns` skill) |
 | `CHANGELOG.md` | Append-only history (`ws-changelog` skill; default `rules.changelogFile`) |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` (installer-written) |
 

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 16:40] Agent: Cursor Grok 4.6
+- **Prompt**: Execute combined_next_pr plan (catalog Extra + ws-patterns + specify-time closure; close fix-pr index)
+- **Done**: Demoted 3 skills to Extra; merged patterns; FORMAT/validate --mode authoring; write-spec lookup + context.md; Step 0 skip-register; lite >5-step valve; MEMORY trap for orch closure
+- **Result**: 48 skills (42 W + 6 E); catalog + closure implemented on develop; index Feature map `[x]` for three slugs
+
 ### [2026-08-22 16:26] Agent: Cursor Grok 4.6
 - **Prompt**: Check model presets per step, then write defaults into config.json.example so new installs prefill preset templates
 - **Done**: Confirmed schema/resolver/interview already support modelsPreset + stepModels; filled per-step `steps` templates on shipped presets; aligned configure-project detection; copied templates into dogfood config.json

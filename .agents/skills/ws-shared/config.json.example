@@ -155,7 +155,7 @@
     },
     "patternsBackend": true,
     "patternsFrontend": true,
-    "_comment_patterns": "When true, ws-patterns-backend and ws-patterns-frontend are active for consulting backend.md and frontend.md during development.",
+    "_comment_patterns": "When true, ws-patterns is active for consulting backend.md and frontend.md during development.",
     "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
     "deliveryCommitArtifacts": {
       "includeRefinedPlan": true,

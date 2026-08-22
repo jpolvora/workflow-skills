@@ -43,8 +43,8 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
    - Done when: relevant entries noted or none found; keywords recorded for `step-output.memory_consult`.
 
 3. **Detect layers & consult pattern files** — Identify target layers from plan files and stack:
-   - If Web/UI files are touched and `defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load [`ws-patterns-frontend`](../ws-patterns-frontend/SKILL.md) before modifying UI components, templates, or styling.
-   - If Domain/Application/EF/backend files are touched and `defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load [`ws-patterns-backend`](../ws-patterns-backend/SKILL.md) before modifying backend logic.
+   - If Web/UI files are touched and `defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load [`ws-patterns`](../ws-patterns/SKILL.md) before modifying UI components, templates, or styling.
+   - If Domain/Application/EF/backend files are touched and `defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load [`ws-patterns`](../ws-patterns/SKILL.md) before modifying backend logic.
    - Done when: matching pattern files are read and recorded in `step-output.pattern_consult` (`consulted` | `skipped` | `n/a`).
 
 4. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.

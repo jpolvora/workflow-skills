@@ -439,11 +439,10 @@ function ensureSharedConsumerArtifacts() {
 
 function afterSkillCopy(skillName, destPath) {
   // Hub consumer artifacts are seeded when the hub is ensured (workflows / full).
-  // Also seed when installing ws-self-learning, ws-patterns-backend, or ws-patterns-frontend alone so memory works without a workflow.
+  // Also seed when installing ws-self-learning or ws-patterns alone so memory works without a workflow.
   if (
     skillName === 'ws-self-learning' ||
-    skillName === 'ws-patterns-backend' ||
-    skillName === 'ws-patterns-frontend'
+    skillName === 'ws-patterns'
   ) {
     ensureSharedHubInstalled(
       fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? 'update' : 'install'

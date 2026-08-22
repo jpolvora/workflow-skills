@@ -25,10 +25,12 @@ Create, review, or format `*.spec.md`. Canonical format SoT — other skills **r
 
 Infer mode or ask. Triggers: `/ws-spec-format`, `@ws-spec-format`, create/review/format/validate phrasing.
 
+CLI: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs [--mode=authoring|compat] <spec>`. Default **compat** (historical files: warn on missing closure, do not fail). **authoring** is required for new `ws-write-spec` writes (Out of Scope + Assumptions tables).
+
 ## Review (Done when report emitted; no edit without approval)
 
 1. Read `*.spec.md` (or `{us-dir}/`).
-2. Validate frontmatter, required sections, AC quality per [`FORMAT.md`](FORMAT.md). Tracker specs (`github` / `azure-devops`) must include `### Prior Work Sweep` when sweep ran. Modification/bugfix specs must include `### Design Intent` or documented greenfield skip.
+2. Validate frontmatter, required sections, AC quality per [`FORMAT.md`](FORMAT.md). Tracker specs (`github` / `azure-devops`) must include `### Prior Work Sweep` when sweep ran. Modification/bugfix specs must include `### Design Intent` or documented greenfield skip. New specs: authoring-mode closure (`## Out of Scope`, `## Assumptions & Open Questions`).
 3. Cross-check architecture docs when present (`CONTEXT.md`, stack file, `config.json.domain`).
 4. Emit check table (Frontmatter / Description / ACs → OK|FAIL + fix).
 5. Edit only on explicit `apply fixes` / `format`.

@@ -1,6 +1,6 @@
 # Spec-to-PR — Diagrams (FSM 0–9)
 
-> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`; folder == `name:`). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../ws-shared/gates.md), [`config-resolution.md`](../ws-shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
+> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`; folder == `name:`). Optional Extra post-workflow: `ws-update-plan-implementation` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../ws-shared/gates.md), [`config-resolution.md`](../ws-shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
 
 ---
 
@@ -74,7 +74,7 @@ flowchart TD
 | 7 | `ws-testing` | `ws-testing` |
 | 8 | `ws-ship-pr` | `ws-ship-pr` |
 | 9 | `ws-fix-pr` / `ws-goal-fix-pr` | `ws-fix-pr` / `ws-goal-fix-pr` |
-| Post | `ws-update-plan-implementation` | `ws-update-plan-implementation` |
+| Post | `ws-update-plan-implementation` (optional Extra) | invoke when installed |
 
 ---
 

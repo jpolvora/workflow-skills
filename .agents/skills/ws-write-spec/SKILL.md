@@ -20,7 +20,7 @@ Author or reformulate a **local** `*.spec.md` into the project specs directory o
 
 **Do not** create `{plansDir}/{slug}/`, `step-00-*.spec.md`, state files, or any other plan/workflow artifact directly. Plan copies are owned by [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` / `--register` when a workflow starts — never by this skill’s default write.
 
-**Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` (free-text) or keep tracker origin `source: github` | `source: azure-devops`.
+**Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` (free-text) or keep tracker origin `source: github` | `source: azure-devops`. New writes must pass `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring`.
 
 **Specs family:** Role = draft / reformulate under `{specsDir}` only. Router / vocabulary: [`../ws-shared/autoload.md`](../ws-shared/autoload.md). Next: format → `ws-spec-format`; standalone → `index.PRD` user-gate (`ws-spec-index` `track`); start workflow → `ws-local-spec-provider` register; browse → `ws-spec-list`.
 
@@ -65,20 +65,33 @@ When writing a spec derived from a remote tracker issue or raw human description
 
 ## Steps
 
-1. **Parse & Ingest** — Infer or parse title, url-safe `slug`, and origin (`source`). For tracker issues, extract metadata (`id`, `url`, `labels`, `workItemType`).
+1. **Lookup (before any `user-gate`)** — Resolve discoverable facts from the codebase, `{sharedDir}/MEMORY.md`, and the stack file (`config.json` → `rules.stackFile`, default `{sharedDir}/STACK.md`). Do **not** present a `user-gate` until this lookup has run.
+   - Done when: lookup notes exist (hits or none) for code, MEMORY, and stack.
+
+2. **Parse & Ingest** — Infer or parse title, url-safe `slug`, and origin (`source`). For tracker issues, extract metadata (`id`, `url`, `labels`, `workItemType`).
    - **Prior-work sweep (before plan/code):** When `source` is `github` or `azure-devops`, dispatch provider `sweep-prior-work` (`--issue {id}`, keywords from title/body). When `source: local` / `id: null`: keyword + `git log` on inferred paths; if `providers.scm` is github or azure-devops, also search PRs by title keywords via that provider (not via `ws-local-spec-provider`). Record findings under `## Original Issue Context` → `### Prior Work Sweep`. Exact open PR for the **same tracker id** → `user-gate` (Recommended: stop/reuse). Related hits: record and continue; `autoMode`: continue unless exact same-issue open PR (then Pause).
    - Done when: title, `slug`, `source`, metadata, and prior-work sweep (when required) are identified.
 
-2. **Design intent (modification tasks)** — Before treating a behavior gap as a bug, inspect `git log -p -S "<symbol>"` and/or `git log -L :<func>:<file>`. Record `### Design Intent` under Notes or Original Issue Context (intentional constraint vs accidental gap). Greenfield new files: skip with reason. Mandatory for "fix bug / restore behavior" wording.
+3. **Design intent (modification tasks)** — Before treating a behavior gap as a bug, inspect `git log -p -S "<symbol>"` and/or `git log -L :<func>:<file>`. Record `### Design Intent` under Notes or Original Issue Context (intentional constraint vs accidental gap). Greenfield new files: skip with reason. Mandatory for "fix bug / restore behavior" wording.
    - Done when: design-intent recorded or skip reason documented.
 
-3. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol.
-   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
+4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Include `## Out of Scope` and `## Assumptions & Open Questions` tables. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
+   - **Gray area:** when a user-facing choice has two or more valid product options, write `{specsDir}/{slug}.context.md` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
+   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
 
-4. **Write** — Save `{specsDir}/{slug}.spec.md` (or `{output-dir}/{slug}.spec.md` when overridden). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`.
+5. **Write** — Save `{specsDir}/{slug}.spec.md` (or `{output-dir}/{slug}.spec.md` when overridden). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`.
    - Done when: that specsDir file exists on disk.
 
-5. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy. Delegate to `ws-local-spec-provider`:
+6. **Authoring validate** — Run and do **not** finish while the exit code is non-zero:
+
+   ```bash
+   node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring "{specsDir}/{slug}.spec.md"
+   ```
+
+   Fix the spec and re-run until PASS. Do not register, hand off as done, or present the standalone `index.PRD` gate while validation fails.
+   - Done when: authoring validation exits 0.
+
+7. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy **and** authoring validation passed. Delegate to `ws-local-spec-provider`:
 
    ```bash
    node {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs \
@@ -88,21 +101,24 @@ When writing a spec derived from a remote tracker issue or raw human description
    That script keeps the `{specsDir}` spec of record normalized and writes `{us-dir}/step-00-{slug}.spec.md`. Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
    - Done when: command succeeded, or this step was skipped.
 
-6. **Standalone `index.PRD` gate** — When the **user** invoked `/write-spec` or `/ws-write-spec` (not orch Step 0), after the spec file exists, present `user-gate` (recommended first):
+8. **Standalone `index.PRD` gate** — When the **user** invoked `/write-spec` or `/ws-write-spec` (not orch Step 0), after authoring validation passes, present `user-gate` (recommended first):
    1. **Add to index.PRD (Recommended)** — track `{slug}` on the spec board
    2. **Skip tracking**
    Cancel / dismiss → HS-1 STOP (never infer yes). `autoMode`: take option 1. Orch Step 0 / provider fetch that called this skill: **skip this gate**.
    On Add: load [`ws-spec-index`](../ws-spec-index/SKILL.md) and run `track {slug}`. That edits `{specsDir}/index.PRD` only (Feature map `[ ]` + Next-specs row). It is **not** `ws-local-spec-provider` `--register` and must not create `{plansDir}` artifacts.
    - Done when: the gate is resolved (tracked, skipped, or already present), or this step was skipped because orch owns the call.
 
-7. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. Mention whether `index.PRD` was updated. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
+9. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. Mention whether `index.PRD` was updated. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
    - Done when: caller has the specsDir path (and plan path only when registered).
 
 ## Subagent contract
 
 - Transform the assigned source into one canonical, testable specification.
+- Lookup codebase, MEMORY, and stack facts before any `user-gate`.
 - Preserve tracker context and map each requirement to a numbered atomic AC.
-- Write only the requested spec path and return its repo-relative location.
+- Close Out of Scope + Assumptions; map present dimensions to ACs or one `N/A because` row.
+- Invoke `validate_spec.cjs --mode=authoring` and do not finish while it is non-zero.
+- Write only the requested spec path (and lazy `context.md` when a gray area exists) and return its repo-relative location.
 - After a standalone user invoke, stop at the `index.PRD` user-gate; on Add, `track` via `ws-spec-index` only.
 - Do not register a workflow `step-00` or advance orch state unless the caller assigns `--register` / Step 0.
 

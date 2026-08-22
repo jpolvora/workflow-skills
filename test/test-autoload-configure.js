@@ -78,8 +78,7 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
   const skills = [
     'ws-senior-developer',
     'ws-self-learning',
-    'ws-patterns-backend',
-    'ws-patterns-frontend',
+    'ws-patterns',
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',
@@ -157,6 +156,12 @@ function parseJsonOut(result) {
       !/\/opt\//.test(autoText) && !/\/opt\//.test(rootText),
       'no /opt absolute paths in emitted markdown',
     );
+    assert(
+      autoText.includes('`ws-patterns`') &&
+        !autoText.includes('ws-patterns-backend') &&
+        !autoText.includes('ws-patterns-frontend'),
+      '--section patterns / --write-autoload emits ws-patterns only',
+    );
   }
 }
 
@@ -167,8 +172,7 @@ function parseJsonOut(result) {
   for (const id of [
     'ws-senior-developer',
     'ws-self-learning',
-    'ws-patterns-backend',
-    'ws-patterns-frontend',
+    'ws-patterns',
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',

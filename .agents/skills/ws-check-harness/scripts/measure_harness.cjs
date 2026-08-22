@@ -12,8 +12,7 @@ const ENHANCING = [
   'ws-senior-developer',
   'ws-tdah',
   'ws-self-learning',
-  'ws-patterns-frontend',
-  'ws-patterns-backend',
+  'ws-patterns',
 ];
 
 function argsOf(argv) {

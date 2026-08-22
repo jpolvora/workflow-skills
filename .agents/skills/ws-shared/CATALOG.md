@@ -11,7 +11,6 @@
 | `ws-tdah` | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) |
 | `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) |
 | `ws-fable-method` | [`../ws-fable-method/SKILL.md`](../ws-fable-method/SKILL.md) |
-| `ws-fable-domain` | [`../ws-fable-domain/SKILL.md`](../ws-fable-domain/SKILL.md) |
 | `ws-spec-format` | [`../ws-spec-format/SKILL.md`](../ws-spec-format/SKILL.md) |
 | `ws-classify-complexity` | [`../ws-classify-complexity/SKILL.md`](../ws-classify-complexity/SKILL.md) |
 | `ws-configure-project` | [`../ws-configure-project/SKILL.md`](../ws-configure-project/SKILL.md) |
@@ -22,14 +21,12 @@
 | `ws-spec-list` | [`../ws-spec-list/SKILL.md`](../ws-spec-list/SKILL.md) |
 | `ws-spec-from-provider` | [`../ws-spec-from-provider/SKILL.md`](../ws-spec-from-provider/SKILL.md) |
 | `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
-| `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-pre-daily` | [`../ws-pre-daily/SKILL.md`](../ws-pre-daily/SKILL.md) |
 | `ws-spec-explain` | [`../ws-spec-explain/SKILL.md`](../ws-spec-explain/SKILL.md) |
 | `ws-spec-archive` | [`../ws-spec-archive/SKILL.md`](../ws-spec-archive/SKILL.md) |
 | `ws-cleanup` | [`../ws-cleanup/SKILL.md`](../ws-cleanup/SKILL.md) |
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
-| `ws-patterns-backend` | [`../ws-patterns-backend/SKILL.md`](../ws-patterns-backend/SKILL.md) |
-| `ws-patterns-frontend` | [`../ws-patterns-frontend/SKILL.md`](../ws-patterns-frontend/SKILL.md) |
+| `ws-patterns` | [`../ws-patterns/SKILL.md`](../ws-patterns/SKILL.md) |
 
 ### Harness & review (Workflows package)
 
@@ -51,10 +48,13 @@ Present only after Extra or Full install. If a path is missing, treat as intenti
 | `ws-write-a-skill` | [`../ws-write-a-skill/SKILL.md`](../ws-write-a-skill/SKILL.md) |
 | `ws-show-harness` | [`../ws-show-harness/SKILL.md`](../ws-show-harness/SKILL.md) |
 | `ws-preview` | [`../ws-preview/SKILL.md`](../ws-preview/SKILL.md) |
+| `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
+| `ws-fable-domain` | [`../ws-fable-domain/SKILL.md`](../ws-fable-domain/SKILL.md) |
+| `ws-update-plan-implementation` | [`../ws-update-plan-implementation/SKILL.md`](../ws-update-plan-implementation/SKILL.md) |
 
 ### Intentionally orch-only (not duplicated here)
 
-Pipeline folders `ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`, orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`), and providers are discovered via host invoke / orch dispatch — not listed as promoted utilities.
+Pipeline folders `ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`), and providers are discovered via host invoke / orch dispatch — not listed as promoted utilities. `ws-update-plan-implementation` is Extra (optional post-workflow).
 
 Install packages and dependency map: upstream `bin/skill-dependencies.json` in [workflow-skills](https://github.com/jpolvora/workflow-skills) (not vendored in consumer clones).
 
@@ -70,7 +70,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Project spec index init/sync/promote/track | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO User Stories → local specs | `ws-spec-from-provider` |
-| Timesheet / activity hours for a delivery day | `ws-activity-report` |
+| Timesheet / activity hours for a delivery day | `ws-activity-report` (Extra) |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
@@ -79,10 +79,9 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
-| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
+| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
 | Engineering delivery gate / Code review proof | `ws-senior-developer` (default on-demand; opt in via `rules.seniorDeveloper`; root `AGENTS.md` may autoload — see § Consumer root override) |
-| Backend patterns & architectural preferences | `ws-patterns-backend` |
-| Frontend UI/UX patterns & component preferences | `ws-patterns-frontend` |
+| Backend & frontend patterns | `ws-patterns` |
 | Fill / update `config.json` | `ws-configure-project` (optional suggestion only for secrets pre-commit hook — never required) |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |

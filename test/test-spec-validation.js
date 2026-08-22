@@ -32,4 +32,55 @@ assert.match(result.stdout, /AC1[\s\S]*composite/i);
 
 const tracker = write(path.join(root, 'tracker.spec.md'), fs.readFileSync(valid, 'utf8').replace('source: local', 'source: github'));
 assert.notStrictEqual(run(script, [tracker]).status, 0, 'tracker spec without Prior Work Sweep should fail');
+
+const closureBlock = `
+## Out of Scope
+| Feature | Reason |
+|---------|--------|
+| Merge spec boards | Breaks the two-board contract |
+## Assumptions & Open Questions
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Validator default | compat | Keep historical exit codes | y |
+| Remaining dimensions | N/A because this fixture is a unit test | Collapse rule | y |
+`;
+
+const missingOut = write(path.join(root, 'missing-out.spec.md'), `${fs.readFileSync(valid, 'utf8')}
+## Assumptions & Open Questions
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Default | compat | Keep tests green | y |
+`);
+assert.notStrictEqual(run(script, [missingOut, '--mode=authoring']).status, 0, 'authoring fails when Out of Scope is missing');
+
+const emptyAssume = write(path.join(root, 'empty-assume.spec.md'), `${fs.readFileSync(valid, 'utf8')}
+## Out of Scope
+| Feature | Reason |
+|---------|--------|
+| Shim folders | Latest layout only |
+## Assumptions & Open Questions
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Default | TBD |  | n |
+`);
+assert.notStrictEqual(run(script, [emptyAssume, '--mode=authoring']).status, 0, 'authoring fails on empty assumption cells');
+
+const emptyOut = write(path.join(root, 'empty-out.spec.md'), `${fs.readFileSync(valid, 'utf8')}
+## Out of Scope
+| Feature | Reason |
+|---------|--------|
+## Assumptions & Open Questions
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Default | compat | Keep tests green | y |
+`);
+assert.notStrictEqual(run(script, [emptyOut, '--mode=authoring']).status, 0, 'authoring fails when Out of Scope has zero data rows');
+
+const compat = run(script, [valid, '--modification']);
+assert.strictEqual(compat.status, 0, 'compat omits --mode and does not fail missing closure');
+assert.match(compat.stderr, /WARN:[\s\S]*Out of Scope/i);
+
+const authoringPass = write(path.join(root, 'authoring-pass.spec.md'), `${fs.readFileSync(valid, 'utf8')}${closureBlock}`);
+assert.strictEqual(run(script, [authoringPass, '--mode=authoring', '--modification']).status, 0, 'full authoring fixture should pass');
+
 console.log('test-spec-validation: ok');

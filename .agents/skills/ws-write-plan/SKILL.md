@@ -42,7 +42,7 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
    - **Design intent:** For modification / bugfix ACs, require `git log -p -S` and/or `git log -L` on touched symbols before recommending behavior changes; reference `### Design Intent` from the spec when present.
    - If `defaults.patternsFrontend` is `true`, **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) to incorporate project UI/UX and styling conventions into the technical design.
    - If `defaults.patternsBackend` is `true`, **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) to incorporate domain, architecture, and API conventions.
-   - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true`, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6.
+   - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true` **and** the `ws-fable-domain` skill folder exists, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6. Missing folder: skip domain adapters (do not STOP).
    - Done when: stack, patterns, and relevant memory entries are identified.
 
 

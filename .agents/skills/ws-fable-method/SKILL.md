@@ -34,7 +34,7 @@ Structured problem-solving loop: accuracy via structure, evidence, honesty. Foll
 - Reachable sources → full loop
 - Unlearned technique → Step 2 lookup budget first, then loop
 - Inference only → say so; low-confidence; do not dress as rigorous
-- Recurring domain → `ws-fable-domain` adapter
+- Recurring domain → `ws-fable-domain` adapter when that Extra skill is installed
 
 ## Loop
 

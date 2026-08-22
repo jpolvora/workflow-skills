@@ -167,12 +167,12 @@
         "patternsBackend": {
           "type": "boolean",
           "default": true,
-          "description": "When true, ws-patterns-backend is enabled in autoload.md and consulted during backend implementations."
+          "description": "When true, ws-patterns is enabled in autoload.md and consulted during backend implementations."
         },
         "patternsFrontend": {
           "type": "boolean",
           "default": true,
-          "description": "When true, ws-patterns-frontend is enabled in autoload.md and consulted during frontend implementations."
+          "description": "When true, ws-patterns is enabled in autoload.md and consulted during frontend implementations."
         },
         "deliveryCommitArtifacts": {
           "type": "object",

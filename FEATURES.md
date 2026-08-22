@@ -2,7 +2,7 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
-Package version: **0.3.33** · 48 skills (45 Workflows + 3 Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.33** · 48 skills (42 Workflows + 6 Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -123,8 +123,8 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
-| Canonical `*.spec.md` schema, section hierarchy, and AC rules | `ws-spec-format` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring`. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
+| Canonical `*.spec.md` schema, section hierarchy, AC rules, and specify-time closure (`Out of Scope`, Assumptions, dimensions sweep) | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register | `ws-spec-from-provider` |
@@ -146,8 +146,8 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Anti-regression traps: consult before planning, record after discovering | `ws-self-learning` | `{sharedDir}/MEMORY.md` + `memory/*.md` |
 | Failure reflection hook — forbids `Learning: N/A` when session friction is high | `ws-self-learning` | same |
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
-| Backend architectural conventions, consulted before backend tasks | `ws-patterns-backend` | `{sharedDir}/backend.md` |
-| Frontend UI/UX conventions, consulted before frontend tasks | `ws-patterns-frontend` | `{sharedDir}/frontend.md` |
+| Backend architectural conventions, consulted before backend tasks | `ws-patterns` | `{sharedDir}/backend.md` |
+| Frontend UI/UX conventions, consulted before frontend tasks | `ws-patterns` | `{sharedDir}/frontend.md` |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
 | Domain authority, minimum evidence sets, and fraud definitions per domain | `ws-fable-domain` | domain adapters |
 
@@ -201,7 +201,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-goal-loop` | Generic convergence primitive: sentinel management, heartbeat and settle timers, re-check control. Backs `ws-goal-fix-pr` |
 | `ws-update-plan-implementation` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
 
-Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-patterns-backend`, `ws-patterns-frontend`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
+Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-patterns`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
 
 ---
 
@@ -235,7 +235,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (44 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -301,7 +301,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
 | [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; proactive same-class sweep (code, MEMORY, PR context) before resolve; post-round MEMORY/pattern learning for accepted reviewer/CI defects |
 | [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative fix-pr rounds until threads hit zero and checks pass; each round records reviewer/CI mistakes into MEMORY (and pattern files when enabled) |
-| [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | W | Post-ship QA delta capture, planning, and execution |
+| [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | E | Post-ship QA delta capture, planning, and execution |
 
 ### Providers
 
@@ -328,7 +328,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 |-------|-----|------|
 | [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md) | W | Engineering delivery gate and code review proof source |
 | [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | W | Adversarial audit of claimed work against git diffs |
-| [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | W | Domain adapters: authority, evidence sets, fraud definitions |
+| [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | E | Domain adapters: authority, evidence sets, fraud definitions |
 | [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | W | Secrets and PII scan with optional pre-commit hook |
 | [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | E | External reviewer dry-run without publishing threads |
 
@@ -348,8 +348,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | Skill | Pkg | Role |
 |-------|-----|------|
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) | W | Anti-regression memory engine |
-| [`ws-patterns-backend`](.agents/skills/ws-patterns-backend/SKILL.md) | W | Backend architectural preferences engine |
-| [`ws-patterns-frontend`](.agents/skills/ws-patterns-frontend/SKILL.md) | W | Frontend UI/UX preferences engine |
+| [`ws-patterns`](.agents/skills/ws-patterns/SKILL.md) | W | Backend and frontend architectural / UI preferences engine |
 | [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) | W | Append-only task history writer |
 | [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | W | Micro diff hygiene guidelines |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) | W | Action-first reply shape and operational judgment |
@@ -360,7 +359,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 |-------|-----|------|
 | [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | W | Interactive `config.json` wizard |
 | [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | W | Generic convergence loop primitive |
-| [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | W | Timesheet entries for a delivery day |
+| [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | E | Timesheet entries for a delivery day |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | W | 36-hour standup briefing |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | W | Spec/US status & delivery panorama |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Archive plan history into `index.PRD`; propose plan-dir cleanup |
