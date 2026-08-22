@@ -172,6 +172,14 @@ def base_url(organization: str, project: str) -> str:
     return f"https://dev.azure.com/{organization}/{urllib.parse.quote(project)}"
 
 
+def pr_web_url(pr: dict[str, Any]) -> str:
+    links = pr.get("_links") or {}
+    web = (links.get("web") or {}).get("href")
+    if web:
+        return str(web)
+    return str(pr.get("url") or "")
+
+
 def git_url(organization: str, project: str, repository: str, suffix: str) -> str:
     return (
         f"{base_url(organization, project)}/_apis/git/repositories/"
@@ -374,7 +382,7 @@ def get_pr_context(repo_root: Path, pr_id: int, repository: str, include_system:
             "sourceRefName": pr.get("sourceRefName"),
             "targetRefName": pr.get("targetRefName"),
             "createdBy": (pr.get("createdBy") or {}).get("displayName"),
-            "url": pr.get("url"),
+            "url": pr_web_url(pr),
         },
         "workItems": work_items,
         "threads": threads,

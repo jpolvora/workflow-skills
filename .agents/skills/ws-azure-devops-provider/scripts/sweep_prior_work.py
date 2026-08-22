@@ -117,17 +117,37 @@ def api_get(url: str, pat: str) -> Any:
         return json.loads(resp.read().decode("utf-8"))
 
 
+ADO_STATE_TO_GH = {"active": "OPEN", "completed": "CLOSED", "abandoned": "CLOSED"}
+
+
+def pr_web_url(pr: dict[str, Any]) -> str:
+    links = pr.get("_links") or {}
+    web = (links.get("web") or {}).get("href")
+    if web:
+        return str(web)
+    return str(pr.get("url") or "")
+
+
+def normalize_head_ref(ref: str | None) -> str:
+    if not ref:
+        return ""
+    value = str(ref).strip()
+    prefix = "refs/heads/"
+    return value[len(prefix) :] if value.startswith(prefix) else value
+
+
 def pr_row(pr: dict[str, Any], search_text: str) -> dict[str, Any]:
     pid = pr.get("pullRequestId")
-    status = pr.get("status")
-    src = pr.get("sourceRefName")
+    native_status = pr.get("status")
+    normalized_state = ADO_STATE_TO_GH.get(str(native_status or "").lower(), native_status or "")
+    src = normalize_head_ref(pr.get("sourceRefName"))
     return {
         "number": pid,
         "pullRequestId": pid,
         "title": pr.get("title") or "",
-        "state": status,
-        "status": status,
-        "url": pr.get("url") or "",
+        "state": normalized_state,
+        "status": native_status,
+        "url": pr_web_url(pr),
         "headRefName": src,
         "sourceRefName": src,
         "searchText": search_text,

@@ -266,6 +266,47 @@ const adoSweepDry = spawnSync(
 );
 assert(adoSweepDry.status === 0, 'Azure sweep_prior_work.py --dry-run exits 0');
 
+const adoSweepScript = path.join(SKILLS, 'ws-azure-devops-provider/scripts/sweep_prior_work.py');
+const prRowProbe = spawnSync(
+  pythonBin,
+  ['-'],
+  {
+    encoding: 'utf8',
+    cwd: REPO,
+    env: { ...process.env, ADO_SWEEP_SCRIPT: adoSweepScript },
+    input: [
+      'import importlib.util, json, os',
+      'path = os.environ["ADO_SWEEP_SCRIPT"]',
+      'spec = importlib.util.spec_from_file_location("sweep", path)',
+      'mod = importlib.util.module_from_spec(spec)',
+      'spec.loader.exec_module(mod)',
+      'row = mod.pr_row({',
+      '  "pullRequestId": 9,',
+      '  "title": "t",',
+      '  "status": "active",',
+      '  "sourceRefName": "refs/heads/feat/x",',
+      '  "url": "https://dev.azure.com/o/p/_apis/git/repositories/r/pullRequests/9",',
+      '  "_links": {"web": {"href": "https://dev.azure.com/o/p/_git/r/pullrequest/9"}},',
+      '}, "q")',
+      'print(json.dumps(row))',
+      '',
+    ].join('\n'),
+  },
+);
+assert(prRowProbe.status === 0, 'Azure pr_row fixture exits 0');
+let prRow;
+try {
+  prRow = JSON.parse(prRowProbe.stdout || '{}');
+} catch {
+  prRow = {};
+}
+assert(!String(prRow.url || '').includes('/_apis/'), 'ADO sweep url must be web UI, not REST');
+assert(prRow.url === 'https://dev.azure.com/o/p/_git/r/pullrequest/9', 'ADO sweep url uses _links.web.href');
+assert(prRow.state === 'OPEN', 'ADO state uses GitHub OPEN vocabulary');
+assert(prRow.status === 'active', 'ADO status keeps native value');
+assert(prRow.headRefName === 'feat/x', 'ADO headRefName is a bare branch');
+assert(prRow.sourceRefName === 'feat/x', 'ADO sourceRefName is a bare branch');
+
 for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
   const skip = spawnSync(
     'python',
