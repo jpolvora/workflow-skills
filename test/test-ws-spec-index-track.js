@@ -81,4 +81,21 @@ assert.match(after, /Open Next-spec:.*`lease-demo`/, 'open next-spec lists slug'
 const again = run(['--specs-dir', specs, '--slug', 'lease-demo']);
 assert.strictEqual(JSON.parse(again.stdout).reason, 'already tracked');
 
+// pipe in title must not break Next-specs columns
+fs.writeFileSync(
+  path.join(specs, 'pipe-title.spec.md'),
+  `---
+title: Auth | OAuth refactor
+source: local
+---
+
+# Auth
+`,
+  'utf8',
+);
+const piped = run(['--specs-dir', specs, '--slug', 'pipe-title']);
+assert.strictEqual(piped.status, 0, 'pipe-title track exits 0');
+const pipedIndex = fs.readFileSync(path.join(specs, 'index.PRD'), 'utf8');
+assert.match(pipedIndex, /Auth \| OAuth refactor/, 'title pipes escaped in table cell');
+
 console.log('All ws-spec-index track tests passed');

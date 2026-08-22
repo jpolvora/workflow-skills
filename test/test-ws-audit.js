@@ -496,6 +496,22 @@ function main() {
   const smellClassified = JSON.parse(smellOnly.stdout.trim());
   assert(smellClassified.matched === false, 'nestedQuoteSmell alone does not match');
 
+  // Non-quoting -c failures must not match this classifier
+  const modMissing = runNode([
+    'classify-shell-failure',
+    '--command',
+    'python -c "import missing_module_xyz"',
+    '--stderr',
+    'ModuleNotFoundError: No module named missing_module_xyz',
+    '--step',
+    '4',
+  ]);
+  assert(modMissing.status === 0, 'module-missing classify exits 0');
+  assert(
+    JSON.parse(modMissing.stdout.trim()).matched === false,
+    'ModuleNotFoundError must not match',
+  );
+
   // Append classified findings into a fresh session and draft remediation options.
   // us-dir must stay inside the repo: audit_log persists repo-relative paths and rejects outside roots.
   const remUs = fs.mkdtempSync(path.join(REPO_ROOT, '.tmp-audit-rem-'));

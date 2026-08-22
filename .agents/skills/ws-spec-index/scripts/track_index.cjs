@@ -4,7 +4,7 @@
 /**
  * Deterministic index.PRD track helper for ws-spec-index mode `track`.
  * Usage: node track_index.cjs --specs-dir <dir> --slug <slug>
- * Prints JSON: { status: 'tracked'|'skipped', reason?, slug, title? }
+ * Prints JSON: { status: 'tracked'|'skipped'|'error', reason?, slug, title? }
  */
 
 const fs = require('fs');
@@ -31,15 +31,14 @@ function readTitle(specPath) {
 
 function alreadyTracked(indexText, slug) {
   const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(`(?:spec:\\s*)?\`?${esc}(?:\\.spec\\.md)?\`?`, 'i');
+  const re = new RegExp('(?:spec:\\s*)?`?' + esc + '(?:\\.spec\\.md)?`?', 'i');
   return re.test(indexText);
 }
 
 function lastPhaseLabel(indexText) {
   const matches = [...indexText.matchAll(/^###\s+Phase[^\n]*/gm)];
   if (!matches.length) return 'Feature map';
-  const last = matches[matches.length - 1][0];
-  return last.replace(/^###\s+/, '').trim();
+  return matches[matches.length - 1][0].replace(/^###\s+/, '').trim();
 }
 
 function nextRowNumber(indexText) {
@@ -50,11 +49,17 @@ function nextRowNumber(indexText) {
   return max + 1;
 }
 
+function escapeTableCell(value) {
+  return String(value || '')
+    .replace(/\|/g, '\\|')
+    .replace(/[\r\n]+/g, ' ');
+}
+
 function track({ specsDir, slug }) {
   if (!specsDir || !slug) {
     return { status: 'error', reason: 'missing --specs-dir or --slug' };
   }
-  const specPath = path.join(specsDir, `${slug}.spec.md`);
+  const specPath = path.join(specsDir, slug + '.spec.md');
   const indexPath = path.join(specsDir, 'index.PRD');
   if (!fs.existsSync(indexPath)) {
     return { status: 'skipped', reason: 'index.PRD missing', slug };
@@ -68,7 +73,7 @@ function track({ specsDir, slug }) {
     return { status: 'skipped', reason: 'already tracked', slug, title };
   }
 
-  const bullet = `- [ ] ${title} (\`spec: ${slug}.spec.md\`)`;
+  const bullet = '- [ ] ' + title + ' (`spec: ' + slug + '.spec.md`)';
   const phaseRe = /^###\s+Phase[^\n]*$/gm;
   const phases = [...indexText.matchAll(phaseRe)];
   if (phases.length) {
@@ -77,44 +82,53 @@ function track({ specsDir, slug }) {
     const rest = indexText.slice(start);
     const nextHeading = rest.search(/\n##\s+/);
     const insertAt = start + (nextHeading === -1 ? rest.length : nextHeading);
-    // insert before blank lines preceding next ## when possible: append after last non-empty in phase block
     const block = indexText.slice(start, insertAt);
     const trimmedEnd = block.replace(/\s*$/, '');
     indexText =
       indexText.slice(0, start) +
       trimmedEnd +
-      `\n${bullet}\n` +
+      '\n' +
+      bullet +
+      '\n' +
       indexText.slice(start + trimmedEnd.length);
   } else {
     const fm = indexText.search(/^##\s+7\.\s+Feature map/m);
     if (fm === -1) {
-      indexText = `${indexText.trimEnd()}\n\n${bullet}\n`;
+      indexText = indexText.trimEnd() + '\n\n' + bullet + '\n';
     } else {
       const after = indexText.indexOf('\n', fm);
-      indexText = indexText.slice(0, after + 1) + `${bullet}\n` + indexText.slice(after + 1);
+      indexText = indexText.slice(0, after + 1) + bullet + '\n' + indexText.slice(after + 1);
     }
   }
 
   const n = nextRowNumber(indexText);
   const phase = lastPhaseLabel(indexText);
-  const row = `| ${n} | \`${slug}\` | \`[ ]\` todo | ${phase} | ${title} |`;
+  const row =
+    '| ' +
+    n +
+    ' | `' +
+    slug +
+    '` | `[ ]` todo | ' +
+    escapeTableCell(phase) +
+    ' | ' +
+    escapeTableCell(title) +
+    ' |';
+
   const openRe = /^Open Next-spec:.*$/m;
   if (openRe.test(indexText)) {
     indexText = indexText.replace(openRe, (line) => {
-      if (line.includes(`\`${slug}\``)) return line;
-      return line.replace(
-        /(\.|Other new work)/,
-        (_, tail) => (tail === '.' ? `, \`${slug}\`.` : `, \`${slug}\`. Other new work`),
-      );
+      if (line.includes('`' + slug + '`')) return line;
+      if (/\.\s*$/.test(line)) return line.replace(/\.\s*$/, ', `' + slug + '`.');
+      return line.replace(/\s*$/, '') + ', `' + slug + '`';
     });
   }
-  // Prefer inserting row before Open Next-spec line; else before ## Inbox / ## 9
+
   if (/^Open Next-spec:/m.test(indexText)) {
-    indexText = indexText.replace(/^Open Next-spec:/m, `${row}\n\nOpen Next-spec:`);
+    indexText = indexText.replace(/^Open Next-spec:/m, row + '\n\nOpen Next-spec:');
   } else if (/^##\s+9\.\s+Inbox/m.test(indexText)) {
-    indexText = indexText.replace(/^##\s+9\.\s+Inbox/m, `${row}\n\n## 9. Inbox`);
+    indexText = indexText.replace(/^##\s+9\.\s+Inbox/m, row + '\n\n## 9. Inbox');
   } else {
-    indexText = `${indexText.trimEnd()}\n${row}\n`;
+    indexText = indexText.trimEnd() + '\n' + row + '\n';
   }
 
   fs.writeFileSync(indexPath, indexText, 'utf8');
@@ -129,4 +143,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { track, alreadyTracked, readTitle, nextRowNumber };
+module.exports = { track, alreadyTracked, readTitle, nextRowNumber, escapeTableCell };

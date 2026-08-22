@@ -105,7 +105,8 @@ export function classifyShellFailure({
   if (!isDashC) {
     return { matched: false, findings };
   }
-  if (!(isSyntax || /Error|Traceback|Exception/i.test(blob))) {
+  // AUDIT-FORMAT: SyntaxError / quoting failures only (not ModuleNotFoundError etc).
+  if (!(isSyntax || (nestedQuoteSmell && /SyntaxError|unterminated|closing parenthesis/i.test(blob)))) {
     return { matched: false, findings };
   }
 
