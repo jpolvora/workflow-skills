@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 19:55] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr collect now #234 review threads
+- **Done**: Mutating-path parity spawn (CLI org/project, empty PAT) asserts Missing PAT
+- **Result**: Dry-run-only override test cannot hide a broken apply_cli_overrides merge
+
 ### [2026-08-22 19:50] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr + ws-goal-fix-pr (ADO comment_issue CLI)
 - **Done**: Merged main into develop; stamp 0.3.36; FEATURES + test-doc-sync pin

@@ -361,6 +361,37 @@ assert(
 assert(!/unrecognized arguments/.test(adoOverride.stderr || ''), 'ADO comment_issue.py does not reject --org/--project');
 assert(/dry-run/.test(adoOverride.stdout || ''), 'ADO comment_issue.py --dry-run with overrides prints dry-run');
 
+const adoOverrideEnv = { ...process.env };
+delete adoOverrideEnv.ADO_PAT;
+delete adoOverrideEnv.AZURE_DEVOPS_PAT;
+const adoOverrideMutating = spawnSync(
+  'python',
+  [
+    path.join(SKILLS, 'ws-azure-devops-provider', 'scripts/comment_issue.py'),
+    '--org',
+    'parity-org',
+    '--project',
+    'parity-project',
+    '--id',
+    '1',
+    '--body',
+    'x',
+  ],
+  { encoding: 'utf8', cwd: REPO, env: adoOverrideEnv },
+);
+assert(
+  adoOverrideMutating.status === 1,
+  `ADO comment_issue.py mutating overrides exit 1 (got ${adoOverrideMutating.status}): ${adoOverrideMutating.stderr || adoOverrideMutating.stdout}`,
+);
+assert(
+  /Missing PAT/i.test(adoOverrideMutating.stderr || ''),
+  'CLI org/project overrides must reach validate_auth on mutating path',
+);
+assert(
+  !/Missing issueTrackers\.azureDevOps org\/project/i.test(adoOverrideMutating.stderr || ''),
+  'CLI overrides should satisfy org/project when config tracker fields are empty',
+);
+
 const { HUB_WHITELIST } = await import(pathToFileURL(path.join(REPO, 'bin/install-rules.js')).href);
 assert(
   HUB_WHITELIST.includes('scm-provider-contract.md'),
