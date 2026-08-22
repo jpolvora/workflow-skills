@@ -6,17 +6,26 @@ const path = require('path');
 
 const PLACEHOLDER = /^(?:tbd|todo|placeholder|\?+|[-–—.]{1,3}|\.{3}|n\/?a)$/i;
 
+function usage() {
+  process.stdout.write(
+    'Usage: node validate_spec.cjs [--mode=authoring|compat] [--json] [--modification] [--repo-root <dir>] <spec>\n',
+  );
+}
+
 function parseArgs(argv) {
   const options = { json: false, modification: false, mode: 'compat' };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
-    if (token === '--json' || token === '--modification') options[token.slice(2)] = true;
+    if (token === '--help' || token === '-h') options.help = true;
+    else if (token === '--json' || token === '--modification') options[token.slice(2)] = true;
     else if (token === '--repo-root') options.repoRoot = argv[++index];
     else if (token === '--mode') options.mode = String(argv[++index] || '').trim();
     else if (token.startsWith('--mode=')) options.mode = token.slice('--mode='.length).trim();
+    else if (token.startsWith('-')) throw new Error(`unknown argument: ${token}`);
     else if (!options.spec) options.spec = token;
     else throw new Error(`unknown argument: ${token}`);
   }
+  if (options.help) return options;
   if (!options.spec) throw new Error('spec path is required');
   if (!['authoring', 'compat'].includes(options.mode)) {
     throw new Error('--mode must be authoring or compat');
@@ -171,15 +180,20 @@ function validate(text, options) {
 
 try {
   const options = parseArgs(process.argv.slice(2));
-  const file = path.resolve(options.repoRoot || '.', options.spec);
-  const result = validate(fs.readFileSync(file, 'utf8').replace(/\r\n?/g, '\n'), options);
-  if (options.json) process.stdout.write(`${JSON.stringify({ file: options.spec.replace(/\\/g, '/'), ...result }, null, 2)}\n`);
-  else {
-    for (const warning of result.warnings) process.stderr.write(`WARN: ${warning.message}\n`);
-    for (const error of result.errors) process.stderr.write(`${error.ac ? `${error.ac}: ` : ''}${error.message}\n`);
-    if (result.ok) process.stdout.write(`PASS: ${options.spec} (${result.acceptanceCriteria.length} ACs)\n`);
+  if (options.help) {
+    usage();
+    process.exitCode = 0;
+  } else {
+    const file = path.resolve(options.repoRoot || '.', options.spec);
+    const result = validate(fs.readFileSync(file, 'utf8').replace(/\r\n?/g, '\n'), options);
+    if (options.json) process.stdout.write(`${JSON.stringify({ file: options.spec.replace(/\\/g, '/'), ...result }, null, 2)}\n`);
+    else {
+      for (const warning of result.warnings) process.stderr.write(`WARN: ${warning.message}\n`);
+      for (const error of result.errors) process.stderr.write(`${error.ac ? `${error.ac}: ` : ''}${error.message}\n`);
+      if (result.ok) process.stdout.write(`PASS: ${options.spec} (${result.acceptanceCriteria.length} ACs)\n`);
+    }
+    process.exitCode = result.ok ? 0 : 1;
   }
-  process.exitCode = result.ok ? 0 : 1;
 } catch (error) {
   process.stderr.write(`ERROR: ${error.message}\n`);
   process.exitCode = 1;

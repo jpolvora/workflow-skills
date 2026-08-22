@@ -94,4 +94,14 @@ assert.match(compat.stderr, /WARN:[\s\S]*Out of Scope/i);
 const authoringPass = write(path.join(root, 'authoring-pass.spec.md'), `${fs.readFileSync(valid, 'utf8')}${closureBlock}`);
 assert.strictEqual(run(script, [authoringPass, '--mode=authoring', '--modification']).status, 0, 'full authoring fixture should pass');
 
+const help = run(script, ['--help']);
+assert.strictEqual(help.status, 0, '--help exits 0');
+assert.match(`${help.stdout}${help.stderr}`, /Usage/i);
+assert.match(`${help.stdout}${help.stderr}`, /--mode/);
+
+const unknownFlag = run(script, ['--nope']);
+assert.notStrictEqual(unknownFlag.status, 0, 'unknown dash flag exits non-zero');
+assert.match(unknownFlag.stderr, /unknown argument: --nope/i);
+assert.doesNotMatch(unknownFlag.stderr, /ENOENT/);
+
 console.log('test-spec-validation: ok');

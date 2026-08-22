@@ -1,10 +1,16 @@
 ## Summary
-- Add a non-packaged upstream session harness at `.agents/dev-harness/SKILL.md` (frozen dogfood contract; not in `.agents/skills/`, not shipped to consumers).
-- Point root `AGENTS.md` session autoload, DX dogfood, and write-spec / senior / fable / learning / changelog routes at that file so authoring does not `Read` live `ws-*` SKILL.md bodies.
-- Packaged `ws-*` SoT and consumer hubs stay unchanged; live skill bodies load only when authoring or testing that skill.
+
+Release **0.3.35** from `develop` → `main`.
+
+- `validate_spec.cjs` `--help`/`-h` prints usage and exits 0 (was treated as a spec path → ENOENT on `cwd/--help`).
+- Unknown dash flags now fail with `unknown argument` instead of opening a file.
+- Package stamp 0.3.35 (site footer + skill frontmatter + integrity).
 
 ## Test plan
-- [ ] `npm run test`
-- [ ] `npm run verify-integrity`
-- [ ] `python .agents/skills/ws-check-workflows/scripts/check_workflows.py`
+
+- [x] `node test/test-spec-lint.js` (includes `--help` / `--nope` assertions)
+- [x] `npm run test` (exit 0)
+- [x] `npm run verify-integrity` (v0.3.35)
+- [x] Leak scan: no HIGH findings
 - [ ] CI on this PR
+- [ ] `ws-goal-fix-pr` until review threads are 0
