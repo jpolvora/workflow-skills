@@ -96,6 +96,32 @@ assert(
   'goal-fix-pr blocks resolve/push without proactive evidence',
 );
 
+// Post-round learning (reviewer/CI mistakes → MEMORY / patterns)
+const selfLearning = read('.agents/skills/ws-self-learning/SKILL.md');
+assert(
+  /Post fix-pr round/i.test(selfLearning) &&
+    /ws-goal-fix-pr/.test(selfLearning) &&
+    /Learning: N\/A/.test(selfLearning),
+  'ws-self-learning defines post fix-pr round write protocol',
+);
+assert(
+  /Post-round learning/i.test(goalFix) &&
+    goalFix.includes('ws-self-learning') &&
+    /Forbidden:.*Learning: N\/A/s.test(goalFix),
+  'goal-fix-pr requires post-round learning each loop',
+);
+assert(
+  /post-round learning/i.test(fixPr) && fixPr.includes('ws-self-learning'),
+  'ws-fix-pr verify step runs post-round learning',
+);
+const goalEval7 = JSON.parse(read('.agents/skills/ws-goal-fix-pr/evals/evals.json')).evals.find(
+  (e) => e.id === 7,
+);
+assert(
+  goalEval7 && /post-round learning/i.test(goalEval7.assertions.join(' ')),
+  'goal-fix-pr eval id 7 covers post-round learning',
+);
+
 // AC7 / AC8 — evals second-path, skip reason, MEMORY consult-skipped
 const eval4 = evals.evals.find((e) => e.id === 4);
 const eval5 = evals.evals.find((e) => e.id === 5);

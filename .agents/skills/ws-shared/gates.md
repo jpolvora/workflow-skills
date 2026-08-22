@@ -12,7 +12,7 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 
 | Rule | Detail |
 |------|--------|
-| **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. |
+| **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. `ws-update-plan-implementation` is optional Extra (invoke when installed). |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
 | **One combined delivery + ship ask** | Orchestrator presents the combined gate once at standard Step 8 / lite Step 4. [`ws-ship-pr`](../ws-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-ask at user-gate. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
@@ -202,14 +202,19 @@ When the loop is active (score `< 9`, or `scoreAndRefine` mode / completed-workf
    Score Analysis Complete:
    - Overall Score: {score}/10
    - Tasks Flagged for Improvement: {N} tasks
+   - Second pass reviews the full Pass 1 diff for overengineering and unused artifacts.
 
    Options:
    1. Proceed with Second Pass Refinement (Recommended)
    2. Accept First Pass As-Is & Ship
    3. Selective Refinement (choose specific tasks)
    ```
-4. **Second Pass Execution:** Re-run implementation for flagged tasks with Pass 1 scoring context, followed by 2nd pass verification and comparative reporting (`step-08-{slug}.second-pass-report.md`).
-5. **Comparative Delivery Gate:** When a 2nd pass ran, compare Pass 1 vs Pass 2 scores, LOC deltas, and test metrics before ship/commit.
+4. **Second Pass Execution:** After Pass 1 check-implementation, load the **full** Pass 1 diff (workflow `files_touched` plus `git diff` vs `{base}`), every plan task, and every AC — not only flagged task ids. Re-dispatch `ws-implement-tasks` (role `scoreAndRefine`) to:
+   - Apply Pass 1 scoring recommendations for flagged tasks (Option 1: all flagged; Option 3: chosen tasks only). Option 1 runs even when zero tasks are flagged.
+   - **Overengineering sweep:** if any AC/task implementation can be simpler and still meet the AC, simplify it.
+   - **Dead artifact removal:** delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs or spec requirements.
+   Then re-run `ws-verify-plan`. Record simplifications and deletions in `step-08-{slug}.second-pass-report.md`. Post-simplify score must stay ≥ 9.
+5. **Comparative Delivery Gate:** When a 2nd pass ran, compare Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, and test metrics before ship/commit.
 
 ---
 
@@ -265,5 +270,5 @@ Ship/PREPARE nuances (row 5 visibility): [`../ws-ship-pr/PREPARE-CHECKLIST.md`](
 |------|---------|
 | `skipTesting` | Skip Step 7 Testing (auto-skip when no test surface + unit tests green) |
 | `skipMutationTesting` | **Config** `defaults.skipMutationTesting` (not workflow state): skip optional mutation substep inside Step 7; default true (opt-in). Also skipped when `verification.mutationTest` empty |
-| `scoreAndRefine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`). Score `< 9` always runs this loop until ≥ 9 |
+| `scoreAndRefine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score `< 9` always runs this loop until ≥ 9 |
 

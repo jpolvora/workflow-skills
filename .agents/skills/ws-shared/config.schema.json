@@ -115,7 +115,7 @@
         "fullMode": { "type": "boolean" },
         "scoreAndRefine": {
           "type": "boolean",
-          "description": "Optional extra Pass 1 scoring and 2nd pass polish when Step 5 score is already >= 9. A score below 9 always runs scoreAndRefine until >= 9, even when this flag is false."
+          "description": "Optional extra Pass 1 scoring and 2nd pass polish when Step 5 score is already >= 9 (wide-context overengineering sweep and unused workflow-introduced artifact removal). A score below 9 always runs scoreAndRefine until >= 9, even when this flag is false."
         },
         "autoload": {
           "type": "boolean",
@@ -167,12 +167,12 @@
         "patternsBackend": {
           "type": "boolean",
           "default": true,
-          "description": "When true, ws-patterns-backend is enabled in autoload.md and consulted during backend implementations."
+          "description": "When true, ws-patterns is enabled in autoload.md and consulted during backend implementations."
         },
         "patternsFrontend": {
           "type": "boolean",
           "default": true,
-          "description": "When true, ws-patterns-frontend is enabled in autoload.md and consulted during frontend implementations."
+          "description": "When true, ws-patterns is enabled in autoload.md and consulted during frontend implementations."
         },
         "deliveryCommitArtifacts": {
           "type": "object",

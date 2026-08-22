@@ -72,7 +72,16 @@ KNOWN_MODULES = []
 
 KNOWN_LAYERS = [
     "Core", "Infrastructure", "Api", "Web", "Tests",
+    "Harness", "Domain", "Application",
 ]
+
+_PATH_PREFIX_RE = re.compile(
+    r"(?:\.agents/|bin/|docs/|scripts/|specs/|test/|tests/|src/|web/)\S+"
+)
+_BACKTICK_PATH_RE = re.compile(
+    r"`((?:\.agents/|bin/|docs/|scripts/|specs/|test/|tests/|src/|web/)[^`]+)`"
+)
+_WS_SKILL_RE = re.compile(r"\bws-[a-z0-9]+(?:-[a-z0-9]+)*\b", re.IGNORECASE)
 
 _TOKEN_BOUNDARY_BEFORE = r"(?<![a-z0-9])"
 _TOKEN_BOUNDARY_AFTER = r"(?![a-z0-9])"
@@ -128,9 +137,64 @@ def _read_utf8(path: Path) -> str:
 
 def _clean_list(val: str) -> list[str]:
     val = val.strip().strip("`")
-    return [v.strip().strip("`") for v in val.split(",") if v.strip()]
+    return [v.strip().strip("`") for v in re.split(r"[,;]", val) if v.strip()]
 
 
+def _normalize_path(path: str) -> str:
+    return path.strip().strip("`\"'").replace("\\", "/").rstrip(".,;:()[]{}").lower()
+
+
+def _module_tokens(mod: str) -> list[str]:
+    """Split a Module field into comparable tokens (ws-* ids, path basenames, names)."""
+    raw = mod.strip().strip("`")
+    tokens: list[str] = []
+    for part in re.split(r"[/|,;]+", raw):
+        part = part.strip().strip("`").strip()
+        if not part:
+            continue
+        tokens.append(part.lower())
+        for m in _WS_SKILL_RE.finditer(part):
+            tokens.append(m.group().lower())
+        base_name = Path(part.replace("\\", "/")).name.lower()
+        if base_name and base_name != part.lower():
+            tokens.append(base_name)
+            if base_name.endswith((".py", ".cjs", ".js")):
+                tokens.append(Path(base_name).stem.lower())
+    seen: set[str] = set()
+    out: list[str] = []
+    for t in tokens:
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+    return out
+
+
+def _path_pattern_hit(
+    plan_paths: set[str],
+    patterns: list[str],
+    plan_text: str = "",
+) -> bool:
+    norms = {_normalize_path(p) for p in plan_paths if p}
+    text_norm = plan_text.replace("\\", "/").lower()
+    for pattern in patterns:
+        pat = _normalize_path(pattern)
+        if not pat:
+            continue
+        fn_pat = pat.replace("**/", "*").replace("**", "*")
+        for path in norms:
+            if fnmatch.fnmatch(path, fn_pat):
+                return True
+            if pat.endswith("/**") or pat.endswith("/*"):
+                prefix = pat.rstrip("*").rstrip("/")
+                if path == prefix or path.startswith(prefix + "/"):
+                    return True
+            bare_pat = pat.rstrip("*").rstrip("/")
+            if bare_pat and (path.startswith(bare_pat + "/") or bare_pat in path):
+                return True
+        bare = pat.rstrip("/*")
+        if bare and bare in text_norm:
+            return True
+    return False
 def parse_memory(path: Path) -> dict:
     text = _read_utf8(path)
     traps = []
@@ -198,15 +262,22 @@ def extract_plan_keywords(path: Path) -> dict:
     }
 
     for layer in KNOWN_LAYERS:
-        if layer.lower() in text.lower():
+        if re.search(rf"\b{re.escape(layer)}\b", text, re.IGNORECASE):
             keywords["layers"].add(layer)
 
     for mod in KNOWN_MODULES:
         if _text_contains_module(text, mod):
             keywords["modules"].add(mod)
 
-    for m in re.finditer(r'(?:src/|web/|tests/)\S+', text):
+    for m in _WS_SKILL_RE.finditer(text):
+        keywords["modules"].add(m.group())
+
+    for m in _PATH_PREFIX_RE.finditer(text):
         path_str = m.group().rstrip('.,;()[]{}*`"\'')
+        keywords["file_paths"].add(path_str)
+
+    for m in _BACKTICK_PATH_RE.finditer(text):
+        path_str = m.group(1).rstrip('.,;()[]{}*')
         keywords["file_paths"].add(path_str)
 
     for m in re.finditer(
@@ -219,40 +290,70 @@ def extract_plan_keywords(path: Path) -> dict:
         keywords["us_ids"].add(m.group(1))
 
     return {k: sorted(v) for k, v in keywords.items()}
-
-
-def cross_reference(memory: dict, plan: dict) -> dict:
+def cross_reference(memory: dict, plan: dict, plan_text: str = "") -> dict:
     plan_layers = set(plan["layers"])
-    plan_modules = set(m.lower().replace("-", "") for m in plan["modules"])
+    plan_module_keys: set[str] = set()
+    for m in plan["modules"]:
+        plan_module_keys.add(m.lower().replace("-", ""))
+        for tok in _module_tokens(m):
+            plan_module_keys.add(tok.replace("-", ""))
     plan_entities = set(e.lower() for e in plan["entities"])
-    plan_file_paths = set(p.lower() for p in plan["file_paths"])
+    plan_file_paths = set(_normalize_path(p) for p in plan["file_paths"])
+    plan_text_l = plan_text.lower().replace("\\", "/")
 
     results = {"traps": [], "patterns": []}
 
     for entry_type in ["traps", "patterns"]:
         for entry in memory[entry_type]:
             entry_layers = set(entry["layers"])
-            entry_modules = set(
-                m.lower().strip("`").replace("-", "")
-                for m in entry["modules"]
-            )
+            entry_module_keys: set[str] = set()
+            for em in entry["modules"]:
+                for tok in _module_tokens(em):
+                    entry_module_keys.add(tok.replace("-", ""))
 
             layer_overlap = plan_layers & entry_layers
-            module_overlap = plan_modules & entry_modules
+            meaningful_layers = layer_overlap - {"Harness"}
+            module_overlap = plan_module_keys & entry_module_keys
             entity_hit = any(e in entry["text"].lower() for e in plan_entities)
-            path_hit = any(
-                fnmatch.fnmatch(plan_path, pattern.lower().replace("\\", "/"))
-                for plan_path in plan_file_paths
-                for pattern in entry.get("path_patterns", [])
-            ) or any(p in entry["text"].lower() for p in plan_file_paths)
 
-            if layer_overlap or module_overlap or entity_hit or path_hit:
+            path_hit = _path_pattern_hit(
+                plan_file_paths,
+                entry.get("path_patterns", []),
+                plan_text,
+            ) or any(
+                p in entry["text"].lower().replace("\\", "/")
+                for p in plan_file_paths
+            )
+
+            module_text_hit = False
+            matched_from_text: list[str] = []
+            for em in entry["modules"]:
+                for tok in _module_tokens(em):
+                    if len(tok) < 3:
+                        continue
+                    if tok.startswith("ws-"):
+                        if re.search(rf"\b{re.escape(tok)}\b", plan_text_l, re.IGNORECASE):
+                            module_text_hit = True
+                            matched_from_text.append(tok)
+                    elif tok in plan_text_l:
+                        module_text_hit = True
+                        matched_from_text.append(tok)
+
+            matched_modules = sorted(module_overlap) or sorted(set(matched_from_text))
+
+            if (
+                path_hit
+                or module_overlap
+                or module_text_hit
+                or entity_hit
+                or meaningful_layers
+            ):
                 results[entry_type].append({
                     "title": entry["title"],
                     "type": entry["type"],
                     "severity": entry.get("severity"),
                     "matched_layers": sorted(layer_overlap),
-                    "matched_modules": sorted(module_overlap),
+                    "matched_modules": matched_modules,
                     "entity_match": entity_hit,
                     "path_match": path_hit,
                     "force_interview": (
@@ -263,8 +364,6 @@ def cross_reference(memory: dict, plan: dict) -> dict:
                 })
 
     return results
-
-
 def format_report(plan_path: Path, plan_keywords: dict, results: dict) -> str:
     lines = []
     lines.append("=" * 50)
@@ -363,8 +462,9 @@ def main():
         sys.exit(0)
 
     memory = parse_memory(memory_path)
+    plan_text = _read_utf8(plan_path)
     plan = extract_plan_keywords(plan_path)
-    results = cross_reference(memory, plan)
+    results = cross_reference(memory, plan, plan_text)
 
     if args.json:
         print(json.dumps({
@@ -386,3 +486,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

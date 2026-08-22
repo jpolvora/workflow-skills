@@ -154,7 +154,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-ship-pr` | 8 | Delivery artifacts + push/PR (product already committed) |
 | `ws-fix-pr` | 9 | PR thread fix |
 | `ws-goal-fix-pr` | 9 | Fix until zero threads |
-| `ws-update-plan-implementation` | Post | Plan deltas |
+| `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas when installed |
 | `ws-github-provider` | Provider | GitHub issue→spec + PR ops (same intents as Azure) |
 | `ws-azure-devops-provider` | Provider | ADO WI→spec + PR ops (same intents as GitHub) |
 | `ws-local-spec-provider` | Provider | Local `*.spec.md` |
@@ -240,12 +240,13 @@ Opt-out: `stop ws-tdah` / `stop verbosity` / `normal mode` (retired `stop ws-gab
 
 MEMORY = anti-regression (input + output). Changelog = append-only history, not MEMORY.
 
-**Before** plan/code/fix (skip pure Q&A): 3–8 keywords + touched file paths → `Grep` / `Read` `{sharedDir}/MEMORY.md` or `python .agents/skills/ws-self-learning/scripts/self_learning.py --match-paths <files>` → fold Medium+ **DO NOT** / **INSTEAD DO**.
+**Before** plan/code/fix (skip pure Q&A): 3–8 keywords + touched file paths → `Grep` / `Read` `{sharedDir}/MEMORY.md` or `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --match-paths <files>` → fold Medium+ **DO NOT** / **INSTEAD DO**.
 
 **After** mutating work (required `Learning:` line):
 - **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Record Root Cause & Trap in `{sharedDir}/memory/YYYY-MM-DD-[slug].md` and compile.
+- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap (and `{sharedDir}/backend.md` / `frontend.md` when those pattern flags are on). `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
 - **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory `Severity: High/Critical` memory entry.
-- **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `python .agents/skills/ws-self-learning/scripts/self_learning.py --compile` (script path, not a skill load). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
+- **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` (script path, not a skill load). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
 - `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.
 
 Entry shape: `### [YYYY-MM-DD] [Topic]` plus Layer, Module, Severity, PathPattern, Scenario / Context, DO NOT, INSTEAD DO.
@@ -265,7 +266,7 @@ Do not re-read or rewrite past changelog entries.
 
 When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-write-spec` / `ws-spec-format` unless authoring those skills.
 
-Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. When derived from a remote tracker issue, reformulate into explicit, testable agentic ACs while preserving the original human context in `## Original Issue Context` (`source: github` | `source: azure-devops`). For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch:
+Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. Lookup codebase, `{sharedDir}/MEMORY.md`, and the stack file **before** any `user-gate`. Include `## Out of Scope` and `## Assumptions & Open Questions`. Run `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring` and do not finish while non-zero. Gray area with ≥2 product options → `{specsDir}/{slug}.context.md` (never empty). When derived from a remote tracker issue, reformulate into explicit, testable agentic ACs while preserving the original human context in `## Original Issue Context` (`source: github` | `source: azure-devops`). For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch (skip register when authoring validation fails):
 
 ```bash
 python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
@@ -274,7 +275,7 @@ python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
 
 Use `--force` only when overwriting a differing plan copy. Handoff: `{specsDir}` path (and `step-00` path only if register ran).
 
-Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devops}`, `specDate`. Body: Description, testable one-line ACs, `## Original Issue Context` (for tracker issues), Notes as needed. Every stated requirement → ≥1 AC or explicit out-of-scope. Downstream orch reads `{us-dir}/step-00-*.spec.md` after register, never live tracker APIs.
+Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devops}`, `specDate`. Body: Description, testable one-line ACs, Out of Scope, Assumptions, `## Original Issue Context` (for tracker issues), Notes as needed. Every stated requirement → ≥1 AC or explicit out-of-scope. Downstream orch reads `{us-dir}/step-00-*.spec.md` after register, never live tracker APIs.
 
 
 ---

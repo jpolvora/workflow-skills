@@ -247,7 +247,7 @@ class WorkflowChecker:
             }
 
         # Check auxiliary skills dispatched by standard workflow
-        aux_skills = ["ws-goal-fix-pr", "ws-update-plan-implementation", "ws-github-provider", "ws-azure-devops-provider", "ws-local-spec-provider"]
+        aux_skills = ["ws-goal-fix-pr", "ws-github-provider", "ws-azure-devops-provider", "ws-local-spec-provider"]
         for aux in aux_skills:
             if (SKILLS_DIR / aux / "SKILL.md").exists():
                 dispatched_skills.add(aux)

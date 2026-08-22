@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.3.32
+version: 0.3.34
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -70,8 +70,8 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 5. **Surgical fix (defect class + proactive discovery)**: for each blocking thread (score 6–10), name the defect class, then follow [`scripts/COOPERATIVE_FIX.md`](scripts/COOPERATIVE_FIX.md) **proactive discovery** (code grep **and** MEMORY when present **and** same-PR context sources **and** optional pattern docs when enabled) before `resolve-thread`. Apply minimal edits that fix every in-scope occurrence per the size gate, not only the anchored `file:line`. Record `defectClass`, `sourcesConsulted`, `proactiveFixed`, and `proactiveSkipped` (path + reason) on the plan-gate and in each resolution comment. **Forbidden:** closing a thread after fixing only the anchor when same-class surgical hits remain unfixed without a recorded skip. Missing `MEMORY.md` is consult-skipped (record in `sourcesConsulted`); absence of prior round reports is not a failure.
    - Done when: all approved threads have proactive pass evidence on the plan-gate, class-wide fixes or recorded skips, and resolution comments that carry the proactive report fields.
 
-6. **Verify & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); resolve each handled thread via provider intent `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
-   - Done when: verification passed, report exists, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).
+6. **Verify, learn & push**: run `config.json.verification` commands; write the review report under `{reviewsDir}/PR-<PR-ID>-round-<N>.md` (`{reviewsDir}` ← `config.reviews.dir`); then run post-round learning per [`ws-self-learning`](../ws-self-learning/SKILL.md) § Post fix-pr round (goal-fix-pr also requires this each loop). Resolve each handled thread via provider intent `resolve-thread` (skip remote mutation when `dry-run`) with a `<!-- resolution-reply -->` marker in the comment body; stage, commit, and `git push origin HEAD` (skip push when `dry-run`).
+   - Done when: verification passed, report exists with `Learning:`, traps compiled when required, threads are resolved (or dry-run simulated), and the branch is pushed (unless `dry-run`).
 
 ## Runtime audit (`defaults.enableAuditing`)
 

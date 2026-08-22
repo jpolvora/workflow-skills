@@ -248,6 +248,43 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!sharedDepMap.packages?.extra?.skills?.includes('ws-preview')) {
     fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-preview');
   }
+  {
+    const extraDemoted = ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation'];
+    for (const map of [depMap, sharedDepMap]) {
+      const w = map.packages?.workflows?.skills || [];
+      const e = map.packages?.extra?.skills || [];
+      for (const id of extraDemoted) {
+        if (w.includes(id)) fail(`workflows package must not list Extra skill ${id}`);
+        if (!e.includes(id)) fail(`extra package missing demoted skill ${id}`);
+      }
+      if (!w.includes('ws-patterns')) fail('workflows package missing ws-patterns');
+      if (w.includes('ws-patterns-backend') || w.includes('ws-patterns-frontend')) {
+        fail('workflows package still lists retired pattern skill ids');
+      }
+      if (e.includes('ws-patterns-backend') || e.includes('ws-patterns-frontend')) {
+        fail('extra package still lists retired pattern skill ids');
+      }
+    }
+    const activityDeps = depMap.dependencies?.['ws-activity-report'] || [];
+    for (const forbidden of ['ws-github-provider', 'ws-azure-devops-provider', 'ws-configure-project']) {
+      if (activityDeps.includes(forbidden)) {
+        fail(`dependencies.ws-activity-report must not include ${forbidden}`);
+      }
+    }
+    if ((depMap.dependencies?.['ws-write-plan'] || []).includes('ws-fable-domain')) {
+      fail('dependencies.ws-write-plan must not include ws-fable-domain');
+    }
+    if ((depMap.dependencies?.['ws-spec-to-pr'] || []).includes('ws-update-plan-implementation')) {
+      fail('dependencies.ws-spec-to-pr must not include ws-update-plan-implementation');
+    }
+    if ((depMap.dependencies?.['ws-fable-method'] || []).includes('ws-fable-domain')) {
+      fail('dependencies.ws-fable-method must not include ws-fable-domain');
+    }
+    if ((depMap.dependencies?.['ws-pre-daily'] || []).includes('ws-activity-report')) {
+      fail('dependencies.ws-pre-daily must not include ws-activity-report');
+    }
+    ok('package map Extra demotion + ws-patterns membership (AC1–AC5 graph)');
+  }
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('ws-testing')) fail('ARTIFACTS.md missing Step 7 Testing ownership');
@@ -1072,6 +1109,19 @@ child.on('close', async (code) => {
     if (fs.existsSync(path.join(pkgSkills, 'security-review'))) {
       fail('Workflows package must not install Extra-only security-review');
     }
+    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation']) {
+      if (fs.existsSync(path.join(pkgSkills, extra))) {
+        fail(`Workflows package must not install Extra skill ${extra}`);
+      }
+    }
+    if (!fs.existsSync(path.join(pkgSkills, 'ws-patterns', 'SKILL.md'))) {
+      fail('Workflows package did not install ws-patterns');
+    }
+    for (const retired of ['ws-patterns-backend', 'ws-patterns-frontend']) {
+      if (fs.existsSync(path.join(pkgSkills, retired))) {
+        fail(`Workflows package must not install retired skill ${retired}`);
+      }
+    }
     fs.rmSync(pkgDir, { recursive: true, force: true });
     ok('Workflows package installs workflows+hub without Extra-only skills');
   }
@@ -1195,6 +1245,37 @@ child.on('close', async (code) => {
       fail('ws-shared/config.json not preserved on install --yes');
     }
     ok('install --package workflows --yes refreshes skills and preserves config.json');
+
+    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation']) {
+      if (fs.existsSync(path.join(niDir, '.agents', 'skills', extra))) {
+        fail(`install --package workflows --yes must not create Extra skill ${extra}`);
+      }
+    }
+
+    const fullExtraDir = path.join(__dirname, '.pkg-full-extra');
+    fs.rmSync(fullExtraDir, { recursive: true, force: true });
+    fs.mkdirSync(fullExtraDir, { recursive: true });
+    const fullExtra = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--full', '--yes'],
+      {
+        cwd: fullExtraDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 180000
+      }
+    );
+    if (fullExtra.status !== 0) {
+      console.error(`${fullExtra.stdout || ''}${fullExtra.stderr || ''}`);
+      fail(`install --full --yes exited ${fullExtra.status}`);
+    }
+    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation']) {
+      if (!fs.existsSync(path.join(fullExtraDir, '.agents', 'skills', extra, 'SKILL.md'))) {
+        fail(`Full install missing Extra skill ${extra}`);
+      }
+    }
+    fs.rmSync(fullExtraDir, { recursive: true, force: true });
+    ok('Full install still creates the three Extra-demoted skills');
 
     // --skills + transitive deps
     const skillsDir2 = path.join(__dirname, '.pkg-ni-skills');

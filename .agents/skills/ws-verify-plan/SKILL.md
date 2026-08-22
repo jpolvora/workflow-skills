@@ -1,7 +1,7 @@
 ---
 name: ws-verify-plan
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ 9; below 9 runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.3.32
+version: 0.3.34
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -54,7 +54,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
 5. **Handoff**: return the score and report path.
-   - Workflow: the orchestrator owns the gate after reading the report: score `>= 9` advances to Step 6; score `< 9` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= 9` (max 3 rounds per visit, then Pause). Do not auto-approve below 9.
+   - Workflow: the orchestrator owns the gate after reading the report: score `>= 9` advances to Step 6 (optional `scoreAndRefine` second pass first when the flag is on — [`gates.md`](../ws-shared/gates.md) § Score & Refine); score `< 9` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= 9` (max 3 rounds per visit, then Pause). Do not auto-approve below 9.
    - Standalone: apply the same `>= 9` / `< 9` threshold; recommend `scoreAndRefine` until `>= 9` when below 9.
    - Done when: the caller has the score and report path.
 

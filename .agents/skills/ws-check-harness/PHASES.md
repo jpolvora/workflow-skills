@@ -106,11 +106,11 @@ Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When
 | `ws-ship-pr` | `ws-ship-pr` | 8 | Delivery + push/PR |
 | `ws-fix-pr` | `ws-fix-pr` | 9 | One-shot PR threads |
 | `ws-goal-fix-pr` | `ws-goal-fix-pr` | 9 | Thread convergence loop |
-| `ws-update-plan-implementation` | `ws-update-plan-implementation` | Post | Plan deltas after workflow |
+| `ws-update-plan-implementation` | `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas after workflow when installed |
 
 **Rules:**
 
-1. **Folder == frontmatter `name:`** for all twelve pipeline skills (`ws-*`). FSM step numbers stay `0`–`9` / Post in tables; they are **not** part of the folder name. `ws-goal-fix-pr` shares FSM step **9** with `ws-fix-pr`; `ws-update-plan-implementation` is **Post**.
+1. **Folder == frontmatter `name:`** for pipeline skills (`ws-*`). FSM step numbers stay `0`–`9` in tables; they are **not** part of the folder name. `ws-goal-fix-pr` shares FSM step **9** with `ws-fix-pr`; `ws-update-plan-implementation` is optional Extra Post (not a required Workflows FSM step).
 2. **`name:` / folder** use the `ws-` prefix (e.g. `ws-testing`, `ws-goal-fix-pr`). No numeric `NN-` folder prefixes.
 3. **`invocation_names`** should include bare short id and `ws-*` only — no retired `NN-*` folder aliases.
 4. **Orchestrator dispatch** (`ws-spec-to-pr/STEP-DISPATCH.md`, orch `SKILL.md`): use `ws-*` folder ids. STEP-DISPATCH is **standard-only** (0–9); lite keeps its own 0–5 table.

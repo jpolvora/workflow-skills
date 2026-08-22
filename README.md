@@ -27,7 +27,7 @@ Portable **agent skills** that take a feature spec to a reviewed pull request. I
 |---------|--------------|
 | **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads with a proactive same-class sweep before resolve (steps 0–9). |
 | **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
-| **A derived 9/10 verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ 9**. Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. |
+| **A derived 9/10 verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ 9**. Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. Optional `scoreAndRefine` second pass then reviews the full diff for overengineering and unused workflow-introduced artifacts. |
 | **Verifiable runtime artifacts** | Atomic Node state updates publish deterministic `run.json` / `run.md`, a repo plans index, per-step JSONL telemetry, and a machine-readable AC ledger. |
 | **Smaller dispatch context** | Bounded subagent contracts and indexed plan slices replace repeated full-document payloads. Context and MEMORY budgets fail closed when exceeded. |
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
@@ -221,7 +221,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Role |
 |-------|------|
 | [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | Orchestrators |
-| [`ws-write-spec`](.agents/skills/ws-write-spec/SKILL.md) … [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` / `ws-update-plan-implementation` (`ws-*`; FSM steps 0–9 + post) |
+| [`ws-write-spec`](.agents/skills/ws-write-spec/SKILL.md) … [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` (`ws-*`; FSM steps 0–9). Optional Extra post-workflow: [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) |
 | [`ws-github-provider`](.agents/skills/ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](.agents/skills/ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](.agents/skills/ws-local-spec-provider/SKILL.md) | Issue/WI → **spec of record** under `{specsDir}` then workflow `step-00` under `{plansDir}` + PR ops. Shared SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) |
 
 ### Review & audit
@@ -236,13 +236,13 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Role |
 |-------|------|
 | [`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md) | 7-step problem-solving loop with gates |
-| [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) |
+| [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) (Extra) |
 | [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md) | Engineering-delivery gate and Code review proof source (default in `rules.seniorDeveloper`) |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration |
-| [`ws-patterns-backend`](.agents/skills/ws-patterns-backend/SKILL.md) · [`ws-patterns-frontend`](.agents/skills/ws-patterns-frontend/SKILL.md) | Backend & Frontend persistent patterns memory engines |
+| [`ws-patterns`](.agents/skills/ws-patterns/SKILL.md) | Backend & frontend persistent patterns memory engine |
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) · [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, plan-history archive, feature spec sync, format & goal loop |
-| [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (plan bootstrap start → latest PR thread comment or delivery commit; human vs agent duration split) |
+| [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (Extra; plan bootstrap start → latest PR thread comment or delivery commit; human vs agent duration split) |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | Standup briefing of the last 36 hours |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | Spec/US status panorama — what it does, what it delivered, how to check & test |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | Archive `{plansDir}` delivery facts into `index.PRD`, then propose cleanup of shipped plan folders |

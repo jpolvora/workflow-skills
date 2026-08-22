@@ -1,6 +1,6 @@
 ---
 name: ws-pre-daily
-version: 0.3.32
+version: 0.3.34
 disable-model-invocation: true
 description: Standup briefing of the last 36 hours — delivered, made, ongoing, next.
 invocation_names:
@@ -14,7 +14,7 @@ invocation_names:
 
 Read-only standup for a rolling window (default **36 hours**). Prints **Delivered / Made / Ongoing / Next**. Does not commit, push, or post.
 
-Timesheet clocks → [`ws-activity-report`](../ws-activity-report/SKILL.md). Output shape → [`references/OUTPUT.md`](references/OUTPUT.md).
+Timesheet clocks → [`ws-activity-report`](../ws-activity-report/SKILL.md) when that Extra skill is installed. Output shape → [`references/OUTPUT.md`](references/OUTPUT.md).
 
 ## Invocation
 

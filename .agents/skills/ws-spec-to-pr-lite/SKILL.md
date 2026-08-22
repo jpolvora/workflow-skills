@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.32
+version: 0.3.34
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -14,7 +14,7 @@ invocation_names:
 
 Sequential spec→ship orchestrator executing inline steps (0–5) using the same pipeline skills as [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md). Do **not** use `STEP-DISPATCH.md` for lite step numbers.
 
-**Specs family:** Role = single-feature **lite** Spec→PR. Same entry rules as standard for specs (`{specsDir}` draft → register; tracker fetch → `ws-write-spec` agentic reformulation → register). Downstream steps always read the enhanced local spec copy. Prefer when `ws-classify-complexity` recommends lite. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = single-feature **lite** Spec→PR. Same entry rules as standard for specs (`{specsDir}` draft → authoring validate → register; tracker fetch → `ws-write-spec` agentic reformulation → authoring validate → register). Newly written spec with authoring validation non-zero: **skip** `ws-local-spec-provider` register. Pre-closure existing spec: register allowed under `validate_spec.cjs` `--mode=compat`. Downstream steps always read the enhanced local spec copy. Prefer when `ws-classify-complexity` recommends lite. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap (Feature branch gate: §5b; Resume pre-check vs `{integrationBranch}`: §4c).
 
@@ -30,11 +30,11 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 4. **Artifacts:** `step-00` spec · `step-01` plan · `step-08` result (shared names with standard).
 5. **Commits & Cleanup:** Required **G2-code after Step 2 before Step 3**; second G2-code after Step 3 review-fix if product files remain (`commit-code`, path-scoped `files_touched` — [`gates.md`](../ws-shared/gates.md) § Required G2-code save points). Configured delivery artifacts at Step 4 G2-delivery (`defaults.deliveryCommitArtifacts` / [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8). On `status → completed`, follow [`artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md) Phase A: `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
 6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel`, `dag`, `scoreAndRefine`, or `reviewFix` even if set. Lite Step 3 review-fix stays on Step `3` / `reviewerModel` / `stepModels["3"]`.
-7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`).
+7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`; wide-context simplify per [`gates.md`](../ws-shared/gates.md) § Score & Refine).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
 9. **Runtime audit:** When `defaults.enableAuditing` is `true`, follow [`ws-audit`](../ws-audit/SKILL.md) (init at bootstrap, append script execution errors including inline `-c`/`-e` quoting failures, anomalies/performance/correctness/disposable scripts per step, finalize + remediation `user-gate` via `draft-remediation` at end). When `false`, skip.
 10. **Session leases:** When `defaults.sessionLeases` is not explicit `false` (omitted → on), follow [`setup.md`](../ws-shared/setup.md) §5a: `acquire` before Step 0/resume; `heartbeat --lease-id {leaseId}` on each step transition; `release` on terminal status; `git-lock --holder {leaseId}` around destroyable git.
-11. **Patterns & MEMORY Consult:** In Steps 1, 2, and 3: if `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load `ws-patterns-frontend` before Web/UI edits; if `defaults.patternsBackend` is true, read `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load `ws-patterns-backend` before backend edits; grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `pattern_consult` and `memory_consult` in step outputs.
+11. **Patterns & MEMORY Consult:** In Steps 1, 2, and 3: if `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load `ws-patterns` before Web/UI edits; if `defaults.patternsBackend` is true, read `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load `ws-patterns` before backend edits; grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `pattern_consult` and `memory_consult` in step outputs.
 
 
 
@@ -42,7 +42,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` (+ register); **prior-work sweep** before plan/code | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** `step-00-{slug}.spec.md` registered + classifier user-gate completed |
+| 0 | Spec | providers / `ws-write-spec` (+ authoring validate; skip register on fail); **prior-work sweep** before plan/code | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** authoring validation PASS **and** `step-00-{slug}.spec.md` registered + classifier user-gate completed |
 
 | 1 | Planning | `ws-write-plan` (design-intent git log for modifications) | `step-01-{slug}.plan.md` created & validated |
 | 2 | Implementation | `ws-implement-tasks` (**defect-class repo-wide sweep**) | Code modified + build/tests pass (`config.json.verification`); then required G2-code (skip if empty) |
@@ -66,6 +66,10 @@ After completing step N (0..4), before step N+1:
 After `step-00-{slug}.spec.md` exists and before Step 1:
 1. Run [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) → writes `step-00-{slug}.classify.md`.
 2. **User Gate** (unless `autoMode` or `skipQualityGates`): Accept recommendation (Recommended) · Override to standard · Override to lite.
+
+## Lite safety valve
+
+After `step-01-{slug}.plan.md` exists (opening implement step list in plan §3 / Step-by-Step), if that list has **> 5** atomic steps, present `user-gate` (recommended first): **Continue lite** / **Switch to `ws-spec-to-pr` standard**. `dagThresholds.maxImplementationSteps` stays **3** for classify; this valve is independent. `autoMode`: continue lite.
 
 ## Quality Gate Bypass (`skipQualityGates`)
 

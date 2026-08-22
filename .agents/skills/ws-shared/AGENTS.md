@@ -48,8 +48,8 @@
 | `STACK.md` | Human-readable companion to `config.json` (edit freely) |
 | `MEMORY.md` | Compiled anti-regression index (`ws-self-learning` skill) |
 | `memory/*.md` | Individual memory entries (compile into `MEMORY.md`) |
-| `backend.md` | Consumer-owned backend architectural patterns & rules (`ws-patterns-backend` skill) |
-| `frontend.md` | Consumer-owned frontend UI/UX patterns & rules (`ws-patterns-frontend` skill) |
+| `backend.md` | Consumer-owned backend architectural patterns & rules (`ws-patterns` skill) |
+| `frontend.md` | Consumer-owned frontend UI/UX patterns & rules (`ws-patterns` skill) |
 | `CHANGELOG.md` | Append-only history (`ws-changelog` skill; default `rules.changelogFile`) |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` (installer-written) |
 
@@ -61,7 +61,7 @@
 |-------|------|---------|
 | `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) | Every task completion |
-| `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md` (keywords + path matching); on completion: write traps / failure reflection → compile |
+| `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md` (keywords + path matching); on completion: write traps / failure reflection → compile; after each `ws-goal-fix-pr` / `ws-fix-pr` round: record reviewer/CI mistakes |
 
 `ws-tdah` is **on-demand** here (invoke `/ws-tdah` · `/tdah` · `start ws-tdah`). Upstream root `AGENTS.md` inlines a compact session contract for dogfood (does not `Read` live `ws-tdah`); that is not the consumer default.
 

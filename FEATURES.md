@@ -2,7 +2,7 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
-Package version: **0.3.32** · 48 skills (45 Workflows + 3 Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.34** · 48 skills (42 Workflows + 6 Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -68,7 +68,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 | Gate | Rule | Owner |
 |------|------|-------|
 | **Derived verify score ≥ 9** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. Below 9 it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). | `ws-verify-plan` |
-| **Score & refine** | When a score is already ≥ 9 and `defaults.scoreAndRefine` is on, the user is offered a second polish pass with a task-by-task score analysis. | `ws-verify-plan` |
+| **Score & refine** | When a score is already ≥ 9 and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-verify-plan` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |
 | **Commit before review** | Product files must be committed before a review is dispatched, so the review always diffs a real `{base}...HEAD`. Uncommitted product files STOP the step. | `gates.md` (G2-code) |
 | **Regression sabotage** | When mutation testing is unset, Step 7 deliberately breaks assertions to confirm the suite actually catches regressions. | `ws-testing` (`run_sabotage.py`) |
@@ -123,8 +123,8 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
-| Canonical `*.spec.md` schema, section hierarchy, and AC rules | `ws-spec-format` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring`. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
+| Canonical `*.spec.md` schema, section hierarchy, AC rules, and specify-time closure (`Out of Scope`, Assumptions, dimensions sweep) | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register | `ws-spec-from-provider` |
@@ -146,8 +146,8 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Anti-regression traps: consult before planning, record after discovering | `ws-self-learning` | `{sharedDir}/MEMORY.md` + `memory/*.md` |
 | Failure reflection hook — forbids `Learning: N/A` when session friction is high | `ws-self-learning` | same |
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
-| Backend architectural conventions, consulted before backend tasks | `ws-patterns-backend` | `{sharedDir}/backend.md` |
-| Frontend UI/UX conventions, consulted before frontend tasks | `ws-patterns-frontend` | `{sharedDir}/frontend.md` |
+| Backend architectural conventions, consulted before backend tasks | `ws-patterns` | `{sharedDir}/backend.md` |
+| Frontend UI/UX conventions, consulted before frontend tasks | `ws-patterns` | `{sharedDir}/frontend.md` |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
 | Domain authority, minimum evidence sets, and fraud definitions per domain | `ws-fable-domain` | domain adapters |
 
@@ -201,7 +201,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-goal-loop` | Generic convergence primitive: sentinel management, heartbeat and settle timers, re-check control. Backs `ws-goal-fix-pr` |
 | `ws-update-plan-implementation` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
 
-Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-patterns-backend`, `ws-patterns-frontend`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
+Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-patterns`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
 
 ---
 
@@ -235,7 +235,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (44 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -249,12 +249,14 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.32)
+## 12. Recent evolution (0.3.22 → 0.3.34)
 
 Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.34** | Aug 22 | Extra demotion (`ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`); merge `ws-patterns-*` into `ws-patterns`; specify-time closure pack (`Out of Scope` / Assumptions, `validate_spec --mode=authoring`, write-spec lookup + `{slug}.context.md`, Step 0 skip-register, lite >5-step valve) |
+| **0.3.33** | Aug 22 | scoreAndRefine second pass (score already ≥ 9) reviews the full Pass 1 diff: simplify overengineered ACs/tasks; remove unused workflow-introduced files/tests/methods/classes |
 | **0.3.32** | Aug 22 | Runtime audit suggestion categories already shipped; cooperative session leases (`defaults.sessionLeases`, default on) with same-slug exclusive lock + short git critical section; schema/CLI/tests/docs |
 | **0.3.31** | Aug 22 | Nested-quote `python -c` / `node -e` audit classify + draft-remediation user-gate; `ws-fix-pr` / `ws-goal-fix-pr` proactive same-class sweep (multi-source discovery before resolve); standalone `ws-write-spec` gates `index.PRD` track via `ws-spec-index` |
 | **0.3.30** | Aug 21 | SCM provider parity tests, LF-pinned `bin/skill-integrity.json`, and a site/catalog stamp for the 48-skill inventory |
@@ -298,9 +300,9 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
-| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; proactive same-class sweep (code, MEMORY, PR context) before resolve |
-| [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative fix-pr rounds until threads hit zero and checks pass |
-| [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | W | Post-ship QA delta capture, planning, and execution |
+| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; proactive same-class sweep (code, MEMORY, PR context) before resolve; post-round MEMORY/pattern learning for accepted reviewer/CI defects |
+| [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative fix-pr rounds until threads hit zero and checks pass; each round records reviewer/CI mistakes into MEMORY (and pattern files when enabled) |
+| [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | E | Post-ship QA delta capture, planning, and execution |
 
 ### Providers
 
@@ -327,7 +329,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 |-------|-----|------|
 | [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md) | W | Engineering delivery gate and code review proof source |
 | [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | W | Adversarial audit of claimed work against git diffs |
-| [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | W | Domain adapters: authority, evidence sets, fraud definitions |
+| [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | E | Domain adapters: authority, evidence sets, fraud definitions |
 | [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | W | Secrets and PII scan with optional pre-commit hook |
 | [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | E | External reviewer dry-run without publishing threads |
 
@@ -347,8 +349,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | Skill | Pkg | Role |
 |-------|-----|------|
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) | W | Anti-regression memory engine |
-| [`ws-patterns-backend`](.agents/skills/ws-patterns-backend/SKILL.md) | W | Backend architectural preferences engine |
-| [`ws-patterns-frontend`](.agents/skills/ws-patterns-frontend/SKILL.md) | W | Frontend UI/UX preferences engine |
+| [`ws-patterns`](.agents/skills/ws-patterns/SKILL.md) | W | Backend and frontend architectural / UI preferences engine |
 | [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) | W | Append-only task history writer |
 | [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | W | Micro diff hygiene guidelines |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) | W | Action-first reply shape and operational judgment |
@@ -359,7 +360,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 |-------|-----|------|
 | [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | W | Interactive `config.json` wizard |
 | [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | W | Generic convergence loop primitive |
-| [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | W | Timesheet entries for a delivery day |
+| [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | E | Timesheet entries for a delivery day |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | W | 36-hour standup briefing |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | W | Spec/US status & delivery panorama |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Archive plan history into `index.PRD`; propose plan-dir cleanup |

@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 45, `extra` = 3). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 42, `extra` = 6). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -44,7 +44,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 | 08 | `ws-ship-pr` | `.agents/skills/ws-ship-pr/SKILL.md` |
 | 09 | `ws-fix-pr` | `.agents/skills/ws-fix-pr/SKILL.md` |
 | — | `ws-goal-fix-pr` | `.agents/skills/ws-goal-fix-pr/SKILL.md` |
-| Post | `ws-update-plan-implementation` | `.agents/skills/ws-update-plan-implementation/SKILL.md` |
+| Post | `ws-update-plan-implementation` | `.agents/skills/ws-update-plan-implementation/SKILL.md` (Extra) |
 | — | `ws-github-provider` | `.agents/skills/ws-github-provider/SKILL.md` |
 | — | `ws-azure-devops-provider` | `.agents/skills/ws-azure-devops-provider/SKILL.md` |
 | — | `ws-local-spec-provider` | `.agents/skills/ws-local-spec-provider/SKILL.md` |
@@ -70,19 +70,18 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
 | `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Batch: classify each spec, then standard or lite |
 | `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
-| `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas |
+| `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas (Extra) |
 | `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Specs |
 | `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
-| `ws-patterns-backend` | `.agents/skills/ws-patterns-backend/SKILL.md` | Consult backend.md before write; record patterns after → `{sharedDir}/backend.md` |
-| `ws-patterns-frontend` | `.agents/skills/ws-patterns-frontend/SKILL.md` | Consult frontend.md before write; record patterns after → `{sharedDir}/frontend.md` |
+| `ws-patterns` | `.agents/skills/ws-patterns/SKILL.md` | Consult backend.md / frontend.md by task layer; record after → `{sharedDir}` |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
 | `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` (may optionally suggest secrets pre-commit hook — never required) |
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |
 | `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import open GH issues / ADO US → write-spec + register |
-| `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries from plan bootstrap start → latest PR thread comment or delivery commit |
+| `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries from plan bootstrap start → latest PR thread comment or delivery commit (Extra) |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | Standup briefing of the last 36 hours — delivered, made, ongoing, next |
 | `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Read-only panorama: spec/US status, what it delivers, how to check & test |
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan-folder facts into `index.PRD` Archive, then propose cleanup of shipped `{plansDir}` folders |
@@ -108,9 +107,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Fable Method 7-step loop | This file § [3. Investigate loop](#3-investigate-loop-ws-fable-method) (live `ws-fable-method` only when authoring that skill) |
-| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` |
-| Backend patterns & rules | `ws-patterns-backend` |
-| Frontend UI/UX patterns & rules | `ws-patterns-frontend` |
+| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
+| Backend & frontend patterns | `ws-patterns` |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
@@ -124,7 +122,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
-| Timesheet / activity hours for a delivery day | `ws-activity-report` |
+| Timesheet / activity hours for a delivery day | `ws-activity-report` (Extra) |
 | Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
@@ -222,7 +220,7 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in § [Ups
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
 | GitHub issue → spec / fix | `ws-github-provider` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) or orchestrator with issue URL |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
-| Timesheet / activity hours | `ws-activity-report` |
+| Timesheet / activity hours | `ws-activity-report` (Extra) |
 | Explain spec / US status | `ws-spec-explain` |
 | Archive plans into `index.PRD` | `ws-spec-archive` |
 | Clean workflow leftovers | `ws-cleanup` |

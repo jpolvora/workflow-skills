@@ -2,7 +2,7 @@
 
 > **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract. Use this README + [`DIAGRAM.md`](DIAGRAM.md) for onboarding. FAQ sections that still mention steps 11–13 are **legacy**; trust [`SKILL.md`](SKILL.md) / this README for steps **0–9**.
 >
-> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`). Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/tools.md). Config: `.agents/skills/ws-shared/config.json`.
+> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`). Optional Extra post-workflow: `ws-update-plan-implementation` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/tools.md). Config: `.agents/skills/ws-shared/config.json`.
 >
 > **Identity:** `/ws-spec-to-pr`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
@@ -83,7 +83,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 | `skip-tests` | Skip implement-time test suite runs (build still runs) |
 | `full` | Step 8 Recommended = commit plan+result then create PR |
 | `strict` | Full verification matrix at Step 5 |
-| `score-and-refine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`). Score `< 9` always runs this loop until ≥ 9 |
+| `score-and-refine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score `< 9` always runs this loop until ≥ 9 |
 
 **Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/setup.md).
 
@@ -112,7 +112,7 @@ Node state helpers update the workflow atomically and publish deterministic `run
 | **8** | Ship | `ws-ship-pr` | Delivery artifacts + push/PR → `step-08-{slug}.result.md` (product already committed) |
 | **9** | Fix-PR | `ws-fix-pr` / `ws-goal-fix-pr` | Threads → merge policy |
 
-Post-workflow QA deltas: `ws-update-plan-implementation` (`ws-update-plan-implementation`).
+Post-workflow QA deltas (optional Extra, when installed): `ws-update-plan-implementation`.
 
 ### Step 7 — Testing (summary)
 

@@ -1,5 +1,45 @@
 # Changelog
 
+### [2026-08-22 17:20] Agent: Cursor Grok 4.6
+- **Prompt**: goal-fix-pr #231 round 2 (empty Assumptions table)
+- **Done**: authoring fails when Assumptions has zero data rows; compat warns; FORMAT + test
+- **Result**: Specify-time closure cannot skip defaults via a header-only Assumptions table
+
+### [2026-08-22 17:15] Agent: Cursor Grok 4.6
+- **Prompt**: goal-fix-pr #231 review threads (MEMORY compile + patterns headers)
+- **Done**: self_learning.cjs heading separators and scenario backticks; dogfood backend.md/frontend.md consult `ws-patterns`; tests + compile
+- **Result**: Defect classes cleared for MEMORY compile formatting and retired pattern skill ids
+
+### [2026-08-22 16:45] Agent: Cursor Grok 4.6
+- **Prompt**: Stamp 0.3.34 for combined next PR
+- **Done**: `npm run build-site:bump` + FEATURES evolution + integrity regenerate; index Done log SHA `89e7c96`
+- **Result**: Single extra version stamp on develop for catalog Extra, ws-patterns, and specify-time closure
+
+### [2026-08-22 16:40] Agent: Cursor Grok 4.6
+- **Prompt**: Execute combined_next_pr plan (catalog Extra + ws-patterns + specify-time closure; close fix-pr index)
+- **Done**: Demoted 3 skills to Extra; merged patterns; FORMAT/validate --mode authoring; write-spec lookup + context.md; Step 0 skip-register; lite >5-step valve; MEMORY trap for orch closure
+- **Result**: 48 skills (42 W + 6 E); catalog + closure implemented on develop; index Feature map `[x]` for three slugs
+
+### [2026-08-22 16:26] Agent: Cursor Grok 4.6
+- **Prompt**: Check model presets per step, then write defaults into config.json.example so new installs prefill preset templates
+- **Done**: Confirmed schema/resolver/interview already support modelsPreset + stepModels; filled per-step `steps` templates on shipped presets; aligned configure-project detection; copied templates into dogfood config.json
+- **Result**: Fresh consumer installs seed named presets with 0-9 + dag/scoreAndRefine/reviewFix slots
+
+### [2026-08-22 16:20] Agent: Cursor Grok 4.6
+- **Prompt**: Add post fix-pr learning each goal-fix-pr loop so reviewer/CI mistakes go into memory/patterns
+- **Done**: ws-self-learning § Post fix-pr round; goal-fix-pr step 5 + fix-pr verify; deps, evals, tests, hubs
+- **Result**: Each fix-pr round records accepted reviewer/CI defects so the next round does not repeat them
+
+### [2026-08-22 16:15] Agent: Cursor Grok 4.6
+- **Prompt**: Add test, bump version, commit
+- **Done**: Added `test/test-score-and-refine-second-pass.js`; stamped 0.3.33 (`build-site:bump` + integrity + FEATURES/README)
+- **Result**: Second-pass simplify contract is versioned and committed
+
+### [2026-08-22 16:10] Agent: Cursor Grok 4.6
+- **Prompt**: Add scoreAndRefine second-pass instruction to simplify overengineered ACs/tasks and remove unused workflow-introduced artifacts
+- **Done**: Canonical second-pass protocol in gates.md; STEP-DISPATCH / ws-implement-tasks / docs/FAQ/FEATURES aligned; contract test in test-quality-gates.js
+- **Result**: Optional polish now wide-context: simplify if possible, delete unused files/tests/methods/classes this workflow introduced
+
 ### [2026-08-22 15:10] Agent: Composer
 - **Prompt**: goal-fix PR #230 remaining review threads (skip-existing / plan step-00)
 - **Done**: Skip filter also treats `{plansDir}/us-{id}/step-00-us-{id}.spec.md` as existing; evals aligned

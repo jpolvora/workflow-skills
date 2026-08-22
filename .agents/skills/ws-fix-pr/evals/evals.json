@@ -60,6 +60,16 @@
         "Agent records memory consult-skipped in sourcesConsulted",
         "Agent still runs code and context proactive discovery before resolve"
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "A code-reviewer CI thread scored 8 flags a missing null check that we just shipped; fix it and finish the pass.",
+      "expected_output": "Surgical fix plus a MEMORY trap so the next round does not repeat the mistake; Learning: N/A is forbidden for this accepted defect.",
+      "assertions": [
+        "Agent writes a memory/YYYY-MM-DD-fix-pr-*.md trap (or cites an existing Medium+ hit) after fixing the accepted reviewer/CI defect",
+        "Agent compiles MEMORY after the write",
+        "Agent does not use Learning: N/A for an accepted score 6-10 reviewer/CI defect"
+      ]
     }
   ]
 }

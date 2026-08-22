@@ -1,7 +1,7 @@
 ---
 name: ws-audit
 description: Runtime workflow audit observer — logs script/tool/I/O/dispatch anomalies, diagnoses performance bottlenecks, detects disposable scratch scripts, and proposes upstream GitHub issues, draft PRs, and session todos (user-gate).
-version: 0.3.32
+version: 0.3.34
 disable-model-invocation: true
 invocation_names:
   - audit

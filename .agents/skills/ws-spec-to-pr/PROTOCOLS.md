@@ -310,7 +310,7 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 Read state: `{us-dir}/{workflow-id}.state.md` — `## Step outputs (compact)` plus at most the two most recent full step outputs.
 Skill: {SKILL.md path} — required sections: `## Subagent contract` and the step sections named by STEP-DISPATCH (never the full skill body).
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
-Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning, ws-patterns-frontend (if patternsFrontend), ws-patterns-backend (if patternsBackend)
+Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning, ws-patterns (if patternsFrontend and/or patternsBackend)
 Read: compact state outputs; injected MEMORY slice (orchestrator path-scoped query, ≤ 4,000 B — do not read the MEMORY.md index); `config.json.rules.stackFile` slices when provided.
 Patterns: if `config.json.defaults.patternsFrontend` is true and `{sharedDir}/frontend.md` exists, Read the injected frontend slice before any Web/UI edit.
 Patterns: if `config.json.defaults.patternsBackend` is true and `{sharedDir}/backend.md` exists, Read the injected backend slice before any Domain/Application/EF edit.
@@ -354,4 +354,4 @@ Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct
 
 ## Post-workflow (outside this agent)
 
-Manual QA after workflow completion (or pause before Step 8) not resumed here. Use [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix → re-review loop (in-pipeline review fixes).
+Manual QA after workflow completion (or pause before Step 8) not resumed here. Optional Extra skill [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) (invoke when installed) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix → re-review loop (in-pipeline review fixes). Not a required FSM step.

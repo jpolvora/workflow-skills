@@ -43,10 +43,25 @@ assert(defaultsProps.stepModels?.type === 'object', 'schema defaults.stepModels 
 assert(!schema.properties?.defaults?.required?.includes('modelsPreset'), 'schema does not require modelsPreset');
 
 assert(example.defaults.modelsPreset === 'default', 'example sets modelsPreset default');
+assert(example.defaults.modelPresets?.default?.plannerModel === 'current', 'default preset plannerModel is current');
+assert(example.defaults.modelPresets?.default?.executionModel === 'current', 'default preset executionModel is current');
+assert(example.defaults.modelPresets?.default?.reviewerModel === 'current', 'default preset reviewerModel is current');
+assert(example.defaults.modelPresets?.default?.testingModel === 'current', 'default preset testingModel is current');
 assert(example.defaults.modelPresets?.cursor?.executionModel, 'example includes cursor preset');
 assert(example.defaults.modelPresets?.deepseek, 'example includes deepseek preset');
+assert(example.defaults.modelPresets?.opencode, 'example includes opencode preset');
 assert(example.defaults.modelPresets?.cheap, 'example includes cheap preset');
 assert(Object.prototype.hasOwnProperty.call(example.defaults.stepModels, 'dag'), 'example stepModels includes dag');
+
+const STEP_TEMPLATE_KEYS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'dag', 'scoreAndRefine', 'reviewFix'];
+for (const name of ['default', 'cursor', 'deepseek', 'opencode', 'cheap']) {
+  const steps = example.defaults.modelPresets?.[name]?.steps;
+  assert(steps && typeof steps === 'object', `example ${name} preset includes steps template`);
+  for (const key of STEP_TEMPLATE_KEYS) {
+    assert(Object.prototype.hasOwnProperty.call(steps, key), `example ${name}.steps includes ${key}`);
+  }
+  assert(steps['4'] === '' && steps['5'] === '', `example ${name}.steps 4 and 5 stay empty for lite session`);
+}
 
 const session = 'session-model';
 const baseDefaults = {

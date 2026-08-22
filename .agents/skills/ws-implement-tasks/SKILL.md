@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.32
+version: 0.3.34
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -26,7 +26,7 @@ Standalone:
 /implement-tasks <plan-path> [mode=build|fix] [findings=<path>]
 ```
 
-Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; Step 7 test failures): orchestrator passes `planPath`, `mode`, and optional `findings` path.
+Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 6 / lite Step 3 fix → re-review; Step 7 test failures): orchestrator passes `planPath`, `mode`, and optional `findings` path.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -43,8 +43,8 @@ Workflow (ws-spec-to-pr Step 4 build; Step 6 / lite Step 3 fix → re-review; St
    - Done when: relevant entries noted or none found; keywords recorded for `step-output.memory_consult`.
 
 3. **Detect layers & consult pattern files** — Identify target layers from plan files and stack:
-   - If Web/UI files are touched and `defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load [`ws-patterns-frontend`](../ws-patterns-frontend/SKILL.md) before modifying UI components, templates, or styling.
-   - If Domain/Application/EF/backend files are touched and `defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load [`ws-patterns-backend`](../ws-patterns-backend/SKILL.md) before modifying backend logic.
+   - If Web/UI files are touched and `defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load [`ws-patterns`](../ws-patterns/SKILL.md) before modifying UI components, templates, or styling.
+   - If Domain/Application/EF/backend files are touched and `defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load [`ws-patterns`](../ws-patterns/SKILL.md) before modifying backend logic.
    - Done when: matching pattern files are read and recorded in `step-output.pattern_consult` (`consulted` | `skipped` | `n/a`).
 
 4. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
@@ -111,13 +111,19 @@ summary: |
 ```
 
 
+## ScoreAndRefine second pass
+
+When the orchestrator dispatches this skill for optional polish (Pass 1 score already ≥ 9, `scoreAndRefine` flag): follow [`gates.md`](../ws-shared/gates.md) § Score & Refine gate item 4. Load the **full** Pass 1 diff, every plan task, and every AC — not only flagged task ids. Simplify overengineered implementations that still meet the AC. Delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs. Re-run configured verification.
+
+- Done when: each AC still met; unused workflow-introduced artifacts removed or justified in `summary`; verification green.
+
 ## Rules
 
 No commit/push (orch/user owns staging). Surgical scope only. Schema migrations via project CLI only.
 
 ## Subagent contract
 
-- Implement only assigned task ids, AC ids, and writable paths.
+- Implement only assigned task ids, AC ids, and writable paths (scoreAndRefine second pass: assigned set is the full Pass 1 `files_touched` unless Option 3 named a subset).
 - Consult injected memory and matching backend/frontend patterns before mutation.
 - Run the named configured verification commands after each task batch.
 - Never write workflow state or ledger files; return structured evidence to the orchestrator.

@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.3.32
+version: 0.3.34
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -83,13 +83,16 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 4. **Verify**: run `config.json.verification` commands plus a `ws-code-review` diff check. Three consecutive verification failures stop the loop and escalate.
    - Done when: verification passed, or the loop has stopped and escalated.
 
-5. **Re-check & loop**: wait `<wait>` seconds, re-check SCM review/CI run completion and re-collect `activeThreads`, repeating from step 3 until `activeThreads == 0` with all checks completed, `max` is reached, escalation occurs, or the user aborts.
+5. **Post-round learning**: Follow [`ws-self-learning`](../ws-self-learning/SKILL.md) § Post fix-pr round. For accepted reviewer/CI defects this round (score 6–10 threads and `check-pr-status` **diff-regression** failures that we fixed): write a MEMORY trap unless a Medium+ entry already covers the class; compile. When `defaults.patternsBackend` / `defaults.patternsFrontend` is true and the class is a stack convention, append to `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` (this loop auto-yes). Skip writes in `dry-run`. Round report must include `Learning:` titles. **Forbidden:** `Learning: N/A` when this round fixed a valid reviewer/CI defect that was not already in MEMORY.
+   - Done when: trap written and compiled, or `Learning: N/A (no new reviewer-CI trap)` is justified (no accepted defects, or duplicate MEMORY hit).
+
+6. **Re-check & loop**: wait `<wait>` seconds, re-check SCM review/CI run completion and re-collect `activeThreads`, repeating from step 3 until `activeThreads == 0` with all checks completed, `max` is reached, escalation occurs, or the user aborts.
    - Done when: one of the stop conditions above is met.
 
-6. **Pre-merge verification gate**: When the Step 5 stop condition is convergence (`activeThreads == 0`), call `list-threads` one final time and confirm the payload's `activeThreads` array is empty. Both providers report only unresolved threads (`fetch_threads.cjs` filters by `isResolved`; `fix_pr_azure_context.py` filters by `status`), so an empty array is the evidence that every thread is resolved. This is a **hard gate** — do not hand off to the caller until this verification passes with evidence; if `activeThreads` is non-empty, return to step 3. If the stop condition was `max` reached, escalation, or user abort, skip this gate and proceed to step 7 (final report) so the caller decides.
+7. **Pre-merge verification gate**: When the Step 6 stop condition is convergence (`activeThreads == 0`), call `list-threads` one final time and confirm the payload's `activeThreads` array is empty. Both providers report only unresolved threads (`fetch_threads.cjs` filters by `isResolved`; `fix_pr_azure_context.py` filters by `status`), so an empty array is the evidence that every thread is resolved. This is a **hard gate** — do not hand off to the caller until this verification passes with evidence; if `activeThreads` is non-empty, return to step 3. If the stop condition was `max` reached, escalation, or user abort, skip this gate and proceed to step 8 (final report) so the caller decides.
    - Done when: `list-threads` payload shows `activeThreads: []` (no unresolved threads), or the loop exited via `max`/escalation/abort and the final report records the remaining threads.
 
-7. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence from step 6; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
+8. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); `Learning:` titles per round; links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence from step 7; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
    - Done when: the report is presented to the user.
 
 ## Runtime audit (`defaults.enableAuditing`)
@@ -105,5 +108,6 @@ When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`confi
 - Use the configured adaptive interval and record observed state plus chosen wait.
 - Exit immediately on a fresh clean result; do not arm a redundant heartbeat.
 - Keep fixes, resolutions, commits, and pushes inside the explicitly authorized loop.
-- Return rounds, stop condition, final active-thread evidence, and remaining blockers.
+- After every Act round, record accepted reviewer/CI defects via `ws-self-learning` (and pattern files when those flags are on).
+- Return rounds, stop condition, final active-thread evidence, remaining blockers, and `Learning:` titles.
 
