@@ -1,7 +1,7 @@
 ---
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
-version: 0.3.34
+version: 0.3.35
 invocation_names:
   - spec-format
   - ws-spec-format
@@ -25,7 +25,7 @@ Create, review, or format `*.spec.md`. Canonical format SoT — other skills **r
 
 Infer mode or ask. Triggers: `/ws-spec-format`, `@ws-spec-format`, create/review/format/validate phrasing.
 
-CLI: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs [--mode=authoring|compat] <spec>`. Default **compat** (historical files: warn on missing closure, do not fail). **authoring** is required for new `ws-write-spec` writes (Out of Scope + Assumptions tables).
+CLI: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs [--help] [--mode=authoring|compat] <spec>`. Default **compat** (historical files: warn on missing closure, do not fail). **authoring** is required for new `ws-write-spec` writes (Out of Scope + Assumptions tables).
 
 ## Review (Done when report emitted; no edit without approval)
 

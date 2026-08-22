@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-08-22 19:25] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr goal-fix-pr #233 usage omits --help
+- **Done**: usage() lists `[--help|-h]`; test asserts that token; integrity restamp
+- **Result**: Review thread PRRT_kwDOTFajc86bb8in addressed
+
+### [2026-08-22 19:05] Agent: Cursor Grok 4.6
+- **Prompt**: `validate_spec.cjs --help` ENOENT; `/ws-ship-pr` to develop→main
+- **Done**: `--help`/`-h` usage exit 0; unknown dash flags rejected; stamp 0.3.35; `npm run test` + integrity green
+- **Result**: Ready to PR develop→main as 0.3.35
+
+### [2026-08-22 19:00] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr https://github.com/jpolvora/workflow-skills/pull/232
+- **Done**: Attached PR 232 at Step 9; goal-fix-pr already-converged (0 threads, review+test green); merged via `gh pr merge --merge`
+- **Result**: PR 232 MERGED at 9d131d22; no Act round
+
 ### [2026-08-22 18:40] Agent: Composer
 - **Prompt**: Upstream check-harness false ENOENT on hybrid consumers; FEATURES.md hub link
 - **Done**: `resolveSkillMdPath` (local then global); `measure_harness.cjs` uses it; PHASES hybrid/FEATURES omission; hub maintainer checklist drops consumer-broken link
