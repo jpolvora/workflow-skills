@@ -1,6 +1,6 @@
 ---
 name: ws-patterns
-version: 0.3.35
+version: 0.3.36
 description: Project patterns engine — consults backend.md or frontend.md by task layer and records learned conventions after implementation or user corrections.
 invocation_names:
   - ws-patterns
