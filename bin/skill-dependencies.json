@@ -59,6 +59,7 @@
         "ws-multi-spec",
         "ws-spec-index",
         "ws-spec-list",
+        "ws-spec-from-provider",
         "ws-sync-spec",
         "ws-senior-developer",
         "ws-activity-report",
@@ -208,6 +209,14 @@
     "ws-spec-list": [
       "ws-spec-to-pr",
       "ws-spec-to-pr-lite",
+      "ws-configure-project"
+    ],
+    "ws-spec-from-provider": [
+      "ws-github-provider",
+      "ws-azure-devops-provider",
+      "ws-write-spec",
+      "ws-local-spec-provider",
+      "ws-spec-format",
       "ws-configure-project"
     ],
     "ws-activity-report": [

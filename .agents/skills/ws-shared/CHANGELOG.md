@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 19:02] Agent: Composer
+- **Prompt**: /ws-write-a-skill create ws-spec-from-provider; commit into current PR if possible
+- **Done**: Added `ws-spec-from-provider` (bulk GH issues / ADO US → write-spec + register), list scripts, deps/autoload/catalog/FEATURES wiring
+- **Result**: Delivered on develop into open PR #230
+
 ### [2026-08-22 14:38] Agent: Composer
 - **Prompt**: implement audit-performance-correctness-and-reusable-scripts & workflow-session-leases in same PR on develop, then ws-ship-pr + ws-goal
 - **Done**: Confirmed audit suggestion categories/CLI already green; added session leases (schema, session_lease.cjs, config default-on, setup/orch/tools wiring, tests, FEATURES/index)

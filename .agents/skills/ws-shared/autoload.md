@@ -85,6 +85,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
 | Deliver **many** specs sequentially (auto lite/standard workers) | [`ws-multi-spec`](../ws-multi-spec/SKILL.md) | Master orch only — does not edit product code itself |
 | Explain status / what a spec delivered (read-only panorama) | [`ws-spec-explain`](../ws-spec-explain/SKILL.md) | Does not implement, ship, or edit specs |
+| Bulk-import open GH issues / ADO User Stories → local specs + register | [`ws-spec-from-provider`](../ws-spec-from-provider/SKILL.md) | Not single-id fetch (use provider `fetch-to-spec`); not orch delivery |
 
 ### Keyword → skill (quick map)
 
@@ -93,6 +94,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | write a spec, draft spec, brainstorm feature spec, reformulate issue | `ws-write-spec` |
 | format spec, validate AC, spec-format, missing acceptance criteria | `ws-spec-format` |
 | register spec, fetch-to-spec (file), promote spec into a workflow run | `ws-local-spec-provider` |
+| import issues, import user stories, bulk specs from github/ado, spec-from-provider | `ws-spec-from-provider` |
 | list specs, list plans, dual board, unlinked specs, manage workflows | `ws-spec-list` |
 | index.PRD, promote inbox, sync index status, init PRD, track spec | `ws-spec-index` |
 | archive plans, archive index.PRD, harvest plan history | `ws-spec-archive` |
@@ -138,6 +140,10 @@ tracker issue / work item
                              → ws-local-spec-provider register --source {origin}
                                                        → {us-dir}/step-00-us-{id}.spec.md
 
+open backlog (batch)
+    → ws-spec-from-provider  → list (GH open issues | ADO US @Me)
+                             → per id: write-spec enhance + register (skip existing {specsDir})
+
 {specsDir}/*.spec.md
     → ws-spec-list           → browse / start orch / remove
     → ws-local-spec-provider → {us-dir}/step-00-{slug}.spec.md
@@ -162,7 +168,7 @@ harvest {plansDir} history (manual)
 3. `ws-spec-list` is the UX board; `ws-spec-index` is the PRD index; `ws-spec-archive` harvests `{plansDir}` history into that index so plan folders can go. Do not use one for the other's job.
 4. `ws-sync-spec` (body ↔ code) ≠ `ws-spec-index sync` (index ↔ delivery evidence).
 5. `ws-multi-spec` dispatches `ws-spec-to-pr` / `ws-spec-to-pr-lite` workers; it does not replace `ws-spec-list` for interactive pick-one.
-6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` fetch → `ws-write-spec` agentic reformulation → `{specsDir}` spec of record, then local-spec-provider register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly.
+6. Tracker issues/WIs enter via `ws-github-provider` / `ws-azure-devops-provider` fetch → `ws-write-spec` agentic reformulation → `{specsDir}` spec of record, then local-spec-provider register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly. Batch backlog import: `ws-spec-from-provider`.
 8. `ws-spec-archive` (manual) harvests `{plansDir}` into `index.PRD` Archive then proposes plan-dir cleanup. `ws-cleanup` deletes untracked scratch only. Archive first when history must survive.
 
 ---
