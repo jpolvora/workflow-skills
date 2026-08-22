@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "5962279ce17745f73d223c808670834cb14358cc64891f9bc92ab4842920de25",
+  "fullPackageDigest": "6342e03f6c8aac3a0c4ac888f8b1610b30ae817ec6eabefbb5700f8f418db493",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
@@ -332,9 +332,9 @@
         "PREPARE-CHECKLIST.md": "52fc9e5c2b57646c4cdbbe78a13b30ad4c93bc13057cd899eff021acfa7036f1",
         "scripts/detect-base-branch.sh": "8435a94884d1ce3653159f2ffdee12829b758c8eb69cb9481d51ff8916c756fd",
         "scripts/verify.sh": "6d4599feb7a67f8f74aab3ce8c5191d3b6bee31fea5d3993ff667a3e13ef8c88",
-        "SKILL.md": "f6ed9eade2bcbc8a3ad39e8c8bbac5977164aea29eb86e4b4e71a3a7f0be5225"
+        "SKILL.md": "264439451893a45260e2ebd9239c3e8e30b32f538dba2e62939aa468fb281bd2"
       },
-      "skillDigest": "5d45e168e2edeaad1948899bafaae9a664cbbb48d6d3f5f0306719488b0f1c26"
+      "skillDigest": "10521b0b517d8bad7938cc55312e597046f7bbbd4c9a3e530f781d2de39c7ad0"
     },
     "ws-show-harness": {
       "files": {
@@ -372,10 +372,10 @@
       "files": {
         "evals/evals.json": "6432e82a6422c2faac3fe033b3e1dfe376d55fced5941f111e94c12335d06cd8",
         "scripts/list_my_user_stories.py": "aa2b1efec1faa64ed01b83c7b1fcd7882e8a9276d03d694896c80bd843def47e",
-        "scripts/list_open_issues.py": "c379b332140d607efeeb0565283e8b97ed453334798e5a529eeefc7fe1e18638",
+        "scripts/list_open_issues.py": "2d1969cca39504f3b39e5534a8000d6897f163c201a973b4fab2d1e8615a8ecc",
         "SKILL.md": "0d0d10c56d283f846eeaa6eb12fdc7c74345aad26c33ba75c3262e227d8e947e"
       },
-      "skillDigest": "63e604df6cea12717ef5d25189845f748f99563dafb2c7211107b426d09ce6b2"
+      "skillDigest": "a0eeeb7403700fbfb08228af4b4efceb97666bfced669bd73d5ebc64ded0216f"
     },
     "ws-spec-index": {
       "files": {

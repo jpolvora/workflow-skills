@@ -4,6 +4,7 @@
   python list_open_issues.py [--repo-root PATH] [--limit N] [--owner ORG] [--repo NAME]
 
 Reads issueTrackers.github from ws-shared/config.json. Requires `gh` on PATH.
+Uncapped runs use `gh api --paginate` so results are not silently truncated at 1000.
 """
 from __future__ import annotations
 
@@ -56,6 +57,109 @@ def load_github_tracker(repo_root: Path) -> tuple[str, str]:
     return owner, repo
 
 
+def run_gh(cmd: list[str]) -> subprocess.CompletedProcess[str]:
+    try:
+        return subprocess.run(
+            cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except FileNotFoundError:
+        print("Error: `gh` not found on PATH", file=sys.stderr)
+        raise SystemExit(1)
+
+
+def parse_paginated_issues(raw: str) -> list[dict]:
+    """Parse `gh api --paginate` stdout (single array, concatenated arrays, or NDJSON)."""
+    text = (raw or "").strip()
+    if not text:
+        return []
+
+    issues: list = []
+    if text.startswith("["):
+        try:
+            parsed = json.loads(text)
+            if isinstance(parsed, list):
+                issues = parsed
+        except json.JSONDecodeError:
+            fixed = text.replace("][", "],[")
+            try:
+                pages = json.loads(f"[{fixed}]")
+                issues = [item for page in pages for item in page]
+            except json.JSONDecodeError as exc:
+                raise SystemExit(f"Error: invalid gh api JSON — {exc}") from exc
+    else:
+        for line in text.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                page = json.loads(line)
+            except json.JSONDecodeError as exc:
+                raise SystemExit(f"Error: invalid gh api JSON — {exc}") from exc
+            if isinstance(page, list):
+                issues.extend(page)
+            elif isinstance(page, dict):
+                issues.append(page)
+
+    return [
+        item
+        for item in issues
+        if isinstance(item, dict)
+        and "pull_request" not in item
+        and item.get("number") is not None
+    ]
+
+
+def list_via_api(owner: str, repo: str) -> list[dict]:
+    completed = run_gh(
+        [
+            "gh",
+            "api",
+            "--paginate",
+            f"repos/{owner}/{repo}/issues?state=open&per_page=100",
+        ]
+    )
+    if completed.returncode != 0:
+        err = (completed.stderr or completed.stdout or "").strip()
+        print(f"Error: gh api issues failed: {err}", file=sys.stderr)
+        raise SystemExit(completed.returncode or 1)
+    return parse_paginated_issues(completed.stdout or "")
+
+
+def list_via_issue_list(owner: str, repo: str, limit: int) -> list[dict]:
+    completed = run_gh(
+        [
+            "gh",
+            "issue",
+            "list",
+            "--repo",
+            f"{owner}/{repo}",
+            "--state",
+            "open",
+            "--json",
+            "number,title,url,state,labels,assignees",
+            "--limit",
+            str(limit),
+        ]
+    )
+    if completed.returncode != 0:
+        err = (completed.stderr or completed.stdout or "").strip()
+        print(f"Error: gh issue list failed: {err}", file=sys.stderr)
+        raise SystemExit(completed.returncode or 1)
+    try:
+        issues = json.loads(completed.stdout or "[]")
+    except json.JSONDecodeError as exc:
+        print(f"Error: invalid gh JSON — {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+    if not isinstance(issues, list):
+        return []
+    return [item for item in issues if isinstance(item, dict) and item.get("number") is not None]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="List open GitHub issues as JSON")
     parser.add_argument("--repo-root", help="Project root owning ws-shared/config.json")
@@ -71,48 +175,13 @@ def main() -> int:
     if args.repo.strip():
         repo = args.repo.strip()
 
-    cmd = [
-        "gh",
-        "issue",
-        "list",
-        "--repo",
-        f"{owner}/{repo}",
-        "--state",
-        "open",
-        "--json",
-        "number,title,url,state,labels,assignees",
-    ]
     if args.limit and args.limit > 0:
-        cmd.extend(["--limit", str(args.limit)])
+        collected = list_via_issue_list(owner, repo, args.limit)
     else:
-        cmd.extend(["--limit", "1000"])
-
-    try:
-        completed = subprocess.run(
-            cmd,
-            check=False,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-        )
-    except FileNotFoundError:
-        print("Error: `gh` not found on PATH", file=sys.stderr)
-        return 1
-
-    if completed.returncode != 0:
-        err = (completed.stderr or completed.stdout or "").strip()
-        print(f"Error: gh issue list failed: {err}", file=sys.stderr)
-        return completed.returncode or 1
-
-    try:
-        issues = json.loads(completed.stdout or "[]")
-    except json.JSONDecodeError as exc:
-        print(f"Error: invalid gh JSON — {exc}", file=sys.stderr)
-        return 1
+        collected = list_via_api(owner, repo)
 
     out = []
-    for item in issues if isinstance(issues, list) else []:
+    for item in collected:
         number = item.get("number")
         if number is None:
             continue
@@ -120,7 +189,7 @@ def main() -> int:
             {
                 "id": int(number),
                 "title": (item.get("title") or "").strip(),
-                "url": (item.get("url") or "").strip(),
+                "url": (item.get("url") or item.get("html_url") or "").strip(),
                 "state": (item.get("state") or "").strip(),
             }
         )
