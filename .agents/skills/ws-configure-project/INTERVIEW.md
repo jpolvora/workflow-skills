@@ -51,6 +51,9 @@ Scan consumer **repo root** (not this skill package alone):
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
 7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, **patternsBackend**, **patternsFrontend**, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, and `convergence`) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
+   - **Models preset** (`modelsPreset`): pick from shipped sample keys in `config.json.example` (`modelPresets` map) or **Custom…** / **Keep current** / **Skip**. Unknown names fall back to preset `default` when present.
+   - **Per-step overrides** (`stepModels`): optional numeric `"0"`–`"9"` and roles `dag`, `scoreAndRefine`, `reviewFix` (skippable; empty strings). Token `"current"` uses the active session model.
+   - **Advanced phase keys** (legacy overrides of the active preset; empty = fall through):
    - `plannerModel` (Planning phase: Steps 0–3)
    - `executionModel` (Execution phase: Step 4)
    - `reviewerModel` (Review phase: standard Steps 5–6)

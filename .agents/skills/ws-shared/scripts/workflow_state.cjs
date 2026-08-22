@@ -458,6 +458,133 @@ function statePaths(stateFile, context) {
   };
 }
 
+const KNOWN_SUBSTEPS = new Set(['dag', 'scoreAndRefine', 'reviewFix']);
+
+function isNonEmptyModel(value) {
+  return typeof value === 'string' && value.trim() !== '';
+}
+
+function normalizeSubstep(value) {
+  if (!isNonEmptyModel(value)) return null;
+  const role = String(value).trim();
+  return KNOWN_SUBSTEPS.has(role) ? role : null;
+}
+
+function getActivePreset(defaults) {
+  const presets = defaults?.modelPresets;
+  if (!presets || typeof presets !== 'object') return null;
+  const selected = defaults.modelsPreset;
+  if (isNonEmptyModel(selected) && presets[String(selected).trim()]) {
+    return presets[String(selected).trim()];
+  }
+  if (presets.default) return presets.default;
+  return null;
+}
+
+function resolveStepOverride(defaults, preset, stepKey, role, pipeline) {
+  const stepModels = defaults?.stepModels;
+  if (stepModels && typeof stepModels === 'object') {
+    if (pipeline !== 'lite' && role && isNonEmptyModel(stepModels[role])) {
+      return String(stepModels[role]).trim();
+    }
+    if (isNonEmptyModel(stepModels[stepKey])) {
+      const stepNum = Number(stepKey);
+      if (pipeline !== 'lite' || (Number.isInteger(stepNum) && stepNum >= 0 && stepNum <= 5)) {
+        return String(stepModels[stepKey]).trim();
+      }
+    }
+  }
+  const steps = preset?.steps;
+  if (steps && typeof steps === 'object') {
+    if (pipeline !== 'lite' && role && isNonEmptyModel(steps[role])) {
+      return String(steps[role]).trim();
+    }
+    if (isNonEmptyModel(steps[stepKey])) {
+      const stepNum = Number(stepKey);
+      if (pipeline !== 'lite' || (Number.isInteger(stepNum) && stepNum >= 0 && stepNum <= 5)) {
+        return String(steps[stepKey]).trim();
+      }
+    }
+  }
+  return null;
+}
+
+function resolvePhaseKeyValue(defaults, preset, phaseKey) {
+  if (phaseKey && isNonEmptyModel(defaults?.[phaseKey])) return String(defaults[phaseKey]).trim();
+  if (phaseKey && preset && isNonEmptyModel(preset[phaseKey])) return String(preset[phaseKey]).trim();
+  return null;
+}
+
+function resolveStandardStep7Chain(defaults, preset) {
+  if (isNonEmptyModel(defaults?.testingModel)) return String(defaults.testingModel).trim();
+  if (preset && isNonEmptyModel(preset.testingModel)) return String(preset.testingModel).trim();
+  if (isNonEmptyModel(defaults?.executionModel)) return String(defaults.executionModel).trim();
+  if (preset && isNonEmptyModel(preset.executionModel)) return String(preset.executionModel).trim();
+  return null;
+}
+
+function standardPhaseKey(step, role) {
+  if (role) return 'executionModel';
+  if (step >= 0 && step <= 3) return 'plannerModel';
+  if (step === 4) return 'executionModel';
+  if (step === 5 || step === 6) return 'reviewerModel';
+  if (step === 7) return 'step7-chain';
+  return null;
+}
+
+function litePhaseKey(step) {
+  if (step === 0 || step === 1) return 'plannerModel';
+  if (step === 2) return 'executionModel';
+  if (step === 3) return 'reviewerModel';
+  return null;
+}
+
+function finalizeResolvedModel(value, sessionModel) {
+  if (value === 'current') return sessionModel || 'unknown';
+  if (isNonEmptyModel(value)) return String(value).trim();
+  return sessionModel || 'unknown';
+}
+
+function resolvePhaseModel(defaults, { step, role, pipeline = 'standard', sessionModel = 'unknown' }) {
+  const stepNum = Number(step);
+  const stepKey = String(step);
+  const normalizedRole = pipeline === 'lite' ? null : normalizeSubstep(role);
+  const preset = getActivePreset(defaults || {});
+  const override = resolveStepOverride(defaults || {}, preset, stepKey, normalizedRole, pipeline);
+  if (override) return finalizeResolvedModel(override, sessionModel);
+
+  if (pipeline === 'lite') {
+    const phaseKey = litePhaseKey(stepNum);
+    if (phaseKey) {
+      const phaseValue = resolvePhaseKeyValue(defaults || {}, preset, phaseKey);
+      if (phaseValue) return finalizeResolvedModel(phaseValue, sessionModel);
+    }
+    return sessionModel || 'unknown';
+  }
+
+  const phaseKey = standardPhaseKey(stepNum, normalizedRole);
+  if (phaseKey === 'step7-chain') {
+    const chainValue = resolveStandardStep7Chain(defaults || {}, preset);
+    if (chainValue) return finalizeResolvedModel(chainValue, sessionModel);
+    return sessionModel || 'unknown';
+  }
+  if (phaseKey) {
+    const phaseValue = resolvePhaseKeyValue(defaults || {}, preset, phaseKey);
+    if (phaseValue) return finalizeResolvedModel(phaseValue, sessionModel);
+  }
+  return sessionModel || 'unknown';
+}
+
+function resolveRecordedModel(options, context, state, pipeline, step) {
+  if (options.model && String(options.model).trim()) return String(options.model).trim();
+  return resolvePhaseModel(context.config?.defaults || {}, {
+    step,
+    role: options.substep,
+    pipeline,
+    sessionModel: String(state.currentModel || 'unknown'),
+  });
+}
+
 function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, options) {
   if (!['dispatch', 'finish', 'bypass'].includes(operation)) throw new Error('operation must be dispatch, finish, or bypass');
   if (options.elapsed !== undefined) throw new Error('--elapsed is not accepted; elapsedSec is derived from timestamps');
@@ -487,7 +614,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.stepStatus[String(step)] = 'active';
     const dispatch = { step, dispatchedAt: timestamp };
     state.stepDispatches = [...state.stepDispatches.filter((item) => Number(item.step) !== step), dispatch].sort((a, b) => a.step - b.step);
-    state.currentModel = String(options.model || state.currentModel || 'unknown');
+    state.currentModel = resolveRecordedModel(options, context, state, pipeline, step);
+    options.model = state.currentModel;
     state.nextAction = `Finish step ${step}`;
     event = commonEvent(state, pipeline, step, 'dispatch', timestamp, options, context);
     event.dispatchedAt = timestamp;
@@ -510,6 +638,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.completedSteps = [...new Set([...(state.completedSteps || []).map(Number), step])].sort((a, b) => a - b);
     state.stepStatus[String(step)] = status;
     state.currentStep = Math.min(maxStep, step + 1);
+    state.currentModel = resolveRecordedModel(options, context, state, pipeline, step);
+    options.model = state.currentModel;
     state.nextAction = status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
     const output = readStepOutput(options.stepOutput, context);
     body = compactOutputs(body, step, output);
@@ -809,6 +939,7 @@ module.exports = {
   artifactStampFields,
   stampStepArtifact,
   performUpdate,
+  resolvePhaseModel,
   validateSnapshot,
   runUpdateCli,
   runValidateCli,

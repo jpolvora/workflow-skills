@@ -221,6 +221,34 @@
         "testingModel": {
           "type": "string",
           "description": "Preferred LLM model name for the test executor (standard Step 7) in autoMode. Empty or omitted resolves to executionModel at dispatch time."
+        },
+        "modelsPreset": {
+          "type": "string",
+          "description": "Named key in modelPresets selecting the active preset bundle. Unknown names fall back to preset default when present, else legacy four phase keys."
+        },
+        "modelPresets": {
+          "type": "object",
+          "description": "Reusable preset bundles (custom names allowed). Each preset may define phase keys and an optional steps string map.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "plannerModel": { "type": "string" },
+              "executionModel": { "type": "string" },
+              "reviewerModel": { "type": "string" },
+              "testingModel": { "type": "string" },
+              "steps": {
+                "type": "object",
+                "additionalProperties": { "type": "string" },
+                "description": "Per-step or substep overrides (numeric \"0\"–\"9\", dag, scoreAndRefine, reviewFix)."
+              }
+            }
+          }
+        },
+        "stepModels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Per-step or substep model overrides (numeric \"0\"–\"9\", dag, scoreAndRefine, reviewFix). Not the state frontmatter stepModels list."
         }
       }
     },

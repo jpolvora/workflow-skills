@@ -163,7 +163,61 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Optional portable model identifiers for subagents. Fallback to the active session model if empty or unavailable. testingModel is the test executor for standard Step 7; empty/omitted uses executionModel. reviewerModel covers standard Steps 5-6 only.",
+    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Lite ignores testingModel, dag, scoreAndRefine, and reviewFix.",
+    "modelsPreset": "default",
+    "modelPresets": {
+      "default": {
+        "plannerModel": "current",
+        "executionModel": "current",
+        "reviewerModel": "current",
+        "testingModel": "current"
+      },
+      "cursor": {
+        "plannerModel": "cursor-grok-4.6-xhigh",
+        "executionModel": "composer-2.5",
+        "testingModel": "composer-2.5",
+        "reviewerModel": "cursor-grok-4.6-medium",
+        "steps": {
+          "2": "cursor-grok-4.6-xhigh",
+          "dag": "composer-2.5",
+          "scoreAndRefine": "composer-2.5",
+          "reviewFix": "composer-2.5"
+        }
+      },
+      "deepseek": {
+        "plannerModel": "opencode-go/deepseek-v4-pro",
+        "executionModel": "opencode-go/deepseek-v4-flash",
+        "testingModel": "composer-2.5",
+        "reviewerModel": "cursor-grok-4.6-medium"
+      },
+      "opencode": {
+        "plannerModel": "opencode-go/deepseek-v4-pro",
+        "executionModel": "opencode-go/deepseek-v4-flash",
+        "testingModel": "opencode-go/deepseek-v4-flash",
+        "reviewerModel": "opencode-go/deepseek-v4-pro"
+      },
+      "cheap": {
+        "plannerModel": "composer-2.5",
+        "executionModel": "composer-2.5",
+        "testingModel": "composer-2.5",
+        "reviewerModel": "composer-2.5"
+      }
+    },
+    "stepModels": {
+      "0": "",
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "",
+      "7": "",
+      "8": "",
+      "9": "",
+      "dag": "",
+      "scoreAndRefine": "",
+      "reviewFix": ""
+    },
     "plannerModel": "",
     "executionModel": "",
     "reviewerModel": "",
