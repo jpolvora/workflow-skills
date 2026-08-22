@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-22 19:25] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr goal-fix-pr #233 usage omits --help
+- **Done**: usage() lists `[--help|-h]`; test asserts that token; integrity restamp
+- **Result**: Review thread PRRT_kwDOTFajc86bb8in addressed
+
 ### [2026-08-22 19:05] Agent: Cursor Grok 4.6
 - **Prompt**: `validate_spec.cjs --help` ENOENT; `/ws-ship-pr` to develop→main
 - **Done**: `--help`/`-h` usage exit 0; unknown dash flags rejected; stamp 0.3.35; `npm run test` + integrity green

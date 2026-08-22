@@ -97,6 +97,7 @@ assert.strictEqual(run(script, [authoringPass, '--mode=authoring', '--modificati
 const help = run(script, ['--help']);
 assert.strictEqual(help.status, 0, '--help exits 0');
 assert.match(`${help.stdout}${help.stderr}`, /Usage/i);
+assert.match(`${help.stdout}${help.stderr}`, /\[--help\|-h\]/);
 assert.match(`${help.stdout}${help.stderr}`, /--mode/);
 
 const unknownFlag = run(script, ['--nope']);

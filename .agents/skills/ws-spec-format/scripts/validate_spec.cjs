@@ -8,7 +8,7 @@ const PLACEHOLDER = /^(?:tbd|todo|placeholder|\?+|[-–—.]{1,3}|\.{3}|n\/?a)$/
 
 function usage() {
   process.stdout.write(
-    'Usage: node validate_spec.cjs [--mode=authoring|compat] [--json] [--modification] [--repo-root <dir>] <spec>\n',
+    'Usage: node validate_spec.cjs [--help|-h] [--mode=authoring|compat] [--json] [--modification] [--repo-root <dir>] <spec>\n',
   );
 }
 
