@@ -2,6 +2,11 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-21 20:08] Agent: Cursor Grok 4.6
+- **Prompt**: commit, push, /ws-goal-fix-pr
+- **Done**: Pushed enclosure/classify/fsync fixes; stamp step-artifact metadata on register, review persist, and finish
+- **Result**: Pre-advance no longer HS-5s on spec/review files that only had domain frontmatter
+
 ### [2026-08-21 19:56] Agent: Cursor Grok 4.6
 - **Prompt**: fix ERROR: EPERM: operation not permitted, fsync
 - **Done**: `atomicWrite` now opens the temp file for write and treats Windows `EPERM`/`EINVAL` from `fsync` as non-fatal

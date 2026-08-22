@@ -27,6 +27,10 @@ assert.strictEqual(JSON.parse(detected.stdout).specsDir, '.agents/specs');
 const registered = run(path.join(localScripts, 'register_local_spec.cjs'), ['--input', 'input.spec.md', '--json', '--repo-root', root]);
 assert.strictEqual(registered.status, 0, registered.stderr);
 assert.ok(fs.existsSync(path.join(root, '.agents/plans/node-ports/step-00-node-ports.spec.md')));
+assert.match(
+  fs.readFileSync(path.join(root, '.agents/plans/node-ports/step-00-node-ports.spec.md'), 'utf8'),
+  /^---\n[\s\S]*^step: 0\n/m,
+);
 
 write(path.join(root, '.agents/skills/ws-shared/memory/2026-08-21-port.md'), `### [2026-08-21] Node port
 - **Layer**: Runtime

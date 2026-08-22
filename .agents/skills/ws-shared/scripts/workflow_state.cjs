@@ -151,6 +151,61 @@ function inlineObject(value) {
   return `{ ${Object.entries(value).map(([key, item]) => `${key}: ${scalar(item)}`).join(', ')} }`;
 }
 
+function upsertArtifactFrontmatter(text, fields) {
+  const normalized = String(text).replace(/\r\n?/g, '\n');
+  let data = {};
+  let body = normalized;
+  try {
+    const parsed = parseFrontmatter(normalized);
+    data = parsed.data;
+    body = parsed.body;
+  } catch (error) {
+    if (!/frontmatter YAML marker not found/.test(error.message)) throw error;
+  }
+  return `---\n${serializeFrontmatter({ ...data, ...fields })}\n---\n${body.replace(/^\n*/, '')}`;
+}
+
+function artifactStampFields(state, step, now) {
+  return {
+    step,
+    slug: state.slug,
+    workflowId: state.workflowId,
+    status: state.status || 'completed',
+    startedAt: state.startedAt || now,
+    endedAt: now,
+    acRefs: Array.isArray(state.acRefs) ? state.acRefs : [],
+  };
+}
+
+function finishArtifactName(slug, step) {
+  const names = {
+    0: `step-00-${slug}.spec.md`,
+    1: `step-01-${slug}.plan.md`,
+    2: `step-02-${slug}.plan.refined.md`,
+    3: `step-03-${slug}.plan.exec.md`,
+    5: `step-05-${slug}.plan.report.md`,
+    6: `step-06-${slug}.review.md`,
+    7: `step-07-${slug}.testing.report.md`,
+    8: `step-08-${slug}.result.md`,
+  };
+  return names[step];
+}
+
+function stampStepArtifact(file, state, step) {
+  if (!file || !fs.existsSync(file)) return false;
+  const now = new Date().toISOString();
+  const fields = artifactStampFields(state, step, now);
+  try {
+    const previous = parseFrontmatter(fs.readFileSync(file, 'utf8')).data;
+    if (previous.startedAt) fields.startedAt = previous.startedAt;
+    if (previous.endedAt) fields.endedAt = previous.endedAt;
+  } catch {
+    // body-only artifacts get a new metadata block
+  }
+  atomicWrite(file, upsertArtifactFrontmatter(fs.readFileSync(file, 'utf8'), fields));
+  return true;
+}
+
 function serializeFrontmatter(data) {
   const lines = [];
   for (const [key, value] of Object.entries(data)) {
@@ -531,6 +586,10 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   atomicWrite(paths.runFile, `${JSON.stringify(run, null, 2)}\n`);
   atomicWrite(paths.runMarkdown, renderRun(run, labels));
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
+  if (operation === 'finish') {
+    const artifact = finishArtifactName(state.slug, step);
+    if (artifact) stampStepArtifact(path.join(paths.usDir, artifact), state, step);
+  }
   validateSnapshot({ stateFile: absoluteState, runFile: paths.runFile, indexFile: index.file, context, maxStep });
   return { ok: true, operation, step, revision: state.revision, stateSha256: stateHash, runPath: toRepoRelative(context.repoRoot, paths.runFile) };
 }
@@ -746,6 +805,9 @@ module.exports = {
   renderRun,
   validateGateDecision,
   artifactMetadata,
+  upsertArtifactFrontmatter,
+  artifactStampFields,
+  stampStepArtifact,
   performUpdate,
   validateSnapshot,
   runUpdateCli,

@@ -4,6 +4,11 @@
 const fs = require('fs');
 const path = require('path');
 const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const {
+  parseFrontmatter,
+  upsertArtifactFrontmatter,
+  artifactStampFields,
+} = require('../../ws-shared/scripts/workflow_state.cjs');
 
 function parseArgs(argv) {
   const options = {};
@@ -74,12 +79,35 @@ function main() {
   }
   const roundFile = path.join(outputDir, `step-06-${options.slug}.review.r${round}.md`);
   const canonical = path.join(outputDir, `step-06-${options.slug}.review.md`);
-  if (fs.existsSync(roundFile) && fs.readFileSync(roundFile, 'utf8') !== content) {
+  const now = new Date().toISOString();
+  let state = { slug: options.slug, workflowId: options.workflowId || options.slug, status: 'completed', acRefs: [] };
+  const stateHit = fs.existsSync(outputDir)
+    ? fs.readdirSync(outputDir).find((name) => name.endsWith('.state.md'))
+    : null;
+  if (stateHit) {
+    try {
+      state = { ...state, ...parseFrontmatter(fs.readFileSync(path.join(outputDir, stateHit), 'utf8')).data };
+    } catch {
+      // keep fallback identity from slug
+    }
+  }
+  const fields = artifactStampFields(state, 6, now);
+  if (fs.existsSync(roundFile)) {
+    try {
+      const previous = parseFrontmatter(fs.readFileSync(roundFile, 'utf8')).data;
+      if (previous.startedAt) fields.startedAt = previous.startedAt;
+      if (previous.endedAt) fields.endedAt = previous.endedAt;
+    } catch {
+      // first persist of a body-only round
+    }
+  }
+  const stamped = upsertArtifactFrontmatter(content, fields);
+  if (fs.existsSync(roundFile) && fs.readFileSync(roundFile, 'utf8') !== stamped) {
     throw new Error(`review round is immutable and already differs: ${toRepoRelative(context.repoRoot, roundFile)}`);
   }
   fs.mkdirSync(outputDir, { recursive: true });
-  fs.writeFileSync(roundFile, content, 'utf8');
-  fs.writeFileSync(canonical, content, 'utf8');
+  fs.writeFileSync(roundFile, stamped, 'utf8');
+  fs.writeFileSync(canonical, stamped, 'utf8');
   process.stdout.write(`${JSON.stringify({
     ok: true,
     round,

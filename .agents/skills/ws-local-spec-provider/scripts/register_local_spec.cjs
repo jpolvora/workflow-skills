@@ -8,6 +8,11 @@ const {
   resolveConfiguredPath,
   toRepoRelative,
 } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const {
+  parseFrontmatter,
+  upsertArtifactFrontmatter,
+  artifactStampFields,
+} = require('../../ws-shared/scripts/workflow_state.cjs');
 
 function argsOf(argv) {
   const args = { source: 'local', force: false, json: false };
@@ -97,14 +102,41 @@ function main() {
   const inSpecs = path.relative(specsDir, input) === '' || !path.relative(specsDir, input).startsWith('..');
   const specPath = inSpecs ? input : path.join(specsDir, `${slug}.spec.md`);
   const workflowPath = path.join(plansDir, slug, `step-00-${slug}.spec.md`);
+  const usDir = path.dirname(workflowPath);
+  const now = new Date().toISOString();
+  let state = { slug, workflowId: slug, status: 'active', acRefs: [] };
+  const stateHit = fs.existsSync(usDir)
+    ? fs.readdirSync(usDir).find((name) => name.endsWith('.state.md'))
+    : null;
+  if (stateHit) {
+    try {
+      state = { ...state, ...parseFrontmatter(fs.readFileSync(path.join(usDir, stateHit), 'utf8')).data };
+    } catch {
+      // keep slug fallback
+    }
+  }
+  const fields = artifactStampFields(state, 0, now);
+  if (fs.existsSync(workflowPath)) {
+    try {
+      const previous = parseFrontmatter(fs.readFileSync(workflowPath, 'utf8')).data;
+      if (previous.startedAt) fields.startedAt = previous.startedAt;
+      if (previous.endedAt) fields.endedAt = previous.endedAt;
+    } catch {
+      // first stamp of a spec-only copy
+    }
+  }
+  const workflowContent = upsertArtifactFrontmatter(content, fields);
 
-  for (const [target, force] of [[specPath, args.force || inSpecs], [workflowPath, args.force || input === workflowPath]]) {
-    if (fs.existsSync(target) && fs.readFileSync(target, 'utf8').replace(/\r\n?/g, '\n') !== content && !force) {
+  for (const [target, force, expected] of [
+    [specPath, args.force || inSpecs, content],
+    [workflowPath, args.force || input === workflowPath, workflowContent],
+  ]) {
+    if (fs.existsSync(target) && fs.readFileSync(target, 'utf8').replace(/\r\n?/g, '\n') !== expected && !force) {
       throw new Error(`destination exists and differs: ${target}`);
     }
   }
   const specsAction = writeChecked(specPath, content, args.force || inSpecs);
-  const action = writeChecked(workflowPath, content, args.force || input === workflowPath);
+  const action = writeChecked(workflowPath, workflowContent, args.force || input === workflowPath);
   const payload = {
     input: toRepoRelative(context.repoRoot, input),
     slug,

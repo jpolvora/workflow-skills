@@ -48,4 +48,5 @@ assert.strictEqual(run(reviewScript, ['--input', 'r2.md', '--output-dir', 'round
 write(path.join(root, 'r1-other.md'), 'No feedback\n');
 assert.notStrictEqual(run(reviewScript, ['--input', 'r1-other.md', '--output-dir', 'rounds', '--slug', 'feature', '--round', '1', '--repo-root', root]).status, 0, 'immutable round rewrite fails');
 assert.match(fs.readFileSync(path.join(rounds, 'step-06-feature.review.md'), 'utf8'), /closed/);
+assert.match(fs.readFileSync(path.join(rounds, 'step-06-feature.review.md'), 'utf8'), /^---\n[\s\S]*^step: 6\n/m);
 console.log('test-ac-ledger: ok');

@@ -48,6 +48,24 @@ assert.strictEqual(index.workflows[0].workflowId, 'wf');
 assert.ok(index.workflows[0].statePath.includes('/demo/') && !index.workflows[0].statePath.includes('\\'));
 assert.strictEqual(run(validate, ['wf', '--repo-root', root]).status, 0, 'index-based discovery validates by workflow id');
 
+write(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), `---
+id: null
+slug: demo
+title: Demo
+source: local
+specDate: 2026-08-21
+---
+## Description
+Demo.
+`);
+assert.strictEqual(run(update, [
+  'finish', stateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:08.000Z', ...common,
+]).status, 0);
+assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^step: 0$/m);
+assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^workflowId: wf$/m);
+write(path.join(root, '.agents/plans/demo/ac-ledger.json'), JSON.stringify({ acceptanceCriteria: [] }));
+assert.strictEqual(run(validate, [stateRel, '--pre-advance', '1', '--repo-root', root]).status, 0, 'pre-advance 1 accepts stamped spec metadata');
+
 const invalidGate = run(update, [
   'finish', stateRel, '--step', '1', '--gate-decision', '"continue"', '--timestamp', '2026-08-21T20:00:06.000Z', ...common,
 ]);
