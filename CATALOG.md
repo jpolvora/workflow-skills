@@ -81,6 +81,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |
+| `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import open GH issues / ADO US → write-spec + register |
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries from plan bootstrap start → latest PR thread comment or delivery commit |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | Standup briefing of the last 36 hours — delivered, made, ongoing, next |
 | `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Read-only panorama: spec/US status, what it delivers, how to check & test |
@@ -122,10 +123,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Batch spec delivery | `ws-multi-spec` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
 | Timesheet / activity hours for a delivery day | `ws-activity-report` |
-| Explain spec / US status & delivery panorama | `ws-spec-explain` |
-| Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
-| Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |

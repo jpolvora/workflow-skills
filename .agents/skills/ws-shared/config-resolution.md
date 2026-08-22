@@ -123,6 +123,31 @@ node {skillsRoot}/ws-audit/scripts/audit_log.js resolve [--config "{sharedDir}/c
 
 ---
 
+## Session lease resolution (`defaults.sessionLeases`)
+
+Cooperative same-slug leases + short git critical-section lock for parallel chats on one worktree (via [`session_lease.cjs`](../ws-spec-to-pr/scripts/session_lease.cjs)). Schema: [`session-lease.schema.json`](session-lease.schema.json).
+
+| Condition | Effective `sessionLeases` |
+|-----------|----------------------------|
+| Key omitted / null / missing config | `true` (fail closed on duplicate slug) |
+| Explicit `true` | `true` |
+| Explicit `false` | `false` (tests / nested helpers) |
+
+When effective `true`:
+- Bootstrap / resume calls `acquire --slug {slug}` before Step 0; lease files live under `{plansDir}/.runtime/leases/` (gitignored).
+- Same-slug live conflict → `user-gate`: Resume that lease / Wait / Abort.
+- Different live slug on the same worktree → `user-gate`: Wait / Proceed / Abort (never silent global wait).
+- Orch git recipes for checkout, reset, stash, merge, rebase, commit, and push call `git-lock` (exclusive `{plansDir}/.runtime/git.lock`, TTL 2 minutes, wait ≤ 60 seconds) then `git-unlock`.
+- `{plansDir}/index.json` remains a derived catalog — not the exclusive-create lock SoT. No tracked repo-root PID wait file.
+
+Resolve helper:
+
+```bash
+node {skillsRoot}/ws-spec-to-pr/scripts/session_lease.cjs resolve [--config "{sharedDir}/config.json"]
+```
+
+---
+
 ## Parallel DAG task execution resolution (`defaults.enableDag`)
 
 Optional setting in `defaults.enableDag` for task execution mode in `ws-spec-to-pr` / `ws-plan-to-tasks` / `ws-implement-tasks`.

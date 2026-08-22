@@ -136,7 +136,6 @@
     "patternsBackend": true,
     "patternsFrontend": true,
     "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
-
     "deliveryCommitArtifacts": {
       "includeRefinedPlan": true,
       "includeDeliveryResult": false,
@@ -153,7 +152,9 @@
     "plannerModel": "opencode-go/deepseek-v4-pro",
     "executionModel": "composer-2.5",
     "reviewerModel": "cursor-grok-4.6-high",
-    "testingModel": "composer-2.5"
+    "testingModel": "composer-2.5",
+    "sessionLeases": true,
+    "_comment_sessionLeases": "When true (default when omitted), bootstrap acquires same-slug session lease; destroyable git uses git.lock. Explicit false disables."
   },
   "plans": {
     "dir": ".agents/plans",

@@ -136,6 +136,8 @@
     "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
     "enableAuditing": false,
     "_comment_enableAuditing": "When true, ws-spec-to-pr* orch runs under ws-audit runtime observer; writes {us-dir}/audit-*.log.md; logs anomalies/performance/correctness/disposable scripts; end-of-run may propose upstream GitHub issues or reusable tooling. Default false.",
+    "sessionLeases": true,
+    "_comment_sessionLeases": "When true (default when omitted), bootstrap acquires a same-slug exclusive session lease under {plansDir}/.runtime/leases/ and destroyable git recipes take {plansDir}/.runtime/git.lock (TTL 2m, wait ≤60s). Explicit false disables both.",
     "enableDag": false,
     "_comment_enableDag": "When true, break execution plan into multiple parallel tasks. When false (default), execute tasks sequentially one by one in serial order.",
     "contextBudget": 32000,

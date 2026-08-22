@@ -790,7 +790,7 @@
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">48</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">49</strong> skills available</span>
     </div>
   </div>
 
@@ -1179,7 +1179,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">23 skills</span>
+      <span class="count">24 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="ws-github-provider ws-azure-devops-provider ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1392,6 +1392,16 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-format/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-from-provider/SKILL.md" data-name="ws-spec-from-provider" data-slug="ws-spec-from-provider" data-desc="bulk-import open github issues or ado user stories into local specs (write-spec + register). trigger when importing tracker backlog to {specsdir} for ws-spec-list / ws-multi-spec." data-deps="ws-github-provider ws-azure-devops-provider ws-write-spec ws-local-spec-provider ws-spec-format ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-from-provider</div>
+        </div>
+        <div class="desc">Bulk-import open GitHub issues or ADO User Stories into local specs (write-spec + register). Trigger when importing tracker backlog to {specsDir} for ws-spec-list / ws-multi-spec.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (6):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-github-provider">ws-github-provider</span><span class="dep-pill" data-dep="ws-azure-devops-provider">ws-azure-devops-provider</span><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-from-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-index/SKILL.md" data-name="ws-spec-index" data-slug="ws-spec-index" data-desc="project prd index manager — initializes, synchronizes, and promotes feature specifications within the project index (index.prd)." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-spec-index</div>
@@ -1503,9 +1513,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 45 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 46 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+37)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+38)
       </div>
     </div>
 
@@ -1906,7 +1916,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.31 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.32 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

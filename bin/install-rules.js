@@ -28,6 +28,7 @@ export const HUB_WHITELIST = [
   'step-artifact.schema.json',
   'telemetry.schema.json',
   'workflow-state.schema.json',
+  'session-lease.schema.json',
   'evals.schema.json',
   // npm cannot pack a file named .gitignore; ship hub.gitignore → install as .gitignore
   'hub.gitignore',
