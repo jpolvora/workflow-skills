@@ -2,10 +2,30 @@
 
 Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) skill. Do not use this file for anti-regression context (use `MEMORY.md`).
 
+### [2026-08-22 11:35] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-write-spec harness benchmark for fictitious spec dry-runs + TLC scoring + snapshot compare
+- **Done**: Wrote `.agents/specs/harness-spec-benchmark.spec.md` (not registered); validate_spec PASS (27 ACs)
+- **Result**: Upstream-only CLI spec: static/live prepare-collect, evidence-or-zero + discrimination sensor, baselines vs gitignored runs
+
+### [2026-08-22 11:23] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-write-spec unique Node-or-Python stack for all helper scripts + AGENTS.md/SKILL_AUTHORING rule
+- **Done**: Wrote `.agents/specs/unique-skill-script-runtime.spec.md` (not registered); locked Node 22; 26 ACs covering ports, dual deletion, docs/rules, harness gate
+- **Result**: Spec of record under `{specsDir}`; Python unique-stack and dual freeze rejected; ready to register / start workflow
+
 ### [2026-08-22 11:16] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 225
 - **Done**: Round 1 fixed WIT `commentId` key + whitespace audit test; resolved 2 threads; pushed `2e39202`; re-check `activeThreads: []` and CI green
 - **Result**: Converged; PR https://github.com/jpolvora/workflow-skills/pull/225 ready for caller merge (skill does not merge)
+
+### [2026-08-22 11:41] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr auto full models-preset + goal-fix-pr
+- **Done**: Shipped PR 226; fixed finish/--substep persist; merged to main; Phase A CLEAN
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/226 MERGED
+
+### [2026-08-22 11:30] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr auto full from models-preset-and-per-step.spec.md after GH issues empty
+- **Done**: Implemented presets + per-step resolve; score 10; review clean; tests + sabotage pass; product commit 79db57b
+- **Result**: Ready to push develop and open PR to main (stay-on-integration)
 
 ### [2026-08-22 11:00] Agent: Cursor Grok 4.6
 - **Prompt**: Write a spec for later implementation with the best TLC spec-driven ideas (delivery quality, performance, score near 10)
