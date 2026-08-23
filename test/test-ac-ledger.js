@@ -1,7 +1,10 @@
 import fs from 'fs';
+import { createRequire } from 'module';
 import utils from './harness-test-utils.cjs';
 
+const require = createRequire(import.meta.url);
 const { assert, path, repoRoot, temp, run, write } = utils;
+const { loadJsonSchema, validateNode } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/validate_json_schema.cjs'));
 const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
 const reviewScript = path.join(repoRoot, '.agents/skills/ws-code-review/scripts/write_review_round.cjs');
 const root = temp('ws-ac-ledger-');
@@ -132,5 +135,17 @@ const skipScore = JSON.parse(skipInvoke(['score', '--ledger', 'ac-ledger.json', 
 assert.ok(!skipScore.errors.some((error) => error.includes('backendFormat')), 'skipped backendFormat is observed');
 assert.strictEqual(skipScore.knownDefect, false, 'skip does not set knownDefect');
 assert.ok(skipScore.score > 8, 'skip with non-zero exit does not cap score at 8');
+
+const ledgerSchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/ac-ledger.schema.json'), 'ac ledger');
+const skipLedger = JSON.parse(fs.readFileSync(path.join(skipRoot, 'ac-ledger.json'), 'utf8'));
+const schemaErrors = validateNode(skipLedger, ledgerSchema, 'ac-ledger.json');
+assert.ok(
+  skipLedger.aliasResults.some((row) => row.skipReason === 'baseline-dirty'),
+  'linked ledger persists skipReason',
+);
+assert.ok(
+  !schemaErrors.some((error) => /unexpected key skipReason/.test(error)),
+  `schema rejects skipReason: ${schemaErrors.join('; ')}`,
+);
 
 console.log('test-ac-ledger: ok');

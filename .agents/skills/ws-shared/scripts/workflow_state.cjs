@@ -45,6 +45,14 @@ function stateIdentityHash(text) {
   return sha256(parseFrontmatter(text).frontmatter);
 }
 
+function legacyStateHash(text) {
+  return sha256(text);
+}
+
+function snapshotHashMatches(stored, stateText) {
+  return stored === stateIdentityHash(stateText) || stored === legacyStateHash(stateText);
+}
+
 function nowIso() {
   return new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
@@ -773,7 +781,8 @@ function validateRuntime(usDir) {
 }
 
 function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, preAdvance }) {
-  const parsed = parseFrontmatter(fs.readFileSync(stateFile, 'utf8'));
+  const stateText = fs.readFileSync(stateFile, 'utf8');
+  const parsed = parseFrontmatter(stateText);
   const state = parsed.data;
   const errors = [];
   for (const key of ['workflowId', 'status', 'currentStep', 'stateVersion', 'revision']) {
@@ -787,17 +796,21 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
   if (state.gateDecision !== undefined) {
     try { validateGateDecision(state.gateDecision); } catch (error) { errors.push(error.message); }
   }
-  const actualHash = stateIdentityHash(fs.readFileSync(stateFile, 'utf8'));
+  const actualHash = stateIdentityHash(stateText);
   if (fs.existsSync(runFile)) {
     const run = JSON.parse(fs.readFileSync(runFile, 'utf8'));
-    if (run.revision !== Number(state.revision) || run.stateSha256 !== actualHash) errors.push('run.json revision/state hash mismatch');
+    if (run.revision !== Number(state.revision) || !snapshotHashMatches(run.stateSha256, stateText)) {
+      errors.push('run.json revision/state hash mismatch');
+    }
     const runSchema = path.join(__dirname, '..', 'run.schema.json');
     errors.push(...validateNode(run, loadJsonSchema(runSchema, 'run schema'), 'run.json'));
   }
   if (fs.existsSync(indexFile)) {
     const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
     const row = index.workflows?.find((item) => item.workflowId === state.workflowId);
-    if (!row || row.stateSha256 !== actualHash || index.revision !== Number(state.revision)) errors.push('plans index revision/state hash mismatch');
+    if (!row || !snapshotHashMatches(row.stateSha256, stateText) || index.revision !== Number(state.revision)) {
+      errors.push('plans index revision/state hash mismatch');
+    }
   }
   const unknownRuntime = validateRuntime(path.dirname(stateFile));
   if (unknownRuntime.length) errors.push(`unknown .runtime residue: ${unknownRuntime.join(', ')}`);
@@ -950,6 +963,8 @@ module.exports = {
   RUNTIME_NAMES,
   sha256,
   stateIdentityHash,
+  legacyStateHash,
+  snapshotHashMatches,
   parseFrontmatter,
   serializeFrontmatter,
   normalizeFable,

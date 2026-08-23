@@ -271,6 +271,24 @@ acImplemented: 0
   assert.strictEqual(run(validate, [hashStateRel, '--repo-root', hashRoot]).status, 0, 'gate history append does not break hash');
 }
 
+// Legacy full-file stateSha256 still passes pre-advance 6
+{
+  const { pa6Root, stateRel } = setupPreAdvance6Fixture({ includeFormatSkip: true });
+  const stateFile = path.join(pa6Root, stateRel);
+  const stateText = fs.readFileSync(stateFile, 'utf8');
+  const fullHash = sha256(stateText);
+  assert.notStrictEqual(fullHash, stateIdentityHash(stateText), 'legacy full-file digest differs from frontmatter hash');
+  const runPath = path.join(pa6Root, '.agents/plans/pa6/run.json');
+  const runJson = JSON.parse(fs.readFileSync(runPath, 'utf8'));
+  runJson.stateSha256 = fullHash;
+  fs.writeFileSync(runPath, `${JSON.stringify(runJson, null, 2)}\n`);
+  assert.strictEqual(
+    run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]).status,
+    0,
+    'legacy full-file run.json hash accepted until next performUpdate',
+  );
+}
+
 // AC12 / AC13 — finish --commit writes and dedupes commits
 {
   const commitRoot = temp('ws-state-commit-');

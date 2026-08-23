@@ -5,10 +5,10 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "fa1431c06de762093a9bdde49a5a43c7f084c9d05d98e5fa59d857edbd2d4712",
+  "fullPackageDigest": "e3e616b289ee5065a6a711f3b5e0ef4c5c7d6ea40b7de54d5380ad82d5a57e2a",
   "hub": {
     "files": {
-      "ac-ledger.schema.json": "590c71d9d095556514006f9aef9674fdf3f9d280d59b7df94baf1e85068243c5",
+      "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
       "AGENTS.md": "4e55a197c78a143f80419644284fdc712d4dda2a23d2599f99d2d1185754fbbf",
       "autoload.md": "651a72b35fecf1038263b67256a4ae338e37419c432d585f995b30c6ed460e32",
       "backend.md.template": "2f04abd5d1d963df303cb74c4f5360b6f651faa95df873fe3891a2f95613cbf3",
@@ -33,7 +33,7 @@
       "scripts/resolve_consumer_root.cjs": "d8127bcdcb14ec43061cabd5fdc8d6955c1351b9f92f27177f0f66dc33d98bf1",
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
-      "scripts/workflow_state.cjs": "8a8abb5c2850203b8b2b032b9e450dd439114977ac392b9dfafbd814b78d345a",
+      "scripts/workflow_state.cjs": "2c9e17099ec955e78ed201f81fb99e8fc1d890b30b0f868a4fde19e8710868e6",
       "session-lease.schema.json": "4b473bb47830e88d459ad69752289568f721fbd495ac47bf705ffb3a1804c25e",
       "setup.md": "c4098ae418250074ef1eadfeacc76ee8d5ac52eba638a1229f3ffbd0b200ed29",
       "skill-dependencies.json": "051aef6007cf92cc0e27fd15ad4dabe00555a89aed65dcb63d3b8292843ccee0",
@@ -43,7 +43,7 @@
       "tools.md": "88294443742d997b98eabaed12d901e8faea4eaf200322ffb51e11d45e955c8d",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "851a20a291be57b7f449dd2fe610782dc577cf1f1095d25d30cd5837deae7289"
+    "skillDigest": "e80327ab41e20104c730f76207fa3f3a1724d988b4d81d13cc828a9c48799218"
   },
   "packageVersion": "0.3.36",
   "skills": {
