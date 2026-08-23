@@ -172,11 +172,13 @@ function hasMergedDelivery(plansDir, slug) {
   const results = walkFilesNamed(slugDir, (name) => /^step-08-.+\.result\.md$/i.test(name), []);
   for (const file of results) {
     const text = readUtf8(file);
+    const mergedPrPhrase =
+      /\bmerged PR\b/i.test(text) && !/\bnot merged PR\b/i.test(text);
     if (
       /\bmerged:\s*true\b/i.test(text) ||
       /\bstate:\s*MERGED\b/i.test(text) ||
-      /\bmerged PR\b/i.test(text) ||
-      /^status:\s*completed\b/im.test(text)
+      mergedPrPhrase ||
+      /^status:\s*completed\s*$/im.test(text)
     ) {
       return true;
     }

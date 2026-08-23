@@ -71,7 +71,7 @@ Before evaluating flow mode or dispatching a worker, run the probe check:
 | # | Check | Evidence | Action |
 |---|-------|----------|--------|
 | 1 | Item already terminal in state | `shipped` (with confirmed merge) or `skipped` in state table | Skip worker |
-| 2 | Prior delivery result for slug | `Glob` `{plansDir}/{slug}/**/step-08-*.result.md` exists and cites `merged: true` / `state: MERGED` / `merged PR` / `status: completed` | Mark `skipped` + `reason: already-implemented` |
+| 2 | Prior delivery result for slug | `Glob` `{plansDir}/{slug}/**/step-08-*.result.md` exists and cites `merged: true` / `state: MERGED` / `merged PR` (not `not merged PR`) / a whole-line `status: completed` | Mark `skipped` + `reason: already-implemented` |
 | 3 | SCM merged PR for slug | Provider `gh` / SCM list shows merged PR referencing slug / title | Mark `skipped` + `reason: already-implemented` |
 
 If ambiguous (e.g., unmerged open PR or missing evidence), do **not** skip. Proceed to Phase 4b convergence gate or worker execution.

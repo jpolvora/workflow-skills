@@ -234,6 +234,31 @@ assert.ok(
   'status completed reason',
 );
 
+const blockedDir = path.join(tmp, 'blocked-specs');
+const blockedPlans = path.join(tmp, 'blocked-plans');
+fs.mkdirSync(blockedDir);
+fs.mkdirSync(path.join(blockedPlans, 'blocked-one'), { recursive: true });
+writeSpec(blockedDir, 'blocked-one');
+fs.writeFileSync(
+  path.join(blockedPlans, 'blocked-one', 'step-08-blocked-one.result.md'),
+  'Ship blocked: not merged PR yet\nstatus: completed pending review\n',
+  'utf8',
+);
+const blocked = run([
+  '--specs-dir',
+  blockedDir,
+  '--plans-dir',
+  blockedPlans,
+  '--repo-root',
+  tmp,
+]);
+const blockedJson = JSON.parse(blocked.stdout);
+assert.strictEqual(blockedJson.pending.length, 1, 'negated merge prose stays pending');
+assert.ok(
+  blockedJson.pending.some((r) => r.slug === 'blocked-one'),
+  'not merged PR / status completed pending review is not already-implemented',
+);
+
 const splitDir = path.join(tmp, 'split-specs');
 fs.mkdirSync(splitDir);
 fs.writeFileSync(

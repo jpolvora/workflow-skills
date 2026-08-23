@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 17:54] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 6
+- **Done**: Tighten hasMergedDelivery: reject `not merged PR`; require whole-line `status: completed`
+- **Result**: Blocked/open step-08 notes stay pending on blank scan
+
 ### [2026-08-23 17:47] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 238 round 5
 - **Done**: canonicalFiles docs + Completion walk resolve bare `index.PRD` to `{specsDir}` when repo-root is missing
