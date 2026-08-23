@@ -9,6 +9,11 @@ const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scri
 
 const STATUSES = new Set(['Pending', 'Implemented', 'ImplementedDifferently', 'NotImplemented']);
 const BOUNDARIES = new Set(['step5', 'pre-step6', 'ship']);
+const ALIAS_SKIP_REASONS = new Set(['not-applicable', 'baseline-dirty', 'comment-key']);
+
+function isSkipped(result) {
+  return Boolean(result && ALIAS_SKIP_REASONS.has(result.skipReason));
+}
 
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
@@ -190,6 +195,9 @@ function link(options, context) {
   for (const value of options.aliasResult || []) {
     const result = parseObject(value, 'alias-result');
     if (!result.alias || result.exitCode === undefined || !result.command) throw new Error('alias result requires alias, command, and exitCode');
+    if (result.skipReason !== undefined && result.skipReason !== null && result.skipReason !== '') {
+      if (!ALIAS_SKIP_REASONS.has(result.skipReason)) throw new Error(`invalid alias skipReason: ${result.skipReason}`);
+    }
     const normalized = {
       alias: result.alias,
       commandHash: sha256(result.command),
@@ -197,6 +205,7 @@ function link(options, context) {
       endedAt: result.endedAt || null,
       exitCode: Number(result.exitCode),
     };
+    if (result.skipReason) normalized.skipReason = result.skipReason;
     ledger.aliasResults = [...ledger.aliasResults.filter((entry) => entry.alias !== normalized.alias), normalized].sort((a, b) => a.alias.localeCompare(b.alias));
   }
   if (options.testSurfaceSkip) {
@@ -234,13 +243,13 @@ function scoreLedger(ledger, boundary, context) {
   let knownDefect = ledger.declaredGaps.length > 0;
   let missingEvidence = false;
   const configuredAliases = Object.entries(context.config?.verification || {})
-    .filter(([key, value]) => /(?:Build|Test|Format)$/.test(key) && typeof value === 'string' && value.trim() && !/^<.*>$/.test(value.trim()))
+    .filter(([key, value]) => /(?:Build|Test|Format)$/.test(key) && !/^_/.test(key) && typeof value === 'string' && value.trim() && !/^<.*>$/.test(value.trim()))
     .map(([key]) => key)
     .sort();
   for (const alias of configuredAliases) {
     const observed = ledger.aliasResults.find((item) => item.alias === alias);
     if (!observed) errors.push(`configured verification alias lacks observed result: ${alias}`);
-    else if (observed.exitCode !== 0) knownDefect = true;
+    else if (!isSkipped(observed) && observed.exitCode !== 0) knownDefect = true;
   }
   const validTestingSkip = ledger.testingSkip
     && fs.existsSync(path.resolve(context.repoRoot, ledger.testingSkip.evidence))
@@ -265,7 +274,7 @@ function scoreLedger(ledger, boundary, context) {
     if (row.findings.some((finding) => finding.state === 'open' && ['Critical', 'Warning'].includes(finding.severity))) knownDefect = true;
     if (boundary === 'pre-step6' && !row.commits.length) errors.push(`${row.id}: product commit linkage required before step 6`);
   }
-  if (ledger.aliasResults.some((result) => result.exitCode !== 0)) knownDefect = true;
+  if (ledger.aliasResults.some((result) => !isSkipped(result) && result.exitCode !== 0)) knownDefect = true;
   let score = total ? Math.floor((10 * earned) / total) : 0;
   if (knownDefect) score = Math.min(score, 8);
   else if (missingEvidence) score = Math.min(score, 9);

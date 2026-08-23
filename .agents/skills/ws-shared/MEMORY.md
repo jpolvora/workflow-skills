@@ -6,6 +6,33 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-23] Shared worktree integrity vs other-worker dirty skills
+- **Layer**: `Harness`
+- **Module**: `skill-integrity / ws-spec-to-pr Step 7`
+- **Severity**: `High`
+- **PathPattern**: `bin/skill-integrity.json`, `.agents/skills/ws-*/**`, `package.json`
+- **Scenario / Context**: Parallel ws-multi-spec workers share one worktree. Step 7 `npm run test` / `npm run verify-integrity` fail when another worker has uncommitted hashed skill files (or `package.json` test-list changes). Regenerating integrity while those files are dirty stamps *their* hashes into this worker's G2-code commit.
+- **DO NOT**: Run `npm run generate-integrity` or treat integrity/test red as this slug's defect while other workers' hashed paths are dirty. Do not `git add -A`.
+- **INSTEAD DO**: Stash *other* workers' tracked hashed paths by explicit path; regenerate integrity only after the tree is this slug's hashed files; pop the stash after ship. Re-check `git rev-parse --abbrev-ref HEAD` stays on the assigned branch.
+
+### [2026-08-23] Ledger skipReason must be in the published schema
+- **Layer**: `Harness`
+- **Module**: `ac-ledger.schema.json / ac_ledger.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/ac-ledger.schema.json, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, test/test-ac-ledger.js, bin/skill-integrity.json`
+- **Scenario / Context**: PR 237 persisted optional `aliasResult.skipReason`, but `ac-ledger.schema.json` used `additionalProperties: false` without that field. Schema walkers rejected real post-link ledgers.
+- **DO NOT**: Add a persisted JSON field under `additionalProperties: false` without updating the shipped schema and regenerating integrity hashes.
+- **INSTEAD DO**: Add optional `skipReason` with the runtime enum (`not-applicable` | `baseline-dirty` | `comment-key`) to `aliasResults` items, schema-validate a linked ledger in tests, and run `npm run generate-integrity` for the hashed schema.
+
+### [2026-08-23] Frontmatter state hash must accept legacy full-file digest
+- **Layer**: `Harness`
+- **Module**: `workflow_state.cjs / validateSnapshot`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-workflow-state-contract.js`
+- **Scenario / Context**: PR 237 switched `stateSha256` to frontmatter-only hashing. In-flight `run.json` / plans index still stored the previous full-file SHA-256, so `validate --pre-advance 6` failed on hash mismatch before ledger skips were evaluated.
+- **DO NOT**: Compare persisted `stateSha256` only to `stateIdentityHash` after changing the hash identity. That breaks consumers who have not yet run `performUpdate`.
+- **INSTEAD DO**: Accept the legacy full-file digest in `validateSnapshot` for `run.json` and the plans index until the next `performUpdate` rewrites those files. Keep writers on the new frontmatter-only hash. Cover with a fixture that seeds a legacy full-file `run.json` and asserts pre-advance 6 still passes.
+
 ### [2026-08-22] validate_spec leftover flags are not spec paths
 - **Layer**: `Harness`
 - **Module**: `ws-spec-format / validate_spec.cjs`

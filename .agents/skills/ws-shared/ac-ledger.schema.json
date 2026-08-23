@@ -24,7 +24,11 @@
           "commandHash": { "$ref": "#/$defs/hash" },
           "startedAt": { "type": ["string", "null"] },
           "endedAt": { "type": ["string", "null"] },
-          "exitCode": { "type": "integer" }
+          "exitCode": { "type": "integer" },
+          "skipReason": {
+            "type": "string",
+            "enum": ["not-applicable", "baseline-dirty", "comment-key"]
+          }
         }
       }
     },

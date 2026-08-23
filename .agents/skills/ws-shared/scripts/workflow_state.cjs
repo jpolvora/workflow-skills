@@ -34,10 +34,23 @@ const RUNTIME_NAMES = [
   /^final\.md$/,
   /^plan-gate\.md$/,
   /^resolve-[A-Za-z0-9_-]+\.txt$/,
+  /\.(cjs|patch|md)$/,
 ];
 
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
+}
+
+function stateIdentityHash(text) {
+  return sha256(parseFrontmatter(text).frontmatter);
+}
+
+function legacyStateHash(text) {
+  return sha256(text);
+}
+
+function snapshotHashMatches(stored, stateText) {
+  return stored === stateIdentityHash(stateText) || stored === legacyStateHash(stateText);
 }
 
 function nowIso() {
@@ -676,6 +689,14 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       if (fableBlocks(context.config?.fable?.auditVerdictsBlockShip, options.fableVerdict)) throw new Error(`fable verdict blocks this transition: ${options.fableVerdict}`);
       state.fableVerdict = options.fableVerdict;
     }
+    if (options.commit) {
+      const commitSha = String(options.commit).trim();
+      if (!/^[a-f0-9]{7,40}$/i.test(commitSha)) throw new Error('commit sha must be 7-40 hex characters');
+      state.commits = Array.isArray(state.commits) ? state.commits : [];
+      if (!state.commits.some((item) => item.sha === commitSha)) {
+        state.commits.push({ sha: commitSha, step: Number(step) });
+      }
+    }
     event = {
       ...commonEvent(state, pipeline, step, 'finish', finishedAt, options, context),
       dispatchedAt: dispatchedAt || null,
@@ -713,7 +734,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       .sort((a, b) => a.step - b.step);
   }
   const stateContent = `---\n${serializeFrontmatter(state)}\n---\n${body.replace(/^\n*/, '')}`;
-  const stateHash = sha256(stateContent);
+  const stateHash = stateIdentityHash(stateContent);
   const medians = estimatedSteps(context, pipeline, maxStep);
   const run = buildRun(state, pipeline, maxStep, labels, stateHash, medians);
   const index = updatePlansIndex(context, run, timestamp);
@@ -760,7 +781,8 @@ function validateRuntime(usDir) {
 }
 
 function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, preAdvance }) {
-  const parsed = parseFrontmatter(fs.readFileSync(stateFile, 'utf8'));
+  const stateText = fs.readFileSync(stateFile, 'utf8');
+  const parsed = parseFrontmatter(stateText);
   const state = parsed.data;
   const errors = [];
   for (const key of ['workflowId', 'status', 'currentStep', 'stateVersion', 'revision']) {
@@ -774,17 +796,21 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
   if (state.gateDecision !== undefined) {
     try { validateGateDecision(state.gateDecision); } catch (error) { errors.push(error.message); }
   }
-  const actualHash = sha256(fs.readFileSync(stateFile, 'utf8'));
+  const actualHash = stateIdentityHash(stateText);
   if (fs.existsSync(runFile)) {
     const run = JSON.parse(fs.readFileSync(runFile, 'utf8'));
-    if (run.revision !== Number(state.revision) || run.stateSha256 !== actualHash) errors.push('run.json revision/state hash mismatch');
+    if (run.revision !== Number(state.revision) || !snapshotHashMatches(run.stateSha256, stateText)) {
+      errors.push('run.json revision/state hash mismatch');
+    }
     const runSchema = path.join(__dirname, '..', 'run.schema.json');
     errors.push(...validateNode(run, loadJsonSchema(runSchema, 'run schema'), 'run.json'));
   }
   if (fs.existsSync(indexFile)) {
     const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
     const row = index.workflows?.find((item) => item.workflowId === state.workflowId);
-    if (!row || row.stateSha256 !== actualHash || index.revision !== Number(state.revision)) errors.push('plans index revision/state hash mismatch');
+    if (!row || !snapshotHashMatches(row.stateSha256, stateText) || index.revision !== Number(state.revision)) {
+      errors.push('plans index revision/state hash mismatch');
+    }
   }
   const unknownRuntime = validateRuntime(path.dirname(stateFile));
   if (unknownRuntime.length) errors.push(`unknown .runtime residue: ${unknownRuntime.join(', ')}`);
@@ -883,7 +909,7 @@ function rebuildIndex(context, config) {
       if (entry.isDirectory()) stack.push(full);
       else if (entry.name.endsWith('.state.md')) {
         const state = parseFrontmatter(fs.readFileSync(full, 'utf8')).data;
-        const hash = sha256(fs.readFileSync(full, 'utf8'));
+        const hash = stateIdentityHash(fs.readFileSync(full, 'utf8'));
         workflows.push({
           workflowId: state.workflowId,
           slug: state.slug || state.us,
@@ -936,6 +962,9 @@ module.exports = {
   SKIP_REASONS,
   RUNTIME_NAMES,
   sha256,
+  stateIdentityHash,
+  legacyStateHash,
+  snapshotHashMatches,
   parseFrontmatter,
   serializeFrontmatter,
   normalizeFable,

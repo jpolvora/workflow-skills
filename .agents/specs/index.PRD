@@ -94,6 +94,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Specify-time closure pack for score-10 spec delivery (`spec: specify-closure-pack.spec.md`)
 - [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: unique-skill-script-runtime.spec.md`)
 - [x] Cooperative session leases for parallel agents on one worktree (`spec: workflow-session-leases.spec.md`)
+- [ ] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: us-235.spec.md`)
+
 
 ## 8. Next specs
 
@@ -149,8 +151,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 48 | `unique-skill-script-runtime` | `[ ]` todo | Phase 4 | Node-only runtime for all packaged helper scripts |
 
 | 49 | `workflow-session-leases` | `[x]` done | Phase 4 | Cooperative session leases for parallel agents on one worktree |
+| 50 | `us-235` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`.
 
 ## 9. Inbox
 
