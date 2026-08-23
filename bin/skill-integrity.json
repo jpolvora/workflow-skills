@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "813da91b373f87264944ab68a7fd1f7f66f1b68e4ec718ecb3809cbcf0cae376",
+  "fullPackageDigest": "de7c5f6ad83f070fbb1168f9f0feb29aa7582400a1bd80ceab151bd1c7999447",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -15,8 +15,8 @@
       "CATALOG.md": "0be52ab5eb4f865b4b75a70b06ba38863cc023819439d6f3f785b57a14539487",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "config-resolution.md": "8e2ec393132f63fe05710927889f8424fc108239558f875dbed03117ad6d3a3c",
-      "config.json.example": "40dd8b6591e2becbae562cd384dd153e8c7d6369e118fd1604ca332b95b7a55d",
-      "config.schema.json": "17e14a37f5d4f642da9c28604005c3ba7fa124c9f04b645ff6588ddbfd1fb7da",
+      "config.json.example": "c28124388f1636ad05203d822d0571b57488f9152722f154dc8bde5cc52263dd",
+      "config.schema.json": "9e7f883add1fcae648963974a8b099bb2dc705239419001755587f20816cf2b4",
       "CROSS-PLATFORM.md": "325bb5fd23f28d9c274294c3579ee0922348c732bc75f788aee148bd4d118f32",
       "evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "frontend.md.template": "d84d4d36bb5c03e4caef32e9ca32d633fe07eb32300b21f0743b2bae712e3676",
@@ -43,7 +43,7 @@
       "tools.md": "88294443742d997b98eabaed12d901e8faea4eaf200322ffb51e11d45e955c8d",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "bb48efb0f25a1ccfdc4001683e630832c221ccf7e6d443ea30d58ad7d0ff686a"
+    "skillDigest": "682af4debc8787a661aa08aac0862c0befe484829dd0b7bce8ca231675887c5c"
   },
   "packageVersion": "0.3.36",
   "skills": {
@@ -443,9 +443,9 @@
     "ws-task-lifecycle": {
       "files": {
         "evals/evals.json": "b17d0c903414b53132812f0426a9dd13e04fb21120f4b65f682887a390da345e",
-        "SKILL.md": "dc2b0f0b171b6a9c21b1f787eba3e7fb6101e4c10b8b45007a58d8516a9328e9"
+        "SKILL.md": "8cdf28895c0d07daf1bbddfc09e882f8901c42f405a15bcaf9079edf2cbe4738"
       },
-      "skillDigest": "cb47490bea01b7226ad2357905ac8b2b03bc23c4c38fc70660ccf1927ce1636f"
+      "skillDigest": "3fef6b0eb2b2927f2b1bcd8d5029e88fa2b6a6c9d4d77bf5ef0187c7760f648d"
     },
     "ws-tdah": {
       "files": {

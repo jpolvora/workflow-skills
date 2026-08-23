@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 17:47] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 5
+- **Done**: canonicalFiles docs + Completion walk resolve bare `index.PRD` to `{specsDir}` when repo-root is missing
+- **Result**: Explicit default arrays no longer skip the real spec index
+
 ### [2026-08-23 17:42] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 238 round 4
 - **Done**: Bare `PR #` no longer marks already-implemented; index lookup uses file slug; `status: completed` still omits

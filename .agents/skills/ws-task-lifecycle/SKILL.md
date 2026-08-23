@@ -53,7 +53,7 @@ Walk tracking files in this order (or `tracking.canonicalFiles` when that JSON a
 3. `PRODUCT.PRD` — append a Done-log line when the file exists.
 4. `index.PRD` — use the listed path if present, else `{specsDir}/index.PRD`. Set the matching checkbox to `[x]` and append a Done-log line when the file exists.
 
-If `tracking.canonicalFiles` is absent or `[]`, use that default list. If it is a non-empty array of repo-relative paths, walk that array in listed order before changelog.
+If `tracking.canonicalFiles` is absent or `[]`, use that default list. If it is a non-empty array of repo-relative paths, walk that array in listed order before changelog. If a listed path is exactly `index.PRD` (no directory) and repo-root `index.PRD` is missing, use `{specsDir}/index.PRD`.
 
 Skip a path that is not on disk. Each skip produces one skip note that names the missing path. Skipping one file does not skip later steps that still apply. Do not create empty tracking files.
 

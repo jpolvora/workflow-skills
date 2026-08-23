@@ -58,6 +58,10 @@ assert(
 );
 assert(skill.includes('{specsDir}'), 'AC11: uses {specsDir} token');
 assert(
+  /exactly `index\.PRD`/.test(skill) && /repo-root `index\.PRD` is missing/.test(skill),
+  'listed bare index.PRD falls back to {specsDir}/index.PRD',
+);
+assert(
   !skill.includes('.agents/specs'),
   'AC11: SKILL.md prose does not hardcode .agents/specs',
 );

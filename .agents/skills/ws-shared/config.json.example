@@ -340,7 +340,7 @@
   },
 
   "tracking": {
-    "_comment": "Optional ws-task-lifecycle Completion walk. Absent or empty canonicalFiles → FEATURES.md, PLAN.md, PRODUCT.PRD, index.PRD.",
+    "_comment": "Optional ws-task-lifecycle Completion walk. Absent or empty canonicalFiles → FEATURES.md, PLAN.md, PRODUCT.PRD, then {specsDir}/index.PRD. Bare index.PRD only if that file exists at repo root.",
     "canonicalFiles": []
   },
 

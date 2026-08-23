@@ -328,7 +328,7 @@
         "canonicalFiles": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
-          "description": "Repo-relative tracking files walked in listed order. Absent or empty → FEATURES.md, PLAN.md, PRODUCT.PRD, index.PRD."
+          "description": "Repo-relative tracking files walked in listed order. Absent or empty → FEATURES.md, PLAN.md, PRODUCT.PRD, then index at plans.specsDir (default .agents/specs/index.PRD). Do not use bare index.PRD unless that file exists at repo root."
         }
       }
     },
