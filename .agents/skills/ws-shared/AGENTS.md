@@ -102,19 +102,20 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 
 ## Promoted skills (top-level installables)
 
-Inventory tables: [`CATALOG.md`](CATALOG.md) (on demand). Extra package rows live in the companion so Workflows-only installs can omit Extra routes without editing this file.
+Inventory tables: [`CATALOG.md`](CATALOG.md) (on demand). Extra rows live in the companion so Workflows-only installs can omit them.
 
 ## Task router (consumer)
 
-Intent → skill table: [`CATALOG.md`](CATALOG.md) § Task router (consumer). Specs keywords: [`autoload.md`](autoload.md) § Specs skill router. Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
+Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`autoload.md`](autoload.md) § Specs skill router. Pipeline steps 0–9: orch dispatch only.
 
 | Intent (utility shortcuts) | Load |
 |----------------------------|------|
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
+| Prompt-driven task (not Spec-to-PR) | `ws-task-lifecycle` |
 
-**Product-commit order (both orch):** after verify (standard Step 5, score ≥ 9) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
+**Product commits (both orch):** after Step 5 score ≥ 9 (standard) or lite Step 2, commit `files_touched`; review `{base}...HEAD`; second commit for review fixes. `{plansDir}` only at Step 8 / lite Step 4. Never `git add -A`.
 
 ## Managed skills — no silent local refactors
 

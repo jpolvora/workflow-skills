@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 16:20] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr us-236.spec.md plus configure-project autoload opt-in for ws-task-lifecycle
+- **Done**: Shipped `ws-task-lifecycle` (Intake, Implementation, Completion); `defaults.autoloadTaskLifecycle` + configure `--section autoload` question; tests; catalogs; integrity
+- **Result**: Prompt-driven work stays spec-driven when consumers opt in; shipped Always-applied table stays lean
+
 ### [2026-08-23 12:30] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr + /ws-goal-fix-pr (us-235 / PR 237)
 - **Done**: Confirmed empty threads + green CI; merged PR 237; close-loop on issue 235

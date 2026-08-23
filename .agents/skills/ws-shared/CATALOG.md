@@ -21,6 +21,7 @@
 | `ws-spec-list` | [`../ws-spec-list/SKILL.md`](../ws-spec-list/SKILL.md) |
 | `ws-spec-from-provider` | [`../ws-spec-from-provider/SKILL.md`](../ws-spec-from-provider/SKILL.md) |
 | `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
+| `ws-task-lifecycle` | [`../ws-task-lifecycle/SKILL.md`](../ws-task-lifecycle/SKILL.md) |
 | `ws-pre-daily` | [`../ws-pre-daily/SKILL.md`](../ws-pre-daily/SKILL.md) |
 | `ws-spec-explain` | [`../ws-spec-explain/SKILL.md`](../ws-spec-explain/SKILL.md) |
 | `ws-spec-archive` | [`../ws-spec-archive/SKILL.md`](../ws-spec-archive/SKILL.md) |
@@ -76,6 +77,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
+| Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |

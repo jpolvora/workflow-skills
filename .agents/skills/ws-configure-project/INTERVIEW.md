@@ -13,7 +13,7 @@ Disclosed detail for [`SKILL.md`](SKILL.md). Load when detecting or interviewing
 
 ## Optional (offer once, skippable)
 
-`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (persists `defaults.autoload` + Always-applied path refresh; optional root `AGENTS.md` when enabled).
+`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (persists `defaults.autoload` + optional `defaults.autoloadTaskLifecycle` + Always-applied path refresh; optional root `AGENTS.md` when enabled).
 
 ## Detection heuristics
 
@@ -94,6 +94,7 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
 | `defaults.autoload` | boolean | `false` | When `true`, consumer intends root `AGENTS.md` to autoload Always-applied skills from `{sharedDir}/autoload.md` |
+| `defaults.autoloadTaskLifecycle` | boolean | `false` | When `true`, `--write-autoload` includes `ws-task-lifecycle` in the Always-applied table. Does not set `defaults.autoload`. |
 
 | Signal | Suggest |
 |--------|---------|
@@ -102,7 +103,10 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 | Skill only under global skills root | Path `{globalSkillsRoot}/ws-<id>/SKILL.md` |
 | Skill missing both places | Keep `{skillsRoot}/…` token; harness `--check` warns |
 | Enable consumer root autoload? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
-| User chooses Yes (`true`) | Root write **first** (`--write-autoload` + `--write-root-agents`); persist `defaults.autoload: true` only after root succeeds. Non-generated root → user-gate overwrite/`--force` (Recommended: No → leave flag false) |
+| Autoload `ws-task-lifecycle` like other Always-applied skills? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+| User chooses Yes (`true`) for root autoload | Root write **first** (`--write-autoload` + `--write-root-agents`); persist `defaults.autoload: true` only after root succeeds. Non-generated root → user-gate overwrite/`--force` (Recommended: No → leave flag false) |
+| User chooses Yes (`true`) for `ws-task-lifecycle` | `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Does **not** set `defaults.autoload` |
+| User chooses No / Skip / Keep false for `ws-task-lifecycle` | `--set-autoload-task-lifecycle false` (or leave omitted); `--write-autoload` does not add the row |
 | User chooses No / Skip / Keep false | Write or leave `defaults.autoload: false`; root `AGENTS.md` optional (do not require) |
 
 **Enablement gate options:** No (`false`, **Recommended**) / Yes (`true`) / Keep current / Skip.
@@ -114,6 +118,8 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload --write-root-agents [--force]
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload true
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload false
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true
+python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false
 python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check --json
 ```
 
@@ -126,4 +132,4 @@ Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
 - After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.
-- Autoload writes: `defaults.autoload` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`.
+- Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.

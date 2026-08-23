@@ -162,6 +162,14 @@ function parseJsonOut(result) {
         !autoText.includes('ws-patterns-frontend'),
       '--section patterns / --write-autoload emits ws-patterns only',
     );
+    const alwaysTable =
+      (autoText.match(
+        /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
+      ) || [])[1] || '';
+    assert(
+      alwaysTable.length > 0 && !/`ws-task-lifecycle`/.test(alwaysTable),
+      'AC49: omitted autoloadTaskLifecycle → --write-autoload does not add ws-task-lifecycle',
+    );
   }
 }
 
@@ -619,6 +627,87 @@ function seedConfigExample(root) {
     assert(data.check?.effectiveAutoload === false, 'AC11: effectiveAutoload false after set false');
     assert(check.status === 0 && data.check?.ok === true, 'AC11: false + missing root check OK');
     assert(data.check?.rootAgentsPresent === false, 'AC11: root still absent when false');
+  }
+}
+
+{
+  // AC49: explicit false → --write-autoload does not add ws-task-lifecycle
+  const root = mkTmp('ws-autoload-tl-false-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  const example = JSON.parse(
+    fs.readFileSync(
+      path.join(root, '.agents/skills/ws-shared/config.json.example'),
+      'utf8',
+    ),
+  );
+  example.defaults = { ...(example.defaults || {}), autoloadTaskLifecycle: false };
+  fs.writeFileSync(
+    path.join(root, '.agents/skills/ws-shared/config.json'),
+    JSON.stringify(example, null, 2) + '\n',
+    'utf8',
+  );
+  const result = runPy(['--repo-root', root, '--write-autoload', '--json']);
+  const data = parseJsonOut(result);
+  if (data) {
+    const autoText = fs.readFileSync(
+      path.join(root, '.agents/skills/ws-shared/autoload.md'),
+      'utf8',
+    );
+    const alwaysTable =
+      (autoText.match(
+        /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
+      ) || [])[1] || '';
+    assert(
+      result.status === 0 &&
+        alwaysTable.length > 0 &&
+        !/`ws-task-lifecycle`/.test(alwaysTable),
+      'AC49: autoloadTaskLifecycle false → --write-autoload does not add ws-task-lifecycle',
+    );
+  }
+}
+
+{
+  // AC50: true → --write-autoload includes ws-task-lifecycle
+  const root = mkTmp('ws-autoload-tl-true-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  const skillDir = path.join(root, '.agents', 'skills', 'ws-task-lifecycle');
+  fs.mkdirSync(skillDir, { recursive: true });
+  fs.writeFileSync(path.join(skillDir, 'SKILL.md'), '# ws-task-lifecycle\n', 'utf8');
+  const result = runPy([
+    '--repo-root',
+    root,
+    '--set-autoload-task-lifecycle',
+    'true',
+    '--write-autoload',
+    '--json',
+  ]);
+  const data = parseJsonOut(result);
+  if (data) {
+    const autoText = fs.readFileSync(
+      path.join(root, '.agents/skills/ws-shared/autoload.md'),
+      'utf8',
+    );
+    const cfg = JSON.parse(
+      fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+    );
+    const alwaysTable =
+      (autoText.match(
+        /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
+      ) || [])[1] || '';
+    assert(
+      result.status === 0 && /`ws-task-lifecycle`/.test(alwaysTable),
+      'AC50: autoloadTaskLifecycle true → --write-autoload includes ws-task-lifecycle',
+    );
+    assert(
+      autoText.includes('.agents/skills/ws-task-lifecycle/SKILL.md'),
+      'AC50: local stub emits .agents/skills path for ws-task-lifecycle',
+    );
+    assert(
+      cfg.defaults?.autoloadTaskLifecycle === true && cfg.defaults?.autoload !== true,
+      'AC47: --set-autoload-task-lifecycle true does not set defaults.autoload true',
+    );
   }
 }
 

@@ -133,6 +133,8 @@
     "_comment_scoreAndRefine": "Optional extra polish when Step 5 score is already >= 9 (wide-context overengineering sweep; unused workflow-introduced artifact removal). Score < 9 always runs scoreAndRefine until >= 9 (max 3 rounds, then Pause).",
     "autoload": false,
     "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
+    "autoloadTaskLifecycle": false,
+    "_comment_autoloadTaskLifecycle": "When true, --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted/false → on-demand only. Does not set defaults.autoload.",
     "enableAuditing": false,
     "_comment_enableAuditing": "When true, ws-spec-to-pr* orch runs under ws-audit runtime observer; writes {us-dir}/audit-*.log.md; logs anomalies/performance/correctness/disposable scripts; end-of-run may propose upstream GitHub issues or reusable tooling. Default false.",
     "sessionLeases": true,
@@ -335,6 +337,11 @@
     "noInlineHandWrittenMigrations": true,
     "commitPlanFilesOnlyAtStep8": true,
     "skipQualityGates": false
+  },
+
+  "tracking": {
+    "_comment": "Optional ws-task-lifecycle Completion walk. Absent or empty canonicalFiles → FEATURES.md, PLAN.md, PRODUCT.PRD, index.PRD.",
+    "canonicalFiles": []
   },
 
   "fable": {

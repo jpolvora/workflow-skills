@@ -81,6 +81,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Init / sync / promote / track `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence; `track` = add existing spec row; does not harvest `{plansDir}` history (`ws-spec-archive`) |
 | Harvest plan-folder facts into `index.PRD` Archive, then propose shipped-plan cleanup | [`ws-spec-archive`](../ws-spec-archive/SKILL.md) | Does not delete untracked scratch (that is `ws-cleanup`); does not rewrite AC bodies |
 | Spec text drifted from implemented code after prompts | [`ws-sync-spec`](../ws-sync-spec/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
+| Prompt-driven product work (not Spec-to-PR) | [`ws-task-lifecycle`](../ws-task-lifecycle/SKILL.md) | Does not mkdir `{plansDir}` or write `step-00`; does not invoke spec-to-pr / lite |
 | Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
 | Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
 | Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
@@ -100,6 +101,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | index.PRD, promote inbox, sync index status, init PRD, track spec | `ws-spec-index` |
 | archive plans, archive index.PRD, harvest plan history | `ws-spec-archive` |
 | sync spec to code, spec drift, update AC after code change | `ws-sync-spec` |
+| prompt-driven task, task lifecycle, cowork without spec-to-pr | `ws-task-lifecycle` |
 | spec to pr, full pipeline, standard orch | `ws-spec-to-pr` |
 | lite / fast spec to pr | `ws-spec-to-pr-lite` |
 | classify complexity, lite or standard? | `ws-classify-complexity` |

@@ -1,0 +1,26 @@
+{
+  "skill_name": "ws-task-lifecycle",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/ws-task-lifecycle implement a product change after tests pass",
+      "expected_output": "Agent follows Intake then Implementation then Completion. Completion updates FEATURES.md before PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. No {plansDir} tree is created.",
+      "assertions": [
+        "Loads ws-task-lifecycle and names phases Intake, Implementation, Completion",
+        "Completion order lists FEATURES.md before PLAN.md",
+        "Does not create a {plansDir} workflow tree or write step-00-*.spec.md",
+        "Does not invoke ws-spec-to-pr or ws-spec-to-pr-lite"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "A consumer set defaults.autoloadTaskLifecycle true. Should prompt-driven work still skip Spec-to-PR?",
+      "expected_output": "Yes. Autoload opt-in only adds Always-applied membership. The coordinator still forbids ws-spec-to-pr and does not mkdir {plansDir}.",
+      "assertions": [
+        "Treats defaults.autoloadTaskLifecycle as opt-in Always-applied membership only",
+        "Does not set defaults.autoload as a side effect of the task-lifecycle flag",
+        "Still forbids creating a {plansDir} workflow tree for a prompt task"
+      ]
+    }
+  ]
+}

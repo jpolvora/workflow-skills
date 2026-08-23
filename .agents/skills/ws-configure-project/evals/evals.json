@@ -29,6 +29,7 @@
       "assertions": [
         "Loads --section autoload flow from SKILL.md / INTERVIEW.md",
         "Offers Generate/Refresh / Keep current / Skip for root AGENTS.md",
+        "Asks Autoload ws-task-lifecycle like other Always-applied skills with No (Recommended)",
         "Uses configure_autoload.py helper with portable path forms only",
         "Does not invent absolute filesystem paths"
       ]

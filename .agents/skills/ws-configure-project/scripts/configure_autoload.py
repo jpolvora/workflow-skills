@@ -4,6 +4,7 @@ Configure / validate shared autoload.md Always-applied paths and optional root A
 
 Usage:
   python configure_autoload.py --set-autoload true|false [--repo-root DIR] [--dry-run]
+  python configure_autoload.py --set-autoload-task-lifecycle true|false [--repo-root DIR] [--dry-run]
   python configure_autoload.py --write-autoload [--repo-root DIR] [--global-skills-root DIR]
   python configure_autoload.py --write-root-agents [--repo-root DIR] [--global-skills-root DIR]
   python configure_autoload.py --check [--repo-root DIR] [--global-skills-root DIR] [--json]
@@ -99,6 +100,82 @@ def resolve_effective_autoload(repo_root: Path) -> bool:
     if not isinstance(defaults, dict):
         return False
     return defaults.get("autoload") is True
+
+
+def resolve_autoload_task_lifecycle(repo_root: Path) -> bool:
+    """True only when defaults.autoloadTaskLifecycle is JSON boolean true."""
+    data = load_config_json(repo_root)
+    if data is None:
+        return False
+    defaults = data.get("defaults")
+    if not isinstance(defaults, dict):
+        return False
+    return defaults.get("autoloadTaskLifecycle") is True
+
+
+TASK_LIFECYCLE_ID = "ws-task-lifecycle"
+TASK_LIFECYCLE_TRIGGER = (
+    "Every prompt-driven product task — intake, implement, complete (opt-in)"
+)
+
+
+def ensure_task_lifecycle_member(membership: list[dict]) -> list[dict]:
+    """Append ws-task-lifecycle when missing; preserve existing trigger if present."""
+    if any(row.get("skill") == TASK_LIFECYCLE_ID for row in membership):
+        return membership
+    return [
+        *membership,
+        {"skill": TASK_LIFECYCLE_ID, "trigger": TASK_LIFECYCLE_TRIGGER},
+    ]
+
+
+def set_autoload_task_lifecycle(repo_root: Path, value: bool, dry_run: bool = False) -> dict:
+    """Ensure config.json exists, set defaults.autoloadTaskLifecycle. Does not set defaults.autoload."""
+    config_path = repo_root / SHARED_CONFIG_REL
+    example_path = repo_root / SHARED_CONFIG_EXAMPLE_REL
+    created_from_example = False
+
+    if not config_path.is_file():
+        if not example_path.is_file():
+            raise SystemExit(
+                f"ERROR: missing {config_path.as_posix()} and example "
+                f"{example_path.as_posix()} (install hub / copy template)"
+            )
+        if not dry_run:
+            config_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(example_path, config_path)
+        created_from_example = True
+
+    data = load_config_json(repo_root)
+    if data is None and dry_run and created_from_example:
+        try:
+            data = json.loads(example_path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            data = None
+    if data is None:
+        raise SystemExit(f"ERROR: could not read or parse {config_path.as_posix()}")
+
+    defaults = data.get("defaults")
+    if not isinstance(defaults, dict):
+        defaults = {}
+        data["defaults"] = defaults
+    defaults["autoloadTaskLifecycle"] = bool(value)
+
+    written = False
+    if not dry_run:
+        config_path.write_text(
+            json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        written = True
+
+    return {
+        "configPath": str(config_path.as_posix()),
+        "autoloadTaskLifecycle": bool(value),
+        "autoload": defaults.get("autoload"),
+        "written": written,
+        "createdFromExample": created_from_example,
+    }
 
 
 def set_autoload(repo_root: Path, value: bool, dry_run: bool = False) -> dict:
@@ -235,6 +312,8 @@ def ensure_autoload_md(
     existing = parse_always_applied_rows(text)
     preserved = membership_from_existing_rows(existing)
     membership = preserved if preserved else default_always_applied_membership()
+    if resolve_autoload_task_lifecycle(repo_root):
+        membership = ensure_task_lifecycle_member(membership)
     table, meta = build_always_applied_table(
         repo_root,
         global_skills_root=global_skills_root,
@@ -578,6 +657,12 @@ def main() -> int:
         default=None,
         help="Persist defaults.autoload in project config.json (true|false)",
     )
+    parser.add_argument(
+        "--set-autoload-task-lifecycle",
+        choices=("true", "false"),
+        default=None,
+        help="Persist defaults.autoloadTaskLifecycle in project config.json (true|false)",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--force",
@@ -601,11 +686,12 @@ def main() -> int:
             args.check,
             args.emit_paths,
             args.set_autoload is not None,
+            args.set_autoload_task_lifecycle is not None,
         ]
     ):
         parser.error(
-            "Choose --set-autoload, --write-autoload, --write-root-agents, "
-            "--check, or --emit-paths"
+            "Choose --set-autoload, --set-autoload-task-lifecycle, --write-autoload, "
+            "--write-root-agents, --check, or --emit-paths"
         )
 
     out: dict = {"repoRoot": str(repo_root.as_posix())}
@@ -613,6 +699,13 @@ def main() -> int:
     if args.emit_paths:
         _, meta = build_always_applied_table(repo_root, global_skills_root=groot)
         out["skills"] = meta
+
+    if args.set_autoload_task_lifecycle is not None:
+        out["setAutoloadTaskLifecycle"] = set_autoload_task_lifecycle(
+            repo_root,
+            args.set_autoload_task_lifecycle == "true",
+            dry_run=args.dry_run,
+        )
 
     # Root write before --set-autoload true so a refused overwrite cannot leave
     # defaults.autoload=true with a missing/incomplete root (harness critical).
@@ -647,6 +740,12 @@ def main() -> int:
             print(
                 f"defaults.autoload={s['autoload']} written={s['written']} "
                 f"createdFromExample={s['createdFromExample']}"
+            )
+        if "setAutoloadTaskLifecycle" in out:
+            t = out["setAutoloadTaskLifecycle"]
+            print(
+                f"defaults.autoloadTaskLifecycle={t['autoloadTaskLifecycle']} "
+                f"written={t['written']} createdFromExample={t['createdFromExample']}"
             )
         if args.emit_paths:
             for row in out.get("skills", []):
