@@ -33,6 +33,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Compare persisted `stateSha256` only to `stateIdentityHash` after changing the hash identity. That breaks consumers who have not yet run `performUpdate`.
 - **INSTEAD DO**: Accept the legacy full-file digest in `validateSnapshot` for `run.json` and the plans index until the next `performUpdate` rewrites those files. Keep writers on the new frontmatter-only hash. Cover with a fixture that seeds a legacy full-file `run.json` and asserts pre-advance 6 still passes.
 
+### [2026-08-23] Autoload opt-out must strip Always-applied row
+- **Layer**: `Config / autoload`
+- **Module**: `configure_autoload.py` / `ws-configure-project`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.py, .agents/skills/ws-shared/autoload.md`
+- **Scenario / Context**: PR #238 review. `defaults.autoloadTaskLifecycle: false` plus `--write-autoload` only skipped *adding* `ws-task-lifecycle`. After a prior Yes, `membership_from_existing_rows` kept the row, so Always-applied stayed out of sync with `config.json`.
+- **DO NOT**: Treat "does not add" as sticky membership that ignores a later false flag.
+- **INSTEAD DO**: When the flag is not JSON `true`, drop `ws-task-lifecycle` from Always-applied membership (leave other preserved rows). Assert against the first Skill/Path/Trigger table only. Keep numbered wizard steps at column 0 in SKILL.md (sub-bullets may indent; `2.` / `3.` must not nest under `1.`).
+
 ### [2026-08-23] Always-applied membership tests vs autoload router tables
 - **Layer**: `Tests`
 - **Module**: `test-autoload-configure.js` / `autoload.md`

@@ -711,6 +711,60 @@ function seedConfigExample(root) {
   }
 }
 
+{
+  // Opt-out after opt-in: --write-autoload must drop a previously added row
+  const root = mkTmp('ws-autoload-tl-roundtrip-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  seedConfigExample(root);
+  const skillDir = path.join(root, '.agents', 'skills', 'ws-task-lifecycle');
+  fs.mkdirSync(skillDir, { recursive: true });
+  fs.writeFileSync(path.join(skillDir, 'SKILL.md'), '# ws-task-lifecycle\n', 'utf8');
+  const enabled = runPy([
+    '--repo-root',
+    root,
+    '--set-autoload-task-lifecycle',
+    'true',
+    '--write-autoload',
+    '--json',
+  ]);
+  const enabledData = parseJsonOut(enabled);
+  const enabledTable =
+    ((fs.readFileSync(path.join(root, '.agents/skills/ws-shared/autoload.md'), 'utf8').match(
+      /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
+    ) || [])[1] || '');
+  assert(
+    enabled.status === 0 && enabledData && /`ws-task-lifecycle`/.test(enabledTable),
+    'round-trip setup: true writes ws-task-lifecycle Always-applied row',
+  );
+  const disabled = runPy([
+    '--repo-root',
+    root,
+    '--set-autoload-task-lifecycle',
+    'false',
+    '--write-autoload',
+    '--json',
+  ]);
+  const disabledData = parseJsonOut(disabled);
+  const disabledText = fs.readFileSync(
+    path.join(root, '.agents/skills/ws-shared/autoload.md'),
+    'utf8',
+  );
+  const disabledTable =
+    (disabledText.match(
+      /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
+    ) || [])[1] || '';
+  const cfg = JSON.parse(
+    fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+  );
+  assert(
+    disabled.status === 0 &&
+      disabledData &&
+      cfg.defaults?.autoloadTaskLifecycle === false &&
+      !/`ws-task-lifecycle`/.test(disabledTable),
+    'opt-out: false --write-autoload drops ws-task-lifecycle from Always-applied table',
+  );
+}
+
 cleanup();
 
 if (failures > 0) {

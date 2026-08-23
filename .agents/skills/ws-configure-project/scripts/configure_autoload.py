@@ -129,6 +129,11 @@ def ensure_task_lifecycle_member(membership: list[dict]) -> list[dict]:
     ]
 
 
+def drop_task_lifecycle_member(membership: list[dict]) -> list[dict]:
+    """Remove ws-task-lifecycle so opt-out matches config.json (other rows stay)."""
+    return [row for row in membership if row.get("skill") != TASK_LIFECYCLE_ID]
+
+
 def set_autoload_task_lifecycle(repo_root: Path, value: bool, dry_run: bool = False) -> dict:
     """Ensure config.json exists, set defaults.autoloadTaskLifecycle. Does not set defaults.autoload."""
     config_path = repo_root / SHARED_CONFIG_REL
@@ -314,6 +319,8 @@ def ensure_autoload_md(
     membership = preserved if preserved else default_always_applied_membership()
     if resolve_autoload_task_lifecycle(repo_root):
         membership = ensure_task_lifecycle_member(membership)
+    else:
+        membership = drop_task_lifecycle_member(membership)
     table, meta = build_always_applied_table(
         repo_root,
         global_skills_root=global_skills_root,

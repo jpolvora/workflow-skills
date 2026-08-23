@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-08-23 17:28] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 (review threads)
+- **Done**: Un-nest configure-project wizard steps 2–3; drop `ws-task-lifecycle` from Always-applied on opt-out `--write-autoload`
+- **Result**: Round-trip test added; threads pending resolve after push
+
+### [2026-08-23 17:22] Agent: Cursor Grok 4.6
+- **Prompt**: Continue /ws-spec-to-pr us-236 through ship
+- **Done**: Delivery commit `18b14d8`; pushed `develop`; opened PR #238; commented issue #236
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/238 (Step 9 in progress)
+
 ### [2026-08-23 16:20] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-to-pr us-236.spec.md plus configure-project autoload opt-in for ws-task-lifecycle
 - **Done**: Shipped `ws-task-lifecycle` (Intake, Implementation, Completion); `defaults.autoloadTaskLifecycle` + configure `--section autoload` question; tests; catalogs; integrity
