@@ -49,4 +49,88 @@ write(path.join(root, 'r1-other.md'), 'No feedback\n');
 assert.notStrictEqual(run(reviewScript, ['--input', 'r1-other.md', '--output-dir', 'rounds', '--slug', 'feature', '--round', '1', '--repo-root', root]).status, 0, 'immutable round rewrite fails');
 assert.match(fs.readFileSync(path.join(rounds, 'step-06-feature.review.md'), 'utf8'), /closed/);
 assert.match(fs.readFileSync(path.join(rounds, 'step-06-feature.review.md'), 'utf8'), /^---\n[\s\S]*^step: 6\n/m);
+
+// AC1 / AC14 — underscore verification keys are not required aliases
+const aliasRoot = temp('ws-ac-ledger-alias-');
+write(path.join(aliasRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  verification: {
+    _comment_mutationTest: 'Optional mutation runner documentation only.',
+    backendTest: 'npm run test',
+  },
+  plans: { dir: '.agents/plans' },
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(aliasRoot, 'alias.spec.md'), '## Acceptance Criteria\n- AC1: Behavior.\n');
+function aliasInvoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', aliasRoot]);
+}
+assert.strictEqual(aliasInvoke(['init', '--spec', 'alias.spec.md', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'alias']).status, 0);
+const aliasScore = JSON.parse(aliasInvoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.ok(aliasScore.errors.some((error) => error.includes('backendTest')), 'unobserved backendTest fails');
+assert.ok(!aliasScore.errors.some((error) => error.includes('_comment_mutationTest')), 'comment key is not a required alias');
+
+// AC2 — example config has no _comment_mutationTest
+const exampleConfig = JSON.parse(fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/config.json.example'), 'utf8'));
+assert.strictEqual(exampleConfig.verification._comment_mutationTest, undefined);
+
+// AC3 — skipReason enum validation at link
+for (const reason of ['not-applicable', 'baseline-dirty', 'comment-key']) {
+  const link = aliasInvoke([
+    'link', '--ledger', 'ac-ledger.json', '--event-id', `skip-${reason}`, '--ac', 'AC1',
+    '--alias-result', JSON.stringify({ alias: 'backendTest', command: 'npm run test', exitCode: 0, skipReason: reason }),
+  ]);
+  assert.strictEqual(link.status, 0, `skipReason ${reason} accepted: ${link.stderr}`);
+}
+const invalidSkip = aliasInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'skip-invalid', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendTest', command: 'npm run test', exitCode: 0, skipReason: 'nope' }),
+]);
+assert.notStrictEqual(invalidSkip.status, 0, 'invalid skipReason rejected at link');
+
+// AC4 / AC5 / AC6 — skip counts as observed; non-zero exit with skip does not set knownDefect
+const skipRoot = temp('ws-ac-ledger-skip-');
+write(path.join(skipRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  verification: { backendFormat: 'npm run lint', backendTest: 'npm run test' },
+  plans: { dir: '.agents/plans' },
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(skipRoot, 'skip.spec.md'), '## Acceptance Criteria\n- AC1: First.\n- AC2: Second.\n');
+write(path.join(skipRoot, 'impl.js'), 'export const value = 1;\n');
+write(path.join(skipRoot, 'skip.test.js'), 'test("first behavior", () => {});\ntest("second behavior", () => {});\n');
+write(path.join(skipRoot, 'plan.index.json'), JSON.stringify({
+  acceptanceCriteria: [
+    { id: 'AC1', taskIds: [], planSectionIds: [], expectedTestNames: ['first behavior'] },
+    { id: 'AC2', taskIds: ['T2'], planSectionIds: ['S2'], expectedTestNames: ['second behavior'] },
+  ],
+}));
+function skipInvoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', skipRoot]);
+}
+assert.strictEqual(skipInvoke(['init', '--spec', 'skip.spec.md', '--plan-index', 'plan.index.json', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'skip']).status, 0);
+for (const [id, name, withTest] of [['AC1', 'first behavior', true], ['AC2', 'second behavior', false]]) {
+  const args = [
+    'link', '--ledger', 'ac-ledger.json', '--event-id', `link-${id}`, '--ac', id,
+    '--status', 'Implemented', '--file', 'impl.js:L1-L1',
+    '--commit', JSON.stringify({ sha: 'abcdef1', step: 4 }),
+  ];
+  if (withTest) {
+    args.push('--test', JSON.stringify({ name, sourceFile: 'skip.test.js', phase: 'observed', alias: 'backendTest', exitCode: 0 }));
+  } else {
+    args.push('--test', JSON.stringify({ name, sourceFile: 'skip.test.js', phase: 'planned', alias: null, exitCode: null }));
+  }
+  assert.strictEqual(skipInvoke(args).status, 0, skipInvoke(args).stderr);
+}
+assert.strictEqual(skipInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-test', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendTest', command: 'npm run test', exitCode: 0 }),
+]).status, 0);
+assert.strictEqual(skipInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendFormat', command: 'npm run lint', exitCode: 2, skipReason: 'baseline-dirty' }),
+]).status, 0);
+const skipScore = JSON.parse(skipInvoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'pre-step6']).stdout);
+assert.ok(!skipScore.errors.some((error) => error.includes('backendFormat')), 'skipped backendFormat is observed');
+assert.strictEqual(skipScore.knownDefect, false, 'skip does not set knownDefect');
+assert.ok(skipScore.score > 8, 'skip with non-zero exit does not cap score at 8');
+
 console.log('test-ac-ledger: ok');

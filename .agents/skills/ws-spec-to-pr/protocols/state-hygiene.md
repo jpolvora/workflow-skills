@@ -18,6 +18,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --step {N} \
   --status {completed|failed|skipped} \
+  --commit {sha} \
   --model {modelName} \
   --substep {dag|scoreAndRefine|reviewFix} \
   --prompt-tokens {promptTokens} \
