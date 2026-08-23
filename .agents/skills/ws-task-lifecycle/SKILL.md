@@ -1,0 +1,68 @@
+---
+name: ws-task-lifecycle
+description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
+version: 0.3.36
+disable-model-invocation: true
+invocation_names:
+  - task-lifecycle
+  - ws-task-lifecycle
+---
+
+# ws-task-lifecycle
+
+> When this skill is loaded, output "ws-task-lifecycle loaded."
+
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+
+Coordinator for **prompt-driven** implementation (direct user task). Not a second FSM. Do **not** invoke `ws-spec-to-pr` or `ws-spec-to-pr-lite` from this skill. Do **not** create `{plansDir}/{slug}/` or write `step-00-*.spec.md`.
+
+**Default invoke:** slash / task-router (on-demand). Always-applied membership is opt-in via `defaults.autoloadTaskLifecycle` and `ws-configure-project --section autoload`. Shipped `{sharedDir}/autoload.md` Always-applied table does not list this skill.
+
+**Specs family:** Role = prompt-task cowork. Drafts → [`ws-write-spec`](../ws-write-spec/SKILL.md). Index checkboxes → [`ws-spec-index`](../ws-spec-index/SKILL.md) conventions. Body drift → [`ws-sync-spec`](../ws-sync-spec/SKILL.md) (optional, not this bus). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+
+Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before Reads. Never hardcode a specs directory path.
+
+## Phase 1 — Intake
+
+1. If `{specsDir}/index.PRD` exists, Read it.
+   - Done when: the file was read, or a skip note records it is absent.
+2. If repo-root `PLAN.md` exists, Read it.
+   - Done when: the file was read, or a skip note records it is absent.
+3. If the prompt is a product change and no matching `{specsDir}/{slug}.spec.md` exists, invoke `ws-write-spec`. Do not draft a full spec body in this file.
+   - Done when: a slice spec exists under `{specsDir}`, or the prompt is not a product change.
+4. When `{specsDir}/index.PRD` exists and the slug has no Feature map / Next-specs row, invoke [`ws-spec-index`](../ws-spec-index/SKILL.md) `track {slug}` (standalone Add path). Skip with a note when the row already exists or the index is absent.
+   - Done when: the slug is on the board, already-tracked skip note, or index-absent skip note.
+5. After the slice spec exists and **before** product-file edits, set the matching `index.PRD` checkbox from `[ ]` to `[~]` when that index exists.
+   - Done when: the checkbox is `[~]`, or `index.PRD` is absent (skip note).
+
+## Phase 2 — Implementation
+
+1. Load [`ws-karpathy-guidelines`](../ws-karpathy-guidelines/SKILL.md) before the first product-file edit.
+   - Done when: surgical-scope rules are in session.
+2. Load [`ws-senior-developer`](../ws-senior-developer/SKILL.md) before claiming the task complete.
+   - Done when: delivery-gate / Code review proof rules are in session.
+3. If `verification.backendTest` is a non-empty string, run that alias. If it is empty, record a skip note and do not fail this phase for a missing test alias.
+   - Done when: the alias exited, or a skip note exists.
+
+## Phase 3 — Completion
+
+Walk tracking files in this order (or `tracking.canonicalFiles` when that JSON array is non-empty):
+
+1. `FEATURES.md` — mark the matching item `[x]` when the file exists.
+2. `PLAN.md` — append a Done-log line when the file exists.
+3. `PRODUCT.PRD` — append a Done-log line when the file exists.
+4. `index.PRD` — use the listed path if present, else `{specsDir}/index.PRD`. Set the matching checkbox to `[x]` and append a Done-log line when the file exists.
+
+If `tracking.canonicalFiles` is absent or `[]`, use that default list. If it is a non-empty array of repo-relative paths, walk that array in listed order before changelog. If a listed path is exactly `index.PRD` (no directory) and repo-root `index.PRD` is missing, use `{specsDir}/index.PRD`.
+
+Skip a path that is not on disk. Each skip produces one skip note that names the missing path. Skipping one file does not skip later steps that still apply. Do not create empty tracking files.
+
+Then invoke [`ws-changelog`](../ws-changelog/SKILL.md), then [`ws-self-learning`](../ws-self-learning/SKILL.md).
+
+- Done when: existing tracking files in the walk are updated (or skip-noted), changelog ran, and self-learning ran.
+
+## Rules
+
+- en-us; path tokens only; explicit `python` / `node` / `bash` launchers when running scripts.
+- Never `git add -A`. Never mkdir a workflow plan tree for a prompt task.
+- `ws-sync-spec` remains optional body-drift repair, not this tracking bus.

@@ -1,0 +1,950 @@
+{
+  "schemaVersion": 1,
+  "revision": 21,
+  "workflowId": "us-235-20260823T151631Z",
+  "slug": "us-235",
+  "specPath": ".agents/plans/us-235/step-00-us-235.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`scoreLedger` omits `config.verification` keys whose names match `/^_/` from the required-alias set.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L245-L248",
+        "test/test-ac-ledger.js:L53-L70"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 245,
+          "lineEnd": 248,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": "test/test-ac-ledger.js",
+          "lineStart": 53,
+          "lineEnd": 70,
+          "sha256": "5fc51055dec57eac359844285a85064c5cf706eacef5d529823a5db239f55f45"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "comment key is not a required alias",
+          "sourceFile": "test/test-ac-ledger.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.116Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.116Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`.agents/skills/ws-shared/config.json.example` has no `verification` key named `_comment_mutationTest`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/config.json.example:L102-L115",
+        "test/test-ac-ledger.js:L72-L74"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/config.json.example",
+          "lineStart": 102,
+          "lineEnd": 115,
+          "sha256": "99fa41085265edac4be9bdd07ebc433a72cdd64da9a0138df9109b336e204953"
+        },
+        {
+          "path": "test/test-ac-ledger.js",
+          "lineStart": 72,
+          "lineEnd": 74,
+          "sha256": "5fc51055dec57eac359844285a85064c5cf706eacef5d529823a5db239f55f45"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2 — example config has no _comment_mutationTest",
+          "sourceFile": "test/test-ac-ledger.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.173Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.174Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`aliasResult` accepts optional `skipReason` whose value is `not-applicable`, `baseline-dirty`, or `comment-key`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L12-L16",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L198-L208",
+        "test/test-ac-ledger.js:L76-L88"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 12,
+          "lineEnd": 16,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 198,
+          "lineEnd": 208,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": "test/test-ac-ledger.js",
+          "lineStart": 76,
+          "lineEnd": 88,
+          "sha256": "5fc51055dec57eac359844285a85064c5cf706eacef5d529823a5db239f55f45"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "invalid skipReason rejected at link",
+          "sourceFile": "test/test-ac-ledger.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.234Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.235Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "An `aliasResult` that includes a valid `skipReason` counts as an observed result for that alias.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L14-L16",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L249-L252",
+        "test/test-ac-ledger.js:L90-L132"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 14,
+          "lineEnd": 16,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 249,
+          "lineEnd": 252,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": "test/test-ac-ledger.js",
+          "lineStart": 90,
+          "lineEnd": 132,
+          "sha256": "5fc51055dec57eac359844285a85064c5cf706eacef5d529823a5db239f55f45"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "skipped backendFormat is observed",
+          "sourceFile": "test/test-ac-ledger.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.288Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.289Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "A valid `skipReason` does not set `knownDefect` and does not cap score at 8.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L252-L252",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L277-L277",
+        "test/test-ac-ledger.js:L133-L133"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 252,
+          "lineEnd": 252,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 277,
+          "lineEnd": 277,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": "test/test-ac-ledger.js",
+          "lineStart": 133,
+          "lineEnd": 133,
+          "sha256": "5fc51055dec57eac359844285a85064c5cf706eacef5d529823a5db239f55f45"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "skip does not set knownDefect",
+          "sourceFile": "test/test-ac-ledger.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.342Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.342Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`skipReason: baseline-dirty` on `backendFormat` is accepted when the failing format paths are outside ledger `files_touched`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L57-L57",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L12-L16",
+        "test/test-ac-ledger.js:L134-L134"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 12,
+          "lineEnd": 16,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 57,
+          "lineEnd": 57,
+          "sha256": "b9e06545eaa49d0107f4787281b5e1577278f6ae8cf0705f1e332e455fc9ec23"
+        },
+        {
+          "path": "test/test-ac-ledger.js",
+          "lineStart": 134,
+          "lineEnd": 134,
+          "sha256": "5fc51055dec57eac359844285a85064c5cf706eacef5d529823a5db239f55f45"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "skip with non-zero exit does not cap score at 8",
+          "sourceFile": "test/test-ac-ledger.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.396Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.396Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`validateSnapshot` with `preAdvance === 6` fails when a required alias has neither `aliasResult` nor `skipReason`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L826-L839",
+        "test/test-workflow-state-contract.js:L182-L187"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 826,
+          "lineEnd": 839,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 182,
+          "lineEnd": 187,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "missing backendFormat blocks pre-advance 6",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.448Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.448Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "`validateSnapshot` with `preAdvance === 6` succeeds when derived score is at least 9, `knownDefect` is false, and every required alias is observed or skipped.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L804-L844",
+        "test/test-workflow-state-contract.js:L190-L196"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 804,
+          "lineEnd": 844,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 190,
+          "lineEnd": 196,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC8 / AC15 — score 9 with baseline-dirty skip passes pre-advance 6",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.501Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.502Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac8"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`update_state` does not report unknown `.runtime` residue for files whose names match `/\\.(cjs|patch|md)$/`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L26-L38",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L769-L773",
+        "test/test-workflow-state-contract.js:L198-L232"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 26,
+          "lineEnd": 38,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 769,
+          "lineEnd": 773,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 198,
+          "lineEnd": 232,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "unknown .runtime residue: helper.txt",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.554Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.555Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac9"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "`validateSnapshot` computes `stateSha256` from YAML frontmatter bytes only.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L44-L46",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L790-L790",
+        "test/test-workflow-state-contract.js:L235-L268"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 44,
+          "lineEnd": 46,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 790,
+          "lineEnd": 790,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 235,
+          "lineEnd": 268,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "gate history append does not break hash",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.609Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.610Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac10"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "Appending `## Gate history` after `finish` leaves `run.json.stateSha256` matching the frontmatter hash.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L44-L46",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L790-L790",
+        "test/test-workflow-state-contract.js:L269-L271"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 44,
+          "lineEnd": 46,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 790,
+          "lineEnd": 790,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 269,
+          "lineEnd": 271,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "gate history append does not break hash",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.669Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.670Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac11"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "`update_state finish --commit <sha>` writes that SHA into `state.commits`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L684-L690",
+        "test/test-workflow-state-contract.js:L274-L307"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 684,
+          "lineEnd": 690,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 274,
+          "lineEnd": 307,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC12 / AC13 — finish --commit writes and dedupes commits",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.715Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.715Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac12"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "A second `finish --commit` with the same SHA exits 0 without duplicating the entry.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L688-L690",
+        "test/test-workflow-state-contract.js:L308-L314"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 688,
+          "lineEnd": 690,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 308,
+          "lineEnd": 314,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "same SHA is not duplicated",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.778Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.778Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac13"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "Automated tests fail if `_comment_mutationTest` is treated as a required alias.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L245-L248",
+        "test/test-ac-ledger.js:L53-L70"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 245,
+          "lineEnd": 248,
+          "sha256": "e288c8b51de12991f5fc45c0ac6fa1e792557a28de9a505753f072dbe1e1019a"
+        },
+        {
+          "path": "test/test-ac-ledger.js",
+          "lineStart": 53,
+          "lineEnd": 70,
+          "sha256": "5fc51055dec57eac359844285a85064c5cf706eacef5d529823a5db239f55f45"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "comment key is not a required alias",
+          "sourceFile": "test/test-ac-ledger.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.821Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.822Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac14"
+      ]
+    },
+    {
+      "id": "AC15",
+      "text": "Automated tests cover pre-advance 6 with score 9, `knownDefect` false, and `backendFormat` skipped via `baseline-dirty`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L804-L844",
+        "test/test-workflow-state-contract.js:L190-L196"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 804,
+          "lineEnd": 844,
+          "sha256": "c1497f0cb06fd52ab599dbd39467b13c57a74f6a0032624d3bdb11f570edb971"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 190,
+          "lineEnd": 196,
+          "sha256": "bae741438c4327d2bf3fb36657eec207f0f949c2d381c93fa0efcfefd77687cc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "92519dd2f403c0435404a4380f876af9f2a8c1d3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC8 / AC15 — score 9 with baseline-dirty skip passes pre-advance 6",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-23T15:58:46.878Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/plans/us-235/.runtime/fable-judge.md:L1-L24",
+          "timestamp": "2026-08-23T15:58:46.879Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-92519dd",
+        "us235-step5-ac15"
+      ]
+    }
+  ],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 9,
+    "earnedUnits": 135,
+    "totalUnits": 150,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-08-23T16:08:20.690Z"
+  }
+}

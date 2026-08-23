@@ -2,6 +2,8 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
+This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at ≥ 9. Extra/harness skills sit beside that pipeline; they do not replace the spec.
+
 Package version: **0.3.36** · 48 skills (42 Workflows + 6 Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
@@ -53,7 +55,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 
 ### 1.3 Batch delivery — `ws-multi-spec`
 
-Runs a queue of specs one at a time. For each spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state.
+Runs a queue of specs one at a time. A blank `/ws-multi-spec` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state.
 
 ### 1.4 Direct problem solving — `ws-fable-method`
 
@@ -131,6 +133,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
+| Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
 
 Every entry path — free text, local file, GitHub issue, Azure work item — produces the spec of record under `{specsDir}` **before** any plan artifact exists. Re-fetching refuses to clobber a differing spec unless `--force` is passed.
@@ -235,7 +238,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -324,6 +327,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → write-spec + register |
 | [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
+| [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 
 ### Quality and audit
 

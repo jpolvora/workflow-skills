@@ -59,6 +59,7 @@
         "ws-spec-list",
         "ws-spec-from-provider",
         "ws-sync-spec",
+        "ws-task-lifecycle",
         "ws-senior-developer",
         "ws-pre-daily",
         "ws-spec-explain",
@@ -217,6 +218,15 @@
     "ws-activity-report": [],
     "ws-pre-daily": [
       "ws-configure-project"
+    ],
+    "ws-task-lifecycle": [
+      "ws-write-spec",
+      "ws-spec-format",
+      "ws-spec-index",
+      "ws-karpathy-guidelines",
+      "ws-senior-developer",
+      "ws-changelog",
+      "ws-self-learning"
     ],
     "ws-spec-explain": [
       "ws-configure-project",

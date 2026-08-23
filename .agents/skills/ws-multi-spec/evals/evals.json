@@ -9,6 +9,7 @@
         "Agent loads ws-multi-spec before acting",
         "Follows skill steps and Done when criteria",
         "Uses path tokens from tools.md instead of hardcoded consumer paths",
+        "Blank scan lists only pending/unfinished specs",
         "Output is en-us and harness-neutral"
       ]
     },

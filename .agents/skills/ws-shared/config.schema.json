@@ -122,6 +122,11 @@
           "default": false,
           "description": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted or missing config → effective false."
         },
+        "autoloadTaskLifecycle": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, ws-configure-project --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted or false → on-demand only. Does not set defaults.autoload."
+        },
         "enableAuditing": {
           "type": "boolean",
           "default": false,
@@ -312,6 +317,18 @@
           "enum": ["cursor-reviewer", "agentic-code-reviewers"],
           "default": "cursor-reviewer",
           "description": "External review backend. v1 uses cursor-reviewer only; agentic-code-reviewers reserved for future."
+        }
+      }
+    },
+    "tracking": {
+      "type": "object",
+      "description": "Optional tracking-file list for ws-task-lifecycle Completion.",
+      "additionalProperties": true,
+      "properties": {
+        "canonicalFiles": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Repo-relative tracking files walked in listed order. Absent or empty → FEATURES.md, PLAN.md, PRODUCT.PRD, then index at plans.specsDir (default .agents/specs/index.PRD). Do not use bare index.PRD unless that file exists at repo root."
         }
       }
     },

@@ -1,5 +1,75 @@
 # Changelog
 
+### [2026-08-23 17:54] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 6
+- **Done**: Tighten hasMergedDelivery: reject `not merged PR`; require whole-line `status: completed`
+- **Result**: Blocked/open step-08 notes stay pending on blank scan
+
+### [2026-08-23 17:47] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 5
+- **Done**: canonicalFiles docs + Completion walk resolve bare `index.PRD` to `{specsDir}` when repo-root is missing
+- **Result**: Explicit default arrays no longer skip the real spec index
+
+### [2026-08-23 17:42] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 4
+- **Done**: Bare `PR #` no longer marks already-implemented; index lookup uses file slug; `status: completed` still omits
+- **Result**: Open PRs stay selectable on blank scan; `[x]` filename rows match diverging frontmatter slugs
+
+### [2026-08-23 17:36] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 3
+- **Done**: No-path autoload interview always runs `--write-autoload`; `hasMergedDelivery` accepts real step-08 PR cites
+- **Result**: Wizard opt-out strips Always-applied row; pending-spec probe matches shipped artifacts
+
+### [2026-08-23 17:32] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 2 (index track after write-spec)
+- **Done**: Intake now invokes `ws-spec-index track {slug}` before `[~]` so new specs get an index row
+- **Result**: AC8 can run for net-new slugs; eval + unit assertion added
+
+### [2026-08-23 17:28] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 (review threads)
+- **Done**: Un-nest configure-project wizard steps 2–3; drop `ws-task-lifecycle` from Always-applied on opt-out `--write-autoload`
+- **Result**: Round-trip test added; threads pending resolve after push
+
+### [2026-08-23 17:22] Agent: Cursor Grok 4.6
+- **Prompt**: Continue /ws-spec-to-pr us-236 through ship
+- **Done**: Delivery commit `18b14d8`; pushed `develop`; opened PR #238; commented issue #236
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/238 (Step 9 in progress)
+
+### [2026-08-23 16:20] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr us-236.spec.md plus configure-project autoload opt-in for ws-task-lifecycle
+- **Done**: Shipped `ws-task-lifecycle` (Intake, Implementation, Completion); `defaults.autoloadTaskLifecycle` + configure `--section autoload` question; tests; catalogs; integrity
+- **Result**: Prompt-driven work stays spec-driven when consumers opt in; shipped Always-applied table stays lean
+
+### [2026-08-23 12:30] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr + /ws-goal-fix-pr (us-235 / PR 237)
+- **Done**: Confirmed empty threads + green CI; merged PR 237; close-loop on issue 235
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/237 merged to main
+
+### [2026-08-23 12:25] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 237 (us-235 review threads)
+- **Done**: Accept legacy full-file `stateSha256` in `validateSnapshot`; add optional `skipReason` to `ac-ledger.schema.json`; tests + integrity
+- **Result**: Threads 1–4 fixed on `feature/us-235`; PR 237 not merged
+
+### [2026-08-23 12:16] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr full auto for us-235 (Step 5→6 deadlock)
+- **Done**: skipReason + underscore comment aliases, .runtime allowlist, frontmatter-only state hash, finish --commit; PR 237
+- **Result**: Shipped https://github.com/jpolvora/workflow-skills/pull/237 (not merged; parent owns fix-pr)
+
+### [2026-08-23 16:05] Agent: Cursor Grok 4.6
+- **Prompt**: Analyze if this repo is spec-driven; update website copy, marketing, and bot indexing
+- **Done**: Positioned Workflow Skills as spec-driven delivery (spec = contract of record). Site hero/FAQ/JSON-LD/OG; `docs/robots.txt`, `sitemap.xml`, `llms.txt`; README/FEATURES/package.json/AGENTS aligned
+- **Result**: Marketing and crawler surfaces now state spec-driven model without claiming Extra/fable replace the spec
+
+### [2026-08-23 15:40] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-from-provider 236
+- **Done**: Imported GitHub #236 to `.agents/specs/us-236.spec.md` (agentic ACs + context) and registered `.agents/plans/us-236/step-00-us-236.spec.md`
+- **Result**: 1 imported / 0 skipped / 0 failed; authoring validate PASS (39 ACs)
+
+### [2026-08-23 15:20] Agent: Cursor Grok 4.6
+- **Prompt**: ws-multi-spec should list only pending/unfinished specs to list
+- **Done**: Blank scan filters via `list_pending_specs.cjs` (index `[ ]`/`[~]` + untracked; omit `[x]` / Done-log / merged / step-00 copies)
+- **Result**: `/ws-multi-spec` user-gate no longer offers shipped specs
+
 ### [2026-08-22 19:55] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr collect now #234 review threads
 - **Done**: Mutating-path parity spawn (CLI org/project, empty PAT) asserts Missing PAT

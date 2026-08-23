@@ -258,6 +258,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
         if (!e.includes(id)) fail(`extra package missing demoted skill ${id}`);
       }
       if (!w.includes('ws-patterns')) fail('workflows package missing ws-patterns');
+      if (!w.includes('ws-task-lifecycle')) fail('workflows package missing ws-task-lifecycle');
       if (w.includes('ws-patterns-backend') || w.includes('ws-patterns-frontend')) {
         fail('workflows package still lists retired pattern skill ids');
       }

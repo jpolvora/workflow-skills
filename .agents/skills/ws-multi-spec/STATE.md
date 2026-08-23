@@ -71,7 +71,7 @@ Before evaluating flow mode or dispatching a worker, run the probe check:
 | # | Check | Evidence | Action |
 |---|-------|----------|--------|
 | 1 | Item already terminal in state | `shipped` (with confirmed merge) or `skipped` in state table | Skip worker |
-| 2 | Prior delivery result for slug | `Glob` `{plansDir}/{slug}/**/step-08-*.result.md` exists and cites merged PR / commit | Mark `skipped` + `reason: already-implemented` |
+| 2 | Prior delivery result for slug | `Glob` `{plansDir}/{slug}/**/step-08-*.result.md` exists and cites `merged: true` / `state: MERGED` / `merged PR` (not `not merged PR`) / a whole-line `status: completed` | Mark `skipped` + `reason: already-implemented` |
 | 3 | SCM merged PR for slug | Provider `gh` / SCM list shows merged PR referencing slug / title | Mark `skipped` + `reason: already-implemented` |
 
 If ambiguous (e.g., unmerged open PR or missing evidence), do **not** skip. Proceed to Phase 4b convergence gate or worker execution.
@@ -79,11 +79,11 @@ If ambiguous (e.g., unmerged open PR or missing evidence), do **not** skip. Proc
 ## Blank-List Scan
 
 When invoked without args or state file:
-1. Resolve `{specsDir}` from `config.plans.specsDir` (default `.agents/specs`).
-2. `Glob` `{specsDir}/**/*.spec.md`.
-3. Present `user-gate` multi-select list.
+1. Resolve `{specsDir}` from `config.plans.specsDir` (default `.agents/specs`) and `{plansDir}` from `config.plans.dir`.
+2. Run `node {skillsRoot}/ws-multi-spec/scripts/list_pending_specs.cjs --specs-dir {specsDir} --plans-dir {plansDir} --json`.
+3. Present `user-gate` multi-select from `pending[]` only (omit index `[x]` / Done-log / merged `step-08` results / `step-00-*.spec.md`).
 4. User selection establishes the run order.
-5. If cancelled or empty, stop immediately (no state file created).
+5. If cancelled, empty selection, or `pending[]` is empty, stop immediately (no state file created).
 
 ## Resume Policy
 

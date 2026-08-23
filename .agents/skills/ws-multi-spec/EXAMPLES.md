@@ -6,7 +6,7 @@
 /ws-multi-spec
 ```
 
-Scans `{specsDir}/**/*.spec.md` (`plans.specsDir`, default `.agents/specs`), prompts the user with a multi-select gate, creates `{plansDir}/ws-multi-spec/ms-20260725T220000Z.state.md` with auto-detected `baseBranch: develop`, syncs feature branches with `baseBranch` before worker dispatch, evaluates each spec's complexity (lite vs standard), and dispatches workers sequentially.
+Scans pending/unfinished specs under `{specsDir}` (`plans.specsDir`, default `.agents/specs`): index `[ ]` / `[~]` and untracked files, omitting `[x]` / Done-log / already-merged items. Prompts a multi-select gate, creates `{plansDir}/ws-multi-spec/ms-20260725T220000Z.state.md` with auto-detected `baseBranch: develop`, syncs feature branches with `baseBranch` before worker dispatch, evaluates each spec's complexity (lite vs standard), and dispatches workers sequentially. Explicit `*.spec.md` args still queue those paths even if already shipped.
 
 ## 2. Explicit Spec List
 

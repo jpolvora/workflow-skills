@@ -38,8 +38,9 @@ flowchart TD
 
 ### Phase 2: Scan & Init Queue
 - Resolve `{specsDir}` from `config.json` → `plans.specsDir` (default `.agents/specs`).
-- `Glob` `{specsDir}/**/*.spec.md` (excluding non-spec files).
-- Present `user-gate` multi-select gate to the user with sorted spec paths.
+- Run `node {skillsRoot}/ws-multi-spec/scripts/list_pending_specs.cjs --specs-dir {specsDir} --plans-dir {plansDir} --json`.
+- Present `user-gate` multi-select **only** with sorted `pending[]` paths (index `[ ]` / `[~]`, plus untracked specs of record). Do **not** list `[x]` / Done-log / already-merged items, or `step-00-*.spec.md` copies.
+- If `pending[]` is empty: report no unfinished specs and stop (no state file).
 - Generate `runId` (`ms-{YYYYMMDDTHHMMSSZ}`).
 - Write initial run state file at `{plansDir}/ws-multi-spec/{runId}.state.md` containing `baseBranch: {baseBranch}` in YAML frontmatter.
 
