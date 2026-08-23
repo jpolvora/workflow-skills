@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 17:32] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 2 (index track after write-spec)
+- **Done**: Intake now invokes `ws-spec-index track {slug}` before `[~]` so new specs get an index row
+- **Result**: AC8 can run for net-new slugs; eval + unit assertion added
+
 ### [2026-08-23 17:28] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 238 (review threads)
 - **Done**: Un-nest configure-project wizard steps 2–3; drop `ws-task-lifecycle` from Always-applied on opt-out `--write-autoload`

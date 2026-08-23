@@ -49,6 +49,13 @@ const featIdx = completion.indexOf('FEATURES.md');
 const planIdx = completion.indexOf('PLAN.md');
 assert(featIdx >= 0 && planIdx > featIdx, 'AC16/AC38: Completion lists FEATURES.md before PLAN.md');
 
+assert(
+  /ws-write-spec/.test(skill) &&
+    /ws-spec-index/.test(skill) &&
+    /track \{slug\}/.test(skill) &&
+    /\[~\]/.test(skill),
+  'AC6/AC8: write-spec then spec-index track then [~] before product edits',
+);
 assert(skill.includes('{specsDir}'), 'AC11: uses {specsDir} token');
 assert(
   !skill.includes('.agents/specs'),
@@ -90,6 +97,10 @@ assert(
 assert(
   evalBlob.includes('{plansDir}'),
   'eval asserts no {plansDir} workflow tree',
+);
+assert(
+  evalBlob.includes('ws-spec-index track'),
+  'eval asserts Intake tracks new slugs via ws-spec-index',
 );
 
 if (failures > 0) {

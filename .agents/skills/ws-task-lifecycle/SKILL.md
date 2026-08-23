@@ -30,7 +30,9 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
    - Done when: the file was read, or a skip note records it is absent.
 3. If the prompt is a product change and no matching `{specsDir}/{slug}.spec.md` exists, invoke `ws-write-spec`. Do not draft a full spec body in this file.
    - Done when: a slice spec exists under `{specsDir}`, or the prompt is not a product change.
-4. After the slice spec exists and **before** product-file edits, set the matching `index.PRD` checkbox from `[ ]` to `[~]` when that index exists.
+4. When `{specsDir}/index.PRD` exists and the slug has no Feature map / Next-specs row, invoke [`ws-spec-index`](../ws-spec-index/SKILL.md) `track {slug}` (standalone Add path). Skip with a note when the row already exists or the index is absent.
+   - Done when: the slug is on the board, already-tracked skip note, or index-absent skip note.
+5. After the slice spec exists and **before** product-file edits, set the matching `index.PRD` checkbox from `[ ]` to `[~]` when that index exists.
    - Done when: the checkbox is `[~]`, or `index.PRD` is absent (skip note).
 
 ## Phase 2 — Implementation

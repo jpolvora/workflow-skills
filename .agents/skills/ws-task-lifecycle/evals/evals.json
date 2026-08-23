@@ -4,9 +4,10 @@
     {
       "id": 1,
       "prompt": "/ws-task-lifecycle implement a product change after tests pass",
-      "expected_output": "Agent follows Intake then Implementation then Completion. Completion updates FEATURES.md before PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. No {plansDir} tree is created.",
+      "expected_output": "Agent follows Intake then Implementation then Completion. New slice specs are tracked on index.PRD via ws-spec-index before [~]. Completion updates FEATURES.md before PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. No {plansDir} tree is created.",
       "assertions": [
         "Loads ws-task-lifecycle and names phases Intake, Implementation, Completion",
+        "When a new slice spec is written, invokes ws-spec-index track before [~]",
         "Completion order lists FEATURES.md before PLAN.md",
         "Does not create a {plansDir} workflow tree or write step-00-*.spec.md",
         "Does not invoke ws-spec-to-pr or ws-spec-to-pr-lite"
