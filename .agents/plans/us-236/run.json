@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "us-236-20260823T195756Z",
+  "slug": "us-236",
+  "pipeline": "standard",
+  "status": "active",
+  "currentStep": 0,
+  "pendingGate": null,
+  "nextAction": "Finish step 0",
+  "acTotal": 0,
+  "acImplemented": 0,
+  "score": null,
+  "estimatedRemainingSec": 1931.5,
+  "steps": [
+    {
+      "step": 0,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 41.5
+    },
+    {
+      "step": 1,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 159
+    },
+    {
+      "step": 2,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 120
+    },
+    {
+      "step": 3,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 90
+    },
+    {
+      "step": 4,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 553.5
+    },
+    {
+      "step": 5,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 157.5
+    },
+    {
+      "step": 6,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 210
+    },
+    {
+      "step": 7,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 180
+    },
+    {
+      "step": 8,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 60
+    },
+    {
+      "step": 9,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 360
+    }
+  ],
+  "statePath": ".agents/plans/us-236/us-236-20260823T195756Z.state.md",
+  "stateSha256": "15247766190e67986e2de8acf6691dd20e8702fe68228d880f9c240c203f9c3f"
+}

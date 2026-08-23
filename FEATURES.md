@@ -2,6 +2,8 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
+This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at ≥ 9. Extra/harness skills sit beside that pipeline; they do not replace the spec.
+
 Package version: **0.3.36** · 48 skills (42 Workflows + 6 Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
@@ -53,7 +55,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 
 ### 1.3 Batch delivery — `ws-multi-spec`
 
-Runs a queue of specs one at a time. For each spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state.
+Runs a queue of specs one at a time. A blank `/ws-multi-spec` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state.
 
 ### 1.4 Direct problem solving — `ws-fable-method`
 

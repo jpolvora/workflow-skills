@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-08-23 12:30] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr + /ws-goal-fix-pr (us-235 / PR 237)
+- **Done**: Confirmed empty threads + green CI; merged PR 237; close-loop on issue 235
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/237 merged to main
+
+### [2026-08-23 12:25] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 237 (us-235 review threads)
+- **Done**: Accept legacy full-file `stateSha256` in `validateSnapshot`; add optional `skipReason` to `ac-ledger.schema.json`; tests + integrity
+- **Result**: Threads 1–4 fixed on `feature/us-235`; PR 237 not merged
+
+### [2026-08-23 12:16] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr full auto for us-235 (Step 5→6 deadlock)
+- **Done**: skipReason + underscore comment aliases, .runtime allowlist, frontmatter-only state hash, finish --commit; PR 237
+- **Result**: Shipped https://github.com/jpolvora/workflow-skills/pull/237 (not merged; parent owns fix-pr)
+
+### [2026-08-23 16:05] Agent: Cursor Grok 4.6
+- **Prompt**: Analyze if this repo is spec-driven; update website copy, marketing, and bot indexing
+- **Done**: Positioned Workflow Skills as spec-driven delivery (spec = contract of record). Site hero/FAQ/JSON-LD/OG; `docs/robots.txt`, `sitemap.xml`, `llms.txt`; README/FEATURES/package.json/AGENTS aligned
+- **Result**: Marketing and crawler surfaces now state spec-driven model without claiming Extra/fable replace the spec
+
+### [2026-08-23 15:40] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-from-provider 236
+- **Done**: Imported GitHub #236 to `.agents/specs/us-236.spec.md` (agentic ACs + context) and registered `.agents/plans/us-236/step-00-us-236.spec.md`
+- **Result**: 1 imported / 0 skipped / 0 failed; authoring validate PASS (39 ACs)
+
+### [2026-08-23 15:20] Agent: Cursor Grok 4.6
+- **Prompt**: ws-multi-spec should list only pending/unfinished specs to list
+- **Done**: Blank scan filters via `list_pending_specs.cjs` (index `[ ]`/`[~]` + untracked; omit `[x]` / Done-log / merged / step-00 copies)
+- **Result**: `/ws-multi-spec` user-gate no longer offers shipped specs
+
 ### [2026-08-22 19:55] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr collect now #234 review threads
 - **Done**: Mutating-path parity spawn (CLI org/project, empty PAT) asserts Missing PAT

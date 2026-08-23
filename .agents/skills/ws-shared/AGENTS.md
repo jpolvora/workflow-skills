@@ -2,7 +2,7 @@
 
 **Audience: agents** (config resolution, gates, skill loading, consumer-owned paths). Humans: install narrative in the project README or upstream [workflow-skills](https://github.com/jpolvora/workflow-skills) README.
 
-> **Config, gates, bootstrap docs, skill loading, and consumer-owned project data** for [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
+> **Config, gates, bootstrap docs, skill loading, and consumer-owned project data** for spec-driven delivery via [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Specs are the contract of record; this hub stores project config, not specs.
 >
 > This folder is **not** an installable skill package. The installer copies hub templates here when a workflow or Full package is selected.
 >

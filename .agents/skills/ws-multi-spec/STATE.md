@@ -79,11 +79,11 @@ If ambiguous (e.g., unmerged open PR or missing evidence), do **not** skip. Proc
 ## Blank-List Scan
 
 When invoked without args or state file:
-1. Resolve `{specsDir}` from `config.plans.specsDir` (default `.agents/specs`).
-2. `Glob` `{specsDir}/**/*.spec.md`.
-3. Present `user-gate` multi-select list.
+1. Resolve `{specsDir}` from `config.plans.specsDir` (default `.agents/specs`) and `{plansDir}` from `config.plans.dir`.
+2. Run `node {skillsRoot}/ws-multi-spec/scripts/list_pending_specs.cjs --specs-dir {specsDir} --plans-dir {plansDir} --json`.
+3. Present `user-gate` multi-select from `pending[]` only (omit index `[x]` / Done-log / merged `step-08` results / `step-00-*.spec.md`).
 4. User selection establishes the run order.
-5. If cancelled or empty, stop immediately (no state file created).
+5. If cancelled, empty selection, or `pending[]` is empty, stop immediately (no state file created).
 
 ## Resume Policy
 

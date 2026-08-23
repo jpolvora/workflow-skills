@@ -16,7 +16,7 @@ invocation_names:
 
 Sequential multi-spec batch delivery orchestrator with **smart complexity & flow auto-detection**.
 
-**Specs family:** Role = master batch loop over `{specsDir}` (or explicit paths). Per spec: classify → `ws-spec-to-pr-lite` or `ws-spec-to-pr` worker → fix-pr → merge → next. Interactive pick-one → [`ws-spec-list`](../ws-spec-list/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = master batch loop over `{specsDir}` (or explicit paths). Blank scan lists **only pending/unfinished** specs (see [`PROTOCOL.md`](PROTOCOL.md) Phase 2). Per spec: classify → `ws-spec-to-pr-lite` or `ws-spec-to-pr` worker → fix-pr → merge → next. Interactive pick-one → [`ws-spec-list`](../ws-spec-list/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Audience & Load
 
@@ -32,7 +32,8 @@ Aliases: [`../ws-shared/tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/
 | Intent | Alias | Rule |
 |--------|-------|------|
 | Worker dispatch | `dispatch-agent` | `generalPurpose` or subagent; `description: "ws-multi-spec worker [{flowMode}] — {slug}"`; sequential execution |
-| User gate | `user-gate` / `user-gate-auto` | Selection gate for blank scan; failure pause gate (Resume, Skip, Abort) |
+| User gate | `user-gate` / `user-gate-auto` | Selection gate for blank scan (`pending[]` only); failure pause gate (Resume, Skip, Abort) |
+| Blank-scan inventory | `Shell` | `node {skillsRoot}/ws-multi-spec/scripts/list_pending_specs.cjs --specs-dir {specsDir} --plans-dir {plansDir} --json` |
 | SCM / state probe | `Shell` | SCM query & file probes; parse worker `step-output` |
 | State persistence | `write-to-file` | Update `{plansDir}/ws-multi-spec/{runId}.state.md` |
 

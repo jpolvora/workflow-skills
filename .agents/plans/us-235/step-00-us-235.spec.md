@@ -1,0 +1,132 @@
+---
+id: 235
+slug: us-235
+title: "Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist"
+source: github
+specDate: 2026-08-23
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/235"
+step: 0
+workflowId: us-235-20260823T151631Z
+status: active
+startedAt: "2026-08-23T15:06:50.643Z"
+endedAt: "2026-08-23T15:06:50.643Z"
+acRefs: []
+---
+# Specification — Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist
+
+## Description
+
+`ws-spec-to-pr` **scoreAndRefine** can finish Step 5 at score 9 with `knownDefect: false` and a G2-code commit, then fail `validate_state --pre-advance 6`. Four defects combine into a deadlock for messy-but-valid consumer repos.
+
+**Current code (verified in this tree):**
+
+1. **Comment keys become required aliases.** `ac_ledger.cjs` `scoreLedger` treats every `config.verification` key matching `/(?:Build|Test|Format)$/` with a non-empty, non-`<placeholder>` string as required. Shipped `config.json.example` includes `_comment_mutationTest` (matches `Test$`; value is a sentence). JSON schema does not declare `_comment_*`.
+2. **Pre-advance 6 promotes scorer `errors[]` to a hard stop.** Missing alias writes `errors[]` only, does not set `knownDefect`, and caps score at 9 via `completeTen`. `workflow_state.cjs` `validateSnapshot` when `preAdvance === 6` copies every `derived.errors` entry. Recording a failed format run sets `knownDefect` and caps score at 8. There is no `skipReason` on `aliasResult`.
+3. **`.runtime` allowlist is too tight.** `RUNTIME_NAMES` is exact names plus `round-\d+.md` / `resolve-*.txt`. `validateRuntime` runs on every `update_state`. scoreAndRefine / sabotage `.cjs` / `.patch` / notes fail as unknown residue.
+4. **State hash is the entire markdown file.** `validateSnapshot` hashes `fs.readFileSync(stateFile)`. `update_state finish` has no `--commit`, so G2-code SHAs never land in `state.commits` unless YAML is hand-edited (which then breaks the hash unless done inside the same write).
+
+**Target behavior:** comment keys are never aliases; dirty format outside `files_touched` is skippable without a score-8 cap; helper files in `.runtime` do not fail `update_state`; G2-code SHA persistence does not break `run.json.stateSha256`.
+
+### Scope and architecture
+
+| Area | Path | Change |
+|------|------|--------|
+| Alias filter | `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs` | Skip keys matching `/^_/` |
+| Example config | `.agents/skills/ws-shared/config.json.example` | Remove or rename `_comment_mutationTest` |
+| Skip observation | `ac_ledger.cjs` `aliasResult` | Optional `skipReason` |
+| Pre-advance 6 | `.agents/skills/ws-shared/scripts/workflow_state.cjs` | Treat skip as observed; keep fail-closed for truly missing aliases |
+| Runtime allowlist | `workflow_state.cjs` `RUNTIME_NAMES` | Allow `*.cjs`, `*.patch`, `*.md` |
+| State hash | `workflow_state.cjs` `validateSnapshot` | Hash YAML frontmatter only |
+| Finish commit | `update_state` / `performUpdate` finish | Repeatable `--commit <sha>` |
+
+## Acceptance Criteria
+
+- AC1: `scoreLedger` omits `config.verification` keys whose names match `/^_/` from the required-alias set.
+- AC2: `.agents/skills/ws-shared/config.json.example` has no `verification` key named `_comment_mutationTest`.
+- AC3: `aliasResult` accepts optional `skipReason` whose value is `not-applicable`, `baseline-dirty`, or `comment-key`.
+- AC4: An `aliasResult` that includes a valid `skipReason` counts as an observed result for that alias.
+- AC5: A valid `skipReason` does not set `knownDefect` and does not cap score at 8.
+- AC6: `skipReason: baseline-dirty` on `backendFormat` is accepted when the failing format paths are outside ledger `files_touched`.
+- AC7: `validateSnapshot` with `preAdvance === 6` fails when a required alias has neither `aliasResult` nor `skipReason`.
+- AC8: `validateSnapshot` with `preAdvance === 6` succeeds when derived score is at least 9, `knownDefect` is false, and every required alias is observed or skipped.
+- AC9: `update_state` does not report unknown `.runtime` residue for files whose names match `/\.(cjs|patch|md)$/`.
+- AC10: `validateSnapshot` computes `stateSha256` from YAML frontmatter bytes only.
+- AC11: Appending `## Gate history` after `finish` leaves `run.json.stateSha256` matching the frontmatter hash.
+- AC12: `update_state finish --commit <sha>` writes that SHA into `state.commits`.
+- AC13: A second `finish --commit` with the same SHA exits 0 without duplicating the entry.
+- AC14: Automated tests fail if `_comment_mutationTest` is treated as a required alias.
+- AC15: Automated tests cover pre-advance 6 with score 9, `knownDefect` false, and `backendFormat` skipped via `baseline-dirty`.
+
+## Original Issue Context
+
+```markdown
+## Summary
+
+Running `ws-spec-to-pr` **scoreAndRefine** on a completed standard workflow (consumer: MarchanteERP, US 2817) reached a valid **Step 5 score of 9/10** and a G2-code commit, then **could not pre-advance to Step 6**. The stop is a mix of fail-closed policy and several skill defects that deadlock messy-but-valid repos.
+
+Reproduced with:
+
+- `node …/ac_ledger.cjs score --ledger … --boundary step5` → `score: 9`, `knownDefect: false`
+- `node …/validate_state.cjs … --pre-advance 6` → hard fail on `configured verification alias lacks observed result: backendFormat` / `frontendBuild`
+
+## Defects
+
+### 1. `_comment_*` verification keys become required aliases
+### 2. Pre-advance 6 promotes scorer `errors[]` to a hard stop (deadlock with dirty format)
+### 3. `.runtime` allowlist rejects scoreAndRefine / sabotage helpers
+### 4. State hash is the entire markdown file; `finish` cannot record G2-code SHAs
+
+## Acceptance (issue checkboxes)
+
+- Example config comment keys are never required aliases
+- A Step 5 score of 9 with honest missing format either advances to Step 6 or Step 5 refuses to finish until aliases are observed (one documented policy)
+- Failed format on files outside `files_touched` can be skipped without capping score at 8
+- scoreAndRefine / sabotage files in `.runtime` do not fail `update_state`
+- G2-code SHA can be persisted without breaking `run.json` hash
+- Tests cover `_comment_mutationTest` and pre-advance 6 with score 9 + missing `backendFormat`
+```
+
+Issue URL: https://github.com/jpolvora/workflow-skills/issues/235
+
+### Prior Work Sweep
+
+- **Exact open PR for #235:** none. Continue.
+- **Keyword PR hits (not this issue):** merged PR 207 (`ws-audit` runtime audit) and merged PR 191 (`ws-doctor`). Recorded; not duplicates.
+- **Nearby commits on touched files:** `76c9795` introduced AC ledger scoring, `RUNTIME_NAMES`, and fail-closed gates. Later `#223` / `#226` / models-preset commits touched the same scripts for unrelated review-thread and dispatch-substep fixes. No commit implements skipReason, `_` key exclusion, frontmatter-only hash, or `finish --commit`.
+
+### Design Intent
+
+- **Fail-closed gates are intentional.** `76c9795` (`feat(harness-efficiency-and-verifiability)`) shipped ledger scoring and state helpers *without relaxing fail-closed gates*. Pre-advance 6 must still reject a truly missing required alias.
+- **Comment keys as aliases are accidental.** Schema and example comments were documentation; the `/(?:Build|Test|Format)$/` filter never excluded `/^_/`.
+- **Full-file state hash is accidental coupling.** Gate-history markdown is narrative; `run.json.stateSha256` should pin identity YAML, not prose.
+- **Exact `.runtime` names were intentional hygiene** and accidentally omitted scoreAndRefine helper extensions (`.cjs`, `.patch`, notes `.md`).
+- **No `finish --commit` is a gap**, not a rejected feature. G2-code SHAs were expected in `state.commits` but had no CLI.
+
+## Notes
+
+- Consumer evidence (not a skill bug): `dotnet format --verify-no-changes` exit 2 on MarchanteERP is pre-existing whitespace outside US 2817 `files_touched`.
+- Field workaround to stop requiring: fake `aliasResult` for `_comment_mutationTest` with `exitCode: 0` without executing the comment string. Remove the need for that workaround.
+- Empty `mutationTest: ""` already skips; do not invent extra empty-string policy.
+- `{us-dir}` is `{plansDir}/{slug}/`. `.runtime` lives beside `.state.md`.
+- Policy detail: `.agents/specs/us-235.context.md`.
+
+## Out of Scope
+
+| Item | Rationale |
+|------|-----------|
+| Auto-fixing consumer format debt | Format failures on in-scope files remain `knownDefect` |
+| Changing Step 5 scoring weights or `completeTen` | Only alias classification, skip observation, hash, and allowlist change |
+| Allowing arbitrary `.runtime` filenames | Unknown extensions stay fail-closed |
+| Hashing a full JSON snapshot instead of frontmatter | Frontmatter-only is the chosen hash target |
+| Azure DevOps tracker import | This issue is GitHub-origin; SCM finish path is GitHub/`update_state` |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Missing-alias vs pre-advance 6 policy | `skipReason` counts as observed; truly missing aliases still fail pre-advance 6 | Preserves fail-closed intent from `76c9795` and gives dirty-format an honest ledger row | n |
+| `skipReason` enum | `not-applicable` \| `baseline-dirty` \| `comment-key` | Matches issue sketch; `comment-key` is belt-and-suspenders after `/^_/` exclusion | n |
+| `.runtime` extra patterns | `*.cjs`, `*.patch`, `*.md` | Covers scoreAndRefine / sabotage helpers named in the issue | n |
+| State hash target | YAML frontmatter only | Body `## Gate history` must not break `run.json` | n |
+| Auth / rate limits / tenancy / TTL | N/A because these scripts are local Node CLIs with no network or tenant data | Local file validators | n |

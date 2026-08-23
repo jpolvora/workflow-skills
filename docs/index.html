@@ -3,12 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workflow Skills — Spec to reviewed pull request</title>
-  <meta name="description" content="Portable agent skills that take a feature spec to a reviewed pull request. Verify at 9/10. Same GitHub and Azure DevOps operations. Works in any coding assistant.">
+  <title>Workflow Skills — Spec-driven delivery for coding agents</title>
+  <meta name="description" content="Spec-driven software delivery for coding agents. The spec is the contract of record; plans, code, and PRs are derived from it. Verify at 9/10 from an AC ledger. Same GitHub and Azure DevOps operations.">
+  <link rel="canonical" href="https://jpolvora.github.io/workflow-skills/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Jone Polvora">
+  <meta name="keywords" content="spec-driven development, spec-driven workflow, spec to pull request, agent skills, coding agents, AI software delivery, GitHub, Azure DevOps, acceptance criteria, AC ledger">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="https://jpolvora.github.io/workflow-skills/">
+  <meta property="og:site_name" content="Workflow Skills">
+  <meta property="og:title" content="Workflow Skills — Spec-driven delivery for coding agents">
+  <meta property="og:description" content="Install portable skills so a coding agent runs a named pipeline from a feature spec to a reviewed pull request. The spec is the contract; verify score is derived, not authored.">
+  <meta property="og:image" content="https://jpolvora.github.io/workflow-skills/assets/workflow-hero-poster.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Workflow Skills — Spec-driven delivery for coding agents">
+  <meta name="twitter:description" content="Spec in. Ledger-scored verify. Reviewed pull request out. GitHub and Azure DevOps, same operations.">
+  <meta name="twitter:image" content="https://jpolvora.github.io/workflow-skills/assets/workflow-hero-poster.webp">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="alternate" type="text/plain" href="https://jpolvora.github.io/workflow-skills/llms.txt" title="LLM-readable project summary">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Workflow Skills",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Windows, macOS, Linux",
+    "license": "https://github.com/jpolvora/workflow-skills/blob/main/LICENSE",
+    "url": "https://jpolvora.github.io/workflow-skills/",
+    "codeRepository": "https://github.com/jpolvora/workflow-skills",
+    "author": { "@type": "Person", "name": "Jone Polvora", "url": "https://jpolvora.github.io/" },
+    "description": "Spec-driven software delivery skills for coding agents. Specs are the contract of record; orchestrators take a spec to a reviewed pull request with a derived verify bar of 9/10.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Workflow Skills spec-driven?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. A canonical *.spec.md is the contract of record. Plans under the plans directory are run artifacts, not a second spec. Standard verify derives its 0–10 score from an acceptance-criteria ledger and advances only at 9 or above."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Workflow Skills?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A portable skill pack for coding agents. After install, the agent runs a named spec-driven pipeline to a reviewed pull request instead of inventing a process each time. Standard is ten steps; lite is six. GitHub and Azure DevOps share the same PR operations."
+        }
+      }
+    ]
+  }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/marked@15.0.6/marked.min.js"></script>
 </head>
 <body>
@@ -62,7 +117,7 @@
   </div>
 
   <div class="hero-announcement">
-    <span>Spec in. Reviewed pull request out.</span>
+    <span>Spec-driven delivery. Reviewed pull request out.</span>
   </div>
   <div class="hero-animation-wrap">
     <video
@@ -84,7 +139,7 @@
     </video>
   </div>
   <h1>Workflow <span class="gradient-text">Skills</span></h1>
-  <p class="hero-subtitle">Portable skills that take any coding agent from a feature spec to a reviewed pull request. Advance only at verify score 9/10. Same operations on GitHub and Azure DevOps.</p>
+  <p class="hero-subtitle">Spec-driven software delivery for any coding agent. The spec is the contract of record. Plans, code, and PRs are derived from it. Advance only when verify hits 9/10 from the AC ledger. Same operations on GitHub and Azure DevOps.</p>
 
   <div style="margin-bottom: 28px;">
     <a href="#install" class="offer-cta-fill">
@@ -137,7 +192,7 @@
 <section id="features">
   <div class="section-header">
     <h2>Features</h2>
-    <p class="section-subtitle">What the skills actually do after you install them.</p>
+    <p class="section-subtitle">A spec-driven pipeline: the spec is source of truth, gates are named, and the agent cannot skip them.</p>
   </div>
   <div class="role-matrix-grid">
   <!-- efficiency-verifiability:start -->
@@ -180,9 +235,9 @@
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">1</div>
-        <h4 class="role-card-title">Spec to pull request</h4>
+        <h4 class="role-card-title">Spec is the contract</h4>
       </div>
-      <p class="role-card-desc">Write a spec, plan, implement, verify, review, test, open a PR, and close review threads. One orchestrator owns the sequence so the agent does not skip gates.</p>
+      <p class="role-card-desc">Human-facing <code>*.spec.md</code> under the specs directory is the contract of record. Plans are run artifacts. Write a spec, plan, implement, verify, review, test, open a PR, and close threads. One orchestrator owns the sequence so the agent does not skip gates.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -232,7 +287,7 @@
 <section id="how-it-works">
   <div class="section-header">
     <h2>How It Works</h2>
-    <p class="section-subtitle">From spec to pull request, one named step at a time.</p>
+    <p class="section-subtitle">Start from a spec. Derive the plan. Implement against acceptance criteria. Ship a reviewed PR.</p>
   </div>
 
   <div class="how-container">
@@ -716,7 +771,7 @@
 <section id="workflows">
   <div class="section-header">
     <h2>Workflows</h2>
-    <p class="section-subtitle">One thorough path. One fast path. Same project config.</p>
+    <p class="section-subtitle">Every delivery run starts from a spec. One thorough path. One fast path. Same project config.</p>
   </div>
   
   <div class="workflows-grid">
@@ -772,6 +827,7 @@
       <div class="workflow-steps-title">What it does:</div>
       <ul class="workflow-steps-list">
         <li>Routes simple specs to lite and complex specs to standard</li>
+        <li>Blank scan lists only pending/unfinished specs</li>
         <li>Skips specs that already have a merged PR</li>
         <li>Keeps queue state under <code>{plansDir}/ws-multi-spec/</code></li>
         <li>On failure: Resume, Skip, or Abort</li>
@@ -1590,7 +1646,7 @@
 <section id="faq">
   <div class="section-header">
     <h2>Frequently Asked Questions</h2>
-    <p class="section-subtitle">Everything you need to know about Workflow Skills, FSM execution engine, quality gates, and agent harness compatibility.</p>
+    <p class="section-subtitle">Spec-driven delivery, orchestrators, quality gates, and agent harness compatibility.</p>
   </div>
 
   <div class="faq-controls">
@@ -1620,8 +1676,30 @@
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p>Workflow Skills is a portable skill pack for coding agents. You install it once. The agent then runs a named pipeline from spec to pull request instead of inventing a process each time.</p>
-          <p>Standard delivery is ten steps. Lite is six. Verify must hit 9/10 before review. GitHub and Azure DevOps expose the same PR operations. Your project config and memory stay local when skills update.</p>
+          <p>Workflow Skills is a portable, <strong>spec-driven</strong> skill pack for coding agents. You install it once. The agent then runs a named pipeline from a feature spec to a reviewed pull request instead of inventing a process each time.</p>
+          <p>The spec is the contract of record. Plans are run artifacts. Standard delivery is ten steps. Lite is six. Verify must hit 9/10 from the AC ledger before review. GitHub and Azure DevOps expose the same PR operations. Your project config and memory stay local when skills update.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q1b -->
+    <div class="faq-item" data-faq-cat="getting-started" data-search="spec-driven spec driven development sdd specification contract of record plans vs specs ac ledger">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Getting Started</span>
+          <span>Is this a spec-driven workflow project?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Yes. Delivery is spec-driven:</p>
+          <ul>
+            <li><strong>Spec of record</strong> — canonical <code>*.spec.md</code> under the specs directory (local draft, GitHub issue, or Azure DevOps work item).</li>
+            <li><strong>Plans are runs</strong> — workflow copies and state live under the plans directory. A plan is not a second spec.</li>
+            <li><strong>Acceptance criteria gate code</strong> — standard verify derives its 0–10 score from an AC ledger. Agents cannot author or override that score. Advance only at 9 or above.</li>
+          </ul>
+          <p>This upstream repo uses the same model. Extra skills (direct problem-solving, doctor, preview) sit beside the pipeline; they do not replace the spec contract.</p>
         </div>
       </div>
     </div>
@@ -1701,7 +1779,7 @@
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p><code>ws-multi-spec</code> is a sequential smart multi-spec batch orchestrator. It indexes all feature specifications under <code>specs/</code>, runs <code>ws-classify-complexity</code> on each spec to dynamically select between Standard or Lite pipeline execution, and processes them one by one.</p>
+          <p><code>ws-multi-spec</code> is a sequential smart multi-spec batch orchestrator. A blank scan lists only pending and unfinished specifications under <code>{specsDir}</code>, runs <code>ws-classify-complexity</code> on each selected spec to dynamically select between Standard or Lite pipeline execution, and processes them one by one.</p>
           <p>It maintains state persistence under <code>{plansDir}/ws-multi-spec/</code> (allowing safe session pauses/resumes), skips specs with already-merged PRs, and presents structured <code>user-gate</code> choices if a spec encounters an issue.</p>
         </div>
       </div>

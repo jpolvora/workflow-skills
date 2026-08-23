@@ -96,7 +96,7 @@ When editing harness docs: put **agent obligations** here; put **human install/U
 
 ## Canonical upstream
 
-Repo `jpolvora/workflow-skills` is the authoritative upstream for workflows and pipeline skills.
+Repo `jpolvora/workflow-skills` is the authoritative upstream for **spec-driven** workflows and pipeline skills. Specs (`{specsDir}/*.spec.md`) are the contract of record; `{plansDir}` holds run artifacts.
 
 - Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed** (project-local and/or **global**). `update` overwrites skill files; `uninstall` removes skill folders (cascades unused deps) and never deletes project `ws-shared/` consumer data.
 - **Preserve** under the **project** `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Project hub **overrides** any global `$HOME/.agents/skills/ws-shared` values. The installer ships no packaged upstream index — the consumer hub is `ws-shared/AGENTS.md`. Fresh install / `ws-configure-project` seeds `config.json` (from example), `MEMORY.md`, `CHANGELOG.md`, and `STACK.md` under the **project** `ws-shared/` when missing. Installer never writes consumer repo-root files.

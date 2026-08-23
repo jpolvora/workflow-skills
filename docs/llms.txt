@@ -1,0 +1,34 @@
+# Workflow Skills
+
+> Spec-driven software delivery skills for coding agents. A canonical feature spec is the contract of record. Orchestrators turn that spec into a reviewed pull request. Plans are run artifacts, not a second spec.
+
+Site: https://jpolvora.github.io/workflow-skills/
+Repo: https://github.com/jpolvora/workflow-skills
+Install: `npx --yes github:jpolvora/workflow-skills`
+
+## Spec-driven model
+
+- Spec of record: `{specsDir}/{slug}.spec.md` (default `.agents/specs/`). Format: `ws-spec-format`. Authoring: `ws-write-spec`. Index: `ws-spec-index` (`index.PRD`).
+- Tracker import: GitHub or Azure DevOps → spec of record → register workflow copy (`ws-spec-from-provider`, providers).
+- Plans: `{plansDir}/{slug}/` holds step artifacts (`step-00-*.spec.md` is a copy). Specs and plans are two boards (`ws-spec-list`).
+- Verify: standard Step 5 derives score 0–10 from an AC ledger. Advance only at ≥ 9. Agents cannot author or override the score.
+- This upstream repo dogfoods the same model.
+
+## Pipelines
+
+- `ws-spec-to-pr` — standard FSM steps 0–9 (spec, plan, interview, tasks, implement, verify, review, test, ship, fix-PR).
+- `ws-spec-to-pr-lite` — lite steps 0–5 (spec, plan, implement, review, ship, fix-PR).
+- `ws-multi-spec` — queue pending specs; classify lite vs standard per spec.
+- `ws-fable-method` — 7-step evidence loop when a full pipeline is not warranted. Adjacent, not a second spec contract.
+
+## Not spec-driven (adjacent)
+
+Harness checks, doctor, preview, changelog, memory, patterns, activity report. They support delivery; they do not replace the spec.
+
+## Docs for humans and agents
+
+- Human install: https://github.com/jpolvora/workflow-skills/blob/main/README.md
+- Agent hub: https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md
+- Feature inventory: https://github.com/jpolvora/workflow-skills/blob/main/FEATURES.md
+- Skill catalog: https://github.com/jpolvora/workflow-skills/blob/main/CATALOG.md
+- Spec format: `.agents/skills/ws-spec-format/FORMAT.md`

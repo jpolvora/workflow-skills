@@ -8,7 +8,7 @@
 [![npx](https://img.shields.io/badge/npx-github:jpolvora/workflow--skills-blue?logo=npm)](https://github.com/jpolvora/workflow-skills)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-site-success?logo=github)](https://jpolvora.github.io/workflow-skills)
 
-Portable **agent skills** that take a feature spec to a reviewed pull request. Install into a project, keep config and memory local, contribute lasting skill changes here via PR.
+**Spec-driven delivery** for coding agents. The spec is the contract of record; plans, code, and pull requests are derived from it. Portable **agent skills** run that pipeline in any coding assistant. Install into a project, keep config and memory local, contribute lasting skill changes here via PR.
 
 | Doc | Who reads it | What it covers |
 |-----|--------------|----------------|
@@ -48,7 +48,7 @@ Two delivery workflows (install independently; both share `.agents/skills/ws-sha
 |----------|----------|---------|
 | **[`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → **product commit** → review → **review-fix commit** → test → ship → fix-pr (FSM steps 0–9) |
 | **[`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → **product commit** → review → **review-fix commit** → ship → fix-pr (steps 0–5) |
-| **[`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue execution with smart flow auto-detection (`ws-spec-to-pr` vs `ws-spec-to-pr-lite` per spec complexity) |
+| **[`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue (blank scan lists pending/unfinished specs only) with smart flow auto-detection (`ws-spec-to-pr` vs `ws-spec-to-pr-lite` per spec complexity) |
 | **[`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
 
 See **Features** above for the operating model. Gates: [`gates.md`](.agents/skills/ws-shared/gates.md). Agent contract: [`AGENTS.md`](AGENTS.md) § Dual-mode. Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md). Site FAQ: [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills#faq).
