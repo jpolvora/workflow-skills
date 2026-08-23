@@ -71,9 +71,9 @@ Open Next-spec: \`todo-one\`, \`partial-one\`.
   'utf8',
 );
 
-function writeSpec(dir, slug, extraFm = '') {
+function writeSpec(dir, slug, extraFm = '', fileBase = slug) {
   fs.writeFileSync(
-    path.join(dir, `${slug}.spec.md`),
+    path.join(dir, `${fileBase}.spec.md`),
     `---
 slug: ${slug}
 title: ${slug}
@@ -201,12 +201,55 @@ const prCite = run([
   tmp,
 ]);
 const prCiteJson = JSON.parse(prCite.stdout);
-assert.strictEqual(prCiteJson.pending.length, 0, 'PR # in step-08 omits pending');
+assert.strictEqual(prCiteJson.pending.length, 1, 'open PR # in step-08 stays pending');
 assert.ok(
-  prCiteJson.omitted.some(
-    (r) => r.slug === 'done-pr' && r.reason === 'already-implemented',
+  prCiteJson.pending.some((r) => r.slug === 'done-pr'),
+  'unmerged PR cite is not already-implemented',
+);
+
+const completedOnly = path.join(tmp, 'completed-specs');
+const completedPlans = path.join(tmp, 'completed-plans');
+fs.mkdirSync(completedOnly);
+fs.mkdirSync(path.join(completedPlans, 'done-complete'), { recursive: true });
+writeSpec(completedOnly, 'done-complete');
+fs.writeFileSync(
+  path.join(completedPlans, 'done-complete', 'step-08-done-complete.result.md'),
+  '---\nstatus: completed\n---\nDelivery finished.\n',
+  'utf8',
+);
+const completed = run([
+  '--specs-dir',
+  completedOnly,
+  '--plans-dir',
+  completedPlans,
+  '--repo-root',
+  tmp,
+]);
+const completedJson = JSON.parse(completed.stdout);
+assert.strictEqual(completedJson.pending.length, 0, 'status completed omits pending');
+assert.ok(
+  completedJson.omitted.some(
+    (r) => r.slug === 'done-complete' && r.reason === 'already-implemented',
   ),
-  'step-08 PR # cite reason',
+  'status completed reason',
+);
+
+const splitDir = path.join(tmp, 'split-specs');
+fs.mkdirSync(splitDir);
+fs.writeFileSync(
+  path.join(splitDir, 'index.PRD'),
+  '- [x] Closed feature (`spec: my-feature.spec.md`)\n',
+  'utf8',
+);
+writeSpec(splitDir, 'other-slug', '', 'my-feature');
+const split = run(['--specs-dir', splitDir, '--repo-root', tmp]);
+const splitJson = JSON.parse(split.stdout);
+assert.strictEqual(splitJson.pending.length, 0, 'filename slug vs frontmatter still index-done');
+assert.ok(
+  splitJson.omitted.some(
+    (r) => r.slug === 'other-slug' && r.reason === 'index-done',
+  ),
+  'index lookup uses file slug when frontmatter diverges',
 );
 
 console.log('test-list-pending-specs: ok');

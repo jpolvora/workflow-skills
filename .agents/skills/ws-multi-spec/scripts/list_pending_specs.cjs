@@ -176,7 +176,6 @@ function hasMergedDelivery(plansDir, slug) {
       /\bmerged:\s*true\b/i.test(text) ||
       /\bstate:\s*MERGED\b/i.test(text) ||
       /\bmerged PR\b/i.test(text) ||
-      /\bPR\s+#\d+\b/i.test(text) ||
       /^status:\s*completed\b/im.test(text)
     ) {
       return true;
@@ -204,20 +203,21 @@ function listPending(opts) {
       });
       continue;
     }
+    const fileSlug = path.basename(abs).replace(/\.spec\.md$/i, '');
     let slug = null;
     try {
       slug = extractFrontmatterField(readUtf8(abs), 'slug');
     } catch {
       slug = null;
     }
-    if (!slug) slug = path.basename(abs).replace(/\.spec\.md$/i, '');
+    if (!slug) slug = fileSlug;
 
-    if (hasMergedDelivery(plansAbs, slug)) {
+    if (hasMergedDelivery(plansAbs, slug) || hasMergedDelivery(plansAbs, fileSlug)) {
       omitted.push({ slug, specPath, reason: 'already-implemented' });
       continue;
     }
 
-    const indexStatus = indexMap.get(slug);
+    const indexStatus = indexMap.get(slug) ?? indexMap.get(fileSlug);
     if (indexStatus === 'done') {
       omitted.push({ slug, specPath, reason: 'index-done' });
       continue;

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 17:42] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 4
+- **Done**: Bare `PR #` no longer marks already-implemented; index lookup uses file slug; `status: completed` still omits
+- **Result**: Open PRs stay selectable on blank scan; `[x]` filename rows match diverging frontmatter slugs
+
 ### [2026-08-23 17:36] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 238 round 3
 - **Done**: No-path autoload interview always runs `--write-autoload`; `hasMergedDelivery` accepts real step-08 PR cites
