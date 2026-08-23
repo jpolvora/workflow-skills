@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 17:36] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr 238 round 3
+- **Done**: No-path autoload interview always runs `--write-autoload`; `hasMergedDelivery` accepts real step-08 PR cites
+- **Result**: Wizard opt-out strips Always-applied row; pending-spec probe matches shipped artifacts
+
 ### [2026-08-23 17:32] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 238 round 2 (index track after write-spec)
 - **Done**: Intake now invokes `ws-spec-index track {slug}` before `[~]` so new specs get an index row

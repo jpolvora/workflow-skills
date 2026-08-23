@@ -182,4 +182,31 @@ assert.ok(
   'local merged result reason',
 );
 
+const prCiteOnly = path.join(tmp, 'pr-cite-specs');
+const prCitePlans = path.join(tmp, 'pr-cite-plans');
+fs.mkdirSync(prCiteOnly);
+fs.mkdirSync(path.join(prCitePlans, 'done-pr'), { recursive: true });
+writeSpec(prCiteOnly, 'done-pr');
+fs.writeFileSync(
+  path.join(prCitePlans, 'done-pr', 'step-08-done-pr.result.md'),
+  '**Ship evidence:** PR #238 https://example.test/pull/238\n',
+  'utf8',
+);
+const prCite = run([
+  '--specs-dir',
+  prCiteOnly,
+  '--plans-dir',
+  prCitePlans,
+  '--repo-root',
+  tmp,
+]);
+const prCiteJson = JSON.parse(prCite.stdout);
+assert.strictEqual(prCiteJson.pending.length, 0, 'PR # in step-08 omits pending');
+assert.ok(
+  prCiteJson.omitted.some(
+    (r) => r.slug === 'done-pr' && r.reason === 'already-implemented',
+  ),
+  'step-08 PR # cite reason',
+);
+
 console.log('test-list-pending-specs: ok');

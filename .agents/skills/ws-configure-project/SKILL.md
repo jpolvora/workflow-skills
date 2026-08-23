@@ -59,8 +59,8 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
    3. On **No (`false`)** / Keep current (when already false) / Skip: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload false` (or leave false); optionally `--write-autoload` to refresh paths; do **not** require creating root `AGENTS.md`.
    4. user-gate: **Autoload `ws-task-lifecycle` like other Always-applied skills?** — **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
       1. On **Yes (`true`)**: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Do **not** set `defaults.autoload` from this answer.
-      2. On **No (`false`)** / Skip / Keep false: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false` (or leave omitted); `--write-autoload` must not add or retain a `ws-task-lifecycle` Always-applied row.
-   - Done when: `defaults.autoload` persisted; `defaults.autoloadTaskLifecycle` persisted or left false/omitted; Always-applied table refreshed when `--write-autoload` ran.
+      2. On **No (`false`)** / Skip / Keep false: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false` then **`--write-autoload`** (same as Yes) so a prior Always-applied row is stripped. Do **not** set `defaults.autoload`.
+   - Done when: `defaults.autoload` persisted; `defaults.autoloadTaskLifecycle` persisted or left false/omitted; Always-applied table refreshed via `--write-autoload` after both Yes and No answers for `ws-task-lifecycle`.
 7. **Security pre-commit hook** — Ask via `user-gate`: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
    - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
    - On **Yes (`true`)**: run `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.

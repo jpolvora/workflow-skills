@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "b3dc0fe9bce4d841c50673e41c88bfb07af36f8fd27642f5122b2209d26e9a3f",
+  "fullPackageDigest": "1eff90acdcc3dcee953122bbc7bef23df6aedc1da1266feae36060b594b1a30a",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -135,12 +135,12 @@
     "ws-configure-project": {
       "files": {
         "evals/evals.json": "7fd4d9eb8443397f9856d9e1fe457ce12ea987629f7bbb342e703ba6366cc79d",
-        "INTERVIEW.md": "d29347eeecaa3def0f0ee85fbfc77f042165da388d95a2c788e179dc8d560b57",
+        "INTERVIEW.md": "4d7036d94d54d57dd8084e5f90ed7fc3297f9f620233b83ceb008b0a6affdb84",
         "scripts/configure_autoload.py": "c3acac4e3152abdd11b560d0aa575cf1e39a4e0b60cfd26af8fd909d4352bfdc",
         "scripts/stack_fingerprint.cjs": "96285aea1b6aa471a4218ecea83c764efb6e9202c7c9f439056127af2ddffdba",
-        "SKILL.md": "b4614ef0d191b0c4932f82751d96bc9069aff49c4e4e36bc4357c285652f16b3"
+        "SKILL.md": "837702ce5dde82448fc966eb41ccfceb382f2c5534bc37774aaf9ef6907ae179"
       },
-      "skillDigest": "cd4833c61ca0938a5afabc21cf3002fc8c764f75fccd8c8bba25087e3600023c"
+      "skillDigest": "7954247ec5a3209b831807c5667978493e65cb71a08051303c2c5fb41799feb6"
     },
     "ws-doctor": {
       "files": {
@@ -255,11 +255,11 @@
         "evals/evals.json": "108e8c673be4e461cbef9bab9d2f5e5d29d6600b3f3c40ec3a2a44fd2eda1e19",
         "EXAMPLES.md": "cd1128c604b41ba4eec690b6a4dc9b176e526dfe3abb9c3f5d3a70838e14348a",
         "PROTOCOL.md": "8822c9585d6558181f410b0d6cc1f52c196134d103035457de68c41436f777b4",
-        "scripts/list_pending_specs.cjs": "91145a50c8fafb07dd3c908ad4bbadf5ba1eca539b3bfd15cbe47a615a0b1a7b",
+        "scripts/list_pending_specs.cjs": "c784ca75307ca36a75fd97fdaafe56d30c9c42124e4cb831691488e4212ac18d",
         "SKILL.md": "f4f273b6d84a18f43e98344d08d470d7b589b5cc3acaadd5a68008baaa159d2d",
-        "STATE.md": "5dde633eaf802e485f02bf4797a92600f811dc536ce536d60f0609db5efcbfe4"
+        "STATE.md": "495b83b6b892f668208d11a98374b48f9ff6778af73024163b2fa9043629f17d"
       },
-      "skillDigest": "adc9edfd9c2fde7f168d72551325da32b35454ea9d9411e249aaf31cc7844d2f"
+      "skillDigest": "31eac6819e8eaed0a025f5d47c1e89ea0660ab5bc0d5cae8d7f1c3fb5295e508"
     },
     "ws-patterns": {
       "files": {

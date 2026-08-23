@@ -765,6 +765,25 @@ function seedConfigExample(root) {
   );
 }
 
+{
+  const skillMd = fs.readFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-configure-project/SKILL.md'),
+    'utf8',
+  );
+  const interview = fs.readFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-configure-project/INTERVIEW.md'),
+    'utf8',
+  );
+  assert(
+    /--set-autoload-task-lifecycle false` then \*\*`--write-autoload`\*\*/.test(skillMd),
+    'interview No path requires --write-autoload after false (same as Yes)',
+  );
+  assert(
+    /--set-autoload-task-lifecycle false` then `--write-autoload`/.test(interview),
+    'INTERVIEW.md No path requires --write-autoload after false',
+  );
+}
+
 cleanup();
 
 if (failures > 0) {

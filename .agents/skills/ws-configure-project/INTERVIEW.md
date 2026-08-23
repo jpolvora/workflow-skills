@@ -106,7 +106,7 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 | Autoload `ws-task-lifecycle` like other Always-applied skills? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
 | User chooses Yes (`true`) for root autoload | Root write **first** (`--write-autoload` + `--write-root-agents`); persist `defaults.autoload: true` only after root succeeds. Non-generated root → user-gate overwrite/`--force` (Recommended: No → leave flag false) |
 | User chooses Yes (`true`) for `ws-task-lifecycle` | `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Does **not** set `defaults.autoload` |
-| User chooses No / Skip / Keep false for `ws-task-lifecycle` | `--set-autoload-task-lifecycle false` (or leave omitted); `--write-autoload` does not add or retain the row |
+| User chooses No / Skip / Keep false for `ws-task-lifecycle` | `--set-autoload-task-lifecycle false` then `--write-autoload` so the Always-applied row is stripped. Does **not** set `defaults.autoload` |
 | User chooses No / Skip / Keep false | Write or leave `defaults.autoload: false`; root `AGENTS.md` optional (do not require) |
 
 **Enablement gate options:** No (`false`, **Recommended**) / Yes (`true`) / Keep current / Skip.
