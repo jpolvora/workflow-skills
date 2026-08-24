@@ -38,7 +38,7 @@
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
 | [`CHANGELOG.md.template`](CHANGELOG.md.template) | Empty ws-changelog stub — seeds `CHANGELOG.md` |
 | [`skill-dependencies.json`](skill-dependencies.json) | Install graph + **`packageVersion`** + single **`upstream`** ownership block (no per-skill `upstream:` in SKILL.md) |
-| [`scripts/`](scripts/) | Resolver: [`resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) (`--repo-root` → cwd hub) |
+| [`scripts/`](scripts/) | Hybrid resolver helpers: [`resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) (Node SoT) and [`resolve_consumer_root.py`](scripts/resolve_consumer_root.py) (still imported by managed Python scripts until frozen). Both honor `--repo-root` → cwd hub probe. |
 
 ## Consumer-owned (local only)
 

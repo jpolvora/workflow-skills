@@ -244,7 +244,21 @@ An HS-5 indicates that `state.md` YAML parsing or schema validation failed, or t
 1.  Open the state file in your editor: `{plansDir}/us-{id}/{workflow-id}.state.md`.
 2.  Fix any malformed YAML characters (e.g. unquoted colons, unresolved strings, or syntax errors).
 3.  If stderr includes `plan.index.json is required before implement`, backfill that file (next item) before retrying validate.
-4.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
+4.  If stderr includes `ac-ledger.json is required before advance`, backfill the ledger (next item) before retrying validate.
+5.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
+
+### Pre-advance fails: ac-ledger.json is required before advance
+Workflows started before 0.3.37 may lack `{us-dir}/ac-ledger.json` even when `step-00-{slug}.spec.md` exists. Before `--pre-advance 1` (or any later advance), initialize from the registered spec:
+
+```bash
+node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs init \
+  --spec "{us-dir}/step-00-{slug}.spec.md" \
+  --output "{us-dir}/ac-ledger.json" \
+  --slug {slug} \
+  --workflow-id {workflow-id}
+```
+
+When `{us-dir}/plan.index.json` already exists, add `--plan-index "{us-dir}/plan.index.json"` so task linkage is populated.
 
 ### Pre-advance fails: plan.index.json is required before implement
 Workflows started before 0.3.37 may lack `{us-dir}/plan.index.json`. Before `--pre-advance` to implement (standard 4 / lite 2), backfill from the plan of record:

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 01:00] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 ac-ledger resume docs + resolver table)
+- **Done**: FAQ + setup.md 5d backfill for missing `ac-ledger.json`; hub scripts table lists Python resolver again; artifact-economy asserts both recipes
+- **Result**: Pre-0.3.37 resumes can init the ledger before pre-advance 1
+
 ### [2026-08-24 00:55] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr round (PR 239 missing ac-ledger negative test)
 - **Done**: Contract tests: standard + lite `--pre-advance 1` fail when `ac-ledger.json` is absent

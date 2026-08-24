@@ -220,6 +220,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
 5a. **Session model refresh (mandatory on every resume):** Re-read the executing session model → update `currentModel`. If changed vs prior frontmatter value, log `model-change | step {currentStep} | {old} → {new} | ISO` in ## Gate history. Ignore leftover `modelChain` keys in old state files.
 5c. **Missing `plan.index.json` (resume of pre-0.3.37 runs):** If `{us-dir}/plan.index.json` is absent and the next pre-advance is implement or later (standard ≥ 4 / lite ≥ 2), backfill with `plan_index.cjs build` before validate. Recipe: [`ws-spec-to-pr/docs/faq.md`](../../ws-spec-to-pr/docs/faq.md) § Pre-advance fails: plan.index.json is required before implement.
+5d. **Missing `ac-ledger.json` (resume of pre-0.3.37 runs):** If `{us-dir}/ac-ledger.json` is absent, `ac_ledger.cjs init` from `step-00-{slug}.spec.md` before `--pre-advance 1` (or any later advance). Recipe: [`ws-spec-to-pr/docs/faq.md`](../../ws-spec-to-pr/docs/faq.md) § Pre-advance fails: ac-ledger.json is required before advance.
 6. Paused: resume at same step (checkpoint revert M=currentStep → hygiene → board → gate).
 7. No unfinished workflows: skip list, proceed to bootstrap.
 
