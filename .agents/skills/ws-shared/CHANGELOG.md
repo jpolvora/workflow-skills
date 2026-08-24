@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 01:05] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr CI (shared AGENTS.md 14000 B budget)
+- **Done**: Kept both resolver filenames; shortened tools/autoload/scripts rows so hub AGENTS.md stays under 14000 B
+- **Result**: `test-context-budget.js` passes again
+
 ### [2026-08-24 01:00] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr (PR 239 ac-ledger resume docs + resolver table)
 - **Done**: FAQ + setup.md 5d backfill for missing `ac-ledger.json`; hub scripts table lists Python resolver again; artifact-economy asserts both recipes
