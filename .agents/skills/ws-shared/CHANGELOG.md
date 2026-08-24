@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 01:10] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 plans-index missing row)
+- **Done**: Fail-closed when `{plansDir}/index.json` exists but has no row for the workflow (in-repo states); contract test added
+- **Result**: Untracked plan folders no longer pass `validate_state.cjs`
+
 ### [2026-08-24 01:05] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr CI (shared AGENTS.md 14000 B budget)
 - **Done**: Kept both resolver filenames; shortened tools/autoload/scripts rows so hub AGENTS.md stays under 14000 B

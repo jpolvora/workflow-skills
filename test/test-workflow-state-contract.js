@@ -534,4 +534,35 @@ assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '2', '--
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:09.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '4', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 4 uses step-06 review, not step-03 exec');
 
+const indexGapRoot = temp('ws-state-index-gap-');
+write(path.join(indexGapRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  verification: {},
+  defaults: {},
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+const gapStateRel = '.agents/plans/gap/wf-gap.state.md';
+write(path.join(indexGapRoot, gapStateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: wf-gap
+slug: gap
+workflowType: standard
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+---
+# State
+`);
+write(path.join(indexGapRoot, '.agents/plans/index.json'), JSON.stringify({
+  schemaVersion: 1,
+  revision: 0,
+  workflows: [],
+}));
+const missingRow = run(validate, [gapStateRel, '--repo-root', indexGapRoot]);
+assert.notStrictEqual(missingRow.status, 0, 'validate fails when plans index exists without this workflowId');
+assert.match(`${missingRow.stdout}${missingRow.stderr}`, /plans index missing workflow entry: wf-gap/);
+
 console.log('test-workflow-state-contract: ok');

@@ -9,6 +9,7 @@ const {
   resolveConsumerContext,
   resolveConfiguredPath,
   toRepoRelative,
+  inside,
 } = require('./resolve_consumer_root.cjs');
 const { scoreLedger } = require('../../ws-spec-to-pr/scripts/ac_ledger.cjs');
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
@@ -840,10 +841,12 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
     const runSchema = path.join(__dirname, '..', 'run.schema.json');
     errors.push(...validateNode(run, loadJsonSchema(runSchema, 'run schema'), 'run.json'));
   }
-  if (fs.existsSync(indexFile)) {
+  if (fs.existsSync(indexFile) && inside(path.resolve(stateFile), context.repoRoot)) {
     const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
     const row = index.workflows?.find((item) => item.workflowId === state.workflowId);
-    if (row && (!snapshotHashMatches(row.stateSha256, stateText) || index.revision !== Number(state.revision))) {
+    if (!row) {
+      errors.push(`plans index missing workflow entry: ${state.workflowId}`);
+    } else if (!snapshotHashMatches(row.stateSha256, stateText) || index.revision !== Number(state.revision)) {
       errors.push('plans index revision/state hash mismatch');
     }
   }
