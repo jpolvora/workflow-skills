@@ -38,7 +38,7 @@
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
 | [`CHANGELOG.md.template`](CHANGELOG.md.template) | Empty ws-changelog stub — seeds `CHANGELOG.md` |
 | [`skill-dependencies.json`](skill-dependencies.json) | Install graph + **`packageVersion`** + single **`upstream`** ownership block (no per-skill `upstream:` in SKILL.md) |
-| [`scripts/`](scripts/) | Resolver helpers for hybrid/global installs: `resolve_consumer_root.py` / `resolve_consumer_root.cjs` (`--repo-root` → cwd hub probe → `parents[4]` when script is project-local) |
+| [`scripts/`](scripts/) | Resolver: [`resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) (`--repo-root` → cwd hub) |
 
 ## Consumer-owned (local only)
 

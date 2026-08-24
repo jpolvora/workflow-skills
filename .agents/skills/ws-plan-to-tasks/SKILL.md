@@ -26,7 +26,7 @@ Standalone:
 /plan-to-tasks <plan-path> [thresholds=<path>]
 ```
 
-Workflow (ws-spec-to-pr Step 3): orchestrator passes `planPath` (`step-02-*.plan.refined.md` or `step-01-*.plan.md`) from state.
+Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` is `true`. When `enableDag` is false (default), the orchestrator writes the sequential stub with `write_sequential_dag.cjs` and does not load this skill. When dispatched, the orchestrator passes `planPath` (`step-02-*.plan.refined.md` or `step-01-*.plan.md`) from state.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -35,9 +35,7 @@ Workflow (ws-spec-to-pr Step 3): orchestrator passes `planPath` (`step-02-*.plan
 
 ## Steps
 
-1. **Detect size & mode** — Check `config.json` -> `defaults.enableDag`:
-   - If `enableDag` is `false` (or omitted/default): set `execMode: sequential` (forces sequential task execution by subagents one by one, skipping parallel DAG generation).
-   - If `enableDag` is `true`: evaluate the plan against `config.json.dagThresholds` (default: steps ≤3, files ≤6, layers ≤2). All within threshold → `execMode: sequential`. Any exceeded, or the step breakdown is ambiguous → `execMode: parallel`.
+1. **Detect size & mode** — This skill runs only when `defaults.enableDag` is `true`. Evaluate the plan against `config.json.dagThresholds` (default: steps ≤3, files ≤6, layers ≤2). All within threshold → `execMode: sequential` (write the sequential JSON stub). Any exceeded, or the step breakdown is ambiguous → `execMode: parallel`.
    - Done when: `execMode` is set with its counted metrics (steps, files, layers).
 
 2. **Write sequential output** (when `execMode: sequential`) — Write `step-03-{slug}.plan.exec.md` noting the reason and thresholds, and `step-03-{slug}.exec.dag.json`:

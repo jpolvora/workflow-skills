@@ -749,7 +749,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     const artifact = finishArtifactName(state.slug, step);
     if (artifact) stampStepArtifact(path.join(paths.usDir, artifact), state, step);
   }
-  validateSnapshot({ stateFile: absoluteState, runFile: paths.runFile, indexFile: index.file, context, maxStep });
+  validateSnapshot({ stateFile: absoluteState, runFile: paths.runFile, indexFile: index.file, context, maxStep, pipeline });
   return { ok: true, operation, step, revision: state.revision, stateSha256: stateHash, runPath: toRepoRelative(context.repoRoot, paths.runFile) };
 }
 
@@ -780,7 +780,42 @@ function validateRuntime(usDir) {
   return fs.readdirSync(runtime).filter((name) => !RUNTIME_NAMES.some((pattern) => pattern.test(name)));
 }
 
-function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, preAdvance }) {
+function skippedReason(state, step) {
+  const item = (state.skippedSteps || []).find((row) => Number(row.step) === Number(step));
+  return item && item.reason ? String(item.reason) : '';
+}
+
+function requiredAdvanceArtifact(pipeline, next, state) {
+  const slug = state.slug || state.us;
+  if (!slug) return null;
+  if (pipeline === 'lite') {
+    const lite = {
+      1: { file: `step-00-${slug}.spec.md`, expectedStep: 0 },
+      2: { file: `step-01-${slug}.plan.md`, expectedStep: 1 },
+      4: { file: `step-06-${slug}.review.md`, expectedStep: 6 },
+      5: { file: `step-08-${slug}.result.md`, expectedStep: 8 },
+    };
+    return lite[next] || null;
+  }
+  if (next === 3 && skippedReason(state, 2) === 'interview-not-required') return null;
+  if (next === 8) {
+    const skip = skippedReason(state, 7);
+    if (skip === 'testing-disabled' || skip === 'no-test-surface') return null;
+  }
+  const standard = {
+    1: { file: `step-00-${slug}.spec.md`, expectedStep: 0 },
+    2: { file: `step-01-${slug}.plan.md`, expectedStep: 1 },
+    3: { file: `step-02-${slug}.plan.refined.md`, expectedStep: 2 },
+    4: { file: `step-03-${slug}.plan.exec.md`, expectedStep: 3 },
+    6: { file: `step-05-${slug}.plan.report.md`, expectedStep: 5 },
+    7: { file: `step-06-${slug}.review.md`, expectedStep: 6 },
+    8: { file: `step-07-${slug}.testing.report.md`, expectedStep: 7 },
+    9: { file: `step-08-${slug}.result.md`, expectedStep: 8 },
+  };
+  return standard[next] || null;
+}
+
+function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, preAdvance, pipeline }) {
   const stateText = fs.readFileSync(stateFile, 'utf8');
   const parsed = parseFrontmatter(stateText);
   const state = parsed.data;
@@ -816,23 +851,18 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
   if (unknownRuntime.length) errors.push(`unknown .runtime residue: ${unknownRuntime.join(', ')}`);
   if (preAdvance !== undefined) {
     const next = Number(preAdvance);
-    const artifactNames = {
-      1: `step-00-${state.slug}.spec.md`,
-      2: `step-01-${state.slug}.plan.md`,
-      3: `step-02-${state.slug}.plan.refined.md`,
-      4: `step-03-${state.slug}.plan.exec.md`,
-      6: `step-05-${state.slug}.plan.report.md`,
-      7: `step-06-${state.slug}.review.md`,
-      8: `step-07-${state.slug}.testing.report.md`,
-      9: `step-08-${state.slug}.result.md`,
-    };
-    const required = artifactNames[next];
+    const flow = pipeline || state.workflowType || 'standard';
+    const required = requiredAdvanceArtifact(flow, next, state);
     if (required) {
-      const file = path.join(path.dirname(stateFile), required);
+      const file = path.join(path.dirname(stateFile), required.file);
       if (!fs.existsSync(file)) errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, file)}`);
       else {
-        try { artifactMetadata(file, next - 1, state); } catch (error) { errors.push(error.message); }
+        try { artifactMetadata(file, required.expectedStep, state); } catch (error) { errors.push(error.message); }
       }
+    }
+    const implementFrom = flow === 'lite' ? 2 : 4;
+    if (next >= implementFrom && !fs.existsSync(path.join(path.dirname(stateFile), 'plan.index.json'))) {
+      errors.push('plan.index.json is required before implement');
     }
     const ledgerFile = path.join(path.dirname(stateFile), 'ac-ledger.json');
     if (next >= 1 && !fs.existsSync(ledgerFile)) errors.push('ac-ledger.json is required before advance');
@@ -947,6 +977,7 @@ function runValidateCli(config) {
       indexFile: plansIndexPath(context),
       context,
       maxStep: config.maxStep,
+      pipeline: config.pipeline,
       preAdvance: options.preAdvance === true ? undefined : options.preAdvance,
     });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

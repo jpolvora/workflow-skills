@@ -41,9 +41,8 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` (+ authoring validate; skip register on fail); **prior-work sweep** before plan/code | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** authoring validation PASS **and** `step-00-{slug}.spec.md` registered + classifier user-gate completed |
-
-| 1 | Planning | `ws-write-plan` (design-intent git log for modifications) | `step-01-{slug}.plan.md` created & validated |
+| 0 | Spec | providers / `ws-write-spec` (+ authoring validate; skip register on fail); **prior-work sweep** before plan/code; after register `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs init --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/ac-ledger.json" --slug {slug} --workflow-id {workflow-id}` | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** authoring validation PASS **and** `step-00-{slug}.spec.md` registered + `ac-ledger.json` + classifier user-gate completed |
+| 1 | Planning | `ws-write-plan` (design-intent git log for modifications); then `node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs build --plan "{us-dir}/step-01-{slug}.plan.md" --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/plan.index.json"` | `step-01-{slug}.plan.md` + `plan.index.json` created & validated |
 | 2 | Implementation | `ws-implement-tasks` (**defect-class repo-wide sweep**) | Code modified + build/tests pass (`config.json.verification`); then required G2-code (skip if empty) |
 | 3 | Review | `ws-code-review` (+ fix; sibling modules beyond diff) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |
 | 4 | Ship | orch + `ws-ship-pr` (`check-pr-status` CI triage + **`comment-issue`** on create) | `step-08-{slug}.result.md` created + PR created/skipped per menu |

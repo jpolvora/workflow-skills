@@ -181,9 +181,9 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
 **Normal — workflow discovery (mandatory before any new workflow):**
 
-1. `Glob` `{plansDir}/**/*.state.md` (`{plansDir}` ← `config.plans.dir`) → list all state files.
-2. For each, `Read` frontmatter YAML: `status`, `workflowId`, `slug`, `us`, `currentStep`, `startedAt`, `autoMode`, `workflowType`.
-3. Filter by `workflowType` match (`standard` vs `lite`).
+1. If `{plansDir}/index.json` is missing, run `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs rebuild-index` (lite orch: the lite `validate_state.cjs` wrapper; same module).
+2. `Read` `{plansDir}/index.json` **once**. Use `workflows[]` fields (`status`, `workflowId`, `slug`, `pipeline`/`workflowType`, `currentStep`, `statePath`). Do not `Glob`/`Read` every `*.state.md` unless the index is corrupt — then `rebuild-index` and retry once.
+3. Filter by `workflowType` / `pipeline` match (`standard` vs `lite`).
    - **Completed Workflow Check:** If an existing workflow matches the target US/slug and has `status: completed` (or all steps finished):
      Prompt via `user-gate`:
      ```text

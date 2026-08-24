@@ -28,4 +28,19 @@ assert.strictEqual(run(dagScript, [
 const dag = JSON.parse(fs.readFileSync(path.join(root, 'step-03-feature.exec.dag.json'), 'utf8'));
 assert.deepStrictEqual(dag.tasks, []);
 assert.strictEqual(dag.skipReason, 'dag-disabled');
+
+const dispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
+assert.match(dispatch, /ac_ledger\.cjs init/);
+assert.match(dispatch, /plan_index\.cjs build/);
+assert.match(dispatch, /write_sequential_dag\.cjs/);
+assert.match(dispatch, /probe_test_surface\.cjs/);
+assert.match(dispatch, /force_interview/);
+const artifacts = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');
+assert.match(artifacts, /plan\.index\.json/);
+assert.match(artifacts, /ac-ledger\.json/);
+const testing = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-testing/SKILL.md'), 'utf8');
+assert.match(testing, /probe_test_surface\.cjs/);
+const setup = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/setup.md'), 'utf8');
+assert.match(setup, /index\.json/);
+assert.doesNotMatch(setup, /Glob `\{plansDir\}\/\*\*\/\*\.state\.md`/);
 console.log('test-artifact-economy: ok');

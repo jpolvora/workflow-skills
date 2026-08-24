@@ -110,7 +110,7 @@ dispatch-agent:
 Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree via `Shell`: `worktree add` → merge → `worktree remove` → `branch -d`. Max 1 active. Audit: `Write` `stepDispatches[]`. No per-DAG-task worktree.
 
 **Step 4 dispatch:**
-- `defaults.enableDag: false` (default) or `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `step-01-*.plan.md` directly (sequential subagent task execution, no DAG).
+- `defaults.enableDag: false` (default) or `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `plan.index.json` AC slices (plan of record: refined if present, else step-01). Step 3 is an orch `write_sequential_dag.cjs` stub, not a subagent.
 - `defaults.enableDag: true` & `execMode: parallel` → DAG: `dispatch-agent` per level, ≤3 concurrent, no file overlap within level.
 
 ### Check-implementation score gate (Step 5)

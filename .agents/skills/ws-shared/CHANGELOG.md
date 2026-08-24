@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-23 23:35] Agent: Cursor Grok 4.6
+- **Prompt**: Improve workflow-skills efficiency; enumerate ws-spec-to-pr; report, plan, parallel implementation
+- **Done**: Wired existing helpers into live dispatch (ledger init, plan index, sequential DAG stub, test-surface probe); skip-aware Node pre-advance; report+plan under `{plansDir}/workflow-efficiency-audit/`
+- **Result**: Default Step 3 is a script stub; pre-advance no longer demands skipped artifacts; unique-runtime Python ports deferred
+
+
 ### [2026-08-23 23:20] Agent: Composer
 - **Prompt**: Remove ws-audit skill completely
 - **Done**: Deleted ws-audit skill tree and tests; stripped orch/ship/fix invoke sites, catalogs, doctor switch, config flag (already absent from schema/config); regenerated integrity/site

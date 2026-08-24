@@ -23,14 +23,14 @@ Four ways to get work done. All of them share one `config.json` and the same pro
 
 ### 1.1 Standard pipeline — `ws-spec-to-pr` (steps 0–9)
 
-A finite state machine that carries one feature from an idea to a merged pull request. Each step dispatches a dedicated subagent skill and writes a named artifact under `{plansDir}/{slug}/`.
+A finite state machine that carries one feature from an idea to a merged pull request. Each coding/review step dispatches a dedicated subagent skill and writes a named artifact under `{plansDir}/{slug}/`. Default `enableDag: false` writes Step 3 with `write_sequential_dag.cjs` (no subagent).
 
 | Step | What happens | Artifact |
 |------|--------------|----------|
-| 0 | Entry gate, tracker fetch, **prior-work sweep**, spec authoring (`ws-write-spec`), register as spec of record | `{specsDir}/{slug}.spec.md` → `step-00-{slug}.spec.md` |
-| 1 | Implementation plan (`ws-write-plan`) plus a MEMORY conflict check against known traps | `step-01-{slug}.plan.md` |
-| 2 | Optional plan interrogation to surface hidden assumptions (`ws-interview`) | `step-02-{slug}.plan.refined.md` |
-| 3 | Task breakdown into an execution DAG (`ws-plan-to-tasks`) | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
+| 0 | Entry gate, tracker fetch, **prior-work sweep**, spec authoring (`ws-write-spec`), register, `ac_ledger.cjs init` | `{specsDir}/{slug}.spec.md` → `step-00-{slug}.spec.md` + `ac-ledger.json` |
+| 1 | Implementation plan (`ws-write-plan`), MEMORY conflict check, `plan_index.cjs build` | `step-01-{slug}.plan.md` + `plan.index.json` |
+| 2 | Optional plan interrogation (`ws-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan.refined.md` |
+| 3 | Sequential exec stub (`write_sequential_dag.cjs`) unless `enableDag: true` then `ws-plan-to-tasks` | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
 | 4 | Implementation (`ws-implement-tasks`) with pattern and memory consult proof | code + build/test verification |
 | 5 | Spec-compliance scoring 0–10 (`ws-verify-plan`); **advances only at ≥ 9** | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
@@ -90,7 +90,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 - **Checkpoint tags** (`uswf/{workflow-id}/before-step-{N}`) are written at each transition, so a run can be inspected or rolled back per step.
 - **Telemetry** is emitted as JSONL per step under `{plansDir}/{slug}/telemetry/`.
 - **State is transactional and indexed.** Atomic Node state updates publish `run.json`, `run.md`, and the repo-level plans index with repo-relative POSIX paths and closed skip reasons.
-- **Acceptance criteria are traceable.** `plan.index.json` maps plan slices; `ac-ledger.json` links each AC to semantic evidence, files, tests, commits, findings, and sabotage outcomes.
+- **Acceptance criteria are traceable.** Orchestrator Step 0 runs `ac_ledger.cjs init`; Step 1 (and Step 2 after interview) runs `plan_index.cjs build`. Downstream steps read AC slices from `plan.index.json`. The ledger links each AC to semantic evidence, files, tests, commits, findings, and sabotage outcomes.
 - **Review history is immutable.** Every review round is preserved as `.review.rN.md`; the canonical review file points at the latest validated round.
 
 ---
