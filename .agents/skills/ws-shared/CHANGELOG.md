@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-08-23 22:16] Agent: Cursor Grok 4.6
+- **Prompt**: track 236
+- **Done**: Added `us-236` to Feature map + Next-specs; marked `[x]` with Done-log row for PR #238
+- **Result**: `.agents/specs/index.PRD` tracks shipped `ws-task-lifecycle` / autoload opt-in
+
+### [2026-08-23 17:59] Agent: Cursor Grok 4.6
+- **Prompt**: Merge PR 238 after fix-pr convergence
+- **Done**: Merged develop → main; commented issue #236; Step 9 completed; lease released
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/238 merged (`7203c86`)
+
 ### [2026-08-23 17:54] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 238 round 6
 - **Done**: Tighten hasMergedDelivery: reject `not merged PR`; require whole-line `status: completed`
