@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 00:55] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr round (PR 239 missing ac-ledger negative test)
+- **Done**: Contract tests: standard + lite `--pre-advance 1` fail when `ac-ledger.json` is absent
+- **Result**: Dropping the ledger gate cannot pass `test-workflow-state-contract.js`
+
 ### [2026-08-24 00:50] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr + /ws-goal-fix-pr (PR 239 Python pre-advance twin)
 - **Done**: Froze standard + lite `validate_state.py` to exec Node SoT; aligned `update_state.py` stateVersion 2; retargeted quality-gates to `validate_state.cjs`

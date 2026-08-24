@@ -67,6 +67,9 @@ assert.strictEqual(run(update, [
 ]).status, 0);
 assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^step: 0$/m);
 assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^workflowId: wf$/m);
+const missingLedger = run(validate, [stateRel, '--pre-advance', '1', '--repo-root', root]);
+assert.notStrictEqual(missingLedger.status, 0, 'pre-advance 1 requires ac-ledger.json');
+assert.match(`${missingLedger.stdout}${missingLedger.stderr}`, /ac-ledger\.json is required before advance/);
 write(path.join(root, '.agents/plans/demo/ac-ledger.json'), JSON.stringify({ acceptanceCriteria: [] }));
 assert.strictEqual(run(validate, [stateRel, '--pre-advance', '1', '--repo-root', root]).status, 0, 'pre-advance 1 accepts stamped spec metadata');
 
@@ -505,6 +508,9 @@ acRefs: [AC1]
 
 T00 implements AC1 in \`src/lite.js\` with V1:lite-test.
 `);
+const liteMissingLedger = run(liteValidate, [liteStateRel, '--pre-advance', '1', '--repo-root', liteRoot]);
+assert.notStrictEqual(liteMissingLedger.status, 0, 'lite pre-advance 1 requires ac-ledger.json');
+assert.match(`${liteMissingLedger.stdout}${liteMissingLedger.stderr}`, /ac-ledger\.json is required before advance/);
 write(path.join(liteRoot, '.agents/plans/lite/ac-ledger.json'), JSON.stringify({
   schemaVersion: 1, revision: 1, workflowId: 'wf-lite', slug: 'lite',
   specPath: '.agents/plans/lite/step-00-lite.spec.md', planIndexPath: null,
