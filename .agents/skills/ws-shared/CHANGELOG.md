@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 00:20] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr then fix PR 239 review threads
+- **Done**: Contract tests for Step 7 `no-test-surface` / `testing-disabled` skip → `--pre-advance 8` without a testing report
+- **Result**: Skip-aware ship advance is now regression-locked in `test-workflow-state-contract.js`
+
 ### [2026-08-24 00:08] Agent: Cursor Grok 4.6
 - **Prompt**: Add config verboseMode; preview bullets from the executing model; default true
 - **Done**: `defaults.verboseMode` schema/seed `true` (`config.json.example`, ws-configure-project); runtime omitted/`false` silent, explicit `true` prints a reasoned start-of-step list; no canned preview script

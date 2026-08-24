@@ -427,6 +427,31 @@ assert.strictEqual(run(update, [
 ]).status, 0);
 assert.strictEqual(run(validate, [skipStateRel, '--pre-advance', '4', '--repo-root', skipRoot]).status, 0, 'pre-advance 4 accepts sequential DAG stub plus plan.index.json');
 
+function assertTestingSkipPreAdvance8(reason) {
+  const { pa6Root, stateRel, usDir, common } = setupPreAdvance6Fixture({ includeFormatSkip: true });
+  stampArtifact(usDir, 'step-06-pa6.review.md', 6, 'pa6', 'wf-pa6');
+  assert.strictEqual(run(update, ['dispatch', stateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:00.000Z', ...common]).status, 0);
+  assert.strictEqual(run(update, ['finish', stateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:05.000Z', ...common]).status, 0);
+  assert.strictEqual(run(ledgerScript, [
+    'score', '--ledger', '.agents/plans/pa6/ac-ledger.json', '--boundary', 'step5', '--repo-root', pa6Root,
+  ]).status, 0);
+  const blocked = run(validate, [stateRel, '--pre-advance', '8', '--repo-root', pa6Root]);
+  assert.notStrictEqual(blocked.status, 0, `pre-advance 8 requires testing report when Step 7 not skipped (${reason})`);
+  assert.match(`${blocked.stdout}${blocked.stderr}`, /step-07-pa6\.testing\.report\.md/);
+  assert.strictEqual(run(update, ['dispatch', stateRel, '--step', '7', '--timestamp', '2026-08-21T21:00:06.000Z', ...common]).status, 0);
+  assert.strictEqual(run(update, [
+    'finish', stateRel, '--step', '7', '--status', 'skipped', '--reason', reason,
+    '--timestamp', '2026-08-21T21:00:07.000Z', ...common,
+  ]).status, 0);
+  assert.strictEqual(
+    run(validate, [stateRel, '--pre-advance', '8', '--repo-root', pa6Root]).status,
+    0,
+    `pre-advance 8 accepts Step 7 ${reason} skip without testing report`,
+  );
+}
+assertTestingSkipPreAdvance8('no-test-surface');
+assertTestingSkipPreAdvance8('testing-disabled');
+
 const liteValidate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/validate_state.cjs');
 const liteUpdate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
 const liteRoot = temp('ws-state-lite-');
