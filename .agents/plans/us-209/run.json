@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "us-209-20260815T175409Z",
+  "slug": "us-209",
+  "pipeline": "lite",
+  "status": "completed",
+  "currentStep": 5,
+  "pendingGate": null,
+  "nextAction": "Done",
+  "acTotal": 0,
+  "acImplemented": 0,
+  "score": 0,
+  "estimatedRemainingSec": 0,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    }
+  ],
+  "statePath": ".agents/plans/us-209/us-209-20260815T175409Z.state.md",
+  "stateSha256": "988c320e5e39e0857136de898ab7b7d3b0048b4174049d611511682f6b1f6e19"
+}

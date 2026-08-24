@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.36",
+  "packageVersion": "0.3.37",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -43,7 +43,6 @@
         "ws-check-harness",
         "ws-check-workflows",
         "ws-doctor",
-        "ws-audit",
         "ws-tdah",
         "ws-karpathy-guidelines",
         "ws-spec-format",
@@ -110,7 +109,6 @@
       "ws-goal-loop",
       "ws-self-learning",
       "ws-changelog",
-      "ws-audit",
       "ws-configure-project",
       "ws-spec-index",
       "ws-senior-developer",
@@ -133,7 +131,6 @@
       "ws-spec-format",
       "ws-self-learning",
       "ws-changelog",
-      "ws-audit",
       "ws-configure-project",
       "ws-spec-index",
       "ws-senior-developer",
@@ -157,13 +154,11 @@
       "ws-spec-format"
     ],
     "ws-fix-pr": [
-      "ws-audit",
       "ws-self-learning"
     ],
     "ws-goal-fix-pr": [
       "ws-fix-pr",
       "ws-goal-loop",
-      "ws-audit",
       "ws-self-learning"
     ],
     "ws-write-plan": [],
@@ -173,8 +168,7 @@
     "ws-ship-pr": [
       "ws-secrets-leak-review",
       "ws-fable-judge",
-      "ws-spec-index",
-      "ws-audit"
+      "ws-spec-index"
     ],
     "ws-code-review": [
       "ws-karpathy-guidelines",
@@ -199,8 +193,7 @@
       "ws-ship-pr",
       "ws-goal-fix-pr",
       "ws-tdah",
-      "ws-karpathy-guidelines",
-      "ws-audit"
+      "ws-karpathy-guidelines"
     ],
     "ws-spec-list": [
       "ws-spec-to-pr",
@@ -242,7 +235,6 @@
       "ws-github-provider",
       "ws-azure-devops-provider"
     ],
-    "ws-audit": [],
     "ws-doctor": []
   },
   "autoloadOnly": [],

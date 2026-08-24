@@ -131,7 +131,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - Config: `.agents/skills/ws-shared/config.json` only — [`config-resolution.md`](.agents/skills/ws-shared/config-resolution.md)
 - SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — GitHub and Azure DevOps must implement the same required intents
 - Gates: [`gates.md`](.agents/skills/ws-shared/gates.md) — prefer `user-gate` (native structured choice when available; markdown fallback)
-- **Session model:** orchestrator session always runs under `currentModel`; switch via Pause → session host → Resume (no `--model` / `--model-chain`). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels`, and legacy phase keys — apply exclusively to standard `dispatch-agent` subagents (lite is inline; telemetry only). `defaults.enableDag` (default `false`) forces sequential task execution; `true` restores threshold-based parallel DAG. Optional review-model soft tip at Advance into Step 6 (full orch only)
+- **Session model:** orchestrator session always runs under `currentModel`; switch via Pause → session host → Resume (no `--model` / `--model-chain`). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels`, and legacy phase keys — apply exclusively to standard `dispatch-agent` subagents (lite is inline; telemetry only). `defaults.enableDag` (default `false`) forces sequential task execution; `true` restores threshold-based parallel DAG. `defaults.verboseMode` (explicit `true` → executing model reasons and prints a start-of-step `*` preview; omitted/`false` → silent; schema/`ws-configure-project` seed writes `true`). Optional review-model soft tip at Advance into Step 6 (full orch only)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
 - **Product commits:** standard after Step 5 when score ≥ 9 (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 / lite Step 4). Review uses `git diff {base}...HEAD`. No push before ship.
@@ -246,7 +246,7 @@ MEMORY = anti-regression (input + output). Changelog = append-only history, not 
 - **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Record Root Cause & Trap in `{sharedDir}/memory/YYYY-MM-DD-[slug].md` and compile.
 - **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap (and `{sharedDir}/backend.md` / `frontend.md` when those pattern flags are on). `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
 - **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory `Severity: High/Critical` memory entry.
-- **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` (script path, not a skill load). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
+- **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` (script path, not a skill load; run compile only after the file is on disk, not in the same parallel tool batch as Write). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
 - `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.
 
 Entry shape: `### [YYYY-MM-DD] [Topic]` plus Layer, Module, Severity, PathPattern, Scenario / Context, DO NOT, INSTEAD DO.
@@ -349,7 +349,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
    - `docs/index.html` (rebuild catalog via `node bin/build-site.js` / `npm run build-site:bump`, and update website feature cards/install sections/FAQ as applicable).
    - `README.md` (update human install/usage narrative, CLI flags, and feature options).
    - Root `AGENTS.md` and [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) (keep skill indexes, task routers, autoload set, and CLI documentation in sync).
-   - [`FEATURES.md`](FEATURES.md) (feature inventory and skill catalog narrative — mandatory sync target).
+   - [`FEATURES.md`](FEATURES.md) when `tracking.featuresMdEnabled` is not `false` (feature inventory — optional via `{sharedDir}/config.json`; upstream dogfood keeps it on).
 2. Evaluate: **ws-check-harness** (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow [`CATALOG.md`](CATALOG.md) § Upstream developer workflow (dependency graph, integrity, version/catalog, hub drift).
 3. If hashed install content changed, regenerate integrity in the same commit (`npm run generate-integrity` + `npm run verify-integrity`) — [`CATALOG.md`](CATALOG.md) § Before ship PR step 7.
 

@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -103,13 +103,6 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
 8. **Telemetry aggregate** (post-delivery, non-blocking): after successful ship completion — PR created (`stopBeforeFixPr` / workflow Step 8 handoff), merge done (standalone or full convergence), or `shipAction: skip` with workflow delivery marked complete — run `node bin/generate-telemetry-aggregate.cjs` (writes `{plansDir}/telemetry/aggregate.json`). When `stopBeforeFixPr`, orchestrator Step 9 also runs this after `ws-goal-fix-pr` convergence (idempotent). On failure: **warn and continue** — do not block ship, merge, or PR handoff.
    - Done when: aggregate script ran or failure warned; delivery outcome already reported.
 
-## Runtime audit (`defaults.enableAuditing`)
-
-When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), follow [`ws-audit`](../ws-audit/SKILL.md):
-- **Inherit or Init:** in workflow mode, inherit the active orchestrator audit session (`{us-dir}`); in standalone mode, initialize a session under `{plansDir}/ship-{shipHead}`.
-- **Catch script errors:** whenever any script or helper (`detect-base-branch.sh`, `verify.sh`, provider scripts `fix_pr_azure_context.py` / `fetch_threads.cjs` / `resolve_thread.cjs`, SCM CLI commands, or telemetry scripts) fails or exits non-zero, append a finding (`category: "script"`, `severity: "error"`).
-- **Finalize & gate:** when running standalone, finalize the audit session at completion/stop and present the upstream issue gate if errors occurred.
-
 ## Output
 
 ```markdown
@@ -123,7 +116,7 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 - Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `bash {skillsRoot}/ws-ship-pr/scripts/verify.sh`
 - SCM Providers (configured via `config.json` `providers.scm`): [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md)
 - Security: [ws-secrets-leak-review](../ws-secrets-leak-review/SKILL.md)
-- Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md) · Audit: [ws-audit](../ws-audit/SKILL.md)
+- Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md)
 - Base detection: `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../ws-spec-to-pr/ARTIFACTS.md)
 
 ## Subagent contract

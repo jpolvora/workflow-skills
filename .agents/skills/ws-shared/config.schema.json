@@ -127,11 +127,6 @@
           "default": false,
           "description": "When true, ws-configure-project --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted or false → on-demand only. Does not set defaults.autoload."
         },
-        "enableAuditing": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, ws-spec-to-pr* orchestrators activate ws-audit runtime observer to log execution anomalies, diagnose performance/correctness, detect disposable scripts, and propose upstream GitHub issues/reusable tooling at run end. Omitted or missing config → effective false."
-        },
         "sessionLeases": {
           "type": "boolean",
           "default": true,
@@ -141,6 +136,11 @@
           "type": "boolean",
           "default": false,
           "description": "When true, break execution plans into multiple parallel tasks executed concurrently by subagents. When false (default), execute tasks sequentially one by one in serial order."
+        },
+        "verboseMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Seed/schema default true (config.json.example and ws-configure-project writes). Runtime: effective only when the JSON value is explicit true; omitted or false → silent. The executing model reasons about this run and prints a Starting step N (label) bullet preview before any tool call. Do not ship canned preview text."
         },
         "contextBudget": {
           "type": "integer",
@@ -325,10 +325,15 @@
       "description": "Optional tracking-file list for ws-task-lifecycle Completion.",
       "additionalProperties": true,
       "properties": {
+        "featuresMdEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default if omitted), the features file participates in the default Completion walk (auto-detected: repo-root FEATURES.md when it exists, else {specsDir}/index.PRD). When false, skip the features file entirely."
+        },
         "canonicalFiles": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
-          "description": "Repo-relative tracking files walked in listed order. Absent or empty → FEATURES.md, PLAN.md, PRODUCT.PRD, then index at plans.specsDir (default .agents/specs/index.PRD). Do not use bare index.PRD unless that file exists at repo root."
+          "description": "Repo-relative tracking files walked in listed order. Absent or empty → auto-detected features file (when tracking.featuresMdEnabled is not false), PLAN.md, PRODUCT.PRD. An explicit list replaces the default entirely (include FEATURES.md or index.PRD yourself if wanted)."
         }
       }
     },

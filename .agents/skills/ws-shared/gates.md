@@ -20,6 +20,7 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
 | **Config** | Only `.agents/skills/ws-shared/config.json`. No `ws-spec-to-pr/config.json` / `ws-spec-to-pr-lite/config.json`. |
 | **User gates** | Prefer native structured choice UI when available; markdown fallback when not; HS-1 on cancel. |
+| **Verbose step preview** | When `defaults.verboseMode` is explicit `true`, the model executing the step (orch for orch-owned/lite inline work; the dispatched subagent otherwise) reasons about **this run** and prints `Starting step N (label):` plus `*` bullets before any tool call. Omitted/`false` → silent. Schema/`ws-configure-project` seed writes `true`. Preview text is not canned in skills or scripts. |
 
 ---
 

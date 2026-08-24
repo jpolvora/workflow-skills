@@ -1,5 +1,103 @@
 # Changelog
 
+### [2026-08-24 01:20] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 rebuild-index revision)
+- **Done**: `rebuild-index` stamps max state revision; validate checks row hash only; contract uses `revision: 5`
+- **Result**: Resume after rebuild works for in-flight states past Step 0
+
+### [2026-08-24 01:15] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 partial plans index discovery)
+- **Done**: setup.md + FAQ: `rebuild-index` on incomplete resume lists; contract test rebuilds a missing row
+- **Result**: Orphaned `*.state.md` files can re-enter the index before validate
+
+### [2026-08-24 01:10] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 plans-index missing row)
+- **Done**: Fail-closed when `{plansDir}/index.json` exists but has no row for the workflow (in-repo states); contract test added
+- **Result**: Untracked plan folders no longer pass `validate_state.cjs`
+
+### [2026-08-24 01:05] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr CI (shared AGENTS.md 14000 B budget)
+- **Done**: Kept both resolver filenames; shortened tools/autoload/scripts rows so hub AGENTS.md stays under 14000 B
+- **Result**: `test-context-budget.js` passes again
+
+### [2026-08-24 01:00] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 ac-ledger resume docs + resolver table)
+- **Done**: FAQ + setup.md 5d backfill for missing `ac-ledger.json`; hub scripts table lists Python resolver again; artifact-economy asserts both recipes
+- **Result**: Pre-0.3.37 resumes can init the ledger before pre-advance 1
+
+### [2026-08-24 00:55] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr round (PR 239 missing ac-ledger negative test)
+- **Done**: Contract tests: standard + lite `--pre-advance 1` fail when `ac-ledger.json` is absent
+- **Result**: Dropping the ledger gate cannot pass `test-workflow-state-contract.js`
+
+### [2026-08-24 00:50] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr + /ws-goal-fix-pr (PR 239 Python pre-advance twin)
+- **Done**: Froze standard + lite `validate_state.py` to exec Node SoT; aligned `update_state.py` stateVersion 2; retargeted quality-gates to `validate_state.cjs`
+- **Result**: Python and Node `--pre-advance` can no longer disagree on plan.index.json / ledger / skip-aware artifacts
+
+### [2026-08-24 00:45] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr round 3 (PR 239 eval contract for optional FEATURES.md)
+- **Done**: Made eval id 1 conditional on `tracking.featuresMdEnabled`; added eval id 3 for the false branch; test asserts both
+- **Result**: Agents that skip FEATURES.md when the flag is false no longer fail eval
+
+### [2026-08-24 00:30] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr fix-pr round 2 (PR 239 plan.index resume docs)
+- **Done**: FAQ + setup.md backfill for missing `plan.index.json` on pre-0.3.37 resume; integrity regenerated
+- **Result**: Operators can rebuild the index before implement pre-advance after package update
+
+### [2026-08-24 00:20] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr then fix PR 239 review threads
+- **Done**: Contract tests for Step 7 `no-test-surface` / `testing-disabled` skip → `--pre-advance 8` without a testing report
+- **Result**: Skip-aware ship advance is now regression-locked in `test-workflow-state-contract.js`
+
+### [2026-08-24 00:08] Agent: Cursor Grok 4.6
+- **Prompt**: Add config verboseMode; preview bullets from the executing model; default true
+- **Done**: `defaults.verboseMode` schema/seed `true` (`config.json.example`, ws-configure-project); runtime omitted/`false` silent, explicit `true` prints a reasoned start-of-step list; no canned preview script
+- **Result**: ws-spec-to-pr* steps announce a live analysis unless the consumer sets false
+
+
+### [2026-08-23 23:55] Agent: Cursor Grok 4.6
+- **Prompt**: Fix memory trap compiler scripts
+- **Done**: Fail-closed Node compile (dated heading + DO NOT/INSTEAD DO, colon-inside-bold labels); Python twin execs `.cjs`; isolated `test-memory-formatting.js` to `--repo-root`
+- **Result**: Invalid entries no longer rewrite MEMORY.md; py/cjs parsers cannot drift
+
+
+### [2026-08-23 23:35] Agent: Cursor Grok 4.6
+- **Prompt**: Improve workflow-skills efficiency; enumerate ws-spec-to-pr; report, plan, parallel implementation
+- **Done**: Wired existing helpers into live dispatch (ledger init, plan index, sequential DAG stub, test-surface probe); skip-aware Node pre-advance; report+plan under `{plansDir}/workflow-efficiency-audit/`
+- **Result**: Default Step 3 is a script stub; pre-advance no longer demands skipped artifacts; unique-runtime Python ports deferred
+
+
+### [2026-08-23 23:20] Agent: Composer
+- **Prompt**: Remove ws-audit skill completely
+- **Done**: Deleted ws-audit skill tree and tests; stripped orch/ship/fix invoke sites, catalogs, doctor switch, config flag (already absent from schema/config); regenerated integrity/site
+- **Result**: Package no longer ships runtime audit observer or defaults.enableAuditing
+
+### [2026-08-23 23:00] Agent: Composer
+- **Prompt**: Which skill requires FEATURES.md; make optional via config.json
+- **Done**: Documented hard fail was `test-doc-sync.js` (not a runtime skill); added `tracking.featuresMdEnabled`; wired ws-task-lifecycle + hubs + doc-sync
+- **Result**: Consumers can set `featuresMdEnabled: false` to disable FEATURES.md walk/require
+
+### [2026-08-23 22:35] Agent: Composer
+- **Prompt**: Audit unfinished workflows vs PRs/commits/code; close stale leftovers
+- **Done**: Marked us-217 (#219), deepseek-harness-improvements (#216), us-209 (#213), us-211 (#212) completed; cancelled superseded us-211 pause run; rebuilt plans index
+- **Result**: 0 unfinished workflows remain; ready for new `/ws-spec-to-pr` start
+
+### [2026-08-23 22:26] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-cleanup → Delete listed candidates
+- **Done**: Removed 96 disposable paths (scratch, shipped orphans under us-236, `.tmp-*`, review rounds)
+- **Result**: Plan/runtime leftovers cleared; tracked plan state files remain dirty locally
+
+### [2026-08-23 22:16] Agent: Cursor Grok 4.6
+- **Prompt**: track 236
+- **Done**: Added `us-236` to Feature map + Next-specs; marked `[x]` with Done-log row for PR #238
+- **Result**: `.agents/specs/index.PRD` tracks shipped `ws-task-lifecycle` / autoload opt-in
+
+### [2026-08-23 17:59] Agent: Cursor Grok 4.6
+- **Prompt**: Merge PR 238 after fix-pr convergence
+- **Done**: Merged develop → main; commented issue #236; Step 9 completed; lease released
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/238 merged (`7203c86`)
+
 ### [2026-08-23 17:54] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr 238 round 6
 - **Done**: Tighten hasMergedDelivery: reject `not merged PR`; require whole-line `status: completed`

@@ -29,16 +29,16 @@
 | [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
 | [`scm-provider-contract.md`](scm-provider-contract.md) | Required SCM intents (`ws-github-provider` ↔ `ws-azure-devops-provider` parity) |
 | [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
-| [`tools.md`](tools.md) | Canonical agent tool vocabulary (aliases → config keys), **Path tokens** (`{skillsRoot}` / `{sharedDir}` / `{plansDir}`), script launchers (`python` / `node` / `bash`). Load with `config.json` before tool calls. |
+| [`tools.md`](tools.md) | Tool aliases, path tokens `{skillsRoot}` / `{sharedDir}` / `{plansDir}`, launchers (`python` / `node` / `bash`). Load with `config.json`. |
 | [`CATALOG.md`](CATALOG.md) | On-demand promoted-skill inventory and consumer task router |
 | [`CROSS-PLATFORM.md`](CROSS-PLATFORM.md) | UTF-8, quoting, and explicit-launcher runtime contract |
-| [`autoload.md`](autoload.md) | Always-applied skill list + **specs vocabulary / progressive-disclosure router** (which specs skill to load) + **hub contracts** (SCM parity, verify score) |
+| [`autoload.md`](autoload.md) | Always-applied list, specs skill router, hub contracts (SCM, verify score) |
 | [`STACK.md.example`](STACK.md.example) | Template for human-readable stack companion — seeds `STACK.md` |
 | [`setup.md`](setup.md) | Bootstrap & entry logic shared by `ws-spec-to-pr` and `ws-spec-to-pr-lite` |
 | [`MEMORY.md.template`](MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
 | [`CHANGELOG.md.template`](CHANGELOG.md.template) | Empty ws-changelog stub — seeds `CHANGELOG.md` |
 | [`skill-dependencies.json`](skill-dependencies.json) | Install graph + **`packageVersion`** + single **`upstream`** ownership block (no per-skill `upstream:` in SKILL.md) |
-| [`scripts/`](scripts/) | Resolver helpers for hybrid/global installs: `resolve_consumer_root.py` / `resolve_consumer_root.cjs` (`--repo-root` → cwd hub probe → `parents[4]` when script is project-local) |
+| [`scripts/`](scripts/) | [`resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) (Node SoT) and [`resolve_consumer_root.py`](scripts/resolve_consumer_root.py) (Python imports). `--repo-root` → cwd hub. |
 
 ## Consumer-owned (local only)
 
@@ -158,7 +158,7 @@ Additional obligations when maintaining and releasing the upstream skills packag
 - [ ] **3. Regenerate Integrity Manifest**: Run `npm run generate-integrity` and `npm run verify-integrity`.
 - [ ] **4. Harness Audit**: Run `ws-check-harness` to ensure 0 critical findings.
 - [ ] **5. Hub Sync**: Keep the upstream root `AGENTS.md` and this hub (`ws-shared/AGENTS.md` + [`autoload.md`](autoload.md)) in sync before shipping PR.
-- [ ] **6. FEATURES Sync**: Update package-root `FEATURES.md` (upstream clone only — **not** shipped to consumer installs) when shipped capabilities change.
+- [ ] **6. FEATURES Sync**: When `tracking.featuresMdEnabled` is not `false` and package-root `FEATURES.md` is in use (upstream clone only — **not** shipped to consumer installs), update it when shipped capabilities change. Set `tracking.featuresMdEnabled: false` to disable.
 
 ---
 

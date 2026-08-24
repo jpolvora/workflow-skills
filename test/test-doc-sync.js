@@ -7,15 +7,21 @@ const skills = fs.readdirSync(path.join(repoRoot, '.agents/skills'), { withFileT
   .filter((entry) => entry.isDirectory() && entry.name !== 'ws-shared' && fs.existsSync(path.join(repoRoot, '.agents/skills', entry.name, 'SKILL.md')))
   .map((entry) => entry.name);
 for (const skill of skills) assert.match(catalog, new RegExp(`\\\`${skill}\\\``), `catalog includes ${skill}`);
-for (const relative of [
+const configPath = path.join(repoRoot, '.agents/skills/ws-shared/config.json');
+const config = fs.existsSync(configPath)
+  ? JSON.parse(fs.readFileSync(configPath, 'utf8'))
+  : {};
+const featuresMdEnabled = config.tracking?.featuresMdEnabled !== false;
+const requiredDocs = [
   'README.md',
-  'FEATURES.md',
   'CATALOG.md',
   'docs/index.html',
   '.agents/skills/ws-shared/AGENTS.md',
   '.agents/skills/ws-shared/CATALOG.md',
   '.agents/skills/ws-shared/CROSS-PLATFORM.md',
-]) {
+];
+if (featuresMdEnabled) requiredDocs.splice(1, 0, 'FEATURES.md');
+for (const relative of requiredDocs) {
   assert.doesNotMatch(fs.readFileSync(path.join(repoRoot, relative), 'utf8'), /^(?:<{7}|={7}|>{7})/m, `${relative} has no conflict marker`);
 }
 const writeSpec = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-write-spec/SKILL.md'), 'utf8');
@@ -33,5 +39,7 @@ for (const heading of [
 ]) assert.match(site, new RegExp(heading), `site documents ${heading}`);
 const build = run(path.join(repoRoot, 'bin/build-site.js'), ['--check']);
 assert.strictEqual(build.status, 0, build.stderr);
-assert.strictEqual(JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).version, '0.3.36');
+assert.strictEqual(JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).version, '0.3.37');
+const taskLifecycle = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-task-lifecycle/SKILL.md'), 'utf8');
+assert.match(taskLifecycle, /featuresMdEnabled/, 'task-lifecycle honors tracking.featuresMdEnabled');
 console.log('test-doc-sync: ok');

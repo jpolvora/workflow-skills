@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -16,7 +16,7 @@ Execute the coding and testing steps from the plan (build mode) or correct defec
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-**Reads:** execution plan (`step-03-*.plan.exec.md`), refined plan (`step-02-*.plan.refined.md`), or draft plan (`step-01-*.plan.md`); `config.json` for layer patterns; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
+**Reads:** `{us-dir}/plan.index.json` AC slices via `plan_index.cjs read --ac` when that file exists (do not read a `superseded: true` step-01). Else execution plan (`step-03-*.plan.exec.md`), refined plan, or draft plan; `config.json` for layer patterns; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
 
 ## Invocation
 
@@ -123,7 +123,7 @@ No commit/push (orch/user owns staging). Surgical scope only. Schema migrations 
 
 ## Subagent contract
 
-- Implement only assigned task ids, AC ids, and writable paths (scoreAndRefine second pass: assigned set is the full Pass 1 `files_touched` unless Option 3 named a subset).
+- Implement only assigned task ids, AC ids, and writable paths (scoreAndRefine second pass: assigned set is the full Pass 1 `files_touched` unless Option 3 named a subset). Prefer `plan.index.json` slices over a full superseded plan.
 - Consult injected memory and matching backend/frontend patterns before mutation.
 - Run the named configured verification commands after each task batch.
 - Never write workflow state or ledger files; return structured evidence to the orchestrator.

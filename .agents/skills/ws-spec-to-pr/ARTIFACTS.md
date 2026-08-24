@@ -30,8 +30,11 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 | Complexity classification | `step-00-{slug}.classify.md` | Step 0 (`ws-classify-complexity`) | No |
 | Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 8)** when `includeRefinedPlan` and no refined plan |
 | Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 8)** when `includeRefinedPlan` and present (replaces plan) |
-| Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 | No |
-| DAG | `step-03-{slug}.exec.dag.json` | Step 3 | No |
+| Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 (orch stub or `ws-plan-to-tasks`) | No |
+| DAG | `step-03-{slug}.exec.dag.json` | Step 3 (`write_sequential_dag.cjs` when `enableDag` is false; `ws-plan-to-tasks` when true) | No |
+| Plan index | `plan.index.json` | Step 1 (`plan_index.cjs build`; rebuild after Step 2) | No |
+| AC ledger | `ac-ledger.json` | Step 0 (`ac_ledger.cjs init`) | No |
+| Live run | `run.json` / `RUN.md` | Every `update_state` transition | No |
 | Check-implementation report | `step-05-{slug}.plan.report.md` | Step 5 | **Yes (Step 8)** when `includeCheckReport` |
 | Code review | `step-06-{slug}.review.md` | Step 6 | **Yes (Step 8)** when `includeCodeReview` |
 | Review fix report | `step-06-{slug}.fix.report.md` | Step 6 fix → re-review loop | No |
@@ -47,17 +50,19 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 
 | Advance to step N | Required on disk (minimum) |
 |-------------------|----------------------------|
-| 1 | `step-00-{slug}.spec.md` |
+| 1 | `step-00-{slug}.spec.md` + `ac-ledger.json` |
 | 2 | `step-00-{slug}.spec.md` + `step-01-{slug}.plan.md` |
-| 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` |
-| 4 | `step-02-{slug}.plan.refined.md` if present, else `step-01-{slug}.plan.md` |
+| 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` (Step 2 skipped `interview-not-required`) |
+| 4 | plan of record + `plan.index.json` + `step-03-{slug}.plan.exec.md` (sequential stub when `enableDag` is false) |
 | 5 | plan or refined plan + implementation tree (state manifest `created` / `artifacts` non-empty, or `dryRun`) |
 | 6 | `step-05-{slug}.plan.report.md` |
 | 7 | `step-06-{slug}.review.md` when code review ran |
-| 8 | `step-07-{slug}.testing.report.md` when Step 7 completed (not skipped) |
+| 8 | `step-07-{slug}.testing.report.md` when Step 7 completed (not skipped `testing-disabled` / `no-test-surface`) |
 | 9 | `step-08-{slug}.result.md` + PR exists (ship evidence) |
 
-**Lite orch:** mirrors advance-to steps **1–5** with the same artifact names where those steps exist; lite ship still uses `step-08-{slug}.result.md` at delivery.
+**Plan index read contract:** Steps 3–7 resolve plan text through `{us-dir}/plan.index.json` (`plan_index.cjs read --ac AC{n}` or `build_dispatch_context.cjs`). Do not read a `superseded: true` `step-01` body. Rebuild the index after Step 2 stamps `--draft` on step-01.
+
+**Lite orch:** mirrors advance-to steps **1–5** with lite artifact names (`step-06` review at lite Step 3; `step-08` result at lite Step 4). Same `ac-ledger.json` / `plan.index.json` rules. Lite ship still uses `step-08-{slug}.result.md` at delivery.
 
 `step-00-{slug}.classify.md` is advisory (Step 0); it is **not** a prerequisite for advance-to.
 
@@ -96,7 +101,7 @@ Stage **only** artifacts enabled by `config.json` → `defaults.deliveryCommitAr
 5. `git add` only resolved paths under `{us-dir}`; commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
 6. Product/source staging remains separate (`commit-code`: path-scoped workflow `files_touched`, not directory roots).
 
-**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
+**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, `plan.index.json`, `ac-ledger.json`, `run.json`, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
 
 Result file may still be **written** for orch evidence when `includeDeliveryResult` is false — it simply is not staged.
 
@@ -145,7 +150,7 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 
 | 1 | `ws-write-plan` |
 | 2 | `ws-interview` |
-| 3 | `ws-plan-to-tasks` |
+| 3 | `ws-plan-to-tasks` (only when `enableDag: true`; else orch `write_sequential_dag.cjs`) |
 | 4 | `ws-implement-tasks` (build) |
 | 5 | `ws-verify-plan` |
 | 6 | `ws-code-review` (+ `ws-implement-tasks` fix → re-review, max 3) |

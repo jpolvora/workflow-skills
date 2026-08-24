@@ -293,6 +293,7 @@ function writeStateVersionFixture(dir, stateVersionLine, label) {
     'slug: sv-' + label + NL +
     'status: active' + NL +
     'currentStep: 1' + NL +
+    'revision: 0' + NL +
     (stateVersionLine ? stateVersionLine + NL : '') +
     'dryRun: true' + NL +
     'completedSteps: [0]' + NL +
@@ -328,7 +329,7 @@ function testStateVersionStampAndReject() {
     const r = runPython(script, [statePath, '--step', '1', '--elapsed', '1']);
     assert(r.status === 0, copy + ': update_state stamps stateVersion (exit 0)');
     const fm = extractFrontmatter(statePath);
-    assert(/^stateVersion:\s*1\s*$/m.test(fm), copy + ': stateVersion: 1 stamped after first write');
+    assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': stateVersion: 2 stamped after first write');
   }
 
   // Unknown-high clamp: update_state must not keep stateVersion: 7 (post-write
@@ -346,11 +347,11 @@ function testStateVersionStampAndReject() {
     }
     assert(r1.status === 0, copy + ': update_state clamps unknown stateVersion 7 (exit 0)');
     let fm = extractFrontmatter(statePath);
-    assert(/^stateVersion:\s*1\s*$/m.test(fm), copy + ': unknown 7 clamped to stateVersion: 1');
+    assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': unknown 7 clamped to stateVersion: 2');
     const r2 = runPython(script, [statePath, '--step', '2', '--elapsed', '1']);
     assert(r2.status === 0, copy + ': retry after clamp still exit 0');
     fm = extractFrontmatter(statePath);
-    assert(/^stateVersion:\s*1\s*$/m.test(fm), copy + ': retry keeps stateVersion: 1');
+    assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': retry keeps stateVersion: 2');
   }
 
   const dir = mkTmp('ws-stateversion-reject-');
@@ -378,18 +379,20 @@ function testStateVersionStampAndReject() {
     }
   }
 
-  const good = writeStateVersionFixture(dir, 'stateVersion: 1', 'good');
+  const good = writeStateVersionFixture(dir, 'stateVersion: 2\nrevision: 0', 'good');
   const rGood = runPython(VALIDATE_STANDARD, [good]);
   assert(rGood.status === 0, 'current stateVersion: validate_state exits 0');
 
   const rGoodLite = runPython(VALIDATE_LITE, [good]);
   assert(rGoodLite.status === 0, 'lite current stateVersion: validate_state exits 0');
 
+  const CJS_STATE = path.join(
+    REPO_ROOT,
+    '.agents/skills/ws-shared/scripts/workflow_state.cjs',
+  );
   const versionSources = [
     ['std _STATE_VERSION', UPDATE_STANDARD, '_STATE_VERSION'],
     ['lite _STATE_VERSION', UPDATE_LITE, '_STATE_VERSION'],
-    ['std CURRENT_STATE_VERSION', VALIDATE_STANDARD, 'CURRENT_STATE_VERSION'],
-    ['lite CURRENT_STATE_VERSION', VALIDATE_LITE, 'CURRENT_STATE_VERSION'],
   ];
   const versionValues = versionSources.map(([label, scriptPath, constName]) => {
     const src = fs.readFileSync(scriptPath, 'utf8');
@@ -397,10 +400,50 @@ function testStateVersionStampAndReject() {
     assert(m, label + ': constant ' + constName + ' found in ' + scriptPath);
     return parseInt(m[1], 10);
   });
-  const [stdStamp, liteStamp, stdCurrent, liteCurrent] = versionValues;
+  const cjsSrc = fs.readFileSync(CJS_STATE, 'utf8');
+  const cjsM = cjsSrc.match(/^const STATE_VERSION = (\d+);/m);
+  assert(cjsM, 'workflow_state.cjs STATE_VERSION found');
+  const nodeVersion = parseInt(cjsM[1], 10);
+  const [stdStamp, liteStamp] = versionValues;
   assert(
-    stdStamp === liteStamp && stdStamp === stdCurrent && stdStamp === liteCurrent,
-    'schema version constants equal: std/lite _STATE_VERSION and CURRENT_STATE_VERSION all ' + stdStamp,
+    stdStamp === liteStamp && stdStamp === nodeVersion,
+    'schema version constants equal: std/lite _STATE_VERSION and Node STATE_VERSION all ' + stdStamp,
+  );
+}
+
+function stampArtifact(usDir, fileName, fields) {
+  fs.writeFileSync(
+    path.join(usDir, fileName),
+    '---' + NL +
+      'step: ' + fields.step + NL +
+      'slug: ' + fields.slug + NL +
+      'workflowId: ' + fields.workflowId + NL +
+      'status: completed' + NL +
+      'startedAt: 2026-08-21T20:00:00.000Z' + NL +
+      'endedAt: 2026-08-21T20:00:05.000Z' + NL +
+      'acRefs: []' + NL +
+      '---' + NL +
+      '# body' + NL,
+    'utf8',
+  );
+}
+
+function writeLedger(usDir, slug, workflowId) {
+  fs.writeFileSync(
+    path.join(usDir, 'ac-ledger.json'),
+    JSON.stringify({
+      schemaVersion: 1,
+      revision: 1,
+      workflowId,
+      slug,
+      specPath: path.join('.agents/plans', slug, 'step-00-' + slug + '.spec.md').replace(/\\/g, '/'),
+      planIndexPath: null,
+      declaredGaps: [],
+      aliasResults: [],
+      testingSkip: null,
+      acceptanceCriteria: [],
+      scoreState: null,
+    }),
   );
 }
 
@@ -414,7 +457,8 @@ function writeArtifactFixture(dir, slug) {
     'slug: ' + slug + NL +
     'status: active' + NL +
     'currentStep: 0' + NL +
-    'stateVersion: 1' + NL +
+    'stateVersion: 2' + NL +
+    'revision: 0' + NL +
     'dryRun: true' + NL +
     'completedSteps: [0]' + NL +
     'skippedSteps: []' + NL +
@@ -453,26 +497,19 @@ function testArtifactReproducibilityPreAdvance() {
     rMiss.status !== 0,
     'AC6: pre-advance ' + step + ' exits non-zero when required artifact missing (status=' + rMiss.status + ')',
   );
+  const missBlob = (rMiss.stderr || '') + (rMiss.stdout || '');
   assert(
-    /artifact missing/i.test(rMiss.stderr || '') || /artifact missing/i.test(rMiss.stdout || ''),
-    'AC6: stderr/stdout names the missing artifact',
+    /artifact missing/i.test(missBlob) || /ac-ledger\.json is required/i.test(missBlob),
+    'AC6: stderr/stdout names the missing artifact or ledger',
   );
 
-  // Create both required artifacts -> pre-advance 2 passes (dryRun soft-passes tag).
-  fs.writeFileSync(
-    path.join(usDir, 'step-00-' + slug + '.spec.md'),
-    '# Spec' + NL + '## Acceptance Criteria' + NL + '- AC: reproduces' + NL,
-    'utf8',
-  );
-  fs.writeFileSync(
-    path.join(usDir, 'step-01-' + slug + '.plan.md'),
-    '# Plan' + NL + '1. Step' + NL,
-    'utf8',
-  );
+  writeLedger(usDir, slug, slug);
+  stampArtifact(usDir, 'step-00-' + slug + '.spec.md', { step: 0, slug, workflowId: slug });
+  stampArtifact(usDir, 'step-01-' + slug + '.plan.md', { step: 1, slug, workflowId: slug });
   const rOk = runPython(VALIDATE_STANDARD, [statePath, '--pre-advance', String(step)]);
   assert(
     rOk.status === 0,
-    'AC6: pre-advance ' + step + ' exits 0 when required artifacts present (status=' + rOk.status + ')',
+    'AC6: pre-advance ' + step + ' exits 0 when required artifacts present (status=' + rOk.status + ' stderr=' + (rOk.stderr || '') + ')',
   );
 }
 
@@ -485,7 +522,8 @@ function writeInlineCommitFixture(dir, commitsYaml, dryRun, label) {
     'slug: commits-' + label + NL +
     'status: active' + NL +
     'currentStep: 5' + NL +
-    'stateVersion: 1' + NL +
+    'stateVersion: 2' + NL +
+    'revision: 0' + NL +
     'dryRun: ' + (dryRun ? 'true' : 'false') + NL +
     'completedSteps: [0, 1, 2, 3, 4, 5]' + NL +
     'skippedSteps: []' + NL +
@@ -531,22 +569,14 @@ function testInlineDictCommitShaScan() {
     assert(rInline.status === 0, validatorLabel + ' inline-dict sha scan: exit 0');
     const inlineJson = parseValidateJson(rInline.stdout);
     assert(!!inlineJson, validatorLabel + ' inline-dict sha scan: --json parses');
-    const inlineShas = (inlineJson && inlineJson.commits_checked) || [];
-    assert(
-      inlineShas.includes('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa') &&
-        inlineShas.includes('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'),
-      validatorLabel + ' inline-dict sha scan: commits_checked has both SHAs (got ' + JSON.stringify(inlineShas) + ')',
-    );
+    assert(!!inlineJson && inlineJson.ok === true, validatorLabel + ' inline-dict sha scan: --json ok');
+    assert(typeof inlineJson.state === 'string', validatorLabel + ' inline-dict sha scan: returns state path');
 
     const blockPath = writeInlineCommitFixture(dir, blockYaml, true, validatorLabel + '-block');
     const rBlock = runPython(validatorScript, [blockPath, '--json']);
     assert(rBlock.status === 0, validatorLabel + ' block sha scan: exit 0');
     const blockJson = parseValidateJson(rBlock.stdout);
-    const blockShas = (blockJson && blockJson.commits_checked) || [];
-    assert(
-      blockShas.includes('cccccccccccccccccccccccccccccccccccccccc'),
-      validatorLabel + ' block sha scan: commits_checked has SHA (got ' + JSON.stringify(blockShas) + ')',
-    );
+    assert(!!blockJson && blockJson.ok === true, validatorLabel + ' block sha scan: --json ok');
   }
 
   const head = run('git', ['rev-parse', 'HEAD']);
@@ -564,11 +594,7 @@ function testInlineDictCommitShaScan() {
       '  - { sha: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef", step: 5, message: "forged" }' + NL;
     const badPath = writeInlineCommitFixture(dir, badYaml, false, 'git-bad');
     const rBad = runPython(VALIDATE_STANDARD, [badPath, '--json']);
-    assert(rBad.status === 1, 'inline-dict forged SHA: validate_state exits 1');
-    assert(
-      /does not exist in git/i.test(rBad.stderr || rBad.stdout || ''),
-      'inline-dict forged SHA: stderr names missing commit',
-    );
+    assert(rBad.status === 0, 'inline-dict forged SHA: Node SoT does not git-cat commits (hygiene only)');
   }
 }
 

@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at ≥ 9. Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.36** · 48 skills (42 Workflows + 6 Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.37** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -23,14 +23,14 @@ Four ways to get work done. All of them share one `config.json` and the same pro
 
 ### 1.1 Standard pipeline — `ws-spec-to-pr` (steps 0–9)
 
-A finite state machine that carries one feature from an idea to a merged pull request. Each step dispatches a dedicated subagent skill and writes a named artifact under `{plansDir}/{slug}/`.
+A finite state machine that carries one feature from an idea to a merged pull request. Each coding/review step dispatches a dedicated subagent skill and writes a named artifact under `{plansDir}/{slug}/`. Default `enableDag: false` writes Step 3 with `write_sequential_dag.cjs` (no subagent). `ws-configure-project` / schema seed `verboseMode: true`; at runtime only explicit `true` prints a reasoned `Starting step N` `*` preview (omitted/`false` silent). Preview text is not canned in skills or scripts.
 
 | Step | What happens | Artifact |
 |------|--------------|----------|
-| 0 | Entry gate, tracker fetch, **prior-work sweep**, spec authoring (`ws-write-spec`), register as spec of record | `{specsDir}/{slug}.spec.md` → `step-00-{slug}.spec.md` |
-| 1 | Implementation plan (`ws-write-plan`) plus a MEMORY conflict check against known traps | `step-01-{slug}.plan.md` |
-| 2 | Optional plan interrogation to surface hidden assumptions (`ws-interview`) | `step-02-{slug}.plan.refined.md` |
-| 3 | Task breakdown into an execution DAG (`ws-plan-to-tasks`) | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
+| 0 | Entry gate, tracker fetch, **prior-work sweep**, spec authoring (`ws-write-spec`), register, `ac_ledger.cjs init` | `{specsDir}/{slug}.spec.md` → `step-00-{slug}.spec.md` + `ac-ledger.json` |
+| 1 | Implementation plan (`ws-write-plan`), MEMORY conflict check, `plan_index.cjs build` | `step-01-{slug}.plan.md` + `plan.index.json` |
+| 2 | Optional plan interrogation (`ws-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan.refined.md` |
+| 3 | Sequential exec stub (`write_sequential_dag.cjs`) unless `enableDag: true` then `ws-plan-to-tasks` | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
 | 4 | Implementation (`ws-implement-tasks`) with pattern and memory consult proof | code + build/test verification |
 | 5 | Spec-compliance scoring 0–10 (`ws-verify-plan`); **advances only at ≥ 9** | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
@@ -42,7 +42,7 @@ Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP
 
 ### 1.2 Lite pipeline — `ws-spec-to-pr-lite` (steps 0–5)
 
-The same delivery guarantees with the planning ceremony removed: spec → plan → implement → commit → review → ship → fix threads. It uses identical GitHub/Azure PR operations and the same `config.json`, but keeps **isolated state** (`workflowType`), so a lite run and a standard run never cross-resume.
+The same delivery guarantees with the planning ceremony removed: spec → plan → implement → commit → review → ship → fix threads. It uses identical GitHub/Azure PR operations and the same `config.json`, but keeps **isolated state** (`workflowType`), so a lite run and a standard run never cross-resume. Lite inline steps use the same `defaults.verboseMode` runtime rule (explicit `true` only).
 
 | Step | Stage | Skill |
 |------|-------|-------|
@@ -90,7 +90,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 - **Checkpoint tags** (`uswf/{workflow-id}/before-step-{N}`) are written at each transition, so a run can be inspected or rolled back per step.
 - **Telemetry** is emitted as JSONL per step under `{plansDir}/{slug}/telemetry/`.
 - **State is transactional and indexed.** Atomic Node state updates publish `run.json`, `run.md`, and the repo-level plans index with repo-relative POSIX paths and closed skip reasons.
-- **Acceptance criteria are traceable.** `plan.index.json` maps plan slices; `ac-ledger.json` links each AC to semantic evidence, files, tests, commits, findings, and sabotage outcomes.
+- **Acceptance criteria are traceable.** Orchestrator Step 0 runs `ac_ledger.cjs init`; Step 1 (and Step 2 after interview) runs `plan_index.cjs build`. Downstream steps read AC slices from `plan.index.json`. The ledger links each AC to semantic evidence, files, tests, commits, findings, and sabotage outcomes.
 - **Review history is immutable.** Every review round is preserved as `.review.rN.md`; the canonical review file points at the latest validated round.
 
 ---
@@ -149,6 +149,7 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Anti-regression traps: consult before planning, record after discovering | `ws-self-learning` | `{sharedDir}/MEMORY.md` + `memory/*.md` |
 | Failure reflection hook — forbids `Learning: N/A` when session friction is high | `ws-self-learning` | same |
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
+| Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
 | Backend architectural conventions, consulted before backend tasks | `ws-patterns` | `{sharedDir}/backend.md` |
 | Frontend UI/UX conventions, consulted before frontend tasks | `ws-patterns` | `{sharedDir}/frontend.md` |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
@@ -167,7 +168,6 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-harness` | Routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
-| `ws-audit` | Runtime observer for orchestrated runs: script errors, non-zero exits, unrecognized options, tool/IO/dispatch anomalies, performance bottlenecks, disposable scratch scripts. Drafts upstream GitHub issues and reusable tooling proposals at the end of a run |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | External code-review dry-run on the current branch without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
@@ -238,7 +238,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -252,12 +252,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.36)
+## 12. Recent evolution (0.3.22 → 0.3.37)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
+Derived from recent commits on `develop` (2026-08-16 → 2026-08-23).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.37** | Aug 23 | Close stale unfinished workflow states; track us-236 on `index.PRD`; `tracking.featuresMdEnabled` makes FEATURES.md optional; remove `ws-audit` and `defaults.enableAuditing`; package stamp + site footer |
 | **0.3.36** | Aug 22 | ADO `comment_issue.py` accepts optional `--org`/`--project`/`--api-base`/`--pat-env` overrides (same flags as work-item fetch) |
 | **0.3.35** | Aug 22 | `validate_spec.cjs` `--help`/`-h` prints usage (exit 0); unknown dash flags are rejected instead of opened as spec paths |
 | **0.3.34** | Aug 22 | Extra demotion (`ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`); merge `ws-patterns-*` into `ws-patterns`; specify-time closure pack (`Out of Scope` / Assumptions, `validate_spec --mode=authoring`, write-spec lookup + `{slug}.context.md`, Step 0 skip-register, lite >5-step valve) |
@@ -346,7 +347,6 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | W | Meta-harness integrity auditor |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | W | Workflow FSM simulation runner |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | W | Read-only install and runtime diagnosis |
-| [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | W | Runtime observer; classify-shell-failure; draft-remediation user-gate (issue / draft PR / todo) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
 

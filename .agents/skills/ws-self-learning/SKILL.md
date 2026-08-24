@@ -1,6 +1,6 @@
 ---
 name: ws-self-learning
-version: 0.3.36
+version: 0.3.37
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 invocation_names:
   - self-learning
@@ -74,10 +74,11 @@ After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record 
 
 1. **Analyze context** — What did we try that failed? What non-obvious constraint or pitfall did we hit?
 2. **Write to `{sharedDir}/memory/`** — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
-3. **Compile `MEMORY.md`** — Expand tokens, then run:
+3. **Compile `MEMORY.md`** — Expand tokens, then run (only after the memory file exists on disk; never in the same parallel tool batch as the `Write`):
    ```bash
    node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
    ```
+   Compile fails closed (exit 1, no `MEMORY.md` rewrite) when any `memory/*.md` lacks `### [YYYY-MM-DD]` or both **DO NOT** (or Trap Avoided) and **INSTEAD DO** (or Solution). The Python path is a thin exec of this Node SoT.
 4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` (only when valid per rules above) in the final proof; one-line summary in the reply.
 
 ## Conflict Resolution

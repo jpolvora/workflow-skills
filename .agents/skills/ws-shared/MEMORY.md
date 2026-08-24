@@ -6,6 +6,96 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-24] verboseMode omitted is off even when schema default is true
+- **Layer**: `Harness`
+- **Module**: `ws-shared / config-resolution / ws-configure-project`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/config.schema.json, .agents/skills/ws-shared/config-resolution.md, .agents/skills/ws-configure-project/INTERVIEW.md, test/test-verbose-mode.js`
+- **Scenario / Context**: Adding `defaults.verboseMode` so orch prints a reasoned start-of-step list
+- **DO NOT**: Treat JSON Schema `default: true` or a seeded `config.json.example` value as the runtime value when the key is omitted from a live `config.json`
+- **INSTEAD DO**: Runtime enable only on explicit `true`. Omitted/`false` stay silent. Write `true` only from schema seed, `config.json.example`, and `ws-configure-project` `--section defaults` (Recommended)
+
+### [2026-08-24] Shared hub AGENTS.md has a 14000 B budget
+- **Layer**: `Harness`
+- **Module**: `ws-shared/AGENTS.md / test-context-budget`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/AGENTS.md, test/test-context-budget.js`
+- **Scenario / Context**: PR 239 CI. Restoring `resolve_consumer_root.py` in the hub scripts table pushed `ws-shared/AGENTS.md` over 14000 UTF-8 bytes. Local `npm test` was not re-run after that docs-only commit; GitHub `test` failed while review was green.
+- **DO NOT**: Lengthen hub `AGENTS.md` without checking `test-context-budget.js` (`utf8Size('.agents/skills/ws-shared/AGENTS.md') <= 14000`). Do not skip `node test/test-context-budget.js` after hub prose edits.
+- **INSTEAD DO**: Keep required filenames, then shorten adjacent table cells until the file is under 14000 B. Re-run context-budget before push.
+
+### [2026-08-24] rebuild-index must not reset index.revision to 0
+- **Layer**: `Harness`
+- **Module**: `workflow_state.cjs rebuildIndex / validateSnapshot`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-workflow-state-contract.js`
+- **Scenario / Context**: PR 239 review. Documented `rebuild-index` recovery wrote `index.revision: 0`. Validate then required `index.revision === state.revision`, so any in-flight state with `revision > 0` still failed after a successful rebuild.
+- **DO NOT**: Hardcode rebuilt index revision to 0, or couple a global index revision to each state's revision. Do not cover rebuild only with a `revision: 0` fixture.
+- **INSTEAD DO**: Stamp rebuilt `index.revision` to max state revision. Compare only the per-workflow `stateSha256` row hash. Assert rebuild then validate with `revision: 5`.
+
+### [2026-08-24] Python validate_state twins must exec Node SoT
+- **Layer**: `Harness`
+- **Module**: `validate_state.py / workflow_state.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/validate_state.py, .agents/skills/ws-spec-to-pr-lite/scripts/validate_state.py, .agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-quality-gates.js`
+- **Scenario / Context**: PR 239 review. Node `requiredAdvanceArtifact` gained plan.index.json, skip-aware artifacts, and ac-ledger gates. Python `--pre-advance` stayed on a separate implementation, so `python validate_state.py` could pass while `node validate_state.cjs` failed (and vice versa). Quality-gates still spawned Python, so CI could not catch Node-only regressions.
+- **DO NOT**: Keep a second `--pre-advance` parser in Python when Node `workflow_state.cjs` is the orch SoT. Do not leave `test-quality-gates.js` pointed at the twin.
+- **INSTEAD DO**: Freeze both `validate_state.py` copies to exec sibling `validate_state.cjs`. Stamp Python `update_state.py` `_STATE_VERSION` to match Node `STATE_VERSION`. Point quality-gates at the CJS CLI.
+
+### [2026-08-24] Pre-advance 8 must cover Step 7 testing skips
+- **Layer**: `Harness`
+- **Module**: `workflow_state.cjs / requiredAdvanceArtifact`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-workflow-state-contract.js`
+- **Scenario / Context**: PR 239 review. Skip-aware pre-advance exempts `step-07-{slug}.testing.report.md` when Step 7 is skipped with `testing-disabled` or `no-test-surface`, but the contract suite never ran `--pre-advance 8` on that branch.
+- **DO NOT**: Land skip-aware `requiredAdvanceArtifact` rules whose only coverage is sister steps (interview skip → 3, DAG skip → 4, lite review → 4). A later edit can re-block legitimate skipped-testing ships with no CI signal.
+- **INSTEAD DO**: Assert pre-advance 8 fails without the testing report when Step 7 is not skipped, then `finish --status skipped` with each testing skip reason and assert pre-advance 8 exits 0. Re-score the ledger at boundary `step5` before those checks.
+
+### [2026-08-24] Pre-advance 1 needs a missing-ledger negative test
+- **Layer**: `Harness`
+- **Module**: `workflow_state.cjs / ac-ledger.json / test-workflow-state-contract`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-workflow-state-contract.js`
+- **Scenario / Context**: PR 239 review. The gate `ac-ledger.json is required before advance` for `next >= 1` shipped with only a passing fixture that always seeds the ledger first.
+- **DO NOT**: Add a hard pre-advance file gate and only assert the happy path after writing that file. A later deletion of the check would not fail CI.
+- **INSTEAD DO**: Assert `--pre-advance 1` exits non-zero and names `ac-ledger.json` before the ledger is written (standard and lite).
+
+### [2026-08-24] Plans index missing-row must stay fail-closed
+- **Layer**: `Harness`
+- **Module**: `workflow_state.cjs / plans index.json`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-workflow-state-contract.js`
+- **Scenario / Context**: PR 239 review. Skipping the index check when `workflowId` had no row unblocked OS-temp Python fixtures, but also let in-repo states pass while untracked in `{plansDir}/index.json`.
+- **DO NOT**: Change `if (!row || mismatch)` to `if (row && mismatch)` so a missing index entry is ignored. That hides archive/prune/manual index drift.
+- **INSTEAD DO**: Fail with `plans index missing workflow entry` when the state file is inside `repoRoot` and the index exists. Skip the index check only for paths outside the consumer root (OS-temp fixtures). Assert the missing-row path in the contract suite.
+
+### [2026-08-24] Partial plans index needs rebuild-index on resume
+- **Layer**: `Harness`
+- **Module**: `setup.md / validate_state.cjs rebuild-index`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/setup.md, .agents/skills/ws-spec-to-pr/docs/faq.md, test/test-workflow-state-contract.js`
+- **Scenario / Context**: PR 239 review. Discovery rebuilt `{plansDir}/index.json` only when the file was absent. A partial index hid on-disk `*.state.md` from the unfinished-workflow gate while validate fail-closed on missing rows.
+- **DO NOT**: Treat a present `index.json` as complete. Do not skip `rebuild-index` after package update or when the resume list looks incomplete.
+- **INSTEAD DO**: Run `validate_state.cjs rebuild-index` when the index is missing, stale after upgrade, or an expected workflow is absent. Document the `plans index missing workflow entry` recovery in FAQ. Assert rebuild restores the row.
+
+### [2026-08-24] Optional tracking files need conditional eval contracts
+- **Layer**: `Harness`
+- **Module**: `ws-task-lifecycle / evals / test-ws-task-lifecycle`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-task-lifecycle/evals/evals.json, .agents/skills/ws-task-lifecycle/SKILL.md, test/test-ws-task-lifecycle.js`
+- **Scenario / Context**: PR 239 review. SKILL.md made FEATURES.md optional via `tracking.featuresMdEnabled`, but eval id 1 and the test still locked in "FEATURES.md before PLAN.md" unconditionally. Agents that correctly skip FEATURES.md fail eval.
+- **DO NOT**: Add an opt-out branch to a SKILL without updating the machine-checked eval contract and its test assertions. Default-path-only eval is insufficient once the SKILL adds an explicit opt-out.
+- **INSTEAD DO**: Gate the FEATURES.md assertion on `tracking.featuresMdEnabled is not false`, add an eval case for the `false` branch, and assert both branches in the test.
+
+### [2026-08-24] New pre-advance artifacts need resume backfill docs
+- **Layer**: `Harness`
+- **Module**: `workflow_state.cjs / plan.index.json / faq.md`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, .agents/skills/ws-spec-to-pr/docs/faq.md, .agents/skills/ws-shared/setup.md`
+- **Scenario / Context**: PR 239 review. 0.3.37 requires `{us-dir}/plan.index.json` before implement. In-flight workflows started on 0.3.36 never ran `plan_index.cjs build`.
+- **DO NOT**: Add a hard pre-advance file gate whose only coverage is new-run dispatch. Resume/troubleshooting that still describes HS-5 as YAML-only leaves operators stuck after update.
+- **INSTEAD DO**: Document the backfill command in `ws-spec-to-pr/docs/faq.md` and `setup.md` resume, and assert those recipes in `test-artifact-economy.js`.
+
 ### [2026-08-23] Shared worktree integrity vs other-worker dirty skills
 - **Layer**: `Harness`
 - **Module**: `skill-integrity / ws-spec-to-pr Step 7`
@@ -14,6 +104,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Parallel ws-multi-spec workers share one worktree. Step 7 `npm run test` / `npm run verify-integrity` fail when another worker has uncommitted hashed skill files (or `package.json` test-list changes). Regenerating integrity while those files are dirty stamps *their* hashes into this worker's G2-code commit.
 - **DO NOT**: Run `npm run generate-integrity` or treat integrity/test red as this slug's defect while other workers' hashed paths are dirty. Do not `git add -A`.
 - **INSTEAD DO**: Stash *other* workers' tracked hashed paths by explicit path; regenerate integrity only after the tree is this slug's hashed files; pop the stash after ship. Re-check `git rev-parse --abbrev-ref HEAD` stays on the assigned branch.
+
+### [2026-08-23] Memory compile must fail closed and stay on the Node SoT
+- **Layer**: `Harness`
+- **Module**: `ws-self-learning / self_learning.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-self-learning/scripts/self_learning.cjs, .agents/skills/ws-self-learning/scripts/self_learning.py, test/test-memory-formatting.js`
+- **Scenario / Context**: Compiling `{sharedDir}/memory/*` after writing a new trap, or spawning the leftover Python path
+- **DO NOT**: Keep a second Python parser; silently drop or stub entries that lack `### [YYYY-MM-DD]` / DO NOT / INSTEAD DO; compile in the same parallel tool batch as the Write of the memory file; compile the live hub from `test-memory-formatting.js`
+- **INSTEAD DO**: Parse labels as both `**Name**:` and `**Name:**`; refuse to rewrite MEMORY.md when any file is invalid; exec the Node SoT from `self_learning.py`; Write then compile sequentially; isolate compiler tests with `--repo-root`
 
 ### [2026-08-23] Ledger skipReason must be in the published schema
 - **Layer**: `Harness`
@@ -32,6 +131,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: PR 237 switched `stateSha256` to frontmatter-only hashing. In-flight `run.json` / plans index still stored the previous full-file SHA-256, so `validate --pre-advance 6` failed on hash mismatch before ledger skips were evaluated.
 - **DO NOT**: Compare persisted `stateSha256` only to `stateIdentityHash` after changing the hash identity. That breaks consumers who have not yet run `performUpdate`.
 - **INSTEAD DO**: Accept the legacy full-file digest in `validateSnapshot` for `run.json` and the plans index until the next `performUpdate` rewrites those files. Keep writers on the new frontmatter-only hash. Cover with a fixture that seeds a legacy full-file `run.json` and asserts pre-advance 6 still passes.
+
+### [2026-08-23] Dispatch must invoke existing orch helpers
+- **Layer**: `Harness`
+- **Module**: `ws-spec-to-pr / STEP-DISPATCH`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md, .agents/skills/ws-spec-to-pr/scripts/*.cjs, .agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: Helpers (`ac_ledger.cjs`, `plan_index.cjs`, `write_sequential_dag.cjs`, `probe_test_surface.cjs`) and Node pre-advance rules shipped while STEP-DISPATCH still dispatched a Step 3 subagent and never ran `init`/`build`/probe. Pre-advance then failed or agents paid 90–180 s for empty DAG JSON.
+- **DO NOT**: Land a `.cjs` helper plus `validate_state` requirement without a STEP-DISPATCH (or lite SKILL) recipe that actually runs it. Do not treat `measure_harness` artifact-reread 0 B as proof while plan.index is off the live path.
+- **INSTEAD DO**: Wire `node {skillsRoot}/…` in the step table in the same change as the helper; add a recipe assertion in `test-artifact-economy.js`; honor `skippedSteps` reasons in `requiredAdvanceArtifact`.
 
 ### [2026-08-23] Autoload opt-out must strip Always-applied row
 - **Layer**: `Config / autoload`
@@ -60,14 +168,14 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Treat leftover argv tokens (including `--help`) as a spec filename
 - **INSTEAD DO**: Print usage and exit 0 for `--help`/`-h`; reject other dash tokens as unknown arguments before any `readFileSync`
 
-### [2026-08-22] Nested-quote python -c must be audited
+### [2026-08-22] Nested-quote python -c is forbidden
 - **Layer**: `Harness`
-- **Module**: `ws-audit / check_shell_quoting / extract_frontmatter_field`
+- **Module**: `check_shell_quoting / extract_frontmatter_field`
 - **Severity**: `High`
-- **PathPattern**: `.agents/skills/ws-audit/**, .agents/skills/ws-check-harness/scripts/check_shell_quoting.cjs, .agents/skills/ws-shared/scripts/extract_frontmatter_field.cjs, .agents/skills/ws-shared/CROSS-PLATFORM.md`
-- **Scenario / Context**: Agents invent `python -c` one-liners with both `"` and `'` (e.g. `["']` character classes) that raise `SyntaxError` under shell quoting. Recovery without logging left no upstream issue/PR/todo.
-- **DO NOT**: Invent nested-quote `python -c` / `node -e` one-liners for frontmatter or YAML fields, or recover silently without an audit finding when `enableAuditing` is true.
-- **INSTEAD DO**: Use `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs`. On `-c`/`-e` SyntaxError, run `classify-shell-failure`, append both findings, and present `draft-remediation` user-gate (issue / draft PR / todo / copy / skip). Static gate: `check_shell_quoting.cjs` in Phase 5a.
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/check_shell_quoting.cjs, .agents/skills/ws-shared/scripts/extract_frontmatter_field.cjs, .agents/skills/ws-shared/CROSS-PLATFORM.md`
+- **Scenario / Context**: Agents invent `python -c` one-liners with both `"` and `'` (e.g. `["']` character classes) that raise `SyntaxError` under shell quoting.
+- **DO NOT**: Invent nested-quote `python -c` / `node -e` one-liners for frontmatter or YAML fields.
+- **INSTEAD DO**: Use `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs`. Static gate: `check_shell_quoting.cjs` in Phase 5a.
 
 ### [2026-08-22] Memory conflict must match harness paths
 - **Layer**: `Harness`
@@ -220,14 +328,6 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Stamp `stateVersion` with `max(current, schema)` (that preserves values above the supported schema).
 - **INSTEAD DO**: Always emit `_STATE_VERSION`. Clamp unknown highs so post-write validation can succeed. Keep `validate_state` reject-loud for on-disk missing/older/unknown until a writer rewrite.
 
-### [2026-08-16] audit session JSON must persist repo-relative paths
-- **Layer**: `Infrastructure`
-- **Module**: `ws-audit / audit_log.js initAudit`
-- **Severity**: `Medium`
-- **Scenario / Context**: `initAudit` stored `usDir` and `logPath` via `path.resolve`, so committed `.audit-session-*.json` files contained Windows absolute paths (`l:\source\...`). Other clones and CI cannot resume those sessions; the commit leaks a local filesystem layout.
-- **DO NOT**: Persist `path.resolve` absolute paths in audit session JSON that may be committed under `{us-dir}`.
-- **INSTEAD DO**: Write posix repo-relative `usDir`/`logPath` (hydrate to absolute only for fs I/O). Cover with `test/test-ws-audit.js` asserting the on-disk JSON is not absolute and has no drive letter.
-
 ### [2026-08-15] Upstream dogfood contract is inlined in root AGENTS.md
 - **Layer**: `Infrastructure`
 - **Module**: `AGENTS.md / session autoload`
@@ -253,6 +353,12 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **INSTEAD DO**: If the feature tip has 0 commits not in develop/main, mark the leftover workflow `completed` (already merged) and start new work from develop. Before checkout, copy or restore plan artifacts if they live only on the current branch. Restore HEAD to `develop` after closing the leftover run.
 
 ### [2026-08-15] Hybrid/global scripts must not resolve consumer ws-shared from __file__
+- **Layer**: `harness`
+- **Module**: `ws-shared/scripts`
+- **Severity**: `high`
+- **Scenario / Context**: Global-only install (`$HOME/.agents/skills`) with consumer `ws-shared` under `$PWD`; scripts using `parents[4]` or sibling `ws-shared` next to `__file__` silently target the global hub.
+- **DO NOT**: `self_learning.py --compile` writing `$HOME/.agents/skills/ws-shared/MEMORY.md`; `validate_state` / `classify.cjs` reading global `dagThresholds` / `plans.dir`.
+- **INSTEAD DO**: Shared `resolve_consumer_root` (Python + JS): `--repo-root` → CWD hub probe → `parents[4]` only when script is not under `{globalSkillsRoot}`. Port all affected scripts; document skill-script expand rule in `tools.md`.
 
 ### [2026-08-15] Global vs local ws-* duplicates in this upstream repo
 - **Layer**: `Infrastructure`

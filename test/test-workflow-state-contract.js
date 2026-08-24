@@ -67,6 +67,9 @@ assert.strictEqual(run(update, [
 ]).status, 0);
 assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^step: 0$/m);
 assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^workflowId: wf$/m);
+const missingLedger = run(validate, [stateRel, '--pre-advance', '1', '--repo-root', root]);
+assert.notStrictEqual(missingLedger.status, 0, 'pre-advance 1 requires ac-ledger.json');
+assert.match(`${missingLedger.stdout}${missingLedger.stderr}`, /ac-ledger\.json is required before advance/);
 write(path.join(root, '.agents/plans/demo/ac-ledger.json'), JSON.stringify({ acceptanceCriteria: [] }));
 assert.strictEqual(run(validate, [stateRel, '--pre-advance', '1', '--repo-root', root]).status, 0, 'pre-advance 1 accepts stamped spec metadata');
 
@@ -135,6 +138,7 @@ verificationScore: 9
       { id: 'AC2', taskIds: ['T2'], planSectionIds: ['S2'], expectedTestNames: ['second behavior'] },
     ],
   }));
+  write(path.join(usDir, 'plan.index.json'), fs.readFileSync(path.join(pa6Root, 'plan.index.json')));
   const ledgerRel = `.agents/plans/${slug}/ac-ledger.json`;
   function ledger(args) {
     return run(ledgerScript, [...args, '--repo-root', pa6Root]);
@@ -331,5 +335,240 @@ acImplemented: 0
   stateData = parseFrontmatter(fs.readFileSync(path.join(commitRoot, commitStateRel), 'utf8')).data;
   assert.strictEqual(stateData.commits.filter((item) => item.sha === 'abcdef1').length, 1, 'same SHA is not duplicated');
 }
+
+const skipRoot = temp('ws-state-skip-');
+const skipStateRel = '.agents/plans/skip/wf.state.md';
+write(path.join(skipRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  verification: {},
+  defaults: {},
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(skipRoot, skipStateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: wf-skip
+slug: skip
+workflowType: standard
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+write(path.join(skipRoot, '.agents/plans/skip/step-00-skip.spec.md'), `---
+id: null
+slug: skip
+title: Skip
+source: local
+specDate: 2026-08-21
+---
+## Description
+Skip.
+## Acceptance Criteria
+- AC1: Skip interview still advances.
+`);
+write(path.join(skipRoot, '.agents/plans/skip/step-01-skip.plan.md'), `---
+step: 1
+slug: skip
+workflowId: wf-skip
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+# Plan
+
+## Work
+
+T00 implements AC1 in \`src/skip.js\` with V1:skip-test.
+`);
+write(path.join(skipRoot, '.agents/plans/skip/ac-ledger.json'), JSON.stringify({
+  schemaVersion: 1,
+  revision: 1,
+  workflowId: 'wf-skip',
+  slug: 'skip',
+  specPath: '.agents/plans/skip/step-00-skip.spec.md',
+  planIndexPath: null,
+  declaredGaps: [],
+  aliasResults: [],
+  testingSkip: null,
+  acceptanceCriteria: [{ id: 'AC1', text: 'Skip interview still advances.', status: 'Pending', evidence: [], tasks: [], planSections: [], files: [], commits: [], tests: [], verdicts: [], findings: [], sabotage: { required: false, status: 'not-required', exitCode: null }, linkEventIds: [] }],
+  scoreState: null,
+}));
+const skipCommon = ['--repo-root', skipRoot, '--jsonl-out', '.agents/plans/skip/telemetry/step-00.jsonl'];
+assert.strictEqual(run(update, ['dispatch', skipStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:00.000Z', ...skipCommon]).status, 0);
+assert.strictEqual(run(update, ['finish', skipStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z', ...skipCommon]).status, 0);
+assert.strictEqual(run(update, ['dispatch', skipStateRel, '--step', '1', '--timestamp', '2026-08-21T20:00:06.000Z', ...skipCommon]).status, 0);
+assert.strictEqual(run(update, ['finish', skipStateRel, '--step', '1', '--timestamp', '2026-08-21T20:00:07.000Z', ...skipCommon]).status, 0);
+assert.notStrictEqual(run(validate, [skipStateRel, '--pre-advance', '3', '--repo-root', skipRoot]).status, 0, 'pre-advance 3 requires refined plan when interview was not skipped');
+assert.strictEqual(run(update, ['dispatch', skipStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:08.000Z', ...skipCommon]).status, 0);
+assert.strictEqual(run(update, [
+  'finish', skipStateRel, '--step', '2', '--status', 'skipped', '--reason', 'interview-not-required',
+  '--timestamp', '2026-08-21T20:00:09.000Z', ...skipCommon,
+]).status, 0);
+assert.strictEqual(run(validate, [skipStateRel, '--pre-advance', '3', '--repo-root', skipRoot]).status, 0, 'pre-advance 3 skips refined plan when interview-not-required');
+assert.notStrictEqual(run(validate, [skipStateRel, '--pre-advance', '4', '--repo-root', skipRoot]).status, 0, 'pre-advance 4 requires plan.index.json before implement');
+assert.strictEqual(run(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/plan_index.cjs'), [
+  'build', '--plan', '.agents/plans/skip/step-01-skip.plan.md', '--spec', '.agents/plans/skip/step-00-skip.spec.md',
+  '--output', '.agents/plans/skip/plan.index.json', '--repo-root', skipRoot,
+]).status, 0);
+assert.strictEqual(run(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/write_sequential_dag.cjs'), [
+  '--slug', 'skip', '--workflow-id', 'wf-skip', '--plan', '.agents/plans/skip/step-01-skip.plan.md',
+  '--exec-out', '.agents/plans/skip/step-03-skip.plan.exec.md',
+  '--dag-out', '.agents/plans/skip/step-03-skip.exec.dag.json',
+  '--timestamp', '2026-08-21T20:00:10.000Z', '--repo-root', skipRoot,
+]).status, 0);
+assert.strictEqual(run(update, ['dispatch', skipStateRel, '--step', '3', '--timestamp', '2026-08-21T20:00:10.000Z', ...skipCommon]).status, 0);
+assert.strictEqual(run(update, [
+  'finish', skipStateRel, '--step', '3', '--status', 'skipped', '--reason', 'dag-disabled',
+  '--timestamp', '2026-08-21T20:00:11.000Z', ...skipCommon,
+]).status, 0);
+assert.strictEqual(run(validate, [skipStateRel, '--pre-advance', '4', '--repo-root', skipRoot]).status, 0, 'pre-advance 4 accepts sequential DAG stub plus plan.index.json');
+
+function assertTestingSkipPreAdvance8(reason) {
+  const { pa6Root, stateRel, usDir, common } = setupPreAdvance6Fixture({ includeFormatSkip: true });
+  stampArtifact(usDir, 'step-06-pa6.review.md', 6, 'pa6', 'wf-pa6');
+  assert.strictEqual(run(update, ['dispatch', stateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:00.000Z', ...common]).status, 0);
+  assert.strictEqual(run(update, ['finish', stateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:05.000Z', ...common]).status, 0);
+  assert.strictEqual(run(ledgerScript, [
+    'score', '--ledger', '.agents/plans/pa6/ac-ledger.json', '--boundary', 'step5', '--repo-root', pa6Root,
+  ]).status, 0);
+  const blocked = run(validate, [stateRel, '--pre-advance', '8', '--repo-root', pa6Root]);
+  assert.notStrictEqual(blocked.status, 0, `pre-advance 8 requires testing report when Step 7 not skipped (${reason})`);
+  assert.match(`${blocked.stdout}${blocked.stderr}`, /step-07-pa6\.testing\.report\.md/);
+  assert.strictEqual(run(update, ['dispatch', stateRel, '--step', '7', '--timestamp', '2026-08-21T21:00:06.000Z', ...common]).status, 0);
+  assert.strictEqual(run(update, [
+    'finish', stateRel, '--step', '7', '--status', 'skipped', '--reason', reason,
+    '--timestamp', '2026-08-21T21:00:07.000Z', ...common,
+  ]).status, 0);
+  assert.strictEqual(
+    run(validate, [stateRel, '--pre-advance', '8', '--repo-root', pa6Root]).status,
+    0,
+    `pre-advance 8 accepts Step 7 ${reason} skip without testing report`,
+  );
+}
+assertTestingSkipPreAdvance8('no-test-surface');
+assertTestingSkipPreAdvance8('testing-disabled');
+
+const liteValidate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/validate_state.cjs');
+const liteUpdate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
+const liteRoot = temp('ws-state-lite-');
+const liteStateRel = '.agents/plans/lite/wf.state.md';
+write(path.join(liteRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  verification: {},
+  defaults: {},
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(liteRoot, liteStateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: wf-lite
+slug: lite
+workflowType: lite
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+write(path.join(liteRoot, '.agents/plans/lite/step-00-lite.spec.md'), `---
+id: null
+slug: lite
+title: Lite
+source: local
+specDate: 2026-08-21
+---
+## Description
+Lite.
+## Acceptance Criteria
+- AC1: Lite implement uses plan.index.json.
+`);
+write(path.join(liteRoot, '.agents/plans/lite/step-01-lite.plan.md'), `---
+step: 1
+slug: lite
+workflowId: wf-lite
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+# Plan
+
+## Work
+
+T00 implements AC1 in \`src/lite.js\` with V1:lite-test.
+`);
+const liteMissingLedger = run(liteValidate, [liteStateRel, '--pre-advance', '1', '--repo-root', liteRoot]);
+assert.notStrictEqual(liteMissingLedger.status, 0, 'lite pre-advance 1 requires ac-ledger.json');
+assert.match(`${liteMissingLedger.stdout}${liteMissingLedger.stderr}`, /ac-ledger\.json is required before advance/);
+write(path.join(liteRoot, '.agents/plans/lite/ac-ledger.json'), JSON.stringify({
+  schemaVersion: 1, revision: 1, workflowId: 'wf-lite', slug: 'lite',
+  specPath: '.agents/plans/lite/step-00-lite.spec.md', planIndexPath: null,
+  declaredGaps: [], aliasResults: [], testingSkip: null,
+  acceptanceCriteria: [{ id: 'AC1', text: 'Lite implement uses plan.index.json.', status: 'Pending', evidence: [], tasks: [], planSections: [], files: [], commits: [], tests: [], verdicts: [], findings: [], sabotage: { required: false, status: 'not-required', exitCode: null }, linkEventIds: [] }],
+  scoreState: null,
+}));
+const liteCommon = ['--repo-root', liteRoot, '--jsonl-out', '.agents/plans/lite/telemetry/step-00.jsonl'];
+assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:00.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '1', '--timestamp', '2026-08-21T20:00:06.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '1', '--timestamp', '2026-08-21T20:00:07.000Z', ...liteCommon]).status, 0);
+assert.notStrictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '2', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 2 requires plan.index.json');
+assert.strictEqual(run(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/plan_index.cjs'), [
+  'build', '--plan', '.agents/plans/lite/step-01-lite.plan.md', '--spec', '.agents/plans/lite/step-00-lite.spec.md',
+  '--output', '.agents/plans/lite/plan.index.json', '--repo-root', liteRoot,
+]).status, 0);
+assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '2', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 2 accepts plan.index.json without step-02');
+stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-06-lite.review.md', 6, 'lite', 'wf-lite');
+assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:08.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:09.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '4', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 4 uses step-06 review, not step-03 exec');
+
+const indexGapRoot = temp('ws-state-index-gap-');
+write(path.join(indexGapRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  verification: {},
+  defaults: {},
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+const gapStateRel = '.agents/plans/gap/wf-gap.state.md';
+write(path.join(indexGapRoot, gapStateRel), `---
+stateVersion: 2
+revision: 5
+workflowId: wf-gap
+slug: gap
+workflowType: standard
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+---
+# State
+`);
+write(path.join(indexGapRoot, '.agents/plans/index.json'), JSON.stringify({
+  schemaVersion: 1,
+  revision: 0,
+  workflows: [],
+}));
+const missingRow = run(validate, [gapStateRel, '--repo-root', indexGapRoot]);
+assert.notStrictEqual(missingRow.status, 0, 'validate fails when plans index exists without this workflowId');
+assert.match(`${missingRow.stdout}${missingRow.stderr}`, /plans index missing workflow entry: wf-gap/);
+assert.strictEqual(run(validate, ['rebuild-index', '--repo-root', indexGapRoot]).status, 0, 'rebuild-index exits 0');
+assert.strictEqual(
+  run(validate, [gapStateRel, '--repo-root', indexGapRoot]).status,
+  0,
+  'rebuild-index restores the missing workflow row even when state revision is > 0',
+);
 
 console.log('test-workflow-state-contract: ok');

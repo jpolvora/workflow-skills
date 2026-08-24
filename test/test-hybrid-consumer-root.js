@@ -187,8 +187,12 @@ function scaffoldProjectLocalSelfLearning(projectRoot) {
   fs.mkdirSync(skillScripts, { recursive: true });
   fs.mkdirSync(sharedScripts, { recursive: true });
   fs.copyFileSync(
-    path.join(GLOBAL_SKILLS, 'ws-shared', 'scripts', 'resolve_consumer_root.py'),
-    path.join(sharedScripts, 'resolve_consumer_root.py'),
+    path.join(GLOBAL_SKILLS, 'ws-shared', 'scripts', 'resolve_consumer_root.cjs'),
+    path.join(sharedScripts, 'resolve_consumer_root.cjs'),
+  );
+  fs.copyFileSync(
+    path.join(GLOBAL_SKILLS, 'ws-self-learning', 'scripts', 'self_learning.cjs'),
+    path.join(skillScripts, 'self_learning.cjs'),
   );
   fs.copyFileSync(
     path.join(GLOBAL_SKILLS, 'ws-self-learning', 'scripts', 'self_learning.py'),
@@ -310,7 +314,9 @@ us: us-hybrid
 slug: us-hybrid
 status: in_progress
 currentStep: 1
-stateVersion: 1
+stateVersion: 2
+revision: 0
+skippedSteps: []
 completedSteps: [0]
 dryRun: true
 workflowManifest:
@@ -339,7 +345,7 @@ commits: []
   } catch {
     parsed = null;
   }
-  assert(parsed && parsed.state, 'validate_state returns JSON state path');
+  assert(parsed && parsed.ok === true && parsed.state, 'validate_state returns JSON ok + state path');
   const resolved = path.resolve(consumer, parsed.state);
   assert(
     resolved.replace(/\\/g, '/').includes('.agents/consumer-plans/'),

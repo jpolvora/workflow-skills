@@ -47,7 +47,19 @@ assert(
 const completion = skill.split('## Phase 3 — Completion')[1]?.split('## Rules')[0] || '';
 const featIdx = completion.indexOf('FEATURES.md');
 const planIdx = completion.indexOf('PLAN.md');
-assert(featIdx >= 0 && planIdx > featIdx, 'AC16/AC38: Completion lists FEATURES.md before PLAN.md');
+assert(featIdx >= 0 && planIdx > featIdx, 'AC16/AC38: Completion lists features file before PLAN.md');
+assert(
+  /featuresMdEnabled/.test(skill),
+  'Completion documents tracking.featuresMdEnabled for optional features file',
+);
+assert(
+  /auto-detect/i.test(completion),
+  'Completion auto-detects the features file',
+);
+assert(
+  /\{specsDir\}\/index\.PRD/.test(completion),
+  'Completion defaults the features file to {specsDir}/index.PRD',
+);
 
 assert(
   /ws-write-spec/.test(skill) &&
@@ -95,8 +107,16 @@ assert(
 
 const evalBlob = JSON.stringify(evals);
 assert(
-  evalBlob.includes('FEATURES.md before PLAN.md'),
-  'eval asserts FEATURES.md before PLAN.md',
+  evalBlob.includes('auto-detects the features file'),
+  'eval asserts features file auto-detection',
+);
+assert(
+  evalBlob.includes('When tracking.featuresMdEnabled is not false'),
+  'eval id 1 gates features file on tracking.featuresMdEnabled not false',
+);
+assert(
+  evalBlob.includes('When tracking.featuresMdEnabled is false'),
+  'eval covers the featuresMdEnabled false branch',
 );
 assert(
   evalBlob.includes('{plansDir}'),

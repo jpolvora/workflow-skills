@@ -58,7 +58,7 @@ These already group well, or renaming them now would churn SCM/PR vocabulary wit
 
 | Family | Current ids | Optional future ids | Why deferred |
 |--------|-------------|---------------------|--------------|
-| check / harness | `ws-check-harness`, `ws-check-workflows`, `ws-show-harness`, `ws-doctor`, `ws-audit` | `ws-harness-show`, `ws-harness-doctor`, `ws-harness-audit` | `ws-check-*` already groups the auditors; doctor/audit/show are distinct products |
+| check / harness | `ws-check-harness`, `ws-check-workflows`, `ws-show-harness`, `ws-doctor` | `ws-harness-show`, `ws-harness-doctor` | `ws-check-*` already groups the auditors; doctor/show are distinct products |
 | pr | `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr` | `ws-pr-ship`, `ws-pr-fix` | Slash commands `/ship-pr` `/fix-pr` are established |
 | fable | `ws-fable-method`, `ws-fable-judge`, `ws-fable-domain` | (none) | Already grouped |
 | patterns | `ws-patterns-backend`, `ws-patterns-frontend` | (none here) | Separate catalog-cleanup spec owns a possible `ws-patterns` merge; do not collide |

@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.36
+version: 0.3.37
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -32,19 +32,16 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel`, `dag`, `scoreAndRefine`, or `reviewFix` even if set. Lite Step 3 review-fix stays on Step `3` / `reviewerModel` / `stepModels["3"]`.
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`; wide-context simplify per [`gates.md`](../ws-shared/gates.md) § Score & Refine).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
-9. **Runtime audit:** When `defaults.enableAuditing` is `true`, follow [`ws-audit`](../ws-audit/SKILL.md) (init at bootstrap, append script execution errors including inline `-c`/`-e` quoting failures, anomalies/performance/correctness/disposable scripts per step, finalize + remediation `user-gate` via `draft-remediation` at end). When `false`, skip.
-10. **Session leases:** When `defaults.sessionLeases` is not explicit `false` (omitted → on), follow [`setup.md`](../ws-shared/setup.md) §5a: `acquire` before Step 0/resume; `heartbeat --lease-id {leaseId}` on each step transition; `release` on terminal status; `git-lock --holder {leaseId}` around destroyable git.
-11. **Patterns & MEMORY Consult:** In Steps 1, 2, and 3: if `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load `ws-patterns` before Web/UI edits; if `defaults.patternsBackend` is true, read `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load `ws-patterns` before backend edits; grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `pattern_consult` and `memory_consult` in step outputs.
-
-
+9. **Session leases:** When `defaults.sessionLeases` is not explicit `false` (omitted → on), follow [`setup.md`](../ws-shared/setup.md) §5a: `acquire` before Step 0/resume; `heartbeat --lease-id {leaseId}` on each step transition; `release` on terminal status; `git-lock --holder {leaseId}` around destroyable git.
+10. **Patterns & MEMORY Consult:** In Steps 1, 2, and 3: if `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load `ws-patterns` before Web/UI edits; if `defaults.patternsBackend` is true, read `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load `ws-patterns` before backend edits; grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `pattern_consult` and `memory_consult` in step outputs.
+11. **Verbose preview:** When `defaults.verboseMode` is explicit `true`, the session model (lite is inline) must **analyze this run** and print `Starting step {N} ({Label}):` plus 4–8 `*` bullets before any tool call for that step (goal, lookups, actions, conditional writes, next-step readiness). Do **not** copy a canned list. Omitted/`false` → silent. Schema/`ws-configure-project` seed writes `true`.
 
 ## Steps 0–5 Index
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` (+ authoring validate; skip register on fail); **prior-work sweep** before plan/code | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** authoring validation PASS **and** `step-00-{slug}.spec.md` registered + classifier user-gate completed |
-
-| 1 | Planning | `ws-write-plan` (design-intent git log for modifications) | `step-01-{slug}.plan.md` created & validated |
+| 0 | Spec | providers / `ws-write-spec` (+ authoring validate; skip register on fail); **prior-work sweep** before plan/code; after register `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs init --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/ac-ledger.json" --slug {slug} --workflow-id {workflow-id}` | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** authoring validation PASS **and** `step-00-{slug}.spec.md` registered + `ac-ledger.json` + classifier user-gate completed |
+| 1 | Planning | `ws-write-plan` (design-intent git log for modifications); then `node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs build --plan "{us-dir}/step-01-{slug}.plan.md" --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/plan.index.json"` | `step-01-{slug}.plan.md` + `plan.index.json` created & validated |
 | 2 | Implementation | `ws-implement-tasks` (**defect-class repo-wide sweep**) | Code modified + build/tests pass (`config.json.verification`); then required G2-code (skip if empty) |
 | 3 | Review | `ws-code-review` (+ fix; sibling modules beyond diff) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |
 | 4 | Ship | orch + `ws-ship-pr` (`check-pr-status` CI triage + **`comment-issue`** on create) | `step-08-{slug}.result.md` created + PR created/skipped per menu |

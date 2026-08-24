@@ -110,7 +110,7 @@ dispatch-agent:
 Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree via `Shell`: `worktree add` → merge → `worktree remove` → `branch -d`. Max 1 active. Audit: `Write` `stepDispatches[]`. No per-DAG-task worktree.
 
 **Step 4 dispatch:**
-- `defaults.enableDag: false` (default) or `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `step-01-*.plan.md` directly (sequential subagent task execution, no DAG).
+- `defaults.enableDag: false` (default) or `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `plan.index.json` AC slices (plan of record: refined if present, else step-01). Step 3 is an orch `write_sequential_dag.cjs` stub, not a subagent.
 - `defaults.enableDag: true` & `execMode: parallel` → DAG: `dispatch-agent` per level, ≤3 concurrent, no file overlap within level.
 
 ### Check-implementation score gate (Step 5)
@@ -324,6 +324,12 @@ Learning: use ## Step outputs (compact) plus at most two prior full outputs. Do 
 Telemetry is stamped by the orchestrator (`dispatchedAt`/`finishedAt`); do not author elapsedSec.
 End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, pattern_consult{frontend, backend}, memory_consult{keywords, hits}, model)
 ```
+```
+
+**VerboseMode addendum** (append to the body **only** when `defaults.verboseMode` is explicit `true`; omitted/`false` → skip):
+
+```markdown
+VerboseMode: analyze THIS run (skill contract, state, files on disk, skip rules, config). Before any tool call, print `Starting step {STEP} ({Label}):` plus 4–8 `*` bullets covering goal, lookups, actions, conditional writes, and how the next step becomes ready. Then do the work. Do not copy a canned list.
 ```
 
 

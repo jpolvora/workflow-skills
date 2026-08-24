@@ -1,7 +1,7 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
@@ -46,14 +46,17 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
 
 ## Phase 3 — Completion
 
+Resolve `tracking.featuresMdEnabled` from `{sharedDir}/config.json`: omitted or `true` → the features file participates in the **default** walk; explicit `false` → skip the features file entirely.
+
+**Features file auto-detection** (default walk step 1): when `tracking.featuresMdEnabled` is not `false`, resolve the features file path in this order — (a) repo-root `FEATURES.md` when it exists, (b) `{specsDir}/index.PRD` (default). When `featuresMdEnabled` is `false`, skip the features file step entirely. Mark the matching item `[x]` and append a Done-log line when the resolved file exists; skip with a note when it is absent. Do not create an empty features file.
+
 Walk tracking files in this order (or `tracking.canonicalFiles` when that JSON array is non-empty):
 
-1. `FEATURES.md` — mark the matching item `[x]` when the file exists.
+1. Features file — auto-detected per above (repo-root `FEATURES.md` when it exists, else `{specsDir}/index.PRD`); only when `tracking.featuresMdEnabled` is not `false`.
 2. `PLAN.md` — append a Done-log line when the file exists.
 3. `PRODUCT.PRD` — append a Done-log line when the file exists.
-4. `index.PRD` — use the listed path if present, else `{specsDir}/index.PRD`. Set the matching checkbox to `[x]` and append a Done-log line when the file exists.
 
-If `tracking.canonicalFiles` is absent or `[]`, use that default list. If it is a non-empty array of repo-relative paths, walk that array in listed order before changelog. If a listed path is exactly `index.PRD` (no directory) and repo-root `index.PRD` is missing, use `{specsDir}/index.PRD`.
+If `tracking.canonicalFiles` is absent or `[]`, use that default list (with the features file step omitted when `featuresMdEnabled` is `false`). If it is a non-empty array of repo-relative paths, walk that array in listed order before changelog (explicit list is authoritative — include `FEATURES.md` or `index.PRD` yourself if wanted). If a listed path is exactly `index.PRD` (no directory) and repo-root `index.PRD` is missing, use `{specsDir}/index.PRD`.
 
 Skip a path that is not on disk. Each skip produces one skip note that names the missing path. Skipping one file does not skip later steps that still apply. Do not create empty tracking files.
 

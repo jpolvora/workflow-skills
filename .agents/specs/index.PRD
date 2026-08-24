@@ -95,6 +95,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: unique-skill-script-runtime.spec.md`)
 - [x] Cooperative session leases for parallel agents on one worktree (`spec: workflow-session-leases.spec.md`)
 - [ ] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: us-235.spec.md`)
+- [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: us-236.spec.md`)
+
 
 
 ## 8. Next specs
@@ -152,6 +154,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 
 | 49 | `workflow-session-leases` | `[x]` done | Phase 4 | Cooperative session leases for parallel agents on one worktree |
 | 50 | `us-235` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist |
+| 51 | `us-236` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill |
 
 Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`.
 
@@ -207,6 +210,7 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchm
 | 2026-08-22 | `skill-catalog-cleanup` | Extra demotion + merge `ws-patterns-*` into `ws-patterns` | [PR #231](https://github.com/jpolvora/workflow-skills/pull/231) (`89e7c96`) |
 | 2026-08-22 | `fix-pr-proactive-class-sweep` | Proactive same-defect-class sweep in cooperative fix | [PR #231](https://github.com/jpolvora/workflow-skills/pull/231) (already in tree; index closed) |
 | 2026-08-22 | `specify-closure-pack` | Specify-time closure pack for score-10 spec delivery | [PR #231](https://github.com/jpolvora/workflow-skills/pull/231) (`89e7c96`) |
+| 2026-08-23 | `us-236` | Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill | [PR #238](https://github.com/jpolvora/workflow-skills/pull/238) |
 
 ## 11. Maintenance checklist
 

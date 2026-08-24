@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "deepseek-harness-improvements-20260816T204345Z",
+  "slug": "deepseek-harness-improvements",
+  "pipeline": "standard",
+  "status": "completed",
+  "currentStep": 9,
+  "pendingGate": null,
+  "nextAction": "Done",
+  "acTotal": 0,
+  "acImplemented": 0,
+  "score": 0,
+  "estimatedRemainingSec": 0,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 6,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 7,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 8,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 9,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    }
+  ],
+  "statePath": ".agents/plans/deepseek-harness-improvements/deepseek-harness-improvements-20260816T204345Z.state.md",
+  "stateSha256": "555224ad9453d1ad3fd77a7954a67c71bced0b960e98663fa60c1314b7692ed4"
+}

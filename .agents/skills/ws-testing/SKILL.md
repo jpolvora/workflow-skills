@@ -1,7 +1,7 @@
 ---
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -26,7 +26,7 @@ Standalone:
 /testing <plan-path> [spec=<spec-path>] [skip-browser]
 ```
 
-Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from orchestrator state. The orchestrator, not this skill, decides skip when `skipTesting` is set or when there is no meaningful test surface and unit tests are already green. UI browser testing requires explicit authorization. Mutation is **standard Step 7 only** — lite orch does not dispatch this skill. On Step 7 `autoMode` dispatch, the orchestrator supplies the resolved test-executor model (`defaults.testingModel` when non-empty, else `executionModel`, else the active session model). This skill does not pick a different model on its own. Standalone `/testing` (no orch) uses the current session model and does not switch.
+Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from orchestrator state. The orchestrator, not this skill, decides skip when `skipTesting` is set or when `node {skillsRoot}/ws-testing/scripts/probe_test_surface.cjs --json` reports `hasTestSurface: false` and unit tests are already green. Agent judgment cannot skip. UI browser testing requires explicit authorization. Mutation is **standard Step 7 only** — lite orch does not dispatch this skill. On Step 7 `autoMode` dispatch, the orchestrator supplies the resolved test-executor model (`defaults.testingModel` when non-empty, else `executionModel`, else the active session model). This skill does not pick a different model on its own. Standalone `/testing` (no orch) uses the current session model and does not switch.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -92,4 +92,4 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 - Capture test names, source files, aliases, timestamps, and exit codes for ledger linkage.
 - Derive sabotage status from the helper exit code and preserve byte-identical restoration.
 - Write only testing plan/report artifacts; hand product fixes back to implementation.
-- Return observed tests or machine skip evidence.
+- Return observed tests or machine skip evidence from `probe_test_surface.cjs` (never skip on judgment alone).

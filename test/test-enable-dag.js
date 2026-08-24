@@ -94,8 +94,8 @@ assert(
   'ws-plan-to-tasks SKILL.md references defaults.enableDag',
 );
 assert(
-  planToTasksSkill.includes('execMode: sequential'),
-  'ws-plan-to-tasks SKILL.md sets execMode: sequential when enableDag is false',
+  /only when `defaults.enableDag` is `true`/.test(planToTasksSkill),
+  'ws-plan-to-tasks SKILL.md is dispatched only when enableDag is true',
 );
 
 const specToPrSkill = read('.agents/skills/ws-spec-to-pr/SKILL.md');
@@ -108,6 +108,14 @@ const stepDispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 assert(
   stepDispatch.includes('defaults.enableDag'),
   'STEP-DISPATCH.md documents defaults.enableDag evaluation in Step 3',
+);
+assert(
+  stepDispatch.includes('write_sequential_dag.cjs'),
+  'STEP-DISPATCH.md writes sequential DAG via script when enableDag is false',
+);
+assert(
+  /do \*\*not\*\* `dispatch-agent`/.test(stepDispatch),
+  'STEP-DISPATCH.md does not dispatch a Step 3 subagent when enableDag is false',
 );
 
 const protocols = read('.agents/skills/ws-spec-to-pr/PROTOCOLS.md');

@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -94,13 +94,6 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 
 8. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); `Learning:` titles per round; links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence from step 7; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
    - Done when: the report is presented to the user.
-
-## Runtime audit (`defaults.enableAuditing`)
-
-When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), follow [`ws-audit`](../ws-audit/SKILL.md):
-- **Inherit or Init:** in workflow mode (Step 9 / Step 5), inherit the active orchestrator audit session (`{us-dir}`); in standalone mode, initialize a session under `{plansDir}/pr-{PR-NUMBER}`.
-- **Catch script errors:** whenever any provider script (`fix_pr_azure_context.py`, `fetch_threads.cjs`, `resolve_thread.cjs`, SCM CLI helpers) or verification script fails or exits non-zero, append a finding (`category: "script"`, `severity: "error"`, capturing command line, stdout, stderr, and `recovered: true/false`).
-- **Finalize & gate:** when running standalone, finalize the audit session at loop completion/stop and present the upstream issue gate if errors occurred.
 
 ## Subagent contract
 

@@ -1,79 +1,79 @@
 {
   "schemaVersion": 1,
-  "revision": 1,
+  "revision": 24,
   "workflowId": "us-236-20260823T195756Z",
   "slug": "us-236",
   "pipeline": "standard",
-  "status": "active",
-  "currentStep": 0,
+  "status": "completed",
+  "currentStep": 9,
   "pendingGate": null,
-  "nextAction": "Finish step 0",
-  "acTotal": 0,
-  "acImplemented": 0,
-  "score": null,
-  "estimatedRemainingSec": 1931.5,
+  "nextAction": "Done",
+  "acTotal": 51,
+  "acImplemented": 51,
+  "score": 9,
+  "estimatedRemainingSec": 0,
   "steps": [
     {
       "step": 0,
-      "status": "active",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 41.5
+      "estimatedRemainingSec": 0
     },
     {
       "step": 1,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 159
+      "estimatedRemainingSec": 0
     },
     {
       "step": 2,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 120
+      "estimatedRemainingSec": 0
     },
     {
       "step": 3,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 90
+      "estimatedRemainingSec": 0
     },
     {
       "step": 4,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 553.5
+      "estimatedRemainingSec": 0
     },
     {
       "step": 5,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 157.5
+      "estimatedRemainingSec": 0
     },
     {
       "step": 6,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 210
+      "estimatedRemainingSec": 0
     },
     {
       "step": 7,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 180
+      "estimatedRemainingSec": 0
     },
     {
       "step": 8,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 60
+      "estimatedRemainingSec": 0
     },
     {
       "step": 9,
-      "status": "pending",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 360
+      "estimatedRemainingSec": 0
     }
   ],
   "statePath": ".agents/plans/us-236/us-236-20260823T195756Z.state.md",
-  "stateSha256": "15247766190e67986e2de8acf6691dd20e8702fe68228d880f9c240c203f9c3f"
+  "stateSha256": "bbdf8746a8317cfc5c6045094c18c8de0050c8b4d5a714d60ae7583856246c82"
 }

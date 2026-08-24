@@ -26,8 +26,11 @@ Lite: F0=0 · F1=1 · F2=2 then G2-code · F3=3 then G2-code (fixes if any) · F
 flowchart TD
   S0[0 Spec] --> S1[1 Plan]
   S1 --> S2[2 Interview]
-  S2 --> S3[3 Plan-to-tasks]
-  S3 --> S4[4 Implement]
+  S2 --> S3{enableDag}
+  S3 -->|false default| Stub[write_sequential_dag.cjs]
+  S3 -->|true| Dag[ws-plan-to-tasks]
+  Stub --> S4[4 Implement]
+  Dag --> S4
   S4 --> S5[5 Check-implementation]
   S5 -->|score ≥ 9| C1[G2-code verified implementation]
   S5 -->|score < 9| G5[scoreAndRefine until ≥ 9]
@@ -67,7 +70,7 @@ flowchart TD
 | 0 | `ws-write-spec` | `ws-write-spec` |
 | 1 | `ws-write-plan` | `ws-write-plan` |
 | 2 | `ws-interview` | `ws-interview` |
-| 3 | `ws-plan-to-tasks` | `ws-plan-to-tasks` |
+| 3 | `ws-plan-to-tasks` | `ws-plan-to-tasks` (skipped dispatch when `enableDag: false`) |
 | 4 / 6-fix | `ws-implement-tasks` | `ws-implement-tasks` |
 | 5 | `ws-verify-plan` | `ws-verify-plan` |
 | 6 | `ws-code-review` | `ws-code-review` |

@@ -63,4 +63,8 @@ for (const relative of [
   const text = fs.readFileSync(path.join(repoRoot, relative), 'utf8');
   assert.doesNotMatch(text, /(?:update_state|validate_state|register_local_spec|detect_specs_dir|self_learning)\.py/, `${relative} invokes Node runtime ports`);
 }
+assert.match(
+  fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-testing/SKILL.md'), 'utf8'),
+  /probe_test_surface\.cjs/,
+);
 console.log('test-runtime-portability: ok');
