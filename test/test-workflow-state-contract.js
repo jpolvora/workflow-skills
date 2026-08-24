@@ -544,7 +544,7 @@ write(path.join(indexGapRoot, '.agents/skills/ws-shared/config.json'), JSON.stri
 const gapStateRel = '.agents/plans/gap/wf-gap.state.md';
 write(path.join(indexGapRoot, gapStateRel), `---
 stateVersion: 2
-revision: 0
+revision: 5
 workflowId: wf-gap
 slug: gap
 workflowType: standard
@@ -568,7 +568,7 @@ assert.strictEqual(run(validate, ['rebuild-index', '--repo-root', indexGapRoot])
 assert.strictEqual(
   run(validate, [gapStateRel, '--repo-root', indexGapRoot]).status,
   0,
-  'rebuild-index restores the missing workflow row',
+  'rebuild-index restores the missing workflow row even when state revision is > 0',
 );
 
 console.log('test-workflow-state-contract: ok');

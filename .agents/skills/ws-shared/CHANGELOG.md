@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 01:20] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 rebuild-index revision)
+- **Done**: `rebuild-index` stamps max state revision; validate checks row hash only; contract uses `revision: 5`
+- **Result**: Resume after rebuild works for in-flight states past Step 0
+
 ### [2026-08-24 01:15] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr (PR 239 partial plans index discovery)
 - **Done**: setup.md + FAQ: `rebuild-index` on incomplete resume lists; contract test rebuilds a missing row

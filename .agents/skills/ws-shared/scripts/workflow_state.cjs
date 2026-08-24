@@ -846,8 +846,8 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
     const row = index.workflows?.find((item) => item.workflowId === state.workflowId);
     if (!row) {
       errors.push(`plans index missing workflow entry: ${state.workflowId}`);
-    } else if (!snapshotHashMatches(row.stateSha256, stateText) || index.revision !== Number(state.revision)) {
-      errors.push('plans index revision/state hash mismatch');
+    } else if (!snapshotHashMatches(row.stateSha256, stateText)) {
+      errors.push('plans index state hash mismatch');
     }
   }
   const unknownRuntime = validateRuntime(path.dirname(stateFile));
@@ -935,6 +935,7 @@ function rebuildIndex(context, config) {
   const plansDir = resolveConfiguredPath(context.repoRoot, context.config?.plans?.dir, '.agents/plans');
   const workflows = [];
   const stack = [plansDir];
+  let maxRevision = 0;
   for (const current of stack) {
     if (!fs.existsSync(current)) continue;
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
@@ -943,6 +944,7 @@ function rebuildIndex(context, config) {
       else if (entry.name.endsWith('.state.md')) {
         const state = parseFrontmatter(fs.readFileSync(full, 'utf8')).data;
         const hash = stateIdentityHash(fs.readFileSync(full, 'utf8'));
+        maxRevision = Math.max(maxRevision, Number(state.revision || 0));
         workflows.push({
           workflowId: state.workflowId,
           slug: state.slug || state.us,
@@ -958,7 +960,7 @@ function rebuildIndex(context, config) {
     }
   }
   workflows.sort((a, b) => String(a.workflowId).localeCompare(String(b.workflowId)));
-  const index = { schemaVersion: SCHEMA_VERSION, revision: 0, generatedAt: nowIso(), workflows };
+  const index = { schemaVersion: SCHEMA_VERSION, revision: maxRevision, generatedAt: nowIso(), workflows };
   atomicWrite(plansIndexPath(context), `${JSON.stringify(index, null, 2)}\n`);
   return { ok: true, type: 'index-rebuilt', workflows: workflows.length };
 }
