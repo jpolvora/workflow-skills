@@ -564,5 +564,11 @@ write(path.join(indexGapRoot, '.agents/plans/index.json'), JSON.stringify({
 const missingRow = run(validate, [gapStateRel, '--repo-root', indexGapRoot]);
 assert.notStrictEqual(missingRow.status, 0, 'validate fails when plans index exists without this workflowId');
 assert.match(`${missingRow.stdout}${missingRow.stderr}`, /plans index missing workflow entry: wf-gap/);
+assert.strictEqual(run(validate, ['rebuild-index', '--repo-root', indexGapRoot]).status, 0, 'rebuild-index exits 0');
+assert.strictEqual(
+  run(validate, [gapStateRel, '--repo-root', indexGapRoot]).status,
+  0,
+  'rebuild-index restores the missing workflow row',
+);
 
 console.log('test-workflow-state-contract: ok');

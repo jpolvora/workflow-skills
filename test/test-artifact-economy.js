@@ -50,5 +50,8 @@ assert.match(setup, /index\.json/);
 assert.match(setup, /Missing `plan\.index\.json`/);
 assert.match(setup, /Missing `ac-ledger\.json`/);
 assert.match(setup, /ac_ledger\.cjs init/);
+assert.match(setup, /rebuild-index/);
+assert.match(setup, /resume list looks incomplete/);
+assert.match(faq, /plans index missing workflow entry/);
 assert.doesNotMatch(setup, /Glob `\{plansDir\}\/\*\*\/\*\.state\.md`/);
 console.log('test-artifact-economy: ok');

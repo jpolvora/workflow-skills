@@ -245,7 +245,17 @@ An HS-5 indicates that `state.md` YAML parsing or schema validation failed, or t
 2.  Fix any malformed YAML characters (e.g. unquoted colons, unresolved strings, or syntax errors).
 3.  If stderr includes `plan.index.json is required before implement`, backfill that file (next item) before retrying validate.
 4.  If stderr includes `ac-ledger.json is required before advance`, backfill the ledger (next item) before retrying validate.
-5.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
+5.  If stderr includes `plans index missing workflow entry`, run `rebuild-index` (next item) before retrying validate.
+6.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
+
+### Pre-advance fails: plans index missing workflow entry
+`{plansDir}/index.json` exists but omits this workflow (partial pre-0.3.37 index, copied `{us-dir}`, or prune drift). Rebuild from on-disk `*.state.md` files, then retry validate:
+
+```bash
+node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs rebuild-index
+```
+
+Lite orch: the lite `validate_state.cjs` wrapper (same module). Then `Read` `{plansDir}/index.json` once and confirm the `workflowId` row exists.
 
 ### Pre-advance fails: ac-ledger.json is required before advance
 Workflows started before 0.3.37 may lack `{us-dir}/ac-ledger.json` even when `step-00-{slug}.spec.md` exists. Before `--pre-advance 1` (or any later advance), initialize from the registered spec:

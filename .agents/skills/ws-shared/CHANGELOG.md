@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 01:15] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr (PR 239 partial plans index discovery)
+- **Done**: setup.md + FAQ: `rebuild-index` on incomplete resume lists; contract test rebuilds a missing row
+- **Result**: Orphaned `*.state.md` files can re-enter the index before validate
+
 ### [2026-08-24 01:10] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr (PR 239 plans-index missing row)
 - **Done**: Fail-closed when `{plansDir}/index.json` exists but has no row for the workflow (in-repo states); contract test added
