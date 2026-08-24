@@ -34,8 +34,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
 9. **Session leases:** When `defaults.sessionLeases` is not explicit `false` (omitted → on), follow [`setup.md`](../ws-shared/setup.md) §5a: `acquire` before Step 0/resume; `heartbeat --lease-id {leaseId}` on each step transition; `release` on terminal status; `git-lock --holder {leaseId}` around destroyable git.
 10. **Patterns & MEMORY Consult:** In Steps 1, 2, and 3: if `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load `ws-patterns` before Web/UI edits; if `defaults.patternsBackend` is true, read `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load `ws-patterns` before backend edits; grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `pattern_consult` and `memory_consult` in step outputs.
-
-
+11. **Verbose preview:** When `defaults.verboseMode` is explicit `true`, the session model (lite is inline) must **analyze this run** and print `Starting step {N} ({Label}):` plus 4–8 `*` bullets before any tool call for that step (goal, lookups, actions, conditional writes, next-step readiness). Do **not** copy a canned list. Omitted/`false` → silent. Schema/`ws-configure-project` seed writes `true`.
 
 ## Steps 0–5 Index
 

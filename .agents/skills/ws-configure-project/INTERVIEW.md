@@ -50,7 +50,7 @@ Scan consumer **repo root** (not this skill package alone):
 4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, **patternsBackend**, **patternsFrontend**, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, and `convergence`) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
+7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, **patternsBackend**, **patternsFrontend**, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, and `convergence`) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
    - **Models preset** (`modelsPreset`): pick from shipped sample keys in `config.json.example` (`modelPresets` map) or **Custom…** / **Keep current** / **Skip**. Unknown names fall back to preset `default` when present.
    - **Per-step overrides** (`stepModels`): optional numeric `"0"`–`"9"` and roles `dag`, `scoreAndRefine`, `reviewFix` (skippable; empty strings). Token `"current"` uses the active session model.
    - **Advanced phase keys** (legacy overrides of the active preset; empty = fall through):
@@ -59,6 +59,12 @@ Scan consumer **repo root** (not this skill package alone):
    - `reviewerModel` (Review phase: standard Steps 5–6)
    - `testingModel` (test executor, standard Step 7). **Recommended:** leave empty (same as `executionModel`). Same host canonical strings as the other model keys.
    - Offer model identifiers exposed by the session host or a custom string; fallback to the active session model if empty or unavailable.
+
+   **Verbose mode** (subsection of `defaults` / `--section defaults`; writes `defaults.verboseMode`). Seed from schema/`config.json.example` is `true`. Runtime omitted key = off.
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Print a reasoned start-of-step bullet preview? | `verboseMode` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
 
    **Delivery commit artifacts** (subsection of `defaults` / `--section defaults`; writes `defaults.deliveryCommitArtifacts`). Staging SoT: [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8. `autoMode`: accept Recommended on all three gates without prompting.
 

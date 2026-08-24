@@ -137,6 +137,11 @@
           "default": false,
           "description": "When true, break execution plans into multiple parallel tasks executed concurrently by subagents. When false (default), execute tasks sequentially one by one in serial order."
         },
+        "verboseMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Seed/schema default true (config.json.example and ws-configure-project writes). Runtime: effective only when the JSON value is explicit true; omitted or false → silent. The executing model reasons about this run and prints a Starting step N (label) bullet preview before any tool call. Do not ship canned preview text."
+        },
         "contextBudget": {
           "type": "integer",
           "minimum": 18000,

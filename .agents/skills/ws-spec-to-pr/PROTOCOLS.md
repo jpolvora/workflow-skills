@@ -326,6 +326,12 @@ End with ```step-output(status, step, artifacts, files_touched, verification, re
 ```
 ```
 
+**VerboseMode addendum** (append to the body **only** when `defaults.verboseMode` is explicit `true`; omitted/`false` → skip):
+
+```markdown
+VerboseMode: analyze THIS run (skill contract, state, files on disk, skip rules, config). Before any tool call, print `Starting step {STEP} ({Label}):` plus 4–8 `*` bullets covering goal, lookups, actions, conditional writes, and how the next step becomes ready. Then do the work. Do not copy a canned list.
+```
+
 
 ### Transition Gates
 

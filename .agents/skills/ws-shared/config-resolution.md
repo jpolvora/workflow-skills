@@ -135,3 +135,19 @@ Optional setting in `defaults.enableDag` for task execution mode in `ws-spec-to-
 | Key omitted / `false` (default) | `false` | Tasks execute sequentially one by one in serial order using subagents (no parallel tasks/DAG). |
 | Explicit `true` | `true` | Tasks break into parallel DAG execution groups (up to 3 concurrent per level) evaluated against `config.json.dagThresholds`. |
 
+---
+
+## Verbose step preview (`defaults.verboseMode`)
+
+Optional setting in `defaults.verboseMode` for `ws-spec-to-pr` / `ws-spec-to-pr-lite`.
+
+**Write-time default:** schema `default` is `true`; `config.json.example` and `ws-configure-project` persist `true` when they write the key.
+
+**Runtime:** effective only when the JSON value is explicit `true` (omitted / missing / `false` → silent).
+
+| Condition | Effective `verboseMode` | Behavior |
+|-----------|-------------------------|----------|
+| Key omitted / missing | `false` | Step work starts with no preview list. |
+| Explicit `false` | `false` | Silent. |
+| Explicit `true` | `true` | The model that will execute step N **analyzes this run** (dispatch/action, state, on-disk artifacts, skip rules, config) and prints `Starting step N (Label):` plus 4–8 `*` bullets before any tool call. Standard `dispatch-agent` steps: that subagent prints first. Orch-owned / lite inline steps: the orchestrator model prints. Do not ship or copy canned preview text. |
+

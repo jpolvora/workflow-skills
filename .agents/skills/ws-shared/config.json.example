@@ -139,6 +139,8 @@
     "_comment_sessionLeases": "When true (default when omitted), bootstrap acquires a same-slug exclusive session lease under {plansDir}/.runtime/leases/ and destroyable git recipes take {plansDir}/.runtime/git.lock (TTL 2m, wait ≤60s). Explicit false disables both.",
     "enableDag": false,
     "_comment_enableDag": "When true, break execution plan into multiple parallel tasks. When false (default), execute tasks sequentially one by one in serial order.",
+    "verboseMode": true,
+    "_comment_verboseMode": "Seeded true by ws-configure-project / config.json.example. Runtime: explicit true prints a reasoned start-of-step preview; omitted or false → silent. Preview text is not canned in skills.",
     "contextBudget": 32000,
     "_comment_contextBudget": "Maximum UTF-8 bytes in one complete standard subagent dispatch; fixed contract preamble remains capped at 18000 and MEMORY at 4000.",
     "parallelVerifyReview": false,

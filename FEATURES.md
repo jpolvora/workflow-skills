@@ -23,7 +23,7 @@ Four ways to get work done. All of them share one `config.json` and the same pro
 
 ### 1.1 Standard pipeline — `ws-spec-to-pr` (steps 0–9)
 
-A finite state machine that carries one feature from an idea to a merged pull request. Each coding/review step dispatches a dedicated subagent skill and writes a named artifact under `{plansDir}/{slug}/`. Default `enableDag: false` writes Step 3 with `write_sequential_dag.cjs` (no subagent).
+A finite state machine that carries one feature from an idea to a merged pull request. Each coding/review step dispatches a dedicated subagent skill and writes a named artifact under `{plansDir}/{slug}/`. Default `enableDag: false` writes Step 3 with `write_sequential_dag.cjs` (no subagent). `ws-configure-project` / schema seed `verboseMode: true`; at runtime only explicit `true` prints a reasoned `Starting step N` `*` preview (omitted/`false` silent). Preview text is not canned in skills or scripts.
 
 | Step | What happens | Artifact |
 |------|--------------|----------|
@@ -42,7 +42,7 @@ Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP
 
 ### 1.2 Lite pipeline — `ws-spec-to-pr-lite` (steps 0–5)
 
-The same delivery guarantees with the planning ceremony removed: spec → plan → implement → commit → review → ship → fix threads. It uses identical GitHub/Azure PR operations and the same `config.json`, but keeps **isolated state** (`workflowType`), so a lite run and a standard run never cross-resume.
+The same delivery guarantees with the planning ceremony removed: spec → plan → implement → commit → review → ship → fix threads. It uses identical GitHub/Azure PR operations and the same `config.json`, but keeps **isolated state** (`workflowType`), so a lite run and a standard run never cross-resume. Lite inline steps use the same `defaults.verboseMode` runtime rule (explicit `true` only).
 
 | Step | Stage | Skill |
 |------|-------|-------|
@@ -149,6 +149,7 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Anti-regression traps: consult before planning, record after discovering | `ws-self-learning` | `{sharedDir}/MEMORY.md` + `memory/*.md` |
 | Failure reflection hook — forbids `Learning: N/A` when session friction is high | `ws-self-learning` | same |
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
+| Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
 | Backend architectural conventions, consulted before backend tasks | `ws-patterns` | `{sharedDir}/backend.md` |
 | Frontend UI/UX conventions, consulted before frontend tasks | `ws-patterns` | `{sharedDir}/frontend.md` |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |

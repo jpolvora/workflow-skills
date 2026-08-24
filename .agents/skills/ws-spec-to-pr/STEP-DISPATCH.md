@@ -10,6 +10,19 @@
 
 > **Subagent Model Switching:** The orchestrator session ALWAYS runs under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels` (numeric `"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`), and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Pass the resolved host id on `dispatch-agent` and as `--model` (plus optional `--substep` when applicable) to `update_state.cjs`. Blank `--model` backfills via `resolvePhaseModel`. **Standard buckets:** Steps 0–3 → `plannerModel`; Step 4 sequential (`enableDag: false`) → Step `4` / `executionModel` (no required `dag` key); Step 4 DAG workers (`enableDag: true`) → role `dag` / `executionModel`; Steps 5–6 → `reviewerModel`; Step 5 `scoreAndRefine` re-implement → role `scoreAndRefine` / `executionModel`; Step 6 review-fix implement → role `reviewFix` / `executionModel`; **Step 7 resolve:** `testingModel` → `executionModel` → session **after** preset/`stepModels` overrides; Steps 8–9 → session unless `stepModels["8"|"9"]` is set. Token `"current"` → session. On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
 
+**Verbose preview:** When `defaults.verboseMode` is explicit `true`, the **model that will execute this step** (orchestrator for orch-owned work; the dispatched subagent otherwise) must **analyze this run** (Action column, state, files already on disk, skip rules, config) and print, before any tool call:
+
+```text
+Starting step {N} ({Label}):
+* {goal for this slug / this run}
+* {what you will look for}
+* {what you will do}
+* {conditional writes}
+* {how you will know the next step is ready}
+```
+
+Fill 4–8 `*` bullets from that analysis. Do **not** copy a canned list from a skill, script, or prior step. Omitted or `false` → do not print this block. Schema/seed default is `true` only when `ws-configure-project` writes the key. When using `dispatch-agent`, append the VerboseMode addendum in [`PROTOCOLS.md`](PROTOCOLS.md) § Base Prompt Prefix.
+
 | Step | Action | Artifact |
 |------|--------|----------|
 | 0 | Entry gate (user-gate). US/tracker provided → provider fetch snapshot → **prior-work sweep** (`sweep-prior-work` plus `node {skillsRoot}/ws-spec-to-pr/scripts/search_plan_history.cjs --slug {slug} --keyword <terms>`) recorded in `step-00`; surface matching completed local workflow artifacts. Then `dispatch-agent` `ws-write-spec` (reformulate & enhance to `{specsDir}/{slug}.spec.md` with agentic ACs + original human context + authoring validate). **Newly written** spec: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring "{specsDir}/{slug}.spec.md"` — non-zero → **skip** `ws-local-spec-provider` register and STOP. Pre-closure existing `*.spec.md`: register allowed under `--mode=compat` (warn, do not fail). No args → free-text → same local history sweep → `dispatch-agent` `ws-write-spec` → authoring validate → register only on PASS. Existing `*.spec.md` → history sweep → compat validate → register. Optional soft clarify if AC empty. After register: `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs init --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/ac-ledger.json" --slug {slug} --workflow-id {workflow-id}` (required before pre-advance 1). | `{specsDir}/{slug}.spec.md` **then** `step-00-{slug}.spec.md` + `ac-ledger.json` |

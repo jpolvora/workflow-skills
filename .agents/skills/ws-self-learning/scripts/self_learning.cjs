@@ -8,6 +8,16 @@ const {
   toRepoRelative,
 } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
+const FIELD_DEFS = [
+  { key: 'layer', names: ['Layer'] },
+  { key: 'module', names: ['Module'] },
+  { key: 'severity', names: ['Severity'] },
+  { key: 'pathPattern', names: ['PathPattern', 'Path Pattern', 'PathPatterns', 'Path', 'Paths'] },
+  { key: 'scenario', names: ['Scenario / Context', 'Scenario/Context', 'Context', 'Scenario'] },
+  { key: 'doNot', names: ['DO NOT', 'Do Not', 'DO_NOT', 'Trap Avoided'] },
+  { key: 'instead', names: ['INSTEAD DO', 'Instead Do', 'INSTEAD_DO', 'Solution'] },
+];
+
 function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i += 1) {
@@ -20,48 +30,128 @@ function parseArgs(argv) {
     } else if (token === '--repo-root') args.repoRoot = argv[++i];
     else throw new Error(`unknown argument: ${token}`);
   }
-  if (![args.compile, args.query, args.matchPaths].filter(Boolean).length) throw new Error('choose --compile, --query, or --match-paths');
+  if (![args.compile, args.query, args.matchPaths].filter(Boolean).length) {
+    throw new Error('choose --compile, --query, or --match-paths');
+  }
   return args;
-}
-
-function field(text, names) {
-  const escaped = names.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-  return text.match(new RegExp(`^- \\*\\*(?:${escaped})\\*\\*:\\s*(.*)$`, 'mi'))?.[1].trim() || '';
 }
 
 function unwrapTicks(value) {
   return String(value || '').replace(/^`|`$/g, '');
 }
 
-function parseEntry(file) {
-  const text = fs.readFileSync(file, 'utf8').replace(/\r\n?/g, '\n');
-  const header = text.match(/^###\s+\[(\d{4}-\d{2}-\d{2})\]\s*(.+)$/m);
-  const fallback = path.basename(file, '.md').match(/^(\d{4}-\d{2}-\d{2})[-_](.+)$/);
+function fieldLabelRe(names) {
+  const escaped = names.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  // Accept both `- **Name**: value` and `- **Name:** value`.
+  return new RegExp(`^- \\*\\*(?:${escaped})(?::\\*\\*|\\*\\*:)\\s*(.*)$`, 'i');
+}
+
+function parseFields(text) {
+  const values = {
+    layer: '',
+    module: '',
+    severity: '',
+    pathPattern: '',
+    scenario: '',
+    doNot: '',
+    instead: '',
+  };
+  let current = null;
+  for (const raw of text.split('\n')) {
+    const line = raw.replace(/\s+$/, '');
+    let matched = null;
+    for (const def of FIELD_DEFS) {
+      const hit = line.trim().match(fieldLabelRe(def.names));
+      if (hit) {
+        matched = { key: def.key, value: hit[1].trim() };
+        break;
+      }
+    }
+    if (matched) {
+      current = matched.key;
+      values[current] = matched.value;
+      continue;
+    }
+    if (!line.trim()) {
+      current = null;
+      continue;
+    }
+    if (current && !line.startsWith('#') && !/^\s*[-*]\s/.test(line)) {
+      values[current] = `${values[current]} ${line.trim()}`.trim();
+    }
+  }
+  return values;
+}
+
+function emptyEntry(file, errors, text = '') {
   return {
     file: path.basename(file),
-    date: header?.[1] || fallback?.[1] || '1970-01-01',
-    title: header?.[2]?.trim() || fallback?.[2]?.replace(/[-_]/g, ' ') || path.basename(file, '.md'),
-    layer: unwrapTicks(field(text, ['Layer'])),
-    module: unwrapTicks(field(text, ['Module'])),
-    severity: unwrapTicks(field(text, ['Severity'])),
-    pathPattern: unwrapTicks(field(text, ['PathPattern', 'Path Pattern', 'PathPatterns', 'Path', 'Paths'])),
-    scenario: field(text, ['Scenario / Context', 'Scenario/Context', 'Context', 'Scenario']),
-    doNot: field(text, ['DO NOT', 'Do Not', 'DO_NOT', 'Trap Avoided']),
-    instead: field(text, ['INSTEAD DO', 'Instead Do', 'INSTEAD_DO', 'Solution']),
+    date: '1970-01-01',
+    title: path.basename(file, '.md'),
+    layer: '',
+    module: '',
+    severity: '',
+    pathPattern: '',
+    scenario: '',
+    doNot: '',
+    instead: '',
     text,
+    errors,
   };
 }
 
-function entries(memoryDir) {
+function parseEntry(file) {
+  let text;
+  try {
+    text = fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  } catch (error) {
+    return emptyEntry(file, [`unreadable (${error.message})`]);
+  }
+  const header = text.match(/^###\s+\[(\d{4}-\d{2}-\d{2})\]\s*(.+)$/m);
+  const fields = parseFields(text);
+  const errors = [];
+  if (!header) errors.push('missing ### [YYYY-MM-DD] heading');
+  if (!fields.doNot) errors.push('missing DO NOT (or Trap Avoided)');
+  if (!fields.instead) errors.push('missing INSTEAD DO (or Solution)');
+  return {
+    file: path.basename(file),
+    date: header?.[1] || '1970-01-01',
+    title: header?.[2]?.trim() || path.basename(file, '.md'),
+    layer: unwrapTicks(fields.layer),
+    module: unwrapTicks(fields.module),
+    severity: unwrapTicks(fields.severity),
+    pathPattern: unwrapTicks(fields.pathPattern),
+    scenario: fields.scenario,
+    doNot: fields.doNot,
+    instead: fields.instead,
+    text,
+    errors,
+  };
+}
+
+function listMemoryFiles(memoryDir) {
   if (!fs.existsSync(memoryDir)) return [];
   return fs.readdirSync(memoryDir)
-    .filter((name) => name.endsWith('.md') && !name.startsWith('.'))
-    .map((name) => parseEntry(path.join(memoryDir, name)))
+    .filter((name) => name.toLowerCase().endsWith('.md') && !name.startsWith('.'))
+    .map((name) => path.join(memoryDir, name));
+}
+
+function entries(memoryDir) {
+  return listMemoryFiles(memoryDir)
+    .map((file) => parseEntry(file))
     .sort((a, b) => b.date.localeCompare(a.date) || b.title.localeCompare(a.title));
 }
 
 function compile(context, memoryDir, output) {
   fs.mkdirSync(memoryDir, { recursive: true });
+  const loaded = entries(memoryDir);
+  const invalid = loaded.filter((entry) => entry.errors.length);
+  if (invalid.length) {
+    for (const entry of invalid) {
+      process.stderr.write(`ERROR: ${entry.file}: ${entry.errors.join('; ')}\n`);
+    }
+    throw new Error(`refusing to compile: ${invalid.length} invalid memory file(s)`);
+  }
   const header = [
     '# Memory - Anti-Regression Knowledge',
     '',
@@ -71,7 +161,7 @@ function compile(context, memoryDir, output) {
     '',
     '---',
   ];
-  const blocks = entries(memoryDir).map((entry) => [
+  const blocks = loaded.map((entry) => [
     `### [${entry.date}] ${entry.title}`,
     entry.layer && `- **Layer**: \`${entry.layer}\``,
     entry.module && `- **Module**: \`${entry.module}\``,

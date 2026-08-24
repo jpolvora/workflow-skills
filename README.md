@@ -36,7 +36,7 @@
 | **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until ship. |
 | **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |
 | **Two speeds, one config** | Standard and lite share `config.json`. Isolated state (`workflowType`); no cross-resume. New runs ask stay-on-branch or `feat/{slug}`. |
-| **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
+| **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Fresh `ws-configure-project` / `config.json.example` seed `defaults.verboseMode: true` (reasoned start-of-step preview); omitted or `false` at runtime is silent. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
 
 ---
 

@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-24] verboseMode omitted is off even when schema default is true
+- **Layer**: `Harness`
+- **Module**: `ws-shared / config-resolution / ws-configure-project`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/config.schema.json, .agents/skills/ws-shared/config-resolution.md, .agents/skills/ws-configure-project/INTERVIEW.md, test/test-verbose-mode.js`
+- **Scenario / Context**: Adding `defaults.verboseMode` so orch prints a reasoned start-of-step list
+- **DO NOT**: Treat JSON Schema `default: true` or a seeded `config.json.example` value as the runtime value when the key is omitted from a live `config.json`
+- **INSTEAD DO**: Runtime enable only on explicit `true`. Omitted/`false` stay silent. Write `true` only from schema seed, `config.json.example`, and `ws-configure-project` `--section defaults` (Recommended)
+
 ### [2026-08-23] Shared worktree integrity vs other-worker dirty skills
 - **Layer**: `Harness`
 - **Module**: `skill-integrity / ws-spec-to-pr Step 7`
@@ -14,6 +23,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Parallel ws-multi-spec workers share one worktree. Step 7 `npm run test` / `npm run verify-integrity` fail when another worker has uncommitted hashed skill files (or `package.json` test-list changes). Regenerating integrity while those files are dirty stamps *their* hashes into this worker's G2-code commit.
 - **DO NOT**: Run `npm run generate-integrity` or treat integrity/test red as this slug's defect while other workers' hashed paths are dirty. Do not `git add -A`.
 - **INSTEAD DO**: Stash *other* workers' tracked hashed paths by explicit path; regenerate integrity only after the tree is this slug's hashed files; pop the stash after ship. Re-check `git rev-parse --abbrev-ref HEAD` stays on the assigned branch.
+
+### [2026-08-23] Memory compile must fail closed and stay on the Node SoT
+- **Layer**: `Harness`
+- **Module**: `ws-self-learning / self_learning.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-self-learning/scripts/self_learning.cjs, .agents/skills/ws-self-learning/scripts/self_learning.py, test/test-memory-formatting.js`
+- **Scenario / Context**: Compiling `{sharedDir}/memory/*` after writing a new trap, or spawning the leftover Python path
+- **DO NOT**: Keep a second Python parser; silently drop or stub entries that lack `### [YYYY-MM-DD]` / DO NOT / INSTEAD DO; compile in the same parallel tool batch as the Write of the memory file; compile the live hub from `test-memory-formatting.js`
+- **INSTEAD DO**: Parse labels as both `**Name**:` and `**Name:**`; refuse to rewrite MEMORY.md when any file is invalid; exec the Node SoT from `self_learning.py`; Write then compile sequentially; isolate compiler tests with `--repo-root`
 
 ### [2026-08-23] Ledger skipReason must be in the published schema
 - **Layer**: `Harness`
@@ -254,6 +272,12 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **INSTEAD DO**: If the feature tip has 0 commits not in develop/main, mark the leftover workflow `completed` (already merged) and start new work from develop. Before checkout, copy or restore plan artifacts if they live only on the current branch. Restore HEAD to `develop` after closing the leftover run.
 
 ### [2026-08-15] Hybrid/global scripts must not resolve consumer ws-shared from __file__
+- **Layer**: `harness`
+- **Module**: `ws-shared/scripts`
+- **Severity**: `high`
+- **Scenario / Context**: Global-only install (`$HOME/.agents/skills`) with consumer `ws-shared` under `$PWD`; scripts using `parents[4]` or sibling `ws-shared` next to `__file__` silently target the global hub.
+- **DO NOT**: `self_learning.py --compile` writing `$HOME/.agents/skills/ws-shared/MEMORY.md`; `validate_state` / `classify.cjs` reading global `dagThresholds` / `plans.dir`.
+- **INSTEAD DO**: Shared `resolve_consumer_root` (Python + JS): `--repo-root` → CWD hub probe → `parents[4]` only when script is not under `{globalSkillsRoot}`. Port all affected scripts; document skill-script expand rule in `tools.md`.
 
 ### [2026-08-15] Global vs local ws-* duplicates in this upstream repo
 - **Layer**: `Infrastructure`

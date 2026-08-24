@@ -1,5 +1,17 @@
 # Changelog
 
+### [2026-08-24 00:08] Agent: Cursor Grok 4.6
+- **Prompt**: Add config verboseMode; preview bullets from the executing model; default true
+- **Done**: `defaults.verboseMode` schema/seed `true` (`config.json.example`, ws-configure-project); runtime omitted/`false` silent, explicit `true` prints a reasoned start-of-step list; no canned preview script
+- **Result**: ws-spec-to-pr* steps announce a live analysis unless the consumer sets false
+
+
+### [2026-08-23 23:55] Agent: Cursor Grok 4.6
+- **Prompt**: Fix memory trap compiler scripts
+- **Done**: Fail-closed Node compile (dated heading + DO NOT/INSTEAD DO, colon-inside-bold labels); Python twin execs `.cjs`; isolated `test-memory-formatting.js` to `--repo-root`
+- **Result**: Invalid entries no longer rewrite MEMORY.md; py/cjs parsers cannot drift
+
+
 ### [2026-08-23 23:35] Agent: Cursor Grok 4.6
 - **Prompt**: Improve workflow-skills efficiency; enumerate ws-spec-to-pr; report, plan, parallel implementation
 - **Done**: Wired existing helpers into live dispatch (ledger init, plan index, sequential DAG stub, test-surface probe); skip-aware Node pre-advance; report+plan under `{plansDir}/workflow-efficiency-audit/`
