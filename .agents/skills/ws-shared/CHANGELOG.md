@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 22:35] Agent: Composer
+- **Prompt**: Audit unfinished workflows vs PRs/commits/code; close stale leftovers
+- **Done**: Marked us-217 (#219), deepseek-harness-improvements (#216), us-209 (#213), us-211 (#212) completed; cancelled superseded us-211 pause run; rebuilt plans index
+- **Result**: 0 unfinished workflows remain; ready for new `/ws-spec-to-pr` start
+
 ### [2026-08-23 22:26] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-cleanup → Delete listed candidates
 - **Done**: Removed 96 disposable paths (scratch, shipped orphans under us-236, `.tmp-*`, review rounds)

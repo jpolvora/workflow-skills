@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "us-211-20260815T165926Z",
+  "slug": "us-211",
+  "pipeline": "lite",
+  "status": "cancelled",
+  "currentStep": 0,
+  "pendingGate": null,
+  "nextAction": "Cancelled",
+  "acTotal": 0,
+  "acImplemented": 0,
+  "score": 0,
+  "estimatedRemainingSec": 0,
+  "steps": [
+    {
+      "step": 0,
+      "status": "cancelled",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    }
+  ],
+  "statePath": ".agents/plans/us-211/us-211-20260815T165926Z.state.md",
+  "stateSha256": "91173cec77e0cf9d46458accf6ad7b4a5718d23fee54088bbf84e934f719dba0"
+}
