@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-23 22:26] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-cleanup → Delete listed candidates
+- **Done**: Removed 96 disposable paths (scratch, shipped orphans under us-236, `.tmp-*`, review rounds)
+- **Result**: Plan/runtime leftovers cleared; tracked plan state files remain dirty locally
+
 ### [2026-08-23 22:16] Agent: Cursor Grok 4.6
 - **Prompt**: track 236
 - **Done**: Added `us-236` to Feature map + Next-specs; marked `[x]` with Done-log row for PR #238
