@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ 9 before review. Trigger for full/standard delivery.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -39,7 +39,7 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 2. **Auth:** Gate required for G1+. Cancel → HS-1. Commit → G2 + menu (HS-2).
 3. **Isolation:** Subagent per step. Checkpoint tag `uswf/{id}/before-step-{N}`. Branch-direct default; worktree when `plans.useWorktrees=true`.
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `state.md` short-term; `{sharedDir}/MEMORY.md` generalizable.
-5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` (numeric + `dag` / `scoreAndRefine` / `reviewFix`), and legacy phase keys — pass the resolved id on `dispatch-agent` and `--model` / `--substep` to `update_state.cjs` (Step 7: `testingModel` → `executionModel` → session after overrides; `reviewerModel` is Steps 5–6 only). **Config switches (not invocation flags):** `defaults.enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `defaults.enableAuditing` (runtime audit observer); `defaults.sessionLeases` (Invariant 9).
+5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` (numeric + `dag` / `scoreAndRefine` / `reviewFix`), and legacy phase keys — pass the resolved id on `dispatch-agent` and `--model` / `--substep` to `update_state.cjs` (Step 7: `testingModel` → `executionModel` → session after overrides; `reviewerModel` is Steps 5–6 only). **Config switches (not invocation flags):** `defaults.enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `defaults.sessionLeases` (Invariant 9).
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Product G2-code after Step 5 and after Step 6 review-fix uses path-scoped `files_touched` only. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
 7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset. **Resume pre-check (AC9):** on resume, before re-implementing, resolve `{integrationBranch}` = `config.project.workingBranch` when set, else `{baseBranch}`; if `{gitRemote}` exists, run `git fetch {gitRemote} {integrationBranch}` first (auth/network failure → skip-check `fetch-failed`, proceed, never mark completed); then run `git rev-list --count origin/{integrationBranch}..HEAD` (do **not** compare only to `origin/{baseBranch}` when `workingBranch` is set — stale tips merged into `develop` can still be ahead of `main`). Count `0` → mark `completed` (already merged) **only when** the workflow has product commits (`state.commits` non-empty or Step 5 in `completedSteps`) **and** `HEAD` ≠ `baselineCommit`; bare `0` on a branch that never committed is pre-first-commit resume — proceed normally. When `state.branch` equals `{integrationBranch}` (stay-on-integration), skip the count, log `resume-gate | skip-check | stay-on-integration | {branch} vs {integrationBranch} | ISO`, and proceed (do **not** mark completed). Skip-check when `origin/{integrationBranch}` is unavailable (see [`setup.md`](../ws-shared/setup.md) §4c).
 8. **Reproducible-artifact invariant (AC6):** every step artifact a later step reads must be reconstructable from state + committed diff, enforced by the pre-advance `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance <N>` check: if a required artifact or its metadata for advancing to step N is missing, validation exits non-zero and advance is blocked (fail closed).
@@ -68,12 +68,6 @@ After `step-00-{slug}.spec.md` exists and before Step 1:
 ## Quality Gate Bypass (`skipQualityGates`)
 
 See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
-
-## Runtime audit (`defaults.enableAuditing`)
-
-When `config.json` → `defaults.enableAuditing` resolves to `true` (see [`config-resolution.md`](../ws-shared/config-resolution.md)), load [`ws-audit`](../ws-audit/SKILL.md) at bootstrap:
-- Wrap each step's `update_state` with audit log appends (errors, anomalies, performance bottlenecks, correctness risks, disposable scratch scripts, and inline `-c`/`-e` quoting failures).
-- Run the remediation `user-gate` at workflow end (`draft-remediation`: issue / draft PR / todo / copy / skip) when `has-errors` or `has-suggestions` is true. Never auto-create.
 
 ## Invocation
 

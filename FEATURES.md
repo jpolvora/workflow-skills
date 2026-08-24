@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at ≥ 9. Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.36** · 48 skills (42 Workflows + 6 Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.37** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -167,7 +167,6 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-harness` | Routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
-| `ws-audit` | Runtime observer for orchestrated runs: script errors, non-zero exits, unrecognized options, tool/IO/dispatch anomalies, performance bottlenecks, disposable scratch scripts. Drafts upstream GitHub issues and reusable tooling proposals at the end of a run |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | External code-review dry-run on the current branch without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
@@ -238,7 +237,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -252,12 +251,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.36)
+## 12. Recent evolution (0.3.22 → 0.3.37)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
+Derived from recent commits on `develop` (2026-08-16 → 2026-08-23).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.37** | Aug 23 | Close stale unfinished workflow states; track us-236 on `index.PRD`; `tracking.featuresMdEnabled` makes FEATURES.md optional; remove `ws-audit` and `defaults.enableAuditing`; package stamp + site footer |
 | **0.3.36** | Aug 22 | ADO `comment_issue.py` accepts optional `--org`/`--project`/`--api-base`/`--pat-env` overrides (same flags as work-item fetch) |
 | **0.3.35** | Aug 22 | `validate_spec.cjs` `--help`/`-h` prints usage (exit 0); unknown dash flags are rejected instead of opened as spec paths |
 | **0.3.34** | Aug 22 | Extra demotion (`ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`); merge `ws-patterns-*` into `ws-patterns`; specify-time closure pack (`Out of Scope` / Assumptions, `validate_spec --mode=authoring`, write-spec lookup + `{slug}.context.md`, Step 0 skip-register, lite >5-step valve) |
@@ -346,7 +346,6 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-22).
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | W | Meta-harness integrity auditor |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | W | Workflow FSM simulation runner |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | W | Read-only install and runtime diagnosis |
-| [`ws-audit`](.agents/skills/ws-audit/SKILL.md) | W | Runtime observer; classify-shell-failure; draft-remediation user-gate (issue / draft PR / todo) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
 

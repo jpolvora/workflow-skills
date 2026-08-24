@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-08-23 23:20] Agent: Composer
+- **Prompt**: Remove ws-audit skill completely
+- **Done**: Deleted ws-audit skill tree and tests; stripped orch/ship/fix invoke sites, catalogs, doctor switch, config flag (already absent from schema/config); regenerated integrity/site
+- **Result**: Package no longer ships runtime audit observer or defaults.enableAuditing
+
+### [2026-08-23 23:00] Agent: Composer
+- **Prompt**: Which skill requires FEATURES.md; make optional via config.json
+- **Done**: Documented hard fail was `test-doc-sync.js` (not a runtime skill); added `tracking.featuresMdEnabled`; wired ws-task-lifecycle + hubs + doc-sync
+- **Result**: Consumers can set `featuresMdEnabled: false` to disable FEATURES.md walk/require
+
 ### [2026-08-23 22:35] Agent: Composer
 - **Prompt**: Audit unfinished workflows vs PRs/commits/code; close stale leftovers
 - **Done**: Marked us-217 (#219), deepseek-harness-improvements (#216), us-209 (#213), us-211 (#212) completed; cancelled superseded us-211 pause run; rebuilt plans index

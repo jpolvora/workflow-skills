@@ -349,7 +349,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
    - `docs/index.html` (rebuild catalog via `node bin/build-site.js` / `npm run build-site:bump`, and update website feature cards/install sections/FAQ as applicable).
    - `README.md` (update human install/usage narrative, CLI flags, and feature options).
    - Root `AGENTS.md` and [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) (keep skill indexes, task routers, autoload set, and CLI documentation in sync).
-   - [`FEATURES.md`](FEATURES.md) (feature inventory and skill catalog narrative — mandatory sync target).
+   - [`FEATURES.md`](FEATURES.md) when `tracking.featuresMdEnabled` is not `false` (feature inventory — optional via `{sharedDir}/config.json`; upstream dogfood keeps it on).
 2. Evaluate: **ws-check-harness** (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow [`CATALOG.md`](CATALOG.md) § Upstream developer workflow (dependency graph, integrity, version/catalog, hub drift).
 3. If hashed install content changed, regenerate integrity in the same commit (`npm run generate-integrity` + `npm run verify-integrity`) — [`CATALOG.md`](CATALOG.md) § Before ship PR step 7.
 

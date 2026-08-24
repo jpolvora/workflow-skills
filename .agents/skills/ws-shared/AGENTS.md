@@ -158,7 +158,7 @@ Additional obligations when maintaining and releasing the upstream skills packag
 - [ ] **3. Regenerate Integrity Manifest**: Run `npm run generate-integrity` and `npm run verify-integrity`.
 - [ ] **4. Harness Audit**: Run `ws-check-harness` to ensure 0 critical findings.
 - [ ] **5. Hub Sync**: Keep the upstream root `AGENTS.md` and this hub (`ws-shared/AGENTS.md` + [`autoload.md`](autoload.md)) in sync before shipping PR.
-- [ ] **6. FEATURES Sync**: Update package-root `FEATURES.md` (upstream clone only — **not** shipped to consumer installs) when shipped capabilities change.
+- [ ] **6. FEATURES Sync**: When `tracking.featuresMdEnabled` is not `false` and package-root `FEATURES.md` is in use (upstream clone only — **not** shipped to consumer installs), update it when shipped capabilities change. Set `tracking.featuresMdEnabled: false` to disable.
 
 ---
 

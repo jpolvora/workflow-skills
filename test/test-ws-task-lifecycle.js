@@ -48,6 +48,10 @@ const completion = skill.split('## Phase 3 — Completion')[1]?.split('## Rules'
 const featIdx = completion.indexOf('FEATURES.md');
 const planIdx = completion.indexOf('PLAN.md');
 assert(featIdx >= 0 && planIdx > featIdx, 'AC16/AC38: Completion lists FEATURES.md before PLAN.md');
+assert(
+  /featuresMdEnabled/.test(skill),
+  'Completion documents tracking.featuresMdEnabled for optional FEATURES.md',
+);
 
 assert(
   /ws-write-spec/.test(skill) &&

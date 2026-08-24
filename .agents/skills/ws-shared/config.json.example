@@ -135,8 +135,6 @@
     "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
     "autoloadTaskLifecycle": false,
     "_comment_autoloadTaskLifecycle": "When true, --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted/false → on-demand only. Does not set defaults.autoload.",
-    "enableAuditing": false,
-    "_comment_enableAuditing": "When true, ws-spec-to-pr* orch runs under ws-audit runtime observer; writes {us-dir}/audit-*.log.md; logs anomalies/performance/correctness/disposable scripts; end-of-run may propose upstream GitHub issues or reusable tooling. Default false.",
     "sessionLeases": true,
     "_comment_sessionLeases": "When true (default when omitted), bootstrap acquires a same-slug exclusive session lease under {plansDir}/.runtime/leases/ and destroyable git recipes take {plansDir}/.runtime/git.lock (TTL 2m, wait ≤60s). Explicit false disables both.",
     "enableDag": false,
@@ -340,7 +338,8 @@
   },
 
   "tracking": {
-    "_comment": "Optional ws-task-lifecycle Completion walk. Absent or empty canonicalFiles → FEATURES.md, PLAN.md, PRODUCT.PRD, then {specsDir}/index.PRD. Bare index.PRD only if that file exists at repo root.",
+    "_comment": "ws-task-lifecycle Completion walk. featuresMdEnabled default true when omitted; set false to disable FEATURES.md entirely (no walk, no hub FEATURES Sync). Absent or empty canonicalFiles → optional FEATURES.md (if enabled), PLAN.md, PRODUCT.PRD, then {specsDir}/index.PRD. Bare index.PRD only if that file exists at repo root.",
+    "featuresMdEnabled": true,
     "canonicalFiles": []
   },
 

@@ -241,7 +241,7 @@ slug: harness-path-pattern
 ---
 ## Technical Design
 Layer: Harness
-Touch: \`.agents/skills/ws-audit/scripts/check_shell.js\`
+Touch: \`.agents/skills/ws-check-harness/scripts/check_shell.js\`
 Skill: ws-self-learning
 `, 'utf8');
 
@@ -254,7 +254,7 @@ Skill: ws-self-learning
 - **Severity**: High
 - **Layer**: Harness
 - **Module**: ws-self-learning
-- **PathPattern**: \`.agents/skills/ws-audit/**\`
+- **PathPattern**: \`.agents/skills/ws-check-harness/**\`
 `, 'utf8');
 
   const harnessResult = spawnSync('python', [scriptPath, harnessPlanPath, '--memory', harnessMemoryPath, '--json'], {

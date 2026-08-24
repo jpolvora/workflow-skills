@@ -127,11 +127,6 @@
           "default": false,
           "description": "When true, ws-configure-project --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted or false → on-demand only. Does not set defaults.autoload."
         },
-        "enableAuditing": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, ws-spec-to-pr* orchestrators activate ws-audit runtime observer to log execution anomalies, diagnose performance/correctness, detect disposable scripts, and propose upstream GitHub issues/reusable tooling at run end. Omitted or missing config → effective false."
-        },
         "sessionLeases": {
           "type": "boolean",
           "default": true,
@@ -325,10 +320,15 @@
       "description": "Optional tracking-file list for ws-task-lifecycle Completion.",
       "additionalProperties": true,
       "properties": {
+        "featuresMdEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default if omitted), include FEATURES.md in the default Completion walk when the file exists, and upstream package doc-sync may require it. When false, never walk or require FEATURES.md (consumers without a package FEATURES inventory)."
+        },
         "canonicalFiles": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
-          "description": "Repo-relative tracking files walked in listed order. Absent or empty → FEATURES.md, PLAN.md, PRODUCT.PRD, then index at plans.specsDir (default .agents/specs/index.PRD). Do not use bare index.PRD unless that file exists at repo root."
+          "description": "Repo-relative tracking files walked in listed order. Absent or empty → optional FEATURES.md (when tracking.featuresMdEnabled is not false), PLAN.md, PRODUCT.PRD, then index at plans.specsDir (default .agents/specs/index.PRD). Do not use bare index.PRD unless that file exists at repo root. An explicit list replaces the default entirely (FEATURES.md only if you include it)."
         }
       }
     },

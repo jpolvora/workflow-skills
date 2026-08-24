@@ -1,7 +1,7 @@
 ---
 name: ws-spec-from-provider
 description: Bulk-import open GitHub issues or ADO User Stories into local specs (write-spec + register). Trigger when importing tracker backlog to {specsDir} for ws-spec-list / ws-multi-spec.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - spec-from-provider

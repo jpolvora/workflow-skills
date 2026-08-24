@@ -101,28 +101,6 @@ Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to
 
 ---
 
-## Runtime audit resolution (`defaults.enableAuditing`)
-
-Optional runtime observer for `ws-spec-to-pr` / `ws-spec-to-pr-lite` / `ws-multi-spec` (via [`ws-audit`](../ws-audit/SKILL.md)).
-
-| Condition | Effective `enableAuditing` |
-|-----------|----------------------------|
-| No project `{sharedDir}/config.json` | `false` |
-| Key omitted / null / unreadable | `false` |
-| Explicit `true` / `false` | that value |
-
-When `true`: orch initializes audit log under `{us-dir}`, appends findings for script/tool/I/O/dispatch anomalies (including recovered skill defects), performance bottlenecks, correctness risks, and disposable scratch scripts, and finalizes at run end. Actionable `error` findings trigger `user-gate` proposing a GitHub issue on the package upstream repo; actionable reusable tooling suggestions / disposable script detections trigger `user-gate` proposing upstream script pre-generation.
-
-When `false`: no audit log obligation; no end-of-run issue gate from this feature.
-
-Resolve helper:
-
-```bash
-node {skillsRoot}/ws-audit/scripts/audit_log.js resolve [--config "{sharedDir}/config.json"]
-```
-
----
-
 ## Session lease resolution (`defaults.sessionLeases`)
 
 Cooperative same-slug leases + short git critical-section lock for parallel chats on one worktree (via [`session_lease.cjs`](../ws-spec-to-pr/scripts/session_lease.cjs)). Schema: [`session-lease.schema.json`](session-lease.schema.json).

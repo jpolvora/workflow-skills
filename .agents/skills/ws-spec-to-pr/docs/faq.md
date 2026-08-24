@@ -109,7 +109,6 @@ flowchart TD
 *   `skip-tests`: Skips the execution of testing suites (e.g. `npm run test` or `pytest`) in STACK.md. Build checks are still enforced.
 *   Mutation (inside Step 7): not a CLI flag by default — configure `verification.mutationTest` and set `defaults.skipMutationTesting: false` to opt in. Empty `mutationTest` or `skipMutationTesting: true` skips mutation without failing.
 *   **Feature-branch gate** (new start only): after identity, ask stay-on-current / create `feat/{slug}` from HEAD / create from `baseBranch`. Resume skips this gate.
-*   **Runtime audit**: `defaults.enableAuditing: true` wraps the run with [`ws-audit`](../../ws-audit/SKILL.md). Default `false`.
 *   **testingModel**: optional `defaults.testingModel` for standard Step 7 only; `modelsPreset` / `stepModels` overrides apply first, then empty uses `executionModel`.
 
 ---

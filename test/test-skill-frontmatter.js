@@ -24,12 +24,12 @@ const crlfDirty = [
   '',
   '',
   '',
-  'name: ws-audit',
+  'name: ws-sample',
   'version: 0.3.14',
   'description: observe',
   '---',
   '',
-  '# ws-audit',
+  '# ws-sample',
   '',
 ].join('\r\n');
 
@@ -37,8 +37,8 @@ const once = rewriteSkillMarkdown(crlfDirty, '0.3.15');
 assert(once != null, 'CRLF dirty frontmatter parses');
 assert(!once.includes('\r'), 'output is LF-only');
 assert(leadingBlanks(once) === 0, `CRLF dirty rewrite has 0 leading blanks (got ${leadingBlanks(once)})`);
-assert(once.startsWith('---\nname: ws-audit\nversion: 0.3.15\n'), 'version stamped; name immediately after ---');
-assert(once.includes('# ws-audit'), 'body preserved');
+assert(once.startsWith('---\nname: ws-sample\nversion: 0.3.15\n'), 'version stamped; name immediately after ---');
+assert(once.includes('# ws-sample'), 'body preserved');
 
 const twice = rewriteSkillMarkdown(once.replace(/\n/g, '\r\n'), '0.3.16');
 assert(leadingBlanks(twice) === 0, 'second CRLF bump does not add a blank line');

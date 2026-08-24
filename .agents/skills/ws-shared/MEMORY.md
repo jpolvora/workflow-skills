@@ -60,14 +60,14 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Treat leftover argv tokens (including `--help`) as a spec filename
 - **INSTEAD DO**: Print usage and exit 0 for `--help`/`-h`; reject other dash tokens as unknown arguments before any `readFileSync`
 
-### [2026-08-22] Nested-quote python -c must be audited
+### [2026-08-22] Nested-quote python -c is forbidden
 - **Layer**: `Harness`
-- **Module**: `ws-audit / check_shell_quoting / extract_frontmatter_field`
+- **Module**: `check_shell_quoting / extract_frontmatter_field`
 - **Severity**: `High`
-- **PathPattern**: `.agents/skills/ws-audit/**, .agents/skills/ws-check-harness/scripts/check_shell_quoting.cjs, .agents/skills/ws-shared/scripts/extract_frontmatter_field.cjs, .agents/skills/ws-shared/CROSS-PLATFORM.md`
-- **Scenario / Context**: Agents invent `python -c` one-liners with both `"` and `'` (e.g. `["']` character classes) that raise `SyntaxError` under shell quoting. Recovery without logging left no upstream issue/PR/todo.
-- **DO NOT**: Invent nested-quote `python -c` / `node -e` one-liners for frontmatter or YAML fields, or recover silently without an audit finding when `enableAuditing` is true.
-- **INSTEAD DO**: Use `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs`. On `-c`/`-e` SyntaxError, run `classify-shell-failure`, append both findings, and present `draft-remediation` user-gate (issue / draft PR / todo / copy / skip). Static gate: `check_shell_quoting.cjs` in Phase 5a.
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/check_shell_quoting.cjs, .agents/skills/ws-shared/scripts/extract_frontmatter_field.cjs, .agents/skills/ws-shared/CROSS-PLATFORM.md`
+- **Scenario / Context**: Agents invent `python -c` one-liners with both `"` and `'` (e.g. `["']` character classes) that raise `SyntaxError` under shell quoting.
+- **DO NOT**: Invent nested-quote `python -c` / `node -e` one-liners for frontmatter or YAML fields.
+- **INSTEAD DO**: Use `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs`. Static gate: `check_shell_quoting.cjs` in Phase 5a.
 
 ### [2026-08-22] Memory conflict must match harness paths
 - **Layer**: `Harness`
@@ -219,14 +219,6 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: `stamp_state_version` used `max(current, _STATE_VERSION)`. A frontmatter `stateVersion: 7` stayed 7. `update_state.py` writes the file first, then runs `validate_state.py`, which rejects unknown versions. The unsupported value remains on disk; every retry re-stamps 7, so recovery needs a manual edit.
 - **DO NOT**: Stamp `stateVersion` with `max(current, schema)` (that preserves values above the supported schema).
 - **INSTEAD DO**: Always emit `_STATE_VERSION`. Clamp unknown highs so post-write validation can succeed. Keep `validate_state` reject-loud for on-disk missing/older/unknown until a writer rewrite.
-
-### [2026-08-16] audit session JSON must persist repo-relative paths
-- **Layer**: `Infrastructure`
-- **Module**: `ws-audit / audit_log.js initAudit`
-- **Severity**: `Medium`
-- **Scenario / Context**: `initAudit` stored `usDir` and `logPath` via `path.resolve`, so committed `.audit-session-*.json` files contained Windows absolute paths (`l:\source\...`). Other clones and CI cannot resume those sessions; the commit leaks a local filesystem layout.
-- **DO NOT**: Persist `path.resolve` absolute paths in audit session JSON that may be committed under `{us-dir}`.
-- **INSTEAD DO**: Write posix repo-relative `usDir`/`logPath` (hydrate to absolute only for fs I/O). Cover with `test/test-ws-audit.js` asserting the on-disk JSON is not absolute and has no drive letter.
 
 ### [2026-08-15] Upstream dogfood contract is inlined in root AGENTS.md
 - **Layer**: `Infrastructure`

@@ -1,6 +1,6 @@
 ---
 name: ws-multi-spec
-version: 0.3.36
+version: 0.3.37
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:
@@ -45,7 +45,6 @@ Aliases: [`../ws-shared/tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/
 4. **End-to-End Closure per Spec:** Every PR must undergo `ws-goal-fix-pr` convergence (`activeThreads == 0`) and explicit SCM merge (`state: MERGED`) before dispatching next spec.
 5. **Isolation & State:** Fresh worker context per spec; update `{plansDir}/ws-multi-spec/{runId}.state.md`.
 6. **Pause on Failure:** No silent continue on worker error; prompt user gate (Resume, Skip, Abort).
-7. **Runtime audit:** Child `ws-spec-to-pr` / `ws-spec-to-pr-lite` workers inherit project `defaults.enableAuditing`; when `true`, each worker follows [`ws-audit`](../ws-audit/SKILL.md) for its run.
 
 ## Triggers
 

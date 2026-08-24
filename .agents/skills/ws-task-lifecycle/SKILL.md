@@ -1,7 +1,7 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.3.36
+version: 0.3.37
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
@@ -46,14 +46,16 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
 
 ## Phase 3 — Completion
 
+Resolve `tracking.featuresMdEnabled` from `{sharedDir}/config.json`: omitted or `true` → FEATURES.md participates in the **default** walk when the file exists; explicit `false` → never walk or invent FEATURES.md (skip the default FEATURES step entirely).
+
 Walk tracking files in this order (or `tracking.canonicalFiles` when that JSON array is non-empty):
 
-1. `FEATURES.md` — mark the matching item `[x]` when the file exists.
+1. `FEATURES.md` — only when `tracking.featuresMdEnabled` is not `false`; mark the matching item `[x]` when the file exists.
 2. `PLAN.md` — append a Done-log line when the file exists.
 3. `PRODUCT.PRD` — append a Done-log line when the file exists.
 4. `index.PRD` — use the listed path if present, else `{specsDir}/index.PRD`. Set the matching checkbox to `[x]` and append a Done-log line when the file exists.
 
-If `tracking.canonicalFiles` is absent or `[]`, use that default list. If it is a non-empty array of repo-relative paths, walk that array in listed order before changelog. If a listed path is exactly `index.PRD` (no directory) and repo-root `index.PRD` is missing, use `{specsDir}/index.PRD`.
+If `tracking.canonicalFiles` is absent or `[]`, use that default list (with FEATURES.md omitted when `featuresMdEnabled` is `false`). If it is a non-empty array of repo-relative paths, walk that array in listed order before changelog (explicit list is authoritative — include `FEATURES.md` yourself if wanted). If a listed path is exactly `index.PRD` (no directory) and repo-root `index.PRD` is missing, use `{specsDir}/index.PRD`.
 
 Skip a path that is not on disk. Each skip produces one skip note that names the missing path. Skipping one file does not skip later steps that still apply. Do not create empty tracking files.
 

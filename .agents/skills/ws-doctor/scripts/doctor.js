@@ -19,7 +19,6 @@ const DEFAULT_SWITCH_KEYS = [
   'fullMode',
   'scoreAndRefine',
   'autoload',
-  'enableAuditing',
 ];
 
 const DELIVERY_ARTIFACT_KEYS = [

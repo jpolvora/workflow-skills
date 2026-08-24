@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.36
+version: 0.3.37
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -32,9 +32,8 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel`, `dag`, `scoreAndRefine`, or `reviewFix` even if set. Lite Step 3 review-fix stays on Step `3` / `reviewerModel` / `stepModels["3"]`.
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`; wide-context simplify per [`gates.md`](../ws-shared/gates.md) § Score & Refine).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
-9. **Runtime audit:** When `defaults.enableAuditing` is `true`, follow [`ws-audit`](../ws-audit/SKILL.md) (init at bootstrap, append script execution errors including inline `-c`/`-e` quoting failures, anomalies/performance/correctness/disposable scripts per step, finalize + remediation `user-gate` via `draft-remediation` at end). When `false`, skip.
-10. **Session leases:** When `defaults.sessionLeases` is not explicit `false` (omitted → on), follow [`setup.md`](../ws-shared/setup.md) §5a: `acquire` before Step 0/resume; `heartbeat --lease-id {leaseId}` on each step transition; `release` on terminal status; `git-lock --holder {leaseId}` around destroyable git.
-11. **Patterns & MEMORY Consult:** In Steps 1, 2, and 3: if `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load `ws-patterns` before Web/UI edits; if `defaults.patternsBackend` is true, read `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load `ws-patterns` before backend edits; grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `pattern_consult` and `memory_consult` in step outputs.
+9. **Session leases:** When `defaults.sessionLeases` is not explicit `false` (omitted → on), follow [`setup.md`](../ws-shared/setup.md) §5a: `acquire` before Step 0/resume; `heartbeat --lease-id {leaseId}` on each step transition; `release` on terminal status; `git-lock --holder {leaseId}` around destroyable git.
+10. **Patterns & MEMORY Consult:** In Steps 1, 2, and 3: if `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load `ws-patterns` before Web/UI edits; if `defaults.patternsBackend` is true, read `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load `ws-patterns` before backend edits; grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `pattern_consult` and `memory_consult` in step outputs.
 
 
 
