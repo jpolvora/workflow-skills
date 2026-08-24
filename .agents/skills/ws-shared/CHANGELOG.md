@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 00:45] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-goal-fix-pr round 3 (PR 239 eval contract for optional FEATURES.md)
+- **Done**: Made eval id 1 conditional on `tracking.featuresMdEnabled`; added eval id 3 for the false branch; test asserts both
+- **Result**: Agents that skip FEATURES.md when the flag is false no longer fail eval
+
 ### [2026-08-24 00:30] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr fix-pr round 2 (PR 239 plan.index resume docs)
 - **Done**: FAQ + setup.md backfill for missing `plan.index.json` on pre-0.3.37 resume; integrity regenerated

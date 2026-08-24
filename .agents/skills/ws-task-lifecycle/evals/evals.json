@@ -4,11 +4,12 @@
     {
       "id": 1,
       "prompt": "/ws-task-lifecycle implement a product change after tests pass",
-      "expected_output": "Agent follows Intake then Implementation then Completion. New slice specs are tracked on index.PRD via ws-spec-index before [~]. Completion updates FEATURES.md before PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. No {plansDir} tree is created.",
+      "expected_output": "Agent follows Intake then Implementation then Completion. New slice specs are tracked on index.PRD via ws-spec-index before [~]. When tracking.featuresMdEnabled is not false, Completion updates FEATURES.md before PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. When tracking.featuresMdEnabled is false, Completion skips FEATURES.md and walks PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. No {plansDir} tree is created.",
       "assertions": [
         "Loads ws-task-lifecycle and names phases Intake, Implementation, Completion",
         "When a new slice spec is written, invokes ws-spec-index track before [~]",
-        "Completion order lists FEATURES.md before PLAN.md",
+        "When tracking.featuresMdEnabled is not false, Completion order lists FEATURES.md before PLAN.md",
+        "When tracking.featuresMdEnabled is false, Completion skips FEATURES.md and still walks PLAN.md before PRODUCT.PRD",
         "Does not create a {plansDir} workflow tree or write step-00-*.spec.md",
         "Does not invoke ws-spec-to-pr or ws-spec-to-pr-lite"
       ]
@@ -21,6 +22,15 @@
         "Treats defaults.autoloadTaskLifecycle as opt-in Always-applied membership only",
         "Does not set defaults.autoload as a side effect of the task-lifecycle flag",
         "Still forbids creating a {plansDir} workflow tree for a prompt task"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Consumer set tracking.featuresMdEnabled false. Run /ws-task-lifecycle completion after a prompt task.",
+      "expected_output": "Completion skips FEATURES.md entirely and walks PLAN.md, PRODUCT.PRD, index.PRD, then changelog and self-learning.",
+      "assertions": [
+        "Does not update or invent FEATURES.md when featuresMdEnabled is false",
+        "Still walks PLAN.md before PRODUCT.PRD when those files exist"
       ]
     }
   ]

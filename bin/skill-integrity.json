@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "24ca079cb91c1e40f332a912dcbc7091a8a12f47616a30ab3df27c187f38f09a",
+  "fullPackageDigest": "e61db264e29fc6e3035f048ca289def50d81ace40e51990296c2b704ff170769",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -433,10 +433,10 @@
     },
     "ws-task-lifecycle": {
       "files": {
-        "evals/evals.json": "b17d0c903414b53132812f0426a9dd13e04fb21120f4b65f682887a390da345e",
+        "evals/evals.json": "067e13637c3efa6325a9d5ef1b386ad32a6c795cb33582d18e2e3ceffd0f058a",
         "SKILL.md": "fe4e450059270c71c39c1dbe53e7922672095f988790fa686ababfcb90ae211c"
       },
-      "skillDigest": "7da2431638665201bb851511b13b98bd58ff57021e87855a8ac40b3d3a4d7f86"
+      "skillDigest": "75dd26c49f783105e91ad161768795f25f0a23466b429c7d39038674ad67a8c1"
     },
     "ws-tdah": {
       "files": {

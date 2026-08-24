@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Land skip-aware `requiredAdvanceArtifact` rules whose only coverage is sister steps (interview skip → 3, DAG skip → 4, lite review → 4). A later edit can re-block legitimate skipped-testing ships with no CI signal.
 - **INSTEAD DO**: Assert pre-advance 8 fails without the testing report when Step 7 is not skipped, then `finish --status skipped` with each testing skip reason and assert pre-advance 8 exits 0. Re-score the ledger at boundary `step5` before those checks.
 
+### [2026-08-24] Optional tracking files need conditional eval contracts
+- **Layer**: `Harness`
+- **Module**: `ws-task-lifecycle / evals / test-ws-task-lifecycle`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-task-lifecycle/evals/evals.json, .agents/skills/ws-task-lifecycle/SKILL.md, test/test-ws-task-lifecycle.js`
+- **Scenario / Context**: PR 239 review. SKILL.md made FEATURES.md optional via `tracking.featuresMdEnabled`, but eval id 1 and the test still locked in "FEATURES.md before PLAN.md" unconditionally. Agents that correctly skip FEATURES.md fail eval.
+- **DO NOT**: Add an opt-out branch to a SKILL without updating the machine-checked eval contract and its test assertions. Default-path-only eval is insufficient once the SKILL adds an explicit opt-out.
+- **INSTEAD DO**: Gate the FEATURES.md assertion on `tracking.featuresMdEnabled is not false`, add an eval case for the `false` branch, and assert both branches in the test.
+
 ### [2026-08-24] New pre-advance artifacts need resume backfill docs
 - **Layer**: `Harness`
 - **Module**: `workflow_state.cjs / plan.index.json / faq.md`

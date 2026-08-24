@@ -100,7 +100,15 @@ assert(
 const evalBlob = JSON.stringify(evals);
 assert(
   evalBlob.includes('FEATURES.md before PLAN.md'),
-  'eval asserts FEATURES.md before PLAN.md',
+  'eval asserts FEATURES.md before PLAN.md (conditional on featuresMdEnabled not false)',
+);
+assert(
+  evalBlob.includes('When tracking.featuresMdEnabled is not false'),
+  'eval id 1 gates FEATURES.md on tracking.featuresMdEnabled not false',
+);
+assert(
+  evalBlob.includes('When tracking.featuresMdEnabled is false'),
+  'eval covers the featuresMdEnabled false branch',
 );
 assert(
   evalBlob.includes('{plansDir}'),
