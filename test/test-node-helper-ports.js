@@ -50,5 +50,11 @@ for (const relative of [
   '.agents/skills/ws-self-learning/scripts/self_learning.py',
   '.agents/skills/ws-spec-to-pr/scripts/update_state.py',
   '.agents/skills/ws-spec-to-pr/scripts/validate_state.py',
-]) assert.ok(fs.existsSync(path.join(repoRoot, relative)), `frozen Python helper remains: ${relative}`);
+]) {
+  const py = fs.readFileSync(path.join(repoRoot, relative), 'utf8');
+  assert.ok(fs.existsSync(path.join(repoRoot, relative)), `frozen Python helper remains: ${relative}`);
+  if (relative.endsWith('validate_state.py')) {
+    assert.match(py, /validate_state\.cjs/, `${relative} execs Node SoT`);
+  }
+}
 console.log('test-node-helper-ports: ok');

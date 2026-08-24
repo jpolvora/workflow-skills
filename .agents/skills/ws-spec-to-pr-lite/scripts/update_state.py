@@ -65,8 +65,8 @@ STEP_LABELS = {
 # Current state schema version stamped into the state.yaml frontmatter.
 # This writer always emits _STATE_VERSION (never an unknown higher value).
 # validate_state.py rejects missing/older/unknown versions (reject loud).
-# Keep in sync with the standard copy and with CURRENT_STATE_VERSION in validate_state.py.
-_STATE_VERSION = 1
+# Keep in sync with the standard copy and with STATE_VERSION in workflow_state.cjs.
+_STATE_VERSION = 2
 
 _SECRET_PATTERNS = [
     (re.compile(r"\b(sk-[a-zA-Z0-9]{10,})\b"), "[REDACTED]"),
@@ -403,6 +403,8 @@ def stamp_state_version(data: dict) -> dict:
     re-stamps 7, blocking recovery without a manual edit.
     """
     data["stateVersion"] = _STATE_VERSION
+    if data.get("revision") is None or str(data.get("revision", "")).strip() == "":
+        data["revision"] = 0
     return data
 
 

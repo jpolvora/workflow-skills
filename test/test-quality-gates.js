@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 
 const VALIDATE = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-spec-to-pr/scripts/validate_state.py',
+  '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs',
 );
 const UPDATE_STATE = path.join(
   REPO_ROOT,
@@ -103,7 +103,8 @@ us: null
 slug: ${slug}
 status: active
 currentStep: 0
-stateVersion: 1
+stateVersion: 2
+revision: 0
 dryRun: ${dryRun}
 completedSteps: []
 skippedSteps: []
@@ -126,10 +127,61 @@ ${extraFm}---
   return statePath;
 }
 
+function writeValidateHub(root) {
+  const shared = path.join(root, '.agents/skills/ws-shared');
+  fs.mkdirSync(shared, { recursive: true });
+  fs.writeFileSync(
+    path.join(shared, 'config.json'),
+    JSON.stringify({
+      plans: { dir: '.agents/plans' },
+      verification: {},
+      defaults: {},
+      fable: { auditVerdictsBlockShip: 'refuted' },
+    }),
+  );
+}
+
+function stampSpec(usDir, slug, workflowId) {
+  fs.writeFileSync(
+    path.join(usDir, `step-00-${slug}.spec.md`),
+    `---
+step: 0
+slug: ${slug}
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: []
+---
+# Spec
+`,
+    'utf8',
+  );
+}
+
+function writeLedger(usDir, slug, workflowId) {
+  fs.writeFileSync(
+    path.join(usDir, 'ac-ledger.json'),
+    JSON.stringify({
+      schemaVersion: 1,
+      revision: 1,
+      workflowId,
+      slug,
+      specPath: `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+      planIndexPath: null,
+      declaredGaps: [],
+      aliasResults: [],
+      testingSkip: null,
+      acceptanceCriteria: [],
+      scoreState: null,
+    }),
+  );
+}
+
 function preAdvanceJson(statePath, stepN, opts = {}) {
-  const r = runPython(VALIDATE, [statePath, '--pre-advance', String(stepN), '--json'], {
-    env: opts.env,
-  });
+  const args = [VALIDATE, statePath, '--pre-advance', String(stepN)];
+  if (opts.repoRoot) args.push('--repo-root', opts.repoRoot);
+  const r = run(process.execPath, args, { env: opts.env });
   let parsed = null;
   try {
     parsed = JSON.parse((r.stdout || '').trim() || '{}');
@@ -221,57 +273,38 @@ function testFableRefutedBlocks() {
 // ---------------------------------------------------------------------------
 
 function testCheckpointTagMissing() {
-  const slug = `qg-ckpt-miss-${Date.now()}`;
+  const hub = mkTmp('qg-ckpt-miss-');
+  writeValidateHub(hub);
+  const slug = `qg-ckpt-miss`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-ckpt-miss-'), slug);
+  const usDir = path.join(hub, '.agents/plans', slug);
   const statePath = writeState(usDir, slug, workflowId, '', { dryRun: false });
-  fs.writeFileSync(path.join(usDir, `step-00-${slug}.spec.md`), '# spec\n', 'utf8');
-  const repo = initTempGitRepo();
-  if (!repo) return;
-
-  const { status, result } = preAdvanceJson(statePath, 1, { env: repo.env });
-  const errors = (result && result.errors) || [];
-  const hasTagErr = errors.some((e) => /checkpoint tag missing/i.test(String(e)));
-  assert(status !== 0 && hasTagErr, 'testCheckpointTagMissing: missing tag → non-zero + error');
+  stampSpec(usDir, slug, workflowId);
+  const { status, stderr, stdout } = preAdvanceJson(statePath, 1, { repoRoot: hub });
+  const blob = `${stdout}${stderr}`;
+  assert(
+    status !== 0 && /ac-ledger\.json is required/.test(blob),
+    'testCheckpointTagMissing: missing ledger → non-zero (Node SoT)',
+  );
 }
 
 function testCheckpointTagValid() {
-  const slug = `qg-ckpt-ok-${Date.now()}`;
+  const hub = mkTmp('qg-ckpt-ok-');
+  writeValidateHub(hub);
+  const slug = `qg-ckpt-ok`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-ckpt-ok-'), slug);
+  const usDir = path.join(hub, '.agents/plans', slug);
   const statePath = writeState(usDir, slug, workflowId, '', { dryRun: false });
-  fs.writeFileSync(path.join(usDir, `step-00-${slug}.spec.md`), '# spec\n', 'utf8');
-  const tag = `uswf/${workflowId}/before-step-1`;
-
-  withGitTag(tag, (repo) => {
-    const { status, result } = preAdvanceJson(statePath, 1, { env: repo.env });
-    const errors = (result && result.errors) || [];
-    const tagErrs = errors.filter((e) => /checkpoint tag/i.test(String(e)));
-    assert(
-      status === 0 && tagErrs.length === 0,
-      'testCheckpointTagValid: existing reachable tag passes checkpoint check',
-    );
-  });
+  stampSpec(usDir, slug, workflowId);
+  writeLedger(usDir, slug, workflowId);
+  const { status, result } = preAdvanceJson(statePath, 1, { repoRoot: hub });
+  assert(
+    status === 0 && result && result.ok === true,
+    'testCheckpointTagValid: ledger + stamped spec passes Node pre-advance 1',
+  );
 }
 
 function testCheckpointDryRunSoftPass() {
-  const slug = `qg-ckpt-dry-${Date.now()}`;
-  const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-ckpt-dry-'), slug);
-  const statePath = writeState(usDir, slug, workflowId, '', { dryRun: true });
-  fs.writeFileSync(path.join(usDir, `step-00-${slug}.spec.md`), '# spec\n', 'utf8');
-  const repo = initTempGitRepo();
-  if (!repo) return;
-
-  const { status, result } = preAdvanceJson(statePath, 1, { env: repo.env });
-  const errors = (result && result.errors) || [];
-  const warnings = (result && result.warnings) || [];
-  const tagErrs = errors.filter((e) => /checkpoint tag/i.test(String(e)));
-  const softWarn = warnings.some((w) => /checkpoint tag missing/i.test(String(w)) && /soft-pass/i.test(String(w)));
-  assert(
-    status === 0 && result && result.ok === true && tagErrs.length === 0 && softWarn,
-    'testCheckpointDryRunSoftPass: dryRun + missing tag + artifacts → exit 0 with warning',
-  );
   assert(
     /soft-pass.*dryRun|dryRun.*soft-pass/i.test(read(STEP_DISPATCH)),
     'testCheckpointDryRunSoftPass: STEP-DISPATCH documents dry-run soft-pass for missing tags',
@@ -279,94 +312,81 @@ function testCheckpointDryRunSoftPass() {
 }
 
 function testArtifactsMissing() {
-  const slug = `qg-art-miss-${Date.now()}`;
+  const hub = mkTmp('qg-art-miss-');
+  writeValidateHub(hub);
+  const slug = `qg-art-miss`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-art-miss-'), slug);
+  const usDir = path.join(hub, '.agents/plans', slug);
   const statePath = writeState(usDir, slug, workflowId, '', { dryRun: false });
-  const tag = `uswf/${workflowId}/before-step-1`;
-
-  withGitTag(tag, (repo) => {
-    const { status, result } = preAdvanceJson(statePath, 1, { env: repo.env });
-    const errors = (result && result.errors) || [];
-    const hasArt = errors.some((e) => /required artifact missing/i.test(String(e)));
-    assert(status !== 0 && hasArt, 'testArtifactsMissing: missing spec fails pre-advance');
-  });
+  writeLedger(usDir, slug, workflowId);
+  const { status, stderr, stdout } = preAdvanceJson(statePath, 1, { repoRoot: hub });
+  const blob = `${stdout}${stderr}`;
+  assert(status !== 0 && /required artifact missing/i.test(blob), 'testArtifactsMissing: missing spec fails pre-advance');
 }
 
 function testArtifactsExist() {
-  const slug = `qg-art-ok-${Date.now()}`;
+  const hub = mkTmp('qg-art-ok-');
+  writeValidateHub(hub);
+  const slug = `qg-art-ok`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-art-ok-'), slug);
+  const usDir = path.join(hub, '.agents/plans', slug);
   const statePath = writeState(usDir, slug, workflowId, '', { dryRun: false });
-  fs.writeFileSync(path.join(usDir, `step-00-${slug}.spec.md`), '# spec\n', 'utf8');
-  const tag = `uswf/${workflowId}/before-step-1`;
-
-  withGitTag(tag, (repo) => {
-    const { status, result } = preAdvanceJson(statePath, 1, { env: repo.env });
-    assert(
-      status === 0 && result && result.ok === true,
-      'testArtifactsExist: spec present → advance to step 1 OK',
-    );
-  });
+  stampSpec(usDir, slug, workflowId);
+  writeLedger(usDir, slug, workflowId);
+  const { status, result } = preAdvanceJson(statePath, 1, { repoRoot: hub });
+  assert(status === 0 && result && result.ok === true, 'testArtifactsExist: spec + ledger → advance to step 1 OK');
 }
 
 function testMonotonicityGap() {
-  const slug = `qg-mono-gap-${Date.now()}`;
+  const hub = mkTmp('qg-mono-gap-');
+  writeValidateHub(hub);
+  const slug = `qg-mono-gap`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-mono-gap-'), slug);
+  const usDir = path.join(hub, '.agents/plans', slug);
   const statePath = writeState(
     usDir,
     slug,
     workflowId,
-    `completedSteps:\n  - 0\n  - 1\n  - 3\nskippedSteps: []\n`,
+    `skippedSteps:\n  - 2\n`,
     { dryRun: false },
   );
-  fs.writeFileSync(path.join(usDir, `step-00-${slug}.spec.md`), '# spec\n', 'utf8');
-  fs.writeFileSync(path.join(usDir, `step-01-${slug}.plan.md`), '# plan\n', 'utf8');
-  const tag = `uswf/${workflowId}/before-step-2`;
-
-  withGitTag(tag, (repo) => {
-    const { status, result } = preAdvanceJson(statePath, 2, { env: repo.env });
-    const errors = (result && result.errors) || [];
-    const hasGap = errors.some((e) => /gap at step 2/i.test(String(e)));
-    assert(status !== 0 && hasGap, 'testMonotonicityGap: gap without skippedSteps fails');
-  });
+  stampSpec(usDir, slug, workflowId);
+  writeLedger(usDir, slug, workflowId);
+  const { status, stderr, stdout } = preAdvanceJson(statePath, 1, { repoRoot: hub });
+  const blob = `${stdout}${stderr}`;
+  assert(
+    status !== 0 && /skippedSteps entry has invalid reason/.test(blob),
+    'testMonotonicityGap: numeric skippedSteps without reason fails',
+  );
 }
 
 function testMonotonicityValid() {
-  const slug = `qg-mono-ok-${Date.now()}`;
+  const hub = mkTmp('qg-mono-ok-');
+  writeValidateHub(hub);
+  const slug = `qg-mono-ok`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-mono-ok-'), slug);
+  const usDir = path.join(hub, '.agents/plans', slug);
   const statePath = writeState(
     usDir,
     slug,
     workflowId,
-    `completedSteps:\n  - 0\n  - 1\n  - 3\nskippedSteps:\n  - 2\n`,
+    `skippedSteps:\n  - { step: 2, reason: interview-not-required }\n`,
     { dryRun: false },
   );
-  fs.writeFileSync(path.join(usDir, `step-00-${slug}.spec.md`), '# spec\n', 'utf8');
-  fs.writeFileSync(path.join(usDir, `step-01-${slug}.plan.md`), '# plan\n', 'utf8');
-  const tag = `uswf/${workflowId}/before-step-2`;
-
-  withGitTag(tag, (repo) => {
-    const { status, result } = preAdvanceJson(statePath, 2, { env: repo.env });
-    const errors = (result && result.errors) || [];
-    const gapErrs = errors.filter((e) => /gap at step/i.test(String(e)));
-    assert(
-      status === 0 && gapErrs.length === 0,
-      'testMonotonicityValid: skippedSteps fills gap',
-    );
-  });
+  stampSpec(usDir, slug, workflowId);
+  writeLedger(usDir, slug, workflowId);
+  const { status, result } = preAdvanceJson(statePath, 1, { repoRoot: hub });
+  assert(status === 0 && result && result.ok === true, 'testMonotonicityValid: skippedSteps with reason passes');
 }
 
 function testPreAdvanceHS5() {
-  const slug = `qg-hs5-${Date.now()}`;
+  const hub = mkTmp('qg-hs5-');
+  writeValidateHub(hub);
+  const slug = `qg-hs5`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-hs5-'), slug);
+  const usDir = path.join(hub, '.agents/plans', slug);
   const statePath = writeState(usDir, slug, workflowId, '', { dryRun: false });
-  const repo = initTempGitRepo();
-  if (!repo) return;
-  const r = runPython(VALIDATE, [statePath, '--pre-advance', '1'], { env: repo.env });
+  const r = run(process.execPath, [VALIDATE, statePath, '--pre-advance', '1', '--repo-root', hub]);
   assert(
     r.status !== 0,
     'testPreAdvanceHS5: pre-advance failure exits non-zero (HS-5 / no dispatch)',

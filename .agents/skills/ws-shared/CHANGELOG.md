@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 00:50] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr + /ws-goal-fix-pr (PR 239 Python pre-advance twin)
+- **Done**: Froze standard + lite `validate_state.py` to exec Node SoT; aligned `update_state.py` stateVersion 2; retargeted quality-gates to `validate_state.cjs`
+- **Result**: Python and Node `--pre-advance` can no longer disagree on plan.index.json / ledger / skip-aware artifacts
+
 ### [2026-08-24 00:45] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr round 3 (PR 239 eval contract for optional FEATURES.md)
 - **Done**: Made eval id 1 conditional on `tracking.featuresMdEnabled`; added eval id 3 for the false branch; test asserts both

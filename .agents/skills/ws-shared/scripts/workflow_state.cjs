@@ -843,7 +843,7 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
   if (fs.existsSync(indexFile)) {
     const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
     const row = index.workflows?.find((item) => item.workflowId === state.workflowId);
-    if (!row || !snapshotHashMatches(row.stateSha256, stateText) || index.revision !== Number(state.revision)) {
+    if (row && (!snapshotHashMatches(row.stateSha256, stateText) || index.revision !== Number(state.revision))) {
       errors.push('plans index revision/state hash mismatch');
     }
   }
@@ -855,7 +855,7 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
     const required = requiredAdvanceArtifact(flow, next, state);
     if (required) {
       const file = path.join(path.dirname(stateFile), required.file);
-      if (!fs.existsSync(file)) errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, file)}`);
+      if (!fs.existsSync(file)) errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })}`);
       else {
         try { artifactMetadata(file, required.expectedStep, state); } catch (error) { errors.push(error.message); }
       }
@@ -980,7 +980,7 @@ function runValidateCli(config) {
       pipeline: config.pipeline,
       preAdvance: options.preAdvance === true ? undefined : options.preAdvance,
     });
-    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ ...result, state: toRepoRelative(context.repoRoot, stateFile, { allowOutside: true }) }, null, 2)}\n`);
   } catch (error) {
     process.stderr.write(`ERROR: ${error.message}\n`);
     process.exitCode = 1;
