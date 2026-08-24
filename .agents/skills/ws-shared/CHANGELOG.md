@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-24 00:30] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-ship-pr fix-pr round 2 (PR 239 plan.index resume docs)
+- **Done**: FAQ + setup.md backfill for missing `plan.index.json` on pre-0.3.37 resume; integrity regenerated
+- **Result**: Operators can rebuild the index before implement pre-advance after package update
+
 ### [2026-08-24 00:20] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-ship-pr then fix PR 239 review threads
 - **Done**: Contract tests for Step 7 `no-test-surface` / `testing-disabled` skip → `--pre-advance 8` without a testing report

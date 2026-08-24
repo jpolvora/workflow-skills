@@ -240,10 +240,24 @@ If you rollback, Nav Backward, or Undo, the orchestrator resets the working tree
 ## 7. Troubleshooting
 
 ### My workflow paused with HS-5. What do I do?
-An HS-5 indicates that `state.md` YAML parsing or schema validation failed.
+An HS-5 indicates that `state.md` YAML parsing or schema validation failed, or that a pre-advance check exited non-zero (missing required artifact).
 1.  Open the state file in your editor: `{plansDir}/us-{id}/{workflow-id}.state.md`.
 2.  Fix any malformed YAML characters (e.g. unquoted colons, unresolved strings, or syntax errors).
-3.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
+3.  If stderr includes `plan.index.json is required before implement`, backfill that file (next item) before retrying validate.
+4.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
+
+### Pre-advance fails: plan.index.json is required before implement
+Workflows started before 0.3.37 may lack `{us-dir}/plan.index.json`. Before `--pre-advance` to implement (standard 4 / lite 2), backfill from the plan of record:
+
+```bash
+node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs build \
+  --plan "{us-dir}/step-02-{slug}.plan.refined.md" \
+  --spec "{us-dir}/step-00-{slug}.spec.md" \
+  --output "{us-dir}/plan.index.json" \
+  --draft "{us-dir}/step-01-{slug}.plan.md"
+```
+
+Omit `--draft` when step-01 was not superseded. Use `step-01-{slug}.plan.md` as `--plan` when no refined plan exists.
 
 For comparable environment reports, run `ws-doctor --persist` or persist the harness report under `plans.diagnosticsDir`. Use `workflow-skills telemetry report` to inspect per-run audit counts and median elapsed time by pipeline and step.
 
