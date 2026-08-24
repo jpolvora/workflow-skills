@@ -4,12 +4,12 @@
     {
       "id": 1,
       "prompt": "/ws-task-lifecycle implement a product change after tests pass",
-      "expected_output": "Agent follows Intake then Implementation then Completion. New slice specs are tracked on index.PRD via ws-spec-index before [~]. When tracking.featuresMdEnabled is not false, Completion updates FEATURES.md before PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. When tracking.featuresMdEnabled is false, Completion skips FEATURES.md and walks PLAN.md, then PRODUCT.PRD, then index.PRD, then changelog and self-learning. No {plansDir} tree is created.",
+      "expected_output": "Agent follows Intake then Implementation then Completion. New slice specs are tracked on index.PRD via ws-spec-index before [~]. When tracking.featuresMdEnabled is not false, Completion auto-detects the features file (repo-root FEATURES.md when it exists, else {specsDir}/index.PRD) and marks it [x] before walking PLAN.md, then PRODUCT.PRD, then changelog and self-learning. When tracking.featuresMdEnabled is false, Completion skips the features file and walks PLAN.md, then PRODUCT.PRD, then changelog and self-learning. No {plansDir} tree is created.",
       "assertions": [
         "Loads ws-task-lifecycle and names phases Intake, Implementation, Completion",
         "When a new slice spec is written, invokes ws-spec-index track before [~]",
-        "When tracking.featuresMdEnabled is not false, Completion order lists FEATURES.md before PLAN.md",
-        "When tracking.featuresMdEnabled is false, Completion skips FEATURES.md and still walks PLAN.md before PRODUCT.PRD",
+        "When tracking.featuresMdEnabled is not false, Completion auto-detects the features file (FEATURES.md or {specsDir}/index.PRD) before walking PLAN.md",
+        "When tracking.featuresMdEnabled is false, Completion skips the features file and still walks PLAN.md before PRODUCT.PRD",
         "Does not create a {plansDir} workflow tree or write step-00-*.spec.md",
         "Does not invoke ws-spec-to-pr or ws-spec-to-pr-lite"
       ]
@@ -27,9 +27,9 @@
     {
       "id": 3,
       "prompt": "Consumer set tracking.featuresMdEnabled false. Run /ws-task-lifecycle completion after a prompt task.",
-      "expected_output": "Completion skips FEATURES.md entirely and walks PLAN.md, PRODUCT.PRD, index.PRD, then changelog and self-learning.",
+      "expected_output": "Completion skips the features file entirely and walks PLAN.md, PRODUCT.PRD, then changelog and self-learning.",
       "assertions": [
-        "Does not update or invent FEATURES.md when featuresMdEnabled is false",
+        "Does not update or invent a features file (FEATURES.md or index.PRD) when featuresMdEnabled is false",
         "Still walks PLAN.md before PRODUCT.PRD when those files exist"
       ]
     }

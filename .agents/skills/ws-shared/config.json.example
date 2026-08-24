@@ -340,7 +340,7 @@
   },
 
   "tracking": {
-    "_comment": "ws-task-lifecycle Completion walk. featuresMdEnabled default true when omitted; set false to disable FEATURES.md entirely (no walk, no hub FEATURES Sync). Absent or empty canonicalFiles → optional FEATURES.md (if enabled), PLAN.md, PRODUCT.PRD, then {specsDir}/index.PRD. Bare index.PRD only if that file exists at repo root.",
+    "_comment": "ws-task-lifecycle Completion walk. featuresMdEnabled default true when omitted; set false to disable the features file entirely. Absent or empty canonicalFiles → auto-detected features file (repo-root FEATURES.md when it exists, else {specsDir}/index.PRD), PLAN.md, PRODUCT.PRD.",
     "featuresMdEnabled": true,
     "canonicalFiles": []
   },

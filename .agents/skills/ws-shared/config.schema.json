@@ -328,12 +328,12 @@
         "featuresMdEnabled": {
           "type": "boolean",
           "default": true,
-          "description": "When true (default if omitted), include FEATURES.md in the default Completion walk when the file exists, and upstream package doc-sync may require it. When false, never walk or require FEATURES.md (consumers without a package FEATURES inventory)."
+          "description": "When true (default if omitted), the features file participates in the default Completion walk (auto-detected: repo-root FEATURES.md when it exists, else {specsDir}/index.PRD). When false, skip the features file entirely."
         },
         "canonicalFiles": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
-          "description": "Repo-relative tracking files walked in listed order. Absent or empty → optional FEATURES.md (when tracking.featuresMdEnabled is not false), PLAN.md, PRODUCT.PRD, then index at plans.specsDir (default .agents/specs/index.PRD). Do not use bare index.PRD unless that file exists at repo root. An explicit list replaces the default entirely (FEATURES.md only if you include it)."
+          "description": "Repo-relative tracking files walked in listed order. Absent or empty → auto-detected features file (when tracking.featuresMdEnabled is not false), PLAN.md, PRODUCT.PRD. An explicit list replaces the default entirely (include FEATURES.md or index.PRD yourself if wanted)."
         }
       }
     },
