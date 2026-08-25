@@ -80,7 +80,7 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
 | **2** | Plan Refinement | Conditional skip or `ws-interview` (End refinement auto-confirms 2e) |
 | **3** | Execution Plan & DAG | `ws-plan-to-tasks` — sequential writes exec.md + dag.json (empty task groups) |
 | **4** | Implementation | `ws-implement-tasks` mode build |
-| **5** | Check-implementation | `ws-verify-plan` quick-score; `scoreAndRefine` until score ≥ 9 (auto pauses only after max rounds still &lt; 9); then simulate G2-code of workflow product files |
+| **5** | Check-implementation | `ws-verify-plan` quick-score; `scoreAndRefine` until score ≥ `defaults.minVerifyScore` (default 9) (auto pauses only after max rounds still below bar); then simulate G2-code of workflow product files |
 | **6** | Code Review (+ fix → re-review) | `ws-code-review` on committed `{base}...HEAD`; on Critical/Warning: fix → re-review max 3; simulate G2-code of review fixes if any; Pause on residual |
 | **7** | Testing | May auto-skip (`skipTesting` / no surface); else `ws-testing` without browser |
 | **8** | Ship | Delivery result + combined gate → simulate delivery-artifact commit + PR (`ws-ship-pr`; product already committed) |

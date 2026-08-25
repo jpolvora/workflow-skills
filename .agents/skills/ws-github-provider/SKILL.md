@@ -1,7 +1,7 @@
 ---
 name: ws-github-provider
 description: GitHub issue→spec and PR ops. Same required intents as Azure DevOps (scm-provider-contract). Trigger when providers.scm is github.
-version: 0.3.38
+version: 0.3.40
 disable-model-invocation: true
 invocation_names:
   - github-provider
@@ -56,7 +56,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base) |
 | `list-threads` | PR id | Thread list | `fetch_threads.cjs` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `gh pr checks`; on fail `gh run view --log-failed`; classify diff/baseline/flake; one flake rerun |
-| `resolve-thread` | thread id (+ comment) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation) | `resolve_thread.cjs` |
+| `resolve-thread` | thread id (+ comment; optional `--model`) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation); comment footer `LLM model: {id}` when `--model` set | `resolve_thread.cjs` |
 | `comment-issue` | issue id, body | Public issue comment (alias `close-loop`) | `comment_issue.py` → `gh issue comment` |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 

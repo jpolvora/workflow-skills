@@ -50,9 +50,9 @@ Scan consumer **repo root** (not this skill package alone):
 4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, and `convergence`) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
+7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, **minVerifyScore**, and `convergence`) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
    - **Models preset** (`modelsPreset`): pick from shipped sample keys in `config.json.example` (`modelPresets` map) or **Custom…** / **Keep current** / **Skip**. Unknown names fall back to preset `default` when present.
-   - **Per-step overrides** (`stepModels`): optional numeric `"0"`–`"9"` and roles `dag`, `scoreAndRefine`, `reviewFix` (skippable; empty strings). Token `"current"` uses the active session model.
+   - **Per-step overrides** (`stepModels`): optional numeric `"0"`–`"9"` and roles `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec` (skippable; empty strings). Token `"current"` uses the active session model. Offer Fix-PR plan and execute independently: `fixPrPlan` defaults through `reviewerModel`, `fixPrExec` through `executionModel`; neither inherits numeric `"9"` (outer Step 9 only). Lite ignores both role model switches but still plans before editing inline.
    - **Advanced phase keys** (legacy overrides of the active preset; empty = fall through):
    - `plannerModel` (Planning phase: Steps 0–3)
    - `executionModel` (Execution phase: Step 4)
@@ -65,6 +65,12 @@ Scan consumer **repo root** (not this skill package alone):
    | Gate | Writes | Options (Recommended first) |
    |------|--------|-----------------------------|
    | Print a reasoned start-of-step bullet preview? | `verboseMode` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
+
+   **Min verify score** (writes `defaults.minVerifyScore`; Recommended default 9). Runtime omitted/invalid → 9.
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Minimum Step 5 Advance / scoreAndRefine bar (1–10)? | `minVerifyScore` | **9 (Recommended)** / 10 / custom integer 1–10 / Keep current / Skip |
 
    **Delivery commit artifacts** (subsection of `defaults` / `--section defaults`; writes `defaults.deliveryCommitArtifacts`). Staging SoT: [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8. `autoMode`: accept Recommended on all three gates without prompting.
 

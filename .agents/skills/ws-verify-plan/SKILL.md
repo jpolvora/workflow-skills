@@ -1,7 +1,7 @@
 ---
 name: ws-verify-plan
-description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ 9; below 9 runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.3.38
+description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
+version: 0.3.40
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -28,7 +28,7 @@ Standalone:
 /verify-plan [spec-input] [plan-dir=<path>]
 ```
 
-Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optional `mode=quick|full`. Default `mode=quick`; escalate to `full` when quick score < 9, orchestrator passes `mode=full`, or user passed `--strict`.
+Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, optional `mode=quick|full`. Default `mode=quick`; escalate to `full` when quick score `< minVerifyScore`, orchestrator passes `mode=full`, or user passed `--strict`.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -46,7 +46,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: every planned feature/AC has a situation and evidence, and Quick Score's three metrics are each scored.
 
 3. **Score**: link semantic/file/test/alias/sabotage evidence to `{us-dir}/ac-ledger.json`, then run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <path> --boundary step5`. This derived integer **0-10** is the only score; never author or override a numeric score in a report or state update.
-   - **Regression Sabotage Check:** For bug-fix/regression tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` with caller-authored invert patch. Record pass/fail/skipped+reason in the report. Missing **required** sabotage → fail-closed overall score **< 9** (never Advance; triggers `scoreAndRefine` / Pause per `gates.md`). Restore failure aborts this step (exit 1).
+   - **Regression Sabotage Check:** For bug-fix/regression tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` with caller-authored invert patch. Record pass/fail/skipped+reason in the report. Missing **required** sabotage → fail-closed below the Advance bar (`knownDefect` caps at 8) (never Advance; triggers `scoreAndRefine` / Pause per `gates.md`). Restore failure aborts this step (exit 1).
    - Optional `fable` integration: use the normalized tri-state policy from the shared workflow runtime. `REFUTED` always blocks as the safety floor; `"refuted"` blocks `REFUTED`; `"caveats"` also blocks `VERIFIED WITH CAVEATS`; `false` never relaxes the `REFUTED` floor. Link the verdict and finding evidence before scoring.
    - Done when: an integer score 0-10 is set.
 
@@ -54,8 +54,8 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
 5. **Handoff**: return the score and report path.
-   - Workflow: the orchestrator owns the gate after reading the report: score `>= 9` advances to Step 6 (optional `scoreAndRefine` second pass first when the flag is on — [`gates.md`](../ws-shared/gates.md) § Score & Refine); score `< 9` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= 9` (max 3 rounds per visit, then Pause). Do not auto-approve below 9.
-   - Standalone: apply the same `>= 9` / `< 9` threshold; recommend `scoreAndRefine` until `>= 9` when below 9.
+   - Workflow: the orchestrator owns the gate after reading the report: score `>= defaults.minVerifyScore` (default 9) advances to Step 6 (optional `scoreAndRefine` second pass first when the flag is on — [`gates.md`](../ws-shared/gates.md) § Score & Refine); score below `defaults.minVerifyScore` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= defaults.minVerifyScore` (default 9) (max 3 rounds per visit, then Pause). Do not auto-approve below `defaults.minVerifyScore`.
+   - Standalone: apply the same `>= defaults.minVerifyScore` (default 9) / below-bar threshold; recommend `scoreAndRefine` until `>= defaults.minVerifyScore` (default 9) when below bar.
    - Done when: the caller has the score and report path.
 
 ## Subagent contract

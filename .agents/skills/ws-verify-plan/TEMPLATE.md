@@ -27,8 +27,8 @@ Canonical skill: [`SKILL.md`](SKILL.md).
 | Evidence | invert patch path, test command exit code, restore clean |
 
 ## Recommendation
-- [ ] **SCORE AND REFINE**: Score < 9. Re-implement flagged tasks and re-verify until >= 9.
-- [ ] **APPROVE & COMMIT**: Score >= 9. Proceed to code review and commit.
+- [ ] **SCORE AND REFINE**: Score < defaults.minVerifyScore (default 9). Re-implement flagged tasks and re-verify until >= defaults.minVerifyScore (default 9).
+- [ ] **APPROVE & COMMIT**: Score >= defaults.minVerifyScore (default 9). Proceed to code review and commit.
 
 ### Details / Feedback
 [Specific files to fix or rewrite, if any]

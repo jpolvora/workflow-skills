@@ -23,7 +23,7 @@ This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0�
 | 5a. [When does the pipeline commit?](#when-does-the-pipeline-commit-code) | Product commits after verify and after review-fix |
 | 6. [Artifacts & State Lifecycle](#6-artifacts--state-lifecycle) | state.md structure, plansDir artifacts, git checkpoints |
 | 7. [Troubleshooting](#7-troubleshooting) | Handling HS pauses, worktree issues, and retry loops |
-| 8. [Verify score & SCM providers](#8-verify-score--scm-providers) | Step 5 bar ≥ 9; GitHub/Azure intent parity |
+| 8. [Verify score & SCM providers](#8-verify-score--scm-providers) | Step 5 bar ≥ `defaults.minVerifyScore` (default 9); GitHub/Azure intent parity |
 
 ---
 
@@ -34,7 +34,7 @@ Spec-to-PR is a deterministic **orchestrated software delivery pipeline** design
 
 ### Standard vs. Lite Modes
 The hub supports two workflows depending on target speed and project complexity:
-*   **Standard (`ws-spec-to-pr`)**: Detailed 10-step lifecycle (0 to 9) containing plan refinement interviews, sequential or parallel DAG execution, read-only verify gates (advance at score ≥ 9), a required product commit after verify, local code review of `{base}...HEAD`, a second product commit for review fixes, and testing batteries.
+*   **Standard (`ws-spec-to-pr`)**: Detailed 10-step lifecycle (0 to 9) containing plan refinement interviews, sequential or parallel DAG execution, read-only verify gates (advance at score ≥ `defaults.minVerifyScore` (default 9)), a required product commit after verify, local code review of `{base}...HEAD`, a second product commit for review fixes, and testing batteries.
 *   **Lite (`ws-spec-to-pr-lite`)**: Fast-track 6-step lifecycle (0 to 5) skipping Plan Refinement interviews, DAG creation, verify gates, and step-7 testing. Product commit after implement (before review), then a second commit for review fixes. Steps are executed inline in a single session.
 
 ### Who is responsible for what?
@@ -55,10 +55,10 @@ flowchart TD
   S2 --> S3[3 Plan-to-tasks]
   S3 --> S4[4 Implement]
   S4 --> S5[5 Check-implementation]
-  S5 -->|score ≥ 9| C1[G2-code verified implementation]
-  S5 -->|score < 9| G5[scoreAndRefine until ≥ 9]
-  G5 -->|score ≥ 9| C1
-  G5 -->|max 3 still < 9| P[Pause]
+  S5 -->|≥ minVerifyScore| C1[G2-code verified implementation]
+  S5 -->|below minVerifyScore| G5[scoreAndRefine until ≥ minVerifyScore]
+  G5 -->|≥ minVerifyScore| C1
+  G5 -->|max 3 still below bar| P[Pause]
   C1 --> S6[6 Code-review]
   S6 -->|findings| Fix[Fix substep<br/>ws-implement-tasks]
   Fix --> C2[G2-code review fixes]
@@ -104,12 +104,13 @@ flowchart TD
 
 ### Modes & Flags
 *   `dry-run` (`dryRun: true`): Simulates all operations. Prevents source edits, git commits, remote pushes, browser automation, and memory updates.
-*   `auto` (`autoMode: true`): Disables interactive menus. Auto-selects options (index 0). Workflow pauses only on hard stops or if a verify score stays below 9 after max scoreAndRefine rounds.
+*   `auto` (`autoMode: true`): Disables interactive menus. Auto-selects options (index 0). Workflow pauses only on hard stops or if a verify score stays below `defaults.minVerifyScore` after max scoreAndRefine rounds.
 *   `skip-testing`: Skips standard Step 7 Testing entirely, moving directly to Step 8 Ship.
 *   `skip-tests`: Skips the execution of testing suites (e.g. `npm run test` or `pytest`) in STACK.md. Build checks are still enforced.
 *   Mutation (inside Step 7): not a CLI flag by default — configure `verification.mutationTest` and set `defaults.skipMutationTesting: false` to opt in. Empty `mutationTest` or `skipMutationTesting: true` skips mutation without failing.
 *   **Feature-branch gate** (new start only): after identity, ask stay-on-current / create `feat/{slug}` from HEAD / create from `baseBranch`. Resume skips this gate.
 *   **testingModel**: optional `defaults.testingModel` for standard Step 7 only; `modelsPreset` / `stepModels` overrides apply first, then empty uses `executionModel`.
+*   **Fix-PR role models**: standard Step 9 remains one outer FSM step. Each batch plans first with `fixPrPlan` (`reviewerModel` fallback), then executes with `fixPrExec` (`executionModel` fallback). Role overrides never inherit numeric `stepModels["9"]`; lite keeps the same order inline on the session model.
 
 ---
 
@@ -145,8 +146,8 @@ flowchart TD
 ### Step 5: Check-implementation
 *   **Executor**: Verifier subagent (read-only) (`ws-verify-plan` / `ws-verify-plan`).
 *   **Role**: Evaluates the written code against the spec/plan and publishes an integer score (0–10).
-    *   **Score ≥ 9**: Passes gate, then **required G2-code** of workflow-touched product files (skip if the stage set is empty; never empty commit).
-    *   **Score < 9**: Runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ 9 (max 3 rounds, then Pause). Product commit runs only after score ≥ 9. Never auto-approve below 9.
+    *   **Score ≥ `defaults.minVerifyScore` (default 9)**: Passes gate, then **required G2-code** of workflow-touched product files (skip if the stage set is empty; never empty commit).
+    *   **Score below `defaults.minVerifyScore`**: Runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ `defaults.minVerifyScore` (default 9) (max 3 rounds, then Pause). Product commit runs only after score ≥ `defaults.minVerifyScore` (default 9). Never auto-approve below bar.
     *   Do not dispatch Step 6 while workflow product files remain uncommitted.
 
 ### Step 6: Code Review
@@ -317,7 +318,7 @@ This is **mandatory** even if you chose **Keep all artifacts** (that choice only
 ## 8. Verify score & SCM providers
 
 ### What score is required to leave Step 5?
-Standard check-implementation advances only at overall score **≥ 9**. Score **< 9** always runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ 9. Max **3** rounds per Step 5 visit, then Pause (fail closed). Resume continues. Never auto-approve below 9, including in `autoMode`. Optional polish (Accept As-Is) only when the score is already ≥ 9 and the `scoreAndRefine` flag is on; choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced artifacts. Lite has no Step 5 verify gate.
+Standard check-implementation advances only at overall score **≥ `defaults.minVerifyScore` (default 9)**. Score below `defaults.minVerifyScore` always runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ `defaults.minVerifyScore` (default 9). Max **3** rounds per Step 5 visit, then Pause (fail closed). Resume continues. Never auto-approve below bar, including in `autoMode`. Optional polish (Accept As-Is) only when the score is already ≥ `defaults.minVerifyScore` (default 9) and the `scoreAndRefine` flag is on; choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced artifacts. Lite has no Step 5 verify gate.
 
 ### Do GitHub and Azure DevOps support the same PR operations?
 Yes. Both implement the required intents in [`scm-provider-contract.md`](../../ws-shared/scm-provider-contract.md): `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, `merge-pr`. Host CLI recipes stay inside each provider `INTENTS.md`. An extra intent on one side without the other (and without an allowlist row) fails `npm run test` (`test/test-provider-parity.js`). [`ws-local-spec-provider`](../../ws-local-spec-provider/SKILL.md) is not an SCM implementer; it delegates PR intents to `providers.scm`.

@@ -106,10 +106,12 @@ function setupPreAdvance6Fixture(options = {}) {
   const workflowId = 'wf-pa6';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(pa6Root, '.agents/plans', slug);
+  const defaults = {};
+  if (options.minVerifyScore !== undefined) defaults.minVerifyScore = options.minVerifyScore;
   write(path.join(pa6Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: { backendFormat: 'npm run lint', backendTest: 'npm run test' },
-    defaults: {},
+    defaults,
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(pa6Root, stateRel), `---
@@ -180,7 +182,7 @@ verificationScore: 9
     'finish', stateRel, '--step', '5', '--timestamp', '2026-08-21T20:01:00.000Z',
     '--verification-score', '9', '--score-boundary', 'pre-step6', ...common,
   ]).status, 0);
-  return { pa6Root, stateRel, slug, workflowId, usDir, common };
+  return { pa6Root, stateRel, slug, workflowId, usDir, common, ledger };
 }
 
 // AC7 — missing required alias fails pre-advance 6
@@ -197,6 +199,51 @@ verificationScore: 9
   const ledgerData = JSON.parse(fs.readFileSync(path.join(pa6Root, '.agents/plans/pa6/ac-ledger.json'), 'utf8'));
   assert.strictEqual(ledgerData.scoreState.boundary, 'pre-step6');
   assert.strictEqual(run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]).status, 0);
+}
+
+{
+  const { pa6Root, stateRel } = setupPreAdvance6Fixture({ includeFormatSkip: true, minVerifyScore: 10 });
+  const fail = run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]);
+  assert.notStrictEqual(fail.status, 0, 'minVerifyScore 10 blocks ledger score 9');
+  assert.match(`${fail.stdout}${fail.stderr}`, /ledger score must be at least 10 before step 6/);
+}
+
+{
+  const { pa6Root, stateRel } = setupPreAdvance6Fixture({ includeFormatSkip: true, minVerifyScore: 8 });
+  assert.strictEqual(run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]).status, 0, 'minVerifyScore 8 allows ledger score 9');
+}
+
+{
+  const { pa6Root, stateRel } = setupPreAdvance6Fixture({ includeFormatSkip: true, minVerifyScore: 99 });
+  assert.strictEqual(run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]).status, 0, 'invalid minVerifyScore falls back to 9');
+}
+
+{
+  const { pa6Root, stateRel, slug, ledger } = setupPreAdvance6Fixture({ includeFormatSkip: true, minVerifyScore: 8 });
+  const ledgerRel = `.agents/plans/${slug}/ac-ledger.json`;
+  assert.strictEqual(ledger([
+    'link', '--ledger', ledgerRel, '--event-id', 'defect', '--ac', 'AC1',
+    '--finding', JSON.stringify({ id: 'CR-001', severity: 'Warning', state: 'open', round: 1, evidence: 'impl.js:L1-L1' }),
+    '--sabotage-exit', '1',
+  ]).status, 0);
+  const rescored = JSON.parse(ledger(['score', '--ledger', ledgerRel, '--boundary', 'pre-step6']).stdout);
+  assert.strictEqual(rescored.score, 8);
+  assert.strictEqual(run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]).status, 0, 'minVerifyScore 8 allows ledger score 8');
+}
+
+{
+  const { pa6Root, stateRel, slug, ledger } = setupPreAdvance6Fixture({ includeFormatSkip: true });
+  const ledgerRel = `.agents/plans/${slug}/ac-ledger.json`;
+  assert.strictEqual(ledger([
+    'link', '--ledger', ledgerRel, '--event-id', 'defect', '--ac', 'AC1',
+    '--finding', JSON.stringify({ id: 'CR-001', severity: 'Warning', state: 'open', round: 1, evidence: 'impl.js:L1-L1' }),
+    '--sabotage-exit', '1',
+  ]).status, 0);
+  const rescored = JSON.parse(ledger(['score', '--ledger', ledgerRel, '--boundary', 'pre-step6']).stdout);
+  assert.strictEqual(rescored.score, 8);
+  const fail = run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]);
+  assert.notStrictEqual(fail.status, 0, 'default minVerifyScore 9 blocks ledger score 8');
+  assert.match(`${fail.stdout}${fail.stderr}`, /ledger score must be at least 9 before step 6/);
 }
 
 // AC9 — runtime allowlist for cjs, patch, md

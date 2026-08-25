@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.38
+version: 0.3.40
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -29,7 +29,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 3. **State & Telemetry:** Run `node {skillsRoot}/ws-spec-to-pr-lite/scripts/update_state.cjs dispatch` before each inline step and `finish` afterward with `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`; elapsed time is derived from those timestamps and authored `--elapsed` is rejected. Missing telemetry → **HS-5**.
 4. **Artifacts:** `step-00` spec · `step-01` plan · `step-08` result (shared names with standard).
 5. **Commits & Cleanup:** Required **G2-code after Step 2 before Step 3**; second G2-code after Step 3 review-fix if product files remain (`commit-code`, path-scoped `files_touched` — [`gates.md`](../ws-shared/gates.md) § Required G2-code save points). Configured delivery artifacts at Step 4 G2-delivery (`defaults.deliveryCommitArtifacts` / [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8). On `status → completed`, follow [`artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md) Phase A: `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
-6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel`, `dag`, `scoreAndRefine`, or `reviewFix` even if set. Lite Step 3 review-fix stays on Step `3` / `reviewerModel` / `stepModels["3"]`.
+6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel` or role keys `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, or `fixPrExec`, even if set. Lite Step 3 review-fix stays on numeric Step `3`; Fix-PR runs gate-only plan then execute inline on `currentModel`, while numeric Step `5` remains the only outer telemetry row.
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`; wide-context simplify per [`gates.md`](../ws-shared/gates.md) § Score & Refine).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
 9. **MEMORY Consult:** In Steps 1, 2, and 3: grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `memory_consult` in step outputs.
@@ -44,7 +44,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 | 2 | Implementation | `ws-implement-tasks` (**defect-class repo-wide sweep**) | Code modified + build/tests pass (`config.json.verification`); then required G2-code (skip if empty) |
 | 3 | Review | `ws-code-review` (+ fix; sibling modules beyond diff) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |
 | 4 | Ship | orch + `ws-ship-pr` (`check-pr-status` CI triage + **`comment-issue`** on create) | `step-08-{slug}.result.md` created + PR created/skipped per menu |
-| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` (`check-pr-status` baseline vs diff) | PR merged or zero active threads (`activeThreads == 0`) |
+| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr`: for each batch, write and validate the gate-only plan before any product edit, then execute inline (`check-pr-status` baseline vs diff); ignore role model switches | Complete plan + execute/proactive evidence; PR merged or zero active threads (`activeThreads == 0`) |
 
 **No Step 5/7 verify or testing:** lite does not dispatch `ws-verify-plan` or `ws-testing`. **Regression sabotage** and **mutation testing** are **standard-orch Steps 5 and 7 only** — out of scope for lite.
 

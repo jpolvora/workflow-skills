@@ -1,16 +1,12 @@
 ## Summary
-
-Release **0.3.36** from `develop` → `main`.
-
-- ADO `comment_issue.py` accepts optional `--org` / `--project` / `--api-base` / `--pat-env` (config remains the default). Close-loop matches work-item fetch CLI.
-- Package stamp 0.3.36.
+- Drop `ws-patterns` and session leases / git.lock from shipped skills, orch, config, installer, and tests so workflows stay lighter; keep `ws-self-learning` MEMORY.
+- Freeze Python state helpers to Node (`update_state` / `validate_state` exec wrappers) and add HTTP retry / UTF-8 resilience helpers.
+- Drop the root `AGENTS.md` byte cap while keeping consumer hub context budgets; package **0.3.38**.
 
 ## Test plan
+- [x] `bash .agents/skills/ws-ship-pr/scripts/verify.sh` (VERIFY_OK)
+- [x] `npm run verify-integrity` (v0.3.38)
+- [x] `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` (PASS)
+- [x] Phase 5a: duplicates / shell-quoting / measure_harness
+- [x] `node test/test-context-budget.js`
 
-- [x] `node test/test-provider-parity.js` (org/project dry-run spawn)
-- [x] `node test/test-hermes-spec-to-pr-enhancements.js`
-- [x] `npm run test` (exit 0)
-- [x] `npm run verify-integrity` (v0.3.36)
-- [x] Leak scan: no HIGH findings
-- [ ] CI on this PR
-- [ ] `ws-goal-fix-pr` until review threads are 0

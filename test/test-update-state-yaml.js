@@ -211,6 +211,52 @@ function testLocNestedMappingRoundTrip() {
   assertCompletedStepsContains(fm, [0, 1, 2], 'pass 2');
 }
 
+function testFixPrRoleDispatchesPreserveNestedLoc() {
+  const dir = mkTmp('ws-update-state-fix-pr-roles-');
+  const { statePath, stateRel } = writeLocFixture(dir);
+  const jsonlRel = '.agents/plans/us-202/telemetry/step-09.jsonl';
+
+  for (const [substep, model, second] of [
+    ['fixPrPlan', 'reviewer-role', '10'],
+    ['fixPrExec', 'execution-role', '20'],
+  ]) {
+    const result = runNode(UPDATE_STANDARD, [
+      'dispatch', stateRel, '--step', '9',
+      '--substep', substep,
+      '--model', model,
+      '--timestamp', `2026-08-21T20:02:${second}.000Z`,
+      '--jsonl-out', jsonlRel,
+      '--repo-root', dir,
+    ]);
+    assert(result.status === 0, `${substep} nested-loc dispatch: exit 0`);
+    if (result.status !== 0) {
+      console.error(result.stdout);
+      console.error(result.stderr);
+    }
+  }
+
+  const fm = extractFrontmatter(statePath);
+  assertLocMapping(fm, 'Fix-PR role dispatches');
+  assert(/substep:\s*fixPrExec/.test(fm), 'Fix-PR compact state retains latest execute role');
+  assert(
+    !/completedSteps:\s*(?:\[[^\]]*\b9\b|(?:\r?\n\s+-\s+\d+\s*)*\r?\n\s+-\s+9\b)/.test(fm),
+    'Fix-PR internal dispatches do not complete Step 9',
+  );
+
+  const events = fs.readFileSync(path.join(dir, jsonlRel), 'utf8')
+    .trim()
+    .split(/\r?\n/)
+    .map((line) => JSON.parse(line));
+  assert(
+    events.map((event) => event.substep).join(',') === 'fixPrPlan,fixPrExec',
+    'Fix-PR JSONL preserves ordered role history',
+  );
+  assert(
+    events.map((event) => event.model).join(',') === 'reviewer-role,execution-role',
+    'Fix-PR JSONL preserves actual role models',
+  );
+}
+
 function testLiteSerializerMirrorsNestedDictFix() {
   const dir = mkTmp('ws-update-state-lite-loc-');
   const { statePath, stateRel } = writeLocFixture(dir);
@@ -620,6 +666,7 @@ function testInlineDictCommitShaScan() {
 function main() {
   console.log('test-update-state-yaml.js\n');
   testLocNestedMappingRoundTrip();
+  testFixPrRoleDispatchesPreserveNestedLoc();
   testLiteSerializerMirrorsNestedDictFix();
   testDuplicateCompletedStepsUnion();
   testStateVersionStampAndReject();

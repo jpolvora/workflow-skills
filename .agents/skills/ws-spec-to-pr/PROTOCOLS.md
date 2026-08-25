@@ -91,7 +91,7 @@ Every step: call `update_state.cjs dispatch` before execution and `finish` after
 
 No in-gate model picker. At every transition, show the gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume).
 
-The orchestrator session ALWAYS executes under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels`, and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent`. Pass the resolved id on `dispatch-agent` and record it with `--model` / optional `--substep` on `update_state.cjs`. Step 7 uses the `testingModel` → `executionModel` → session chain after preset/`stepModels` overrides. On subagent switch failure or unconfigured model, gracefully fall back to `currentModel`.
+The orchestrator session ALWAYS executes under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels`, and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent`. Pass the resolved id on `dispatch-agent` and record it with `--model` / optional `--substep` on `update_state.cjs`. Step 7 uses the `testingModel` → `executionModel` → session chain after preset/`stepModels` overrides. Step 9 internal roles use `fixPrPlan` → `reviewerModel` and `fixPrExec` → `executionModel`; they bypass numeric `"9"`, resolve from one captured session fallback, emit dispatch events only, and leave the single Step 9 finish to the outer orchestrator. On subagent switch failure or unconfigured model, gracefully fall back to the captured `currentModel`.
 
 When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
@@ -119,10 +119,10 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ 9 | Complete step 5; Advance to 6 |
-| < 9 | **scoreAndRefine** until ≥ 9 (max 3 rounds, then Pause). Never Advance or auto-approve below 9. |
+| ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5 scoring; when Reach-10 conditions in [`gates.md`](../ws-shared/gates.md) hold, offer Reach-10 before G2-code; otherwise G2-code then Advance to 6 |
+| below `defaults.minVerifyScore` | **scoreAndRefine** until ≥ `defaults.minVerifyScore` (default 9) (max 3 rounds, then Pause). Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
-`--strict`: always run full verification matrix regardless of score. `autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below 9 — Pause only after max rounds still < 9. Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate.
+`--strict`: always run full verification matrix regardless of score. `autoMode`: skip the Reach-10 offer and advance at the current passing score; still auto-run scoreAndRefine rounds below the bar — do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`. Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate · § Reach-10 offer.
 
 ### Code review + fix → re-review loop (Step 6)
 
@@ -219,8 +219,8 @@ Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr:
 First-class step after Step 8 when `shipAction: create-pr` and PR exists (canonical detail: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 9):
 
 1. **Wait for code-review / CI** (≥300s settle + poll checks/threads) — do not merge yet.
-2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot) until **no open issues** (`activeThreads == 0`).
-3. **Merge** via SCM `merge-pr` only after convergence and required checks are green.
+2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot). Each Act-round or standalone batch must complete its gate-only `fixPrPlan` before `fixPrExec`; when subagents are available, append both ordered role dispatches to Step 9 JSONL. Internal roles never finish Step 9.
+3. Continue until **no open issues** (`activeThreads == 0`), then **merge** via SCM `merge-pr` only after required checks are green. The outer orchestrator records one Step 9 finish.
 
 Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · checks red.
 
@@ -242,7 +242,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Transition / phase model | **Advance** with resolved phase model (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`; fallback to session `currentModel`) |
 | Step 2 needs_user | first option; early → **End refinement and advance** (auto-confirms 2e) |
 | Step 2e (only if shown) | **I confirm shared understanding — advance to Step 3** |
-| Step 5 score < 9 | scoreAndRefine until ≥ 9 (max 3); Pause on residual (no auto-approve) |
+| Step 5 score below `defaults.minVerifyScore` | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |
 | Post-verify G2-code (after Step 5) | Commit when stage set non-empty; skip when empty |
 | Post-review-fix G2-code (after Step 6) | Commit when stage set non-empty; skip when empty |
 | Step 7 skipTesting / no API-UI | skip step |

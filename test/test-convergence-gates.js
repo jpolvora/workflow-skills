@@ -53,6 +53,30 @@ const merged = JSON.parse(fs.readFileSync(path.join(root, 'merged.json'), 'utf8'
 assert.deepStrictEqual(merged.findings.map((item) => item.id), ['CR-1', 'V-1']);
 assert.strictEqual(merged.requiresFix, true);
 
+const rootMin10 = temp('ws-convergence-min10-');
+write(path.join(rootMin10, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  defaults: { minVerifyScore: 10 },
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(rootMin10, 'verify9.json'), JSON.stringify({ score: 9, findings: [] }));
+write(path.join(rootMin10, 'review-empty.json'), JSON.stringify({ findings: [] }));
+assert.strictEqual(run(merge, ['--verify', 'verify9.json', '--review', 'review-empty.json', '--output', 'merged-min10.json', '--repo-root', rootMin10]).status, 0);
+const mergedMin10 = JSON.parse(fs.readFileSync(path.join(rootMin10, 'merged-min10.json'), 'utf8'));
+assert.strictEqual(mergedMin10.requiresFix, true, 'minVerifyScore 10 requires fix for score 9');
+
+const rootMin8 = temp('ws-convergence-min8-');
+write(path.join(rootMin8, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  defaults: { minVerifyScore: 8 },
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(rootMin8, 'verify8.json'), JSON.stringify({ score: 8, findings: [] }));
+write(path.join(rootMin8, 'review-empty.json'), JSON.stringify({ findings: [] }));
+assert.strictEqual(run(merge, ['--verify', 'verify8.json', '--review', 'review-empty.json', '--output', 'merged-min8.json', '--repo-root', rootMin8]).status, 0);
+const mergedMin8 = JSON.parse(fs.readFileSync(path.join(rootMin8, 'merged-min8.json'), 'utf8'));
+assert.strictEqual(mergedMin8.requiresFix, false, 'minVerifyScore 8 allows score 8 with no Critical/Warning findings');
+
 const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/gates.md'), 'utf8');
 assert.match(gates, /at most five blocking gates/i);
 console.log('test-convergence-gates: ok');

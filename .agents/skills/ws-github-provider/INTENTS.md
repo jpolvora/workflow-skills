@@ -105,12 +105,12 @@ python .agents/skills/ws-github-provider/scripts/comment_issue.py \
 ## `resolve-thread`
 
 ```bash
-node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{resolution note}" [--dry-run]
+node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{resolution note}" [--model {model}] [--dry-run]
 ```
 
 > **IMPORTANT**: Never call `addPullRequestReviewThreadReply` alone. Always use `resolve_thread.cjs`, which calls both `addPullRequestReviewThreadReply` AND `resolveReviewThread` atomically in one GraphQL mutation. Posting the `<!-- resolution-reply -->` marker comment without the `resolveReviewThread` mutation is **not** a resolved thread — `isResolved` will remain `false` until the mutation fires.
 
-Pass `--dry-run` when the parent skill is in `dry-run` (prints the planned resolve; no GraphQL).
+Pass `--model {currentModel}` (or the executing session model id) so the resolution reply ends with `---\nLLM model: {id}`. Pass `--dry-run` when the parent skill is in `dry-run` (prints the planned resolve; no GraphQL).
 
 ## `merge-pr`
 

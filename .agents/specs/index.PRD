@@ -96,6 +96,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Cooperative session leases for parallel agents on one worktree (`spec: workflow-session-leases.spec.md`)
 - [ ] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: us-235.spec.md`)
 - [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: us-236.spec.md`)
+- [ ] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: fix-pr-batch-plan-exec.spec.md`)
+
 
 
 
@@ -155,8 +157,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 49 | `workflow-session-leases` | `[x]` done | Phase 4 | Cooperative session leases for parallel agents on one worktree |
 | 50 | `us-235` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist |
 | 51 | `us-236` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill |
+| 52 | `fix-pr-batch-plan-exec` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix-pr: plan substep (reviewer model) then execute (fix model) per batch |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`, `fix-pr-batch-plan-exec`.
 
 ## 9. Inbox
 

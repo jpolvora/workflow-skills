@@ -1,5 +1,30 @@
 # Changelog
 
+### [2026-08-25 13:42] Agent: Composer
+- **Prompt**: Surgical restore of LLM model footer on fix-pr thread close comments (Azure + GitHub)
+- **Done**: GitHub `resolve_thread.cjs` `--model` + `---\nLLM model: {id}`; Azure already appended; ws-fix-pr + INTENTS instruct pass `--model`; parity tests
+- **Result**: Closing resolve comments sign with the session model id when `--model` is passed
+
+### [2026-08-25 12:38] Agent: Composer
+- **Prompt**: Add to index.PRD (Recommended) for fix-pr-batch-plan-exec
+- **Done**: `ws-spec-index track fix-pr-batch-plan-exec` — Feature map `[ ]` + Next-specs row 52
+- **Result**: tracked in `.agents/specs/index.PRD`
+
+### [2026-08-25 12:17] Agent: Cursor Grok 4.6
+- **Prompt**: Parametrize min AC/task verify score via config.json; default ≥ 9; offer 10 when low effort
+- **Done**: `defaults.minVerifyScore` (1–10, omitted → 9) drives scoreAndRefine, pre-advance 6, and merge_verify_review; Reach-10 user-gate after verify
+- **Result**: Advance bar is project-configurable; ledger formula unchanged
+
+### [2026-08-25 11:55] Agent: Composer
+- **Prompt**: Improve fix-pr with plan (reviewer model) then execute (fix model) per batch; check if already implemented else spec/plan register
+- **Done**: Confirmed not implemented; authored `fix-pr-batch-plan-exec` spec + context + plan; authoring validate PASS; registered to `{plansDir}`
+- **Result**: `.agents/specs/fix-pr-batch-plan-exec.spec.md` → `.agents/plans/fix-pr-batch-plan-exec/` (13 ACs)
+
+### [2026-08-25 10:21] Agent: Composer
+- **Prompt**: `/ws-ship-pr` + `/ws-goal-fix-pr` for develop→main
+- **Done**: Prepare board green; pushed develop; opened PR #240; converged (0 threads, CI+review green); merged
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/240 MERGED (`c4237294`)
+
 ### [2026-08-25 10:15] Agent: Cursor Grok 4.6
 - **Prompt**: Read todo.txt, create an interpreted plan, and implement
 - **Done**: Removed `ws-patterns` and session leases/git.lock from skills, orch, config, installer, tests, and docs; confirmed `ws-audit` already gone; bumped 0.3.38

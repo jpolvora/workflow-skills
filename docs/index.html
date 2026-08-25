@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Workflow Skills — Spec-driven delivery for coding agents</title>
-  <meta name="description" content="Spec-driven software delivery for coding agents. The spec is the contract of record; plans, code, and PRs are derived from it. Verify at 9/10 from an AC ledger. Same GitHub and Azure DevOps operations.">
+  <meta name="description" content="Spec-driven software delivery for coding agents. The spec is the contract of record; plans, code, and PRs are derived from it. Verify at ≥ defaults.minVerifyScore (default 9) from an AC ledger. Same GitHub and Azure DevOps operations.">
   <link rel="canonical" href="https://jpolvora.github.io/workflow-skills/">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="author" content="Jone Polvora">
@@ -36,7 +36,7 @@
     "url": "https://jpolvora.github.io/workflow-skills/",
     "codeRepository": "https://github.com/jpolvora/workflow-skills",
     "author": { "@type": "Person", "name": "Jone Polvora", "url": "https://jpolvora.github.io/" },
-    "description": "Spec-driven software delivery skills for coding agents. Specs are the contract of record; orchestrators take a spec to a reviewed pull request with a derived verify bar of 9/10.",
+    "description": "Spec-driven software delivery skills for coding agents. Specs are the contract of record; orchestrators take a spec to a reviewed pull request with a configurable verify bar (defaults.minVerifyScore, default 9/10).",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
   }
   </script>
@@ -50,7 +50,7 @@
         "name": "Is Workflow Skills spec-driven?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. A canonical *.spec.md is the contract of record. Plans under the plans directory are run artifacts, not a second spec. Standard verify derives its 0–10 score from an acceptance-criteria ledger and advances only at 9 or above."
+          "text": "Yes. A canonical *.spec.md is the contract of record. Plans under the plans directory are run artifacts, not a second spec. Standard verify derives its 0–10 score from an acceptance-criteria ledger and advances only at score ≥ defaults.minVerifyScore (default 9, range 1–10)."
         }
       },
       {
@@ -139,7 +139,7 @@
     </video>
   </div>
   <h1>Workflow <span class="gradient-text">Skills</span></h1>
-  <p class="hero-subtitle">Spec-driven software delivery for any coding agent. The spec is the contract of record. Plans, code, and PRs are derived from it. Advance only when verify hits 9/10 from the AC ledger. Same operations on GitHub and Azure DevOps.</p>
+  <p class="hero-subtitle">Spec-driven software delivery for any coding agent. The spec is the contract of record. Plans, code, and PRs are derived from it. Advance only when verify hits ≥ <code>defaults.minVerifyScore</code> (default 9) from the AC ledger. Same operations on GitHub and Azure DevOps.</p>
 
   <div style="margin-bottom: 28px;">
     <a href="#install" class="offer-cta-fill">
@@ -179,8 +179,8 @@
       <div class="metric-lbl">Standard and lite</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val emerald">≥ 9</div>
-      <div class="metric-lbl">Verify bar to advance</div>
+      <div class="metric-val emerald">default 9</div>
+      <div class="metric-lbl">Verify bar (≥ minVerifyScore)</div>
     </div>
     <div class="metric-card">
       <div class="metric-val amber">GitHub + Azure</div>
@@ -248,10 +248,10 @@
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
-        <div class="role-card-icon">9</div>
-        <h4 class="role-card-title">Verify at 9 or keep going</h4>
+        <div class="role-card-icon">default 9</div>
+        <h4 class="role-card-title">Verify at minVerifyScore or keep going</h4>
       </div>
-      <p class="role-card-desc">Standard Step 5 scores the work 0–10. Below 9 it re-implements flagged tasks and re-scores (max 3 rounds). It never auto-approves a weak score.</p>
+      <p class="role-card-desc">Standard Step 5 scores the work 0–10. Below <code>defaults.minVerifyScore</code> (default 9) it re-implements flagged tasks and re-scores (max 3 rounds). It never auto-approves a weak score.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -411,7 +411,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 2: Execution & Verification</span>
           </div>
-          <p class="stepper-desc">Evaluates code changes against spec acceptance criteria, calculating an objective completeness score (0–10) and generating a verification report. Advance requires score <strong>≥ 9</strong>; below 9 the orchestrator runs <code>scoreAndRefine</code> (re-implement flagged tasks and re-verify) until that bar. After a passing score, the orchestrator commits workflow-touched product files so local review can diff committed work vs the base branch.</p>
+          <p class="stepper-desc">Evaluates code changes against spec acceptance criteria, calculating an objective completeness score (0–10) and generating a verification report. Advance requires score <strong>≥ <code>defaults.minVerifyScore</code></strong> (default 9, range 1–10); below the bar the orchestrator runs <code>scoreAndRefine</code> (re-implement flagged tasks and re-verify) until that bar. After a passing score, the orchestrator commits workflow-touched product files so local review can diff committed work vs the base branch.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
@@ -482,7 +482,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
           </div>
-          <p class="stepper-desc">Monitors open Pull Request review comments in an autonomous goal loop, applying code fixes until zero unresolved threads remain.</p>
+          <p class="stepper-desc">For each Act-round or standalone batch, runs a gate-only <code>fixPrPlan</code> with reviewer-class model resolution, then validates and applies it in <code>fixPrExec</code> with execution-class resolution. Both roles stay inside outer Step 9; convergence continues until zero unresolved threads remain.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>
@@ -590,7 +590,7 @@
             </div>
             <span class="stepper-fsm-tag">Lite Pipeline</span>
           </div>
-          <p class="stepper-desc">Runs fix loop on incoming PR comments until all threads are resolved.</p>
+          <p class="stepper-desc">Runs the same gate-only plan before execute order for each incoming PR-comment batch, inline on the current session model, until all threads are resolved.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>
@@ -720,7 +720,7 @@
             <div class="role-card-icon">🔍</div>
             <h4 class="role-card-title">Verifiers & Auditors</h4>
           </div>
-          <p class="role-card-desc">Spec compliance scoring (advance at ≥ 9, scoreAndRefine until then), multi-pass code reviews, adversarial AI fraud detection, secrets scanning, install diagnose, and test verification.</p>
+          <p class="role-card-desc">Spec compliance scoring (advance at ≥ <code>defaults.minVerifyScore</code> (default 9), scoreAndRefine until then), multi-pass code reviews, adversarial AI fraud detection, secrets scanning, install diagnose, and test verification.</p>
           <div class="role-card-skills">
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-verify-plan/SKILL.md">ws-verify-plan</span>
             <span class="skill-tag-pill audit view-skill" data-path=".agents/skills/ws-code-review/SKILL.md">ws-code-review</span>
@@ -780,13 +780,13 @@
         <span class="workflow-badge standard">Standard FSM</span>
       </div>
       <p class="workflow-tagline">Thorough delivery (steps 0–9)</p>
-      <p>Plan, interview, implement, verify at 9/10, commit, review, test, open a PR, and close threads.</p>
+      <p>Plan, interview, implement, verify at ≥ minVerifyScore (default 9), commit, review, test, open a PR, and close threads.</p>
       <div class="workflow-steps-title">What it runs:</div>
       <ul class="workflow-steps-list">
         <li>Feature-branch strategy gate at bootstrap, then spec (Step 0)</li>
         <li>Architectural Review & Interview (Steps 1–2)</li>
         <li>DAG Task Decomposition (Step 3)</li>
-        <li>Implement, verify (score ≥ 9 or scoreAndRefine), product commit, local code review, review-fix commit (Steps 4–6)</li>
+        <li>Implement, verify (score ≥ <code>defaults.minVerifyScore</code> (default 9) or scoreAndRefine), product commit, local code review, review-fix commit (Steps 4–6)</li>
         <li>Pre-PR testing (optional <code>testingModel</code>), shipping & ws-goal-fix-pr (Steps 7–9)</li>
       </ul>
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">
@@ -1132,14 +1132,14 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-update-plan-implementation/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-verify-plan/SKILL.md" data-name="ws-verify-plan" data-slug="ws-verify-plan" data-desc="spec compliance scorer (0–10). pipeline advances only at score ≥ 9; below 9 runs scoreandrefine. trigger for check-implementation or orch step 5." data-deps="ws-fable-judge" data-layer="layer-2" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-verify-plan/SKILL.md" data-name="ws-verify-plan" data-slug="ws-verify-plan" data-desc="spec compliance scorer (0–10). pipeline advances only at score ≥ `defaults.minverifyscore` (default 9); below bar runs scoreandrefine. trigger for check-implementation or orch step 5." data-deps="ws-fable-judge" data-layer="layer-2" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-verify-plan</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
         </div>
         </div>
-        <div class="desc">Spec compliance scorer (0–10). Pipeline advances only at score ≥ 9; below 9 runs scoreAndRefine. Trigger for check-implementation or orch Step 5.</div>
+        <div class="desc">Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-fable-judge">ws-fable-judge</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-verify-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
@@ -1417,14 +1417,14 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-list/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr/SKILL.md" data-name="ws-spec-to-pr" data-slug="ws-spec-to-pr" data-desc="end-to-end spec-to-pr (steps 0–9). verify score ≥ 9 before review. trigger for full/standard delivery." data-deps="ws-write-spec ws-classify-complexity ws-write-plan ws-interview ws-plan-to-tasks ws-implement-tasks ws-verify-plan ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-github-provider ws-azure-devops-provider ws-local-spec-provider ws-check-harness ws-check-workflows ws-tdah ws-karpathy-guidelines ws-spec-format ws-goal-loop ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-senior-developer" data-layer="layer-5" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr/SKILL.md" data-name="ws-spec-to-pr" data-slug="ws-spec-to-pr" data-desc="end-to-end spec-to-pr (steps 0–9). verify score ≥ `defaults.minverifyscore` (default 9) before review. trigger for full/standard delivery." data-deps="ws-write-spec ws-classify-complexity ws-write-plan ws-interview ws-plan-to-tasks ws-implement-tasks ws-verify-plan ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-github-provider ws-azure-devops-provider ws-local-spec-provider ws-check-harness ws-check-workflows ws-tdah ws-karpathy-guidelines ws-spec-format ws-goal-loop ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-senior-developer" data-layer="layer-5" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-spec-to-pr</div>
         <div class="skill-badges">
           <span class="skill-badge full">full</span>
         </div>
         </div>
-        <div class="desc">End-to-end Spec-to-PR (steps 0–9). Verify score ≥ 9 before review. Trigger for full/standard delivery.</div>
+        <div class="desc">End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.</div>
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (26):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-write-spec">ws-write-spec</span><span class="dep-pill" data-dep="ws-classify-complexity">ws-classify-complexity</span><span class="dep-pill" data-dep="ws-write-plan">ws-write-plan</span><span class="dep-pill" data-dep="ws-interview">ws-interview</span><span class="dep-pill" data-dep="ws-plan-to-tasks">ws-plan-to-tasks</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-verify-plan">ws-verify-plan</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-testing">ws-testing</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-github-provider">ws-github-provider</span><span class="dep-pill" data-dep="ws-azure-devops-provider">ws-azure-devops-provider</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span><span class="dep-pill" data-dep="ws-check-harness">ws-check-harness</span><span class="dep-pill" data-dep="ws-check-workflows">ws-check-workflows</span><span class="dep-pill" data-dep="ws-tdah">ws-tdah</span><span class="dep-pill" data-dep="ws-karpathy-guidelines">ws-karpathy-guidelines</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-goal-loop">ws-goal-loop</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-senior-developer">ws-senior-developer</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
@@ -1643,7 +1643,7 @@
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p>Workflow Skills is a portable, <strong>spec-driven</strong> skill pack for coding agents. You install it once. The agent then runs a named pipeline from a feature spec to a reviewed pull request instead of inventing a process each time.</p>
-          <p>The spec is the contract of record. Plans are run artifacts. Standard delivery is ten steps. Lite is six. Verify must hit 9/10 from the AC ledger before review. GitHub and Azure DevOps expose the same PR operations. Your project config and memory stay local when skills update.</p>
+          <p>The spec is the contract of record. Plans are run artifacts. Standard delivery is ten steps. Lite is six. Verify must hit ≥ <code>defaults.minVerifyScore</code> (default 9) from the AC ledger before review. GitHub and Azure DevOps expose the same PR operations. Your project config and memory stay local when skills update.</p>
         </div>
       </div>
     </div>
@@ -1663,7 +1663,7 @@
           <ul>
             <li><strong>Spec of record</strong> — canonical <code>*.spec.md</code> under the specs directory (local draft, GitHub issue, or Azure DevOps work item).</li>
             <li><strong>Plans are runs</strong> — workflow copies and state live under the plans directory. A plan is not a second spec.</li>
-            <li><strong>Acceptance criteria gate code</strong> — standard verify derives its 0–10 score from an AC ledger. Agents cannot author or override that score. Advance only at 9 or above.</li>
+            <li><strong>Acceptance criteria gate code</strong> — standard verify derives its 0–10 score from an AC ledger. Agents cannot author or override that score. Advance only at score ≥ <code>defaults.minVerifyScore</code> (default 9).</li>
           </ul>
           <p>This upstream repo uses the same model. Extra skills (direct problem-solving, doctor, preview) sit beside the pipeline; they do not replace the spec contract.</p>
         </div>
@@ -1683,7 +1683,7 @@
         <div class="faq-answer-content">
           <p>Pick by how much process you want:</p>
           <ul>
-            <li><strong>Standard</strong> (<code>ws-spec-to-pr</code>): ten steps. Plan interview, task graph, verify at 9/10, commit, review, tests, PR, thread fixes.</li>
+            <li><strong>Standard</strong> (<code>ws-spec-to-pr</code>): ten steps. Plan interview, task graph, verify at ≥ minVerifyScore (default 9), commit, review, tests, PR, thread fixes.</li>
             <li><strong>Lite</strong> (<code>ws-spec-to-pr-lite</code>): six steps. Plan, implement, commit, review, PR. No interview, DAG, or test step.</li>
           </ul>
         </div>
@@ -1703,7 +1703,7 @@
         <div class="faq-answer-content">
           <p>Product files are committed <strong>before</strong> local code review, not first at ship:</p>
           <ul>
-            <li><strong>Standard:</strong> after Step 5 verify (score ≥ 9), then Step 6 reviews <code>git diff {base}...HEAD</code>. Review fixes get a second product commit.</li>
+            <li><strong>Standard:</strong> after Step 5 verify (score ≥ <code>defaults.minVerifyScore</code>, default 9), then Step 6 reviews <code>git diff {base}...HEAD</code>. Review fixes get a second product commit.</li>
             <li><strong>Lite:</strong> after Step 2 implement, then Step 3 review; second commit after review fixes if any.</li>
             <li><strong>Ship (Step 8 / lite Step 4):</strong> configured plan-dir delivery artifacts + push/PR. Plan files stay uncommitted until then.</li>
           </ul>
@@ -1723,13 +1723,13 @@
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p>Standard Step 5 (<code>ws-verify-plan</code>) advances only at overall score <strong>≥ 9</strong>.</p>
+          <p>Standard Step 5 (<code>ws-verify-plan</code>) advances only at overall score <strong>≥ <code>defaults.minVerifyScore</code></strong> (default <strong>9</strong>, range 1–10).</p>
           <ul>
-            <li>Score <strong>&lt; 9</strong>: the orchestrator runs <code>scoreAndRefine</code> (re-implement flagged tasks, then re-verify) until ≥ 9.</li>
-            <li>Max <strong>3</strong> rounds per Step 5 visit; then Pause (fail closed). Resume continues. Never auto-approve below 9, including in <code>autoMode</code>.</li>
-            <li>Optional polish (Accept As-Is) only when the score is already ≥ 9 and the <code>scoreAndRefine</code> flag is on. Choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced files, tests, methods, and classes.</li>
+            <li>Score <strong>below the bar</strong>: the orchestrator runs <code>scoreAndRefine</code> (re-implement flagged tasks, then re-verify) until ≥ <code>defaults.minVerifyScore</code>.</li>
+            <li>Max <strong>3</strong> rounds per Step 5 visit; then Pause (fail closed). Resume continues. Never auto-approve below the bar, including in <code>autoMode</code>.</li>
+            <li>Optional polish (Accept As-Is) only when the score is already ≥ <code>defaults.minVerifyScore</code> and the <code>scoreAndRefine</code> flag is on. Choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced files, tests, methods, and classes.</li>
           </ul>
-          <p>Lite has no Step 5 verify gate. Product commit on standard runs only after score ≥ 9.</p>
+          <p>Lite has no Step 5 verify gate. Product commit on standard runs only after score ≥ <code>defaults.minVerifyScore</code> (default 9).</p>
         </div>
       </div>
     </div>
@@ -1781,7 +1781,7 @@
         <div class="faq-answer-content">
           <p>Workflow Skills includes multiple layers of automated defense:</p>
           <ul>
-            <li><strong><code>ws-verify-plan</code></strong>: Spec compliance score 0–10. Standard Step 5 advances only at ≥ 9; below 9 runs <code>scoreAndRefine</code> until that bar (max 3 rounds).</li>
+            <li><strong><code>ws-verify-plan</code></strong>: Spec compliance score 0–10. Standard Step 5 advances only at ≥ <code>defaults.minVerifyScore</code> (default 9); below the bar runs <code>scoreAndRefine</code> until that bar (max 3 rounds).</li>
             <li><strong><code>ws-senior-developer</code></strong>: Delivery gate enforcing surgical diff footprints, anti-reinvention checks, and pre-ship verification proof.</li>
             <li><strong><code>ws-fable-judge</code></strong>: Adversarial audit engine performing diff-grounded verification to detect 4 classic AI code frauds (weakened unit tests, false verification claims, unauthorized side effects, and scope creep).</li>
             <li><strong><code>ws-secrets-leak-review</code></strong>: Pre-PR scanner checking diffs for hardcoded API tokens, private keys, passwords, and sensitive credentials.</li>
@@ -1937,7 +1937,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.38 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.40 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

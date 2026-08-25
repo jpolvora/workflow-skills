@@ -74,6 +74,17 @@
         "Agent does not use Learning: N/A for that accepted defect",
         "en-us and harness-neutral wording"
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "An Act round sees four active PR threads. Run the batch and continue convergence.",
+      "expected_output": "The round invokes ws-fix-pr once, requiring one complete fixPrPlan gate and one fixPrExec proactive evidence set before resolve or push.",
+      "assertions": [
+        "Agent uses one plan-execute pair for the four-thread Act-round batch",
+        "Agent does not resolve or push before both fixPrPlan gate evidence and fixPrExec proactive evidence are complete",
+        "Internal roles emit ordered dispatch evidence but never finish outer Step 9",
+        "The outer orchestrator owns the single Step 9 finish after convergence or terminal stop"
+      ]
     }
   ]
 }

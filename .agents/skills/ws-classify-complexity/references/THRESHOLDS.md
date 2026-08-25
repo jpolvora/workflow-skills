@@ -8,7 +8,7 @@
 | **After Pass 1** | Orchestrator may re-invoke with `--score-analysis {us-dir}/step-05-{slug}.score-analysis.md`. Script adds distribution (mean, variance, low-score clusters) and may adjust **advisory** recommendation. |
 | **Mid-flight** | Updated recommendation is **advisory only** unless user re-gates. Do not silently change `workflowType`. |
 
-Heuristic (when scores present): uniform high scores (mean ≥ 8, low variance) may reinforce `lite`; high variance or low-score clusters (task scores `< 9`) bias toward `standard`.
+Heuristic (when scores present): uniform high scores (mean ≥ 8, low variance) may reinforce `lite`; high variance or low-score clusters (task scores below `defaults.minVerifyScore`, default 9) bias toward `standard`.
 
 ## Threshold source
 

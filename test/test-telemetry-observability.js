@@ -7,6 +7,7 @@ const aggregateModule = require('../bin/generate-telemetry-aggregate.cjs');
 const { assert, path, repoRoot, temp, run, write } = utils;
 const doctor = path.join(repoRoot, '.agents/skills/ws-doctor/scripts/doctor.js');
 const persist = path.join(repoRoot, '.agents/skills/ws-shared/scripts/persist_diagnostic.cjs');
+const updateState = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
 const root = temp('ws-telemetry-');
 const plans = path.join(root, '.agents/plans');
 write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
@@ -15,6 +16,42 @@ write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
   verification: {},
   fable: { auditVerdictsBlockShip: 'refuted' },
 }));
+const fixState = path.join(plans, 'fix-pr', 'fix-pr.state.md');
+const fixJsonlRel = '.agents/plans/fix-pr/telemetry/step-09.jsonl';
+write(fixState, `---
+workflowId: fix-pr-telemetry
+slug: fix-pr
+status: active
+currentStep: 9
+currentModel: session-model
+revision: 0
+completedSteps: []
+telemetry:
+  loc:
+    baseline: 10
+---
+`);
+for (const [substep, model] of [
+  ['fixPrPlan', 'reviewer-role'],
+  ['fixPrExec', 'execution-role'],
+]) {
+  const result = run(updateState, [
+    'dispatch', fixState,
+    '--step', '9',
+    '--substep', substep,
+    '--model', model,
+    '--jsonl-out', fixJsonlRel,
+    '--repo-root', root,
+  ]);
+  assert.strictEqual(result.status, 0, result.stderr);
+}
+const fixEvents = fs.readFileSync(path.join(root, fixJsonlRel), 'utf8')
+  .trim()
+  .split(/\r?\n/)
+  .map((line) => JSON.parse(line));
+assert.deepStrictEqual(fixEvents.map((event) => event.substep), ['fixPrPlan', 'fixPrExec']);
+assert.deepStrictEqual(fixEvents.map((event) => event.model), ['reviewer-role', 'execution-role']);
+assert.ok(fixEvents.every((event) => event.type === 'dispatch'));
 const telemetry = path.join(plans, 'demo', 'telemetry', 'step-04.jsonl');
 write(telemetry, [
   JSON.stringify({
@@ -32,8 +69,10 @@ write(telemetry, [
 ].join('\n') + '\n');
 
 const aggregate = aggregateModule.generateAggregate({ repoRoot: root, plansDir: plans, write: false });
-assert.strictEqual(aggregate.runs.length, 1);
-assert.strictEqual(aggregate.runs[0].auditCounts.unusual, 2);
+assert.strictEqual(aggregate.runs.length, 2);
+const demoRun = aggregate.runs.find((item) => item.workflowId === 'wf');
+assert.ok(demoRun);
+assert.strictEqual(demoRun.auditCounts.unusual, 2);
 assert.strictEqual(aggregate.medians.standard.steps['4'], 12);
 assert.match(aggregateModule.renderReport(aggregate), /Workflow telemetry report[\s\S]*wf/);
 

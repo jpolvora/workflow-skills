@@ -48,8 +48,8 @@ assert(
   'gates.md limits deletion to workflow-introduced artifacts and keeps ACs',
 );
 assert(
-  /Post-simplify score must stay ≥ 9/i.test(gates),
-  'gates.md requires post-simplify score ≥ 9',
+  /Post-simplify score must stay ≥ defaults\.minVerifyScore|must stay ≥ \{?minVerifyScore/i.test(gates),
+  'gates.md requires post-simplify score ≥ defaults.minVerifyScore',
 );
 assert(
   /Option 1 runs even when zero tasks are flagged/i.test(gates),

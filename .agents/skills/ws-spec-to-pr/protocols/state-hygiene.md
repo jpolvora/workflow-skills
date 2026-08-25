@@ -11,7 +11,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs dispatch \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --step {N} \
   --model {modelName} \
-  --substep {dag|scoreAndRefine|reviewFix} \
+  --substep {dag|scoreAndRefine|reviewFix|fixPrPlan|fixPrExec} \
   --jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl
 
 node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
@@ -31,6 +31,8 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
 ```
 
 `--jsonl-out` is **mandatory** on every call (zero-padded `NN` = step number). Creates `{plansDir}/{slug}/telemetry/` lazily. When quality gates are bypassed, run the `bypass` operation with `--gate` and `--reason`.
+
+Step 9 internal Fix-PR roles are dispatch-only: append `fixPrPlan` then `fixPrExec` with their actual models to the same Step 9 JSONL. They bypass numeric Step 9 model fallback and never use the `finish` recipe. JSONL preserves both role dispatches; compact `stepDispatches` intentionally retains only the latest numeric Step 9 row. The outer orchestrator alone calls `finish --step 9` once after convergence or terminal stop. Preserve nested `telemetry.loc` while updating either role.
 
 ### Measured elapsed time
 
@@ -88,7 +90,7 @@ Checks (per [`ARTIFACTS.md`](../ARTIFACTS.md) step-input table): checkpoint tag 
 | 3 | `step-02-{slug}.plan.refined.md` (skip if `interview-not-required`) | — |
 | 4 | `step-03-{slug}.plan.exec.md` + `plan.index.json` | `step-06-{slug}.review.md` + `plan.index.json` |
 | 5 | — | `step-08-{slug}.result.md` |
-| 6 | `step-05-{slug}.plan.report.md` + ledger score ≥ 9 | — |
+| 6 | `step-05-{slug}.plan.report.md` + ledger score ≥ `defaults.minVerifyScore` (default 9) | — |
 | 7 | `step-06-{slug}.review.md` | — |
 | 8 | `step-07-{slug}.testing.report.md` (skip if `testing-disabled` / `no-test-surface`) | — |
 | 9 | `step-08-{slug}.result.md` | — |

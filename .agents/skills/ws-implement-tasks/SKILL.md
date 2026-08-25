@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.38
+version: 0.3.40
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -105,7 +105,7 @@ summary: |
 
 ## ScoreAndRefine second pass
 
-When the orchestrator dispatches this skill for optional polish (Pass 1 score already ≥ 9, `scoreAndRefine` flag): follow [`gates.md`](../ws-shared/gates.md) § Score & Refine gate item 4. Load the **full** Pass 1 diff, every plan task, and every AC — not only flagged task ids. Simplify overengineered implementations that still meet the AC. Delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs. Re-run configured verification.
+When the orchestrator dispatches this skill for optional polish (Pass 1 score already ≥ `defaults.minVerifyScore` (default 9), `scoreAndRefine` flag): follow [`gates.md`](../ws-shared/gates.md) § Score & Refine gate item 4. Load the **full** Pass 1 diff, every plan task, and every AC — not only flagged task ids. Simplify overengineered implementations that still meet the AC. Delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs. Re-run configured verification.
 
 - Done when: each AC still met; unused workflow-introduced artifacts removed or justified in `summary`; verification green.
 

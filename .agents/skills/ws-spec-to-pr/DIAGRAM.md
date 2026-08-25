@@ -32,10 +32,10 @@ flowchart TD
   Stub --> S4[4 Implement]
   Dag --> S4
   S4 --> S5[5 Check-implementation]
-  S5 -->|score ≥ 9| C1[G2-code verified implementation]
-  S5 -->|score < 9| G5[scoreAndRefine until ≥ 9]
-  G5 -->|score ≥ 9| C1
-  G5 -->|max 3 still < 9| P[Pause]
+  S5 -->|≥ minVerifyScore| C1[G2-code verified implementation]
+  S5 -->|below minVerifyScore| G5[scoreAndRefine until ≥ minVerifyScore]
+  G5 -->|≥ minVerifyScore| C1
+  G5 -->|max 3 still below bar| P[Pause]
   C1 --> S6[6 Code-review]
   S6 -->|findings| Fix[Fix substep<br/>ws-implement-tasks]
   Fix --> C2[G2-code review fixes]

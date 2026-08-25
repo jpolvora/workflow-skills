@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "revision": 19,
+  "workflowId": "fix-pr-batch-plan-exec-20260825T163900Z",
+  "slug": "fix-pr-batch-plan-exec",
+  "pipeline": "standard",
+  "status": "active",
+  "currentStep": 9,
+  "pendingGate": null,
+  "nextAction": "Run step 9",
+  "acTotal": 13,
+  "acImplemented": 0,
+  "score": null,
+  "estimatedRemainingSec": 1724.5,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "skipped",
+      "skipReason": "dag-disabled",
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 6,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 7,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 8,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 9,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 1724.5
+    }
+  ],
+  "statePath": ".agents/plans/fix-pr-batch-plan-exec/fix-pr-batch-plan-exec-20260825T163900Z.state.md",
+  "stateSha256": "2e09632a1197efddbbd687751791cdca25ed173252f61dc6e60c10e93d02eb77"
+}

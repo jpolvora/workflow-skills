@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/fix-pr-batch-plan-exec/step-02-fix-pr-batch-plan-exec.plan.refined.md",
+    "sha256": "c726c00575445aad5f171ae2ac28931f6e849f5231afc54fc790a48b119a3f34",
+    "bytes": 30066,
+    "lines": 357
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "0. Summary & Binding Decisions",
+      "level": 2,
+      "byteStart": 389,
+      "byteEnd": 2497,
+      "lineStart": 12,
+      "lineEnd": 28,
+      "sha256": "61beac519709622e55d157f2ddbd493b3413f506bcd52b5bfd054f714f983e50",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-002",
+      "title": "1. Definition of Ready, Scope & AC Coverage",
+      "level": 2,
+      "byteStart": 2497,
+      "byteEnd": 4936,
+      "lineStart": 29,
+      "lineEnd": 75,
+      "sha256": "5290e521983e5665b79453cef8824405e60c33889f4ccff36f6b42c08d74356b",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10",
+        "AC11",
+        "AC12",
+        "AC13"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "2. Technical Design & Architecture",
+      "level": 2,
+      "byteStart": 4936,
+      "byteEnd": 10421,
+      "lineStart": 76,
+      "lineEnd": 149,
+      "sha256": "8c657efe5cdb9b5a85361329de87241db1e41172f6f1c4207a1c9215a251ea57",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-004",
+      "title": "2.1 Batch lifecycle and mutation barrier",
+      "level": 3,
+      "byteStart": 4977,
+      "byteEnd": 6993,
+      "lineStart": 78,
+      "lineEnd": 98,
+      "sha256": "e98f1f6bf844f9cb1a6b34c441531bb470f5cbb87cc0436243f48201ba2eb45b",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-005",
+      "title": "2.2 Gate identity and amendments",
+      "level": 3,
+      "byteStart": 6993,
+      "byteEnd": 8368,
+      "lineStart": 99,
+      "lineEnd": 123,
+      "sha256": "810a4873a26da2816227609f72dd6db420e8dcbcb27d0190c4fd81dc062e019f",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-006",
+      "title": "2.3 Model resolution",
+      "level": 3,
+      "byteStart": 8368,
+      "byteEnd": 9569,
+      "lineStart": 124,
+      "lineEnd": 140,
+      "sha256": "6d56f13f9b388d84dc32cd949b9722df396297b552b3ad9270a00cc00d168a8b",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-007",
+      "title": "2.4 Telemetry and state semantics",
+      "level": 3,
+      "byteStart": 9569,
+      "byteEnd": 10421,
+      "lineStart": 141,
+      "lineEnd": 149,
+      "sha256": "308191feb586cf3c5ae01340a0a4e13eb5417cc8c565ffc9325361072297b13d",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-008",
+      "title": "3. Concrete File Design",
+      "level": 2,
+      "byteStart": 10421,
+      "byteEnd": 14082,
+      "lineStart": 150,
+      "lineEnd": 172,
+      "sha256": "9a43a058d2ca07baed14236fcae2aff643052c22b9d571555655dd7b3ba8ae86",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-configure-project/INTERVIEW.md",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/evals/evals.json",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-fix-pr/evals/evals.json",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.schema.json",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/skill-dependencies.json",
+        ".agents/skills/ws-shared/tools.md",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        "AGENTS.md",
+        "FEATURES.md",
+        "README.md",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "docs/index.html",
+        "package.json",
+        "test/test-fix-pr-proactive-class-sweep.js",
+        "test/test-models-preset-and-per-step.js",
+        "test/test-telemetry-observability.js",
+        "test/test-update-state-yaml.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-009",
+      "title": "4. Step-by-Step Implementation Plan",
+      "level": 2,
+      "byteStart": 14082,
+      "byteEnd": 18260,
+      "lineStart": 173,
+      "lineEnd": 222,
+      "sha256": "1a1e3793470481d25a8d639b813dfd74a9a76245485d39f6600800ac7e090af8",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/skill-integrity.json",
+        "package.json",
+        "test-evals-schema.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-010",
+      "title": "5. Test Coverage & Verification",
+      "level": 2,
+      "byteStart": 18260,
+      "byteEnd": 20486,
+      "lineStart": 223,
+      "lineEnd": 265,
+      "sha256": "6bb4c4b8d9a0512162889899a2568931a099249c2093f03df50fd78f8c96693a",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10",
+        "AC11",
+        "AC12",
+        "AC13"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-fix-pr/SKILL.md"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-011",
+      "title": "6. Permissions, Scenario Probes & Invariants",
+      "level": 2,
+      "byteStart": 20486,
+      "byteEnd": 22414,
+      "lineStart": 266,
+      "lineEnd": 298,
+      "sha256": "521c4c66ea05ca46b96a1efdcc6348c67e1132920500e5cfb3f946d464988f5f",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-012",
+      "title": "7. Pre-Implementation / Pre-PR Checklist",
+      "level": 2,
+      "byteStart": 22414,
+      "byteEnd": 23343,
+      "lineStart": 299,
+      "lineEnd": 314,
+      "sha256": "b6d408f8f084e9cd35abdc9f6ca4150b6f4f9990d3a2802b680be1a1ce5d706c",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-013",
+      "title": "8. Closed Decisions",
+      "level": 2,
+      "byteStart": 23343,
+      "byteEnd": 24718,
+      "lineStart": 315,
+      "lineEnd": 332,
+      "sha256": "d0fb0af12c9c15070ad25c3f8b7ced39b1f56de35bcd47f61d6d096baed895b1",
+      "acRefs": [
+        "AC3",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-014",
+      "title": "Interview Registry",
+      "level": 2,
+      "byteStart": 24718,
+      "byteEnd": 29237,
+      "lineStart": 333,
+      "lineEnd": 350,
+      "sha256": "7e6a8534e343f9e56d92e8d81814cdeba3ae9c079f43921b4d6bc2745a829d90",
+      "acRefs": [
+        "AC1",
+        "AC3",
+        "AC5",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-configure-project/SKILL.md",
+        "test-update-state-yaml.js",
+        "test/test-context-budget.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-015",
+      "title": "Notes",
+      "level": 2,
+      "byteStart": 29237,
+      "byteEnd": 30066,
+      "lineStart": 351,
+      "lineEnd": 357,
+      "sha256": "2b3cc441a0bf8f4cf84f7a6f03c995809d955ebb2c6b81fa977464502999cfee",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "A batch is defined as one `ws-goal-fix-pr` Act round or one standalone `/fix-pr` run (all threads scored for that pass), not per-thread dual dispatch.",
+      "planSectionIds": [
+        "section-002",
+        "section-010",
+        "section-014"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test-update-state-yaml.js",
+        "test/",
+        "test/test-context-budget.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC2",
+      "text": "Every batch completes a plan substep before any product-file edit by writing the fix plan artifact (`plan-gate.md` or documented successor) with scores, proposed actions, and proactive field placeholders.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC3",
+      "text": "Plan substep forbids product code edits, commits, pushes, and remote `resolve-thread` mutations (gate file writes only).",
+      "planSectionIds": [
+        "section-002",
+        "section-010",
+        "section-013",
+        "section-014"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test-update-state-yaml.js",
+        "test/",
+        "test/test-context-budget.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC4",
+      "text": "Execute substep follows the batch plan artifact and records any plan amendment on the gate before further edits.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC5",
+      "text": "When the host supports `dispatch-agent`, plan runs under model role `fixPrPlan` and execute under `fixPrExec`, with `--model` / `--substep` recorded when orch-owned.",
+      "planSectionIds": [
+        "section-002",
+        "section-010",
+        "section-014"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test-update-state-yaml.js",
+        "test/",
+        "test/test-context-budget.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC6",
+      "text": "Model resolve order is `stepModels[fixPrPlan|fixPrExec]` → preset steps → phase fallback (`fixPrPlan` → `reviewerModel`; `fixPrExec` → `executionModel`) → session, with empty/unsupported falling through to session without aborting.",
+      "planSectionIds": [
+        "section-002",
+        "section-010",
+        "section-013",
+        "section-014"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test-update-state-yaml.js",
+        "test/",
+        "test/test-context-budget.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC7",
+      "text": "`config.schema.json`, `config.json.example` presets, `tools.md`, and `STEP-DISPATCH.md` list roles `fixPrPlan` and `fixPrExec` beside `dag` / `scoreAndRefine` / `reviewFix`.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC8",
+      "text": "Lite orch ignores dual-model switches (session `currentModel`) but still enforces plan-before-edit artifact order for each batch.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC9",
+      "text": "`ws-goal-fix-pr` Act round Done-when requires plan evidence on the gate plus execute with proactive sweep before push/resolve of score 6–10 threads.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC10",
+      "text": "Cooperative proactive class sweep, CI baseline triage, and post-round `ws-self-learning` remain required on the execute substep.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC11",
+      "text": "`ws-fix-pr` / `ws-goal-fix-pr` evals or focused `test/*.js` assert plan-before-edit language and the two role names / fallbacks with no dual folders or shims.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC12",
+      "text": "Auto-Fix CI path (`AUTO_FIX.md`) is unchanged by this spec.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC13",
+      "text": "Language remains en-us; skill bodies stay host-neutral; path tokens use `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` only.",
+      "planSectionIds": [
+        "section-002",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-fix-pr/scripts/AUTO_FIX.md",
+        ".agents/skills/ws-shared/AGENTS.md",
+        ".agents/skills/ws-shared/config.json",
+        "test/"
+      ],
+      "expectedTestNames": []
+    }
+  ]
+}

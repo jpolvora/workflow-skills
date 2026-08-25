@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "fix-pr-batch-plan-exec-20260825T163900Z",
+  "slug": "fix-pr-batch-plan-exec",
+  "specPath": ".agents/plans/fix-pr-batch-plan-exec/step-00-fix-pr-batch-plan-exec.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "A batch is defined as one `ws-goal-fix-pr` Act round or one standalone `/fix-pr` run (all threads scored for that pass), not per-thread dual dispatch.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC2",
+      "text": "Every batch completes a plan substep before any product-file edit by writing the fix plan artifact (`plan-gate.md` or documented successor) with scores, proposed actions, and proactive field placeholders.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC3",
+      "text": "Plan substep forbids product code edits, commits, pushes, and remote `resolve-thread` mutations (gate file writes only).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC4",
+      "text": "Execute substep follows the batch plan artifact and records any plan amendment on the gate before further edits.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC5",
+      "text": "When the host supports `dispatch-agent`, plan runs under model role `fixPrPlan` and execute under `fixPrExec`, with `--model` / `--substep` recorded when orch-owned.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC6",
+      "text": "Model resolve order is `stepModels[fixPrPlan|fixPrExec]` → preset steps → phase fallback (`fixPrPlan` → `reviewerModel`; `fixPrExec` → `executionModel`) → session, with empty/unsupported falling through to session without aborting.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC7",
+      "text": "`config.schema.json`, `config.json.example` presets, `tools.md`, and `STEP-DISPATCH.md` list roles `fixPrPlan` and `fixPrExec` beside `dag` / `scoreAndRefine` / `reviewFix`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC8",
+      "text": "Lite orch ignores dual-model switches (session `currentModel`) but still enforces plan-before-edit artifact order for each batch.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC9",
+      "text": "`ws-goal-fix-pr` Act round Done-when requires plan evidence on the gate plus execute with proactive sweep before push/resolve of score 6–10 threads.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC10",
+      "text": "Cooperative proactive class sweep, CI baseline triage, and post-round `ws-self-learning` remain required on the execute substep.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC11",
+      "text": "`ws-fix-pr` / `ws-goal-fix-pr` evals or focused `test/*.js` assert plan-before-edit language and the two role names / fallbacks with no dual folders or shims.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC12",
+      "text": "Auto-Fix CI path (`AUTO_FIX.md`) is unchanged by this spec.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC13",
+      "text": "Language remains en-us; skill bodies stay host-neutral; path tokens use `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` only.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    }
+  ],
+  "scoreState": null
+}

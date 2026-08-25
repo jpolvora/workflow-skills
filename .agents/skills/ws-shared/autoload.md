@@ -114,7 +114,7 @@ Load the named hub file or one skill. Do not load both SCM provider bodies to co
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
 | SCM parity / GitHub vs Azure intents / `scm-provider-contract` | [`scm-provider-contract.md`](scm-provider-contract.md) then **one** provider | Do not load both provider `SKILL.md` bodies to compare intents |
-| Check-implementation / verify score / `scoreAndRefine` | Orch Step 5; standalone [`ws-verify-plan`](../ws-verify-plan/SKILL.md); gates in [`gates.md`](gates.md) | Do not auto-approve below 9; do not load `ws-implement-tasks` until scoreAndRefine says to |
+| Check-implementation / verify score / `scoreAndRefine` | Orch Step 5; standalone [`ws-verify-plan`](../ws-verify-plan/SKILL.md); gates in [`gates.md`](gates.md) | Do not auto-approve below `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to |
 
 | Keywords / phrases | Invoke |
 |--------------------|--------|
