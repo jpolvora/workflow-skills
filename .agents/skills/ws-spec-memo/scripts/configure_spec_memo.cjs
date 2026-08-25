@@ -111,16 +111,24 @@ function main() {
   const importSpecified = args.importTree !== null || stdin.import !== undefined;
   const doImport = importSpecified ? Boolean(args.importTree ?? stdin.import) : false;
   const doHook = args.hook ?? stdin.hook ?? false;
+  const enableSpecified = args.enabled !== null || stdin.enabled !== undefined;
+  const nextEnabled = args.enabled ?? stdin.enabled ?? prev.enabled ?? false;
+  const enablingThisRun = enableSpecified && nextEnabled === true;
+  const importOnEnable = importSpecified
+    ? doImport
+    : enablingThisRun
+      ? false
+      : (prev.importOnEnable ?? true);
 
   const next = {
-    enabled: args.enabled ?? stdin.enabled ?? prev.enabled ?? false,
+    enabled: nextEnabled,
     mode,
     cli: args.cli ?? stdin.cli ?? prev.cli ?? 'memo',
     vaultRoot: stdin.vaultRoot ?? prev.vaultRoot ?? '',
     bootstrapOnSession:
       args.bootstrapOnSession ?? stdin.bootstrapOnSession ?? prev.bootstrapOnSession ?? true,
     writeBlockHook: prev.writeBlockHook ?? false,
-    importOnEnable: importSpecified ? doImport : (prev.importOnEnable ?? true),
+    importOnEnable,
     mcpServerName: prev.mcpServerName ?? 'spec-memo',
   };
 

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f9c9fe0b6b9368a9b2f00ff3b569ac9490a0df4b372f032469c170c0478fbb10",
+  "fullPackageDigest": "86da87abb128f454736fdce651eeb637ff0f0d30f83354aaa582c827362e05f4",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -40,10 +40,10 @@
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
       "step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "telemetry.schema.json": "ea0fae1da61d60e3a32980fb4aa504e7c3bf91ffc1896ade2406343a7b8d278d",
-      "tools.md": "bbd9dc732661941b719cc63763694401748ce0ba9abfdec2200da3c1bc7b42af",
+      "tools.md": "9c618d3bc8c6636a2d9823af1b85f6e77b94c82424c17f46edbc5f7c2ee6a456",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "e3a591a83722187df8021e6093d5f454e57dedef1aace075f31bafa858b45d86"
+    "skillDigest": "160ec40b0c8ed3a11484310ffb97ebcd5b4fa234cdbc04cd79d36ee4f0cf4fc1"
   },
   "packageVersion": "0.3.40",
   "skills": {
@@ -379,10 +379,10 @@
         "references/INTEGRATION.md": "b17584bfd28f6c7df6ee0081c77634da520b2926f7365b0fc4ddc45b1cbb4486",
         "references/MCP-TEMPLATE.json": "7046b6cb8fe5bf45e0cfba36904db92afc7fe751b08307fda582570a37007fdc",
         "scripts/check_spec_memo.cjs": "a491fb69b83580d6aa53619693aace503fcd6ef8bc25ac943498077d10049a61",
-        "scripts/configure_spec_memo.cjs": "00d6f2574ce392902175d796d99cb4a8418da66a00068dd22ecd92a4b567b4e7",
+        "scripts/configure_spec_memo.cjs": "8704946273aa34d91f98139b54b1897e11c9495e1af139b8ac8a80a58e2cbc24",
         "SKILL.md": "8a0c4782fe4d2b1d73945868dbb8e0ab0bf4a62b619e778bb41aca9e2db35b2d"
       },
-      "skillDigest": "987cf286935f1dc1e52dc0895c9e6201df48b00043148ea117bb6707c8c9d938"
+      "skillDigest": "35a15ec087a2cc3f174304e55f51d8baa74a6dc4206ebda2b312d2d025a8c8fb"
     },
     "ws-spec-to-pr": {
       "files": {

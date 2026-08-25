@@ -128,6 +128,42 @@ try {
   assert(enabledReport.ok === false, 'vault-active preflight fails when CLI unavailable');
   assert(checkEnabled.status === 1, 'vault-active preflight exits 1 when unhealthy');
 
+  const stubCli = path.join(tmp, 'stub-memo.cjs');
+  fs.writeFileSync(
+    stubCli,
+    `#!/usr/bin/env node
+const cmd = process.argv[2];
+if (cmd === '--help') process.exit(0);
+if (cmd === 'hook') process.exit(1);
+process.exit(0);
+`,
+  );
+  const hookFail = runNode(
+    CONFIGURE,
+    [
+      '--repo-root',
+      tmp,
+      '--apply',
+      '--enabled',
+      'true',
+      '--cli',
+      `node ${stubCli}`,
+      '--hook',
+      'true',
+      '--import',
+      'false',
+      '--json',
+    ],
+    { env: { WORKFLOW_SKILLS_SHARED_DIR: customShared } },
+  );
+  assert(hookFail.status === 0, 'hook failure still exits 0 by contract');
+  const hookResult = JSON.parse(hookFail.stdout);
+  assert(hookResult.specMemo.writeBlockHook === false, 'failed hook does not mark writeBlockHook true');
+  assert(
+    hookResult.actions.find((a) => a.action === 'hook-install')?.status === 1,
+    'hook failure recorded in actions',
+  );
+
   if (failures === 0) console.log('\ntest-spec-memo-scripts: ok');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
