@@ -3,7 +3,9 @@
  * Run: node test/test-fix-pr-proactive-class-sweep.js
  */
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
+import { execSync } from 'child_process';
 import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 
@@ -89,6 +91,10 @@ assert(
   'sync and dirty-worktree preflight precedes fixPrPlan',
 );
 assert(
+  /1\. \*\*Outer preflight\*\*[\s\S]*validate-auth[\s\S]*2\. \*\*`fixPrPlan`/i.test(fixPr),
+  'outer preflight requires validate-auth before fixPrPlan',
+);
+assert(
   /fixPrPlan[\s\S]*write only this `plan-gate\.md`[\s\S]*must not edit product files, commit, push, call `resolve-thread`, or call `finish --step 9`/i.test(fixPr),
   'fixPrPlan is gate-only and forbids product, remote, and finish mutations',
 );
@@ -102,6 +108,24 @@ assert(
   /stale or invalid gate blocks execution and returns to `fixPrPlan`/i.test(fixPr),
   'fixPrExec stale identity or HEAD returns to planning',
 );
+assert(
+  /headSha` to equal current HEAD/i.test(fixPr) || /`headSha` to equal current HEAD/i.test(fixPr),
+  'fixPrExec requires gate headSha to equal current HEAD',
+);
+// Stale-gate fixture: wrong headSha must not match live HEAD (contract remains fail-closed in SKILL)
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'fixpr-gate-'));
+  const gate = path.join(tmp, 'plan-gate.md');
+  fs.writeFileSync(
+    gate,
+    ['batchId: batch-1', 'prId: 241', 'headSha: deadbeef', 'status: planned', 'activeThreadIds: [1]'].join('\n'),
+  );
+  const head = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+  const gateText = fs.readFileSync(gate, 'utf8');
+  assert(!gateText.includes(head), 'stale gate fixture headSha differs from current HEAD');
+  assert(/headSha.*equal current HEAD/i.test(fixPr), 'SKILL still requires headSha === HEAD before exec');
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
 for (const field of [
   'timestamp', 'newFact', 'previousAction', 'revisedAction', 'rationale', 'evidence source',
 ]) {

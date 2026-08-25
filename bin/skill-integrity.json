@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "8a58bd1e3fb9bf948aede9b71c151276192682a50cf29dc3884444c74f9af465",
+  "fullPackageDigest": "e04c535e5b69b69a150a7abe237485eb40040acae0dff3c0f336b75d3b7f68f4",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -24,7 +24,7 @@
       "plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
       "plans-index.schema.json": "7f40795ad30dd6deec567b7eb4f4758177da65b4c5633eebba59d44e989ed585",
       "run.schema.json": "d7b735086589e34c272bb14a3d0e895714aede0a3de6f1bf60be3c34116463f2",
-      "scm-provider-contract.md": "494864cb128157e3d4a5a722ce4f944fe0bf297a4d2c47e9f76a904d538ccdb3",
+      "scm-provider-contract.md": "d82946d3d8d612fe3b2a63c910b67c323f2007d07304f0d43cd7fee500524762",
       "scripts/ac_counts.cjs": "8a91b1172476d805a90740231e96f8904e6dd045782b4ddb238a06818cedf0c5",
       "scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
@@ -43,7 +43,7 @@
       "tools.md": "7a045599ff82f25a89cf135aa8f2223a0f11aa9fe00e99df85000f7e95481aaf",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "ee7ab1205c42940ddd7281b4fbce6d30877d5a0d79815162fae8f00a8b5a9411"
+    "skillDigest": "f98fdc7ea39f86a95c282135819c2010cfa6a5eafe8b969f536c51b5f3fc0d46"
   },
   "packageVersion": "0.3.40",
   "skills": {
