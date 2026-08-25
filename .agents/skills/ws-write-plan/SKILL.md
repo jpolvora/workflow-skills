@@ -1,7 +1,7 @@
 ---
 name: ws-write-plan
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.3.37
+version: 0.3.38
 disable-model-invocation: true
 invocation_names:
   - write-plan
@@ -18,7 +18,7 @@ Draft an implementation blueprint from the spec.
 
 **Canonical path:** `{us-dir}/step-01-{slug}.plan.md` (`{us-dir}` = `{plansDir}/{slug}/`).
 
-**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work; when `defaults.patternsFrontend` is true, read `{sharedDir}/frontend.md`; when `defaults.patternsBackend` is true, read `{sharedDir}/backend.md`.
+**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work.
 
 ## Invocation
 
@@ -38,12 +38,10 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 ## Steps
 
-1. **Load spec, stack & pattern context** — Read the spec input and `config.json` layers/invariants; grep `{sharedDir}/MEMORY.md` for plan keywords.
+1. **Load spec, stack & memory** — Read the spec input and `config.json` layers/invariants; grep `{sharedDir}/MEMORY.md` for plan keywords.
    - **Design intent:** For modification / bugfix ACs, require `git log -p -S` and/or `git log -L` on touched symbols before recommending behavior changes; reference `### Design Intent` from the spec when present.
-   - If `defaults.patternsFrontend` is `true`, **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) to incorporate project UI/UX and styling conventions into the technical design.
-   - If `defaults.patternsBackend` is `true`, **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) to incorporate domain, architecture, and API conventions.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true` **and** the `ws-fable-domain` skill folder exists, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6. Missing folder: skip domain adapters (do not STOP).
-   - Done when: stack, patterns, and relevant memory entries are identified.
+   - Done when: stack and relevant memory entries are identified.
 
 
 

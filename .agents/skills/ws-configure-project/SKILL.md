@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.3.37
+version: 0.3.38
 description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
 invocation_names:
   - configure-project
@@ -25,11 +25,11 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 | Flag | Effect |
 |------|--------|
-| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`autoload`**, **`patterns`**). `defaults` includes delivery-commit artifacts, pattern tracking, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
+| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`autoload`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
 
-**`--section autoload` / `--section patterns`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`), optional `defaults.autoloadTaskLifecycle` (default / Recommended = `false`), and pattern flags (`defaults.patternsBackend`, `defaults.patternsFrontend`). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
+**`--section autoload`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`) and optional `defaults.autoloadTaskLifecycle` (default / Recommended = `false`). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
 
 ## Steps
 

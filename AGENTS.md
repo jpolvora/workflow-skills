@@ -246,7 +246,7 @@ MEMORY = anti-regression (input + output). Changelog = append-only history, not 
 
 **After** mutating work (required `Learning:` line):
 - **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Record Root Cause & Trap in `{sharedDir}/memory/YYYY-MM-DD-[slug].md` and compile.
-- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap (and `{sharedDir}/backend.md` / `frontend.md` when those pattern flags are on). `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
+- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap. `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
 - **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory `Severity: High/Critical` memory entry.
 - **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` (script path, not a skill load; run compile only after the file is on disk, not in the same parallel tool batch as Write). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
 - `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.

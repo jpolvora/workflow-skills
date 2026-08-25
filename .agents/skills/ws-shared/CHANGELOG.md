@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-25 10:15] Agent: Cursor Grok 4.6
+- **Prompt**: Read todo.txt, create an interpreted plan, and implement
+- **Done**: Removed `ws-patterns` and session leases/git.lock from skills, orch, config, installer, tests, and docs; confirmed `ws-audit` already gone; bumped 0.3.38
+- **Result**: Workflows package is 41 skills; orch consults MEMORY only; parallel-run locking is not a skill responsibility
+
 ### [2026-08-25 08:50] Agent: Cursor Grok 4.6
 - **Prompt**: Commit current work then implement waves A+B+C (freeze Python twins, retry/UTF-8, prune protocol redundancy)
 - **Done**: `update_state.py` / register / detect_specs_dir exec Node SoT; nested `telemetry.loc` parse; `telemetry.steps` dual-write; `--pre-advance` requires N; HTTP retry + utf8_stdio; PROTOCOLS points at state-hygiene cheat sheet

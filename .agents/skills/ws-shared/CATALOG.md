@@ -27,7 +27,6 @@
 | `ws-spec-archive` | [`../ws-spec-archive/SKILL.md`](../ws-spec-archive/SKILL.md) |
 | `ws-cleanup` | [`../ws-cleanup/SKILL.md`](../ws-cleanup/SKILL.md) |
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
-| `ws-patterns` | [`../ws-patterns/SKILL.md`](../ws-patterns/SKILL.md) |
 
 ### Harness & review (Workflows package)
 
@@ -82,7 +81,6 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
 | Engineering delivery gate / Code review proof | `ws-senior-developer` (default on-demand; opt in via `rules.seniorDeveloper`; root `AGENTS.md` may autoload — see § Consumer root override) |
-| Backend & frontend patterns | `ws-patterns` |
 | Fill / update `config.json` | `ws-configure-project` (optional suggestion only for secrets pre-commit hook — never required) |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |

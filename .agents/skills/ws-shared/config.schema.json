@@ -127,11 +127,6 @@
           "default": false,
           "description": "When true, ws-configure-project --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted or false → on-demand only. Does not set defaults.autoload."
         },
-        "sessionLeases": {
-          "type": "boolean",
-          "default": true,
-          "description": "When true (default when omitted), ws-spec-to-pr* bootstrap acquires a cooperative same-slug session lease under {plansDir}/.runtime/leases/ and orch git recipes take a short {plansDir}/.runtime/git.lock critical section. Explicit false disables acquire and git-lock (tests/nested helpers)."
-        },
         "enableDag": {
           "type": "boolean",
           "default": false,
@@ -168,16 +163,6 @@
             "backoff": { "type": "number", "minimum": 1, "default": 1.5 },
             "maxIterations": { "type": "integer", "minimum": 1, "default": 20 }
           }
-        },
-        "patternsBackend": {
-          "type": "boolean",
-          "default": true,
-          "description": "When true, ws-patterns is enabled in autoload.md and consulted during backend implementations."
-        },
-        "patternsFrontend": {
-          "type": "boolean",
-          "default": true,
-          "description": "When true, ws-patterns is enabled in autoload.md and consulted during frontend implementations."
         },
         "deliveryCommitArtifacts": {
           "type": "object",

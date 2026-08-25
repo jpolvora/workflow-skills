@@ -2,7 +2,7 @@
 
 This file records project-specific frontend conventions, UI/UX rules, component patterns, validation styling, i18n localization standards, and form/dropdown interactions.
 
-Agents consulting `ws-patterns` MUST read and strictly adhere to these patterns during frontend implementations and code reviews.
+This file is leftover local notes. Shipped skills do not consult it.
 
 ---
 

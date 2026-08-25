@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.37",
+  "packageVersion": "0.3.38",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -63,8 +63,7 @@
         "ws-pre-daily",
         "ws-spec-explain",
         "ws-cleanup",
-        "ws-spec-archive",
-        "ws-patterns"
+        "ws-spec-archive"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -111,8 +110,7 @@
       "ws-changelog",
       "ws-configure-project",
       "ws-spec-index",
-      "ws-senior-developer",
-      "ws-patterns"
+      "ws-senior-developer"
     ],
     "ws-spec-to-pr-lite": [
       "ws-write-spec",
@@ -133,8 +131,7 @@
       "ws-changelog",
       "ws-configure-project",
       "ws-spec-index",
-      "ws-senior-developer",
-      "ws-patterns"
+      "ws-senior-developer"
     ],
     "ws-write-spec": [
       "ws-spec-format",

@@ -257,12 +257,12 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
         if (w.includes(id)) fail(`workflows package must not list Extra skill ${id}`);
         if (!e.includes(id)) fail(`extra package missing demoted skill ${id}`);
       }
-      if (!w.includes('ws-patterns')) fail('workflows package missing ws-patterns');
+      if (w.includes('ws-patterns')) fail('workflows package must not list retired ws-patterns');
       if (!w.includes('ws-task-lifecycle')) fail('workflows package missing ws-task-lifecycle');
       if (w.includes('ws-patterns-backend') || w.includes('ws-patterns-frontend')) {
         fail('workflows package still lists retired pattern skill ids');
       }
-      if (e.includes('ws-patterns-backend') || e.includes('ws-patterns-frontend')) {
+      if (e.includes('ws-patterns') || e.includes('ws-patterns-backend') || e.includes('ws-patterns-frontend')) {
         fail('extra package still lists retired pattern skill ids');
       }
     }
@@ -284,7 +284,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     if ((depMap.dependencies?.['ws-pre-daily'] || []).includes('ws-activity-report')) {
       fail('dependencies.ws-pre-daily must not include ws-activity-report');
     }
-    ok('package map Extra demotion + ws-patterns membership (AC1–AC5 graph)');
+    ok('package map Extra demotion + retired ws-patterns absent (AC1–AC5 graph)');
   }
   const artifacts = fs.readFileSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
@@ -1115,10 +1115,10 @@ child.on('close', async (code) => {
         fail(`Workflows package must not install Extra skill ${extra}`);
       }
     }
-    if (!fs.existsSync(path.join(pkgSkills, 'ws-patterns', 'SKILL.md'))) {
-      fail('Workflows package did not install ws-patterns');
+    if (fs.existsSync(path.join(pkgSkills, 'ws-patterns', 'SKILL.md'))) {
+      fail('Workflows package must not install retired ws-patterns');
     }
-    for (const retired of ['ws-patterns-backend', 'ws-patterns-frontend']) {
+    for (const retired of ['ws-patterns', 'ws-patterns-backend', 'ws-patterns-frontend']) {
       if (fs.existsSync(path.join(pkgSkills, retired))) {
         fail(`Workflows package must not install retired skill ${retired}`);
       }

@@ -14,7 +14,6 @@ const ENHANCING_SKILLS = [
   'ws-senior-developer',
   'ws-tdah',
   'ws-self-learning',
-  'ws-patterns',
 ];
 
 function parseArgs(argv) {

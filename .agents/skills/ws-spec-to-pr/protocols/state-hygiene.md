@@ -93,7 +93,7 @@ Checks (per [`ARTIFACTS.md`](../ARTIFACTS.md) step-input table): checkpoint tag 
 | 8 | `step-07-{slug}.testing.report.md` (skip if `testing-disabled` / `no-test-surface`) | — |
 | 9 | `step-08-{slug}.result.md` | — |
 
-In-flight resume: backfill `plan.index.json` / `ac-ledger.json` before validate. See [`docs/faq.md`](../docs/faq.md).
+In-flight resume: backfill `plan.index.json` / `ac-ledger.json` before validate. See [`faq.md`](../docs/faq.md).
 
 | Result | Action |
 |--------|--------|

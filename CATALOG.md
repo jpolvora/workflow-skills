@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 42, `extra` = 6). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 41, `extra` = 6). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -72,8 +72,6 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas (Extra) |
 | `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Specs |
 | `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
-| `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Consult MEMORY before write; record traps after → `{sharedDir}/MEMORY.md` |
-| `ws-patterns` | `.agents/skills/ws-patterns/SKILL.md` | Consult backend.md / frontend.md by task layer; record after → `{sharedDir}` |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
 | `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` (may optionally suggest secrets pre-commit hook — never required) |
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
@@ -108,7 +106,6 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Fable Method 7-step loop | This file § [3. Investigate loop](#3-investigate-loop-ws-fable-method) (live `ws-fable-method` only when authoring that skill) |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
-| Backend & frontend patterns | `ws-patterns` |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |

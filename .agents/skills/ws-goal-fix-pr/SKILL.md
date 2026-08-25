@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.3.37
+version: 0.3.38
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -83,7 +83,7 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 4. **Verify**: run `config.json.verification` commands plus a `ws-code-review` diff check. Three consecutive verification failures stop the loop and escalate.
    - Done when: verification passed, or the loop has stopped and escalated.
 
-5. **Post-round learning**: Follow [`ws-self-learning`](../ws-self-learning/SKILL.md) § Post fix-pr round. For accepted reviewer/CI defects this round (score 6–10 threads and `check-pr-status` **diff-regression** failures that we fixed): write a MEMORY trap unless a Medium+ entry already covers the class; compile. When `defaults.patternsBackend` / `defaults.patternsFrontend` is true and the class is a stack convention, append to `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` (this loop auto-yes). Skip writes in `dry-run`. Round report must include `Learning:` titles. **Forbidden:** `Learning: N/A` when this round fixed a valid reviewer/CI defect that was not already in MEMORY.
+5. **Post-round learning**: Follow [`ws-self-learning`](../ws-self-learning/SKILL.md) § Post fix-pr round. For accepted reviewer/CI defects this round (score 6–10 threads and `check-pr-status` **diff-regression** failures that we fixed): write a MEMORY trap unless a Medium+ entry already covers the class; compile. Skip writes in `dry-run`. Round report must include `Learning:` titles. **Forbidden:** `Learning: N/A` when this round fixed a valid reviewer/CI defect that was not already in MEMORY.
    - Done when: trap written and compiled, or `Learning: N/A (no new reviewer-CI trap)` is justified (no accepted defects, or duplicate MEMORY hit).
 
 6. **Re-check & loop**: wait `<wait>` seconds, re-check SCM review/CI run completion and re-collect `activeThreads`, repeating from step 3 until `activeThreads == 0` with all checks completed, `max` is reached, escalation occurs, or the user aborts.

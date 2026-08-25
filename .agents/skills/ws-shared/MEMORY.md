@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Reintroduce `utf8Size('AGENTS.md') <= 40000` in `test-context-budget.js`, or treat root `AGENTS.md` as a packaged consumer always-applied file.
 - **INSTEAD DO**: Keep the 14000 B cap on `.agents/skills/ws-shared/AGENTS.md` and the 24000 B cap on `CATALOG.md`. Grow root `AGENTS.md` when the upstream session contract needs it.
 
+### [2026-08-25] Retiring a skill must drop eval counts; doctor cites markdown link text
+- **Layer**: `Harness`
+- **Module**: `test-evals-schema / ws-doctor`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-evals-schema.js, .agents/skills/*/evals/evals.json, .agents/skills/ws-spec-to-pr/protocols/*.md`
+- **Scenario / Context**: Removing `ws-patterns` deleted its `evals/evals.json`. `test-evals-schema.js` still expected `Validated 44 eval files`. Separately, `ws-doctor` reports `cited: docs/faq.md` from the markdown *label*, so a protocols file linking as `[docs/faq.md](../docs/faq.md)` fails `testLiveSpecToPrDocsFaqNotMissing`.
+- **DO NOT**: Leave an absolute eval-file count in `test-evals-schema.js` after deleting a skill evals folder. Do not use backtick label `docs/faq.md` inside `protocols/` (doctor expands that label relative to the protocols directory).
+- **INSTEAD DO**: Decrement the `Validated N eval files` assertion whenever an `evals/evals.json` is removed. From `protocols/`, use label `faq.md` (or other non-`docs/faq.md` text) with href `../docs/faq.md`.
+
 ### [2026-08-25] Node frontmatter must keep nested telemetry.loc
 - **Layer**: `Infrastructure`
 - **Module**: `ws-shared / workflow_state.cjs parseFrontmatter`

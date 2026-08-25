@@ -2,7 +2,7 @@
 
 This file records project-specific backend conventions, architectural rules, entity validation standards, DTO patterns, database query standards, and API response structures.
 
-Agents consulting `ws-patterns` MUST read and strictly adhere to these patterns during backend implementations and code reviews.
+This file is leftover local notes. Shipped skills do not consult it.
 
 ---
 

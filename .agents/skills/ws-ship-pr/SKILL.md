@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.37
+version: 0.3.38
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -87,8 +87,7 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
    - If the resolved stage set is empty → **STOP** (no empty plan-artifact delivery commit).
    - Never invent missing artifact content. Product/source staging (`commit-code` / ship-scope product files) is unchanged and separate from this delivery set.
    - Commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
-   - When `defaults.sessionLeases` is not explicit `false` and workflow state carries `{leaseId}`, wrap **every** delivery `git commit` and the final push in the same critical section as [`tools.md`](../ws-shared/tools.md) `commit-code` / `push-branch`: `node {skillsRoot}/ws-spec-to-pr/scripts/session_lease.cjs git-lock --plans-dir "{plansDir}" --holder "{leaseId}"` → git recipe → `git-unlock --holder "{leaseId}"` (always, success or fail). Prefer those tool aliases over raw git when leases are on.
-   Then commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {shipHead}` **inside that lock** when leases apply (or dispatch `push-branch`). Skip push when `shipAction: skip` or `dry-run`.
+   Then commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {shipHead}` (or dispatch `push-branch`). Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
 5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL. When workflow state or spec frontmatter has tracker `id`, dispatch provider **`comment-issue`** (alias `close-loop`) with PR URL + one-paragraph summary (`dry-run` when parent is dry-run). Skip when `id` is null / `source: local`.
