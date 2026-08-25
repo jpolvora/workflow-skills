@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "e04c535e5b69b69a150a7abe237485eb40040acae0dff3c0f336b75d3b7f68f4",
+  "fullPackageDigest": "5f3fe9053cec2d5ae55aaa6b6866542189080a8eaf2b78ae3cbe7889ec18db71",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -18,7 +18,7 @@
       "config.schema.json": "2ec2dd984fa5e8a29eccb97644e5a6b8fd8a83bbc804f0fd617fa97c06732d83",
       "CROSS-PLATFORM.md": "d70d5812d557519605ad15645e7cf1cd36c8e3f5bf68fa583237357405927d8e",
       "evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "gates.md": "017faa828a552790c370736f601d771cf6e758c88b28ca22480e4f967c8d59b3",
+      "gates.md": "945e48155d8c0e78bc414f16ff96f3c49d34c796131487ee6e818d0a9ff3e953",
       "hub.gitignore": "e35960c4a5d024e07092884dc69d4c79669c93cdd856e19757ed316e0ec1b844",
       "MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
@@ -43,7 +43,7 @@
       "tools.md": "7a045599ff82f25a89cf135aa8f2223a0f11aa9fe00e99df85000f7e95481aaf",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "f98fdc7ea39f86a95c282135819c2010cfa6a5eafe8b969f536c51b5f3fc0d46"
+    "skillDigest": "bee1113200ce29a6649bd46fa9c64eeebe6d244dfc9188f4d0a3638d2dce349f"
   },
   "packageVersion": "0.3.40",
   "skills": {
@@ -171,13 +171,13 @@
         "evals/evals.json": "aefb1fad2ce60785232b08121e339ead2fd2c4747de42a6c66630c2a439317c3",
         "README.md": "7f220a36d983e0edcb567e50ee2c0e42cb447df9eaa8bd0f2fd335fa4b881ea0",
         "scripts/AUTO_FIX.md": "28271d03a6d8d3a0d53d3fc2f89e6a36dd1ab0e9da6bc259edcecf9ac157f3a1",
-        "scripts/COOPERATIVE_FIX.md": "53d6607b0b9be277b319620d8ddec5c88f44d0f0f93b303cfb2dde75570c693e",
+        "scripts/COOPERATIVE_FIX.md": "c6c6e9d5f5f43994107c0dc8d862c9b17615f473e079b87d928071884323e478",
         "scripts/fetch_threads.cjs": "5c20d7ffc17d175fabce85853a69c23f18f95968c7bc51782d978f58855cb5e0",
         "scripts/fix_pr_azure_context.py": "d6ece5f1864a89be0c82fc2f415621e6f6d98bcda3d219f2c24a488a9623cbd8",
         "scripts/resolve_thread.cjs": "31f8f979dfe0d02a1ada1138ca5d6f14e687e5f6027a3015d808ca4572baf585",
         "SKILL.md": "3ef621ee07c4416b357edd94526daf302056ac32a57b6b5ee42802221c64fc51"
       },
-      "skillDigest": "0df7e78927b0a2c0102b3aea16fc8620d62cd27b402ea2847b8dc0145146f62f"
+      "skillDigest": "6b5306a9cde101c8cce30a89d8030b2fb056e616aec92333f6c9febd1db0367c"
     },
     "ws-github-provider": {
       "files": {
@@ -379,7 +379,7 @@
         "DIAGRAM.md": "dbb88c842c1cc8109a6be09777f687cc2f0f270123d9ed340595d7cb6a4fe8d9",
         "docs/faq.md": "fed817d03c4b28958f391f0e16d72ebcb31857b7eb35b2bec109732faf79d4b1",
         "evals/evals.json": "76a6440941d350b4f03bf74916968ee30509593c2a9bb8e63c3400a4a8bc0be4",
-        "PROTOCOLS.md": "094139083994ae0dd8969bacdf80bf5ee47c331cfe84f65ce240c1536ac00640",
+        "PROTOCOLS.md": "a83243c3b81363eef8906f0fae966b12406d0abf38b46e93da765f0f473d56d5",
         "protocols/artifact-cleanup.md": "b1a344a931294d1b7d5bd66ce6c429c43364176da2e1728b2cd68960ea82e7ac",
         "protocols/delivery-result.md": "31055799e966567a4a038316c1fe78cefc7368236424d6ee50987ece499d4f7c",
         "protocols/progress-board.md": "5734a27d8fa63ec4178d3842e2dc623d62b7d385d61f8cfa1f17b1b8f8abe514",
@@ -403,7 +403,7 @@
         "STEP-DISPATCH.md": "b37568f2431cf756c655b046506c369ae83b63e7a3b5396b1c03bcd07a6e8edb",
         "ws-spec-to-pr-run-test.md": "e02b0ab33116157aca673cca2ae54faeadcf9c67c0e5ff25234e2da8ac4212ab"
       },
-      "skillDigest": "212560c5275fd5f778b473c1bfe5938e9dc55aa468ba35b4ce1c9bd832c48c56"
+      "skillDigest": "85f7322e930047254981c479c251aa2c3f550358de46e99d81331de4b54d509e"
     },
     "ws-spec-to-pr-lite": {
       "files": {

@@ -94,21 +94,22 @@ Do not close a thread without a corresponding fix listed explicitly (`resolvedTh
 
 ## Order of Operations (fix-pr IDE)
 
+Follow `SKILL.md` steps 1–5 (outer preflight → gate-only `fixPrPlan` → validated `fixPrExec` → verify/learn/resolve/push). Use this file for proactive discovery, defect-class sweeps, and resolution report fields — not as a competing outer sequence.
+
 ```
-0. Verify local branch == PR head; git fetch + git pull <remote> <headRefName>
-0b. If `gh` available: check `gh pr checks <PR_ID>` and in_progress runs for agentic-code-review.yml + agentic-auto-fix.yml; inform user (do not auto-block)
-1. Fetch open threads (GraphQL via `node .agents/skills/ws-github-provider/scripts/fetch_threads.cjs`)
-2. Deeply analyze each description; name the defect class
-2b. Proactive discovery (code + MEMORY + same-PR context + patterns when present; see Proactive discovery section)
-3. Apply surgical fixes for the class (anchored instance + proactive hits per size gate)
-4. git add + local commit (`fix(#N): auto-fix issues from review threads [...])
-5. Execute validation (build/test per stack)
-6. Close each resolved thread via `node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs` (`<!-- resolution-reply -->`)
-7. git push — only if validation and attempted resolutions succeed
-8. Wait for next review round; on new threads, restart from step 0
+0. Outer preflight: sync branch, refuse dirty worktree, `validate-auth`
+1. fixPrPlan: list-threads + check-pr-status; score threads; write complete plan-gate.md only
+2. Handoff validation: batchId/prId/headSha/activeThreadIds must match HEAD
+3. fixPrExec: proactive discovery (below) → surgical fixes → verification
+4. Provider resolve-thread with <!-- resolution-reply --> and --model {currentModel}
+5. Commit + push (unless dry-run)
 ```
 
-If step 5 or 6 fails: **do not push**. Local commit preserved for manual inspection.
+GitHub close recipe (after fixes land):  
+`node …/resolve_thread.cjs {THREAD_ID} "{note}" --model {currentModel}`  
+(Azure: provider `resolve-thread --model` equivalent.)
+
+If verify or resolve fails: **do not push**. Local commit preserved for manual inspection.
 
 ## Order of Operations (Auto-Fix CI)
 

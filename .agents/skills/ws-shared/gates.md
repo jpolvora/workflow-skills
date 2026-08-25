@@ -202,7 +202,11 @@ Pass the selected ship intent into `ws-ship-pr` as `shipAction: create-pr|push-o
 Separate from ship. After Step 8 / lite Step 4 when `shipAction: create-pr` and a PR exists:
 
 1. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot).
-2. Merge policy per goal-fix / provider helpers.
+2. Each issue-fix **batch** (one Act round or one standalone `/fix-pr`) runs ordered **`fixPrPlan` → `fixPrExec`**:
+   - **`fixPrPlan`** (gate-only): fetch/score threads; write complete `{skillsRoot}/ws-fix-pr/runs/pr-<PR-ID>/plan-gate.md`; no product edits, commit, push, `resolve-thread`, or outer `finish --step 9`.
+   - **`fixPrExec`**: validate the gate against HEAD, follow it (amend before deviate), apply cooperative proactive sweeps, then verify / resolve / push.
+3. Standard orch: role models via `fixPrPlan` → `reviewerModel` and `fixPrExec` → `executionModel` (see session-model banner above). Lite: both phases inline without role switching.
+4. Merge policy per goal-fix / provider helpers.
 
 Stop: max exhausted · merge blocked · cancelled · PR closed.
 

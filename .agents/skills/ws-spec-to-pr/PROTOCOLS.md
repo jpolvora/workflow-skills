@@ -119,10 +119,10 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ `defaults.minVerifyScore` (default 9) | Complete step 5; Advance to 6 |
+| ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5 scoring; when Reach-10 conditions in [`gates.md`](../ws-shared/gates.md) hold, offer Reach-10 before G2-code; otherwise G2-code then Advance to 6 |
 | below `defaults.minVerifyScore` | **scoreAndRefine** until ≥ `defaults.minVerifyScore` (default 9) (max 3 rounds, then Pause). Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
-`--strict`: always run full verification matrix regardless of score. `autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`. Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate.
+`--strict`: always run full verification matrix regardless of score. `autoMode`: skip the Reach-10 offer and advance at the current passing score; still auto-run scoreAndRefine rounds below the bar — do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`. Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate · § Reach-10 offer.
 
 ### Code review + fix → re-review loop (Step 6)
 

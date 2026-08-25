@@ -51,6 +51,14 @@ assert(/autoMode.*skip.*Reach-10|skip the Reach-10 offer/i.test(gates), 'gates.m
 const dispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 assert(dispatch.includes('defaults.minVerifyScore'), 'STEP-DISPATCH names defaults.minVerifyScore');
 
+const protocols = read('.agents/skills/ws-spec-to-pr/PROTOCOLS.md');
+assert(/Reach[- ]10/i.test(protocols), 'PROTOCOLS.md documents Reach-10 offer');
+
+assert(
+  /fixPrPlan/.test(gates) && /fixPrExec/.test(gates) && /Fix-PR gate[\s\S]*plan-gate/i.test(gates),
+  'gates.md Fix-PR gate documents batch plan/exec contract',
+);
+
 const verify = read('.agents/skills/ws-verify-plan/SKILL.md');
 assert(verify.includes('defaults.minVerifyScore'), 'ws-verify-plan names defaults.minVerifyScore');
 
