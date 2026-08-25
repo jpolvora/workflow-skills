@@ -238,7 +238,10 @@ function testFixPrRoleDispatchesPreserveNestedLoc() {
   const fm = extractFrontmatter(statePath);
   assertLocMapping(fm, 'Fix-PR role dispatches');
   assert(/substep:\s*fixPrExec/.test(fm), 'Fix-PR compact state retains latest execute role');
-  assert(!/^completedSteps:[^\n]*\b9\b/m.test(fm), 'Fix-PR internal dispatches do not complete Step 9');
+  assert(
+    !/completedSteps:\s*(?:\[[^\]]*\b9\b|(?:\r?\n\s+-\s+\d+\s*)*\r?\n\s+-\s+9\b)/.test(fm),
+    'Fix-PR internal dispatches do not complete Step 9',
+  );
 
   const events = fs.readFileSync(path.join(dir, jsonlRel), 'utf8')
     .trim()

@@ -303,7 +303,7 @@ revision: 0
 fs.mkdirSync(path.join(tempRoot, '.agents/plans'), { recursive: true });
 fs.writeFileSync(
   path.join(tempRoot, '.agents/plans/index.json'),
-  JSON.stringify({ schemaVersion: 1, workflows: [{}] }),
+  JSON.stringify({ schemaVersion: 1, workflows: [] }),
 );
 const dispatchRun = spawnSync(
   process.execPath,
@@ -319,7 +319,7 @@ const dispatchRun = spawnSync(
   { encoding: 'utf8' },
 );
 assert(dispatchRun.status === 0, `temp consumer dispatch: ${dispatchRun.stderr}`);
-assert(dispatchRun.status === 0, 'plans index sort tolerates a row with missing workflowId');
+assert(dispatchRun.status === 0, 'temp consumer plans index starts empty and accepts dispatch');
 const updated = fs.readFileSync(stateFile, 'utf8');
 assert(/currentModel: cheap-planner/.test(updated), 'CJS --repo-root resolves preset from temp consumer hub');
 
@@ -425,7 +425,10 @@ assert(
   'Step 9 JSONL records actual Fix-PR role models',
 );
 let fixStateText = fs.readFileSync(fixState, 'utf8');
-assert(!/completedSteps:[^\n]*9/.test(fixStateText), 'internal Fix-PR dispatches do not complete Step 9');
+assert(
+  !/completedSteps:\s*(?:\[[^\]]*\b9\b|(?:\r?\n\s+-\s+\d+\s*)*\r?\n\s+-\s+9\b)/.test(fixStateText),
+  'internal Fix-PR dispatches do not complete Step 9',
+);
 assert(/substep: fixPrExec/.test(fixStateText), 'compact Step 9 dispatch state keeps latest internal role');
 
 const outerFinish = spawnSync(

@@ -552,8 +552,8 @@ function updatePlansIndex(context, run, timestamp) {
   index.schemaVersion = SCHEMA_VERSION;
   index.revision = run.revision;
   index.generatedAt = timestamp;
-  index.workflows = [...(index.workflows || []).filter((item) => item.workflowId !== row.workflowId), row]
-    .sort((a, b) => String(a.workflowId || '').localeCompare(String(b.workflowId || '')));
+  index.workflows = [...(index.workflows || []).filter((item) => item && item.workflowId && item.workflowId !== row.workflowId), row]
+    .sort((a, b) => String(a.workflowId).localeCompare(String(b.workflowId)));
   return { file, index };
 }
 
