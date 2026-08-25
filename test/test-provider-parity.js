@@ -179,6 +179,17 @@ const ghDry = spawnSync(
 assert(ghDry.status === 0, 'GitHub resolve_thread.cjs --dry-run exits 0');
 assert(/\[dry-run\]/.test(ghDry.stdout || ''), 'GitHub resolve_thread.cjs --dry-run prints dry-run (no GraphQL)');
 
+const ghDryModel = spawnSync(
+  process.execPath,
+  [ghScript, '--dry-run', '--model', 'composer-2.5', 'thread-parity', 'parity note'],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(ghDryModel.status === 0, 'GitHub resolve_thread.cjs --dry-run --model exits 0');
+assert(
+  /---\nLLM model: composer-2\.5/.test(ghDryModel.stdout || ''),
+  'GitHub resolve-thread appends LLM model footer',
+);
+
 const adoScript = path.join(SKILLS, 'ws-azure-devops-provider/scripts/fix_pr_azure_context.py');
 const pythonBin = process.platform === 'win32' ? 'python' : 'python3';
 const adoHelp = spawnSync(pythonBin, [adoScript, 'resolve-thread', '--help'], {
@@ -210,6 +221,29 @@ assert(adoDryNoModel.status === 0, 'Azure resolve-thread --dry-run works without
 assert(
   !/required|cannot be empty/i.test(`${adoDryNoModel.stdout || ''}${adoDryNoModel.stderr || ''}`),
   'Azure --model is optional host metadata',
+);
+
+const adoDryModel = spawnSync(
+  pythonBin,
+  [
+    adoScript,
+    'resolve-thread',
+    '--dry-run',
+    '--pr-id',
+    '1',
+    '--thread-id',
+    '1',
+    '--comment',
+    'parity note',
+    '--model',
+    'composer-2.5',
+  ],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(adoDryModel.status === 0, 'Azure resolve-thread --dry-run --model exits 0');
+assert(
+  /---\\nLLM model: composer-2\.5/.test(adoDryModel.stdout || ''),
+  'Azure resolve-thread appends LLM model footer',
 );
 
 const delegated = required.filter((id) => id !== 'validate-auth' && id !== 'fetch-to-spec');
