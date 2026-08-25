@@ -91,15 +91,16 @@ Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-githu
 
 ### Subagent model preferences
 
-The orchestrator session ALWAYS runs under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels` (numeric `"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`), and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in **standard** `dispatch-agent` dispatches only:
+The orchestrator session ALWAYS runs under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels` (numeric `"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`), and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in **standard** `dispatch-agent` dispatches only:
 
 - **Resolve order (blank orch `--model`):** `stepModels[role|N]` → active preset `steps[role|N]` → top-level phase key → preset phase key → session. Token `"current"` uses session `currentModel` (no fallthrough). Unknown `modelsPreset` → preset `default` when present, else legacy four keys.
 - **Planning Phase**: `plannerModel` (standard Steps 0–3)
-- **Execution Phase**: `executionModel` (standard Step 4 sequential; role `dag` / `scoreAndRefine` / `reviewFix` when applicable)
-- **Review Phase**: `reviewerModel` (standard Steps 5–6)
-- **Testing Phase (standard Step 7 only)**: `testingModel` → `executionModel` → session **after** preset/`stepModels` overrides. Lite does not read or apply `testingModel`, `dag`, `scoreAndRefine`, or `reviewFix`.
+- **Execution Phase**: `executionModel` (standard Step 4 sequential; role `dag` / `scoreAndRefine` / `reviewFix`; Step 9 role `fixPrExec`)
+- **Review Phase**: `reviewerModel` (standard Steps 5–6; Step 9 role `fixPrPlan`)
+- **Testing Phase (standard Step 7 only)**: `testingModel` → `executionModel` → session **after** preset/`stepModels` overrides.
+- **Fix-PR internal roles**: capture session fallback once; `fixPrPlan` resolves `stepModels.fixPrPlan` → preset `steps.fixPrPlan` → top-level `reviewerModel` → preset `reviewerModel` → captured session. `fixPrExec` uses the same chain with `executionModel`. Neither role consults numeric `"9"`; that value selects only the outer Step 9 skill. Record two ordered dispatch events, never an internal Step 9 finish.
 
-**Lite (`ws-spec-to-pr-lite`):** executes inline in the main orchestrator session with no `dispatch-agent` subagents, so models are resolved for telemetry / banner only. The session stays under `{currentModel}`. Apply `stepModels` `"0"`–`"5"` when set; phase buckets 0–1 / 2 / 3 / 4–5 session unless step override.
+**Lite (`ws-spec-to-pr-lite`):** executes inline in the main orchestrator session with no `dispatch-agent` subagents, so models are resolved for telemetry / banner only. The session stays under `{currentModel}`. Apply `stepModels` `"0"`–`"5"` when set; phase buckets 0–1 / 2 / 3 / 4–5 session unless step override. Lite does not read or apply `testingModel`, and ignores every role key including `fixPrPlan` / `fixPrExec`; Fix-PR still plans before editing inline.
 
 **Portable parameterization:** when `dispatch-agent` exposes a model field, pass the configured identifier through that field. Otherwise include `Model: {modelName}` in the dispatch header when the host supports model hints.
 

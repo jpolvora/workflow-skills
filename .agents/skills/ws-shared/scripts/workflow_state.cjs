@@ -388,6 +388,7 @@ function commonEvent(state, pipeline, step, type, timestamp, options, context) {
     pipeline,
     packageVersion,
     step,
+    ...(isNonEmptyModel(options.substep) ? { substep: String(options.substep).trim() } : {}),
     model: String(options.model || state.currentModel || 'unknown'),
     retries: Number(options.retries || 0),
     reviewRounds: Number(options.reviewRounds || 0),
@@ -552,7 +553,7 @@ function updatePlansIndex(context, run, timestamp) {
   index.revision = run.revision;
   index.generatedAt = timestamp;
   index.workflows = [...(index.workflows || []).filter((item) => item.workflowId !== row.workflowId), row]
-    .sort((a, b) => a.workflowId.localeCompare(b.workflowId));
+    .sort((a, b) => String(a.workflowId || '').localeCompare(String(b.workflowId || '')));
   return { file, index };
 }
 
@@ -576,7 +577,8 @@ function statePaths(stateFile, context) {
   };
 }
 
-const KNOWN_SUBSTEPS = new Set(['dag', 'scoreAndRefine', 'reviewFix']);
+const KNOWN_SUBSTEPS = new Set(['dag', 'scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec']);
+const FIX_PR_SUBSTEPS = new Set(['fixPrPlan', 'fixPrExec']);
 
 function isNonEmptyModel(value) {
   return typeof value === 'string' && value.trim() !== '';
@@ -600,12 +602,13 @@ function getActivePreset(defaults) {
 }
 
 function resolveStepOverride(defaults, preset, stepKey, role, pipeline) {
+  const numericStepAllowed = !FIX_PR_SUBSTEPS.has(role);
   const stepModels = defaults?.stepModels;
   if (stepModels && typeof stepModels === 'object') {
     if (pipeline !== 'lite' && role && isNonEmptyModel(stepModels[role])) {
       return String(stepModels[role]).trim();
     }
-    if (isNonEmptyModel(stepModels[stepKey])) {
+    if (numericStepAllowed && isNonEmptyModel(stepModels[stepKey])) {
       const stepNum = Number(stepKey);
       if (pipeline !== 'lite' || (Number.isInteger(stepNum) && stepNum >= 0 && stepNum <= 5)) {
         return String(stepModels[stepKey]).trim();
@@ -617,7 +620,7 @@ function resolveStepOverride(defaults, preset, stepKey, role, pipeline) {
     if (pipeline !== 'lite' && role && isNonEmptyModel(steps[role])) {
       return String(steps[role]).trim();
     }
-    if (isNonEmptyModel(steps[stepKey])) {
+    if (numericStepAllowed && isNonEmptyModel(steps[stepKey])) {
       const stepNum = Number(stepKey);
       if (pipeline !== 'lite' || (Number.isInteger(stepNum) && stepNum >= 0 && stepNum <= 5)) {
         return String(steps[stepKey]).trim();
@@ -642,6 +645,8 @@ function resolveStandardStep7Chain(defaults, preset) {
 }
 
 function standardPhaseKey(step, role) {
+  if (role === 'fixPrPlan') return 'reviewerModel';
+  if (role === 'fixPrExec') return 'executionModel';
   if (role) return 'executionModel';
   if (step >= 0 && step <= 3) return 'plannerModel';
   if (step === 4) return 'executionModel';

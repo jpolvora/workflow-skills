@@ -36,7 +36,7 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
 | 8 | Delivery result, ship gate, push and PR creation (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
-| 9 | PR thread convergence (`ws-goal-fix-pr` / `ws-fix-pr`) then merge | resolved threads / merge |
+| 9 | PR thread convergence: one gate-only `fixPrPlan` then `fixPrExec` per Act-round/standalone batch, then merge | plan gate + resolved threads / merge |
 
 Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md).
 
@@ -51,7 +51,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 | 2 | Implementation (defect-class repo sweep) | `ws-implement-tasks` |
 | 3 | Review (+ fix loop, sibling modules) | `ws-code-review` |
 | 4 | Ship (CI triage + tracker comment) | `ws-ship-pr` |
-| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` |
+| 5 | Fix-PR (plan-before-edit inline on current model) | `ws-goal-fix-pr` / `ws-fix-pr` |
 
 ### 1.3 Batch delivery — `ws-multi-spec`
 
@@ -223,7 +223,7 @@ Everything project-specific lives in one consumer-owned, gitignored file: `.agen
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
 
-**Per-phase model switching:** the orchestrator session always runs under the active model. Named presets (`modelsPreset` / `modelPresets`), optional per-step `stepModels`, and legacy phase keys resolve the subagent model for standard `dispatch-agent` dispatches only, with graceful fallback when a switch fails.
+**Per-phase model switching:** the orchestrator session always runs under the active model. Named presets (`modelsPreset` / `modelPresets`), optional per-step/role `stepModels`, and legacy phase keys resolve the subagent model for standard `dispatch-agent` dispatches only, with graceful fallback when a switch fails. Fix-PR resolves `fixPrPlan` through `reviewerModel` and `fixPrExec` through `executionModel`; both bypass numeric Step 9, which remains outer-only. Lite ignores role switches and runs plan then execute inline.
 
 Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `backend.md`, `frontend.md`, `installed-skills.json`, `CHANGELOG.md`, `skill-integrity-local.json`.
 
@@ -305,8 +305,8 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
-| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | Single-pass PR thread resolution; proactive same-class sweep (code, MEMORY, PR context) before resolve; post-round MEMORY/pattern learning for accepted reviewer/CI defects |
-| [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative fix-pr rounds until threads hit zero and checks pass; each round records reviewer/CI mistakes into MEMORY (and pattern files when enabled) |
+| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | One batch-wide reviewer-plan then execution pass; durable gate, amendment-before-deviation, proactive same-class sweep, verification, resolution, learning, push |
+| [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative Act-round batches until threads hit zero and checks pass; requires both plan and execute evidence before resolve/push |
 | [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | E | Post-ship QA delta capture, planning, and execution |
 
 ### Providers

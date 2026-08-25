@@ -482,7 +482,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 3: Delivery & PR Fix Convergence</span>
           </div>
-          <p class="stepper-desc">Monitors open Pull Request review comments in an autonomous goal loop, applying code fixes until zero unresolved threads remain.</p>
+          <p class="stepper-desc">For each Act-round or standalone batch, runs a gate-only <code>fixPrPlan</code> with reviewer-class model resolution, then validates and applies it in <code>fixPrExec</code> with execution-class resolution. Both roles stay inside outer Step 9; convergence continues until zero unresolved threads remain.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>
@@ -590,7 +590,7 @@
             </div>
             <span class="stepper-fsm-tag">Lite Pipeline</span>
           </div>
-          <p class="stepper-desc">Runs fix loop on incoming PR comments until all threads are resolved.</p>
+          <p class="stepper-desc">Runs the same gate-only plan before execute order for each incoming PR-comment batch, inline on the current session model, until all threads are resolved.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill scm view-skill" data-path=".agents/skills/ws-fix-pr/SKILL.md">ws-fix-pr</span>

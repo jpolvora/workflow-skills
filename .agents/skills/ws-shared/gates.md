@@ -50,6 +50,8 @@ To use a different model for the orchestrator session: Pause → switch it in th
 
 The orchestrator session ALWAYS runs under the active session model (`{currentModel}`). Resolve `{targetSubagentModel}` from `defaults.modelsPreset` / `modelPresets`, optional `stepModels`, and legacy phase keys for the subagent at Step N (or lite telemetry); otherwise `{targetSubagentModel}` defaults to `{currentModel}`. If unknown, use `unknown`. Log `model | step {N} | {name} | ISO`. On change vs prior state value, also log `model-change | step {N} | {old} → {new} | ISO`.
 
+For standard Step 9, capture `{currentModel}` once before internal dispatches. `fixPrPlan` falls back through `reviewerModel`; `fixPrExec` through `executionModel`. Neither role consults numeric Step 9, and neither finishes the outer step. Lite runs both phases inline without role switching.
+
 **Primary options (always shown):**
 
 1. **Next** — Advance to Step N+1 (Recommended)

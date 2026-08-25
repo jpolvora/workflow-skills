@@ -4,6 +4,7 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -28,7 +29,9 @@ const cooperative = read('.agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md');
 const fixPr = read('.agents/skills/ws-fix-pr/SKILL.md');
 const autoFix = read('.agents/skills/ws-fix-pr/scripts/AUTO_FIX.md');
 const goalFix = read('.agents/skills/ws-goal-fix-pr/SKILL.md');
+const lite = read('.agents/skills/ws-spec-to-pr-lite/SKILL.md');
 const evals = JSON.parse(read('.agents/skills/ws-fix-pr/evals/evals.json'));
+const goalEvals = JSON.parse(read('.agents/skills/ws-goal-fix-pr/evals/evals.json'));
 
 // AC1 / AC3 / AC9 — shared contract proactive discovery + size gate + single source
 assert(
@@ -76,6 +79,44 @@ assert(
   'fix-pr SKILL proactiveFixed and proactiveSkipped',
 );
 
+// Batch plan -> execute mutation barrier and durable handoff
+assert(
+  /batch.*all active threads/i.test(fixPr) && /one `fixPrPlan`.*`fixPrExec` pair/i.test(fixPr),
+  'fix-pr defines one role pair per active-thread batch',
+);
+assert(
+  fixPr.indexOf('1. **Outer preflight**') < fixPr.indexOf('2. **`fixPrPlan`'),
+  'sync and dirty-worktree preflight precedes fixPrPlan',
+);
+assert(
+  /fixPrPlan[\s\S]*write only this `plan-gate\.md`[\s\S]*must not edit product files, commit, push, call `resolve-thread`, or call `finish --step 9`/i.test(fixPr),
+  'fixPrPlan is gate-only and forbids product, remote, and finish mutations',
+);
+for (const field of [
+  'batchId', 'prId', 'scope', 'headSha', 'plannedAt', 'activeThreadIds',
+  'threadId', 'score', 'proposedAction', 'amendments',
+]) {
+  assert(fixPr.includes(field), `fix-pr gate contract includes ${field}`);
+}
+assert(
+  /stale or invalid gate blocks execution and returns to `fixPrPlan`/i.test(fixPr),
+  'fixPrExec stale identity or HEAD returns to planning',
+);
+for (const field of [
+  'timestamp', 'newFact', 'previousAction', 'revisedAction', 'rationale', 'evidence source',
+]) {
+  assert(fixPr.includes(field), `fix-pr amendment contract includes ${field}`);
+}
+assert(
+  /Before the first product edit that differs from `proposedAction`, append an amendment/i.test(fixPr),
+  'fixPrExec appends amendment before deviating edit',
+);
+assert(
+  fixPr.includes('fixPrPlan') && fixPr.includes('reviewerModel') &&
+    fixPr.includes('fixPrExec') && fixPr.includes('executionModel'),
+  'fix-pr binds plan and execute roles to reviewer/execution phases',
+);
+
 // AC5 — Auto-Fix mirrors proactive discovery
 assert(
   /proactive discovery/i.test(autoFix) && autoFix.includes('sourcesConsulted'),
@@ -94,6 +135,24 @@ assert(
 assert(
   goalFix.includes('proactiveSkipped') && /resolve-thread|push/i.test(goalFix),
   'goal-fix-pr blocks resolve/push without proactive evidence',
+);
+assert(
+  /invoke .*ws-fix-pr.* once/i.test(goalFix) && /one ordered `fixPrPlan`.*`fixPrExec` pair/i.test(goalFix),
+  'goal Act round invokes one batch-wide plan-execute pair',
+);
+assert(
+  /Forbidden:.*resolve or push before both substeps have evidence/s.test(goalFix),
+  'goal Done-when blocks resolve/push before both role evidence sets',
+);
+assert(
+  /never finish outer Step 9/i.test(goalFix),
+  'goal internal roles never finish outer Step 9',
+);
+assert(
+  lite.includes('fixPrPlan') && lite.includes('fixPrExec') &&
+    /gate-only plan.*before any product edit/i.test(lite) &&
+    /numeric Step `5` remains the only outer telemetry row/i.test(lite),
+  'lite ignores role switches but enforces inline plan-before-edit with outer Step 5 telemetry',
 );
 
 // Post-round learning (reviewer/CI mistakes → MEMORY / patterns)
@@ -121,6 +180,15 @@ assert(
   goalEval7 && /post-round learning/i.test(goalEval7.assertions.join(' ')),
   'goal-fix-pr eval id 7 covers post-round learning',
 );
+const eval8 = evals.evals.find((e) => e.id === 8);
+const eval9 = evals.evals.find((e) => e.id === 9);
+const goalEval8 = goalEvals.evals.find((e) => e.id === 8);
+assert(eval8 && /one batch-wide fixPrPlan/i.test(eval8.expected_output), 'fix-pr eval covers one batch pair');
+assert(eval9 && /structured amendment before/i.test(eval9.expected_output), 'fix-pr eval covers amendment-before-edit');
+assert(
+  goalEval8 && /never finish outer Step 9/i.test(goalEval8.assertions.join(' ')),
+  'goal-fix-pr eval covers no early Step 9 finish',
+);
 
 // AC7 / AC8 — evals second-path, skip reason, MEMORY consult-skipped
 const eval4 = evals.evals.find((e) => e.id === 4);
@@ -137,6 +205,14 @@ assert(
   eval6.assertions.some((a) => /consult-skipped/i.test(a)),
   'eval id 6 consult-skipped not fatal',
 );
+
+const normalizedAutoFix = autoFix.replace(/\r\n/g, '\n');
+const autoFixBlob = createHash('sha1')
+  .update(`blob ${Buffer.byteLength(normalizedAutoFix, 'utf8')}\0`)
+  .update(normalizedAutoFix, 'utf8')
+  .digest('hex');
+assert(autoFixBlob === '59e51b370edd51d6b8ae5ef87c9a9c29b931cf9b', 'AUTO_FIX.md remains byte-for-byte unchanged');
+assert(!/fixPrPlan|fixPrExec/.test(autoFix), 'AUTO_FIX.md contains no dual-model role contract');
 
 // AC10 — sabotage guardrail still referenced in harness test sibling
 const hermes = read('test/test-hermes-spec-to-pr-enhancements.js');

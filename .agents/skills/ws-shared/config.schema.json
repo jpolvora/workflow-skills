@@ -242,7 +242,11 @@
               "steps": {
                 "type": "object",
                 "additionalProperties": { "type": "string" },
-                "description": "Per-step or substep overrides (numeric \"0\"–\"9\", dag, scoreAndRefine, reviewFix)."
+                "properties": {
+                  "fixPrPlan": { "type": "string", "description": "Fix-PR batch planning role; falls back to reviewerModel and never numeric Step 9." },
+                  "fixPrExec": { "type": "string", "description": "Fix-PR batch execution role; falls back to executionModel and never numeric Step 9." }
+                },
+                "description": "Per-step or substep overrides (numeric \"0\"–\"9\", dag, scoreAndRefine, reviewFix, fixPrPlan, fixPrExec)."
               }
             }
           }
@@ -250,7 +254,11 @@
         "stepModels": {
           "type": "object",
           "additionalProperties": { "type": "string" },
-          "description": "Per-step or substep model overrides (numeric \"0\"–\"9\", dag, scoreAndRefine, reviewFix). Not the state frontmatter stepModels list."
+          "properties": {
+            "fixPrPlan": { "type": "string", "description": "Fix-PR batch planning role; falls back to reviewerModel and never numeric Step 9." },
+            "fixPrExec": { "type": "string", "description": "Fix-PR batch execution role; falls back to executionModel and never numeric Step 9." }
+          },
+          "description": "Per-step or substep model overrides (numeric \"0\"–\"9\", dag, scoreAndRefine, reviewFix, fixPrPlan, fixPrExec). Not the state frontmatter stepModels list."
         }
       }
     },

@@ -113,7 +113,7 @@ Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`a
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Prompt-driven task (not Spec-to-PR) | `ws-task-lifecycle` |
 
-**Product commits (both orch):** after Step 5 score ≥ `defaults.minVerifyScore` (default 9) (standard) or lite Step 2, commit `files_touched`; review `{base}...HEAD`; second commit for review fixes. `{plansDir}` only at Step 8 / lite Step 4. Never `git add -A`.
+**Product commits:** standard after Step 5 reaches `minVerifyScore` (default 9); lite after Step 2. Commit only `files_touched`; review `{base}...HEAD`; commit review fixes separately. `{plansDir}` only at Step 8 / lite 4; never `git add -A`. Fix-PR: `fixPrPlan` (reviewer) before `fixPrExec` (execution) inside standard Step 9; lite inline.
 
 ## Managed skills — no silent local refactors
 

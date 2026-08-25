@@ -51,6 +51,8 @@ Two delivery workflows (install independently; both share `.agents/skills/ws-sha
 | **[`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue (blank scan lists pending/unfinished specs only) with smart flow auto-detection (`ws-spec-to-pr` vs `ws-spec-to-pr-lite` per spec complexity) |
 | **[`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
 
+Fix-PR batches plan before they edit: `fixPrPlan` uses reviewer-class model resolution to write the complete gate, then `fixPrExec` uses execution-class resolution to validate and apply it. Standard keeps this inside outer Step 9; lite runs the same order inline on its current session model.
+
 See **Features** above for the operating model. Gates: [`gates.md`](.agents/skills/ws-shared/gates.md). Agent contract: [`AGENTS.md`](AGENTS.md) § Dual-mode. Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md). Site FAQ: [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills#faq).
 
 ### Contribution policy

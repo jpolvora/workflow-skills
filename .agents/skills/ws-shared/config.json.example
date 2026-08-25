@@ -163,7 +163,7 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Lite ignores testingModel, dag, scoreAndRefine, and reviewFix. Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap) or copy a bundle's steps into stepModels. Empty numeric steps fall through to that preset's phase keys (lite 0-1 planner, 2 execution, 3 reviewer, 4-5 session).",
+    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap) or copy a bundle's steps into stepModels. Empty numeric steps fall through to that preset's phase keys (lite 0-1 planner, 2 execution, 3 reviewer, 4-5 session).",
     "modelsPreset": "default",
     "modelPresets": {
       "default": {
@@ -184,7 +184,9 @@
           "9": "current",
           "dag": "current",
           "scoreAndRefine": "current",
-          "reviewFix": "current"
+          "reviewFix": "current",
+          "fixPrPlan": "current",
+          "fixPrExec": "current"
         }
       },
       "cursor": {
@@ -205,7 +207,9 @@
           "9": "current",
           "dag": "composer-2.5",
           "scoreAndRefine": "composer-2.5",
-          "reviewFix": "composer-2.5"
+          "reviewFix": "composer-2.5",
+          "fixPrPlan": "",
+          "fixPrExec": ""
         }
       },
       "deepseek": {
@@ -226,7 +230,9 @@
           "9": "current",
           "dag": "opencode-go/deepseek-v4-flash",
           "scoreAndRefine": "opencode-go/deepseek-v4-flash",
-          "reviewFix": "opencode-go/deepseek-v4-flash"
+          "reviewFix": "opencode-go/deepseek-v4-flash",
+          "fixPrPlan": "",
+          "fixPrExec": ""
         }
       },
       "opencode": {
@@ -247,7 +253,9 @@
           "9": "current",
           "dag": "opencode-go/deepseek-v4-flash",
           "scoreAndRefine": "opencode-go/deepseek-v4-flash",
-          "reviewFix": "opencode-go/deepseek-v4-flash"
+          "reviewFix": "opencode-go/deepseek-v4-flash",
+          "fixPrPlan": "",
+          "fixPrExec": ""
         }
       },
       "cheap": {
@@ -268,11 +276,13 @@
           "9": "current",
           "dag": "composer-2.5",
           "scoreAndRefine": "composer-2.5",
-          "reviewFix": "composer-2.5"
+          "reviewFix": "composer-2.5",
+          "fixPrPlan": "",
+          "fixPrExec": ""
         }
       }
     },
-    "_comment_stepModels": "Optional project-wide overrides (win over the active preset). Empty string = fall through. Keys 0-9 are standard steps; lite uses 0-5. Roles: dag, scoreAndRefine, reviewFix.",
+    "_comment_stepModels": "Optional project-wide overrides (win over the active preset). Empty string = fall through. Keys 0-9 are standard steps; lite uses 0-5. Roles: dag, scoreAndRefine, reviewFix, fixPrPlan, fixPrExec. Fix-PR roles never inherit numeric 9.",
     "stepModels": {
       "0": "",
       "1": "",
@@ -286,7 +296,9 @@
       "9": "",
       "dag": "",
       "scoreAndRefine": "",
-      "reviewFix": ""
+      "reviewFix": "",
+      "fixPrPlan": "",
+      "fixPrExec": ""
     },
     "plannerModel": "",
     "executionModel": "",

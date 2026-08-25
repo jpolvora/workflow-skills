@@ -70,6 +70,27 @@
         "Agent compiles MEMORY after the write",
         "Agent does not use Learning: N/A for an accepted score 6-10 reviewer/CI defect"
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "Fix three active threads on PR #42 with separate reviewer and execution model preferences.",
+      "expected_output": "One batch-wide fixPrPlan writes the complete gate before one fixPrExec edits; numeric Step 9 remains outer-only.",
+      "assertions": [
+        "Agent performs sync and dirty-worktree preflight before fixPrPlan",
+        "fixPrPlan writes only plan-gate.md with batchId, prId, headSha, activeThreadIds, scores, proposed actions, proactive placeholders, and amendments",
+        "No product edit, commit, push, resolve-thread, or Step 9 finish occurs in fixPrPlan",
+        "Agent runs one fixPrPlan and one fixPrExec for the three-thread batch, not one pair per thread"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "During fixPrExec, refreshed thread evidence changes the approved action for thread 17.",
+      "expected_output": "Execution validates gate identity and HEAD, then appends a structured amendment before any deviating edit.",
+      "assertions": [
+        "Agent re-plans instead of editing when batchId, PR, thread batch, or headSha is stale",
+        "Agent appends timestamp, threadId, newFact, previousAction, revisedAction, rationale, and evidence source before the revised edit",
+        "Agent still completes COOPERATIVE_FIX proactive discovery and verification before resolve or push"
+      ]
     }
   ]
 }

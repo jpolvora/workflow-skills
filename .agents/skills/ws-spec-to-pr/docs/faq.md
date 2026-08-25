@@ -110,6 +110,7 @@ flowchart TD
 *   Mutation (inside Step 7): not a CLI flag by default — configure `verification.mutationTest` and set `defaults.skipMutationTesting: false` to opt in. Empty `mutationTest` or `skipMutationTesting: true` skips mutation without failing.
 *   **Feature-branch gate** (new start only): after identity, ask stay-on-current / create `feat/{slug}` from HEAD / create from `baseBranch`. Resume skips this gate.
 *   **testingModel**: optional `defaults.testingModel` for standard Step 7 only; `modelsPreset` / `stepModels` overrides apply first, then empty uses `executionModel`.
+*   **Fix-PR role models**: standard Step 9 remains one outer FSM step. Each batch plans first with `fixPrPlan` (`reviewerModel` fallback), then executes with `fixPrExec` (`executionModel` fallback). Role overrides never inherit numeric `stepModels["9"]`; lite keeps the same order inline on the session model.
 
 ---
 

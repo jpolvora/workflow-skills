@@ -133,7 +133,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - Config: `.agents/skills/ws-shared/config.json` only — [`config-resolution.md`](.agents/skills/ws-shared/config-resolution.md)
 - SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — GitHub and Azure DevOps must implement the same required intents
 - Gates: [`gates.md`](.agents/skills/ws-shared/gates.md) — prefer `user-gate` (native structured choice when available; markdown fallback)
-- **Session model:** orch stays on `currentModel` (Pause → host → Resume; no `--model` / `--model-chain`). Subagent models: `defaults.modelsPreset` / `modelPresets` / `stepModels` / legacy phase keys; standard `dispatch-agent` only (lite inline). `defaults.enableDag` default `false` = sequential; `true` = DAG. `defaults.verboseMode` explicit `true` = start-of-step `*` preview (schema seed writes `true`). Review-model tip at Advance into Step 6 (full orch)
+- **Session model:** orch stays on `currentModel` (Pause → host → Resume; no `--model` / `--model-chain`). Subagent models: `defaults.modelsPreset` / `modelPresets` / `stepModels` / legacy phase keys; standard `dispatch-agent` only (lite inline). Fix-PR batches use `fixPrPlan` → `reviewerModel`, then `fixPrExec` → `executionModel`; both bypass numeric Step 9 and emit dispatch events only. `defaults.enableDag` default `false` = sequential; `true` = DAG. `defaults.verboseMode` explicit `true` = start-of-step `*` preview (schema seed writes `true`). Review-model tip at Advance into Step 6 (full orch)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
 - **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 / lite Step 4). Review uses `git diff {base}...HEAD`. No push before ship.
@@ -154,8 +154,8 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Delivery artifacts + push/PR (product already committed) |
-| `ws-fix-pr` | 9 | PR thread fix |
-| `ws-goal-fix-pr` | 9 | Fix until zero threads |
+| `ws-fix-pr` | 9 | Batch gate-only plan → execute/proactive fix |
+| `ws-goal-fix-pr` | 9 | Repeat plan/execute batches until zero threads |
 | `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas |
 | `ws-github-provider` | Provider | GitHub issue→spec + PR ops (same intents as Azure) |
 | `ws-azure-devops-provider` | Provider | ADO WI→spec + PR ops (same intents as GitHub) |
