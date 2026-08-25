@@ -162,6 +162,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-local-spec-provider` | Provider | Local `*.spec.md` |
 | `ws-spec-format` | Protocol | Spec format |
 | `ws-goal-loop` | Primitive | Convergence loop |
+| `ws-spec-memo` | Utility | External spec-memo vault bridge (setup via `ws-configure-project --section specMemo` or `/ws-spec-memo`) |
 
 ---
 
@@ -365,7 +366,7 @@ On demand: [`CATALOG.md`](CATALOG.md). Package membership: [`bin/skill-dependenc
 
 ## Task router
 
-Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
+Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup` / `ws-spec-memo`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
 
 ## Verification (before claim complete / commit)
 

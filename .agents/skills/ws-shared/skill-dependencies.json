@@ -63,7 +63,8 @@
         "ws-pre-daily",
         "ws-spec-explain",
         "ws-cleanup",
-        "ws-spec-archive"
+        "ws-spec-archive",
+        "ws-spec-memo"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -232,7 +233,11 @@
       "ws-github-provider",
       "ws-azure-devops-provider"
     ],
-    "ws-doctor": []
+    "ws-doctor": [],
+    "ws-spec-memo": [
+      "ws-configure-project",
+      "ws-self-learning"
+    ]
   },
   "autoloadOnly": [],
   "selectOffRule": "no-cascade-deselect"

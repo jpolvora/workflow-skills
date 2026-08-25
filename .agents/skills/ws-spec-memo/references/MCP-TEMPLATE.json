@@ -1,0 +1,9 @@
+{
+  "_comment": "Register in your agent host MCP settings. Replace command/args if specMemo.cli uses npx.",
+  "mcpServers": {
+    "spec-memo": {
+      "command": "memo",
+      "args": ["serve"]
+    }
+  }
+}

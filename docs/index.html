@@ -844,7 +844,7 @@
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">46</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">47</strong> skills available</span>
     </div>
   </div>
 
@@ -1216,7 +1216,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">22 skills</span>
+      <span class="count">23 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1417,6 +1417,16 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-list/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-memo/SKILL.md" data-name="ws-spec-memo" data-slug="ws-spec-memo" data-desc="configure and bridge workflow-skills with the external spec-memo vault (mcp/cli). trigger on spec-memo, external memory vault, memo bootstrap, migrate memory to vault, or off-repo agent memory setup." data-deps="ws-configure-project ws-self-learning" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-memo</div>
+        </div>
+        <div class="desc">Configure and bridge workflow-skills with the external spec-memo vault (MCP/CLI). Trigger on spec-memo, external memory vault, memo bootstrap, migrate MEMORY to vault, or off-repo agent memory setup.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-memo/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr/SKILL.md" data-name="ws-spec-to-pr" data-slug="ws-spec-to-pr" data-desc="end-to-end spec-to-pr (steps 0–9). verify score ≥ `defaults.minverifyscore` (default 9) before review. trigger for full/standard delivery." data-deps="ws-write-spec ws-classify-complexity ws-write-plan ws-interview ws-plan-to-tasks ws-implement-tasks ws-verify-plan ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-github-provider ws-azure-devops-provider ws-local-spec-provider ws-check-harness ws-check-workflows ws-tdah ws-karpathy-guidelines ws-spec-format ws-goal-loop ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-senior-developer" data-layer="layer-5" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-spec-to-pr</div>
@@ -1514,9 +1524,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 41 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 42 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+33)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+34)
       </div>
     </div>
 

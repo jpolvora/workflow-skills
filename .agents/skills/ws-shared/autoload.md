@@ -104,6 +104,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | multi-spec, batch specs, run all specs | `ws-multi-spec` |
 | explain spec, spec status, what did US deliver, /explain | `ws-spec-explain` |
 | cleanup workflow, clean plan leftovers, delete telemetry/.runtime | `ws-cleanup` |
+| spec-memo, external vault, off-repo memory, memo bootstrap | `ws-spec-memo` |
 
 ---
 

@@ -338,6 +338,54 @@
       }
     },
     "rules": { "type": "object" },
+    "specMemo": {
+      "type": "object",
+      "description": "External spec-memo vault bridge (ws-spec-memo). When enabled is explicit true, memory/changelog ops route to memo MCP/CLI instead of in-repo MEMORY.",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Explicit true enables vault bridge; omitted or false keeps in-repo ws-self-learning."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["vault", "hybrid"],
+          "default": "vault",
+          "description": "vault = vault-only writes; hybrid = fallback to in-repo MEMORY on MCP/CLI failure."
+        },
+        "cli": {
+          "type": "string",
+          "default": "memo",
+          "description": "CLI launcher (memo or npx -y spec-memo)."
+        },
+        "vaultRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Override SPEC_MEMO_ROOT; empty uses ~/.spec-memo."
+        },
+        "bootstrapOnSession": {
+          "type": "boolean",
+          "default": true,
+          "description": "When enabled, recommend memo bootstrap at session start."
+        },
+        "writeBlockHook": {
+          "type": "boolean",
+          "default": false,
+          "description": "True when memo hook install succeeded during setup."
+        },
+        "importOnEnable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether setup runs memo import when enabling vault."
+        },
+        "mcpServerName": {
+          "type": "string",
+          "default": "spec-memo",
+          "description": "Expected MCP namespace id in agent host."
+        }
+      }
+    },
     "invariants": {
       "type": "object",
       "description": "Project invariants and workflow bypass toggles.",

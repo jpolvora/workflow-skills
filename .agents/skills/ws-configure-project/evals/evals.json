@@ -23,15 +23,15 @@
       ]
     },
     {
-      "id": 3,
-      "prompt": "/ws-configure-project --section autoload",
-      "expected_output": "Agent refreshes autoload.md Always-applied paths and offers Generate/Refresh root AGENTS.md via user-gate; uses configure_autoload.py; no absolute paths.",
+      "id": 4,
+      "prompt": "/ws-configure-project --section specMemo",
+      "expected_output": "Agent runs check_spec_memo preflight, offers vault enable gate (No Recommended), and applies specMemo via configure_spec_memo.cjs when user opts in.",
       "assertions": [
-        "Loads --section autoload flow from SKILL.md / INTERVIEW.md",
-        "Offers Generate/Refresh / Keep current / Skip for root AGENTS.md",
-        "Asks Autoload ws-task-lifecycle like other Always-applied skills with No (Recommended)",
-        "Uses configure_autoload.py helper with portable path forms only",
-        "Does not invent absolute filesystem paths"
+        "Loads --section specMemo flow from SKILL.md / INTERVIEW.md",
+        "Runs check_spec_memo.cjs before writing specMemo config",
+        "Default Recommended is specMemo.enabled false",
+        "Uses configure_spec_memo.cjs with explicit launchers",
+        "Shows MCP-TEMPLATE.json when vault enabled"
       ]
     }
   ]
