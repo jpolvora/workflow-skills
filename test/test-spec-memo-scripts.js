@@ -31,6 +31,7 @@ function runNode(script, args, opts = {}) {
   return cp.spawnSync(process.execPath, [script, ...args], {
     cwd: opts.cwd || REPO_ROOT,
     encoding: 'utf8',
+    input: opts.input,
     env: { ...process.env, ...(opts.env || {}) },
   });
 }
@@ -83,6 +84,25 @@ try {
   assert(badMode.status === 2, 'configure rejects invalid specMemo.mode');
   const cfgAfterBadMode = JSON.parse(fs.readFileSync(path.join(customShared, 'config.json'), 'utf8'));
   assert(cfgAfterBadMode.specMemo.mode !== 'hybird', 'invalid mode is not persisted');
+
+  const configureStdin = runNode(
+    CONFIGURE,
+    ['--repo-root', tmp, '--apply', '--json', '--stdin-json'],
+    {
+      env: { WORKFLOW_SKILLS_SHARED_DIR: customShared },
+      input: JSON.stringify({
+        enabled: true,
+        mode: 'hybrid',
+        import: false,
+        hook: false,
+        bootstrapOnSession: true,
+      }),
+    },
+  );
+  assert(configureStdin.status === 0, 'configure_spec_memo --stdin-json exits 0');
+  const stdinResult = JSON.parse(configureStdin.stdout);
+  assert(stdinResult.specMemo.enabled === true, 'stdin-json applies enabled');
+  assert(stdinResult.specMemo.mode === 'hybrid', 'stdin-json applies mode');
 
   if (failures === 0) console.log('\ntest-spec-memo-scripts: ok');
 } finally {

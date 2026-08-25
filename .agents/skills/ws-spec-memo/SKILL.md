@@ -74,7 +74,7 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
 
 4. **Apply config** — Run:
    ```bash
-   node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json < choices.json
+   node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json --stdin-json < choices.json
    ```
    Write `{choices.json}` as a short uncommitted temp with flags from step 3; delete after. Script merges `specMemo` into `{sharedDir}/config.json` only (never commit).
    - Done when: script exit 0; config summary printed.
