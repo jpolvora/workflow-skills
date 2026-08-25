@@ -3,7 +3,9 @@
  * Run: node test/test-min-verify-score.js
  */
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
+import cp from 'child_process';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 
@@ -13,6 +15,7 @@ const REPO = path.resolve(__dirname, '..');
 const { resolveMinVerifyScore } = require(
   path.join(REPO, '.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs'),
 );
+const CLASSIFY = path.join(REPO, '.agents/skills/ws-classify-complexity/scripts/classify.cjs');
 
 let failures = 0;
 function assert(cond, msg) {
@@ -71,6 +74,58 @@ assert(autoload.includes('defaults.minVerifyScore'), 'autoload.md names defaults
 
 const site = read('docs/index.html');
 assert(site.includes('defaults.minVerifyScore'), 'docs/index.html names defaults.minVerifyScore');
+
+// Classify Pass 1: score below configured bar (but > 6) must bias toward standard
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mvs-classify-'));
+  const shared = path.join(root, '.agents/skills/ws-shared');
+  fs.mkdirSync(shared, { recursive: true });
+  fs.writeFileSync(
+    path.join(shared, 'config.json'),
+    JSON.stringify({
+      defaults: { minVerifyScore: 10, scoreAndRefine: true },
+      dagThresholds: { maxImplementationSteps: 5, maxExpectedFiles: 8, maxLayers: 3 },
+      plans: { dir: '.agents/plans' },
+    }),
+  );
+  const slug = 'mvs-bar-bias';
+  const specPath = path.join(root, `${slug}.spec.md`);
+  fs.writeFileSync(
+    specPath,
+    `---\nslug: ${slug}\ntitle: Mini\n---\n## Overview\nTiny.\n\n## Acceptance Criteria\n- AC1: done\n`,
+    'utf8',
+  );
+  const analysisPath = path.join(root, `step-05-${slug}.score-analysis.md`);
+  fs.writeFileSync(
+    analysisPath,
+    `# Score analysis\n\n| Task | Score |\n|------|-------|\n| T1 | 9 |\n`,
+    'utf8',
+  );
+  const outDir = path.join(root, 'out');
+  fs.mkdirSync(outDir, { recursive: true });
+  const r = cp.spawnSync(
+    process.execPath,
+    [CLASSIFY, specPath, '--output-dir', outDir, '--score-analysis', analysisPath],
+    {
+      encoding: 'utf8',
+      cwd: REPO,
+      env: { ...process.env, WS_REPO_ROOT: root },
+    },
+  );
+  const md = fs.existsSync(path.join(outDir, `step-00-${slug}.classify.md`))
+    ? fs.readFileSync(path.join(outDir, `step-00-${slug}.classify.md`), 'utf8')
+    : '';
+  assert(r.status === 0, 'classify --score-analysis with raised bar exits 0');
+  assert(
+    /recommendedPipeline:\s*standard/.test(md) || /bias toward standard/i.test(md),
+    'single score 9 with minVerifyScore 10 biases toward standard',
+  );
+  try {
+    fs.rmSync(root, { recursive: true, force: true });
+  } catch {
+    /* ignore */
+  }
+}
 
 if (failures > 0) {
   console.error(`\n${failures} failure(s)`);

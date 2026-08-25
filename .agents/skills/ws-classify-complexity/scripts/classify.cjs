@@ -292,7 +292,7 @@ function thresholdRecommendation(metrics, thresholds) {
   };
 }
 
-function applyScoreAnalysis(basePipeline, stats, thresholds, metrics) {
+function applyScoreAnalysis(basePipeline, stats, thresholds, metrics, minVerifyScore) {
   if (!stats || stats.count === 0) {
     return {
       pipeline: basePipeline,
@@ -301,12 +301,13 @@ function applyScoreAnalysis(basePipeline, stats, thresholds, metrics) {
     };
   }
 
+  const bar = typeof minVerifyScore === 'number' ? minVerifyScore : 9;
   const highVariance = stats.variance !== null && stats.variance >= 2;
   const lowClusters = stats.lowCount >= 2;
   const uniformHigh =
     stats.mean !== null && stats.mean >= 8 && stats.variance !== null && stats.variance < 1.5;
 
-  if (highVariance || lowClusters || stats.min < 6) {
+  if (highVariance || lowClusters || stats.min < bar) {
     if (basePipeline === 'lite') {
       return {
         pipeline: 'standard',
@@ -517,6 +518,7 @@ function main() {
         stats,
         thresholds,
         metrics,
+        minVerifyScore,
       );
       recommendedPipeline = scoreResult.pipeline;
       scoreAdjusted = scoreResult.adjusted;
