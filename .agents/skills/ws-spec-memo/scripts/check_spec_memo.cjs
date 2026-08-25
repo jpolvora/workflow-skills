@@ -133,7 +133,9 @@ function main() {
     ? runDoctor(specMemo.cli || 'memo', repoRoot)
     : { ok: false, error: 'CLI not available' };
   const pollution = scanPollution(repoRoot, ctx.sharedDir, plansDirAbs);
-  const healthy = cli.available && doctor.ok;
+  const vaultReady = cli.available && doctor.ok;
+  const vaultActive = specMemo.enabled === true;
+  const healthy = vaultActive ? vaultReady : true;
 
   const report = {
     ok: healthy,

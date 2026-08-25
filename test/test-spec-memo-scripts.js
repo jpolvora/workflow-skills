@@ -51,7 +51,7 @@ try {
   assert(typeof report.doctor === 'object', 'check JSON includes doctor');
   assert(typeof report.vault === 'object' && typeof report.vault.ok === 'boolean', 'check JSON includes vault.ok alias');
   assert(report.sharedDir === '.agents/skills/ws-shared', 'check resolves default sharedDir');
-  assert(report.ok === (report.cli.available && report.vault.ok), 'check report.ok reflects CLI and vault health');
+  assert(report.ok === (report.config.enabled ? report.cli.available && report.vault.ok : true), 'check report.ok reflects vault-active health only');
   assert(checkDefault.status === (report.ok ? 0 : 1), 'check_spec_memo exit code matches health');
 
   const customShared = path.join(tmp, 'custom-hub');
