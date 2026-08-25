@@ -74,6 +74,15 @@ function runCmd(command, cmdArgs, cwd) {
   return { status: run.status, stdout: run.stdout || '', stderr: run.stderr || '' };
 }
 
+function cliAvailable(cliSetting) {
+  const parts = (cliSetting || 'memo').trim().split(/\s+/);
+  const probe = spawnSync(parts[0], [...parts.slice(1), '--help'], {
+    encoding: 'utf8',
+    shell: process.platform === 'win32',
+  });
+  return probe.status === 0 || (probe.stdout || '').includes('memo');
+}
+
 function main() {
   const args = parseArgs(process.argv);
   const ctx = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: SCRIPT_FILE });
@@ -99,6 +108,10 @@ function main() {
     process.exit(2);
   }
 
+  const importSpecified = args.importTree !== null || stdin.import !== undefined;
+  const doImport = importSpecified ? Boolean(args.importTree ?? stdin.import) : false;
+  const doHook = args.hook ?? stdin.hook ?? false;
+
   const next = {
     enabled: args.enabled ?? stdin.enabled ?? prev.enabled ?? false,
     mode,
@@ -107,16 +120,19 @@ function main() {
     bootstrapOnSession:
       args.bootstrapOnSession ?? stdin.bootstrapOnSession ?? prev.bootstrapOnSession ?? true,
     writeBlockHook: prev.writeBlockHook ?? false,
-    importOnEnable: prev.importOnEnable ?? true,
+    importOnEnable: importSpecified ? doImport : (prev.importOnEnable ?? true),
     mcpServerName: prev.mcpServerName ?? 'spec-memo',
   };
 
-  const doImport = args.importTree ?? stdin.import ?? false;
-  const doHook = args.hook ?? stdin.hook ?? false;
   const actions = [];
 
   if (!args.apply) {
     console.error('Error: pass --apply to write config');
+    process.exit(2);
+  }
+
+  if (next.enabled && !cliAvailable(next.cli)) {
+    console.error('Error: cannot enable specMemo vault — CLI unavailable');
     process.exit(2);
   }
 

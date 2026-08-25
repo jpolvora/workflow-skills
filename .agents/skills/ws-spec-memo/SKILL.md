@@ -9,7 +9,6 @@ description: >-
 invocation_names:
   - ws-spec-memo
   - spec-memo
-  - configure-spec-memo
 ---
 
 # ws-spec-memo

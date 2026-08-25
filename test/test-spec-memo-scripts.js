@@ -91,7 +91,7 @@ try {
     {
       env: { WORKFLOW_SKILLS_SHARED_DIR: customShared },
       input: JSON.stringify({
-        enabled: true,
+        enabled: false,
         mode: 'hybrid',
         import: false,
         hook: false,
@@ -101,8 +101,32 @@ try {
   );
   assert(configureStdin.status === 0, 'configure_spec_memo --stdin-json exits 0');
   const stdinResult = JSON.parse(configureStdin.stdout);
-  assert(stdinResult.specMemo.enabled === true, 'stdin-json applies enabled');
+  assert(stdinResult.specMemo.enabled === false, 'stdin-json applies enabled');
   assert(stdinResult.specMemo.mode === 'hybrid', 'stdin-json applies mode');
+  assert(stdinResult.specMemo.importOnEnable === false, 'stdin-json persists importOnEnable false');
+
+  const enableNoCli = runNode(
+    CONFIGURE,
+    ['--repo-root', tmp, '--apply', '--enabled', 'true', '--json'],
+    { env: { WORKFLOW_SKILLS_SHARED_DIR: customShared } },
+  );
+  assert(enableNoCli.status === 2, 'configure rejects enable when CLI unavailable');
+
+  const enabledHubRel = 'vault-active-hub';
+  seedHub(tmp, { sharedRel: enabledHubRel });
+  const enabledHub = path.join(tmp, enabledHubRel);
+  const enabledCfgPath = path.join(enabledHub, 'config.json');
+  fs.copyFileSync(path.join(enabledHub, 'config.json.example'), enabledCfgPath);
+  const enabledCfg = JSON.parse(fs.readFileSync(enabledCfgPath, 'utf8'));
+  enabledCfg.specMemo = { enabled: true, cli: 'memo-unavailable-for-test' };
+  fs.writeFileSync(enabledCfgPath, `${JSON.stringify(enabledCfg, null, 2)}\n`, 'utf8');
+  const checkEnabled = runNode(CHECK, ['--repo-root', tmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: enabledHub },
+  });
+  const enabledReport = JSON.parse(checkEnabled.stdout);
+  assert(enabledReport.config.enabled === true, 'enabled fixture activates vault branch');
+  assert(enabledReport.ok === false, 'vault-active preflight fails when CLI unavailable');
+  assert(checkEnabled.status === 1, 'vault-active preflight exits 1 when unhealthy');
 
   if (failures === 0) console.log('\ntest-spec-memo-scripts: ok');
 } finally {
