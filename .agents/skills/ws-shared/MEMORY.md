@@ -51,6 +51,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Reimplement dispatch/finish/bypass or `--pre-advance` in Python. Do not pass `--elapsed`. Do not accept a bare `--pre-advance` flag. Do not run update_state without `--repo-root` pointing at a temp consumer.
 - **INSTEAD DO**: Keep `.py` as exec-wrappers of sibling `.cjs`. Canonical CLI is `dispatch` / `finish` / `bypass`. Seed a temp hub `config.json` and pass `--repo-root`. Reject `--elapsed` and require `--pre-advance N`.
 
+### [2026-08-25] Fix-PR completedSteps assertions must be block-aware
+- **Layer**: `Harness`
+- **Module**: `ws-fix-pr / update_state tests`
+- **Severity**: `High`
+- **PathPattern**: `test/test-models-preset-and-per-step.js, test/test-update-state-yaml.js, .agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: Step 6 review found single-line `completedSteps:[^\n]*9` checks that miss YAML block lists (`- 9` on the next line), and index sort coercion that preserved schema-invalid rows without workflowId.
+- **DO NOT**: Assert Step completion with a single-line regex against `completedSteps:`, or keep malformed plans-index rows alive via empty-string sort coercion.
+- **INSTEAD DO**: Use the same inline/block-aware completedSteps pattern as outer-finish tests; drop index rows missing `workflowId` when rewriting `plans/index.json`.
+
 ### [2026-08-24] verboseMode omitted is off even when schema default is true
 - **Layer**: `Harness`
 - **Module**: `ws-shared / config-resolution / ws-configure-project`

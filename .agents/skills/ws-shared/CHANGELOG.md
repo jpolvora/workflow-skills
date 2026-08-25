@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-25 13:42] Agent: Composer
+- **Prompt**: Surgical restore of LLM model footer on fix-pr thread close comments (Azure + GitHub)
+- **Done**: GitHub `resolve_thread.cjs` `--model` + `---\nLLM model: {id}`; Azure already appended; ws-fix-pr + INTENTS instruct pass `--model`; parity tests
+- **Result**: Closing resolve comments sign with the session model id when `--model` is passed
+
 ### [2026-08-25 12:38] Agent: Composer
 - **Prompt**: Add to index.PRD (Recommended) for fix-pr-batch-plan-exec
 - **Done**: `ws-spec-index track fix-pr-batch-plan-exec` — Feature map `[ ]` + Next-specs row 52

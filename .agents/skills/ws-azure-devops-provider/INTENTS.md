@@ -128,7 +128,7 @@ python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py r
   [--dry-run]
 ```
 
-`--model` is optional host metadata (footer). Omit it when the caller does not have a session model id. Pass `--dry-run` when parent is dry-run; skip remote mutation.
+Pass `--model {currentModel}` (or the executing session model id) so the resolution comment ends with `---\nLLM model: {id}`. Omit `--model` only when the caller has no session model id. Pass `--dry-run` when parent is dry-run; skip remote mutation.
 
 ## `merge-pr`
 

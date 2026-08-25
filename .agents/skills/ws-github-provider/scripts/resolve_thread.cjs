@@ -2,6 +2,7 @@ const fs = require('fs');
 const { fetchRetry } = require('../../ws-shared/scripts/http_retry.cjs');
 
 const RESOLUTION_MARKER = '<!-- resolution-reply -->';
+const MODEL_FOOTER_PREFIX = 'LLM model:';
 
 function loadDotEnv() {
   if (!fs.existsSync('.env')) return;
@@ -38,27 +39,54 @@ function resolveToken() {
   return null;
 }
 
-function buildResolutionBody(note) {
+function appendModelFooter(body, model) {
+  const text = String(body || '').trimEnd();
+  const id = String(model || '').trim();
+  if (!id) return text;
+  if (text.toLowerCase().includes(MODEL_FOOTER_PREFIX.toLowerCase())) return text;
+  return `${text}\n\n---\n${MODEL_FOOTER_PREFIX} ${id}`;
+}
+
+function buildResolutionBody(note, model) {
   const explanation = note?.trim() || 'Issue fixed in the current iteration.';
-  return [RESOLUTION_MARKER, '', explanation].join('\n');
+  const base = [RESOLUTION_MARKER, '', explanation].join('\n');
+  return appendModelFooter(base, model);
+}
+
+function parseArgs(argv) {
+  const dryRun = argv.includes('--dry-run');
+  let model = '';
+  const positional = [];
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--dry-run') continue;
+    if (arg === '--model') {
+      model = argv[i + 1] || '';
+      i += 1;
+      continue;
+    }
+    positional.push(arg);
+  }
+  return { dryRun, model, threadId: positional[0], note: positional[1] };
 }
 
 async function main() {
   loadDotEnv();
 
-  const args = process.argv.slice(2);
-  const dryRun = args.includes('--dry-run');
-  const positional = args.filter((a) => a !== '--dry-run');
-  const threadId = positional[0];
-  const note = positional[1];
+  const { dryRun, model, threadId, note } = parseArgs(process.argv.slice(2));
 
   if (!threadId) {
-    console.error('Usage: node resolve_thread.cjs <THREAD_ID> "<resolution note>" [--dry-run]');
+    console.error(
+      'Usage: node resolve_thread.cjs <THREAD_ID> "<resolution note>" [--model <id>] [--dry-run]',
+    );
     process.exit(1);
   }
 
+  const body = buildResolutionBody(note, model);
+
   if (dryRun) {
     console.log(`[dry-run] would resolve thread ${threadId} (no GraphQL).`);
+    console.log(body);
     process.exit(0);
   }
 
@@ -69,8 +97,6 @@ async function main() {
     );
     process.exit(1);
   }
-
-  const body = buildResolutionBody(note);
 
   const query = `
     mutation ResolveAndReply($threadId: ID!, $body: String!) {
