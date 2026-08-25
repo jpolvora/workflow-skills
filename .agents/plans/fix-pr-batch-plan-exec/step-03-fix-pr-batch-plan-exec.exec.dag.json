@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "step": 3,
+    "slug": "fix-pr-batch-plan-exec",
+    "workflowId": "fix-pr-batch-plan-exec-20260825T163900Z",
+    "status": "completed",
+    "startedAt": "1970-01-01T00:00:00Z",
+    "endedAt": "1970-01-01T00:00:00Z",
+    "acRefs": [
+      "AC1",
+      "AC2",
+      "AC3",
+      "AC4",
+      "AC5",
+      "AC6",
+      "AC7",
+      "AC8",
+      "AC9",
+      "AC10",
+      "AC11",
+      "AC12",
+      "AC13"
+    ]
+  },
+  "schemaVersion": 1,
+  "execMode": "sequential",
+  "skipReason": "dag-disabled",
+  "tasks": [],
+  "levels": []
+}

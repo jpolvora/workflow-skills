@@ -5,7 +5,7 @@ title: "fix-pr: plan substep (reviewer model) then execute (fix model) per batch
 source: local
 specDate: 2026-08-25
 step: 0
-workflowId: fix-pr-batch-plan-exec
+workflowId: fix-pr-batch-plan-exec-20260825T163900Z
 status: active
 startedAt: "2026-08-25T15:54:01.633Z"
 endedAt: "2026-08-25T15:54:01.633Z"
