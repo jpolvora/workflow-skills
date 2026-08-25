@@ -16,7 +16,7 @@ Next action: Run step 9
 | 6 | Code review | completed | 0s |
 | 7 | Testing | completed | 0s |
 | 8 | Ship | completed | 0s |
-| 9 | Fix PR | active | 1724.5s |
+| 9 | Fix PR | completed | 0s |
 
 ACs: 0/13
 Score: n/a

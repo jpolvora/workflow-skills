@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 19,
+  "revision": 21,
   "workflowId": "fix-pr-batch-plan-exec-20260825T163900Z",
   "slug": "fix-pr-batch-plan-exec",
   "pipeline": "standard",
@@ -11,7 +11,7 @@
   "acTotal": 13,
   "acImplemented": 0,
   "score": null,
-  "estimatedRemainingSec": 1724.5,
+  "estimatedRemainingSec": 0,
   "steps": [
     {
       "step": 0,
@@ -69,11 +69,11 @@
     },
     {
       "step": 9,
-      "status": "active",
+      "status": "completed",
       "skipReason": null,
-      "estimatedRemainingSec": 1724.5
+      "estimatedRemainingSec": 0
     }
   ],
   "statePath": ".agents/plans/fix-pr-batch-plan-exec/fix-pr-batch-plan-exec-20260825T163900Z.state.md",
-  "stateSha256": "2e09632a1197efddbbd687751791cdca25ed173252f61dc6e60c10e93d02eb77"
+  "stateSha256": "d7a09c9bf1d13345eab56642ce0c2191d2018c6bd71cec2618606701fd2a7c60"
 }
