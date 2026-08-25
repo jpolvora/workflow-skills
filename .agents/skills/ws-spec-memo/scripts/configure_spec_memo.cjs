@@ -14,6 +14,7 @@ const {
 } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 const SCRIPT_FILE = __filename;
+const ALLOWED_MODES = new Set(['vault', 'hybrid']);
 
 function parseArgs(argv) {
   const args = {
@@ -92,9 +93,15 @@ function main() {
   const config = readJson(configPath);
   const prev = config.specMemo || {};
 
+  const mode = args.mode ?? stdin.mode ?? prev.mode ?? 'vault';
+  if (!ALLOWED_MODES.has(mode)) {
+    console.error(`Error: specMemo.mode must be vault or hybrid (got: ${mode})`);
+    process.exit(2);
+  }
+
   const next = {
     enabled: args.enabled ?? stdin.enabled ?? prev.enabled ?? false,
-    mode: args.mode ?? stdin.mode ?? prev.mode ?? 'vault',
+    mode,
     cli: args.cli ?? stdin.cli ?? prev.cli ?? 'memo',
     vaultRoot: stdin.vaultRoot ?? prev.vaultRoot ?? '',
     bootstrapOnSession:

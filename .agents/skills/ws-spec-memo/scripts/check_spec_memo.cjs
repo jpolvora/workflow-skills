@@ -76,13 +76,13 @@ function scanPollution(repoRoot, sharedDirAbs, plansDirAbs) {
   return findings;
 }
 
-function runDoctor(cliCommand) {
+function runDoctor(cliCommand, repoRoot) {
   const parts = cliCommand.trim().split(/\s+/);
   const bin = parts[0];
   const binArgs = parts.slice(1);
   const run = spawnSync(bin, [...binArgs, 'doctor', '--json'], {
     encoding: 'utf8',
-    cwd: process.cwd(),
+    cwd: repoRoot,
     shell: process.platform === 'win32',
   });
   if (run.status !== 0) {
@@ -129,11 +129,14 @@ function main() {
   const plansDirAbs = resolveConfiguredPath(repoRoot, config.plans && config.plans.dir, '.agents/plans');
 
   const cli = detectCli(specMemo.cli);
-  const doctor = cli.available ? runDoctor(specMemo.cli || 'memo') : { ok: false, error: 'CLI not available' };
+  const doctor = cli.available
+    ? runDoctor(specMemo.cli || 'memo', repoRoot)
+    : { ok: false, error: 'CLI not available' };
   const pollution = scanPollution(repoRoot, ctx.sharedDir, plansDirAbs);
+  const healthy = cli.available && doctor.ok;
 
   const report = {
-    ok: true,
+    ok: healthy,
     repoRoot,
     sharedDir: toRepoRelative(repoRoot, ctx.sharedDir, { allowOutside: true }),
     config: {
@@ -157,6 +160,8 @@ function main() {
   } else {
     printHuman(report);
   }
+
+  if (!healthy) process.exit(1);
 }
 
 main();

@@ -46,20 +46,21 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-test-'));
 try {
   seedHub(tmp);
   const checkDefault = runNode(CHECK, ['--repo-root', tmp, '--json']);
-  assert(checkDefault.status === 0, 'check_spec_memo exits 0 on seeded hub');
   const report = JSON.parse(checkDefault.stdout);
   assert(typeof report.cli === 'object', 'check JSON includes cli');
   assert(typeof report.doctor === 'object', 'check JSON includes doctor');
   assert(typeof report.vault === 'object' && typeof report.vault.ok === 'boolean', 'check JSON includes vault.ok alias');
   assert(report.sharedDir === '.agents/skills/ws-shared', 'check resolves default sharedDir');
+  assert(report.ok === (report.cli.available && report.vault.ok), 'check report.ok reflects CLI and vault health');
+  assert(checkDefault.status === (report.ok ? 0 : 1), 'check_spec_memo exit code matches health');
 
   const customShared = path.join(tmp, 'custom-hub');
   seedHub(tmp, { sharedRel: 'custom-hub' });
   const checkOverride = runNode(CHECK, ['--repo-root', tmp, '--json'], {
     env: { WORKFLOW_SKILLS_SHARED_DIR: customShared },
   });
-  assert(checkOverride.status === 0, 'check_spec_memo honors WORKFLOW_SKILLS_SHARED_DIR');
   const overrideReport = JSON.parse(checkOverride.stdout);
+  assert(checkOverride.status === (overrideReport.ok ? 0 : 1), 'check_spec_memo honors WORKFLOW_SKILLS_SHARED_DIR exit code');
   assert(
     overrideReport.sharedDir.replace(/\\/g, '/') === 'custom-hub',
     'check reports overridden sharedDir',
@@ -75,6 +76,13 @@ try {
     fs.existsSync(path.join(customShared, 'config.json')),
     'configure seeds config under overridden sharedDir',
   );
+
+  const badMode = runNode(CONFIGURE, ['--repo-root', tmp, '--apply', '--mode', 'hybird', '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: customShared },
+  });
+  assert(badMode.status === 2, 'configure rejects invalid specMemo.mode');
+  const cfgAfterBadMode = JSON.parse(fs.readFileSync(path.join(customShared, 'config.json'), 'utf8'));
+  assert(cfgAfterBadMode.specMemo.mode !== 'hybird', 'invalid mode is not persisted');
 
   if (failures === 0) console.log('\ntest-spec-memo-scripts: ok');
 } finally {

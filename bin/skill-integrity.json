@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "80416ff95f4ca9cf0e84ba5d0c34cc85c4f420c141eba91dc993d217fbb57e4f",
+  "fullPackageDigest": "5c8fe224221754ec9dbb1bab6a47699977f3e5ca7b56b59abe91db6666e18430",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -378,11 +378,11 @@
         "evals/evals.json": "fc9cf6871ab2254021a03b5d0affcd376b7b1c7f14c222f648af75ee66b19727",
         "references/INTEGRATION.md": "b17584bfd28f6c7df6ee0081c77634da520b2926f7365b0fc4ddc45b1cbb4486",
         "references/MCP-TEMPLATE.json": "7046b6cb8fe5bf45e0cfba36904db92afc7fe751b08307fda582570a37007fdc",
-        "scripts/check_spec_memo.cjs": "7b09abc1ff374670b3d05ef79c0c4b06ddf897aaf7efb36770b457a335568439",
-        "scripts/configure_spec_memo.cjs": "325588c7c8d31f4ad7bccdbb6697e5b4963127b9be0e0c4cad6f1db9c792c591",
+        "scripts/check_spec_memo.cjs": "012b30f1b3f17f88a7ac96d30e0b175143dd3cd9e24145eeb51d2ab11a64a400",
+        "scripts/configure_spec_memo.cjs": "55cc45d274c70227f0b4ce3daee6ea1da4d112724116fd93b4e89734091e0c18",
         "SKILL.md": "8c7afd40981472a67a9d74443b77267378d0c7de841d28beb9a11410ae62fe92"
       },
-      "skillDigest": "1fddf3946bd5f48b2f05780d4368415571a11c6627662b99d79c96e3b06adbe4"
+      "skillDigest": "e76af98997d803daf6d75b2793f396b2628caed1c510977986b60c032dfcb0f7"
     },
     "ws-spec-to-pr": {
       "files": {
