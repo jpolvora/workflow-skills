@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-08-25 08:35] Agent: Cursor Grok 4.6
+- **Prompt**: Root AGENTS.md does not need a 40000 B cap; it is upstream/dev only and is not shipped to consumers
+- **Done**: Dropped `utf8Size('AGENTS.md') <= 40000` from `test-context-budget.js`; AC1 no longer byte-caps the root hub; kept 14000 B shared hub + 24000 B CATALOG
+- **Result**: Root session-contract growth is not a CI failure; consumer always-applied budget is unchanged
+
+### [2026-08-24 18:55] Agent: Cursor Grok 4.6
+- **Prompt**: Add mandatory source-anonymization for bug/issue fixes in AGENTS.md
+- **Done**: Root and shared hub AGENTS.md plus README/FEATURES: generic wording for reports, commits, specs, and new tracker issues
+- **Result**: Agents must not cite private consumer projects when closing a fix
+
+### [2026-08-24 18:50] Agent: Cursor Grok 4.6
+- **Prompt**: Fix Azure DevOps provider `az repos pr policy list` call that passed `--project`
+- **Done**: `check-pr-status` in `ws-azure-devops-provider/INTENTS.md` drops `--project` (CLI rejects it; PR ids are org-unique)
+- **Result**: Agents no longer copy the create-PR project flag onto policy list
+
 ### [2026-08-24 01:20] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-goal-fix-pr (PR 239 rebuild-index revision)
 - **Done**: `rebuild-index` stamps max state revision; validate checks row hash only; contract uses `revision: 5`

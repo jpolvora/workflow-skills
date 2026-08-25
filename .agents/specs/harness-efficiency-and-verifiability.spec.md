@@ -54,7 +54,7 @@ Scope covers ten workstreams (W1–W10) derived from a measured audit of the cur
 
 ## Acceptance Criteria
 
-- AC1: Root `AGENTS.md` § Skill catalog (layers) moves to a companion `CATALOG.md` loaded on demand, and root `AGENTS.md` measures ≤ 40,000 B.
+- AC1: Root `AGENTS.md` § Skill catalog (layers) moves to a companion `CATALOG.md` loaded on demand. Root `AGENTS.md` is upstream-only (not packaged to consumers) and is not byte-capped; `ws-shared/AGENTS.md` remains the consumer always-applied hub (AC2).
 - AC2: `ws-shared/AGENTS.md` measures ≤ 14,000 B after its promoted-skill tables and cross-platform shell/encoding block move to on-demand companions.
 - AC3: Each of the six mandatory enhancing skills (`ws-karpathy-guidelines`, `ws-senior-developer`, `ws-tdah`, `ws-self-learning`, `ws-patterns-frontend`, `ws-patterns-backend`) exposes a `## Subagent contract` section of ≤ 40 lines that is the only part a dispatched subagent must read.
 - AC4: `ws-spec-to-pr/PROTOCOLS.md` Base Prompt Prefix contains no `read full` instruction and instead names the skill body plus an explicit list of required sections.

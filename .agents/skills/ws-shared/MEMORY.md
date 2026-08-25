@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-25] Root AGENTS.md is not byte-capped
+- **Layer**: `Harness`
+- **Module**: `AGENTS.md / test-context-budget`
+- **Severity**: `Medium`
+- **PathPattern**: `AGENTS.md, test/test-context-budget.js, .agents/specs/harness-efficiency-and-verifiability.spec.md`
+- **Scenario / Context**: Root `AGENTS.md` is the upstream dogfood hub. The installer never copies it to consumers; they load `ws-shared/AGENTS.md`.
+- **DO NOT**: Reintroduce `utf8Size('AGENTS.md') <= 40000` in `test-context-budget.js`, or treat root `AGENTS.md` as a packaged consumer always-applied file.
+- **INSTEAD DO**: Keep the 14000 B cap on `.agents/skills/ws-shared/AGENTS.md` and the 24000 B cap on `CATALOG.md`. Grow root `AGENTS.md` when the upstream session contract needs it.
+
 ### [2026-08-24] verboseMode omitted is off even when schema default is true
 - **Layer**: `Harness`
 - **Module**: `ws-shared / config-resolution / ws-configure-project`
@@ -95,6 +104,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: PR 239 review. 0.3.37 requires `{us-dir}/plan.index.json` before implement. In-flight workflows started on 0.3.36 never ran `plan_index.cjs build`.
 - **DO NOT**: Add a hard pre-advance file gate whose only coverage is new-run dispatch. Resume/troubleshooting that still describes HS-5 as YAML-only leaves operators stuck after update.
 - **INSTEAD DO**: Document the backfill command in `ws-spec-to-pr/docs/faq.md` and `setup.md` resume, and assert those recipes in `test-artifact-economy.js`.
+
+### [2026-08-24] az repos pr policy list rejects --project
+- **Layer**: `Harness`
+- **Module**: `ws-azure-devops-provider / check-pr-status`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-azure-devops-provider/INTENTS.md`
+- **Scenario / Context**: Azure CLI `az repos pr policy list` treats PR ids as organization-unique. Passing `--project` fails with `unrecognized arguments: --project`.
+- **DO NOT**: Copy `--project` from `az repos pr create` onto `az repos pr policy list`.
+- **INSTEAD DO**: Call `az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}"` only. Use `--project` on create/list-PRs/`az repos policy list`, not on PR policy evaluations.
 
 ### [2026-08-23] Shared worktree integrity vs other-worker dirty skills
 - **Layer**: `Harness`

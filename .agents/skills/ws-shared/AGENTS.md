@@ -6,8 +6,6 @@
 >
 > This folder is **not** an installable skill package. The installer copies hub templates here when a workflow or Full package is selected.
 >
-> Promoted utilities and harness skills live as **top-level** installable skills under `.agents/skills/<skill>/`.
->
 > **Consumer-owned** (preserved on update; never overwritten by upstream):
 > `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, and `CHANGELOG.md` (when `rules.changelogFile` points under `ws-shared/`).
 > Fresh install seeds `config.json` from `config.json.example`, empty `MEMORY.md` / `CHANGELOG.md` from templates, and `STACK.md` from `STACK.md.example`. Prefer [`ws-configure-project`](../ws-configure-project/SKILL.md) to fill placeholders. The installer writes `installed-skills.json` for update/uninstall tracking.
@@ -17,6 +15,8 @@
 > **Hybrid / override (mandatory):** Agents may load `ws-*` skill bodies from the global skills root while reading **project** `$PWD/.agents/skills/ws-shared/config.json`. **Local (project) config always overrides global hub config.** Upstream skill SoT is `.agents/skills/ws-*` (see root `AGENTS.md` § Skill SoT, install scopes & config override).
 
 **Language:** en-us only for skill bodies, gates, banners, and harness docs.
+
+**Source anonymization (mandatory):** Do not cite private consumer projects in reports, commits, specs, or new tracker issues. Diagnose from pasted errors; publish generic wording.
 
 ---
 

@@ -5,11 +5,11 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "3f2f6c5974999ebab3b49d88be9a03a976b517669b87d7ba123ed32c9e826de8",
+  "fullPackageDigest": "a1e6e823b4d114c1335758bf77102f88507888269a6e202e5a4d6164b7df3a47",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
-      "AGENTS.md": "7726fa7f3bf6fe4c5c2b43f26bca4b79e9f9b49835369cb0b2c4356967bc7cd9",
+      "AGENTS.md": "da64019cc41ecfaf9c01c7f7f3f8353f57922cf19003f90ce006de5b387aa570",
       "autoload.md": "ddd86ffa7f473ea9e66c682dc9dd39759bc0cb40c2d0ac4832e87bdb8846d4cb",
       "backend.md.template": "2f04abd5d1d963df303cb74c4f5360b6f651faa95df873fe3891a2f95613cbf3",
       "CATALOG.md": "3ea15a844149c58eb6f8f5199d935dde1431c736cea8bc26d9772a34908e7136",
@@ -43,7 +43,7 @@
       "tools.md": "88294443742d997b98eabaed12d901e8faea4eaf200322ffb51e11d45e955c8d",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "1b00f78a52f13a2b3a00c845d5be189476e1c27ddaf1c2cd35a268dd8831af5d"
+    "skillDigest": "e6855d93a1adb276e113a4a1ed5080917add46f9ed2e94b9d1f1189e76f6f89e"
   },
   "packageVersion": "0.3.37",
   "skills": {
@@ -61,14 +61,14 @@
     "ws-azure-devops-provider": {
       "files": {
         "evals/evals.json": "7f2cf9cd59c0fd70d6f5cf6214a81db79eef7c81edbf561fb594d7ff17195c30",
-        "INTENTS.md": "d793085ec9f681dcc8ae59be23750b3f5430c037c5b5d095e81e7a1b04ad9729",
+        "INTENTS.md": "be05a775cc6a886b28b0e0a837eaff7ce6645456e94faa338beac9a324cc5a02",
         "scripts/ado-workitem-to-spec.py": "6003aed16835cb99dacd037083f175ab9af6a2deaecd2b402ed146070714b8a7",
         "scripts/comment_issue.py": "4493e8cbe8a471e129ba428495a5dfedcce8454a8acfc8d230c9feb609c3ed79",
         "scripts/fix_pr_azure_context.py": "13cfc0f723a388e23bd4d24cc582580cfd438fcbe20e6b6f1a0854adca87957b",
         "scripts/sweep_prior_work.py": "971b009a3394ebc74d92671a6b5391951f63548fa92e8481e38865a7e6e07729",
         "SKILL.md": "aac58f93c7cb4c9199e6ef27c9a618f760591617d93ee01d3b9b7e81f02b329c"
       },
-      "skillDigest": "d0f67348ab51e0cb1b4c8cedebe3796033cc32226ee23217fbf7d6fff3e0fa7f"
+      "skillDigest": "77d9dc5f9865bdfd22836ca91a8e458766854ed736c2645fcc36965888971e78"
     },
     "ws-changelog": {
       "files": {
