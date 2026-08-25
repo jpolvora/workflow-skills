@@ -7,6 +7,13 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const {
+  resolveConsumerContext,
+  resolveConfiguredPath,
+  toRepoRelative,
+} = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+
+const SCRIPT_FILE = __filename;
 
 function parseArgs(argv) {
   const args = { repoRoot: process.cwd(), json: false };
@@ -21,14 +28,6 @@ function parseArgs(argv) {
     }
   }
   return args;
-}
-
-function readJsonSafe(filePath) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch {
-    return null;
-  }
 }
 
 function pathExists(p) {
@@ -56,23 +55,22 @@ function detectCli(cliSetting) {
   };
 }
 
-function scanPollution(repoRoot, sharedDir, plansDir) {
+function scanPollution(repoRoot, sharedDirAbs, plansDirAbs) {
   const findings = [];
   const checks = [
-    { rel: path.join(sharedDir, 'MEMORY.md'), kind: 'memory-index' },
-    { rel: path.join(sharedDir, 'memory'), kind: 'memory-dir' },
-    { rel: plansDir, kind: 'plans-dir' },
+    { abs: path.join(sharedDirAbs, 'MEMORY.md'), kind: 'memory-index' },
+    { abs: path.join(sharedDirAbs, 'memory'), kind: 'memory-dir' },
+    { abs: plansDirAbs, kind: 'plans-dir' },
   ];
   for (const c of checks) {
-    const abs = path.join(repoRoot, c.rel);
-    if (pathExists(abs)) {
-      const stat = fs.statSync(abs);
-      if (c.kind === 'plans-dir' && stat.isDirectory()) {
-        const entries = fs.readdirSync(abs);
-        if (entries.length > 0) findings.push({ path: c.rel, kind: c.kind, note: `${entries.length} entries` });
-      } else if (c.kind !== 'plans-dir') {
-        findings.push({ path: c.rel, kind: c.kind, note: stat.isDirectory() ? 'directory' : 'file' });
-      }
+    if (!pathExists(c.abs)) continue;
+    const rel = toRepoRelative(repoRoot, c.abs, { allowOutside: true });
+    const stat = fs.statSync(c.abs);
+    if (c.kind === 'plans-dir' && stat.isDirectory()) {
+      const entries = fs.readdirSync(c.abs);
+      if (entries.length > 0) findings.push({ path: rel, kind: c.kind, note: `${entries.length} entries` });
+    } else if (c.kind !== 'plans-dir') {
+      findings.push({ path: rel, kind: c.kind, note: stat.isDirectory() ? 'directory' : 'file' });
     }
   }
   return findings;
@@ -124,20 +122,20 @@ function printHuman(report) {
 
 function main() {
   const args = parseArgs(process.argv);
-  const repoRoot = path.resolve(args.repoRoot);
-  const sharedDir = '.agents/skills/ws-shared';
-  const configPath = path.join(repoRoot, sharedDir, 'config.json');
-  const config = readJsonSafe(configPath) || {};
+  const ctx = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: SCRIPT_FILE });
+  const repoRoot = ctx.repoRoot;
+  const config = ctx.config || {};
   const specMemo = config.specMemo || {};
-  const plansDir = (config.plans && config.plans.dir) || '.agents/plans';
+  const plansDirAbs = resolveConfiguredPath(repoRoot, config.plans && config.plans.dir, '.agents/plans');
 
   const cli = detectCli(specMemo.cli);
   const doctor = cli.available ? runDoctor(specMemo.cli || 'memo') : { ok: false, error: 'CLI not available' };
-  const pollution = scanPollution(repoRoot, sharedDir, plansDir);
+  const pollution = scanPollution(repoRoot, ctx.sharedDir, plansDirAbs);
 
   const report = {
     ok: true,
     repoRoot,
+    sharedDir: toRepoRelative(repoRoot, ctx.sharedDir, { allowOutside: true }),
     config: {
       enabled: specMemo.enabled === true,
       mode: specMemo.mode || 'vault',
@@ -147,8 +145,11 @@ function main() {
     },
     cli,
     doctor,
+    vault: { ok: doctor.ok, error: doctor.error || null },
     pollution,
-    configPath: pathExists(configPath) ? configPath : null,
+    configPath: pathExists(ctx.configPath)
+      ? toRepoRelative(repoRoot, ctx.configPath, { allowOutside: true })
+      : null,
   };
 
   if (args.json) {

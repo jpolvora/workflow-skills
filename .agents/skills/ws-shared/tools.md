@@ -112,7 +112,7 @@ The orchestrator session ALWAYS runs under the active session model (`currentMod
 |------|--------|--------|
 | `update-memory` | Write learned pattern | When `specMemo.enabled` is explicit `true`, `memo upsert --kind trap` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md); hybrid falls back to `{sharedDir}/memory/` on failure. Else create unique file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` |
 | `extract-frontmatter` | Read YAML frontmatter field(s) from markdown | `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs --file {path} --field slug` (prefer over `python -c` / nested-quote one-liners) |
-| `update-ws-changelog` | Append historical log | `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
+| `update-ws-changelog` | Append historical log | When `specMemo.enabled` is explicit `true`, `{specMemo.cli} append --event "…"` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md); hybrid may also append `{rules.changelogFile}`. Else `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
 ## Script launchers
 

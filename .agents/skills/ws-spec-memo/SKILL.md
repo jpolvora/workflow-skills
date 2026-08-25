@@ -55,7 +55,7 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
    ```bash
    node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json
    ```
-   Require exit 0 and parse `cli.available`, `vault.ok`, `pollution`.
+   Require exit 0 and parse `cli.available`, `doctor.ok` (alias `vault.ok`), and `pollution`.
    - Done when: preflight JSON is in context.
 
 2. **CLI gate** — When `cli.available` is false, `user-gate`:

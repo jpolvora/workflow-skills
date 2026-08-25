@@ -8,6 +8,12 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const {
+  resolveConsumerContext,
+  toRepoRelative,
+} = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+
+const SCRIPT_FILE = __filename;
 
 function parseArgs(argv) {
   const args = {
@@ -69,10 +75,10 @@ function runCmd(command, cmdArgs, cwd) {
 
 function main() {
   const args = parseArgs(process.argv);
-  const repoRoot = path.resolve(args.repoRoot);
-  const sharedDir = path.join(repoRoot, '.agents/skills/ws-shared');
-  const configPath = path.join(sharedDir, 'config.json');
-  const examplePath = path.join(sharedDir, 'config.json.example');
+  const ctx = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: SCRIPT_FILE });
+  const repoRoot = ctx.repoRoot;
+  const configPath = path.join(ctx.sharedDir, 'config.json');
+  const examplePath = path.join(ctx.sharedDir, 'config.json.example');
 
   if (!fs.existsSync(configPath)) {
     if (!fs.existsSync(examplePath)) {
@@ -127,7 +133,7 @@ function main() {
 
   const result = {
     ok: true,
-    configPath,
+    configPath: toRepoRelative(repoRoot, configPath, { allowOutside: true }),
     specMemo: next,
     actions,
   };

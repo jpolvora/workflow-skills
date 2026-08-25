@@ -33,6 +33,8 @@ workflow-skills stores agent working state in-repo by default:
 
 ## Operation routing
 
+When `specMemo.enabled: true`, agents follow `tools.md` aliases and [`ws-spec-memo`](../SKILL.md) — autoloaded `ws-self-learning` / `ws-changelog` skill bodies are unchanged in this release; the bridge reroutes at the alias layer.
+
 | Moment | In-repo (default) | Vault mode (`specMemo.enabled: true`) |
 |--------|-------------------|----------------------------------------|
 | Session start | `Grep`/`Read` `MEMORY.md` | `memo bootstrap` or MCP `bootstrap` |
@@ -72,6 +74,6 @@ Install `memo hook install` to block accidental commits of those paths.
 | `ws-spec-memo` | Setup, check, bootstrap bridge (this skill) |
 | `ws-self-learning` | In-repo trap engine; hybrid fallback |
 | `ws-changelog` | In-repo history; hybrid may dual-write |
-| `ws-configure-project` | Seeds `config.json`; optional `--section specMemo` future |
+| `ws-configure-project` | Seeds `config.json`; optional `--section specMemo` for vault setup |
 | `ws-cleanup` | Removes in-tree disposable scratch after import |
 | `ws-doctor` | Diagnoses ws-* install; not vault health |
