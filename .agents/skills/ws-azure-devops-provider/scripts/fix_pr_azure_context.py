@@ -32,6 +32,14 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root  # noqa: E402
+from utf8_stdio import ensure_utf8_stdio  # noqa: E402
+from http_retry import urlopen_retry  # noqa: E402
+
+ensure_utf8_stdio()
 
 ACTIVE_STATUSES = {"active", "pending"}
 DEFAULT_WORK_ITEM_FIELDS = ",".join(
@@ -46,33 +54,6 @@ DEFAULT_WORK_ITEM_FIELDS = ",".join(
 )
 
 
-def ensure_utf8_stdio() -> None:
-    """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
-    os.environ["PYTHONIOENCODING"] = "utf-8"
-    for stream in (sys.stdin, sys.stdout, sys.stderr):
-        reconfigure = getattr(stream, "reconfigure", None)
-        if not callable(reconfigure):
-            continue
-        try:
-            reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            try:
-                reconfigure(errors="replace")
-            except Exception:
-                pass
-
-
-ensure_utf8_stdio()
-
-
-def find_repo_root(start: Path) -> Path:
-    current = start.expanduser().resolve()
-    for candidate in [current, *current.parents]:
-        if (candidate / ".agents").is_dir() or (candidate / ".git").exists():
-            return candidate
-    if current.is_dir():
-        return current
-    raise SystemExit("Could not locate repository root containing .agents/ or .git.")
 
 
 def resolve_pat(pat_env_var: str, secret_path: Path | None = None) -> str:
@@ -214,7 +195,7 @@ def azdo_request(
         headers=auth_headers(pat, content_type=content_type),
     )
     try:
-        with urllib.request.urlopen(request, timeout=90) as response:
+        with urlopen_retry(request, timeout=90) as response:
             raw = response.read()
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
@@ -527,7 +508,10 @@ def print_collect_summary(payload: dict[str, Any]) -> None:
 def main(argv: list[str]) -> int:
     ensure_utf8_stdio()
     args = parse_args(argv)
-    repo_root = find_repo_root(Path(args.repo_root) if args.repo_root else Path.cwd())
+    repo_root = resolve_repo_root(
+        getattr(args, "repo_root", None),
+        script_file=__file__,
+    )
     if args.action == "resolve-thread" and args.dry_run:
         repository = args.repository or "dry-run"
     else:

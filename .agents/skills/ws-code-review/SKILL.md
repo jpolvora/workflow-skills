@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.37
+version: 0.3.38
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -77,11 +77,9 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 4. **Generalize defect class**: for each proven finding, search the full diff **and sibling modules beyond the diff** for the same vulnerability/pattern; report as a class finding or named exemption (path + reason). Critical if an unfixed sibling of a proven defect remains without exemption.
    - Done when: sibling occurrences beyond the diff are searched and reported (or none found).
 
-5. **Sweep known patterns & MEMORY**:
+5. **Sweep MEMORY**:
    - Read compiled `{sharedDir}/MEMORY.md` entries (titles, Module/Layer tags, and `DO NOT` / `INSTEAD DO` directives) against the in-scope modified file list and plan keywords; report confirmed violations as Warning or Critical by severity.
-   - If Web/UI files are in the diff and `config.json.defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and check for project UI/UX pattern violations (e.g. missing Back button toolbar on subpages, hardcoded copy vs i18n, subscription cleanup, grid/table styling conventions).
-   - If Domain/Application/EF/backend files are in the diff and `config.json.defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and check for domain/architectural pattern violations.
-   - Done when: memory entries and relevant pattern files have been swept against the diff, and any confirmed violations are listed.
+   - Done when: memory entries have been swept against the diff, and any confirmed violations are listed.
 
 
 

@@ -19,46 +19,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
-def ensure_utf8_stdio() -> None:
-    os.environ["PYTHONIOENCODING"] = "utf-8"
-    for stream in (sys.stdin, sys.stdout, sys.stderr):
-        reconfigure = getattr(stream, "reconfigure", None)
-        if not callable(reconfigure):
-            continue
-        try:
-            reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            try:
-                reconfigure(errors="replace")
-            except Exception:
-                pass
-
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root, to_repo_relative  # noqa: E402
+from utf8_stdio import ensure_utf8_stdio  # noqa: E402
 
 ensure_utf8_stdio()
-
-HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
-
-
-def resolve_repo_root(override: str | None = None) -> Path:
-    if override:
-        return Path(override).expanduser().resolve()
-    cwd = Path.cwd().resolve()
-    if (cwd / HUB_REL).is_file():
-        return cwd
-    return Path(__file__).resolve().parents[4]
-
-
-def to_repo_relative(repo_root: Path, path: str | Path) -> str:
-    p = Path(path)
-    try:
-        rel = p.resolve().relative_to(repo_root.resolve())
-        return rel.as_posix()
-    except ValueError:
-        s = str(path).replace("\\", "/")
-        if re.match(r"^[A-Za-z]:/", s):
-            return Path(s).name
-        return s.lstrip("/")
 
 
 def run_gh(args: list[str], repo_root: Path) -> tuple[int, str, str]:
@@ -119,7 +86,7 @@ def search_prs(repo_root: Path, query: str, dry_run: bool, auth_ok: bool) -> lis
 def git_log(repo_root: Path, files: list[str]) -> list[dict[str, str]]:
     if not files:
         return []
-    rel_files = [to_repo_relative(repo_root, f) for f in files]
+    rel_files = [to_repo_relative(repo_root, f, allow_outside=True) for f in files]
     proc = subprocess.run(
         ["git", "log", "--oneline", "-20", "--", *rel_files],
         cwd=repo_root,
@@ -149,7 +116,7 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="Advisory mode; skip remote when auth missing")
     args = parser.parse_args()
 
-    repo_root = resolve_repo_root(args.repo_root)
+    repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
     auth_ok, auth_msg = validate_auth(repo_root, args.dry_run)
     if not auth_ok and not args.dry_run:
         return 1

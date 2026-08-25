@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.37
+version: 0.3.38
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -16,7 +16,7 @@ Execute the coding and testing steps from the plan (build mode) or correct defec
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-**Reads:** `{us-dir}/plan.index.json` AC slices via `plan_index.cjs read --ac` when that file exists (do not read a `superseded: true` step-01). Else execution plan (`step-03-*.plan.exec.md`), refined plan, or draft plan; `config.json` for layer patterns; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
+**Reads:** `{us-dir}/plan.index.json` AC slices via `plan_index.cjs read --ac` when that file exists (do not read a `superseded: true` step-01). Else execution plan (`step-03-*.plan.exec.md`), refined plan, or draft plan; `config.json` for stack layers; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
 
 ## Invocation
 
@@ -42,24 +42,19 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 2. **Consult MEMORY** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for 3–8 modules/paths/keywords in the plan; apply Medium+ Solutions before editing; record search keywords and hits.
    - Done when: relevant entries noted or none found; keywords recorded for `step-output.memory_consult`.
 
-3. **Detect layers & consult pattern files** — Identify target layers from plan files and stack:
-   - If Web/UI files are touched and `defaults.patternsFrontend` is `true`: **Read** `{sharedDir}/frontend.md` (or fallback to `{sharedDir}/frontend.md.template` if missing) and load [`ws-patterns`](../ws-patterns/SKILL.md) before modifying UI components, templates, or styling.
-   - If Domain/Application/EF/backend files are touched and `defaults.patternsBackend` is `true`: **Read** `{sharedDir}/backend.md` (or fallback to `{sharedDir}/backend.md.template` if missing) and load [`ws-patterns`](../ws-patterns/SKILL.md) before modifying backend logic.
-   - Done when: matching pattern files are read and recorded in `step-output.pattern_consult` (`consulted` | `skipped` | `n/a`).
-
-4. **Scan codebase** — Locate similar patterns in the project layers (`config.json`) for style consistency.
+3. **Scan codebase** — Locate similar code in the project layers (`config.json`) for style consistency.
    - Done when: a matching pattern is found, or none exists and this is noted.
 
-5. **Implement** — Write minimal, modular code matching the requirements without scope creep.
+4. **Implement** — Write minimal, modular code matching the requirements without scope creep.
    - Done when: every planned file is created or modified per its AC.
 
-6. **Fix the Entire Defect Class** — After Implement (build mode), repo-wide search/grep for the same defect pattern or vulnerability class (not style-only). Fix same-class siblings in scope; list remaining hits or exemptions (path + reason) in `step-output.summary`. Fix mode step 4 widens sibling sweep from modified directories to **repo-wide same pattern** with the same exemption rule.
+5. **Fix the Entire Defect Class** — After Implement (build mode), repo-wide search/grep for the same defect pattern or vulnerability class (not style-only). Fix same-class siblings in scope; list remaining hits or exemptions (path + reason) in `step-output.summary`. Fix mode step 4 widens sibling sweep from modified directories to **repo-wide same pattern** with the same exemption rule.
    - Done when: search performed; remaining hits listed or justified.
 
-7. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
+6. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
    - Done when: applicable verification commands exit 0 (or failures are listed in step-output with `status: failed`).
 
-8. **Report** — Return the modified/created file lists and test output details.
+7. **Report** — Return the modified/created file lists and test output details.
    - Done when: the step-output below is populated.
 
 ## Fix mode
@@ -67,7 +62,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
    - Done when: every finding is enumerated.
 
-2. **Consult MEMORY & pattern files** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths; if matching layers are affected and `defaults.patternsFrontend` / `defaults.patternsBackend` are `true`, consult `{sharedDir}/frontend.md` / `{sharedDir}/backend.md` (or fallback to templates if missing); reuse known Solutions before inventing fixes.
+2. **Consult MEMORY** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths; reuse known Solutions before inventing fixes.
    - Done when: relevant entries noted or none found.
 
 
@@ -92,9 +87,6 @@ Modify the working tree directly; never commit or push.
 
 ```yaml
 status: success | partial | failed | needs_user
-pattern_consult:
-  frontend: consulted | skipped | n/a
-  backend: consulted | skipped | n/a
 memory_consult:
   keywords: []
   hits: []
@@ -124,7 +116,7 @@ No commit/push (orch/user owns staging). Surgical scope only. Schema migrations 
 ## Subagent contract
 
 - Implement only assigned task ids, AC ids, and writable paths (scoreAndRefine second pass: assigned set is the full Pass 1 `files_touched` unless Option 3 named a subset). Prefer `plan.index.json` slices over a full superseded plan.
-- Consult injected memory and matching backend/frontend patterns before mutation.
+- Consult injected memory before mutation.
 - Run the named configured verification commands after each task batch.
 - Never write workflow state or ledger files; return structured evidence to the orchestrator.
-- Report exact touched files, pattern consult, memory consult, checks, and remaining gaps.
+- Report exact touched files, memory consult, checks, and remaining gaps.

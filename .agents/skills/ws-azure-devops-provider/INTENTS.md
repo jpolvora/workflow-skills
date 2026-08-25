@@ -90,9 +90,10 @@ Return structured threads to `ws-fix-pr` / `ws-goal-fix-pr`. Active count = `len
 ## `check-pr-status`
 
 ```bash
-az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}" --project "{project}"
+az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}"
 ```
 
+- Do not pass `--project` (the CLI rejects it; PR ids are unique in the organization).
 - Evaluates build pipelines and status policies for `{PR_ID}`.
 - Finished when all status policies and build pipelines report completed status (`approved`/`succeeded`/`failed`, not active/running).
 - On failed build/policy: fetch build log via REST or `az pipelines runs show --id {runId}`.

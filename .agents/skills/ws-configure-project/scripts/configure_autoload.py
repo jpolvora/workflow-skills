@@ -46,7 +46,6 @@ ensure_utf8_stdio()
 DEFAULT_ALWAYS_APPLIED: list[tuple[str, str]] = [
     ("ws-senior-developer", "Every prompt — delivery gate / Code review proof"),
     ("ws-self-learning", "Every mutating task — MEMORY consult + trap write"),
-    ("ws-patterns", "Every prompt — load SKILL.md; consult backend.md / frontend.md by task layer"),
     ("ws-changelog", "Every task completion — append-only history"),
     ("ws-fable-method", "Every prompt — structured investigate/act/verify when non-trivial"),
     ("ws-tdah", "Every prompt — action-first shape + judgment"),

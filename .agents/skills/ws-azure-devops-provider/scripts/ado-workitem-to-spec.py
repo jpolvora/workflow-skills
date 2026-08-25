@@ -43,23 +43,8 @@ _SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
 if str(_SHARED_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SHARED_SCRIPTS))
 from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
-
-
-def ensure_utf8_stdio() -> None:
-    """Force UTF-8 on stdio so Windows locale (cp1252) does not break on Unicode (e.g. →)."""
-    os.environ["PYTHONIOENCODING"] = "utf-8"
-    for stream in (sys.stdin, sys.stdout, sys.stderr):
-        reconfigure = getattr(stream, "reconfigure", None)
-        if not callable(reconfigure):
-            continue
-        try:
-            reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            try:
-                reconfigure(errors="replace")
-            except Exception:
-                pass
-
+from utf8_stdio import ensure_utf8_stdio  # noqa: E402
+from http_retry import urlopen_retry  # noqa: E402
 
 ensure_utf8_stdio()
 
@@ -160,7 +145,7 @@ def fetch_work_item(org: str, project: str, work_item_id: int, pat: str, api_bas
     )
     request = urllib.request.Request(url, method="GET", headers=auth_headers(pat))
     try:
-        with urllib.request.urlopen(request, timeout=90) as response:
+        with urlopen_retry(request, timeout=90) as response:
             raw = response.read()
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")

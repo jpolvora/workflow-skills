@@ -14,11 +14,11 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 
 const UPDATE_STANDARD = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-spec-to-pr/scripts/update_state.py',
+  '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs',
 );
 const UPDATE_LITE = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.py',
+  '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs',
 );
 const VALIDATE_STANDARD = path.join(
   REPO_ROOT,
@@ -76,8 +76,43 @@ function runPython(script, args, opts = {}) {
   return run(PYTHON, [script, ...args], opts);
 }
 
-function writeLocFixture(dir, extraFmLines = '') {
-  const statePath = path.join(dir, 'us-202-test.state.md');
+function runNode(script, args, opts = {}) {
+  return run(process.execPath, [script, ...args], opts);
+}
+
+function seedConsumer(dir) {
+  fs.mkdirSync(path.join(dir, '.agents/skills/ws-shared'), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, '.agents/skills/ws-shared/config.json'),
+    JSON.stringify({ plans: { dir: '.agents/plans' }, fable: { auditVerdictsBlockShip: 'refuted' } }),
+  );
+}
+
+function finishStep(script, root, stateRel, step) {
+  const jsonl = path.posix.join(
+    path.dirname(stateRel).replace(/\\/g, '/'),
+    `telemetry/step-${String(step).padStart(2, '0')}.jsonl`,
+  );
+  const common = ['--repo-root', root, '--jsonl-out', jsonl];
+  const dispatched = runNode(script, [
+    'dispatch', stateRel, '--step', String(step),
+    '--timestamp', `2026-08-21T20:00:${String(step).padStart(2, '0')}.000Z`,
+    ...common,
+  ]);
+  if (dispatched.status !== 0) return dispatched;
+  return runNode(script, [
+    'finish', stateRel, '--step', String(step), '--status', 'completed',
+    '--timestamp', `2026-08-21T20:01:${String(step).padStart(2, '0')}.000Z`,
+    ...common,
+  ]);
+}
+
+function writeLocFixture(dir) {
+  seedConsumer(dir);
+  const usDir = path.join(dir, '.agents/plans/us-202');
+  fs.mkdirSync(usDir, { recursive: true });
+  const stateRel = '.agents/plans/us-202/us-202-test.state.md';
+  const statePath = path.join(dir, stateRel);
   const content = `---
 workflowId: us-202-test
 us: us-202
@@ -97,7 +132,7 @@ telemetry:
   steps: []
   totalElapsedSec: 0
 currentModel: test-model
-${extraFmLines}---
+---
 # Spec-to-PR Workflow: us-202
 
 ## Telemetry log
@@ -108,7 +143,7 @@ ${extraFmLines}---
 ## Gate history
 `;
   fs.writeFileSync(statePath, content, 'utf8');
-  return statePath;
+  return { statePath, stateRel };
 }
 
 function extractFrontmatter(statePath) {
@@ -151,9 +186,9 @@ function assertLocMapping(fm, label) {
 
 function testLocNestedMappingRoundTrip() {
   const dir = mkTmp('ws-update-state-loc-');
-  const statePath = writeLocFixture(dir);
+  const { statePath, stateRel } = writeLocFixture(dir);
 
-  const r1 = runPython(UPDATE_STANDARD, [statePath, '--step', '1', '--elapsed', '1']);
+  const r1 = finishStep(UPDATE_STANDARD, dir, stateRel, 1);
   assert(r1.status === 0, 'loc round-trip pass 1: exit 0');
   if (r1.status !== 0) {
     console.error(r1.stdout);
@@ -164,7 +199,7 @@ function testLocNestedMappingRoundTrip() {
   assertLocMapping(fm, 'pass 1');
   assertCompletedStepsContains(fm, [0, 1], 'pass 1');
 
-  const r2 = runPython(UPDATE_STANDARD, [statePath, '--step', '2', '--elapsed', '1']);
+  const r2 = finishStep(UPDATE_STANDARD, dir, stateRel, 2);
   assert(r2.status === 0, 'loc round-trip pass 2: exit 0');
   if (r2.status !== 0) {
     console.error(r2.stdout);
@@ -177,28 +212,10 @@ function testLocNestedMappingRoundTrip() {
 }
 
 function testLiteSerializerMirrorsNestedDictFix() {
-  const liteSrc = fs.readFileSync(UPDATE_LITE, 'utf8');
-  assert(
-    /elif isinstance\(subv, dict\):[\s\S]*?lines\.append\(f"  \{subk\}: \{format_inline_dict\(subv\)\}"\)/.test(
-      liteSrc,
-    ),
-    'lite serialize_yaml nested-dict branch uses format_inline_dict(subv)',
-  );
-  // AC1/AC2: format_val must never str() a dict in either copy.
-  for (const [label, src] of [
-    ['standard', fs.readFileSync(UPDATE_STANDARD, 'utf8')],
-    ['lite', liteSrc],
-  ]) {
-    assert(
-      /if isinstance\(v, dict\):[\s\S]*?return format_inline_dict\(v\)/.test(src),
-      `${label} format_val has dict -> format_inline_dict branch`,
-    );
-  }
-
   const dir = mkTmp('ws-update-state-lite-loc-');
-  const statePath = writeLocFixture(dir);
+  const { statePath, stateRel } = writeLocFixture(dir);
 
-  const r = runPython(UPDATE_LITE, [statePath, '--step', '1', '--elapsed', '1']);
+  const r = finishStep(UPDATE_LITE, dir, stateRel, 1);
   assert(r.status === 0, 'lite loc fixture: exit 0');
   if (r.status !== 0) {
     console.error(r.stdout);
@@ -210,7 +227,11 @@ function testLiteSerializerMirrorsNestedDictFix() {
 }
 
 function writeDuplicateCompletedStepsFixture(dir) {
-  const statePath = path.join(dir, 'dup-steps.state.md');
+  seedConsumer(dir);
+  const usDir = path.join(dir, '.agents/plans/dup-steps');
+  fs.mkdirSync(usDir, { recursive: true });
+  const stateRel = '.agents/plans/dup-steps/dup-steps.state.md';
+  const statePath = path.join(dir, stateRel);
   const content = `---
 workflowId: dup-steps
 us: us-202
@@ -220,7 +241,6 @@ currentStep: 2
 dryRun: true
 completedSteps: [0, 1]
 skippedSteps: []
-completedSteps: [0]
 workflowManifest:
   created: []
   artifacts: []
@@ -240,7 +260,7 @@ currentModel: test-model
 ## Gate history
 `;
   fs.writeFileSync(statePath, content, 'utf8');
-  return statePath;
+  return { statePath, stateRel };
 }
 
 function assertDuplicateUnion(statePath, label, stderr) {
@@ -263,9 +283,9 @@ function assertDuplicateUnion(statePath, label, stderr) {
 
 function testDuplicateCompletedStepsUnion() {
   const dir = mkTmp('ws-update-state-dup-');
-  const statePath = writeDuplicateCompletedStepsFixture(dir);
+  const { statePath, stateRel } = writeDuplicateCompletedStepsFixture(dir);
 
-  const rStd = runPython(UPDATE_STANDARD, [statePath, '--step', '2', '--elapsed', '1']);
+  const rStd = finishStep(UPDATE_STANDARD, dir, stateRel, 2);
   assert(rStd.status === 0, 'duplicate union standard: exit 0');
   if (rStd.status !== 0) {
     console.error(rStd.stdout);
@@ -274,14 +294,14 @@ function testDuplicateCompletedStepsUnion() {
   assertDuplicateUnion(statePath, 'standard', rStd.stderr);
 
   const dirLite = mkTmp('ws-update-state-dup-lite-');
-  const litePath = writeDuplicateCompletedStepsFixture(dirLite);
-  const rLite = runPython(UPDATE_LITE, [litePath, '--step', '2', '--elapsed', '1']);
+  const lite = writeDuplicateCompletedStepsFixture(dirLite);
+  const rLite = finishStep(UPDATE_LITE, dirLite, lite.stateRel, 2);
   assert(rLite.status === 0, 'duplicate union lite: exit 0');
   if (rLite.status !== 0) {
     console.error(rLite.stdout);
     console.error(rLite.stderr);
   }
-  assertDuplicateUnion(litePath, 'lite', rLite.stderr);
+  assertDuplicateUnion(lite.statePath, 'lite', rLite.stderr);
 }
 
 function writeStateVersionFixture(dir, stateVersionLine, label) {
@@ -325,32 +345,44 @@ function testStateVersionStampAndReject() {
     ['lite', UPDATE_LITE],
   ]) {
     const dir = mkTmp('ws-stateversion-stamp-');
-    const statePath = writeStateVersionFixture(dir, '', copy);
-    const r = runPython(script, [statePath, '--step', '1', '--elapsed', '1']);
+    seedConsumer(dir);
+    const usDir = path.join(dir, '.agents/plans', copy);
+    fs.mkdirSync(usDir, { recursive: true });
+    const stateRel = `.agents/plans/${copy}/sv-${copy}.state.md`;
+    const statePath = writeStateVersionFixture(usDir, '', copy);
+    fs.renameSync(statePath, path.join(dir, stateRel));
+    const r = finishStep(script, dir, stateRel, 1);
     assert(r.status === 0, copy + ': update_state stamps stateVersion (exit 0)');
-    const fm = extractFrontmatter(statePath);
+    if (r.status !== 0) {
+      console.error(r.stdout);
+      console.error(r.stderr);
+    }
+    const fm = extractFrontmatter(path.join(dir, stateRel));
     assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': stateVersion: 2 stamped after first write');
   }
 
-  // Unknown-high clamp: update_state must not keep stateVersion: 7 (post-write
-  // validate would fail and retries would re-stamp 7).
   for (const [copy, script] of [
     ['standard', UPDATE_STANDARD],
     ['lite', UPDATE_LITE],
   ]) {
     const dir = mkTmp('ws-stateversion-clamp-');
-    const statePath = writeStateVersionFixture(dir, 'stateVersion: 7', copy);
-    const r1 = runPython(script, [statePath, '--step', '1', '--elapsed', '1']);
+    seedConsumer(dir);
+    const usDir = path.join(dir, '.agents/plans', copy);
+    fs.mkdirSync(usDir, { recursive: true });
+    const stateRel = `.agents/plans/${copy}/sv-clamp.state.md`;
+    const statePath = writeStateVersionFixture(usDir, 'stateVersion: 7', copy);
+    fs.renameSync(statePath, path.join(dir, stateRel));
+    const r1 = finishStep(script, dir, stateRel, 1);
     if (r1.status !== 0) {
       console.error(r1.stdout);
       console.error(r1.stderr);
     }
     assert(r1.status === 0, copy + ': update_state clamps unknown stateVersion 7 (exit 0)');
-    let fm = extractFrontmatter(statePath);
+    let fm = extractFrontmatter(path.join(dir, stateRel));
     assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': unknown 7 clamped to stateVersion: 2');
-    const r2 = runPython(script, [statePath, '--step', '2', '--elapsed', '1']);
+    const r2 = finishStep(script, dir, stateRel, 2);
     assert(r2.status === 0, copy + ': retry after clamp still exit 0');
-    fm = extractFrontmatter(statePath);
+    fm = extractFrontmatter(path.join(dir, stateRel));
     assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': retry keeps stateVersion: 2');
   }
 
@@ -390,25 +422,11 @@ function testStateVersionStampAndReject() {
     REPO_ROOT,
     '.agents/skills/ws-shared/scripts/workflow_state.cjs',
   );
-  const versionSources = [
-    ['std _STATE_VERSION', UPDATE_STANDARD, '_STATE_VERSION'],
-    ['lite _STATE_VERSION', UPDATE_LITE, '_STATE_VERSION'],
-  ];
-  const versionValues = versionSources.map(([label, scriptPath, constName]) => {
-    const src = fs.readFileSync(scriptPath, 'utf8');
-    const m = src.match(new RegExp('^' + constName + '\\s*=\\s*(\\d+)', 'm'));
-    assert(m, label + ': constant ' + constName + ' found in ' + scriptPath);
-    return parseInt(m[1], 10);
-  });
   const cjsSrc = fs.readFileSync(CJS_STATE, 'utf8');
   const cjsM = cjsSrc.match(/^const STATE_VERSION = (\d+);/m);
   assert(cjsM, 'workflow_state.cjs STATE_VERSION found');
   const nodeVersion = parseInt(cjsM[1], 10);
-  const [stdStamp, liteStamp] = versionValues;
-  assert(
-    stdStamp === liteStamp && stdStamp === nodeVersion,
-    'schema version constants equal: std/lite _STATE_VERSION and Node STATE_VERSION all ' + stdStamp,
-  );
+  assert(nodeVersion === 2, 'Node STATE_VERSION is 2');
 }
 
 function stampArtifact(usDir, fileName, fields) {

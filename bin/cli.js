@@ -411,39 +411,14 @@ function ensureSharedConsumerArtifacts() {
     fs.writeFileSync(changelogPath, content);
     console.log(`    Seeded fresh ws-shared/CHANGELOG.md`);
   }
-
-  const backendPath = path.join(destShared, 'backend.md');
-  if (fs.existsSync(backendPath)) {
-    console.log(`    Preserved existing ws-shared/backend.md`);
-  } else {
-    const templatePath = path.join(packageSkillsDir, HUB_DIR, 'backend.md.template');
-    if (fs.existsSync(templatePath)) {
-      fs.copyFileSync(templatePath, backendPath);
-      console.log(`    Seeded fresh ws-shared/backend.md`);
-    }
-  }
-
-  const frontendPath = path.join(destShared, 'frontend.md');
-  if (fs.existsSync(frontendPath)) {
-    console.log(`    Preserved existing ws-shared/frontend.md`);
-  } else {
-    const templatePath = path.join(packageSkillsDir, HUB_DIR, 'frontend.md.template');
-    if (fs.existsSync(templatePath)) {
-      fs.copyFileSync(templatePath, frontendPath);
-      console.log(`    Seeded fresh ws-shared/frontend.md`);
-    }
-  }
 }
 
 
 
 function afterSkillCopy(skillName, destPath) {
   // Hub consumer artifacts are seeded when the hub is ensured (workflows / full).
-  // Also seed when installing ws-self-learning or ws-patterns alone so memory works without a workflow.
-  if (
-    skillName === 'ws-self-learning' ||
-    skillName === 'ws-patterns'
-  ) {
+  // Also seed when installing ws-self-learning alone so memory works without a workflow.
+  if (skillName === 'ws-self-learning') {
     ensureSharedHubInstalled(
       fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? 'update' : 'install'
     );

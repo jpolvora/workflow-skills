@@ -98,22 +98,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 5. **Identity**: `workflow-id`, `slug`, `us-dir`.
    - **[ws-spec-to-pr]**: Inject `workflowType: standard` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
    - **[ws-spec-to-pr-lite]**: Inject `workflowType: lite`.
-5a. **Session lease (standard + lite)** — after Identity (slug known), before Step 0 and on resume, when `defaults.sessionLeases` is not explicit `false` (omitted → enabled; see [`config-resolution.md`](config-resolution.md) § Session lease):
-
-   ```bash
-   node {skillsRoot}/ws-spec-to-pr/scripts/session_lease.cjs prune --plans-dir "{plansDir}"
-   node {skillsRoot}/ws-spec-to-pr/scripts/session_lease.cjs acquire --slug "{slug}" [--lease-id "{leaseId}"] --workflow-id "{workflow-id}" --plans-dir "{plansDir}"
-   ```
-
-   Persist returned `lease.leaseId` in workflow state. Heartbeat on orch step transitions via `heartbeat --lease-id {leaseId}`. On terminal workflow status run `release --lease-id {leaseId} --status completed|cancelled|failed`.
-
-   **Same-slug conflict** (`conflict=same-slug`): `user-gate` options — **Resume that lease** (Recommended; re-`acquire` with holder `leaseId`) / **Wait** / **Abort**. Cancel → STOP.
-
-   **Other live slug on same worktree** (`otherLiveSlugs` non-empty): `user-gate` options — **Wait** / **Proceed** (Recommended when unrelated) / **Abort**. Never silent global wait. Proceed still requires `git-lock` around destroyable git.
-
-   When `defaults.sessionLeases: false`, skip acquire/heartbeat/release/git-lock.
-
-5b. **Feature branch gate (new workflow only)** — runs after Identity when this is a **new** start (not resume). Resume paths skip 5b entirely (see [Resume / reset](#resume--reset) § branch resume). Do not stage or commit at bootstrap (`git add -A` forbidden). When session leases are enabled, wrap every destroyable git command in this gate (`checkout`, `fetch`+checkout, `stash` push/pop) with `session_lease.cjs git-lock --holder "{leaseId}"` … `git-unlock --holder "{leaseId}"`.
+5b. **Feature branch gate (new workflow only)** — runs after Identity when this is a **new** start (not resume). Resume paths skip 5b entirely (see [Resume / reset](#resume--reset) § branch resume). Do not stage or commit at bootstrap (`git add -A` forbidden).
 
    **Resolve `{baseBranch}`** (before the gate): read `config.json` → `project.baseBranch` when set; else `Shell` `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh`. Gate copy uses `{baseBranch}` — never treat `master` as the sole hardcoded base example.
 
@@ -163,7 +148,6 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - `branch` — final branch name (created, checked-out existing, or current HEAD name for stay)
    - `branchStrategy` — `from-current` | `from-base` | `stay` | `checkout-existing`
    - `baseBranch` — resolved `{baseBranch}`
-   - `leaseId` — when session leases are enabled, the `lease.leaseId` from §5a `acquire` (required for every later `heartbeat` / `git-lock` / `git-unlock` / `release`)
 
    **Banner sync:** after 5b completes, re-print the init banner `branch` / `baseBranch` rows (step 3 table) or a short **Feature branch gate result** table so displayed values match state.
 

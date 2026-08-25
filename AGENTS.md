@@ -7,6 +7,8 @@ This file is the **routing and operating contract** for the agent harness in thi
 
 **Language:** en-us only for skill bodies, gates, banners, and harness docs.
 
+**Source anonymization (mandatory):** Bug/issue fixes (prompt or spec) must not cite private consumer project names. Pasted consumer code or traces are for diagnosis only. Closing reports, commits, specs, and new GitHub (or other tracker) issues must use generic wording: strip private names, paths, hostnames, and customer data; describe the failure class, not the originating app. Name this public package (`workflow-skills`, `ws-*`) only when the work is actually here.
+
 ---
 
 ## Portability & harness neutrality (mandatory)
@@ -131,7 +133,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - Config: `.agents/skills/ws-shared/config.json` only — [`config-resolution.md`](.agents/skills/ws-shared/config-resolution.md)
 - SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — GitHub and Azure DevOps must implement the same required intents
 - Gates: [`gates.md`](.agents/skills/ws-shared/gates.md) — prefer `user-gate` (native structured choice when available; markdown fallback)
-- **Session model:** orchestrator session always runs under `currentModel`; switch via Pause → session host → Resume (no `--model` / `--model-chain`). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels`, and legacy phase keys — apply exclusively to standard `dispatch-agent` subagents (lite is inline; telemetry only). `defaults.enableDag` (default `false`) forces sequential task execution; `true` restores threshold-based parallel DAG. `defaults.verboseMode` (explicit `true` → executing model reasons and prints a start-of-step `*` preview; omitted/`false` → silent; schema/`ws-configure-project` seed writes `true`). Optional review-model soft tip at Advance into Step 6 (full orch only)
+- **Session model:** orch stays on `currentModel` (Pause → host → Resume; no `--model` / `--model-chain`). Subagent models: `defaults.modelsPreset` / `modelPresets` / `stepModels` / legacy phase keys; standard `dispatch-agent` only (lite inline). `defaults.enableDag` default `false` = sequential; `true` = DAG. `defaults.verboseMode` explicit `true` = start-of-step `*` preview (schema seed writes `true`). Review-model tip at Advance into Step 6 (full orch)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
 - **Product commits:** standard after Step 5 when score ≥ 9 (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 / lite Step 4). Review uses `git diff {base}...HEAD`. No push before ship.
@@ -148,13 +150,13 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
-| `ws-verify-plan` | 5 | Check-implementation (advance at score ≥ 9; `scoreAndRefine` below); required product commit follows before review |
-| `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit of fixes) |
+| `ws-verify-plan` | 5 | Check-implementation (advance at score ≥ 9); product commit before review |
+| `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Delivery artifacts + push/PR (product already committed) |
 | `ws-fix-pr` | 9 | PR thread fix |
 | `ws-goal-fix-pr` | 9 | Fix until zero threads |
-| `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas when installed |
+| `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas |
 | `ws-github-provider` | Provider | GitHub issue→spec + PR ops (same intents as Azure) |
 | `ws-azure-devops-provider` | Provider | ADO WI→spec + PR ops (same intents as GitHub) |
 | `ws-local-spec-provider` | Provider | Local `*.spec.md` |
@@ -244,7 +246,7 @@ MEMORY = anti-regression (input + output). Changelog = append-only history, not 
 
 **After** mutating work (required `Learning:` line):
 - **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Record Root Cause & Trap in `{sharedDir}/memory/YYYY-MM-DD-[slug].md` and compile.
-- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap (and `{sharedDir}/backend.md` / `frontend.md` when those pattern flags are on). `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
+- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap. `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
 - **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory `Severity: High/Critical` memory entry.
 - **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` (script path, not a skill load; run compile only after the file is on disk, not in the same parallel tool batch as Write). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
 - `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.
@@ -266,7 +268,7 @@ Do not re-read or rewrite past changelog entries.
 
 When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-write-spec` / `ws-spec-format` unless authoring those skills.
 
-Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. Lookup codebase, `{sharedDir}/MEMORY.md`, and the stack file **before** any `user-gate`. Include `## Out of Scope` and `## Assumptions & Open Questions`. Run `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring` and do not finish while non-zero. Gray area with ≥2 product options → `{specsDir}/{slug}.context.md` (never empty). When derived from a remote tracker issue, reformulate into explicit, testable agentic ACs while preserving the original human context in `## Original Issue Context` (`source: github` | `source: azure-devops`). For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch (skip register when authoring validation fails):
+Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. Lookup codebase, `{sharedDir}/MEMORY.md`, and the stack file **before** any `user-gate`. Include `## Out of Scope` and `## Assumptions & Open Questions`. Run `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring` and do not finish while non-zero. Gray area with ≥2 product options → `{specsDir}/{slug}.context.md` (never empty). When derived from a **public** tracker issue, reformulate into explicit, testable agentic ACs and keep human wording in `## Original Issue Context` (`source: github` | `source: azure-devops`). Private consumer pastes: paraphrase that section with generic examples. For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch (skip register when authoring validation fails):
 
 ```bash
 python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \

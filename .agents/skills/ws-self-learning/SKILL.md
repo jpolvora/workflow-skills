@@ -1,6 +1,6 @@
 ---
 name: ws-self-learning
-version: 0.3.37
+version: 0.3.38
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 invocation_names:
   - self-learning
@@ -66,9 +66,8 @@ After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record 
 1. Collect **accepted defects**: threads scored 6–10 that received a code fix, plus `check-pr-status` **diff-regression** failures this round fixed.
 2. Skip: score 0–5 no-change threads, baseline noise, infra-flake, wrong reviewer claims justified with no code change, and classes already covered by a Medium+ MEMORY hit.
 3. For each remaining class: write `{sharedDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` with concrete **DO NOT** / **INSTEAD DO**, then compile.
-4. If the class is a reusable stack convention and `defaults.patternsBackend` / `defaults.patternsFrontend` is true, also record it in `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` (goal-fix-pr auto-yes; standalone `ws-fix-pr` uses those skills' user-gate).
-5. Round report `Learning:` must list new entry titles. **Forbidden:** `Learning: N/A` when step 1 had any accepted defect that was not already in MEMORY.
-6. `dry-run`: skip MEMORY and pattern writes (analysis-only).
+4. Round report `Learning:` must list new entry titles. **Forbidden:** `Learning: N/A` when step 1 had any accepted defect that was not already in MEMORY.
+5. `dry-run`: skip MEMORY writes (analysis-only).
 
 ## Process (write after)
 

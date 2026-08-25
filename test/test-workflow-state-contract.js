@@ -533,6 +533,26 @@ stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-06-lite.review.md
 assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:08.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:09.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '4', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 4 uses step-06 review, not step-03 exec');
+assert.notStrictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 5 requires ship result');
+stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-08-lite.result.md', 8, 'lite', 'wf-lite');
+assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:10.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:11.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 5 accepts step-08 result');
+
+const barePreAdvance = run(validate, [stateRel, '--pre-advance', '--repo-root', root]);
+assert.notStrictEqual(barePreAdvance.status, 0, 'bare --pre-advance is rejected');
+assert.match(`${barePreAdvance.stdout}${barePreAdvance.stderr}`, /pre-advance requires a step number/);
+
+const skipFinish = run(update, [
+  'finish', stateRel, '--step', '3', '--status', 'skipped', '--reason', 'dag-disabled',
+  '--evidence', 'enableDag false', '--timestamp', '2026-08-21T20:00:12.000Z', ...common,
+]);
+assert.strictEqual(skipFinish.status, 0, 'Node skip writes reason objects');
+assert.match(fs.readFileSync(path.join(root, stateRel), 'utf8'), /reason: dag-disabled/);
+
+const helpOut = run(validate, ['--help']);
+assert.strictEqual(helpOut.status, 0, 'validate --help exits 0');
+assert.match(helpOut.stdout, /Usage:/);
 
 const indexGapRoot = temp('ws-state-index-gap-');
 write(path.join(indexGapRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({

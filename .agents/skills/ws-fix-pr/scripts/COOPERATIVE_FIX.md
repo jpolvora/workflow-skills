@@ -29,7 +29,6 @@ After validating a thread (score 6–10 or equivalent), **name the defect class 
 | 1 | **Code** | Repo-wide grep / structural search for the same pattern (identifiers, schema shapes, copied helpers, false-green claims). Include every path the thread already named. |
 | 2 | **MEMORY** | Consult `{sharedDir}/MEMORY.md` and matching `memory/*` via [`ws-self-learning`](../../ws-self-learning/SKILL.md) pre-work (keywords + path match for the defect class and touched paths). Reuse known `INSTEAD DO` solutions. **Missing `MEMORY.md` is consult-skipped, not fatal** — record `memory: consult-skipped` in `sourcesConsulted` and continue. |
 | 3 | **Context** | Other **open** threads on the same PR that share the class; prior `{reviewsDir}/PR-<id>-round-*.md` findings when present; `check-pr-status` failed-log snippets for the same pattern; thread-body "similar occurrence" notes. **Missing prior round reports is advisory, not a failure.** |
-| 4 | **Patterns (when enabled)** | `{sharedDir}/backend.md` / `{sharedDir}/frontend.md` only when those files exist, `defaults.patternsBackend` / `defaults.patternsFrontend` are true, and the layer matches. Record `patterns: consult-skipped` when a file is absent or the layer does not match. |
 
 Discovery findings that are the **same class** become candidate fixes in this round (not deferred to "hope CI finds them").
 

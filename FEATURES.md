@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at ≥ 9. Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.37** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.38** · 47 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -31,7 +31,7 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 1 | Implementation plan (`ws-write-plan`), MEMORY conflict check, `plan_index.cjs build` | `step-01-{slug}.plan.md` + `plan.index.json` |
 | 2 | Optional plan interrogation (`ws-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan.refined.md` |
 | 3 | Sequential exec stub (`write_sequential_dag.cjs`) unless `enableDag: true` then `ws-plan-to-tasks` | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
-| 4 | Implementation (`ws-implement-tasks`) with pattern and memory consult proof | code + build/test verification |
+| 4 | Implementation (`ws-implement-tasks`) with memory consult proof | code + build/test verification |
 | 5 | Spec-compliance scoring 0–10 (`ws-verify-plan`); **advances only at ≥ 9** | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
@@ -150,12 +150,10 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Failure reflection hook — forbids `Learning: N/A` when session friction is high | `ws-self-learning` | same |
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
 | Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
-| Backend architectural conventions, consulted before backend tasks | `ws-patterns` | `{sharedDir}/backend.md` |
-| Frontend UI/UX conventions, consulted before frontend tasks | `ws-patterns` | `{sharedDir}/frontend.md` |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
 | Domain authority, minimum evidence sets, and fraud definitions per domain | `ws-fable-domain` | domain adapters |
 
-Steps 4 and 6 of the standard pipeline require **proof** of pattern and memory consultation in the subagent's step output; a missing consult is a gate failure, not a warning.
+Steps 4 and 6 of the standard pipeline require **proof** of memory consultation in the subagent's step output; a missing consult is a gate failure, not a warning.
 
 ---
 
@@ -173,10 +171,6 @@ Meta-skills that keep the suite itself honest.
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
 
 Harness dispatches use bounded `## Subagent contract` sections plus indexed plan slices. The fixed preamble is capped at 18 KB, matched MEMORY at 4 KB, and total dispatch context at `defaults.contextBudget` (32 KB by default). `measure_harness.cjs` reports the reduction against the measured baseline (each skill id is resolved locally then under `{globalSkillsRoot}` so hybrid consumers are not ENOENT), while `check_duplicates.cjs` rejects duplicated normative blocks. Phase 5a also runs `check_shell_quoting.cjs` to block nested-quote `python -c` / `node -e` one-liners.
-
-
-
-**Session leases (`defaults.sessionLeases`):** cooperative same-slug exclusive leases under `{plansDir}/.runtime/leases/` plus a short `{plansDir}/.runtime/git.lock` critical section around destroyable git (checkout, reset, stash, merge, rebase, commit, push). Default **on** when the key is omitted; explicit `false` disables. This is **not** a repo-root wait-PID / global idle mutex — unrelated slugs on the same worktree warn via `user-gate` (Wait / Proceed / Abort).
 
 Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills telemetry report` renders per-run audit counts and median elapsed times by pipeline and step.
 
@@ -204,7 +198,9 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-goal-loop` | Generic convergence primitive: sentinel management, heartbeat and settle timers, re-check control. Backs `ws-goal-fix-pr` |
 | `ws-update-plan-implementation` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
 
-Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-patterns`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
+Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
+
+**Source anonymization:** agents must not name private consumer projects in closing reports, commits, specs, or new tracker issues. Pasted consumer traces stay in-chat for diagnosis; published wording describes the failure class with generic examples.
 
 ---
 
@@ -246,18 +242,19 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 | **Self-overwrite guard** | Remote install into the source repo is blocked, except under `test/` |
 | **No remote shell path** | The curl shim only downloads; all work happens in Node |
 | **Cross-platform** | Node `fs` APIs on Windows, macOS, and Linux; UTF-8 stdio forced for nested Python helpers |
-| **Script runtime policy** | New managed scripts are Node `.cjs`; existing `.py` helpers are frozen except for bug fixes |
+| **Script runtime policy** | New managed scripts are Node `.cjs`; existing `.py` helpers exec the sibling Node SoT. Shared `http_retry` retries 429/5xx; `utf8_stdio.py` forces UTF-8 on Windows |
 | **Runtime artifact exclusions** | Tarballs exclude consumer data, workflow runtime directories, audit scratch files, `__pycache__`, and compiled Python files |
 | **Interactive catalog** | [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills), generated by `bin/build-site.js` with per-skill dependency badges and full/lite workflow tags |
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.37)
+## 12. Recent evolution (0.3.22 → 0.3.38)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-08-23).
+Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.38** | Aug 25 | Remove `ws-patterns` (backend/frontend pattern files) and session leases / git.lock from orch and config; keep `ws-self-learning` MEMORY |
 | **0.3.37** | Aug 23 | Close stale unfinished workflow states; track us-236 on `index.PRD`; `tracking.featuresMdEnabled` makes FEATURES.md optional; remove `ws-audit` and `defaults.enableAuditing`; package stamp + site footer |
 | **0.3.36** | Aug 22 | ADO `comment_issue.py` accepts optional `--org`/`--project`/`--api-base`/`--pat-env` overrides (same flags as work-item fetch) |
 | **0.3.35** | Aug 22 | `validate_spec.cjs` `--help`/`-h` prints usage (exit 0); unknown dash flags are rejected instead of opened as spec paths |
@@ -281,7 +278,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-23).
 
 ## 13. Full skill catalog
 
-48 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+47 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -355,7 +352,6 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-23).
 | Skill | Pkg | Role |
 |-------|-----|------|
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) | W | Anti-regression memory engine |
-| [`ws-patterns`](.agents/skills/ws-patterns/SKILL.md) | W | Backend and frontend architectural / UI preferences engine |
 | [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) | W | Append-only task history writer |
 | [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | W | Micro diff hygiene guidelines |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) | W | Action-first reply shape and operational judgment |

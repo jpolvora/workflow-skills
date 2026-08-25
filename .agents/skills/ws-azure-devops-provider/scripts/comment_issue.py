@@ -24,22 +24,8 @@ _SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
 if str(_SHARED_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SHARED_SCRIPTS))
 from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
-
-
-def ensure_utf8_stdio() -> None:
-    os.environ["PYTHONIOENCODING"] = "utf-8"
-    for stream in (sys.stdin, sys.stdout, sys.stderr):
-        reconfigure = getattr(stream, "reconfigure", None)
-        if not callable(reconfigure):
-            continue
-        try:
-            reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            try:
-                reconfigure(errors="replace")
-            except Exception:
-                pass
-
+from utf8_stdio import ensure_utf8_stdio  # noqa: E402
+from http_retry import urlopen_retry  # noqa: E402
 
 ensure_utf8_stdio()
 
@@ -92,7 +78,7 @@ def post_comment(ado: dict[str, Any], work_item_id: int, body: str, pat: str) ->
     req.add_header("Authorization", f"Basic {token}")
     req.add_header("Content-Type", "application/json")
     req.add_header("Accept", "application/json")
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urlopen_retry(req, timeout=60) as resp:
         raw = resp.read().decode("utf-8")
     if not raw.strip():
         return {}

@@ -183,6 +183,7 @@ The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-
 - **Audit:** `integrity` recomputes digests for skills listed in `installed-skills.json` and compares to `skill-integrity-local.json` (selective installs only require their closure). `--check` compares semver **and** `fullPackageDigest` when the remote integrity manifest is reachable.
 - **Consumer-owned exclusions:** `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `CHANGELOG.md`, and `skill-integrity-local.json` are never hashed and never fail integrity when edited.
 - **Trust limit:** the integrity manifest is **unsigned**. Fetching it shares the same trust boundary as today’s remote `package.json` / raw GitHub fetch (no publisher signing in this release).
+- **Source anonymization:** when a pasted error comes from a private consumer app, agents must not name that project in reports, commits, specs, or new GitHub issues. Use generic wording. See root `AGENTS.md`.
 - **Latest layout only:** no folder renames or older-layout migration on update — install/update always copies the current skill tree.
 - **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
@@ -239,7 +240,6 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md) | Engineering-delivery gate and Code review proof source (default in `rules.seniorDeveloper`) |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration |
-| [`ws-patterns`](.agents/skills/ws-patterns/SKILL.md) | Backend & frontend persistent patterns memory engine |
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) · [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) · [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, plan-history archive, feature spec sync, prompt-task lifecycle, format & goal loop |
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (Extra; plan bootstrap start → latest PR thread comment or delivery commit; human vs agent duration split) |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | Standup briefing of the last 36 hours |

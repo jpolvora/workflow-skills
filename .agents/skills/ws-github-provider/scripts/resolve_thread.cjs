@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { fetchRetry } = require('../../ws-shared/scripts/http_retry.cjs');
 
 const RESOLUTION_MARKER = '<!-- resolution-reply -->';
 
@@ -82,7 +83,7 @@ async function main() {
     }
   `;
 
-  const response = await fetch('https://api.github.com/graphql', {
+  const response = await fetchRetry('https://api.github.com/graphql', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,

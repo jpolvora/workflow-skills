@@ -28,11 +28,11 @@ Auto: HS-3/4/5 apply; HS-1/2 N/A.
 
 ### Transition Discipline
 
-**Normal:** N done → `update_state` (+ `--jsonl-out`) → **required G2-code after Step 5 before Step 6** (and after Step 6 review-fix if dirty; skip if empty stage) → checkpoint `before-step-{N+1}` → `validate_state --pre-advance {N+1}` (shell; skip when `skipQualityGates` / `--skip-gates`) → Board → summary → Transition Gate → dispatch N+1. G2-code algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. `dryRun` prints message + paths and does not call `git commit`; do not dispatch review if the simulated stage set is non-empty.
+**Normal:** dispatch → finish (`update_state.cjs`) → G2-code after Step 5 (and after Step 6 review-fix if dirty) → checkpoint → `validate_state.cjs --pre-advance {N+1}` → Board → Transition Gate. Canonical recipes: [`protocols/state-hygiene.md`](protocols/state-hygiene.md). G2-code algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. `dryRun` prints paths and does not `git commit`.
 
 **Auto:** auto-gate + dispatch N+1 same turn (`autoMode` commits G2-code when the stage set is non-empty).
 
-**Forbidden:** mutating step or commit without gate.
+**Forbidden:** mutating step or commit without gate. `--pre-advance` without a step number is invalid (scripts fail closed).
 
 ### Universal step controls (every boundary)
 
@@ -310,19 +310,17 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 Read state: `{us-dir}/{workflow-id}.state.md` — `## Step outputs (compact)` plus at most the two most recent full step outputs.
 Skill: {SKILL.md path} — required sections: `## Subagent contract` and the step sections named by STEP-DISPATCH (never the full skill body).
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
-Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning, ws-patterns (if patternsFrontend and/or patternsBackend)
+Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
 Read: compact state outputs; injected MEMORY slice (orchestrator path-scoped query, ≤ 4,000 B — do not read the MEMORY.md index); `config.json.rules.stackFile` slices when provided.
-Patterns: if `config.json.defaults.patternsFrontend` is true and `{sharedDir}/frontend.md` exists, Read the injected frontend slice before any Web/UI edit.
-Patterns: if `config.json.defaults.patternsBackend` is true and `{sharedDir}/backend.md` exists, Read the injected backend slice before any Domain/Application/EF edit.
 
 MEMORY: apply the injected slice (Severity Medium+ DO NOT / INSTEAD DO). Empty slice is valid when MEMORY.md is absent.
-Proof: step-output must include `memory_consult` and `pattern_consult` (see schema).
+Proof: step-output must include `memory_consult` (see schema).
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
 Role: fresh; no resume. files_touched required (revert). model: {resolvedSubagentModel}.
 Rules: no `{plansDir}/` in git-add except Step 8 G2-delivery; needs_user: ≥2 choices, recommended first.
 Learning: use ## Step outputs (compact) plus at most two prior full outputs. Do NOT repeat broken approaches.
 Telemetry is stamped by the orchestrator (`dispatchedAt`/`finishedAt`); do not author elapsedSec.
-End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, pattern_consult{frontend, backend}, memory_consult{keywords, hits}, model)
+End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, memory_consult{keywords, hits}, model)
 ```
 ```
 

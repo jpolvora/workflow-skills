@@ -6,6 +6,51 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-25] Root AGENTS.md is not byte-capped
+- **Layer**: `Harness`
+- **Module**: `AGENTS.md / test-context-budget`
+- **Severity**: `Medium`
+- **PathPattern**: `AGENTS.md, test/test-context-budget.js, .agents/specs/harness-efficiency-and-verifiability.spec.md`
+- **Scenario / Context**: Root `AGENTS.md` is the upstream dogfood hub. The installer never copies it to consumers; they load `ws-shared/AGENTS.md`.
+- **DO NOT**: Reintroduce `utf8Size('AGENTS.md') <= 40000` in `test-context-budget.js`, or treat root `AGENTS.md` as a packaged consumer always-applied file.
+- **INSTEAD DO**: Keep the 14000 B cap on `.agents/skills/ws-shared/AGENTS.md` and the 24000 B cap on `CATALOG.md`. Grow root `AGENTS.md` when the upstream session contract needs it.
+
+### [2026-08-25] Retiring a skill must drop eval counts; doctor cites markdown link text
+- **Layer**: `Harness`
+- **Module**: `test-evals-schema / ws-doctor`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-evals-schema.js, .agents/skills/*/evals/evals.json, .agents/skills/ws-spec-to-pr/protocols/*.md`
+- **Scenario / Context**: Removing `ws-patterns` deleted its `evals/evals.json`. `test-evals-schema.js` still expected `Validated 44 eval files`. Separately, `ws-doctor` reports `cited: docs/faq.md` from the markdown *label*, so a protocols file linking as `[docs/faq.md](../docs/faq.md)` fails `testLiveSpecToPrDocsFaqNotMissing`.
+- **DO NOT**: Leave an absolute eval-file count in `test-evals-schema.js` after deleting a skill evals folder. Do not use backtick label `docs/faq.md` inside `protocols/` (doctor expands that label relative to the protocols directory).
+- **INSTEAD DO**: Decrement the `Validated N eval files` assertion whenever an `evals/evals.json` is removed. From `protocols/`, use label `faq.md` (or other non-`docs/faq.md` text) with href `../docs/faq.md`.
+
+### [2026-08-25] Node frontmatter must keep nested telemetry.loc
+- **Layer**: `Infrastructure`
+- **Module**: `ws-shared / workflow_state.cjs parseFrontmatter`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-update-state-yaml.js`
+- **Scenario / Context**: Frozen Python `update_state.py` now execs Node. A one-level YAML flatten turned `telemetry.loc.baseline` into `telemetry.baseline` and emptied `loc`, so the nested-map round-trip test failed.
+- **DO NOT**: Parse indented mapping blocks by trimming every line into a single flat object. Do not stringify nested maps with `JSON.stringify` on `telemetry.steps`.
+- **INSTEAD DO**: Parse nested keys with indent (`parseNestedMapping`). Serialize object arrays as YAML `- { … }` so `elapsedSec` dual-writes into state.md. Cover with `test-update-state-yaml.js` loc mapping and `test-quality-gates.js` dual-write.
+
+### [2026-08-25] Lite pre-advance 5 fail assert before stamping step-08
+- **Layer**: `Harness`
+- **Module**: `test / test-workflow-state-contract.js`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-workflow-state-contract.js, .agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: Lite `--pre-advance 5` requires `step-08-{slug}.result.md`. Stamping that file before the negative assert made the fail check exit 0.
+- **DO NOT**: Stamp `step-08` and then assert pre-advance 5 fails.
+- **INSTEAD DO**: Assert pre-advance 5 is non-zero with no ship result, then stamp `step-08`, finish lite step 4, then assert pre-advance 5 exits 0.
+
+### [2026-08-25] Frozen update_state.py execs Node dispatch/finish
+- **Layer**: `Infrastructure`
+- **Module**: `ws-spec-to-pr* / update_state.py`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/update_state.py, .agents/skills/ws-spec-to-pr-lite/scripts/update_state.py, test/test-update-state-yaml.js, test/test-quality-gates.js`
+- **Scenario / Context**: Python twins reimplemented `--step`/`--elapsed`/`--pre-advance` and drifted from `workflow_state.cjs`. Tests that spawned Python against this repo also wrote `plans/index.json` here.
+- **DO NOT**: Reimplement dispatch/finish/bypass or `--pre-advance` in Python. Do not pass `--elapsed`. Do not accept a bare `--pre-advance` flag. Do not run update_state without `--repo-root` pointing at a temp consumer.
+- **INSTEAD DO**: Keep `.py` as exec-wrappers of sibling `.cjs`. Canonical CLI is `dispatch` / `finish` / `bypass`. Seed a temp hub `config.json` and pass `--repo-root`. Reject `--elapsed` and require `--pre-advance N`.
+
 ### [2026-08-24] verboseMode omitted is off even when schema default is true
 - **Layer**: `Harness`
 - **Module**: `ws-shared / config-resolution / ws-configure-project`
@@ -95,6 +140,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: PR 239 review. 0.3.37 requires `{us-dir}/plan.index.json` before implement. In-flight workflows started on 0.3.36 never ran `plan_index.cjs build`.
 - **DO NOT**: Add a hard pre-advance file gate whose only coverage is new-run dispatch. Resume/troubleshooting that still describes HS-5 as YAML-only leaves operators stuck after update.
 - **INSTEAD DO**: Document the backfill command in `ws-spec-to-pr/docs/faq.md` and `setup.md` resume, and assert those recipes in `test-artifact-economy.js`.
+
+### [2026-08-24] az repos pr policy list rejects --project
+- **Layer**: `Harness`
+- **Module**: `ws-azure-devops-provider / check-pr-status`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-azure-devops-provider/INTENTS.md`
+- **Scenario / Context**: Azure CLI `az repos pr policy list` treats PR ids as organization-unique. Passing `--project` fails with `unrecognized arguments: --project`.
+- **DO NOT**: Copy `--project` from `az repos pr create` onto `az repos pr policy list`.
+- **INSTEAD DO**: Call `az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}"` only. Use `--project` on create/list-PRs/`az repos policy list`, not on PR policy evaluations.
 
 ### [2026-08-23] Shared worktree integrity vs other-worker dirty skills
 - **Layer**: `Harness`

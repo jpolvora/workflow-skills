@@ -78,7 +78,6 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
   const skills = [
     'ws-senior-developer',
     'ws-self-learning',
-    'ws-patterns',
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',
@@ -157,10 +156,10 @@ function parseJsonOut(result) {
       'no /opt absolute paths in emitted markdown',
     );
     assert(
-      autoText.includes('`ws-patterns`') &&
+      !autoText.includes('`ws-patterns`') &&
         !autoText.includes('ws-patterns-backend') &&
         !autoText.includes('ws-patterns-frontend'),
-      '--section patterns / --write-autoload emits ws-patterns only',
+      '--write-autoload does not emit retired ws-patterns ids',
     );
     const alwaysTable =
       (autoText.match(
@@ -180,7 +179,6 @@ function parseJsonOut(result) {
   for (const id of [
     'ws-senior-developer',
     'ws-self-learning',
-    'ws-patterns',
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',

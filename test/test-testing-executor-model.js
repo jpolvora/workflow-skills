@@ -144,16 +144,10 @@ assert(
   'resolve: both empty/omitted keeps session model',
 );
 
-const updateStatePy = read('.agents/skills/ws-spec-to-pr/scripts/update_state.py');
+const updateStateCjs = read('.agents/skills/ws-shared/scripts/workflow_state.cjs');
 assert(
-  updateStatePy.includes('def resolve_phase_model'),
-  'ws-spec-to-pr update_state.py contains resolve_phase_model helper',
-);
-
-const updateStateLitePy = read('.agents/skills/ws-spec-to-pr-lite/scripts/update_state.py');
-assert(
-  updateStateLitePy.includes('def resolve_phase_model'),
-  'ws-spec-to-pr-lite update_state.py contains resolve_phase_model helper',
+  updateStateCjs.includes('function resolvePhaseModel'),
+  'workflow_state.cjs contains resolvePhaseModel helper',
 );
 
 const protocols = read('.agents/skills/ws-spec-to-pr/PROTOCOLS.md');
