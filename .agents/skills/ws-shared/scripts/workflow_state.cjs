@@ -120,6 +120,48 @@ function parseValue(value) {
   return /^[{[]/.test(raw) ? parseInline(raw) : cleanScalar(raw);
 }
 
+function mappingIndent(block) {
+  for (const line of block) {
+    if (line.trim()) return line.match(/^(\s*)/)[0].length;
+  }
+  return 0;
+}
+
+function parseNestedMapping(block) {
+  const nested = {};
+  const base = mappingIndent(block);
+  for (let index = 0; index < block.length; index += 1) {
+    const line = block[index];
+    if (!line.trim()) continue;
+    const indent = line.match(/^(\s*)/)[0].length;
+    if (indent !== base) continue;
+    const item = line.trim().match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!item) continue;
+    const [, nestedKey, raw] = item;
+    if (raw !== '') {
+      nested[nestedKey] = parseValue(raw);
+      continue;
+    }
+    const child = [];
+    while (index + 1 < block.length) {
+      const next = block[index + 1];
+      if (!next.trim()) {
+        index += 1;
+        continue;
+      }
+      const nextIndent = next.match(/^(\s*)/)[0].length;
+      if (nextIndent <= indent) break;
+      child.push(block[++index]);
+    }
+    const childNonEmpty = child.filter((row) => row.trim());
+    if (!childNonEmpty.length) nested[nestedKey] = {};
+    else if (childNonEmpty.every((row) => row.trim().startsWith('-'))) {
+      nested[nestedKey] = childNonEmpty.map((row) => parseValue(row.trim().slice(1).trim()));
+    } else nested[nestedKey] = parseNestedMapping(child);
+  }
+  return nested;
+}
+
 function parseFrontmatter(text) {
   const normalized = text.replace(/\r\n?/g, '\n');
   const match = normalized.match(/^---\s*\n([\s\S]*?)\n---\s*\n?/);
@@ -142,12 +184,7 @@ function parseFrontmatter(text) {
     if (nonEmpty.every((line) => line.trim().startsWith('-'))) {
       data[key] = nonEmpty.map((line) => parseValue(line.trim().slice(1).trim()));
     } else {
-      const nested = {};
-      for (const line of nonEmpty) {
-        const item = line.trim().match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-        if (item) nested[item[1]] = parseValue(item[2]);
-      }
-      data[key] = nested;
+      data[key] = parseNestedMapping(block);
     }
   }
   return { data, body: normalized.slice(match[0].length), frontmatter: match[1] };
@@ -161,8 +198,17 @@ function scalar(value) {
   return text;
 }
 
+function formatInline(value) {
+  if (Array.isArray(value)) {
+    if (!value.length) return '[]';
+    return `[${value.map((item) => (item && typeof item === 'object' && !Array.isArray(item) ? inlineObject(item) : scalar(item))).join(', ')}]`;
+  }
+  if (value && typeof value === 'object') return inlineObject(value);
+  return scalar(value);
+}
+
 function inlineObject(value) {
-  return `{ ${Object.entries(value).map(([key, item]) => `${key}: ${scalar(item)}`).join(', ')} }`;
+  return `{ ${Object.entries(value).map(([key, item]) => `${key}: ${formatInline(item)}`).join(', ')} }`;
 }
 
 function upsertArtifactFrontmatter(text, fields) {
@@ -236,7 +282,10 @@ function serializeFrontmatter(data) {
         for (const [nestedKey, nestedValue] of Object.entries(value)) {
           if (Array.isArray(nestedValue)) {
             if (!nestedValue.length) lines.push(`  ${nestedKey}: []`);
-            else lines.push(`  ${nestedKey}: ${JSON.stringify(nestedValue)}`);
+            else if (nestedValue.every((item) => item && typeof item === 'object' && !Array.isArray(item))) {
+              lines.push(`  ${nestedKey}:`);
+              for (const item of nestedValue) lines.push(`    - ${inlineObject(item)}`);
+            } else lines.push(`  ${nestedKey}: ${formatInline(nestedValue)}`);
           } else if (nestedValue && typeof nestedValue === 'object') {
             lines.push(`  ${nestedKey}: ${inlineObject(nestedValue)}`);
           } else lines.push(`  ${nestedKey}: ${scalar(nestedValue)}`);
@@ -274,19 +323,43 @@ function listArg(value) {
   return String(value).split(',').map((item) => item.trim().replace(/\\/g, '/')).filter(Boolean);
 }
 
+function redactSecrets(value) {
+  return String(value).replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[REDACTED]');
+}
+
 function parseArgs(argv) {
   const positional = [];
   const options = {};
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     if (!token.startsWith('--')) positional.push(token);
     else {
       const key = token.slice(2).replace(/-([a-z])/g, (_, character) => character.toUpperCase());
-      if (['json', 'preAdvance', 'estimated'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) options[key] = true;
+      if (key === 'preAdvance') {
+        const next = argv[index + 1];
+        if (next === undefined || String(next).startsWith('--')) {
+          throw new Error('--pre-advance requires a step number (1-9)');
+        }
+        options.preAdvance = argv[++index];
+        continue;
+      }
+      if (['json', 'estimated'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) options[key] = true;
       else options[key] = argv[++index];
     }
   }
   return { positional, options };
+}
+
+function requirePreAdvanceStep(value) {
+  const next = Number(value);
+  if (!Number.isInteger(next) || next < 1 || next > 9) {
+    throw new Error('--pre-advance requires a step number (1-9)');
+  }
+  return next;
 }
 
 function normalizeFable(value) {
@@ -319,6 +392,7 @@ function commonEvent(state, pipeline, step, type, timestamp, options, context) {
     reviewRounds: Number(options.reviewRounds || 0),
     refineRounds: Number(options.refineRounds || 0),
     skipReason: options.reason || null,
+    bypassed: type === 'gate-bypass',
     acTotal: Number(options.acTotal || state.acTotal || 0),
     acImplemented: Number(options.acImplemented || state.acImplemented || 0),
   };
@@ -333,6 +407,35 @@ function readStepOutput(value, context) {
   } catch {
     return { summary: String(raw).slice(0, 2000) };
   }
+}
+
+function applyFinishTelemetry(state, labels, step, payload) {
+  const telemetry = state.telemetry && typeof state.telemetry === 'object' && !Array.isArray(state.telemetry)
+    ? state.telemetry
+    : {};
+  const prior = Array.isArray(telemetry.steps)
+    ? telemetry.steps.filter((item) => item && typeof item === 'object')
+    : [];
+  const row = {
+    N: step,
+    label: labels[step] || `Step ${step}`,
+    dispatchedAt: payload.dispatchedAt || null,
+    finishedAt: payload.finishedAt,
+    elapsedSec: payload.elapsedSec,
+    promptTokens: payload.promptTokens,
+    completionTokens: payload.completionTokens,
+    estimated: payload.estimated,
+    model: payload.model,
+    filesTouched: payload.filesTouched,
+  };
+  telemetry.steps = [...prior.filter((item) => Number(item.N ?? item.step) !== step), row]
+    .sort((a, b) => Number(a.N ?? a.step) - Number(b.N ?? b.step));
+  telemetry.totalElapsedSec = telemetry.steps.reduce((sum, item) => sum + Number(item.elapsedSec || 0), 0);
+  telemetry.totalTokens = telemetry.steps.reduce(
+    (sum, item) => sum + Number(item.promptTokens || 0) + Number(item.completionTokens || 0),
+    0,
+  );
+  state.telemetry = telemetry;
 }
 
 function compactOutputs(body, step, output) {
@@ -668,6 +771,16 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     const created = listArg(options.created || output.files_touched?.created?.join(','));
     const modified = listArg(options.modified || output.files_touched?.modified?.join(','));
     const deleted = listArg(options.deleted || output.files_touched?.deleted?.join(','));
+    applyFinishTelemetry(state, labels, step, {
+      dispatchedAt,
+      finishedAt,
+      elapsedSec,
+      estimated,
+      promptTokens: Number(options.promptTokens || 0),
+      completionTokens: Number(options.completionTokens || 0),
+      model: state.currentModel,
+      filesTouched: { created, modified, deleted },
+    });
     state.workflowManifest = state.workflowManifest && typeof state.workflowManifest === 'object' ? state.workflowManifest : {};
     for (const key of ['created', 'modified', 'deleted']) {
       state.workflowManifest[key] = [...new Set([...(state.workflowManifest[key] || []), ...({ created, modified, deleted }[key])])].sort();
@@ -710,7 +823,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       gateDecision,
       score: derivedScore,
       verdict: options.fableVerdict || null,
-      errors: listArg(options.errors),
+      errors: listArg(options.errors).map(redactSecrets),
     };
   } else {
     if (!options.gate || !options.reason) throw new Error('bypass requires --gate and --reason');
@@ -896,6 +1009,10 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
 function runUpdateCli(config) {
   try {
     const { positional, options } = parseArgs(process.argv.slice(2));
+    if (options.help) {
+      process.stdout.write('Usage: update_state.cjs dispatch|finish|bypass <state> --step N [options]\n');
+      return;
+    }
     const [operation, stateFile] = positional;
     options.scriptFile = config.scriptFile;
     const result = performUpdate(config, operation, stateFile, options);
@@ -968,6 +1085,10 @@ function rebuildIndex(context, config) {
 function runValidateCli(config) {
   try {
     const { positional, options } = parseArgs(process.argv.slice(2));
+    if (options.help) {
+      process.stdout.write('Usage: validate_state.cjs <state|workflowId|rebuild-index> [--pre-advance N] [--repo-root DIR]\n');
+      return;
+    }
     const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: config.scriptFile });
     if (positional[0] === 'rebuild-index') {
       process.stdout.write(`${JSON.stringify(rebuildIndex(context, config), null, 2)}\n`);
@@ -983,7 +1104,7 @@ function runValidateCli(config) {
       context,
       maxStep: config.maxStep,
       pipeline: config.pipeline,
-      preAdvance: options.preAdvance === true ? undefined : options.preAdvance,
+      preAdvance: options.preAdvance === undefined ? undefined : requirePreAdvanceStep(options.preAdvance),
     });
     process.stdout.write(`${JSON.stringify({ ...result, state: toRepoRelative(context.repoRoot, stateFile, { allowOutside: true }) }, null, 2)}\n`);
   } catch (error) {
@@ -1001,6 +1122,7 @@ module.exports = {
   stateIdentityHash,
   legacyStateHash,
   snapshotHashMatches,
+  parseArgs,
   parseFrontmatter,
   serializeFrontmatter,
   normalizeFable,

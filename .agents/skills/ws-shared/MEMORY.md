@@ -15,6 +15,33 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Reintroduce `utf8Size('AGENTS.md') <= 40000` in `test-context-budget.js`, or treat root `AGENTS.md` as a packaged consumer always-applied file.
 - **INSTEAD DO**: Keep the 14000 B cap on `.agents/skills/ws-shared/AGENTS.md` and the 24000 B cap on `CATALOG.md`. Grow root `AGENTS.md` when the upstream session contract needs it.
 
+### [2026-08-25] Node frontmatter must keep nested telemetry.loc
+- **Layer**: `Infrastructure`
+- **Module**: `ws-shared / workflow_state.cjs parseFrontmatter`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs, test/test-update-state-yaml.js`
+- **Scenario / Context**: Frozen Python `update_state.py` now execs Node. A one-level YAML flatten turned `telemetry.loc.baseline` into `telemetry.baseline` and emptied `loc`, so the nested-map round-trip test failed.
+- **DO NOT**: Parse indented mapping blocks by trimming every line into a single flat object. Do not stringify nested maps with `JSON.stringify` on `telemetry.steps`.
+- **INSTEAD DO**: Parse nested keys with indent (`parseNestedMapping`). Serialize object arrays as YAML `- { … }` so `elapsedSec` dual-writes into state.md. Cover with `test-update-state-yaml.js` loc mapping and `test-quality-gates.js` dual-write.
+
+### [2026-08-25] Lite pre-advance 5 fail assert before stamping step-08
+- **Layer**: `Harness`
+- **Module**: `test / test-workflow-state-contract.js`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-workflow-state-contract.js, .agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: Lite `--pre-advance 5` requires `step-08-{slug}.result.md`. Stamping that file before the negative assert made the fail check exit 0.
+- **DO NOT**: Stamp `step-08` and then assert pre-advance 5 fails.
+- **INSTEAD DO**: Assert pre-advance 5 is non-zero with no ship result, then stamp `step-08`, finish lite step 4, then assert pre-advance 5 exits 0.
+
+### [2026-08-25] Frozen update_state.py execs Node dispatch/finish
+- **Layer**: `Infrastructure`
+- **Module**: `ws-spec-to-pr* / update_state.py`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/update_state.py, .agents/skills/ws-spec-to-pr-lite/scripts/update_state.py, test/test-update-state-yaml.js, test/test-quality-gates.js`
+- **Scenario / Context**: Python twins reimplemented `--step`/`--elapsed`/`--pre-advance` and drifted from `workflow_state.cjs`. Tests that spawned Python against this repo also wrote `plans/index.json` here.
+- **DO NOT**: Reimplement dispatch/finish/bypass or `--pre-advance` in Python. Do not pass `--elapsed`. Do not accept a bare `--pre-advance` flag. Do not run update_state without `--repo-root` pointing at a temp consumer.
+- **INSTEAD DO**: Keep `.py` as exec-wrappers of sibling `.cjs`. Canonical CLI is `dispatch` / `finish` / `bypass`. Seed a temp hub `config.json` and pass `--repo-root`. Reject `--elapsed` and require `--pre-advance N`.
+
 ### [2026-08-24] verboseMode omitted is off even when schema default is true
 - **Layer**: `Harness`
 - **Module**: `ws-shared / config-resolution / ws-configure-project`

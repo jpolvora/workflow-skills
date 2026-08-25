@@ -22,14 +22,17 @@ function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
-    if (token === '--compile' || token === '-c') args.compile = true;
+    if (token === '--help' || token === '-h') args.help = true;
+    else if (token === '--compile' || token === '-c') args.compile = true;
     else if (token === '--query' || token === '-q') args.query = argv[++i];
     else if (token === '--match-paths' || token === '-m') {
       args.matchPaths = [];
       while (i + 1 < argv.length && !argv[i + 1].startsWith('--')) args.matchPaths.push(argv[++i]);
-    } else if (token === '--repo-root') args.repoRoot = argv[++i];
+    }     else if (token === '--repo-root') args.repoRoot = argv[++i];
+    else if (token === '--help' || token === '-h') args.help = true;
     else throw new Error(`unknown argument: ${token}`);
   }
+  if (args.help) return args;
   if (![args.compile, args.query, args.matchPaths].filter(Boolean).length) {
     throw new Error('choose --compile, --query, or --match-paths');
   }
@@ -187,6 +190,10 @@ function globMatch(pattern, value) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    process.stdout.write('Usage: self_learning.cjs --compile | --query <text> | --match-paths <paths...> [--repo-root DIR]\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: __filename, skillId: 'ws-self-learning' });
   const memoryDir = path.join(context.sharedDir, 'memory');
   const output = path.join(context.sharedDir, 'MEMORY.md');

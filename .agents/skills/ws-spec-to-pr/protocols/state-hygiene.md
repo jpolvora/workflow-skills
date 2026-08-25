@@ -73,13 +73,33 @@ node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs \
   --pre-advance {N+1}
 ```
 
+`--pre-advance` **requires** an integer 1–9. A bare flag is rejected.
+
 Checks (per [`ARTIFACTS.md`](../ARTIFACTS.md) step-input table): checkpoint tag exists and is reachable; required input artifacts on disk; `completedSteps` monotonicity.
+
+### Pre-advance artifact cheat sheet
+
+`--pre-advance N` means "about to dispatch step N". Standard and lite required files:
+
+| Next | Standard | Lite |
+|------|----------|------|
+| 1 | `step-00-{slug}.spec.md` + `ac-ledger.json` | same |
+| 2 | `step-01-{slug}.plan.md` | same |
+| 3 | `step-02-{slug}.plan.refined.md` (skip if `interview-not-required`) | — |
+| 4 | `step-03-{slug}.plan.exec.md` + `plan.index.json` | `step-06-{slug}.review.md` + `plan.index.json` |
+| 5 | — | `step-08-{slug}.result.md` |
+| 6 | `step-05-{slug}.plan.report.md` + ledger score ≥ 9 | — |
+| 7 | `step-06-{slug}.review.md` | — |
+| 8 | `step-07-{slug}.testing.report.md` (skip if `testing-disabled` / `no-test-surface`) | — |
+| 9 | `step-08-{slug}.result.md` | — |
+
+In-flight resume: backfill `plan.index.json` / `ac-ledger.json` before validate. See [`docs/faq.md`](../docs/faq.md).
 
 | Result | Action |
 |--------|--------|
 | exit 0 | Continue → Progress Board → Transition Gate → dispatch N+1 |
 | exit ≠ 0 | **HS-5** — STOP; no board, no gate, no dispatch |
 
-**Bypass (this gate only):** When `--skip-gates` or `skipQualityGates` is active, **skip** this shell call. Record bypass in JSONL via `--bypassed` on `update_state` (`gate: pre-advance`). Does not bypass build/test/security, HS-1–HS-4, or other quality gates.
+**Bypass (this gate only):** When `--skip-gates` or `skipQualityGates` is active, skip this shell call. Record bypass with `update_state.cjs bypass --gate pre-advance --reason skip-gates`. Does not bypass build/test/security, HS-1–HS-4, or other quality gates.
 
 Fail hygiene or pre-advance → **HS-5** (STOP before Progress Board).

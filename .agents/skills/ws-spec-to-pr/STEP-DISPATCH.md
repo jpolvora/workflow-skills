@@ -102,7 +102,7 @@ Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3`
 
 When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
 
-Telemetry/`--elapsed` still required under `autoMode`/`fullMode` (State Hygiene → HS-5 if missing).
+Dispatch/finish timestamps still required under `autoMode`/`fullMode` (State Hygiene → HS-5 if missing). Authored `--elapsed` is rejected.
 
 **Combined gate** ([`gates.md`](../ws-shared/gates.md)):
 

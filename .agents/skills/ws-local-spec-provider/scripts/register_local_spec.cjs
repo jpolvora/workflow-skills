@@ -18,10 +18,12 @@ function argsOf(argv) {
   const args = { source: 'local', force: false, json: false };
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
-    if (token === '--force') args.force = true;
+    if (token === '--help' || token === '-h') args.help = true;
+    else if (token === '--force') args.force = true;
     else if (token === '--json') args.json = true;
     else if (token.startsWith('--')) args[token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[++i];
   }
+  if (args.help) return args;
   if (!args.input) throw new Error('--input is required');
   return args;
 }
@@ -91,6 +93,10 @@ function writeChecked(file, content, force) {
 
 function main() {
   const args = argsOf(process.argv.slice(2));
+  if (args.help) {
+    process.stdout.write('Usage: register_local_spec.cjs --input <spec> [--slug SLUG] [--source local|github|azure-devops] [--force] [--json] [--repo-root DIR]\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: __filename });
   const config = context.config || {};
   const plansDir = resolveConfiguredPath(context.repoRoot, args.plansDir || config.plans?.dir, '.agents/plans');

@@ -13,10 +13,12 @@ function parseArgs(argv) {
   const args = { json: false, ensure: false };
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
-    if (token === '--detect' || token === '--validate' || token === '--ensure' || token === '--json') args[token.slice(2)] = true;
+    if (token === '--help' || token === '-h') args.help = true;
+    else if (token === '--detect' || token === '--validate' || token === '--ensure' || token === '--json') args[token.slice(2)] = true;
     else if (token === '--configure' || token === '--repo-root') args[token.slice(2).replace('-r', 'R')] = argv[++i];
     else throw new Error(`unknown argument: ${token}`);
   }
+  if (args.help) return args;
   if (![args.detect, args.validate, Boolean(args.configure)].filter(Boolean).length) throw new Error('choose --detect, --configure, or --validate');
   return args;
 }
@@ -32,6 +34,10 @@ function emit(payload, json) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    process.stdout.write('Usage: detect_specs_dir.cjs --detect|--configure DIR|--validate [--ensure] [--json] [--repo-root DIR]\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: __filename });
   const configFile = path.join(context.sharedDir, 'config.json');
   const config = fs.existsSync(configFile) ? JSON.parse(fs.readFileSync(configFile, 'utf8')) : {};

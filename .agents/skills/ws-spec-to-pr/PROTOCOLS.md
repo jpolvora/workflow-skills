@@ -28,11 +28,11 @@ Auto: HS-3/4/5 apply; HS-1/2 N/A.
 
 ### Transition Discipline
 
-**Normal:** N done → `update_state` (+ `--jsonl-out`) → **required G2-code after Step 5 before Step 6** (and after Step 6 review-fix if dirty; skip if empty stage) → checkpoint `before-step-{N+1}` → `validate_state --pre-advance {N+1}` (shell; skip when `skipQualityGates` / `--skip-gates`) → Board → summary → Transition Gate → dispatch N+1. G2-code algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. `dryRun` prints message + paths and does not call `git commit`; do not dispatch review if the simulated stage set is non-empty.
+**Normal:** dispatch → finish (`update_state.cjs`) → G2-code after Step 5 (and after Step 6 review-fix if dirty) → checkpoint → `validate_state.cjs --pre-advance {N+1}` → Board → Transition Gate. Canonical recipes: [`protocols/state-hygiene.md`](protocols/state-hygiene.md). G2-code algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. `dryRun` prints paths and does not `git commit`.
 
 **Auto:** auto-gate + dispatch N+1 same turn (`autoMode` commits G2-code when the stage set is non-empty).
 
-**Forbidden:** mutating step or commit without gate.
+**Forbidden:** mutating step or commit without gate. `--pre-advance` without a step number is invalid (scripts fail closed).
 
 ### Universal step controls (every boundary)
 

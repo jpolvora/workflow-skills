@@ -461,28 +461,31 @@ class WorkflowChecker:
 
     def check_state_isolation_and_config(self) -> None:
         """Verify state update files and provider scripts target shared/config.json and serialize workflowType."""
-        std_update = SKILLS_DIR / "ws-spec-to-pr" / "scripts" / "update_state.py"
+        std_update = SKILLS_DIR / "ws-spec-to-pr" / "scripts" / "update_state.cjs"
+        shared_state = SKILLS_DIR / "ws-shared" / "scripts" / "workflow_state.cjs"
         if std_update.exists():
-            code = std_update.read_text(encoding="utf-8", errors="replace")
-            if "workflowType" not in code or "standard" not in code:
+            wrapper = std_update.read_text(encoding="utf-8", errors="replace")
+            sot = shared_state.read_text(encoding="utf-8", errors="replace") if shared_state.exists() else ""
+            if "pipeline: 'standard'" not in wrapper or "workflowType" not in sot:
                 self.add_issue(
                     "CRITICAL",
                     "State Isolation",
-                    "ws-spec-to-pr/scripts/update_state.py",
-                    "Standard update_state.py does not serialize workflowType: standard.",
-                    "Ensure update_state.py sets workflowType to 'standard'.",
+                    "ws-spec-to-pr/scripts/update_state.cjs",
+                    "Standard update_state.cjs does not serialize workflowType: standard.",
+                    "Ensure update_state.cjs sets pipeline standard and workflow_state.cjs writes workflowType.",
                 )
 
-        lite_update = SKILLS_DIR / "ws-spec-to-pr-lite" / "scripts" / "update_state.py"
+        lite_update = SKILLS_DIR / "ws-spec-to-pr-lite" / "scripts" / "update_state.cjs"
         if lite_update.exists():
-            code = lite_update.read_text(encoding="utf-8", errors="replace")
-            if "workflowType" not in code or "lite" not in code:
+            wrapper = lite_update.read_text(encoding="utf-8", errors="replace")
+            sot = shared_state.read_text(encoding="utf-8", errors="replace") if shared_state.exists() else ""
+            if "pipeline: 'lite'" not in wrapper or "workflowType" not in sot:
                 self.add_issue(
                     "CRITICAL",
                     "State Isolation",
-                    "ws-spec-to-pr-lite/scripts/update_state.py",
-                    "Lite update_state.py does not serialize workflowType: lite.",
-                    "Ensure update_state.py sets workflowType to 'lite'.",
+                    "ws-spec-to-pr-lite/scripts/update_state.cjs",
+                    "Lite update_state.cjs does not serialize workflowType: lite.",
+                    "Ensure update_state.cjs sets pipeline lite and workflow_state.cjs writes workflowType.",
                 )
 
         lite_val_state = SKILLS_DIR / "ws-spec-to-pr-lite" / "scripts" / "validate_state.py"

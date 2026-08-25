@@ -154,41 +154,6 @@ assert(
   'lite ignores reviewFix role',
 );
 
-const pyScript = path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.py');
-const pyProbe = `
-import importlib.util, json, sys
-spec = importlib.util.spec_from_file_location("std_update", ${JSON.stringify(pyScript)})
-mod = importlib.util.module_from_spec(spec)
-sys.modules["std_update"] = mod
-spec.loader.exec_module(mod)
-defaults = json.loads(sys.argv[1])
-role = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] != "-" else None
-print(mod.resolve_phase_model(int(sys.argv[2]), None, "sess", role=role, pipeline=sys.argv[4], defaults=defaults))
-`;
-const pyDefaults = JSON.stringify({
-  modelsPreset: 'cursor',
-  modelPresets: example.defaults.modelPresets,
-  stepModels: { dag: 'dag-worker' },
-});
-const pyDag = spawnSync('python', ['-c', pyProbe, pyDefaults, '4', 'dag', 'standard'], {
-  encoding: 'utf8',
-});
-assert(pyDag.status === 0, `python resolve_phase_model spawn: ${pyDag.stderr}`);
-assert(pyDag.stdout.trim() === 'dag-worker', 'python standard role dag via injected defaults');
-
-const pyLiteScript = `
-import json, importlib.util, sys
-spec = importlib.util.spec_from_file_location("lite_update", ${JSON.stringify(path.join(REPO, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.py'))})
-mod = importlib.util.module_from_spec(spec)
-sys.modules["lite_update"] = mod
-spec.loader.exec_module(mod)
-defaults = json.loads(sys.argv[1])
-print(mod.resolve_phase_model(4, None, "sess", role="reviewFix", pipeline="lite", defaults=defaults))
-`;
-const pyLiteRun = spawnSync('python', ['-c', pyLiteScript, pyDefaults], { encoding: 'utf8' });
-assert(pyLiteRun.status === 0, `python lite resolve: ${pyLiteRun.stderr}`);
-assert(pyLiteRun.stdout.trim() === 'sess', 'python lite ignores reviewFix');
-
 const dispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 assert(dispatch.includes('modelsPreset'), 'STEP-DISPATCH documents modelsPreset');
 assert(dispatch.includes('scoreAndRefine'), 'STEP-DISPATCH documents scoreAndRefine role');

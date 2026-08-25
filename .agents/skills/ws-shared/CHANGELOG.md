@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-25 08:50] Agent: Cursor Grok 4.6
+- **Prompt**: Commit current work then implement waves A+B+C (freeze Python twins, retry/UTF-8, prune protocol redundancy)
+- **Done**: `update_state.py` / register / detect_specs_dir exec Node SoT; nested `telemetry.loc` parse; `telemetry.steps` dual-write; `--pre-advance` requires N; HTTP retry + utf8_stdio; PROTOCOLS points at state-hygiene cheat sheet
+- **Result**: Tests use `dispatch`/`finish`/`bypass` against temp consumers; loc and dual-write gates pass; lite pre-advance 5 fail-assert is before stamp
+
 ### [2026-08-25 08:35] Agent: Cursor Grok 4.6
 - **Prompt**: Root AGENTS.md does not need a 40000 B cap; it is upstream/dev only and is not shipped to consumers
 - **Done**: Dropped `utf8Size('AGENTS.md') <= 40000` from `test-context-budget.js`; AC1 no longer byte-caps the root hub; kept 14000 B shared hub + 24000 B CATALOG

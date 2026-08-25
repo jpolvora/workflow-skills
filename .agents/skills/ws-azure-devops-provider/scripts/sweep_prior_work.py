@@ -23,50 +23,18 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-
-def ensure_utf8_stdio() -> None:
-    os.environ["PYTHONIOENCODING"] = "utf-8"
-    for stream in (sys.stdin, sys.stdout, sys.stderr):
-        reconfigure = getattr(stream, "reconfigure", None)
-        if not callable(reconfigure):
-            continue
-        try:
-            reconfigure(encoding="utf-8", errors="replace")
-        except Exception:
-            try:
-                reconfigure(errors="replace")
-            except Exception:
-                pass
-
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+if str(_SHARED_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SHARED_SCRIPTS))
+from resolve_consumer_root import resolve_repo_root, resolve_config_path, to_repo_relative  # noqa: E402
+from utf8_stdio import ensure_utf8_stdio  # noqa: E402
+from http_retry import urlopen_retry  # noqa: E402
 
 ensure_utf8_stdio()
 
-HUB_REL = Path(".agents") / "skills" / "ws-shared" / "config.json"
-
-
-def resolve_repo_root(override: str | None = None) -> Path:
-    if override:
-        return Path(override).expanduser().resolve()
-    cwd = Path.cwd().resolve()
-    if (cwd / HUB_REL).is_file():
-        return cwd
-    return Path(__file__).resolve().parents[4]
-
-
-def to_repo_relative(repo_root: Path, path: str | Path) -> str:
-    p = Path(path)
-    try:
-        rel = p.resolve().relative_to(repo_root.resolve())
-        return rel.as_posix()
-    except ValueError:
-        s = str(path).replace("\\", "/")
-        if re.match(r"^[A-Za-z]:/", s):
-            return Path(s).name
-        return s.lstrip("/")
-
 
 def load_ado_config(repo_root: Path) -> dict[str, Any]:
-    cfg_path = repo_root / HUB_REL
+    cfg_path = resolve_config_path(repo_root)
     if not cfg_path.is_file():
         return {}
     try:
@@ -113,7 +81,7 @@ def api_get(url: str, pat: str) -> Any:
     token = base64.b64encode(f":{pat}".encode("utf-8")).decode("ascii")
     req.add_header("Authorization", f"Basic {token}")
     req.add_header("Accept", "application/json")
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urlopen_retry(req, timeout=60) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
@@ -239,7 +207,7 @@ def search_prs(ado: dict[str, Any], pat: str, search_text: str) -> list[dict[str
 def git_log(repo_root: Path, files: list[str]) -> list[dict[str, str]]:
     if not files:
         return []
-    rel_files = [to_repo_relative(repo_root, f) for f in files]
+    rel_files = [to_repo_relative(repo_root, f, allow_outside=True) for f in files]
     proc = subprocess.run(
         ["git", "log", "--oneline", "-20", "--", *rel_files],
         cwd=repo_root,
@@ -269,7 +237,7 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="Advisory mode; skip remote when auth missing")
     args = parser.parse_args()
 
-    repo_root = resolve_repo_root(args.repo_root)
+    repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
     ado = load_ado_config(repo_root)
     auth_ok, auth_msg = validate_auth(ado, args.dry_run)
     if not auth_ok and not args.dry_run:

@@ -4,7 +4,7 @@
 Canonical invoke:
     node {skillsRoot}/ws-spec-to-pr-lite/scripts/validate_state.cjs <state> [--pre-advance <N>]
 
-Reads project hub `{sharedDir}/config.json` via the Node SoT (resolve_consumer_root.cjs).
+Reads project hub `ws-shared/config.json` (`{sharedDir}`) via the Node SoT (resolve_consumer_root.cjs).
 Do not reimplement --pre-advance here — parsers drift from workflow_state.cjs.
 """
 from __future__ import annotations

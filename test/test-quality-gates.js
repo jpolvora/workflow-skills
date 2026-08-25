@@ -22,7 +22,7 @@ const VALIDATE = path.join(
 );
 const UPDATE_STATE = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-spec-to-pr/scripts/update_state.py',
+  '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs',
 );
 const CLASSIFY = path.join(
   REPO_ROOT,
@@ -475,54 +475,47 @@ function testClassifyOverride() {
 function testJsonlFieldsLazyDirNoPiiDualWrite() {
   const slug = `qg-jsonl-${Date.now()}`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-jsonl-'), slug);
+  const root = mkTmp('qg-jsonl-');
+  writeValidateHub(root);
+  const usDir = path.join(root, '.agents/plans', slug);
+  const stateRel = `.agents/plans/${slug}/${workflowId}.state.md`;
   const statePath = writeState(usDir, slug, workflowId);
-  const jsonlPath = path.join(usDir, 'telemetry', 'step-00.jsonl');
+  const jsonlRel = `.agents/plans/${slug}/telemetry/step-00.jsonl`;
+  const jsonlPath = path.join(root, jsonlRel);
+  const common = ['--repo-root', root, '--jsonl-out', jsonlRel];
 
   assert(!fs.existsSync(path.join(usDir, 'telemetry')), 'testJsonl*: telemetry/ absent before update');
 
-  const r = runPython(UPDATE_STATE, [
-    statePath,
-    '--step',
-    '0',
-    '--status',
-    'completed',
-    '--elapsed',
-    '12',
-    '--tokens',
-    '100:50',
-    '--model',
-    'test-model',
-    '--label',
-    'Spec',
-    '--gate-choice',
-    'advance',
-    '--verification-score',
-    '8',
-    '--fable-verdict',
-    'VERIFIED',
-    '--errors',
-    'leak:user@example.com,ok',
-    '--jsonl-out',
-    jsonlPath,
+  const dispatched = run(process.execPath, [
+    UPDATE_STATE, 'dispatch', stateRel, '--step', '0',
+    '--timestamp', '2026-08-21T20:00:00.000Z', ...common,
+  ]);
+  assert(dispatched.status === 0, `testJsonl*: dispatch exits 0 (${dispatched.stderr || dispatched.stdout || ''})`);
+  const r = run(process.execPath, [
+    UPDATE_STATE, 'finish', stateRel, '--step', '0',
+    '--timestamp', '2026-08-21T20:00:12.000Z',
+    '--prompt-tokens', '100',
+    '--completion-tokens', '50',
+    '--model', 'test-model',
+    '--errors', 'leak:user@example.com,ok',
+    '--gate-decision', JSON.stringify({ gate: 'transition', choice: 'continue', reason: 'approved', round: 1 }),
+    ...common,
   ]);
 
   assert(r.status === 0, `testJsonl*: update_state exits 0 (${r.stderr || r.stdout || ''})`);
   assert(fs.existsSync(jsonlPath), 'testJsonlLazyDir: creates telemetry/ and jsonl');
 
-  const line = read(jsonlPath).trim().split(/\r?\n/)[0];
-  const rec = JSON.parse(line);
+  const lines = read(jsonlPath).trim().split(/\r?\n/).filter(Boolean).map((row) => JSON.parse(row));
+  const rec = lines.find((row) => row.type === 'finish');
+  assert(Boolean(rec), 'testJsonl*: finish JSONL record exists');
   const required = [
     'timestamp',
     'step',
-    'label',
     'elapsedSec',
     'promptTokens',
     'completionTokens',
     'filesTouched',
     'model',
-    'verificationScore',
-    'fableVerdict',
     'gateDecision',
     'errors',
     'bypassed',
@@ -531,6 +524,7 @@ function testJsonlFieldsLazyDirNoPiiDualWrite() {
   assert(missing.length === 0, `testJsonlFields: schema keys present (${missing.join(',') || 'all'})`);
   assert(rec.step === 0 && rec.elapsedSec === 12, 'testJsonlFields: step/elapsed values');
   assert(rec.bypassed === false, 'testJsonlFields: bypassed false by default');
+  const line = JSON.stringify(rec);
   assert(
     Array.isArray(rec.errors) && rec.errors.some((e) => /\[REDACTED\]/.test(String(e))),
     'testJsonlNoPii: email / secret-like content redacted in errors',
@@ -589,21 +583,20 @@ function testBypassSafetyFloor() {
 function testSkipGatesBypassedJsonlField() {
   const slug = `qg-bypass-${Date.now()}`;
   const workflowId = `${slug}-wf`;
-  const usDir = path.join(mkTmp('qg-bypass-'), slug);
-  const statePath = writeState(usDir, slug, workflowId);
-  const jsonlPath = path.join(usDir, 'telemetry', 'step-00.jsonl');
+  const root = mkTmp('qg-bypass-');
+  writeValidateHub(root);
+  const usDir = path.join(root, '.agents/plans', slug);
+  const stateRel = `.agents/plans/${slug}/${workflowId}.state.md`;
+  writeState(usDir, slug, workflowId);
+  const jsonlRel = `.agents/plans/${slug}/telemetry/step-00.jsonl`;
+  const jsonlPath = path.join(root, jsonlRel);
+  const common = ['--repo-root', root, '--jsonl-out', jsonlRel];
 
-  const r = runPython(UPDATE_STATE, [
-    statePath,
-    '--step',
-    '0',
-    '--status',
-    'completed',
-    '--elapsed',
-    '3',
-    '--jsonl-out',
-    jsonlPath,
-    '--bypassed',
+  const r = run(process.execPath, [
+    UPDATE_STATE, 'bypass', stateRel, '--step', '0',
+    '--gate', 'quality-gates', '--reason', 'skip-gates',
+    '--timestamp', '2026-08-21T20:00:03.000Z',
+    ...common,
   ]);
   assert(r.status === 0, 'testSkipGatesBypassTelemetry: update_state --bypassed exits 0');
   const lines = read(jsonlPath)
@@ -611,9 +604,11 @@ function testSkipGatesBypassedJsonlField() {
     .split(/\r?\n/)
     .filter(Boolean)
     .map((l) => JSON.parse(l));
-  const stepRec = lines.find((rec) => rec.bypassed === true && rec.type !== 'gate-bypass');
   const typed = lines.find((rec) => rec.type === 'gate-bypass');
-  assert(Boolean(stepRec), 'testSkipGatesBypassTelemetry: JSONL records bypassed true');
+  assert(
+    typed && typed.bypassed === true,
+    'testSkipGatesBypassTelemetry: JSONL records bypassed true',
+  );
   assert(
     typed &&
       typed.gate === 'quality-gates' &&
