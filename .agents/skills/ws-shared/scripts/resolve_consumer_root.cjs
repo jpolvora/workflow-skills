@@ -58,6 +58,12 @@ function normalizeConfig(config) {
   return normalized;
 }
 
+function resolveMinVerifyScore(config) {
+  const n = config?.defaults?.minVerifyScore;
+  if (typeof n !== 'number' || !Number.isInteger(n) || n < 1 || n > 10) return 9;
+  return n;
+}
+
 function resolveSkillMdPath(context, skillId) {
   const local = path.join(context.repoRoot, '.agents', 'skills', skillId, 'SKILL.md');
   if (fs.existsSync(local)) return local;
@@ -132,4 +138,5 @@ module.exports = {
   toRepoRelative,
   reportResolved,
   normalizeConfig,
+  resolveMinVerifyScore,
 };

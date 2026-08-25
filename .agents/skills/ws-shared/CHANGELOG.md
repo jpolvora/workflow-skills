@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-25 12:17] Agent: Cursor Grok 4.6
+- **Prompt**: Parametrize min AC/task verify score via config.json; default ≥ 9; offer 10 when low effort
+- **Done**: `defaults.minVerifyScore` (1–10, omitted → 9) drives scoreAndRefine, pre-advance 6, and merge_verify_review; Reach-10 user-gate after verify
+- **Result**: Advance bar is project-configurable; ledger formula unchanged
+
 ### [2026-08-25 10:15] Agent: Cursor Grok 4.6
 - **Prompt**: Read todo.txt, create an interpreted plan, and implement
 - **Done**: Removed `ws-patterns` and session leases/git.lock from skills, orch, config, installer, tests, and docs; confirmed `ws-audit` already gone; bumped 0.3.38

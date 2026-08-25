@@ -34,7 +34,7 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 | **F0** | Bootstrap | 0 | Spec / providers / free-text |
 | **F1** | Planning | 1–3 | Plan → interview → plan-to-tasks |
 | **F2** | Implement | 4 | `ws-implement-tasks` build |
-| **F3** | Check | 5 | Score 0–10 vs refined ‖ spec; ≥9 to Advance (`scoreAndRefine` until ≥9); then **required G2-code** of workflow product files |
+| **F3** | Check | 5 | Score 0–10 vs refined ‖ spec; ≥ `defaults.minVerifyScore` (default 9) to Advance (`scoreAndRefine` until ≥ bar); then **required G2-code** of workflow product files |
 | **F4** | Review | 6 | Code-review of committed diff vs base + **conditional fix** substep; then G2-code of review fixes if any |
 | **F5** | Testing | 7 | `ws-testing` (skippable) |
 | **F6** | Ship + Fix-PR | 8–9 | Combined delivery+ship; then fix-pr |
@@ -46,7 +46,7 @@ Lite: 0 Spec → 1 Plan → 2 Implement → G2-code → 3 Review → G2-code (fi
 ```text
 /ws-spec-to-pr 2416
   → 0 Spec → 1 Plan → 2 Interview → 3 Tasks
-  → 4 Implement → 5 Check (≥9 or scoreAndRefine until ≥9) → G2-code (verified implementation)
+  → 4 Implement → 5 Check (≥ `defaults.minVerifyScore` (default 9) or scoreAndRefine until bar) → G2-code (verified implementation)
   → 6 Review (committed diff vs base; fix → re-review, max 3) → G2-code (review fixes if any)
   → 7 Testing
   → 8 Ship (delivery artifacts + push/PR) → 9 Fix-PR
@@ -83,7 +83,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 | `skip-tests` | Skip implement-time test suite runs (build still runs) |
 | `full` | Step 8 Recommended = commit plan+result then create PR |
 | `strict` | Full verification matrix at Step 5 |
-| `score-and-refine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score `< 9` always runs this loop until ≥ 9 |
+| `score-and-refine` | Optional extra polish when Step 5 score is already ≥ `defaults.minVerifyScore` (default 9) (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score below `defaults.minVerifyScore` always runs this loop until ≥ `defaults.minVerifyScore` (default 9) |
 
 **Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/setup.md).
 
@@ -106,7 +106,7 @@ Node state helpers update the workflow atomically and publish deterministic `run
 | **2** | Interview | `ws-interview` | `step-02-{slug}.plan.refined.md` |
 | **3** | Plan-to-tasks | `ws-plan-to-tasks` | exec + DAG |
 | **4** | Implement | `ws-implement-tasks` | Code |
-| **5** | Check-implementation | `ws-verify-plan` | Score 0–10; ≥9 to Advance (`scoreAndRefine` until ≥9); then required G2-code of workflow product files |
+| **5** | Check-implementation | `ws-verify-plan` | Score 0–10; ≥ `defaults.minVerifyScore` (default 9) to Advance (`scoreAndRefine` until bar); then required G2-code of workflow product files |
 | **6** | Code-review | `ws-code-review` (+ fix → re-review, max 3) | Committed `{base}...HEAD`; then G2-code of review fixes if any |
 | **7** | Testing | `ws-testing` | `step-07-{slug}.testing.*` |
 | **8** | Ship | `ws-ship-pr` | Delivery artifacts + push/PR → `step-08-{slug}.result.md` (product already committed) |

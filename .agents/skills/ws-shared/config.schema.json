@@ -115,7 +115,14 @@
         "fullMode": { "type": "boolean" },
         "scoreAndRefine": {
           "type": "boolean",
-          "description": "Optional extra Pass 1 scoring and 2nd pass polish when Step 5 score is already >= 9 (wide-context overengineering sweep and unused workflow-introduced artifact removal). A score below 9 always runs scoreAndRefine until >= 9, even when this flag is false."
+          "description": "Optional extra Pass 1 scoring and 2nd pass polish when Step 5 score is already >= minVerifyScore (default 9) (wide-context overengineering sweep and unused workflow-introduced artifact removal). A score below minVerifyScore always runs scoreAndRefine until >= minVerifyScore, even when this flag is false."
+        },
+        "minVerifyScore": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 9,
+          "description": "Minimum ledger-derived 0-10 score to Advance Step 5, stop the mandatory scoreAndRefine loop, flag tasks, and set merge_verify_review requiresFix from verify score. Omitted or invalid values resolve to 9 at runtime."
         },
         "autoload": {
           "type": "boolean",

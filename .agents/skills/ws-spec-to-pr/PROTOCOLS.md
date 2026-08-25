@@ -119,10 +119,10 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ 9 | Complete step 5; Advance to 6 |
-| < 9 | **scoreAndRefine** until ≥ 9 (max 3 rounds, then Pause). Never Advance or auto-approve below 9. |
+| ≥ `defaults.minVerifyScore` (default 9) | Complete step 5; Advance to 6 |
+| below `defaults.minVerifyScore` | **scoreAndRefine** until ≥ `defaults.minVerifyScore` (default 9) (max 3 rounds, then Pause). Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
-`--strict`: always run full verification matrix regardless of score. `autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below 9 — Pause only after max rounds still < 9. Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate.
+`--strict`: always run full verification matrix regardless of score. `autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`. Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate.
 
 ### Code review + fix → re-review loop (Step 6)
 
@@ -242,7 +242,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Transition / phase model | **Advance** with resolved phase model (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`; fallback to session `currentModel`) |
 | Step 2 needs_user | first option; early → **End refinement and advance** (auto-confirms 2e) |
 | Step 2e (only if shown) | **I confirm shared understanding — advance to Step 3** |
-| Step 5 score < 9 | scoreAndRefine until ≥ 9 (max 3); Pause on residual (no auto-approve) |
+| Step 5 score below `defaults.minVerifyScore` | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |
 | Post-verify G2-code (after Step 5) | Commit when stage set non-empty; skip when empty |
 | Post-review-fix G2-code (after Step 6) | Commit when stage set non-empty; skip when empty |
 | Step 7 skipTesting / no API-UI | skip step |

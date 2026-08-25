@@ -88,7 +88,7 @@ Checks (per [`ARTIFACTS.md`](../ARTIFACTS.md) step-input table): checkpoint tag 
 | 3 | `step-02-{slug}.plan.refined.md` (skip if `interview-not-required`) | — |
 | 4 | `step-03-{slug}.plan.exec.md` + `plan.index.json` | `step-06-{slug}.review.md` + `plan.index.json` |
 | 5 | — | `step-08-{slug}.result.md` |
-| 6 | `step-05-{slug}.plan.report.md` + ledger score ≥ 9 | — |
+| 6 | `step-05-{slug}.plan.report.md` + ledger score ≥ `defaults.minVerifyScore` (default 9) | — |
 | 7 | `step-06-{slug}.review.md` | — |
 | 8 | `step-07-{slug}.testing.report.md` (skip if `testing-disabled` / `no-test-surface`) | — |
 | 9 | `step-08-{slug}.result.md` | — |

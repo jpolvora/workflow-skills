@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, toRepoRelative, resolveMinVerifyScore } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 const SEVERITY = { Critical: 0, Warning: 1, Suggestion: 2 };
 
@@ -39,6 +39,7 @@ function finding(value, source) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
+  const minVerifyScore = resolveMinVerifyScore(context.config);
   const verify = readPayload(path.resolve(context.repoRoot, options.verify), 'verify');
   const review = readPayload(path.resolve(context.repoRoot, options.review), 'review');
   const seen = new Set();
@@ -59,7 +60,8 @@ function main() {
     schemaVersion: 1,
     score: Number(verify.score),
     findings,
-    requiresFix: Number(verify.score) < 9 || findings.some((item) => ['Critical', 'Warning'].includes(item.severity)),
+    requiresFix: Number(verify.score) < minVerifyScore
+      || findings.some((item) => ['Critical', 'Warning'].includes(item.severity)),
   };
   const output = path.resolve(context.repoRoot, options.output);
   fs.mkdirSync(path.dirname(output), { recursive: true });

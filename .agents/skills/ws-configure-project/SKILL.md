@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.3.38
+version: 0.3.39
 description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
 invocation_names:
   - configure-project
@@ -78,3 +78,4 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/ws-shared/CHANGELOG.md` unless user picks otherwise.
 - Delivery commit artifacts (`defaults.deliveryCommitArtifacts`): interview under `defaults` / `--section defaults` per [`INTERVIEW.md`](INTERVIEW.md); recommended = refined plan on, delivery result off, opt-ins off (see [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8).
 - Models (`defaults` / `--section defaults`): pick `modelsPreset` from shipped `config.json.example` sample keys, then optional `stepModels` (`"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`); keep empty legacy phase keys unless the user wants an advanced override. Token `"current"` uses the session model.
+- Min verify score (`defaults` / `--section defaults`): interview `defaults.minVerifyScore` per [`INTERVIEW.md`](INTERVIEW.md) (Recommended 9; runtime omitted/invalid → 9).

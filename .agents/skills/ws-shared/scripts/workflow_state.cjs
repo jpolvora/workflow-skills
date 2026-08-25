@@ -10,6 +10,7 @@ const {
   resolveConfiguredPath,
   toRepoRelative,
   inside,
+  resolveMinVerifyScore,
 } = require('./resolve_consumer_root.cjs');
 const { scoreLedger } = require('../../ws-spec-to-pr/scripts/ac_ledger.cjs');
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
@@ -991,7 +992,10 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
       } catch (error) {
         errors.push(`ledger verification failed: ${error.message}`);
       }
-      if (!derived || derived.score < 9) errors.push('ledger score must be at least 9 before step 6');
+      const minVerifyScore = resolveMinVerifyScore(context.config);
+      if (!derived || derived.score < minVerifyScore) {
+        errors.push(`ledger score must be at least ${minVerifyScore} before step 6`);
+      }
       if (!ledger.scoreState || Number(ledger.scoreState.score) !== derived?.score || ledger.scoreState.boundary !== boundary) {
         errors.push(`ledger scoreState must match derived ${boundary} score`);
       }

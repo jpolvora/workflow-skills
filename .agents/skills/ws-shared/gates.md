@@ -126,10 +126,26 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ 9 | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
-| < 9 | Run **scoreAndRefine** until overall score ≥ 9 (even when `defaults.scoreAndRefine` is false). Write `step-05-{slug}.score-analysis.md`, re-dispatch `ws-implement-tasks` for tasks scoring < 9, re-run `ws-verify-plan`. Max **3** rounds per Step 5 visit; log `score-refine round={n}/3`. After 3 rounds still < 9: **Pause** (fail closed). Resume continues the loop. Refine runs **before** the product commit. Never Advance or auto-approve below 9. |
+| ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
+| below `defaults.minVerifyScore` | Run **scoreAndRefine** until overall score ≥ `defaults.minVerifyScore` (default 9) (even when `defaults.scoreAndRefine` is false). Write `step-05-{slug}.score-analysis.md`, re-dispatch `ws-implement-tasks` for tasks scoring below `defaults.minVerifyScore`, re-run `ws-verify-plan`. Max **3** rounds per Step 5 visit; log `score-refine round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Refine runs **before** the product commit. Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
-`autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below 9 — Pause only after max rounds still < 9.
+`autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`.
+
+---
+
+## Reach-10 offer (after verify, before G2-code)
+
+When overall score **≥** resolved `defaults.minVerifyScore`, score **< 10**, ledger `knownDefect` is false, remaining gap is `missingEvidence` and/or `completeTen` false, and remaining work looks small (link tests/files, fill evidence, tiny AC polish):
+
+`user-gate`:
+1. **Reach 10 before advance** (Recommended)
+2. **Advance at {score}**
+
+Cancel → STOP (HS-1). Never infer yes. Large rework → skip this offer.
+
+`autoMode`: skip the Reach-10 offer and advance at the current passing score.
+
+Choosing Reach 10 runs one `scoreAndRefine` polish round (role `scoreAndRefine`), then re-verify. If still < 10, do not block Advance when score still meets `minVerifyScore`.
 
 ---
 
@@ -141,7 +157,7 @@ Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-
 
 | Mode | After | Before | Message | `commits[].step` |
 |------|-------|--------|---------|------------------|
-| standard | Step 5 score ≥ 9 | Step 6 | `feat({slug}): verified implementation` | `5` |
+| standard | Step 5 score ≥ `defaults.minVerifyScore` (default 9) | Step 6 | `feat({slug}): verified implementation` | `5` |
 | lite | Step 2 implement (build/tests already in exit criteria) | Step 3 | same | `2` |
 | both | Review-fix loop if product files remain (one commit for all ≤3 rounds) | Advance (std 7 / lite 4) | `fix({slug}): code-review fixes` | `6` / `3` |
 
@@ -192,13 +208,13 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 
 ## Score & Refine gate (`scoreAndRefine`)
 
-Step 5 overall score **must be ≥ 9** to Advance. A score `< 9` **always** runs this loop, even when `defaults.scoreAndRefine` is false.
+Step 5 overall score **must be ≥ `defaults.minVerifyScore` (default 9)** to Advance. A score below `defaults.minVerifyScore` **always** runs this loop, even when `defaults.scoreAndRefine` is false.
 
-When the loop is active (score `< 9`, or `scoreAndRefine` mode / completed-workflow bootstrap):
+When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefine` mode / completed-workflow bootstrap):
 
-1. **Pass 1 Score Analysis:** Score plan tasks against acceptance criteria (`step-05-{slug}.score-analysis.md`). Flag tasks scoring `< 9`.
-2. **Below-9 loop (mandatory):** If overall score `< 9`, do **not** offer Accept First Pass As-Is. Re-dispatch `ws-implement-tasks` for flagged tasks with scoring context, then re-run `ws-verify-plan`. Repeat until overall score `≥ 9`. Max **3** rounds per Step 5 visit; log `score-refine | round={n}/3`. After 3 rounds still `< 9`: **Pause** (fail closed). Resume continues the loop. Never Advance or auto-approve below 9.
-3. **Optional polish (overall already ≥ 9 and `scoreAndRefine` flag):** present `user-gate`:
+1. **Pass 1 Score Analysis:** Score plan tasks against acceptance criteria (`step-05-{slug}.score-analysis.md`). Flag tasks scoring below `defaults.minVerifyScore`.
+2. **Below-bar loop (mandatory):** If overall score below `defaults.minVerifyScore`, do **not** offer Accept First Pass As-Is. Re-dispatch `ws-implement-tasks` for flagged tasks with scoring context, then re-run `ws-verify-plan`. Repeat until overall score ≥ `defaults.minVerifyScore` (default 9). Max **3** rounds per Step 5 visit; log `score-refine | round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Never Advance or auto-approve below `defaults.minVerifyScore`.
+3. **Optional polish (overall already ≥ `defaults.minVerifyScore` (default 9) and `scoreAndRefine` flag):** present `user-gate`:
    ```text
    Score Analysis Complete:
    - Overall Score: {score}/10
@@ -214,7 +230,7 @@ When the loop is active (score `< 9`, or `scoreAndRefine` mode / completed-workf
    - Apply Pass 1 scoring recommendations for flagged tasks (Option 1: all flagged; Option 3: chosen tasks only). Option 1 runs even when zero tasks are flagged.
    - **Overengineering sweep:** if any AC/task implementation can be simpler and still meet the AC, simplify it.
    - **Dead artifact removal:** delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs or spec requirements.
-   Then re-run `ws-verify-plan`. Record simplifications and deletions in `step-08-{slug}.second-pass-report.md`. Post-simplify score must stay ≥ 9.
+   Then re-run `ws-verify-plan`. Record simplifications and deletions in `step-08-{slug}.second-pass-report.md`. Post-simplify score must stay ≥ defaults.minVerifyScore (default 9).
 5. **Comparative Delivery Gate:** When a 2nd pass ran, compare Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, and test metrics before ship/commit.
 
 ---
@@ -242,7 +258,7 @@ When the loop is active (score `< 9`, or `scoreAndRefine` mode / completed-workf
 | Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
 | Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
-| Check-implementation < 9 | scoreAndRefine until ≥ 9 (max 3); Pause on residual (no auto-approve) |
+| Check-implementation below minVerifyScore | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |
 | Review findings (full Step 6 / lite Step 3) | Autofix → re-review (max 3); Pause on residual Critical/Warning |
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`); mutation runs only when configured and not `skipMutationTesting` |
 | Post-verify G2-code (standard after Step 5 / lite after Step 2) | Commit when stage set non-empty; skip when empty |
@@ -271,5 +287,5 @@ Ship/PREPARE nuances (row 5 visibility): [`../ws-ship-pr/PREPARE-CHECKLIST.md`](
 |------|---------|
 | `skipTesting` | Skip Step 7 Testing (auto-skip when no test surface + unit tests green) |
 | `skipMutationTesting` | **Config** `defaults.skipMutationTesting` (not workflow state): skip optional mutation substep inside Step 7; default true (opt-in). Also skipped when `verification.mutationTest` empty |
-| `scoreAndRefine` | Optional extra polish when Step 5 score is already ≥ 9 (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score `< 9` always runs this loop until ≥ 9 |
+| `scoreAndRefine` | Optional extra polish when Step 5 score is already ≥ `defaults.minVerifyScore` (default 9) (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score below `defaults.minVerifyScore` always runs this loop until ≥ `defaults.minVerifyScore` (default 9) |
 

@@ -68,7 +68,7 @@ assert(/Fix the Entire Defect Class|repo-wide/i.test(implement), 'implement-task
 assert(/beyond the diff|sibling modules/i.test(review), 'code-review sibling beyond diff');
 
 assert(/run_sabotage\.py/i.test(verify), 'verify-plan sabotage script');
-assert(/score \*\*< 9\*\*/i.test(verify), 'verify-plan fail-closed < 9');
+assert(/minVerifyScore|below the Advance bar|knownDefect caps at 8/i.test(verify), 'verify-plan sabotage fail-closed vs Advance bar');
 assert(!/below 7|cap below 7/i.test(verify), 'verify-plan no below-7 cap');
 
 assert(/run_sabotage\.py/i.test(testing), 'testing sabotage when mutation unset');

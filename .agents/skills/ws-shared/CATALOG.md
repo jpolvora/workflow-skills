@@ -88,7 +88,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Format/review spec | `ws-spec-format` |
 | Specs vocabulary / which specs skill to load | [`autoload.md`](autoload.md) § Specs skill router |
-| Verify / check-implementation / verify score | `ws-verify-plan` (advance at score ≥ 9; `scoreAndRefine` below) |
+| Verify / check-implementation / verify score | `ws-verify-plan` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
 | SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](scm-provider-contract.md) — then one provider skill |
 | Record learning | `ws-self-learning` |
 | Record ws-changelog | `ws-changelog` |
@@ -98,7 +98,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
 
-**Product-commit order (both orch):** after verify (standard Step 5, score ≥ 9) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
+**Product-commit order (both orch):** after verify (standard Step 5, score ≥ `defaults.minVerifyScore` (default 9)) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
 
 ---
 

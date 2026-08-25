@@ -19,6 +19,7 @@ const SCRIPT_DIR = __dirname;
 const {
   resolveConsumerContext,
   toRepoRelative,
+  resolveMinVerifyScore,
 } = require(path.resolve(SCRIPT_DIR, '..', '..', 'ws-shared', 'scripts', 'resolve_consumer_root.cjs'));
 
 function usage() {
@@ -100,10 +101,12 @@ function loadConfig(context) {
   const config = context.config || loadJsonIfExists(examplePath) || {};
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(config.dagThresholds || {}) };
   const scoreAndRefine = Boolean(config.defaults && config.defaults.scoreAndRefine);
+  const minVerifyScore = resolveMinVerifyScore(config);
   return {
     config,
     thresholds,
     scoreAndRefine,
+    minVerifyScore,
     configSource: fs.existsSync(configPath) ? configPath : examplePath,
   };
 }
@@ -257,14 +260,14 @@ function parseScoresFromAnalysis(content) {
   return deduped.length ? deduped : scores;
 }
 
-function scoreStats(scores) {
+function scoreStats(scores, minVerifyScore) {
   if (!scores.length) {
     return { count: 0, mean: null, variance: null, min: null, max: null, lowCount: 0 };
   }
   const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
   const variance =
     scores.reduce((acc, s) => acc + (s - mean) ** 2, 0) / scores.length;
-  const lowCount = scores.filter((s) => s < 9).length;
+  const lowCount = scores.filter((s) => s < minVerifyScore).length;
   return {
     count: scores.length,
     mean: Math.round(mean * 100) / 100,
@@ -458,7 +461,7 @@ function main() {
   const slug = inferSlug(specPath, frontmatter);
   const title = frontmatter.title || slug;
 
-  const { config, thresholds, scoreAndRefine, configSource } = loadConfig(context);
+  const { config, thresholds, scoreAndRefine, minVerifyScore, configSource } = loadConfig(context);
 
   const specLayers = countSpecLayers(body);
   const configLayers = countConfigLayers(config);
@@ -508,7 +511,7 @@ function main() {
     } else {
       const analysisContent = fs.readFileSync(analysisPath, 'utf8');
       const scores = parseScoresFromAnalysis(analysisContent);
-      const stats = scoreStats(scores);
+      const stats = scoreStats(scores, minVerifyScore);
       const scoreResult = applyScoreAnalysis(
         recommendedPipeline,
         stats,
@@ -528,7 +531,7 @@ function main() {
         `| Mean | ${stats.mean ?? 'n/a'} |`,
         `| Variance | ${stats.variance ?? 'n/a'} |`,
         `| Min / Max | ${stats.min ?? 'n/a'} / ${stats.max ?? 'n/a'} |`,
-        `| Low scores (<9) | ${stats.lowCount} |`,
+        `| Low scores (<${minVerifyScore}) | ${stats.lowCount} |`,
         '',
         scoreResult.reason,
       ].join('\n');

@@ -65,7 +65,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 |-------|------|-------|
 | `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Packaged; consumer on-demand. This repo uses § [4. Reply shape](#4-reply-shape-ws-tdah) |
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Packaged; this repo uses § [1. Surgical scope](#1-surgical-scope-ws-karpathy-guidelines) |
-| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9); verify ≥ 9 before review |
+| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9); verify ≥ `defaults.minVerifyScore` (default 9) before review |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
 | `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Batch: classify each spec, then standard or lite |
 | `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
@@ -99,7 +99,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
 | Engineering delivery gate / Code review proof | This file § [2. Delivery gate](#2-delivery-gate-ws-senior-developer) (live `ws-senior-developer` only when authoring that skill) |
-| Verify / check-implementation / verify score | `ws-verify-plan` (advance at score ≥ 9; `scoreAndRefine` below) |
+| Verify / check-implementation / verify score | `ws-verify-plan` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
 | SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — then one provider skill |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `ws-secrets-leak-review` |

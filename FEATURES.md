@@ -2,9 +2,9 @@
 
 **Audience: humans and agents** — the complete capability inventory of the `ws-*` skill suite.
 
-This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at ≥ 9. Extra/harness skills sit beside that pipeline; they do not replace the spec.
+This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.38** · 47 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.39** · 47 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -32,7 +32,7 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 2 | Optional plan interrogation (`ws-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan.refined.md` |
 | 3 | Sequential exec stub (`write_sequential_dag.cjs`) unless `enableDag: true` then `ws-plan-to-tasks` | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
 | 4 | Implementation (`ws-implement-tasks`) with memory consult proof | code + build/test verification |
-| 5 | Spec-compliance scoring 0–10 (`ws-verify-plan`); **advances only at ≥ 9** | `step-05-{slug}.plan.report.md` |
+| 5 | Spec-compliance scoring 0–10 (`ws-verify-plan`); **advances only at ≥ `defaults.minVerifyScore`** (default 9) | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
 | 8 | Delivery result, ship gate, push and PR creation (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
@@ -69,8 +69,9 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 | Gate | Rule | Owner |
 |------|------|-------|
-| **Derived verify score ≥ 9** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. Below 9 it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). | `ws-verify-plan` |
-| **Score & refine** | When a score is already ≥ 9 and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-verify-plan` |
+| **Derived verify score** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. | `ws-verify-plan` |
+| **Configurable verify bar (`defaults.minVerifyScore`)** | Default 9, range 1–10, omitted → 9. Below the bar it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). Optional Reach-10 user-gate when effort is low. | `ws-verify-plan` |
+| **Score & refine** | When a score is already ≥ `minVerifyScore` and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-verify-plan` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |
 | **Commit before review** | Product files must be committed before a review is dispatched, so the review always diffs a real `{base}...HEAD`. Uncommitted product files STOP the step. | `gates.md` (G2-code) |
 | **Regression sabotage** | When mutation testing is unset, Step 7 deliberately breaks assertions to confirm the suite actually catches regressions. | `ws-testing` (`run_sabotage.py`) |
@@ -216,7 +217,7 @@ Everything project-specific lives in one consumer-owned, gitignored file: `.agen
 | `issueTrackers` | GitHub and Azure DevOps credentials, CLI, converter scripts |
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
-| `defaults` | Execution mode, test globs, 32 KB context budget, optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, and legacy per-phase model identifiers |
+| `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, and legacy per-phase model identifiers |
 | `plans` / `reviews` / `preview` | Artifact roots, diagnostics root, and dry-run backend |
 | `rules` | Guardrail paths: harness, senior developer, karpathy, stack file, changelog file |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
@@ -248,12 +249,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.38)
+## 12. Recent evolution (0.3.22 → 0.3.39)
 
 Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.39** | Aug 25 | **Configurable verify bar** via `defaults.minVerifyScore` (1–10, default 9): drives scoreAndRefine, pre-advance Step 6, and `merge_verify_review`; optional Reach-10 user-gate after verify; ledger formula unchanged |
 | **0.3.38** | Aug 25 | Remove `ws-patterns` (backend/frontend pattern files) and session leases / git.lock from orch and config; keep `ws-self-learning` MEMORY |
 | **0.3.37** | Aug 23 | Close stale unfinished workflow states; track us-236 on `index.PRD`; `tracking.featuresMdEnabled` makes FEATURES.md optional; remove `ws-audit` and `defaults.enableAuditing`; package stamp + site footer |
 | **0.3.36** | Aug 22 | ADO `comment_issue.py` accepts optional `--org`/`--project`/`--api-base`/`--pat-env` overrides (same flags as work-item fetch) |
@@ -299,7 +301,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 | [`ws-interview`](.agents/skills/ws-interview/SKILL.md) | W | Interrogate a plan for hidden assumptions and ambiguities |
 | [`ws-plan-to-tasks`](.agents/skills/ws-plan-to-tasks/SKILL.md) | W | Break a plan into an atomic, dependency-mapped task DAG |
 | [`ws-implement-tasks`](.agents/skills/ws-implement-tasks/SKILL.md) | W | Build features from the DAG, or apply surgical review fixes |
-| [`ws-verify-plan`](.agents/skills/ws-verify-plan/SKILL.md) | W | Score spec compliance 0–10; gate at ≥ 9 |
+| [`ws-verify-plan`](.agents/skills/ws-verify-plan/SKILL.md) | W | Score spec compliance 0–10; gate at ≥ `defaults.minVerifyScore` (default 9) |
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
