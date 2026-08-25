@@ -249,12 +249,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.39)
+## 12. Recent evolution (0.3.22 → 0.3.40)
 
 Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.40** | Aug 25 | Fix-PR batch dual-model: `fixPrPlan` (reviewer) then `fixPrExec` (execution) per Act round / standalone `/fix-pr`; config roles + tests; Auto-Fix unchanged |
 | **0.3.39** | Aug 25 | **Configurable verify bar** via `defaults.minVerifyScore` (1–10, default 9): drives scoreAndRefine, pre-advance Step 6, and `merge_verify_review`; optional Reach-10 user-gate after verify; ledger formula unchanged |
 | **0.3.38** | Aug 25 | Remove `ws-patterns` (backend/frontend pattern files) and session leases / git.lock from orch and config; keep `ws-self-learning` MEMORY |
 | **0.3.37** | Aug 23 | Close stale unfinished workflow states; track us-236 on `index.PRD`; `tracking.featuresMdEnabled` makes FEATURES.md optional; remove `ws-audit` and `defaults.enableAuditing`; package stamp + site footer |
