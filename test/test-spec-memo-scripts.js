@@ -181,6 +181,31 @@ process.exit(0);
     'reports repo-relative ws-memo path',
   );
 
+  const globalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'global-skills-'));
+  const globalMemo = path.join(globalRoot, 'ws-memo');
+  fs.mkdirSync(globalMemo, { recursive: true });
+  fs.writeFileSync(path.join(globalMemo, 'SKILL.md'), '---\nname: ws-memo\n---\n', 'utf8');
+  const globalTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-global-'));
+  const globalOnlyHubRel = 'vault-global-memo-hub';
+  seedHub(globalTmp, { sharedRel: globalOnlyHubRel });
+  const globalOnlyHub = path.join(globalTmp, globalOnlyHubRel);
+  const globalCfgPath = path.join(globalOnlyHub, 'config.json');
+  fs.copyFileSync(path.join(globalOnlyHub, 'config.json.example'), globalCfgPath);
+  const globalCfg = JSON.parse(fs.readFileSync(globalCfgPath, 'utf8'));
+  globalCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
+  fs.writeFileSync(globalCfgPath, `${JSON.stringify(globalCfg, null, 2)}\n`, 'utf8');
+  const checkGlobal = runNode(CHECK, ['--repo-root', globalTmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: globalOnlyHub, WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  const globalReport = JSON.parse(checkGlobal.stdout);
+  assert(globalReport.runtimeHandoff.wsMemo.installed === true, 'global ws-memo detected when local missing');
+  assert(
+    globalReport.runtimeHandoff.wsMemo.skillPath.includes('global install'),
+    'reports global install path',
+  );
+  fs.rmSync(globalRoot, { recursive: true, force: true });
+  fs.rmSync(globalTmp, { recursive: true, force: true });
+
   const disabledReport = JSON.parse(checkDefault.stdout);
   assert(disabledReport.runtimeHandoff === null, 'runtimeHandoff omitted when vault disabled');
   assert(checkDefault.status === 0, 'disabled vault check exits 0 without ws-memo');
