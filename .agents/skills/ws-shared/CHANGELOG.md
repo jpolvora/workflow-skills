@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-26 18:10 UTC] Agent: Composer
+- **Prompt**: Convert LLM Workflow Best Practices Research download to root `RESEARCH.md`
+- **Done**: Added structured `RESEARCH.md` at repo root from Downloads source; corrected stale path names; mapped proposals to current `ws-*` layout and `SKILL_AUTHORING.md`
+- **Result**: Research backlog doc ready for future skill/harness improvement specs
+
 ### [2026-08-26 18:07 UTC] Agent: Composer
 - **Prompt**: `/ws-check-harness` — apply approved correction plan
 - **Done**: Fixed broken FAQ links in `ws-shared/setup.md` (`../../ws-spec-to-pr/...` → `../ws-spec-to-pr/...`); bumped upstream dogfood session-contract stamp in `AGENTS.md` to **0.3.40**
