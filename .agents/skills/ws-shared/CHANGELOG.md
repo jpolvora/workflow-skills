@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-08-26 16:50 UTC] Agent: Composer
+- **Prompt**: Confirm workflow-skills vault git url as projectId; ingest memory; clean up; commit
+- **Done**: Bound `projectId` `github.com-jpolvora-workflow-skills` (origin `github.com/jpolvora/workflow-skills`); imported 59 traps to local + MCP vaults; reset `MEMORY.md` to template; removed `memory/*.md` (kept `.gitkeep`); left `.agents/plans` in place (doctor `--fix` would wipe plan dirs)
+- **Result**: Vault SoT for traps; in-repo memory residue cleared for commit
+
+### [2026-08-26 16:35 UTC] Agent: Composer
+- **Prompt**: Add AGENTS.md references for spec-memo MCP server and hooks (from prior ws-memo install session)
+- **Done**: Root `AGENTS.md` §5 dogfood subsection (MCP tools, `ws-memo` runtime, `ws-spec-memo` setup, `memo hook install`); pipeline row + progressive-disclosure + task-router pointers
+- **Result**: Agents in this repo can route vault/MCP/hook work without vendoring SURFACE.md
+
+### [2026-08-26 15:28 UTC] Agent: Composer
+- **Prompt**: install ws-memo skill into global skills root from spec-memo repo
+- **Done**: Copied `.agents/skills/ws-memo/` from local `spec-memo` (develop@d224e9a) into `$HOME/.agents/skills/ws-memo`
+- **Result**: Global skill present (SKILL.md + references + evals); matches source tree
+
 ### [2026-08-26 11:25] Agent: Composer
 - **Prompt**: Configure agentic-code-reviewers to cursor engine + composer 2.5; disable OpenCode engine on GitHub only
 - **Done**: Confirmed cursor-code-review.yml already uses `--engine cursor-sdk` / `--model composer-2.5` on PRs; disabled GitHub workflow "Agentic Code Review (OpenCode)" via `gh workflow disable` (yml kept as workflow_dispatch backup)
