@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.40** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.41** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -250,12 +250,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.40)
+## 12. Recent evolution (0.3.22 → 0.3.41)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
+Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.41** | Aug 26 | `ws-spec-memo` runtime ops hand off to spec-memo `ws-memo`; hashed hub `setup.md` FAQ links + skill-integrity refresh; root `RESEARCH.md` backlog |
 | **0.3.40** | Aug 25 | Fix-PR batch dual-model: `fixPrPlan` (reviewer) then `fixPrExec` (execution) per Act round / standalone `/fix-pr`; config roles + tests; Auto-Fix unchanged |
 | **0.3.39** | Aug 25 | **Configurable verify bar** via `defaults.minVerifyScore` (1–10, default 9): drives scoreAndRefine, pre-advance Step 6, and `merge_verify_review`; optional Reach-10 user-gate after verify; ledger formula unchanged |
 | **0.3.38** | Aug 25 | Remove `ws-patterns` (backend/frontend pattern files) and session leases / git.lock from orch and config; keep `ws-self-learning` MEMORY |

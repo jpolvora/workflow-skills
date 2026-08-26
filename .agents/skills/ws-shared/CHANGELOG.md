@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-26 18:40 UTC] Agent: Cursor Grok 4.6
+- **Prompt**: Fix CI integrity failure; commit; bump; ship `/ws-ship-pr` next version
+- **Done**: Regenerated `bin/skill-integrity.json` after hashed hub `setup.md` drift; `npm run build-site:bump` 0.3.40 → 0.3.41; FEATURES/test-doc-sync/AGENTS stamp aligned; isolated spec-memo missing-ws-memo fixture from global skills
+- **Result**: Package stamped 0.3.41; integrity `--check` must exit 0 before PR
+
 ### [2026-08-26 18:10 UTC] Agent: Composer
 - **Prompt**: Convert LLM Workflow Best Practices Research download to root `RESEARCH.md`
 - **Done**: Added structured `RESEARCH.md` at repo root from Downloads source; corrected stale path names; mapped proposals to current `ws-*` layout and `SKILL_AUTHORING.md`

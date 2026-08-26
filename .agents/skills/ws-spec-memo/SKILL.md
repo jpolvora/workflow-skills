@@ -1,6 +1,6 @@
 ---
 name: ws-spec-memo
-version: 0.3.40
+version: 0.3.41
 disable-model-invocation: true
 description: >-
   Configure and bridge workflow-skills with the external spec-memo vault (MCP/CLI).
