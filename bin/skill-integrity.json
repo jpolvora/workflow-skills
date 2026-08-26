@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "44f8ecdeb4940482bb646c9cd93dcd6fe66b542c85dc03a49a919fabee257608",
+  "fullPackageDigest": "4a7ef5c9b16ec4e1c2f999f03bc082cea1044fbbf62a98613f354d255e4acceb",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -40,10 +40,10 @@
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
       "step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "telemetry.schema.json": "ea0fae1da61d60e3a32980fb4aa504e7c3bf91ffc1896ade2406343a7b8d278d",
-      "tools.md": "1a6595f1a975f36b937eac84e5e72904a96509173f04211af508bc8cebc82998",
+      "tools.md": "45023ed0ebed163a73bbcdcc1e389b7c3020b9ce965b952062b6daef681c2a66",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "81a63a3379a40104105927153e9c43ad4617b1c04670e90aff71f19ee741c86b"
+    "skillDigest": "f656985592a313cc5c8d29d5e74071b2258a70a3593cf297fd0c47cdd6f383de"
   },
   "packageVersion": "0.3.40",
   "skills": {
@@ -378,11 +378,11 @@
         "evals/evals.json": "351abe1f689c388177c6da455dd70bc659dd41f46442e4a480c6e6043cb511b9",
         "references/INTEGRATION.md": "bc675a9f112a39b49520fc4707d14254582d65e2c7ee818c43487f49698b64b6",
         "references/MCP-TEMPLATE.json": "d11229c6f4af19cf44ee274ba6a57d52efc42da151b727d048fd4a8c0d378ed9",
-        "scripts/check_spec_memo.cjs": "cfedc25d50e0704416053bb5ec514d0e1efd899c6d0ed3853b2f753a70aa9db0",
+        "scripts/check_spec_memo.cjs": "fac6d5e4f7674d6d27ebb4d04b24d0837cb780cc9cc89ec8f194bc2e21519bcc",
         "scripts/configure_spec_memo.cjs": "5ae04c43dbd8188ed80bb5c71a8111b8943108ffdfb1e0530e6350e8204c2844",
         "SKILL.md": "22bc023cdfc7f738bcced2fee6a2c9a6280c8864756dfa7343cc6ce4a7cbfeb7"
       },
-      "skillDigest": "89eeeda045237000026c4127881660d6e6b4591cd2b2c731a341a627bec1b612"
+      "skillDigest": "c508ad93de94e3a693d1502491a4370355ef8df994867746cffcd71981198b82"
     },
     "ws-spec-to-pr": {
       "files": {

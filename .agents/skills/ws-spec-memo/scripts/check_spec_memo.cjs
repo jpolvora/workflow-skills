@@ -148,9 +148,6 @@ function printHuman(report) {
     lines.push('', '## Runtime handoff (ws-memo)');
     lines.push(`- MCP server expected: ${report.runtimeHandoff.mcpServerName}`);
     lines.push(`- ws-memo skill: ${report.runtimeHandoff.wsMemo.installed ? 'installed' : 'missing'} (${report.runtimeHandoff.wsMemo.skillPath})`);
-    if (!report.runtimeHandoff.wsMemo.installed) {
-      lines.push(`- Warning: ${report.runtimeHandoff.wsMemo.hint || 'Install ws-memo from spec-memo; use /ws-memo for search, promote, gc, etc.'}`);
-    }
     if (report.runtimeHandoff.warnings.length > 0) {
       report.runtimeHandoff.warnings.forEach((w) => lines.push(`- Warning: ${w}`));
     }

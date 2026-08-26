@@ -163,12 +163,23 @@ process.exit(0);
   assert(healthyReport.config.enabled === true, 'healthy fixture activates vault branch');
   assert(healthyReport.ok === true, 'vault-active preflight passes when CLI and doctor healthy');
   assert(checkHealthy.status === 0, 'vault-active healthy preflight exits 0');
-  assert(healthyReport.runtimeHandoff === null || typeof healthyReport.runtimeHandoff === 'object', 'runtimeHandoff present when vault active');
-  if (healthyReport.runtimeHandoff) {
-    assert(healthyReport.runtimeHandoff.mcpServerName === 'spec-memo', 'runtimeHandoff reports mcp server name');
-    assert(typeof healthyReport.runtimeHandoff.wsMemo.installed === 'boolean', 'runtimeHandoff reports ws-memo installed flag');
-    assert(checkHealthy.status === 0, 'missing ws-memo warns but does not fail healthy vault check');
-  }
+  assert(healthyReport.runtimeHandoff !== null, 'runtimeHandoff required when vault active');
+  assert(healthyReport.runtimeHandoff.mcpServerName === 'spec-memo', 'runtimeHandoff reports mcp server name');
+  assert(healthyReport.runtimeHandoff.wsMemo.installed === false, 'healthy fixture without ws-memo seed reports missing');
+  assert(checkHealthy.status === 0, 'missing ws-memo warns but does not fail healthy vault check');
+
+  const memoSkillDir = path.join(tmp, '.agents', 'skills', 'ws-memo');
+  fs.mkdirSync(memoSkillDir, { recursive: true });
+  fs.writeFileSync(path.join(memoSkillDir, 'SKILL.md'), '---\nname: ws-memo\n---\n', 'utf8');
+  const checkWithMemo = runNode(CHECK, ['--repo-root', tmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: healthyHub },
+  });
+  const withMemoReport = JSON.parse(checkWithMemo.stdout);
+  assert(withMemoReport.runtimeHandoff.wsMemo.installed === true, 'local ws-memo skill detected');
+  assert(
+    withMemoReport.runtimeHandoff.wsMemo.skillPath.replace(/\\/g, '/').includes('.agents/skills/ws-memo/SKILL.md'),
+    'reports repo-relative ws-memo path',
+  );
 
   const disabledReport = JSON.parse(checkDefault.stdout);
   assert(disabledReport.runtimeHandoff === null, 'runtimeHandoff omitted when vault disabled');

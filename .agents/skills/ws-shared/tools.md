@@ -57,7 +57,7 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `read-config` | Load project config | `Read` `{sharedDir}/config.json` |
 | `read-artifacts-registry` | Resolve one artifact from the Artifact map | `Read` `{skillsRoot}/ws-spec-to-pr/ARTIFACTS.md` heading `## Artifact map` for the named row/anchor only. Do not read ARTIFACTS.md in full. |
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `{sharedDir}/STACK.md`) |
-| `read-memory` | Load learned knowledge **before** plan/code/fix | When `specMemo.enabled` is explicit `true`, prefer [`ws-spec-memo`](../ws-spec-memo/SKILL.md) bootstrap; for search/recall follow-ups load **`/ws-memo`** (spec-memo skill). Else `Grep` / `Read` `{sharedDir}/MEMORY.md`. Mandatory for mutating work — see [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult |
+| `read-memory` | Load learned knowledge **before** plan/code/fix | When `specMemo.enabled` is explicit `true`, prefer [`ws-spec-memo`](../ws-spec-memo/SKILL.md) bootstrap; for search/recall follow-ups load **`/ws-memo`** when `{skillsRoot}/ws-memo/SKILL.md` exists, else `{specMemo.cli} search`. Else `Grep` / `Read` `{sharedDir}/MEMORY.md`. Mandatory for mutating work — see [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
 | `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `node {skillsRoot}/ws-spec-to-pr/scripts/{name}.cjs` (`update_state`, `validate_state`). Frozen Python helpers remain for converters/thread shims: prefer `{skillsRoot}/{github,azure-devops,local-spec}-provider/scripts/` |
 
@@ -110,7 +110,7 @@ The orchestrator session ALWAYS runs under the active session model (`currentMod
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `update-memory` | Write learned pattern | When `specMemo.enabled` is explicit `true`, `{specMemo.cli} upsert --kind trap` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md) setup path; trap/search follow-ups → **`/ws-memo`**. Hybrid falls back to `{sharedDir}/memory/` on failure. Else create unique file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` |
+| `update-memory` | Write learned pattern | When `specMemo.enabled` is explicit `true`, `{specMemo.cli} upsert --kind trap` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md) setup path; trap/search follow-ups → **`/ws-memo`** when `{skillsRoot}/ws-memo/SKILL.md` exists, else `{specMemo.cli} search`. Hybrid falls back to `{sharedDir}/memory/` on failure. Else create unique file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` |
 | `extract-frontmatter` | Read YAML frontmatter field(s) from markdown | `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs --file {path} --field slug` (prefer over `python -c` / nested-quote one-liners) |
 | `update-ws-changelog` | Append historical log | When `specMemo.enabled` is explicit `true`, `{specMemo.cli} append --event "…"` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md); hybrid may also append `{rules.changelogFile}`. Else `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
