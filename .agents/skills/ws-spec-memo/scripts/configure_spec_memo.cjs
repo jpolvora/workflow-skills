@@ -114,7 +114,12 @@ function main() {
   const doImport = importSpecified ? Boolean(args.importTree ?? stdin.import) : false;
   const doHook = args.hook ?? stdin.hook ?? false;
   const nextEnabled = args.enabled ?? stdin.enabled ?? prev.enabled ?? false;
-  const importOnEnable = importSpecified ? doImport : (prev.importOnEnable ?? true);
+  // When enabling without an explicit import choice, record that import did not run.
+  const importOnEnable = importSpecified
+    ? doImport
+    : nextEnabled
+      ? false
+      : (prev.importOnEnable ?? true);
 
   const next = {
     enabled: nextEnabled,
