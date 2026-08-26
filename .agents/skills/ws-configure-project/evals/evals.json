@@ -33,6 +33,18 @@
         "Uses configure_autoload.py helper with portable path forms only",
         "Does not invent absolute filesystem paths"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "/ws-configure-project --section specMemo",
+      "expected_output": "Agent runs check_spec_memo preflight, offers vault enable gate (No Recommended), and applies specMemo via configure_spec_memo.cjs when user opts in.",
+      "assertions": [
+        "Loads --section specMemo flow from SKILL.md / INTERVIEW.md",
+        "Runs check_spec_memo.cjs before writing specMemo config",
+        "Default Recommended is specMemo.enabled false",
+        "Uses configure_spec_memo.cjs with explicit launchers",
+        "Shows MCP-TEMPLATE.json when vault enabled"
+      ]
     }
   ]
 }

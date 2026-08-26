@@ -13,7 +13,7 @@ Disclosed detail for [`SKILL.md`](SKILL.md). Load when detecting or interviewing
 
 ## Optional (offer once, skippable)
 
-`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (persists `defaults.autoload` + optional `defaults.autoloadTaskLifecycle` + Always-applied path refresh; optional root `AGENTS.md` when enabled).
+`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (persists `defaults.autoload` + optional `defaults.autoloadTaskLifecycle` + Always-applied path refresh; optional root `AGENTS.md` when enabled), **`specMemo`** (external vault bridge via `ws-spec-memo`; default disabled).
 
 ## Detection heuristics
 
@@ -41,6 +41,9 @@ Scan consumer **repo root** (not this skill package alone):
 | Fable skills in `{skillsRoot}` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: "refuted"` |
 | Session host exposes subagent model identifiers | Offer those portable identifiers as `defaults.modelPresets` field values and optional `defaults.stepModels` overrides; still allow empty legacy phase keys. Mention `"current"` and unknown-`modelsPreset` fallback to preset `default`. If the host exposes no identifiers, recommend sample keys from `config.json.example` or Skip. |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
+| Existing `{sharedDir}/memory/` or `{plansDir}/` with content | Suggest **Import legacy tree** when enabling vault |
+| `memo` or `npx spec-memo` on PATH | `specMemo.cli` → `memo` (Recommended) |
+| CLI missing | Recommend `npm install -g spec-memo` or `specMemo.cli: "npx -y spec-memo"` before enable |
 
 ## Interview order
 
@@ -83,7 +86,8 @@ Scan consumer **repo root** (not this skill package alone):
    Merge-write into `config.json` without deleting unknown keys; preserve `_comment*` keys.
 8. `domain` / `rules` — optional
 9. `autoload` — optional (or standalone `--section autoload`)
-10. `security` — optional pre-commit hook enablement gate:
+10. `specMemo` — optional external vault (or standalone `--section specMemo`); see § specMemo below
+11. `security` — optional pre-commit hook enablement gate:
     - User-gate: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
     - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
     - Execution on Yes: `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.
@@ -139,9 +143,47 @@ Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd
 
 **Path rules:** never write absolute paths (`C:\…`, `/Users/…`). Markdown links use real relative targets; prose may use `{skillsRoot}` / `{globalSkillsRoot}` / `{sharedDir}` tokens.
 
+## specMemo (external vault)
+
+Optional bridge to [spec-memo](https://github.com/jpolvora/spec-memo) via [`ws-spec-memo`](../ws-spec-memo/SKILL.md). **Recommended default:** `specMemo.enabled: false` (keep in-repo `ws-self-learning` / `MEMORY.md`).
+
+| Key | Type | Default | Meaning |
+|-----|------|---------|---------|
+| `specMemo.enabled` | boolean | `false` | Explicit `true` routes `read-memory` / trap writes to vault MCP/CLI |
+| `specMemo.mode` | string | `vault` | `vault` = vault-only; `hybrid` = fallback to in-repo MEMORY on failure |
+| `specMemo.cli` | string | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
+| `specMemo.bootstrapOnSession` | boolean | `true` | Recommend `memo bootstrap` at session start when enabled |
+| `specMemo.writeBlockHook` | boolean | `false` | Set true when `memo hook install` succeeds |
+| `specMemo.importOnEnable` | boolean | `true` | Whether setup runs one-shot import |
+| `specMemo.mcpServerName` | string | `spec-memo` | Expected MCP namespace in agent host |
+
+| Signal | Suggest |
+|--------|---------|
+| `{sharedDir}/memory/` or `{plansDir}/` populated | Offer **Import legacy tree** on enable |
+| `check_spec_memo.cjs` → `pollution` non-empty | Mention import + write-block hook |
+| `cli.available: false` | **Skip external vault (Recommended)** until CLI installed |
+| Enable external vault? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+
+**Preflight (mandatory before gates):**
+
+```bash
+node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json
+```
+
+**Apply (after user gates):**
+
+```bash
+node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json \
+  --enabled {true|false} --mode {vault|hybrid} --import {true|false} --hook {true|false} \
+  --bootstrap-on-session {true|false} [--cli "memo"]
+```
+
+When enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md) pointer. Never commit `{sharedDir}/config.json`.
+
 ## Write rules
 
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
 - After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.
 - Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.
+- specMemo writes: `specMemo.*` in `{sharedDir}/config.json` only; optional `memo import` / `memo hook install` via `configure_spec_memo.cjs` when user opts in.

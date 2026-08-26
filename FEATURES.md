@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.40** · 47 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.40** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -152,6 +152,7 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
 | Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
+| External vault bridge: configure spec-memo MCP/CLI, import legacy `.agents` tree, bootstrap session brief | `ws-spec-memo` | `~/.spec-memo/projects/<projectId>/` when `specMemo.enabled: true` |
 | Domain authority, minimum evidence sets, and fraud definitions per domain | `ws-fable-domain` | domain adapters |
 
 Steps 4 and 6 of the standard pipeline require **proof** of memory consultation in the subagent's step output; a missing consult is a gate failure, not a warning.
@@ -281,7 +282,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 
 ## 13. Full skill catalog
 
-47 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+48 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -328,6 +329,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → write-spec + register |
 | [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
+| [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Configure spec-memo external vault bridge (MCP/CLI) |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 
 ### Quality and audit
@@ -363,7 +365,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-25).
 
 | Skill | Pkg | Role |
 |-------|-----|------|
-| [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | W | Interactive `config.json` wizard |
+| [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | W | Interactive `config.json` wizard (optional `--section specMemo` for external vault setup) |
 | [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | W | Generic convergence loop primitive |
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | E | Timesheet entries for a delivery day |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | W | 36-hour standup briefing |

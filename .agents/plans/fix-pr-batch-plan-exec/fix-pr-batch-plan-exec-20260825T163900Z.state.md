@@ -1,6 +1,6 @@
 ---
 stateVersion: 2
-revision: 19
+revision: 21
 workflowType: standard
 workflowId: fix-pr-batch-plan-exec-20260825T163900Z
 slug: fix-pr-batch-plan-exec
@@ -8,9 +8,9 @@ us: null
 title: "fix-pr: plan substep (reviewer model) then execute (fix model) per batch"
 specSource: local
 specPath: .agents/plans/fix-pr-batch-plan-exec/step-00-fix-pr-batch-plan-exec.spec.md
-status: active
+status: completed
 startedAt: "2026-08-25T16:39:00Z"
-endedAt: null
+endedAt: "2026-08-25T17:57:43.379Z"
 currentStep: 9
 completedSteps:
   - 0
@@ -22,6 +22,7 @@ completedSteps:
   - 6
   - 7
   - 8
+  - 9
 skippedSteps:
   - { step: 3, reason: dag-disabled, evidence: "" }
 autoMode: true
@@ -62,6 +63,7 @@ stepStatus:
   6: completed
   7: completed
   8: completed
+  9: completed
 stepDispatches:
   - { step: 0, dispatchedAt: "2026-08-25T16:42:34Z" }
   - { step: 1, dispatchedAt: "2026-08-25T16:43:59Z" }
@@ -72,6 +74,7 @@ stepDispatches:
   - { step: 6, dispatchedAt: "2026-08-25T17:28:00Z" }
   - { step: 7, dispatchedAt: "2026-08-25T17:37:42Z" }
   - { step: 8, dispatchedAt: "2026-08-25T17:42:52Z" }
+  - { step: 9, dispatchedAt: "2026-08-25T17:57:43Z" }
 telemetry:
   loc: { baseline: 41708 }
   workflowStartedAt: "2026-08-25T16:39:00Z"
@@ -85,6 +88,7 @@ telemetry:
     - { N: 6, label: Code review, dispatchedAt: "2026-08-25T17:28:00Z", finishedAt: "2026-08-25T17:37:29Z", elapsedSec: 569, promptTokens: 0, completionTokens: 0, estimated: false, model: Composer, filesTouched: { created: [], modified: [], deleted: [] } }
     - { N: 7, label: Testing, dispatchedAt: "2026-08-25T17:37:42Z", finishedAt: "2026-08-25T17:41:53Z", elapsedSec: 251, promptTokens: 0, completionTokens: 0, estimated: false, model: Composer, filesTouched: { created: [], modified: [], deleted: [] } }
     - { N: 8, label: Ship, dispatchedAt: "2026-08-25T17:42:52Z", finishedAt: "2026-08-25T17:44:17Z", elapsedSec: 85, promptTokens: 0, completionTokens: 0, estimated: false, model: Composer, filesTouched: { created: [], modified: [], deleted: [] } }
+    - { N: 9, label: Fix PR, dispatchedAt: "2026-08-25T17:57:43Z", finishedAt: "2026-08-25T17:57:43Z", elapsedSec: 0, promptTokens: 0, completionTokens: 0, estimated: false, model: Composer, filesTouched: { created: [], modified: [], deleted: [] } }
   totalElapsedSec: 3080
   totalTokens: 0
 acTotal: 13

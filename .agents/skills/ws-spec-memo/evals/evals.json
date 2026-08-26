@@ -1,0 +1,32 @@
+{
+  "skill_name": "ws-spec-memo",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run /ws-spec-memo setup when memo CLI is not installed",
+      "expected_output": "user-gate offers npm install -g spec-memo; does not enable vault without CLI",
+      "assertions": [
+        "Invokes check_spec_memo.cjs before writing config",
+        "Does not set specMemo.enabled true when user cancels CLI gate"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run bootstrap with specMemo.enabled true, mode hybrid, MCP unreachable",
+      "expected_output": "Warns once and falls back to in-repo MEMORY.md consult",
+      "assertions": [
+        "Does not write memory/*.md when vault upsert succeeds",
+        "Reports actionable error in vault mode when bootstrap fails"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run /ws-spec-memo import on repo with .agents/plans and ws-shared/memory",
+      "expected_output": "memo import --from repo root; summarizes counts",
+      "assertions": [
+        "Requires user-gate before import",
+        "Suggests write-block hook after import"
+      ]
+    }
+  ]
+}

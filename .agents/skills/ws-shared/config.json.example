@@ -354,6 +354,18 @@
     "canonicalFiles": []
   },
 
+  "specMemo": {
+    "_comment": "External spec-memo vault bridge (ws-spec-memo). enabled must be explicit true to route memory/changelog to memo MCP/CLI.",
+    "enabled": false,
+    "mode": "vault",
+    "cli": "memo",
+    "vaultRoot": "",
+    "bootstrapOnSession": true,
+    "writeBlockHook": false,
+    "importOnEnable": true,
+    "mcpServerName": "spec-memo"
+  },
+
   "fable": {
     "_comment": "Opt-in integration for fable-* skills within ws-spec-to-pr / ws-spec-to-pr-lite workflows. Master toggle must be true to enable automatic calls.",
     "enabled": true,

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-25 13:15] Agent: Composer
+- **Prompt**: Follow-up after Fix-PR implement subagent; clear remaining PR #241 review threads
+- **Done**: Aligned COOPERATIVE_FIX IDE order with plan→exec; PROTOCOLS Reach-10; gates Fix-PR batch roles; min-verify asserts; classify `applyScoreAnalysis` uses `minVerifyScore`; pushed `2f1df635` + `6d53eee2`; resolved threads (`activeThreads: 0`)
+- **Result**: PR #241 MERGEABLE; test + review green; zero open review threads
+
 ### [2026-08-25 13:42] Agent: Composer
 - **Prompt**: Surgical restore of LLM model footer on fix-pr thread close comments (Azure + GitHub)
 - **Done**: GitHub `resolve_thread.cjs` `--model` + `---\nLLM model: {id}`; Azure already appended; ws-fix-pr + INTENTS instruct pass `--model`; parity tests

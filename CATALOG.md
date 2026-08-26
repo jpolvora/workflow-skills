@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 41, `extra` = 6). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 42, `extra` = 6). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -84,6 +84,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan-folder facts into `index.PRD` Archive, then propose cleanup of shipped `{plansDir}` folders |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | List + confirm delete of workflow leftovers (telemetry, .runtime, shipped plans); suggest .gitignore |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
+| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Configure spec-memo external vault bridge (MCP/CLI) |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven intake → implement → complete (not Spec-to-PR) |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -141,6 +142,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Convergence loop | `ws-goal-loop` |
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` |
+| spec-memo / external vault / off-repo memory | `ws-spec-memo` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 
 ---

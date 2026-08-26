@@ -25,27 +25,29 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 | Flag | Effect |
 |------|--------|
-| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`autoload`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
+| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`autoload`**, **`specMemo`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
 
 **`--section autoload`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`) and optional `defaults.autoloadTaskLifecycle` (default / Recommended = `false`). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
+
+**`--section specMemo`:** optional external vault bridge via [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Runs preflight, interviews enable/mode/import/hook/bootstrap, writes `specMemo.*` through `configure_spec_memo.cjs`. Default / Recommended = `specMemo.enabled: false` (in-repo MEMORY).
 
 ## Steps
 
 1. **Ensure file** — If `config.json` missing: `cp` from `config.json.example`. If example missing, STOP (hub not installed). For `--section autoload`, still ensure `config.json` exists (seed from example) because the section persists `defaults.autoload`.
    - Done when: `config.json` exists on disk (or detect-only with example readable).
 
-2. **Detect** — Before stack scanning, run `node {skillsRoot}/ws-configure-project/scripts/stack_fingerprint.cjs check`. When it returns `skipDetection: true`, reuse the current stack detection; otherwise scan the consumer repo for stack, SCM, and commands, apply heuristics in [`INTERVIEW.md`](INTERVIEW.md) § Detection, and after accepted detection run the helper's `write` command to store `stackFingerprint` in `STACK.md` frontmatter. Build a suggestion map (path → value) without writing config yet. For `--section autoload`, detect per-skill install scope only (project-local vs global) and current `defaults.autoload` / `defaults.autoloadTaskLifecycle`.
-   - Done when: suggestion map covers at least `project`, `providers`/`issueTrackers`, `verification`, and `plans.dir` (defaults OK); or autoload path map + effective flag is ready.
+2. **Detect** — Before stack scanning, run `node {skillsRoot}/ws-configure-project/scripts/stack_fingerprint.cjs check`. When it returns `skipDetection: true`, reuse the current stack detection; otherwise scan the consumer repo for stack, SCM, and commands, apply heuristics in [`INTERVIEW.md`](INTERVIEW.md) § Detection, and after accepted detection run the helper's `write` command to store `stackFingerprint` in `STACK.md` frontmatter. Build a suggestion map (path → value) without writing config yet. For `--section autoload`, detect per-skill install scope only (project-local vs global) and current `defaults.autoload` / `defaults.autoloadTaskLifecycle`. For `--section specMemo`, run `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json` and record `cli.available`, `pollution`, and current `specMemo.*`.
+   - Done when: suggestion map covers at least `project`, `providers`/`issueTrackers`, `verification`, and `plans.dir` (defaults OK); or autoload path map + effective flag is ready; or specMemo preflight JSON is ready.
 
-3. **Gap list** — Compare current `config.json` to required keys in INTERVIEW.md § Required. Mark each: filled / placeholder (`<…>` or empty) / missing. For `--section autoload`, gap is `defaults.autoload` (+ root file consistency when true) and `defaults.autoloadTaskLifecycle`.
+3. **Gap list** — Compare current `config.json` to required keys in INTERVIEW.md § Required. Mark each: filled / placeholder (`<…>` or empty) / missing. For `--section autoload`, gap is `defaults.autoload` (+ root file consistency when true) and `defaults.autoloadTaskLifecycle`. For `--section specMemo`, gap is `specMemo.enabled` (+ CLI availability when user wants enable).
    - Done when: gap list exists; `--force` treats filled as re-ask candidates.
 
 4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never commit `config.json`. Autoload enablement gate: see step 6 (Recommended = No / `false`).
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
-5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`.
+5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload` or `--section specMemo`.
    - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
    - If the resolved target is missing: offer **Generate** into `.agents/skills/ws-shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/ws-shared/` unless the user explicitly chose another path.
    - Done when: config points at an existing companion, or user skipped.
@@ -61,13 +63,30 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
       1. On **Yes (`true`)**: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Do **not** set `defaults.autoload` from this answer.
       2. On **No (`false`)** / Skip / Keep false: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false` then **`--write-autoload`** (same as Yes) so a prior Always-applied row is stripped. Do **not** set `defaults.autoload`.
    - Done when: `defaults.autoload` persisted; `defaults.autoloadTaskLifecycle` persisted or left false/omitted; Always-applied table refreshed via `--write-autoload` after both Yes and No answers for `ws-task-lifecycle`.
-7. **Security pre-commit hook** — Ask via `user-gate`: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
+7. **spec-memo vault (optional)** — Run when full interview reaches optional extras, or immediately for `--section specMemo`. See [`INTERVIEW.md`](INTERVIEW.md) § specMemo and [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Skip core project interview when `--section specMemo` only.
+   1. Preflight: `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json`. When `cli.available` is false, user-gate: **Install spec-memo globally (Recommended)** (`npm install -g spec-memo`) / **Use npx for this session** (set `specMemo.cli` to `npx -y spec-memo`) / **Skip external vault (Recommended when CLI missing)** / Cancel → STOP.
+   2. user-gate: **Enable external spec-memo vault (`specMemo.enabled: true`)?** — **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
+   3. On **Yes (`true`)** — sequential gates (Recommended first):
+      - **Mode vault** (vault-only memory writes) / **Mode hybrid** (vault + in-repo MEMORY fallback)
+      - **Import legacy `.agents` tree now** / Skip import
+      - **Install write-block pre-commit hook** (`memo hook install`) / Skip hook
+      - **Bootstrap on session start** (`specMemo.bootstrapOnSession: true`) / Manual bootstrap only
+   4. Apply via:
+      ```bash
+      node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json \
+        --enabled {true|false} --mode {vault|hybrid} --import {true|false} --hook {true|false} \
+        --bootstrap-on-session {true|false} [--cli "memo"]
+      ```
+      On **No / Skip / Keep false**: `--enabled false` only (preserve other `specMemo.*` keys).
+   5. When enabled, print MCP snippet from [`ws-spec-memo/references/MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and note: register `spec-memo` MCP server in the agent host (`{cli} serve`). Full bridge map: [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
+   - Done when: `specMemo.*` persisted; import/hook ran when user chose Yes; MCP snippet shown when enabled.
+8. **Security pre-commit hook** — Ask via `user-gate`: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
    - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
    - On **Yes (`true`)**: run `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.
    - Never auto-installed or enforced on install; presented strictly as an optional interview gate.
    - Done when: user selection handled; hook installed if explicitly requested.
 
-8. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`.
+9. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). For specMemo: re-run `check_spec_memo.cjs` when section ran. Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`; when vault enabled, `/ws-spec-memo bootstrap` at session start.
    - Done when: summary shown; `--detect-only` ends after step 2 with no write.
 
 ## Rules
