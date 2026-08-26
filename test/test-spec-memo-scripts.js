@@ -206,6 +206,33 @@ process.exit(0);
   fs.rmSync(globalRoot, { recursive: true, force: true });
   fs.rmSync(globalTmp, { recursive: true, force: true });
 
+  const bothTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-both-'));
+  const bothGlobal = fs.mkdtempSync(path.join(os.tmpdir(), 'global-skills-both-'));
+  fs.mkdirSync(path.join(bothGlobal, 'ws-memo'), { recursive: true });
+  fs.writeFileSync(path.join(bothGlobal, 'ws-memo', 'SKILL.md'), '---\nname: ws-memo\n---\n', 'utf8');
+  const bothHubRel = 'vault-both-memo-hub';
+  seedHub(bothTmp, { sharedRel: bothHubRel });
+  const bothHub = path.join(bothTmp, bothHubRel);
+  const bothCfgPath = path.join(bothHub, 'config.json');
+  fs.copyFileSync(path.join(bothHub, 'config.json.example'), bothCfgPath);
+  const bothCfg = JSON.parse(fs.readFileSync(bothCfgPath, 'utf8'));
+  bothCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
+  fs.writeFileSync(bothCfgPath, `${JSON.stringify(bothCfg, null, 2)}\n`, 'utf8');
+  const localMemo = path.join(bothTmp, '.agents', 'skills', 'ws-memo', 'SKILL.md');
+  fs.mkdirSync(path.dirname(localMemo), { recursive: true });
+  fs.writeFileSync(localMemo, '---\nname: ws-memo-local\n---\n', 'utf8');
+  const checkBoth = runNode(CHECK, ['--repo-root', bothTmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: bothHub, WORKFLOW_SKILLS_GLOBAL_DIR: bothGlobal },
+  });
+  const bothReport = JSON.parse(checkBoth.stdout);
+  assert(bothReport.runtimeHandoff.wsMemo.installed === true, 'both fixtures: ws-memo detected');
+  assert(
+    bothReport.runtimeHandoff.wsMemo.skillPath.replace(/\\/g, '/').includes('.agents/skills/ws-memo/SKILL.md'),
+    'local ws-memo wins over global when both exist',
+  );
+  fs.rmSync(bothGlobal, { recursive: true, force: true });
+  fs.rmSync(bothTmp, { recursive: true, force: true });
+
   const disabledReport = JSON.parse(checkDefault.stdout);
   assert(disabledReport.runtimeHandoff === null, 'runtimeHandoff omitted when vault disabled');
   assert(checkDefault.status === 0, 'disabled vault check exits 0 without ws-memo');
