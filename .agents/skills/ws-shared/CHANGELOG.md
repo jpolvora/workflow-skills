@@ -1,5 +1,45 @@
 # Changelog
 
+### [2026-08-26 18:40 UTC] Agent: Cursor Grok 4.6
+- **Prompt**: Fix CI integrity failure; commit; bump; ship `/ws-ship-pr` next version
+- **Done**: Regenerated `bin/skill-integrity.json` after hashed hub `setup.md` drift; `npm run build-site:bump` 0.3.40 → 0.3.41; FEATURES/test-doc-sync/AGENTS stamp aligned; isolated spec-memo missing-ws-memo fixture from global skills
+- **Result**: Package stamped 0.3.41; integrity `--check` must exit 0 before PR
+
+### [2026-08-26 18:10 UTC] Agent: Composer
+- **Prompt**: Convert LLM Workflow Best Practices Research download to root `RESEARCH.md`
+- **Done**: Added structured `RESEARCH.md` at repo root from Downloads source; corrected stale path names; mapped proposals to current `ws-*` layout and `SKILL_AUTHORING.md`
+- **Result**: Research backlog doc ready for future skill/harness improvement specs
+
+### [2026-08-26 18:07 UTC] Agent: Composer
+- **Prompt**: `/ws-check-harness` — apply approved correction plan
+- **Done**: Fixed broken FAQ links in `ws-shared/setup.md` (`../../ws-spec-to-pr/...` → `../ws-spec-to-pr/...`); bumped upstream dogfood session-contract stamp in `AGENTS.md` to **0.3.40**
+- **Result**: Harness OK post-correction; Phase 2 revalidation pass on touched files
+
+### [2026-08-26 16:50 UTC] Agent: Composer
+- **Prompt**: Confirm workflow-skills vault git url as projectId; ingest memory; clean up; commit
+- **Done**: Bound `projectId` `github.com-jpolvora-workflow-skills` (origin `github.com/jpolvora/workflow-skills`); imported 59 traps to local + MCP vaults; reset `MEMORY.md` to template; removed `memory/*.md` (kept `.gitkeep`); left `.agents/plans` in place (doctor `--fix` would wipe plan dirs)
+- **Result**: Vault SoT for traps; in-repo memory residue cleared for commit
+
+### [2026-08-26 16:35 UTC] Agent: Composer
+- **Prompt**: Add AGENTS.md references for spec-memo MCP server and hooks (from prior ws-memo install session)
+- **Done**: Root `AGENTS.md` §5 dogfood subsection (MCP tools, `ws-memo` runtime, `ws-spec-memo` setup, `memo hook install`); pipeline row + progressive-disclosure + task-router pointers
+- **Result**: Agents in this repo can route vault/MCP/hook work without vendoring SURFACE.md
+
+### [2026-08-26 15:28 UTC] Agent: Composer
+- **Prompt**: install ws-memo skill into global skills root from spec-memo repo
+- **Done**: Copied `.agents/skills/ws-memo/` from local `spec-memo` (develop@d224e9a) into `$HOME/.agents/skills/ws-memo`
+- **Result**: Global skill present (SKILL.md + references + evals); matches source tree
+
+### [2026-08-26 11:25] Agent: Composer
+- **Prompt**: Configure agentic-code-reviewers to cursor engine + composer 2.5; disable OpenCode engine on GitHub only
+- **Done**: Confirmed cursor-code-review.yml already uses `--engine cursor-sdk` / `--model composer-2.5` on PRs; disabled GitHub workflow "Agentic Code Review (OpenCode)" via `gh workflow disable` (yml kept as workflow_dispatch backup)
+- **Result**: Active PR reviewer is Cursor only; OpenCode workflow no longer listed as active on GitHub
+
+### [2026-08-26 01:38] Agent: Composer (cursor preset)
+- **Prompt**: `/ws-spec-to-pr` issue #243 full auto with cursor preset models
+- **Done**: ws-spec-memo → ws-memo runtime handoff (INTEGRATION, SKILL, check warnings, tools.md, eval); PR #244; CI green; goal-fix-pr converged (0 threads)
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/244
+
 ### [2026-08-25 20:24] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` on PR #242 (ws-spec-memo)
 - **Done**: 10 fix rounds (45 threads total) through `e9c8d8de`; resolve_consumer_root, health gates, `{specMemo.cli}` aliases, configure edge cases; MEMORY trap compiled

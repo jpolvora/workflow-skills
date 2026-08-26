@@ -144,7 +144,7 @@
       "includeTestingReport": false
     },
     "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Lite ignores testingModel, dag, scoreAndRefine, and reviewFix.",
-    "modelsPreset": "default",
+    "modelsPreset": "cursor",
     "modelPresets": {
       "default": {
         "plannerModel": "current",

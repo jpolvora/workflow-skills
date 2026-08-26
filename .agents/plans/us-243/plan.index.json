@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/us-243/step-01-us-243.plan.md",
+    "sha256": "4f48eee09aa63a0f80413521838c429b04283635033e5f63595612b9cc601f84",
+    "bytes": 1660,
+    "lines": 33
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "Summary",
+      "level": 2,
+      "byteStart": 298,
+      "byteEnd": 575,
+      "lineStart": 12,
+      "lineEnd": 15,
+      "sha256": "a8775a03825a9598d0c5fae8a56c5c0e8782487a21fee765f70eb7eecbbc4062",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-002",
+      "title": "Tasks",
+      "level": 2,
+      "byteStart": 575,
+      "byteEnd": 1439,
+      "lineStart": 16,
+      "lineEnd": 28,
+      "sha256": "d66ed6fc0eb3845b15556a0e56d9dd20dbd456b3e6a4b29b0828c664c513f27f",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "Verification",
+      "level": 2,
+      "byteStart": 1439,
+      "byteEnd": 1660,
+      "lineStart": 29,
+      "lineEnd": 33,
+      "sha256": "01534dbd2a8ab0fe2776dcb01de99ed0a23877d32fe57782131a41fb019fe02e",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`references/INTEGRATION.md` states the two-skill split (`ws-spec-memo` = wiring/`specMemo.*`; runtime ops = `ws-memo`) and that `ws-spec-memo` does not own search/get/gc/promote/canvas/SSE/status/rank/backup/sync.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC2",
+      "text": "`INTEGRATION.md` tells agents that after `specMemo.enabled: true` and MCP registration they must load `ws-memo` from the spec-memo package/clone (`{skillsRoot}/ws-memo` or copy from spec-memo `.agents/skills/ws-memo/`).",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC3",
+      "text": "`SKILL.md` includes a one-line runtime next step pointing at `/ws-memo` (spec-memo skill) after setup/check/bootstrap/import/disable paths without pasting an 8-tool MCP table.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC4",
+      "text": "`references/MCP-TEMPLATE.json` keeps stdio `memo serve` / npx serve as default snippets and adds an optional comment pointing at spec-memo `ws-memo/references/MCP-TEMPLATE.json` for SSE/status ports `3000`/`3001` and canvas `4100`.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC5",
+      "text": "When `specMemo.enabled` is explicit `true`, `check_spec_memo.cjs` reports (warn, exit 0) whether MCP `spec-memo` is expected and whether `{skillsRoot}/ws-memo/SKILL.md` exists; missing `ws-memo` does not fail the check.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC6",
+      "text": "When `specMemo.enabled` is not explicit `true`, `check_spec_memo.cjs` exits 0 without requiring `ws-memo` or MCP registration.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC7",
+      "text": "`tools.md` vault reroute notes (when `specMemo.enabled`) point trap/search follow-ups at `ws-memo` / `/ws-memo` instead of expanding `ws-spec-memo` into a command encyclopedia.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC8",
+      "text": "`evals/evals.json` adds an eval that after setup the agent loads `ws-memo` for search/promote-style ops and does not invent a ninth MCP tool or duplicate SURFACE.md inside `ws-spec-memo`.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC9",
+      "text": "Setup interview Recommended defaults still keep `specMemo.enabled: false` (no change that makes enable the Recommended first choice).",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC10",
+      "text": "No SURFACE.md (or other full vault command encyclopedia) is copied into `ws-spec-memo` skill docs.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-spec-memo-scripts.js"
+      ],
+      "expectedTestNames": []
+    }
+  ]
+}

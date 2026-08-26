@@ -43,6 +43,7 @@ function seedHub(root, { sharedRel = '.agents/skills/ws-shared' } = {}) {
 }
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-test-'));
+const emptyGlobalSkills = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-empty-global-'));
 
 try {
   seedHub(tmp);
@@ -157,7 +158,10 @@ process.exit(0);
   healthyCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
   fs.writeFileSync(healthyCfgPath, `${JSON.stringify(healthyCfg, null, 2)}\n`, 'utf8');
   const checkHealthy = runNode(CHECK, ['--repo-root', tmp, '--json'], {
-    env: { WORKFLOW_SKILLS_SHARED_DIR: healthyHub },
+    env: {
+      WORKFLOW_SKILLS_SHARED_DIR: healthyHub,
+      WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobalSkills,
+    },
   });
   const healthyReport = JSON.parse(checkHealthy.stdout);
   assert(healthyReport.config.enabled === true, 'healthy fixture activates vault branch');
@@ -334,6 +338,7 @@ process.exit(0);
   if (failures === 0) console.log('\ntest-spec-memo-scripts: ok');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
+  fs.rmSync(emptyGlobalSkills, { recursive: true, force: true });
 }
 
 process.exit(failures === 0 ? 0 : 1);

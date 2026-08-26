@@ -1,0 +1,291 @@
+{
+  "indexPath": ".agents/plans/index.json",
+  "keywords": [
+    "243",
+    "spec",
+    "memo"
+  ],
+  "matches": [
+    {
+      "workflowId": "us-235-20260823T151631Z",
+      "slug": "us-235",
+      "score": 3,
+      "artifacts": [
+        ".agents/plans/us-235/RUN.md",
+        ".agents/plans/us-235/step-00-us-235.classify.md",
+        ".agents/plans/us-235/step-00-us-235.issue.json",
+        ".agents/plans/us-235/step-00-us-235.spec.md",
+        ".agents/plans/us-235/step-01-us-235.plan.md",
+        ".agents/plans/us-235/step-02-us-235.plan.refined.md",
+        ".agents/plans/us-235/step-05-us-235.plan.report.md",
+        ".agents/plans/us-235/step-08-us-235.result.md"
+      ]
+    },
+    {
+      "workflowId": "agents-skills-as-sot-20260808T072631Z",
+      "slug": "agents-skills-as-sot",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/agents-skills-as-sot/step-00-agents-skills-as-sot.classify.md",
+        ".agents/plans/agents-skills-as-sot/step-00-agents-skills-as-sot.spec.md",
+        ".agents/plans/agents-skills-as-sot/step-01-agents-skills-as-sot.plan.md",
+        ".agents/plans/agents-skills-as-sot/step-02-agents-skills-as-sot.plan.refined.md",
+        ".agents/plans/agents-skills-as-sot/step-05-agents-skills-as-sot.plan.report.md",
+        ".agents/plans/agents-skills-as-sot/step-08-agents-skills-as-sot.result.md"
+      ]
+    },
+    {
+      "workflowId": "autoload-skills-overlap-audit-20260808T154444Z",
+      "slug": "autoload-skills-overlap-audit",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/autoload-skills-overlap-audit/step-00-autoload-skills-overlap-audit.classify.md",
+        ".agents/plans/autoload-skills-overlap-audit/step-00-autoload-skills-overlap-audit.spec.md",
+        ".agents/plans/autoload-skills-overlap-audit/step-01-autoload-skills-overlap-audit.plan.md",
+        ".agents/plans/autoload-skills-overlap-audit/step-02-autoload-skills-overlap-audit.plan.refined.md",
+        ".agents/plans/autoload-skills-overlap-audit/step-05-autoload-skills-overlap-audit.plan.report.md",
+        ".agents/plans/autoload-skills-overlap-audit/step-08-autoload-skills-overlap-audit.result.md"
+      ]
+    },
+    {
+      "workflowId": "check-harness-upstream-sot-20260808T020602Z",
+      "slug": "check-harness-upstream-sot",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/check-harness-upstream-sot/step-00-check-harness-upstream-sot.classify.md",
+        ".agents/plans/check-harness-upstream-sot/step-00-check-harness-upstream-sot.spec.md",
+        ".agents/plans/check-harness-upstream-sot/step-01-check-harness-upstream-sot.plan.md",
+        ".agents/plans/check-harness-upstream-sot/step-02-check-harness-upstream-sot.plan.refined.md",
+        ".agents/plans/check-harness-upstream-sot/step-05-check-harness-upstream-sot.plan.report.md",
+        ".agents/plans/check-harness-upstream-sot/step-08-check-harness-upstream-sot.result.md"
+      ]
+    },
+    {
+      "workflowId": "deepseek-harness-improvements-20260816T204345Z",
+      "slug": "deepseek-harness-improvements",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/deepseek-harness-improvements/RUN.md",
+        ".agents/plans/deepseek-harness-improvements/step-00-deepseek-harness-improvements.classify.md",
+        ".agents/plans/deepseek-harness-improvements/step-00-deepseek-harness-improvements.spec.md",
+        ".agents/plans/deepseek-harness-improvements/step-01-deepseek-harness-improvements.plan.md",
+        ".agents/plans/deepseek-harness-improvements/step-02-deepseek-harness-improvements.plan.refined.md",
+        ".agents/plans/deepseek-harness-improvements/step-05-deepseek-harness-improvements.plan.report.md",
+        ".agents/plans/deepseek-harness-improvements/step-05-deepseek-harness-improvements.score-analysis.md",
+        ".agents/plans/deepseek-harness-improvements/step-05-deepseek-harness-improvements.score-analysis.pass2.md",
+        ".agents/plans/deepseek-harness-improvements/step-08-deepseek-harness-improvements.second-pass-report.md"
+      ]
+    },
+    {
+      "workflowId": "fix-pr-batch-plan-exec-20260825T163900Z",
+      "slug": "fix-pr-batch-plan-exec",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/fix-pr-batch-plan-exec/RUN.md",
+        ".agents/plans/fix-pr-batch-plan-exec/step-00-fix-pr-batch-plan-exec.classify.md",
+        ".agents/plans/fix-pr-batch-plan-exec/step-00-fix-pr-batch-plan-exec.spec.md",
+        ".agents/plans/fix-pr-batch-plan-exec/step-01-fix-pr-batch-plan-exec.plan.md",
+        ".agents/plans/fix-pr-batch-plan-exec/step-02-fix-pr-batch-plan-exec.plan.refined.md",
+        ".agents/plans/fix-pr-batch-plan-exec/step-05-fix-pr-batch-plan-exec.plan.report.md",
+        ".agents/plans/fix-pr-batch-plan-exec/step-08-fix-pr-batch-plan-exec.result.md"
+      ]
+    },
+    {
+      "workflowId": "interview-project-context-auto-answer-20260808T034812Z",
+      "slug": "interview-project-context-auto-answer",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/interview-project-context-auto-answer/step-00-interview-project-context-auto-answer.classify.md",
+        ".agents/plans/interview-project-context-auto-answer/step-00-interview-project-context-auto-answer.spec.md",
+        ".agents/plans/interview-project-context-auto-answer/step-01-interview-project-context-auto-answer.plan.md",
+        ".agents/plans/interview-project-context-auto-answer/step-08-interview-project-context-auto-answer.result.md"
+      ]
+    },
+    {
+      "workflowId": "remove-consumer-agents-md-requirement-20260807T214300Z",
+      "slug": "remove-consumer-agents-md-requirement",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/remove-consumer-agents-md-requirement/step-00-remove-consumer-agents-md-requirement.spec.md",
+        ".agents/plans/remove-consumer-agents-md-requirement/step-01-remove-consumer-agents-md-requirement.plan.md",
+        ".agents/plans/remove-consumer-agents-md-requirement/step-02-remove-consumer-agents-md-requirement.plan.refined.md",
+        ".agents/plans/remove-consumer-agents-md-requirement/step-05-remove-consumer-agents-md-requirement.plan.report.md"
+      ]
+    },
+    {
+      "workflowId": "testing-executor-model-20260812T192105Z",
+      "slug": "testing-executor-model",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/testing-executor-model/step-00-testing-executor-model.classify.md",
+        ".agents/plans/testing-executor-model/step-00-testing-executor-model.spec.md",
+        ".agents/plans/testing-executor-model/step-01-testing-executor-model.plan.md",
+        ".agents/plans/testing-executor-model/step-08-fable-judge.md",
+        ".agents/plans/testing-executor-model/step-08-testing-executor-model.result.md"
+      ]
+    },
+    {
+      "workflowId": "us-202-20260813T181505Z",
+      "slug": "us-202",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/us-202/step-00-us-202.classify.md",
+        ".agents/plans/us-202/step-00-us-202.issue.json",
+        ".agents/plans/us-202/step-00-us-202.spec.md",
+        ".agents/plans/us-202/step-01-us-202.plan.md",
+        ".agents/plans/us-202/step-02-us-202.plan.refined.md",
+        ".agents/plans/us-202/step-05-us-202.plan.report.md",
+        ".agents/plans/us-202/step-08-us-202.result.md"
+      ]
+    },
+    {
+      "workflowId": "us-211-20260815T171820Z",
+      "slug": "us-211",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/us-211/RUN.md",
+        ".agents/plans/us-211/step-00-us-211.classify.md",
+        ".agents/plans/us-211/step-00-us-211.issue.json",
+        ".agents/plans/us-211/step-00-us-211.spec.md",
+        ".agents/plans/us-211/step-01-us-211.plan.md"
+      ]
+    },
+    {
+      "workflowId": "us-217-20260819T121800Z",
+      "slug": "us-217",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/us-217/RUN.md",
+        ".agents/plans/us-217/step-00-us-217.classify.md",
+        ".agents/plans/us-217/step-00-us-217.issue.json",
+        ".agents/plans/us-217/step-00-us-217.spec.md",
+        ".agents/plans/us-217/step-01-us-217.plan.md",
+        ".agents/plans/us-217/step-02-us-217.plan.refined.md",
+        ".agents/plans/us-217/step-05-us-217.plan.report.md",
+        ".agents/plans/us-217/step-08-us-217.result.md"
+      ]
+    },
+    {
+      "workflowId": "us-236-20260823T195756Z",
+      "slug": "us-236",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/us-236/RUN.md",
+        ".agents/plans/us-236/step-00-us-236.issue.json",
+        ".agents/plans/us-236/step-00-us-236.spec.md",
+        ".agents/plans/us-236/step-02-us-236.plan.refined.md"
+      ]
+    },
+    {
+      "workflowId": "workflow-bootstrap-feature-branch-20260812T180942Z",
+      "slug": "workflow-bootstrap-feature-branch",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/workflow-bootstrap-feature-branch/step-00-workflow-bootstrap-feature-branch.classify.md",
+        ".agents/plans/workflow-bootstrap-feature-branch/step-00-workflow-bootstrap-feature-branch.spec.md",
+        ".agents/plans/workflow-bootstrap-feature-branch/step-01-workflow-bootstrap-feature-branch.plan.md",
+        ".agents/plans/workflow-bootstrap-feature-branch/step-05-workflow-bootstrap-feature-branch.plan.report.md",
+        ".agents/plans/workflow-bootstrap-feature-branch/step-08-workflow-bootstrap-feature-branch.result.md"
+      ]
+    },
+    {
+      "workflowId": "ws-doctor-20260812T015156Z",
+      "slug": "ws-doctor",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/ws-doctor/step-00-ws-doctor.classify.md",
+        ".agents/plans/ws-doctor/step-00-ws-doctor.spec.md",
+        ".agents/plans/ws-doctor/step-01-ws-doctor.plan.md",
+        ".agents/plans/ws-doctor/step-05-ws-doctor.plan.report.md",
+        ".agents/plans/ws-doctor/step-08-ws-doctor.result.md"
+      ]
+    },
+    {
+      "workflowId": "ws-doctor-204-205-20260814T013818Z",
+      "slug": "ws-doctor-204-205",
+      "score": 2,
+      "artifacts": [
+        ".agents/plans/ws-doctor-204-205/step-00-ws-doctor-204-205.classify.md",
+        ".agents/plans/ws-doctor-204-205/step-00-ws-doctor-204-205.spec.md",
+        ".agents/plans/ws-doctor-204-205/step-01-ws-doctor-204-205.plan.md",
+        ".agents/plans/ws-doctor-204-205/step-05-ws-doctor-204-205.plan.report.md",
+        ".agents/plans/ws-doctor-204-205/step-08-ws-doctor-204-205.result.md"
+      ]
+    },
+    {
+      "workflowId": "configurable-consumer-autoload-20260810T194555Z",
+      "slug": "configurable-consumer-autoload",
+      "score": 1,
+      "artifacts": [
+        ".agents/plans/configurable-consumer-autoload/step-00-configurable-consumer-autoload.classify.md",
+        ".agents/plans/configurable-consumer-autoload/step-00-configurable-consumer-autoload.spec.md",
+        ".agents/plans/configurable-consumer-autoload/step-01-configurable-consumer-autoload.plan.md"
+      ]
+    },
+    {
+      "workflowId": "enable-auditing-20260812T020840Z",
+      "slug": "enable-auditing",
+      "score": 1,
+      "artifacts": [
+        ".agents/plans/enable-auditing/step-00-enable-auditing.classify.md",
+        ".agents/plans/enable-auditing/step-00-enable-auditing.spec.md",
+        ".agents/plans/enable-auditing/step-01-enable-auditing.plan.md",
+        ".agents/plans/enable-auditing/step-02-enable-auditing.plan.refined.md",
+        ".agents/plans/enable-auditing/step-08-enable-auditing.result.md"
+      ]
+    },
+    {
+      "workflowId": "refine-ws-activity-report-human-timing-20260812T023033Z",
+      "slug": "refine-ws-activity-report-human-timing",
+      "score": 1,
+      "artifacts": [
+        ".agents/plans/refine-ws-activity-report-human-timing/step-00-refine-ws-activity-report-human-timing.classify.md",
+        ".agents/plans/refine-ws-activity-report-human-timing/step-00-refine-ws-activity-report-human-timing.spec.md",
+        ".agents/plans/refine-ws-activity-report-human-timing/step-01-refine-ws-activity-report-human-timing.plan.md"
+      ]
+    },
+    {
+      "workflowId": "us-183-20260809T015646Z",
+      "slug": "us-183",
+      "score": 1,
+      "artifacts": [
+        ".agents/plans/us-183/step-00-us-183.classify.md",
+        ".agents/plans/us-183/step-00-us-183.spec.md",
+        ".agents/plans/us-183/step-08-us-183.result.md"
+      ]
+    },
+    {
+      "workflowId": "us-209-20260815T175409Z",
+      "slug": "us-209",
+      "score": 1,
+      "artifacts": [
+        ".agents/plans/us-209/RUN.md",
+        ".agents/plans/us-209/step-00-us-209.classify.md",
+        ".agents/plans/us-209/step-00-us-209.spec.md"
+      ]
+    },
+    {
+      "workflowId": "us-210-20260815T181800Z",
+      "slug": "us-210",
+      "score": 1,
+      "artifacts": [
+        ".agents/plans/us-210/step-00-us-210.classify.md",
+        ".agents/plans/us-210/step-00-us-210.issue.json",
+        ".agents/plans/us-210/step-00-us-210.spec.md",
+        ".agents/plans/us-210/step-01-us-210.plan.md",
+        ".agents/plans/us-210/step-08-us-210.result.md"
+      ]
+    },
+    {
+      "workflowId": "us-220-20260819T132248Z",
+      "slug": "us-220",
+      "score": 1,
+      "artifacts": [
+        ".agents/plans/us-220/step-00-us-220.classify.md",
+        ".agents/plans/us-220/step-00-us-220.spec.md",
+        ".agents/plans/us-220/step-01-us-220.plan.md",
+        ".agents/plans/us-220/step-05-us-220.plan.report.md"
+      ]
+    }
+  ]
+}
