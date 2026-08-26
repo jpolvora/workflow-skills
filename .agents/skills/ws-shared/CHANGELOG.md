@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-26 18:07 UTC] Agent: Composer
+- **Prompt**: `/ws-check-harness` — apply approved correction plan
+- **Done**: Fixed broken FAQ links in `ws-shared/setup.md` (`../../ws-spec-to-pr/...` → `../ws-spec-to-pr/...`); bumped upstream dogfood session-contract stamp in `AGENTS.md` to **0.3.40**
+- **Result**: Harness OK post-correction; Phase 2 revalidation pass on touched files
+
 ### [2026-08-26 16:50 UTC] Agent: Composer
 - **Prompt**: Confirm workflow-skills vault git url as projectId; ingest memory; clean up; commit
 - **Done**: Bound `projectId` `github.com-jpolvora-workflow-skills` (origin `github.com/jpolvora/workflow-skills`); imported 59 traps to local + MCP vaults; reset `MEMORY.md` to template; removed `memory/*.md` (kept `.gitkeep`); left `.agents/plans` in place (doctor `--fix` would wipe plan dirs)
