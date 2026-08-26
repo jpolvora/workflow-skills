@@ -1,0 +1,481 @@
+{
+  "schemaVersion": 1,
+  "revision": 15,
+  "workflowId": "us-243-20260826T052032Z",
+  "slug": "us-243",
+  "specPath": ".agents/plans/us-243/step-00-us-243.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`references/INTEGRATION.md` states the two-skill split (`ws-spec-memo` = wiring/`specMemo.*`; runtime ops = `ws-memo`) and that `ws-spec-memo` does not own search/get/gc/promote/canvas/SSE/status/rank/backup/sync.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md:L70-L101"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+          "lineStart": 70,
+          "lineEnd": 101,
+          "sha256": "d311c4af21bdba8d59de90867372451b88bc744adab06025339fe9954706b086"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.417Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC1",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`INTEGRATION.md` tells agents that after `specMemo.enabled: true` and MCP registration they must load `ws-memo` from the spec-memo package/clone (`{skillsRoot}/ws-memo` or copy from spec-memo `.agents/skills/ws-memo/`).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md:L79-L88"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+          "lineStart": 79,
+          "lineEnd": 88,
+          "sha256": "d311c4af21bdba8d59de90867372451b88bc744adab06025339fe9954706b086"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.488Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC2",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`SKILL.md` includes a one-line runtime next step pointing at `/ws-memo` (spec-memo skill) after setup/check/bootstrap/import/disable paths without pasting an 8-tool MCP table.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/SKILL.md:L22-L24"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/SKILL.md",
+          "lineStart": 22,
+          "lineEnd": 24,
+          "sha256": "22bc023cdfc7f738bcced2fee6a2c9a6280c8864756dfa7343cc6ce4a7cbfeb7"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.551Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC3",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`references/MCP-TEMPLATE.json` keeps stdio `memo serve` / npx serve as default snippets and adds an optional comment pointing at spec-memo `ws-memo/references/MCP-TEMPLATE.json` for SSE/status ports `3000`/`3001` and canvas `4100`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json:L1-L13"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+          "lineStart": 1,
+          "lineEnd": 13,
+          "sha256": "2f0ecb9b1646774d024cb3c17c3d56729b891ee46d6a0f65ecd952bf8586ed1d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.613Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC4",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "When `specMemo.enabled` is explicit `true`, `check_spec_memo.cjs` reports (warn, exit 0) whether MCP `spec-memo` is expected and whether `{skillsRoot}/ws-memo/SKILL.md` exists; missing `ws-memo` does not fail the check.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs:L168-L195"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+          "lineStart": 168,
+          "lineEnd": 195,
+          "sha256": "9c20752134be57be3d9dec04bb879a16bec53655b93788adfb50fde96e73c5f2"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.676Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC5",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "When `specMemo.enabled` is not explicit `true`, `check_spec_memo.cjs` exits 0 without requiring `ws-memo` or MCP registration.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs:L143-L145"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+          "lineStart": 143,
+          "lineEnd": 145,
+          "sha256": "9c20752134be57be3d9dec04bb879a16bec53655b93788adfb50fde96e73c5f2"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.739Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC6",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`tools.md` vault reroute notes (when `specMemo.enabled`) point trap/search follow-ups at `ws-memo` / `/ws-memo` instead of expanding `ws-spec-memo` into a command encyclopedia.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/tools.md:L60-L113"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/tools.md",
+          "lineStart": 60,
+          "lineEnd": 113,
+          "sha256": "94fafa7e3b6b590fba4341a4adc2c5d3a0a9d71285d4487fb3358ab47e02da64"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.799Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC7",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "`evals/evals.json` adds an eval that after setup the agent loads `ws-memo` for search/promote-style ops and does not invent a ninth MCP tool or duplicate SURFACE.md inside `ws-spec-memo`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/evals/evals.json:L31-L40"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/evals/evals.json",
+          "lineStart": 31,
+          "lineEnd": 40,
+          "sha256": "4cbb6cfe783559b80f04a10133c04c5ae99082c51f259ff50a9e209c22bd34fd"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.863Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC8",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "Setup interview Recommended defaults still keep `specMemo.enabled: false` (no change that makes enable the Recommended first choice).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/SKILL.md:L68-L72"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/SKILL.md",
+          "lineStart": 68,
+          "lineEnd": 72,
+          "sha256": "22bc023cdfc7f738bcced2fee6a2c9a6280c8864756dfa7343cc6ce4a7cbfeb7"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.922Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC9",
+        "step5-product"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "No SURFACE.md (or other full vault command encyclopedia) is copied into `ws-spec-memo` skill docs.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-memo/SKILL.md:L22-L24"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-memo/SKILL.md",
+          "lineStart": 22,
+          "lineEnd": 24,
+          "sha256": "22bc023cdfc7f738bcced2fee6a2c9a6280c8864756dfa7343cc6ce4a7cbfeb7"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "384e1aa2cd7f527e804c463eb463abf8aae1252a",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-spec-memo-scripts",
+          "sourceFile": "test/test-spec-memo-scripts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-08-26T05:33:28.980Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-AC10",
+        "step5-product"
+      ]
+    }
+  ],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 9,
+    "earnedUnits": 90,
+    "totalUnits": 100,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-08-26T05:34:02.697Z"
+  }
+}

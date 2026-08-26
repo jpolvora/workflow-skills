@@ -1,0 +1,126 @@
+{
+  "status": "ok",
+  "provider": "github",
+  "issue": 243,
+  "keywords": [
+    "spec-memo",
+    "ws-memo",
+    "ws-spec-memo",
+    "handoff"
+  ],
+  "pullRequests": [
+    {
+      "number": 212,
+      "pullRequestId": 212,
+      "title": "feat(us-211): hybrid/global consumer ws-shared root resolver",
+      "state": "MERGED",
+      "status": "MERGED",
+      "url": "https://github.com/jpolvora/workflow-skills/pull/212",
+      "headRefName": "feature/us-211",
+      "sourceRefName": "feature/us-211",
+      "searchQuery": "#243"
+    },
+    {
+      "number": 242,
+      "pullRequestId": 242,
+      "title": "Add ws-spec-memo external vault bridge",
+      "state": "MERGED",
+      "status": "MERGED",
+      "url": "https://github.com/jpolvora/workflow-skills/pull/242",
+      "headRefName": "develop",
+      "sourceRefName": "develop",
+      "searchQuery": "spec-memo ws-memo ws-spec-memo handoff"
+    }
+  ],
+  "commits": [
+    {
+      "sha": "f5762de3",
+      "subject": "fix(#242): pollution scan, stdin-json errors, MCP npx template [PRRT_kwDOTFajc86cSwHY, PRRT_kwDOTFajc86cSwH2, PRRT_kwDOTFajc86cSwIZ, PRRT_kwDOTFajc86cSwI2, PRRT_kwDOTFajc86cSwJO]",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    },
+    {
+      "sha": "d4dfcdd8",
+      "subject": "fix(#242): spec-memo disable/import docs and configure edge cases [PRRT_kwDOTFajc86cSrt2, PRRT_kwDOTFajc86cSruX, PRRT_kwDOTFajc86cSru4, PRRT_kwDOTFajc86cSrvi, PRRT_kwDOTFajc86cSrwH]",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    },
+    {
+      "sha": "bddd8542",
+      "subject": "fix(#242): harden spec-memo configure and invocation names [PRRT_kwDOTFajc86cSatv, PRRT_kwDOTFajc86cSauq, PRRT_kwDOTFajc86cSavP, PRRT_kwDOTFajc86cSavv]",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    },
+    {
+      "sha": "8aebbd8a",
+      "subject": "fix(#242): document --stdin-json for spec-memo configure apply [PRRT_kwDOTFajc86cSWBz, PRRT_kwDOTFajc86cSWC3, PRRT_kwDOTFajc86cSWDn]",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    },
+    {
+      "sha": "f3afeae8",
+      "subject": "fix(#242): allow preflight success when specMemo vault is disabled [PRRT_kwDOTFajc86cSRG5, PRRT_kwDOTFajc86cSRH3, PRRT_kwDOTFajc86cSRI2, PRRT_kwDOTFajc86cSRJ_]",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    },
+    {
+      "sha": "f47e674e",
+      "subject": "fix(#242): tighten spec-memo preflight health and mode validation [PRRT_kwDOTFajc86cSMp5, PRRT_kwDOTFajc86cSMq1, PRRT_kwDOTFajc86cSMrY, PRRT_kwDOTFajc86cSMst]",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    },
+    {
+      "sha": "0b4f658e",
+      "subject": "fix(#242): address spec-memo review threads [PRRT_kwDOTFajc86cSHoY, PRRT_kwDOTFajc86cSHpM, PRRT_kwDOTFajc86cSHpz, PRRT_kwDOTFajc86cSHqZ, PRRT_kwDOTFajc86cSHrD, PRRT_kwDOTFajc86cSHrg, PRRT_kwDOTFajc86cSHsC, PRRT_kwDOTFajc86cSHs-, PRRT_kwDOTFajc86cSHt5, PRRT_kwDOTFajc86cSHvC]",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    },
+    {
+      "sha": "f59970af",
+      "subject": "Add ws-spec-memo skill and wire external vault setup into configure-project.",
+      "files": [
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-memo/references/INTEGRATION.md",
+        ".agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json",
+        ".agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs",
+        ".agents/skills/ws-spec-memo/evals/evals.json"
+      ]
+    }
+  ],
+  "repoRoot": "."
+}

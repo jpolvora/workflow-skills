@@ -162,7 +162,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-local-spec-provider` | Provider | Local `*.spec.md` |
 | `ws-spec-format` | Protocol | Spec format |
 | `ws-goal-loop` | Primitive | Convergence loop |
-| `ws-spec-memo` | Utility | External spec-memo vault bridge (setup via `ws-configure-project --section specMemo` or `/ws-spec-memo`) |
+| `ws-spec-memo` | Utility | External spec-memo vault **setup/bridge** (`specMemo.*`, import, hybrid fallback, write-block hook interview) via `ws-configure-project --section specMemo` or `/ws-spec-memo`. Runtime vault ops → **`ws-memo`** from [spec-memo](https://github.com/jpolvora/spec-memo) (not packaged here) |
 
 ---
 
@@ -265,6 +265,19 @@ Then changelog (`config.json` → `rules.changelogFile`, else `{sharedDir}/CHANG
 
 Do not re-read or rewrite past changelog entries.
 
+#### spec-memo MCP + hooks (this repo dogfood)
+
+Optional external vault ([spec-memo](https://github.com/jpolvora/spec-memo)). Default remains the in-repo MEMORY/changelog path above unless `{sharedDir}/config.json` → `specMemo.enabled` is explicit `true` (or the user asks for vault ops).
+
+| Piece | Use |
+|-------|-----|
+| **MCP** | When the host exposes namespace `spec-memo`, `user-spec-memo`, or `specMemo.mcpServerName`, prefer those tools. Discover schema before invoke. Core tools: `bootstrap`, `search`, `get`, `upsert`, `append`, `forget`, `gc`, `promote`. Do **not** invent a ninth MCP tool. Host snippet: [`.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json`](.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json) (stdio `{cli} serve`). |
+| **Runtime skill** | Load **`ws-memo`** from `{globalSkillsRoot}/ws-memo/SKILL.md` (shipped by spec-memo; install/copy into global or project `{skillsRoot}` — not authored under this package). Prefer MCP; CLI (`memo` / `npx -y spec-memo`) for extras. |
+| **Setup/bridge** | **`ws-spec-memo`** only: `specMemo.*`, import, hybrid MEMORY fallback, check/bootstrap/disable. Map: [`ws-spec-memo/references/INTEGRATION.md`](.agents/skills/ws-spec-memo/references/INTEGRATION.md). |
+| **Write-block hook** | CLI-only: `memo hook install [--productRoot {repo}]` (blocks committing vault residue / workflow scratch). Bypass: `SKIP_MEMO_HOOK=1`. Setup interview may offer this via `ws-spec-memo`; do not invent a custom hook script. |
+
+When vault mode is on: session consult → MCP `bootstrap` (or `memo bootstrap`); new traps → `upsert`; task log → `append`; follow [`tools.md`](.agents/skills/ws-shared/tools.md) `read-memory` / `update-memory` vault reroutes. Hybrid falls back to in-repo MEMORY on MCP/CLI failure.
+
 ### 6. Write a spec (on demand)
 
 When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-write-spec` / `ws-spec-format` unless authoring those skills.
@@ -310,6 +323,7 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 | SCM / verify-score wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/autoload.md) § Hub contracts → then that hub file or one skill. |
 | Orchestrated run (`ws-spec-to-pr` / lite / `ws-multi-spec`) | The orchestrator owns loading. Load step skills via its dispatch table, one step at a time. |
 | Need config, tokens, or gate wording | Read `{sharedDir}/config.json` (shape: [`config.json.example`](.agents/skills/ws-shared/config.json.example)) + [`tools.md`](.agents/skills/ws-shared/tools.md) / [`gates.md`](.agents/skills/ws-shared/gates.md) — not a skill body. |
+| spec-memo / vault / memo MCP / write-block hook | § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (MCP + hooks). Setup → `ws-spec-memo`. Runtime → `{globalSkillsRoot}/ws-memo` (or project `{skillsRoot}/ws-memo`). Do not vendor `SURFACE.md` into this repo. |
 | Check-implementation / verify score / `scoreAndRefine` | Orchestrated: Step 5 via orch dispatch (`ws-verify-plan` only). Standalone: `ws-verify-plan`. Gate copy: `{sharedDir}/gates.md`. Advance only at `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to. |
 | SCM intents / GitHub vs Azure parity / `scm-provider-contract` | Read [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md). Load **one** provider `SKILL.md` when executing that SCM. Do not load both provider bodies to compare intents. |
 | A skill names a companion file (`PHASES.md`, `STEP-DISPATCH.md`, `FORMAT.md`, `scm-provider-contract.md`, …) | Read it **when that skill says to**, not upfront. |
@@ -366,7 +380,7 @@ On demand: [`CATALOG.md`](CATALOG.md). Package membership: [`bin/skill-dependenc
 
 ## Task router
 
-Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup` / `ws-spec-memo`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
+Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup` / `ws-spec-memo`). Vault runtime ops after setup → `ws-memo` (spec-memo package / `{globalSkillsRoot}`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
 
 ## Verification (before claim complete / commit)
 
