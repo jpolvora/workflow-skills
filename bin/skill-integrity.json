@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "4a7ef5c9b16ec4e1c2f999f03bc082cea1044fbbf62a98613f354d255e4acceb",
+  "fullPackageDigest": "c42cd5dc93e78a66112169b0b637b99ae2123b978fcaceeee10af918e7736dfd",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -40,10 +40,10 @@
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
       "step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "telemetry.schema.json": "ea0fae1da61d60e3a32980fb4aa504e7c3bf91ffc1896ade2406343a7b8d278d",
-      "tools.md": "45023ed0ebed163a73bbcdcc1e389b7c3020b9ce965b952062b6daef681c2a66",
+      "tools.md": "29edf5b9f9983806e6f0a15c5d4b59fa7dc062a0a2439f476f9a57eb1401324e",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "f656985592a313cc5c8d29d5e74071b2258a70a3593cf297fd0c47cdd6f383de"
+    "skillDigest": "c1653eaba5df90f08fe7c43f17745f03616bf26322ae3820a42736426338c1da"
   },
   "packageVersion": "0.3.40",
   "skills": {
