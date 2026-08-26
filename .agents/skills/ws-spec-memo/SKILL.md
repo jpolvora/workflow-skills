@@ -99,10 +99,21 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
 
 ## Steps — import
 
-1. Require `memo` CLI. `user-gate`: **Import legacy workflow tree to vault (Recommended)** / Cancel.
-2. Run `{cli} import --from {repoRoot}` (add `--dry-run` when flag passed).
-3. Print import counts; recommend write-block hook if not installed.
+1. Run `check_spec_memo.cjs --json` and require `cli.available: true` for `{specMemo.cli}` (default `memo`).
+2. `user-gate`: **Import legacy workflow tree to vault (Recommended)** / Cancel.
+3. Run `{specMemo.cli} import --from {repoRoot}` (add `--dry-run` when flag passed).
+4. Print import counts; recommend write-block hook if not installed.
    - Done when: import exit 0 or user cancelled.
+
+## Steps — disable
+
+1. Run:
+   ```bash
+   node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json --enabled false
+   ```
+   Preserve other `specMemo.*` keys; never delete vault data.
+2. Tell the user in-repo `{sharedDir}/MEMORY.md` / `memory/*` paths are active again.
+   - Done when: `specMemo.enabled` is explicit `false` and summary printed.
 
 ## Bridge obligations (when `specMemo.enabled: true`)
 

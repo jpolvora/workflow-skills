@@ -164,6 +164,64 @@ process.exit(0);
     'hook failure recorded in actions',
   );
 
+  const cfgBeforeHookRetry = JSON.parse(fs.readFileSync(path.join(customShared, 'config.json'), 'utf8'));
+  cfgBeforeHookRetry.specMemo = { ...cfgBeforeHookRetry.specMemo, enabled: false, writeBlockHook: true };
+  fs.writeFileSync(path.join(customShared, 'config.json'), `${JSON.stringify(cfgBeforeHookRetry, null, 2)}\n`, 'utf8');
+  const hookRetry = runNode(
+    CONFIGURE,
+    [
+      '--repo-root',
+      tmp,
+      '--apply',
+      '--enabled',
+      'true',
+      '--cli',
+      `node ${stubCli}`,
+      '--hook',
+      'true',
+      '--import',
+      'false',
+      '--json',
+    ],
+    { env: { WORKFLOW_SKILLS_SHARED_DIR: customShared } },
+  );
+  assert(hookRetry.status === 0, 'hook retry exits 0 when reinstall fails');
+  const hookRetryResult = JSON.parse(hookRetry.stdout);
+  assert(hookRetryResult.specMemo.writeBlockHook === true, 'failed hook reinstall preserves writeBlockHook true');
+
+  const importFailStub = path.join(tmp, 'import-fail-stub.cjs');
+  fs.writeFileSync(
+    importFailStub,
+    `#!/usr/bin/env node
+if (process.argv[2] === '--help') process.exit(0);
+if (process.argv[2] === 'import') process.exit(3);
+process.exit(0);
+`,
+  );
+  const cfgBeforeImportFail = JSON.parse(fs.readFileSync(path.join(customShared, 'config.json'), 'utf8'));
+  const importFail = runNode(
+    CONFIGURE,
+    [
+      '--repo-root',
+      tmp,
+      '--apply',
+      '--enabled',
+      'true',
+      '--cli',
+      `node ${importFailStub}`,
+      '--import',
+      'true',
+      '--json',
+    ],
+    { env: { WORKFLOW_SKILLS_SHARED_DIR: customShared } },
+  );
+  assert(importFail.status === 3, 'import failure aborts configure');
+  const cfgAfterImportFail = JSON.parse(fs.readFileSync(path.join(customShared, 'config.json'), 'utf8'));
+  assert(
+    cfgAfterImportFail.specMemo.enabled === cfgBeforeImportFail.specMemo.enabled,
+    'import failure does not persist partial config',
+  );
+
   if (failures === 0) console.log('\ntest-spec-memo-scripts: ok');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });

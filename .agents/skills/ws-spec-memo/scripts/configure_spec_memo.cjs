@@ -111,14 +111,8 @@ function main() {
   const importSpecified = args.importTree !== null || stdin.import !== undefined;
   const doImport = importSpecified ? Boolean(args.importTree ?? stdin.import) : false;
   const doHook = args.hook ?? stdin.hook ?? false;
-  const enableSpecified = args.enabled !== null || stdin.enabled !== undefined;
   const nextEnabled = args.enabled ?? stdin.enabled ?? prev.enabled ?? false;
-  const enablingThisRun = enableSpecified && nextEnabled === true;
-  const importOnEnable = importSpecified
-    ? doImport
-    : enablingThisRun
-      ? false
-      : (prev.importOnEnable ?? true);
+  const importOnEnable = importSpecified ? doImport : (prev.importOnEnable ?? true);
 
   const next = {
     enabled: nextEnabled,
@@ -156,7 +150,9 @@ function main() {
   if (next.enabled && doHook) {
     const hook = runCmd(next.cli, ['hook', 'install', '--productRoot', repoRoot], repoRoot);
     actions.push({ action: 'hook-install', status: hook.status });
-    next.writeBlockHook = hook.status === 0;
+    if (hook.status === 0) {
+      next.writeBlockHook = true;
+    }
   }
 
   config.specMemo = next;
