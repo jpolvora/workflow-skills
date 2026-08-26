@@ -163,6 +163,79 @@ process.exit(0);
   assert(healthyReport.config.enabled === true, 'healthy fixture activates vault branch');
   assert(healthyReport.ok === true, 'vault-active preflight passes when CLI and doctor healthy');
   assert(checkHealthy.status === 0, 'vault-active healthy preflight exits 0');
+  assert(healthyReport.runtimeHandoff !== null, 'runtimeHandoff required when vault active');
+  assert(healthyReport.runtimeHandoff.mcpServerName === 'spec-memo', 'runtimeHandoff reports mcp server name');
+  assert(healthyReport.runtimeHandoff.wsMemo.installed === false, 'healthy fixture without ws-memo seed reports missing');
+  assert(checkHealthy.status === 0, 'missing ws-memo warns but does not fail healthy vault check');
+
+  const memoSkillDir = path.join(tmp, '.agents', 'skills', 'ws-memo');
+  fs.mkdirSync(memoSkillDir, { recursive: true });
+  fs.writeFileSync(path.join(memoSkillDir, 'SKILL.md'), '---\nname: ws-memo\n---\n', 'utf8');
+  const checkWithMemo = runNode(CHECK, ['--repo-root', tmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: healthyHub },
+  });
+  const withMemoReport = JSON.parse(checkWithMemo.stdout);
+  assert(withMemoReport.runtimeHandoff.wsMemo.installed === true, 'local ws-memo skill detected');
+  assert(
+    withMemoReport.runtimeHandoff.wsMemo.skillPath.replace(/\\/g, '/').includes('.agents/skills/ws-memo/SKILL.md'),
+    'reports repo-relative ws-memo path',
+  );
+
+  const globalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'global-skills-'));
+  const globalMemo = path.join(globalRoot, 'ws-memo');
+  fs.mkdirSync(globalMemo, { recursive: true });
+  fs.writeFileSync(path.join(globalMemo, 'SKILL.md'), '---\nname: ws-memo\n---\n', 'utf8');
+  const globalTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-global-'));
+  const globalOnlyHubRel = 'vault-global-memo-hub';
+  seedHub(globalTmp, { sharedRel: globalOnlyHubRel });
+  const globalOnlyHub = path.join(globalTmp, globalOnlyHubRel);
+  const globalCfgPath = path.join(globalOnlyHub, 'config.json');
+  fs.copyFileSync(path.join(globalOnlyHub, 'config.json.example'), globalCfgPath);
+  const globalCfg = JSON.parse(fs.readFileSync(globalCfgPath, 'utf8'));
+  globalCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
+  fs.writeFileSync(globalCfgPath, `${JSON.stringify(globalCfg, null, 2)}\n`, 'utf8');
+  const checkGlobal = runNode(CHECK, ['--repo-root', globalTmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: globalOnlyHub, WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  const globalReport = JSON.parse(checkGlobal.stdout);
+  assert(globalReport.runtimeHandoff.wsMemo.installed === true, 'global ws-memo detected when local missing');
+  assert(
+    globalReport.runtimeHandoff.wsMemo.skillPath.includes('global install'),
+    'reports global install path',
+  );
+  fs.rmSync(globalRoot, { recursive: true, force: true });
+  fs.rmSync(globalTmp, { recursive: true, force: true });
+
+  const bothTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-both-'));
+  const bothGlobal = fs.mkdtempSync(path.join(os.tmpdir(), 'global-skills-both-'));
+  fs.mkdirSync(path.join(bothGlobal, 'ws-memo'), { recursive: true });
+  fs.writeFileSync(path.join(bothGlobal, 'ws-memo', 'SKILL.md'), '---\nname: ws-memo\n---\n', 'utf8');
+  const bothHubRel = 'vault-both-memo-hub';
+  seedHub(bothTmp, { sharedRel: bothHubRel });
+  const bothHub = path.join(bothTmp, bothHubRel);
+  const bothCfgPath = path.join(bothHub, 'config.json');
+  fs.copyFileSync(path.join(bothHub, 'config.json.example'), bothCfgPath);
+  const bothCfg = JSON.parse(fs.readFileSync(bothCfgPath, 'utf8'));
+  bothCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
+  fs.writeFileSync(bothCfgPath, `${JSON.stringify(bothCfg, null, 2)}\n`, 'utf8');
+  const localMemo = path.join(bothTmp, '.agents', 'skills', 'ws-memo', 'SKILL.md');
+  fs.mkdirSync(path.dirname(localMemo), { recursive: true });
+  fs.writeFileSync(localMemo, '---\nname: ws-memo-local\n---\n', 'utf8');
+  const checkBoth = runNode(CHECK, ['--repo-root', bothTmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: bothHub, WORKFLOW_SKILLS_GLOBAL_DIR: bothGlobal },
+  });
+  const bothReport = JSON.parse(checkBoth.stdout);
+  assert(bothReport.runtimeHandoff.wsMemo.installed === true, 'both fixtures: ws-memo detected');
+  assert(
+    bothReport.runtimeHandoff.wsMemo.skillPath.replace(/\\/g, '/').includes('.agents/skills/ws-memo/SKILL.md'),
+    'local ws-memo wins over global when both exist',
+  );
+  fs.rmSync(bothGlobal, { recursive: true, force: true });
+  fs.rmSync(bothTmp, { recursive: true, force: true });
+
+  const disabledReport = JSON.parse(checkDefault.stdout);
+  assert(disabledReport.runtimeHandoff === null, 'runtimeHandoff omitted when vault disabled');
+  assert(checkDefault.status === 0, 'disabled vault check exits 0 without ws-memo');
 
   const stubCli = path.join(tmp, 'stub-memo.cjs');
   fs.writeFileSync(

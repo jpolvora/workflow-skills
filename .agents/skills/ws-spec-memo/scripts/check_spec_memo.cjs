@@ -10,6 +10,7 @@ const { spawnSync } = require('child_process');
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
+  resolveGlobalSkillsRoot,
   toRepoRelative,
 } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
@@ -37,6 +38,26 @@ function pathExists(p) {
   } catch {
     return false;
   }
+}
+
+function resolveWsMemoSkill(repoRoot) {
+  const localSkillsRoot = path.join(repoRoot, '.agents', 'skills');
+  const local = path.join(localSkillsRoot, 'ws-memo', 'SKILL.md');
+  if (pathExists(local)) {
+    return {
+      installed: true,
+      skillPath: toRepoRelative(repoRoot, local, { allowOutside: true }),
+    };
+  }
+  const global = path.join(resolveGlobalSkillsRoot(), 'ws-memo', 'SKILL.md');
+  if (pathExists(global)) {
+    return { installed: true, skillPath: 'ws-memo/SKILL.md (global install)' };
+  }
+  return {
+    installed: false,
+    skillPath: '.agents/skills/ws-memo/SKILL.md',
+    hint: 'Copy from spec-memo .agents/skills/ws-memo/ or install beside other ws-* skills; then use /ws-memo for runtime ops.',
+  };
 }
 
 function detectCli(cliSetting) {
@@ -123,6 +144,14 @@ function printHuman(report) {
   if (report.config.enabled && report.pollution.length > 0) {
     lines.push('', 'Recommendation: run `/ws-spec-memo import` then `memo hook install` or `/ws-cleanup`.');
   }
+  if (report.runtimeHandoff) {
+    lines.push('', '## Runtime handoff (ws-memo)');
+    lines.push(`- MCP server expected: ${report.runtimeHandoff.mcpServerName}`);
+    lines.push(`- ws-memo skill: ${report.runtimeHandoff.wsMemo.installed ? 'installed' : 'missing'} (${report.runtimeHandoff.wsMemo.skillPath})`);
+    if (report.runtimeHandoff.warnings.length > 0) {
+      report.runtimeHandoff.warnings.forEach((w) => lines.push(`- Warning: ${w}`));
+    }
+  }
   console.log(lines.join('\n'));
 }
 
@@ -143,6 +172,20 @@ function main() {
   const vaultActive = specMemo.enabled === true;
   const healthy = vaultActive ? vaultReady : true;
 
+  const wsMemo = resolveWsMemoSkill(repoRoot);
+  const mcpServerName = specMemo.mcpServerName || 'spec-memo';
+  const runtimeWarnings = [];
+  if (vaultActive) {
+    if (!wsMemo.installed) {
+      runtimeWarnings.push(
+        'ws-memo skill not found — copy from spec-memo .agents/skills/ws-memo/; runtime ops use /ws-memo, not ws-spec-memo.',
+      );
+    }
+    runtimeWarnings.push(
+      `Register MCP server "${mcpServerName}" in the agent host (stdio: ${specMemo.cli || 'memo'} serve).`,
+    );
+  }
+
   const report = {
     ok: healthy,
     repoRoot,
@@ -153,11 +196,15 @@ function main() {
       cli: specMemo.cli || 'memo',
       bootstrapOnSession: specMemo.bootstrapOnSession !== false,
       writeBlockHook: specMemo.writeBlockHook === true,
+      mcpServerName,
     },
     cli,
     doctor,
     vault: { ok: doctor.ok, error: doctor.error || null },
     pollution,
+    runtimeHandoff: vaultActive
+      ? { mcpServerName, wsMemo, warnings: runtimeWarnings }
+      : null,
     configPath: pathExists(ctx.configPath)
       ? toRepoRelative(repoRoot, ctx.configPath, { allowOutside: true })
       : null,

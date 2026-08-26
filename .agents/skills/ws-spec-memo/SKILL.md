@@ -19,7 +19,9 @@ invocation_names:
 
 Mapping table → [`references/INTEGRATION.md`](references/INTEGRATION.md). MCP host snippet → [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json).
 
-**Not this skill:** replacing `ws-spec-to-pr` plan trees; editing spec-memo source; auto-enabling vault mode on install.
+**Not this skill:** replacing `ws-spec-to-pr` plan trees; editing spec-memo source; auto-enabling vault mode on install; runtime vault search/get/gc/promote/canvas/SSE (use **`ws-memo`** from [spec-memo](https://github.com/jpolvora/spec-memo) — see [`references/INTEGRATION.md`](references/INTEGRATION.md) § Two-skill split).
+
+**Runtime (after setup):** when vault is enabled and MCP/CLI is registered, load **`/ws-memo`** (`{skillsRoot}/ws-memo/SKILL.md` from the spec-memo package) for day-to-day vault operations — not this skill.
 
 **Also invoked from:** [`ws-configure-project`](../ws-configure-project/SKILL.md) step 7 / `--section specMemo` during project setup (same gates; default Recommended = disabled).
 
@@ -84,11 +86,15 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
 6. **Post-setup check** — Re-run `check_spec_memo.cjs`. When import ran, suggest `ws-cleanup` for disposable in-tree scratch after user confirms vault contents.
    - Done when: final report delivered; skill stops.
 
+**Next:** Runtime vault ops → **`/ws-memo`** (spec-memo skill). See [`references/INTEGRATION.md`](references/INTEGRATION.md) § Runtime handoff.
+
 ## Steps — check
 
 1. Run `check_spec_memo.cjs --repo-root {repoRoot}` (human markdown default).
 2. When `specMemo.enabled` and pollution findings exist, recommend `memo doctor --fix` or `ws-cleanup` via `user-gate`.
    - Done when: report printed; no config writes unless user invokes setup.
+
+**Next:** Runtime vault ops → **`/ws-memo`** when vault is enabled.
 
 ## Steps — bootstrap
 
@@ -97,6 +103,8 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
 3. On CLI/MCP failure and `specMemo.mode` is `hybrid`, warn once and consult in-repo MEMORY. On `vault` mode failure, report actionable fix (install CLI, register MCP, run setup) and STOP.
    - Done when: brief (<8 KB) printed or MEMORY consult completed.
 
+**Next:** Runtime vault ops → **`/ws-memo`** when vault is enabled.
+
 ## Steps — import
 
 1. Run `check_spec_memo.cjs --json` and require `cli.available: true` for `{specMemo.cli}` (default `memo`).
@@ -104,6 +112,8 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
 3. Run `{specMemo.cli} import --from {repoRoot}` (add `--dry-run` when flag passed).
 4. Print import counts; recommend write-block hook if not installed.
    - Done when: import exit 0 or user cancelled.
+
+**Next:** Runtime vault ops → **`/ws-memo`** when vault is enabled.
 
 ## Steps — disable
 
@@ -114,6 +124,8 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
    Preserve other `specMemo.*` keys; never delete vault data.
 2. Tell the user in-repo `{sharedDir}/MEMORY.md` / `memory/*` paths are active again.
    - Done when: `specMemo.enabled` is explicit `false` and summary printed.
+
+**Next:** When re-enabling vault later, run setup again then **`/ws-memo`** for runtime ops.
 
 ## Bridge obligations (when `specMemo.enabled: true`)
 

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "bf2a2d84f08a05e2c6ff5c116f890ceb0f93ccf1f21d6138c77b6fcf6d4cbbf7",
+  "fullPackageDigest": "c42cd5dc93e78a66112169b0b637b99ae2123b978fcaceeee10af918e7736dfd",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -40,10 +40,10 @@
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
       "step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "telemetry.schema.json": "ea0fae1da61d60e3a32980fb4aa504e7c3bf91ffc1896ade2406343a7b8d278d",
-      "tools.md": "9c618d3bc8c6636a2d9823af1b85f6e77b94c82424c17f46edbc5f7c2ee6a456",
+      "tools.md": "29edf5b9f9983806e6f0a15c5d4b59fa7dc062a0a2439f476f9a57eb1401324e",
       "workflow-state.schema.json": "17806d22bb6e479f872ffbb5323c3d642c1347b1970ff09505e6043319db7bd2"
     },
-    "skillDigest": "160ec40b0c8ed3a11484310ffb97ebcd5b4fa234cdbc04cd79d36ee4f0cf4fc1"
+    "skillDigest": "c1653eaba5df90f08fe7c43f17745f03616bf26322ae3820a42736426338c1da"
   },
   "packageVersion": "0.3.40",
   "skills": {
@@ -375,14 +375,14 @@
     },
     "ws-spec-memo": {
       "files": {
-        "evals/evals.json": "fc9cf6871ab2254021a03b5d0affcd376b7b1c7f14c222f648af75ee66b19727",
-        "references/INTEGRATION.md": "b17584bfd28f6c7df6ee0081c77634da520b2926f7365b0fc4ddc45b1cbb4486",
-        "references/MCP-TEMPLATE.json": "909c2d50ff0badaa097db1e3ff477317b8836c78eb845241bbad11e29438c18f",
-        "scripts/check_spec_memo.cjs": "aef3f3f5d5d2480dde663adede6c0c8174de74d835be685be57ec0b4d6b9b22e",
+        "evals/evals.json": "351abe1f689c388177c6da455dd70bc659dd41f46442e4a480c6e6043cb511b9",
+        "references/INTEGRATION.md": "bc675a9f112a39b49520fc4707d14254582d65e2c7ee818c43487f49698b64b6",
+        "references/MCP-TEMPLATE.json": "d11229c6f4af19cf44ee274ba6a57d52efc42da151b727d048fd4a8c0d378ed9",
+        "scripts/check_spec_memo.cjs": "fac6d5e4f7674d6d27ebb4d04b24d0837cb780cc9cc89ec8f194bc2e21519bcc",
         "scripts/configure_spec_memo.cjs": "5ae04c43dbd8188ed80bb5c71a8111b8943108ffdfb1e0530e6350e8204c2844",
-        "SKILL.md": "bb320d058f444bccf57f6b160f52505880d151aa6f101629056c105dcb3feecc"
+        "SKILL.md": "22bc023cdfc7f738bcced2fee6a2c9a6280c8864756dfa7343cc6ce4a7cbfeb7"
       },
-      "skillDigest": "643fe9fe5034dc77b3b75651f3a388ab787e050181c97f139f3c19d29948f0fd"
+      "skillDigest": "c508ad93de94e3a693d1502491a4370355ef8df994867746cffcd71981198b82"
     },
     "ws-spec-to-pr": {
       "files": {

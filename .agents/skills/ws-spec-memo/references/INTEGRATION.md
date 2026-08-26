@@ -67,11 +67,33 @@ Specs of record may remain in `{specsDir}` for Spec-to-PR register flow; vault h
 
 Install `memo hook install` to block accidental commits of those paths.
 
+## Two-skill split (setup vs runtime)
+
+| Skill | Package | Role |
+|-------|---------|------|
+| **`ws-spec-memo`** | workflow-skills (this repo) | Setup/bridge only: `specMemo.*` in `{sharedDir}/config.json`, import, hybrid MEMORY fallback, write-block hook interview, check/bootstrap |
+| **`ws-memo`** | [spec-memo](https://github.com/jpolvora/spec-memo) | Runtime vault ops: search, get, forget, gc, promote (formats), canvas, SSE, status, rank, sync/backup, hooks |
+
+**`ws-spec-memo` does not own** search, get, gc, promote, canvas, SSE, status monitor, rank, vault sync/backup, or the full MCP/CLI catalog. Do not duplicate [SURFACE.md](https://github.com/jpolvora/spec-memo/blob/develop/.agents/skills/ws-memo/references/SURFACE.md) here.
+
+### Runtime handoff (after setup)
+
+When `specMemo.enabled: true` and the host has registered the `spec-memo` MCP server (or `{specMemo.cli} serve`):
+
+1. Finish wiring with **`ws-spec-memo`** (setup, check, bootstrap, import, disable).
+2. Load **`ws-memo`** from the spec-memo package or clone:
+   - `{skillsRoot}/ws-memo/SKILL.md` when installed beside other `ws-*` skills, **or**
+   - copy from `spec-memo/.agents/skills/ws-memo/` into `{skillsRoot}/ws-memo/`.
+3. Use **`/ws-memo`** (or invoke that skill) for day-to-day vault operations — not an expanded `ws-spec-memo` body.
+
+`check_spec_memo.cjs` may **warn** when `ws-memo` is missing while vault is enabled; it must not fail the Recommended disabled-vault path.
+
 ## Related skills
 
 | Skill | Relationship |
 |-------|--------------|
 | `ws-spec-memo` | Setup, check, bootstrap bridge (this skill) |
+| `ws-memo` | Runtime vault ops (spec-memo package; load after setup) |
 | `ws-self-learning` | In-repo trap engine; hybrid fallback |
 | `ws-changelog` | In-repo history; hybrid may dual-write |
 | `ws-configure-project` | Seeds `config.json`; optional `--section specMemo` for vault setup |
