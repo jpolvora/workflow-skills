@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-08-26 11:25] Agent: Composer
+- **Prompt**: Configure agentic-code-reviewers to cursor engine + composer 2.5; disable OpenCode engine on GitHub only
+- **Done**: Confirmed cursor-code-review.yml already uses `--engine cursor-sdk` / `--model composer-2.5` on PRs; disabled GitHub workflow "Agentic Code Review (OpenCode)" via `gh workflow disable` (yml kept as workflow_dispatch backup)
+- **Result**: Active PR reviewer is Cursor only; OpenCode workflow no longer listed as active on GitHub
+
+### [2026-08-26 01:38] Agent: Composer (cursor preset)
+- **Prompt**: `/ws-spec-to-pr` issue #243 full auto with cursor preset models
+- **Done**: ws-spec-memo → ws-memo runtime handoff (INTEGRATION, SKILL, check warnings, tools.md, eval); PR #244; CI green; goal-fix-pr converged (0 threads)
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/244
+
 ### [2026-08-25 20:24] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` on PR #242 (ws-spec-memo)
 - **Done**: 10 fix rounds (45 threads total) through `e9c8d8de`; resolve_consumer_root, health gates, `{specMemo.cli}` aliases, configure edge cases; MEMORY trap compiled
