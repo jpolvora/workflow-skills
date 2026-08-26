@@ -69,8 +69,14 @@ function scanPollution(repoRoot, sharedDirAbs, plansDirAbs) {
     if (c.kind === 'plans-dir' && stat.isDirectory()) {
       const entries = fs.readdirSync(c.abs);
       if (entries.length > 0) findings.push({ path: rel, kind: c.kind, note: `${entries.length} entries` });
-    } else if (c.kind !== 'plans-dir') {
-      findings.push({ path: rel, kind: c.kind, note: stat.isDirectory() ? 'directory' : 'file' });
+    } else if (c.kind === 'memory-dir' && stat.isDirectory()) {
+      const entries = fs.readdirSync(c.abs).filter((e) => !e.startsWith('.'));
+      if (entries.length > 0) findings.push({ path: rel, kind: c.kind, note: `${entries.length} entries` });
+    } else if (c.kind === 'memory-index' && stat.isFile()) {
+      const content = fs.readFileSync(c.abs, 'utf8');
+      if (/^### \[/m.test(content)) {
+        findings.push({ path: rel, kind: c.kind, note: 'compiled traps' });
+      }
     }
   }
   return findings;

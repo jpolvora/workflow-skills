@@ -105,6 +105,16 @@ try {
   assert(stdinResult.specMemo.mode === 'hybrid', 'stdin-json applies mode');
   assert(stdinResult.specMemo.importOnEnable === false, 'stdin-json persists importOnEnable false');
 
+  const badStdin = runNode(
+    CONFIGURE,
+    ['--repo-root', tmp, '--apply', '--json', '--stdin-json'],
+    {
+      env: { WORKFLOW_SKILLS_SHARED_DIR: customShared },
+      input: '{not-json',
+    },
+  );
+  assert(badStdin.status === 2, 'configure rejects malformed --stdin-json');
+
   const enableNoCli = runNode(
     CONFIGURE,
     ['--repo-root', tmp, '--apply', '--enabled', 'true', '--json'],
@@ -127,6 +137,32 @@ try {
   assert(enabledReport.config.enabled === true, 'enabled fixture activates vault branch');
   assert(enabledReport.ok === false, 'vault-active preflight fails when CLI unavailable');
   assert(checkEnabled.status === 1, 'vault-active preflight exits 1 when unhealthy');
+
+  const healthyStub = path.join(tmp, 'healthy-memo.cjs');
+  fs.writeFileSync(
+    healthyStub,
+    `#!/usr/bin/env node
+const cmd = process.argv[2];
+if (cmd === '--help') process.exit(0);
+if (cmd === 'doctor') { console.log('{"ok":true}'); process.exit(0); }
+process.exit(0);
+`,
+  );
+  const healthyHubRel = 'vault-healthy-hub';
+  seedHub(tmp, { sharedRel: healthyHubRel });
+  const healthyHub = path.join(tmp, healthyHubRel);
+  const healthyCfgPath = path.join(healthyHub, 'config.json');
+  fs.copyFileSync(path.join(healthyHub, 'config.json.example'), healthyCfgPath);
+  const healthyCfg = JSON.parse(fs.readFileSync(healthyCfgPath, 'utf8'));
+  healthyCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
+  fs.writeFileSync(healthyCfgPath, `${JSON.stringify(healthyCfg, null, 2)}\n`, 'utf8');
+  const checkHealthy = runNode(CHECK, ['--repo-root', tmp, '--json'], {
+    env: { WORKFLOW_SKILLS_SHARED_DIR: healthyHub },
+  });
+  const healthyReport = JSON.parse(checkHealthy.stdout);
+  assert(healthyReport.config.enabled === true, 'healthy fixture activates vault branch');
+  assert(healthyReport.ok === true, 'vault-active preflight passes when CLI and doctor healthy');
+  assert(checkHealthy.status === 0, 'vault-active healthy preflight exits 0');
 
   const stubCli = path.join(tmp, 'stub-memo.cjs');
   fs.writeFileSync(

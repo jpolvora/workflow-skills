@@ -50,11 +50,13 @@ function parseArgs(argv) {
 }
 
 function readStdinJson() {
+  const raw = fs.readFileSync(0, 'utf8').trim();
+  if (!raw) return {};
   try {
-    const raw = fs.readFileSync(0, 'utf8').trim();
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error(`Error: invalid --stdin-json payload (${err.message})`);
+    process.exit(2);
   }
 }
 

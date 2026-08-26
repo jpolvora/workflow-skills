@@ -1,9 +1,13 @@
 {
-  "_comment": "Register in your agent host MCP settings. Replace command/args if specMemo.cli uses npx.",
+  "_comment": "Pick the block matching specMemo.cli from config.json. Use spec-memo-npx when cli is npx -y spec-memo.",
   "mcpServers": {
-    "spec-memo": {
+    "spec-memo-global": {
       "command": "memo",
       "args": ["serve"]
+    },
+    "spec-memo-npx": {
+      "command": "npx",
+      "args": ["-y", "spec-memo", "serve"]
     }
   }
 }
