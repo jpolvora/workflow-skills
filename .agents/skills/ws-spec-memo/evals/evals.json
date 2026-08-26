@@ -27,6 +27,16 @@
         "Requires user-gate before import",
         "Suggests write-block hook after import"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "After ws-spec-memo setup with vault enabled, agent needs memo search or promote format=skill",
+      "expected_output": "Agent loads ws-memo from spec-memo for runtime ops; does not invent a ninth MCP tool or duplicate SURFACE.md in ws-spec-memo",
+      "assertions": [
+        "Points to /ws-memo or {skillsRoot}/ws-memo/SKILL.md",
+        "Does not expand ws-spec-memo into full command encyclopedia",
+        "Does not add new MCP tool beyond spec-memo contract"
+      ]
     }
   ]
 }

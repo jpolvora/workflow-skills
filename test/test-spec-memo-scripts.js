@@ -163,6 +163,16 @@ process.exit(0);
   assert(healthyReport.config.enabled === true, 'healthy fixture activates vault branch');
   assert(healthyReport.ok === true, 'vault-active preflight passes when CLI and doctor healthy');
   assert(checkHealthy.status === 0, 'vault-active healthy preflight exits 0');
+  assert(healthyReport.runtimeHandoff === null || typeof healthyReport.runtimeHandoff === 'object', 'runtimeHandoff present when vault active');
+  if (healthyReport.runtimeHandoff) {
+    assert(healthyReport.runtimeHandoff.mcpServerName === 'spec-memo', 'runtimeHandoff reports mcp server name');
+    assert(typeof healthyReport.runtimeHandoff.wsMemo.installed === 'boolean', 'runtimeHandoff reports ws-memo installed flag');
+    assert(checkHealthy.status === 0, 'missing ws-memo warns but does not fail healthy vault check');
+  }
+
+  const disabledReport = JSON.parse(checkDefault.stdout);
+  assert(disabledReport.runtimeHandoff === null, 'runtimeHandoff omitted when vault disabled');
+  assert(checkDefault.status === 0, 'disabled vault check exits 0 without ws-memo');
 
   const stubCli = path.join(tmp, 'stub-memo.cjs');
   fs.writeFileSync(
