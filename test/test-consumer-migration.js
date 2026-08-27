@@ -94,7 +94,7 @@ function tempDir() {
   for (const entry of fs.readdirSync(skillsRoot, { withFileTypes: true })) {
     if (!entry.isDirectory() || !entry.name.startsWith('ws-')) continue;
     const skillDir = path.join(skillsRoot, entry.name);
-    for (const rel of ['SKILL.md', 'setup.md', 'tools.md', 'PHASES.md', 'STEP-DISPATCH.md']) {
+    for (const rel of ['SKILL.md', 'setup.md', 'tools.md', 'STEP-DISPATCH.md']) {
       const filePath = path.join(skillDir, rel);
       if (!fs.existsSync(filePath)) continue;
       const text = fs.readFileSync(filePath, 'utf8');
