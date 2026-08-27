@@ -22,7 +22,7 @@ function sha256(value) {
 function parseArgs(argv) {
   const positional = [];
   const options = {};
-  const repeatable = new Set(['ac', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult']);
+  const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult']);
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (!token.startsWith('--')) positional.push(token);
@@ -49,6 +49,21 @@ function writeJson(file, value) {
 
 function criteriaFromSpec(text) {
   return [...text.matchAll(/^- (AC[1-9][0-9]*):\s*(.+)$/gm)].map((match) => ({ id: match[1], text: match[2].trim() }));
+}
+
+function negativeScenariosFromSpec(text) {
+  const notes = text.match(/## Validation & Observation Notes[\s\S]*?(?=\n## |$)/i)?.[0] || '';
+  const subsection = notes.match(/### Negative & Failing Test Scenarios[\s\S]*?(?=\n### |\n## |$)/i)?.[0] || '';
+  if (!subsection) return [];
+  return [...subsection.matchAll(/^[-*]\s+(.+)$/gm)]
+    .map((match) => match[1].trim())
+    .filter((line) => line && !/^\([^)]+\)\s*$/.test(line) && !/^(TBD|TODO|placeholder)\b/i.test(line))
+    .map((line, index) => ({
+      id: `NS${index + 1}`,
+      text: line,
+      tests: [],
+      linkEventIds: [],
+    }));
 }
 
 function defaultRow(criterion, planIndex) {
@@ -94,6 +109,7 @@ function init(options, context) {
     aliasResults: [],
     testingSkip: null,
     acceptanceCriteria: criteria.map((criterion) => defaultRow(criterion, planIndex)),
+    negativeScenarios: negativeScenariosFromSpec(fs.readFileSync(spec, 'utf8')),
     scoreState: null,
   };
   writeJson(path.resolve(context.repoRoot, options.output), ledger);
@@ -140,12 +156,17 @@ function validateTest(test, context) {
 }
 
 function link(options, context) {
-  if (!options.ledger || !options.eventId || !options.ac?.length) throw new Error('link requires --ledger, --event-id, and at least one --ac');
+  if (!options.ledger || !options.eventId) throw new Error('link requires --ledger and --event-id');
+  const acIds = options.ac || [];
+  const nsIds = options.negative || [];
+  if (!acIds.length && !nsIds.length) throw new Error('link requires at least one --ac or --negative');
   const file = path.resolve(context.repoRoot, options.ledger);
   const ledger = readJson(file);
-  const eventAlreadyApplied = ledger.acceptanceCriteria.some((row) => row.linkEventIds.includes(options.eventId));
+  ledger.negativeScenarios ||= [];
+  const eventAlreadyApplied = ledger.acceptanceCriteria.some((row) => row.linkEventIds.includes(options.eventId))
+    || ledger.negativeScenarios.some((row) => row.linkEventIds.includes(options.eventId));
   if (eventAlreadyApplied) return ledger;
-  for (const ac of options.ac) {
+  for (const ac of acIds) {
     const row = ledger.acceptanceCriteria.find((item) => item.id === ac);
     if (!row) throw new Error(`unknown AC: ${ac}`);
     if (options.status) {
@@ -188,6 +209,17 @@ function link(options, context) {
     if (options.sabotageExit !== undefined) {
       const exitCode = Number(options.sabotageExit);
       row.sabotage = { required: true, status: exitCode === 0 ? 'passed' : 'failed', exitCode };
+    }
+    row.linkEventIds.push(options.eventId);
+    row.linkEventIds.sort();
+  }
+  for (const id of nsIds) {
+    const row = ledger.negativeScenarios.find((item) => item.id === id);
+    if (!row) throw new Error(`unknown negative scenario: ${id}`);
+    for (const value of options.test || []) {
+      const item = validateTest(parseObject(value, 'test'), context);
+      row.tests = [...row.tests.filter((entry) => !(entry.name === item.name && entry.phase === item.phase)), item]
+        .sort((a, b) => a.name.localeCompare(b.name) || a.phase.localeCompare(b.phase));
     }
     row.linkEventIds.push(options.eventId);
     row.linkEventIds.sort();
@@ -275,6 +307,9 @@ function scoreLedger(ledger, boundary, context) {
     if (boundary === 'pre-step6' && !row.commits.length) errors.push(`${row.id}: product commit linkage required before step 6`);
   }
   if (ledger.aliasResults.some((result) => !isSkipped(result) && result.exitCode !== 0)) knownDefect = true;
+  const missingNegative = (ledger.negativeScenarios || []).some((row) =>
+    !row.tests.some((test) => test.phase === 'observed' && Number(test.exitCode) === 0));
+  if (missingNegative) knownDefect = true;
   let score = total ? Math.floor((10 * earned) / total) : 0;
   if (knownDefect) score = Math.min(score, 8);
   else if (missingEvidence) score = Math.min(score, 9);
@@ -342,4 +377,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { scoreLedger, verifyFileHashes, criteriaFromSpec, readJson };
+module.exports = { scoreLedger, verifyFileHashes, criteriaFromSpec, negativeScenariosFromSpec, readJson };

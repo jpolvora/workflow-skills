@@ -21,9 +21,11 @@ assert.match(interview, /failing test baseline/i);
 const implement = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md'), 'utf8');
 assert.match(implement, /failing tests first/i);
 assert.match(implement, /false-positive/i);
+assert.match(implement, /--negative/);
 
 const verify = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-verify-plan/SKILL.md'), 'utf8');
 assert.match(verify, /negative test/i);
+assert.match(verify, /negativeScenarios/);
 
 const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 assert.match(pkg.scripts['tests:harness-efficiency'], /test-validate-spec\.js/);

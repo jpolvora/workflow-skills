@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-27] Verify score must fail-close on uncovered negative scenarios
+- **Layer**: `Harness`
+- **Module**: `ws-verify-plan / ac_ledger`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-shared/ac-ledger.schema.json, .agents/skills/ws-verify-plan/SKILL.md`
+- **Scenario / Context**: Step 5 Advance used only `- ACn:` rows. Specs can document failing cases under Validation Notes while ac_ledger.cjs score still reaches minVerifyScore on happy-path ACs.
+- **DO NOT**: Treat AC coverage as the only numeric gate, or ingest telemetry bullets from Validation Notes as negative scenarios.
+- **INSTEAD DO**: Init `negativeScenarios` from `### Negative & Failing Test Scenarios`. Link observed passing tests with `ac_ledger.cjs link --negative NS{n}`. Uncovered rows set knownDefect and cap the score at 8.
+
 ### [2026-08-27] Review jury payload bridge and memory sanitizer trap preservation
 - **Layer**: `harness`
 - **Module**: `ws-code-review / ws-self-learning`
@@ -23,6 +32,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: During Step 6 review jury execution, each juror's `write_review_round.cjs` was overwriting canonical `step-06-{slug}.review.md`, leaving only the last juror's findings for downstream fix mode. `merge_review_jury.cjs` was also not validating the number of juror reports against configured `defaults.reviewJury.size`.
 - **DO NOT**: Overwrite canonical review markdown when running individual jurors under review jury. Allow review jury merge to silently proceed with fewer juror files than configured.
 - **INSTEAD DO**: Guard canonical markdown write with `!options.juryOut` in `write_review_round.cjs`. Materialize the merged jury markdown via `--canonical-review-out` in `merge_review_jury.cjs` and validate juror count against `defaults.reviewJury.size`.
+
+### [2026-08-27] Retired artifacts need matching stale live-reference patterns
+- **Layer**: `Harness`
+- **Module**: `ws-shared / retired_artifacts`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/retired_artifacts.cjs, test/test-consumer-migration.js`
+- **Scenario / Context**: Extending RETIRED_HUB_FILES or RETIRED_DEFAULTS_KEYS without STALE_LIVE_REFERENCE_PATTERNS lets live SKILL.md / hub docs reintroduce retired ids while consumer-migration scans stay green.
+- **DO NOT**: Add prune/doctor retirement entries without a matching STALE_LIVE_REFERENCE_PATTERNS row, or use a bare `\bpatterns\b` regex that false-positives on unrelated prose.
+- **INSTEAD DO**: Ship STALE_LIVE_REFERENCE_PATTERNS in the same change as new retired keys/templates, using precise regexes (`patternsBackend`, `defaults.patterns`, `_comment_patterns*`, `backend.md.template`). Assert required ids in test-consumer-migration.js.
 
 ### [2026-08-27] Resolve-thread metadata-only notes
 - **Layer**: `providers`

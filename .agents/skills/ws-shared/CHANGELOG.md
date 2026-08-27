@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-27 12:55] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` open develop→main PR (251)
+- **Done**: STALE_LIVE_REFERENCE_PATTERNS parity for newly retired keys/templates; ac_ledger fail-closes uncovered Negative & Failing Test Scenarios
+- **Result**: `npm test` exit 0; integrity v0.3.46; six review threads queued for resolve after push
+
+
 ### [2026-08-27 11:50] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-fable-method` implement spec-dor-tdd-refinement-hardening.spec.md; bump version and commit
 - **Done**: Authoring-mode DoR + Validation Notes; write-spec/interview/implement-tasks/verify-plan TDD protocol; tests wired; package 0.3.46

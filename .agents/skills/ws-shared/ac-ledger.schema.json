@@ -47,6 +47,10 @@
       "items": { "$ref": "#/$defs/ac" },
       "minItems": 1
     },
+    "negativeScenarios": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/negativeScenario" }
+    },
     "scoreState": {
       "type": ["object", "null"]
     }
@@ -141,6 +145,32 @@
             "required": { "type": "boolean" },
             "status": { "enum": ["not-required", "passed", "failed"] },
             "exitCode": { "type": ["integer", "null"] }
+          }
+        },
+        "linkEventIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "negativeScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "tests", "linkEventIds"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^NS[1-9][0-9]*$" },
+        "text": { "type": "string", "minLength": 1 },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "sourceFile", "phase"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "sourceFile": { "$ref": "#/$defs/path" },
+              "phase": { "enum": ["planned", "observed"] },
+              "alias": { "type": ["string", "null"] },
+              "exitCode": { "type": ["integer", "null"] },
+              "timestamp": { "type": "string" }
+            }
           }
         },
         "linkEventIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }

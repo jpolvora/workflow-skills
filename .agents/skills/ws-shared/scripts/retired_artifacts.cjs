@@ -46,6 +46,12 @@ const STALE_LIVE_REFERENCE_PATTERNS = [
   { id: 'ws-audit', re: /\bws-audit\b/, removedIn: '0.3.37' },
   { id: 'defaults.enableAuditing', re: /\benableAuditing\b/, removedIn: '0.3.37' },
   { id: 'ws-patterns skill', re: /\bws-patterns(?:-backend|-frontend)?\b/, removedIn: '0.3.38' },
+  { id: 'defaults.patternsBackend', re: /\bpatternsBackend\b/, removedIn: '0.3.38' },
+  { id: 'defaults.patternsFrontend', re: /\bpatternsFrontend\b/, removedIn: '0.3.38' },
+  { id: 'defaults.patterns', re: /\bdefaults\.patterns\b|"patterns"\s*:/, removedIn: '0.3.38' },
+  { id: '_comment_patterns', re: /_comment_patterns(?:Backend|Frontend)?\b/, removedIn: '0.3.38' },
+  { id: 'backend.md.template', re: /backend\.md\.template/i, removedIn: '0.3.38' },
+  { id: 'frontend.md.template', re: /frontend\.md\.template/i, removedIn: '0.3.38' },
 ];
 
 function stripRetiredConfigKeys(cfg) {

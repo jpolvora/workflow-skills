@@ -137,6 +137,19 @@ function tempDir() {
     0,
     `live skill/hub files still reference retired artifacts:\n${offenders.join('\n')}`,
   );
+
+  const requiredStaleIds = [
+    'defaults.patternsBackend',
+    'defaults.patternsFrontend',
+    'defaults.patterns',
+    '_comment_patterns',
+    'backend.md.template',
+    'frontend.md.template',
+  ];
+  const staleIds = new Set(STALE_LIVE_REFERENCE_PATTERNS.map((pattern) => pattern.id));
+  for (const id of requiredStaleIds) {
+    assert.ok(staleIds.has(id), `STALE_LIVE_REFERENCE_PATTERNS missing ${id}`);
+  }
 }
 
 console.log('test-consumer-migration: ok');

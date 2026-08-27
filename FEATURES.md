@@ -69,7 +69,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 | Gate | Rule | Owner |
 |------|------|-------|
-| **Derived verify score** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. | `ws-verify-plan` |
+| **Derived verify score** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. Uncovered spec Negative & Failing Test Scenarios (`negativeScenarios` without an observed passing test) are a known defect and cap the score at 8. | `ws-verify-plan` |
 | **Configurable verify bar (`defaults.minVerifyScore`)** | Default 9, range 1–10, omitted → 9. Below the bar it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). Optional Reach-10 user-gate when effort is low. | `ws-verify-plan` |
 | **Score & refine** | When a score is already ≥ `minVerifyScore` and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-verify-plan` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |

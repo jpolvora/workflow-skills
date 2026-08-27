@@ -148,4 +148,44 @@ assert.ok(
   `schema rejects skipReason: ${schemaErrors.join('; ')}`,
 );
 
+const nsRoot = temp('ws-ac-ledger-ns-');
+write(path.join(nsRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(nsRoot, 'ns.spec.md'), [
+  '## Acceptance Criteria',
+  '- AC1: First behavior.',
+  '',
+  '## Validation & Observation Notes',
+  '',
+  '### Telemetry & Observable Signals',
+  '- Authoring validator output.',
+  '',
+  '### Negative & Failing Test Scenarios',
+  '- Missing DoR section fails authoring validation.',
+  '',
+].join('\n'));
+write(path.join(nsRoot, 'impl.js'), 'export const value = 1;\n');
+write(path.join(nsRoot, 'ns.test.js'), 'test("missing DoR section fails", () => {});\n');
+function nsInvoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', nsRoot]);
+}
+assert.strictEqual(nsInvoke(['init', '--spec', 'ns.spec.md', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'ns']).status, 0);
+const nsLedger = JSON.parse(fs.readFileSync(path.join(nsRoot, 'ac-ledger.json'), 'utf8'));
+assert.strictEqual(nsLedger.negativeScenarios.length, 1);
+assert.strictEqual(nsLedger.negativeScenarios[0].id, 'NS1');
+assert.strictEqual(nsInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'link-ac1', '--ac', 'AC1',
+  '--status', 'Implemented', '--file', 'impl.js:L1-L1',
+  '--test', JSON.stringify({ name: 'missing DoR section fails', sourceFile: 'ns.test.js', phase: 'planned', alias: null, exitCode: null }),
+]).status, 0);
+const nsCapped = JSON.parse(nsInvoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.ok(nsCapped.score <= 8 && nsCapped.knownDefect, 'uncovered negative scenario caps at 8');
+assert.strictEqual(nsInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'link-ns1', '--negative', 'NS1',
+  '--test', JSON.stringify({ name: 'missing DoR section fails', sourceFile: 'ns.test.js', phase: 'observed', alias: null, exitCode: 0 }),
+]).status, 0);
+const nsCovered = JSON.parse(nsInvoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.ok(!nsCovered.knownDefect, 'observed negative scenario clears knownDefect');
+const nsSchemaErrors = validateNode(JSON.parse(fs.readFileSync(path.join(nsRoot, 'ac-ledger.json'), 'utf8')), ledgerSchema, 'ac-ledger.json');
+assert.strictEqual(nsSchemaErrors.length, 0, nsSchemaErrors.join('; '));
+
 console.log('test-ac-ledger: ok');
