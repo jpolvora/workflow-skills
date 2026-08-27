@@ -888,18 +888,24 @@ function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoa
     getRetiredArtifactsModule();
   const globalRootAbs = tokenMap._abs?.globalSkillsRoot;
   const projectSkillDirs = findRetiredSkillDirsAtRoot(fs, path, skillsRootAbs);
-  const globalSkillDirs =
-    globalRootAbs && path.resolve(globalRootAbs) !== path.resolve(skillsRootAbs)
-      ? findRetiredSkillDirsAtRoot(fs, path, globalRootAbs)
-      : [];
+  const distinctGlobal =
+    globalRootAbs && path.resolve(globalRootAbs) !== path.resolve(skillsRootAbs);
+  const globalSkillDirs = distinctGlobal
+    ? findRetiredSkillDirsAtRoot(fs, path, globalRootAbs)
+    : [];
+  const listHub = (dirAbs) =>
+    RETIRED_HUB_FILES.filter((name) => fs.existsSync(path.join(dirAbs, name)));
+  const projectHubFiles = listHub(sharedDirAbs);
+  const globalHubFiles = distinctGlobal ? listHub(path.join(globalRootAbs, 'ws-shared')) : [];
   const staleRetired = {
     configKeys: listRetiredConfigKeys(cfg),
-    hubFiles: RETIRED_HUB_FILES.filter((name) => fs.existsSync(path.join(sharedDirAbs, name))),
+    hubFiles: { project: projectHubFiles, global: globalHubFiles },
     skillDirs: { project: projectSkillDirs, global: globalSkillDirs },
   };
   const hasStaleRetired =
     staleRetired.configKeys.length > 0 ||
-    staleRetired.hubFiles.length > 0 ||
+    projectHubFiles.length > 0 ||
+    globalHubFiles.length > 0 ||
     projectSkillDirs.length > 0 ||
     globalSkillDirs.length > 0;
 
@@ -908,7 +914,7 @@ function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoa
     path: toPosix(path.relative(projectRoot, configPath)),
     reason: null,
     recommendation: hasStaleRetired
-      ? globalSkillDirs.length
+      ? globalSkillDirs.length || globalHubFiles.length
         ? 'Run `npx --yes github:jpolvora/workflow-skills update` (project) and `update --global` (global skills root) to prune retired artifacts removed in 0.3.37–0.3.38.'
         : 'Run `npx --yes github:jpolvora/workflow-skills update` to prune retired artifacts (session leases, ws-patterns, ws-audit removed in 0.3.37–0.3.38).'
       : null,
@@ -1061,8 +1067,11 @@ function formatMarkdown(report) {
       if (cfg.staleRetired.configKeys.length) {
         lines.push(`- config keys: ${cfg.staleRetired.configKeys.join(', ')}`);
       }
-      if (cfg.staleRetired.hubFiles.length) {
-        lines.push(`- hub files: ${cfg.staleRetired.hubFiles.join(', ')}`);
+      if (cfg.staleRetired.hubFiles.project?.length) {
+        lines.push(`- hub files (project): ${cfg.staleRetired.hubFiles.project.join(', ')}`);
+      }
+      if (cfg.staleRetired.hubFiles.global?.length) {
+        lines.push(`- hub files (global): ${cfg.staleRetired.hubFiles.global.join(', ')}`);
       }
       if (cfg.staleRetired.skillDirs.project?.length) {
         lines.push(`- skill folders (project): ${cfg.staleRetired.skillDirs.project.join(', ')}`);
