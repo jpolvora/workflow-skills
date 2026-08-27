@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "40394c07a7299d4e33a8cfd54ea3f1ff8628261bbbb879b149767022f04b9ead",
+  "fullPackageDigest": "569d243e093afc35d26edfc866ddc5e2c1edddee15775bcced1e2dedccb48a84",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -81,14 +81,14 @@
     "ws-check-harness": {
       "files": {
         "evals/evals.json": "8b5e01d5b9d12b5b6fdd94e8d1958fd1e53cd6aad1ab77675637ab83fe431f8e",
-        "PHASES.md": "a14915bb0ebbc0bf4bd9e493e3bc709d97eea811cfb340dd36898edee9ecc9bf",
+        "PHASES.md": "2a8f41426ae487050dc760572b6b542178179a934ac4736f6d8a672d618fbf6b",
         "REPORT-FORMAT.md": "c4ebf7fdccf0469cd4be21c65b1905b44eeacd874c7028791062f2d244543e69",
         "scripts/check_duplicates.cjs": "ff3737715f778a68a01a722668937cc9561b03b0337b3039979b22db758945dc",
         "scripts/check_shell_quoting.cjs": "c65d46afe4e3c281e5c5aca698447aca14382d46325c8bc0bc493824ac7e3eab",
         "scripts/measure_harness.cjs": "d3ab6910914fe9a22a3fb4c9239f3b754c243a6dd134561dd2381c0a629454f8",
         "SKILL.md": "bf6eeaab5a13844fe295f16a3fd370361e1b2cb48405ded49c295d24ff4e6767"
       },
-      "skillDigest": "84774c49da481979f1f091078679eafd64b4c6e24821450549d39085b3d676de"
+      "skillDigest": "1940f2b9c996469a314434ea77a2e20bfad2de2978c02168dd200780e7dfaf06"
     },
     "ws-check-workflows": {
       "files": {
