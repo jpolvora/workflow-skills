@@ -41,3 +41,12 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Consumer was vault-only (`enableMemoryFiles: false`, `enableSpecMemoIntegration: true`) then ran `/ws-spec-memo disable` / `--enabled false` without an explicit memory-files flag. Prev `enableMemoryFiles: false` was preserved, so `resolveMemoryRouting` left both backends off and in-repo MEMORY consult/compile stayed dark.
 - **DO NOT**: When disabling vault integration without an explicit `--enable-memory-files` / stdin memory flag, reuse previous `enableMemoryFiles: false` from vault-only mode.
 - **INSTEAD DO**: If `nextSpecMemo` becomes false and the caller did not set memory-files explicitly, set `nextMemoryFiles = true` so disable restores local markdown memory. Cover with a vault-only → disable restoration test.
+
+### [2026-08-26] Avoid redundant dual Node/Python scripts
+- **Layer**: `harness`
+- **Module**: `ws-shared / skill scripts`
+- **Severity**: `High`
+- **PathPattern**: `**/*.{cjs,js,py};**/ws-shared/scripts/**`
+- **Scenario / Context**: A helper was implemented twice (Node `.cjs` + Python `.py`) “for parity,” then review demanded dual-runtime tests. Dual copies drift (config routing, parent-count bugs, CI-only failures) and violate the package Node SoT (`unique-skill-script-runtime`).
+- **DO NOT**: Add a second-language mirror of an existing helper, write Node/Python parity test pairs for the same job, or invent new dual `.cjs`+`.py` scripts for one responsibility.
+- **INSTEAD DO**: New scripts use **one** runtime only — prefer **Node `.cjs`** for packaged skills (canonical). Pre-existing `.py` helpers may be evolved, updated, or bug-fixed in place without adding a Node twin (and vice versa). Delete unused mirrors rather than covering them with parity tests.

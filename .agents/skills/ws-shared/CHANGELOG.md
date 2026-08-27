@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 03:12 UTC] Agent: Composer
+- **Prompt**: `/ws-self-learning` — trap for dual Node/Python scripts
+- **Done**: Added `memory/2026-08-26-avoid-dual-node-python-scripts.md`; compiled MEMORY; vault upsert
+- **Result**: High-severity trap: one runtime per job; Node for new packaged scripts; evolve pre-existing in place
+
 ### [2026-08-27 03:10 UTC] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` PR 246 round 4 — schema modes + drop Python memory-routing mirror
 - **Done**: Expand `specMemo.mode` schema enum to local/disabled; remove unused Python `resolve_memory_routing` (Node SoT only); integrity regen
