@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-27 03:10] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` PR 248 — reject filler-only resolve-thread comments
+- **Done**: GitHub and Azure substance gates require a 4+ letter token with two distinct letters; parity tests reject forty `x`; INTENTS + SCM contract updated
+- **Result**: `node test/test-provider-parity.js` green
+
+
 ### [2026-08-27 00:50] Agent: Cursor Grok 4.6
 - **Prompt**: Fix-PR thread close must include what was done for the correction, not only model + Corrigido em <hash>; apply on ADO and GitHub
 - **Done**: Both `resolve-thread` implementations reject hash-only bodies; skill/INTENTS/contract require files+behavior in the comment; parity tests cover GH and Azure

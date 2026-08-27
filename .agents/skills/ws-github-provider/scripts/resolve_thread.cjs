@@ -12,6 +12,7 @@ const HASH_STATUS_PREFIX_RE =
 const SHA_ONLY_RE = /^[0-9a-f]{7,40}\.?$/i;
 const METADATA_LINE_RE =
   /^(?:defectClass|sourcesConsulted|proactiveFixed|proactiveSkipped)\s*:/i;
+const WORD_TOKEN_RE = /\b[a-zA-Z]{4,}\b/g;
 
 function loadDotEnv() {
   if (!fs.existsSync('.env')) return;
@@ -72,8 +73,14 @@ function resolutionCommentSubstance(comment) {
   return parts.join(' ');
 }
 
+function hasLexicalWord(substance) {
+  const words = String(substance).match(WORD_TOKEN_RE) || [];
+  return words.some((word) => new Set(word.toLowerCase()).size >= 2);
+}
+
 function assertResolutionNote(note) {
-  if (resolutionCommentSubstance(note).length < MIN_RESOLUTION_SUBSTANCE_CHARS) {
+  const substance = resolutionCommentSubstance(note);
+  if (substance.length < MIN_RESOLUTION_SUBSTANCE_CHARS || !hasLexicalWord(substance)) {
     console.error(THIN_RESOLUTION_ERROR);
     process.exit(1);
   }

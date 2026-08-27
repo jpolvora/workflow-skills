@@ -12,8 +12,8 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Severity**: `Medium`
 - **PathPattern**: `**/resolve_thread.cjs|**/fix_pr_azure_context.py`
 - **Scenario / Context**: Cooperative bookkeeping lines (`defectClass`, `sourcesConsulted`, `proactiveFixed`, `proactiveSkipped`) can exceed 40 characters without describing what changed.
-- **DO NOT**: Count COOPERATIVE_FIX metadata keys as resolution-comment substance.
-- **INSTEAD DO**: Strip those lines before the length gate so both GitHub and Azure reject metadata-only notes (parity test).
+- **DO NOT**: Count COOPERATIVE_FIX metadata keys or homogeneous filler (e.g. forty `x` characters) as resolution-comment substance.
+- **INSTEAD DO**: Strip metadata lines, then require ≥40 remaining characters **and** a 4+ letter alphabetic token with two distinct letters so both GitHub and Azure reject metadata-only and homogeneous filler notes (parity tests).
 
 ### [2026-08-27] Phase 4 rg vs MEMORY traps
 - **Layer**: `harness`
@@ -38,9 +38,9 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Module**: `ws-doctor`
 - **Severity**: `Medium`
 - **PathPattern**: `.agents/skills/ws-doctor/scripts/doctor.js`
-- **Scenario / Context**: Hybrid installs keep skills globally while project `ws-shared` holds config. Retired hub files (`session-lease.schema.json`) can remain under `$HOME/.agents/skills/ws-shared/` after 0.3.38 while the project hub is clean. Scanning only `sharedDirAbs` (project) yields a false-negative pre-update diagnostic.
-- **DO NOT**: Report stale retired hub files from the project hub only when `{globalSkillsRoot}` is a distinct tree.
-- **INSTEAD DO**: Also list `RETIRED_HUB_FILES` under `{globalSkillsRoot}/ws-shared/` when it differs from project `{skillsRoot}`; recommend `update --global` when global leftovers exist. Cover with a hybrid fixture test.
+- **Scenario / Context**: Hybrid installs keep skills globally while project `ws-shared` holds config. Retired hub files (`session-lease.schema.json`) and retired `defaults.*` keys can remain under `$HOME/.agents/skills/ws-shared/` after 0.3.38 while the project hub is clean. Scanning only project `sharedDirAbs` / project `config.json` yields a false-negative pre-update diagnostic.
+- **DO NOT**: Report stale retired hub files or config keys from the project hub only when `{globalSkillsRoot}` is a distinct tree.
+- **INSTEAD DO**: Also list `RETIRED_HUB_FILES` and `listRetiredConfigKeys` under `{globalSkillsRoot}/ws-shared/` when it differs from project `{skillsRoot}`; recommend `update --global` when global leftovers exist. Cover with hybrid fixture tests.
 
 ### [2026-08-26] Vault-disable restore only when vault was active
 - **Layer**: `skills`

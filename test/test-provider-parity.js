@@ -231,6 +231,18 @@ assert(
   'GitHub metadata-only reject names the correction requirement',
 );
 
+const FILLER_RESOLUTION_NOTE = 'x'.repeat(40);
+const ghFiller = spawnSync(
+  process.execPath,
+  [ghScript, '--dry-run', 'thread-parity', FILLER_RESOLUTION_NOTE],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(ghFiller.status !== 0, 'GitHub resolve-thread rejects filler-only comments');
+assert(
+  THIN_RESOLUTION_ERROR.test(`${ghFiller.stdout || ''}${ghFiller.stderr || ''}`),
+  'GitHub filler-only reject names the correction requirement',
+);
+
 const adoScript = path.join(SKILLS, 'ws-azure-devops-provider/scripts/fix_pr_azure_context.py');
 const pythonBin = process.platform === 'win32' ? 'python' : 'python3';
 const adoHelp = spawnSync(pythonBin, [adoScript, 'resolve-thread', '--help'], {
@@ -337,6 +349,27 @@ assert(adoMeta.status !== 0, 'Azure resolve-thread rejects metadata-only comment
 assert(
   THIN_RESOLUTION_ERROR.test(`${adoMeta.stdout || ''}${adoMeta.stderr || ''}`),
   'Azure metadata-only reject names the correction requirement',
+);
+
+const adoFiller = spawnSync(
+  pythonBin,
+  [
+    adoScript,
+    'resolve-thread',
+    '--dry-run',
+    '--pr-id',
+    '1',
+    '--thread-id',
+    '1',
+    '--comment',
+    FILLER_RESOLUTION_NOTE,
+  ],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(adoFiller.status !== 0, 'Azure resolve-thread rejects filler-only comments');
+assert(
+  THIN_RESOLUTION_ERROR.test(`${adoFiller.stdout || ''}${adoFiller.stderr || ''}`),
+  'Azure filler-only reject names the correction requirement',
 );
 
 const delegated = required.filter((id) => id !== 'validate-auth' && id !== 'fetch-to-spec');

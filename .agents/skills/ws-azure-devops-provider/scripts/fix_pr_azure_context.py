@@ -387,6 +387,7 @@ METADATA_LINE_RE = re.compile(
     r"^(?:defectClass|sourcesConsulted|proactiveFixed|proactiveSkipped)\s*:",
     re.IGNORECASE,
 )
+WORD_TOKEN_RE = re.compile(r"\b[a-zA-Z]{4,}\b")
 
 
 def resolution_comment_substance(comment: str) -> str:
@@ -407,8 +408,16 @@ def resolution_comment_substance(comment: str) -> str:
     return " ".join(parts)
 
 
+def has_lexical_word(substance: str) -> bool:
+    for word in WORD_TOKEN_RE.findall(substance or ""):
+        if len(set(word.lower())) >= 2:
+            return True
+    return False
+
+
 def assert_resolution_comment(comment: str) -> None:
-    if len(resolution_comment_substance(comment)) < MIN_RESOLUTION_SUBSTANCE_CHARS:
+    substance = resolution_comment_substance(comment)
+    if len(substance) < MIN_RESOLUTION_SUBSTANCE_CHARS or not has_lexical_word(substance):
         raise SystemExit(THIN_RESOLUTION_ERROR)
 
 
