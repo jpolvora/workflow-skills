@@ -1005,7 +1005,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       .filter(Boolean)
       .sort((a, b) => a.step - b.step);
   }
-  if (operation === 'finish' && priorJsonText && finishFingerprint(state) === priorFingerprint) {
+  const isIdempotentFinish = operation === 'finish' && Boolean(priorJsonText) && finishFingerprint(state) === priorFingerprint;
+  if (isIdempotentFinish) {
     const restored = JSON.parse(priorJsonText);
     Object.keys(state).forEach((key) => {
       delete state[key];
@@ -1022,22 +1023,27 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
 
   if (operation === 'finish') {
     const hygiene = resolveContextHygiene(context.config);
-    event.handoffBytes = writeHandoffFile({
-      usDir: paths.usDir,
-      state,
-      pipeline,
-      step,
-      options,
-      context,
-      output: finishOutput,
-    });
+    if (!isIdempotentFinish) {
+      event.handoffBytes = writeHandoffFile({
+        usDir: paths.usDir,
+        state,
+        pipeline,
+        step,
+        options,
+        context,
+        output: finishOutput,
+      });
+    }
     event.pruneAfterStep = hygiene.pruneAfterStep;
     if (pipeline === 'lite' && resolveReviewJurySize(context.config) > 1 && Number(step) === 3) {
       event.juryIgnored = 'lite-inline';
     }
+    if (isIdempotentFinish) event.idempotentReplay = true;
   }
 
-  appendJsonl(telemetryFile, event);
+  if (!isIdempotentFinish) {
+    appendJsonl(telemetryFile, event);
+  }
   atomicWrite(paths.jsonFile, jsonText);
   atomicWrite(absoluteState, stateContent);
   atomicWrite(paths.runFile, `${JSON.stringify(run, null, 2)}\n`);

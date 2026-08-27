@@ -42,6 +42,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Add files under `ws-shared/` (new dirs such as `schemas/`) without listing that dir or file on `HUB_WHITELIST`. Require `./sanitize_memory.cjs` from `self_learning.cjs` then copy only the parent script in test scaffolds. Assert identical `finish` is hash-stable on a workflow that already advanced past that step. Wrap `{path-tokens}` in markdown backticks inside JavaScript template literals. Run `build-site:bump` after already incrementing `package.json`.
 - **INSTEAD DO**: Keep copy and hash enumeration in lockstep: whitelist new hub dirs (`schemas` like `scripts`). Copy `sanitize_memory.cjs` next to `self_learning.cjs` in any isolated skill tree. Use a dedicated dispatch→finish→finish fixture for AC30. Use HTML `<code>` in `build-site.js` template strings. Bump version once (prefer `build-site:bump` from the previous patch).
 
+### [2026-08-27] Idempotent finish handoff stability and duplicate telemetry prevention
+- **Layer**: `harness`
+- **Module**: `ws-shared / workflow_state`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs;test/test-workflow-state-contract.js`
+- **Scenario / Context**: Idempotent finish restored `.state.json` but ran `writeHandoffFile` and telemetry append unconditionally. On replay, `writeHandoffFile` could overwrite rich subagent summary with a thin fallback and duplicate finish events in `.jsonl`.
+- **DO NOT**: Unconditionally overwrite `handoff/step-{NN}.json` or append duplicate finish telemetry during an idempotent finish replay.
+- **INSTEAD DO**: Guard `writeHandoffFile` and `appendJsonl` with `!isIdempotentFinish` so prior handoff JSON and telemetry are preserved intact.
+
 ### [2026-08-27] Fix-PR resolution comments must describe the correction
 - **Layer**: `Harness`
 - **Module**: `ws-fix-pr / resolve-thread`

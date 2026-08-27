@@ -682,6 +682,7 @@ acImplemented: 0
   ], noPython).status, 0, 'dispatch without Python on PATH');
   assert.strictEqual(run(update, [
     'finish', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z',
+    '--step-output', JSON.stringify({ summary: 'Rich subagent summary' }),
     '--gate-decision', gate, ...idempCommon,
   ], noPython).status, 0, 'finish without Python on PATH');
   const jsonPath = path.join(idempRoot, '.agents/plans/idemp/wf.state.json');
@@ -705,9 +706,12 @@ acImplemented: 0
   assert.ok(fs.existsSync(handoff), 'finish writes handoff/step-00.json');
   const payload = JSON.parse(fs.readFileSync(handoff, 'utf8'));
   assert.strictEqual(payload.step, 0);
+  assert.strictEqual(payload.summary, 'Rich subagent summary', 'idempotent finish preserves original rich handoff summary');
   assert.ok(Buffer.byteLength(JSON.stringify(payload), 'utf8') <= 8192);
-  const finishLine = fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/telemetry/step-00.jsonl'), 'utf8')
-    .trim().split('\n').map(JSON.parse).filter((row) => row.type === 'finish').at(-1);
+  const finishLines = fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/telemetry/step-00.jsonl'), 'utf8')
+    .trim().split('\n').map(JSON.parse).filter((row) => row.type === 'finish');
+  assert.strictEqual(finishLines.length, 1, 'idempotent finish does not duplicate finish telemetry');
+  const finishLine = finishLines[0];
   assert.equal(typeof finishLine.handoffBytes, 'number');
   assert.strictEqual(finishLine.pruneAfterStep, true);
 }
