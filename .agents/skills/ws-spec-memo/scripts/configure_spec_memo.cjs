@@ -125,8 +125,16 @@ function main() {
   let nextMemoryFiles = memoryFilesParam;
   if (nextMemoryFiles === null || nextMemoryFiles === undefined) {
     if (!nextSpecMemo && args.enableMemoryFiles === null && stdin.enableMemoryFiles === undefined) {
-      // Disabling vault restores local markdown memory unless caller explicitly sets both backends off.
-      nextMemoryFiles = true;
+      // Restore local markdown only when leaving an active vault; keep prior choice if already disabled.
+      const vaultWasActive =
+        prev.enableSpecMemoIntegration === true || prev.enabled === true;
+      if (vaultWasActive) {
+        nextMemoryFiles = true;
+      } else if (prev.enableMemoryFiles !== undefined) {
+        nextMemoryFiles = Boolean(prev.enableMemoryFiles);
+      } else {
+        nextMemoryFiles = true;
+      }
     } else if (args.mode || stdin.mode) {
       const explicitMode = args.mode ?? stdin.mode;
       if (!ALLOWED_MODES.has(explicitMode)) {

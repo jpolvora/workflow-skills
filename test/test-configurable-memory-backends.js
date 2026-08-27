@@ -138,10 +138,31 @@ try {
   const checkState1Json = JSON.parse(checkState1.stdout);
   assert(checkState1Json.config.mode === 'local', 'check_spec_memo reports mode: "local" for local-only state');
 
+  // Stub memo CLI so vault enable works without a real install (CI-safe)
+  const stubCli = path.join(tmp, 'stub-memo.cjs');
+  fs.writeFileSync(
+    stubCli,
+    `#!/usr/bin/env node
+const cmd = process.argv[2];
+if (cmd === '--help') process.exit(0);
+if (cmd === 'doctor') { console.log('{"ok":true}'); process.exit(0); }
+process.exit(0);
+`,
+    'utf8'
+  );
+  const stubCliArg = `node ${stubCli}`;
+
   // Test State 2: Vault only
   const cfgState2 = runNode(
     CONFIGURE,
-    ['--repo-root', tmp, '--apply', '--enable-memory-files', 'false', '--enable-spec-memo', 'true', '--json']
+    [
+      '--repo-root', tmp,
+      '--apply',
+      '--enable-memory-files', 'false',
+      '--enable-spec-memo', 'true',
+      '--cli', stubCliArg,
+      '--json',
+    ]
   );
   assert(cfgState2.status === 0, 'configure state 2 (vault only) exits 0');
   const res2 = JSON.parse(cfgState2.stdout).specMemo;
@@ -176,6 +197,17 @@ try {
   const res4 = JSON.parse(cfgState4.stdout).specMemo;
   assert(res4.enableMemoryFiles === false && res4.enableSpecMemoIntegration === false, 'state 4 persisted correctly');
 
+  // Idempotent disable on already-disabled project must not re-enable local memory
+  const cfgDisableAgain = runNode(
+    CONFIGURE,
+    ['--repo-root', tmp, '--apply', '--enabled', 'false', '--json']
+  );
+  assert(cfgDisableAgain.status === 0, 'disable on already-disabled exits 0');
+  const resDisableAgain = JSON.parse(cfgDisableAgain.stdout).specMemo;
+  assert(
+    resDisableAgain.enableMemoryFiles === false && resDisableAgain.enableSpecMemoIntegration === false,
+    'disable on already-disabled keeps enableMemoryFiles: false'
+  );
   // Test check_spec_memo reports new flags
   const checkRes = runNode(CHECK, ['--repo-root', tmp, '--json']);
   const checkJson = JSON.parse(checkRes.stdout);

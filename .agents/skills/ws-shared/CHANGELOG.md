@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 02:48 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 round 2 (CI vault-only JSON crash + disable restore guard)
+- **Done**: Gate disable→local restore on vaultWasActive; stub CLI for vault-only tests; idempotent disable-on-disabled; integrity regen
+- **Result**: Local memory-backend + full `npm run test` green; ready to push/resolve
+
 ### [2026-08-27 02:35 UTC] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` PR 246 live
 - **Done**: Restored local memory on vault disable; strengthened tools.md knowledge-alias tests; integrity regen; MEMORY traps + round-1 report
