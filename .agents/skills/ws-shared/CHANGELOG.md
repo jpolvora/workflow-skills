@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 03:23] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-write-spec` from RESEARCH.md for spec-to-pr-* pack integration and production quality
+- **Done**: Authored `research-driven-pipeline-quality.spec.md` + context companion; authoring validate PASS (31 ACs); tracked on `index.PRD`
+- **Result**: Spec of record at `.agents/specs/research-driven-pipeline-quality.spec.md`; not registered to a plan dir
+
 ### [2026-08-27 03:10] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-goal-fix-pr` PR 248 — reject filler-only resolve-thread comments
 - **Done**: GitHub and Azure substance gates require a 4+ letter token with two distinct letters; parity tests reject forty `x`; INTENTS + SCM contract updated
