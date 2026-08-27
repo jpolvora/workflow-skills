@@ -531,6 +531,16 @@ function ensureSharedHubInstalled(mode = 'install') {
   // Never overwrite consumer config.json / STACK.md / MEMORY.md / CHANGELOG.md from upstream
   ensureSharedConsumerArtifacts();
   pruneRetiredConsumerArtifacts(fs, path, { skillsDir: targetSkillsDir });
+  if (!isGlobalScope) {
+    const globalDir = resolveGlobalSkillsDir();
+    if (
+      path.resolve(globalDir) !== path.resolve(targetSkillsDir) &&
+      fs.existsSync(globalDir)
+    ) {
+      console.log('  Checking global skills root for retired artifacts...');
+      pruneRetiredConsumerArtifacts(fs, path, { skillsDir: globalDir });
+    }
+  }
 
   console.log(
     `  ws-shared/ hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack/CHANGELOG preserved)`

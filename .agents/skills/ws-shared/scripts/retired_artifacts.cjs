@@ -69,6 +69,12 @@ function listRetiredConfigKeys(cfg) {
   return found;
 }
 
+function findRetiredSkillDirsAtRoot(fs, pathModule, skillsDirAbs) {
+  if (!skillsDirAbs) return [];
+  const root = pathModule.resolve(skillsDirAbs);
+  return RETIRED_SKILL_DIRS.filter((id) => fs.existsSync(pathModule.join(root, id)));
+}
+
 /**
  * Prune retired hub files, config keys, and skill folders from a consumer install.
  * @param {object} fs - node fs module
@@ -157,5 +163,6 @@ module.exports = {
   STALE_LIVE_REFERENCE_PATTERNS,
   stripRetiredConfigKeys,
   listRetiredConfigKeys,
+  findRetiredSkillDirsAtRoot,
   pruneRetiredConsumerArtifacts,
 };

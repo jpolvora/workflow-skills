@@ -300,15 +300,15 @@ ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement
 # Install mode consumer ({skillsRoot}, often .agents/skills):
 ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement-tasks,verify-plan,code-review,testing,ship-pr,fix-pr,goal-fix-pr,update-plan-implementation} 2>/dev/null
 
-# Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ)
+# Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ / ws-check-harness PHASES forbidden table)
 # Install mode upstream:
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation|session_lease|sessionLeases|session-lease\.schema|ws-patterns|ws-audit|enableAuditing' \
   AGENTS.md .agents/skills/ bin/skill-dependencies.json \
-  --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md'
+  --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' --glob '!**/ws-check-harness/PHASES.md'
 # Install mode consumer (guard missing hubs / skills root):
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation|session_lease|sessionLeases|session-lease\.schema|ws-patterns|ws-audit|enableAuditing' \
   AGENTS.md .agents/skills/ bin/skill-dependencies.json \
-  --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' 2>/dev/null || true
+  --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' --glob '!**/ws-check-harness/PHASES.md' 2>/dev/null || true
 ```
 
 ### Phase 3 — Routing graph and decision paths

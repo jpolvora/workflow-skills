@@ -43,6 +43,11 @@ function getRetiredArtifactsModule() {
       },
       RETIRED_HUB_FILES: ['session-lease.schema.json'],
       RETIRED_SKILL_DIRS: ['ws-patterns', 'ws-patterns-backend', 'ws-patterns-frontend', 'ws-audit'],
+      findRetiredSkillDirsAtRoot(fsMod, pathMod, skillsDirAbs) {
+        if (!skillsDirAbs) return [];
+        const root = pathMod.resolve(skillsDirAbs);
+        return this.RETIRED_SKILL_DIRS.filter((id) => fsMod.existsSync(pathMod.join(root, id)));
+      },
     };
   }
   return retiredArtifactsModule;
@@ -879,24 +884,33 @@ function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoa
     rulesSummary[k] = markEmpty(v);
   }
 
-  const { listRetiredConfigKeys, RETIRED_HUB_FILES, RETIRED_SKILL_DIRS } =
+  const { listRetiredConfigKeys, RETIRED_HUB_FILES, findRetiredSkillDirsAtRoot } =
     getRetiredArtifactsModule();
+  const globalRootAbs = tokenMap._abs?.globalSkillsRoot;
+  const projectSkillDirs = findRetiredSkillDirsAtRoot(fs, path, skillsRootAbs);
+  const globalSkillDirs =
+    globalRootAbs && path.resolve(globalRootAbs) !== path.resolve(skillsRootAbs)
+      ? findRetiredSkillDirsAtRoot(fs, path, globalRootAbs)
+      : [];
   const staleRetired = {
     configKeys: listRetiredConfigKeys(cfg),
     hubFiles: RETIRED_HUB_FILES.filter((name) => fs.existsSync(path.join(sharedDirAbs, name))),
-    skillDirs: RETIRED_SKILL_DIRS.filter((id) => fs.existsSync(path.join(skillsRootAbs, id))),
+    skillDirs: { project: projectSkillDirs, global: globalSkillDirs },
   };
   const hasStaleRetired =
     staleRetired.configKeys.length > 0 ||
     staleRetired.hubFiles.length > 0 ||
-    staleRetired.skillDirs.length > 0;
+    projectSkillDirs.length > 0 ||
+    globalSkillDirs.length > 0;
 
   return {
     available: true,
     path: toPosix(path.relative(projectRoot, configPath)),
     reason: null,
     recommendation: hasStaleRetired
-      ? 'Run `npx --yes github:jpolvora/workflow-skills update` to prune retired artifacts (session leases, ws-patterns, ws-audit removed in 0.3.37–0.3.38).'
+      ? globalSkillDirs.length
+        ? 'Run `npx --yes github:jpolvora/workflow-skills update` (project) and `update --global` (global skills root) to prune retired artifacts removed in 0.3.37–0.3.38.'
+        : 'Run `npx --yes github:jpolvora/workflow-skills update` to prune retired artifacts (session leases, ws-patterns, ws-audit removed in 0.3.37–0.3.38).'
       : null,
     schemaAware: Boolean(schemaLoad && schemaLoad.ok),
     schemaIssues,
@@ -1050,8 +1064,11 @@ function formatMarkdown(report) {
       if (cfg.staleRetired.hubFiles.length) {
         lines.push(`- hub files: ${cfg.staleRetired.hubFiles.join(', ')}`);
       }
-      if (cfg.staleRetired.skillDirs.length) {
-        lines.push(`- skill folders: ${cfg.staleRetired.skillDirs.join(', ')}`);
+      if (cfg.staleRetired.skillDirs.project?.length) {
+        lines.push(`- skill folders (project): ${cfg.staleRetired.skillDirs.project.join(', ')}`);
+      }
+      if (cfg.staleRetired.skillDirs.global?.length) {
+        lines.push(`- skill folders (global): ${cfg.staleRetired.skillDirs.global.join(', ')}`);
       }
       if (cfg.recommendation) {
         lines.push('');
