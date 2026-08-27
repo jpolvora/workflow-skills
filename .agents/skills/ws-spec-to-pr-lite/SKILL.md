@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.42
+version: 0.3.45
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -51,7 +51,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 ## Post-Mutating Transition Sequence (Steps 0–4 → 1–5)
 
 After completing step N (0..4), before step N+1:
-1. **State Hygiene:** `update_state.cjs` dispatch/finish with file lists, structured `--gate-decision`, and `--jsonl-out`; use its `bypass` operation when `skipQualityGates`.
+1. **State Hygiene:** `update_state.cjs` dispatch/finish with file lists, structured `--gate-decision`, and `--jsonl-out`; use its `bypass` operation when `skipQualityGates`. `finish` writes `{us-dir}/handoff/step-{NN}.json`. When `defaults.contextHygiene.pruneAfterStep` is true (default), the next inline step reads that handoff plus compact state, not the full prior step markdown. Lite ignores `reviewJury.size` greater than 1 (one inline review) and records `juryIgnored: lite-inline` on that finish event. `defaults.contextHygiene.backgroundVerboseSteps` does not apply (no `dispatch-agent`).
 2. **G2-code after Step 2 before Step 3** (required; skip if empty stage). After Step 3 review-fix: G2-code if product files remain. Algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points / [`tools.md`](../ws-shared/tools.md) `commit-code`. Fail-closed: uncommitted workflow product files → do not dispatch Step 3 `ws-code-review`. `dryRun` simulates only. Other steps: skip.
 3. **Checkpoint:** `git tag uswf/{workflow-id}/before-step-{N+1}` @ HEAD **after** any G2-code.
 4. **Pre-Advance CI:** Unless `skipQualityGates`, run `node {skillsRoot}/ws-spec-to-pr-lite/scripts/validate_state.cjs {plansDir}/{slug}/{workflow-id}.state.md --pre-advance {N+1}`. Exit code > 0 → **HS-5** (STOP). Does **not** skip G2-code.

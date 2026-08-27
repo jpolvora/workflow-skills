@@ -1,6 +1,6 @@
 ---
 name: ws-pre-daily
-version: 0.3.43
+version: 0.3.45
 disable-model-invocation: true
 description: Standup briefing of the last 36 hours — delivered, made, ongoing, next.
 invocation_names:

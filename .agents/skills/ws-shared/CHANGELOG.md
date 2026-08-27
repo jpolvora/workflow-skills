@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 03:45] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-fable-method` implement research-driven-pipeline-quality.spec.md W1–W7
+- **Done**: JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, providerCompat/contextHygiene/reviewJury, memory sanitizer, pipeline handoff check, hub `schemas/` whitelist, package 0.3.45
+- **Result**: `npm run test` green; `check_pipeline_handoff` OK; integrity v0.3.45
+
 ### [2026-08-27 03:23] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-write-spec` from RESEARCH.md for spec-to-pr-* pack integration and production quality
 - **Done**: Authored `research-driven-pipeline-quality.spec.md` + context companion; authoring validate PASS (31 ACs); tracked on `index.PRD`

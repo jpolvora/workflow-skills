@@ -8,6 +8,7 @@ const {
   resolveMemoryRouting,
   toRepoRelative,
 } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { sanitizeMemoryBody } = require('./sanitize_memory.cjs');
 
 const FIELD_DEFS = [
   { key: 'layer', names: ['Layer'] },
@@ -148,6 +149,19 @@ function entries(memoryDir) {
 
 function compile(context, memoryDir, output) {
   fs.mkdirSync(memoryDir, { recursive: true });
+  const rejected = [];
+  for (const file of listMemoryFiles(memoryDir)) {
+    const raw = fs.readFileSync(file, 'utf8');
+    const sanitized = sanitizeMemoryBody(raw);
+    if (!sanitized.ok) {
+      rejected.push(path.basename(file));
+      continue;
+    }
+    if (sanitized.text !== raw) fs.writeFileSync(file, sanitized.text, 'utf8');
+  }
+  if (rejected.length) {
+    throw new Error(`refusing to compile: injection-only memory file(s): ${rejected.join(', ')}`);
+  }
   const loaded = entries(memoryDir);
   const invalid = loaded.filter((entry) => entry.errors.length);
   if (invalid.length) {

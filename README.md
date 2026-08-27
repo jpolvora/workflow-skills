@@ -28,7 +28,7 @@
 | **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads with a proactive same-class sweep before resolve (steps 0–9). |
 | **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
 | **A configurable verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ `defaults.minVerifyScore`** (default **9**, range 1–10). Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. Below the bar, scoreAndRefine re-implements flagged tasks. Optional Reach-10 user-gate when effort is low. When already ≥ the bar, optional `scoreAndRefine` second pass reviews the full diff for overengineering and unused workflow-introduced artifacts. |
-| **Verifiable runtime artifacts** | Atomic Node state updates publish deterministic `run.json` / `run.md`, a repo plans index, per-step JSONL telemetry, and a machine-readable AC ledger. |
+| **Verifiable runtime artifacts** | Atomic Node state updates publish `{workflow-id}.state.json` (machine SoT), derived `run.json` / `run.md`, step handoff JSON, a repo plans index, per-step JSONL telemetry, and a machine-readable AC ledger. |
 | **Smaller dispatch context** | Bounded subagent contracts and indexed plan slices replace repeated full-document payloads. Context and MEMORY budgets fail closed when exceeded. |
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
 | **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; tracker close-loop via `comment-issue`. |
@@ -146,7 +146,7 @@ Edit under `.agents/skills/ws-shared/` — never overwritten by upstream:
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers, and optional path tokens. **Fresh install seeds** from `config.json.example`; fill via `/ws-configure-project`. New runtime controls include test globs, context budget, optional parallel verify/review, step or phase gates, adaptive convergence, diagnostics storage, and portable phase-model identifiers. `fable.auditVerdictsBlockShip` defaults to `"refuted"`; `"caveats"` is an explicit stricter policy. Gitignored and never committed. |
+| `config.json` | Project identity, stack, verification, providers, and optional path tokens. **Fresh install seeds** from `config.json.example`; fill via `/ws-configure-project`. New runtime controls include test globs, context budget, optional parallel verify/review, step or phase gates, adaptive convergence, diagnostics storage, portable phase-model identifiers, optional provider-compat host hints, inter-step prune (`contextHygiene`), and optional review jury. `fable.auditVerdictsBlockShip` defaults to `"refuted"`; `"caveats"` is an explicit stricter policy. Gitignored and never committed. |
 | `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
 | `MEMORY.md` | Anti-regression index (`ws-self-learning`) |
 | `memory/*.md` | Individual memory entries |

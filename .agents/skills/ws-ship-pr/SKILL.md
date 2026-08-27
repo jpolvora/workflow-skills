@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.42
+version: 0.3.45
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -125,4 +125,5 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 - Stop before any external mutation unless the caller supplied the selected ship intent.
 - Return the prepare board, resulting refs/URL when applicable, and unresolved blockers.
 - Never weaken REFUTED handling or infer approval from cancellation.
+- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
 

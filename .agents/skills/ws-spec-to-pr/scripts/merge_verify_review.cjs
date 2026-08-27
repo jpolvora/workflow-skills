@@ -36,6 +36,35 @@ function finding(value, source) {
   };
 }
 
+function sortFindings(findings) {
+  return [...findings].sort((a, b) => SEVERITY[a.severity] - SEVERITY[b.severity]
+    || a.path.localeCompare(b.path)
+    || a.line - b.line
+    || a.id.localeCompare(b.id)
+    || String(a.source).localeCompare(String(b.source)));
+}
+
+function collapseIdentical(findings) {
+  const seen = new Set();
+  return findings.filter((item) => {
+    const key = `${item.id}\0${item.path}\0${item.line}\0${item.severity}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function mergeJuryReports(reports) {
+  const findings = collapseIdentical(reports.flatMap((report, index) => (
+    report.findings.map((item) => finding(item, `juror-${index + 1}`))
+  )));
+  return {
+    schemaVersion: 1,
+    findings: sortFindings(findings),
+    requiresFix: findings.some((item) => ['Critical', 'Warning'].includes(item.severity)),
+  };
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
@@ -43,7 +72,7 @@ function main() {
   const verify = readPayload(path.resolve(context.repoRoot, options.verify), 'verify');
   const review = readPayload(path.resolve(context.repoRoot, options.review), 'review');
   const seen = new Set();
-  const findings = [
+  const findings = sortFindings([
     ...verify.findings.map((item) => finding(item, 'verify')),
     ...review.findings.map((item) => finding(item, 'review')),
   ].filter((item) => {
@@ -51,11 +80,7 @@ function main() {
     if (seen.has(key)) throw new Error(`duplicate finding identity: ${item.source}/${item.id}`);
     seen.add(key);
     return true;
-  }).sort((a, b) => SEVERITY[a.severity] - SEVERITY[b.severity]
-    || a.path.localeCompare(b.path)
-    || a.line - b.line
-    || a.id.localeCompare(b.id)
-    || a.source.localeCompare(b.source));
+  }));
   const result = {
     schemaVersion: 1,
     score: Number(verify.score),
@@ -69,9 +94,19 @@ function main() {
   process.stdout.write(`${JSON.stringify({ ...result, output: toRepoRelative(context.repoRoot, output) }, null, 2)}\n`);
 }
 
-try {
-  main();
-} catch (error) {
-  process.stderr.write(`ERROR: ${error.message}\n`);
-  process.exitCode = 1;
+module.exports = {
+  finding,
+  sortFindings,
+  collapseIdentical,
+  mergeJuryReports,
+  readPayload,
+};
+
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    process.stderr.write(`ERROR: ${error.message}\n`);
+    process.exitCode = 1;
+  }
 }

@@ -50,7 +50,10 @@
         "unusual": { "type": "integer", "minimum": 0 },
         "suggestions": { "type": "integer", "minimum": 0 }
       }
-    }
+    },
+    "handoffBytes": { "type": "integer", "minimum": 0 },
+    "pruneAfterStep": { "type": "boolean" },
+    "juryIgnored": { "type": "string" }
   },
   "additionalProperties": false,
   "$defs": {

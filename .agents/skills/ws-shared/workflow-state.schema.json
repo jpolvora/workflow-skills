@@ -58,7 +58,8 @@
         "required": ["step", "dispatchedAt"],
         "properties": {
           "step": { "type": "integer", "minimum": 0, "maximum": 9 },
-          "dispatchedAt": { "type": "string", "format": "date-time" }
+          "dispatchedAt": { "type": "string", "format": "date-time" },
+          "substep": { "type": "string", "minLength": 1 }
         }
       }
     },

@@ -1,7 +1,7 @@
 ---
 name: ws-write-plan
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.3.42
+version: 0.3.45
 disable-model-invocation: true
 invocation_names:
   - write-plan
@@ -64,4 +64,5 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 - Map every AC to implementation work, expected files, and a named test so `plan_index.cjs` can build `{us-dir}/plan.index.json`.
 - Record unresolved design choices explicitly instead of choosing silently.
 - Write only the assigned plan artifact and return its path.
+- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
 

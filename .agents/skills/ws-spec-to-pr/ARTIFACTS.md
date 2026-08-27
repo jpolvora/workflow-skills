@@ -24,7 +24,9 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 
 | Artifact | Filename | Produced by | Committable |
 |----------|----------|-------------|-------------|
-| State | `{workflow-id}.state.md` | Orchestrator | No |
+| State | `{workflow-id}.state.md` | Orchestrator (rendered view) | No |
+| State JSON | `{workflow-id}.state.json` | Orchestrator (`update_state` machine SoT) | No |
+| Step handoff | `handoff/step-{NN}.json` | Every `update_state finish` | No |
 | Issue snapshot | `step-00-{slug}.issue.json` | Step 0 / issue fetch | No |
 | **Spec (canonical)** | `step-00-{slug}.spec.md` | Step 0 / issue→spec / local register | **Yes (Step 8)** when `includeSpec` |
 | Complexity classification | `step-00-{slug}.classify.md` | Step 0 (`ws-classify-complexity`) | No |
@@ -101,7 +103,7 @@ Stage **only** artifacts enabled by `config.json` → `defaults.deliveryCommitAr
 5. `git add` only resolved paths under `{us-dir}`; commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
 6. Product/source staging remains separate (`commit-code`: path-scoped workflow `files_touched`, not directory roots).
 
-**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, `plan.index.json`, `ac-ledger.json`, `run.json`, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
+**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, `plan.index.json`, `ac-ledger.json`, `run.json`, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
 
 Result file may still be **written** for orch evidence when `includeDeliveryResult` is false — it simply is not staged.
 

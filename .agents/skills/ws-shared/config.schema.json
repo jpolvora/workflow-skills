@@ -170,6 +170,52 @@
           "enum": ["step", "phase"],
           "default": "step"
         },
+        "providerCompat": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional host hints. Skill bodies must not hardcode vendor HTTP flags.",
+          "properties": {
+            "stabilizeStaticPrefix": {
+              "type": "boolean",
+              "default": true,
+              "description": "Keep the orchestrator static dispatch prefix byte-stable from token 0 when the host caches prefixes."
+            },
+            "thinkingToolCompat": {
+              "type": "boolean",
+              "default": false,
+              "description": "Host hint: preserve reasoning/assistant text across tool turns; do not force tool choice when the host rejects it."
+            }
+          }
+        },
+        "contextHygiene": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pruneAfterStep": {
+              "type": "boolean",
+              "default": true,
+              "description": "After update_state finish, the next step loads handoff JSON and compact state rather than full prior step markdown."
+            },
+            "backgroundVerboseSteps": {
+              "type": "boolean",
+              "default": false,
+              "description": "When true, standard orch may dispatch Steps 6 and 7 as non-blocking host jobs via portable dispatch-agent; unsupported hosts fall back to blocking."
+            }
+          }
+        },
+        "reviewJury": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3,
+              "default": 1,
+              "description": "Independent standard Step 6 review dispatches. Lite ignores values greater than 1."
+            }
+          }
+        },
         "convergence": {
           "type": "object",
           "additionalProperties": false,

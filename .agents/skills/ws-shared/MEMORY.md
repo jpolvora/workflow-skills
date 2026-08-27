@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Treat `{sharedDir}/MEMORY.md` or `memory/*` hits as live retired-id violations.
 - **INSTEAD DO**: Glob-exempt `MEMORY.md` and `memory/**` (same class as CHANGELOG) so the recipe stays empty on a clean tree.
 
+### [2026-08-27] JSON state hub whitelist and memory sanitizer siblings
+- **Layer**: `harness`
+- **Module**: `install-rules / workflow_state / ws-self-learning`
+- **Severity**: `High`
+- **PathPattern**: `bin/install-rules.js;**/workflow_state.cjs;**/self_learning.cjs;**/sanitize_memory.cjs`
+- **Scenario / Context**: JSON-primary `{workflow-id}.state.json` plus `ws-shared/schemas/handoff.schema.json` and a compile-time sanitizer. Install tree verification failed because the new hub directory was packed but not on `HUB_WHITELIST`. Hybrid compile failed because a fixture copied `self_learning.cjs` without sibling `sanitize_memory.cjs`. Idempotent `finish` hash checks on a shared fixture after later steps rewound `currentStep`.
+- **DO NOT**: Add files under `ws-shared/` (new dirs such as `schemas/`) without listing that dir or file on `HUB_WHITELIST`. Require `./sanitize_memory.cjs` from `self_learning.cjs` then copy only the parent script in test scaffolds. Assert identical `finish` is hash-stable on a workflow that already advanced past that step. Wrap `{path-tokens}` in markdown backticks inside JavaScript template literals. Run `build-site:bump` after already incrementing `package.json`.
+- **INSTEAD DO**: Keep copy and hash enumeration in lockstep: whitelist new hub dirs (`schemas` like `scripts`). Copy `sanitize_memory.cjs` next to `self_learning.cjs` in any isolated skill tree. Use a dedicated dispatch→finish→finish fixture for AC30. Use HTML `<code>` in `build-site.js` template strings. Bump version once (prefer `build-site:bump` from the previous patch).
+
 ### [2026-08-27] Fix-PR resolution comments must describe the correction
 - **Layer**: `Harness`
 - **Module**: `ws-fix-pr / resolve-thread`
@@ -32,6 +41,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: After the LLM model footer was added to thread-close comments, agents posted hash-only bodies (`Corrigido em {sha}` / `Fixed in {sha}` plus `LLM model: {id}`) with no description of the code change. Reviewers cannot tell what was actually fixed.
 - **DO NOT**: Close a GitHub or Azure thread with only a commit hash and/or model footer. Do not treat `--model` as the comment body.
 - **INSTEAD DO**: Pass a `--comment` / resolution note that states what changed (files + behavior) and why it resolves the thread, plus the commit when code changed. Both providers reject hash-only bodies before any remote mutation.
+
+### [2026-08-27] Fable ship audit — research-driven pipeline quality
+- **Layer**: `harness`
+- **Module**: `ws-ship-pr / research-driven-pipeline-quality`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs;bin/install-rules.js;test/**`
+- **Scenario / Context**: Pre-ship fable-judge on uncommitted W1–W7 implementation. Fresh `npm run test` exit 0; `verify-integrity` OK; secrets scan clean; workflows PASS. Full interactive `ws-check-harness` Phases 0–5c were not agent-walked (mechanical Phase 5a + workflows only).
+- **DO NOT**: Credit a full harness audit from mechanical script exits alone when CATALOG Before-ship row 8 requires Phases 0–5c, or ship while claiming orch Step 6 review already ran.
+- **INSTEAD DO**: Treat mechanical Phase 5a + `check_workflows` + green `npm run test` as evidence with an explicit caveat on the prepare board; run or credit a `develop`…`main` local review before merge; keep `auditVerdictsBlockShip: refuted` so caveats do not block push.
 
 ### [2026-08-27] Doctor hybrid global hub leftovers
 - **Layer**: `skills`
