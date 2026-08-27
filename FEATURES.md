@@ -250,9 +250,9 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.42)
+## 12. Recent evolution (0.3.22 → 0.3.46)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
+Derived from recent commits on `develop` (2026-08-16 → 2026-08-27).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
