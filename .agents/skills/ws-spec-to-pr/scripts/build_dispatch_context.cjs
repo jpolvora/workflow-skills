@@ -100,8 +100,8 @@ function latestHandoff(context, stateRel, explicit) {
   let parsed;
   try {
     parsed = JSON.parse(raw);
-  } catch {
-    return '';
+  } catch (error) {
+    throw new Error(`handoff JSON unreadable: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })} (${error.message})`);
   }
   const pretty = `## Handoff\n\n\`\`\`json\n${JSON.stringify(parsed)}\n\`\`\`\n`;
   if (bytes(pretty) <= 8192) return pretty;

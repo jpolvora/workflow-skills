@@ -157,4 +157,42 @@ assert.match(interviewText, /\*\*Context hygiene\*\*/);
 assert.match(interviewText, /\*\*Review jury\*\*/);
 assert.match(interviewText, /\*\*Provider compatibility hints\*\*/);
 
+const corruptFixture = path.join(repoRoot, 'test', `.tmp-corrupt-handoff-${process.pid}`);
+try {
+  fs.mkdirSync(path.join(corruptFixture, 'handoff'), { recursive: true });
+  write(path.join(corruptFixture, 'wf.state.md'), '## Step outputs (compact)\n\n- Step 1: ok\n');
+  write(path.join(corruptFixture, 'handoff/step-01.json'), '{ invalid json');
+  const corruptRelative = path.relative(repoRoot, corruptFixture).replace(/\\/g, '/');
+  const corruptResult = run(contextScript, [
+    '--skill', '.agents/skills/ws-implement-tasks/SKILL.md',
+    '--state', `${corruptRelative}/wf.state.md`,
+    '--repo-root', repoRoot,
+  ]);
+  assert.notStrictEqual(corruptResult.status, 0, 'corrupted handoff JSON fails closed');
+  assert.match(corruptResult.stderr, /handoff JSON unreadable/);
+} finally {
+  fs.rmSync(corruptFixture, { recursive: true, force: true });
+}
+
+const telemetrySchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/telemetry.schema.json'), 'telemetry');
+const sampleEvent = {
+  schemaVersion: 1,
+  type: 'dispatch',
+  timestamp: '2026-08-27T12:00:00.000Z',
+  workflowId: 'wf-sample',
+  pipeline: 'standard',
+  packageVersion: '0.3.45',
+  step: 9,
+  substep: 'fixPrPlan',
+  model: 'cursor-grok-4.6-medium',
+  retries: 0,
+  reviewRounds: 0,
+  refineRounds: 0,
+  skipReason: null,
+  bypassed: false,
+  acTotal: 2,
+  acImplemented: 2,
+};
+assert.strictEqual(validateNode(sampleEvent, telemetrySchema, 'telemetry').length, 0, 'telemetry event with substep and bypassed passes schema');
+
 console.log('test-research-pipeline-quality: ok');

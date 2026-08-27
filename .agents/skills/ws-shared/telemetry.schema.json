@@ -53,7 +53,10 @@
     },
     "handoffBytes": { "type": "integer", "minimum": 0 },
     "pruneAfterStep": { "type": "boolean" },
-    "juryIgnored": { "type": "string" }
+    "juryIgnored": { "type": "string" },
+    "substep": { "type": "string", "minLength": 1 },
+    "bypassed": { "type": "boolean" },
+    "idempotentReplay": { "type": "boolean" }
   },
   "additionalProperties": false,
   "$defs": {
