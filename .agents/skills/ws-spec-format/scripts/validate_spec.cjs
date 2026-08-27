@@ -101,6 +101,18 @@ function sectionBody(text, heading) {
   return lines.join('\n');
 }
 
+function subsectionBody(text, heading) {
+  const start = text.search(new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm'));
+  if (start < 0) return '';
+  const rest = text.slice(start).split('\n').slice(1);
+  const lines = [];
+  for (const line of rest) {
+    if (/^#{2,3}\s+/.test(line)) break;
+    lines.push(line);
+  }
+  return lines.join('\n');
+}
+
 function sectionIsPlaceholder(body) {
   const lines = String(body || '').split('\n').map((line) => line.trim()).filter(Boolean);
   if (!lines.length) return true;
@@ -151,8 +163,39 @@ function readinessFindings(text) {
       code: 'notes-empty',
       message: 'Validation & Observation Notes must include non-placeholder observation or negative-test content.',
     });
+  } else {
+    const nsFindings = negativeScenarioFindings(text);
+    errors.push(...nsFindings);
+    warnings.push(...nsFindings);
   }
   return { errors, warnings };
+}
+
+function negativeScenarioFindings(text) {
+  const errors = [];
+  const notesHeading = '## Validation & Observation Notes';
+  if (!headingPresent(text, notesHeading)) return errors;
+  const notesBody = sectionBody(text, notesHeading);
+  const subsection = '### Negative & Failing Test Scenarios';
+  if (!headingPresent(notesBody, subsection)) {
+    errors.push({
+      code: 'negative-subsection',
+      message: 'Validation & Observation Notes must include ### Negative & Failing Test Scenarios with at least one non-placeholder bullet.',
+    });
+    return errors;
+  }
+  const bullets = subsectionBody(notesBody, subsection)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => /^[-*]\s+/.test(line))
+    .map((line) => line.replace(/^[-*]\s+/, ''));
+  if (!bullets.length || bullets.every((item) => isPlaceholder(item))) {
+    errors.push({
+      code: 'negative-empty',
+      message: '### Negative & Failing Test Scenarios must list at least one expected red test or error state.',
+    });
+  }
+  return errors;
 }
 
 function closureFindings(text) {

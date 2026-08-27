@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-27 13:05] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` PR 251 round 2
+- **Done**: Authoring validate_spec requires ### Negative & Failing Test Scenarios with a non-placeholder bullet; FORMAT.md matches
+- **Result**: test-validate-spec / test-spec-validation / test-spec-dor-tdd exit 0
+
+
 ### [2026-08-27 12:55] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-goal-fix-pr` open develop→main PR (251)
 - **Done**: STALE_LIVE_REFERENCE_PATTERNS parity for newly retired keys/templates; ac_ledger fail-closes uncovered Negative & Failing Test Scenarios

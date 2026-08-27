@@ -68,6 +68,29 @@ assert.match(`${missingNotesRun.stdout}${missingNotesRun.stderr}`, /Required sec
 const authoringPass = write(path.join(root, 'authoring-pass.spec.md'), `${base}${closure}${dor}${notes}`);
 assert.strictEqual(run(script, [authoringPass, '--mode=authoring', '--modification']).status, 0, 'authoring passes with DoR and Validation Notes');
 
+const telemetryOnly = write(path.join(root, 'telemetry-only.spec.md'), `${base}${closure}${dor}
+## Validation & Observation Notes
+### Telemetry & Observable Signals
+- Authoring validator emits PASS or FAIL for --mode=authoring.
+`);
+const telemetryOnlyRun = run(script, [telemetryOnly, '--mode=authoring', '--modification']);
+assert.notStrictEqual(telemetryOnlyRun.status, 0, 'authoring fails when Negative & Failing Test Scenarios is missing');
+assert.match(`${telemetryOnlyRun.stdout}${telemetryOnlyRun.stderr}`, /Negative & Failing Test Scenarios/);
+
+const emptyNegative = write(path.join(root, 'empty-negative.spec.md'), `${base}${closure}${dor}
+## Validation & Observation Notes
+### Telemetry & Observable Signals
+- Authoring validator emits PASS or FAIL for --mode=authoring.
+### Negative & Failing Test Scenarios
+- TBD
+`);
+const emptyNegativeRun = run(script, [emptyNegative, '--mode=authoring', '--modification']);
+assert.notStrictEqual(emptyNegativeRun.status, 0, 'authoring fails when Negative scenarios are placeholder-only');
+
+const compatTelemetry = run(script, [telemetryOnly, '--modification']);
+assert.strictEqual(compatTelemetry.status, 0, 'compat does not fail telemetry-only historical notes');
+assert.match(compatTelemetry.stderr, /Negative & Failing Test Scenarios/);
+
 const compat = run(script, [missingDor, '--modification']);
 assert.strictEqual(compat.status, 0, 'compat does not fail historical specs that omit DoR');
 assert.match(compat.stderr, /WARN:[\s\S]*Definition of Ready \(DoR\)/i);

@@ -8,6 +8,7 @@ assert.match(format, /## Definition of Ready \(DoR\)/);
 assert.match(format, /## Validation & Observation Notes/);
 assert.match(format, /Readiness Item/);
 assert.match(format, /Negative & Failing Test Scenarios/);
+assert.match(format, /authoring validation fails if/i);
 
 const writeSpec = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-write-spec/SKILL.md'), 'utf8');
 assert.match(writeSpec, /Definition of Ready/);

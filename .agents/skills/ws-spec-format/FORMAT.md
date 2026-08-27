@@ -130,7 +130,7 @@ Markdown table with columns **Readiness Item**, **Requirement**, and **Verificat
 
 ### Validation & Observation Notes
 
-Non-placeholder body. Include **Telemetry & Observable Signals** (named commands, logs, or scores) and **Negative & Failing Test Scenarios** (expected red tests or error states). Placeholder-only text (`TBD`, `TODO`, `placeholder`) fails authoring validation.
+Non-placeholder body. Include **Telemetry & Observable Signals** (named commands, logs, or scores) and **Negative & Failing Test Scenarios** (expected red tests or error states). Authoring validation fails if `### Negative & Failing Test Scenarios` is missing or has only placeholder bullets. Placeholder-only text (`TBD`, `TODO`, `placeholder`) fails authoring validation.
 
 ### Optional companion
 
@@ -144,5 +144,5 @@ Gray area with two or more valid product options → `{specsDir}/{slug}.context.
 4. Modification / bugfix specs → `### Design Intent` required (or documented skip for greenfield).
 5. `*.issue.json` is audit-only — downstream workflow skills read `step-00-*.spec.md` only.
 6. Local specs (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
-7. New specs: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring <spec>` must exit 0 (closure headings + tables, plus non-empty `## Definition of Ready (DoR)` and `## Validation & Observation Notes`). Omit `--mode` (compat) for historical files: same errors as before, plus warnings for missing closure / DoR / Validation Notes.
+7. New specs: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring <spec>` must exit 0 (closure headings + tables, plus non-empty `## Definition of Ready (DoR)` and `## Validation & Observation Notes` including `### Negative & Failing Test Scenarios` with at least one non-placeholder bullet). Omit `--mode` (compat) for historical files: same errors as before, plus warnings for missing closure / DoR / Validation Notes.
 
