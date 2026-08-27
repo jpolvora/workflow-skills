@@ -133,6 +133,7 @@ try {
   assert(cfgState1.status === 0, 'configure state 1 (local only) exits 0');
   const res1 = JSON.parse(cfgState1.stdout).specMemo;
   assert(res1.enableMemoryFiles === true && res1.enableSpecMemoIntegration === false, 'state 1 persisted correctly');
+  assert(res1.mode === 'local', 'state 1 persists mode: local');
 
   const checkState1 = runNode(CHECK, ['--repo-root', tmp, '--json']);
   const checkState1Json = JSON.parse(checkState1.stdout);
@@ -152,6 +153,26 @@ process.exit(0);
   );
   const stubCliArg = `node ${stubCli}`;
 
+  // Legacy --enabled true on fresh seed (mode: vault + enableMemoryFiles: true) → vault-only, not dual
+  const tmpLegacy = fs.mkdtempSync(path.join(os.tmpdir(), 'configurable-memory-legacy-'));
+  try {
+    seedHub(tmpLegacy);
+    const cfgLegacyEnable = runNode(
+      CONFIGURE,
+      ['--repo-root', tmpLegacy, '--apply', '--enabled', 'true', '--cli', stubCliArg, '--json']
+    );
+    assert(cfgLegacyEnable.status === 0, 'legacy --enabled true exits 0');
+    const resLegacyEnable = JSON.parse(cfgLegacyEnable.stdout).specMemo;
+    assert(
+      resLegacyEnable.enableMemoryFiles === false &&
+        resLegacyEnable.enableSpecMemoIntegration === true &&
+        resLegacyEnable.mode === 'vault',
+      'legacy --enabled true honors prev.mode vault (vault-only, not dual)'
+    );
+  } finally {
+    fs.rmSync(tmpLegacy, { recursive: true, force: true });
+  }
+
   // Test State 2: Vault only
   const cfgState2 = runNode(
     CONFIGURE,
@@ -167,8 +188,31 @@ process.exit(0);
   assert(cfgState2.status === 0, 'configure state 2 (vault only) exits 0');
   const res2 = JSON.parse(cfgState2.stdout).specMemo;
   assert(res2.enableMemoryFiles === false && res2.enableSpecMemoIntegration === true, 'state 2 persisted correctly');
+  assert(res2.mode === 'vault', 'state 2 persists mode: vault');
 
-  // Disabling spec-memo from vault-only mode without explicit memoryFiles flag restores local markdown memory
+  // Test State 3: Dual mode (both backends)
+  const cfgState3 = runNode(
+    CONFIGURE,
+    [
+      '--repo-root', tmp,
+      '--apply',
+      '--enable-memory-files', 'true',
+      '--enable-spec-memo', 'true',
+      '--cli', stubCliArg,
+      '--json',
+    ]
+  );
+  assert(cfgState3.status === 0, 'configure state 3 (dual) exits 0');
+  const res3 = JSON.parse(cfgState3.stdout).specMemo;
+  assert(
+    res3.enableMemoryFiles === true && res3.enableSpecMemoIntegration === true,
+    'state 3 persisted correctly'
+  );
+  assert(res3.mode === 'hybrid', 'state 3 persists mode: hybrid');
+  const checkState3Json = JSON.parse(runNode(CHECK, ['--repo-root', tmp, '--json']).stdout);
+  assert(checkState3Json.config.mode === 'hybrid', 'check_spec_memo reports mode: hybrid for dual state');
+
+  // Disabling spec-memo from dual/vault without explicit memoryFiles flag restores local markdown memory
   const cfgDisableVault = runNode(
     CONFIGURE,
     ['--repo-root', tmp, '--apply', '--enabled', 'false', '--json']
@@ -179,6 +223,7 @@ process.exit(0);
     resDisableVault.enableMemoryFiles === true && resDisableVault.enableSpecMemoIntegration === false,
     'disabling spec-memo from vault-only mode restores enableMemoryFiles: true'
   );
+  assert(resDisableVault.mode === 'local', 'disable persists mode: local when memory files restored');
   const checkRestoredJson = JSON.parse(runNode(CHECK, ['--repo-root', tmp, '--json']).stdout);
   assert(checkRestoredJson.config.mode === 'local', 'check_spec_memo reports mode: "local" after vault disable restoration');
 
@@ -196,6 +241,7 @@ process.exit(0);
   assert(cfgState4.status === 0, 'configure state 4 (disabled) exits 0');
   const res4 = JSON.parse(cfgState4.stdout).specMemo;
   assert(res4.enableMemoryFiles === false && res4.enableSpecMemoIntegration === false, 'state 4 persisted correctly');
+  assert(res4.mode === 'disabled', 'state 4 persists mode: disabled');
 
   // Idempotent disable on already-disabled project must not re-enable local memory
   const cfgDisableAgain = runNode(
@@ -208,6 +254,7 @@ process.exit(0);
     resDisableAgain.enableMemoryFiles === false && resDisableAgain.enableSpecMemoIntegration === false,
     'disable on already-disabled keeps enableMemoryFiles: false'
   );
+  assert(resDisableAgain.mode === 'disabled', 'idempotent disable keeps mode: disabled');
   // Test check_spec_memo reports new flags
   const checkRes = runNode(CHECK, ['--repo-root', tmp, '--json']);
   const checkJson = JSON.parse(checkRes.stdout);

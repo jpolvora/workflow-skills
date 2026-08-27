@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 02:56 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 round 3 (legacy enable, dual coverage, persisted modes)
+- **Done**: Legacy `--enabled true` honors `prev.mode`; persist `local`/`disabled` when vault off; State 3 dual-mode test; integrity regen
+- **Result**: Local memory-backend + full `npm run test` green; ready to push/resolve
+
 ### [2026-08-27 02:48 UTC] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` PR 246 round 2 (CI vault-only JSON crash + disable restore guard)
 - **Done**: Gate disable→local restore on vaultWasActive; stub CLI for vault-only tests; idempotent disable-on-disabled; integrity regen

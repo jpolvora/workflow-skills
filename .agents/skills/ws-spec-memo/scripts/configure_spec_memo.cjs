@@ -142,6 +142,10 @@ function main() {
         process.exit(2);
       }
       nextMemoryFiles = (explicitMode === 'hybrid');
+    } else if (nextSpecMemo) {
+      // Legacy enable without memory flags: honor prev.mode (default vault), not seed enableMemoryFiles.
+      const legacyMode = prev.mode || 'vault';
+      nextMemoryFiles = legacyMode === 'hybrid';
     } else if (prev.enableMemoryFiles !== undefined) {
       nextMemoryFiles = Boolean(prev.enableMemoryFiles);
     } else if (prev.enabled && prev.mode === 'vault') {
@@ -153,11 +157,17 @@ function main() {
     nextMemoryFiles = Boolean(nextMemoryFiles);
   }
 
-  const mode = args.mode ?? stdin.mode ?? (nextMemoryFiles ? 'hybrid' : 'vault');
-  if (!ALLOWED_MODES.has(mode)) {
-    console.error(`Error: specMemo.mode must be vault or hybrid (got: ${mode})`);
+  const explicitMode = args.mode ?? stdin.mode ?? null;
+  if (explicitMode !== null && !ALLOWED_MODES.has(explicitMode)) {
+    console.error(`Error: specMemo.mode must be vault or hybrid (got: ${explicitMode})`);
     process.exit(2);
   }
+
+  const persistedMode =
+    explicitMode ??
+    (nextSpecMemo
+      ? (nextMemoryFiles ? 'hybrid' : 'vault')
+      : (nextMemoryFiles ? 'local' : 'disabled'));
 
   const importSpecified = args.importTree !== null || stdin.import !== undefined;
   const doImport = importSpecified ? Boolean(args.importTree ?? stdin.import) : false;
@@ -173,7 +183,7 @@ function main() {
     enabled: nextSpecMemo,
     enableMemoryFiles: nextMemoryFiles,
     enableSpecMemoIntegration: nextSpecMemo,
-    mode: nextMemoryFiles ? 'hybrid' : 'vault',
+    mode: persistedMode,
     cli: args.cli ?? stdin.cli ?? prev.cli ?? 'memo',
     vaultRoot: stdin.vaultRoot ?? prev.vaultRoot ?? '',
     bootstrapOnSession:
