@@ -61,4 +61,4 @@ Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should c
 - Validate with `dotnet test` / `npm test` / `npm run build`
 - Auto-review with `code-review` skill before push
 - Report under `{reviewsDir}/` (`{reviewsDir}` ← `config.reviews.dir`)
-- Resolution comment with `<!-- resolution-reply -->` marker
+- Resolution comment with `<!-- resolution-reply -->` marker, correction summary (not hash-only), and LLM model footer

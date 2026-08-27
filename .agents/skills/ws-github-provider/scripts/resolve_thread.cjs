@@ -3,6 +3,13 @@ const { fetchRetry } = require('../../ws-shared/scripts/http_retry.cjs');
 
 const RESOLUTION_MARKER = '<!-- resolution-reply -->';
 const MODEL_FOOTER_PREFIX = 'LLM model:';
+const MIN_RESOLUTION_SUBSTANCE_CHARS = 40;
+const THIN_RESOLUTION_ERROR =
+  'resolve-thread: comment must describe the correction (what changed and why), not only a commit hash or LLM model footer.';
+const HTML_COMMENT_RE = /<!--[\s\S]*?-->/g;
+const HASH_STATUS_PREFIX_RE =
+  /^(?:corrigido|fixed|resolved|closed|done)(?:\s+(?:em|in|at|no))?(?:\s+commit)?[:\s]+[0-9a-f]{7,40}\.?\s*/i;
+const SHA_ONLY_RE = /^[0-9a-f]{7,40}\.?$/i;
 
 function loadDotEnv() {
   if (!fs.existsSync('.env')) return;
@@ -47,8 +54,30 @@ function appendModelFooter(body, model) {
   return `${text}\n\n---\n${MODEL_FOOTER_PREFIX} ${id}`;
 }
 
+function resolutionCommentSubstance(comment) {
+  let text = String(comment || '').replace(HTML_COMMENT_RE, '');
+  text = text.replace(/\n---\s*\nLLM model:[\s\S]*$/i, '');
+  text = text.replace(/^LLM model:\s*.+$/gim, '');
+  const parts = [];
+  for (const raw of text.split(/\r?\n/)) {
+    let line = raw.trim();
+    if (!line || line === '---' || line === '-') continue;
+    line = line.replace(HASH_STATUS_PREFIX_RE, '').trim();
+    if (!line || SHA_ONLY_RE.test(line)) continue;
+    parts.push(line);
+  }
+  return parts.join(' ');
+}
+
+function assertResolutionNote(note) {
+  if (resolutionCommentSubstance(note).length < MIN_RESOLUTION_SUBSTANCE_CHARS) {
+    console.error(THIN_RESOLUTION_ERROR);
+    process.exit(1);
+  }
+}
+
 function buildResolutionBody(note, model) {
-  const explanation = note?.trim() || 'Issue fixed in the current iteration.';
+  const explanation = String(note || '').trim();
   const base = [RESOLUTION_MARKER, '', explanation].join('\n');
   return appendModelFooter(base, model);
 }
@@ -82,6 +111,7 @@ async function main() {
     process.exit(1);
   }
 
+  assertResolutionNote(note);
   const body = buildResolutionBody(note, model);
 
   if (dryRun) {

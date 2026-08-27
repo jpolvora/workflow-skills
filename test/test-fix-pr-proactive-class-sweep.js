@@ -216,6 +216,19 @@ const eval9 = evals.evals.find((e) => e.id === 9);
 const goalEval8 = goalEvals.evals.find((e) => e.id === 8);
 assert(eval8 && /one batch-wide fixPrPlan/i.test(eval8.expected_output), 'fix-pr eval covers one batch pair');
 assert(eval9 && /structured amendment before/i.test(eval9.expected_output), 'fix-pr eval covers amendment-before-edit');
+const eval10 = evals.evals.find((e) => e.id === 10);
+assert(
+  eval10 && /hash-only/i.test(eval10.expected_output) && /GitHub and Azure/i.test(eval10.assertions.join(' ')),
+  'fix-pr eval id 10 covers resolution comment substance on both providers',
+);
+assert(
+  /hash-only/i.test(cooperative) && /what changed/i.test(cooperative),
+  'COOPERATIVE_FIX Thread Response forbids hash-only resolution comments',
+);
+assert(
+  /hash-only/i.test(fixPr) && /describes the correction/i.test(fixPr),
+  'fix-pr SKILL requires resolution comments to describe the correction',
+);
 assert(
   goalEval8 && /never finish outer Step 9/i.test(goalEval8.assertions.join(' ')),
   'goal-fix-pr eval covers no early Step 9 finish',

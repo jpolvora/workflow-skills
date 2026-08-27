@@ -91,6 +91,16 @@
         "Agent appends timestamp, threadId, newFact, previousAction, revisedAction, rationale, and evidence source before the revised edit",
         "Agent still completes COOPERATIVE_FIX proactive discovery and verification before resolve or push"
       ]
+    },
+    {
+      "id": 10,
+      "prompt": "Close the GitHub or Azure review thread after fixing the Edit-button lazy-load bug.",
+      "expected_output": "resolve-thread comment describes the code change and commit; hash-only Corrigido em {sha} plus LLM model footer is rejected on both providers.",
+      "assertions": [
+        "Agent passes a resolve-thread comment that states what changed (files + behavior) and the commit when code changed",
+        "Agent does not post a hash-only or model-footer-only body",
+        "Agent uses the same comment contract on GitHub and Azure resolve-thread"
+      ]
     }
   ]
 }

@@ -89,6 +89,10 @@ assert(fs.existsSync(CONTRACT), 'scm-provider-contract.md exists');
 
 const required = firstColumnBacktickIds(sectionAfterHeading(contractMd, 'Required intents'));
 assert(required.length >= 9, `required intents count >= 9 (got ${required.length})`);
+assert(
+  /hash-only/i.test(contractMd),
+  'scm-provider-contract resolve-thread rejects hash-only comments',
+);
 for (const id of [
   'validate-auth',
   'fetch-to-spec',
@@ -170,24 +174,48 @@ for (const intent of union) {
   }
 }
 
+const GOOD_RESOLUTION_NOTE =
+  'Fixed in 3dc20274.\n\nloadList() now preloads row actions so the Edit button is visible before opening the extra-actions menu.';
+const THIN_RESOLUTION_NOTE = 'Corrigido em 3dc20274.';
+const THIN_RESOLUTION_ERROR = /must describe the correction/;
+
 const ghScript = path.join(SKILLS, 'ws-github-provider/scripts/resolve_thread.cjs');
 const ghDry = spawnSync(
   process.execPath,
-  [ghScript, '--dry-run', 'thread-parity', 'parity note'],
+  [ghScript, '--dry-run', 'thread-parity', GOOD_RESOLUTION_NOTE],
   { encoding: 'utf8', cwd: REPO },
 );
 assert(ghDry.status === 0, 'GitHub resolve_thread.cjs --dry-run exits 0');
 assert(/\[dry-run\]/.test(ghDry.stdout || ''), 'GitHub resolve_thread.cjs --dry-run prints dry-run (no GraphQL)');
+assert(
+  /preloads row actions/.test(ghDry.stdout || ''),
+  'GitHub resolve-thread dry-run keeps the correction summary',
+);
 
 const ghDryModel = spawnSync(
   process.execPath,
-  [ghScript, '--dry-run', '--model', 'composer-2.5', 'thread-parity', 'parity note'],
+  [ghScript, '--dry-run', '--model', 'composer-2.5', 'thread-parity', GOOD_RESOLUTION_NOTE],
   { encoding: 'utf8', cwd: REPO },
 );
 assert(ghDryModel.status === 0, 'GitHub resolve_thread.cjs --dry-run --model exits 0');
 assert(
   /---\nLLM model: composer-2\.5/.test(ghDryModel.stdout || ''),
   'GitHub resolve-thread appends LLM model footer',
+);
+assert(
+  /preloads row actions/.test(ghDryModel.stdout || ''),
+  'GitHub resolve-thread with --model still includes the correction summary',
+);
+
+const ghThin = spawnSync(
+  process.execPath,
+  [ghScript, '--dry-run', '--model', 'composer-2.5', 'thread-parity', THIN_RESOLUTION_NOTE],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(ghThin.status !== 0, 'GitHub resolve-thread rejects hash-only comments');
+assert(
+  THIN_RESOLUTION_ERROR.test(`${ghThin.stdout || ''}${ghThin.stderr || ''}`),
+  'GitHub hash-only reject names the correction requirement',
 );
 
 const adoScript = path.join(SKILLS, 'ws-azure-devops-provider/scripts/fix_pr_azure_context.py');
@@ -213,7 +241,7 @@ const adoDryNoModel = spawnSync(
     '--thread-id',
     '1',
     '--comment',
-    'parity note',
+    GOOD_RESOLUTION_NOTE,
   ],
   { encoding: 'utf8', cwd: REPO },
 );
@@ -221,6 +249,10 @@ assert(adoDryNoModel.status === 0, 'Azure resolve-thread --dry-run works without
 assert(
   !/required|cannot be empty/i.test(`${adoDryNoModel.stdout || ''}${adoDryNoModel.stderr || ''}`),
   'Azure --model is optional host metadata',
+);
+assert(
+  /preloads row actions/.test(adoDryNoModel.stdout || ''),
+  'Azure resolve-thread dry-run keeps the correction summary',
 );
 
 const adoDryModel = spawnSync(
@@ -234,7 +266,7 @@ const adoDryModel = spawnSync(
     '--thread-id',
     '1',
     '--comment',
-    'parity note',
+    GOOD_RESOLUTION_NOTE,
     '--model',
     'composer-2.5',
   ],
@@ -244,6 +276,33 @@ assert(adoDryModel.status === 0, 'Azure resolve-thread --dry-run --model exits 0
 assert(
   /---\\nLLM model: composer-2\.5/.test(adoDryModel.stdout || ''),
   'Azure resolve-thread appends LLM model footer',
+);
+assert(
+  /preloads row actions/.test(adoDryModel.stdout || ''),
+  'Azure resolve-thread with --model still includes the correction summary',
+);
+
+const adoThin = spawnSync(
+  pythonBin,
+  [
+    adoScript,
+    'resolve-thread',
+    '--dry-run',
+    '--pr-id',
+    '1',
+    '--thread-id',
+    '1',
+    '--comment',
+    THIN_RESOLUTION_NOTE,
+    '--model',
+    'composer-2.5',
+  ],
+  { encoding: 'utf8', cwd: REPO },
+);
+assert(adoThin.status !== 0, 'Azure resolve-thread rejects hash-only comments');
+assert(
+  THIN_RESOLUTION_ERROR.test(`${adoThin.stdout || ''}${adoThin.stderr || ''}`),
+  'Azure hash-only reject names the correction requirement',
 );
 
 const delegated = required.filter((id) => id !== 'validate-auth' && id !== 'fetch-to-spec');
@@ -297,6 +356,10 @@ for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
     assert(intentsMd.includes(term), `${skillId} INTENTS.md check-pr-status has ${term}`);
   }
   assert(/user-gate/.test(intentsMd), `${skillId} INTENTS.md sweep exact-open-PR user-gate`);
+  assert(
+    /hash-only/i.test(intentsMd),
+    `${skillId} INTENTS.md resolve-thread rejects hash-only comments`,
+  );
 }
 
 const ghThreads = read(path.join(SKILLS, 'ws-github-provider/scripts/fetch_threads.cjs'));

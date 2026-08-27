@@ -110,7 +110,7 @@ node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs {THREAD_ID} "{
 
 > **IMPORTANT**: Never call `addPullRequestReviewThreadReply` alone. Always use `resolve_thread.cjs`, which calls both `addPullRequestReviewThreadReply` AND `resolveReviewThread` atomically in one GraphQL mutation. Posting the `<!-- resolution-reply -->` marker comment without the `resolveReviewThread` mutation is **not** a resolved thread — `isResolved` will remain `false` until the mutation fires.
 
-Pass `--model {currentModel}` (or the executing session model id) so the resolution reply ends with `---\nLLM model: {id}`. Pass `--dry-run` when the parent skill is in `dry-run` (prints the planned resolve; no GraphQL).
+The `{resolution note}` must describe the correction (what changed and why). Include the commit when code changed. Hash-only or model-footer-only bodies are rejected (exit 1) before any remote mutation. Pass `--model {currentModel}` (or the executing session model id) so the resolution reply ends with `---\nLLM model: {id}`. Pass `--dry-run` when the parent skill is in `dry-run` (prints the planned resolve; no GraphQL).
 
 ## `merge-pr`
 

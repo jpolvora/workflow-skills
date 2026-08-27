@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-27 00:50] Agent: Cursor Grok 4.6
+- **Prompt**: Fix-PR thread close must include what was done for the correction, not only model + Corrigido em <hash>; apply on ADO and GitHub
+- **Done**: Both `resolve-thread` implementations reject hash-only bodies; skill/INTENTS/contract require files+behavior in the comment; parity tests cover GH and Azure
+- **Result**: `node test/test-provider-parity.js` and `node test/test-fix-pr-proactive-class-sweep.js` green
+
+
 ### [2026-08-26 23:36] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` 246 round 5 — leftover threads after CI
 - **Done**: Resolve already-fixed mode-matrix thread; add AC14 lifecycle-hook assertions (self-learning upsert, tools.md upsert/append, AGENTS aliases)
