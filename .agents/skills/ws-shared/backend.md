@@ -2,7 +2,7 @@
 
 This file records project-specific backend conventions, architectural rules, entity validation standards, DTO patterns, database query standards, and API response structures.
 
-This file is leftover local notes. Shipped skills do not consult it.
+This file is for optional local notes. Architectural conventions and tech stack rules belong in `STACK.md` and project architecture documentation. Shipped skills do not consult this file.
 
 ---
 

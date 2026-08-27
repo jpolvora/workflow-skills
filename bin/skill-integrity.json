@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f62807ec1e028176e67a0ccf8e40399e1d7ca029293dab975f52bf1bcca49a3d",
+  "fullPackageDigest": "f71f19c498ca6d66f4d93b700b6597035a6e782b3bb81ab4d15160ff6aff61df",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -33,7 +33,7 @@
       "scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
       "scripts/resolve_consumer_root.cjs": "0aaef641a6016097a04980b41eb58404453cd62b0d3be511b152b0e6df1c9686",
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
-      "scripts/retired_artifacts.cjs": "63622cac29f6ffd2a242e9a8cfc5e862394b2233caf40dcc33f2a380c540a932",
+      "scripts/retired_artifacts.cjs": "2f0105facf914a8e9bc6b445cbb5b592e3ab89d15ced36bfed89faee29060990",
       "scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "scripts/workflow_state.cjs": "d834bf781a480fd63e009d6ebfd69f45a7b8c0f2dc8f4e3cc2be7c7121d7e3e2",
@@ -45,7 +45,7 @@
       "tools.md": "5dcf45810b754fdca832c8438caecdc6d1ca72196d5613ae10cda7be94454d7f",
       "workflow-state.schema.json": "bfbeddf4c213a11ea75b82cbfbc4cd60e941a1cae05e0a73d5a1523da9bd6583"
     },
-    "skillDigest": "b096871b4256d42fc462d8ddb62aa2e3bf764c6a27402b7d1a831b41fa0b7958"
+    "skillDigest": "7cb9275931c134f5d4d5e6a27b6eebed29b875f4c2c755521666e714ab091efc"
   },
   "packageVersion": "0.3.45",
   "skills": {
@@ -139,10 +139,10 @@
     "ws-doctor": {
       "files": {
         "evals/evals.json": "3f6ce20f565e7d7c51542fa94e1a3c7c2b61b6dff13ee3693448fa78e46714d3",
-        "scripts/doctor.js": "d4361d8c82015a9126a1c22a25912803933a8a8e56fee4cbed4815dd03b1d99e",
+        "scripts/doctor.js": "e8723b00c950a84d4c77a013d9caec58dfd81cd7a25f0bc6f9400520ddb62ae2",
         "SKILL.md": "37f4fd84cb91cc894644cb72b1d7809e7aceb5fc44c1e4cbf226980aeca3966a"
       },
-      "skillDigest": "5a7433bda11159feb43577037b1723cf8553ca984a4017589dc4ac175e9b9e13"
+      "skillDigest": "c03a5d2be7e708525791c6f514c8d52ec87584113ae0ac576404e08d9d62650b"
     },
     "ws-fable-domain": {
       "files": {

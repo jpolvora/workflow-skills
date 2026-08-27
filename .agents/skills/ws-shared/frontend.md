@@ -2,7 +2,7 @@
 
 This file records project-specific frontend conventions, UI/UX rules, component patterns, validation styling, i18n localization standards, and form/dropdown interactions.
 
-This file is leftover local notes. Shipped skills do not consult it.
+This file is for optional local notes. UI/UX conventions and tech stack rules belong in `STACK.md` and project architecture documentation. Shipped skills do not consult this file.
 
 ---
 

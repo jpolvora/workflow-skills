@@ -8,7 +8,11 @@
  * Removed in 0.3.38: ws-patterns*, session leases / git.lock, defaults.sessionLeases
  */
 
-const RETIRED_HUB_FILES = ['session-lease.schema.json'];
+const RETIRED_HUB_FILES = [
+  'session-lease.schema.json',
+  'backend.md.template',
+  'frontend.md.template',
+];
 
 const RETIRED_SKILL_DIRS = [
   'ws-patterns',
@@ -22,6 +26,7 @@ const RETIRED_DEFAULTS_KEYS = [
   'enableAuditing',
   'patternsBackend',
   'patternsFrontend',
+  'patterns',
 ];
 
 const RETIRED_DEFAULTS_COMMENT_KEYS = [
@@ -29,6 +34,7 @@ const RETIRED_DEFAULTS_COMMENT_KEYS = [
   '_comment_enableAuditing',
   '_comment_patternsBackend',
   '_comment_patternsFrontend',
+  '_comment_patterns',
 ];
 
 /** Live skill/hub bodies must not invoke these (exempt CHANGELOG + LEGACY banners). */
