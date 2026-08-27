@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.3.42
+version: 0.3.45
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -89,4 +89,4 @@ When an orchestrator owns the run and `dispatch-agent` is available, append orde
    - Done when: the execute role followed the gate, every deviation was amended before its governed edit, and every approved thread has class-wide proactive evidence or recorded skips.
 
 5. **Verify, learn, resolve, and push**: run `config.json.verification`; write `{reviewsDir}/PR-<PR-ID>-round-<N>.md`; run post-round learning per [`ws-self-learning`](../ws-self-learning/SKILL.md) § Post fix-pr round. Only after complete plan and execute/proactive evidence, call provider `resolve-thread` with a `<!-- resolution-reply -->` marker, a `--comment` / note that names the commit (when code changed) **and** states what changed (files + behavior + why it resolves; GitHub and Azure reject hash-only or model-footer-only bodies), and `--model` set to the executing session model (`currentModel` / actual `fixPrExec` model) so the closing comment ends with `---\nLLM model: {id}`. Template: [`scripts/COOPERATIVE_FIX.md`](scripts/COOPERATIVE_FIX.md) § Thread Response. Then stage, commit, and `git push origin HEAD`. `dry-run` suppresses product/remote mutation, commit, and push while retaining plan evidence and simulation.
-   - Done when: both `fixPrPlan` gate evidence and `fixPrExec` proactive evidence are complete, verification passed, the report includes `Learning:`, required traps are compiled, each resolution comment describes the correction (not hash-only), threads are resolved or simulated, and the branch is pushed unless `dry-run`.
+   - Done when: both `fixPrPlan` gate evidence and `fixPrExec` proactive evidence are complete, verification passed, the report includes `Learning:`, required traps are compiled, each resolution comment describes the correction (not hash-only), threads are resolved or simulated, and the branch is pushed unless `dry-run`. After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.

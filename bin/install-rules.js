@@ -29,6 +29,7 @@ export const HUB_WHITELIST = [
   'telemetry.schema.json',
   'workflow-state.schema.json',
   'evals.schema.json',
+  'schemas',
   // npm cannot pack a file named .gitignore; ship hub.gitignore → install as .gitignore
   'hub.gitignore',
   'MEMORY.md.template',

@@ -147,6 +147,20 @@
     "_comment_parallelVerifyReview": "When true, standard Steps 5 and 6 may run concurrently as read-only reviewers after an immutable product commit; default false.",
     "gateGranularity": "step",
     "_comment_gateGranularity": "step prompts at every boundary; phase uses at most five blocking gates in a normal standard run without weakening hard stops.",
+    "providerCompat": {
+      "stabilizeStaticPrefix": true,
+      "thinkingToolCompat": false
+    },
+    "_comment_providerCompat": "Optional host hints only. Skill bodies never hardcode vendor HTTP flags. thinkingToolCompat default false; stabilizeStaticPrefix default true.",
+    "contextHygiene": {
+      "pruneAfterStep": true,
+      "backgroundVerboseSteps": false
+    },
+    "_comment_contextHygiene": "pruneAfterStep default true: next step reads handoff/step-NN.json. backgroundVerboseSteps default false; unsupported hosts log background-unsupported and block.",
+    "reviewJury": {
+      "size": 1
+    },
+    "_comment_reviewJury": "Integer 1-3. Default 1 (single reviewer). Size 2-3 is standard Step 6 only; lite ignores and records juryIgnored: lite-inline.",
     "convergence": {
       "initialDelaySec": 0,
       "minPollSec": 30,

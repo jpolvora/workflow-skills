@@ -307,7 +307,7 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 
 ```markdown
 # Subagent — Step {STEP} — {Label}
-Read state: `{us-dir}/{workflow-id}.state.md` — `## Step outputs (compact)` plus at most the two most recent full step outputs.
+Read state: `{us-dir}/{workflow-id}.state.json` (machine SoT) and `{workflow-id}.state.md` `## Step outputs (compact)` plus at most the two most recent full step outputs. Read `{us-dir}/handoff/step-{NN}.json` for the prior step. Do not reload full `step-06-*.review.md` or `step-07-*.testing.*` bodies unless ARTIFACTS.md names that file as required for this step.
 Skill: {SKILL.md path} — required sections: `## Subagent contract` and the step sections named by STEP-DISPATCH (never the full skill body).
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
 Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning

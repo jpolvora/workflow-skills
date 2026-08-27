@@ -61,6 +61,17 @@ function priorFindings(outputDir, slug, round) {
   return known;
 }
 
+function toJuryPayload(findings) {
+  return {
+    findings: findings.map((item) => ({
+      id: item.id,
+      severity: item.severity,
+      path: item.path,
+      line: item.lineStart,
+    })),
+  };
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   const round = Number(options.round);
@@ -103,17 +114,24 @@ function main() {
   }
   const stamped = upsertArtifactFrontmatter(content, fields);
   if (fs.existsSync(roundFile) && fs.readFileSync(roundFile, 'utf8') !== stamped) {
-    throw new Error(`review round is immutable and already differs: ${toRepoRelative(context.repoRoot, roundFile)}`);
+    throw new Error(`review round is immutable and already differs: ${toRepoRelative(context.repoRoot, roundFile, { allowOutside: true })}`);
   }
   fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(roundFile, stamped, 'utf8');
-  fs.writeFileSync(canonical, stamped, 'utf8');
+  if (!options.juryOut) {
+    fs.writeFileSync(canonical, stamped, 'utf8');
+  }
+  if (options.juryOut) {
+    const juryPath = path.resolve(context.repoRoot, options.juryOut);
+    fs.mkdirSync(path.dirname(juryPath), { recursive: true });
+    fs.writeFileSync(juryPath, `${JSON.stringify(toJuryPayload(findings), null, 2)}\n`, 'utf8');
+  }
   process.stdout.write(`${JSON.stringify({
     ok: true,
     round,
     findings,
-    roundPath: toRepoRelative(context.repoRoot, roundFile),
-    canonicalPath: toRepoRelative(context.repoRoot, canonical),
+    roundPath: toRepoRelative(context.repoRoot, roundFile, { allowOutside: true }),
+    canonicalPath: toRepoRelative(context.repoRoot, canonical, { allowOutside: true }),
   })}\n`);
 }
 

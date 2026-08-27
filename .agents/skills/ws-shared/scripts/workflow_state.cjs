@@ -51,8 +51,182 @@ function legacyStateHash(text) {
   return sha256(text);
 }
 
-function snapshotHashMatches(stored, stateText) {
+function snapshotHashMatches(stored, stateText, jsonText) {
+  if (jsonText && stored === sha256(jsonText)) return true;
   return stored === stateIdentityHash(stateText) || stored === legacyStateHash(stateText);
+}
+
+function markdownStatePath(file) {
+  return String(file).endsWith('.state.json') ? String(file).replace(/\.state\.json$/, '.state.md') : file;
+}
+
+function jsonStatePath(file) {
+  return String(file).endsWith('.state.json') ? file : String(file).replace(/\.state\.md$/, '.state.json');
+}
+
+function stableValue(value) {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (value && typeof value === 'object') {
+    return Object.keys(value).sort().reduce((acc, key) => {
+      acc[key] = stableValue(value[key]);
+      return acc;
+    }, {});
+  }
+  return value;
+}
+
+function canonicalStateJson(state) {
+  return `${JSON.stringify(stableValue(state), null, 2)}\n`;
+}
+
+function jsonIdentityHash(state) {
+  return sha256(canonicalStateJson(state));
+}
+
+function readPriorHandoffOutput(usDir, step) {
+  const file = path.join(usDir, 'handoff', `step-${String(step).padStart(2, '0')}.json`);
+  if (!fs.existsSync(file)) return null;
+  try {
+    const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return {
+      summary: String(raw.summary || ''),
+      findings: raw.findings ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function finishFingerprint(state, output) {
+  return JSON.stringify(stableValue({
+    currentStep: state.currentStep,
+    completedSteps: state.completedSteps,
+    skippedSteps: state.skippedSteps,
+    stepStatus: state.stepStatus,
+    workflowManifest: state.workflowManifest,
+    status: state.status,
+    gateDecision: state.gateDecision,
+    commits: state.commits,
+    verificationScore: state.verificationScore,
+    fableVerdict: state.fableVerdict,
+    outputSummary: String(output?.summary || ''),
+    outputFindings: findingsHistogram(output?.findings),
+  }));
+}
+
+function loadPersistedState(stateFile) {
+  const mdPath = markdownStatePath(stateFile);
+  const jsonPath = jsonStatePath(stateFile);
+  if (fs.existsSync(jsonPath)) {
+    const state = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    const body = fs.existsSync(mdPath) ? parseFrontmatter(fs.readFileSync(mdPath, 'utf8')).body : '';
+    return { state, body, mdPath, jsonPath, jsonText: fs.readFileSync(jsonPath, 'utf8') };
+  }
+  if (!fs.existsSync(mdPath)) throw new Error(`state file not found: ${stateFile}`);
+  const parsed = parseFrontmatter(fs.readFileSync(mdPath, 'utf8'));
+  return { state: parsed.data, body: parsed.body, mdPath, jsonPath, jsonText: null };
+}
+
+function stateCoresAgree(jsonState, markdownData) {
+  const keys = ['workflowId', 'revision', 'currentStep', 'status', 'stateVersion', 'slug', 'workflowType'];
+  return keys.every((key) => JSON.stringify(jsonState[key]) === JSON.stringify(markdownData[key]));
+}
+
+function resolveContextHygiene(config) {
+  const hygiene = config?.defaults?.contextHygiene || {};
+  return {
+    pruneAfterStep: hygiene.pruneAfterStep !== false,
+    backgroundVerboseSteps: hygiene.backgroundVerboseSteps === true,
+  };
+}
+
+function resolveReviewJurySize(config) {
+  const size = Number(config?.defaults?.reviewJury?.size);
+  if (!Number.isInteger(size)) return 1;
+  return size;
+}
+
+function findingsHistogram(value) {
+  const empty = {
+    critical: 0, warning: 0, suggestion: 0, info: 0,
+  };
+  if (!value) return empty;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const key = String(item.severity || '').toLowerCase();
+      if (Object.hasOwn(empty, key)) empty[key] += 1;
+    }
+    return empty;
+  }
+  if (typeof value === 'object') {
+    return {
+      critical: Number(value.critical || 0),
+      warning: Number(value.warning || 0),
+      suggestion: Number(value.suggestion || 0),
+      info: Number(value.info || 0),
+    };
+  }
+  return empty;
+}
+
+function truncateHandoff(payload) {
+  let text = `${JSON.stringify(payload)}\n`;
+  const limit = 8192;
+  if (Buffer.byteLength(text, 'utf8') <= limit) return text;
+  const copy = {
+    ...payload,
+    summary: String(payload.summary || '').slice(0, 200),
+    artifactPaths: (payload.artifactPaths || []).slice(0, 8),
+  };
+  text = `${JSON.stringify(copy)}\n`;
+  if (Buffer.byteLength(text, 'utf8') <= limit) return text;
+  copy.summary = String(copy.summary || '').slice(0, 80);
+  copy.artifactPaths = [];
+  return `${JSON.stringify(copy)}\n`;
+}
+
+function normalizeHandoffPaths(repoRoot, paths) {
+  if (!Array.isArray(paths)) return [];
+  return [...new Set(
+    paths.filter(Boolean).map((item) => {
+      const clean = String(item).trim();
+      if (!clean) return '';
+      const absolute = path.isAbsolute(clean) ? clean : path.resolve(repoRoot, clean);
+      return toRepoRelative(repoRoot, absolute, { allowOutside: true });
+    }).filter(Boolean)
+  )];
+}
+
+function writeHandoffFile({ usDir, state, pipeline, step, options, context, output }) {
+  const schemaPath = path.join(__dirname, '..', 'schemas', 'handoff.schema.json');
+  let payload;
+  if (options.handoff) {
+    payload = JSON.parse(fs.readFileSync(path.resolve(context.repoRoot, options.handoff), 'utf8'));
+    payload.artifactPaths = normalizeHandoffPaths(context.repoRoot, payload.artifactPaths || []);
+  } else {
+    const created = listArg(options.created || output.files_touched?.created?.join(','));
+    const modified = listArg(options.modified || output.files_touched?.modified?.join(','));
+    const deleted = listArg(options.deleted || output.files_touched?.deleted?.join(','));
+    const touched = [...new Set([...created, ...modified, ...deleted])];
+    payload = {
+      step: Number(step),
+      slug: String(state.slug || ''),
+      workflowId: String(state.workflowId || ''),
+      workflowType: pipeline,
+      status: String(options.status || 'completed'),
+      artifactPaths: normalizeHandoffPaths(context.repoRoot, touched),
+      acRefs: listArg(options.acRefs || (Array.isArray(output.acRefs) ? output.acRefs.join(',') : '')),
+      summary: String(output.summary || options.summary || `Finished step ${step}`).slice(0, 500),
+      nextAction: String(state.nextAction || ''),
+      findings: findingsHistogram(output.findings),
+    };
+  }
+  const errors = validateNode(payload, loadJsonSchema(schemaPath, 'handoff schema'), 'handoff');
+  if (errors.length) throw new Error(errors.join('; '));
+  const text = truncateHandoff(payload);
+  const target = path.join(usDir, 'handoff', `step-${String(step).padStart(2, '0')}.json`);
+  atomicWrite(target, text);
+  return Buffer.byteLength(text, 'utf8');
 }
 
 function nowIso() {
@@ -568,12 +742,14 @@ function validateGateDecision(value) {
 }
 
 function statePaths(stateFile, context) {
-  const statePath = toRepoRelative(context.repoRoot, stateFile);
+  const mdPath = markdownStatePath(stateFile);
+  const statePath = toRepoRelative(context.repoRoot, mdPath);
   return {
     statePath,
-    usDir: path.dirname(stateFile),
-    runFile: path.join(path.dirname(stateFile), 'run.json'),
-    runMarkdown: path.join(path.dirname(stateFile), 'RUN.md'),
+    usDir: path.dirname(mdPath),
+    runFile: path.join(path.dirname(mdPath), 'run.json'),
+    runMarkdown: path.join(path.dirname(mdPath), 'RUN.md'),
+    jsonFile: jsonStatePath(mdPath),
   };
 }
 
@@ -717,14 +893,17 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   if (!['dispatch', 'finish', 'bypass'].includes(operation)) throw new Error('operation must be dispatch, finish, or bypass');
   if (options.elapsed !== undefined) throw new Error('--elapsed is not accepted; elapsedSec is derived from timestamps');
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: options.scriptFile });
-  const absoluteState = path.resolve(context.repoRoot, stateFile);
-  if (!fs.existsSync(absoluteState)) throw new Error(`state file not found: ${stateFile}`);
-  const parsed = parseFrontmatter(fs.readFileSync(absoluteState, 'utf8'));
-  const state = parsed.data;
+  const absoluteInput = path.resolve(context.repoRoot, stateFile);
+  const loaded = loadPersistedState(absoluteInput);
+  const absoluteState = loaded.mdPath;
+  const priorJsonText = loaded.jsonText;
+  const state = loaded.state;
   const step = Number(options.step);
   if (!Number.isInteger(step) || step < 0 || step > maxStep) throw new Error(`step must be in range 0..${maxStep}`);
   const timestamp = String(options.timestamp || options.finishedAt || options.dispatchedAt || nowIso());
   const paths = statePaths(absoluteState, context);
+  const priorHandoffOutput = operation === 'finish' ? readPriorHandoffOutput(paths.usDir, step) : null;
+  const priorFingerprint = finishFingerprint(loaded.state, priorHandoffOutput);
   syncAcCountsFromLedger(state, paths.usDir);
   state.stateVersion = STATE_VERSION;
   state.revision = Number(state.revision || 0) + 1;
@@ -732,10 +911,13 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   state.workflowId ||= path.basename(absoluteState, '.state.md');
   state.slug ||= state.us || path.basename(path.dirname(absoluteState));
   state.statePath = paths.statePath;
+  state.completedSteps = Array.isArray(state.completedSteps) ? state.completedSteps : [];
+  state.skippedSteps = Array.isArray(state.skippedSteps) ? state.skippedSteps : [];
   state.stepStatus = state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {};
   state.stepDispatches = Array.isArray(state.stepDispatches) ? state.stepDispatches : [];
-  let body = parsed.body;
+  let body = loaded.body;
   let event;
+  let finishOutput = {};
 
   if (operation === 'dispatch') {
     state.currentStep = step;
@@ -773,7 +955,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     options.model = state.currentModel;
     state.nextAction = status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
     const output = readStepOutput(options.stepOutput, context);
-    body = compactOutputs(body, step, output);
+    finishOutput = output;
     const created = listArg(options.created || output.files_touched?.created?.join(','));
     const modified = listArg(options.modified || output.files_touched?.modified?.join(','));
     const deleted = listArg(options.deleted || output.files_touched?.deleted?.join(','));
@@ -853,14 +1035,48 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       .filter(Boolean)
       .sort((a, b) => a.step - b.step);
   }
+  const isIdempotentFinish = operation === 'finish' && Boolean(priorJsonText) && finishFingerprint(state, finishOutput) === priorFingerprint;
+  if (isIdempotentFinish) {
+    const restored = JSON.parse(priorJsonText);
+    Object.keys(state).forEach((key) => {
+      delete state[key];
+    });
+    Object.assign(state, restored);
+  } else if (operation === 'finish') {
+    body = compactOutputs(body, step, finishOutput);
+  }
+  const jsonText = canonicalStateJson(state);
+  const stateHash = sha256(jsonText);
   const stateContent = `---\n${serializeFrontmatter(state)}\n---\n${body.replace(/^\n*/, '')}`;
-  const stateHash = stateIdentityHash(stateContent);
   const medians = estimatedSteps(context, pipeline, maxStep);
   const run = buildRun(state, pipeline, maxStep, labels, stateHash, medians);
   const index = updatePlansIndex(context, run, timestamp);
   const telemetryFile = path.resolve(context.repoRoot, options.jsonlOut || path.join(paths.usDir, 'telemetry', `step-${String(step).padStart(2, '0')}.jsonl`));
 
-  appendJsonl(telemetryFile, event);
+  if (operation === 'finish') {
+    const hygiene = resolveContextHygiene(context.config);
+    if (!isIdempotentFinish) {
+      event.handoffBytes = writeHandoffFile({
+        usDir: paths.usDir,
+        state,
+        pipeline,
+        step,
+        options,
+        context,
+        output: finishOutput,
+      });
+    }
+    event.pruneAfterStep = hygiene.pruneAfterStep;
+    if (pipeline === 'lite' && resolveReviewJurySize(context.config) > 1 && Number(step) === 3) {
+      event.juryIgnored = 'lite-inline';
+    }
+    if (isIdempotentFinish) event.idempotentReplay = true;
+  }
+
+  if (!isIdempotentFinish) {
+    appendJsonl(telemetryFile, event);
+  }
+  atomicWrite(paths.jsonFile, jsonText);
   atomicWrite(absoluteState, stateContent);
   atomicWrite(paths.runFile, `${JSON.stringify(run, null, 2)}\n`);
   atomicWrite(paths.runMarkdown, renderRun(run, labels));
@@ -936,10 +1152,17 @@ function requiredAdvanceArtifact(pipeline, next, state) {
 }
 
 function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, preAdvance, pipeline }) {
-  const stateText = fs.readFileSync(stateFile, 'utf8');
-  const parsed = parseFrontmatter(stateText);
-  const state = parsed.data;
+  const mdPath = markdownStatePath(stateFile);
+  const jsonPath = jsonStatePath(stateFile);
+  const mdText = fs.existsSync(mdPath) ? fs.readFileSync(mdPath, 'utf8') : '';
+  const jsonText = fs.existsSync(jsonPath) ? fs.readFileSync(jsonPath, 'utf8') : '';
+  if (!mdText && !jsonText) throw new Error(`state file not found: ${stateFile}`);
+  const parsed = mdText ? parseFrontmatter(mdText) : { data: {}, body: '' };
+  const state = jsonText ? JSON.parse(jsonText) : parsed.data;
   const errors = [];
+  if (jsonText && mdText && !stateCoresAgree(state, parsed.data)) {
+    errors.push('Markdown-only edit disagrees with JSON state (hash mismatch vs .state.json)');
+  }
   for (const key of ['workflowId', 'status', 'currentStep', 'stateVersion', 'revision']) {
     if (state[key] === undefined) errors.push(`mandatory key missing: ${key}`);
   }
@@ -951,42 +1174,45 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
   if (state.gateDecision !== undefined) {
     try { validateGateDecision(state.gateDecision); } catch (error) { errors.push(error.message); }
   }
-  const actualHash = stateIdentityHash(stateText);
+  if (jsonText) {
+    errors.push(...validateNode(state, loadJsonSchema(path.join(__dirname, '..', 'workflow-state.schema.json'), 'workflow state schema'), 'state.json'));
+  }
+  const actualHash = jsonText ? sha256(jsonText) : stateIdentityHash(mdText);
   if (fs.existsSync(runFile)) {
     const run = JSON.parse(fs.readFileSync(runFile, 'utf8'));
-    if (run.revision !== Number(state.revision) || !snapshotHashMatches(run.stateSha256, stateText)) {
+    if (run.revision !== Number(state.revision) || !snapshotHashMatches(run.stateSha256, mdText, jsonText)) {
       errors.push('run.json revision/state hash mismatch');
     }
     const runSchema = path.join(__dirname, '..', 'run.schema.json');
     errors.push(...validateNode(run, loadJsonSchema(runSchema, 'run schema'), 'run.json'));
   }
-  if (fs.existsSync(indexFile) && inside(path.resolve(stateFile), context.repoRoot)) {
+  if (fs.existsSync(indexFile) && inside(path.resolve(mdPath), context.repoRoot)) {
     const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
     const row = index.workflows?.find((item) => item.workflowId === state.workflowId);
     if (!row) {
       errors.push(`plans index missing workflow entry: ${state.workflowId}`);
-    } else if (!snapshotHashMatches(row.stateSha256, stateText)) {
+    } else if (!snapshotHashMatches(row.stateSha256, mdText, jsonText)) {
       errors.push('plans index state hash mismatch');
     }
   }
-  const unknownRuntime = validateRuntime(path.dirname(stateFile));
+  const unknownRuntime = validateRuntime(path.dirname(mdPath));
   if (unknownRuntime.length) errors.push(`unknown .runtime residue: ${unknownRuntime.join(', ')}`);
   if (preAdvance !== undefined) {
     const next = Number(preAdvance);
     const flow = pipeline || state.workflowType || 'standard';
     const required = requiredAdvanceArtifact(flow, next, state);
     if (required) {
-      const file = path.join(path.dirname(stateFile), required.file);
+      const file = path.join(path.dirname(mdPath), required.file);
       if (!fs.existsSync(file)) errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })}`);
       else {
         try { artifactMetadata(file, required.expectedStep, state); } catch (error) { errors.push(error.message); }
       }
     }
     const implementFrom = flow === 'lite' ? 2 : 4;
-    if (next >= implementFrom && !fs.existsSync(path.join(path.dirname(stateFile), 'plan.index.json'))) {
+    if (next >= implementFrom && !fs.existsSync(path.join(path.dirname(mdPath), 'plan.index.json'))) {
       errors.push('plan.index.json is required before implement');
     }
-    const ledgerFile = path.join(path.dirname(stateFile), 'ac-ledger.json');
+    const ledgerFile = path.join(path.dirname(mdPath), 'ac-ledger.json');
     if (next >= 1 && !fs.existsSync(ledgerFile)) errors.push('ac-ledger.json is required before advance');
     if (next >= 6 && fs.existsSync(ledgerFile)) {
       const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
@@ -1068,8 +1294,9 @@ function rebuildIndex(context, config) {
       const full = path.join(current, entry.name);
       if (entry.isDirectory()) stack.push(full);
       else if (entry.name.endsWith('.state.md')) {
-        const state = parseFrontmatter(fs.readFileSync(full, 'utf8')).data;
-        const hash = stateIdentityHash(fs.readFileSync(full, 'utf8'));
+        const loaded = loadPersistedState(full);
+        const state = loaded.state;
+        const hash = loaded.jsonText ? sha256(loaded.jsonText) : stateIdentityHash(fs.readFileSync(full, 'utf8'));
         maxRevision = Math.max(maxRevision, Number(state.revision || 0));
         workflows.push({
           workflowId: state.workflowId,
@@ -1129,6 +1356,8 @@ module.exports = {
   RUNTIME_NAMES,
   sha256,
   stateIdentityHash,
+  jsonIdentityHash,
+  canonicalStateJson,
   legacyStateHash,
   snapshotHashMatches,
   parseArgs,

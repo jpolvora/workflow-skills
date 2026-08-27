@@ -1,7 +1,7 @@
 ---
 name: ws-write-spec
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.3.42
+version: 0.3.45
 disable-model-invocation: true
 invocation_names:
   - write-spec
@@ -121,4 +121,5 @@ When writing a spec derived from a remote tracker issue or raw human description
 - Write only the requested spec path (and lazy `context.md` when a gray area exists) and return its repo-relative location.
 - After a standalone user invoke, stop at the `index.PRD` user-gate; on Add, `track` via `ws-spec-index` only.
 - Do not register a workflow `step-00` or advance orch state unless the caller assigns `--register` / Step 0.
+- After workflow step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
 

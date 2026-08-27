@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.42
+version: 0.3.45
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -106,3 +106,4 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 - Treat ineffective assertions, tests, gates, and checks as minimum Warning.
 - Write only the assigned review draft; the orchestrator persists rounds and ledger links.
 - Return findings sorted by severity, path, line, and id.
+- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.

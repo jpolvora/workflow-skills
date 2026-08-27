@@ -53,7 +53,7 @@ Scan consumer **repo root** (not this skill package alone):
 4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, **minVerifyScore**, and `convergence`) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
+7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, **minVerifyScore**, `convergence`, **`providerCompat`**, **`contextHygiene`**, **`reviewJury`**) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
    - **Models preset** (`modelsPreset`): pick from shipped sample keys in `config.json.example` (`modelPresets` map) or **Custom…** / **Keep current** / **Skip**. Unknown names fall back to preset `default` when present.
    - **Per-step overrides** (`stepModels`): optional numeric `"0"`–`"9"` and roles `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec` (skippable; empty strings). Token `"current"` uses the active session model. Offer Fix-PR plan and execute independently: `fixPrPlan` defaults through `reviewerModel`, `fixPrExec` through `executionModel`; neither inherits numeric `"9"` (outer Step 9 only). Lite ignores both role model switches but still plans before editing inline.
    - **Advanced phase keys** (legacy overrides of the active preset; empty = fall through):
@@ -82,6 +82,26 @@ Scan consumer **repo root** (not this skill package alone):
    | A — Include refined plan (or plan fallback) in delivery commit? | `includeRefinedPlan` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
    | B — Include delivery result (`step-08-*.result.md`)? | `includeDeliveryResult` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
    | C — Opt-in extras | `includeSpec`, `includeCheckReport`, `includeCodeReview`, `includeTestingReport` | Multi-select or sequential per-toggle; **Recommended = none** (all `false`); Keep current / Skip |
+
+   **Context hygiene** (writes `defaults.contextHygiene`)
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Prune prior step markdown after finish? | `pruneAfterStep` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
+   | Background Steps 6–7 when host supports it? | `backgroundVerboseSteps` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+
+   **Review jury** (writes `defaults.reviewJury.size`; standard Step 6 only)
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Independent Step 6 reviewers (1–3)? | `size` | **1 (Recommended)** / 2 / 3 / Keep current / Skip |
+
+   **Provider compatibility hints** (writes `defaults.providerCompat`)
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Stabilize static prefix for prompt cache? | `stabilizeStaticPrefix` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
+   | Thinking tool compatibility mode? | `thinkingToolCompat` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
 
    Merge-write into `config.json` without deleting unknown keys; preserve `_comment*` keys.
 8. `domain` / `rules` — optional

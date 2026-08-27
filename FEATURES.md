@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.42** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.45** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -256,6 +256,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.45** | Aug 27 | **Research-driven pipeline quality:** JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `defaults.providerCompat` / `contextHygiene` / `reviewJury`, memory write sanitizer, pipeline handoff harness check |
 | **0.3.43** | Aug 27 | **Retired artifact hygiene:** `update`/hub refresh prunes session-lease schema, `defaults.sessionLeases` / `enableAuditing` / `patterns*` config keys, and retired `ws-patterns*` / `ws-audit` folders; `ws-doctor` warns on leftovers; harness forbidden-id scan extended |
 | **0.3.42** | Aug 26 | Configurable memory storage backends (`enableMemoryFiles` & `enableSpecMemoIntegration`), `ws-spec-memo` integration bridge, wizard interview updates & tests |
 | **0.3.41** | Aug 26 | `ws-spec-memo` runtime ops hand off to spec-memo `ws-memo`; hashed hub `setup.md` FAQ links + skill-integrity refresh; root `RESEARCH.md` backlog |

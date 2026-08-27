@@ -82,6 +82,32 @@ function optionalFile(context, file) {
   return fs.existsSync(absolute) ? fs.readFileSync(absolute, 'utf8').replace(/\r\n?/g, '\n') : '';
 }
 
+function latestHandoff(context, stateRel, explicit) {
+  const target = explicit
+    ? path.resolve(context.repoRoot, explicit)
+    : stateRel
+      ? path.join(path.dirname(path.resolve(context.repoRoot, stateRel)), 'handoff')
+      : '';
+  if (!target) return '';
+  let file = target;
+  if (fs.existsSync(target) && fs.statSync(target).isDirectory()) {
+    const names = fs.readdirSync(target).filter((name) => /^step-\d+\.json$/.test(name)).sort();
+    if (!names.length) return '';
+    file = path.join(target, names[names.length - 1]);
+  }
+  if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) return '';
+  const raw = fs.readFileSync(file, 'utf8');
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`handoff JSON unreadable: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })} (${error.message})`);
+  }
+  const pretty = `## Handoff\n\n\`\`\`json\n${JSON.stringify(parsed)}\n\`\`\`\n`;
+  if (bytes(pretty) <= 8192) return pretty;
+  return `## Handoff\n\n${String(parsed.summary || '').slice(0, 500)}\n`;
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
@@ -106,10 +132,11 @@ function main() {
   const targetSections = (options.sections || 'Subagent contract').split(',').map((name) => section(targetText, name.trim())).join('\n');
   const plan = indexedSlices(context, options.planIndex, options.ac);
   const state = options.state ? section(optionalFile(context, options.state), 'Step outputs (compact)') : '';
+  const handoff = latestHandoff(context, options.state, options.handoff);
   const memory = memorySlice(context, options.paths);
   const stack = optionalFile(context, options.stack);
   const history = optionalFile(context, options.history);
-  const mandatory = `${fixed}\n${targetSections}\n${plan}\n${state}`;
+  const mandatory = `${fixed}\n${targetSections}\n${plan}\n${state}\n${handoff}`;
   const configured = Number(context.config?.defaults?.contextBudget || DEFAULT_LIMIT);
   if (!Number.isInteger(configured) || configured < FIXED_LIMIT) throw new Error('defaults.contextBudget must be an integer at least 18000');
   if (bytes(mandatory) > configured) throw new Error(`mandatory dispatch context exceeds configured ${configured}-byte budget`);

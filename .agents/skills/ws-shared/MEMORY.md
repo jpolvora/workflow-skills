@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-27] Review jury payload bridge and memory sanitizer trap preservation
+- **Layer**: `harness`
+- **Module**: `ws-code-review / ws-self-learning`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-code-review/scripts/write_review_round.cjs;.agents/skills/ws-self-learning/scripts/sanitize_memory.cjs`
+- **Scenario / Context**: Step 6 review jury required individual juror JSON files with `{ findings: [{ id, severity, path, line }] }` but `write_review_round.cjs` only wrote markdown. `sanitize_memory.cjs` was filtering lines matching injection patterns, stripping legitimate `DO NOT` lines in anti-injection traps.
+- **DO NOT**: Omit machine-readable JSON bridges when multi-reviewer union scripts require structured inputs. Strip entire lines containing injection phrases from formatted markdown memory traps.
+- **INSTEAD DO**: Provide `--jury-out` in `write_review_round.cjs` to emit structured findings JSON for `merge_review_jury.cjs`. Reject injection-only files while preserving legitimate memory bodies intact.
+
+### [2026-08-27] Review jury canonical markdown materialization and juror count validation
+- **Layer**: `harness`
+- **Module**: `ws-code-review / ws-spec-to-pr`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-code-review/scripts/write_review_round.cjs;.agents/skills/ws-spec-to-pr/scripts/merge_review_jury.cjs`
+- **Scenario / Context**: During Step 6 review jury execution, each juror's `write_review_round.cjs` was overwriting canonical `step-06-{slug}.review.md`, leaving only the last juror's findings for downstream fix mode. `merge_review_jury.cjs` was also not validating the number of juror reports against configured `defaults.reviewJury.size`.
+- **DO NOT**: Overwrite canonical review markdown when running individual jurors under review jury. Allow review jury merge to silently proceed with fewer juror files than configured.
+- **INSTEAD DO**: Guard canonical markdown write with `!options.juryOut` in `write_review_round.cjs`. Materialize the merged jury markdown via `--canonical-review-out` in `merge_review_jury.cjs` and validate juror count against `defaults.reviewJury.size`.
+
 ### [2026-08-27] Resolve-thread metadata-only notes
 - **Layer**: `providers`
 - **Module**: `ws-github-provider / ws-azure-devops-provider`
@@ -14,6 +32,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Cooperative bookkeeping lines (`defectClass`, `sourcesConsulted`, `proactiveFixed`, `proactiveSkipped`) can exceed 40 characters without describing what changed.
 - **DO NOT**: Count COOPERATIVE_FIX metadata keys or homogeneous filler (e.g. forty `x` characters) as resolution-comment substance.
 - **INSTEAD DO**: Strip metadata lines, then require ≥40 remaining characters **and** a 4+ letter alphabetic token with two distinct letters so both GitHub and Azure reject metadata-only and homogeneous filler notes (parity tests).
+
+### [2026-08-27] Pipeline handoff hybrid resolution and defaults interview documentation
+- **Layer**: `harness`
+- **Module**: `ws-check-harness / ws-configure-project`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/check_pipeline_handoff.cjs;.agents/skills/ws-configure-project/INTERVIEW.md`
+- **Scenario / Context**: New Phase 5a check resolved pipeline `SKILL.md` paths strictly via `path.join(repoRoot, '.agents', 'skills', id, 'SKILL.md')`, failing hybrid consumers with global skills. New config keys (`providerCompat`, `contextHygiene`, `reviewJury`) were listed in `INTERVIEW.md` defaults bullets without explicit interview gate subsections.
+- **DO NOT**: Hardcode local `.agents/skills` paths in harness validation scripts when `resolveSkillMdPath` exists for hybrid/global resolution. Add new config keys to schema/example without matching interview gate tables in `ws-configure-project/INTERVIEW.md`.
+- **INSTEAD DO**: Use `resolveSkillMdPath(context, skillId)` in harness checks so hybrid consumers pass. Add dedicated gate tables, option tables, and write semantics for every new config key under `ws-configure-project/INTERVIEW.md`.
 
 ### [2026-08-27] Phase 4 rg vs MEMORY traps
 - **Layer**: `harness`
@@ -24,6 +51,42 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Treat `{sharedDir}/MEMORY.md` or `memory/*` hits as live retired-id violations.
 - **INSTEAD DO**: Glob-exempt `MEMORY.md` and `memory/**` (same class as CHANGELOG) so the recipe stays empty on a clean tree.
 
+### [2026-08-27] JSON state hub whitelist and memory sanitizer siblings
+- **Layer**: `harness`
+- **Module**: `install-rules / workflow_state / ws-self-learning`
+- **Severity**: `High`
+- **PathPattern**: `bin/install-rules.js;**/workflow_state.cjs;**/self_learning.cjs;**/sanitize_memory.cjs`
+- **Scenario / Context**: JSON-primary `{workflow-id}.state.json` plus `ws-shared/schemas/handoff.schema.json` and a compile-time sanitizer. Install tree verification failed because the new hub directory was packed but not on `HUB_WHITELIST`. Hybrid compile failed because a fixture copied `self_learning.cjs` without sibling `sanitize_memory.cjs`. Idempotent `finish` hash checks on a shared fixture after later steps rewound `currentStep`.
+- **DO NOT**: Add files under `ws-shared/` (new dirs such as `schemas/`) without listing that dir or file on `HUB_WHITELIST`. Require `./sanitize_memory.cjs` from `self_learning.cjs` then copy only the parent script in test scaffolds. Assert identical `finish` is hash-stable on a workflow that already advanced past that step. Wrap `{path-tokens}` in markdown backticks inside JavaScript template literals. Run `build-site:bump` after already incrementing `package.json`.
+- **INSTEAD DO**: Keep copy and hash enumeration in lockstep: whitelist new hub dirs (`schemas` like `scripts`). Copy `sanitize_memory.cjs` next to `self_learning.cjs` in any isolated skill tree. Use a dedicated dispatch→finish→finish fixture for AC30. Use HTML `<code>` in `build-site.js` template strings. Bump version once (prefer `build-site:bump` from the previous patch).
+
+### [2026-08-27] Idempotent finish output fingerprinting and body preservation
+- **Layer**: `harness`
+- **Module**: `ws-shared / workflow_state`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: `finishFingerprint` previously omitted `summary` and `findings` from the step output, causing non-identical replays with different subagent outputs to be falsely treated as idempotent, while mutating the markdown compact body before JSON restoration.
+- **DO NOT**: Check finish idempotency without comparing `summary` and `findingsHistogram(findings)` against `readPriorHandoffOutput(paths.usDir, step)`, or unconditionally mutate `.state.md` body prior to idempotent restore.
+- **INSTEAD DO**: Include `outputSummary` and `outputFindings` in `finishFingerprint(state, output)` and only call `compactOutputs(body, step, finishOutput)` on non-idempotent finishes.
+
+### [2026-08-27] Idempotent finish handoff stability and duplicate telemetry prevention
+- **Layer**: `harness`
+- **Module**: `ws-shared / workflow_state`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs;test/test-workflow-state-contract.js`
+- **Scenario / Context**: Idempotent finish restored `.state.json` but ran `writeHandoffFile` and telemetry append unconditionally. On replay, `writeHandoffFile` could overwrite rich subagent summary with a thin fallback and duplicate finish events in `.jsonl`.
+- **DO NOT**: Unconditionally overwrite `handoff/step-{NN}.json` or append duplicate finish telemetry during an idempotent finish replay.
+- **INSTEAD DO**: Guard `writeHandoffFile` and `appendJsonl` with `!isIdempotentFinish` so prior handoff JSON and telemetry are preserved intact.
+
+### [2026-08-27] Handoff artifactPaths repo-relative normalization
+- **Layer**: `harness`
+- **Module**: `ws-shared / workflow_state`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: `writeHandoffFile` copied `files_touched` directly into `artifactPaths` without normalizing to repo-relative paths, causing schema validation failures when subagents reported absolute file paths.
+- **DO NOT**: Pass raw absolute paths into `artifactPaths` in `handoff/step-NN.json`.
+- **INSTEAD DO**: Normalize `artifactPaths` with `toRepoRelative(repoRoot, item, { allowOutside: true })` inside `normalizeHandoffPaths` before schema validation and disk serialization.
+
 ### [2026-08-27] Fix-PR resolution comments must describe the correction
 - **Layer**: `Harness`
 - **Module**: `ws-fix-pr / resolve-thread`
@@ -33,6 +96,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Close a GitHub or Azure thread with only a commit hash and/or model footer. Do not treat `--model` as the comment body.
 - **INSTEAD DO**: Pass a `--comment` / resolution note that states what changed (files + behavior) and why it resolves the thread, plus the commit when code changed. Both providers reject hash-only bodies before any remote mutation.
 
+### [2026-08-27] Fable ship audit — research-driven pipeline quality
+- **Layer**: `harness`
+- **Module**: `ws-ship-pr / research-driven-pipeline-quality`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs;bin/install-rules.js;test/**`
+- **Scenario / Context**: Pre-ship fable-judge on uncommitted W1–W7 implementation. Fresh `npm run test` exit 0; `verify-integrity` OK; secrets scan clean; workflows PASS. Full interactive `ws-check-harness` Phases 0–5c were not agent-walked (mechanical Phase 5a + workflows only).
+- **DO NOT**: Credit a full harness audit from mechanical script exits alone when CATALOG Before-ship row 8 requires Phases 0–5c, or ship while claiming orch Step 6 review already ran.
+- **INSTEAD DO**: Treat mechanical Phase 5a + `check_workflows` + green `npm run test` as evidence with an explicit caveat on the prepare board; run or credit a `develop`…`main` local review before merge; keep `auditVerdictsBlockShip: refuted` so caveats do not block push.
+
 ### [2026-08-27] Doctor hybrid global hub leftovers
 - **Layer**: `skills`
 - **Module**: `ws-doctor`
@@ -41,6 +113,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Hybrid installs keep skills globally while project `ws-shared` holds config. Retired hub files (`session-lease.schema.json`) and retired `defaults.*` keys can remain under `$HOME/.agents/skills/ws-shared/` after 0.3.38 while the project hub is clean. Scanning only project `sharedDirAbs` / project `config.json` yields a false-negative pre-update diagnostic.
 - **DO NOT**: Report stale retired hub files or config keys from the project hub only when `{globalSkillsRoot}` is a distinct tree.
 - **INSTEAD DO**: Also list `RETIRED_HUB_FILES` and `listRetiredConfigKeys` under `{globalSkillsRoot}/ws-shared/` when it differs from project `{skillsRoot}`; recommend `update --global` when global leftovers exist. Cover with hybrid fixture tests.
+
+### [2026-08-27] Dispatch context fail-closed handoff JSON parse and telemetry schema parity
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr / ws-shared`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs;.agents/skills/ws-shared/telemetry.schema.json`
+- **Scenario / Context**: `latestHandoff()` in `build_dispatch_context.cjs` caught JSON parse errors on existing handoff files and silently returned empty string. `telemetry.schema.json` was missing `substep`, `bypassed`, and `idempotentReplay` properties emitted by `workflow_state.cjs`.
+- **DO NOT**: Silently drop existing handoff context on JSON parse failure during dispatch context generation. Leave emitted telemetry properties off `telemetry.schema.json`.
+- **INSTEAD DO**: Throw an explicit error on handoff JSON parse failure so corrupt files fail closed. Declare `substep`, `bypassed`, and `idempotentReplay` in `telemetry.schema.json`.
 
 ### [2026-08-26] Vault-disable restore only when vault was active
 - **Layer**: `skills`

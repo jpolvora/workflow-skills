@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "handoff.schema.json",
+  "title": "Pipeline step handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["step", "slug", "workflowId", "workflowType", "status", "artifactPaths", "acRefs", "summary", "nextAction", "findings"],
+  "properties": {
+    "step": { "type": "integer", "minimum": 0, "maximum": 9 },
+    "slug": { "type": "string", "minLength": 1 },
+    "workflowId": { "type": "string", "minLength": 1 },
+    "workflowType": { "enum": ["standard", "lite"] },
+    "status": { "type": "string", "minLength": 1 },
+    "artifactPaths": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^(?![A-Za-z]:|/)(?!.*\\\\).+" }
+    },
+    "acRefs": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^AC\\d+$" }
+    },
+    "summary": { "type": "string" },
+    "nextAction": { "type": "string" },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["critical", "warning", "suggestion", "info"],
+      "properties": {
+        "critical": { "type": "integer", "minimum": 0 },
+        "warning": { "type": "integer", "minimum": 0 },
+        "suggestion": { "type": "integer", "minimum": 0 },
+        "info": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

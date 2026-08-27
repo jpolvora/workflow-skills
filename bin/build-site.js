@@ -389,7 +389,7 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <div class="role-card-icon">N</div>
         <h4 class="role-card-title">Atomic Node state runtime</h4>
       </div>
-      <p class="role-card-desc">Portable Node helpers update workflow state atomically and publish deterministic <code>run.json</code>, <code>run.md</code>, plans-index, and progress artifacts for reliable resume and inspection.</p>
+      <p class="role-card-desc">Portable Node helpers write <code>{workflow-id}.state.json</code> first, render <code>.state.md</code>, and publish derived <code>run.json</code>, <code>run.md</code>, step handoff JSON, plans-index, and progress artifacts for reliable resume and inspection.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">

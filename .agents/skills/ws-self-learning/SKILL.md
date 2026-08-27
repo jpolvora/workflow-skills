@@ -1,6 +1,6 @@
 ---
 name: ws-self-learning
-version: 0.3.42
+version: 0.3.45
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 invocation_names:
   - self-learning
@@ -28,7 +28,7 @@ Consumer-owned memory routing is configured via `config.json` (`enableMemoryFile
 | Moment | Action |
 |--------|--------|
 | **Before plan / before code / before fix** | **Consult (`read-memory`):** if `enableSpecMemoIntegration`: query MCP/CLI `bootstrap` or `search`. If `enableMemoryFiles`: `Grep` / `Read` `{sharedDir}/MEMORY.md` for task keywords AND query touched paths with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`. Apply matching **DO NOT** and **INSTEAD DO** directives. |
-| Implementation hit a trap/pitfall/race | **Write (`update-memory`):** if `enableMemoryFiles`: new file in `{sharedDir}/memory/`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. If `enableSpecMemoIntegration`: `upsert --kind trap` via MCP/CLI. |
+| Implementation hit a trap/pitfall/race | **Write (`update-memory`):** if `enableMemoryFiles`: run `node {skillsRoot}/ws-self-learning/scripts/sanitize_memory.cjs <draft>` (non-zero → revise body), create `{sharedDir}/memory/YYYY-MM-DD-[slug].md`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. If `enableSpecMemoIntegration`: same sanitizer before `upsert --kind trap` via MCP/CLI. |
 | Session had $\ge 2$ tool/test/build failures | **Write (Mandatory):** Failure Reflection Hook — record Root Cause & Trap in `{sharedDir}/memory/` (and/or `upsert --kind trap` via MCP/CLI); `Learning: N/A` is strictly forbidden |
 | `ws-fable-judge` audit yields `REFUTED` / `CAVEATS` | **Write (Mandatory):** Adversarial Reflection — record `Severity: High` or `Critical` trap in `{sharedDir}/memory/` and/or vault |
 | **After each `ws-fix-pr` / `ws-goal-fix-pr` round** | **Write (when a reviewer or CI defect was a real agent mistake):** follow § Post fix-pr round. `Learning: N/A` is forbidden for those defects. |
@@ -77,13 +77,14 @@ After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record 
 ## Process (write after)
 
 1. **Analyze context** — What did we try that failed? What non-obvious constraint or pitfall did we hit?
-2. **Write to `{sharedDir}/memory/`** — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
-3. **Compile `MEMORY.md`** — Expand tokens, then run (only after the memory file exists on disk; never in the same parallel tool batch as the `Write`):
+2. **Sanitize draft body** — Run `node {skillsRoot}/ws-self-learning/scripts/sanitize_memory.cjs <draft>` (non-zero exit → revise body to remove injection-only patterns or unescaped tool calls).
+3. **Write to `{sharedDir}/memory/`** — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
+4. **Compile `MEMORY.md`** — Expand tokens, then run (only after the memory file exists on disk; never in the same parallel tool batch as the `Write`):
    ```bash
    node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
    ```
    Compile fails closed (exit 1, no `MEMORY.md` rewrite) when any `memory/*.md` lacks `### [YYYY-MM-DD]` or both **DO NOT** (or Trap Avoided) and **INSTEAD DO** (or Solution). The Python path is a thin exec of this Node SoT.
-4. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` (only when valid per rules above) in the final proof; one-line summary in the reply.
+5. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` (only when valid per rules above) in the final proof; one-line summary in the reply.
 
 ## Conflict Resolution
 

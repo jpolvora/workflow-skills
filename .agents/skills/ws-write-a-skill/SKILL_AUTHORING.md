@@ -145,3 +145,21 @@ When skills are installed globally (`$HOME/.agents/skills` or `WORKFLOW_SKILLS_G
 2. **Config-Independent / Standalone Skills:**
    - Pure utility or governance skills that operate without project hub config (e.g. `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`).
    - Can execute directly in any repository without prompting for `ws-configure-project`.
+
+## 10. Pipeline artifacts and host hints
+
+### Provider-compat (optional, config only)
+
+When a skill mentions model hosts, keep HTTP and thinking-mode flags in `defaults.providerCompat` as optional host hints. Do not require a named vendor in SKILL.md bodies.
+
+### Inter-step prune and handoff
+
+Orchestrators persist `{us-dir}/handoff/step-{NN}.json` on `update_state finish`. The next step loads that file plus compact state. Do not instruct a full reread of prior step markdown unless ARTIFACTS.md requires it.
+
+### Verbose-step return recipes
+
+Review and testing steps return structured findings in the handoff JSON (counts plus artifact paths). Full logs stay in `step-06` / `step-07` artifacts. Do not dump raw logs into the orchestrator prompt.
+
+### JSON vs Markdown for machine-mutated workflow artifacts
+
+Machine-mutated workflow state uses JSON as SoT (`{workflow-id}.state.json`, ledgers, indexes, handoff). Markdown is a rendered human view. Do not treat YAML frontmatter as the only writer target when a JSON schema exists.

@@ -1,7 +1,7 @@
 ---
 name: ws-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.3.42
+version: 0.3.45
 disable-model-invocation: true
 invocation_names:
   - interview
@@ -94,4 +94,5 @@ needs_user:
 - Resolve project-observable gaps before escalating one blocking question.
 - Preserve every AC mapping and record resolution source.
 - Write only the refined plan and return the closed/open registry.
+- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
 

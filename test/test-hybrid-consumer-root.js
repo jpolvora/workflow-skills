@@ -195,6 +195,10 @@ function scaffoldProjectLocalSelfLearning(projectRoot) {
     path.join(skillScripts, 'self_learning.cjs'),
   );
   fs.copyFileSync(
+    path.join(GLOBAL_SKILLS, 'ws-self-learning', 'scripts', 'sanitize_memory.cjs'),
+    path.join(skillScripts, 'sanitize_memory.cjs'),
+  );
+  fs.copyFileSync(
     path.join(GLOBAL_SKILLS, 'ws-self-learning', 'scripts', 'self_learning.py'),
     path.join(skillScripts, 'self_learning.py'),
   );

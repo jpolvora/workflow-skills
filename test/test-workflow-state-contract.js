@@ -313,9 +313,10 @@ acImplemented: 0
   assert.strictEqual(run(update, ['finish', hashStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z', ...hashCommon]).status, 0);
   const stateText = fs.readFileSync(path.join(hashRoot, hashStateRel), 'utf8');
   const runJson = JSON.parse(fs.readFileSync(path.join(hashRoot, '.agents/plans/hash/run.json'), 'utf8'));
-  const frontHash = stateIdentityHash(stateText);
+  const jsonText = fs.readFileSync(path.join(hashRoot, '.agents/plans/hash/wf.state.json'), 'utf8');
+  const jsonHash = sha256(jsonText);
   const fullHash = sha256(stateText);
-  assert.strictEqual(runJson.stateSha256, frontHash);
+  assert.strictEqual(runJson.stateSha256, jsonHash);
   assert.notStrictEqual(runJson.stateSha256, fullHash);
   const appended = `${stateText.replace(/\s*$/, '\n\n')}## Gate history\n- checkpoint\n`;
   fs.writeFileSync(path.join(hashRoot, hashStateRel), appended, 'utf8');
@@ -637,5 +638,92 @@ assert.strictEqual(
   0,
   'rebuild-index restores the missing workflow row even when state revision is > 0',
 );
+
+{
+  const mdPath = path.join(root, stateRel);
+  assert.ok(fs.existsSync(path.join(root, '.agents/plans/demo/wf.state.json')), 'shared fixture has .state.json');
+  const md = fs.readFileSync(mdPath, 'utf8');
+  fs.writeFileSync(mdPath, md.replace(/currentStep: \d+/, 'currentStep: 9'), 'utf8');
+  const mismatch = run(validate, [stateRel, '--repo-root', root]);
+  assert.notStrictEqual(mismatch.status, 0, 'markdown-only currentStep edit fails');
+  assert.match(`${mismatch.stdout}${mismatch.stderr}`, /disagrees with JSON/);
+}
+
+{
+  const idempRoot = temp('ws-state-idemp-');
+  write(path.join(idempRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  const idempState = '.agents/plans/idemp/wf.state.md';
+  write(path.join(idempRoot, idempState), `---
+stateVersion: 2
+revision: 0
+workflowId: wf-idemp
+slug: idemp
+workflowType: standard
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const noPython = { env: { PATH: path.dirname(process.execPath) } };
+  const idempCommon = ['--repo-root', idempRoot, '--jsonl-out', '.agents/plans/idemp/telemetry/step-00.jsonl'];
+  const gate = JSON.stringify({ gate: 'entry', choice: 'continue', reason: 'approved', round: 1 });
+  assert.strictEqual(run(update, [
+    'dispatch', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:00.000Z', ...idempCommon,
+  ], noPython).status, 0, 'dispatch without Python on PATH');
+  assert.strictEqual(run(update, [
+    'finish', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z',
+    '--step-output', JSON.stringify({ summary: 'Rich subagent summary' }),
+    '--gate-decision', gate, ...idempCommon,
+  ], noPython).status, 0, 'finish without Python on PATH');
+  const jsonPath = path.join(idempRoot, '.agents/plans/idemp/wf.state.json');
+  const mdPath = path.join(idempRoot, idempState);
+  assert.ok(fs.existsSync(jsonPath), 'dispatch/finish writes .state.json');
+  const jsonText = fs.readFileSync(jsonPath, 'utf8');
+  const jsonState = JSON.parse(jsonText);
+  const mdData = parseFrontmatter(fs.readFileSync(mdPath, 'utf8')).data;
+  assert.strictEqual(mdData.currentStep, jsonState.currentStep, '.state.md currentStep matches JSON');
+  assert.strictEqual(mdData.revision, jsonState.revision, '.state.md revision matches JSON');
+  const firstHash = sha256(jsonText);
+  const runJson = JSON.parse(fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/run.json'), 'utf8'));
+  assert.strictEqual(runJson.stateSha256, firstHash, 'run.json hash matches JSON SoT');
+  const second = run(update, [
+    'finish', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z',
+    '--step-output', JSON.stringify({ summary: 'Rich subagent summary' }),
+    '--gate-decision', gate, ...idempCommon,
+  ], noPython);
+  assert.strictEqual(second.status, 0, second.stderr);
+  assert.strictEqual(sha256(fs.readFileSync(jsonPath, 'utf8')), firstHash, 'identical finish is idempotent for state.json');
+  const handoff = path.join(idempRoot, '.agents/plans/idemp/handoff/step-00.json');
+  assert.ok(fs.existsSync(handoff), 'finish writes handoff/step-00.json');
+  const payload = JSON.parse(fs.readFileSync(handoff, 'utf8'));
+  assert.strictEqual(payload.step, 0);
+  assert.strictEqual(payload.summary, 'Rich subagent summary', 'idempotent finish preserves original rich handoff summary');
+  assert.ok(Buffer.byteLength(JSON.stringify(payload), 'utf8') <= 8192);
+  const finishLines = fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/telemetry/step-00.jsonl'), 'utf8')
+    .trim().split('\n').map(JSON.parse).filter((row) => row.type === 'finish');
+  assert.strictEqual(finishLines.length, 1, 'idempotent finish does not duplicate finish telemetry');
+  const finishLine = finishLines[0];
+  assert.equal(typeof finishLine.handoffBytes, 'number');
+  assert.strictEqual(finishLine.pruneAfterStep, true);
+
+  const third = run(update, [
+    'finish', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:06.000Z',
+    '--step-output', JSON.stringify({ summary: 'Updated subagent summary' }),
+    '--gate-decision', gate, ...idempCommon,
+  ], noPython);
+  assert.strictEqual(third.status, 0, third.stderr);
+  const updatedPayload = JSON.parse(fs.readFileSync(handoff, 'utf8'));
+  assert.strictEqual(updatedPayload.summary, 'Updated subagent summary', 'non-identical replay updates handoff summary');
+}
 
 console.log('test-workflow-state-contract: ok');

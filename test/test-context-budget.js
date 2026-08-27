@@ -59,8 +59,10 @@ try {
   const skill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-check-harness/SKILL.md'), 'utf8');
   assert.match(phases, /check_duplicates\.cjs/);
   assert.match(phases, /measure_harness\.cjs/);
+  assert.match(phases, /check_pipeline_handoff\.cjs/);
   assert.match(skill, /check_duplicates\.cjs/);
   assert.match(skill, /measure_harness\.cjs/);
+  assert.match(skill, /check_pipeline_handoff\.cjs/);
   console.log('test-context-budget: ok');
 } finally {
   fs.rmSync(fixture, { recursive: true, force: true });

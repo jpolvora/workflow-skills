@@ -1,7 +1,7 @@
 ---
 name: ws-verify-plan
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.3.42
+version: 0.3.45
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -64,4 +64,5 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
 - Link only observed semantic, file-line, test, alias, sabotage, and verdict evidence.
 - Derive the score through `ac_ledger.cjs`; never author or override it.
 - Write only the assigned verification report and return score plus findings.
+- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
 

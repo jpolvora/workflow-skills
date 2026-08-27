@@ -193,7 +193,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      - Cancel for now
      ```
    - **Non-Existent State:** If no matching completed or unfinished workflow exists, start fresh from **Zero** (Step 0).
-4. Resume: load state, `status: active`, skip bootstrap (including **5b Feature branch gate** — do not re-run), jump to `currentStep` gate.
+4. Resume: load `{workflow-id}.state.json` (machine SoT), `ac-ledger.json`, the latest `{us-dir}/handoff/step-*.json`, and `git log -5 --oneline` on the working branch. Do not reload every `step-0*.md` up front. Then `status: active`, skip bootstrap (including **5b Feature branch gate** — do not re-run), jump to `currentStep` gate.
 4b. **Branch resume (HEAD mismatch):** after skip-bootstrap, if `git rev-parse --abbrev-ref HEAD` ≠ `state.branch` → STOP. `user-gate`:
    - **Check out `{state.branch}` (Recommended)**
    - **Cancel (HS-1)**
