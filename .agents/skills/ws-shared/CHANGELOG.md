@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-27 13:16] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` PR 251 round 3
+- **Done**: Qualify implement-tasks negative-scenario linking for standard vs lite; lite Step 2 requires ledger links
+- **Result**: test-spec-dor-tdd exit 0
+
+
 ### [2026-08-27 13:05] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-goal-fix-pr` PR 251 round 2
 - **Done**: Authoring validate_spec requires ### Negative & Failing Test Scenarios with a non-placeholder bullet; FORMAT.md matches

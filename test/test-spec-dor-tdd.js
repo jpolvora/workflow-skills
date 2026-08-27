@@ -23,6 +23,8 @@ const implement = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-impleme
 assert.match(implement, /failing tests first/i);
 assert.match(implement, /false-positive/i);
 assert.match(implement, /--negative/);
+assert.match(implement, /Lite orch/);
+assert.doesNotMatch(implement, /Step 5 fail-closes/);
 
 const verify = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-verify-plan/SKILL.md'), 'utf8');
 assert.match(verify, /negative test/i);
