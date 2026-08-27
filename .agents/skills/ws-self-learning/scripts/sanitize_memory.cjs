@@ -10,18 +10,14 @@ const INJECTION = [
 function sanitizeMemoryBody(text) {
   const source = String(text || '');
   const withoutFences = source.replace(/```[\s\S]*?\b(?:tool_call|invoke)\b[\s\S]*?```/gi, '');
-  const lines = withoutFences.split(/\r?\n/).filter((line) => {
-    if (/ignore previous instructions/i.test(line)) return false;
-    if (/^\s*system:\s+/i.test(line)) return false;
-    return true;
-  });
-  const cleaned = lines.join('\n').replace(/^\s+|\s+$/g, '');
-  const injectionOnly = INJECTION.some((expression) => expression.test(source)) && !cleaned;
+  const injectionOnly =
+    /^\s*(?:ignore previous instructions|system:\s)/im.test(withoutFences.trim()) &&
+    !/^###\s+\[/m.test(withoutFences);
   if (injectionOnly) return { ok: false, text: '', skipped: true };
-  if (cleaned === source.replace(/\r\n/g, '\n').replace(/^\s+|\s+$/g, '')) {
-    return { ok: true, text: source, skipped: false };
+  if (/```[\s\S]*?\b(?:tool_call|invoke)\b[\s\S]*?```/i.test(source)) {
+    return { ok: true, text: `${withoutFences.replace(/^\s+|\s+$/g, '')}\n`, skipped: false };
   }
-  return { ok: true, text: `${cleaned}\n`, skipped: false };
+  return { ok: true, text: source, skipped: false };
 }
 
 module.exports = { sanitizeMemoryBody };
