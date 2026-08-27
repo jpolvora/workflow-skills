@@ -370,9 +370,9 @@
         },
         "mode": {
           "type": "string",
-          "enum": ["vault", "hybrid"],
+          "enum": ["vault", "hybrid", "local", "disabled"],
           "default": "vault",
-          "description": "vault = vault-only writes; hybrid = fallback to in-repo MEMORY on MCP/CLI failure."
+          "description": "vault = spec-memo only; hybrid = dual backends; local = markdown only; disabled = both backends off."
         },
         "cli": {
           "type": "string",

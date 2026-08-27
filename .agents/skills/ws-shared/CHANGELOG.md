@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 03:10 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 round 4 — schema modes + drop Python memory-routing mirror
+- **Done**: Expand `specMemo.mode` schema enum to local/disabled; remove unused Python `resolve_memory_routing` (Node SoT only); integrity regen
+- **Result**: No dual-runtime parity tests; memory routing stays in `resolve_consumer_root.cjs`
+
 ### [2026-08-27 02:56 UTC] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` PR 246 round 3 (legacy enable, dual coverage, persisted modes)
 - **Done**: Legacy `--enabled true` honors `prev.mode`; persist `local`/`disabled` when vault off; State 3 dual-mode test; integrity regen
