@@ -192,6 +192,17 @@ try {
     'self_learning compile skips when local memory disabled'
   );
 
+  // Test tools.md alias consistency
+  const toolsMd = fs.readFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/tools.md'),
+    'utf8'
+  );
+  assert(
+    toolsMd.includes('enableSpecMemoIntegration') &&
+      !/update-ws-changelog.*specMemo\.enabled/s.test(toolsMd),
+    'update-ws-changelog alias uses enableSpecMemoIntegration, not legacy specMemo.enabled'
+  );
+
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

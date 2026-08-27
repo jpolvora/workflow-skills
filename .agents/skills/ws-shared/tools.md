@@ -112,7 +112,7 @@ The orchestrator session ALWAYS runs under the active session model (`currentMod
 |------|--------|--------|
 | `update-memory` | Write learned pattern | If `enableMemoryFiles: true`: create file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. If `enableSpecMemoIntegration: true`: call spec-memo MCP `upsert --kind trap` or `{specMemo.cli} upsert --kind trap`. When both true: write to both local files and vault. When both false: skip persistence without error |
 | `extract-frontmatter` | Read YAML frontmatter field(s) from markdown | `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs --file {path} --field slug` (prefer over `python -c` / nested-quote one-liners) |
-| `update-ws-changelog` | Append historical log | When `specMemo.enabled` is explicit `true`, `{specMemo.cli} append --event "…"` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md); hybrid may also append `{rules.changelogFile}`. Else `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
+| `update-ws-changelog` | Append historical log | If `enableSpecMemoIntegration: true`: `{specMemo.cli} append --event "…"` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md) (and/or append `{rules.changelogFile}` when local files active). Else `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
 ## Script launchers
 
