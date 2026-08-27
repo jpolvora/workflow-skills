@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-26 23:36] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` 246 round 5 — leftover threads after CI
+- **Done**: Resolve already-fixed mode-matrix thread; add AC14 lifecycle-hook assertions (self-learning upsert, tools.md upsert/append, AGENTS aliases)
+- **Result**: `node test/test-configurable-memory-backends.js` and `npm run test` green
+
 ### [2026-08-26 23:24] Agent: Composer
 - **Prompt**: Ensure plan/implement/fix-pr memory consult includes spec-memo vault when enabled
 - **Done**: Route Pre-work / COOPERATIVE_FIX / write-plan / implement-tasks / tools.md Rules / AGENTS dogfood through `read-memory`/`update-memory`; `sourcesConsulted` gains `memory-files` + `spec-memo`; evals + proactive tests updated

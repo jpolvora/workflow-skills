@@ -371,6 +371,39 @@ process.exit(0);
     'update-memory documents vault frontmatter severity lowercase enum'
   );
 
+  // AC14: lifecycle hook translation (failure reflection / adversarial / changelog) via aliases
+  const selfLearning = fs.readFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-self-learning/SKILL.md'),
+    'utf8'
+  );
+  assert(
+    /update-memory/.test(selfLearning) &&
+      /enableSpecMemoIntegration/.test(selfLearning) &&
+      /upsert --kind trap/.test(selfLearning),
+    'AC14: ws-self-learning failure/fix-pr hooks route traps via update-memory vault upsert when spec-memo enabled'
+  );
+  assert(
+    /Failure Reflection/.test(selfLearning) && /Post fix-pr round/.test(selfLearning),
+    'AC14: ws-self-learning names failure-reflection and post-fix-pr lifecycle hooks'
+  );
+  const toolsFlat = toolsMd.replace(/\n/g, ' ');
+  assert(
+    /update-memory.*enableSpecMemoIntegration: true.*upsert --kind trap/s.test(toolsFlat),
+    'AC14: update-memory alias documents vault trap upsert for lifecycle hook translation'
+  );
+  const changelogRow = toolsMd.split('\n').find((line) => line.includes('`update-ws-changelog`'));
+  assert(
+    Boolean(changelogRow) &&
+      changelogRow.includes('enableSpecMemoIntegration') &&
+      changelogRow.includes('append --event'),
+    'AC14: update-ws-changelog routes vault append when spec-memo enabled'
+  );
+  const agentsMd = fs.readFileSync(path.join(REPO_ROOT, 'AGENTS.md'), 'utf8');
+  assert(
+    /read-memory/.test(agentsMd) && /update-memory/.test(agentsMd) && /enableSpecMemoIntegration/.test(agentsMd),
+    'AC14: dogfood hub routes consult/persist through read-memory/update-memory when vault enabled'
+  );
+
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

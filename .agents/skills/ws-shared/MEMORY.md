@@ -68,3 +68,12 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: A helper was implemented twice (Node `.cjs` + Python `.py`) “for parity,” then review demanded dual-runtime tests. Dual copies drift (config routing, parent-count bugs, CI-only failures) and violate the package Node SoT (`unique-skill-script-runtime`).
 - **DO NOT**: Add a second-language mirror of an existing helper, write Node/Python parity test pairs for the same job, or invent new dual `.cjs`+`.py` scripts for one responsibility.
 - **INSTEAD DO**: New scripts use **one** runtime only — prefer **Node `.cjs`** for packaged skills (canonical). Pre-existing `.py` helpers may be evolved, updated, or bug-fixed in place without adding a Node twin (and vice versa). Delete unused mirrors rather than covering them with parity tests.
+
+### [2026-08-26] AC14 lifecycle routing needs automated assertions
+- **Layer**: `Tests`
+- **Module**: `test-configurable-memory-backends`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-configurable-memory-backends.js`, `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-shared/tools.md`
+- **Scenario / Context**: Spec AC14 requires tests for lifecycle hook translation (failure reflection, fix-pr traps, changelog append) when `enableSpecMemoIntegration` is true. Routing/configure E2E stayed green without asserting `update-memory`/`upsert`/`append` in skill + alias docs.
+- **DO NOT**: Treat `resolveMemoryRouting` + configure E2E as full AC14 coverage.
+- **INSTEAD DO**: Assert `ws-self-learning` `update-memory` + `upsert --kind trap`, `tools.md` vault upsert/append, and hub `read-memory`/`update-memory` routing.
