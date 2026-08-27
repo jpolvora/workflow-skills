@@ -5,3 +5,21 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
   node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
 
 ---
+
+### [2026-08-26] Knowledge-tool aliases must assert flag parity
+- **Layer**: `harness`
+- **Module**: `ws-shared / tools.md + memory-backend tests`
+- **Severity**: `Medium`
+- **PathPattern**: `**/ws-shared/tools.md;**/test-configurable-memory-backends.js`
+- **Scenario / Context**: Memory backend migration updated scripts and some `tools.md` rows, but alias-layer regressions (especially `update-ws-changelog` still mentioning `specMemo.enabled`) can ship while CI stays green if tests only cover routing helpers.
+- **DO NOT**: Rely only on script unit tests for `enableMemoryFiles` / `enableSpecMemoIntegration` migrations.
+- **INSTEAD DO**: Assert each knowledge alias row (`read-memory`, `update-memory`, `update-ws-changelog`) references `enableSpecMemoIntegration` and that `update-ws-changelog` is not gated on legacy `specMemo.enabled`.
+
+### [2026-08-26] Disable vault-only must restore local memory files
+- **Layer**: `skills`
+- **Module**: `ws-spec-memo / configure_spec_memo`
+- **Severity**: `High`
+- **PathPattern**: `**/ws-spec-memo/scripts/configure_spec_memo.cjs`
+- **Scenario / Context**: Consumer was vault-only (`enableMemoryFiles: false`, `enableSpecMemoIntegration: true`) then ran `/ws-spec-memo disable` / `--enabled false` without an explicit memory-files flag. Prev `enableMemoryFiles: false` was preserved, so `resolveMemoryRouting` left both backends off and in-repo MEMORY consult/compile stayed dark.
+- **DO NOT**: When disabling vault integration without an explicit `--enable-memory-files` / stdin memory flag, reuse previous `enableMemoryFiles: false` from vault-only mode.
+- **INSTEAD DO**: If `nextSpecMemo` becomes false and the caller did not set memory-files explicitly, set `nextMemoryFiles = true` so disable restores local markdown memory. Cover with a vault-only → disable restoration test.

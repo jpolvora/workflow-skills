@@ -138,6 +138,29 @@ try {
   const checkState1Json = JSON.parse(checkState1.stdout);
   assert(checkState1Json.config.mode === 'local', 'check_spec_memo reports mode: "local" for local-only state');
 
+  // Test State 2: Vault only
+  const cfgState2 = runNode(
+    CONFIGURE,
+    ['--repo-root', tmp, '--apply', '--enable-memory-files', 'false', '--enable-spec-memo', 'true', '--json']
+  );
+  assert(cfgState2.status === 0, 'configure state 2 (vault only) exits 0');
+  const res2 = JSON.parse(cfgState2.stdout).specMemo;
+  assert(res2.enableMemoryFiles === false && res2.enableSpecMemoIntegration === true, 'state 2 persisted correctly');
+
+  // Disabling spec-memo from vault-only mode without explicit memoryFiles flag restores local markdown memory
+  const cfgDisableVault = runNode(
+    CONFIGURE,
+    ['--repo-root', tmp, '--apply', '--enabled', 'false', '--json']
+  );
+  assert(cfgDisableVault.status === 0, 'disable spec-memo exits 0');
+  const resDisableVault = JSON.parse(cfgDisableVault.stdout).specMemo;
+  assert(
+    resDisableVault.enableMemoryFiles === true && resDisableVault.enableSpecMemoIntegration === false,
+    'disabling spec-memo from vault-only mode restores enableMemoryFiles: true'
+  );
+  const checkRestoredJson = JSON.parse(runNode(CHECK, ['--repo-root', tmp, '--json']).stdout);
+  assert(checkRestoredJson.config.mode === 'local', 'check_spec_memo reports mode: "local" after vault disable restoration');
+
   // Test State 4: None / Disabled via stdin-json
   const cfgState4 = runNode(
     CONFIGURE,
@@ -192,7 +215,7 @@ try {
     'self_learning compile skips when local memory disabled'
   );
 
-  // Test tools.md alias consistency
+  // Test tools.md alias consistency (knowledge-tool rows must stay on new flags)
   const toolsMd = fs.readFileSync(
     path.join(REPO_ROOT, '.agents/skills/ws-shared/tools.md'),
     'utf8'
@@ -202,6 +225,13 @@ try {
       !/update-ws-changelog.*specMemo\.enabled/s.test(toolsMd),
     'update-ws-changelog alias uses enableSpecMemoIntegration, not legacy specMemo.enabled'
   );
+  for (const alias of ['read-memory', 'update-memory', 'update-ws-changelog']) {
+    const row = toolsMd.split('\n').find((line) => line.includes('`' + alias + '`'));
+    assert(
+      Boolean(row) && row.includes('enableSpecMemoIntegration'),
+      `${alias} alias row references enableSpecMemoIntegration`
+    );
+  }
 
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });

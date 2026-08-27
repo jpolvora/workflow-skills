@@ -124,7 +124,10 @@ function main() {
 
   let nextMemoryFiles = memoryFilesParam;
   if (nextMemoryFiles === null || nextMemoryFiles === undefined) {
-    if (args.mode || stdin.mode) {
+    if (!nextSpecMemo && args.enableMemoryFiles === null && stdin.enableMemoryFiles === undefined) {
+      // Disabling vault restores local markdown memory unless caller explicitly sets both backends off.
+      nextMemoryFiles = true;
+    } else if (args.mode || stdin.mode) {
       const explicitMode = args.mode ?? stdin.mode;
       if (!ALLOWED_MODES.has(explicitMode)) {
         console.error(`Error: specMemo.mode must be vault or hybrid (got: ${explicitMode})`);

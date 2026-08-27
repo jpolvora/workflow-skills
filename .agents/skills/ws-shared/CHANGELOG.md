@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 02:35 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 live
+- **Done**: Restored local memory on vault disable; strengthened tools.md knowledge-alias tests; integrity regen; MEMORY traps + round-1 report
+- **Result**: Round 1 fixes ready to commit/resolve/push on PR 246
+
 ### [2026-08-26 18:40 UTC] Agent: Cursor Grok 4.6
 - **Prompt**: Fix CI integrity failure; commit; bump; ship `/ws-ship-pr` next version
 - **Done**: Regenerated `bin/skill-integrity.json` after hashed hub `setup.md` drift; `npm run build-site:bump` 0.3.40 → 0.3.41; FEATURES/test-doc-sync/AGENTS stamp aligned; isolated spec-memo missing-ws-memo fixture from global skills
