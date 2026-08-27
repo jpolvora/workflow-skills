@@ -262,4 +262,49 @@ const sampleEvent = {
 };
 assert.strictEqual(validateNode(sampleEvent, telemetrySchema, 'telemetry').length, 0, 'telemetry event with substep and bypassed passes schema');
 
+const handoffFixture = temp('ws-handoff-abs-');
+write(path.join(handoffFixture, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  defaults: {},
+  verification: {},
+}));
+const updateStateScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
+const stateRel = '.agents/plans/demo/wf.state.md';
+const statePath = path.join(handoffFixture, stateRel);
+fs.mkdirSync(path.dirname(statePath), { recursive: true });
+write(statePath, `---
+stateVersion: 2
+revision: 0
+workflowId: wf-demo
+slug: demo
+workflowType: standard
+currentStep: 4
+status: active
+statePath: .agents/plans/demo/wf.state.md
+currentModel: test-model
+completedSteps: []
+telemetry:
+  loc:
+    created: 0
+    modified: 0
+    deleted: 0
+---
+`);
+const absCreated = path.join(handoffFixture, 'src/abs-created.js');
+const absModified = path.join(handoffFixture, 'src/abs-modified.js');
+const finishRes = run(updateStateScript, [
+  'finish',
+  stateRel,
+  '--step', '4',
+  '--created', absCreated,
+  '--modified', absModified,
+  '--jsonl-out', '.agents/plans/demo/telemetry/step-04.jsonl',
+  '--repo-root', handoffFixture,
+]);
+assert.strictEqual(finishRes.status, 0, finishRes.stderr);
+const handoffJsonPath = path.join(handoffFixture, '.agents/plans/demo/handoff/step-04.json');
+assert.ok(fs.existsSync(handoffJsonPath), 'step-04 handoff JSON exists');
+const handoffData = JSON.parse(fs.readFileSync(handoffJsonPath, 'utf8'));
+assert.deepStrictEqual(handoffData.artifactPaths, ['src/abs-created.js', 'src/abs-modified.js']);
+
 console.log('test-research-pipeline-quality: ok');

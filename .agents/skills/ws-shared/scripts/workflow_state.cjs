@@ -169,22 +169,36 @@ function truncateHandoff(payload) {
   return `${JSON.stringify(copy)}\n`;
 }
 
+function normalizeHandoffPaths(repoRoot, paths) {
+  if (!Array.isArray(paths)) return [];
+  return [...new Set(
+    paths.filter(Boolean).map((item) => {
+      const clean = String(item).trim();
+      if (!clean) return '';
+      const absolute = path.isAbsolute(clean) ? clean : path.resolve(repoRoot, clean);
+      return toRepoRelative(repoRoot, absolute, { allowOutside: true });
+    }).filter(Boolean)
+  )];
+}
+
 function writeHandoffFile({ usDir, state, pipeline, step, options, context, output }) {
   const schemaPath = path.join(__dirname, '..', 'schemas', 'handoff.schema.json');
   let payload;
   if (options.handoff) {
     payload = JSON.parse(fs.readFileSync(path.resolve(context.repoRoot, options.handoff), 'utf8'));
+    payload.artifactPaths = normalizeHandoffPaths(context.repoRoot, payload.artifactPaths || []);
   } else {
     const created = listArg(options.created || output.files_touched?.created?.join(','));
     const modified = listArg(options.modified || output.files_touched?.modified?.join(','));
     const deleted = listArg(options.deleted || output.files_touched?.deleted?.join(','));
+    const touched = [...new Set([...created, ...modified, ...deleted])];
     payload = {
       step: Number(step),
       slug: String(state.slug || ''),
       workflowId: String(state.workflowId || ''),
       workflowType: pipeline,
       status: String(options.status || 'completed'),
-      artifactPaths: [...new Set([...created, ...modified, ...deleted])],
+      artifactPaths: normalizeHandoffPaths(context.repoRoot, touched),
       acRefs: listArg(options.acRefs || (Array.isArray(output.acRefs) ? output.acRefs.join(',') : '')),
       summary: String(output.summary || options.summary || `Finished step ${step}`).slice(0, 500),
       nextAction: String(state.nextAction || ''),

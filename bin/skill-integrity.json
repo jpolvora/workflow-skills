@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "b439a4074d205b2c4449de47fdbbab2bbada69d4b18a3dcfd4c96f685a80b01e",
+  "fullPackageDigest": "6b4a1b7e875d20c550f287e4cd7499e5435c20e54ce75edda984afb690f3f441",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -36,7 +36,7 @@
       "scripts/retired_artifacts.cjs": "63622cac29f6ffd2a242e9a8cfc5e862394b2233caf40dcc33f2a380c540a932",
       "scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
-      "scripts/workflow_state.cjs": "3919fe2190ac061226af2da9bd27ae447501611b8c1e41b0f2c46e71c65b7d64",
+      "scripts/workflow_state.cjs": "5b82aeb5622ee604ba98781d94b3cefd18fa340b14f4da9d32a1a61a8a2f47b3",
       "setup.md": "3726fd76674ad9578d6afc190a14fb7d95a28e31dcf3985618db232671320290",
       "skill-dependencies.json": "50955371ed2289ff2295438c609c4f81a15cf8fcbc7897a63ae438dc3750ec89",
       "STACK.md.example": "e61c576b01067b1c90977b4e34e22941d7021c016d6229dc15f58683b6e705cc",
@@ -45,7 +45,7 @@
       "tools.md": "5dcf45810b754fdca832c8438caecdc6d1ca72196d5613ae10cda7be94454d7f",
       "workflow-state.schema.json": "bfbeddf4c213a11ea75b82cbfbc4cd60e941a1cae05e0a73d5a1523da9bd6583"
     },
-    "skillDigest": "594795a78abcc01d0730ed733ad406ab3efc4e625faefc0bafd0d2bb3fde50c0"
+    "skillDigest": "4affac4209ad7f07bd3558bb2b0974f01ed8ca250f075de1c2345d571e310d87"
   },
   "packageVersion": "0.3.45",
   "skills": {

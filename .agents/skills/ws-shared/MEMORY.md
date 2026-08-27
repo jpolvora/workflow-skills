@@ -69,6 +69,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Unconditionally overwrite `handoff/step-{NN}.json` or append duplicate finish telemetry during an idempotent finish replay.
 - **INSTEAD DO**: Guard `writeHandoffFile` and `appendJsonl` with `!isIdempotentFinish` so prior handoff JSON and telemetry are preserved intact.
 
+### [2026-08-27] Handoff artifactPaths repo-relative normalization
+- **Layer**: `harness`
+- **Module**: `ws-shared / workflow_state`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: `writeHandoffFile` copied `files_touched` directly into `artifactPaths` without normalizing to repo-relative paths, causing schema validation failures when subagents reported absolute file paths.
+- **DO NOT**: Pass raw absolute paths into `artifactPaths` in `handoff/step-NN.json`.
+- **INSTEAD DO**: Normalize `artifactPaths` with `toRepoRelative(repoRoot, item, { allowOutside: true })` inside `normalizeHandoffPaths` before schema validation and disk serialization.
+
 ### [2026-08-27] Fix-PR resolution comments must describe the correction
 - **Layer**: `Harness`
 - **Module**: `ws-fix-pr / resolve-thread`
