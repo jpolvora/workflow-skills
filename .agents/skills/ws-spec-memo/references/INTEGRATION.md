@@ -24,6 +24,7 @@ workflow-skills stores agent working state in-repo by default:
 |-----|---------|------|
 | `enableMemoryFiles` | `true` | When `true`, write traps/learnings to `{sharedDir}/memory/*.md` and compiled `MEMORY.md` |
 | `enableSpecMemoIntegration` | `false` | When `true`, route memory reads/writes to `spec-memo` MCP server tools or CLI |
+| `specMemo.mode` | (`local` when files-only) | Persisted label: `local` \| `vault` \| `hybrid` \| `disabled`. When either boolean flag is **absent**, `resolveMemoryRouting` derives both flags from `mode` (incomplete merges must not silently re-enable local files). Explicit boolean flags always win. |
 | `specMemo.cli` | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
 | `specMemo.vaultRoot` | `""` | Override `$SPEC_MEMO_ROOT`; empty uses `~/.spec-memo` |
 | `specMemo.bootstrapOnSession` | `true` | Recommend `bootstrap` at session start when spec-memo enabled |
@@ -45,8 +46,8 @@ workflow-skills stores agent working state in-repo by default:
 | Moment | Local Markdown (`enableMemoryFiles`) | Spec-Memo MCP/CLI (`enableSpecMemoIntegration`) |
 |--------|---------------------------------------|-------------------------------------------------|
 | Session start | `Grep`/`Read` `MEMORY.md` | `memo bootstrap` or MCP `bootstrap` |
-| Pre-plan consult | `ws-self-learning` `--match-paths` | `bootstrap --path …` or `search --kind trap` |
-| New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `upsert --kind trap` with DO NOT / INSTEAD DO body |
+| Pre-plan / fix-pr / implement consult (`read-memory`) | `ws-self-learning` `--match-paths` / `Grep` `MEMORY.md` — **same evidence class as code** | `bootstrap` / `search --kind trap` (MCP preferred) — **required when this flag is true**; dual → vault first then local |
+| New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `upsert --kind trap` with DO NOT / INSTEAD DO body; MCP frontmatter `severity`: `low`\|`medium`\|`high`\|`critical` (lowercase only) |
 | Failure reflection ($\ge 2$ friction) | Mandatory trap in `{sharedDir}/memory/` | Mandatory `upsert --kind trap` |
 | Adversarial audit (`REFUTED` / `CAVEATS`) | Mandatory reflection in `memory/` | High/Critical `upsert --kind trap` |
 | Task done changelog | Append `{changelogFile}` | `append --event "…"` (event log) |

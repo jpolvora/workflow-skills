@@ -27,7 +27,7 @@ After validating a thread (score 6–10 or equivalent), **name the defect class 
 | Step | Source | What to do |
 |------|--------|------------|
 | 1 | **Code** | Repo-wide grep / structural search for the same pattern (identifiers, schema shapes, copied helpers, false-green claims). Include every path the thread already named. |
-| 2 | **MEMORY** | Consult `{sharedDir}/MEMORY.md` and matching `memory/*` via [`ws-self-learning`](../../ws-self-learning/SKILL.md) pre-work (keywords + path match for the defect class and touched paths). Reuse known `INSTEAD DO` solutions. **Missing `MEMORY.md` is consult-skipped, not fatal** — record `memory: consult-skipped` in `sourcesConsulted` and continue. |
+| 2 | **Memory** | Consult via [`tools.md`](../../ws-shared/tools.md) **`read-memory`** / [`ws-self-learning`](../../ws-self-learning/SKILL.md) Pre-work for the defect class and touched paths — **same evidence class as code**. When `enableSpecMemoIntegration`: vault MCP/CLI `bootstrap`/`search`. When `enableMemoryFiles`: `{sharedDir}/MEMORY.md` + `memory/*` / `--match-paths`. Dual → vault first, then local. Reuse known `INSTEAD DO` solutions. Per-backend absence or flag-off is **consult-skipped, not fatal** — record `memory-files: consult-skipped` and/or `spec-memo: consult-skipped` in `sourcesConsulted` and continue. |
 | 3 | **Context** | Other **open** threads on the same PR that share the class; prior `{reviewsDir}/PR-<id>-round-*.md` findings when present; `check-pr-status` failed-log snippets for the same pattern; thread-body "similar occurrence" notes. **Missing prior round reports is advisory, not a failure.** |
 
 Discovery findings that are the **same class** become candidate fixes in this round (not deferred to "hope CI finds them").
@@ -59,7 +59,7 @@ For each resolved blocking thread, record:
 | Field | Content |
 |-------|---------|
 | `defectClass` | One-line class name |
-| `sourcesConsulted` | Which sources were actually searched (`code`, `memory`, `context`, `patterns` — include `consult-skipped` when MEMORY or patterns were absent) |
+| `sourcesConsulted` | Which sources were actually searched (`code`, `memory-files`, `spec-memo`, `context`, `patterns` — use `consult-skipped` per enabled-or-attempted backend that was unavailable; legacy token `memory` still means the routed `read-memory` consult) |
 | `proactiveFixed` | Paths fixed beyond the anchor |
 | `proactiveSkipped` | `path + reason` for each exempted same-class hit |
 
@@ -116,7 +116,7 @@ If verify or resolve fails: **do not push**. Local commit preserved for manual i
 ```
 1. Fetch open threads (file+line)
 2. Deeply analyze each description; name the defect class
-2b. Proactive discovery across **all open-thread files plus paths named in those descriptions** (code + MEMORY + context + patterns when present; see Proactive discovery section)
+2b. Proactive discovery across **all open-thread files plus paths named in those descriptions** (code + `read-memory` backends + context + patterns when present; see Proactive discovery section)
 3. Apply surgical fixes for the class (anchored instance + proactive hits per size gate)
 4. git add + local commit (`fix(#N): auto-fix issues from review threads [...])
 5. Execute validation build (`npm test` / `npm run build` or `AGENTIC_CODE_REVIEWERS_AUTO_FIX_BUILD_COMMAND`; failure = exit ≠ 0)

@@ -178,7 +178,7 @@ Hub files (`config.json`, `tools.md`, `gates.md`) are not skills. Specs keywords
 
 ### 1. Surgical scope (`ws-karpathy-guidelines`)
 
-Caution over speed; trivial tasks: judgment. Consult `{sharedDir}/MEMORY.md` before inventing (§5).
+Caution over speed; trivial tasks: judgment. Consult knowledge via `read-memory` (local MEMORY and/or spec-memo vault per routing) before inventing (§5).
 
 - **Think:** state assumptions; present multiple interpretations; say if a simpler path exists; stop and ask when unclear.
 - **Simplicity:** minimum code that solves the ask. No extras, single-use abstractions, unrequested configurability, or impossible-path error handling. If 200 lines could be 50, rewrite.
@@ -243,14 +243,14 @@ Opt-out: `stop ws-tdah` / `stop verbosity` / `normal mode` (retired `stop ws-gab
 
 MEMORY = anti-regression (input + output). Changelog = append-only history, not MEMORY.
 
-**Before** plan/code/fix (skip pure Q&A): 3–8 keywords + touched file paths → `Grep` / `Read` `{sharedDir}/MEMORY.md` or `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --match-paths <files>` → fold Medium+ **DO NOT** / **INSTEAD DO**.
+**Before** plan/code/fix (skip pure Q&A): 3–8 keywords + touched file paths → [`tools.md`](.agents/skills/ws-shared/tools.md) **`read-memory`** (when `enableSpecMemoIntegration`: MCP/CLI `bootstrap`/`search`; when `enableMemoryFiles`: `Grep` / `Read` `{sharedDir}/MEMORY.md` or `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`; dual → vault first then local) → fold Medium+ **DO NOT** / **INSTEAD DO**.
 
 **After** mutating work (required `Learning:` line):
-- **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Record Root Cause & Trap in `{sharedDir}/memory/YYYY-MM-DD-[slug].md` and compile.
-- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap. `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
-- **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory `Severity: High/Critical` memory entry.
-- **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` (script path, not a skill load; run compile only after the file is on disk, not in the same parallel tool batch as Write). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
-- `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.
+- **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Persist Root Cause & Trap via **`update-memory`** (local `memory/YYYY-MM-DD-[slug].md` + compile and/or vault `upsert --kind trap`).
+- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), persist via **`update-memory`**. `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
+- **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory High/Critical entry via **`update-memory`** (local body may say `Severity: High`; vault MCP frontmatter must use `severity: "high"` \| `"critical"` lowercase).
+- **Standard work**: new trap → **`update-memory`** (local file then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` when files enabled — compile only after the file is on disk, not in the same parallel tool batch as Write; vault upsert when integration enabled). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
+- `MEMORY.md` conflict (files backend): re-run `--compile`; do not resolve by hand.
 
 Entry shape: `### [YYYY-MM-DD] [Topic]` plus Layer, Module, Severity, PathPattern, Scenario / Context, DO NOT, INSTEAD DO.
 

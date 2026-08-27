@@ -15,6 +15,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Always force `enableMemoryFiles: true` on disable; do not enable vault in tests without a stub CLI (`node <stub>` via `--cli`).
 - **INSTEAD DO**: Restore local memory only when `prev.enableSpecMemoIntegration === true || prev.enabled === true`; otherwise keep prior `enableMemoryFiles`. For vault-only tests, pass a stub `--cli` and assert idempotent disable-on-disabled.
 
+### [2026-08-26] read-memory must hit every enabled backend
+- **Layer**: `Shared`
+- **Module**: `read-memory / fix-pr / plan / implement`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md`, `.agents/skills/ws-write-plan/SKILL.md`, `.agents/skills/ws-implement-tasks/SKILL.md`, `.agents/skills/ws-shared/tools.md`
+- **Scenario / Context**: Agents consulting knowledge before plan/code/fix grepped only `{sharedDir}/MEMORY.md` even when `enableSpecMemoIntegration` was true, so vault traps were invisible during proactive discovery.
+- **DO NOT**: Treat local MEMORY.md as the sole knowledge source when vault integration is on; skip vault `bootstrap`/`search` because files exist; record only a generic `memory` skip when one backend was never attempted.
+- **INSTEAD DO**: Always run `read-memory` for every enabled backend (dual → vault first, then local). Record `memory-files` and/or `spec-memo` in `sourcesConsulted` with per-backend `consult-skipped` when unavailable. Persist via `update-memory` the same way.
+
+### [2026-08-26] mode disabled without flags re-enables local memory
+- **Layer**: `Shared`
+- **Module**: `resolveMemoryRouting`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs`, `test/test-configurable-memory-backends.js`
+- **Scenario / Context**: Incomplete config with `specMemo.mode` set (`disabled` / `local` / `vault` / `hybrid`) but without `enableMemoryFiles` / `enableSpecMemoIntegration` previously ignored mode (except legacy `enabled && vault`), so `mode: "disabled"` silently re-enabled in-repo MEMORY and `mode: "vault"|"hybrid"` alone mis-routed vault off.
+- **DO NOT**: Default missing `enableMemoryFiles` to `true` without reading `specMemo.mode`; fix only the `disabled` branch and leave `vault`/`hybrid` alone incomplete.
+- **INSTEAD DO**: When either flag is absent, derive both from the four-mode matrix (`disabled`/`local`/`vault`/`hybrid`); keep explicit boolean flags authoritative; cover mode-alone + override cases in unit tests.
+
 ### [2026-08-26] Legacy enable honors mode; persist local/disabled
 - **Layer**: `skills`
 - **Module**: `ws-spec-memo / configure_spec_memo`

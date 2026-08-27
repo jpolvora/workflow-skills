@@ -117,6 +117,56 @@ assert(
   'legacy enabled: false maps to enableMemoryFiles: true, enableSpecMemoIntegration: false'
 );
 
+// 7–10. Persisted mode alone (no boolean flags) — full matrix
+const modeMatrix = [
+  ['disabled', { enableMemoryFiles: false, enableSpecMemoIntegration: false }],
+  ['local', { enableMemoryFiles: true, enableSpecMemoIntegration: false }],
+  ['vault', { enableMemoryFiles: false, enableSpecMemoIntegration: true }],
+  ['hybrid', { enableMemoryFiles: true, enableSpecMemoIntegration: true }],
+];
+for (const [mode, expected] of modeMatrix) {
+  assert(
+    JSON.stringify(resolveMemoryRouting({ specMemo: { mode } })) === JSON.stringify(expected),
+    `mode: "${mode}" alone maps to ${JSON.stringify(expected)}`
+  );
+}
+
+// 11. mode: disabled with enabled: false (incomplete merge shape from review)
+assert(
+  JSON.stringify(
+    resolveMemoryRouting({
+      specMemo: { enabled: false, mode: 'disabled' },
+    })
+  ) === JSON.stringify({ enableMemoryFiles: false, enableSpecMemoIntegration: false }),
+  'enabled: false + mode: "disabled" maps to both backends off'
+);
+
+// 12. Explicit flags win over conflicting mode
+assert(
+  JSON.stringify(
+    resolveMemoryRouting({
+      specMemo: {
+        mode: 'disabled',
+        enableMemoryFiles: true,
+        enableSpecMemoIntegration: false,
+      },
+    })
+  ) === JSON.stringify({ enableMemoryFiles: true, enableSpecMemoIntegration: false }),
+  'explicit enableMemoryFiles wins over mode: "disabled"'
+);
+
+// 13. Top-level flags win over mode
+assert(
+  JSON.stringify(
+    resolveMemoryRouting({
+      enableMemoryFiles: false,
+      enableSpecMemoIntegration: true,
+      specMemo: { mode: 'local' },
+    })
+  ) === JSON.stringify({ enableMemoryFiles: false, enableSpecMemoIntegration: true }),
+  'top-level flags win over mode: "local"'
+);
+
 console.log('Testing configure_spec_memo with new flags & reporting...');
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'configurable-memory-test-'));
@@ -311,6 +361,15 @@ process.exit(0);
       `${alias} alias row references enableSpecMemoIntegration`
     );
   }
+  const updateMemoryRow = toolsMd.split('\n').find((line) => line.includes('`update-memory`'));
+  assert(
+    updateMemoryRow &&
+      /severity/.test(updateMemoryRow) &&
+      updateMemoryRow.includes('low') &&
+      updateMemoryRow.includes('critical') &&
+      /lowercase/i.test(updateMemoryRow),
+    'update-memory documents vault frontmatter severity lowercase enum'
+  );
 
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });

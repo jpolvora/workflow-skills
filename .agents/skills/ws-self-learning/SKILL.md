@@ -40,19 +40,22 @@ Task is **not done** until the completion side runs (write or valid `Learning: N
 
 ## Pre-work consult (mandatory for mutating work)
 
+Resolve routing via `resolveMemoryRouting` / [`tools.md`](../ws-shared/tools.md) alias **`read-memory`** (same evidence class as code/docs — not optional flavor text).
+
 1. Identify 3–8 keywords and touched file paths from the task (e.g. `bash`, `CRLF`, `launcher`, `verify.sh`, `managed skill`, `encoding`, touched files like `src/Controllers/Auth.cs` or `bin/cli.js`).
-2. Query matching memories:
-   - Keyword grep: `Grep` terms in `{sharedDir}/MEMORY.md` or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --query <keyword>`.
-   - File/path matching: `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <touched_files...>`.
+2. Query matching memories **per enabled backend** (skip a backend only when its flag is false or the store is unavailable — record that skip; do not skip an enabled backend):
+   - **`enableSpecMemoIntegration: true`:** MCP `bootstrap` / `search` (prefer host namespace `spec-memo` / `user-spec-memo` / `specMemo.mcpServerName`) or `{specMemo.cli} bootstrap` / `search` with the same keywords/paths. Runtime follow-ups → **`/ws-memo`**.
+   - **`enableMemoryFiles: true`:** Keyword grep in `{sharedDir}/MEMORY.md` or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --query <keyword>`; path match with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <touched_files...>`.
+   - **Both true (dual):** vault first, then supplement with local files. **Both false:** no hits; continue without inventing traps from empty consult.
 3. If a hit is Severity Medium+, fold its **DO NOT** / **INSTEAD DO** directives into the plan or first edit. Do not re-discover the same failure mode.
-4. For scripts/skills specifically, also apply the preflight in memory entry **Script/skill authoring preflight** (launchers, LF, Windows Python `\r\n`, no shell bridges).
+4. For scripts/skills specifically, also apply the preflight in memory entry **Script/skill authoring preflight** (launchers, LF, Windows Python `\r\n`, no shell bridges) when that entry appears in either backend.
 
 ## Failure Reflection Hook (Kill the "Learning: N/A" Escape Hatch)
 
 Agents often attempt to save turn tokens by defaulting to `Learning: N/A`. To ensure continuous learning:
 - If `dotnet build`, `npm test`, linters, or any verification command/tool failed $\ge 2$ times during the session before succeeding, the session experienced non-trivial friction.
 - In this scenario, **`Learning: N/A` is strictly FORBIDDEN**.
-- You MUST analyze the root cause of the friction (e.g., misconfigured path, missing flag, unexpected type error, stale cache) and write a new `{sharedDir}/memory/YYYY-MM-DD-[slug].md` entry with concrete **DO NOT** and **INSTEAD DO** directives.
+- You MUST analyze the root cause of the friction (e.g., misconfigured path, missing flag, unexpected type error, stale cache) and persist a new trap via **`update-memory`** with concrete **DO NOT** and **INSTEAD DO** directives (local `{sharedDir}/memory/YYYY-MM-DD-[slug].md` + compile and/or vault upsert per routing).
 
 ## Adversarial Reflection Trigger (`ws-fable-judge`)
 
@@ -66,10 +69,10 @@ When [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audits work and returns a ve
 After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record mistakes the code-reviewer CI or PR threads caught so the next round does not repeat them.
 
 1. Collect **accepted defects**: threads scored 6–10 that received a code fix, plus `check-pr-status` **diff-regression** failures this round fixed.
-2. Skip: score 0–5 no-change threads, baseline noise, infra-flake, wrong reviewer claims justified with no code change, and classes already covered by a Medium+ MEMORY hit.
-3. For each remaining class: write `{sharedDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` with concrete **DO NOT** / **INSTEAD DO**, then compile.
-4. Round report `Learning:` must list new entry titles. **Forbidden:** `Learning: N/A` when step 1 had any accepted defect that was not already in MEMORY.
-5. `dry-run`: skip MEMORY writes (analysis-only).
+2. Skip: score 0–5 no-change threads, baseline noise, infra-flake, wrong reviewer claims justified with no code change, and classes already covered by a Medium+ hit from the **`read-memory`** consult (local and/or vault).
+3. For each remaining class: persist via [`tools.md`](../ws-shared/tools.md) **`update-memory`** (local `{sharedDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` + `--compile` when `enableMemoryFiles`; vault `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Concrete **DO NOT** / **INSTEAD DO** required.
+4. Round report `Learning:` must list new entry titles. **Forbidden:** `Learning: N/A` when step 1 had any accepted defect that was not already covered by `read-memory`.
+5. `dry-run`: skip memory writes (analysis-only).
 
 ## Process (write after)
 
@@ -107,15 +110,15 @@ Path tokens: [`tools.md`](../ws-shared/tools.md) § Path tokens.
 
 ## Done when
 
-- Pre-work: Grep/path-match notes recorded or none found.
-- Completion: new `{sharedDir}/memory/*.md` compiled via script exit 0, or valid `Learning: N/A` proof line (permitted only when session friction $<2$ failures).
+- Pre-work: `read-memory` ran for every **enabled** backend (vault and/or local files); hits or per-backend consult-skips recorded.
+- Completion: `update-memory` persisted a new trap (local compile exit 0 and/or vault upsert) when required, or valid `Learning: N/A` proof line (permitted only when session friction $<2$ failures and no accepted fix-pr defect remained uncovered).
 
 ## Subagent contract
 
-- Query MEMORY keywords and assigned file paths before planning or editing.
+- Run `read-memory` (keywords + paths) against every enabled backend before planning or editing — treat vault traps and local MEMORY as the same evidence class.
 - Inject matching DO NOT and INSTEAD DO guidance into the implementation context.
-- Record a new durable trap only when evidence is novel and reusable.
-- After two or more tool, build, or test failures, a failure-reflection memory entry is mandatory.
-- After each fix-pr / goal-fix-pr round, record accepted reviewer/CI defects as MEMORY traps (and pattern-file rows when those flags are on).
-- Return `memory_consult` and a valid `Learning:` result.
+- Record a new durable trap via `update-memory` only when evidence is novel and reusable.
+- After two or more tool, build, or test failures, a failure-reflection memory entry is mandatory (`update-memory`).
+- After each fix-pr / goal-fix-pr round, record accepted reviewer/CI defects via `update-memory` (and pattern-file rows when those flags are on).
+- Return `memory_consult` (backends queried + hits/skips) and a valid `Learning:` result.
 

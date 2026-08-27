@@ -69,18 +69,23 @@ function resolveMemoryRouting(config) {
   let enableMemoryFiles = config?.enableMemoryFiles ?? specMemo.enableMemoryFiles;
   let enableSpecMemoIntegration = config?.enableSpecMemoIntegration ?? specMemo.enableSpecMemoIntegration;
 
-  if (enableSpecMemoIntegration === undefined) {
-    if (specMemo.enabled !== undefined) {
-      enableSpecMemoIntegration = Boolean(specMemo.enabled);
-    } else {
-      enableSpecMemoIntegration = false;
+  // Persisted mode is authoritative when either boolean flag is absent (incomplete merges).
+  const MODE_FLAGS = {
+    disabled: { enableMemoryFiles: false, enableSpecMemoIntegration: false },
+    local: { enableMemoryFiles: true, enableSpecMemoIntegration: false },
+    vault: { enableMemoryFiles: false, enableSpecMemoIntegration: true },
+    hybrid: { enableMemoryFiles: true, enableSpecMemoIntegration: true },
+  };
+  const fromMode = MODE_FLAGS[specMemo.mode];
+  if (fromMode) {
+    if (enableMemoryFiles === undefined) enableMemoryFiles = fromMode.enableMemoryFiles;
+    if (enableSpecMemoIntegration === undefined) enableSpecMemoIntegration = fromMode.enableSpecMemoIntegration;
+  } else {
+    if (enableSpecMemoIntegration === undefined) {
+      enableSpecMemoIntegration = specMemo.enabled !== undefined ? Boolean(specMemo.enabled) : false;
     }
-  }
-
-  if (enableMemoryFiles === undefined) {
-    if (specMemo.enabled && specMemo.mode === 'vault') {
-      enableMemoryFiles = false;
-    } else {
+    if (enableMemoryFiles === undefined) {
+      // No recognized mode: default local files on (legacy enabled:false / empty config).
       enableMemoryFiles = true;
     }
   }

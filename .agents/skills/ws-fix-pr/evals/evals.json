@@ -53,21 +53,21 @@
     },
     {
       "id": 6,
-      "prompt": "Fix PR threads in a consumer repo with no MEMORY.md under ws-shared.",
-      "expected_output": "Fix-pr proceeds; MEMORY consult-skipped recorded in sourcesConsulted; not a fatal error.",
+      "prompt": "Fix PR threads with enableMemoryFiles true but no MEMORY.md, and enableSpecMemoIntegration false.",
+      "expected_output": "Fix-pr proceeds; memory-files consult-skipped recorded in sourcesConsulted; not a fatal error.",
       "assertions": [
         "Agent does not abort fix-pr because MEMORY.md is missing",
-        "Agent records memory consult-skipped in sourcesConsulted",
+        "Agent records memory-files consult-skipped (or memory consult-skipped) in sourcesConsulted",
         "Agent still runs code and context proactive discovery before resolve"
       ]
     },
     {
       "id": 7,
-      "prompt": "A code-reviewer CI thread scored 8 flags a missing null check that we just shipped; fix it and finish the pass.",
-      "expected_output": "Surgical fix plus a MEMORY trap so the next round does not repeat the mistake; Learning: N/A is forbidden for this accepted defect.",
+      "prompt": "A code-reviewer CI thread scored 8 flags a missing null check that we just shipped; fix it and finish the pass (dual memory backends enabled).",
+      "expected_output": "Surgical fix plus update-memory trap (local and/or vault) so the next round does not repeat the mistake; Learning: N/A is forbidden for this accepted defect.",
       "assertions": [
-        "Agent writes a memory/YYYY-MM-DD-fix-pr-*.md trap (or cites an existing Medium+ hit) after fixing the accepted reviewer/CI defect",
-        "Agent compiles MEMORY after the write",
+        "Agent persists via update-memory (memory/YYYY-MM-DD-fix-pr-*.md and/or vault upsert) or cites an existing Medium+ read-memory hit after fixing the accepted reviewer/CI defect",
+        "Agent compiles MEMORY after a local write when enableMemoryFiles is true",
         "Agent does not use Learning: N/A for an accepted score 6-10 reviewer/CI defect"
       ]
     },

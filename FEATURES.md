@@ -152,7 +152,7 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
 | Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
-| External vault bridge: configure spec-memo MCP/CLI, import legacy `.agents` tree, bootstrap session brief, and dual memory routing (`enableMemoryFiles` / `enableSpecMemoIntegration`) | `ws-spec-memo` | `~/.spec-memo/projects/<projectId>/` when `enableSpecMemoIntegration: true` |
+| External vault bridge: configure spec-memo MCP/CLI, import legacy `.agents` tree, bootstrap session brief, and dual memory routing (`enableMemoryFiles` / `enableSpecMemoIntegration`); plan/implement/fix-pr `read-memory` consults every enabled backend as code-class evidence | `ws-spec-memo` | `~/.spec-memo/projects/<projectId>/` when `enableSpecMemoIntegration: true` |
 | Domain authority, minimum evidence sets, and fraud definitions per domain | `ws-fable-domain` | domain adapters |
 
 Steps 4 and 6 of the standard pipeline require **proof** of memory consultation in the subagent's step output; a missing consult is a gate failure, not a warning.

@@ -355,7 +355,7 @@
   },
 
   "specMemo": {
-    "_comment": "External spec-memo vault bridge (ws-spec-memo). enableSpecMemoIntegration: true routes memory/traps to memo MCP/CLI. enableMemoryFiles: true routes memory to local memory/*.md and MEMORY.md. Both can be true (dual-mode) or false (disabled). Legacy enabled/mode resolve seamlessly.",
+    "_comment": "External spec-memo vault bridge (ws-spec-memo). enableSpecMemoIntegration: true routes memory/traps to memo MCP/CLI. enableMemoryFiles: true routes memory to local memory/*.md and MEMORY.md. Both can be true (dual-mode) or false (disabled). When boolean flags are absent, resolveMemoryRouting derives them from specMemo.mode (local|vault|hybrid|disabled); explicit flags always win. Legacy enabled without mode still resolves.",
     "enabled": false,
     "enableMemoryFiles": true,
     "enableSpecMemoIntegration": false,

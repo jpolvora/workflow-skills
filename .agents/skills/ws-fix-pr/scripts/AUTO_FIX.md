@@ -5,7 +5,7 @@ You are a **Senior Software Developer** tasked with fixing issues raised in open
 ## Expected Workflow
 
 1. **Read** each open thread carefully — deeply analyze the full description (root cause, impact, context). Name the defect class in one line.
-2. **Proactive discovery** before editing: repo-wide code grep for the class; consult MEMORY when present (consult-skipped when absent); scan same-PR context (other open threads, prior round reports when present, failed-check log snippets). Record which sources were searched in `sourcesConsulted`.
+2. **Proactive discovery** before editing: repo-wide code grep for the class; consult `read-memory` for every enabled backend (local MEMORY and/or spec-memo vault; consult-skipped per unavailable backend); scan same-PR context (other open threads, prior round reports when present, failed-check log snippets). Record which sources were searched in `sourcesConsulted` (`code`, `memory-files`, `spec-memo`, `context`, …).
 3. **Sweep siblings** in every file whose content you were given, plus proactive hits from step 2 and any extra paths the thread body already names. Apply the size gate: fix local/surgical hits now; record `path + reason` under `proactiveSkipped` for large or out-of-scope hits. If a named sibling file is not in the prompt, say so in `explanation` and do **not** mark the thread resolved.
 4. **Fix** with minimal patches. The runner **commits**, **validates build**, **closes each fixed thread** with your detailed explanation, and **pushes** to the PR branch.
 
@@ -32,7 +32,7 @@ You will receive:
 ## Instructions
 
 1. Analyze **each** listed thread; correlate description ↔ line ↔ defect class ↔ replacement.
-2. Run proactive discovery (code + MEMORY + context + patterns when present) per [`COOPERATIVE_FIX.md`](COOPERATIVE_FIX.md).
+2. Run proactive discovery (code + `read-memory` backends + context + patterns when present) per [`COOPERATIVE_FIX.md`](COOPERATIVE_FIX.md).
 3. Search sibling and proactive copies of that class in the supplied files (and thread-named paths). Include those ranges in `replacements`.
 4. Formulate surgical `replacements` (minimal ranges, 1-based inclusive).
 5. List in `resolvedThreads` **only** the threads whose class is fixed at the anchor **and** at in-scope proactive/sibling hits (or every skip recorded with `path + reason` in `proactiveSkipped`).
@@ -52,7 +52,7 @@ You will receive:
   "resolvedThreads": [
     {
       "threadId": "12345",
-      "explanation": "defectClass: ... | sourcesConsulted: code, memory (consult-skipped), context | proactiveFixed: path/to/other.cjs | proactiveSkipped: path/to/big.js — large refactor out of review scope | Detailed analysis: the problem was X on line Y. I applied Z because..."
+      "explanation": "defectClass: ... | sourcesConsulted: code, memory-files, spec-memo (consult-skipped), context | proactiveFixed: path/to/other.cjs | proactiveSkipped: path/to/big.js — large refactor out of review scope | Detailed analysis: the problem was X on line Y. I applied Z because..."
     }
   ]
 }

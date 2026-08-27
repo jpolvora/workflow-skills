@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-08-26 23:24] Agent: Composer
+- **Prompt**: Ensure plan/implement/fix-pr memory consult includes spec-memo vault when enabled
+- **Done**: Route Pre-work / COOPERATIVE_FIX / write-plan / implement-tasks / tools.md Rules / AGENTS dogfood through `read-memory`/`update-memory`; `sourcesConsulted` gains `memory-files` + `spec-memo`; evals + proactive tests updated
+- **Result**: Enabled backends are peer evidence with code/docs; per-backend consult-skipped is non-fatal
+
+### [2026-08-26 23:23] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 — deepen mode→flag routing before CI
+- **Done**: `resolveMemoryRouting` derives both flags from full `specMemo.mode` matrix when booleans absent; matrix + override tests; INTEGRATION.md / config.example notes; MEMORY trap; integrity regen
+- **Result**: Adversarial matrix + full `npm run test` green; prevents next-round miss on vault/hybrid-alone incomplete configs
+
 ### [2026-08-27 03:12 UTC] Agent: Composer
 - **Prompt**: `/ws-self-learning` — trap for dual Node/Python scripts
 - **Done**: Added `memory/2026-08-26-avoid-dual-node-python-scripts.md`; compiled MEMORY; vault upsert
