@@ -127,6 +127,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
+| spec-memo vault setup/bridge | `ws-spec-memo` |
+| Runtime spec-memo vault ops (search, upsert, canvas) | `ws-memo` |
 | GitHub issue/PR ops | `ws-github-provider` |
 | ADO WI/PR ops | `ws-azure-devops-provider` |
 | Local `*.spec.md` | `ws-local-spec-provider` |

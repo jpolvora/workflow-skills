@@ -64,6 +64,38 @@ function resolveMinVerifyScore(config) {
   return n;
 }
 
+function resolveMemoryRouting(config) {
+  const specMemo = config?.specMemo || {};
+  let enableMemoryFiles = config?.enableMemoryFiles ?? specMemo.enableMemoryFiles;
+  let enableSpecMemoIntegration = config?.enableSpecMemoIntegration ?? specMemo.enableSpecMemoIntegration;
+
+  // Persisted mode is authoritative when either boolean flag is absent (incomplete merges).
+  const MODE_FLAGS = {
+    disabled: { enableMemoryFiles: false, enableSpecMemoIntegration: false },
+    local: { enableMemoryFiles: true, enableSpecMemoIntegration: false },
+    vault: { enableMemoryFiles: false, enableSpecMemoIntegration: true },
+    hybrid: { enableMemoryFiles: true, enableSpecMemoIntegration: true },
+  };
+  const fromMode = MODE_FLAGS[specMemo.mode];
+  if (fromMode) {
+    if (enableMemoryFiles === undefined) enableMemoryFiles = fromMode.enableMemoryFiles;
+    if (enableSpecMemoIntegration === undefined) enableSpecMemoIntegration = fromMode.enableSpecMemoIntegration;
+  } else {
+    if (enableSpecMemoIntegration === undefined) {
+      enableSpecMemoIntegration = specMemo.enabled !== undefined ? Boolean(specMemo.enabled) : false;
+    }
+    if (enableMemoryFiles === undefined) {
+      // No recognized mode: default local files on (legacy enabled:false / empty config).
+      enableMemoryFiles = true;
+    }
+  }
+
+  return {
+    enableMemoryFiles: Boolean(enableMemoryFiles),
+    enableSpecMemoIntegration: Boolean(enableSpecMemoIntegration),
+  };
+}
+
 function resolveSkillMdPath(context, skillId) {
   const local = path.join(context.repoRoot, '.agents', 'skills', skillId, 'SKILL.md');
   if (fs.existsSync(local)) return local;
@@ -139,4 +171,5 @@ module.exports = {
   reportResolved,
   normalizeConfig,
   resolveMinVerifyScore,
+  resolveMemoryRouting,
 };

@@ -76,7 +76,8 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
-| spec-memo / external vault / off-repo memory | `ws-spec-memo` |
+| spec-memo / external vault setup/bridge | `ws-spec-memo` |
+| Runtime spec-memo vault ops | `ws-memo` |
 | Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |

@@ -22,6 +22,8 @@ function parseArgs(argv) {
     apply: false,
     json: false,
     enabled: null,
+    enableMemoryFiles: null,
+    enableSpecMemoIntegration: null,
     mode: null,
     cli: null,
     importTree: null,
@@ -36,7 +38,10 @@ function parseArgs(argv) {
     else if (a === '--stdin-json') args.stdinJson = true;
     else if (a === '--repo-root') args.repoRoot = argv[++i] || args.repoRoot;
     else if (a === '--enabled') args.enabled = argv[++i] === 'true';
-    else if (a === '--mode') args.mode = argv[++i];
+    else if (a === '--enable-memory-files') args.enableMemoryFiles = argv[++i] === 'true';
+    else if (a === '--enable-spec-memo' || a === '--enable-spec-memo-integration') {
+      args.enableSpecMemoIntegration = argv[++i] === 'true';
+    } else if (a === '--mode') args.mode = argv[++i];
     else if (a === '--cli') args.cli = argv[++i];
     else if (a === '--import') args.importTree = argv[++i] === 'true';
     else if (a === '--hook') args.hook = argv[++i] === 'true';
@@ -103,27 +108,82 @@ function main() {
   const stdin = args.stdinJson ? readStdinJson() : {};
   const config = readJson(configPath);
   const prev = config.specMemo || {};
+  const specMemoParam = args.enableSpecMemoIntegration ?? stdin.enableSpecMemoIntegration;
+  const memoryFilesParam = args.enableMemoryFiles ?? stdin.enableMemoryFiles;
 
-  const mode = args.mode ?? stdin.mode ?? prev.mode ?? 'vault';
-  if (!ALLOWED_MODES.has(mode)) {
-    console.error(`Error: specMemo.mode must be vault or hybrid (got: ${mode})`);
+  let nextSpecMemo = specMemoParam;
+  if (nextSpecMemo === null || nextSpecMemo === undefined) {
+    if (args.enabled !== null || stdin.enabled !== undefined) {
+      nextSpecMemo = Boolean(args.enabled ?? stdin.enabled);
+    } else {
+      nextSpecMemo = prev.enableSpecMemoIntegration ?? (prev.enabled ?? false);
+    }
+  } else {
+    nextSpecMemo = Boolean(nextSpecMemo);
+  }
+
+  let nextMemoryFiles = memoryFilesParam;
+  if (nextMemoryFiles === null || nextMemoryFiles === undefined) {
+    if (!nextSpecMemo && args.enableMemoryFiles === null && stdin.enableMemoryFiles === undefined) {
+      // Restore local markdown only when leaving an active vault; keep prior choice if already disabled.
+      const vaultWasActive =
+        prev.enableSpecMemoIntegration === true || prev.enabled === true;
+      if (vaultWasActive) {
+        nextMemoryFiles = true;
+      } else if (prev.enableMemoryFiles !== undefined) {
+        nextMemoryFiles = Boolean(prev.enableMemoryFiles);
+      } else {
+        nextMemoryFiles = true;
+      }
+    } else if (args.mode || stdin.mode) {
+      const explicitMode = args.mode ?? stdin.mode;
+      if (!ALLOWED_MODES.has(explicitMode)) {
+        console.error(`Error: specMemo.mode must be vault or hybrid (got: ${explicitMode})`);
+        process.exit(2);
+      }
+      nextMemoryFiles = (explicitMode === 'hybrid');
+    } else if (nextSpecMemo) {
+      // Legacy enable without memory flags: honor prev.mode (default vault), not seed enableMemoryFiles.
+      const legacyMode = prev.mode || 'vault';
+      nextMemoryFiles = legacyMode === 'hybrid';
+    } else if (prev.enableMemoryFiles !== undefined) {
+      nextMemoryFiles = Boolean(prev.enableMemoryFiles);
+    } else if (prev.enabled && prev.mode === 'vault') {
+      nextMemoryFiles = false;
+    } else {
+      nextMemoryFiles = true;
+    }
+  } else {
+    nextMemoryFiles = Boolean(nextMemoryFiles);
+  }
+
+  const explicitMode = args.mode ?? stdin.mode ?? null;
+  if (explicitMode !== null && !ALLOWED_MODES.has(explicitMode)) {
+    console.error(`Error: specMemo.mode must be vault or hybrid (got: ${explicitMode})`);
     process.exit(2);
   }
+
+  const persistedMode =
+    explicitMode ??
+    (nextSpecMemo
+      ? (nextMemoryFiles ? 'hybrid' : 'vault')
+      : (nextMemoryFiles ? 'local' : 'disabled'));
 
   const importSpecified = args.importTree !== null || stdin.import !== undefined;
   const doImport = importSpecified ? Boolean(args.importTree ?? stdin.import) : false;
   const doHook = args.hook ?? stdin.hook ?? false;
-  const nextEnabled = args.enabled ?? stdin.enabled ?? prev.enabled ?? false;
   // When enabling without an explicit import choice, record that import did not run.
   const importOnEnable = importSpecified
     ? doImport
-    : nextEnabled
+    : nextSpecMemo
       ? false
       : (prev.importOnEnable ?? true);
 
   const next = {
-    enabled: nextEnabled,
-    mode,
+    enabled: nextSpecMemo,
+    enableMemoryFiles: nextMemoryFiles,
+    enableSpecMemoIntegration: nextSpecMemo,
+    mode: persistedMode,
     cli: args.cli ?? stdin.cli ?? prev.cli ?? 'memo',
     vaultRoot: stdin.vaultRoot ?? prev.vaultRoot ?? '',
     bootstrapOnSession:

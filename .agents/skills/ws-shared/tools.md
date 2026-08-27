@@ -57,7 +57,7 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `read-config` | Load project config | `Read` `{sharedDir}/config.json` |
 | `read-artifacts-registry` | Resolve one artifact from the Artifact map | `Read` `{skillsRoot}/ws-spec-to-pr/ARTIFACTS.md` heading `## Artifact map` for the named row/anchor only. Do not read ARTIFACTS.md in full. |
 | `read-stack` | Load stack reference | `Read` `config.json.rules.stackFile` (default `{sharedDir}/STACK.md`) |
-| `read-memory` | Load learned knowledge **before** plan/code/fix | When `specMemo.enabled` is explicit `true`, prefer [`ws-spec-memo`](../ws-spec-memo/SKILL.md) bootstrap; for search/recall follow-ups load **`/ws-memo`** when `{skillsRoot}/ws-memo/SKILL.md` or `{globalSkillsRoot}/ws-memo/SKILL.md` exists (local first), else `{specMemo.cli} search`. Else `Grep` / `Read` `{sharedDir}/MEMORY.md`. Mandatory for mutating work — see [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult |
+| `read-memory` | Load learned knowledge **before** plan/code/fix | If `enableSpecMemoIntegration: true`: query spec-memo via MCP `bootstrap` / `search` or `{specMemo.cli} bootstrap` / `search` (runtime follow-ups → **`/ws-memo`**). If `enableMemoryFiles: true`: `Grep` / `Read` `{sharedDir}/MEMORY.md` (or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`). When both true: query spec-memo first, supplement with `MEMORY.md`. When both false: return empty results. Mandatory for mutating work — see [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work consult |
 | `search-code` | Find patterns in code | `Grep` / `Glob` |
 | `run-script` | Run workflow / provider script | `Shell` with **explicit launcher** (see [Script launchers](#script-launchers)): `python` / `node` / `bash` + path. Orchestrator helpers: `node {skillsRoot}/ws-spec-to-pr/scripts/{name}.cjs` (`update_state`, `validate_state`). Frozen Python helpers remain for converters/thread shims: prefer `{skillsRoot}/{github,azure-devops,local-spec}-provider/scripts/` |
 
@@ -110,9 +110,9 @@ The orchestrator session ALWAYS runs under the active session model (`currentMod
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `update-memory` | Write learned pattern | When `specMemo.enabled` is explicit `true`, `{specMemo.cli} upsert --kind trap` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md) setup path; trap/search follow-ups → **`/ws-memo`** when `{skillsRoot}/ws-memo/SKILL.md` or `{globalSkillsRoot}/ws-memo/SKILL.md` exists (local first), else `{specMemo.cli} search`. Hybrid falls back to `{sharedDir}/memory/` on failure. Else create unique file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` |
+| `update-memory` | Write learned pattern | If `enableMemoryFiles: true`: create file in `{sharedDir}/memory/` and run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` (body may use Title-Case `Severity: High`). If `enableSpecMemoIntegration: true`: spec-memo MCP/CLI `upsert --kind trap` with frontmatter `severity` in **`low` \| `medium` \| `high` \| `critical` only** (lowercase — `High` fails validation). When both true: write to both. When both false: skip without error |
 | `extract-frontmatter` | Read YAML frontmatter field(s) from markdown | `node {skillsRoot}/ws-shared/scripts/extract_frontmatter_field.cjs --file {path} --field slug` (prefer over `python -c` / nested-quote one-liners) |
-| `update-ws-changelog` | Append historical log | When `specMemo.enabled` is explicit `true`, `{specMemo.cli} append --event "…"` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md); hybrid may also append `{rules.changelogFile}`. Else `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
+| `update-ws-changelog` | Append historical log | If `enableSpecMemoIntegration: true`: `{specMemo.cli} append --event "…"` via [`ws-spec-memo`](../ws-spec-memo/SKILL.md) (and/or append `{rules.changelogFile}` when local files active). Else `Write`/`StrReplace` `config.json.rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`) |
 
 ## Script launchers
 
@@ -138,7 +138,7 @@ Skill `.sh` dialect: Git Bash–compatible bash. Prefer Node/Python for new logi
 1. **No hardcoded commands** in skills — use tool aliases. Config.json holds project-specific values.
 2. **Shell only for git/build/scripts** — never use bash where `Read`/`Write`/`Grep`/`Glob` suffice.
 3. **Explicit launchers** — every managed script call uses `python` / `node` / `bash` per [Script launchers](#script-launchers).
-4. **Consult MEMORY before mutating** — `read-memory` (`Grep` / `Read` `{sharedDir}/MEMORY.md`) before plan, code, skill edits, or script fixes; apply known Solutions. Write new traps via `update-memory` after.
+4. **Consult knowledge before mutating** — `read-memory` ([Capability aliases](#capability-aliases)): every **enabled** backend (`enableSpecMemoIntegration` → vault `bootstrap`/`search`; `enableMemoryFiles` → `{sharedDir}/MEMORY.md` / `--match-paths`; dual → both). Apply known Solutions. Persist new traps via `update-memory` after.
 5. **One worktree max** — step 4 worktrees are exclusive under `{worktrees-dir}` when `config.plans.useWorktrees` is true.
 6. **No commit of `{plansDir}/`** — except Step 8 delivery per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md).
 7. **Subagents: fresh per step** — never resume a subagent across steps.

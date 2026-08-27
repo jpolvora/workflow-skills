@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.41
+version: 0.3.42
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -16,7 +16,7 @@ Execute the coding and testing steps from the plan (build mode) or correct defec
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-**Reads:** `{us-dir}/plan.index.json` AC slices via `plan_index.cjs read --ac` when that file exists (do not read a `superseded: true` step-01). Else execution plan (`step-03-*.plan.exec.md`), refined plan, or draft plan; `config.json` for stack layers; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
+**Reads:** `{us-dir}/plan.index.json` AC slices via `plan_index.cjs read --ac` when that file exists (do not read a `superseded: true` step-01). Else execution plan (`step-03-*.plan.exec.md`), refined plan, or draft plan; `config.json` for stack layers; consult knowledge via [`tools.md`](../ws-shared/tools.md) **`read-memory`** / [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
 
 ## Invocation
 
@@ -39,8 +39,8 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria.
    - Done when: every task/step has an identified file list and AC.
 
-2. **Consult MEMORY** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for 3–8 modules/paths/keywords in the plan; apply Medium+ Solutions before editing; record search keywords and hits.
-   - Done when: relevant entries noted or none found; keywords recorded for `step-output.memory_consult`.
+2. **Consult memory (`read-memory`)** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for 3–8 modules/paths/keywords in the plan (every enabled backend: local files and/or spec-memo vault); apply Medium+ Solutions before editing; record search keywords, backends queried, and hits.
+   - Done when: relevant entries noted or none found; keywords + backends recorded for `step-output.memory_consult`.
 
 3. **Scan codebase** — Locate similar code in the project layers (`config.json`) for style consistency.
    - Done when: a matching pattern is found, or none exists and this is noted.
@@ -62,7 +62,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
    - Done when: every finding is enumerated.
 
-2. **Consult MEMORY** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths; reuse known Solutions before inventing fixes.
+2. **Consult memory (`read-memory`)** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths (every enabled backend); reuse known Solutions before inventing fixes.
    - Done when: relevant entries noted or none found.
 
 

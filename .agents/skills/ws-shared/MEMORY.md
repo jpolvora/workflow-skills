@@ -5,3 +5,75 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
   node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
 
 ---
+
+### [2026-08-26] Vault-disable restore only when vault was active
+- **Layer**: `skills`
+- **Module**: `ws-spec-memo / configure_spec_memo`
+- **Severity**: `High`
+- **PathPattern**: `**/ws-spec-memo/scripts/configure_spec_memo.cjs;**/test-configurable-memory-backends.js`
+- **Scenario / Context**: Unconditional `nextMemoryFiles=true` on `--enabled false` fixed vault-only disable but also re-enabled local memory after an explicit fully-disabled state. Separate CI failure: vault-only configure tests without a stub CLI crash on JSON.parse when `memo` is absent.
+- **DO NOT**: Always force `enableMemoryFiles: true` on disable; do not enable vault in tests without a stub CLI (`node <stub>` via `--cli`).
+- **INSTEAD DO**: Restore local memory only when `prev.enableSpecMemoIntegration === true || prev.enabled === true`; otherwise keep prior `enableMemoryFiles`. For vault-only tests, pass a stub `--cli` and assert idempotent disable-on-disabled.
+
+### [2026-08-26] read-memory must hit every enabled backend
+- **Layer**: `Shared`
+- **Module**: `read-memory / fix-pr / plan / implement`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md`, `.agents/skills/ws-write-plan/SKILL.md`, `.agents/skills/ws-implement-tasks/SKILL.md`, `.agents/skills/ws-shared/tools.md`
+- **Scenario / Context**: Agents consulting knowledge before plan/code/fix grepped only `{sharedDir}/MEMORY.md` even when `enableSpecMemoIntegration` was true, so vault traps were invisible during proactive discovery.
+- **DO NOT**: Treat local MEMORY.md as the sole knowledge source when vault integration is on; skip vault `bootstrap`/`search` because files exist; record only a generic `memory` skip when one backend was never attempted.
+- **INSTEAD DO**: Always run `read-memory` for every enabled backend (dual → vault first, then local). Record `memory-files` and/or `spec-memo` in `sourcesConsulted` with per-backend `consult-skipped` when unavailable. Persist via `update-memory` the same way.
+
+### [2026-08-26] mode disabled without flags re-enables local memory
+- **Layer**: `Shared`
+- **Module**: `resolveMemoryRouting`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs`, `test/test-configurable-memory-backends.js`
+- **Scenario / Context**: Incomplete config with `specMemo.mode` set (`disabled` / `local` / `vault` / `hybrid`) but without `enableMemoryFiles` / `enableSpecMemoIntegration` previously ignored mode (except legacy `enabled && vault`), so `mode: "disabled"` silently re-enabled in-repo MEMORY and `mode: "vault"|"hybrid"` alone mis-routed vault off.
+- **DO NOT**: Default missing `enableMemoryFiles` to `true` without reading `specMemo.mode`; fix only the `disabled` branch and leave `vault`/`hybrid` alone incomplete.
+- **INSTEAD DO**: When either flag is absent, derive both from the four-mode matrix (`disabled`/`local`/`vault`/`hybrid`); keep explicit boolean flags authoritative; cover mode-alone + override cases in unit tests.
+
+### [2026-08-26] Legacy enable honors mode; persist local/disabled
+- **Layer**: `skills`
+- **Module**: `ws-spec-memo / configure_spec_memo`
+- **Severity**: `High`
+- **PathPattern**: `**/ws-spec-memo/scripts/configure_spec_memo.cjs;**/test-configurable-memory-backends.js`
+- **Scenario / Context**: `--enabled true` on a seeded hub (`mode: vault`, `enableMemoryFiles: true`) became dual-mode. After disable, persisted `mode: hybrid` with vault off. Dual-mode lacked configure/check E2E coverage.
+- **DO NOT**: Prefer seed `enableMemoryFiles` over `prev.mode` on legacy enable; persist hybrid/vault when vault is off; ship without State 3 dual coverage.
+- **INSTEAD DO**: On enable without memory flags, set memory from `prev.mode` (default vault). Persist `local`/`disabled` when vault off. Cover all four backend states in tests.
+
+### [2026-08-26] Knowledge-tool aliases must assert flag parity
+- **Layer**: `harness`
+- **Module**: `ws-shared / tools.md + memory-backend tests`
+- **Severity**: `Medium`
+- **PathPattern**: `**/ws-shared/tools.md;**/test-configurable-memory-backends.js`
+- **Scenario / Context**: Memory backend migration updated scripts and some `tools.md` rows, but alias-layer regressions (especially `update-ws-changelog` still mentioning `specMemo.enabled`) can ship while CI stays green if tests only cover routing helpers.
+- **DO NOT**: Rely only on script unit tests for `enableMemoryFiles` / `enableSpecMemoIntegration` migrations.
+- **INSTEAD DO**: Assert each knowledge alias row (`read-memory`, `update-memory`, `update-ws-changelog`) references `enableSpecMemoIntegration` and that `update-ws-changelog` is not gated on legacy `specMemo.enabled`.
+
+### [2026-08-26] Disable vault-only must restore local memory files
+- **Layer**: `skills`
+- **Module**: `ws-spec-memo / configure_spec_memo`
+- **Severity**: `High`
+- **PathPattern**: `**/ws-spec-memo/scripts/configure_spec_memo.cjs`
+- **Scenario / Context**: Consumer was vault-only (`enableMemoryFiles: false`, `enableSpecMemoIntegration: true`) then ran `/ws-spec-memo disable` / `--enabled false` without an explicit memory-files flag. Prev `enableMemoryFiles: false` was preserved, so `resolveMemoryRouting` left both backends off and in-repo MEMORY consult/compile stayed dark.
+- **DO NOT**: When disabling vault integration without an explicit `--enable-memory-files` / stdin memory flag, reuse previous `enableMemoryFiles: false` from vault-only mode.
+- **INSTEAD DO**: If `nextSpecMemo` becomes false and the caller did not set memory-files explicitly, set `nextMemoryFiles = true` so disable restores local markdown memory. Cover with a vault-only → disable restoration test.
+
+### [2026-08-26] Avoid redundant dual Node/Python scripts
+- **Layer**: `harness`
+- **Module**: `ws-shared / skill scripts`
+- **Severity**: `High`
+- **PathPattern**: `**/*.{cjs,js,py};**/ws-shared/scripts/**`
+- **Scenario / Context**: A helper was implemented twice (Node `.cjs` + Python `.py`) “for parity,” then review demanded dual-runtime tests. Dual copies drift (config routing, parent-count bugs, CI-only failures) and violate the package Node SoT (`unique-skill-script-runtime`).
+- **DO NOT**: Add a second-language mirror of an existing helper, write Node/Python parity test pairs for the same job, or invent new dual `.cjs`+`.py` scripts for one responsibility.
+- **INSTEAD DO**: New scripts use **one** runtime only — prefer **Node `.cjs`** for packaged skills (canonical). Pre-existing `.py` helpers may be evolved, updated, or bug-fixed in place without adding a Node twin (and vice versa). Delete unused mirrors rather than covering them with parity tests.
+
+### [2026-08-26] AC14 lifecycle routing needs automated assertions
+- **Layer**: `Tests`
+- **Module**: `test-configurable-memory-backends`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-configurable-memory-backends.js`, `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-shared/tools.md`
+- **Scenario / Context**: Spec AC14 requires tests for lifecycle hook translation (failure reflection, fix-pr traps, changelog append) when `enableSpecMemoIntegration` is true. Routing/configure E2E stayed green without asserting `update-memory`/`upsert`/`append` in skill + alias docs.
+- **DO NOT**: Treat `resolveMemoryRouting` + configure E2E as full AC14 coverage.
+- **INSTEAD DO**: Assert `ws-self-learning` `update-memory` + `upsert --kind trap`, `tools.md` vault upsert/append, and hub `read-memory`/`update-memory` routing.

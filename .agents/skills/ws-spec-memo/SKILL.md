@@ -1,6 +1,6 @@
 ---
 name: ws-spec-memo
-version: 0.3.41
+version: 0.3.42
 disable-model-invocation: true
 description: >-
   Configure and bridge workflow-skills with the external spec-memo vault (MCP/CLI).
@@ -15,15 +15,21 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-memo loaded."
 
-**Bridge skill:** routes workflow-skills memory, changelog, and legacy `.agents` artifacts to the [spec-memo](https://github.com/jpolvora/spec-memo) external vault when `config.json` → `specMemo.enabled` is explicit `true`. Default remains in-repo `{sharedDir}/MEMORY.md` + `memory/*` via `ws-self-learning`.
+**Bridge skill:** routes workflow-skills memory, changelog, failure reflections, and legacy `.agents` artifacts to the [spec-memo](https://github.com/jpolvora/spec-memo) external vault based on `config.json` settings (`enableMemoryFiles` and `enableSpecMemoIntegration`).
+
+- **`enableMemoryFiles: true`**: writes traps/learnings to local `{sharedDir}/memory/*.md` and compiles `{sharedDir}/MEMORY.md` via `ws-self-learning`.
+- **`enableSpecMemoIntegration: true`**: reads/writes memory records via `spec-memo` MCP server tools or `memo` CLI.
+- Both can be enabled (dual-mode: persists to local files and vault), or both disabled. Legacy `specMemo.enabled` and `mode` resolve seamlessly.
 
 Mapping table → [`references/INTEGRATION.md`](references/INTEGRATION.md). MCP host snippet → [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json).
 
-**Not this skill:** replacing `ws-spec-to-pr` plan trees; editing spec-memo source; auto-enabling vault mode on install; runtime vault search/get/gc/promote/canvas/SSE (use **`ws-memo`** from [spec-memo](https://github.com/jpolvora/spec-memo) — see [`references/INTEGRATION.md`](references/INTEGRATION.md) § Two-skill split).
+**Role segregation (two-skill split):**
+- **`ws-memo`** (owned by [spec-memo](https://github.com/jpolvora/spec-memo)): upstream runtime skill for day-to-day vault operations (10 MCP tools: `bootstrap`, `search`, `get`, `upsert`, `append`, `forget`, `gc`, `promote`, `check_version`, `install_skills` + CLI extras like `canvas`, `doctor`, `rank`, `sync-vault`).
+- **`ws-spec-memo`** (owned by workflow-skills): integration bridge covering harness configuration (`config.json`), setup wizard interview, lifecycle hook translation (failure reflection, adversarial audit traps, changelog append), dual-mode fallback, preflight health diagnostics, and legacy data import.
 
 **Runtime (after setup):** when vault is enabled and MCP/CLI is registered, load **`/ws-memo`** (`{skillsRoot}/ws-memo/SKILL.md` from the spec-memo package) for day-to-day vault operations — not this skill.
 
-**Also invoked from:** [`ws-configure-project`](../ws-configure-project/SKILL.md) step 7 / `--section specMemo` during project setup (same gates; default Recommended = disabled).
+**Also invoked from:** [`ws-configure-project`](../ws-configure-project/SKILL.md) step 7 / `--section specMemo` during project setup.
 
 ## Invocation
 

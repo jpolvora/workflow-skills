@@ -312,6 +312,18 @@
     "featuresMdEnabled": true,
     "canonicalFiles": []
   },
+  "specMemo": {
+    "enabled": true,
+    "enableMemoryFiles": true,
+    "enableSpecMemoIntegration": true,
+    "mode": "hybrid",
+    "cli": "memo",
+    "vaultRoot": "",
+    "bootstrapOnSession": true,
+    "writeBlockHook": false,
+    "importOnEnable": false,
+    "mcpServerName": "spec-memo"
+  },
   "fable": {
     "_comment": "Opt-in integration for fable-* skills within ws-spec-to-pr / ws-spec-to-pr-lite workflows. Master toggle must be true to enable automatic calls.",
     "enabled": true,

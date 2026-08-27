@@ -16,35 +16,45 @@ workflow-skills stores agent working state in-repo by default:
 
 [spec-memo](https://github.com/jpolvora/spec-memo) moves **working memory** (traps, decisions, plans, logs, scratch) to `~/.spec-memo/projects/<projectId>/`, keyed by normalized git remote. Product repos keep specs of record and product code only.
 
-## Config switch
+## Config switches
 
-`{sharedDir}/config.json` → `specMemo`:
+`{sharedDir}/config.json` → `enableMemoryFiles` and `enableSpecMemoIntegration` (or under `specMemo`):
 
 | Key | Default | Role |
 |-----|---------|------|
-| `enabled` | `false` | When explicit `true`, bridge table below applies |
-| `mode` | `vault` | `vault` = vault-only writes; `hybrid` = fallback to in-repo MEMORY on MCP/CLI failure |
-| `cli` | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
-| `vaultRoot` | `""` | Override `$SPEC_MEMO_ROOT`; empty uses `~/.spec-memo` |
-| `bootstrapOnSession` | `true` | Recommend `bootstrap` at session start when enabled |
-| `writeBlockHook` | `false` | Whether setup ran `memo hook install` |
-| `importOnEnable` | `true` | Whether setup ran one-shot `memo import` |
-| `mcpServerName` | `spec-memo` | Expected MCP namespace id in agent host |
+| `enableMemoryFiles` | `true` | When `true`, write traps/learnings to `{sharedDir}/memory/*.md` and compiled `MEMORY.md` |
+| `enableSpecMemoIntegration` | `false` | When `true`, route memory reads/writes to `spec-memo` MCP server tools or CLI |
+| `specMemo.mode` | (`local` when files-only) | Persisted label: `local` \| `vault` \| `hybrid` \| `disabled`. When either boolean flag is **absent**, `resolveMemoryRouting` derives both flags from `mode` (incomplete merges must not silently re-enable local files). Explicit boolean flags always win. |
+| `specMemo.cli` | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
+| `specMemo.vaultRoot` | `""` | Override `$SPEC_MEMO_ROOT`; empty uses `~/.spec-memo` |
+| `specMemo.bootstrapOnSession` | `true` | Recommend `bootstrap` at session start when spec-memo enabled |
+| `specMemo.writeBlockHook` | `false` | Whether setup ran `memo hook install` |
+| `specMemo.importOnEnable` | `true` | Whether setup ran one-shot `memo import` |
+| `specMemo.mcpServerName` | `spec-memo` | Expected MCP namespace id in agent host |
+
+## Routing Matrix (4 Combinations)
+
+| `enableMemoryFiles` | `enableSpecMemoIntegration` | Mode Name | Read Behavior (`read-memory`) | Write Behavior (`update-memory`) |
+|---|---|---|---|---|
+| `true` | `false` | Local Files Only (Default) | `Grep`/`Read` `{sharedDir}/MEMORY.md` | Write `{sharedDir}/memory/*.md` + `--compile` |
+| `false` | `true` | Spec-Memo Only (Vault) | MCP/CLI `bootstrap` or `search` | `upsert --kind trap` (no local files created) |
+| `true` | `true` | Dual Mode (Both) | Query MCP/CLI first, supplement with `MEMORY.md` | Persist to both local markdown files and vault |
+| `false` | `false` | Disabled (None) | Returns empty results (no error) | Skips persistence; records `Learning: N/A` |
 
 ## Operation routing
 
-When `specMemo.enabled: true`, agents follow `tools.md` aliases and [`ws-spec-memo`](../SKILL.md) — autoloaded `ws-self-learning` / `ws-changelog` skill bodies are unchanged in this release; the bridge reroutes at the alias layer.
-
-| Moment | In-repo (default) | Vault mode (`specMemo.enabled: true`) |
-|--------|-------------------|----------------------------------------|
+| Moment | Local Markdown (`enableMemoryFiles`) | Spec-Memo MCP/CLI (`enableSpecMemoIntegration`) |
+|--------|---------------------------------------|-------------------------------------------------|
 | Session start | `Grep`/`Read` `MEMORY.md` | `memo bootstrap` or MCP `bootstrap` |
-| Pre-plan consult | `ws-self-learning` `--match-paths` | `bootstrap --path …` or `search --kind trap` |
-| New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `upsert --kind trap` with DO NOT / INSTEAD DO body |
-| Task done changelog | Append `{changelogFile}` | `append --event "…"` (+ hybrid may still append in-repo) |
+| Pre-plan / fix-pr / implement consult (`read-memory`) | `ws-self-learning` `--match-paths` / `Grep` `MEMORY.md` — **same evidence class as code** | `bootstrap` / `search --kind trap` (MCP preferred) — **required when this flag is true**; dual → vault first then local |
+| New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `upsert --kind trap` with DO NOT / INSTEAD DO body; MCP frontmatter `severity`: `low`\|`medium`\|`high`\|`critical` (lowercase only) |
+| Failure reflection ($\ge 2$ friction) | Mandatory trap in `{sharedDir}/memory/` | Mandatory `upsert --kind trap` |
+| Adversarial audit (`REFUTED` / `CAVEATS`) | Mandatory reflection in `memory/` | High/Critical `upsert --kind trap` |
+| Task done changelog | Append `{changelogFile}` | `append --event "…"` (event log) |
 | Fix-PR learning | `memory/*` + compile | `upsert --kind trap` |
 | Legacy migration | Manual copy | `memo import --from {repoRoot}` |
 | Pollution scan | `ws-cleanup` | `memo doctor` + `ws-cleanup` for untracked scratch |
-| Promote ADR to product | Edit `docs/` manually | `memo promote {id} --to docs/…` |
+| Promote ADR to product | Edit `docs/` manually | `memo promote {id} --to docs/…` (via `ws-memo`) |
 
 ## Import mapping (`memo import`)
 

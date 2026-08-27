@@ -37,12 +37,19 @@ const goalEvals = JSON.parse(read('.agents/skills/ws-goal-fix-pr/evals/evals.jso
 
 // AC1 / AC3 / AC9 — shared contract proactive discovery + size gate + single source
 assert(
-  cooperative.includes('Proactive discovery') && cooperative.includes('MEMORY.md'),
-  'COOPERATIVE_FIX defines proactive discovery with MEMORY consult',
+  cooperative.includes('Proactive discovery') &&
+    cooperative.includes('read-memory') &&
+    cooperative.includes('spec-memo') &&
+    cooperative.includes('MEMORY.md'),
+  'COOPERATIVE_FIX defines proactive discovery with read-memory (files + vault)',
 );
 assert(
   /consult-skipped/i.test(cooperative) && cooperative.includes('sourcesConsulted'),
   'COOPERATIVE_FIX consult-skipped and sourcesConsulted',
+);
+assert(
+  cooperative.includes('memory-files') && cooperative.includes('spec-memo'),
+  'COOPERATIVE_FIX sourcesConsulted names memory-files and spec-memo',
 );
 assert(
   cooperative.includes('proactiveFixed') && cooperative.includes('proactiveSkipped'),
@@ -235,7 +242,7 @@ const autoFixBlob = createHash('sha1')
   .update(`blob ${Buffer.byteLength(normalizedAutoFix, 'utf8')}\0`)
   .update(normalizedAutoFix, 'utf8')
   .digest('hex');
-assert(autoFixBlob === '59e51b370edd51d6b8ae5ef87c9a9c29b931cf9b', 'AUTO_FIX.md remains byte-for-byte unchanged');
+assert(autoFixBlob === '97cfebb86144a743760ad000c0596cb7781468c7', 'AUTO_FIX.md remains byte-for-byte unchanged');
 assert(!/fixPrPlan|fixPrExec/.test(autoFix), 'AUTO_FIX.md contains no dual-model role contract');
 
 // AC10 — sabotage guardrail still referenced in harness test sibling

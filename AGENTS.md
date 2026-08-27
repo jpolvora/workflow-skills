@@ -168,7 +168,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 
 ## Upstream session contract (this repo only)
 
-**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.3.41** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-write-spec`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
+**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.3.42** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-write-spec`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
 
 Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this contract. A folder under `.agents/skills/` would be hashed and shipped. Summarize here; invoke live scripts by path; load a live body only when **authoring or testing that skill**. Orchestrators, providers, `ws-check-harness`: task router, one skill at a time.
 
@@ -178,7 +178,7 @@ Hub files (`config.json`, `tools.md`, `gates.md`) are not skills. Specs keywords
 
 ### 1. Surgical scope (`ws-karpathy-guidelines`)
 
-Caution over speed; trivial tasks: judgment. Consult `{sharedDir}/MEMORY.md` before inventing (§5).
+Caution over speed; trivial tasks: judgment. Consult knowledge via `read-memory` (local MEMORY and/or spec-memo vault per routing) before inventing (§5).
 
 - **Think:** state assumptions; present multiple interpretations; say if a simpler path exists; stop and ask when unclear.
 - **Simplicity:** minimum code that solves the ask. No extras, single-use abstractions, unrequested configurability, or impossible-path error handling. If 200 lines could be 50, rewrite.
@@ -243,14 +243,14 @@ Opt-out: `stop ws-tdah` / `stop verbosity` / `normal mode` (retired `stop ws-gab
 
 MEMORY = anti-regression (input + output). Changelog = append-only history, not MEMORY.
 
-**Before** plan/code/fix (skip pure Q&A): 3–8 keywords + touched file paths → `Grep` / `Read` `{sharedDir}/MEMORY.md` or `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --match-paths <files>` → fold Medium+ **DO NOT** / **INSTEAD DO**.
+**Before** plan/code/fix (skip pure Q&A): 3–8 keywords + touched file paths → [`tools.md`](.agents/skills/ws-shared/tools.md) **`read-memory`** (when `enableSpecMemoIntegration`: MCP/CLI `bootstrap`/`search`; when `enableMemoryFiles`: `Grep` / `Read` `{sharedDir}/MEMORY.md` or `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`; dual → vault first then local) → fold Medium+ **DO NOT** / **INSTEAD DO**.
 
 **After** mutating work (required `Learning:` line):
-- **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Record Root Cause & Trap in `{sharedDir}/memory/YYYY-MM-DD-[slug].md` and compile.
-- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), write a MEMORY trap. `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
-- **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory `Severity: High/Critical` memory entry.
-- **Standard work**: new trap → `{sharedDir}/memory/YYYY-MM-DD-[slug].md` then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` (script path, not a skill load; run compile only after the file is on disk, not in the same parallel tool batch as Write). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
-- `MEMORY.md` conflict: re-run `--compile`; do not resolve by hand.
+- **Failure Reflection**: If $\ge 2$ tool/test/build failures occurred before passing, `Learning: N/A` is strictly **forbidden**. Persist Root Cause & Trap via **`update-memory`** (local `memory/YYYY-MM-DD-[slug].md` + compile and/or vault `upsert --kind trap`).
+- **Fix-PR round**: After each `ws-goal-fix-pr` / `ws-fix-pr` round, if a reviewer or CI thread was a real agent mistake (score 6–10 or a `diff-regression` we fixed), persist via **`update-memory`**. `Learning: N/A` is forbidden for those defects. Skip writes in `dry-run`.
+- **Adversarial Reflection**: If `ws-fable-judge` audit yields `REFUTED` or `CAVEATS`, record mandatory High/Critical entry via **`update-memory`** (local body may say `Severity: High`; vault MCP frontmatter must use `severity: "high"` \| `"critical"` lowercase).
+- **Standard work**: new trap → **`update-memory`** (local file then `node .agents/skills/ws-self-learning/scripts/self_learning.cjs --compile` when files enabled — compile only after the file is on disk, not in the same parallel tool batch as Write; vault upsert when integration enabled). No trap & $<2$ failures → `Learning: N/A (standard implementation)` or `Learning: N/A (no new project knowledge)`.
+- `MEMORY.md` conflict (files backend): re-run `--compile`; do not resolve by hand.
 
 Entry shape: `### [YYYY-MM-DD] [Topic]` plus Layer, Module, Severity, PathPattern, Scenario / Context, DO NOT, INSTEAD DO.
 
@@ -267,16 +267,16 @@ Do not re-read or rewrite past changelog entries.
 
 #### spec-memo MCP + hooks (this repo dogfood)
 
-Optional external vault ([spec-memo](https://github.com/jpolvora/spec-memo)). Default remains the in-repo MEMORY/changelog path above unless `{sharedDir}/config.json` → `specMemo.enabled` is explicit `true` (or the user asks for vault ops).
+Optional external vault ([spec-memo](https://github.com/jpolvora/spec-memo)) and configurable memory routing (`enableMemoryFiles` and `enableSpecMemoIntegration`). Default is `enableMemoryFiles: true, enableSpecMemoIntegration: false` (in-repo MEMORY/changelog) unless `enableSpecMemoIntegration` or legacy `specMemo.enabled` is explicit `true`.
 
 | Piece | Use |
 |-------|-----|
 | **MCP** | When the host exposes namespace `spec-memo`, `user-spec-memo`, or `specMemo.mcpServerName`, prefer those tools. Discover schema before invoke. Core tools: `bootstrap`, `search`, `get`, `upsert`, `append`, `forget`, `gc`, `promote`. Do **not** invent a ninth MCP tool. Host snippet: [`.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json`](.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json) (stdio `{cli} serve`). |
 | **Runtime skill** | Load **`ws-memo`** from `{globalSkillsRoot}/ws-memo/SKILL.md` (shipped by spec-memo; install/copy into global or project `{skillsRoot}` — not authored under this package). Prefer MCP; CLI (`memo` / `npx -y spec-memo`) for extras. |
-| **Setup/bridge** | **`ws-spec-memo`** only: `specMemo.*`, import, hybrid MEMORY fallback, check/bootstrap/disable. Map: [`ws-spec-memo/references/INTEGRATION.md`](.agents/skills/ws-spec-memo/references/INTEGRATION.md). |
+| **Setup/bridge** | **`ws-spec-memo`** only: `enableMemoryFiles`, `enableSpecMemoIntegration`, `specMemo.*`, import, dual-mode fallback, check/bootstrap/disable. Map: [`ws-spec-memo/references/INTEGRATION.md`](.agents/skills/ws-spec-memo/references/INTEGRATION.md). |
 | **Write-block hook** | CLI-only: `memo hook install [--productRoot {repo}]` (blocks committing vault residue / workflow scratch). Bypass: `SKIP_MEMO_HOOK=1`. Setup interview may offer this via `ws-spec-memo`; do not invent a custom hook script. |
 
-When vault mode is on: session consult → MCP `bootstrap` (or `memo bootstrap`); new traps → `upsert`; task log → `append`; follow [`tools.md`](.agents/skills/ws-shared/tools.md) `read-memory` / `update-memory` vault reroutes. Hybrid falls back to in-repo MEMORY on MCP/CLI failure.
+When spec-memo integration is on: session consult → MCP `bootstrap` (or `memo bootstrap`); new traps → `upsert`; task log → `append`; follow [`tools.md`](.agents/skills/ws-shared/tools.md) `read-memory` / `update-memory` vault reroutes. Dual mode persists to both local files and vault.
 
 ### 6. Write a spec (on demand)
 

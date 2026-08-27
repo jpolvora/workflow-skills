@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.41** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.42** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -152,7 +152,7 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
 | Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
-| External vault bridge: configure spec-memo MCP/CLI, import legacy `.agents` tree, bootstrap session brief | `ws-spec-memo` | `~/.spec-memo/projects/<projectId>/` when `specMemo.enabled: true` |
+| External vault bridge: configure spec-memo MCP/CLI, import legacy `.agents` tree, bootstrap session brief, and dual memory routing (`enableMemoryFiles` / `enableSpecMemoIntegration`); plan/implement/fix-pr `read-memory` consults every enabled backend as code-class evidence | `ws-spec-memo` | `~/.spec-memo/projects/<projectId>/` when `enableSpecMemoIntegration: true` |
 | Domain authority, minimum evidence sets, and fraud definitions per domain | `ws-fable-domain` | domain adapters |
 
 Steps 4 and 6 of the standard pipeline require **proof** of memory consultation in the subagent's step output; a missing consult is a gate failure, not a warning.
@@ -250,12 +250,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.41)
+## 12. Recent evolution (0.3.22 → 0.3.42)
 
 Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.42** | Aug 26 | Configurable memory storage backends (`enableMemoryFiles` & `enableSpecMemoIntegration`), `ws-spec-memo` integration bridge, wizard interview updates & tests |
 | **0.3.41** | Aug 26 | `ws-spec-memo` runtime ops hand off to spec-memo `ws-memo`; hashed hub `setup.md` FAQ links + skill-integrity refresh; root `RESEARCH.md` backlog |
 | **0.3.40** | Aug 25 | Fix-PR batch dual-model: `fixPrPlan` (reviewer) then `fixPrExec` (execution) per Act round / standalone `/fix-pr`; config roles + tests; Auto-Fix unchanged |
 | **0.3.39** | Aug 25 | **Configurable verify bar** via `defaults.minVerifyScore` (1–10, default 9): drives scoreAndRefine, pre-advance Step 6, and `merge_verify_review`; optional Reach-10 user-gate after verify; ledger formula unchanged |

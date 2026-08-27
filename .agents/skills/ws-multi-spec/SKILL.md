@@ -1,6 +1,6 @@
 ---
 name: ws-multi-spec
-version: 0.3.41
+version: 0.3.42
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:

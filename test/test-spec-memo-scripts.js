@@ -118,7 +118,7 @@ try {
 
   const enableNoCli = runNode(
     CONFIGURE,
-    ['--repo-root', tmp, '--apply', '--enabled', 'true', '--json'],
+    ['--repo-root', tmp, '--apply', '--enabled', 'true', '--cli', 'memo-unavailable-for-test', '--json'],
     { env: { WORKFLOW_SKILLS_SHARED_DIR: customShared } },
   );
   assert(enableNoCli.status === 2, 'configure rejects enable when CLI unavailable');

@@ -1,5 +1,45 @@
 # Changelog
 
+### [2026-08-26 23:36] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` 246 round 5 — leftover threads after CI
+- **Done**: Resolve already-fixed mode-matrix thread; add AC14 lifecycle-hook assertions (self-learning upsert, tools.md upsert/append, AGENTS aliases)
+- **Result**: `node test/test-configurable-memory-backends.js` and `npm run test` green
+
+### [2026-08-26 23:24] Agent: Composer
+- **Prompt**: Ensure plan/implement/fix-pr memory consult includes spec-memo vault when enabled
+- **Done**: Route Pre-work / COOPERATIVE_FIX / write-plan / implement-tasks / tools.md Rules / AGENTS dogfood through `read-memory`/`update-memory`; `sourcesConsulted` gains `memory-files` + `spec-memo`; evals + proactive tests updated
+- **Result**: Enabled backends are peer evidence with code/docs; per-backend consult-skipped is non-fatal
+
+### [2026-08-26 23:23] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 — deepen mode→flag routing before CI
+- **Done**: `resolveMemoryRouting` derives both flags from full `specMemo.mode` matrix when booleans absent; matrix + override tests; INTEGRATION.md / config.example notes; MEMORY trap; integrity regen
+- **Result**: Adversarial matrix + full `npm run test` green; prevents next-round miss on vault/hybrid-alone incomplete configs
+
+### [2026-08-27 03:12 UTC] Agent: Composer
+- **Prompt**: `/ws-self-learning` — trap for dual Node/Python scripts
+- **Done**: Added `memory/2026-08-26-avoid-dual-node-python-scripts.md`; compiled MEMORY; vault upsert
+- **Result**: High-severity trap: one runtime per job; Node for new packaged scripts; evolve pre-existing in place
+
+### [2026-08-27 03:10 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 round 4 — schema modes + drop Python memory-routing mirror
+- **Done**: Expand `specMemo.mode` schema enum to local/disabled; remove unused Python `resolve_memory_routing` (Node SoT only); integrity regen
+- **Result**: No dual-runtime parity tests; memory routing stays in `resolve_consumer_root.cjs`
+
+### [2026-08-27 02:56 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 round 3 (legacy enable, dual coverage, persisted modes)
+- **Done**: Legacy `--enabled true` honors `prev.mode`; persist `local`/`disabled` when vault off; State 3 dual-mode test; integrity regen
+- **Result**: Local memory-backend + full `npm run test` green; ready to push/resolve
+
+### [2026-08-27 02:48 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 round 2 (CI vault-only JSON crash + disable restore guard)
+- **Done**: Gate disable→local restore on vaultWasActive; stub CLI for vault-only tests; idempotent disable-on-disabled; integrity regen
+- **Result**: Local memory-backend + full `npm run test` green; ready to push/resolve
+
+### [2026-08-27 02:35 UTC] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 246 live
+- **Done**: Restored local memory on vault disable; strengthened tools.md knowledge-alias tests; integrity regen; MEMORY traps + round-1 report
+- **Result**: Round 1 fixes ready to commit/resolve/push on PR 246
+
 ### [2026-08-26 18:40 UTC] Agent: Cursor Grok 4.6
 - **Prompt**: Fix CI integrity failure; commit; bump; ship `/ws-ship-pr` next version
 - **Done**: Regenerated `bin/skill-integrity.json` after hashed hub `setup.md` drift; `npm run build-site:bump` 0.3.40 → 0.3.41; FEATURES/test-doc-sync/AGENTS stamp aligned; isolated spec-memo missing-ws-memo fixture from global skills

@@ -1,7 +1,7 @@
 ---
 name: ws-write-plan
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.3.41
+version: 0.3.42
 disable-model-invocation: true
 invocation_names:
   - write-plan
@@ -18,7 +18,7 @@ Draft an implementation blueprint from the spec.
 
 **Canonical path:** `{us-dir}/step-01-{slug}.plan.md` (`{us-dir}` = `{plansDir}/{slug}/`).
 
-**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult MEMORY via [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work.
+**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult knowledge via [`tools.md`](../ws-shared/tools.md) **`read-memory`** / [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (local MEMORY and/or spec-memo vault per routing).
 
 ## Invocation
 
@@ -38,10 +38,10 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 ## Steps
 
-1. **Load spec, stack & memory** — Read the spec input and `config.json` layers/invariants; grep `{sharedDir}/MEMORY.md` for plan keywords.
+1. **Load spec, stack & memory** — Read the spec input and `config.json` layers/invariants; run **`read-memory`** for plan keywords (vault and/or `{sharedDir}/MEMORY.md` per `enableSpecMemoIntegration` / `enableMemoryFiles`).
    - **Design intent:** For modification / bugfix ACs, require `git log -p -S` and/or `git log -L` on touched symbols before recommending behavior changes; reference `### Design Intent` from the spec when present.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true` **and** the `ws-fable-domain` skill folder exists, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6. Missing folder: skip domain adapters (do not STOP).
-   - Done when: stack and relevant memory entries are identified.
+   - Done when: stack and relevant memory entries (from every enabled backend) are identified.
 
 
 

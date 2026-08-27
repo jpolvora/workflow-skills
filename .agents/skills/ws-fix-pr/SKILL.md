@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.3.41
+version: 0.3.42
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -85,7 +85,7 @@ When an orchestrator owns the run and `dispatch-agent` is available, append orde
 
 4. **`fixPrExec` — follow, amend, and fix**: follow the approved gate. Re-run provider `check-pr-status`, inspect failed-check logs, and classify failures as diff-regression, baseline reproduced on `project.baseBranch`, or infra-flake (one rerun only). For changed or remotely resolved thread evidence, append a skip or structured amendment. Before the first product edit that differs from `proposedAction`, append an amendment containing `timestamp`, `threadId`, `newFact`, `previousAction`, `revisedAction`, `rationale`, and evidence source.
 
-   For every score 6–10 thread, name the defect class and follow [`scripts/COOPERATIVE_FIX.md`](scripts/COOPERATIVE_FIX.md) **proactive discovery** (code grep, MEMORY when present, same-PR context sources, and optional pattern docs when enabled) before `resolve-thread`. Apply minimal edits for every in-scope occurrence per the size gate, not only the anchor. Record `defectClass`, `sourcesConsulted`, `proactiveFixed`, and `proactiveSkipped` (path + reason) on the gate and in each resolution comment. **Forbidden:** close a thread after fixing only the anchor while same-class surgical hits remain without a recorded skip. Missing `MEMORY.md` is consult-skipped; absent prior round reports are not a failure.
+   For every score 6–10 thread, name the defect class and follow [`scripts/COOPERATIVE_FIX.md`](scripts/COOPERATIVE_FIX.md) **proactive discovery** (code grep, `read-memory` for every enabled backend — local `MEMORY.md` / `memory/*` and/or spec-memo vault — same-PR context, and optional pattern docs when enabled) before `resolve-thread`. Apply minimal edits for every in-scope occurrence per the size gate, not only the anchor. Record `defectClass`, `sourcesConsulted`, `proactiveFixed`, and `proactiveSkipped` (path + reason) on the gate and in each resolution comment. **Forbidden:** close a thread after fixing only the anchor while same-class surgical hits remain without a recorded skip. Per-backend memory miss is consult-skipped (`memory-files` / `spec-memo`); absent prior round reports are not a failure.
    - Done when: the execute role followed the gate, every deviation was amended before its governed edit, and every approved thread has class-wide proactive evidence or recorded skips.
 
 5. **Verify, learn, resolve, and push**: run `config.json.verification`; write `{reviewsDir}/PR-<PR-ID>-round-<N>.md`; run post-round learning per [`ws-self-learning`](../ws-self-learning/SKILL.md) § Post fix-pr round. Only after complete plan and execute/proactive evidence, call provider `resolve-thread` with a `<!-- resolution-reply -->` marker and `--model` set to the executing session model (`currentModel` / actual `fixPrExec` model) so the closing comment ends with `---\nLLM model: {id}`; then stage, commit, and `git push origin HEAD`. `dry-run` suppresses product/remote mutation, commit, and push while retaining plan evidence and simulation.

@@ -1,7 +1,7 @@
 ---
 name: ws-write-a-skill
 description: Skill authoring & optimization protocol — guides the creation, editing, structural formatting, and progressive-disclosure tuning of agent skills.
-version: 0.3.41
+version: 0.3.42
 invocation_names:
   - ws-write-a-skill
   - write-a-skill
@@ -18,7 +18,7 @@ Root virtue: **predictability** (same process every run, not the same tokens). A
 1. **Gather** — Ask: domain/task, use cases/branches, scripts needed?, reference materials?
    - Done when: scope and invocation choice (model vs user) are agreed.
 
-2. **Consult MEMORY** — Grep `{sharedDir}/MEMORY.md` for skill/script traps (launchers, CRLF, encoding, managed-skill edits). Apply Solutions before drafting scripts.
+2. **Consult memory (`read-memory`)** — Via [`tools.md`](../ws-shared/tools.md) / [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for skill/script traps (launchers, CRLF, encoding, managed-skill edits) from every enabled backend. Apply Solutions before drafting scripts.
    - Done when: relevant entries noted or none found.
 
 3. **Decide invocation** — Model-invoked (keep `description`, pay **context load**) only if the agent or another skill must reach it. Otherwise user-invoked (`disable-model-invocation: true`, human-facing one-line description).
