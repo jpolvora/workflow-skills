@@ -10,6 +10,8 @@ const HTML_COMMENT_RE = /<!--[\s\S]*?-->/g;
 const HASH_STATUS_PREFIX_RE =
   /^(?:corrigido|fixed|resolved|closed|done)(?:\s+(?:em|in|at|no))?(?:\s+commit)?[:\s]+[0-9a-f]{7,40}\.?\s*/i;
 const SHA_ONLY_RE = /^[0-9a-f]{7,40}\.?$/i;
+const METADATA_LINE_RE =
+  /^(?:defectClass|sourcesConsulted|proactiveFixed|proactiveSkipped)\s*:/i;
 
 function loadDotEnv() {
   if (!fs.existsSync('.env')) return;
@@ -62,6 +64,7 @@ function resolutionCommentSubstance(comment) {
   for (const raw of text.split(/\r?\n/)) {
     let line = raw.trim();
     if (!line || line === '---' || line === '-') continue;
+    if (METADATA_LINE_RE.test(line)) continue;
     line = line.replace(HASH_STATUS_PREFIX_RE, '').trim();
     if (!line || SHA_ONLY_RE.test(line)) continue;
     parts.push(line);

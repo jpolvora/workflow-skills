@@ -116,7 +116,7 @@ Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When
 4. **Orchestrator dispatch** (`ws-spec-to-pr/STEP-DISPATCH.md`, orch `SKILL.md`): use `ws-*` folder ids. STEP-DISPATCH is **standard-only** (0–9); lite keeps its own 0–5 table.
 5. **Upstream `bin/skill-dependencies.json`:** workflow package skill ids must match folder names on disk under the skills scan root (`.agents/skills/` when Install mode is upstream; `{skillsRoot}/` when consumer).
 
-**Forbidden folder / path ids** (**critical** in orch dispatch / Layer 2 / `skill-dependencies.json` / live skill bodies; **warning** in human FAQ with an explicit LEGACY banner). Exempt: `CHANGELOG.md` history only:
+**Forbidden folder / path ids** (**critical** in orch dispatch / Layer 2 / `skill-dependencies.json` / live skill bodies; **warning** in human FAQ with an explicit LEGACY banner). Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*` trap docs; FAQ/docs with an explicit LEGACY banner only:
 
 | Forbidden (do not use as path or install id) | Canonical |
 |----------------------------------------------|-----------|
@@ -267,7 +267,7 @@ For each internal reference (post-expansion when applicable):
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
 | Bare relative link resolution | Link `docs/faq.md` inside a skill directory resolved from repo root (`docs/faq.md`) instead of containing folder (`.agents/skills/.../docs/faq.md`) → **warning**; resolution must use containing directory |
 | Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; FAQ/docs with an explicit LEGACY banner only |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / `{sharedDir}/AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and `{sharedDir}/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
@@ -300,11 +300,12 @@ ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement
 # Install mode consumer ({skillsRoot}, often .agents/skills):
 ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement-tasks,verify-plan,code-review,testing,ship-pr,fix-pr,goal-fix-pr,update-plan-implementation} 2>/dev/null
 
-# Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ / ws-check-harness PHASES forbidden table / retired-artifact registry)
+# Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ / MEMORY / memory traps / ws-check-harness PHASES forbidden table / retired-artifact registry)
 # Install mode upstream:
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation|session_lease|sessionLeases|session-lease\.schema|ws-patterns|ws-audit|enableAuditing' \
   AGENTS.md .agents/skills/ bin/skill-dependencies.json \
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' \
+  --glob '!**/MEMORY.md' --glob '!**/memory/**' \
   --glob '!**/ws-check-harness/PHASES.md' \
   --glob '!**/ws-shared/scripts/retired_artifacts.cjs' \
   --glob '!**/ws-doctor/scripts/doctor.js'
@@ -312,6 +313,7 @@ rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|0
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation|session_lease|sessionLeases|session-lease\.schema|ws-patterns|ws-audit|enableAuditing' \
   AGENTS.md .agents/skills/ bin/skill-dependencies.json \
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' \
+  --glob '!**/MEMORY.md' --glob '!**/memory/**' \
   --glob '!**/ws-check-harness/PHASES.md' \
   --glob '!**/ws-shared/scripts/retired_artifacts.cjs' \
   --glob '!**/ws-doctor/scripts/doctor.js' 2>/dev/null || true

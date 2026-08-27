@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-27] Resolve-thread metadata-only notes
+- **Layer**: `providers`
+- **Module**: `ws-github-provider / ws-azure-devops-provider`
+- **Severity**: `Medium`
+- **PathPattern**: `**/resolve_thread.cjs|**/fix_pr_azure_context.py`
+- **Scenario / Context**: Cooperative bookkeeping lines (`defectClass`, `sourcesConsulted`, `proactiveFixed`, `proactiveSkipped`) can exceed 40 characters without describing what changed.
+- **DO NOT**: Count COOPERATIVE_FIX metadata keys as resolution-comment substance.
+- **INSTEAD DO**: Strip those lines before the length gate so both GitHub and Azure reject metadata-only notes (parity test).
+
+### [2026-08-27] Phase 4 rg vs MEMORY traps
+- **Layer**: `harness`
+- **Module**: `ws-check-harness`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-check-harness/PHASES.md`
+- **Scenario / Context**: After adding retired-artifact tokens to the Phase 4 `rg` recipe, anti-regression MEMORY entries that name `session-lease.schema.json` match as if they were live skill references.
+- **DO NOT**: Treat `{sharedDir}/MEMORY.md` or `memory/*` hits as live retired-id violations.
+- **INSTEAD DO**: Glob-exempt `MEMORY.md` and `memory/**` (same class as CHANGELOG) so the recipe stays empty on a clean tree.
+
 ### [2026-08-27] Fix-PR resolution comments must describe the correction
 - **Layer**: `Harness`
 - **Module**: `ws-fix-pr / resolve-thread`

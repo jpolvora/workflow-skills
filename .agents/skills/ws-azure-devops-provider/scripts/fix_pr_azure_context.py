@@ -383,6 +383,10 @@ HASH_STATUS_PREFIX_RE = re.compile(
     re.IGNORECASE,
 )
 SHA_ONLY_RE = re.compile(r"^[0-9a-f]{7,40}\.?$", re.IGNORECASE)
+METADATA_LINE_RE = re.compile(
+    r"^(?:defectClass|sourcesConsulted|proactiveFixed|proactiveSkipped)\s*:",
+    re.IGNORECASE,
+)
 
 
 def resolution_comment_substance(comment: str) -> str:
@@ -393,6 +397,8 @@ def resolution_comment_substance(comment: str) -> str:
     for raw in text.splitlines():
         line = raw.strip()
         if not line or line in {"---", "-"}:
+            continue
+        if METADATA_LINE_RE.match(line):
             continue
         line = HASH_STATUS_PREFIX_RE.sub("", line).strip()
         if not line or SHA_ONLY_RE.match(line):
