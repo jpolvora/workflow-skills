@@ -1,6 +1,6 @@
 ---
 name: ws-memo
-version: 0.3.2
+version: 0.3.42
 description: >-
   Route agent working memory through spec-memo MCP (10 tools) and matching CLI extras.
   Trigger on spec-memo, memo vault, bootstrap brief, upsert trap/decision/spec/plan,
