@@ -496,6 +496,57 @@ function testSkillFolderDocsCompanionsWhenPresent() {
   }
 }
 
+function testStaleRetiredArtifactsReported() {
+  console.log('\n--- testStaleRetiredArtifactsReported ---');
+  const root = mkTmp('ws-doctor-stale-');
+  const { sharedDir, doctorScript } = setupTmpDoctorProject(root);
+  const scriptsDir = path.join(sharedDir, 'scripts');
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(scriptsDir, 'retired_artifacts.cjs'),
+  );
+  fs.writeFileSync(
+    path.join(sharedDir, 'config.json'),
+    `${JSON.stringify(
+      {
+        pathTokens: {
+          skillsRoot: '.agents/skills',
+          sharedDir: '.agents/skills/ws-shared',
+        },
+        defaults: { sessionLeases: true },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  fs.writeFileSync(path.join(sharedDir, 'session-lease.schema.json'), '{}');
+  fs.mkdirSync(path.join(root, '.agents', 'skills', 'ws-patterns'));
+
+  const { ok, report, error } = runDoctorJson([], { cwd: root, doctor: doctorScript });
+  assert(ok, `stale hub doctor exits 0: ${error || ''}`);
+  if (!report) return;
+  const cfg = report.sections.configuration;
+  assert(cfg && cfg.staleRetired, 'staleRetired populated');
+  assert(
+    cfg.staleRetired.configKeys.includes('defaults.sessionLeases'),
+    'staleRetired lists defaults.sessionLeases',
+  );
+  assert(
+    cfg.staleRetired.hubFiles.includes('session-lease.schema.json'),
+    'staleRetired lists session-lease.schema.json',
+  );
+  assert(
+    Array.isArray(cfg.staleRetired.skillDirs?.project) &&
+      cfg.staleRetired.skillDirs.project.includes('ws-patterns'),
+    'staleRetired lists ws-patterns folder under project skills root',
+  );
+  assert(
+    /update/i.test(String(cfg.recommendation || '')),
+    'recommendation mentions update',
+  );
+}
+
 function main() {
   console.log('Running ws-doctor thin smoke tests...');
   try {
@@ -503,6 +554,7 @@ function main() {
     testHelp();
     testJsonReportShape();
     testMissingConfigDoesNotInventValues();
+    testStaleRetiredArtifactsReported();
     testGithubCanonicalRegisterRowHasNodeLauncher();
     testAzureCanonicalRegisterRowHasNodeLauncher();
     testProviderRegisterRowsNotMissingLaunchers();
