@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "revision": 12,
+  "workflowId": "us-250-20260827T143734Z",
+  "slug": "us-250",
+  "pipeline": "lite",
+  "status": "active",
+  "currentStep": 5,
+  "pendingGate": null,
+  "nextAction": "Run step 5",
+  "acTotal": 6,
+  "acImplemented": 0,
+  "score": null,
+  "estimatedRemainingSec": 0,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    }
+  ],
+  "statePath": ".agents/plans/us-250/us-250-20260827T143734Z.state.md",
+  "stateSha256": "d7d4c88c35468e0f3de5c693f1bbfffcec716e011414df63a08a53a15e07c867"
+}

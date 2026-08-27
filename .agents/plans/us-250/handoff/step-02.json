@@ -1,0 +1,1 @@
+{"step":2,"slug":"us-250","workflowId":"us-250-20260827T143734Z","workflowType":"lite","status":"completed","artifactPaths":[".agents/skills/ws-doctor/scripts/doctor.js"],"acRefs":[],"summary":"Finished step 2","nextAction":"Run step 3","findings":{"critical":0,"warning":0,"suggestion":0,"info":0}}

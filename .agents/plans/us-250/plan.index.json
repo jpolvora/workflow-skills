@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/us-250/step-01-us-250.plan.md",
+    "sha256": "2fb75184f17484806bad01149bc238cb8e8bf93da380a79a9dd926175c082863",
+    "bytes": 5604,
+    "lines": 88
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "0. Summary & Business Rules",
+      "level": 2,
+      "byteStart": 132,
+      "byteEnd": 1734,
+      "lineStart": 7,
+      "lineEnd": 17,
+      "sha256": "8af5fda583ed9a4e096e0dd6956c4d546df8c03bf3306d72693fe90786037723",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-002",
+      "title": "1. Definition of Ready & Scope",
+      "level": 2,
+      "byteStart": 1734,
+      "byteEnd": 3004,
+      "lineStart": 18,
+      "lineEnd": 42,
+      "sha256": "2e152423b61d19d1befdec9ac1397d9a4d1b55528d46ce1245f70f5dab3596b3",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "Acceptance Criteria Coverage",
+      "level": 3,
+      "byteStart": 1769,
+      "byteEnd": 2599,
+      "lineStart": 20,
+      "lineEnd": 30,
+      "sha256": "b3ee2b3c68c396053a3cd38f7e2dc30ab983bac2abf8a6d5b9143f68475a3e14",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-004",
+      "title": "In Scope",
+      "level": 3,
+      "byteStart": 2599,
+      "byteEnd": 2888,
+      "lineStart": 31,
+      "lineEnd": 38,
+      "sha256": "a8530c439c610a746f880990e2a4429a7125bdd270324cab78ab6b2de4d9c657",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-005",
+      "title": "Out of Scope",
+      "level": 3,
+      "byteStart": 2888,
+      "byteEnd": 3004,
+      "lineStart": 39,
+      "lineEnd": 42,
+      "sha256": "a640e92c5d0ff9877fbe38cfaa85b8a2be9a2437daffd233382e00d7dab80cf3",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-006",
+      "title": "2. Architecture & Design",
+      "level": 2,
+      "byteStart": 3004,
+      "byteEnd": 3660,
+      "lineStart": 43,
+      "lineEnd": 51,
+      "sha256": "ff16d253d5631fb6eff2c6ce2c36fa84573f681743b06b4c826a609f1c8b0f61",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/consumer-migration.js",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-007",
+      "title": "3. Step-by-Step Implementation Plan",
+      "level": 2,
+      "byteStart": 3660,
+      "byteEnd": 5304,
+      "lineStart": 52,
+      "lineEnd": 78,
+      "sha256": "a7dcba96b181f3c83d4163e7fcc43416dc38e216c3634608becd981ffd11126f",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/frontend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test-ws-doctor.js",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-008",
+      "title": "Step 1: Update Retired Registry (`retired_artifacts.cjs` & `doctor.js`)",
+      "level": 3,
+      "byteStart": 3700,
+      "byteEnd": 4161,
+      "lineStart": 54,
+      "lineEnd": 61,
+      "sha256": "15cdc4b6feea68a10e801b06052378c2ddf35f3598f20e912647785e8abc8e43",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-009",
+      "title": "Step 2: Verify and Align Live Pattern Notes (`backend.md`, `frontend.md`)",
+      "level": 3,
+      "byteStart": 4161,
+      "byteEnd": 4438,
+      "lineStart": 62,
+      "lineEnd": 64,
+      "sha256": "a5fb379c41cacecc99cf3e346a91faf958237f693966ddf5eb67181be5efbf83",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/frontend.md"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-010",
+      "title": "Step 3: Extend Test Suites (`test-consumer-migration.js`, `test-ws-doctor.js`, `test-install.js`)",
+      "level": 3,
+      "byteStart": 4438,
+      "byteEnd": 5094,
+      "lineStart": 65,
+      "lineEnd": 73,
+      "sha256": "c3b6b0a408b8db149216765b18127ebd80d7806bbc5f614bf8e196c6fd359aa5",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test-ws-doctor.js",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-011",
+      "title": "Step 4: Verification & Integrity Regeneration",
+      "level": 3,
+      "byteStart": 5094,
+      "byteEnd": 5304,
+      "lineStart": 74,
+      "lineEnd": 78,
+      "sha256": "48f343946a23bd047e5cb48d83490344e77840506b95f1e80f7f3852fa7cbe2d",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-012",
+      "title": "4. Testing & Verification Plan",
+      "level": 2,
+      "byteStart": 5304,
+      "byteEnd": 5604,
+      "lineStart": 79,
+      "lineEnd": 88,
+      "sha256": "da24a57aff20756424f528e8b412c4900ffe1127ffa7b0a409c596d5a613ec36",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-013",
+      "title": "Automated Tests",
+      "level": 3,
+      "byteStart": 5339,
+      "byteEnd": 5476,
+      "lineStart": 81,
+      "lineEnd": 86,
+      "sha256": "be99b7d564ab5ae72e6857d573c7e891b211f9088321d2befa94d8ad1d902223",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-014",
+      "title": "Manual Verification",
+      "level": 3,
+      "byteStart": 5476,
+      "byteEnd": 5604,
+      "lineStart": 87,
+      "lineEnd": 88,
+      "sha256": "4bf029b58ac54e8aff8d6f9531887415fcf451b9885d6398378f4f9181d35337",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`retired_artifacts.cjs` lists `'backend.md.template'` and `'frontend.md.template'` in `RETIRED_HUB_FILES` so `pruneRetiredConsumerArtifacts` unlinks them from consumer `ws-shared/` during `update`, `install`, and doctor runs.",
+      "planSectionIds": [
+        "section-002",
+        "section-003"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC2",
+      "text": "`retired_artifacts.cjs` lists `'patterns'` in `RETIRED_DEFAULTS_KEYS` and `'_comment_patterns'` in `RETIRED_DEFAULTS_COMMENT_KEYS` so `stripRetiredConfigKeys` strips leftover `defaults._comment_patterns` and `defaults.patterns` sediment from consumer `ws-shared/config.json`.",
+      "planSectionIds": [
+        "section-002",
+        "section-003"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC3",
+      "text": "`STALE_LIVE_REFERENCE_PATTERNS` in `retired_artifacts.cjs` contains patterns to detect any stale live references to `ws-patterns*`, `session-lease.schema.json`, `defaults.sessionLeases`, `patternsBackend`, `patternsFrontend`, or `_comment_patterns*`.",
+      "planSectionIds": [
+        "section-002",
+        "section-003"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC4",
+      "text": "Live `ws-shared/backend.md` and `ws-shared/frontend.md` intros direct agents to consult `STACK.md` and project architecture docs, with zero live mentions of `ws-patterns`.",
+      "planSectionIds": [
+        "section-002",
+        "section-003"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC5",
+      "text": "`test/test-consumer-migration.js`, `test/test-ws-doctor.js`, and `test/test-install.js` verify that `backend.md.template`, `frontend.md.template`, `_comment_patterns`, and retired config keys are properly registered, pruned, and verified.",
+      "planSectionIds": [
+        "section-002",
+        "section-003"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC6",
+      "text": "Harness checks (`ws-check-harness` / `npm test`) pass with 0 errors or retired-id regressions.",
+      "planSectionIds": [
+        "section-002",
+        "section-003"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-doctor/scripts/doctor.js",
+        ".agents/skills/ws-shared/backend.md",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "test/test-ws-doctor.js"
+      ],
+      "expectedTestNames": []
+    }
+  ]
+}

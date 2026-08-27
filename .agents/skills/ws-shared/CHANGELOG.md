@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 11:12] Agent: Gemini 3.7 Flash
+- **Prompt**: `/ws-spec-to-pr-lite` https://github.com/jpolvora/workflow-skills/issues/250
+- **Done**: Added `backend.md.template` and `frontend.md.template` to `RETIRED_HUB_FILES`, added `patterns` and `_comment_patterns` to `RETIRED_DEFAULTS_KEYS`/`RETIRED_DEFAULTS_COMMENT_KEYS` in `retired_artifacts.cjs`, synced `ws-doctor` fallback, updated `backend.md`/`frontend.md` to point at `STACK.md`, updated tests, created PR #251, commented on issue #250.
+- **Result**: PR #251 opened against `main`; full test suite green.
+
 ### [2026-08-27 03:45] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-fable-method` implement research-driven-pipeline-quality.spec.md W1–W7
 - **Done**: JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, providerCompat/contextHygiene/reviewJury, memory sanitizer, pipeline handoff check, hub `schemas/` whitelist, package 0.3.45

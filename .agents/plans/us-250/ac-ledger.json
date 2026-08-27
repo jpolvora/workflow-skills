@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "us-250-20260827T143734Z",
+  "slug": "us-250",
+  "specPath": ".agents/plans/us-250/step-00-us-250.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`retired_artifacts.cjs` lists `'backend.md.template'` and `'frontend.md.template'` in `RETIRED_HUB_FILES` so `pruneRetiredConsumerArtifacts` unlinks them from consumer `ws-shared/` during `update`, `install`, and doctor runs.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC2",
+      "text": "`retired_artifacts.cjs` lists `'patterns'` in `RETIRED_DEFAULTS_KEYS` and `'_comment_patterns'` in `RETIRED_DEFAULTS_COMMENT_KEYS` so `stripRetiredConfigKeys` strips leftover `defaults._comment_patterns` and `defaults.patterns` sediment from consumer `ws-shared/config.json`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC3",
+      "text": "`STALE_LIVE_REFERENCE_PATTERNS` in `retired_artifacts.cjs` contains patterns to detect any stale live references to `ws-patterns*`, `session-lease.schema.json`, `defaults.sessionLeases`, `patternsBackend`, `patternsFrontend`, or `_comment_patterns*`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC4",
+      "text": "Live `ws-shared/backend.md` and `ws-shared/frontend.md` intros direct agents to consult `STACK.md` and project architecture docs, with zero live mentions of `ws-patterns`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC5",
+      "text": "`test/test-consumer-migration.js`, `test/test-ws-doctor.js`, and `test/test-install.js` verify that `backend.md.template`, `frontend.md.template`, `_comment_patterns`, and retired config keys are properly registered, pruned, and verified.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC6",
+      "text": "Harness checks (`ws-check-harness` / `npm test`) pass with 0 errors or retired-id regressions.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    }
+  ],
+  "scoreState": null
+}
