@@ -60,6 +60,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Add files under `ws-shared/` (new dirs such as `schemas/`) without listing that dir or file on `HUB_WHITELIST`. Require `./sanitize_memory.cjs` from `self_learning.cjs` then copy only the parent script in test scaffolds. Assert identical `finish` is hash-stable on a workflow that already advanced past that step. Wrap `{path-tokens}` in markdown backticks inside JavaScript template literals. Run `build-site:bump` after already incrementing `package.json`.
 - **INSTEAD DO**: Keep copy and hash enumeration in lockstep: whitelist new hub dirs (`schemas` like `scripts`). Copy `sanitize_memory.cjs` next to `self_learning.cjs` in any isolated skill tree. Use a dedicated dispatch→finish→finish fixture for AC30. Use HTML `<code>` in `build-site.js` template strings. Bump version once (prefer `build-site:bump` from the previous patch).
 
+### [2026-08-27] Idempotent finish output fingerprinting and body preservation
+- **Layer**: `harness`
+- **Module**: `ws-shared / workflow_state`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: `finishFingerprint` previously omitted `summary` and `findings` from the step output, causing non-identical replays with different subagent outputs to be falsely treated as idempotent, while mutating the markdown compact body before JSON restoration.
+- **DO NOT**: Check finish idempotency without comparing `summary` and `findingsHistogram(findings)` against `readPriorHandoffOutput(paths.usDir, step)`, or unconditionally mutate `.state.md` body prior to idempotent restore.
+- **INSTEAD DO**: Include `outputSummary` and `outputFindings` in `finishFingerprint(state, output)` and only call `compactOutputs(body, step, finishOutput)` on non-idempotent finishes.
+
 ### [2026-08-27] Idempotent finish handoff stability and duplicate telemetry prevention
 - **Layer**: `harness`
 - **Module**: `ws-shared / workflow_state`

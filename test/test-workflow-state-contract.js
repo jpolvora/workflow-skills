@@ -698,6 +698,7 @@ acImplemented: 0
   assert.strictEqual(runJson.stateSha256, firstHash, 'run.json hash matches JSON SoT');
   const second = run(update, [
     'finish', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z',
+    '--step-output', JSON.stringify({ summary: 'Rich subagent summary' }),
     '--gate-decision', gate, ...idempCommon,
   ], noPython);
   assert.strictEqual(second.status, 0, second.stderr);
@@ -714,6 +715,15 @@ acImplemented: 0
   const finishLine = finishLines[0];
   assert.equal(typeof finishLine.handoffBytes, 'number');
   assert.strictEqual(finishLine.pruneAfterStep, true);
+
+  const third = run(update, [
+    'finish', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:06.000Z',
+    '--step-output', JSON.stringify({ summary: 'Updated subagent summary' }),
+    '--gate-decision', gate, ...idempCommon,
+  ], noPython);
+  assert.strictEqual(third.status, 0, third.stderr);
+  const updatedPayload = JSON.parse(fs.readFileSync(handoff, 'utf8'));
+  assert.strictEqual(updatedPayload.summary, 'Updated subagent summary', 'non-identical replay updates handoff summary');
 }
 
 console.log('test-workflow-state-contract: ok');

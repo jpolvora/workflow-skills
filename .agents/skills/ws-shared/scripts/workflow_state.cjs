@@ -83,7 +83,21 @@ function jsonIdentityHash(state) {
   return sha256(canonicalStateJson(state));
 }
 
-function finishFingerprint(state) {
+function readPriorHandoffOutput(usDir, step) {
+  const file = path.join(usDir, 'handoff', `step-${String(step).padStart(2, '0')}.json`);
+  if (!fs.existsSync(file)) return null;
+  try {
+    const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return {
+      summary: String(raw.summary || ''),
+      findings: raw.findings ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function finishFingerprint(state, output) {
   return JSON.stringify(stableValue({
     currentStep: state.currentStep,
     completedSteps: state.completedSteps,
@@ -95,6 +109,8 @@ function finishFingerprint(state) {
     commits: state.commits,
     verificationScore: state.verificationScore,
     fableVerdict: state.fableVerdict,
+    outputSummary: String(output?.summary || ''),
+    outputFindings: findingsHistogram(output?.findings),
   }));
 }
 
@@ -880,13 +896,14 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   const absoluteInput = path.resolve(context.repoRoot, stateFile);
   const loaded = loadPersistedState(absoluteInput);
   const absoluteState = loaded.mdPath;
-  const priorFingerprint = finishFingerprint(loaded.state);
   const priorJsonText = loaded.jsonText;
   const state = loaded.state;
   const step = Number(options.step);
   if (!Number.isInteger(step) || step < 0 || step > maxStep) throw new Error(`step must be in range 0..${maxStep}`);
   const timestamp = String(options.timestamp || options.finishedAt || options.dispatchedAt || nowIso());
   const paths = statePaths(absoluteState, context);
+  const priorHandoffOutput = operation === 'finish' ? readPriorHandoffOutput(paths.usDir, step) : null;
+  const priorFingerprint = finishFingerprint(loaded.state, priorHandoffOutput);
   syncAcCountsFromLedger(state, paths.usDir);
   state.stateVersion = STATE_VERSION;
   state.revision = Number(state.revision || 0) + 1;
@@ -939,7 +956,6 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.nextAction = status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
     const output = readStepOutput(options.stepOutput, context);
     finishOutput = output;
-    body = compactOutputs(body, step, output);
     const created = listArg(options.created || output.files_touched?.created?.join(','));
     const modified = listArg(options.modified || output.files_touched?.modified?.join(','));
     const deleted = listArg(options.deleted || output.files_touched?.deleted?.join(','));
@@ -1019,13 +1035,15 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       .filter(Boolean)
       .sort((a, b) => a.step - b.step);
   }
-  const isIdempotentFinish = operation === 'finish' && Boolean(priorJsonText) && finishFingerprint(state) === priorFingerprint;
+  const isIdempotentFinish = operation === 'finish' && Boolean(priorJsonText) && finishFingerprint(state, finishOutput) === priorFingerprint;
   if (isIdempotentFinish) {
     const restored = JSON.parse(priorJsonText);
     Object.keys(state).forEach((key) => {
       delete state[key];
     });
     Object.assign(state, restored);
+  } else if (operation === 'finish') {
+    body = compactOutputs(body, step, finishOutput);
   }
   const jsonText = canonicalStateJson(state);
   const stateHash = sha256(jsonText);
