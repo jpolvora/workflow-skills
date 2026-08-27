@@ -256,6 +256,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.43** | Aug 27 | **Retired artifact hygiene:** `update`/hub refresh prunes session-lease schema, `defaults.sessionLeases` / `enableAuditing` / `patterns*` config keys, and retired `ws-patterns*` / `ws-audit` folders; `ws-doctor` warns on leftovers; harness forbidden-id scan extended |
 | **0.3.42** | Aug 26 | Configurable memory storage backends (`enableMemoryFiles` & `enableSpecMemoIntegration`), `ws-spec-memo` integration bridge, wizard interview updates & tests |
 | **0.3.41** | Aug 26 | `ws-spec-memo` runtime ops hand off to spec-memo `ws-memo`; hashed hub `setup.md` FAQ links + skill-integrity refresh; root `RESEARCH.md` backlog |
 | **0.3.40** | Aug 25 | Fix-PR batch dual-model: `fixPrPlan` (reviewer) then `fixPrExec` (execution) per Act round / standalone `/fix-pr`; config roles + tests; Auto-Fix unchanged |

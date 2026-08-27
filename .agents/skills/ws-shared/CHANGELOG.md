@@ -115,6 +115,11 @@
 - **Done**: Prepare board green; pushed develop; opened PR #240; converged (0 threads, CI+review green); merged
 - **Result**: https://github.com/jpolvora/workflow-skills/pull/240 MERGED (`c4237294`)
 
+### [2026-08-27 04:00] Agent: Cursor
+- **Prompt**: Fix #247 stale session-lease artifacts after 0.3.38 removal; scan other retired references
+- **Done**: Added `retired_artifacts.cjs` + install/update prune for session-lease schema, retired config keys, and `ws-patterns*` / `ws-audit` folders; `ws-doctor` stale-artifact warnings; harness forbidden-id scan; index/spec retired markers; README note; test-consumer-migration
+- **Result**: Consumer `update` prunes leftovers that caused `session_lease.cjs` MODULE_NOT_FOUND; live skill bodies remain clean
+
 ### [2026-08-25 10:15] Agent: Cursor Grok 4.6
 - **Prompt**: Read todo.txt, create an interpreted plan, and implement
 - **Done**: Removed `ws-patterns` and session leases/git.lock from skills, orch, config, installer, tests, and docs; confirmed `ws-audit` already gone; bumped 0.3.38

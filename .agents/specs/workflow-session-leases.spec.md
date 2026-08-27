@@ -4,7 +4,10 @@ slug: workflow-session-leases
 title: "Cooperative session leases for parallel agents on one worktree"
 source: local
 specDate: 2026-08-22
+status: retired
 ---
+
+> **RETIRED (0.3.38):** Session leases were removed from the shipped product. This spec is historical only. Parallel agents on one worktree should use git worktrees (`plans.useWorktrees`), not lease files or `session_lease.cjs`. Run `npx --yes github:jpolvora/workflow-skills update` to prune stale `session-lease.schema.json` and `defaults.sessionLeases` from consumer `ws-shared/`.
 
 # Specification — Cooperative session leases for parallel agents on one worktree
 

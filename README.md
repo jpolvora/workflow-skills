@@ -186,7 +186,7 @@ The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-
 - **Consumer-owned exclusions:** `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `CHANGELOG.md`, and `skill-integrity-local.json` are never hashed and never fail integrity when edited.
 - **Trust limit:** the integrity manifest is **unsigned**. Fetching it shares the same trust boundary as today’s remote `package.json` / raw GitHub fetch (no publisher signing in this release).
 - **Source anonymization:** when a pasted error comes from a private consumer app, agents must not name that project in reports, commits, specs, or new GitHub issues. Use generic wording. See root `AGENTS.md`.
-- **Latest layout only:** no folder renames or older-layout migration on update — install/update always copies the current skill tree.
+- **Latest layout only:** no folder renames on update — install/update always copies the current skill tree. **Retired artifact hygiene:** `update` / hub refresh also prunes removed features from consumer `ws-shared/` (for example `session-lease.schema.json`, `defaults.sessionLeases`, retired `ws-patterns*` / `ws-audit` folders) without overwriting your config values.
 - **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
 - **Script runtimes:** **Node** is required for install/CLI. **New** managed skill scripts are Node `.cjs` only. Existing `.py` helpers stay until a tracked migration; consumers still need Python to run those leftovers. See [`tools.md`](.agents/skills/ws-shared/tools.md) § Script launchers.

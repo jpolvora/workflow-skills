@@ -134,6 +134,9 @@ Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When
 | `.agents/skills/shared` / `skills/shared/` (retired hub folder) | `.agents/skills/ws-shared` / `skills/ws-shared/` |
 | `hub.dir: "shared"` in `skill-dependencies.json` | `hub.dir: "ws-shared"` |
 | `pathTokens.sharedDir` default `.agents/skills/shared` | `.agents/skills/ws-shared` |
+| `session_lease.cjs` / `defaults.sessionLeases` / `session-lease.schema.json` / `{plansDir}/.runtime/git.lock` (lease mutex) | **Retired 0.3.38** — run `update` to prune consumer leftovers; use `plans.useWorktrees` for parallel isolation |
+| `ws-patterns` / `ws-patterns-backend` / `ws-patterns-frontend` | **Retired 0.3.38** — use `ws-self-learning` MEMORY; run `update` to remove stale folders |
+| `ws-audit` / `defaults.enableAuditing` | **Retired 0.3.37** — use `ws-check-harness` / `ws-check-workflows`; run `update` to prune config keys |
 
 #### Skill writing quality (optional — `ws-write-a-skill`)
 
@@ -299,11 +302,11 @@ ls -d .agents/skills/ws-{write-spec,write-plan,interview,plan-to-tasks,implement
 
 # Retired folder strings must not appear as live paths (exempt CHANGELOG / LEGACY FAQ)
 # Install mode upstream:
-rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
+rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation|session_lease|sessionLeases|session-lease\.schema|ws-patterns|ws-audit|enableAuditing' \
   AGENTS.md .agents/skills/ bin/skill-dependencies.json \
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md'
 # Install mode consumer (guard missing hubs / skills root):
-rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation' \
+rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation|session_lease|sessionLeases|session-lease\.schema|ws-patterns|ws-audit|enableAuditing' \
   AGENTS.md .agents/skills/ bin/skill-dependencies.json \
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' 2>/dev/null || true
 ```
