@@ -99,6 +99,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: fix-pr-batch-plan-exec.spec.md`)
 - [ ] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: configurable-memory-backends.spec.md`)
 - [ ] Research-driven spec-to-pr pipeline quality and integration (`spec: research-driven-pipeline-quality.spec.md`)
+- [ ] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: spec-dor-tdd-refinement-hardening.spec.md`)
+
 
 
 
@@ -164,8 +166,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 52 | `fix-pr-batch-plan-exec` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix-pr: plan substep (reviewer model) then execute (fix model) per batch |
 | 53 | `configurable-memory-backends` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing |
 | 54 | `research-driven-pipeline-quality` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Research-driven spec-to-pr pipeline quality and integration |
+| 55 | `spec-dor-tdd-refinement-hardening` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`, `fix-pr-batch-plan-exec`, `configurable-memory-backends`, `research-driven-pipeline-quality`.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`, `fix-pr-batch-plan-exec`, `configurable-memory-backends`, `research-driven-pipeline-quality`, `spec-dor-tdd-refinement-hardening`.
 
 ## 9. Inbox
 

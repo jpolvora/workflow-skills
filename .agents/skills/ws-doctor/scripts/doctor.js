@@ -29,10 +29,12 @@ function getRetiredArtifactsModule() {
           'enableAuditing',
           'patternsBackend',
           'patternsFrontend',
+          'patterns',
           '_comment_sessionLeases',
           '_comment_enableAuditing',
           '_comment_patternsBackend',
           '_comment_patternsFrontend',
+          '_comment_patterns',
         ];
         if (cfg?.defaults && typeof cfg.defaults === 'object') {
           for (const key of keys) {
@@ -41,7 +43,11 @@ function getRetiredArtifactsModule() {
         }
         return found;
       },
-      RETIRED_HUB_FILES: ['session-lease.schema.json'],
+      RETIRED_HUB_FILES: [
+        'session-lease.schema.json',
+        'backend.md.template',
+        'frontend.md.template',
+      ],
       RETIRED_SKILL_DIRS: ['ws-patterns', 'ws-patterns-backend', 'ws-patterns-frontend', 'ws-audit'],
       findRetiredSkillDirsAtRoot(fsMod, pathMod, skillsDirAbs) {
         if (!skillsDirAbs) return [];

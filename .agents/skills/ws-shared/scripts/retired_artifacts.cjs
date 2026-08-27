@@ -8,7 +8,11 @@
  * Removed in 0.3.38: ws-patterns*, session leases / git.lock, defaults.sessionLeases
  */
 
-const RETIRED_HUB_FILES = ['session-lease.schema.json'];
+const RETIRED_HUB_FILES = [
+  'session-lease.schema.json',
+  'backend.md.template',
+  'frontend.md.template',
+];
 
 const RETIRED_SKILL_DIRS = [
   'ws-patterns',
@@ -22,6 +26,7 @@ const RETIRED_DEFAULTS_KEYS = [
   'enableAuditing',
   'patternsBackend',
   'patternsFrontend',
+  'patterns',
 ];
 
 const RETIRED_DEFAULTS_COMMENT_KEYS = [
@@ -29,6 +34,7 @@ const RETIRED_DEFAULTS_COMMENT_KEYS = [
   '_comment_enableAuditing',
   '_comment_patternsBackend',
   '_comment_patternsFrontend',
+  '_comment_patterns',
 ];
 
 /** Live skill/hub bodies must not invoke these (exempt CHANGELOG + LEGACY banners). */
@@ -40,6 +46,12 @@ const STALE_LIVE_REFERENCE_PATTERNS = [
   { id: 'ws-audit', re: /\bws-audit\b/, removedIn: '0.3.37' },
   { id: 'defaults.enableAuditing', re: /\benableAuditing\b/, removedIn: '0.3.37' },
   { id: 'ws-patterns skill', re: /\bws-patterns(?:-backend|-frontend)?\b/, removedIn: '0.3.38' },
+  { id: 'defaults.patternsBackend', re: /\bpatternsBackend\b/, removedIn: '0.3.38' },
+  { id: 'defaults.patternsFrontend', re: /\bpatternsFrontend\b/, removedIn: '0.3.38' },
+  { id: 'defaults.patterns', re: /\bdefaults\.patterns\b|"patterns"\s*:/, removedIn: '0.3.38' },
+  { id: '_comment_patterns', re: /_comment_patterns(?:Backend|Frontend)?\b/, removedIn: '0.3.38' },
+  { id: 'backend.md.template', re: /backend\.md\.template/i, removedIn: '0.3.38' },
+  { id: 'frontend.md.template', re: /frontend\.md\.template/i, removedIn: '0.3.38' },
 ];
 
 function stripRetiredConfigKeys(cfg) {

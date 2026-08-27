@@ -1,0 +1,98 @@
+---
+id: 250
+slug: us-250
+title: "Harness: remove retired ws-patterns references from hub templates/seeds"
+source: github
+specDate: 2026-08-27
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/250"
+step: 0
+workflowId: us-250-20260827T143734Z
+status: active
+startedAt: "2026-08-27T14:37:34Z"
+endedAt: "2026-08-27T14:42:39.149Z"
+acRefs: []
+---
+# Specification — Harness: remove retired ws-patterns references from hub templates/seeds
+
+## Description
+
+Clean up retired `ws-patterns` references and leftover sediment from hub templates, seeds, and migration utilities.
+
+When `ws-patterns` was retired in 0.3.38 in favor of `ws-self-learning` (`MEMORY.md` / `STACK.md`), template files (`backend.md.template`, `frontend.md.template`) and config comments (`_comment_patterns`) were pruned from git, but consumer and global installs (`~/.agents/skills/ws-shared`) still had leftover unmanaged template files and `defaults._comment_patterns` config entries because `pruneRetiredConsumerArtifacts` in `retired_artifacts.cjs` did not register `backend.md.template`, `frontend.md.template`, `_comment_patterns`, or `patterns` in its retired lists.
+
+This task updates `retired_artifacts.cjs` to include all retired pattern templates and config comment keys, confirms that live files (`backend.md`, `frontend.md`) instruct agents to consult `STACK.md` / architecture docs without referencing `ws-patterns`, ensures `pruneRetiredConsumerArtifacts` removes lingering template files and config keys, and validates the migration and harness tests.
+
+## Acceptance Criteria
+
+- AC1: `retired_artifacts.cjs` lists `'backend.md.template'` and `'frontend.md.template'` in `RETIRED_HUB_FILES` so `pruneRetiredConsumerArtifacts` unlinks them from consumer `ws-shared/` during `update`, `install`, and doctor runs.
+- AC2: `retired_artifacts.cjs` lists `'patterns'` in `RETIRED_DEFAULTS_KEYS` and `'_comment_patterns'` in `RETIRED_DEFAULTS_COMMENT_KEYS` so `stripRetiredConfigKeys` strips leftover `defaults._comment_patterns` and `defaults.patterns` sediment from consumer `ws-shared/config.json`.
+- AC3: `STALE_LIVE_REFERENCE_PATTERNS` in `retired_artifacts.cjs` contains patterns to detect any stale live references to `ws-patterns*`, `session-lease.schema.json`, `defaults.sessionLeases`, `patternsBackend`, `patternsFrontend`, or `_comment_patterns*`.
+- AC4: Live `ws-shared/backend.md` and `ws-shared/frontend.md` intros direct agents to consult `STACK.md` and project architecture docs, with zero live mentions of `ws-patterns`.
+- AC5: `test/test-consumer-migration.js`, `test/test-ws-doctor.js`, and `test/test-install.js` verify that `backend.md.template`, `frontend.md.template`, `_comment_patterns`, and retired config keys are properly registered, pruned, and verified.
+- AC6: Harness checks (`ws-check-harness` / `npm test`) pass with 0 errors or retired-id regressions.
+
+## Original Issue Context
+
+**GitHub #250** — Harness: remove retired ws-patterns references from hub templates/seeds
+
+### Context
+
+Consumer harness audit (`ws-check-harness`) on a hybrid install (project `ws-shared` + `{globalSkillsRoot}`) found **retired `ws-patterns` prose still present in the packaged hub templates/seeds**.
+
+Retired in **0.3.38** per `retired_artifacts.cjs` / doctor (`ws-patterns*`, session leases). Consumer tree was pruned locally; **upstream global install copies still ship the old wording**.
+
+### Evidence (global install `~/.agents/skills/ws-shared`)
+
+| File | Problem |
+|------|---------|
+| `backend.md.template` L5 | `Agents consulting \`ws-patterns\` MUST…` |
+| `frontend.md.template` L5 | same |
+| `backend.md` / `frontend.md` (when seeded) | same live text |
+| hub `config.json` sediment | `_comment_patterns` still mentions `ws-patterns` (consumer prune removed `patternsBackend` / `patternsFrontend`) |
+
+Also related (already listed in retired registry — please confirm installer/`update` always removes leftovers):
+
+- `session-lease.schema.json`
+- `defaults.sessionLeases` / `_comment_sessionLeases`
+
+### Proposed correction
+
+1. Rewrite template/live pattern intros to consult `STACK.md` / architecture docs (no `ws-patterns` skill id).
+2. Ensure `config.json.example` + schema comments do not reintroduce `patternsBackend` / `patternsFrontend` / `ws-patterns` wording.
+3. Confirm `ws-doctor` / `update` prunes `session-lease.schema.json` and lease keys on existing consumers.
+4. Re-run `ws-check-harness` Phase 2 retired-id scan on a fresh install.
+
+Issue URL: https://github.com/jpolvora/workflow-skills/issues/250
+
+### Prior Work Sweep
+
+- **Exact open PR for #250:** none. Continue.
+- **Related PRs / Commits:** PR #151 (ws-senior-developer), PR #191 (ws-doctor), PR #230 (session leases), release 0.3.38 / 0.3.43 (retired artifact hygiene).
+- **Sweep search hits:** `retired_artifacts.cjs` and `consumer-migration.js` were introduced in 0.3.43 to handle session leases and `ws-patterns` folders, but omitted `backend.md.template`, `frontend.md.template`, and `_comment_patterns`.
+
+### Design Intent
+
+- **Complete retired registry:** `retired_artifacts.cjs` is the single source of truth for retired artifacts across install, update, doctor, and migration tests. It must comprehensively list all removed templates and obsolete comment keys.
+- **Consumer-owned data preservation:** Preserving consumer `backend.md` / `frontend.md` if existing (already in `CONSUMER_OWNED_HUB_FILES`), while removing obsolete `.template` files.
+- **No reintroduction:** `config.json.example` and `config.schema.json` must remain clean of retired keys.
+
+## Notes
+
+- Upstream developer loop: regenerate integrity (`npm run generate-integrity`) and run `ws-check-harness` / `npm test` before PR handoff.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Re-introducing `ws-patterns` | Intentionally retired in 0.3.38 in favor of `ws-self-learning` and `STACK.md` |
+| Deleting consumer-authored `backend.md` or `frontend.md` notes | User data must not be destroyed; only remove stale `.template` files and config sediment |
+| Modifying unrelated hub schemas | Focus strictly on retired artifact registry and templates |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Retired template removal | Add `backend.md.template` and `frontend.md.template` to `RETIRED_HUB_FILES` in `retired_artifacts.cjs` | Automatically cleans up global/consumer hubs during update/doctor | y |
+| Retired comment keys | Add `_comment_patterns` and `patterns` to `RETIRED_DEFAULTS_COMMENT_KEYS` and `RETIRED_DEFAULTS_KEYS` | Cleans up lingering config sediment | y |
+| Live `backend.md` and `frontend.md` text | Reference `STACK.md` / architecture docs with no `ws-patterns` mention | Complies with AC4 and zero stale references | y |

@@ -248,7 +248,7 @@ const sampleEvent = {
   timestamp: '2026-08-27T12:00:00.000Z',
   workflowId: 'wf-sample',
   pipeline: 'standard',
-  packageVersion: '0.3.45',
+  packageVersion: '0.3.46',
   step: 9,
   substep: 'fixPrPlan',
   model: 'cursor-grok-4.6-medium',

@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-27] Verify score must fail-close on uncovered negative scenarios
+- **Layer**: `Harness`
+- **Module**: `ws-verify-plan / ac_ledger`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-shared/ac-ledger.schema.json, .agents/skills/ws-verify-plan/SKILL.md`
+- **Scenario / Context**: Step 5 Advance used only `- ACn:` rows. Specs can document failing cases under Validation Notes while ac_ledger.cjs score still reaches minVerifyScore on happy-path ACs.
+- **DO NOT**: Treat AC coverage as the only numeric gate, or ingest telemetry bullets from Validation Notes as negative scenarios.
+- **INSTEAD DO**: Init `negativeScenarios` from `### Negative & Failing Test Scenarios`. Link observed passing tests with `ac_ledger.cjs link --negative NS{n}`. Uncovered rows set knownDefect and cap the score at 8.
+
+### [2026-08-27] Shared pipeline skills must not say unqualified Step 5
+- **Layer**: `Harness`
+- **Module**: `ws-implement-tasks / dual-mode`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-implement-tasks/SKILL.md, .agents/skills/ws-spec-to-pr-lite/SKILL.md`
+- **Scenario / Context**: Shared implement-tasks prose said Step 5 fail-closes on uncovered negative scenarios. Lite maps Step 5 to Fix-PR and never runs ws-verify-plan, so that gate never fires.
+- **DO NOT**: Name numeric Step 5 as a verify/score gate in orch-agnostic pipeline skills.
+- **INSTEAD DO**: Split standard (ws-verify-plan scores negativeScenarios) vs lite (linking is mandatory implement evidence). Keep numeric step ids in the owning orchestrator SKILL.md only.
+
 ### [2026-08-27] Review jury payload bridge and memory sanitizer trap preservation
 - **Layer**: `harness`
 - **Module**: `ws-code-review / ws-self-learning`
@@ -23,6 +41,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: During Step 6 review jury execution, each juror's `write_review_round.cjs` was overwriting canonical `step-06-{slug}.review.md`, leaving only the last juror's findings for downstream fix mode. `merge_review_jury.cjs` was also not validating the number of juror reports against configured `defaults.reviewJury.size`.
 - **DO NOT**: Overwrite canonical review markdown when running individual jurors under review jury. Allow review jury merge to silently proceed with fewer juror files than configured.
 - **INSTEAD DO**: Guard canonical markdown write with `!options.juryOut` in `write_review_round.cjs`. Materialize the merged jury markdown via `--canonical-review-out` in `merge_review_jury.cjs` and validate juror count against `defaults.reviewJury.size`.
+
+### [2026-08-27] Retired artifacts need matching stale live-reference patterns
+- **Layer**: `Harness`
+- **Module**: `ws-shared / retired_artifacts`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/retired_artifacts.cjs, test/test-consumer-migration.js`
+- **Scenario / Context**: Extending RETIRED_HUB_FILES or RETIRED_DEFAULTS_KEYS without STALE_LIVE_REFERENCE_PATTERNS lets live SKILL.md / hub docs reintroduce retired ids while consumer-migration scans stay green.
+- **DO NOT**: Add prune/doctor retirement entries without a matching STALE_LIVE_REFERENCE_PATTERNS row, or use a bare `\bpatterns\b` regex that false-positives on unrelated prose.
+- **INSTEAD DO**: Ship STALE_LIVE_REFERENCE_PATTERNS in the same change as new retired keys/templates, using precise regexes (`patternsBackend`, `defaults.patterns`, `_comment_patterns*`, `backend.md.template`). Assert required ids in test-consumer-migration.js.
 
 ### [2026-08-27] Resolve-thread metadata-only notes
 - **Layer**: `providers`
@@ -122,6 +149,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: `latestHandoff()` in `build_dispatch_context.cjs` caught JSON parse errors on existing handoff files and silently returned empty string. `telemetry.schema.json` was missing `substep`, `bypassed`, and `idempotentReplay` properties emitted by `workflow_state.cjs`.
 - **DO NOT**: Silently drop existing handoff context on JSON parse failure during dispatch context generation. Leave emitted telemetry properties off `telemetry.schema.json`.
 - **INSTEAD DO**: Throw an explicit error on handoff JSON parse failure so corrupt files fail closed. Declare `substep`, `bypassed`, and `idempotentReplay` in `telemetry.schema.json`.
+
+### [2026-08-27] Authoring validation must require negative-scenario subsection
+- **Layer**: `Harness`
+- **Module**: `ws-spec-format / validate_spec`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-format/scripts/validate_spec.cjs, .agents/skills/ws-spec-format/FORMAT.md, test/test-validate-spec.js`
+- **Scenario / Context**: After ac_ledger started ingesting only ### Negative & Failing Test Scenarios, authoring mode still passed telemetry-only Validation Notes. Ledger init then produced an empty negativeScenarios array and Step 5 never fail-closed.
+- **DO NOT**: Treat any non-placeholder Validation Notes body as authoring-ready, or duplicate this heading check inside ac_ledger (compat specs must still init).
+- **INSTEAD DO**: In --mode=authoring, require ### Negative & Failing Test Scenarios with at least one non-placeholder bullet. Keep --mode=compat as warn-only. Keep ac_ledger ingest-only.
+
+### [2026-08-27] Authoring fixtures must include DoR and Validation Notes
+- **Layer**: `harness`
+- **Module**: `ws-spec-format / validate_spec.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-format/scripts/validate_spec.cjs;test/test-spec-validation.js;test/test-validate-spec.js`
+- **Scenario / Context**: `--mode=authoring` now fails unless `## Definition of Ready (DoR)` has a non-placeholder table row and `## Validation & Observation Notes` has non-placeholder body. Compat still warns without failing. Existing authoring-pass fixtures that only had Out of Scope + Assumptions will fail.
+- **DO NOT**: Treat leftover `--help` as a spec path. Treat header-only DoR tables or TBD-only Validation Notes as authoring PASS. Leave authoring fixtures without DoR/Notes after this change.
+- **INSTEAD DO**: Print usage and exit 0 for `--help`/`-h`. Require DoR data rows plus non-placeholder Validation Notes in authoring mode. Extend authoring-pass fixtures (and any new spec) with both sections. Keep `--mode=compat` as the CLI default for historical specs.
 
 ### [2026-08-26] Vault-disable restore only when vault was active
 - **Layer**: `skills`

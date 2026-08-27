@@ -89,6 +89,115 @@ function isPlaceholder(value) {
   return PLACEHOLDER.test(trimmed);
 }
 
+function sectionBody(text, heading) {
+  const start = text.search(new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm'));
+  if (start < 0) return '';
+  const rest = text.slice(start).split('\n').slice(1);
+  const lines = [];
+  for (const line of rest) {
+    if (/^##\s+/.test(line)) break;
+    lines.push(line);
+  }
+  return lines.join('\n');
+}
+
+function subsectionBody(text, heading) {
+  const start = text.search(new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm'));
+  if (start < 0) return '';
+  const rest = text.slice(start).split('\n').slice(1);
+  const lines = [];
+  for (const line of rest) {
+    if (/^#{2,3}\s+/.test(line)) break;
+    lines.push(line);
+  }
+  return lines.join('\n');
+}
+
+function sectionIsPlaceholder(body) {
+  const lines = String(body || '').split('\n').map((line) => line.trim()).filter(Boolean);
+  if (!lines.length) return true;
+  const content = [];
+  for (const line of lines) {
+    if (/^#{3,}\s/.test(line)) continue;
+    if (line.includes('|')) {
+      const cells = line.split('|').slice(1, -1).map((cell) => cell.trim());
+      if (!cells.length || cells.every((cell) => /^:?-{3,}:?$/.test(cell))) continue;
+      cells.forEach((cell) => {
+        if (cell) content.push(cell);
+      });
+      continue;
+    }
+    content.push(line.replace(/^[-*+]\s+/, '').replace(/^\*\*[^*]+\*\*:\s*/, ''));
+  }
+  if (!content.length) return true;
+  return content.every((item) => isPlaceholder(item));
+}
+
+function readinessFindings(text) {
+  const errors = [];
+  const warnings = [];
+  const dorHeading = '## Definition of Ready (DoR)';
+  const notesHeading = '## Validation & Observation Notes';
+  const hasDor = headingPresent(text, dorHeading);
+  const hasNotes = headingPresent(text, notesHeading);
+  if (!hasDor) {
+    const item = { code: 'dor-heading', message: 'Required section is missing: ## Definition of Ready (DoR)' };
+    errors.push(item);
+    warnings.push(item);
+  } else {
+    const data = tableAfterHeading(text, dorHeading).slice(1);
+    const emptyTable = !data.length || data.every((cells) => cells.every((cell) => isPlaceholder(cell)));
+    if (emptyTable || sectionIsPlaceholder(sectionBody(text, dorHeading))) {
+      errors.push({
+        code: 'dor-empty',
+        message: 'Definition of Ready (DoR) must include non-placeholder readiness items.',
+      });
+    }
+  }
+  if (!hasNotes) {
+    const item = { code: 'notes-heading', message: 'Required section is missing: ## Validation & Observation Notes' };
+    errors.push(item);
+    warnings.push(item);
+  } else if (sectionIsPlaceholder(sectionBody(text, notesHeading))) {
+    errors.push({
+      code: 'notes-empty',
+      message: 'Validation & Observation Notes must include non-placeholder observation or negative-test content.',
+    });
+  } else {
+    const nsFindings = negativeScenarioFindings(text);
+    errors.push(...nsFindings);
+    warnings.push(...nsFindings);
+  }
+  return { errors, warnings };
+}
+
+function negativeScenarioFindings(text) {
+  const errors = [];
+  const notesHeading = '## Validation & Observation Notes';
+  if (!headingPresent(text, notesHeading)) return errors;
+  const notesBody = sectionBody(text, notesHeading);
+  const subsection = '### Negative & Failing Test Scenarios';
+  if (!headingPresent(notesBody, subsection)) {
+    errors.push({
+      code: 'negative-subsection',
+      message: 'Validation & Observation Notes must include ### Negative & Failing Test Scenarios with at least one non-placeholder bullet.',
+    });
+    return errors;
+  }
+  const bullets = subsectionBody(notesBody, subsection)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => /^[-*]\s+/.test(line))
+    .map((line) => line.replace(/^[-*]\s+/, ''));
+  if (!bullets.length || bullets.every((item) => isPlaceholder(item))) {
+    errors.push({
+      code: 'negative-empty',
+      message: '### Negative & Failing Test Scenarios must list at least one expected red test or error state.',
+    });
+  }
+  return errors;
+}
+
 function closureFindings(text) {
   const errors = [];
   const warnings = [];
@@ -163,9 +272,10 @@ function validate(text, options) {
   const modification = options.modification || /\b(?:modify|modification|bug\s*fix|bugfix|existing\s+(?:feature|workflow|behavior)|refactor|upgrade)\b/i.test(description);
   if (modification && !/^### Design Intent\s*$/m.test(text)) errors.push({ code: 'design-intent', message: 'Modification specifications require ### Design Intent.' });
   const closure = closureFindings(text);
-  if (options.mode === 'authoring') errors.push(...closure.errors);
+  const readiness = readinessFindings(text);
+  if (options.mode === 'authoring') errors.push(...closure.errors, ...readiness.errors);
   else {
-    for (const warning of closure.warnings) warnings.push(warning);
+    for (const warning of [...closure.warnings, ...readiness.warnings]) warnings.push(warning);
     if (headingPresent(text, '## Out of Scope')) {
       const data = tableAfterHeading(text, '## Out of Scope').slice(1);
       if (!data.length) warnings.push({ code: 'out-of-scope-empty', message: 'Out of Scope has zero data rows.' });

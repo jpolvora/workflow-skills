@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.45** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.46** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -69,7 +69,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 | Gate | Rule | Owner |
 |------|------|-------|
-| **Derived verify score** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. | `ws-verify-plan` |
+| **Derived verify score** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. Uncovered spec Negative & Failing Test Scenarios (`negativeScenarios` without an observed passing test) are a known defect and cap the score at 8. | `ws-verify-plan` |
 | **Configurable verify bar (`defaults.minVerifyScore`)** | Default 9, range 1–10, omitted → 9. Below the bar it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). Optional Reach-10 user-gate when effort is low. | `ws-verify-plan` |
 | **Score & refine** | When a score is already ≥ `minVerifyScore` and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-verify-plan` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |
@@ -127,7 +127,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Capability | Skill |
 |------------|-------|
 | Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring`. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
-| Canonical `*.spec.md` schema, section hierarchy, AC rules, and specify-time closure (`Out of Scope`, Assumptions, dimensions sweep) | `ws-spec-format` |
+| Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), plus authoring-mode **Definition of Ready** and **Validation & Observation Notes** | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register | `ws-spec-from-provider` |
@@ -250,12 +250,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.42)
+## 12. Recent evolution (0.3.22 → 0.3.46)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
+Derived from recent commits on `develop` (2026-08-16 → 2026-08-27).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.46** | Aug 27 | **Spec DoR + TDD:** authoring-mode `Definition of Ready` / Validation Notes, interview failing-test audit, implement-tasks red-then-green, verify-plan negative-test coverage |
 | **0.3.45** | Aug 27 | **Research-driven pipeline quality:** JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `defaults.providerCompat` / `contextHygiene` / `reviewJury`, memory write sanitizer, pipeline handoff harness check |
 | **0.3.43** | Aug 27 | **Retired artifact hygiene:** `update`/hub refresh prunes session-lease schema, `defaults.sessionLeases` / `enableAuditing` / `patterns*` config keys, and retired `ws-patterns*` / `ws-audit` folders; `ws-doctor` warns on leftovers; harness forbidden-id scan extended |
 | **0.3.42** | Aug 26 | Configurable memory storage backends (`enableMemoryFiles` & `enableSpecMemoIntegration`), `ws-spec-memo` integration bridge, wizard interview updates & tests |

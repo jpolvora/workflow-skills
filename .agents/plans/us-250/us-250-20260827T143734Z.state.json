@@ -1,0 +1,216 @@
+{
+  "acImplemented": 0,
+  "acTotal": 6,
+  "autoMode": false,
+  "baseBranch": "main",
+  "baselineCommit": "39144f07a4e889c69cb02ae19413928a4da0a03a",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checkpoints": [
+    {
+      "sha": "39144f07a4e889c69cb02ae19413928a4da0a03a",
+      "step": 0,
+      "tag": "uswf/us-250-20260827T143734Z/before-step-0"
+    }
+  ],
+  "commits": [],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "currentModel": "Gemini 3.7 Flash",
+  "currentStep": 5,
+  "dryRun": false,
+  "fullMode": false,
+  "gateDecision": {
+    "choice": "complete",
+    "gate": "fix-pr",
+    "reason": "Zero active threads on PR 251",
+    "round": 1
+  },
+  "nextAction": "Run step 5",
+  "preExistingDirty": false,
+  "revision": 12,
+  "scoreAndRefine": false,
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [],
+  "slug": "us-250",
+  "startedAt": "2026-08-27T14:37:34Z",
+  "statePath": ".agents/plans/us-250/us-250-20260827T143734Z.state.md",
+  "stateVersion": 2,
+  "status": "active",
+  "stepDispatches": [
+    {
+      "dispatchedAt": "2026-08-27T14:38:49Z",
+      "step": 0
+    },
+    {
+      "dispatchedAt": "2026-08-27T15:00:40Z",
+      "step": 1
+    },
+    {
+      "dispatchedAt": "2026-08-27T15:01:41Z",
+      "step": 2
+    },
+    {
+      "dispatchedAt": "2026-08-27T15:06:32Z",
+      "step": 3
+    },
+    {
+      "dispatchedAt": "2026-08-27T15:10:40Z",
+      "step": 4
+    },
+    {
+      "dispatchedAt": "2026-08-27T15:12:08Z",
+      "step": 5
+    }
+  ],
+  "stepModels": [],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed"
+  },
+  "telemetry": {
+    "loc": {
+      "baseline": 0
+    },
+    "steps": [
+      {
+        "N": 0,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-08-27T14:38:49Z",
+        "elapsedSec": 1258,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/specs/us-250.spec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-08-27T14:59:47Z",
+        "label": "Spec",
+        "model": "Gemini 3.7 Flash",
+        "promptTokens": 0
+      },
+      {
+        "N": 1,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-08-27T15:00:40Z",
+        "elapsedSec": 50,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-250/step-01-us-250.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-08-27T15:01:30Z",
+        "label": "Planning",
+        "model": "Gemini 3.7 Flash",
+        "promptTokens": 0
+      },
+      {
+        "N": 2,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-08-27T15:01:41Z",
+        "elapsedSec": 278,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-doctor/scripts/doctor.js"
+          ]
+        },
+        "finishedAt": "2026-08-27T15:06:19Z",
+        "label": "Implementation",
+        "model": "Gemini 3.7 Flash",
+        "promptTokens": 0
+      },
+      {
+        "N": 3,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-08-27T15:06:32Z",
+        "elapsedSec": 36,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-250/step-06-us-250.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-08-27T15:07:08Z",
+        "label": "Code review",
+        "model": "Gemini 3.7 Flash",
+        "promptTokens": 0
+      },
+      {
+        "N": 4,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-08-27T15:10:40Z",
+        "elapsedSec": 71,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-250/step-08-us-250.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-08-27T15:11:51Z",
+        "label": "Consolidation",
+        "model": "Gemini 3.7 Flash",
+        "promptTokens": 0
+      },
+      {
+        "N": 5,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-08-27T15:12:08Z",
+        "elapsedSec": 23,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-08-27T15:12:31Z",
+        "label": "Ship and PR",
+        "model": "Gemini 3.7 Flash",
+        "promptTokens": 0
+      }
+    ],
+    "totalElapsedSec": 1716,
+    "totalTokens": 0,
+    "workflowStartedAt": "2026-08-27T14:37:34Z"
+  },
+  "title": "Harness: remove retired ws-patterns references from hub templates/seeds",
+  "us": "us-250",
+  "workflowId": "us-250-20260827T143734Z",
+  "workflowManifest": {
+    "artifacts": [],
+    "created": [
+      ".agents/plans/us-250/step-01-us-250.plan.md",
+      ".agents/plans/us-250/step-06-us-250.review.md",
+      ".agents/plans/us-250/step-08-us-250.result.md",
+      ".agents/specs/us-250.spec.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-doctor/scripts/doctor.js"
+    ]
+  },
+  "workflowType": "lite"
+}

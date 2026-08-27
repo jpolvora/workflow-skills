@@ -514,13 +514,15 @@ function testStaleRetiredArtifactsReported() {
           skillsRoot: '.agents/skills',
           sharedDir: '.agents/skills/ws-shared',
         },
-        defaults: { sessionLeases: true },
+        defaults: { sessionLeases: true, _comment_patterns: 'stale comment', patterns: true },
       },
       null,
       2,
     )}\n`,
   );
   fs.writeFileSync(path.join(sharedDir, 'session-lease.schema.json'), '{}');
+  fs.writeFileSync(path.join(sharedDir, 'backend.md.template'), '{}');
+  fs.writeFileSync(path.join(sharedDir, 'frontend.md.template'), '{}');
   fs.mkdirSync(path.join(root, '.agents', 'skills', 'ws-patterns'));
 
   const { ok, report, error } = runDoctorJson([], { cwd: root, doctor: doctorScript });
@@ -530,13 +532,17 @@ function testStaleRetiredArtifactsReported() {
   assert(cfg && cfg.staleRetired, 'staleRetired populated');
   assert(
     Array.isArray(cfg.staleRetired.configKeys?.project) &&
-      cfg.staleRetired.configKeys.project.includes('defaults.sessionLeases'),
-    'staleRetired lists defaults.sessionLeases',
+      cfg.staleRetired.configKeys.project.includes('defaults.sessionLeases') &&
+      cfg.staleRetired.configKeys.project.includes('defaults._comment_patterns') &&
+      cfg.staleRetired.configKeys.project.includes('defaults.patterns'),
+    'staleRetired lists defaults.sessionLeases and pattern config keys',
   );
   assert(
     Array.isArray(cfg.staleRetired.hubFiles?.project) &&
-      cfg.staleRetired.hubFiles.project.includes('session-lease.schema.json'),
-    'staleRetired lists session-lease.schema.json under project hub',
+      cfg.staleRetired.hubFiles.project.includes('session-lease.schema.json') &&
+      cfg.staleRetired.hubFiles.project.includes('backend.md.template') &&
+      cfg.staleRetired.hubFiles.project.includes('frontend.md.template'),
+    'staleRetired lists session-lease.schema.json and pattern templates under project hub',
   );
   assert(
     Array.isArray(cfg.staleRetired.skillDirs?.project) &&

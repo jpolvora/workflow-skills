@@ -1,5 +1,33 @@
 # Changelog
 
+### [2026-08-27 13:16] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` PR 251 round 3
+- **Done**: Qualify implement-tasks negative-scenario linking for standard vs lite; lite Step 2 requires ledger links
+- **Result**: test-spec-dor-tdd exit 0
+
+
+### [2026-08-27 13:05] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` PR 251 round 2
+- **Done**: Authoring validate_spec requires ### Negative & Failing Test Scenarios with a non-placeholder bullet; FORMAT.md matches
+- **Result**: test-validate-spec / test-spec-validation / test-spec-dor-tdd exit 0
+
+
+### [2026-08-27 12:55] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` open develop→main PR (251)
+- **Done**: STALE_LIVE_REFERENCE_PATTERNS parity for newly retired keys/templates; ac_ledger fail-closes uncovered Negative & Failing Test Scenarios
+- **Result**: `npm test` exit 0; integrity v0.3.46; six review threads queued for resolve after push
+
+
+### [2026-08-27 11:50] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-fable-method` implement spec-dor-tdd-refinement-hardening.spec.md; bump version and commit
+- **Done**: Authoring-mode DoR + Validation Notes; write-spec/interview/implement-tasks/verify-plan TDD protocol; tests wired; package 0.3.46
+- **Result**: `npm test` exit 0; authoring validate PASS (9 ACs); integrity v0.3.46
+
+### [2026-08-27 11:12] Agent: Gemini 3.7 Flash
+- **Prompt**: `/ws-spec-to-pr-lite` https://github.com/jpolvora/workflow-skills/issues/250
+- **Done**: Added `backend.md.template` and `frontend.md.template` to `RETIRED_HUB_FILES`, added `patterns` and `_comment_patterns` to `RETIRED_DEFAULTS_KEYS`/`RETIRED_DEFAULTS_COMMENT_KEYS` in `retired_artifacts.cjs`, synced `ws-doctor` fallback, updated `backend.md`/`frontend.md` to point at `STACK.md`, updated tests, created PR #251, commented on issue #250.
+- **Result**: PR #251 opened against `main`; full test suite green.
+
 ### [2026-08-27 03:45] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-fable-method` implement research-driven-pipeline-quality.spec.md W1–W7
 - **Done**: JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, providerCompat/contextHygiene/reviewJury, memory sanitizer, pipeline handoff check, hub `schemas/` whitelist, package 0.3.45

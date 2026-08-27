@@ -26,6 +26,8 @@ function tempDir() {
       _comment_sessionLeases: 'calls session_lease.cjs',
       enableAuditing: false,
       patternsBackend: true,
+      patterns: true,
+      _comment_patterns: 'patterns comment',
       autoMode: false,
     },
   };
@@ -33,8 +35,12 @@ function tempDir() {
   assert.strictEqual(changed, true);
   assert.ok(removed.includes('defaults.sessionLeases'));
   assert.ok(removed.includes('defaults._comment_sessionLeases'));
+  assert.ok(removed.includes('defaults.patterns'));
+  assert.ok(removed.includes('defaults._comment_patterns'));
   assert.strictEqual(next.defaults.autoMode, false);
   assert.strictEqual(next.defaults.sessionLeases, undefined);
+  assert.strictEqual(next.defaults.patterns, undefined);
+  assert.strictEqual(next.defaults._comment_patterns, undefined);
 }
 
 {
@@ -50,6 +56,8 @@ function tempDir() {
           defaults: {
             sessionLeases: true,
             _comment_sessionLeases: 'acquire lease before bootstrap',
+            _comment_patterns: 'legacy patterns comment',
+            patterns: true,
           },
         },
         null,
@@ -57,6 +65,8 @@ function tempDir() {
       )}\n`,
     );
     fs.writeFileSync(path.join(sharedDir, 'session-lease.schema.json'), '{}');
+    fs.writeFileSync(path.join(sharedDir, 'backend.md.template'), '# template');
+    fs.writeFileSync(path.join(sharedDir, 'frontend.md.template'), '# template');
     fs.writeFileSync(
       path.join(sharedDir, 'installed-skills.json'),
       `${JSON.stringify(
@@ -74,12 +84,18 @@ function tempDir() {
       log: (msg) => logs.push(msg),
     });
 
-    assert.deepStrictEqual(result.hubFiles, ['session-lease.schema.json']);
+    assert.deepStrictEqual(result.hubFiles.sort(), ['backend.md.template', 'frontend.md.template', 'session-lease.schema.json'].sort());
     assert.ok(result.configKeys.some((k) => k.includes('sessionLeases')));
+    assert.ok(result.configKeys.some((k) => k.includes('_comment_patterns')));
+    assert.ok(result.configKeys.some((k) => k.includes('patterns')));
     assert.deepStrictEqual(result.skillDirs, ['ws-patterns']);
     assert.ok(!fs.existsSync(path.join(sharedDir, 'session-lease.schema.json')));
+    assert.ok(!fs.existsSync(path.join(sharedDir, 'backend.md.template')));
+    assert.ok(!fs.existsSync(path.join(sharedDir, 'frontend.md.template')));
     const cfg = JSON.parse(fs.readFileSync(path.join(sharedDir, 'config.json'), 'utf8'));
     assert.strictEqual(cfg.defaults.sessionLeases, undefined);
+    assert.strictEqual(cfg.defaults._comment_patterns, undefined);
+    assert.strictEqual(cfg.defaults.patterns, undefined);
     const manifest = JSON.parse(fs.readFileSync(path.join(sharedDir, 'installed-skills.json'), 'utf8'));
     assert.deepStrictEqual(manifest.skills, ['ws-spec-to-pr']);
     assert.deepStrictEqual(manifest.selected, ['ws-spec-to-pr']);
@@ -121,6 +137,19 @@ function tempDir() {
     0,
     `live skill/hub files still reference retired artifacts:\n${offenders.join('\n')}`,
   );
+
+  const requiredStaleIds = [
+    'defaults.patternsBackend',
+    'defaults.patternsFrontend',
+    'defaults.patterns',
+    '_comment_patterns',
+    'backend.md.template',
+    'frontend.md.template',
+  ];
+  const staleIds = new Set(STALE_LIVE_REFERENCE_PATTERNS.map((pattern) => pattern.id));
+  for (const id of requiredStaleIds) {
+    assert.ok(staleIds.has(id), `STALE_LIVE_REFERENCE_PATTERNS missing ${id}`);
+  }
 }
 
 console.log('test-consumer-migration: ok');

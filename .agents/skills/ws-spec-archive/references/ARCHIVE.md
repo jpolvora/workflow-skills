@@ -15,7 +15,7 @@ Match `## Archive` or `## N. Delivery archive` (any heading level ≥ 2). Create
 | Slug | backtick slug |
 | Outcome | `shipped` · `cancelled` · `failed` · `archived` · `in-progress` |
 | Last state | `{status} / step {n}` (or `—`) |
-| PR / Commit | `[PR #N](url)` and/or `` `sha7` ``; `—` when unknown |
+| PR / Commit | `[PR #N](<url>)` and/or `` `sha7` ``; `—` when unknown |
 | Summary | one line; replace `\|` with `/` |
 
 Upsert by slug (replace existing Archive row). Idempotent.
