@@ -83,6 +83,26 @@ Scan consumer **repo root** (not this skill package alone):
    | B — Include delivery result (`step-08-*.result.md`)? | `includeDeliveryResult` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
    | C — Opt-in extras | `includeSpec`, `includeCheckReport`, `includeCodeReview`, `includeTestingReport` | Multi-select or sequential per-toggle; **Recommended = none** (all `false`); Keep current / Skip |
 
+   **Context hygiene** (writes `defaults.contextHygiene`)
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Prune prior step markdown after finish? | `pruneAfterStep` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
+   | Background Steps 6–7 when host supports it? | `backgroundVerboseSteps` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+
+   **Review jury** (writes `defaults.reviewJury.size`; standard Step 6 only)
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Independent Step 6 reviewers (1–3)? | `size` | **1 (Recommended)** / 2 / 3 / Keep current / Skip |
+
+   **Provider compatibility hints** (writes `defaults.providerCompat`)
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Stabilize static prefix for prompt cache? | `stabilizeStaticPrefix` | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
+   | Thinking tool compatibility mode? | `thinkingToolCompat` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+
    Merge-write into `config.json` without deleting unknown keys; preserve `_comment*` keys.
 8. `domain` / `rules` — optional
 9. `autoload` — optional (or standalone `--section autoload`)

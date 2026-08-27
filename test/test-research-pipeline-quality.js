@@ -145,4 +145,16 @@ try {
 const handoffCheck = path.join(repoRoot, '.agents/skills/ws-check-harness/scripts/check_pipeline_handoff.cjs');
 assert.strictEqual(run(handoffCheck, ['--json', '--repo-root', repoRoot]).status, 0);
 
+const hybridConsumer = temp('ws-hybrid-handoff-');
+write(path.join(hybridConsumer, '.agents/skills/ws-shared/config.json'), JSON.stringify({ project: { name: 'hybrid' } }));
+const hybridResult = run(handoffCheck, ['--json', '--repo-root', hybridConsumer], {
+  env: { WORKFLOW_SKILLS_GLOBAL_DIR: path.join(repoRoot, '.agents/skills') },
+});
+assert.strictEqual(hybridResult.status, 0, 'handoff check passes for hybrid consumer with global skills');
+
+const interviewText = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-configure-project/INTERVIEW.md'), 'utf8');
+assert.match(interviewText, /\*\*Context hygiene\*\*/);
+assert.match(interviewText, /\*\*Review jury\*\*/);
+assert.match(interviewText, /\*\*Provider compatibility hints\*\*/);
+
 console.log('test-research-pipeline-quality: ok');

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "fe265c83eab24fdb67ec85dd972271ea5802e5db081401409e3d0c11c2d68ef5",
+  "fullPackageDigest": "35d8c0619c487de1dfef02c98ef44014c0417c9dfeef6698b76ce68c717e1300",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "b60a94f43635af9f2cbf769e78aa9aed21a7525c57f863f0d19b4955b4e67813",
@@ -85,12 +85,12 @@
         "PHASES.md": "9a48f119538c8d912bab6924fc83ad620c80b3fc299ffa90995b927492055c5e",
         "REPORT-FORMAT.md": "c4ebf7fdccf0469cd4be21c65b1905b44eeacd874c7028791062f2d244543e69",
         "scripts/check_duplicates.cjs": "ff3737715f778a68a01a722668937cc9561b03b0337b3039979b22db758945dc",
-        "scripts/check_pipeline_handoff.cjs": "8b88d9d36522c7051ee3cb156add6eef6bbcb293b4737fa5d1157d89b4148ea8",
+        "scripts/check_pipeline_handoff.cjs": "d45bf6da68cae213d72c0516c97126c13ad1b68d8ccc9392726ec086c7ced665",
         "scripts/check_shell_quoting.cjs": "c65d46afe4e3c281e5c5aca698447aca14382d46325c8bc0bc493824ac7e3eab",
         "scripts/measure_harness.cjs": "d3ab6910914fe9a22a3fb4c9239f3b754c243a6dd134561dd2381c0a629454f8",
         "SKILL.md": "d7f42c0d2e565a2d8ba62dd53e19e110483e57a62191db3191d1a99297b9c56b"
       },
-      "skillDigest": "3a017e404f6e286c29b4b9507b0c106e429174eb0bfdd9a9788ece6e7ecb85d9"
+      "skillDigest": "a1a793a0b6ec3c0c96dcc35e1d247397e4bdb8e341db0c9bf737ea15ed3c456a"
     },
     "ws-check-workflows": {
       "files": {
@@ -129,12 +129,12 @@
     "ws-configure-project": {
       "files": {
         "evals/evals.json": "d3970c8df0b3e6d32c02dca95ceb6c51c417c773b05503e012234c73add6e218",
-        "INTERVIEW.md": "b0ddd58fdd62b23fa02c43d254800fe536e4305d7726a15a880acd17d46c5cdc",
+        "INTERVIEW.md": "6ebeb7cdb0a0e81deab91607fb185324d4262d44f766f547eb4a9ce9b4539b85",
         "scripts/configure_autoload.py": "f586e8fed98bf4380c39218df6516ad1ea8ae90ce3f25e8e82ce8f88656b4ae0",
         "scripts/stack_fingerprint.cjs": "96285aea1b6aa471a4218ecea83c764efb6e9202c7c9f439056127af2ddffdba",
         "SKILL.md": "1fcbc04d28cc319db95d2041f0bf921bc15c79b22d6f41d285d8825fc35600ba"
       },
-      "skillDigest": "64727f11d331f7fd9e6ae8f20ac18866da02d7dc38cb81ba5bd79dd23ebaf076"
+      "skillDigest": "a96606f3659e665eae6b876cc2c660868652b89c2313ab65338db9488d0edc21"
     },
     "ws-doctor": {
       "files": {

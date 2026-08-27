@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, resolveSkillMdPath, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 const PIPELINE = [
   'ws-write-spec',
@@ -35,17 +35,21 @@ function main() {
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const missing = [];
   for (const id of PIPELINE) {
-    const file = path.join(context.repoRoot, '.agents', 'skills', id, 'SKILL.md');
-    if (!fs.existsSync(file)) {
-      missing.push({ id, reason: 'missing SKILL.md' });
+    let file;
+    try {
+      file = resolveSkillMdPath(context, id);
+    } catch {
+      missing.push({ id, reason: 'missing SKILL.md', path: toRepoRelative(context.repoRoot, path.join(context.repoRoot, '.agents', 'skills', id, 'SKILL.md'), { allowOutside: true }) });
       continue;
     }
     const text = fs.readFileSync(file, 'utf8');
-    if (!text.includes('handoff/step-')) missing.push({ id, reason: 'missing handoff/step- substring' });
+    if (!text.includes('handoff/step-')) {
+      missing.push({ id, reason: 'missing handoff/step- substring', path: toRepoRelative(context.repoRoot, file, { allowOutside: true }) });
+    }
   }
   const payload = {
     ok: missing.length === 0,
-    missing: missing.map((item) => ({ ...item, path: toRepoRelative(context.repoRoot, path.join(context.repoRoot, '.agents', 'skills', item.id, 'SKILL.md')) })),
+    missing,
   };
   if (options.json) process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
   else if (payload.ok) process.stdout.write(`check_pipeline_handoff: OK (${PIPELINE.length} skills)\n`);
