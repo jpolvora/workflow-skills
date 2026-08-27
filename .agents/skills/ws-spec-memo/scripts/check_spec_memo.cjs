@@ -198,7 +198,9 @@ function main() {
       enabled: specMemo.enabled === true,
       enableMemoryFiles: memoryRouting.enableMemoryFiles,
       enableSpecMemoIntegration: memoryRouting.enableSpecMemoIntegration,
-      mode: memoryRouting.enableMemoryFiles ? 'hybrid' : (specMemo.mode || 'vault'),
+      mode: memoryRouting.enableSpecMemoIntegration
+        ? (memoryRouting.enableMemoryFiles ? 'hybrid' : (specMemo.mode || 'vault'))
+        : (memoryRouting.enableMemoryFiles ? 'local' : 'disabled'),
       cli: specMemo.cli || 'memo',
       bootstrapOnSession: specMemo.bootstrapOnSession !== false,
       writeBlockHook: specMemo.writeBlockHook === true,

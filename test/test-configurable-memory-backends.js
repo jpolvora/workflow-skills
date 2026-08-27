@@ -117,7 +117,7 @@ assert(
   'legacy enabled: false maps to enableMemoryFiles: true, enableSpecMemoIntegration: false'
 );
 
-console.log('Testing configure_spec_memo with new flags...');
+console.log('Testing configure_spec_memo with new flags & reporting...');
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'configurable-memory-test-'));
 
@@ -134,8 +134,12 @@ try {
   const res1 = JSON.parse(cfgState1.stdout).specMemo;
   assert(res1.enableMemoryFiles === true && res1.enableSpecMemoIntegration === false, 'state 1 persisted correctly');
 
-  // Test State 2: Spec-memo only via stdin-json
-  const cfgState2 = runNode(
+  const checkState1 = runNode(CHECK, ['--repo-root', tmp, '--json']);
+  const checkState1Json = JSON.parse(checkState1.stdout);
+  assert(checkState1Json.config.mode === 'local', 'check_spec_memo reports mode: "local" for local-only state');
+
+  // Test State 4: None / Disabled via stdin-json
+  const cfgState4 = runNode(
     CONFIGURE,
     ['--repo-root', tmp, '--apply', '--stdin-json', '--json'],
     {
@@ -145,8 +149,8 @@ try {
       }),
     }
   );
-  assert(cfgState2.status === 0, 'configure state 4 (disabled) exits 0');
-  const res4 = JSON.parse(cfgState2.stdout).specMemo;
+  assert(cfgState4.status === 0, 'configure state 4 (disabled) exits 0');
+  const res4 = JSON.parse(cfgState4.stdout).specMemo;
   assert(res4.enableMemoryFiles === false && res4.enableSpecMemoIntegration === false, 'state 4 persisted correctly');
 
   // Test check_spec_memo reports new flags
@@ -154,17 +158,38 @@ try {
   const checkJson = JSON.parse(checkRes.stdout);
   assert(checkJson.config.enableMemoryFiles === false, 'check_spec_memo reports enableMemoryFiles');
   assert(checkJson.config.enableSpecMemoIntegration === false, 'check_spec_memo reports enableSpecMemoIntegration');
+  assert(checkJson.config.mode === 'disabled', 'check_spec_memo reports mode: "disabled" when both are false');
   assert(checkRes.status === 0, 'disabled memory check exits 0');
 
-  // Test self_learning query when enableMemoryFiles is false
+  // Seed legacy memory files to test short-circuit even with files on disk
+  const memDir = path.join(sharedDir, 'memory');
+  fs.mkdirSync(memDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(memDir, '2026-08-01-legacy-trap.md'),
+    `# [2026-08-01] Legacy Trap\n- **Severity:** High\n- **PathPattern:** src/**\n- **DO NOT:** use legacy trap\n- **INSTEAD DO:** ignore when disabled\n`,
+    'utf8'
+  );
+
+  // Test self_learning query when enableMemoryFiles is false with legacy files present
   const selfLearnRes = runNode(
     SELF_LEARNING,
-    ['--query', 'anything', '--repo-root', tmp]
+    ['--query', 'legacy', '--repo-root', tmp]
   );
-  assert(selfLearnRes.status === 0, 'self_learning query exits 0 when local memory disabled');
+  assert(selfLearnRes.status === 0, 'self_learning query exits 0 when local memory disabled with files present');
   assert(
-    selfLearnRes.stdout.includes('local memory files disabled') || selfLearnRes.stdout.includes('No matching memory'),
-    'self_learning notices local memory files are disabled'
+    selfLearnRes.stdout.includes('local memory files disabled'),
+    'self_learning short-circuits on disabled local memory even with files on disk'
+  );
+
+  // Test self_learning compile when enableMemoryFiles is false with legacy files present
+  const selfLearnCompileRes = runNode(
+    SELF_LEARNING,
+    ['--compile', '--repo-root', tmp]
+  );
+  assert(selfLearnCompileRes.status === 0, 'self_learning compile exits 0 when local memory disabled');
+  assert(
+    selfLearnCompileRes.stdout.includes('Skipped compile (local memory files disabled)'),
+    'self_learning compile skips when local memory disabled'
   );
 
 } finally {

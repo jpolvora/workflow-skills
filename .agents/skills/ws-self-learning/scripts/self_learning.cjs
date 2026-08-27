@@ -199,9 +199,15 @@ function main() {
   const routing = resolveMemoryRouting(context.config);
   const memoryDir = path.join(context.sharedDir, 'memory');
   const output = path.join(context.sharedDir, 'MEMORY.md');
-  if (args.compile) return compile(context, memoryDir, output);
+  if (args.compile) {
+    if (!routing.enableMemoryFiles) {
+      process.stdout.write('Skipped compile (local memory files disabled).\n');
+      return;
+    }
+    return compile(context, memoryDir, output);
+  }
 
-  if (!routing.enableMemoryFiles && !fs.existsSync(memoryDir)) {
+  if (!routing.enableMemoryFiles) {
     process.stdout.write('No matching memory entries found (local memory files disabled).\n');
     return;
   }

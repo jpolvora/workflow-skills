@@ -85,7 +85,6 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | List + confirm delete of workflow leftovers (telemetry, .runtime, shipped plans); suggest .gitignore |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Configure spec-memo external vault bridge (MCP/CLI) |
-| `ws-memo` | `.agents/skills/ws-memo/SKILL.md` | Runtime spec-memo MCP server & CLI working memory ops (from spec-memo) |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven intake → implement → complete (not Spec-to-PR) |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |

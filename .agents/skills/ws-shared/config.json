@@ -317,7 +317,7 @@
     "enableMemoryFiles": true,
     "enableSpecMemoIntegration": true,
     "mode": "hybrid",
-    "cli": "node l:/source/spec-memo/dist/cli.js",
+    "cli": "memo",
     "vaultRoot": "",
     "bootstrapOnSession": true,
     "writeBlockHook": false,
