@@ -897,13 +897,20 @@ function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoa
     RETIRED_HUB_FILES.filter((name) => fs.existsSync(path.join(dirAbs, name)));
   const projectHubFiles = listHub(sharedDirAbs);
   const globalHubFiles = distinctGlobal ? listHub(path.join(globalRootAbs, 'ws-shared')) : [];
+  const projectConfigKeys = listRetiredConfigKeys(cfg);
+  const globalCfgLoad = distinctGlobal
+    ? loadJson(path.join(globalRootAbs, 'ws-shared', 'config.json'))
+    : { ok: false };
+  const globalConfigKeys =
+    globalCfgLoad.ok && globalCfgLoad.data ? listRetiredConfigKeys(globalCfgLoad.data) : [];
   const staleRetired = {
-    configKeys: listRetiredConfigKeys(cfg),
+    configKeys: { project: projectConfigKeys, global: globalConfigKeys },
     hubFiles: { project: projectHubFiles, global: globalHubFiles },
     skillDirs: { project: projectSkillDirs, global: globalSkillDirs },
   };
   const hasStaleRetired =
-    staleRetired.configKeys.length > 0 ||
+    projectConfigKeys.length > 0 ||
+    globalConfigKeys.length > 0 ||
     projectHubFiles.length > 0 ||
     globalHubFiles.length > 0 ||
     projectSkillDirs.length > 0 ||
@@ -914,7 +921,7 @@ function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoa
     path: toPosix(path.relative(projectRoot, configPath)),
     reason: null,
     recommendation: hasStaleRetired
-      ? globalSkillDirs.length || globalHubFiles.length
+      ? globalSkillDirs.length || globalHubFiles.length || globalConfigKeys.length
         ? 'Run `npx --yes github:jpolvora/workflow-skills update` (project) and `update --global` (global skills root) to prune retired artifacts removed in 0.3.37–0.3.38.'
         : 'Run `npx --yes github:jpolvora/workflow-skills update` to prune retired artifacts (session leases, ws-patterns, ws-audit removed in 0.3.37–0.3.38).'
       : null,
@@ -1064,8 +1071,11 @@ function formatMarkdown(report) {
     if (cfg.staleRetired) {
       lines.push('');
       lines.push('Stale retired artifacts (run update to prune):');
-      if (cfg.staleRetired.configKeys.length) {
-        lines.push(`- config keys: ${cfg.staleRetired.configKeys.join(', ')}`);
+      if (cfg.staleRetired.configKeys.project?.length) {
+        lines.push(`- config keys (project): ${cfg.staleRetired.configKeys.project.join(', ')}`);
+      }
+      if (cfg.staleRetired.configKeys.global?.length) {
+        lines.push(`- config keys (global): ${cfg.staleRetired.configKeys.global.join(', ')}`);
       }
       if (cfg.staleRetired.hubFiles.project?.length) {
         lines.push(`- hub files (project): ${cfg.staleRetired.hubFiles.project.join(', ')}`);

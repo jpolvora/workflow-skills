@@ -529,7 +529,8 @@ function testStaleRetiredArtifactsReported() {
   const cfg = report.sections.configuration;
   assert(cfg && cfg.staleRetired, 'staleRetired populated');
   assert(
-    cfg.staleRetired.configKeys.includes('defaults.sessionLeases'),
+    Array.isArray(cfg.staleRetired.configKeys?.project) &&
+      cfg.staleRetired.configKeys.project.includes('defaults.sessionLeases'),
     'staleRetired lists defaults.sessionLeases',
   );
   assert(
@@ -601,6 +602,62 @@ function testGlobalStaleHubFileReported() {
   );
 }
 
+function testGlobalStaleConfigKeysReported() {
+  console.log('\n--- testGlobalStaleConfigKeysReported ---');
+  const project = mkTmp('ws-doctor-stale-cfg-proj-');
+  const globalRoot = mkTmp('ws-doctor-stale-cfg-global-');
+  const { sharedDir, doctorScript } = setupTmpDoctorProject(project);
+  const scriptsDir = path.join(sharedDir, 'scripts');
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(scriptsDir, 'retired_artifacts.cjs'),
+  );
+  fs.writeFileSync(
+    path.join(sharedDir, 'config.json'),
+    `${JSON.stringify(
+      {
+        pathTokens: {
+          skillsRoot: '.agents/skills',
+          sharedDir: '.agents/skills/ws-shared',
+        },
+        defaults: {},
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const globalShared = path.join(globalRoot, 'ws-shared');
+  fs.mkdirSync(globalShared, { recursive: true });
+  fs.writeFileSync(
+    path.join(globalShared, 'config.json'),
+    `${JSON.stringify({ defaults: { sessionLeases: true } }, null, 2)}\n`,
+  );
+
+  const { ok, report, error } = runDoctorJson([], {
+    cwd: project,
+    doctor: doctorScript,
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  assert(ok, `hybrid stale global config doctor exits 0: ${error || ''}`);
+  if (!report) return;
+  const cfg = report.sections.configuration;
+  assert(cfg && cfg.staleRetired, 'staleRetired populated for global config leftover');
+  assert(
+    Array.isArray(cfg.staleRetired.configKeys?.global) &&
+      cfg.staleRetired.configKeys.global.includes('defaults.sessionLeases'),
+    'staleRetired lists defaults.sessionLeases under global hub config',
+  );
+  assert(
+    !cfg.staleRetired.configKeys?.project?.length,
+    'project config keys empty when only global leftover exists',
+  );
+  assert(
+    /update --global/i.test(String(cfg.recommendation || '')),
+    'recommendation mentions update --global for global config leftovers',
+  );
+}
+
 function main() {
   console.log('Running ws-doctor thin smoke tests...');
   try {
@@ -610,6 +667,7 @@ function main() {
     testMissingConfigDoesNotInventValues();
     testStaleRetiredArtifactsReported();
     testGlobalStaleHubFileReported();
+    testGlobalStaleConfigKeysReported();
     testGithubCanonicalRegisterRowHasNodeLauncher();
     testAzureCanonicalRegisterRowHasNodeLauncher();
     testProviderRegisterRowsNotMissingLaunchers();
