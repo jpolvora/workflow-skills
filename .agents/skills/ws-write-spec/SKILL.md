@@ -1,7 +1,7 @@
 ---
 name: ws-write-spec
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.3.45
+version: 0.3.46
 disable-model-invocation: true
 invocation_names:
   - write-spec
@@ -57,9 +57,15 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Unpack ambiguous or loose requirements into atomic, unambiguous, testable ACs (`- AC1: ...`, `- AC2: ...`).
    - Every AC must have clear pass/fail conditions suitable for agentic coding and verification.
    - Detail error handling, edge cases, input validation, and boundary conditions explicitly.
-3. **Preserve Human Origin (`## Original Issue Context`):**
+   - Draft at least one **negative failure** scenario per feature (expected red test or error state).
+3. **Validation & Observation Notes:**
+   - Record named commands, logs, or scores under `## Validation & Observation Notes` → Telemetry.
+   - List negative failure scenarios under `### Negative & Failing Test Scenarios`.
+4. **Definition of Ready:**
+   - Fill `## Definition of Ready (DoR)` with bounded scope, atomic criteria, failure modes, observation telemetry, and zero open blockers (or `N/A because`).
+5. **Preserve Human Origin (`## Original Issue Context`):**
    - For remote tracker issues, preserve the original human-authored title, description, and discussion comments verbatim in `## Original Issue Context` so humans can trace intent back to the source issue.
-4. **Frontmatter Integrity:**
+6. **Frontmatter Integrity:**
    - Free-text: `source: local`, `id: null`.
    - Tracker issue: `source: github` | `source: azure-devops`, `id: {n}`, `slug: us-{n}`, `issueUrl: "{url}"`, `labels: [...]`, `workItemType: "..."` (when ADO).
 
@@ -75,9 +81,9 @@ When writing a spec derived from a remote tracker issue or raw human description
 3. **Design intent (modification tasks)** — Before treating a behavior gap as a bug, inspect `git log -p -S "<symbol>"` and/or `git log -L :<func>:<file>`. Record `### Design Intent` under Notes or Original Issue Context (intentional constraint vs accidental gap). Greenfield new files: skip with reason. Mandatory for "fix bug / restore behavior" wording.
    - Done when: design-intent recorded or skip reason documented.
 
-4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Include `## Out of Scope` and `## Assumptions & Open Questions` tables. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
+4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
    - **Gray area:** when a user-facing choice has two or more valid product options, write `{specsDir}/{slug}.context.md` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
-   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
+   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
 
 5. **Write** — Save `{specsDir}/{slug}.spec.md` (or `{output-dir}/{slug}.spec.md` when overridden). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`.
    - Done when: that specsDir file exists on disk.
@@ -116,7 +122,7 @@ When writing a spec derived from a remote tracker issue or raw human description
 - Transform the assigned source into one canonical, testable specification.
 - Lookup codebase, MEMORY, and stack facts before any `user-gate`.
 - Preserve tracker context and map each requirement to a numbered atomic AC.
-- Close Out of Scope + Assumptions; map present dimensions to ACs or one `N/A because` row.
+- Close Out of Scope + Assumptions + Definition of Ready + observation notes; map present dimensions to ACs or one `N/A because` row.
 - Invoke `validate_spec.cjs --mode=authoring` and do not finish while it is non-zero.
 - Write only the requested spec path (and lazy `context.md` when a gray area exists) and return its repo-relative location.
 - After a standalone user invoke, stop at the `index.PRD` user-gate; on Add, `track` via `ws-spec-index` only.

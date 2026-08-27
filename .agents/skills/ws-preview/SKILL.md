@@ -1,7 +1,7 @@
 ---
 name: ws-preview
 description: External pipeline code-review dry-run on the current branch (optional uncommitted changes) without publishing PR threads.
-version: 0.3.45
+version: 0.3.46
 disable-model-invocation: true
 invocation_names:
   - ws-preview

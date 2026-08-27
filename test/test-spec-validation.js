@@ -43,6 +43,15 @@ const closureBlock = `
 |------------|----------------|-----------|-----------|
 | Validator default | compat | Keep historical exit codes | y |
 | Remaining dimensions | N/A because this fixture is a unit test | Collapse rule | y |
+## Definition of Ready (DoR)
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded Scope | Clear problem statement | Inspect Description and Out of Scope |
+## Validation & Observation Notes
+### Telemetry & Observable Signals
+- Authoring validator emits PASS or FAIL for --mode=authoring.
+### Negative & Failing Test Scenarios
+- Missing DoR heading fails authoring validation.
 `;
 
 const missingOut = write(path.join(root, 'missing-out.spec.md'), `${fs.readFileSync(valid, 'utf8')}

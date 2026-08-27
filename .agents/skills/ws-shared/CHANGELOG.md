@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-27 11:50] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-fable-method` implement spec-dor-tdd-refinement-hardening.spec.md; bump version and commit
+- **Done**: Authoring-mode DoR + Validation Notes; write-spec/interview/implement-tasks/verify-plan TDD protocol; tests wired; package 0.3.46
+- **Result**: `npm test` exit 0; authoring validate PASS (9 ACs); integrity v0.3.46
+
 ### [2026-08-27 11:12] Agent: Gemini 3.7 Flash
 - **Prompt**: `/ws-spec-to-pr-lite` https://github.com/jpolvora/workflow-skills/issues/250
 - **Done**: Added `backend.md.template` and `frontend.md.template` to `RETIRED_HUB_FILES`, added `patterns` and `_comment_patterns` to `RETIRED_DEFAULTS_KEYS`/`RETIRED_DEFAULTS_COMMENT_KEYS` in `retired_artifacts.cjs`, synced `ws-doctor` fallback, updated `backend.md`/`frontend.md` to point at `STACK.md`, updated tests, created PR #251, commented on issue #250.

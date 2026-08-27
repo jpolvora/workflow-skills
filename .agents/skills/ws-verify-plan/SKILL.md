@@ -1,7 +1,7 @@
 ---
 name: ws-verify-plan
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.3.45
+version: 0.3.46
 disable-model-invocation: true
 invocation_names:
   - verify-plan
@@ -41,9 +41,9 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
 1. **Resolve source**: search `{us-dir}` in order for `step-02-{slug}.plan.refined.md` (refined, primary), then `step-01-{slug}.plan.md` (fallback). In full mode, also resolve the primary evaluation source: the refined plan when present, else `step-00-{slug}.spec.md`.
    - Done when: the resolved plan (and, in full mode, spec) path is known.
 
-2. **Evaluate**: Quick Score scores Completeness (40%), Correctness & Style (35%), Tests (25%), each 0-10. US Verification maps every plan feature and acceptance criterion to **Implemented**, **Not implemented**, or **Implemented differently**, each with file:line evidence.
+2. **Evaluate**: Quick Score scores Completeness (40%), Correctness & Style (35%), Tests (25%), each 0-10. US Verification maps every plan feature and acceptance criterion to **Implemented**, **Not implemented**, or **Implemented differently**, each with file:line evidence. Also map spec **negative test** scenarios (Validation Notes / failing cases) to covering tests before advancing; missing negative coverage is a gap, not an implicit pass.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) against `git diff` ground truth. Record verdict (`VERIFIED`, `VERIFIED WITH CAVEATS`, `REFUTED`) and fraud findings in the report.
-   - Done when: every planned feature/AC has a situation and evidence, and Quick Score's three metrics are each scored.
+   - Done when: every planned feature/AC and spec negative test scenario has a situation and evidence, and Quick Score's three metrics are each scored.
 
 3. **Score**: link semantic/file/test/alias/sabotage evidence to `{us-dir}/ac-ledger.json`, then run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <path> --boundary step5`. This derived integer **0-10** is the only score; never author or override a numeric score in a report or state update.
    - **Regression Sabotage Check:** For bug-fix/regression tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` with caller-authored invert patch. Record pass/fail/skipped+reason in the report. Missing **required** sabotage → fail-closed below the Advance bar (`knownDefect` caps at 8) (never Advance; triggers `scoreAndRefine` / Pause per `gates.md`). Restore failure aborts this step (exit 1).

@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.45
+version: 0.3.46
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -45,8 +45,8 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 3. **Scan codebase** — Locate similar code in the project layers (`config.json`) for style consistency.
    - Done when: a matching pattern is found, or none exists and this is noted.
 
-4. **Implement** — Write minimal, modular code matching the requirements without scope creep.
-   - Done when: every planned file is created or modified per its AC.
+4. **TDD cycle** — For each task: write **failing tests first** against unmodified code; run them; if they pass, flag a **false-positive** test hazard and do not treat the task as done. Then apply the minimal code correction that turns the tests green. Then check the task ACs and any spec DoR items the task claims to satisfy.
+   - Done when: a red baseline was observed (or a false-positive was recorded), then green after the correction, and every planned file matches its AC.
 
 5. **Fix the Entire Defect Class** — After Implement (build mode), repo-wide search/grep for the same defect pattern or vulnerability class (not style-only). Fix same-class siblings in scope; list remaining hits or exemptions (path + reason) in `step-output.summary`. Fix mode step 4 widens sibling sweep from modified directories to **repo-wide same pattern** with the same exemption rule.
    - Done when: search performed; remaining hits listed or justified.
