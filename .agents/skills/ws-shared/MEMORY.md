@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Omit machine-readable JSON bridges when multi-reviewer union scripts require structured inputs. Strip entire lines containing injection phrases from formatted markdown memory traps.
 - **INSTEAD DO**: Provide `--jury-out` in `write_review_round.cjs` to emit structured findings JSON for `merge_review_jury.cjs`. Reject injection-only files while preserving legitimate memory bodies intact.
 
+### [2026-08-27] Review jury canonical markdown materialization and juror count validation
+- **Layer**: `harness`
+- **Module**: `ws-code-review / ws-spec-to-pr`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-code-review/scripts/write_review_round.cjs;.agents/skills/ws-spec-to-pr/scripts/merge_review_jury.cjs`
+- **Scenario / Context**: During Step 6 review jury execution, each juror's `write_review_round.cjs` was overwriting canonical `step-06-{slug}.review.md`, leaving only the last juror's findings for downstream fix mode. `merge_review_jury.cjs` was also not validating the number of juror reports against configured `defaults.reviewJury.size`.
+- **DO NOT**: Overwrite canonical review markdown when running individual jurors under review jury. Allow review jury merge to silently proceed with fewer juror files than configured.
+- **INSTEAD DO**: Guard canonical markdown write with `!options.juryOut` in `write_review_round.cjs`. Materialize the merged jury markdown via `--canonical-review-out` in `merge_review_jury.cjs` and validate juror count against `defaults.reviewJury.size`.
+
 ### [2026-08-27] Resolve-thread metadata-only notes
 - **Layer**: `providers`
 - **Module**: `ws-github-provider / ws-azure-devops-provider`

@@ -20,9 +20,36 @@ function parseArgs(argv) {
   return options;
 }
 
+function formatCanonicalReviewMarkdown(result, slug) {
+  const lines = [
+    '---',
+    'artifactType: review',
+    'step: 6',
+    '---',
+    '',
+    `# Code review (merged jury) — ${slug || 'step-06'}`,
+    '',
+  ];
+  if (!result.findings.length) {
+    lines.push('No feedback');
+  } else {
+    for (const finding of result.findings) {
+      const line = Number(finding.line) || 1;
+      lines.push(`### ${finding.id} [${finding.severity}] open ${finding.path}:L${line}-L${line}`);
+      lines.push(`Merged from review jury (${finding.severity}).`);
+      lines.push('');
+    }
+  }
+  return `${lines.join('\n').trim()}\n`;
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
+  const expectedSize = Number(context.config?.defaults?.reviewJury?.size || 0);
+  if (expectedSize > 1 && options.reviews.length !== expectedSize) {
+    throw new Error(`merge_review_jury expected ${expectedSize} juror files, got ${options.reviews.length}`);
+  }
   const reports = options.reviews.map((file, index) => (
     readPayload(path.resolve(context.repoRoot, file), `juror-${index + 1}`)
   ));
@@ -30,6 +57,11 @@ function main() {
   const output = path.resolve(context.repoRoot, options.output);
   fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.writeFileSync(output, `${JSON.stringify(result, null, 2)}\n`, 'utf8');
+  if (options.canonicalReviewOut) {
+    const canonicalPath = path.resolve(context.repoRoot, options.canonicalReviewOut);
+    fs.mkdirSync(path.dirname(canonicalPath), { recursive: true });
+    fs.writeFileSync(canonicalPath, formatCanonicalReviewMarkdown(result, options.slug), 'utf8');
+  }
   process.stdout.write(`${JSON.stringify({ ...result, output: toRepoRelative(context.repoRoot, output) }, null, 2)}\n`);
 }
 

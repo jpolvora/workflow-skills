@@ -82,6 +82,8 @@ assert.strictEqual(parsedJuryOut.findings[0].line, 10);
 assert.strictEqual(parsedJuryOut.findings[1].id, 'CR-002');
 assert.strictEqual(parsedJuryOut.findings[1].line, 20);
 
+assert.strictEqual(fs.existsSync(path.join(reviewOutDir, 'step-06-demo.review.md')), false, 'canonical review is not written when --jury-out is supplied');
+
 const merged = mergeJuryReports([
   {
     findings: [
@@ -102,14 +104,34 @@ assert.ok(merged.findings.some((item) => item.severity === 'Critical'));
 
 const juryScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/merge_review_jury.cjs');
 const juryRoot = temp('ws-jury-');
-write(path.join(juryRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
+write(path.join(juryRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  defaults: { reviewJury: { size: 2 } },
+}));
 write(path.join(juryRoot, 'a.json'), JSON.stringify(parsedJuryOut));
 write(path.join(juryRoot, 'b.json'), JSON.stringify({ findings: [{ id: 'CR-001', severity: 'Warning', path: 'src/foo.js', line: 10 }, { id: 'CR-003', severity: 'Suggestion', path: 'src/baz.js', line: 5 }] }));
-const jury = run(juryScript, ['--review', 'a.json', '--review', 'b.json', '--output', 'out.json', '--repo-root', juryRoot]);
+write(path.join(juryRoot, 'c.json'), JSON.stringify({ findings: [] }));
+
+const countMismatch = run(juryScript, ['--review', 'a.json', '--output', 'out.json', '--repo-root', juryRoot]);
+assert.notStrictEqual(countMismatch.status, 0, 'merge_review_jury fails on count mismatch when size=2');
+
+const jury = run(juryScript, [
+  '--review', 'a.json',
+  '--review', 'b.json',
+  '--output', 'out.json',
+  '--canonical-review-out', 'canonical.review.md',
+  '--slug', 'demo',
+  '--repo-root', juryRoot,
+]);
 assert.strictEqual(jury.status, 0, jury.stderr);
 const juryOut = JSON.parse(fs.readFileSync(path.join(juryRoot, 'out.json'), 'utf8'));
 assert.strictEqual(juryOut.findings.length, 3);
 assert.strictEqual(juryOut.requiresFix, true);
+
+const canonicalText = fs.readFileSync(path.join(juryRoot, 'canonical.review.md'), 'utf8');
+assert.match(canonicalText, /### CR-001 \[Warning\] open src\/foo.js:L10-L10/);
+assert.match(canonicalText, /### CR-002 \[Critical\] open src\/bar.js:L20-L20/);
+assert.match(canonicalText, /### CR-003 \[Suggestion\] open src\/baz.js:L5-L5/);
 
 const lite = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
 const liteRoot = temp('ws-lite-jury-');

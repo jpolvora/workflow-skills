@@ -118,7 +118,9 @@ function main() {
   }
   fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(roundFile, stamped, 'utf8');
-  fs.writeFileSync(canonical, stamped, 'utf8');
+  if (!options.juryOut) {
+    fs.writeFileSync(canonical, stamped, 'utf8');
+  }
   if (options.juryOut) {
     const juryPath = path.resolve(context.repoRoot, options.juryOut);
     fs.mkdirSync(path.dirname(juryPath), { recursive: true });
