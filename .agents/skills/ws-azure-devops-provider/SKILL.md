@@ -57,7 +57,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | `create-pr` | head, base, title/body | PR URL + id | Prefer `az repos pr create`; if `az` missing/fails → REST in INTENTS.md |
 | `list-threads` | PR id | Thread list | `fix_pr_azure_context.py collect` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `az repos pr policy list`; build log via REST or `az pipelines runs show`; classify diff/baseline/flake |
-| `resolve-thread` | thread id (+ PR id, comment; optional `--model`) | Resolved (or dry-run); comment footer `LLM model: {id}` when `--model` set | `fix_pr_azure_context.py resolve-thread` |
+| `resolve-thread` | thread id (+ PR id, comment; optional `--model`) | Resolved (or dry-run); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `fix_pr_azure_context.py resolve-thread` |
 | `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.py` → WIT Comments `api-version=7.1-preview.4` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 

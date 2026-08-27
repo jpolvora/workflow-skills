@@ -9,6 +9,49 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { spawnSync } from 'child_process';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+
+const require = createRequire(import.meta.url);
+const __doctorDir = path.dirname(fileURLToPath(import.meta.url));
+
+let retiredArtifactsModule = null;
+function getRetiredArtifactsModule() {
+  if (retiredArtifactsModule) return retiredArtifactsModule;
+  try {
+    retiredArtifactsModule = require(path.join(__doctorDir, '../../ws-shared/scripts/retired_artifacts.cjs'));
+  } catch {
+    retiredArtifactsModule = {
+      listRetiredConfigKeys(cfg) {
+        const found = [];
+        const keys = [
+          'sessionLeases',
+          'enableAuditing',
+          'patternsBackend',
+          'patternsFrontend',
+          '_comment_sessionLeases',
+          '_comment_enableAuditing',
+          '_comment_patternsBackend',
+          '_comment_patternsFrontend',
+        ];
+        if (cfg?.defaults && typeof cfg.defaults === 'object') {
+          for (const key of keys) {
+            if (Object.prototype.hasOwnProperty.call(cfg.defaults, key)) found.push(`defaults.${key}`);
+          }
+        }
+        return found;
+      },
+      RETIRED_HUB_FILES: ['session-lease.schema.json'],
+      RETIRED_SKILL_DIRS: ['ws-patterns', 'ws-patterns-backend', 'ws-patterns-frontend', 'ws-audit'],
+      findRetiredSkillDirsAtRoot(fsMod, pathMod, skillsDirAbs) {
+        if (!skillsDirAbs) return [];
+        const root = pathMod.resolve(skillsDirAbs);
+        return this.RETIRED_SKILL_DIRS.filter((id) => fsMod.existsSync(pathMod.join(root, id)));
+      },
+    };
+  }
+  return retiredArtifactsModule;
+}
 
 const DEFAULT_SWITCH_KEYS = [
   'autoMode',
@@ -764,7 +807,7 @@ function markEmpty(value) {
   return { value, mark: 'ok' };
 }
 
-function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoad, tokenMap) {
+function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoad, tokenMap, skillsRootAbs) {
   const configPath = path.join(sharedDirAbs, 'config.json');
   const tip =
     'user-gate: recommend running ws-configure-project to create/fill project hub config.json';
@@ -841,13 +884,50 @@ function summarizeConfiguration(projectRoot, sharedDirAbs, configLoad, schemaLoa
     rulesSummary[k] = markEmpty(v);
   }
 
+  const { listRetiredConfigKeys, RETIRED_HUB_FILES, findRetiredSkillDirsAtRoot } =
+    getRetiredArtifactsModule();
+  const globalRootAbs = tokenMap._abs?.globalSkillsRoot;
+  const projectSkillDirs = findRetiredSkillDirsAtRoot(fs, path, skillsRootAbs);
+  const distinctGlobal =
+    globalRootAbs && path.resolve(globalRootAbs) !== path.resolve(skillsRootAbs);
+  const globalSkillDirs = distinctGlobal
+    ? findRetiredSkillDirsAtRoot(fs, path, globalRootAbs)
+    : [];
+  const listHub = (dirAbs) =>
+    RETIRED_HUB_FILES.filter((name) => fs.existsSync(path.join(dirAbs, name)));
+  const projectHubFiles = listHub(sharedDirAbs);
+  const globalHubFiles = distinctGlobal ? listHub(path.join(globalRootAbs, 'ws-shared')) : [];
+  const projectConfigKeys = listRetiredConfigKeys(cfg);
+  const globalCfgLoad = distinctGlobal
+    ? loadJson(path.join(globalRootAbs, 'ws-shared', 'config.json'))
+    : { ok: false };
+  const globalConfigKeys =
+    globalCfgLoad.ok && globalCfgLoad.data ? listRetiredConfigKeys(globalCfgLoad.data) : [];
+  const staleRetired = {
+    configKeys: { project: projectConfigKeys, global: globalConfigKeys },
+    hubFiles: { project: projectHubFiles, global: globalHubFiles },
+    skillDirs: { project: projectSkillDirs, global: globalSkillDirs },
+  };
+  const hasStaleRetired =
+    projectConfigKeys.length > 0 ||
+    globalConfigKeys.length > 0 ||
+    projectHubFiles.length > 0 ||
+    globalHubFiles.length > 0 ||
+    projectSkillDirs.length > 0 ||
+    globalSkillDirs.length > 0;
+
   return {
     available: true,
     path: toPosix(path.relative(projectRoot, configPath)),
     reason: null,
-    recommendation: null,
+    recommendation: hasStaleRetired
+      ? globalSkillDirs.length || globalHubFiles.length || globalConfigKeys.length
+        ? 'Run `npx --yes github:jpolvora/workflow-skills update` (project) and `update --global` (global skills root) to prune retired artifacts removed in 0.3.37–0.3.38.'
+        : 'Run `npx --yes github:jpolvora/workflow-skills update` to prune retired artifacts (session leases, ws-patterns, ws-audit removed in 0.3.37–0.3.38).'
+      : null,
     schemaAware: Boolean(schemaLoad && schemaLoad.ok),
     schemaIssues,
+    staleRetired: hasStaleRetired ? staleRetired : null,
     summary: {
       pathTokens: {
         skillsRoot: tokenMap.skillsRoot,
@@ -988,6 +1068,32 @@ function formatMarkdown(report) {
       lines.push('Schema / identity issues:');
       for (const iss of cfg.schemaIssues) lines.push(`- ${iss}`);
     }
+    if (cfg.staleRetired) {
+      lines.push('');
+      lines.push('Stale retired artifacts (run update to prune):');
+      if (cfg.staleRetired.configKeys.project?.length) {
+        lines.push(`- config keys (project): ${cfg.staleRetired.configKeys.project.join(', ')}`);
+      }
+      if (cfg.staleRetired.configKeys.global?.length) {
+        lines.push(`- config keys (global): ${cfg.staleRetired.configKeys.global.join(', ')}`);
+      }
+      if (cfg.staleRetired.hubFiles.project?.length) {
+        lines.push(`- hub files (project): ${cfg.staleRetired.hubFiles.project.join(', ')}`);
+      }
+      if (cfg.staleRetired.hubFiles.global?.length) {
+        lines.push(`- hub files (global): ${cfg.staleRetired.hubFiles.global.join(', ')}`);
+      }
+      if (cfg.staleRetired.skillDirs.project?.length) {
+        lines.push(`- skill folders (project): ${cfg.staleRetired.skillDirs.project.join(', ')}`);
+      }
+      if (cfg.staleRetired.skillDirs.global?.length) {
+        lines.push(`- skill folders (global): ${cfg.staleRetired.skillDirs.global.join(', ')}`);
+      }
+      if (cfg.recommendation) {
+        lines.push('');
+        lines.push(`Recommendation: ${cfg.recommendation}`);
+      }
+    }
     const s = cfg.summary;
     lines.push('');
     lines.push('### Path tokens');
@@ -1088,6 +1194,7 @@ function main() {
     configLoad,
     schemaLoad,
     tokenMap,
+    skillsRootAbs,
   );
 
   let skills = listSkillDirs(skillsRootAbs, args.skill);

@@ -1431,6 +1431,69 @@ child.on('close', async (code) => {
     ok('Update preserves ws-shared consumer data and never rewrites root AGENTS.md');
   }
 
+  // --- Phase 9b: update prunes retired session-lease / patterns leftovers ---
+  console.log('\n[Phase 9b] update prunes retired session-lease artifacts...');
+  {
+    const pruneDir = path.join(__dirname, '.pkg-prune-retired');
+    fs.rmSync(pruneDir, { recursive: true, force: true });
+    fs.mkdirSync(pruneDir, { recursive: true });
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const inst = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--package', 'workflows', '--yes'],
+      {
+        cwd: pruneDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000,
+      },
+    );
+    if (inst.status !== 0) {
+      console.error(`${inst.stdout || ''}${inst.stderr || ''}`);
+      fail(`workflows install for prune test exited ${inst.status}`);
+    }
+    const skills = path.join(pruneDir, '.agents', 'skills');
+    const shared = path.join(skills, 'ws-shared');
+    const configPath = path.join(shared, 'config.json');
+    const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    cfg.defaults = { ...(cfg.defaults || {}), sessionLeases: true };
+    fs.writeFileSync(configPath, `${JSON.stringify(cfg, null, 2)}\n`);
+    fs.writeFileSync(path.join(shared, 'session-lease.schema.json'), '{}\n');
+    fs.mkdirSync(path.join(skills, 'ws-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(skills, 'ws-patterns', 'SKILL.md'), '# retired\n');
+    const manifestPath = path.join(shared, 'installed-skills.json');
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.skills = [...new Set([...(manifest.skills || []), 'ws-patterns'])];
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+    const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+      cwd: pruneDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 120000,
+    });
+    if (upd.status !== 0) {
+      console.error(`${upd.stdout || ''}${upd.stderr || ''}`);
+      fail(`update prune test exited ${upd.status}`);
+    }
+    if (fs.existsSync(path.join(shared, 'session-lease.schema.json'))) {
+      fail('update must delete session-lease.schema.json');
+    }
+    if (fs.existsSync(path.join(skills, 'ws-patterns'))) {
+      fail('update must remove retired ws-patterns folder');
+    }
+    const afterCfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    if (afterCfg.defaults?.sessionLeases !== undefined) {
+      fail('update must strip defaults.sessionLeases');
+    }
+    const afterManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (afterManifest.skills.includes('ws-patterns')) {
+      fail('update must drop ws-patterns from installed-skills.json');
+    }
+    fs.rmSync(pruneDir, { recursive: true, force: true });
+    ok('update prunes retired session-lease schema, config key, and ws-patterns');
+  }
+
   // --- Phase 10: installed-skills.json + uninstall cascade ---
   console.log('\n[Phase 10] installed-skills.json + uninstall cascade...');
   {

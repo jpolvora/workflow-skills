@@ -6,6 +6,42 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-27] Resolve-thread metadata-only notes
+- **Layer**: `providers`
+- **Module**: `ws-github-provider / ws-azure-devops-provider`
+- **Severity**: `Medium`
+- **PathPattern**: `**/resolve_thread.cjs|**/fix_pr_azure_context.py`
+- **Scenario / Context**: Cooperative bookkeeping lines (`defectClass`, `sourcesConsulted`, `proactiveFixed`, `proactiveSkipped`) can exceed 40 characters without describing what changed.
+- **DO NOT**: Count COOPERATIVE_FIX metadata keys or homogeneous filler (e.g. forty `x` characters) as resolution-comment substance.
+- **INSTEAD DO**: Strip metadata lines, then require ≥40 remaining characters **and** a 4+ letter alphabetic token with two distinct letters so both GitHub and Azure reject metadata-only and homogeneous filler notes (parity tests).
+
+### [2026-08-27] Phase 4 rg vs MEMORY traps
+- **Layer**: `harness`
+- **Module**: `ws-check-harness`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-check-harness/PHASES.md`
+- **Scenario / Context**: After adding retired-artifact tokens to the Phase 4 `rg` recipe, anti-regression MEMORY entries that name `session-lease.schema.json` match as if they were live skill references.
+- **DO NOT**: Treat `{sharedDir}/MEMORY.md` or `memory/*` hits as live retired-id violations.
+- **INSTEAD DO**: Glob-exempt `MEMORY.md` and `memory/**` (same class as CHANGELOG) so the recipe stays empty on a clean tree.
+
+### [2026-08-27] Fix-PR resolution comments must describe the correction
+- **Layer**: `Harness`
+- **Module**: `ws-fix-pr / resolve-thread`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-github-provider/scripts/resolve_thread.cjs, .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py, .agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md`
+- **Scenario / Context**: After the LLM model footer was added to thread-close comments, agents posted hash-only bodies (`Corrigido em {sha}` / `Fixed in {sha}` plus `LLM model: {id}`) with no description of the code change. Reviewers cannot tell what was actually fixed.
+- **DO NOT**: Close a GitHub or Azure thread with only a commit hash and/or model footer. Do not treat `--model` as the comment body.
+- **INSTEAD DO**: Pass a `--comment` / resolution note that states what changed (files + behavior) and why it resolves the thread, plus the commit when code changed. Both providers reject hash-only bodies before any remote mutation.
+
+### [2026-08-27] Doctor hybrid global hub leftovers
+- **Layer**: `skills`
+- **Module**: `ws-doctor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-doctor/scripts/doctor.js`
+- **Scenario / Context**: Hybrid installs keep skills globally while project `ws-shared` holds config. Retired hub files (`session-lease.schema.json`) and retired `defaults.*` keys can remain under `$HOME/.agents/skills/ws-shared/` after 0.3.38 while the project hub is clean. Scanning only project `sharedDirAbs` / project `config.json` yields a false-negative pre-update diagnostic.
+- **DO NOT**: Report stale retired hub files or config keys from the project hub only when `{globalSkillsRoot}` is a distinct tree.
+- **INSTEAD DO**: Also list `RETIRED_HUB_FILES` and `listRetiredConfigKeys` under `{globalSkillsRoot}/ws-shared/` when it differs from project `{skillsRoot}`; recommend `update --global` when global leftovers exist. Cover with hybrid fixture tests.
+
 ### [2026-08-26] Vault-disable restore only when vault was active
 - **Layer**: `skills`
 - **Module**: `ws-spec-memo / configure_spec_memo`

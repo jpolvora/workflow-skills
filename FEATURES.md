@@ -256,6 +256,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.43** | Aug 27 | **Retired artifact hygiene:** `update`/hub refresh prunes session-lease schema, `defaults.sessionLeases` / `enableAuditing` / `patterns*` config keys, and retired `ws-patterns*` / `ws-audit` folders; `ws-doctor` warns on leftovers; harness forbidden-id scan extended |
 | **0.3.42** | Aug 26 | Configurable memory storage backends (`enableMemoryFiles` & `enableSpecMemoIntegration`), `ws-spec-memo` integration bridge, wizard interview updates & tests |
 | **0.3.41** | Aug 26 | `ws-spec-memo` runtime ops hand off to spec-memo `ws-memo`; hashed hub `setup.md` FAQ links + skill-integrity refresh; root `RESEARCH.md` backlog |
 | **0.3.40** | Aug 25 | Fix-PR batch dual-model: `fixPrPlan` (reviewer) then `fixPrExec` (execution) per Act round / standalone `/fix-pr`; config roles + tests; Auto-Fix unchanged |
@@ -309,7 +310,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-26).
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
-| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | One batch-wide reviewer-plan then execution pass; durable gate, amendment-before-deviation, proactive same-class sweep, verification, resolution, learning, push |
+| [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | One batch-wide reviewer-plan then execution pass; durable gate, amendment-before-deviation, proactive same-class sweep, verification, resolution comments that describe the correction (not hash-only), learning, push |
 | [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative Act-round batches until threads hit zero and checks pass; requires both plan and execute evidence before resolve/push |
 | [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | E | Post-ship QA delta capture, planning, and execution |
 

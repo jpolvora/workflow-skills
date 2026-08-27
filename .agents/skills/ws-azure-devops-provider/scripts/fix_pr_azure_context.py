@@ -13,8 +13,8 @@ Config preference:
 
 Usage:
   python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py collect --pr-id 592 --output .agents/skills/ws-fix-pr/runs/pr-592/context.json
-  python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py resolve-thread --pr-id 592 --thread-id 4001 --model composer-2.5 --comment "Justification..."
-  python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py resolve-thread --dry-run --pr-id 592 --thread-id 4001 --model composer-2.5 --comment "Justification..."
+  python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py resolve-thread --pr-id 592 --thread-id 4001 --model composer-2.5 --comment "loadList() now preloads row actions so Edit is visible before the extra-actions menu. Fixed in 3dc20274."
+  python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py resolve-thread --dry-run --pr-id 592 --thread-id 4001 --model composer-2.5 --comment "loadList() now preloads row actions so Edit is visible before the extra-actions menu. Fixed in 3dc20274."
 """
 
 from __future__ import annotations
@@ -372,6 +372,53 @@ def get_pr_context(repo_root: Path, pr_id: int, repository: str, include_system:
 
 
 MODEL_FOOTER_PREFIX = "LLM model:"
+MIN_RESOLUTION_SUBSTANCE_CHARS = 40
+THIN_RESOLUTION_ERROR = (
+    "resolve-thread: comment must describe the correction (what changed and why), "
+    "not only a commit hash or LLM model footer."
+)
+HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+HASH_STATUS_PREFIX_RE = re.compile(
+    r"^(?:corrigido|fixed|resolved|closed|done)(?:\s+(?:em|in|at|no))?(?:\s+commit)?[:\s]+[0-9a-f]{7,40}\.?\s*",
+    re.IGNORECASE,
+)
+SHA_ONLY_RE = re.compile(r"^[0-9a-f]{7,40}\.?$", re.IGNORECASE)
+METADATA_LINE_RE = re.compile(
+    r"^(?:defectClass|sourcesConsulted|proactiveFixed|proactiveSkipped)\s*:",
+    re.IGNORECASE,
+)
+WORD_TOKEN_RE = re.compile(r"\b[a-zA-Z]{4,}\b")
+
+
+def resolution_comment_substance(comment: str) -> str:
+    text = HTML_COMMENT_RE.sub("", comment or "")
+    text = re.sub(r"\n---\s*\nLLM model:[\s\S]*$", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"^LLM model:\s*.+$", "", text, flags=re.IGNORECASE | re.MULTILINE)
+    parts: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line in {"---", "-"}:
+            continue
+        if METADATA_LINE_RE.match(line):
+            continue
+        line = HASH_STATUS_PREFIX_RE.sub("", line).strip()
+        if not line or SHA_ONLY_RE.match(line):
+            continue
+        parts.append(line)
+    return " ".join(parts)
+
+
+def has_lexical_word(substance: str) -> bool:
+    for word in WORD_TOKEN_RE.findall(substance or ""):
+        if len(set(word.lower())) >= 2:
+            return True
+    return False
+
+
+def assert_resolution_comment(comment: str) -> None:
+    substance = resolution_comment_substance(comment)
+    if len(substance) < MIN_RESOLUTION_SUBSTANCE_CHARS or not has_lexical_word(substance):
+        raise SystemExit(THIN_RESOLUTION_ERROR)
 
 
 def format_resolution_comment(comment: str, model: str) -> str:
@@ -393,6 +440,7 @@ def resolve_thread(
     model: str,
     dry_run: bool,
 ) -> dict[str, Any]:
+    assert_resolution_comment(comment)
     formatted_comment = format_resolution_comment(comment, model)
     if dry_run:
         return {
@@ -467,7 +515,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     resolve.add_argument("--pr-id", type=int, required=True)
     resolve.add_argument("--thread-id", type=int, required=True)
-    resolve.add_argument("--comment", required=True)
+    resolve.add_argument(
+        "--comment",
+        required=True,
+        help="What changed and why (commit hash allowed; hash-only bodies are rejected).",
+    )
     resolve.add_argument(
         "--model",
         default="",

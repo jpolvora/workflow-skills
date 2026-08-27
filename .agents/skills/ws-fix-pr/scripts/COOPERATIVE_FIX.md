@@ -139,7 +139,33 @@ All resolutions include the canonical marker:
 <!-- resolution-reply -->
 ```
 
-Body: **detailed explanation** from the agent (problem, root cause, change, why it resolves). Auto-Fix prefixes with `botTag` in the API.
+Body: **detailed explanation** of the correction (problem, root cause, change made, why it resolves), then the commit when code changed, then the model footer. Auto-Fix prefixes with `botTag` in the API. GitHub `resolve_thread.cjs` and Azure `resolve-thread --comment` use the same contract and **reject** hash-only or model-footer-only bodies (exit 1, no remote mutation).
+
+**Required** (score 6–10 with a code fix):
+
+```
+<!-- resolution-reply -->
+Fixed in {shortSha}.
+
+{what changed}: {files + behavior}. {why it resolves the thread}.
+
+defectClass: ...
+sourcesConsulted: ...
+proactiveFixed: ...
+proactiveSkipped: none | {path + reason}
+
+---
+LLM model: {id}
+```
+
+No-code close (score 0–5): omit the commit line; the justification must still explain why no edit. Translated hash-only lines (`Corrigido em {sha}`) are also rejected.
+
+**Forbidden** (do not post):
+
+```
+Fixed in 3dc20274.
+LLM model: composer-2.5
+```
 
 ---
 

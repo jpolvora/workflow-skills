@@ -1,5 +1,17 @@
 # Changelog
 
+### [2026-08-27 03:10] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-goal-fix-pr` PR 248 — reject filler-only resolve-thread comments
+- **Done**: GitHub and Azure substance gates require a 4+ letter token with two distinct letters; parity tests reject forty `x`; INTENTS + SCM contract updated
+- **Result**: `node test/test-provider-parity.js` green
+
+
+### [2026-08-27 00:50] Agent: Cursor Grok 4.6
+- **Prompt**: Fix-PR thread close must include what was done for the correction, not only model + Corrigido em <hash>; apply on ADO and GitHub
+- **Done**: Both `resolve-thread` implementations reject hash-only bodies; skill/INTENTS/contract require files+behavior in the comment; parity tests cover GH and Azure
+- **Result**: `node test/test-provider-parity.js` and `node test/test-fix-pr-proactive-class-sweep.js` green
+
+
 ### [2026-08-26 23:36] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` 246 round 5 — leftover threads after CI
 - **Done**: Resolve already-fixed mode-matrix thread; add AC14 lifecycle-hook assertions (self-learning upsert, tools.md upsert/append, AGENTS aliases)
@@ -114,6 +126,11 @@
 - **Prompt**: `/ws-ship-pr` + `/ws-goal-fix-pr` for develop→main
 - **Done**: Prepare board green; pushed develop; opened PR #240; converged (0 threads, CI+review green); merged
 - **Result**: https://github.com/jpolvora/workflow-skills/pull/240 MERGED (`c4237294`)
+
+### [2026-08-27 04:00] Agent: Cursor
+- **Prompt**: Fix #247 stale session-lease artifacts after 0.3.38 removal; scan other retired references
+- **Done**: Added `retired_artifacts.cjs` + install/update prune for session-lease schema, retired config keys, and `ws-patterns*` / `ws-audit` folders; `ws-doctor` stale-artifact warnings; harness forbidden-id scan; index/spec retired markers; README note; test-consumer-migration
+- **Result**: Consumer `update` prunes leftovers that caused `session_lease.cjs` MODULE_NOT_FOUND; live skill bodies remain clean
 
 ### [2026-08-25 10:15] Agent: Cursor Grok 4.6
 - **Prompt**: Read todo.txt, create an interpreted plan, and implement

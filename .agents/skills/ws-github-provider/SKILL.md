@@ -56,7 +56,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base) |
 | `list-threads` | PR id | Thread list | `fetch_threads.cjs` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `gh pr checks`; on fail `gh run view --log-failed`; classify diff/baseline/flake; one flake rerun |
-| `resolve-thread` | thread id (+ comment; optional `--model`) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation); comment footer `LLM model: {id}` when `--model` set | `resolve_thread.cjs` |
+| `resolve-thread` | thread id (+ comment; optional `--model`) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `resolve_thread.cjs` |
 | `comment-issue` | issue id, body | Public issue comment (alias `close-loop`) | `comment_issue.py` → `gh issue comment` |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 
