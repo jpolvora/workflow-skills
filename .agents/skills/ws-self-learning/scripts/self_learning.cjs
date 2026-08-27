@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const {
   resolveConsumerContext,
+  resolveMemoryRouting,
   toRepoRelative,
 } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
@@ -195,9 +196,15 @@ function main() {
     return;
   }
   const context = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: __filename, skillId: 'ws-self-learning' });
+  const routing = resolveMemoryRouting(context.config);
   const memoryDir = path.join(context.sharedDir, 'memory');
   const output = path.join(context.sharedDir, 'MEMORY.md');
   if (args.compile) return compile(context, memoryDir, output);
+
+  if (!routing.enableMemoryFiles && !fs.existsSync(memoryDir)) {
+    process.stdout.write('No matching memory entries found (local memory files disabled).\n');
+    return;
+  }
 
   const all = entries(memoryDir);
   const matches = args.query

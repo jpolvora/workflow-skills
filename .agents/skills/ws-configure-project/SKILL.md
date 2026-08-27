@@ -63,23 +63,26 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
       1. On **Yes (`true`)**: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Do **not** set `defaults.autoload` from this answer.
       2. On **No (`false`)** / Skip / Keep false: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false` then **`--write-autoload`** (same as Yes) so a prior Always-applied row is stripped. Do **not** set `defaults.autoload`.
    - Done when: `defaults.autoload` persisted; `defaults.autoloadTaskLifecycle` persisted or left false/omitted; Always-applied table refreshed via `--write-autoload` after both Yes and No answers for `ws-task-lifecycle`.
-7. **spec-memo vault (optional)** — Run when full interview reaches optional extras, or immediately for `--section specMemo`. See [`INTERVIEW.md`](INTERVIEW.md) § specMemo and [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Skip core project interview when `--section specMemo` only.
-   1. Preflight: `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json`. When `cli.available` is false, user-gate: **Install spec-memo globally (Recommended)** (`npm install -g spec-memo`) / **Use npx for this session** (set `specMemo.cli` to `npx -y spec-memo`) / **Skip external vault (Recommended when CLI missing)** / Cancel → STOP.
-   2. user-gate: **Enable external spec-memo vault (`specMemo.enabled: true`)?** — **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
-   3. On **Yes (`true`)** — sequential gates (Recommended first):
-      - **Mode vault** (vault-only memory writes) / **Mode hybrid** (vault + in-repo MEMORY fallback)
+7. **spec-memo vault & memory backends (optional)** — Run when full interview reaches optional extras, or immediately for `--section specMemo`. See [`INTERVIEW.md`](INTERVIEW.md) § specMemo and [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Skip core project interview when `--section specMemo` only.
+   1. Preflight: `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json`. When `cli.available` is false, user-gate: **Install spec-memo globally** (`npm install -g spec-memo`) / **Use npx for this session** (set `specMemo.cli` to `npx -y spec-memo`) / **Local markdown files only (Recommended when CLI missing)** / Cancel → STOP.
+   2. user-gate: **Select memory backend(s)?**
+      1. **Local markdown files only (`enableMemoryFiles=true, enableSpecMemoIntegration=false`) (Recommended)**
+      2. **Spec-memo integration only (`enableMemoryFiles=false, enableSpecMemoIntegration=true`)**
+      3. **Both local files and spec-memo integration (`enableMemoryFiles=true, enableSpecMemoIntegration=true`)**
+      4. **None / Disabled (`enableMemoryFiles=false, enableSpecMemoIntegration=false`)**
+   3. When spec-memo integration is selected (options 2 or 3) — sequential gates (Recommended first):
       - **Import legacy `.agents` tree now** / Skip import
       - **Install write-block pre-commit hook** (`memo hook install`) / Skip hook
       - **Bootstrap on session start** (`specMemo.bootstrapOnSession: true`) / Manual bootstrap only
    4. Apply via:
       ```bash
       node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json \
-        --enabled {true|false} --mode {vault|hybrid} --import {true|false} --hook {true|false} \
+        --enable-memory-files {true|false} --enable-spec-memo {true|false} \
+        --import {true|false} --hook {true|false} \
         --bootstrap-on-session {true|false} [--cli "memo"]
       ```
-      On **No / Skip / Keep false**: `--enabled false` only (preserve other `specMemo.*` keys).
-   5. When enabled, print MCP snippet from [`ws-spec-memo/references/MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and note: register `spec-memo` MCP server in the agent host (`{cli} serve`). Full bridge map: [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
-   - Done when: `specMemo.*` persisted; import/hook ran when user chose Yes; MCP snippet shown when enabled.
+   5. When spec-memo enabled, print MCP snippet from [`ws-spec-memo/references/MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and note: register `spec-memo` MCP server in the agent host (`{cli} serve`). Full bridge map: [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
+   - Done when: memory backend settings persisted in `config.json`; import/hook ran when user chose Yes; MCP snippet shown when spec-memo enabled.
 8. **Security pre-commit hook** — Ask via `user-gate`: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
    - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
    - On **Yes (`true`)**: run `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.

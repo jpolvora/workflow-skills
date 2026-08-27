@@ -105,6 +105,35 @@ def load_config(repo_root: Path) -> dict:
     return config
 
 
+def resolve_memory_routing(config: dict) -> dict[str, bool]:
+    spec_memo = config.get("specMemo") or {}
+    enable_memory_files = config.get("enableMemoryFiles")
+    if enable_memory_files is None:
+        enable_memory_files = spec_memo.get("enableMemoryFiles")
+
+    enable_spec_memo = config.get("enableSpecMemoIntegration")
+    if enable_spec_memo is None:
+        enable_spec_memo = spec_memo.get("enableSpecMemoIntegration")
+
+    if enable_spec_memo is None:
+        if "enabled" in spec_memo:
+            enable_spec_memo = bool(spec_memo["enabled"])
+        else:
+            enable_spec_memo = False
+
+    if enable_memory_files is None:
+        if spec_memo.get("enabled") and spec_memo.get("mode") == "vault":
+            enable_memory_files = False
+        else:
+            enable_memory_files = True
+
+    return {
+        "enableMemoryFiles": bool(enable_memory_files),
+        "enableSpecMemoIntegration": bool(enable_spec_memo),
+    }
+
+
+
 def resolve_skills_root(repo_root: Path, skill_id: str | None = None) -> Path:
     local_root = repo_root.resolve() / ".agents" / "skills"
     probe = local_root / skill_id if skill_id else local_root

@@ -17,22 +17,24 @@ invocation_names:
 
 Expand path tokens first ([`tools.md`](../ws-shared/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`.
 
-Consumer-owned memory lives in the shared hub (never overwritten by install/update):
+Consumer-owned memory routing is configured via `config.json` (`enableMemoryFiles` and `enableSpecMemoIntegration`):
 
-- Entries: `{sharedDir}/memory/YYYY-MM-DD-[slug].md`
-- Compiled index: `{sharedDir}/MEMORY.md`
+- **Local markdown files (`enableMemoryFiles: true`)**: entries in `{sharedDir}/memory/YYYY-MM-DD-[slug].md`, compiled index in `{sharedDir}/MEMORY.md`.
+- **Spec-memo vault (`enableSpecMemoIntegration: true`)**: records queried/persisted via `spec-memo` MCP server (`bootstrap`, `search`, `upsert --kind trap`) or CLI `memo`.
+- Both can be enabled (dual-mode) or both disabled.
 
 ## When to run
 
 | Moment | Action |
 |--------|--------|
-| **Before plan / before code / before fix** | **Consult:** `Grep` / `Read` `{sharedDir}/MEMORY.md` for task keywords AND query touched paths with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`. Apply matching **DO NOT** and **INSTEAD DO** directives. |
-| Implementation hit a trap/pitfall/race | **Write:** new file in `{sharedDir}/memory/`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile` (expand tokens before shell) |
-| Session had $\ge 2$ tool/test/build failures | **Write (Mandatory):** Failure Reflection Hook — record Root Cause & Trap in `{sharedDir}/memory/`; `Learning: N/A` is strictly forbidden |
-| `ws-fable-judge` audit yields `REFUTED` / `CAVEATS` | **Write (Mandatory):** Adversarial Reflection — record `Severity: High` or `Critical` trap explaining why claims diverged from ground truth |
+| **Before plan / before code / before fix** | **Consult (`read-memory`):** if `enableSpecMemoIntegration`: query MCP/CLI `bootstrap` or `search`. If `enableMemoryFiles`: `Grep` / `Read` `{sharedDir}/MEMORY.md` for task keywords AND query touched paths with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`. Apply matching **DO NOT** and **INSTEAD DO** directives. |
+| Implementation hit a trap/pitfall/race | **Write (`update-memory`):** if `enableMemoryFiles`: new file in `{sharedDir}/memory/`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. If `enableSpecMemoIntegration`: `upsert --kind trap` via MCP/CLI. |
+| Session had $\ge 2$ tool/test/build failures | **Write (Mandatory):** Failure Reflection Hook — record Root Cause & Trap in `{sharedDir}/memory/` (and/or `upsert --kind trap` via MCP/CLI); `Learning: N/A` is strictly forbidden |
+| `ws-fable-judge` audit yields `REFUTED` / `CAVEATS` | **Write (Mandatory):** Adversarial Reflection — record `Severity: High` or `Critical` trap in `{sharedDir}/memory/` and/or vault |
 | **After each `ws-fix-pr` / `ws-goal-fix-pr` round** | **Write (when a reviewer or CI defect was a real agent mistake):** follow § Post fix-pr round. `Learning: N/A` is forbidden for those defects. |
 | Standard feature/bug fix, no new trap & $<2$ failures | Proof line: `Learning: N/A (standard implementation)` after confirming no new pitfall and session friction $<2$ |
 | Pure Q&A, no durable insight | Proof line: `Learning: N/A (no new project knowledge)` |
+| Memory disabled (both flags false) | Proof line: `Learning: N/A (memory tracking disabled)` |
 
 Task is **not done** until the completion side runs (write or valid `Learning: N/A`) and proof includes a **`Learning:`** line. Prefer consulting MEMORY **before** inventing a new approach when the domain already has High/Critical entries.
 

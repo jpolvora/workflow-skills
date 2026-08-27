@@ -64,6 +64,33 @@ function resolveMinVerifyScore(config) {
   return n;
 }
 
+function resolveMemoryRouting(config) {
+  const specMemo = config?.specMemo || {};
+  let enableMemoryFiles = config?.enableMemoryFiles ?? specMemo.enableMemoryFiles;
+  let enableSpecMemoIntegration = config?.enableSpecMemoIntegration ?? specMemo.enableSpecMemoIntegration;
+
+  if (enableSpecMemoIntegration === undefined) {
+    if (specMemo.enabled !== undefined) {
+      enableSpecMemoIntegration = Boolean(specMemo.enabled);
+    } else {
+      enableSpecMemoIntegration = false;
+    }
+  }
+
+  if (enableMemoryFiles === undefined) {
+    if (specMemo.enabled && specMemo.mode === 'vault') {
+      enableMemoryFiles = false;
+    } else {
+      enableMemoryFiles = true;
+    }
+  }
+
+  return {
+    enableMemoryFiles: Boolean(enableMemoryFiles),
+    enableSpecMemoIntegration: Boolean(enableSpecMemoIntegration),
+  };
+}
+
 function resolveSkillMdPath(context, skillId) {
   const local = path.join(context.repoRoot, '.agents', 'skills', skillId, 'SKILL.md');
   if (fs.existsSync(local)) return local;
@@ -139,4 +166,5 @@ module.exports = {
   reportResolved,
   normalizeConfig,
   resolveMinVerifyScore,
+  resolveMemoryRouting,
 };

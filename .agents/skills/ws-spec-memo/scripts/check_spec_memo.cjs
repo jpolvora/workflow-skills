@@ -11,6 +11,7 @@ const {
   resolveConsumerContext,
   resolveConfiguredPath,
   resolveGlobalSkillsRoot,
+  resolveMemoryRouting,
   toRepoRelative,
 } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
@@ -127,6 +128,8 @@ function printHuman(report) {
     '# ws-spec-memo check',
     '',
     `Repo: ${report.repoRoot}`,
+    `enableMemoryFiles: ${report.config.enableMemoryFiles}`,
+    `enableSpecMemoIntegration: ${report.config.enableSpecMemoIntegration}`,
     `specMemo.enabled: ${report.config.enabled}`,
     `specMemo.mode: ${report.config.mode}`,
     '',
@@ -141,7 +144,7 @@ function printHuman(report) {
   ];
   if (report.pollution.length === 0) lines.push('- none detected');
   else report.pollution.forEach((p) => lines.push(`- ${p.path} (${p.kind}) ${p.note || ''}`));
-  if (report.config.enabled && report.pollution.length > 0) {
+  if (report.config.enableSpecMemoIntegration && !report.config.enableMemoryFiles && report.pollution.length > 0) {
     lines.push('', 'Recommendation: run `/ws-spec-memo import` then `memo hook install` or `/ws-cleanup`.');
   }
   if (report.runtimeHandoff) {
@@ -161,6 +164,7 @@ function main() {
   const repoRoot = ctx.repoRoot;
   const config = ctx.config || {};
   const specMemo = config.specMemo || {};
+  const memoryRouting = resolveMemoryRouting(config);
   const plansDirAbs = resolveConfiguredPath(repoRoot, config.plans && config.plans.dir, '.agents/plans');
 
   const cli = detectCli(specMemo.cli);
@@ -169,7 +173,7 @@ function main() {
     : { ok: false, error: 'CLI not available' };
   const pollution = scanPollution(repoRoot, ctx.sharedDir, plansDirAbs);
   const vaultReady = cli.available && doctor.ok;
-  const vaultActive = specMemo.enabled === true;
+  const vaultActive = memoryRouting.enableSpecMemoIntegration;
   const healthy = vaultActive ? vaultReady : true;
 
   const wsMemo = resolveWsMemoSkill(repoRoot);
@@ -192,7 +196,9 @@ function main() {
     sharedDir: toRepoRelative(repoRoot, ctx.sharedDir, { allowOutside: true }),
     config: {
       enabled: specMemo.enabled === true,
-      mode: specMemo.mode || 'vault',
+      enableMemoryFiles: memoryRouting.enableMemoryFiles,
+      enableSpecMemoIntegration: memoryRouting.enableSpecMemoIntegration,
+      mode: memoryRouting.enableMemoryFiles ? 'hybrid' : (specMemo.mode || 'vault'),
       cli: specMemo.cli || 'memo',
       bootstrapOnSession: specMemo.bootstrapOnSession !== false,
       writeBlockHook: specMemo.writeBlockHook === true,

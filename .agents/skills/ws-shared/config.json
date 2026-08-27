@@ -314,6 +314,8 @@
   },
   "specMemo": {
     "enabled": true,
+    "enableMemoryFiles": true,
+    "enableSpecMemoIntegration": true,
     "mode": "hybrid",
     "cli": "node l:/source/spec-memo/dist/cli.js",
     "vaultRoot": "",

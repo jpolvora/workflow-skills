@@ -143,14 +143,14 @@ Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd
 
 **Path rules:** never write absolute paths (`C:\…`, `/Users/…`). Markdown links use real relative targets; prose may use `{skillsRoot}` / `{globalSkillsRoot}` / `{sharedDir}` tokens.
 
-## specMemo (external vault)
+## specMemo & Memory backends
 
-Optional bridge to [spec-memo](https://github.com/jpolvora/spec-memo) via [`ws-spec-memo`](../ws-spec-memo/SKILL.md). **Recommended default:** `specMemo.enabled: false` (keep in-repo `ws-self-learning` / `MEMORY.md`).
+Configure memory storage backends: local markdown files (`enableMemoryFiles`) and/or external [spec-memo](https://github.com/jpolvora/spec-memo) vault (`enableSpecMemoIntegration`). **Recommended default:** local markdown files only (`enableMemoryFiles: true, enableSpecMemoIntegration: false`).
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
-| `specMemo.enabled` | boolean | `false` | Explicit `true` routes `read-memory` / trap writes to vault MCP/CLI |
-| `specMemo.mode` | string | `vault` | `vault` = vault-only; `hybrid` = fallback to in-repo MEMORY on failure |
+| `enableMemoryFiles` | boolean | `true` | When `true`, write traps/learnings to `{sharedDir}/memory/*.md` and `MEMORY.md` |
+| `enableSpecMemoIntegration` | boolean | `false` | When `true`, route memory ops to `spec-memo` MCP server / CLI |
 | `specMemo.cli` | string | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
 | `specMemo.bootstrapOnSession` | boolean | `true` | Recommend `memo bootstrap` at session start when enabled |
 | `specMemo.writeBlockHook` | boolean | `false` | Set true when `memo hook install` succeeds |
@@ -159,10 +159,10 @@ Optional bridge to [spec-memo](https://github.com/jpolvora/spec-memo) via [`ws-s
 
 | Signal | Suggest |
 |--------|---------|
-| `{sharedDir}/memory/` or `{plansDir}/` populated | Offer **Import legacy tree** on enable |
-| `check_spec_memo.cjs` → `pollution` non-empty | Mention import + write-block hook |
-| `cli.available: false` | **Skip external vault (Recommended)** until CLI installed |
-| Enable external vault? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+| `{sharedDir}/memory/` or `{plansDir}/` populated | Offer **Import legacy tree** on spec-memo enable |
+| `check_spec_memo.cjs` → `pollution` non-empty | Mention import + write-block hook when spec-memo vault is sole backend |
+| `cli.available: false` | **Local files only (Recommended)** until CLI installed |
+| Memory backend selection? | **Local markdown files only (Recommended)** / **Spec-memo integration only** / **Both (dual-mode)** / **None (disabled)** |
 
 **Preflight (mandatory before gates):**
 
@@ -174,11 +174,12 @@ node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot
 
 ```bash
 node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json \
-  --enabled {true|false} --mode {vault|hybrid} --import {true|false} --hook {true|false} \
+  --enable-memory-files {true|false} --enable-spec-memo {true|false} \
+  --import {true|false} --hook {true|false} \
   --bootstrap-on-session {true|false} [--cli "memo"]
 ```
 
-When enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md) pointer. Never commit `{sharedDir}/config.json`.
+When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md) pointer. Never commit `{sharedDir}/config.json`.
 
 ## Write rules
 

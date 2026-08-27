@@ -85,6 +85,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | List + confirm delete of workflow leftovers (telemetry, .runtime, shipped plans); suggest .gitignore |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Configure spec-memo external vault bridge (MCP/CLI) |
+| `ws-memo` | `.agents/skills/ws-memo/SKILL.md` | Runtime spec-memo MCP server & CLI working memory ops (from spec-memo) |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven intake → implement → complete (not Spec-to-PR) |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -127,6 +128,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
+| spec-memo vault setup/bridge | `ws-spec-memo` |
+| Runtime spec-memo vault ops (search, upsert, canvas) | `ws-memo` |
 | GitHub issue/PR ops | `ws-github-provider` |
 | ADO WI/PR ops | `ws-azure-devops-provider` |
 | Local `*.spec.md` | `ws-local-spec-provider` |

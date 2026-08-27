@@ -7,6 +7,16 @@
   "required": ["project", "verification", "plans"],
   "properties": {
     "toolsFile": { "type": "string", "default": "tools.md" },
+    "enableMemoryFiles": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.agents/skills/ws-shared/memory/*.md and compiled MEMORY.md)."
+    },
+    "enableSpecMemoIntegration": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, read and write memory traps, issues, learnings, and logs to spec-memo MCP server / CLI integration."
+    },
     "pathTokens": {
       "type": "object",
       "description": "Fixed install-layout hints for brace tokens {skillsRoot} / {sharedDir}. Not relocatable; defaults match the installer. Agents expand before tool calls. See tools.md § Path tokens.",
@@ -347,6 +357,16 @@
           "type": "boolean",
           "default": false,
           "description": "Explicit true enables vault bridge; omitted or false keeps in-repo ws-self-learning."
+        },
+        "enableMemoryFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.agents/skills/ws-shared/memory/*.md and compiled MEMORY.md)."
+        },
+        "enableSpecMemoIntegration": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, read and write memory traps, issues, learnings, and logs to spec-memo MCP server / CLI integration."
         },
         "mode": {
           "type": "string",

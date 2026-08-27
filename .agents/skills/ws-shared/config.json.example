@@ -355,8 +355,10 @@
   },
 
   "specMemo": {
-    "_comment": "External spec-memo vault bridge (ws-spec-memo). enabled must be explicit true to route memory/changelog to memo MCP/CLI.",
+    "_comment": "External spec-memo vault bridge (ws-spec-memo). enableSpecMemoIntegration: true routes memory/traps to memo MCP/CLI. enableMemoryFiles: true routes memory to local memory/*.md and MEMORY.md. Both can be true (dual-mode) or false (disabled). Legacy enabled/mode resolve seamlessly.",
     "enabled": false,
+    "enableMemoryFiles": true,
+    "enableSpecMemoIntegration": false,
     "mode": "vault",
     "cli": "memo",
     "vaultRoot": "",
