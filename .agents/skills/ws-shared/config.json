@@ -318,7 +318,7 @@
     "cli": "node l:/source/spec-memo/dist/cli.js",
     "vaultRoot": "",
     "bootstrapOnSession": true,
-    "writeBlockHook": true,
+    "writeBlockHook": false,
     "importOnEnable": false,
     "mcpServerName": "spec-memo"
   },
