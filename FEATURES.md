@@ -134,6 +134,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
+| Resolve spec-of-record path and optionally prefix `{specsDir}` files with chronological `NNNN-` when `plans.enforceSpecPrefixOrdering` is true (default false) | `ws-spec-organizer` |
 | Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
 | Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-interview` / `ws-implement-tasks` / `ws-verify-plan` |
@@ -220,7 +221,7 @@ Everything project-specific lives in one consumer-owned, gitignored file: `.agen
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
 | `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, and legacy per-phase model identifiers |
-| `plans` / `reviews` / `preview` | Artifact roots, diagnostics root, and dry-run backend |
+| `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and dry-run backend |
 | `rules` | Guardrail paths: harness, senior developer, karpathy, stack file, changelog file |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
@@ -238,7 +239,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`, `ws-run-benchmark`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`, `ws-run-benchmark`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -299,7 +300,7 @@ These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). Th
 | `skill-family-naming` | todo | Regroup packaged skill ids as `ws-{family}-{verb}` |
 | `unique-skill-script-runtime` | todo | Node-only runtime for all packaged helper scripts |
 | `us-235` | todo | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, `.runtime` allowlist |
-| `spec-prefix-ordering` | todo | Optional chronological `NNNN-` spec filename prefixes and `ws-spec-organizer` (not implemented; this repo's prefixed board names are dogfood only) |
+| `spec-prefix-ordering` | done | Optional chronological `NNNN-` spec filename prefixes via `plans.enforceSpecPrefixOrdering` (default false) and `ws-spec-organizer` (`resolve_spec_path.cjs`, `organize_specs.cjs`) |
 | Inbox | idea | Multi-repository orchestrator; CI/CD workflow generator skill |
 
 Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).

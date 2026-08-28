@@ -15,7 +15,7 @@ invocation_names:
 
 Keep feature specifications (`*.spec.md`) continuously synchronized with real implemented code after prompts, adjustments, or task completions.
 
-**Specs family:** Role = surgical **body** updates when code drifts from AC text. Prefer editing `{specsDir}/{slug}.spec.md`; if a workflow `step-00` copy exists and still matters, keep them aligned or re-register. **Not** `ws-spec-index sync` (index checkboxes vs delivery evidence). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = surgical **body** updates when code drifts from AC text. Resolve the spec of record with `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (unprefixed or `NNNN-{slug}.spec.md`); if a workflow `step-00` copy exists and still matters, keep them aligned or re-register. **Not** `ws-spec-index sync` (index checkboxes vs delivery evidence). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Purpose
 

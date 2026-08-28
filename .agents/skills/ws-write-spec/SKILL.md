@@ -33,7 +33,7 @@ Standalone:
 
 Workflow (ws-spec-to-pr / lite Step 0):
 - **Free-text entry:** orchestrator runs this skill (`{specsDir}` write with `source: local`), then registers via `ws-local-spec-provider` before planning.
-- **Remote tracker entry (GitHub / ADO):** orchestrator / provider runs remote fetch, then runs this skill to **reformulate and enhance** the raw issue content into an agentic-ready local spec of record `{specsDir}/{slug}.spec.md` (preserving `source: github` or `source: azure-devops` and human context), then registers via `ws-local-spec-provider` into `{us-dir}/step-00-{slug}.spec.md`.
+- **Remote tracker entry (GitHub / ADO):** orchestrator / provider runs remote fetch, then runs this skill to **reformulate and enhance** the raw issue content into an agentic-ready local spec of record at the path returned by `resolve_spec_path.cjs` (preserving `source: github` or `source: azure-devops` and human context), then registers via `ws-local-spec-provider` into `{us-dir}/step-00-{slug}.spec.md`.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -41,7 +41,7 @@ Workflow (ws-spec-to-pr / lite Step 0):
 | `--from-issue` | — | Raw issue / work item JSON or markdown snapshot from remote provider |
 | `slug` | inferred | URL-safe id (e.g. `us-{n}` for tracker items) |
 | `source` | `local` | `local` for free-text, `github` for GitHub issues, `azure-devops` for ADO work items |
-| `output-dir` | `{specsDir}` | Optional override for specs directory only (still writes `{output-dir}/{slug}.spec.md`; never `{plansDir}`) |
+| `output-dir` | `{specsDir}` | Optional override for specs directory only (still resolve the filename via `resolve_spec_path.cjs` under that dir; never `{plansDir}`) |
 | `--register` | false | After write, register into `{us-dir}/step-00-{slug}.spec.md` via `ws-local-spec-provider` (workflow only) |
 
 ## Agentic Reformulation & Enhancement Protocol
@@ -80,16 +80,22 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Done when: design-intent recorded or skip reason documented.
 
 4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
-   - **Gray area:** when a user-facing choice has two or more valid product options, write `{specsDir}/{slug}.context.md` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
+   - **Gray area:** when a user-facing choice has two or more valid product options, write the companion at the path from `resolve_spec_path.cjs --slug {slug} --context` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
    - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
 
-5. **Write** — Save `{specsDir}/{slug}.spec.md` (or `{output-dir}/{slug}.spec.md` when overridden). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`.
-   - Done when: that specsDir file exists on disk.
+5. **Write** — Resolve `SPEC_PATH` (and `CONTEXT_PATH` when a gray area exists):
+
+   ```bash
+   node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug} [--repo-root .]
+   ```
+
+   If this command is missing or exits non-zero while `plans.enforceSpecPrefixOrdering` is true: **STOP**. stderr must name `ws-spec-organizer`. Do **not** concatenate `{slug}.spec.md` and do not write. If the helper is missing and the flag is false, write `{specsDir}/{slug}.spec.md` only. Save the spec to `SPEC_PATH` (or under `output-dir` using the same filename stem the helper returned). Ensure parent dir exists. **Never** mkdir or write under `{plansDir}`. Frontmatter `slug` stays unprefixed.
+   - Done when: that spec-of-record file exists on disk.
 
 6. **Authoring validate** — Run and do **not** finish while the exit code is non-zero:
 
    ```bash
-   node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring "{specsDir}/{slug}.spec.md"
+   node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring "{SPEC_PATH}"
    ```
 
    Fix the spec and re-run until PASS. Do not register, hand off as done, or present the standalone `index.PRD` gate while validation fails.
@@ -99,10 +105,10 @@ When writing a spec derived from a remote tracker issue or raw human description
 
    ```bash
    node {skillsRoot}/ws-local-spec-provider/scripts/register_local_spec.cjs \
-     --input "{specsDir}/{slug}.spec.md" --source {source}
+     --input "{SPEC_PATH}" --source {source}
    ```
 
-   That script keeps the `{specsDir}` spec of record normalized and writes `{us-dir}/step-00-{slug}.spec.md`. Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
+   That script keeps the `{specsDir}` spec of record normalized and writes `{us-dir}/step-00-{slug}.spec.md` (plan folder and filename stay unprefixed). Use `--force` only when overwriting an existing plan copy that differs. Standalone `/write-spec` skips this step by default.
    - Done when: command succeeded, or this step was skipped.
 
 8. **Standalone `index.PRD` gate** — When the **user** invoked `/write-spec` or `/ws-write-spec` (not orch Step 0), after authoring validation passes, present `user-gate` (recommended first):
@@ -112,8 +118,8 @@ When writing a spec derived from a remote tracker issue or raw human description
    On Add: load [`ws-spec-index`](../ws-spec-index/SKILL.md) and run `track {slug}`. That edits `{specsDir}/index.PRD` only (Feature map `[ ]` + Next-specs row). It is **not** `ws-local-spec-provider` `--register` and must not create `{plansDir}` artifacts.
    - Done when: the gate is resolved (tracked, skipped, or already present), or this step was skipped because orch owns the call.
 
-9. **Handoff** — Return the `{specsDir}/{slug}.spec.md` path. Mention the `{us-dir}/step-00-` path only if `--register` ran. Mention whether `index.PRD` was updated. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
-   - Done when: caller has the specsDir path (and plan path only when registered).
+9. **Handoff** — Return `SPEC_PATH`. Mention the `{us-dir}/step-00-` path only if `--register` ran. Mention whether `index.PRD` was updated. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
+   - Done when: caller has the spec-of-record path (and plan path only when registered).
 
 ## Subagent contract
 

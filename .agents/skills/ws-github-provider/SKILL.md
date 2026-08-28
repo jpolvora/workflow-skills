@@ -60,7 +60,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | `comment-issue` | issue id, body | Public issue comment (alias `close-loop`) | `comment_issue.py` → `gh issue comment` |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 
-**Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched issue), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.cjs --source github`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
+**Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced spec of record first (via `ws-write-spec` / `resolve_spec_path.cjs`), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.cjs --source github`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
 
 **Branch rule:** never `--delete-branch` when head is `project.workingBranch` (default `develop`).
 
@@ -100,6 +100,6 @@ Legacy: absent `providers.*` → GitHub default when `issueTrackers.github.enabl
 ## Done when
 
 - Intent from the contract table completed with cited CLI/script exit 0 (or dry-run simulation recorded).
-- `fetch-to-spec`: `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** `{us-dir}/step-00-{slug}.spec.md` was registered with `source: github`.
+- `fetch-to-spec`: spec of record exists at the `resolve_spec_path.cjs` path (enhanced via `ws-write-spec`) **and** `{us-dir}/step-00-{slug}.spec.md` was registered with `source: github`.
 - Auth failures STOP with `validate-auth` remediation (no silent fallback).
 

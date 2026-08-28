@@ -42,6 +42,8 @@ assert.match(interviewDoc, /plans\.enforceSpecPrefixOrdering/, 'INTERVIEW.md con
 
 const writeSpecDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-write-spec/SKILL.md'), 'utf8');
 assert.match(writeSpecDoc, /resolve_spec_path\.cjs/, 'ws-write-spec SKILL.md references resolve_spec_path.cjs');
+assert.match(writeSpecDoc, /SPEC_PATH/, 'ws-write-spec numbered Write step uses SPEC_PATH');
+assert.match(writeSpecDoc, /ws-spec-organizer/, 'ws-write-spec names ws-spec-organizer on missing helper');
 
 const fromProviderDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-spec-from-provider/SKILL.md'), 'utf8');
 assert.match(fromProviderDoc, /NNNN-us-\{id\}\.spec\.md/, 'ws-spec-from-provider SKILL.md references NNNN prefix');
@@ -51,6 +53,14 @@ assert.match(formatDoc, /NNNN-\{slug\}\.spec\.md/, 'FORMAT.md documents NNNN pat
 
 const autoloadDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/autoload.md'), 'utf8');
 assert.match(autoloadDoc, /ws-spec-organizer/, 'autoload.md references ws-spec-organizer');
+
+const toolsDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/tools.md'), 'utf8');
+assert.match(toolsDoc, /resolve_spec_path\.cjs/, 'tools.md documents resolve_spec_path.cjs');
+assert.match(toolsDoc, /organize_specs\.cjs/, 'tools.md documents organize_specs.cjs');
+
+const featuresDoc = fs.readFileSync(path.join(REPO, 'FEATURES.md'), 'utf8');
+assert.match(featuresDoc, /enforceSpecPrefixOrdering/, 'FEATURES.md documents the flag');
+assert.doesNotMatch(featuresDoc, /spec-prefix-ordering.*not implemented/i, 'FEATURES.md does not call the feature unimplemented');
 
 // 4. resolve_spec_path.cjs tests
 console.log('4. Testing resolve_spec_path.cjs CLI and behavior');
@@ -137,7 +147,7 @@ function createTempProject(enforcePrefixVal = false) {
   assert.strictEqual(res3.stdout.trim(), '.agents/specs/legacy-unprefixed.spec.md');
 }
 
-// Context flag and JSON output (AC9, AC10)
+// Context flag and JSON output
 {
   const proj = createTempProject(true);
   fs.writeFileSync(path.join(proj.specs, '0001-auth.spec.md'), '---\nslug: auth\n---\n# Auth\n', 'utf8');
@@ -154,6 +164,16 @@ function createTempProject(enforcePrefixVal = false) {
   assert.strictEqual(data.contextPath, '.agents/specs/0002-search.context.md');
   assert.strictEqual(data.enforceSpecPrefixOrdering, true);
   assert.strictEqual(data.existing, false);
+}
+
+// AC9: flag true and helper missing → non-zero; no spec file created
+{
+  const proj = createTempProject(true);
+  const missing = path.join(proj.tmp, 'missing-resolve_spec_path.cjs');
+  const resMissing = spawnSync(process.execPath, [missing, '--slug', 'ghost', '--repo-root', proj.tmp], { encoding: 'utf8' });
+  assert.notStrictEqual(resMissing.status, 0, 'missing helper exits non-zero');
+  assert.ok(!fs.existsSync(path.join(proj.specs, 'ghost.spec.md')), 'no unprefixed write');
+  assert.ok(!fs.existsSync(path.join(proj.specs, '0001-ghost.spec.md')), 'no prefixed write');
 }
 
 // 5. register_local_spec.cjs integration (AC12)
@@ -183,6 +203,38 @@ specDate: 2026-08-28
   assert.strictEqual(regData.slug, 'user-profile', 'slug is unprefixed');
   assert.strictEqual(regData.specPath, '.agents/plans/user-profile/step-00-user-profile.spec.md', 'plan path is unprefixed');
   assert.ok(fs.existsSync(path.join(proj.plans, 'user-profile', 'step-00-user-profile.spec.md')), 'plan file created');
+}
+
+// AC10: copy into {specsDir} uses resolve helper when enforce is true
+{
+  const proj = createTempProject(true);
+  const outside = path.join(proj.tmp, 'incoming-orders.spec.md');
+  fs.writeFileSync(
+    outside,
+    `---
+slug: incoming-orders
+title: Incoming Orders
+specDate: 2026-08-28
+---
+
+# Incoming Orders
+## Acceptance Criteria
+- AC1: List orders
+`,
+    'utf8'
+  );
+  const resOutside = spawnSync(
+    process.execPath,
+    [REGISTER_SCRIPT, '--input', outside, '--source', 'local', '--json'],
+    { encoding: 'utf8', cwd: proj.tmp }
+  );
+  assert.strictEqual(resOutside.status, 0, 'register from outside specsDir exits 0');
+  const outsideData = JSON.parse(resOutside.stdout);
+  assert.strictEqual(outsideData.slug, 'incoming-orders');
+  assert.strictEqual(outsideData.specsPath, '.agents/specs/0001-incoming-orders.spec.md');
+  assert.ok(fs.existsSync(path.join(proj.specs, '0001-incoming-orders.spec.md')));
+  assert.ok(!fs.existsSync(path.join(proj.specs, 'incoming-orders.spec.md')));
+  assert.strictEqual(outsideData.specPath, '.agents/plans/incoming-orders/step-00-incoming-orders.spec.md');
 }
 
 // 6. track_index.cjs integration (AC13)
@@ -219,7 +271,7 @@ slug: billing
   assert.match(updatedIndex, /\|\s*2\s*\|\s*`billing`\s*\|/, 'next specs table row');
 }
 
-// 7. organize_specs.cjs dry-run and apply (AC14, AC15, AC16, NS3, NS5)
+// 7. organize_specs.cjs dry-run and apply (AC14, AC15, AC16, AC17, AC18, NS2, NS5)
 console.log('7. Testing organize_specs.cjs dry-run and apply');
 {
   const proj = createTempProject(true);
@@ -296,6 +348,77 @@ specDate: 2026-07-01
   const updatedPrd = fs.readFileSync(path.join(proj.specs, 'index.PRD'), 'utf8');
   assert.match(updatedPrd, /`spec: 0001-beta-feature\.spec\.md`/, 'index.PRD updated beta');
   assert.match(updatedPrd, /`spec: 0002-alpha-feature\.spec\.md`/, 'index.PRD updated alpha');
+
+  // AC18: re-apply does not double-prefix
+  const resReapply = spawnSync(
+    process.execPath,
+    [ORGANIZE_SCRIPT, '--repo-root', proj.tmp, '--apply', '--json'],
+    { encoding: 'utf8' }
+  );
+  assert.strictEqual(resReapply.status, 0, 're-apply exits 0');
+  const reapplyData = JSON.parse(resReapply.stdout);
+  assert.strictEqual(reapplyData.renames.length, 0, 'idempotent re-apply plans no renames');
+  const names = fs.readdirSync(proj.specs);
+  assert.ok(!names.some((name) => /^\d{4}-\d{4}-/.test(name)), 'no double-prefixed stems');
+}
+
+// NS5: --apply fail-closed when target exists as a different file
+{
+  const proj = createTempProject(true);
+  fs.writeFileSync(
+    path.join(proj.specs, 'alpha.spec.md'),
+    `---
+title: Alpha
+slug: alpha
+specDate: 2026-01-01
+---
+# Alpha
+`,
+    'utf8'
+  );
+  fs.writeFileSync(path.join(proj.specs, 'alpha.context.md'), '# Alpha context\n', 'utf8');
+  fs.writeFileSync(path.join(proj.specs, '0001-alpha.context.md'), '# stray other context\n', 'utf8');
+  const resCollide = spawnSync(
+    process.execPath,
+    [ORGANIZE_SCRIPT, '--repo-root', proj.tmp, '--apply', '--json'],
+    { encoding: 'utf8' }
+  );
+  assert.notStrictEqual(resCollide.status, 0, 'NS5 collision exits non-zero');
+  assert.match(resCollide.stderr, /already exists/, 'NS5 names the colliding target');
+  assert.ok(fs.existsSync(path.join(proj.specs, 'alpha.spec.md')), 'NS5 no partial spec rename');
+  assert.ok(fs.existsSync(path.join(proj.specs, 'alpha.context.md')), 'NS5 no partial context rename');
+}
+
+// Dirty overlapping tracked path: fail closed
+{
+  const proj = createTempProject(true);
+  const specRel = path.join(proj.specs, 'dirty-feature.spec.md');
+  fs.writeFileSync(
+    specRel,
+    `---
+title: Dirty Feature
+slug: dirty-feature
+specDate: 2026-01-01
+---
+# Dirty
+`,
+    'utf8'
+  );
+  const gitOpts = { cwd: proj.tmp, encoding: 'utf8' };
+  assert.strictEqual(spawnSync('git', ['init'], gitOpts).status, 0);
+  spawnSync('git', ['config', 'user.email', 'test@example.com'], gitOpts);
+  spawnSync('git', ['config', 'user.name', 'Test'], gitOpts);
+  spawnSync('git', ['add', '.agents/specs/dirty-feature.spec.md'], gitOpts);
+  assert.strictEqual(spawnSync('git', ['commit', '-m', 'add spec'], gitOpts).status, 0, 'git commit fixture');
+  fs.appendFileSync(specRel, '\n# dirty edit\n', 'utf8');
+  const resDirty = spawnSync(
+    process.execPath,
+    [ORGANIZE_SCRIPT, '--repo-root', proj.tmp, '--apply', '--json'],
+    { encoding: 'utf8' }
+  );
+  assert.notStrictEqual(resDirty.status, 0, 'dirty overlap exits non-zero');
+  assert.match(resDirty.stderr, /dirty overlapping/, 'dirty overlap message');
+  assert.ok(fs.existsSync(specRel), 'dirty spec not renamed');
 }
 
 console.log('--- All spec-prefix-ordering & ws-spec-organizer tests PASSED ---');

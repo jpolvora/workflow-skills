@@ -14,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/`), then register/normalize any `*.spec.md` into **two ordered artifacts** — spec of record `{specsDir}/{slug}.spec.md`, then workflow copy `{us-dir}/step-00-{slug}.spec.md`. No remote trackers.
+Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/`), then register/normalize any `*.spec.md` into **two ordered artifacts** — spec of record (path from `ws-spec-organizer` `resolve_spec_path.cjs`: `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md`), then workflow copy `{us-dir}/step-00-{slug}.spec.md` (plan folder and filename stay unprefixed). No remote trackers.
 
 **Promotion primitive:** this skill's `register_local_spec.cjs` is the **single invoked** promotion path for every provider. Specs of record written under `{specsDir}` (drafted or enhanced via [`ws-write-spec`](../ws-write-spec/SKILL.md) for local or tracker origins) are promoted to the canonical workflow copy `{us-dir}/step-00-{slug}.spec.md` with `--source {origin}`, so `source:` reflects the real origin. The Python helper remains a supported frozen equivalent.
 
@@ -57,12 +57,12 @@ Missing `specsDir`: ensure dir + write key into local `config.json` (gitignored)
 
 | Layout | Path |
 |--------|------|
-| Flat | `{specsDir}/{slug}.spec.md` |
+| Flat | `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md` (via `resolve_spec_path.cjs`) |
 | Nested | `{specsDir}/{slug}/README.spec.md` or `{slug}/{slug}.spec.md` |
 
 **Write order (mandatory):**
 
-1. **Spec of record** — `{specsDir}/{slug}.spec.md`. Inputs that already live under `{specsDir}` (flat or nested) are normalized **in place**, so no duplicate flat twin is created.
+1. **Spec of record** — destination from `resolve_spec_path.cjs` when copying into `{specsDir}`; inputs that already live under `{specsDir}` (flat or nested, including `NNNN-` names) are normalized **in place**, so no duplicate flat twin is created.
 2. **Workflow copy** — `{us-dir}/step-00-{slug}.spec.md`, the canonical artifact every downstream step reads.
 
 Registering never leaves a workflow copy without a spec of record.
@@ -99,7 +99,7 @@ Path overrides when config defaults are wrong: `--specs-dir`, `--plans-dir`, `--
 
 | Input | Action |
 |-------|--------|
-| `*.spec.md` outside `{specsDir}` | Copy → `{specsDir}/{slug}.spec.md`, then `{us-dir}/step-00` |
+| `*.spec.md` outside `{specsDir}` | Copy → path from `resolve_spec_path.cjs`, then `{us-dir}/step-00` |
 | `*.spec.md` under `{specsDir}` (flat or nested) | Normalize in place, then `{us-dir}/step-00` |
 | Slug under `specsDir` | Resolve file → same as above |
 | Already canonical `step-00` | Re-normalize; also ensures the `{specsDir}` spec of record exists; skip Step 0 |

@@ -86,6 +86,51 @@ function getGitFirstAddDate(repoRoot, relativePath) {
   return null;
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isGitRepo(repoRoot) {
+  const res = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  });
+  return res.status === 0 && String(res.stdout).trim() === 'true';
+}
+
+function gitMv(repoRoot, fromRel, toRel) {
+  const res = spawnSync('git', ['mv', fromRel, toRel], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  });
+  if (res.status !== 0) {
+    const detail = String(res.stderr || res.stdout || '').trim();
+    throw new Error(`git mv failed: ${fromRel} -> ${toRel}${detail ? `: ${detail}` : ''}`);
+  }
+}
+
+function overlappingDirtyTracked(repoRoot, relativePaths) {
+  const unique = [...new Set(relativePaths.filter(Boolean))];
+  if (!isGitRepo(repoRoot) || !unique.length) return [];
+  const res = spawnSync('git', ['status', '--porcelain', '-u', '--', ...unique], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  });
+  if (res.status !== 0) return [];
+  const dirty = [];
+  for (const raw of String(res.stdout || '').split(/\r?\n/)) {
+    if (!raw.trim()) continue;
+    const code = raw.slice(0, 2);
+    if (code === '??' || code === '!!') continue;
+    if (!code.trim()) continue;
+    dirty.push(raw.slice(3).trim().replace(/^"|"$/g, ''));
+  }
+  return dirty;
+}
+
 function organizeSpecs(options) {
   const context = resolveConsumerContext({
     repoRoot: options.repoRoot,
@@ -222,8 +267,19 @@ function organizeSpecs(options) {
     }
   }
 
-  // Safety check: Ensure no collision with existing files outside renames
+  // Safety check: dirty overlap, then collisions, then two-phase rename
   if (options.apply && renames.length > 0) {
+    const indexPrdPath = path.join(specsDir, 'index.PRD');
+    const overlapPaths = [
+      ...renames.map((rename) => toRepoRelative(context.repoRoot, path.join(specsDir, rename.from))),
+      ...renames.map((rename) => toRepoRelative(context.repoRoot, path.join(specsDir, rename.to))),
+      fs.existsSync(indexPrdPath) ? toRepoRelative(context.repoRoot, indexPrdPath) : null,
+    ];
+    const dirty = overlappingDirtyTracked(context.repoRoot, overlapPaths);
+    if (dirty.length) {
+      throw new Error(`Cannot --apply with dirty overlapping paths: ${dirty.join(', ')}`);
+    }
+
     const existingFileNames = new Set(entries.filter((e) => e.isFile()).map((e) => e.name));
     const movingFrom = new Set(renames.map((r) => r.from));
 
@@ -233,19 +289,17 @@ function organizeSpecs(options) {
       }
     }
 
-    // Step 1: Use temporary names if there are circular or overlapping renames
     const tempRenames = [];
     for (const rename of renames) {
       const fromPath = path.join(specsDir, rename.from);
       const tempName = `.tmp_organize_${rename.from}`;
       const tempPath = path.join(specsDir, tempName);
       if (rename.isTracked) {
-        const fromRel = toRepoRelative(context.repoRoot, fromPath);
-        const tempRel = toRepoRelative(context.repoRoot, tempPath);
-        const res = spawnSync('git', ['mv', fromRel, tempRel], { cwd: context.repoRoot, stdio: 'pipe' });
-        if (res.status !== 0) {
-          fs.renameSync(fromPath, tempPath);
-        }
+        gitMv(
+          context.repoRoot,
+          toRepoRelative(context.repoRoot, fromPath),
+          toRepoRelative(context.repoRoot, tempPath)
+        );
       } else {
         fs.renameSync(fromPath, tempPath);
       }
@@ -258,28 +312,23 @@ function organizeSpecs(options) {
       });
     }
 
-    // Step 2: Rename from temp to final
     for (const item of tempRenames) {
       if (item.isTracked) {
-        const tempRel = toRepoRelative(context.repoRoot, item.tempPath);
-        const finalRel = toRepoRelative(context.repoRoot, item.finalPath);
-        const res = spawnSync('git', ['mv', tempRel, finalRel], { cwd: context.repoRoot, stdio: 'pipe' });
-        if (res.status !== 0) {
-          fs.renameSync(item.tempPath, item.finalPath);
-        }
+        gitMv(
+          context.repoRoot,
+          toRepoRelative(context.repoRoot, item.tempPath),
+          toRepoRelative(context.repoRoot, item.finalPath)
+        );
       } else {
         fs.renameSync(item.tempPath, item.finalPath);
       }
     }
 
-    // Step 3: Update index.PRD if present
-    const indexPrdPath = path.join(specsDir, 'index.PRD');
     if (fs.existsSync(indexPrdPath)) {
       let indexPrdContent = fs.readFileSync(indexPrdPath, 'utf8');
       for (const rename of renames) {
         if (rename.type === 'spec') {
-          // Replace patterns like `spec: from.spec.md` or `from.spec.md`
-          const regex = new RegExp(`(\`spec:\\s*)${rename.from}(\`)`, 'g');
+          const regex = new RegExp(`(\`spec:\\s*)${escapeRegExp(rename.from)}(\`)`, 'g');
           indexPrdContent = indexPrdContent.replace(regex, `$1${rename.to}$2`);
         }
       }

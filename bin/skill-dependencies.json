@@ -152,7 +152,8 @@
       "ws-local-spec-provider"
     ],
     "ws-local-spec-provider": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-spec-organizer"
     ],
     "ws-fix-pr": [
       "ws-self-learning"

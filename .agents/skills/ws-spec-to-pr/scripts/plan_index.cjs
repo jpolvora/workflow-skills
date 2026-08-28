@@ -132,7 +132,9 @@ function build(options) {
       ledger.revision = (ledger.revision || 1) + 1;
       ledger.scoreState = null;
       fs.writeFileSync(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`, 'utf8');
-    } catch (_) {}
+    } catch (error) {
+      process.stderr.write(`WARN: plan_index ledger auto-sync failed: ${error.message}\n`);
+    }
   }
   if (options.draft && fs.existsSync(path.resolve(context.repoRoot, options.draft))) {
     const draftPath = path.resolve(context.repoRoot, options.draft);
