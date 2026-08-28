@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "218a8ec3e8787d6b363319eb3fde2ac3736e107a8f9e1bd8d5db269f275b8bcb",
+  "fullPackageDigest": "d9f41469a4a63171f27bb5048dfc490a3c20e3b70ba71e75b7776d3f852dd748",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
@@ -400,7 +400,7 @@
         "protocols/progress-board.md": "5734a27d8fa63ec4178d3842e2dc623d62b7d385d61f8cfa1f17b1b8f8abe514",
         "protocols/state-hygiene.md": "391a9abbbfc1a34cfb395054b937a159309873d69940ad31ee14dd7ea8402353",
         "README.md": "e7eefc3f5a79aa39468e7b3bee3a1eed40a6d9a10b4cb62f6362050a5c22c287",
-        "scripts/ac_ledger.cjs": "fd7ed0511f30404641d74816bc922f7dde4e302c7463a093fbdacc2d80f90182",
+        "scripts/ac_ledger.cjs": "c9136606bc59a02a388f3a08fb6cad387fe53fbe3a02a170e442f820128c2b46",
         "scripts/ado-workitem-to-spec.py": "29ffee588e070359a020b1a23990a756b4a31dc9ed82cafc4d124b7c51047825",
         "scripts/build_dispatch_context.cjs": "5ae13b39c8bb39a0be3e73780931a48438a8448728935097310171b1beed4a60",
         "scripts/check_memory_conflict.py": "323314cafd55d1aef19062101c32d74f2be7c0291b4fc46bc25a1e2591c39eb6",
@@ -419,7 +419,7 @@
         "STEP-DISPATCH.md": "789ac6b60601f075bd8d1ed727b2b06619bb372172938c87d71a3dfa18c7f2b4",
         "ws-spec-to-pr-run-test.md": "e02b0ab33116157aca673cca2ae54faeadcf9c67c0e5ff25234e2da8ac4212ab"
       },
-      "skillDigest": "020b46ffcafe3759b574a90314e2e3f7126bff775835dbe6198bc1793f75c286"
+      "skillDigest": "3c9e4096b9b84e229297fc96976072f65748bba094dca709d87af5fe99aad8ed"
     },
     "ws-spec-to-pr-lite": {
       "files": {
