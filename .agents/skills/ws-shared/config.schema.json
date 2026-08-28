@@ -346,6 +346,11 @@
           "type": "boolean",
           "default": false,
           "description": "When true, prefer git worktree isolation for Step 4 implement (non-win32, path length ≤180, git worktree add succeeds)."
+        },
+        "enforceSpecPrefixOrdering": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md with a four-digit sequence under {specsDir}. When false (default), writers use {slug}.spec.md."
         }
       }
     },

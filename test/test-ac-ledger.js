@@ -226,4 +226,34 @@ assert.strictEqual(stealLedger.negativeScenarios.length, 3, 'V9: ingest reads st
 assert.strictEqual(stealLedger.negativeScenarios[0].id, 'NS1');
 assert.match(stealLedger.negativeScenarios[0].text, /First steal-case negative scenario/);
 
+// Test sync-plan-index and plan_index auto-sync
+const syncRoot = temp('ws-ac-ledger-sync-');
+write(path.join(syncRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(syncRoot, 'sync.spec.md'), '## Acceptance Criteria\n- AC1: Task mapped criterion.\n');
+write(path.join(syncRoot, 'plan.index.json'), JSON.stringify({
+  acceptanceCriteria: [
+    { id: 'AC1', taskIds: ['T01'], planSectionIds: ['section-001'], expectedTestNames: ['test_sync'] },
+  ],
+}));
+function syncInvoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', syncRoot]);
+}
+assert.strictEqual(syncInvoke(['init', '--spec', 'sync.spec.md', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'sync']).status, 0);
+let preSyncLedger = JSON.parse(fs.readFileSync(path.join(syncRoot, 'ac-ledger.json'), 'utf8'));
+assert.strictEqual(preSyncLedger.acceptanceCriteria[0].tasks.length, 0);
+assert.strictEqual(preSyncLedger.acceptanceCriteria[0].planSections.length, 0);
+
+assert.strictEqual(syncInvoke(['sync-plan-index', '--ledger', 'ac-ledger.json', '--plan-index', 'plan.index.json']).status, 0);
+let postSyncLedger = JSON.parse(fs.readFileSync(path.join(syncRoot, 'ac-ledger.json'), 'utf8'));
+assert.deepStrictEqual(postSyncLedger.acceptanceCriteria[0].tasks, ['T01']);
+assert.deepStrictEqual(postSyncLedger.acceptanceCriteria[0].planSections, ['section-001']);
+assert.strictEqual(postSyncLedger.acceptanceCriteria[0].tests[0].name, 'test_sync');
+
+// Test link with --plan-index
+assert.strictEqual(syncInvoke(['init', '--spec', 'sync.spec.md', '--output', 'ac-ledger-2.json', '--workflow-id', 'wf', '--slug', 'sync']).status, 0);
+assert.strictEqual(syncInvoke(['link', '--ledger', 'ac-ledger-2.json', '--event-id', 'link-plan', '--plan-index', 'plan.index.json']).status, 0);
+let linkedPlanLedger = JSON.parse(fs.readFileSync(path.join(syncRoot, 'ac-ledger-2.json'), 'utf8'));
+assert.deepStrictEqual(linkedPlanLedger.acceptanceCriteria[0].tasks, ['T01']);
+assert.deepStrictEqual(linkedPlanLedger.acceptanceCriteria[0].planSections, ['section-001']);
+
 console.log('test-ac-ledger: ok');

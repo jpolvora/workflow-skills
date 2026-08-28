@@ -14,9 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-Author or reformulate a **local** `*.spec.md` into the project specs directory only.
-
-**Write path:** `{specsDir}/{slug}.spec.md` — resolve `{specsDir}` ← `config.json` → `plans.specsDir` (default `.agents/specs`; prefer existing repo-root `specs/` when that is the configured value). Create `{specsDir}` if missing.
+**Write path:** resolve path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (honors `plans.enforceSpecPrefixOrdering`: `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
 
 **Do not** create `{plansDir}/{slug}/`, `step-00-*.spec.md`, state files, or any other plan/workflow artifact directly. Plan copies are owned by [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` / `--register` when a workflow starts — never by this skill’s default write.
 

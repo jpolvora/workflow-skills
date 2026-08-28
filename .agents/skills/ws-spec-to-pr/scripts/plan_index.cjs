@@ -107,6 +107,33 @@ function build(options) {
   };
   fs.mkdirSync(path.dirname(path.resolve(context.repoRoot, options.output)), { recursive: true });
   fs.writeFileSync(path.resolve(context.repoRoot, options.output), `${JSON.stringify(index, null, 2)}\n`, 'utf8');
+  const defaultLedger = path.join(path.dirname(path.resolve(context.repoRoot, options.output)), 'ac-ledger.json');
+  const ledgerPath = options.ledger ? path.resolve(context.repoRoot, options.ledger) : (fs.existsSync(defaultLedger) ? defaultLedger : null);
+  if (ledgerPath && fs.existsSync(ledgerPath)) {
+    try {
+      const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+      ledger.planIndexPath = toRepoRelative(context.repoRoot, path.resolve(context.repoRoot, options.output));
+      for (const row of ledger.acceptanceCriteria || []) {
+        const mapping = criteria.find((item) => item.id === row.id);
+        if (mapping) {
+          if (mapping.taskIds && mapping.taskIds.length) {
+            row.tasks = [...new Set([...(row.tasks || []), ...mapping.taskIds])].sort();
+          }
+          if (mapping.planSectionIds && mapping.planSectionIds.length) {
+            row.planSections = [...new Set([...(row.planSections || []), ...mapping.planSectionIds])].sort();
+          }
+          for (const name of mapping.expectedTestNames || []) {
+            if (!row.tests.some((t) => t.name === name)) {
+              row.tests.push({ name, sourceFile: null, phase: 'planned', alias: null, exitCode: null, timestamp: null });
+            }
+          }
+        }
+      }
+      ledger.revision = (ledger.revision || 1) + 1;
+      ledger.scoreState = null;
+      fs.writeFileSync(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`, 'utf8');
+    } catch (_) {}
+  }
   if (options.draft && fs.existsSync(path.resolve(context.repoRoot, options.draft))) {
     const draftPath = path.resolve(context.repoRoot, options.draft);
     const draft = fs.readFileSync(draftPath, 'utf8').replace(/\r\n?/g, '\n');

@@ -64,7 +64,8 @@
         "ws-spec-explain",
         "ws-cleanup",
         "ws-spec-archive",
-        "ws-spec-memo"
+        "ws-spec-memo",
+        "ws-spec-organizer"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -137,7 +138,8 @@
     ],
     "ws-write-spec": [
       "ws-spec-format",
-      "ws-local-spec-provider"
+      "ws-local-spec-provider",
+      "ws-spec-organizer"
     ],
     "ws-github-provider": [
       "ws-spec-format",
@@ -239,6 +241,7 @@
       "ws-configure-project",
       "ws-self-learning"
     ],
+    "ws-spec-organizer": [],
     "ws-run-benchmark": []
   },
   "autoloadOnly": [],

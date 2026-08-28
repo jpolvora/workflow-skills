@@ -14,11 +14,11 @@ Canonical skill: [`SKILL.md`](SKILL.md).
 
 ## Evaluation Criteria
 
-| Criterion | Score (0-10) | Notes |
+| Criterion | Evaluation / Status | Notes |
 | :--- | :--- | :--- |
-| **Completeness** (40%) | | [Did it do everything in the plan?] |
-| **Correctness & Style** (35%) | | [Any bugs, styling issues, tenancy issues?] |
-| **Testing** (25%) | | [Were tests written, ran, and did they pass?] |
+| **Completeness** | | [Did it do everything in the plan?] |
+| **Correctness & Style** | | [Any bugs, styling issues, tenancy issues?] |
+| **Testing** | | [Were tests written, ran, and did they pass?] |
 
 ## Regression Sabotage Check
 

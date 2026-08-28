@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.50** · 49 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.50** · 50 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -308,7 +308,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 
 ## 14. Full skill catalog
 
-49 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+50 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -356,6 +356,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → write-spec + register |
 | [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Configure spec-memo external vault bridge (MCP/CLI) |
+| [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 
 ### Quality and audit

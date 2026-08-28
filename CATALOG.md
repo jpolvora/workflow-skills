@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 42, `extra` = 7). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 43, `extra` = 7). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -86,6 +86,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | List + confirm delete of workflow leftovers (telemetry, .runtime, shipped plans); suggest .gitignore |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Configure spec-memo external vault bridge (MCP/CLI) |
+| `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Resolve spec-of-record path and organize/prefix specs chronologically |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven intake → implement → complete (not Spec-to-PR) |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -128,6 +129,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
+| Resolve spec path / organize board specs | `ws-spec-organizer` |
 | spec-memo vault setup/bridge | `ws-spec-memo` |
 | Runtime spec-memo vault ops (search, upsert, canvas) | `ws-memo` |
 | GitHub issue/PR ops | `ws-github-provider` |
