@@ -32,6 +32,48 @@ assert.match(
   /^---\n[\s\S]*^step: 0\n/m,
 );
 
+const prefixedRoot = temp('ws-node-ports-prefixed-');
+write(path.join(prefixedRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
+}));
+const specsDir = path.join(prefixedRoot, '.agents/specs');
+const plansDir = path.join(prefixedRoot, '.agents/plans/prefix-demo');
+fs.mkdirSync(specsDir, { recursive: true });
+fs.mkdirSync(plansDir, { recursive: true });
+write(path.join(specsDir, '0051-prefix-demo.spec.md'), `---
+id: null
+slug: prefix-demo
+title: Prefix demo
+source: local
+specDate: 2026-08-28
+---
+## Description
+Prefixed board spec.
+`);
+write(path.join(plansDir, 'step-00-prefix-demo.spec.md'), `---
+id: null
+slug: prefix-demo
+title: Prefix demo updated
+source: local
+specDate: 2026-08-28
+---
+## Description
+Workflow copy refresh.
+`);
+const reRegister = run(path.join(localScripts, 'register_local_spec.cjs'), [
+  '--input', '.agents/plans/prefix-demo/step-00-prefix-demo.spec.md',
+  '--force',
+  '--json', '--repo-root', prefixedRoot,
+]);
+assert.strictEqual(reRegister.status, 0, reRegister.stderr);
+const payload = JSON.parse(reRegister.stdout);
+assert.strictEqual(payload.specsPath, '.agents/specs/0051-prefix-demo.spec.md', 'updates prefixed spec-of-record');
+assert.ok(!fs.existsSync(path.join(specsDir, 'prefix-demo.spec.md')), 'does not create unprefixed duplicate');
+assert.match(
+  fs.readFileSync(path.join(specsDir, '0051-prefix-demo.spec.md'), 'utf8'),
+  /Prefix demo updated/,
+);
+
 write(path.join(root, '.agents/skills/ws-shared/memory/2026-08-21-port.md'), `### [2026-08-21] Node port
 - **Layer**: Runtime
 - **Module**: Helpers

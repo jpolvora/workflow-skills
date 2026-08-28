@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "d9f41469a4a63171f27bb5048dfc490a3c20e3b70ba71e75b7776d3f852dd748",
+  "fullPackageDigest": "1e5f80ad2ef3b14c260f4dab3f3b1b9e2fbb9bdee2e355dfd2c326f8982ed064",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
@@ -238,11 +238,11 @@
         "evals/evals.json": "359a80646b53810d6b3048feb2d7d4aa3a03b97e37451b286d6fef63416e305f",
         "scripts/detect_specs_dir.cjs": "c25c9131122808fc8fc56a58f2ce22ccffe2e26f7c3383b0e4bc5556bd258852",
         "scripts/detect_specs_dir.py": "73cd7c2bb5d3d021a4fe6d97f3a74d8ad86ab972db335b595c8155c098b933bd",
-        "scripts/register_local_spec.cjs": "c231af953334c67890449fcc7cc5da17c075660564630dd2adf5da3c7b24d965",
+        "scripts/register_local_spec.cjs": "451f415f75935baa6bdc899796ba2dc85b4d82785eded3f149c8dd5e3a035669",
         "scripts/register_local_spec.py": "a0a14fe1c12dee55bd860d8e0b9dcd92c0dc5884576f83815c6475f2968ad0bc",
         "SKILL.md": "1ea5608deb8ee2ab6687ef918d1f0faf02155cd733e877649920671b0bcffef4"
       },
-      "skillDigest": "ff85ea67b42b2f88b44c4b506a07af2ef8cac4b81591e4d5cc7af537fb0d46da"
+      "skillDigest": "0d51b5c563acf82edc4bf940ac8b2d1dbe472cb09d753f06c7b8480c2a1cb7ae"
     },
     "ws-multi-spec": {
       "files": {
