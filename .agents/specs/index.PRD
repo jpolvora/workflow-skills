@@ -39,67 +39,69 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 ## 7. Feature map by phase
 
 ### Phase 1: Core Foundation & Provider Abstractions
-- [x] Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) (`spec: spec-provider-skills.spec.md`)
-- [x] Promote shared skills to first-class installable packages (`spec: promote-shared-skills.spec.md`)
+- [x] Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) (`spec: 0001-spec-provider-skills.spec.md`)
+- [x] Promote shared skills to first-class installable packages (`spec: 0002-promote-shared-skills.spec.md`)
 - [x] Skill install checksum integrity (SHA-256 digests + install gate) (`spec: skill-install-checksums/step-00-skill-install-checksums.spec.md`)
 - [x] Fix skill integrity mismatch (source digests vs `bin/skill-integrity.json`) (`spec: us-90/step-00-us-90.spec.md`)
 - [x] check-workflows consumer dependency closure (`spec: us-95/step-00-us-95.spec.md`)
 - [x] Immediate UTF-8 stdio reconfiguration (`spec: immediate-utf8-stdio-reconfiguration/step-00-immediate-utf8-stdio-reconfiguration.spec.md`)
 
 ### Phase 2: System Quality & Integration
-- [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: consolidated-gh-issues.spec.md`)
-- [x] Opt-in Integration of fable-* Skills with spec-to-pr Workflows (`spec: fable-skills-integration.spec.md`)
+- [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: 0003-consolidated-gh-issues.spec.md`)
+- [x] Opt-in Integration of fable-* Skills with spec-to-pr Workflows (`spec: 0004-fable-skills-integration.spec.md`)
 
 ### Phase 3: Continuous Verification & Advanced Quality Gates
-- [x] Continuous AI Verification & Quality Gates Engine (`spec: continuous-ai-verification-quality-gates.spec.md`)
-- [x] GraphQL Thread Resolution & Verification in `ws-goal-fix-pr` (`spec: us-168-resolve-review-thread.spec.md`)
-- [x] Source-of-Truth Refactoring to `src/` & Hybrid Global Mode (`spec: src-sot-and-hybrid-global-install.spec.md`)
-- [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: workflow-cleanup-and-branch-protection.spec.md`)
-- [x] Skill Authoring Guidelines & Global Config Gate Rules (`spec: skill-authoring-and-config-gate-rules.spec.md`)
-- [x] Dual-Board Spec & Plan Management via `ws-spec-list` (`spec: ws-spec-list-and-board-management.spec.md`)
-- [x] Remove Consumer Requirement for packaged `.agents/AGENTS.md`; consumer hub is `ws-shared/` (optional root `AGENTS.md` via autoload) (`spec: remove-consumer-agents-md-requirement.spec.md`)
-- [x] Shared `autoload.md` + configure-project root `AGENTS.md` generation (`spec: shared-autoload-md.spec.md`)
-- [x] Always-applied skills overlap audit & thin complementarity edits (`spec: autoload-skills-overlap-audit.spec.md`)
-- [x] Fix broken `../ws-shared/` links in classify THRESHOLDS.md (`spec: us-183.spec.md`)
-- [x] Opt-in mutation testing gate in Spec-to-PR Step 7 (`spec: workflow-mutation-testing-gate.spec.md`)
-- [x] Configurable delivery-commit artifacts (`defaults.deliveryCommitArtifacts`) (`spec: configurable-delivery-commit-artifacts.spec.md`)
-- [x] Configurable consumer autoload flag (`defaults.autoload` + harness enforce) (`spec: configurable-consumer-autoload.spec.md`)
-- [x] Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) (`spec: project-patterns-memory-skills.spec.md`)
+- [x] Continuous AI Verification & Quality Gates Engine (`spec: 0005-continuous-ai-verification-quality-gates.spec.md`)
+- [x] GraphQL Thread Resolution & Verification in `ws-goal-fix-pr` (`spec: 0006-us-168-resolve-review-thread.spec.md`)
+- [x] Source-of-Truth Refactoring to `src/` & Hybrid Global Mode (`spec: 0007-src-sot-and-hybrid-global-install.spec.md`)
+- [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: 0008-workflow-cleanup-and-branch-protection.spec.md`)
+- [x] Skill Authoring Guidelines & Global Config Gate Rules (`spec: 0011-skill-authoring-and-config-gate-rules.spec.md`)
+- [x] Dual-Board Spec & Plan Management via `ws-spec-list` (`spec: 0009-ws-spec-list-and-board-management.spec.md`)
+- [x] Remove Consumer Requirement for packaged `.agents/AGENTS.md`; consumer hub is `ws-shared/` (optional root `AGENTS.md` via autoload) (`spec: 0010-remove-consumer-agents-md-requirement.spec.md`)
+- [x] Shared `autoload.md` + configure-project root `AGENTS.md` generation (`spec: 0013-shared-autoload-md.spec.md`)
+- [x] Always-applied skills overlap audit & thin complementarity edits (`spec: 0012-autoload-skills-overlap-audit.spec.md`)
+- [x] Fix broken `../ws-shared/` links in classify THRESHOLDS.md (`spec: 0014-us-183.spec.md`)
+- [x] Opt-in mutation testing gate in Spec-to-PR Step 7 (`spec: 0015-workflow-mutation-testing-gate.spec.md`)
+- [x] Configurable delivery-commit artifacts (`defaults.deliveryCommitArtifacts`) (`spec: 0016-configurable-delivery-commit-artifacts.spec.md`)
+- [x] Configurable consumer autoload flag (`defaults.autoload` + harness enforce) (`spec: 0017-configurable-consumer-autoload.spec.md`)
+- [x] Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) (`spec: 0018-project-patterns-memory-skills.spec.md`)
 
 ### Phase 4: Runtime diagnostics, audit, timing, and bootstrap
-- [x] `ws-doctor` read-only skills diagnostic inspector (`spec: ws-doctor.spec.md`)
-- [x] `defaults.enableAuditing` runtime workflow audit wrapper (`spec: enable-auditing.spec.md`)
-- [x] Refine `ws-activity-report` human vs agent duration (`spec: refine-ws-activity-report-human-timing.spec.md`)
-- [x] `defaults.testingModel` test executor for standard Step 7 (`spec: testing-executor-model.spec.md`)
-- [x] Feature-branch strategy gate at workflow bootstrap (`spec: workflow-bootstrap-feature-branch.spec.md`)
+- [x] `ws-doctor` read-only skills diagnostic inspector (`spec: 0020-ws-doctor.spec.md`)
+- [x] `defaults.enableAuditing` runtime workflow audit wrapper (`spec: 0019-enable-auditing.spec.md`)
+- [x] Refine `ws-activity-report` human vs agent duration (`spec: 0021-refine-ws-activity-report-human-timing.spec.md`)
+- [x] `defaults.testingModel` test executor for standard Step 7 (`spec: 0023-testing-executor-model.spec.md`)
+- [x] Feature-branch strategy gate at workflow bootstrap (`spec: 0022-workflow-bootstrap-feature-branch.spec.md`)
 - [x] Phase-specific subagent LLM model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) (`plan: auto-mode-model-preferences/step-00-auto-mode-model-preferences.spec.md`)
-- [x] `defaults.enableDag` sequential-by-default task execution (`spec: add-enable-dag-config.spec.md`)
-- [x] `update_state.py` nested `telemetry.loc` + `completedSteps` union (`spec: us-202.spec.md`)
-- [x] Fix `ws-doctor` GitHub issues #204 and #205 (`spec: ws-doctor-204-205.spec.md`)
-- [x] en-us patterns user-gate prompts + autoload consult-vs-load wording (`spec: us-209.spec.md`)
-- [x] `ws-preview` Extra pipeline-review dry-run skill (`spec: us-210.spec.md`)
-- [x] Hybrid/global consumer-root resolver for helper scripts (`spec: us-211.spec.md`)
-- [x] Commit workflow product files before code-review (`spec: commit-before-code-review.spec.md`)
+- [x] `defaults.enableDag` sequential-by-default task execution (`spec: 0024-add-enable-dag-config.spec.md`)
+- [x] `update_state.py` nested `telemetry.loc` + `completedSteps` union (`spec: 0025-us-202.spec.md`)
+- [x] Fix `ws-doctor` GitHub issues #204 and #205 (`spec: 0026-ws-doctor-204-205.spec.md`)
+- [x] en-us patterns user-gate prompts + autoload consult-vs-load wording (`spec: 0030-us-209.spec.md`)
+- [x] `ws-preview` Extra pipeline-review dry-run skill (`spec: 0031-us-210.spec.md`)
+- [x] Hybrid/global consumer-root resolver for helper scripts (`spec: 0032-us-211.spec.md`)
+- [x] Commit workflow product files before code-review (`spec: 0029-commit-before-code-review.spec.md`)
 - [x] DeepSeek Harness-inspired P1: state versioning + resume/goal guards (`plan: deepseek-harness-improvements`)
-- [x] Enforce pattern/MEMORY consults in subagents (`spec: us-217.spec.md`)
-- [x] Port `ws-pre-daily` Extra skill to upstream (`spec: us-220.spec.md`)
-- [x] Harness efficiency, verifiability, and observability upgrade (`spec: harness-efficiency-and-verifiability.spec.md`)
-- [x] Config: model presets and per-step / substep model preferences (`spec: models-preset-and-per-step.spec.md`)
-- [x] Skill catalog cleanup: Extra demotion and patterns merge (`spec: skill-catalog-cleanup.spec.md`)
-- [~] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: hermes-spec-to-pr-enhancements.spec.md`)
-- [x] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: audit-performance-correctness-and-reusable-scripts.spec.md`)
-- [x] `ws-fix-pr` proactive same-category discovery before resolve (`spec: fix-pr-proactive-class-sweep.spec.md`)
-- [ ] Harness spec-run benchmark with snapshot compare (`spec: harness-spec-benchmark.spec.md`)
-- [ ] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: skill-family-naming.spec.md`)
-- [x] Specify-time closure pack for score-10 spec delivery (`spec: specify-closure-pack.spec.md`)
-- [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: unique-skill-script-runtime.spec.md`)
-- [x] ~~Cooperative session leases~~ **retired 0.3.38** — historical spec only (`spec: workflow-session-leases.spec.md`; use worktrees for parallel work)
-- [ ] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: us-235.spec.md`)
-- [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: us-236.spec.md`)
-- [ ] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: fix-pr-batch-plan-exec.spec.md`)
-- [ ] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: configurable-memory-backends.spec.md`)
-- [ ] Research-driven spec-to-pr pipeline quality and integration (`spec: research-driven-pipeline-quality.spec.md`)
-- [ ] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: spec-dor-tdd-refinement-hardening.spec.md`)
+- [x] Enforce pattern/MEMORY consults in subagents (`spec: 0033-us-217.spec.md`)
+- [x] Port `ws-pre-daily` Extra skill to upstream (`spec: 0034-us-220.spec.md`)
+- [x] Harness efficiency, verifiability, and observability upgrade (`spec: 0036-harness-efficiency-and-verifiability.spec.md`)
+- [x] Config: model presets and per-step / substep model preferences (`spec: 0039-models-preset-and-per-step.spec.md`)
+- [x] Skill catalog cleanup: Extra demotion and patterns merge (`spec: 0027-skill-catalog-cleanup.spec.md`)
+- [~] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: 0035-hermes-spec-to-pr-enhancements.spec.md`)
+- [x] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: 0028-audit-performance-correctness-and-reusable-scripts.spec.md`)
+- [x] `ws-fix-pr` proactive same-category discovery before resolve (`spec: 0038-fix-pr-proactive-class-sweep.spec.md`)
+- [ ] Harness spec-run benchmark with snapshot compare (`spec: 0041-harness-spec-benchmark.spec.md`)
+- [ ] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: 0037-skill-family-naming.spec.md`)
+- [x] Specify-time closure pack for score-10 spec delivery (`spec: 0040-specify-closure-pack.spec.md`)
+- [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: 0042-unique-skill-script-runtime.spec.md`)
+- [x] ~~Cooperative session leases~~ **retired 0.3.38** — historical spec only (`spec: 0043-workflow-session-leases.spec.md`; use worktrees for parallel work)
+- [ ] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: 0044-us-235.spec.md`)
+- [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: 0045-us-236.spec.md`)
+- [x] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: 0047-fix-pr-batch-plan-exec.spec.md`)
+- [x] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: 0049-configurable-memory-backends.spec.md`)
+- [x] Research-driven spec-to-pr pipeline quality and integration (`spec: 0050-research-driven-pipeline-quality.spec.md`)
+- [x] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: 0051-spec-dor-tdd-refinement-hardening.spec.md`)
+- [ ] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: spec-prefix-ordering.spec.md`)
+
 
 
 
@@ -163,12 +165,13 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 49 | `workflow-session-leases` | `[x]` retired | Phase 4 | **Removed 0.3.38** — historical spec; session leases / git.lock no longer ship |
 | 50 | `us-235` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist |
 | 51 | `us-236` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill |
-| 52 | `fix-pr-batch-plan-exec` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix-pr: plan substep (reviewer model) then execute (fix model) per batch |
-| 53 | `configurable-memory-backends` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing |
-| 54 | `research-driven-pipeline-quality` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Research-driven spec-to-pr pipeline quality and integration |
-| 55 | `spec-dor-tdd-refinement-hardening` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
+| 52 | `fix-pr-batch-plan-exec` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix-pr: plan substep (reviewer model) then execute (fix model) per batch |
+| 53 | `configurable-memory-backends` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing |
+| 54 | `research-driven-pipeline-quality` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Research-driven spec-to-pr pipeline quality and integration |
+| 55 | `spec-dor-tdd-refinement-hardening` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
+| 56 | `spec-prefix-ordering` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional chronological spec filename prefixes and ws-spec-organizer |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`, `fix-pr-batch-plan-exec`, `configurable-memory-backends`, `research-driven-pipeline-quality`, `spec-dor-tdd-refinement-hardening`.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`, `us-235`, `spec-prefix-ordering`. Other new work goes to Inbox, then promote.
 
 ## 9. Inbox
 
@@ -223,6 +226,10 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchm
 | 2026-08-22 | `fix-pr-proactive-class-sweep` | Proactive same-defect-class sweep in cooperative fix | [PR #231](https://github.com/jpolvora/workflow-skills/pull/231) (already in tree; index closed) |
 | 2026-08-22 | `specify-closure-pack` | Specify-time closure pack for score-10 spec delivery | [PR #231](https://github.com/jpolvora/workflow-skills/pull/231) (`89e7c96`) |
 | 2026-08-23 | `us-236` | Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill | [PR #238](https://github.com/jpolvora/workflow-skills/pull/238) |
+| 2026-08-25 | `fix-pr-batch-plan-exec` | fix-pr: plan substep (reviewer model) then execute (fix model) per batch | Shipped 0.3.40 |
+| 2026-08-26 | `configurable-memory-backends` | Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing | Shipped 0.3.42 |
+| 2026-08-27 | `research-driven-pipeline-quality` | Research-driven spec-to-pr pipeline quality and integration | Shipped 0.3.45 |
+| 2026-08-28 | `spec-dor-tdd-refinement-hardening` | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol | [PR #254](https://github.com/jpolvora/workflow-skills/pull/254) |
 
 ## 11. Maintenance checklist
 

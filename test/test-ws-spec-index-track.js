@@ -121,4 +121,27 @@ assert.ok(
   'next-specs rows contiguous',
 );
 
+fs.writeFileSync(
+  path.join(specs, '0007-prefixed-slug.spec.md'),
+  `---
+slug: prefixed-slug
+title: Prefixed disk name
+source: local
+---
+
+# Prefixed
+`,
+  'utf8',
+);
+const prefixed = run(['--specs-dir', specs, '--slug', 'prefixed-slug']);
+assert.strictEqual(JSON.parse(prefixed.stdout).status, 'tracked', 'prefixed filename found');
+const prefixedIndex = fs.readFileSync(path.join(specs, 'index.PRD'), 'utf8');
+assert.match(
+  prefixedIndex,
+  /Prefixed disk name \(`spec: 0007-prefixed-slug\.spec\.md`\)/,
+  'feature map uses on-disk prefixed filename',
+);
+const prefixedAgain = run(['--specs-dir', specs, '--slug', 'prefixed-slug']);
+assert.strictEqual(JSON.parse(prefixedAgain.stdout).reason, 'already tracked');
+
 console.log('All ws-spec-index track tests passed');

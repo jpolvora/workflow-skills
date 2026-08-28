@@ -71,7 +71,7 @@ Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (ins
 
 **Specs progressive disclosure:** when the user mentions specs, plans, Spec-to-PR, `index.PRD`, or related keywords without naming a skill, load [`autoload.md`](autoload.md) § Specs vocabulary and § Specs skill router — then load **only** the matching skill.
 
-**Hub contracts (load on demand):** SCM intents / GitHub vs Azure parity → [`scm-provider-contract.md`](scm-provider-contract.md) (one provider `SKILL.md` only when executing that SCM). Check-implementation / verify score / `scoreAndRefine` → orch Step 5 or [`ws-verify-plan`](../ws-verify-plan/SKILL.md); gate copy in [`gates.md`](gates.md) (advance at `defaults.minVerifyScore` (default 9)). Config / tokens / gates → `config.json` + [`tools.md`](tools.md) / [`gates.md`](gates.md) — not a skill body.
+**Hub contracts (load on demand):** SCM intents / GitHub vs Azure parity → [`scm-provider-contract.md`](scm-provider-contract.md) (one provider `SKILL.md` only when executing that SCM). Check-implementation / verify score / `scoreAndRefine` → orch Step 5 or [`ws-verify-plan`](../ws-verify-plan/SKILL.md); gate copy in [`gates.md`](gates.md) (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap the score at 8). Config / tokens / gates → `config.json` + [`tools.md`](tools.md) / [`gates.md`](gates.md) — not a skill body.
 
 When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
 

@@ -87,6 +87,15 @@ const emptyNegative = write(path.join(root, 'empty-negative.spec.md'), `${base}$
 const emptyNegativeRun = run(script, [emptyNegative, '--mode=authoring', '--modification']);
 assert.notStrictEqual(emptyNegativeRun.status, 0, 'authoring fails when Negative scenarios are placeholder-only');
 
+const headerOnlyDor = write(path.join(root, 'header-only-dor.spec.md'), `${base}${closure}
+## Definition of Ready (DoR)
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+${notes}`);
+const headerOnlyDorRun = run(script, [headerOnlyDor, '--mode=authoring', '--modification']);
+assert.notStrictEqual(headerOnlyDorRun.status, 0, 'V10: authoring fails when DoR table has header only (no data rows)');
+assert.match(`${headerOnlyDorRun.stdout}${headerOnlyDorRun.stderr}`, /dor-empty|non-placeholder readiness items/i);
+
 const compatTelemetry = run(script, [telemetryOnly, '--modification']);
 assert.strictEqual(compatTelemetry.status, 0, 'compat does not fail telemetry-only historical notes');
 assert.match(compatTelemetry.stderr, /Negative & Failing Test Scenarios/);
@@ -95,7 +104,7 @@ const compat = run(script, [missingDor, '--modification']);
 assert.strictEqual(compat.status, 0, 'compat does not fail historical specs that omit DoR');
 assert.match(compat.stderr, /WARN:[\s\S]*Definition of Ready \(DoR\)/i);
 
-const liveSpec = path.join(repoRoot, '.agents/specs/spec-dor-tdd-refinement-hardening.spec.md');
+const liveSpec = path.join(repoRoot, '.agents/specs/0051-spec-dor-tdd-refinement-hardening.spec.md');
 assert.strictEqual(
   run(script, [liveSpec, '--mode=authoring']).status,
   0,

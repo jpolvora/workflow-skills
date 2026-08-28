@@ -1,7 +1,7 @@
 ---
 name: ws-spec-index
 description: Project PRD index manager — initializes, synchronizes, and promotes feature specifications within the project index (index.PRD).
-version: 0.3.46
+version: 0.3.47
 invocation_names:
   - spec-index
   - ws-spec-index
@@ -23,7 +23,7 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 /ws-spec-index init [sourcePath]       Bootstrap index + specsDir from README/PRD/SPECS or free text
 /ws-spec-index sync [slug]             Sync shipped work to index status, checkboxes, and Done log
 /ws-spec-index promote <inboxItem>     Promote an inbox idea to a phase bullet + next-specs row
-/ws-spec-index track <slug>            Add an existing `{specsDir}/{slug}.spec.md` to Feature map + Next-specs
+/ws-spec-index track <slug>            Add an existing `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md` to Feature map + Next-specs
 ```
 
 ## Modes
@@ -61,10 +61,10 @@ Deterministic helper (preferred for tests/CI):
 node {skillsRoot}/ws-spec-index/scripts/track_index.cjs --specs-dir {specsDir} --slug {slug}
 ```
 
-- Require `{specsDir}/{slug}.spec.md` (spec of record). Title from frontmatter `title`.
+- Require `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md` (spec of record). Title from frontmatter `title`.
 - If `{specsDir}/index.PRD` is missing: `skipped: "index.PRD missing"` (tell the user to `init`; do not invent an index).
 - If the slug already appears in Feature map or Next-specs: `skipped: "already tracked"`.
-- Else append `- [ ] {title} (\`spec: {slug}.spec.md\`)` under the last `### Phase` heading (or under Feature map if no phase headings).
+- Else append `- [ ] {title} (\`spec: {filename}\`)` under the last `### Phase` heading (or under Feature map if no phase headings). Use the on-disk filename (`{slug}.spec.md` or `NNNN-{slug}.spec.md`).
 - Append a Next-specs row with the next `#`, status `` `[ ]` todo ``, last phase label, and a one-line note from the spec title.
 - If an `Open Next-spec:` line exists, append the slug there.
 - Never create `{plansDir}` / `step-00` artifacts. Never treat this as workflow `--register`.

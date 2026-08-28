@@ -346,7 +346,7 @@ function inferSlug(specPath, frontmatter) {
   const base = path.basename(specPath, path.extname(specPath));
   const stepMatch = base.match(/^step-00-(.+)\.spec$/i);
   if (stepMatch) return stepMatch[1];
-  return base.replace(/\.spec$/i, '');
+  return base.replace(/\.spec$/i, '').replace(/^\d{4}-/, '');
 }
 
 function withinCell(ok) {

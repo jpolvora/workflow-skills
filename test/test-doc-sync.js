@@ -36,6 +36,8 @@ for (const heading of [
   'Atomic Node state runtime',
   'Telemetry and deterministic reporting',
   'Gate granularity and adaptive convergence',
+  'Definition of Ready and TDD',
+  'Dual memory routing',
 ]) assert.match(site, new RegExp(heading), `site documents ${heading}`);
 const build = run(path.join(repoRoot, 'bin/build-site.js'), ['--check']);
 assert.strictEqual(build.status, 0, build.stderr);

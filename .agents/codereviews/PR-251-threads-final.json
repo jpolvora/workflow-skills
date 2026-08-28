@@ -1,0 +1,22 @@
+{
+  "prNumber": 251,
+  "owner": "jpolvora",
+  "repo": "workflow-skills",
+  "cooperativeContract": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+  "activeThreads": [
+    {
+      "index": 1,
+      "threadId": "PRRT_kwDOTFajc86c6CmN",
+      "filePath": "/.agents/skills/ws-implement-tasks/SKILL.md",
+      "lineNumber": 48,
+      "summary": "agentic-code-reviewers v0.4.0 (cursor-sdk) ⚠️ **WARNING:** The new TDD step tells agents that uncovered negative scenarios are blocked at \"Step 5\", but this skill is shared by both orchestrators. In ws-spec-to-pr-lite, Step 5 is Fix-PR a...",
+      "comments": [
+        {
+          "author": "github-actions",
+          "createdAt": "2026-08-27T17:09:39Z",
+          "body": "agentic-code-reviewers v0.4.0 (cursor-sdk)\n\n⚠️ **WARNING:** The new TDD step tells agents that uncovered negative scenarios are blocked at \"Step 5\", but this skill is shared by both orchestrators. In ws-spec-to-pr-lite, Step 5 is Fix-PR and the pipeline explicitly skips ws-verify-plan, so ac_ledger.cjs score (the only mechanism that sets knownDefect from negativeScenarios) never runs before review/ship. Lite runs therefore get authoring-time negative-scenario requirements and implement-time linking instructions with no fail-close enforcement, while the prose implies Step 5 will block advance.\n\n**Correção sugerida:**\n\n```markdown\n4. **TDD cycle** — For each task: write **failing tests first** against unmodified code; run them; if they pass, flag a **false-positive** test hazard and do not treat the task as done. Then apply the minimal code correction that turns the tests green. Then check the task ACs and any spec DoR items the task claims to satisfy. Link covering tests for spec `### Negative & Failing Test Scenarios` into `{us-dir}/ac-ledger.json` via `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --negative NS{n} --test {...}` (observed + exit 0). **Standard orch only:** uncovered `negativeScenarios` are scored by `ws-verify-plan` (Step 5) and cap the ledger at 8 (`knownDefect`). **Lite orch:** no verify step runs—treat linking as mandatory implement evidence, not a deferred Step 5 gate.\n```\n\n<details>\n<summary>🔍 Detalhes da Análise IA</summary>\n\n**Score:** 7/10 | **Ação dev:** fix-code\n\n**Análise:**\n1. Evidence: ws-implement-tasks/SKILL.md line 48 references \"Step 5 fail-closes\"; ws-spec-to-pr-lite/SKILL.md line 49 states lite does not dispatch ws-verify-plan; lite step index maps Step 5 to Fix-PR and Step 2 to ws-implement-tasks. ac_ledger.cjs scoreLedger is only invoked by ws-verify-plan (standard Step 5). 2. Scenario: A lite delivery writes negative scenarios at Step 0, runs implement-tasks at Step 2 without linking NS rows, and advances to review/ship; no step scores ac-ledger.json, so missingNegative never surfaces. 3. Protection: test-spec-dor-tdd.js asserts implement/verify SKILL bodies mention --negative but does not simulate lite FSM continuity; test-ac-ledger.js covers scoring only in isolation. 4. Discards: Standard-orch-only wording would be correct for ws-spec-to-pr; rejected treating this as intentional because the shared skill uses unqualified \"Step 5\" and lite still initializes negativeScenarios at Step 0, creating a false enforcement signal.\n\n**Caminhos analisados:** .agents/skills/ws-implement-tasks/SKILL.md, .agents/skills/ws-spec-to-pr-lite/SKILL.md, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, test/test-spec-dor-tdd.js\n</details>"
+        }
+      ]
+    }
+  ]
+}

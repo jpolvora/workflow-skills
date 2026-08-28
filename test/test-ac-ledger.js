@@ -188,4 +188,42 @@ assert.ok(!nsCovered.knownDefect, 'observed negative scenario clears knownDefect
 const nsSchemaErrors = validateNode(JSON.parse(fs.readFileSync(path.join(nsRoot, 'ac-ledger.json'), 'utf8')), ledgerSchema, 'ac-ledger.json');
 assert.strictEqual(nsSchemaErrors.length, 0, nsSchemaErrors.join('; '));
 
+// V9 — inline AC backticks must not steal Notes ingest; start-of-line section wins (3 bullets)
+const stealRoot = temp('ws-ac-ledger-steal-');
+write(path.join(stealRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(stealRoot, 'steal.spec.md'), [
+  '## Acceptance Criteria',
+  '- AC1: `ws-spec-format/FORMAT.md` documents `## Validation & Observation Notes` before the real section.',
+  '- AC2: `validate_spec.cjs` in `--mode=authoring` validates `## Validation & Observation Notes` inline in AC text.',
+  '',
+  '## Definition of Ready (DoR)',
+  '| Readiness Item | Requirement | Verification Method |',
+  '|----------------|-------------|---------------------|',
+  '| Bounded Scope | Steal-case fixture | Inspect ingest |',
+  '',
+  '## Out of Scope',
+  '| Feature | Reason |',
+  '|---------|--------|',
+  '| Retroactive DoR | Historical specs stay compat |',
+  '',
+  '## Validation & Observation Notes',
+  '',
+  '### Telemetry & Observable Signals',
+  '- Ledger init ingests negative scenarios from start-of-line Notes only.',
+  '',
+  '### Negative & Failing Test Scenarios',
+  '- First steal-case negative scenario.',
+  '- Second negative scenario for ingest coverage.',
+  '- Third negative scenario for ingest coverage.',
+  '',
+].join('\n'));
+function stealInvoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', stealRoot]);
+}
+assert.strictEqual(stealInvoke(['init', '--spec', 'steal.spec.md', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'steal']).status, 0);
+const stealLedger = JSON.parse(fs.readFileSync(path.join(stealRoot, 'ac-ledger.json'), 'utf8'));
+assert.strictEqual(stealLedger.negativeScenarios.length, 3, 'V9: ingest reads start-of-line Notes, not inline AC backticks');
+assert.strictEqual(stealLedger.negativeScenarios[0].id, 'NS1');
+assert.match(stealLedger.negativeScenarios[0].text, /First steal-case negative scenario/);
+
 console.log('test-ac-ledger: ok');

@@ -1,5 +1,29 @@
 # Changelog
 
+### [2026-08-28 01:48] Agent: Cursor Grok 4.6
+- **Prompt**: bump version, commit, push
+- **Done**: Patch bump 0.3.46 → 0.3.47 via `build-site:bump`; FEATURES/AGENTS/test package stamp; integrity regen
+- **Result**: `verify-integrity` + `test-doc-sync` + `test-skill-frontmatter` exit 0
+
+
+### [2026-08-28 01:40] Agent: Cursor Grok 4.6
+- **Prompt**: Docs refresh: shipped 0.3.46 features, honest roadmap, LLM-agnostic hero/CTAs
+- **Done**: Reconciled index.PRD shipped rows; FEATURES DoR/TDD/specMemo + Roadmap; README/AGENTS fact-align; site hero From Spec to Delivery with dual CTAs; test-doc-sync headings
+- **Result**: `node test/test-doc-sync.js` and `node bin/build-site.js --check` exit 0; integrity v0.3.46
+
+
+### [2026-08-28 00:35] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-write-spec` optional spec filename prefixes + ws-spec-organizer
+- **Done**: Authored `spec-prefix-ordering.spec.md` + context companion; authoring validate PASS (22 ACs)
+- **Result**: Spec of record at `.agents/specs/spec-prefix-ordering.spec.md`; not registered to a plan dir
+
+
+### [2026-08-28 00:25] Agent: Cursor Grok 4.6
+- **Prompt**: Prefix `.agents/specs` board specs with four-digit chronological order
+- **Done**: Renamed 52 `*.spec.md` (plus 4 `.context.md`) to `NNNN-{name}`; updated `index.PRD`; slug lookup accepts prefixed filenames
+- **Result**: `tests:harness-efficiency` exit 0; integrity v0.3.46
+
+
 ### [2026-08-27 13:16] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-goal-fix-pr` PR 251 round 3
 - **Done**: Qualify implement-tasks negative-scenario linking for standard vs lite; lite Step 2 requires ledger links

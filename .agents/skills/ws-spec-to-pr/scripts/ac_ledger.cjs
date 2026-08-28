@@ -51,9 +51,17 @@ function criteriaFromSpec(text) {
   return [...text.matchAll(/^- (AC[1-9][0-9]*):\s*(.+)$/gm)].map((match) => ({ id: match[1], text: match[2].trim() }));
 }
 
+function sliceHeading(text, heading, nextRe) {
+  const start = text.search(new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'im'));
+  if (start < 0) return '';
+  const rest = text.slice(start);
+  const cut = rest.search(nextRe);
+  return cut < 0 ? rest : rest.slice(0, cut);
+}
+
 function negativeScenariosFromSpec(text) {
-  const notes = text.match(/## Validation & Observation Notes[\s\S]*?(?=\n## |$)/i)?.[0] || '';
-  const subsection = notes.match(/### Negative & Failing Test Scenarios[\s\S]*?(?=\n### |\n## |$)/i)?.[0] || '';
+  const notes = sliceHeading(text, '## Validation & Observation Notes', /\n## /);
+  const subsection = sliceHeading(notes, '### Negative & Failing Test Scenarios', /\n### |\n## /);
   if (!subsection) return [];
   return [...subsection.matchAll(/^[-*]\s+(.+)$/gm)]
     .map((match) => match[1].trim())
