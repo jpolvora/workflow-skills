@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.48",
+  "packageVersion": "0.3.50",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -64,7 +64,8 @@
         "ws-spec-explain",
         "ws-cleanup",
         "ws-spec-archive",
-        "ws-spec-memo"
+        "ws-spec-memo",
+        "ws-spec-organizer"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -77,7 +78,8 @@
         "ws-preview",
         "ws-activity-report",
         "ws-fable-domain",
-        "ws-update-plan-implementation"
+        "ws-update-plan-implementation",
+        "ws-run-benchmark"
       ],
       "ensureHub": false,
       "shortcut": "e",
@@ -136,7 +138,8 @@
     ],
     "ws-write-spec": [
       "ws-spec-format",
-      "ws-local-spec-provider"
+      "ws-local-spec-provider",
+      "ws-spec-organizer"
     ],
     "ws-github-provider": [
       "ws-spec-format",
@@ -149,7 +152,8 @@
       "ws-local-spec-provider"
     ],
     "ws-local-spec-provider": [
-      "ws-spec-format"
+      "ws-spec-format",
+      "ws-spec-organizer"
     ],
     "ws-fix-pr": [
       "ws-self-learning"
@@ -237,7 +241,9 @@
     "ws-spec-memo": [
       "ws-configure-project",
       "ws-self-learning"
-    ]
+    ],
+    "ws-spec-organizer": [],
+    "ws-run-benchmark": []
   },
   "autoloadOnly": [],
   "selectOffRule": "no-cascade-deselect"

@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Harness benchmark report",
+  "type": "object",
+  "required": ["meta", "dimensions", "index", "perAc", "sensor", "diffRange", "verdict"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["packageVersion", "gitSha", "fixtureId", "mode", "orch", "dryRun", "timestamp"],
+      "additionalProperties": false,
+      "properties": {
+        "packageVersion": { "type": "string", "minLength": 1 },
+        "gitSha": { "type": "string", "minLength": 7 },
+        "fixtureId": { "type": "string", "minLength": 1 },
+        "mode": { "type": "string", "enum": ["static", "live"] },
+        "orch": { "type": "string", "enum": ["lite", "standard"] },
+        "dryRun": { "type": "boolean" },
+        "timestamp": { "type": "string", "minLength": 10 },
+        "wallSec": { "type": ["number", "null"], "minimum": 0 },
+        "models": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "completeness",
+        "verifyScore",
+        "judge",
+        "discrimination",
+        "efficiency",
+        "time",
+        "honesty"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "completeness": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+        "verifyScore": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+        "judge": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+        "discrimination": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+        "efficiency": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+        "time": { "type": ["number", "null"], "minimum": 0, "maximum": 10 },
+        "honesty": { "type": ["number", "null"], "minimum": 0, "maximum": 10 }
+      }
+    },
+    "index": {
+      "type": "object",
+      "required": ["value", "weights"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 100 },
+        "weights": {
+          "type": "object",
+          "required": [
+            "completeness",
+            "verifyScore",
+            "judge",
+            "discrimination",
+            "efficiency",
+            "time",
+            "honesty"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "completeness": { "const": 20 },
+            "verifyScore": { "const": 20 },
+            "judge": { "const": 15 },
+            "discrimination": { "const": 15 },
+            "efficiency": { "const": 15 },
+            "time": { "const": 10 },
+            "honesty": { "const": 5 }
+          }
+        }
+      }
+    },
+    "perAc": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "score", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "score": { "type": "number", "minimum": 0, "maximum": 10 },
+          "evidence": { "type": "string" }
+        }
+      }
+    },
+    "sensor": {
+      "type": "object",
+      "required": ["required", "injected", "killed", "porcelainOk", "verdict"],
+      "additionalProperties": false,
+      "properties": {
+        "required": { "type": "boolean" },
+        "injected": { "type": "integer", "minimum": 0 },
+        "killed": { "type": "integer", "minimum": 0 },
+        "porcelainOk": { "type": "boolean" },
+        "verdict": { "type": "string", "enum": ["PASS", "FAIL", "SKIP"] }
+      }
+    },
+    "diffRange": {
+      "type": "object",
+      "required": ["fromSha", "toSha"],
+      "additionalProperties": false,
+      "properties": {
+        "fromSha": { "type": "string" },
+        "toSha": { "type": "string" }
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "FAIL"]
+    }
+  }
+}

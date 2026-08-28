@@ -1,5 +1,36 @@
 # Changelog
 
+### [2026-08-28 18:28] Agent: Cursor Grok 4.6
+- **Prompt**: ws-goal-fix-pr PR 256 round 2
+- **Done**: Aligned ORCH.md with Step 5 and prepare baseline; added defaults.hostAdapter to schema and example
+- **Result**: Three new review threads from CI after round 1
+
+### [2026-08-28 18:10] Agent: Cursor Grok 4.6
+- **Prompt**: ws-goal-fix-pr Step 9 on PR 256
+- **Done**: Fixed live benchmark collect/sensor/compare/oracle defects; fail-closed dual spec paths; dispatch spec pointer uses resolve_spec_path
+- **Result**: Round 1 code fixes for 15 scored threads; 3 host-adapter threads closed without rewrite
+
+### [2026-08-28 14:38] Agent: Antigravity AI (Gemini 3.7 Flash)
+- **Prompt**: bump again, commit and push, then start next shipping version - get next spec to implement (/ws-spec-to-pr)
+- **Done**: Bumped package to `0.3.50`; synchronized version across all 49 SKILL.md frontmatters, test/package.json, AGENTS.md, FEATURES.md, and docs/index.html; updated index.PRD with completed harness-spec-benchmark (0041); regenerated integrity checksums.
+- **Result**: Release `0.3.50` prepared, verified, and committed.
+
+### [2026-08-28 14:25] Agent: Antigravity AI (Gemini 3.7 Flash)
+- **Prompt**: bump version, update website, features, catalog, readme, agents, dependencies, checksum, then commit everything
+- **Done**: Bumped package to `0.3.49`; added host detection matrix & subagent dispatch adapter (`host-dispatch.md`) supporting Antigravity IDE, Cursor, OpenCode, Claude Code, and Codex; integrated sparse Context Pointers protocol (Matt Pocock pattern / Issue #998); added `defaults.hostAdapter` configuration; added `ws-run-benchmark` skill & live test suites; regenerated skill integrity checksums; rebuilt site catalog.
+- **Result**: Release `0.3.49` prepared and verified with 100% test integrity.
+
+- **Prompt**: Create skill run-benchmark to automate prepare → orch → collect → snapshot
+- **Done**: Extra skill `ws-run-benchmark` with `context.cjs`, orch dispatch notes, Extra package registration, tests
+- **Result**: `/ws-run-benchmark --fixture fx-node-helper` runs live flow from the package root
+
+
+### [2026-08-28 08:40] Agent: Cursor Grok 4.6
+- **Prompt**: Create a mid-to-high use case as the frozen benchmark corpus; record scores per version; compare versions in a table
+- **Done**: Added `fx-config-merge` (10 ACs, standard orch) plus `table` CLI; live collect now records `wallSec`
+- **Result**: Same fixture, new package version → snapshot → `table --fixture fx-config-merge --mode live`
+
+
 ### [2026-08-28 02:20] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` PR 255 round 1
 - **Done**: Empty cursor/default steps 2–5 for lite fallthrough; retarget autoload/CATALOG runtime keywords to `ws-memo`; MEMORY trap
@@ -9,7 +40,7 @@
 ### [2026-08-28 02:05] Agent: Composer
 - **Prompt**: Fix GH #252/#253, bump version, commit, push, ship-pr, goal-fix-pr
 - **Done**: Seed `modelsPreset: cursor` with full `default`+`cursor` step maps; `ws-spec-memo` invocation `spec-memo-setup` + MCP template key `spec-memo`; package 0.3.48
-- **Result**: Pending ship-pr / goal-fix-pr
+- **Result**: PR https://github.com/jpolvora/workflow-skills/pull/255 merged; goal-fix-pr converged (0 active threads)
 
 
 ### [2026-08-28 01:50] Agent: Cursor Grok 4.6

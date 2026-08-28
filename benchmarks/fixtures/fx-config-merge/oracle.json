@@ -1,0 +1,29 @@
+{
+  "size": "large",
+  "orch": "standard",
+  "slug": "config-merge",
+  "acIds": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7", "AC8", "AC9", "AC10"],
+  "expectedOutputPaths": [
+    "bin/merge-config.cjs",
+    "lib/merge.cjs",
+    "test/merge-config.test.cjs",
+    "README.md"
+  ],
+  "expectedTestNames": [
+    "merge-overlay-wins",
+    "merge-nested-objects",
+    "merge-array-replace",
+    "merge-missing-required",
+    "merge-invalid-json"
+  ],
+  "sensorPaths": ["lib/merge.cjs"],
+  "sensorTestCommand": "node --test test/merge-config.test.cjs",
+  "testFile": "test/merge-config.test.cjs",
+  "maxHarnessBytes": 1500000,
+  "maxWallSec": 2700,
+  "minVerifyScore": 9,
+  "failIf": [
+    { "dimension": "completeness", "min": 8 },
+    { "dimension": "verifyScore", "min": 9 }
+  ]
+}

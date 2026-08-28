@@ -907,7 +907,7 @@ Non-interactive uninstall:
 Interactive package shortcuts:
   f  Full package (all installable skills + ws-shared/ hub)
   w  Workflows package (orchestrators + pipeline deps + hub)
-  e  Extra package (ws-write-a-skill, ws-show-harness, ws-preview)
+  e  Extra package (ws-write-a-skill, ws-show-harness, ws-preview, ws-run-benchmark)
   a  Select/deselect all
   #  Toggle individual skill (also selects transitive dependencies)
   y  Install selected skills

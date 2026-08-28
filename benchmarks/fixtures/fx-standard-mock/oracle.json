@@ -1,0 +1,12 @@
+{
+  "size": "large",
+  "orch": "standard",
+  "slug": "standard-mock",
+  "acIds": ["AC1", "AC2", "AC3"],
+  "expectedOutputPaths": ["lib/mock.cjs", "test/mock-value-behavior.test.cjs"],
+  "expectedTestNames": ["mock-value-behavior", "mock-export-missing"],
+  "maxHarnessBytes": 1500000,
+  "maxWallSec": 3600,
+  "minVerifyScore": 9,
+  "failIf": []
+}

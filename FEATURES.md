@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.48** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.50** · 50 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -134,6 +134,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
+| Resolve spec-of-record path and optionally prefix `{specsDir}` files with chronological `NNNN-` when `plans.enforceSpecPrefixOrdering` is true (default false) | `ws-spec-organizer` |
 | Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
 | Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-interview` / `ws-implement-tasks` / `ws-verify-plan` |
@@ -220,7 +221,7 @@ Everything project-specific lives in one consumer-owned, gitignored file: `.agen
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
 | `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, and legacy per-phase model identifiers |
-| `plans` / `reviews` / `preview` | Artifact roots, diagnostics root, and dry-run backend |
+| `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and dry-run backend |
 | `rules` | Guardrail paths: harness, senior developer, karpathy, stack file, changelog file |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
@@ -238,7 +239,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (42 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`, `ws-run-benchmark`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -258,7 +259,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-28).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
-| **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName` |
+| **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName`; Extra `ws-run-benchmark` automates live prepare → orch → collect → snapshot |
 | **0.3.47** | Aug 28 | **Docs/site:** LLM-agnostic From Spec to Delivery hero and CTAs; honest remaining-todo roadmap; DoR/TDD and spec-memo dual routing on FEATURES, README, and the public site |
 | **0.3.46** | Aug 27 | **Spec DoR + TDD:** authoring-mode `Definition of Ready` / Validation Notes, interview failing-test audit, implement-tasks red-then-green, verify-plan negative-test coverage |
 | **0.3.45** | Aug 27 | **Research-driven pipeline quality:** JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `defaults.providerCompat` / `contextHygiene` / `reviewJury`, memory write sanitizer, pipeline handoff harness check |
@@ -295,12 +296,11 @@ These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). Th
 
 | Item | Status | Notes |
 |------|--------|-------|
-| `hermes-spec-to-pr-enhancements` | partial | Core Hermes disciplines already ship (prior-work sweep, design-intent history, class fixes, sabotage, CI triage, close-loop). Remaining plan items are not in this package. |
-| `harness-spec-benchmark` | todo | Upstream harness fixture benchmark + snapshot compare |
+| `harness-spec-benchmark` | done | Upstream harness fixture benchmark + snapshot compare; live runner skill `ws-run-benchmark` |
 | `skill-family-naming` | todo | Regroup packaged skill ids as `ws-{family}-{verb}` |
 | `unique-skill-script-runtime` | todo | Node-only runtime for all packaged helper scripts |
 | `us-235` | todo | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, `.runtime` allowlist |
-| `spec-prefix-ordering` | todo | Optional chronological `NNNN-` spec filename prefixes and `ws-spec-organizer` (not implemented; this repo's prefixed board names are dogfood only) |
+| `spec-prefix-ordering` | done | Optional chronological `NNNN-` spec filename prefixes via `plans.enforceSpecPrefixOrdering` (default false) and `ws-spec-organizer` (`resolve_spec_path.cjs`, `organize_specs.cjs`) |
 | Inbox | idea | Multi-repository orchestrator; CI/CD workflow generator skill |
 
 Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
@@ -309,7 +309,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 
 ## 14. Full skill catalog
 
-48 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+50 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -357,6 +357,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → write-spec + register |
 | [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Configure spec-memo external vault bridge (MCP/CLI) |
+| [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 
 ### Quality and audit
@@ -378,6 +379,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | W | Read-only install and runtime diagnosis |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
+| [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | E | Upstream live/static harness benchmark runner |
 
 ### Memory and conventions
 

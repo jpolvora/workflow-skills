@@ -89,7 +89,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [~] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: 0035-hermes-spec-to-pr-enhancements.spec.md`)
 - [x] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: 0028-audit-performance-correctness-and-reusable-scripts.spec.md`)
 - [x] `ws-fix-pr` proactive same-category discovery before resolve (`spec: 0038-fix-pr-proactive-class-sweep.spec.md`)
-- [ ] Harness spec-run benchmark with snapshot compare (`spec: 0041-harness-spec-benchmark.spec.md`)
+- [x] Harness spec-run benchmark with snapshot compare (`spec: 0041-harness-spec-benchmark.spec.md`)
 - [ ] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: 0037-skill-family-naming.spec.md`)
 - [x] Specify-time closure pack for score-10 spec delivery (`spec: 0040-specify-closure-pack.spec.md`)
 - [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: 0042-unique-skill-script-runtime.spec.md`)
@@ -157,7 +157,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 42 | `hermes-spec-to-pr-enhancements` | `[~]` partial | Phase 4 | Plan/result present; not shipped (no PR). Duplicate sweep, design intent, class fixes, sabotage, CI triage, close-loop |
 | 43 | `audit-performance-correctness-and-reusable-scripts` | `[x]` done | Phase 4 | Runtime audit suggestions for perf/correctness/reusable tooling |
 | 44 | `fix-pr-proactive-class-sweep` | `[x]` done | Phase 4 | Proactive same-defect-class sweep in cooperative fix |
-| 45 | `harness-spec-benchmark` | `[ ]` todo | Phase 4 | Upstream harness fixture benchmark + snapshot compare |
+| 45 | `harness-spec-benchmark` | `[x]` done | Phase 4 | Upstream harness fixture benchmark + snapshot compare |
 | 46 | `skill-family-naming` | `[ ]` todo | Phase 4 | Regroup skill ids as `ws-{family}-{verb}` (spec family first) |
 | 47 | `specify-closure-pack` | `[x]` done | Phase 4 | Specify-time closure pack for score-10 delivery |
 | 48 | `unique-skill-script-runtime` | `[ ]` todo | Phase 4 | Node-only runtime for all packaged helper scripts |
@@ -171,7 +171,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 55 | `spec-dor-tdd-refinement-hardening` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
 | 56 | `spec-prefix-ordering` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional chronological spec filename prefixes and ws-spec-organizer |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`, `us-235`, `spec-prefix-ordering`. Other new work goes to Inbox, then promote.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`, `us-235`, `spec-prefix-ordering`. Other new work goes to Inbox, then promote.
 
 ## 9. Inbox
 
@@ -230,6 +230,7 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchm
 | 2026-08-26 | `configurable-memory-backends` | Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing | Shipped 0.3.42 |
 | 2026-08-27 | `research-driven-pipeline-quality` | Research-driven spec-to-pr pipeline quality and integration | Shipped 0.3.45 |
 | 2026-08-28 | `spec-dor-tdd-refinement-hardening` | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol | [PR #254](https://github.com/jpolvora/workflow-skills/pull/254) |
+| 2026-08-28 | `harness-spec-benchmark` | Harness spec-run benchmark with snapshot compare | Implemented (v0.3.49) |
 
 ## 11. Maintenance checklist
 

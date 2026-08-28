@@ -48,7 +48,7 @@ Use these terms exactly. Do not treat a **plan** as a **spec**.
 | **`step-00-{slug}.spec.md`** | Workflow copy of the spec inside `{us-dir}` after register/provider fetch — **plan artifact**, not a Spec-board row |
 | **`index.PRD`** | Project feature index at `{specsDir}/index.PRD` (phases, next-specs, inbox) — owned by `ws-spec-index` |
 | **Register** | Two-phase promotion via `ws-local-spec-provider`: write/normalize the spec of record `{specsDir}/{slug}.spec.md`, then the workflow copy `{us-dir}/step-00-*.spec.md` |
-| **Spec of record** | The `{specsDir}` copy every entry path produces first — providers never write `step-00` without it |
+| **Spec of record** | The `{specsDir}` copy every entry path produces first (path resolved via `ws-spec-organizer`; `{slug}.spec.md` or `NNNN-{slug}.spec.md` when `plans.enforceSpecPrefixOrdering` is true) — providers never write `step-00` without it |
 | **`{specsDir}/{slug}.context.md`** | Optional spec companion from `ws-write-spec` when a user-facing gray area has ≥2 valid product options (Feature Boundary, Implementation Decisions, Deferred Ideas). Not a `{us-dir}` plan artifact |
 | **Classify** | Recommend `lite` vs `standard` orch (`ws-classify-complexity`) after a workflow spec exists |
 | **Drift sync** | Update existing `*.spec.md` bodies to match code (`ws-sync-spec`) — not the same as `ws-spec-index sync` (index status) |
@@ -56,7 +56,7 @@ Use these terms exactly. Do not treat a **plan** as a **spec**.
 
 ### Path rules (mandatory)
 
-1. Standalone `/write-spec` / brainstorm → write **only** `{specsDir}/{slug}.spec.md`. Never mkdir `{plansDir}/{slug}/` for that ask.
+1. Standalone `/write-spec` / brainstorm → write **only** `{specsDir}/{slug}.spec.md` (or `NNNN-{slug}.spec.md` when `plans.enforceSpecPrefixOrdering` is true via `ws-spec-organizer`). Never mkdir `{plansDir}/{slug}/` for that ask.
 2. Every provider (`local`, `github`, `azure-devops`) writes the spec of record under `{specsDir}` **before** any `{plansDir}` artifact.
 3. Workflow planning and later steps read **`{us-dir}/step-00-{slug}.spec.md`** (after register or tracker fetch).
 4. Spec board (`ws-spec-list --specs`) lists `{specsDir}` only. Plan board lists `{plansDir}` state — never merge the two inventories.
@@ -76,6 +76,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |
 | Init / sync / promote / track `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence; `track` = add existing spec row; does not harvest `{plansDir}` history (`ws-spec-archive`) |
 | Harvest plan-folder facts into `index.PRD` Archive, then propose shipped-plan cleanup | [`ws-spec-archive`](../ws-spec-archive/SKILL.md) | Does not delete untracked scratch (that is `ws-cleanup`); does not rewrite AC bodies |
+| Resolve spec-of-record path or organize/prefix existing specs chronologically | [`ws-spec-organizer`](../ws-spec-organizer/SKILL.md) | Does not reformulate requirements (that is write-spec); does not edit index.PRD status |
 | Spec text drifted from implemented code after prompts | [`ws-sync-spec`](../ws-sync-spec/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
 | Prompt-driven product work (not Spec-to-PR) | [`ws-task-lifecycle`](../ws-task-lifecycle/SKILL.md) | Does not mkdir `{plansDir}` or write `step-00`; does not invoke spec-to-pr / lite |
 | Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
@@ -96,6 +97,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | list specs, list plans, dual board, unlinked specs, manage workflows | `ws-spec-list` |
 | index.PRD, promote inbox, sync index status, init PRD, track spec | `ws-spec-index` |
 | archive plans, archive index.PRD, harvest plan history | `ws-spec-archive` |
+| resolve spec path, organize specs, prefix specs NNNN, spec-organizer, enforceSpecPrefixOrdering | `ws-spec-organizer` |
 | sync spec to code, spec drift, update AC after code change | `ws-sync-spec` |
 | prompt-driven task, task lifecycle, cowork without spec-to-pr | `ws-task-lifecycle` |
 | spec to pr, full pipeline, standard orch | `ws-spec-to-pr` |

@@ -54,3 +54,6 @@ check-workflows-report.md
 # them from the npm tarball. Skill bodies under .agents/skills/ws-* are tracked SoT.
 .tmp-ws-cleanup-approved.json
 .tmp-*/
+
+# Harness benchmark full run reports (upstream maintainer only)
+benchmarks/runs/

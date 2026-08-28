@@ -168,6 +168,12 @@
       "backoff": 1.5,
       "maxIterations": 20
     },
+    "hostAdapter": {
+      "mode": "auto",
+      "cliTemplate": "",
+      "browserTool": "browser-mcp"
+    },
+    "_comment_hostAdapter": "Optional. Skills call portable dispatch-agent / browser-mcp. mode auto|native-tool|cli-command|inline-isolated or a named host mapping from host-dispatch.md.",
     "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
     "deliveryCommitArtifacts": {
       "includeRefinedPlan": true,
@@ -327,7 +333,9 @@
     "specsDir": ".agents/specs",
     "diagnosticsDir": ".agents/plans/diagnostics",
     "worktreesDir": ".agents/plans/{slug}/worktrees",
-    "useWorktrees": false
+    "useWorktrees": false,
+    "_comment_enforceSpecPrefixOrdering": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md under {specsDir}. Omitted, non-boolean, or missing config safely resolves to false.",
+    "enforceSpecPrefixOrdering": false
   },
 
   "reviews": {

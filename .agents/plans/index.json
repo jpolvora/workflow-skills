@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 24,
-  "generatedAt": "2026-08-28T04:34:01Z",
+  "revision": 16,
+  "generatedAt": "2026-08-28T12:25:21Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -114,6 +114,17 @@
       "runPath": ".agents/plans/fix-pr-batch-plan-exec/run.json"
     },
     {
+      "workflowId": "harness-spec-benchmark-20260828T113716Z",
+      "slug": "harness-spec-benchmark",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/harness-spec-benchmark/harness-spec-benchmark-20260828T113716Z.state.md",
+      "stateSha256": "6136929a320a245cec71a648b199797be9b359dfcd7c484e52fc21ef3653e8be",
+      "status": "active",
+      "currentStep": 9,
+      "updatedAt": "2026-08-28T12:25:21Z",
+      "runPath": ".agents/plans/harness-spec-benchmark/run.json"
+    },
+    {
       "workflowId": "interview-project-context-auto-answer-20260808T034812Z",
       "slug": "interview-project-context-auto-answer",
       "pipeline": "lite",
@@ -200,51 +211,6 @@
       "currentStep": 8,
       "updatedAt": "2026-08-28T04:34:01Z",
       "runPath": ".agents/plans/testing-executor-model/run.json"
-    },
-    {
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T191636Z.state.md",
-      "stateSha256": "8c996d503a63fd115ff8de0a12478f12b4acfe7a50cc9389fcb965a858580864",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-28T04:34:01Z",
-      "runPath": ".agents/plans/ws-multi-spec/run.json"
-    },
-    {
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T204614Z.state.md",
-      "stateSha256": "fd5ac96efdea7646792ba05c72a78f59eaa441c34bf19fa042662fd61dad2dfb",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-28T04:34:01Z",
-      "runPath": ".agents/plans/ws-multi-spec/run.json"
-    },
-    {
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260815T171347Z.state.md",
-      "stateSha256": "335b36e5c5ae3dfc7af26664b8bfc7d2df8f6269d14b3edb163c8fde1e18417a",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-28T04:34:01Z",
-      "runPath": ".agents/plans/ws-multi-spec/run.json"
-    },
-    {
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260822T204000Z.state.md",
-      "stateSha256": "cf3437a6a688799461c9c02caf0d0c49e24607697bdc598685d895145be2a9e8",
-      "status": "implemented",
-      "currentStep": 0,
-      "updatedAt": "2026-08-28T04:34:01Z",
-      "runPath": ".agents/plans/ws-multi-spec/run.json"
-    },
-    {
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260823T151035Z.state.md",
-      "stateSha256": "23d18a3c58a17ba8dc458e21f424c880fe5e5e7da2e8cd8c1c07c2128fed3f5f",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-28T04:34:01Z",
-      "runPath": ".agents/plans/ws-multi-spec/run.json"
     },
     {
       "workflowId": "us-101",

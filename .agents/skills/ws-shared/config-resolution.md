@@ -126,3 +126,14 @@ Optional setting in `defaults.verboseMode` for `ws-spec-to-pr` / `ws-spec-to-pr-
 | Explicit `false` | `false` | Silent. |
 | Explicit `true` | `true` | The model that will execute step N **analyzes this run** (dispatch/action, state, on-disk artifacts, skip rules, config) and prints `Starting step N (Label):` plus 4–8 `*` bullets before any tool call. Standard `dispatch-agent` steps: that subagent prints first. Orch-owned / lite inline steps: the orchestrator model prints. Do not ship or copy canned preview text. |
 
+---
+
+## Host environment detection & subagent dispatch resolution (`defaults.hostAdapter`)
+
+Optional setting in `defaults.hostAdapter` for multi-IDE and multi-agent subagent execution. See [`host-dispatch.md`](host-dispatch.md).
+
+1. **Auto-detection (default):** Detects Antigravity / Gemini IDE, Cursor, OpenCode, Claude Code, or Codex from host tools and environment.
+2. **Explicit override:** Set `defaults.hostAdapter.mode` (`"auto"`, `"native-tool"`, `"cli-command"`, `"inline-isolated"`, `"antigravity"`, `"cursor"`, `"opencode"`, `"claude"`).
+3. **Sparse context pointers:** Dispatches pass pointers to artifacts (`step-00-*.spec.md`, `plan.index.json`, `ac-ledger.json`, `handoff/step-*.json`) instead of full transcripts.
+
+

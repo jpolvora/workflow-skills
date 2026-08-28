@@ -44,7 +44,7 @@
 
 ### Roadmap
 
-Work that is **not** in the current package: remaining Hermes plan items, harness spec-run benchmark, skill-family renaming, unique Node script runtime, Step 5–6 deadlock (`us-235`), optional spec filename prefixes, plus inbox ideas (multi-repo orchestrator, CI/CD generator). Full table: [`FEATURES.md`](FEATURES.md) § Roadmap. Site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
+Work that is **not** in the current package: harness spec-run benchmark, skill-family renaming, unique Node script runtime, Step 5–6 deadlock (`us-235`), optional spec filename prefixes, plus inbox ideas (multi-repo orchestrator, CI/CD generator). Full table: [`FEATURES.md`](FEATURES.md) § Roadmap. Site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
 
 ---
 
@@ -225,6 +225,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 | [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Pipeline review dry-run via external reviewer (Extra) |
+| [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | Live/static harness benchmark runner (Extra, upstream package root) |
 
 ### Pipeline & providers
 

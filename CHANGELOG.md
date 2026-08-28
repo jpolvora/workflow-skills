@@ -1,6 +1,15 @@
 # Changelog
 
-### [2026-08-21 10:55] Agent: Cursor Grok 4.6
+### [2026-08-28 14:38] Agent: Antigravity AI (Gemini 3.7 Flash)
+- **Prompt**: bump again, commit and push, then start next shipping version - get next spec to implement (/ws-spec-to-pr)
+- **Done**: Bumped package to `0.3.50`; synchronized version across all 49 SKILL.md frontmatters, test/package.json, AGENTS.md, FEATURES.md, and docs/index.html; updated index.PRD with completed harness-spec-benchmark (0041); regenerated integrity checksums.
+- **Result**: Release `0.3.50` prepared, verified, and committed.
+
+### [2026-08-28 14:25] Agent: Antigravity AI (Gemini 3.7 Flash)
+- **Prompt**: bump version, update website, features, catalog, readme, agents, dependencies, checksum, then commit everything
+- **Done**: Bumped package to `0.3.49`; added host detection matrix & subagent dispatch adapter (`host-dispatch.md`) supporting Antigravity IDE, Cursor, OpenCode, Claude Code, and Codex; integrated sparse Context Pointers protocol (Matt Pocock pattern / Issue #998); added `defaults.hostAdapter` configuration; added `ws-run-benchmark` skill & live test suites; regenerated skill integrity checksums; rebuilt site catalog.
+- **Result**: Release `0.3.49` prepared and verified with 100% test integrity.
+
 - **Prompt**: update improving website info, syncing skills features and simplifying and enhancing the marketing ideas describing better, commit again
 - **Done**: Site hero, Features grid, workflow/package/FAQ copy. SKILL.md descriptions for orch + verify + SCM providers; catalog rebuild. README Features table in "you get" language.
 - **Result**: Marketing matches verify ≥ 9 and GitHub/Azure parity. Ready to commit.

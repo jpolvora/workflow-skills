@@ -1,0 +1,17 @@
+{
+  "defaults": {
+    "dryRun": true,
+    "autoMode": true,
+    "minVerifyScore": 9
+  },
+  "plans": {
+    "dir": ".agents/plans",
+    "specsDir": ".agents/specs"
+  },
+  "verification": {
+    "backendTest": "npm test"
+  },
+  "fable": {
+    "auditVerdictsBlockShip": "refuted"
+  }
+}

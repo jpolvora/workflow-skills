@@ -1,0 +1,12 @@
+{
+  "size": "small",
+  "orch": "lite",
+  "slug": "lite-readme",
+  "acIds": ["AC1"],
+  "expectedOutputPaths": ["README.md"],
+  "expectedTestNames": [],
+  "maxHarnessBytes": 1200000,
+  "maxWallSec": 600,
+  "minVerifyScore": 9,
+  "failIf": []
+}

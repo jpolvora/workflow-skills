@@ -65,15 +65,21 @@ function normalize(text, slug, source) {
   return `---\n${fm}\n---\n\n${body.replace(/^\s+/, '')}`;
 }
 
-function findSpecFile(specsDir, slug) {
-  const exact = path.join(specsDir, `${slug}.spec.md`);
-  if (fs.existsSync(exact)) return exact;
-  if (!fs.existsSync(specsDir)) return null;
-  const re = new RegExp(
-    '^\\d{4}-' + slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.spec\\.md$',
-  );
-  const hit = fs.readdirSync(specsDir).find((name) => re.test(name));
-  return hit ? path.join(specsDir, hit) : null;
+function resolveNewSpecDestination(context, specsDir, slug) {
+  const enforce = context.config?.plans?.enforceSpecPrefixOrdering === true;
+  let resolveSpecPath;
+  try {
+    ({ resolveSpecPath } = require('../../ws-spec-organizer/scripts/resolve_spec_path.cjs'));
+  } catch {
+    if (enforce) {
+      throw new Error(
+        'ws-spec-organizer is required when plans.enforceSpecPrefixOrdering is true (missing resolve_spec_path.cjs)'
+      );
+    }
+    return path.join(specsDir, `${slug}.spec.md`);
+  }
+  const resolved = resolveSpecPath({ slug, repoRoot: context.repoRoot });
+  return path.resolve(context.repoRoot, resolved.specPath);
 }
 
 function resolveInput(raw, root, specsDir) {
@@ -124,7 +130,7 @@ function main() {
   const slug = args.slug || inferSlug(input, raw);
   const content = normalize(raw, slug, args.source);
   const inSpecs = path.relative(specsDir, input) === '' || !path.relative(specsDir, input).startsWith('..');
-  const specPath = inSpecs ? input : (findSpecFile(specsDir, slug) || path.join(specsDir, `${slug}.spec.md`));
+  const specPath = inSpecs ? input : resolveNewSpecDestination(context, specsDir, slug);
   const workflowPath = path.join(plansDir, slug, `step-00-${slug}.spec.md`);
   const usDir = path.dirname(workflowPath);
   const now = new Date().toISOString();

@@ -1,0 +1,5 @@
+--- a/lib/merge.cjs
++++ b/lib/merge.cjs
+@@
+-      result[key] = overlay[key];
++      result[key] = base[key];

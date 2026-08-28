@@ -48,6 +48,7 @@ Present only after Extra or Full install. If a path is missing, treat as intenti
 | `ws-write-a-skill` | [`../ws-write-a-skill/SKILL.md`](../ws-write-a-skill/SKILL.md) |
 | `ws-show-harness` | [`../ws-show-harness/SKILL.md`](../ws-show-harness/SKILL.md) |
 | `ws-preview` | [`../ws-preview/SKILL.md`](../ws-preview/SKILL.md) |
+| `ws-run-benchmark` | [`../ws-run-benchmark/SKILL.md`](../ws-run-benchmark/SKILL.md) |
 | `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-fable-domain` | [`../ws-fable-domain/SKILL.md`](../ws-fable-domain/SKILL.md) |
 | `ws-update-plan-implementation` | [`../ws-update-plan-implementation/SKILL.md`](../ws-update-plan-implementation/SKILL.md) |
@@ -76,6 +77,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
+| Resolve spec path / organize board specs | `ws-spec-organizer` |
 | spec-memo / external vault setup/bridge | `ws-spec-memo` |
 | Runtime spec-memo vault ops | `ws-memo` |
 | Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
@@ -98,6 +100,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Create / rewrite a skill | `ws-write-a-skill` (Extra) |
 | Show active harness | `ws-show-harness` (Extra) |
 | Pipeline review / preview CI review | `ws-preview` (Extra) |
+| Live / static harness benchmark (upstream package root) | `ws-run-benchmark` (Extra) |
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
 

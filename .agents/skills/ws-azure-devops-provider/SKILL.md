@@ -1,7 +1,7 @@
 ---
 name: ws-azure-devops-provider
 description: Azure DevOps work-item→spec and PR ops. Same required intents as GitHub (scm-provider-contract). Trigger when providers.scm is azure-devops.
-version: 0.3.48
+version: 0.3.50
 disable-model-invocation: true
 invocation_names:
   - azure-devops-provider
@@ -61,7 +61,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 | `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.py` → WIT Comments `api-version=7.1-preview.4` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
-**Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced `{specsDir}/{slug}.spec.md` first (via `ws-write-spec` derived from the fetched work item), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.cjs --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
+**Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced spec of record first (via `ws-write-spec` / `resolve_spec_path.cjs`), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md) `register_local_spec.cjs --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
 
 **Branch rule:** never delete `project.workingBranch` (default `develop`) after merge.
 
@@ -96,5 +96,5 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 ## Done when
 
 - Intent from the contract table completed with cited CLI/script exit 0 (or dry-run simulation recorded).
-- `fetch-to-spec`: `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** `{us-dir}/step-00-{slug}.spec.md` was registered with `source: azure-devops`.
+- `fetch-to-spec`: spec of record exists at the `resolve_spec_path.cjs` path (enhanced via `ws-write-spec`) **and** `{us-dir}/step-00-{slug}.spec.md` was registered with `source: azure-devops`.
 - Auth/config failures STOP (no silent fallback).

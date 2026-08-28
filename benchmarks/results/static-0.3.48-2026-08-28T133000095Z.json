@@ -1,0 +1,262 @@
+{
+  "runId": "static-2026-08-28T133000095Z",
+  "packageVersion": "0.3.48",
+  "gitSha": "03365356aeab0fb05048e2eaef1b51120e816f58",
+  "mode": "static",
+  "timestamp": "2026-08-28T13:30:00.200Z",
+  "fixtureCount": 5,
+  "allPass": true,
+  "aggregateIndex": 94,
+  "fixtures": [
+    {
+      "fixtureId": "fx-config-merge",
+      "runDir": "static-2026-08-28T133000095Z-fx-config-merge",
+      "verdict": "PASS",
+      "index": 100,
+      "dimensions": {
+        "completeness": 10,
+        "verifyScore": null,
+        "judge": null,
+        "discrimination": null,
+        "efficiency": 10,
+        "time": null,
+        "honesty": null
+      },
+      "sensor": {
+        "required": false,
+        "injected": 0,
+        "killed": 0,
+        "porcelainOk": true,
+        "verdict": "SKIP"
+      },
+      "perAc": [
+        {
+          "id": "AC1",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC2",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC3",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC4",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC5",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC6",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC7",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC8",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC9",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC10",
+          "score": 10,
+          "evidence": "spec AC present"
+        }
+      ],
+      "meta": {
+        "packageVersion": "0.3.48",
+        "gitSha": "03365356aeab0fb05048e2eaef1b51120e816f58",
+        "fixtureId": "fx-config-merge",
+        "mode": "static",
+        "orch": "standard",
+        "dryRun": true,
+        "timestamp": "2026-08-28T13:30:00.200Z"
+      }
+    },
+    {
+      "fixtureId": "fx-incomplete",
+      "runDir": "static-2026-08-28T133000095Z-fx-incomplete",
+      "verdict": "PASS",
+      "index": 71,
+      "dimensions": {
+        "completeness": 5,
+        "verifyScore": null,
+        "judge": null,
+        "discrimination": null,
+        "efficiency": 10,
+        "time": null,
+        "honesty": null
+      },
+      "sensor": {
+        "required": false,
+        "injected": 0,
+        "killed": 0,
+        "porcelainOk": true,
+        "verdict": "SKIP"
+      },
+      "perAc": [
+        {
+          "id": "AC1",
+          "score": 10,
+          "evidence": "spec AC present"
+        }
+      ],
+      "meta": {
+        "packageVersion": "0.3.48",
+        "gitSha": "03365356aeab0fb05048e2eaef1b51120e816f58",
+        "fixtureId": "fx-incomplete",
+        "mode": "static",
+        "orch": "lite",
+        "dryRun": true,
+        "timestamp": "2026-08-28T13:30:00.336Z"
+      }
+    },
+    {
+      "fixtureId": "fx-lite-readme",
+      "runDir": "static-2026-08-28T133000095Z-fx-lite-readme",
+      "verdict": "PASS",
+      "index": 100,
+      "dimensions": {
+        "completeness": 10,
+        "verifyScore": null,
+        "judge": null,
+        "discrimination": null,
+        "efficiency": 10,
+        "time": null,
+        "honesty": null
+      },
+      "sensor": {
+        "required": false,
+        "injected": 0,
+        "killed": 0,
+        "porcelainOk": true,
+        "verdict": "SKIP"
+      },
+      "perAc": [
+        {
+          "id": "AC1",
+          "score": 10,
+          "evidence": "spec AC present"
+        }
+      ],
+      "meta": {
+        "packageVersion": "0.3.48",
+        "gitSha": "03365356aeab0fb05048e2eaef1b51120e816f58",
+        "fixtureId": "fx-lite-readme",
+        "mode": "static",
+        "orch": "lite",
+        "dryRun": true,
+        "timestamp": "2026-08-28T13:30:00.476Z"
+      }
+    },
+    {
+      "fixtureId": "fx-node-helper",
+      "runDir": "static-2026-08-28T133000095Z-fx-node-helper",
+      "verdict": "PASS",
+      "index": 100,
+      "dimensions": {
+        "completeness": 10,
+        "verifyScore": null,
+        "judge": null,
+        "discrimination": null,
+        "efficiency": 10,
+        "time": null,
+        "honesty": null
+      },
+      "sensor": {
+        "required": false,
+        "injected": 0,
+        "killed": 0,
+        "porcelainOk": true,
+        "verdict": "SKIP"
+      },
+      "perAc": [
+        {
+          "id": "AC1",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC2",
+          "score": 10,
+          "evidence": "spec AC present"
+        }
+      ],
+      "meta": {
+        "packageVersion": "0.3.48",
+        "gitSha": "03365356aeab0fb05048e2eaef1b51120e816f58",
+        "fixtureId": "fx-node-helper",
+        "mode": "static",
+        "orch": "lite",
+        "dryRun": true,
+        "timestamp": "2026-08-28T13:30:00.617Z"
+      }
+    },
+    {
+      "fixtureId": "fx-standard-mock",
+      "runDir": "static-2026-08-28T133000095Z-fx-standard-mock",
+      "verdict": "PASS",
+      "index": 100,
+      "dimensions": {
+        "completeness": 10,
+        "verifyScore": null,
+        "judge": null,
+        "discrimination": null,
+        "efficiency": 10,
+        "time": null,
+        "honesty": null
+      },
+      "sensor": {
+        "required": false,
+        "injected": 0,
+        "killed": 0,
+        "porcelainOk": true,
+        "verdict": "SKIP"
+      },
+      "perAc": [
+        {
+          "id": "AC1",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC2",
+          "score": 10,
+          "evidence": "spec AC present"
+        },
+        {
+          "id": "AC3",
+          "score": 10,
+          "evidence": "spec AC present"
+        }
+      ],
+      "meta": {
+        "packageVersion": "0.3.48",
+        "gitSha": "03365356aeab0fb05048e2eaef1b51120e816f58",
+        "fixtureId": "fx-standard-mock",
+        "mode": "static",
+        "orch": "standard",
+        "dryRun": true,
+        "timestamp": "2026-08-28T13:30:00.761Z"
+      }
+    }
+  ]
+}

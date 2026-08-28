@@ -167,10 +167,39 @@ function link(options, context) {
   if (!options.ledger || !options.eventId) throw new Error('link requires --ledger and --event-id');
   const acIds = options.ac || [];
   const nsIds = options.negative || [];
-  if (!acIds.length && !nsIds.length) throw new Error('link requires at least one --ac or --negative');
+  if (!acIds.length && !nsIds.length && !options.aliasResult && !options.testSurfaceSkip && !options.gap && !options.planIndex) {
+    throw new Error('link requires at least one --ac, --negative, --alias-result, --test-surface-skip, --gap, or --plan-index');
+  }
   const file = path.resolve(context.repoRoot, options.ledger);
   const ledger = readJson(file);
   ledger.negativeScenarios ||= [];
+  if (options.planIndex) {
+    const planIndex = readJson(path.resolve(context.repoRoot, options.planIndex));
+    ledger.planIndexPath = toRepoRelative(context.repoRoot, path.resolve(context.repoRoot, options.planIndex));
+    for (const row of ledger.acceptanceCriteria || []) {
+      const mapping = planIndex?.acceptanceCriteria?.find((item) => item.id === row.id);
+      if (mapping) {
+        if (mapping.taskIds && mapping.taskIds.length) {
+          row.tasks = [...new Set([...(row.tasks || []), ...mapping.taskIds])].sort();
+        }
+        if (mapping.planSectionIds && mapping.planSectionIds.length) {
+          row.planSections = [...new Set([...(row.planSections || []), ...mapping.planSectionIds])].sort();
+        }
+        for (const name of mapping.expectedTestNames || []) {
+          if (!row.tests.some((t) => t.name === name)) {
+            row.tests.push({
+              name,
+              sourceFile: null,
+              phase: 'planned',
+              alias: null,
+              exitCode: null,
+              timestamp: null,
+            });
+          }
+        }
+      }
+    }
+  }
   const eventAlreadyApplied = ledger.acceptanceCriteria.some((row) => row.linkEventIds.includes(options.eventId))
     || ledger.negativeScenarios.some((row) => row.linkEventIds.includes(options.eventId));
   if (eventAlreadyApplied) return ledger;
@@ -362,16 +391,52 @@ function report(options, context) {
   return score;
 }
 
+function syncPlanIndex(options, context) {
+  if (!options.ledger || !options.planIndex) throw new Error('sync-plan-index requires --ledger and --plan-index');
+  const file = path.resolve(context.repoRoot, options.ledger);
+  const ledger = readJson(file);
+  const planIndex = readJson(path.resolve(context.repoRoot, options.planIndex));
+  ledger.planIndexPath = toRepoRelative(context.repoRoot, path.resolve(context.repoRoot, options.planIndex));
+  for (const row of ledger.acceptanceCriteria || []) {
+    const mapping = planIndex?.acceptanceCriteria?.find((item) => item.id === row.id);
+    if (mapping) {
+      if (mapping.taskIds && mapping.taskIds.length) {
+        row.tasks = [...new Set([...(row.tasks || []), ...mapping.taskIds])].sort();
+      }
+      if (mapping.planSectionIds && mapping.planSectionIds.length) {
+        row.planSections = [...new Set([...(row.planSections || []), ...mapping.planSectionIds])].sort();
+      }
+      for (const name of mapping.expectedTestNames || []) {
+        if (!row.tests.some((t) => t.name === name)) {
+          row.tests.push({
+            name,
+            sourceFile: null,
+            phase: 'planned',
+            alias: null,
+            exitCode: null,
+            timestamp: null,
+          });
+        }
+      }
+    }
+  }
+  ledger.revision += 1;
+  ledger.scoreState = null;
+  writeJson(file, ledger);
+  return ledger;
+}
+
 function main() {
   const { command, options } = parseArgs(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   let result;
   if (command === 'init') result = init(options, context);
   else if (command === 'link') result = link(options, context);
+  else if (command === 'sync-plan-index') result = syncPlanIndex(options, context);
   else if (command === 'verify') result = verify(options, context, false);
   else if (command === 'score') result = verify(options, context, true);
   else if (command === 'report') result = report(options, context);
-  else throw new Error('command must be init, link, verify, score, or report');
+  else throw new Error('command must be init, link, sync-plan-index, verify, score, or report');
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (command === 'verify' && result.errors.length) process.exitCode = 1;
 }

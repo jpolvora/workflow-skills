@@ -1,6 +1,6 @@
 ---
 name: ws-spec-memo
-version: 0.3.48
+version: 0.3.50
 disable-model-invocation: true
 description: >-
   Setup/bridge only: enable or disable the external vault in config.json, import/migrate

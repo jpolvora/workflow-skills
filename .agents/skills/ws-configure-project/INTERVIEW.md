@@ -49,7 +49,15 @@ Scan consumer **repo root** (not this skill package alone):
 
 1. `project` (name, org, repoUrl, baseBranch, workingBranch)
 2. `providers` + matching `issueTrackers` slice
-3. `plans.dir` / `plans.specsDir` / optional `reviews.dir`
+3. `plans.dir` / `plans.specsDir` / optional `reviews.dir` + **Spec prefix ordering** (`plans.enforceSpecPrefixOrdering`).
+
+   **Spec prefix ordering** (subsection of `plans` / `--section plans`; writes `plans.enforceSpecPrefixOrdering`):
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Enforce chronological NNNN- spec filename prefixes? | `plans.enforceSpecPrefixOrdering` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+
+   Write semantics: explicit JSON boolean `true` enables `NNNN-{slug}.spec.md` with a 4-digit zero-padded prefix for new spec-of-record writes and organizer; omitted, `false`, non-boolean, or missing config safely resolves to `false` (default `{slug}.spec.md`).
 4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
