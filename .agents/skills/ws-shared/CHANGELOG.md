@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-28 00:35] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-write-spec` optional spec filename prefixes + ws-spec-organizer
+- **Done**: Authored `spec-prefix-ordering.spec.md` + context companion; authoring validate PASS (22 ACs)
+- **Result**: Spec of record at `.agents/specs/spec-prefix-ordering.spec.md`; not registered to a plan dir
+
+
 ### [2026-08-28 00:25] Agent: Cursor Grok 4.6
 - **Prompt**: Prefix `.agents/specs` board specs with four-digit chronological order
 - **Done**: Renamed 52 `*.spec.md` (plus 4 `.context.md`) to `NNNN-{name}`; updated `index.PRD`; slug lookup accepts prefixed filenames
