@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-28 01:48] Agent: Cursor Grok 4.6
+- **Prompt**: bump version, commit, push
+- **Done**: Patch bump 0.3.46 → 0.3.47 via `build-site:bump`; FEATURES/AGENTS/test package stamp; integrity regen
+- **Result**: `verify-integrity` + `test-doc-sync` + `test-skill-frontmatter` exit 0
+
+
 ### [2026-08-28 01:40] Agent: Cursor Grok 4.6
 - **Prompt**: Docs refresh: shipped 0.3.46 features, honest roadmap, LLM-agnostic hero/CTAs
 - **Done**: Reconciled index.PRD shipped rows; FEATURES DoR/TDD/specMemo + Roadmap; README/AGENTS fact-align; site hero From Spec to Delivery with dual CTAs; test-doc-sync headings
