@@ -36,6 +36,25 @@ for (const key of ['pipeline', 'execMode', 'runInterview', 'runTesting', 'estima
 }
 assert.strictEqual(payload.executionProfile.estimatedElapsedSec.value, 777);
 
+write(path.join(root, '.agents/specs/0051-prefix-only.spec.md'), `
+## Description
+Small change.
+## Acceptance Criteria
+- AC1: One behavior in \`src/a.js\`.
+`);
+const prefixedClassify = run(
+  classifier,
+  ['.agents/specs/0051-prefix-only.spec.md', '--output-dir', 'out-prefixed'],
+  { cwd: root, env: { WS_REPO_ROOT: root } },
+);
+assert.strictEqual(prefixedClassify.status, 0, prefixedClassify.stderr);
+const prefixedPayload = JSON.parse(prefixedClassify.stdout.split('\nWrote ')[0]);
+assert.match(
+  prefixedPayload.classifyPath,
+  /step-00-prefix-only\.classify\.md$/,
+  'inferSlug strips four-digit filename prefix',
+);
+
 write(path.join(root, '.agents/plans/index.json'), JSON.stringify({
   workflows: [{
     workflowId: 'old-wf', slug: 'old-feature', status: 'completed',

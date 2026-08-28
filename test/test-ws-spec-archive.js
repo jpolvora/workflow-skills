@@ -286,6 +286,59 @@ try {
     'tracked plan skipped as tracked-partial',
   );
   assert(fs.existsSync(trackedDir), 'tracked plan dir kept');
+
+  const prefixedTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-spec-archive-prefixed-'));
+  try {
+    git(prefixedTmp, 'init', '-q');
+    git(prefixedTmp, 'config', 'user.email', 'test@example.com');
+    git(prefixedTmp, 'config', 'user.name', 'test');
+    const prefixedPlans = path.join(prefixedTmp, '.agents', 'plans');
+    const prefixedSpecs = path.join(prefixedTmp, '.agents', 'specs');
+    const prefixedShared = path.join(prefixedTmp, '.agents', 'skills', 'ws-shared');
+    fs.mkdirSync(prefixedShared, { recursive: true });
+    fs.mkdirSync(prefixedSpecs, { recursive: true });
+    fs.writeFileSync(
+      path.join(prefixedShared, 'config.json'),
+      JSON.stringify({ plans: { dir: '.agents/plans', specsDir: '.agents/specs' } }, null, 2),
+      'utf8',
+    );
+    const prefixedShipped = path.join(prefixedPlans, 'done-slug');
+    fs.mkdirSync(prefixedShipped, { recursive: true });
+    fs.writeFileSync(
+      path.join(prefixedShipped, 'done-slug-20260101T000000Z.state.md'),
+      [
+        '---',
+        'slug: done-slug',
+        'title: "Shipped feature"',
+        'status: completed',
+        'currentStep: 8',
+        'prNumber: 99',
+        'prUrl: https://example.test/pull/99',
+        'endedAt: "2026-08-01T00:00:00Z"',
+        '---',
+        '',
+      ].join('\n'),
+      'utf8',
+    );
+    fs.writeFileSync(path.join(prefixedSpecs, '0099-done-slug.spec.md'), '# done-slug (prefixed board name)\n', 'utf8');
+    git(prefixedTmp, 'add', '.agents/specs/0099-done-slug.spec.md');
+    git(prefixedTmp, 'commit', '-m', 'prefixed spec-of-record', '-q');
+    const prefixedScan = run('node', [
+      SCAN,
+      '--repo-root', prefixedTmp,
+      '--plans-dir', '.agents/plans',
+      '--specs-dir', '.agents/specs',
+    ], prefixedTmp);
+    assert(prefixedScan.status === 0, 'scan_plans exit 0 with prefixed spec-of-record');
+    const prefixedInv = JSON.parse(prefixedScan.stdout);
+    const prefixedDone = prefixedInv.plans.find((p) => p.slug === 'done-slug');
+    assert(
+      prefixedDone && prefixedDone.specOfRecord === '.agents/specs/0099-done-slug.spec.md',
+      'specOfRecordPath resolves NNNN-{slug}.spec.md when unprefixed file is absent',
+    );
+  } finally {
+    fs.rmSync(prefixedTmp, { recursive: true, force: true });
+  }
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
