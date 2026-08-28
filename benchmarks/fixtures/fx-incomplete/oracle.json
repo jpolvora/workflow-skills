@@ -1,0 +1,15 @@
+{
+  "size": "small",
+  "orch": "lite",
+  "slug": "incomplete",
+  "acIds": ["AC1"],
+  "expectedOutputPaths": [],
+  "expectedTestNames": [],
+  "expectCompletenessMax": 5,
+  "maxHarnessBytes": 1200000,
+  "maxWallSec": 300,
+  "minVerifyScore": 6,
+  "failIf": [
+    { "dimension": "completeness", "min": 6 }
+  ]
+}

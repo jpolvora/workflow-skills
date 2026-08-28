@@ -1,0 +1,16 @@
+{
+  "size": "medium",
+  "orch": "lite",
+  "slug": "node-helper",
+  "acIds": ["AC1", "AC2"],
+  "expectedOutputPaths": ["lib/greet.cjs", "test/helper-greet-behavior.test.cjs"],
+  "expectedTestNames": ["helper-greet-behavior"],
+  "maxHarnessBytes": 1200000,
+  "maxWallSec": 900,
+  "minVerifyScore": 9,
+  "invertPatch": "invert.patch",
+  "sensorPaths": ["lib/greet.cjs"],
+  "sensorTestCommand": "node --test test/helper-greet-behavior.test.cjs",
+  "testFile": "test/helper-greet-behavior.test.cjs",
+  "failIf": []
+}

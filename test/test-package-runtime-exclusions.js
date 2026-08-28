@@ -13,6 +13,8 @@ for (const pattern of [
   /(?:^|\/)__pycache__(?:\/|$)/,
   /\.py[co]$/,
   /\/runs\//,
+  /^scripts\/harness-benchmark\//,
+  /^benchmarks\/runs\//,
   /\/\.runtime\//,
   /\/\.audit-session-[^/]+\.json$/,
   /\/\.finding-step-[^/]+\.json$/,
