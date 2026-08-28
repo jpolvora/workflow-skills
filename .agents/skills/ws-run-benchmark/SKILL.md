@@ -1,6 +1,6 @@
 ---
 name: ws-run-benchmark
-version: 0.3.48
+version: 0.3.49
 description: >-
   Upstream harness benchmark runner (static or live prepare → orch → collect →
   snapshot). Trigger on run-benchmark, live benchmark, prepare then collect,

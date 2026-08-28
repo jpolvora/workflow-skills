@@ -1,6 +1,10 @@
 # Changelog
 
-### [2026-08-28 09:40] Agent: Cursor Grok 4.6
+### [2026-08-28 14:25] Agent: Antigravity AI (Gemini 3.7 Flash)
+- **Prompt**: bump version, update website, features, catalog, readme, agents, dependencies, checksum, then commit everything
+- **Done**: Bumped package to `0.3.49`; added host detection matrix & subagent dispatch adapter (`host-dispatch.md`) supporting Antigravity IDE, Cursor, OpenCode, Claude Code, and Codex; integrated sparse Context Pointers protocol (Matt Pocock pattern / Issue #998); added `defaults.hostAdapter` configuration; added `ws-run-benchmark` skill & live test suites; regenerated skill integrity checksums; rebuilt site catalog.
+- **Result**: Release `0.3.49` prepared and verified with 100% test integrity.
+
 - **Prompt**: Create skill run-benchmark to automate prepare → orch → collect → snapshot
 - **Done**: Extra skill `ws-run-benchmark` with `context.cjs`, orch dispatch notes, Extra package registration, tests
 - **Result**: `/ws-run-benchmark --fixture fx-node-helper` runs live flow from the package root

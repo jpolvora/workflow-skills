@@ -1,12 +1,12 @@
 {
   "meta": {
-    "packageVersion": "0.3.48",
-    "gitSha": "414b5da29a87de813a558c94bdf9b3011df6b378",
+    "packageVersion": "0.3.49",
+    "gitSha": "89d13186cd294bd7986e7d93c424af0fa35b24fd",
     "fixtureId": "fx-lite-readme",
     "mode": "static",
     "orch": "lite",
     "dryRun": true,
-    "timestamp": "2026-08-28T18:10:07.649Z"
+    "timestamp": "2026-08-28T18:28:02.412Z"
   },
   "dimensions": {
     "completeness": 10,
