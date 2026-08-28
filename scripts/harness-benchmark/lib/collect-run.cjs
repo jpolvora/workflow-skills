@@ -76,6 +76,28 @@ function completenessFromLedger(sandboxRoot, ledger, oracle) {
   return { completeness, perAc };
 }
 
+function readWallSec(sandboxRoot, slug) {
+  const plansDir = path.join(sandboxRoot, '.agents/plans', slug);
+  if (!fs.existsSync(plansDir)) return null;
+  for (const file of fs.readdirSync(plansDir)) {
+    if (!file.endsWith('.state.json')) continue;
+    try {
+      const state = JSON.parse(fs.readFileSync(path.join(plansDir, file), 'utf8'));
+      const total = state.telemetry?.totalElapsedSec;
+      if (Number.isFinite(Number(total))) return Number(total);
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
+
+function scoreTime(wallSec, maxWallSec) {
+  if (wallSec == null || maxWallSec == null) return null;
+  if (wallSec <= maxWallSec) return 10;
+  return Math.max(0, Math.min(10, Math.round((10 * maxWallSec) / wallSec)));
+}
+
 function collectRun(options = {}) {
   const paths = resolvePaths(options);
   if (!options.sandbox) throw new Error('collect requires --sandbox <path>');
@@ -109,13 +131,14 @@ function collectRun(options = {}) {
   if (context.config?.defaults?.currentModel) models.currentModel = context.config.defaults.currentModel;
   if (context.config?.defaults?.modelsPreset) models.modelsPreset = context.config.defaults.modelsPreset;
 
+  const wallSec = readWallSec(sandboxRoot, slug);
   const dimensions = {
     completeness,
     verifyScore: verifyResult.score,
     judge: judge.judge,
     discrimination: sensor.discrimination,
     efficiency: null,
-    time: null,
+    time: scoreTime(wallSec, oracle.maxWallSec),
     honesty: judge.honesty,
   };
 
@@ -128,6 +151,7 @@ function collectRun(options = {}) {
       orch: oracle.orch || 'lite',
       dryRun: true,
       timestamp: new Date().toISOString(),
+      wallSec,
       ...(Object.keys(models).length ? { models } : {}),
     },
     dimensions,
@@ -154,4 +178,6 @@ module.exports = {
   verifyScoreFromLedger,
   completenessFromLedger,
   parseMarkdownScore,
+  readWallSec,
+  scoreTime,
 };

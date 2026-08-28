@@ -17,6 +17,7 @@
         "orch": { "type": "string", "enum": ["lite", "standard"] },
         "dryRun": { "type": "boolean" },
         "timestamp": { "type": "string", "minLength": 10 },
+        "wallSec": { "type": ["number", "null"], "minimum": 0 },
         "models": {
           "type": "object",
           "additionalProperties": { "type": "string" }

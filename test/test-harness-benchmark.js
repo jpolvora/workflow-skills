@@ -15,7 +15,7 @@ const validateSpecScript = path.join(repoRoot, '.agents/skills/ws-spec-format/sc
 // V1: CLI help lists subcommands
 const help = run(cli, ['--help']);
 assert.strictEqual(help.status, 0, help.stderr);
-for (const cmd of ['run', 'prepare', 'collect', 'snapshot', 'compare']) {
+for (const cmd of ['run', 'prepare', 'collect', 'snapshot', 'compare', 'table']) {
   assert.match(help.stdout, new RegExp(`\\b${cmd}\\b`), `help lists ${cmd}`);
 }
 
@@ -39,8 +39,8 @@ for (const key of ['meta', 'dimensions', 'index', 'perAc', 'sensor', 'diffRange'
   assert.ok(schema.required.includes(key), `schema requires ${key}`);
 }
 
-// V17: four fixtures
-for (const id of ['fx-lite-readme', 'fx-node-helper', 'fx-incomplete', 'fx-standard-mock']) {
+// V17: fixtures including mid-high fx-config-merge
+for (const id of ['fx-lite-readme', 'fx-node-helper', 'fx-incomplete', 'fx-standard-mock', 'fx-config-merge']) {
   const dir = path.join(repoRoot, 'benchmarks/fixtures', id);
   assert.ok(fs.existsSync(path.join(dir, 'spec.md')), `${id} spec.md`);
   assert.ok(fs.existsSync(path.join(dir, 'oracle.json')), `${id} oracle.json`);
@@ -52,7 +52,7 @@ const incompleteOracle = JSON.parse(fs.readFileSync(path.join(repoRoot, 'benchma
 assert.ok(incompleteOracle.expectCompletenessMax <= 5);
 
 // V19: oracles spec-anchored (no hash bodies)
-for (const id of ['fx-lite-readme', 'fx-node-helper', 'fx-standard-mock']) {
+for (const id of ['fx-lite-readme', 'fx-node-helper', 'fx-standard-mock', 'fx-config-merge']) {
   const oracle = JSON.parse(fs.readFileSync(path.join(repoRoot, `benchmarks/fixtures/${id}/oracle.json`), 'utf8'));
   assert.ok(oracle.expectedOutputPaths?.length, `${id} paths`);
   assert.ok(!JSON.stringify(oracle).match(/sha256|hash/i), `${id} no hashes`);
@@ -257,6 +257,48 @@ assert.strictEqual(sensorResult.verdict, 'PASS', 'sensor kills inverted mutation
 assert.ok(sensorResult.injected > 0, 'sensor injected mutation');
 assert.strictEqual(sensorResult.killed, sensorResult.injected, 'all injections killed');
 fs.rmSync(sensorScratch, { recursive: true, force: true });
+
+// table: version-over-version markdown from baselines
+const tableRoot = temp('hb-table-');
+write(path.join(tableRoot, 'package.json'), JSON.stringify({ version: '0.0.0' }));
+write(path.join(tableRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
+const tableBaseDir = path.join(tableRoot, 'benchmarks/baselines');
+const slim = (version, index, wallSec) => ({
+  meta: {
+    packageVersion: version,
+    gitSha: 'aaaaaaaa',
+    fixtureId: 'fx-config-merge',
+    mode: 'live',
+    orch: 'standard',
+    dryRun: true,
+    timestamp: `2026-08-28T0${version.slice(-1)}:00:00Z`,
+    wallSec,
+  },
+  dimensions: {
+    completeness: 10,
+    verifyScore: 9,
+    judge: 10,
+    discrimination: 10,
+    efficiency: null,
+    time: 8,
+    honesty: 10,
+  },
+  index: { value: index, weights: {
+    completeness: 20, verifyScore: 20, judge: 15, discrimination: 15, efficiency: 15, time: 10, honesty: 5,
+  } },
+  fixtureId: 'fx-config-merge',
+});
+write(path.join(tableBaseDir, '0.3.49-fx-config-merge-live.json'), JSON.stringify(slim('0.3.49', 88, 1900)));
+write(path.join(tableBaseDir, '0.3.48-fx-config-merge-live.json'), JSON.stringify(slim('0.3.48', 82, 2400)));
+const tableRun = run(cli, ['table', '--fixture', 'fx-config-merge', '--mode', 'live', '--repo-root', tableRoot]);
+assert.strictEqual(tableRun.status, 0, tableRun.stderr || tableRun.stdout);
+assert.match(tableRun.stdout, /0\.3\.48/);
+assert.match(tableRun.stdout, /0\.3\.49/);
+const firstVer = tableRun.stdout.indexOf('0.3.48');
+const secondVer = tableRun.stdout.indexOf('0.3.49');
+assert.ok(firstVer >= 0 && firstVer < secondVer, 'table sorts older version first');
+assert.match(tableRun.stdout, /2400/);
+fs.rmSync(tableRoot, { recursive: true, force: true });
 
 // V25: CATALOG documents benchmark commands
 const catalog = fs.readFileSync(path.join(repoRoot, 'CATALOG.md'), 'utf8');

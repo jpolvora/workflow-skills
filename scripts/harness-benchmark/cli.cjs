@@ -6,6 +6,7 @@ const { prepareSandbox } = require('./lib/prepare-sandbox.cjs');
 const { collectRun } = require('./lib/collect-run.cjs');
 const { snapshotRun } = require('./lib/snapshot.cjs');
 const { compareReports } = require('./lib/compare.cjs');
+const { tableReports } = require('./lib/table.cjs');
 
 const HELP = `Harness benchmark CLI (upstream maintainer only)
 
@@ -18,6 +19,7 @@ Commands:
   collect   Collect live run evidence from a sandbox
   snapshot  Promote a run report to a named baseline
   compare   Compare two reports or baselines
+  table     Print a version-over-version score table from baselines
 
 Global flags:
   --help    Show this help
@@ -49,6 +51,11 @@ compare:
   --fail-if <file.json>    Extra failIf rules
   --allow-regression       Skip index/verifyScore regression thresholds
   --record-lessons         Write MEMORY trap on regression (default off)
+
+table:
+  --fixture <id>           Filter by fixture (recommended: fx-config-merge)
+  --mode <static|live>     Filter by run mode
+  --format <markdown|json> Output format (default markdown)
 `;
 
 function parseArgs(argv) {
@@ -153,6 +160,16 @@ function main() {
       recordLessons: options.recordLessons === true,
     });
     if (!result.ok) process.exitCode = 1;
+    return;
+  }
+
+  if (command === 'table') {
+    tableReports({
+      fixture: options.fixture,
+      mode: options.mode,
+      format: options.format || 'markdown',
+      repoRoot: options.repoRoot,
+    });
     return;
   }
 

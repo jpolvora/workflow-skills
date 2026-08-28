@@ -189,7 +189,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 | Global-scope variants | add `--global` / `-g` (project scope is `--project` / `-p`; global root override `WORKFLOW_SKILLS_GLOBAL_DIR`) |
 | Integrity digests | `npm run generate-integrity` then `npm run verify-integrity` (must exit 0) |
 | Catalog / site | `node bin/build-site.js` (catalog only) · `node bin/build-site.js --check` (read-only verification) · `npm run build-site:bump` (release bump + footer) |
-| Harness benchmark (upstream only) | `npm run benchmark:static` · live: `node scripts/harness-benchmark/cli.cjs prepare --fixture <id>` then `collect --sandbox <path> --fixture <id>` |
+| Harness benchmark (upstream only) | `npm run benchmark:static` · live: `prepare --fixture fx-config-merge` then `collect --sandbox <path>` · `table --fixture fx-config-merge` · `compare --from <old> --to <new>` |
 | Installed-skill audit | `node bin/cli.js integrity` · `node bin/cli.js --check` (version + `fullPackageDigest` vs `main`) |
 
 **Never run install/update against this package root.** The installer writes into `.agents/skills/`, which is the upstream SoT here — it would overwrite the skills you are authoring. Always target a scratch directory (or the trees under `test/`), and prefer local `node bin/cli.js` / `./install-skills.sh` over remote `npx` (§ [Consumer CLI](#consumer-cli-install--update--uninstall)).

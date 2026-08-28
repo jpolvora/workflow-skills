@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-28 08:40] Agent: Cursor Grok 4.6
+- **Prompt**: Create a mid-to-high use case as the frozen benchmark corpus; record scores per version; compare versions in a table
+- **Done**: Added `fx-config-merge` (10 ACs, standard orch) plus `table` CLI; live collect now records `wallSec`
+- **Result**: Same fixture, new package version → snapshot → `table --fixture fx-config-merge --mode live`
+
+
 ### [2026-08-28 02:20] Agent: Composer
 - **Prompt**: `/ws-goal-fix-pr` PR 255 round 1
 - **Done**: Empty cursor/default steps 2–5 for lite fallthrough; retarget autoload/CATALOG runtime keywords to `ws-memo`; MEMORY trap
@@ -9,7 +15,7 @@
 ### [2026-08-28 02:05] Agent: Composer
 - **Prompt**: Fix GH #252/#253, bump version, commit, push, ship-pr, goal-fix-pr
 - **Done**: Seed `modelsPreset: cursor` with full `default`+`cursor` step maps; `ws-spec-memo` invocation `spec-memo-setup` + MCP template key `spec-memo`; package 0.3.48
-- **Result**: Pending ship-pr / goal-fix-pr
+- **Result**: PR https://github.com/jpolvora/workflow-skills/pull/255 merged; goal-fix-pr converged (0 active threads)
 
 
 ### [2026-08-28 01:50] Agent: Cursor Grok 4.6
