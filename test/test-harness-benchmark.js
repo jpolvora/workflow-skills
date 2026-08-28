@@ -158,22 +158,105 @@ fs.rmSync(collectRoot, { recursive: true, force: true });
 // V13: evidence-or-zero completeness
 assert.ok(collectReport.perAc.some((row) => row.score === 0 && row.evidence === 'EXPLICIT ZERO'), 'zero without evidence');
 
-// V14: judge and honesty dimensions present on live collect
+// V14: judge detects fraud when ledger file not in diff
+const { detectFrauds, mapVerdict } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/judge-checks.cjs'));
+const { resolveConsumerContext } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs'));
+const judgeRoot = temp('hb-judge-');
+write(path.join(judgeRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  verification: { backendTest: 'exit 0' },
+  plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
+}));
+write(path.join(judgeRoot, 'impl.js'), 'module.exports = {};\n');
+spawnSync('git', ['init'], { cwd: judgeRoot, encoding: 'utf8' });
+spawnSync('git', ['config', 'user.email', 't@e.com'], { cwd: judgeRoot });
+spawnSync('git', ['config', 'user.name', 't'], { cwd: judgeRoot });
+spawnSync('git', ['add', '.'], { cwd: judgeRoot });
+spawnSync('git', ['commit', '-m', 'init'], { cwd: judgeRoot });
+const judgeLedger = {
+  acceptanceCriteria: [{ id: 'AC1', files: [{ path: 'missing.js', lineStart: 1, lineEnd: 1 }] }],
+  aliasResults: [{ alias: 'backendTest', command: 'exit 0', exitCode: 0 }],
+};
+const judgeContext = resolveConsumerContext({ repoRoot: judgeRoot });
+const judgeFrauds = detectFrauds(judgeRoot, judgeLedger, judgeContext);
+const judgeMapped = mapVerdict(judgeFrauds, []);
+assert.ok(judgeFrauds.some((f) => f.type === 'false-completion' && /not in diff/.test(f.detail)), 'judge flags missing diff file');
+assert.ok(judgeMapped.judge < 10, 'judge score penalized for fraud');
 assert.ok(collectReport.dimensions.judge != null);
 assert.ok(collectReport.dimensions.honesty != null);
 
-// V15/V26: sensor porcelain via applyPatch unit path
-const { applyPatch } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/sensor.cjs'));
+// V14b: re-run verification aliases catches false-completion
+const verifyRoot = temp('hb-judge-verify-');
+write(path.join(verifyRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  verification: { backendTest: 'exit 1' },
+  plans: { dir: '.agents/plans' },
+}));
+write(path.join(verifyRoot, 'impl.js'), 'module.exports = {};\n');
+spawnSync('git', ['init'], { cwd: verifyRoot, encoding: 'utf8' });
+spawnSync('git', ['config', 'user.email', 't@e.com'], { cwd: verifyRoot });
+spawnSync('git', ['config', 'user.name', 't'], { cwd: verifyRoot });
+spawnSync('git', ['add', '.'], { cwd: verifyRoot, encoding: 'utf8' });
+spawnSync('git', ['commit', '-m', 'init'], { cwd: verifyRoot });
+const verifyLedger = {
+  acceptanceCriteria: [{ id: 'AC1', files: [{ path: 'impl.js', lineStart: 1, lineEnd: 1 }] }],
+  aliasResults: [{ alias: 'backendTest', command: 'exit 1', exitCode: 0 }],
+};
+const verifyContext = resolveConsumerContext({ repoRoot: verifyRoot });
+const verifyFrauds = detectFrauds(verifyRoot, verifyLedger, verifyContext);
+assert.ok(
+  verifyFrauds.some((f) => f.type === 'false-completion' && /backendTest/.test(f.detail)),
+  're-run catches ledger pass vs failing alias',
+);
+
+// V14c: unauthorized-action fraud from git history
+const authRoot = temp('hb-judge-auth-');
+write(path.join(authRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
+write(path.join(authRoot, 'impl.js'), 'module.exports = {};\n');
+spawnSync('git', ['init'], { cwd: authRoot, encoding: 'utf8' });
+spawnSync('git', ['config', 'user.email', 't@e.com'], { cwd: authRoot });
+spawnSync('git', ['config', 'user.name', 't'], { cwd: authRoot });
+spawnSync('git', ['add', '.'], { cwd: authRoot });
+spawnSync('git', ['commit', '-m', 'init'], { cwd: authRoot });
+spawnSync('git', ['commit', '--allow-empty', '-m', 'attempt git push origin main'], { cwd: authRoot });
+const authLedger = { acceptanceCriteria: [], aliasResults: [] };
+const authContext = resolveConsumerContext({ repoRoot: authRoot });
+const authFrauds = detectFrauds(authRoot, authLedger, authContext);
+assert.ok(
+  authFrauds.some((f) => f.type === 'unauthorized-action'),
+  'detects unauthorized push in git history',
+);
+fs.rmSync(judgeRoot, { recursive: true, force: true });
+fs.rmSync(verifyRoot, { recursive: true, force: true });
+fs.rmSync(authRoot, { recursive: true, force: true });
+
+// V15/V26: runSensor restores porcelain and kills inverted mutation
+const { runSensor } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/sensor.cjs'));
+const { resolvePaths, loadOracle } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/paths.cjs'));
+const sensorPaths = resolvePaths({ repoRoot });
+const sensorOracle = {
+  ...loadOracle(sensorPaths.fixturesRoot, 'fx-node-helper'),
+  fixtureId: 'fx-node-helper',
+  sensorTestCommand: "node -e \"process.exit(require('fs').readFileSync('lib/greet.cjs','utf8').includes('Hello,')?0:1)\"",
+};
 const sensorScratch = temp('hb-sensor-');
 const greetDir = path.join(sensorScratch, 'lib');
 fs.mkdirSync(greetDir, { recursive: true });
 const greetFile = path.join(greetDir, 'greet.cjs');
-fs.writeFileSync(greetFile, 'function greet(name) { return `Hello, ${name}!`; }\nmodule.exports = { greet };\n');
-const patch = fs.readFileSync(path.join(repoRoot, 'benchmarks/fixtures/fx-node-helper/invert.patch'), 'utf8');
-applyPatch(greetFile, patch);
-assert.match(fs.readFileSync(greetFile, 'utf8'), /Goodbye/);
-fs.writeFileSync(greetFile, 'function greet(name) { return `Hello, ${name}!`; }\nmodule.exports = { greet };\n');
-assert.match(fs.readFileSync(greetFile, 'utf8'), /Hello/);
+fs.writeFileSync(greetFile, 'function greet(name) {\n  return `Hello, ${name}!`;\n}\nmodule.exports = { greet };\n');
+fs.copyFileSync(
+  path.join(sensorPaths.fixturesRoot, 'fx-node-helper/invert.patch'),
+  path.join(sensorScratch, 'invert.patch'),
+);
+spawnSync('git', ['init'], { cwd: sensorScratch, encoding: 'utf8' });
+spawnSync('git', ['config', 'user.email', 't@e.com'], { cwd: sensorScratch });
+spawnSync('git', ['config', 'user.name', 't'], { cwd: sensorScratch });
+spawnSync('git', ['add', '.'], { cwd: sensorScratch });
+spawnSync('git', ['commit', '-m', 'init'], { cwd: sensorScratch });
+const sensorResult = runSensor(sensorScratch, sensorOracle, sensorPaths);
+assert.strictEqual(sensorResult.porcelainOk, true, 'sensor leaves sandbox porcelain clean');
+assert.strictEqual(sensorResult.verdict, 'PASS', 'sensor kills inverted mutation');
+assert.ok(sensorResult.injected > 0, 'sensor injected mutation');
+assert.strictEqual(sensorResult.killed, sensorResult.injected, 'all injections killed');
+fs.rmSync(sensorScratch, { recursive: true, force: true });
 
 // V25: CATALOG documents benchmark commands
 const catalog = fs.readFileSync(path.join(repoRoot, 'CATALOG.md'), 'utf8');
