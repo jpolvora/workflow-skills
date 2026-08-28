@@ -150,7 +150,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
-| `ws-verify-plan` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9)); product commit before review |
+| `ws-verify-plan` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap 8); product commit before review |
 | `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Delivery artifacts + push/PR (product already committed) |
@@ -282,7 +282,7 @@ When spec-memo integration is on: session consult → MCP `bootstrap` (or `memo 
 
 When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-write-spec` / `ws-spec-format` unless authoring those skills.
 
-Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. Lookup codebase, `{sharedDir}/MEMORY.md`, and the stack file **before** any `user-gate`. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Run `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring` and do not finish while non-zero. Gray area with ≥2 product options → `{specsDir}/{slug}.context.md` (never empty). When derived from a **public** tracker issue, reformulate into explicit, testable agentic ACs and keep human wording in `## Original Issue Context` (`source: github` | `source: azure-devops`). Private consumer pastes: paraphrase that section with generic examples. For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch (skip register when authoring validation fails):
+Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. Lookup codebase, `{sharedDir}/MEMORY.md`, and the stack file **before** any `user-gate`. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, `## Validation & Observation Notes`, and `## Negative & Failing Test Scenarios`. Run `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring` and do not finish while non-zero. Gray area with ≥2 product options → `{specsDir}/{slug}.context.md` (never empty). When derived from a **public** tracker issue, reformulate into explicit, testable agentic ACs and keep human wording in `## Original Issue Context` (`source: github` | `source: azure-devops`). Private consumer pastes: paraphrase that section with generic examples. For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch (skip register when authoring validation fails):
 
 ```bash
 python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
@@ -291,7 +291,7 @@ python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
 
 Use `--force` only when overwriting a differing plan copy. Handoff: `{specsDir}` path (and `step-00` path only if register ran).
 
-Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devops}`, `specDate`. Body: Description, testable one-line ACs, Out of Scope, Assumptions, Definition of Ready, Validation & Observation Notes, `## Original Issue Context` (for tracker issues), Notes as needed. Every stated requirement → ≥1 AC or explicit out-of-scope. Downstream orch reads `{us-dir}/step-00-*.spec.md` after register, never live tracker APIs.
+Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devops}`, `specDate`. Body: Description, testable one-line ACs, Out of Scope, Assumptions, Definition of Ready, Validation & Observation Notes, Negative & Failing Test Scenarios, `## Original Issue Context` (for tracker issues), Notes as needed. Every stated requirement → ≥1 AC or explicit out-of-scope. Downstream orch reads `{us-dir}/step-00-*.spec.md` after register, never live tracker APIs.
 
 
 ---

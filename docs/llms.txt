@@ -1,6 +1,8 @@
 # Workflow Skills
 
-> Spec-driven software delivery skills for coding agents. A canonical feature spec is the contract of record. Orchestrators turn that spec into a reviewed pull request. Plans are run artifacts, not a second spec.
+**LLM-agnostic workflow skills. From Spec to Delivery.**
+
+> Spec-driven software delivery skills for coding agents. A canonical feature spec is the contract of record. Orchestrators turn that spec into a reviewed pull request. Plans are run artifacts, not a second spec. Any coding agent that can load SKILL.md can run the pipeline.
 
 Site: https://jpolvora.github.io/workflow-skills/
 Repo: https://github.com/jpolvora/workflow-skills

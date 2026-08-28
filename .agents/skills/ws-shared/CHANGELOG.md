@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-28 01:40] Agent: Cursor Grok 4.6
+- **Prompt**: Docs refresh: shipped 0.3.46 features, honest roadmap, LLM-agnostic hero/CTAs
+- **Done**: Reconciled index.PRD shipped rows; FEATURES DoR/TDD/specMemo + Roadmap; README/AGENTS fact-align; site hero From Spec to Delivery with dual CTAs; test-doc-sync headings
+- **Result**: `node test/test-doc-sync.js` and `node bin/build-site.js --check` exit 0; integrity v0.3.46
+
+
 ### [2026-08-28 00:35] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-write-spec` optional spec filename prefixes + ws-spec-organizer
 - **Done**: Authored `spec-prefix-ordering.spec.md` + context companion; authoring validate PASS (22 ACs)

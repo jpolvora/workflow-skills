@@ -5,11 +5,11 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "1e5f80ad2ef3b14c260f4dab3f3b1b9e2fbb9bdee2e355dfd2c326f8982ed064",
+  "fullPackageDigest": "73b47b69f4556f780801b35e60567840cc025b3bb0dd0742df6dfeafd0edd1f7",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
-      "AGENTS.md": "965ef0fab86e6efe175c9ed3fa268efe6d90ec4c209d1c37b61c8c6a5d150d68",
+      "AGENTS.md": "34cef3e2f23120d1328547c516888a073bec3ac8420af8da4e2855750b2c4a42",
       "autoload.md": "88276c10619b504f0dda7ca80574f79f5135a5fde206568d2c14a8f5ae676d2f",
       "CATALOG.md": "a56003b2ce5555f9986558e833e809aa62e7917ab3fac921761013c5bfa7f13f",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
@@ -45,7 +45,7 @@
       "tools.md": "5dcf45810b754fdca832c8438caecdc6d1ca72196d5613ae10cda7be94454d7f",
       "workflow-state.schema.json": "bfbeddf4c213a11ea75b82cbfbc4cd60e941a1cae05e0a73d5a1523da9bd6583"
     },
-    "skillDigest": "3782a23309989a4c8173dac9580c19ca58321ae25928f1294226f544b760db55"
+    "skillDigest": "dcd83b657f69289421ca6b105b7d57fc3a0fd856bff08055b2f36765e51183c2"
   },
   "packageVersion": "0.3.46",
   "skills": {

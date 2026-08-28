@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workflow Skills — Spec-driven delivery for coding agents</title>
-  <meta name="description" content="Spec-driven software delivery for coding agents. The spec is the contract of record; plans, code, and PRs are derived from it. Verify at ≥ defaults.minVerifyScore (default 9) from an AC ledger. Same GitHub and Azure DevOps operations.">
+  <title>From Spec to Delivery — LLM-agnostic Workflow Skills</title>
+  <meta name="description" content="LLM-agnostic workflow skills. From spec to delivery: named pipeline, reviewed pull request, any coding agent. GitHub and Azure DevOps, same operations. Verify is ledger-derived, not authored.">
   <link rel="canonical" href="https://jpolvora.github.io/workflow-skills/">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="author" content="Jone Polvora">
-  <meta name="keywords" content="spec-driven development, spec-driven workflow, spec to pull request, agent skills, coding agents, AI software delivery, GitHub, Azure DevOps, acceptance criteria, AC ledger">
+  <meta name="keywords" content="LLM-agnostic, from spec to delivery, spec-driven development, spec-driven workflow, spec to pull request, agent skills, coding agents, AI software delivery, GitHub, Azure DevOps, acceptance criteria, AC ledger">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
   <meta property="og:url" content="https://jpolvora.github.io/workflow-skills/">
   <meta property="og:site_name" content="Workflow Skills">
-  <meta property="og:title" content="Workflow Skills — Spec-driven delivery for coding agents">
-  <meta property="og:description" content="Install portable skills so a coding agent runs a named pipeline from a feature spec to a reviewed pull request. The spec is the contract; verify score is derived, not authored.">
+  <meta property="og:title" content="From Spec to Delivery — LLM-agnostic Workflow Skills">
+  <meta property="og:description" content="LLM-agnostic workflow skills. Spec in. Named pipeline. Reviewed pull request out. Any coding agent. GitHub or Azure DevOps.">
   <meta property="og:image" content="https://jpolvora.github.io/workflow-skills/assets/workflow-hero-poster.webp">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Workflow Skills — Spec-driven delivery for coding agents">
-  <meta name="twitter:description" content="Spec in. Ledger-scored verify. Reviewed pull request out. GitHub and Azure DevOps, same operations.">
+  <meta name="twitter:title" content="From Spec to Delivery — LLM-agnostic Workflow Skills">
+  <meta name="twitter:description" content="LLM-agnostic workflow skills. Spec in. Named pipeline. Reviewed pull request out. GitHub and Azure DevOps, same operations.">
   <meta name="twitter:image" content="https://jpolvora.github.io/workflow-skills/assets/workflow-hero-poster.webp">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -36,7 +36,7 @@
     "url": "https://jpolvora.github.io/workflow-skills/",
     "codeRepository": "https://github.com/jpolvora/workflow-skills",
     "author": { "@type": "Person", "name": "Jone Polvora", "url": "https://jpolvora.github.io/" },
-    "description": "Spec-driven software delivery skills for coding agents. Specs are the contract of record; orchestrators take a spec to a reviewed pull request with a configurable verify bar (defaults.minVerifyScore, default 9/10).",
+    "description": "LLM-agnostic workflow skills. From spec to delivery: a named pipeline takes a feature spec to a reviewed pull request on any coding agent. GitHub and Azure DevOps share the same operations. Verify is ledger-derived, not authored.",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
   }
   </script>
@@ -45,6 +45,14 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Are Workflow Skills LLM-agnostic?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Skills are markdown plus scripts. Any coding agent that can load SKILL.md can run the pipeline. There is no required host or IDE. GitHub and Azure DevOps share the same PR operations."
+        }
+      },
       {
         "@type": "Question",
         "name": "Is Workflow Skills spec-driven?",
@@ -77,6 +85,7 @@
   <a href="#catalog" class="dot-nav-item"><span class="tooltip">Catalog</span></a>
   <a href="#install-packages" class="dot-nav-item"><span class="tooltip">Packages</span></a>
   <a href="#install" class="dot-nav-item"><span class="tooltip">Install</span></a>
+  <a href="#roadmap" class="dot-nav-item"><span class="tooltip">Roadmap</span></a>
   <a href="#faq" class="dot-nav-item"><span class="tooltip">FAQ</span></a>
 </aside>
 
@@ -93,6 +102,7 @@
       <a href="#catalog">Catalog</a>
       <a href="#install-packages">Packages</a>
       <a href="#install">Installation</a>
+      <a href="#roadmap">Roadmap</a>
       <a href="#faq">FAQ</a>
       <a href="#contribute">Contribute</a>
     </div>
@@ -101,6 +111,7 @@
         <svg class="sun-icon hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
       </button>
+      <a href="#install" class="nav-install-btn">Install</a>
       <a href="https://github.com/jpolvora/workflow-skills" class="star-btn" target="_blank" rel="noopener">
         <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg>
         Star Repo
@@ -117,7 +128,7 @@
   </div>
 
   <div class="hero-announcement">
-    <span>Spec-driven delivery. Reviewed pull request out.</span>
+    <span>LLM-agnostic workflow skills</span>
   </div>
   <div class="hero-animation-wrap">
     <video
@@ -138,14 +149,17 @@
       <source src="assets/workflow-hero.mp4" type="video/mp4">
     </video>
   </div>
-  <h1>Workflow <span class="gradient-text">Skills</span></h1>
-  <p class="hero-subtitle">Spec-driven software delivery for any coding agent. The spec is the contract of record. Plans, code, and PRs are derived from it. Advance only when verify hits ≥ <code>defaults.minVerifyScore</code> (default 9) from the AC ledger. Same operations on GitHub and Azure DevOps.</p>
+  <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
+  <p class="hero-brand">Workflow Skills</p>
+  <p class="hero-subtitle">Spec in. Named pipeline. Reviewed pull request out. Any coding agent. GitHub or Azure DevOps.</p>
+  <p class="hero-proof">Verify advances only at a ledger-derived score (default 9). Agents cannot author that score.</p>
 
-  <div style="margin-bottom: 28px;">
+  <div class="hero-cta-row">
     <a href="#install" class="offer-cta-fill">
       <span class="offer-cta-fill__bg"></span>
       <span>Install with npx</span>
     </a>
+    <a href="#how-it-works" class="btn-secondary">See the pipeline</a>
   </div>
 
   <div class="terminal-box">
@@ -171,16 +185,16 @@
 
   <div class="hero-metrics">
     <div class="metric-card">
-      <div class="metric-val cyan">45</div>
+      <div class="metric-val cyan">48</div>
       <div class="metric-lbl">Shipped skills</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val purple">2 speeds</div>
-      <div class="metric-lbl">Standard and lite</div>
+      <div class="metric-val purple">LLM-agnostic</div>
+      <div class="metric-lbl">Any agent that loads SKILL.md</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val emerald">default 9</div>
-      <div class="metric-lbl">Verify bar (≥ minVerifyScore)</div>
+      <div class="metric-val emerald">2 speeds</div>
+      <div class="metric-lbl">Standard and lite</div>
     </div>
     <div class="metric-card">
       <div class="metric-val amber">GitHub + Azure</div>
@@ -232,6 +246,20 @@
       <p class="role-card-desc">Choose step or phase gates, with phase mode capped at five blocking decisions. Adaptive polling uses observed check and thread state while preserving fail-closed verification and review convergence.</p>
     </div>
   <!-- efficiency-verifiability:end -->
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">DoR</div>
+        <h4 class="role-card-title">Definition of Ready and TDD</h4>
+      </div>
+      <p class="role-card-desc">Authoring requires Definition of Ready, Validation &amp; Observation Notes, and Negative &amp; Failing Test Scenarios. Interview audits failing tests. Implement is red-then-green. Uncovered negative scenarios cap verify at 8.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">M</div>
+        <h4 class="role-card-title">Dual memory routing</h4>
+      </div>
+      <p class="role-card-desc">Consult local MEMORY files, an external spec-memo vault, or both. <code>enableMemoryFiles</code> and <code>enableSpecMemoIntegration</code> choose the backends. <code>ws-spec-memo</code> is setup; runtime vault ops use <code>ws-memo</code>.</p>
+    </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">1</div>
@@ -306,7 +334,7 @@
       </button>
       <button type="button" class="how-tab-btn" data-target="panel-matrix">
         <span>Skill Role Matrix</span>
-        <span class="tab-badge">45 skills</span>
+        <span class="tab-badge">48 skills</span>
       </button>
     </div>
 
@@ -323,7 +351,7 @@
             </div>
             <span class="stepper-fsm-tag">Phase 1: Spec & Architecture</span>
           </div>
-          <p class="stepper-desc">Transforms free-text user intent, issue description, or context into a canonical <code>*.spec.md</code> with crisp section hierarchy and mandatory acceptance criteria. New runs also ask a feature-branch strategy gate (stay on current, or create <code>feat/{slug}</code> from HEAD or from <code>baseBranch</code>).</p>
+          <p class="stepper-desc">Transforms free-text user intent, issue description, or context into a canonical <code>*.spec.md</code> with crisp section hierarchy, mandatory acceptance criteria, Definition of Ready, Validation &amp; Observation Notes, and Negative &amp; Failing Test Scenarios. Authoring validation fails closed. New runs also ask a feature-branch strategy gate (stay on current, or create <code>feat/{slug}</code> from HEAD or from <code>baseBranch</code>).</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-spec/SKILL.md">ws-write-spec</span>
@@ -506,7 +534,7 @@
             </div>
             <span class="stepper-fsm-tag">Lite Pipeline</span>
           </div>
-          <p class="stepper-desc">Drafts feature spec and evaluates complexity against <code>dagThresholds</code> in project config to validate Lite eligibility.</p>
+          <p class="stepper-desc">Drafts a canonical <code>*.spec.md</code> with Definition of Ready, Validation &amp; Observation Notes, and Negative &amp; Failing Test Scenarios (authoring validation fails closed), then evaluates complexity against <code>dagThresholds</code> in project config to validate Lite eligibility.</p>
           <div class="stepper-skills">
             <span class="stepper-skills-label">Skills called:</span>
             <span class="skill-tag-pill plan view-skill" data-path=".agents/skills/ws-write-spec/SKILL.md">ws-write-spec</span>
@@ -789,9 +817,12 @@
         <li>Implement, verify (score ≥ <code>defaults.minVerifyScore</code> (default 9) or scoreAndRefine), product commit, local code review, review-fix commit (Steps 4–6)</li>
         <li>Pre-PR testing (optional <code>testingModel</code>), shipping & ws-goal-fix-pr (Steps 7–9)</li>
       </ul>
+      <div class="workflow-card-actions">
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">
         View spec-to-pr workflow &rarr;
       </button>
+      <a href="#install" class="workflow-btn">Start in your repo</a>
+      </div>
     </div>
 
     <div class="workflow-card lite">
@@ -810,9 +841,12 @@
         <li>Fast consolidation & PR delivery (plan-dir artifacts at ship)</li>
         <li>Zero setup/config duplication in dual-mode</li>
       </ul>
+      <div class="workflow-card-actions">
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md">
         View spec-to-pr-lite workflow &rarr;
       </button>
+      <a href="#install" class="workflow-btn">Start in your repo</a>
+      </div>
     </div>
 
     <div class="workflow-card multi-spec featured-big-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(99, 102, 241, 0.05)); border: 1px solid rgba(99, 102, 241, 0.2);">
@@ -830,9 +864,12 @@
         <li>Keeps queue state under <code>{plansDir}/ws-multi-spec/</code></li>
         <li>On failure: Resume, Skip, or Abort</li>
       </ul>
+      <div class="workflow-card-actions">
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-multi-spec/SKILL.md">
         View ws-multi-spec orchestrator &rarr;
       </button>
+      <a href="#install" class="workflow-btn">Start in your repo</a>
+      </div>
     </div>
   </div>
 </section>
@@ -1619,6 +1656,30 @@
   </div>
 </section>
 
+<section id="roadmap">
+  <div class="section-header">
+    <h2>Roadmap</h2>
+    <p class="section-subtitle">Not in the current package. Shipped capabilities are on Features.</p>
+  </div>
+  <div class="contribute-box">
+    <ul class="roadmap-list">
+      <li><span class="status">partial</span> Remaining Hermes plan items (core delivery disciplines already ship)</li>
+      <li><span class="status">todo</span> Harness spec-run benchmark with snapshot compare</li>
+      <li><span class="status">todo</span> Skill-family renaming (<code>ws-{family}-{verb}</code>)</li>
+      <li><span class="status">todo</span> Unique Node runtime for all helper scripts</li>
+      <li><span class="status">todo</span> Step 5 to 6 deadlock diagnostics (<code>us-235</code>)</li>
+      <li><span class="status">todo</span> Optional chronological spec filename prefixes (not implemented)</li>
+      <li><span class="status">inbox</span> Multi-repository orchestrator; CI/CD workflow generator</li>
+    </ul>
+    <div class="hero-cta-row">
+      <a href="#install" class="offer-cta-fill">
+        <span class="offer-cta-fill__bg"></span>
+        <span>Install the current package</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <section id="faq">
   <div class="section-header">
     <h2>Frequently Asked Questions</h2>
@@ -1653,7 +1714,7 @@
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p>Workflow Skills is a portable, <strong>spec-driven</strong> skill pack for coding agents. You install it once. The agent then runs a named pipeline from a feature spec to a reviewed pull request instead of inventing a process each time.</p>
-          <p>The spec is the contract of record. Plans are run artifacts. Standard delivery is ten steps. Lite is six. Verify must hit ≥ <code>defaults.minVerifyScore</code> (default 9) from the AC ledger before review. GitHub and Azure DevOps expose the same PR operations. Your project config and memory stay local when skills update.</p>
+          <p>The spec is the contract of record. Plans are run artifacts. Standard delivery is ten steps. Lite is six. Skills are LLM-agnostic: any coding agent that can load <code>SKILL.md</code> can run the pipeline. Verify must hit ≥ <code>defaults.minVerifyScore</code> (default 9) from the AC ledger before review. GitHub and Azure DevOps expose the same PR operations. Your project config and memory stay local when skills update.</p>
         </div>
       </div>
     </div>
@@ -1739,7 +1800,23 @@
             <li>Max <strong>3</strong> rounds per Step 5 visit; then Pause (fail closed). Resume continues. Never auto-approve below the bar, including in <code>autoMode</code>.</li>
             <li>Optional polish (Accept As-Is) only when the score is already ≥ <code>defaults.minVerifyScore</code> and the <code>scoreAndRefine</code> flag is on. Choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced files, tests, methods, and classes.</li>
           </ul>
-          <p>Lite has no Step 5 verify gate. Product commit on standard runs only after score ≥ <code>defaults.minVerifyScore</code> (default 9).</p>
+          <p>Lite has no Step 5 verify gate. Product commit on standard runs only after score ≥ <code>defaults.minVerifyScore</code> (default 9). Uncovered Negative &amp; Failing Test Scenarios cap the derived score at 8.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item" data-faq-cat="quality" data-search="definition of ready dor tdd negative failing test scenarios validate_spec authoring interview implement-tasks">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Quality &amp; Safety</span>
+          <span>What is Definition of Ready, and how does TDD fit?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Authoring a spec requires <strong>Definition of Ready</strong>, <strong>Validation &amp; Observation Notes</strong>, and <strong>Negative &amp; Failing Test Scenarios</strong>. <code>validate_spec.cjs --mode=authoring</code> fails closed if those sections are missing or placeholder.</p>
+          <p>Interview audits failing-test coverage. Implement-tasks is red-then-green. Verify treats uncovered negative scenarios as a known defect and caps the score at 8.</p>
         </div>
       </div>
     </div>
@@ -1778,6 +1855,22 @@
       </div>
     </div>
 
+    <div class="faq-item" data-faq-cat="config" data-search="spec-memo enableMemoryFiles enableSpecMemoIntegration dual memory routing ws-spec-memo ws-memo vault">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Configuration</span>
+          <span>Can I use local MEMORY files and an external spec-memo vault together?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Yes. Dual routing is controlled by <code>enableMemoryFiles</code> and <code>enableSpecMemoIntegration</code>. Default is local MEMORY files on and spec-memo off unless you opt in.</p>
+          <p><code>ws-spec-memo</code> is the setup/bridge (wizard, import, MCP/CLI paths). Runtime vault ops use <code>ws-memo</code> from the spec-memo package. When both backends are on, consult the vault first, then local MEMORY.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Q5 -->
     <div class="faq-item" data-faq-cat="quality" data-search="quality gates adversarial audit ws-fable-judge ws-senior-developer ws-verify-plan score 9 scoreAndRefine code review security leak">
       <button type="button" class="faq-question" aria-expanded="false">
@@ -1802,18 +1895,18 @@
     </div>
 
     <!-- Q6 -->
-    <div class="faq-item" data-faq-cat="compatibility" data-search="ide compatibility cursor windsurf opencode claude code gemini harness neutral portable">
+    <div class="faq-item" data-faq-cat="compatibility" data-search="llm-agnostic llm agnostic any coding agent harness-neutral portable skill.md ide compatibility cursor windsurf opencode claude code gemini">
       <button type="button" class="faq-question" aria-expanded="false">
         <div class="faq-question-text">
           <span class="faq-cat-tag">Compatibility</span>
-          <span>Which IDEs and AI agent tools are supported?</span>
+          <span>Are Workflow Skills LLM-agnostic?</span>
         </div>
         <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p>Workflow Skills is <strong>100% harness-neutral and portable</strong>. Shipped skills run in any consumer environment capable of reading standard markdown skill files under <code>.agents/skills/</code>.</p>
-          <p>It supports Cursor, Windsurf, OpenCode, Claude Code, Gemini CLI, VS Code agent extensions, and custom AI agent harnesses without vendor lock-in or host-specific coupling.</p>
+          <p>Yes. Skills are markdown plus scripts. <strong>Any coding agent that can load <code>SKILL.md</code></strong> can run the pipeline. There is no required host or IDE, and shipped skill bodies do not couple to a vendor UI.</p>
+          <p>GitHub and Azure DevOps share the same PR operations. Config, memory, and changelog stay in your repo when skills update.</p>
         </div>
       </div>
     </div>
@@ -1931,6 +2024,7 @@
 <section id="contribute">
   <div class="section-header">
     <h2>Contribute</h2>
+    <p class="section-subtitle">Lasting skill changes ship here. Consumer installs stay managed copies.</p>
   </div>
   <div class="contribute-box">
     <p>
@@ -1943,6 +2037,14 @@
       Agents: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md" target="_blank" rel="noopener">AGENTS.md</a> for the full routing contract.<br>
       Humans: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/README.md" target="_blank" rel="noopener">README.md</a> for install and contribution guidelines.
     </p>
+    <div class="hero-cta-row" style="margin-top: 24px; margin-bottom: 0;">
+      <a href="#install" class="offer-cta-fill">
+        <span class="offer-cta-fill__bg"></span>
+        <span>Install</span>
+      </a>
+      <a href="https://github.com/jpolvora/workflow-skills" class="btn-secondary" target="_blank" rel="noopener">Star on GitHub</a>
+      <a href="https://github.com/jpolvora/workflow-skills/blob/main/README.md" class="btn-secondary" target="_blank" rel="noopener">Open a PR</a>
+    </div>
   </div>
 </section>
 

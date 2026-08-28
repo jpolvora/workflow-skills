@@ -126,8 +126,8 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring`. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
-| Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), plus authoring-mode **Definition of Ready** and **Validation & Observation Notes** | `ws-spec-format` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring` (fails closed). Required sections include **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios**. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
+| Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), authoring-mode **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios** | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register | `ws-spec-from-provider` |
@@ -136,6 +136,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
 | Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
+| Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-interview` / `ws-implement-tasks` / `ws-verify-plan` |
 
 Every entry path — free text, local file, GitHub issue, Azure work item — produces the spec of record under `{specsDir}` **before** any plan artifact exists. Re-fetching refuses to clobber a differing spec unless `--force` is passed.
 
@@ -218,11 +219,12 @@ Everything project-specific lives in one consumer-owned, gitignored file: `.agen
 | `issueTrackers` | GitHub and Azure DevOps credentials, CLI, converter scripts |
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
-| `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, and legacy per-phase model identifiers |
+| `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, and legacy per-phase model identifiers |
 | `plans` / `reviews` / `preview` | Artifact roots, diagnostics root, and dry-run backend |
 | `rules` | Guardrail paths: harness, senior developer, karpathy, stack file, changelog file |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
+| `specMemo` / memory flags | Dual routing: `enableMemoryFiles` (local `{sharedDir}/MEMORY.md`) and `enableSpecMemoIntegration` (external vault). `specMemo.*` holds MCP/CLI paths; `ws-spec-memo` is setup/bridge, runtime vault ops use `ws-memo` |
 
 **Per-phase model switching:** the orchestrator session always runs under the active model. Named presets (`modelsPreset` / `modelPresets`), optional per-step/role `stepModels`, and legacy phase keys resolve the subagent model for standard `dispatch-agent` dispatches only, with graceful fallback when a switch fails. Fix-PR resolves `fixPrPlan` through `reviewerModel` and `fixPrExec` through `executionModel`; both bypass numeric Step 9, which remains outer-only. Lite ignores role switches and runs plan then execute inline.
 
@@ -285,7 +287,25 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-27).
 
 ---
 
-## 13. Full skill catalog
+## 13. Roadmap (not in the current package)
+
+These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.3.46**.
+
+| Item | Status | Notes |
+|------|--------|-------|
+| `hermes-spec-to-pr-enhancements` | partial | Core Hermes disciplines already ship (prior-work sweep, design-intent history, class fixes, sabotage, CI triage, close-loop). Remaining plan items are not in this package. |
+| `harness-spec-benchmark` | todo | Upstream harness fixture benchmark + snapshot compare |
+| `skill-family-naming` | todo | Regroup packaged skill ids as `ws-{family}-{verb}` |
+| `unique-skill-script-runtime` | todo | Node-only runtime for all packaged helper scripts |
+| `us-235` | todo | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, `.runtime` allowlist |
+| `spec-prefix-ordering` | todo | Optional chronological `NNNN-` spec filename prefixes and `ws-spec-organizer` (not implemented; this repo's prefixed board names are dogfood only) |
+| Inbox | idea | Multi-repository orchestrator; CI/CD workflow generator skill |
+
+Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
+
+---
+
+## 14. Full skill catalog
 
 48 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 

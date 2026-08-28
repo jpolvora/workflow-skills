@@ -1,5 +1,7 @@
 # Workflow Skills
 
+**LLM-agnostic workflow skills.** From Spec to Delivery.
+
 **Audience: humans** (install, overview, contribute).  
 **Agents:** follow [`AGENTS.md`](AGENTS.md) for skill loading, task router, layers, and verification — not this file.
 
@@ -8,7 +10,7 @@
 [![npx](https://img.shields.io/badge/npx-github:jpolvora/workflow--skills-blue?logo=npm)](https://github.com/jpolvora/workflow-skills)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-site-success?logo=github)](https://jpolvora.github.io/workflow-skills)
 
-**Spec-driven delivery** for coding agents. The spec is the contract of record; plans, code, and pull requests are derived from it. Portable **agent skills** run that pipeline in any coding assistant. Install into a project, keep config and memory local, contribute lasting skill changes here via PR.
+**From Spec to Delivery** for any coding agent. The spec is the contract of record; plans, code, and pull requests are derived from it. Portable **agent skills** run that pipeline in any coding assistant. Install into a project, keep config and memory local, contribute lasting skill changes here via PR.
 
 | Doc | Who reads it | What it covers |
 |-----|--------------|----------------|
@@ -34,9 +36,15 @@
 | **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; tracker close-loop via `comment-issue`. |
 | **Safe shell recipes** | Phase 5a blocks nested-quote `python -c` / `node -e` one-liners. Use `extract_frontmatter_field.cjs` for YAML fields. |
 | **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until ship. |
+| **Definition of Ready and TDD** | Authoring requires Definition of Ready, Validation & Observation Notes, and Negative & Failing Test Scenarios (`validate_spec.cjs --mode=authoring` fails closed). Interview audits failing tests. Implement is red-then-green. Uncovered negative scenarios cap verify at 8. |
+| **Dual memory routing** | Local MEMORY files and/or an external spec-memo vault via `enableMemoryFiles` / `enableSpecMemoIntegration`. `ws-spec-memo` is the setup/bridge; runtime vault ops use `ws-memo`. |
 | **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |
 | **Two speeds, one config** | Standard and lite share `config.json`. Isolated state (`workflowType`); no cross-resume. New runs ask stay-on-branch or `feat/{slug}`. |
 | **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Fresh `ws-configure-project` / `config.json.example` seed `defaults.verboseMode: true` (reasoned start-of-step preview); omitted or `false` at runtime is silent. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
+
+### Roadmap
+
+Work that is **not** in the current package: remaining Hermes plan items, harness spec-run benchmark, skill-family renaming, unique Node script runtime, Step 5–6 deadlock (`us-235`), optional spec filename prefixes, plus inbox ideas (multi-repo orchestrator, CI/CD generator). Full table: [`FEATURES.md`](FEATURES.md) § Roadmap. Site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
 
 ---
 
