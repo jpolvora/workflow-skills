@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.47** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.48** · 48 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -252,12 +252,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.47)
+## 12. Recent evolution (0.3.22 → 0.3.48)
 
 Derived from recent commits on `develop` (2026-08-16 → 2026-08-28).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName` |
 | **0.3.47** | Aug 28 | **Docs/site:** LLM-agnostic From Spec to Delivery hero and CTAs; honest remaining-todo roadmap; DoR/TDD and spec-memo dual routing on FEATURES, README, and the public site |
 | **0.3.46** | Aug 27 | **Spec DoR + TDD:** authoring-mode `Definition of Ready` / Validation Notes, interview failing-test audit, implement-tasks red-then-green, verify-plan negative-test coverage |
 | **0.3.45** | Aug 27 | **Research-driven pipeline quality:** JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `defaults.providerCompat` / `contextHygiene` / `reviewJury`, memory write sanitizer, pipeline handoff harness check |
@@ -290,7 +291,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-28).
 
 ## 13. Roadmap (not in the current package)
 
-These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.3.47**.
+These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.3.48**.
 
 | Item | Status | Notes |
 |------|--------|-------|

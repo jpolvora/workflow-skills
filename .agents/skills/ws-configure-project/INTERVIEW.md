@@ -54,7 +54,7 @@ Scan consumer **repo root** (not this skill package alone):
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
 7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, **minVerifyScore**, `convergence`, **`providerCompat`**, **`contextHygiene`**, **`reviewJury`**) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
-   - **Models preset** (`modelsPreset`): pick from shipped sample keys in `config.json.example` (`modelPresets` map) or **Custom…** / **Keep current** / **Skip**. Unknown names fall back to preset `default` when present.
+   - **Models preset** (`modelsPreset`): pick from shipped sample keys in `config.json.example` (`modelPresets` map) or **Custom…** / **Keep current** / **Skip**. Shipped seed uses the full explicit Steps 0–9 + Fix-PR role map sample; unknown names fall back to preset `default` when present.
    - **Per-step overrides** (`stepModels`): optional numeric `"0"`–`"9"` and roles `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec` (skippable; empty strings). Token `"current"` uses the active session model. Offer Fix-PR plan and execute independently: `fixPrPlan` defaults through `reviewerModel`, `fixPrExec` through `executionModel`; neither inherits numeric `"9"` (outer Step 9 only). Lite ignores both role model switches but still plans before editing inline.
    - **Advanced phase keys** (legacy overrides of the active preset; empty = fall through):
    - `plannerModel` (Planning phase: Steps 0–3)

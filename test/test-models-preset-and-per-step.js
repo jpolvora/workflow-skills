@@ -44,11 +44,23 @@ assert(defaultsProps.stepModels?.properties?.fixPrPlan?.type === 'string', 'sche
 assert(defaultsProps.stepModels?.properties?.fixPrExec?.type === 'string', 'schema stepModels includes fixPrExec');
 assert(!schema.properties?.defaults?.required?.includes('modelsPreset'), 'schema does not require modelsPreset');
 
-assert(example.defaults.modelsPreset === 'default', 'example sets modelsPreset default');
-assert(example.defaults.modelPresets?.default?.plannerModel === 'current', 'default preset plannerModel is current');
-assert(example.defaults.modelPresets?.default?.executionModel === 'current', 'default preset executionModel is current');
-assert(example.defaults.modelPresets?.default?.reviewerModel === 'current', 'default preset reviewerModel is current');
-assert(example.defaults.modelPresets?.default?.testingModel === 'current', 'default preset testingModel is current');
+assert(example.defaults.modelsPreset === 'cursor', 'example sets modelsPreset to cursor');
+assert(
+  example.defaults.modelPresets?.default?.plannerModel === 'cursor-grok-4.6-high',
+  'default preset plannerModel is cursor-grok-4.6-high',
+);
+assert(
+  example.defaults.modelPresets?.default?.executionModel === 'composer-2.5',
+  'default preset executionModel is composer-2.5',
+);
+assert(
+  example.defaults.modelPresets?.default?.reviewerModel === 'cursor-grok-4.6-medium',
+  'default preset reviewerModel is cursor-grok-4.6-medium',
+);
+assert(
+  example.defaults.modelPresets?.default?.testingModel === 'composer-2.5',
+  'default preset testingModel is composer-2.5',
+);
 assert(example.defaults.modelPresets?.cursor?.executionModel, 'example includes cursor preset');
 assert(example.defaults.modelPresets?.deepseek, 'example includes deepseek preset');
 assert(example.defaults.modelPresets?.opencode, 'example includes opencode preset');
@@ -59,16 +71,38 @@ const STEP_TEMPLATE_KEYS = [
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
   'dag', 'scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec',
 ];
+const CURSOR_NATIVE_STEPS = {
+  '0': 'cursor-grok-4.6-high',
+  '1': 'cursor-grok-4.6-high',
+  '2': 'cursor-grok-4.6-high',
+  '3': 'cursor-grok-4.6-high',
+  '4': 'composer-2.5',
+  '5': 'cursor-grok-4.6-medium',
+  '6': 'cursor-grok-4.6-medium',
+  '7': 'composer-2.5',
+  '8': 'current',
+  '9': 'current',
+  dag: 'composer-2.5',
+  scoreAndRefine: 'composer-2.5',
+  reviewFix: 'composer-2.5',
+  fixPrPlan: 'cursor-grok-4.6-medium',
+  fixPrExec: 'composer-2.5',
+};
 for (const name of ['default', 'cursor', 'deepseek', 'opencode', 'cheap']) {
   const steps = example.defaults.modelPresets?.[name]?.steps;
   assert(steps && typeof steps === 'object', `example ${name} preset includes steps template`);
   for (const key of STEP_TEMPLATE_KEYS) {
     assert(Object.prototype.hasOwnProperty.call(steps, key), `example ${name}.steps includes ${key}`);
   }
-  assert(steps['4'] === '' && steps['5'] === '', `example ${name}.steps 4 and 5 stay empty for lite session`);
-  const expectedRole = name === 'default' ? 'current' : '';
-  assert(steps.fixPrPlan === expectedRole, `example ${name}.steps fixPrPlan uses ${expectedRole || 'empty'} template`);
-  assert(steps.fixPrExec === expectedRole, `example ${name}.steps fixPrExec uses ${expectedRole || 'empty'} template`);
+  if (name === 'default' || name === 'cursor') {
+    for (const [key, expected] of Object.entries(CURSOR_NATIVE_STEPS)) {
+      assert(steps[key] === expected, `example ${name}.steps.${key} is ${expected}`);
+    }
+  } else {
+    assert(steps['4'] === '' && steps['5'] === '', `example ${name}.steps 4 and 5 stay empty for lite session`);
+    assert(steps.fixPrPlan === '', `example ${name}.steps fixPrPlan uses empty template`);
+    assert(steps.fixPrExec === '', `example ${name}.steps fixPrExec uses empty template`);
+  }
 }
 
 const session = 'session-model';
@@ -84,8 +118,8 @@ const baseDefaults = {
 
 assert(
   resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session }) ===
-    'cursor-grok-4.6-xhigh',
-  'preset plannerModel for step 0',
+    'cursor-grok-4.6-high',
+  'preset step 0 uses cursor-grok-4.6-high',
 );
 assert(
   resolvePhaseModel(baseDefaults, { step: 4, pipeline: 'standard', sessionModel: session }) === 'composer-2.5',
@@ -228,27 +262,33 @@ assert(
 );
 assert(
   resolvePhaseModel(liteDefaults, { step: 3, pipeline: 'lite', sessionModel: session }) ===
-    'cursor-grok-4.6-medium',
-  'lite step 3 uses reviewerModel preset',
+    'cursor-grok-4.6-high',
+  'lite step 3 uses explicit cursor seed step map',
 );
 assert(
-  resolvePhaseModel(liteDefaults, { step: 4, pipeline: 'lite', sessionModel: session }) === session,
-  'lite steps 4-5 default to session',
+  resolvePhaseModel(liteDefaults, { step: 4, pipeline: 'lite', sessionModel: session }) ===
+    'composer-2.5',
+  'lite step 4 uses explicit cursor seed step map',
+);
+assert(
+  resolvePhaseModel(liteDefaults, { step: 5, pipeline: 'lite', sessionModel: session }) ===
+    'cursor-grok-4.6-medium',
+  'lite step 5 uses explicit cursor seed step map',
 );
 assert(
   resolvePhaseModel(liteDefaults, { step: 5, role: 'reviewFix', pipeline: 'lite', sessionModel: session }) ===
-    session,
-  'lite ignores reviewFix role',
+    'cursor-grok-4.6-medium',
+  'lite ignores reviewFix role and keeps numeric step map',
 );
 assert(
   resolvePhaseModel(liteDefaults, { step: 5, role: 'fixPrPlan', pipeline: 'lite', sessionModel: session }) ===
-    session,
-  'lite ignores fixPrPlan role',
+    'cursor-grok-4.6-medium',
+  'lite ignores fixPrPlan role and keeps numeric step map',
 );
 assert(
   resolvePhaseModel(liteDefaults, { step: 5, role: 'fixPrExec', pipeline: 'lite', sessionModel: session }) ===
-    session,
-  'lite ignores fixPrExec role',
+    'cursor-grok-4.6-medium',
+  'lite ignores fixPrExec role and keeps numeric step map',
 );
 
 const dispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');

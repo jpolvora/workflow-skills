@@ -1,13 +1,13 @@
 {
-  "_comment": "Pick the block matching specMemo.cli from config.json. Use spec-memo-npx when cli is npx -y spec-memo. For SSE (port 3000), status monitor (3001), and canvas (4100), see spec-memo ws-memo/references/MCP-TEMPLATE.json — keep stdio memo serve as the default here.",
+  "_comment": "Canonical keys match specMemo.mcpServerName default (spec-memo) and spec-memo ws-memo/references/MCP-TEMPLATE.json. Use spec-memo-npx when cli is npx. Prefer npx -y github:jpolvora/spec-memo; npm package `npx -y spec-memo serve` is an alternate. For SSE (3000), status (3001), canvas (4100), see that upstream template.",
   "mcpServers": {
-    "spec-memo-global": {
+    "spec-memo": {
       "command": "memo",
       "args": ["serve"]
     },
     "spec-memo-npx": {
       "command": "npx",
-      "args": ["-y", "spec-memo", "serve"]
+      "args": ["-y", "github:jpolvora/spec-memo", "serve"]
     }
   }
 }
