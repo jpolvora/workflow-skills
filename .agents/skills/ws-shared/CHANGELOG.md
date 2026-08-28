@@ -1,5 +1,23 @@
 # Changelog
 
+### [2026-08-28 02:20] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 255 round 1
+- **Done**: Empty cursor/default steps 2–5 for lite fallthrough; retarget autoload/CATALOG runtime keywords to `ws-memo`; MEMORY trap
+- **Result**: Pending resolve-thread + re-check
+
+
+### [2026-08-28 02:05] Agent: Composer
+- **Prompt**: Fix GH #252/#253, bump version, commit, push, ship-pr, goal-fix-pr
+- **Done**: Seed `modelsPreset: cursor` with full `default`+`cursor` step maps; `ws-spec-memo` invocation `spec-memo-setup` + MCP template key `spec-memo`; package 0.3.48
+- **Result**: Pending ship-pr / goal-fix-pr
+
+
+### [2026-08-28 01:50] Agent: Cursor Grok 4.6
+- **Prompt**: `/spec-to-pr` spec-dor-tdd-refinement-hardening with `set mode auto full ws-ship-pr ws-goal-fix-pr`
+- **Done**: Standard orch 0–9 on `develop`; start-anchored ledger ingest + V9/V10 tests; shipped and merged PR #254; goal-fix-pr resolved prefix-aware `register_local_spec.cjs` plus archive/classifier regression tests
+- **Result**: PR https://github.com/jpolvora/workflow-skills/pull/254 merged; ledger score 9/10; `npm run test` exit 0
+
+
 ### [2026-08-28 01:48] Agent: Cursor Grok 4.6
 - **Prompt**: bump version, commit, push
 - **Done**: Patch bump 0.3.46 → 0.3.47 via `build-site:bump`; FEATURES/AGENTS/test package stamp; integrity regen

@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Assume the spec of record path is exactly `{specsDir}/{slug}.spec.md`. Infer slug from the prefixed filename stem (`0001-foo` is not the slug).
 - **INSTEAD DO**: Resolve `{slug}.spec.md` first, then `NNNN-{slug}.spec.md`. Prefer frontmatter `slug`. Keep `{plansDir}/{slug}/` unprefixed. Update `index.PRD` `spec:` backticks to the on-disk filename.
 
+### [2026-08-28] Lite steps 2-5 must stay empty in cursor seed
+- **Layer**: `Pipeline`
+- **Module**: `modelPresets / resolvePhaseModel`
+- **Severity**: `High`
+- **PathPattern**: `**/ws-shared/config.json.example;**/test-models-preset-and-per-step.js`
+- **Scenario / Context**: Filling numeric steps 2–5 in default/cursor presets makes lite resolve planner/reviewer models for implement/review/ship telemetry because resolveStepOverride runs before litePhaseKey.
+- **DO NOT**: Ship a full 0–9 filled steps map for the cursor/default presets when lite shares the same numeric keys with different semantics.
+- **INSTEAD DO**: Fill 0–1 / 6–9 / Fix-PR roles explicitly; leave 2–5 empty so lite falls through (2 execution, 3 reviewer, 4–5 session) while standard still uses phase keys.
+
 ### [2026-08-27] Verify score must fail-close on uncovered negative scenarios
 - **Layer**: `Harness`
 - **Module**: `ws-verify-plan / ac_ledger`

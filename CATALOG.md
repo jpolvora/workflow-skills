@@ -144,7 +144,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Convergence loop | `ws-goal-loop` |
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` |
-| spec-memo / external vault / off-repo memory | `ws-spec-memo` |
+| spec-memo-setup / configure vault / import MEMORY | `ws-spec-memo` |
+| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas) | `ws-memo` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 
 ---

@@ -1,14 +1,15 @@
 ---
 name: ws-spec-memo
-version: 0.3.47
+version: 0.3.48
 disable-model-invocation: true
 description: >-
-  Configure and bridge workflow-skills with the external spec-memo vault (MCP/CLI).
-  Trigger on spec-memo, external memory vault, memo bootstrap, migrate MEMORY to vault,
-  or off-repo agent memory setup.
+  Setup/bridge only: enable or disable the external vault in config.json, import/migrate
+  MEMORY into the vault, run preflight check, or hybrid fallback when MCP/CLI is unavailable.
+  Do not trigger for day-to-day vault search/get/upsert/bootstrap when MCP is already registered
+  — use /ws-memo instead. Companion reverse-handoff: https://github.com/jpolvora/spec-memo/issues/17
 invocation_names:
   - ws-spec-memo
-  - spec-memo
+  - spec-memo-setup
 ---
 
 # ws-spec-memo
@@ -21,13 +22,13 @@ invocation_names:
 - **`enableSpecMemoIntegration: true`**: reads/writes memory records via `spec-memo` MCP server tools or `memo` CLI.
 - Both can be enabled (dual-mode: persists to local files and vault), or both disabled. Legacy `specMemo.enabled` and `mode` resolve seamlessly.
 
-Mapping table → [`references/INTEGRATION.md`](references/INTEGRATION.md). MCP host snippet → [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json).
+Mapping table → [`references/INTEGRATION.md`](references/INTEGRATION.md). MCP host snippet → [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json) (server key `spec-memo` matches `specMemo.mcpServerName`; aligned with [spec-memo#17](https://github.com/jpolvora/spec-memo/issues/17)).
 
 **Role segregation (two-skill split):**
 - **`ws-memo`** (owned by [spec-memo](https://github.com/jpolvora/spec-memo)): upstream runtime skill for day-to-day vault operations (10 MCP tools: `bootstrap`, `search`, `get`, `upsert`, `append`, `forget`, `gc`, `promote`, `check_version`, `install_skills` + CLI extras like `canvas`, `doctor`, `rank`, `sync-vault`).
 - **`ws-spec-memo`** (owned by workflow-skills): integration bridge covering harness configuration (`config.json`), setup wizard interview, lifecycle hook translation (failure reflection, adversarial audit traps, changelog append), dual-mode fallback, preflight health diagnostics, and legacy data import.
 
-**Runtime (after setup):** when vault is enabled and MCP/CLI is registered, load **`/ws-memo`** (`{skillsRoot}/ws-memo/SKILL.md` from the spec-memo package) for day-to-day vault operations — not this skill.
+**Runtime (after setup):** when vault is enabled and MCP/`spec-memo` is already registered, prefer **`/ws-memo`** / MCP `bootstrap` for session briefs and vault ops — do **not** run this skill’s `bootstrap` as the primary path. Keep this skill’s `bootstrap` only as hybrid fallback when vault is off or MCP/CLI fails.
 
 **Also invoked from:** [`ws-configure-project`](../ws-configure-project/SKILL.md) step 7 / `--section specMemo` during project setup.
 
@@ -46,7 +47,7 @@ Mapping table → [`references/INTEGRATION.md`](references/INTEGRATION.md). MCP 
 |------------|--------|
 | *(default)* / `setup` | Detect `memo` CLI, interview `specMemo.*`, optional import + write-block hook |
 | `check` | Read-only health: CLI, vault, repo pollution, config |
-| `bootstrap` | Run `memo bootstrap` when enabled; else in-repo MEMORY consult path |
+| `bootstrap` | Session brief **with hybrid fallback** — if MCP `spec-memo` / `user-spec-memo` is already registered, prefer `/ws-memo` / MCP `bootstrap` and skip this subcommand; otherwise run CLI bootstrap or in-repo MEMORY |
 | `import` | One-shot `memo import --from` for legacy in-tree workflow data |
 | `disable` | Set `specMemo.enabled: false` (keeps vault data; restores in-repo memory path) |
 
@@ -103,6 +104,8 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell.
 **Next:** Runtime vault ops → **`/ws-memo`** when vault is enabled.
 
 ## Steps — bootstrap
+
+If MCP `user-spec-memo` / `spec-memo` is already registered, prefer `/ws-memo` / MCP `bootstrap` and skip this subcommand.
 
 1. Read `{sharedDir}/config.json` → `specMemo`. When `enabled` is not explicit `true`, fall back to `ws-self-learning` § Pre-work consult (`Grep`/`Read` `{sharedDir}/MEMORY.md`).
 2. When enabled, run `{specMemo.cli}` bootstrap (default `memo bootstrap`) with optional `--slug` / `--path` from invocation. Prefer MCP `bootstrap` tool when the host exposes the `spec-memo` namespace.
