@@ -62,7 +62,8 @@ function resolveSpecPath(options) {
   const specsDir = path.resolve(context.repoRoot, specsRel);
 
   const cleanSlug = String(options.slug).replace(/^\d{4}-/, '');
-  let existingSpecFile = null;
+  let prefixedHit = null;
+  let unprefixedHit = null;
   const existingPrefixes = [];
 
   if (fs.existsSync(specsDir)) {
@@ -75,13 +76,21 @@ function resolveSpecPath(options) {
         const num = Number(prefixMatch[1]);
         if (!Number.isNaN(num)) existingPrefixes.push(num);
         if (prefixMatch[2] === cleanSlug) {
-          existingSpecFile = name;
+          prefixedHit = name;
         }
       } else if (name === `${cleanSlug}.spec.md`) {
-        existingSpecFile = name;
+        unprefixedHit = name;
       }
     }
   }
+
+  if (prefixedHit && unprefixedHit) {
+    throw new Error(
+      `Ambiguous spec of record for "${cleanSlug}": ${unprefixedHit} and ${prefixedHit}`,
+    );
+  }
+
+  const existingSpecFile = prefixedHit || unprefixedHit;
 
   let finalFileName;
   let isExisting = false;
@@ -114,14 +123,19 @@ function resolveSpecPath(options) {
 }
 
 if (require.main === module) {
-  const options = parseArgs(process.argv.slice(2));
-  const result = resolveSpecPath(options);
-  if (options.json) {
-    console.log(JSON.stringify(result, null, 2));
-  } else if (options.context) {
-    console.log(result.contextPath);
-  } else {
-    console.log(result.specPath);
+  try {
+    const options = parseArgs(process.argv.slice(2));
+    const result = resolveSpecPath(options);
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+    } else if (options.context) {
+      console.log(result.contextPath);
+    } else {
+      console.log(result.specPath);
+    }
+  } catch (error) {
+    console.error(error.message);
+    process.exit(2);
   }
 }
 

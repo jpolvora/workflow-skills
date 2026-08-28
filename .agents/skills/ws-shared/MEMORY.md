@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-28] Spec resolver must fail closed when prefixed and unprefixed files both exist
+- **Layer**: `Harness`
+- **Module**: `ws-spec-organizer / resolve_spec_path`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs;test/test-spec-prefix-ordering.js`
+- **Scenario / Context**: When both `{slug}.spec.md` and `NNNN-{slug}.spec.md` exist, last-wins readdir made the spec of record filesystem-order dependent. Partial migrations then wrote the wrong file.
+- **DO NOT**: Overwrite `existingSpecFile` on every match, or pick last readdir hit when both shapes exist.
+- **INSTEAD DO**: Detect prefixed and unprefixed hits separately and throw `Ambiguous spec of record` so callers fail closed until one file remains.
+
 ### [2026-08-28] Spec of record filenames may use a four-digit chronological prefix
 - **Layer**: `harness`
 - **Module**: `ws-spec-index / ws-local-spec-provider / ws-spec-archive`
@@ -14,6 +23,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Board specs under `.agents/specs/` were renamed to `NNNN-{slug}.spec.md` for visual chronological order. Frontmatter `slug` is unchanged. Tools that only open `{specsDir}/{slug}.spec.md` miss the file and treat the spec as missing.
 - **DO NOT**: Assume the spec of record path is exactly `{specsDir}/{slug}.spec.md`. Infer slug from the prefixed filename stem (`0001-foo` is not the slug).
 - **INSTEAD DO**: Resolve `{slug}.spec.md` first, then `NNNN-{slug}.spec.md`. Prefer frontmatter `slug`. Keep `{plansDir}/{slug}/` unprefixed. Update `index.PRD` `spec:` backticks to the on-disk filename.
+
+### [2026-08-28] Live harness-benchmark collect must use a prepare baseline, not git diff HEAD
+- **Layer**: `Tests`
+- **Module**: `harness-benchmark / collect / sensor / compare`
+- **Severity**: `High`
+- **PathPattern**: `scripts/harness-benchmark/**;benchmarks/fixtures/**;test/test-harness-benchmark.js`
+- **Scenario / Context**: Review threads on PR 256 showed live collect scoring completeness 0 after a normal orch (new files untracked or already committed), discrimination PASS without running real tests (scratch missing testFile; applyPatch appended +lines), inverted fx-incomplete failIf, and snapshot tests rewriting tracked baselines.
+- **DO NOT**: Use `git diff HEAD` for completeness or judge fraud; copy only sensorPaths into scratch; append patch +lines at EOF; fail incomplete fixtures when completeness is below a min; snapshot named baselines into the tracked repo on every `npm test`.
+- **INSTEAD DO**: Seed git in prepare and diff from `.benchmark-baseline-sha` plus untracked names; copy testFile/expectedOutputPaths; apply unified hunks in place; failIf with expectCompletenessMax; snapshot into a temp `--repo-root`; reject compare across fixture/mode.
 
 ### [2026-08-28] Lite steps 2-5 must stay empty in cursor seed
 - **Layer**: `Pipeline`

@@ -55,6 +55,9 @@ function checkFailIf(oracle, toReport) {
 
 function checkRegression(from, to, allowRegression) {
   if (allowRegression) return [];
+  if (from.meta?.mode && to.meta?.mode && from.meta.mode !== to.meta.mode) {
+    return [];
+  }
   const failures = [];
   const indexDrop = (from.index?.value ?? 0) - (to.index?.value ?? 0);
   if (indexDrop > REGRESSION_INDEX_DROP) {
@@ -103,6 +106,14 @@ function compareReports(options = {}) {
 
   const fromReport = loadReport(resolveReportPath(paths, options.from));
   const toReport = loadReport(resolveReportPath(paths, options.to));
+  const fromMeta = fromReport.meta || {};
+  const toMeta = toReport.meta || {};
+  if (fromMeta.fixtureId && toMeta.fixtureId && fromMeta.fixtureId !== toMeta.fixtureId) {
+    throw new Error(`compare fixture mismatch: ${fromMeta.fixtureId} vs ${toMeta.fixtureId}`);
+  }
+  if (fromMeta.mode && toMeta.mode && fromMeta.mode !== toMeta.mode) {
+    throw new Error(`compare mode mismatch: ${fromMeta.mode} vs ${toMeta.mode}`);
+  }
   const deltas = dimensionDeltas(fromReport, toReport);
 
   process.stdout.write([

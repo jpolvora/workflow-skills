@@ -14,7 +14,7 @@ const {
   runOutputDir,
 } = require('./paths.cjs');
 const { buildReport, writeReports } = require('./report-builder.cjs');
-const { runJudgeChecks } = require('./judge-checks.cjs');
+const { runJudgeChecks, gitDiffText } = require('./judge-checks.cjs');
 const { runSensor } = require('./sensor.cjs');
 
 function parseMarkdownScore(sandboxRoot, slug) {
@@ -43,8 +43,7 @@ function verifyScoreFromLedger(sandboxRoot, ledgerPath, acLedgerScript) {
 }
 
 function completenessFromLedger(sandboxRoot, ledger, oracle) {
-  const diffResult = spawnSync('git', ['diff', 'HEAD'], { cwd: sandboxRoot, encoding: 'utf8' });
-  const diffText = diffResult.stdout || '';
+  const diffText = gitDiffText(sandboxRoot);
   const oracleAcs = (oracle.acIds || []).map(String);
   const perAc = [];
   let earned = 0;

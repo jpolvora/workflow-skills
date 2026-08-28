@@ -16,6 +16,26 @@ function copyDir(src, dest) {
   }
 }
 
+function runGit(sandboxRoot, args) {
+  const result = spawnSync('git', args, { cwd: sandboxRoot, encoding: 'utf8' });
+  if (result.status !== 0) {
+    throw new Error(`git ${args.join(' ')} failed: ${result.stderr || result.stdout}`);
+  }
+  return result;
+}
+
+function initSandboxGit(sandboxRoot) {
+  if (!fs.existsSync(path.join(sandboxRoot, '.git'))) {
+    runGit(sandboxRoot, ['init']);
+  }
+  runGit(sandboxRoot, ['config', 'user.email', 'benchmark@workflow-skills.local']);
+  runGit(sandboxRoot, ['config', 'user.name', 'Harness Benchmark']);
+  runGit(sandboxRoot, ['add', '-A']);
+  runGit(sandboxRoot, ['commit', '-m', 'benchmark sandbox seed', '--allow-empty']);
+  const sha = runGit(sandboxRoot, ['rev-parse', 'HEAD']).stdout.trim();
+  fs.writeFileSync(path.join(sandboxRoot, '.benchmark-baseline-sha'), `${sha}\n`, 'utf8');
+}
+
 function prepareSandbox(options = {}) {
   const paths = resolvePaths(options);
   if (!options.fixture) throw new Error('prepare requires --fixture <id>');
@@ -81,7 +101,9 @@ function prepareSandbox(options = {}) {
   ].join('\n');
   fs.writeFileSync(path.join(sandboxRoot, 'RUN.md'), runMd, 'utf8');
 
+  initSandboxGit(sandboxRoot);
+
   return { sandboxRoot, runMd, collectCmd, oracle, paths };
 }
 
-module.exports = { prepareSandbox, copyDir };
+module.exports = { prepareSandbox, copyDir, initSandboxGit };

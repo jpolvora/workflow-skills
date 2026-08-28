@@ -50,6 +50,16 @@ for (const id of ['fx-lite-readme', 'fx-node-helper', 'fx-incomplete', 'fx-stand
 // V18: fx-incomplete cap
 const incompleteOracle = JSON.parse(fs.readFileSync(path.join(repoRoot, 'benchmarks/fixtures/fx-incomplete/oracle.json'), 'utf8'));
 assert.ok(incompleteOracle.expectCompletenessMax <= 5);
+const { checkFailIf, checkRegression } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/compare.cjs'));
+assert.deepStrictEqual(
+  checkFailIf(incompleteOracle, { dimensions: { completeness: 5 }, index: { value: 50 } }),
+  [],
+  'capped incomplete score must not fail compare',
+);
+assert.ok(
+  checkFailIf(incompleteOracle, { dimensions: { completeness: 7 }, index: { value: 70 } }).length > 0,
+  'incomplete fixture must fail when completeness exceeds cap',
+);
 
 // V19: oracles spec-anchored (no hash bodies)
 for (const id of ['fx-lite-readme', 'fx-node-helper', 'fx-standard-mock', 'fx-config-merge']) {
@@ -82,10 +92,13 @@ assert.strictEqual(report.meta.mode, 'static');
 assert.ok(report.dimensions.efficiency != null, 'static efficiency recorded');
 assert.ok(fs.readFileSync(path.join(runsDir, latestRun, 'report.md'), 'utf8').includes('## Dimensions'));
 
-// V21: snapshot slim baseline
-const snap = run(cli, ['snapshot', '--run', latestRun, '--name', 'test-slim-baseline']);
+// V21: snapshot slim baseline into a temp tree (do not rewrite tracked baselines/)
+const snapRoot = temp('hb-snap-');
+write(path.join(snapRoot, 'package.json'), JSON.stringify({ version: '0.0.0' }));
+write(path.join(snapRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
+const snap = run(cli, ['snapshot', '--from', reportPath, '--name', 'test-slim-baseline', '--repo-root', snapRoot]);
 assert.strictEqual(snap.status, 0, snap.stderr);
-const baselinePath = path.join(repoRoot, 'benchmarks/baselines/test-slim-baseline.json');
+const baselinePath = path.join(snapRoot, 'benchmarks/baselines/test-slim-baseline.json');
 const baseline = JSON.parse(fs.readFileSync(baselinePath, 'utf8'));
 assert.ok(baseline.meta && baseline.dimensions && baseline.index && baseline.fixtureId);
 assert.strictEqual(baseline.perAc, undefined);
@@ -100,6 +113,24 @@ const worsePath = path.join(temp('hb-compare-'), 'worse.json');
 write(worsePath, JSON.stringify(worse, null, 2));
 const compareFail = run(cli, ['compare', '--from', baselinePath, '--to', worsePath]);
 assert.strictEqual(compareFail.status, 1, 'compare exits 1 on regression');
+const mismatchReport = {
+  ...baseline,
+  meta: { ...baseline.meta, mode: baseline.meta.mode === 'static' ? 'live' : 'static', fixtureId: 'fx-other' },
+};
+const mismatchPath = path.join(temp('hb-compare-mismatch-'), 'mismatch.json');
+write(mismatchPath, JSON.stringify(mismatchReport, null, 2));
+const compareMismatch = run(cli, ['compare', '--from', baselinePath, '--to', mismatchPath]);
+assert.notStrictEqual(compareMismatch.status, 0, 'compare rejects fixture/mode mismatch');
+assert.match(`${compareMismatch.stderr}\n${compareMismatch.stdout}`, /mismatch/);
+assert.deepStrictEqual(
+  checkRegression(
+    { meta: { mode: 'static' }, index: { value: 100 }, dimensions: { verifyScore: 9 } },
+    { meta: { mode: 'live' }, index: { value: 80 }, dimensions: { verifyScore: 9 } },
+    false,
+  ),
+  [],
+  'index compare skipped across modes',
+);
 
 // V24: CLI has no push spawn
 const cliSource = fs.readFileSync(cli, 'utf8');
@@ -116,6 +147,12 @@ const runMd = fs.readFileSync(path.join(sandboxRoot, 'RUN.md'), 'utf8');
 assert.match(runMd, /dryRun:\s*true/);
 const specCopied = fs.existsSync(path.join(sandboxRoot, '.agents/specs/fx-lite-readme.spec.md'));
 assert.ok(specCopied, 'spec copied to sandbox specsDir');
+assert.strictEqual(
+  spawnSync('git', ['rev-parse', 'HEAD'], { cwd: sandboxRoot, encoding: 'utf8' }).status,
+  0,
+  'prepare must initialize git for collect/orch',
+);
+assert.ok(fs.existsSync(path.join(sandboxRoot, '.benchmark-baseline-sha')), 'prepare records baseline sha');
 fs.rmSync(sandboxRoot, { recursive: true, force: true });
 
 // V12: collect uses ledger verify not markdown score
@@ -228,23 +265,43 @@ fs.rmSync(judgeRoot, { recursive: true, force: true });
 fs.rmSync(verifyRoot, { recursive: true, force: true });
 fs.rmSync(authRoot, { recursive: true, force: true });
 
-// V15/V26: runSensor restores porcelain and kills inverted mutation
-const { runSensor } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/sensor.cjs'));
+const { gitDiffNames } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/judge-checks.cjs'));
+const evRoot = temp('hb-git-ev-');
+write(path.join(evRoot, 'seed.js'), 'module.exports = 1;\n');
+spawnSync('git', ['init'], { cwd: evRoot, encoding: 'utf8' });
+spawnSync('git', ['config', 'user.email', 't@e.com'], { cwd: evRoot });
+spawnSync('git', ['config', 'user.name', 't'], { cwd: evRoot });
+spawnSync('git', ['add', '.'], { cwd: evRoot });
+spawnSync('git', ['commit', '-m', 'seed'], { cwd: evRoot });
+const seedSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: evRoot, encoding: 'utf8' }).stdout.trim();
+write(path.join(evRoot, '.benchmark-baseline-sha'), `${seedSha}\n`);
+write(path.join(evRoot, 'delivered.js'), 'module.exports = 2;\n');
+assert.ok(gitDiffNames(evRoot).includes('delivered.js'), 'untracked deliverables count as baseline diff');
+fs.rmSync(evRoot, { recursive: true, force: true });
+
+// V15/V26: runSensor restores porcelain and kills inverted mutation with the real oracle command
+const { runSensor, applyPatch } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/sensor.cjs'));
 const { resolvePaths, loadOracle } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/paths.cjs'));
 const sensorPaths = resolvePaths({ repoRoot });
+const greetSource = 'function greet(name) {\n  return `Hello, ${name}!`;\n}\nmodule.exports = { greet };\n';
+const invertPatch = fs.readFileSync(path.join(sensorPaths.fixturesRoot, 'fx-node-helper/invert.patch'), 'utf8');
+const patchProbe = temp('hb-patch-');
+write(path.join(patchProbe, 'lib/greet.cjs'), greetSource);
+applyPatch(path.join(patchProbe, 'lib/greet.cjs'), invertPatch);
+const patchedGreet = fs.readFileSync(path.join(patchProbe, 'lib/greet.cjs'), 'utf8');
+assert.match(patchedGreet, /Goodbye/);
+assert.ok(!/function greet\(name\) \{\s*\}/.test(patchedGreet), 'applyPatch inserts + lines in place');
+fs.rmSync(patchProbe, { recursive: true, force: true });
+
 const sensorOracle = {
   ...loadOracle(sensorPaths.fixturesRoot, 'fx-node-helper'),
   fixtureId: 'fx-node-helper',
-  sensorTestCommand: "node -e \"process.exit(require('fs').readFileSync('lib/greet.cjs','utf8').includes('Hello,')?0:1)\"",
 };
 const sensorScratch = temp('hb-sensor-');
-const greetDir = path.join(sensorScratch, 'lib');
-fs.mkdirSync(greetDir, { recursive: true });
-const greetFile = path.join(greetDir, 'greet.cjs');
-fs.writeFileSync(greetFile, 'function greet(name) {\n  return `Hello, ${name}!`;\n}\nmodule.exports = { greet };\n');
-fs.copyFileSync(
-  path.join(sensorPaths.fixturesRoot, 'fx-node-helper/invert.patch'),
-  path.join(sensorScratch, 'invert.patch'),
+write(path.join(sensorScratch, 'lib/greet.cjs'), greetSource);
+write(
+  path.join(sensorScratch, 'test/helper-greet-behavior.test.cjs'),
+  "const test = require('node:test');\nconst assert = require('node:assert');\nconst { greet } = require('../lib/greet.cjs');\ntest('helper-greet-behavior', () => { assert.match(greet('Ada'), /Hello/); });\n",
 );
 spawnSync('git', ['init'], { cwd: sensorScratch, encoding: 'utf8' });
 spawnSync('git', ['config', 'user.email', 't@e.com'], { cwd: sensorScratch });

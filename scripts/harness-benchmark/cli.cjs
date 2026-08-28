@@ -146,6 +146,7 @@ function main() {
       run: options.run,
       from: options.from,
       name: options.name,
+      repoRoot: options.repoRoot,
     });
     process.stdout.write(`baseline written: ${snap.outPath}\n`);
     return;

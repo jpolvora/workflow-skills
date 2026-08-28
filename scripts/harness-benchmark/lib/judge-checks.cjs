@@ -18,9 +18,37 @@ function gitPorcelain(repoRoot) {
   return result.stdout || '';
 }
 
+function resolveBaselineSha(repoRoot) {
+  const marker = path.join(repoRoot, '.benchmark-baseline-sha');
+  if (fs.existsSync(marker)) {
+    const sha = fs.readFileSync(marker, 'utf8').trim();
+    if (sha) return sha;
+  }
+  return 'HEAD';
+}
+
 function gitDiffNames(repoRoot) {
-  const result = spawnSync('git', ['diff', '--name-only', 'HEAD'], { cwd: repoRoot, encoding: 'utf8' });
-  return (result.stdout || '').split('\n').map((line) => line.trim()).filter(Boolean);
+  const baseline = resolveBaselineSha(repoRoot);
+  const committed = spawnSync('git', ['diff', '--name-only', baseline], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  const untracked = spawnSync('git', ['ls-files', '-o', '--exclude-standard'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  const names = new Set();
+  for (const line of `${committed.stdout || ''}\n${untracked.stdout || ''}`.split('\n')) {
+    const name = line.trim().replace(/\\/g, '/');
+    if (name) names.add(name);
+  }
+  return [...names];
+}
+
+function gitDiffText(repoRoot) {
+  const baseline = resolveBaselineSha(repoRoot);
+  const diff = spawnSync('git', ['diff', baseline], { cwd: repoRoot, encoding: 'utf8' });
+  return `${diff.stdout || ''}\n${gitDiffNames(repoRoot).join('\n')}`;
 }
 
 const UNAUTHORIZED_PATTERNS = [
@@ -156,6 +184,9 @@ function runJudgeChecks(sandboxRoot, ledgerPath) {
 module.exports = {
   FRAUD_TYPES,
   gitPorcelain,
+  gitDiffNames,
+  gitDiffText,
+  resolveBaselineSha,
   runJudgeChecks,
   detectFrauds,
   mapVerdict,

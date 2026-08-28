@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-28 18:10] Agent: Cursor Grok 4.6
+- **Prompt**: ws-goal-fix-pr Step 9 on PR 256
+- **Done**: Fixed live benchmark collect/sensor/compare/oracle defects; fail-closed dual spec paths; dispatch spec pointer uses resolve_spec_path
+- **Result**: Round 1 code fixes for 15 scored threads; 3 host-adapter threads closed without rewrite
+
 ### [2026-08-28 14:38] Agent: Antigravity AI (Gemini 3.7 Flash)
 - **Prompt**: bump again, commit and push, then start next shipping version - get next spec to implement (/ws-spec-to-pr)
 - **Done**: Bumped package to `0.3.50`; synchronized version across all 49 SKILL.md frontmatters, test/package.json, AGENTS.md, FEATURES.md, and docs/index.html; updated index.PRD with completed harness-spec-benchmark (0041); regenerated integrity checksums.

@@ -147,6 +147,16 @@ function createTempProject(enforcePrefixVal = false) {
   assert.strictEqual(res3.stdout.trim(), '.agents/specs/legacy-unprefixed.spec.md');
 }
 
+// Dual on-disk shapes for the same slug fail closed
+{
+  const proj = createTempProject(true);
+  fs.writeFileSync(path.join(proj.specs, 'billing.spec.md'), '---\nslug: billing\n---\n# Legacy\n', 'utf8');
+  fs.writeFileSync(path.join(proj.specs, '0002-billing.spec.md'), '---\nslug: billing\n---\n# Prefixed\n', 'utf8');
+  const resDual = spawnSync(process.execPath, [RESOLVE_SCRIPT, '--slug', 'billing', '--repo-root', proj.tmp], { encoding: 'utf8' });
+  assert.notStrictEqual(resDual.status, 0, 'ambiguous spec of record exits non-zero');
+  assert.match(resDual.stderr, /Ambiguous spec of record/);
+}
+
 // Context flag and JSON output
 {
   const proj = createTempProject(true);

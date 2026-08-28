@@ -117,7 +117,8 @@ Target Slug: {slug}
 Role / Model: {resolvedModel}
 
 CONTEXT POINTERS:
-- Spec: {specsDir}/{slug}.spec.md
+- Spec: {resolvedSpecPath}  # from `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}`
+- Context (optional): {resolvedContextPath}  # same helper with --context
 - Plan Index: {us-dir}/plan.index.json
 - AC Ledger: {us-dir}/ac-ledger.json
 - Prior Handoff: {us-dir}/handoff/step-{NN-1}.json

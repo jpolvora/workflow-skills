@@ -10,6 +10,6 @@
   "maxWallSec": 300,
   "minVerifyScore": 6,
   "failIf": [
-    { "dimension": "completeness", "min": 6 }
+    { "expectCompletenessMax": 5 }
   ]
 }

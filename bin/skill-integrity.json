@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f1904704fc5d992e6db7ad70ccf9730782a7d4089e907ef06b12eab619a5242a",
+  "fullPackageDigest": "60c9c35eda6c5764adc8a76d607fb089b9aef82a92addebd17a77bfa24fe4b47",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
@@ -19,7 +19,7 @@
       "CROSS-PLATFORM.md": "d70d5812d557519605ad15645e7cf1cd36c8e3f5bf68fa583237357405927d8e",
       "evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "gates.md": "945e48155d8c0e78bc414f16ff96f3c49d34c796131487ee6e818d0a9ff3e953",
-      "host-dispatch.md": "2262734ab13cc08a4f189aa4e0438690436e7682b0ed240d444e84eaf6d669b4",
+      "host-dispatch.md": "acdcdf9ec66602840ad8991b4593103dbc3212fc21ac9c1e536015c51bfdd839",
       "hub.gitignore": "e35960c4a5d024e07092884dc69d4c79669c93cdd856e19757ed316e0ec1b844",
       "MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
@@ -46,7 +46,7 @@
       "tools.md": "ff3ac426f1de8b296e78b8421cf9539947b44ecf13b1bf2989c11ab1c6c45fd3",
       "workflow-state.schema.json": "bfbeddf4c213a11ea75b82cbfbc4cd60e941a1cae05e0a73d5a1523da9bd6583"
     },
-    "skillDigest": "2a8bdd8a69a41443f6b37c4ddf41c868c743c480e94a8d03e0b64bf1989e94f3"
+    "skillDigest": "3aedf3fb3b0e37efdc113a621af967780befb96043331f76880d096f1e3506d1"
   },
   "packageVersion": "0.3.50",
   "skills": {
@@ -400,10 +400,10 @@
     "ws-spec-organizer": {
       "files": {
         "scripts/organize_specs.cjs": "d8a31d1a57e971b7306f66c809ebb2da779784794a53435edfc2463abad36231",
-        "scripts/resolve_spec_path.cjs": "e59394d2ff844e6599ce9439682fb5e88e2a7440d115e0219739c145eeb69db9",
+        "scripts/resolve_spec_path.cjs": "2f1e73d45d6a42ff2642281d18b65da83842b715fb9e1db5e2b1b196773d4aba",
         "SKILL.md": "763459bd85adee1f00bcba13cff636cb936fd4109192bd2e074b13acd2968fbc"
       },
-      "skillDigest": "0fe6f3058672e061f41650fb3ebb2c6ba35dbe0e7ab11efd27490e5b254554d6"
+      "skillDigest": "113bbcf438d3db19663fbc528fb23e9f620c3e3d4e6d1b4b4c33b14ac15d3559"
     },
     "ws-spec-to-pr": {
       "files": {
