@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-28 00:25] Agent: Cursor Grok 4.6
+- **Prompt**: Prefix `.agents/specs` board specs with four-digit chronological order
+- **Done**: Renamed 52 `*.spec.md` (plus 4 `.context.md`) to `NNNN-{name}`; updated `index.PRD`; slug lookup accepts prefixed filenames
+- **Result**: `tests:harness-efficiency` exit 0; integrity v0.3.46
+
+
 ### [2026-08-27 13:16] Agent: Cursor Grok 4.6
 - **Prompt**: `/ws-goal-fix-pr` PR 251 round 3
 - **Done**: Qualify implement-tasks negative-scenario linking for standard vs lite; lite Step 2 requires ledger links

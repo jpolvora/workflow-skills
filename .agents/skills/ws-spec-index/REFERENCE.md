@@ -39,7 +39,7 @@ Consumer repositories may evolve their `index.PRD` layout. `ws-spec-index` opera
 | **Done log table** | Template: `Date \| Slug \| Title \| PR / Commit`<br/>Live: `When \| Item \| Notes` (or Date/When + Item/Slug) | Append completed row using available column layout. |
 | **Archive table** | Template: `Slug \| Outcome \| Last state \| PR / Commit \| Summary` under `## Archive` or `## N. Delivery archive` | Owned by `ws-spec-archive`. `sync` must preserve existing Archive rows; do not delete the section. |
 | **Feature map** | Bullet lists `- [ ] Feature (\`spec: ...\`)` or nested bullets with separate `- **spec:** \`...\`` | Match backtick `*.spec.md` or slug; update checkbox `[ ]` → `[x]`. |
-| **Dual-path specs** | Normal after any run starts: `{specsDir}/{slug}.spec.md` (spec of record) plus `{plansDir}/{slug}/step-00-*.spec.md` (workflow copy) | `{specsDir}/{slug}.spec.md` path is primary for index status updates. |
+| **Dual-path specs** | Normal after any run starts: `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md` (spec of record) plus `{plansDir}/{slug}/step-00-*.spec.md` (workflow copy) | Spec-of-record path is primary for index status updates. |
 | **`init` Guard** | Non-empty `{specsDir}/index.PRD` exists | Refuse to overwrite without explicit `--force` flag. Return `skipped: "index.PRD already exists"`. |
 | **Spec Frontmatter** | Frontmatter may have `status: draft|completed` or no `status` field | Index row + disk slug mapping is primary; spec frontmatter update is optional. |
 
@@ -57,7 +57,7 @@ input:
   indexFile: string?            # default index.PRD
   sourcePath: string?           # init: README/PRD/SPECS path or free text
   inboxItem: string?            # promote
-  # track: slug required; spec file `{specsDir}/{slug}.spec.md` must exist
+  # track: slug required; spec file `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md` must exist
 
 output:
   updated: string[]             # paths or row ids touched

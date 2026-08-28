@@ -31,12 +31,27 @@ function readTitle(specPath) {
 
 function alreadyTracked(indexText, slug) {
   const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  // Exact slug cell or `spec: slug.spec.md` — not a substring of another slug.
+  // Exact slug cell or `spec: [NNNN-]slug.spec.md` — not a substring of another slug.
   const re = new RegExp(
-    '(?:`spec:\\s*' + esc + '\\.spec\\.md`|\\|\\s*`' + esc + '`\\s*\\|)',
+    '(?:`spec:\\s*(?:\\d{4}-)?' + esc + '\\.spec\\.md`|\\|\\s*`' + esc + '`\\s*\\|)',
     'i',
   );
   return re.test(indexText);
+}
+
+function findSpecFile(specsDir, slug) {
+  const exact = resolveUnder(specsDir, slug + '.spec.md');
+  if (exact && fs.existsSync(exact)) return exact;
+  let names;
+  try {
+    names = fs.readdirSync(specsDir);
+  } catch {
+    return null;
+  }
+  const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('^\\d{4}-' + esc + '\\.spec\\.md$');
+  const hit = names.find((name) => re.test(name));
+  return hit ? resolveUnder(specsDir, hit) : null;
 }
 
 function lastPhaseLabel(indexText) {
@@ -115,15 +130,15 @@ function track({ specsDir, slug }) {
   if (!isSafeSlug(slug)) {
     return { status: 'error', reason: 'invalid slug', slug };
   }
-  const specPath = resolveUnder(specsDir, slug + '.spec.md');
+  const specPath = findSpecFile(specsDir, slug);
   const indexPath = resolveUnder(specsDir, 'index.PRD');
-  if (!specPath || !indexPath) {
+  if (!indexPath) {
     return { status: 'error', reason: 'slug escapes specs-dir', slug };
   }
   if (!fs.existsSync(indexPath)) {
     return { status: 'skipped', reason: 'index.PRD missing', slug };
   }
-  if (!fs.existsSync(specPath)) {
+  if (!specPath || !fs.existsSync(specPath)) {
     return { status: 'skipped', reason: 'spec missing', slug };
   }
   const title = readTitle(specPath) || slug;
@@ -132,8 +147,9 @@ function track({ specsDir, slug }) {
     return { status: 'skipped', reason: 'already tracked', slug, title };
   }
 
+  const specFileName = path.basename(specPath);
   const bullet =
-    '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + slug + '.spec.md`)';
+    '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + specFileName + '`)';
   const phaseRe = /^###\s+Phase[^\n]*$/gm;
   const phases = [...indexText.matchAll(phaseRe)];
   if (phases.length) {

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "revision": 0,
+  "workflowId": "spec-dor-tdd-refinement-hardening-20260828T042229Z",
+  "slug": "spec-dor-tdd-refinement-hardening",
+  "pipeline": "standard",
+  "status": "active",
+  "currentStep": 0,
+  "pendingGate": {
+    "gate": "step-entry",
+    "step": 0
+  },
+  "nextAction": "Run Step 0 local-spec register",
+  "acTotal": 9,
+  "acImplemented": 0,
+  "score": null,
+  "estimatedRemainingSec": 0,
+  "statePath": ".agents/plans/spec-dor-tdd-refinement-hardening/spec-dor-tdd-refinement-hardening-20260828T042229Z.state.md",
+  "stateSha256": "aa3bb2553ef6a005ebea9c4f237bf6d19765c7dfc3b811e64c175444447a845a",
+  "steps": [
+    {
+      "step": 0,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 6,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 7,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 8,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 9,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    }
+  ]
+}

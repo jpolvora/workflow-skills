@@ -40,6 +40,17 @@ function toPosix(p) {
   return p.split(path.sep).join('/');
 }
 
+function specOfRecordPath(specsDir, slug) {
+  const exact = path.join(specsDir, `${slug}.spec.md`);
+  if (fs.existsSync(exact)) return exact;
+  if (!fs.existsSync(specsDir)) return null;
+  const re = new RegExp(
+    '^\\d{4}-' + slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.spec\\.md$',
+  );
+  const hit = fs.readdirSync(specsDir).find((name) => re.test(name));
+  return hit ? path.join(specsDir, hit) : null;
+}
+
 function readUtf8(abs) {
   return fs.readFileSync(abs, 'utf8').replace(/^\uFEFF/, '');
 }
@@ -246,8 +257,9 @@ function main() {
     const fields = (state && state.fields) || {};
     const slug = fields.slug || slugGuess;
     const status = fields.status || null;
-    const specOfRecordRel = fs.existsSync(path.join(specsDir, `${slug}.spec.md`))
-      ? toPosix(path.relative(repoRoot, path.join(specsDir, `${slug}.spec.md`)))
+    const specOfRecordAbs = specOfRecordPath(specsDir, slug);
+    const specOfRecordRel = specOfRecordAbs
+      ? toPosix(path.relative(repoRoot, specOfRecordAbs))
       : (fields.specsPath || null);
     const elig = eligibility(status, archivedFolder, artifacts.hasState);
     const hits = gitHits(repoRoot, relPath, specOfRecordRel, slug);

@@ -40,7 +40,7 @@ function inferSlug(file, text) {
   const name = path.basename(file);
   const stem = name.endsWith('.spec.md') ? name.slice(0, -8) : path.parse(name).name;
   if (/^(readme|index|spec)$/i.test(stem)) return path.basename(path.dirname(file));
-  return stem.replace(/^step-00-/, '');
+  return stem.replace(/^step-00-/, '').replace(/^\d{4}-/, '');
 }
 
 function normalize(text, slug, source) {
@@ -69,13 +69,20 @@ function resolveInput(raw, root, specsDir) {
   const direct = path.resolve(raw);
   const rooted = path.resolve(root, raw);
   for (const candidate of [direct, rooted]) if (fs.existsSync(candidate)) return candidate;
-  const slug = path.basename(raw).replace(/\.spec\.md$/, '').replace(/^step-00-/, '');
+  const slug = path.basename(raw).replace(/\.spec\.md$/, '').replace(/^step-00-/, '').replace(/^\d{4}-/, '');
   const candidates = [
     path.join(specsDir, `${slug}.spec.md`),
     path.join(specsDir, slug, 'README.spec.md'),
     path.join(specsDir, slug, `${slug}.spec.md`),
   ];
-  const found = candidates.find((candidate) => fs.existsSync(candidate));
+  let found = candidates.find((candidate) => fs.existsSync(candidate));
+  if (!found && fs.existsSync(specsDir)) {
+    const re = new RegExp(
+      '^\\d{4}-' + slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.spec\\.md$',
+    );
+    const hit = fs.readdirSync(specsDir).find((name) => re.test(name));
+    if (hit) found = path.join(specsDir, hit);
+  }
   if (!found) throw new Error(`input not found: ${raw}`);
   return found;
 }

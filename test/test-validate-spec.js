@@ -95,7 +95,7 @@ const compat = run(script, [missingDor, '--modification']);
 assert.strictEqual(compat.status, 0, 'compat does not fail historical specs that omit DoR');
 assert.match(compat.stderr, /WARN:[\s\S]*Definition of Ready \(DoR\)/i);
 
-const liveSpec = path.join(repoRoot, '.agents/specs/spec-dor-tdd-refinement-hardening.spec.md');
+const liveSpec = path.join(repoRoot, '.agents/specs/0051-spec-dor-tdd-refinement-hardening.spec.md');
 assert.strictEqual(
   run(script, [liveSpec, '--mode=authoring']).status,
   0,
