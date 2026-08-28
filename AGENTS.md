@@ -168,7 +168,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 
 ## Upstream session contract (this repo only)
 
-**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.3.49** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-write-spec`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
+**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.3.50** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-write-spec`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
 
 Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this contract. A folder under `.agents/skills/` would be hashed and shipped. Summarize here; invoke live scripts by path; load a live body only when **authoring or testing that skill**. Orchestrators, providers, `ws-check-harness`: task router, one skill at a time.
 

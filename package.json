@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.3.49",
+  "version": "0.3.50",
   "description": "Spec-driven delivery skills for coding agents: spec as contract of record through a reviewed pull request",
   "license": "MIT",
   "author": "Jone Polvora",

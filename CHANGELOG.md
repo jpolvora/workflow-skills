@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-28 14:38] Agent: Antigravity AI (Gemini 3.7 Flash)
+- **Prompt**: bump again, commit and push, then start next shipping version - get next spec to implement (/ws-spec-to-pr)
+- **Done**: Bumped package to `0.3.50`; synchronized version across all 49 SKILL.md frontmatters, test/package.json, AGENTS.md, FEATURES.md, and docs/index.html; updated index.PRD with completed harness-spec-benchmark (0041); regenerated integrity checksums.
+- **Result**: Release `0.3.50` prepared, verified, and committed.
+
 ### [2026-08-28 14:25] Agent: Antigravity AI (Gemini 3.7 Flash)
 - **Prompt**: bump version, update website, features, catalog, readme, agents, dependencies, checksum, then commit everything
 - **Done**: Bumped package to `0.3.49`; added host detection matrix & subagent dispatch adapter (`host-dispatch.md`) supporting Antigravity IDE, Cursor, OpenCode, Claude Code, and Codex; integrated sparse Context Pointers protocol (Matt Pocock pattern / Issue #998); added `defaults.hostAdapter` configuration; added `ws-run-benchmark` skill & live test suites; regenerated skill integrity checksums; rebuilt site catalog.
