@@ -881,7 +881,7 @@
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">48</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">50</strong> skills available</span>
     </div>
   </div>
 
@@ -1206,7 +1206,7 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-write-plan/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-write-spec/SKILL.md" data-name="ws-write-spec" data-slug="ws-write-spec" data-desc="local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsdir} from free-text requirements or remote tracker issues." data-deps="ws-spec-format ws-local-spec-provider" data-layer="layer-2" data-full="true" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/ws-write-spec/SKILL.md" data-name="ws-write-spec" data-slug="ws-write-spec" data-desc="local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsdir} from free-text requirements or remote tracker issues." data-deps="ws-spec-format ws-local-spec-provider ws-spec-organizer" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-write-spec</div>
         <div class="skill-badges">
@@ -1216,7 +1216,7 @@
         </div>
         <div class="desc">Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (3):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-local-spec-provider">ws-local-spec-provider</span><span class="dep-pill" data-dep="ws-spec-organizer">ws-spec-organizer</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-write-spec/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -1263,7 +1263,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">23 skills</span>
+      <span class="count">25 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1396,6 +1396,20 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-pre-daily/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <div class="skill-card" data-path=".agents/skills/ws-self-learning/SKILL.md" data-name="ws-self-learning" data-slug="ws-self-learning" data-desc="anti-regression memory engine — consults shared memory before planning/coding and records newly discovered traps into the project knowledge hub." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-self-learning</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-self-learning/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-archive/SKILL.md" data-name="ws-spec-archive" data-slug="ws-spec-archive" data-desc="harvests plansdir delivery facts into specsdir/index.prd, then proposes cleanup of shipped plan folders. trigger on /ws-spec-archive, archive plans, archive index.prd." data-deps="ws-configure-project ws-spec-index ws-github-provider ws-azure-devops-provider" data-layer="layer-5" data-full="false" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-spec-archive</div>
@@ -1472,6 +1486,20 @@
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (2):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-memo/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-organizer/SKILL.md" data-name="ws-spec-organizer" data-slug="ws-spec-organizer" data-desc="spec-of-record path resolution and chronological nnnn- spec organizer." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-organizer</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Spec-of-record path resolution and chronological NNNN- spec organizer.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-organizer/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr/SKILL.md" data-name="ws-spec-to-pr" data-slug="ws-spec-to-pr" data-desc="end-to-end spec-to-pr (steps 0–9). verify score ≥ `defaults.minverifyscore` (default 9) before review. trigger for full/standard delivery." data-deps="ws-write-spec ws-classify-complexity ws-write-plan ws-interview ws-plan-to-tasks ws-implement-tasks ws-verify-plan ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-github-provider ws-azure-devops-provider ws-local-spec-provider ws-check-harness ws-check-workflows ws-tdah ws-karpathy-guidelines ws-spec-format ws-goal-loop ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-senior-developer" data-layer="layer-5" data-full="true" data-lite="false">
@@ -1571,9 +1599,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 42 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 43 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+34)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-write-spec</code>, <code>ws-classify-complexity</code>, <code>ws-write-plan</code>, <code>ws-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+35)
       </div>
     </div>
 

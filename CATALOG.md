@@ -15,8 +15,8 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 | Skill | Path | Description |
 |-------|------|-------------|
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
-| `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation (Full/Lite) |
-| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Workflow skills install/runtime diagnose (read-only report) |
+| `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
+| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Pipeline review dry-run via external reviewer (Extra) |
@@ -57,37 +57,38 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets / PII / credential leak scan; optional pre-commit hook is user-requested only (not required by configure-project) |
-| `ws-fable-judge` | `.agents/skills/ws-fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff-grounded verification |
+| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets and PII leak scan with optional hook |
+| `ws-fable-judge` | `.agents/skills/ws-fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff verification |
 
 ### Layer 5 — Utility & meta
 
 | Skill | Path | Notes |
 |-------|------|-------|
-| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Packaged; consumer on-demand. This repo uses § [4. Reply shape](#4-reply-shape-ws-tdah) |
-| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Packaged; this repo uses § [1. Surgical scope](#1-surgical-scope-ws-karpathy-guidelines) |
-| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9); verify ≥ `defaults.minVerifyScore` (default 9) before review |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first reply shape |
+| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Micro diff hygiene |
+| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9) |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
-| `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Batch: classify each spec, then standard or lite |
-| `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop with gates |
+| `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Batch multi-spec delivery |
+| `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop |
 | `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas (Extra) |
-| `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Specs |
+| `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Canonical spec schema |
 | `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
-| `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
-| `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interview/detect fill `ws-shared/config.json` (may optionally suggest secrets pre-commit hook — never required) |
-| `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence |
+| `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Anti-regression memory engine |
+| `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Append-only task history |
+| `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interactive config.json wizard |
+| `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence loop primitive |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
-| `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs (`{specsDir}`) vs plan workflows (`{plansDir}`) + manage menu |
-| `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import open GH issues / ADO US → write-spec + register |
-| `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries from plan bootstrap start → latest PR thread comment or delivery commit (Extra) |
-| `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | Standup briefing of the last 36 hours — delivered, made, ongoing, next |
-| `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Read-only panorama: spec/US status, what it delivers, how to check & test |
-| `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan-folder facts into `index.PRD` Archive, then propose cleanup of shipped `{plansDir}` folders |
-| `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | List + confirm delete of workflow leftovers (telemetry, .runtime, shipped plans); suggest .gitignore |
-| `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update feature specs after prompt/code evolutions |
-| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Configure spec-memo external vault bridge (MCP/CLI) |
-| `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Resolve spec-of-record path and organize/prefix specs chronologically |
-| `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven intake → implement → complete (not Spec-to-PR) |
+| `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs vs plans + menu |
+| `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import GH/ADO issues → specs |
+| `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries for delivery (Extra) |
+| `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
+| `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Status and delivery panorama |
+| `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
+| `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
+| `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update specs after code changes |
+| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | External vault setup/bridge (MCP/CLI) |
+| `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
+| `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
 
