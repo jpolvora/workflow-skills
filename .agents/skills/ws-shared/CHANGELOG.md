@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-08-28 18:28] Agent: Cursor Grok 4.6
+- **Prompt**: ws-goal-fix-pr PR 256 round 2
+- **Done**: Aligned ORCH.md with Step 5 and prepare baseline; added defaults.hostAdapter to schema and example
+- **Result**: Three new review threads from CI after round 1
+
 ### [2026-08-28 18:10] Agent: Cursor Grok 4.6
 - **Prompt**: ws-goal-fix-pr Step 9 on PR 256
 - **Done**: Fixed live benchmark collect/sensor/compare/oracle defects; fail-closed dual spec paths; dispatch spec pointer uses resolve_spec_path

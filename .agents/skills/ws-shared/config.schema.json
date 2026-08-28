@@ -227,6 +227,21 @@
             "maxIterations": { "type": "integer", "minimum": 1, "default": 20 }
           }
         },
+        "hostAdapter": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional host dispatch adapter. Skills still call portable dispatch-agent; this object only maps how the host runs subagents.",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["auto", "native-tool", "cli-command", "inline-isolated", "antigravity", "cursor", "opencode", "claude"],
+              "default": "auto"
+            },
+            "cliTemplate": { "type": "string" },
+            "browserTool": { "type": "string" },
+            "stepOverrides": { "type": "object" }
+          }
+        },
         "deliveryCommitArtifacts": {
           "type": "object",
           "description": "Which {us-dir} artifacts to stage in the Step 8 delivery commit. Missing object or omitted keys merge to AC1 defaults at read time (includeRefinedPlan true; includeDeliveryResult and all opt-ins false). Never silently fall back to legacy always plan+result.",

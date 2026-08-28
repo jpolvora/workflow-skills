@@ -14,7 +14,7 @@ const {
   runOutputDir,
 } = require('./paths.cjs');
 const { buildReport, writeReports } = require('./report-builder.cjs');
-const { runJudgeChecks, gitDiffText } = require('./judge-checks.cjs');
+const { runJudgeChecks, gitDiffText, resolveBaselineSha } = require('./judge-checks.cjs');
 const { runSensor } = require('./sensor.cjs');
 
 function parseMarkdownScore(sandboxRoot, slug) {
@@ -124,7 +124,8 @@ function collectRun(options = {}) {
   const judge = runJudgeChecks(sandboxRoot, ledgerPath);
   const sensor = runSensor(sandboxRoot, oracle, paths);
 
-  const fromSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: sandboxRoot, encoding: 'utf8' }).stdout?.trim() || '';
+  const fromSha = resolveBaselineSha(sandboxRoot);
+  const toSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: sandboxRoot, encoding: 'utf8' }).stdout?.trim() || fromSha;
   const context = resolveConsumerContext({ repoRoot: sandboxRoot });
   const models = {};
   if (context.config?.defaults?.currentModel) models.currentModel = context.config.defaults.currentModel;
@@ -162,7 +163,7 @@ function collectRun(options = {}) {
       porcelainOk: sensor.porcelainOk,
       verdict: sensor.verdict,
     },
-    diffRange: { fromSha, toSha: fromSha },
+    diffRange: { fromSha, toSha },
     verdict: sensor.verdict === 'FAIL' ? 'FAIL' : (verifyResult.exitCode === 0 ? 'PASS' : 'FAIL'),
   });
 

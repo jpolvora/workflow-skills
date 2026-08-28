@@ -1,4 +1,4 @@
-# Live orch dispatch (load at Step 4 only)
+# Live orch dispatch (load at Step 5 only)
 
 Parent session stays on the **package root**. Orch work happens only under `{sandbox}`.
 
@@ -31,4 +31,4 @@ Missing either file → do not collect; report the gap.
 ## Notes
 
 - Orch skills inside the sandbox are the copied consumer tree, not the parent authoring SoT.
-- `git diff HEAD` completeness in collect is uncommitted-only. Product commits inside the sandbox are still allowed; verifyScore still comes from the ledger.
+- Completeness/judge diff uses the prepare baseline (`.benchmark-baseline-sha`) plus untracked paths. Product commits inside the sandbox are expected; verifyScore still comes from the ledger.

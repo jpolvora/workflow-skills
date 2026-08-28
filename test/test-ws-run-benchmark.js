@@ -44,4 +44,17 @@ assert.match(elsewhere.stderr, /package root/);
 const extra = JSON.parse(fs.readFileSync(path.join(repoRoot, 'bin/skill-dependencies.json'), 'utf8'));
 assert.ok(extra.packages.extra.skills.includes('ws-run-benchmark'));
 
+const schema = JSON.parse(fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/config.schema.json'), 'utf8'));
+assert.ok(schema.properties.defaults.properties.hostAdapter, 'schema defines defaults.hostAdapter');
+assert.match(
+  fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/config.json.example'), 'utf8'),
+  /"hostAdapter"/,
+);
+
+const orchMd = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-run-benchmark/references/ORCH.md'), 'utf8');
+assert.match(orchMd, /load at Step 5 only/);
+assert.match(orchMd, /\.benchmark-baseline-sha/);
+assert.doesNotMatch(orchMd, /git diff HEAD/);
+assert.match(skill, /5\. \*\*Orch\*\*/);
+
 console.log('test-ws-run-benchmark: ok');

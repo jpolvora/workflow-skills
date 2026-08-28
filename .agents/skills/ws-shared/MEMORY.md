@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-28] ws-run-benchmark ORCH.md loads at Step 5
+- **Layer**: `Harness`
+- **Module**: `ws-run-benchmark`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-run-benchmark/references/ORCH.md;.agents/skills/ws-run-benchmark/SKILL.md`
+- **Scenario / Context**: Companion header said load at Step 4 while SKILL.md Step 4 is Prepare and Step 5 is Orch.
+- **DO NOT**: Label ORCH.md as Step 4 when prepare is Step 4 and orch dispatch is Step 5.
+- **INSTEAD DO**: Keep the companion header aligned with the numbered SKILL.md step that actually loads it (Step 5).
+
 ### [2026-08-28] Spec resolver must fail closed when prefixed and unprefixed files both exist
 - **Layer**: `Harness`
 - **Module**: `ws-spec-organizer / resolve_spec_path`
@@ -41,6 +50,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Filling numeric steps 2–5 in default/cursor presets makes lite resolve planner/reviewer models for implement/review/ship telemetry because resolveStepOverride runs before litePhaseKey.
 - **DO NOT**: Ship a full 0–9 filled steps map for the cursor/default presets when lite shares the same numeric keys with different semantics.
 - **INSTEAD DO**: Fill 0–1 / 6–9 / Fix-PR roles explicitly; leave 2–5 empty so lite falls through (2 execution, 3 reviewer, 4–5 session) while standard still uses phase keys.
+
+### [2026-08-28] Documented defaults.hostAdapter must live in schema and example
+- **Layer**: `Harness`
+- **Module**: `ws-shared / config`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/config.schema.json;.agents/skills/ws-shared/config.json.example;.agents/skills/ws-shared/config-resolution.md`
+- **Scenario / Context**: Hub docs advertised defaults.hostAdapter without a schema or example object, so configure/validation could not check the advertised shape.
+- **DO NOT**: Document a new config.json key in hub prose without adding it to config.schema.json and config.json.example.
+- **INSTEAD DO**: Ship schema properties and an example object in the same change as the hub documentation.
 
 ### [2026-08-27] Verify score must fail-close on uncovered negative scenarios
 - **Layer**: `Harness`
