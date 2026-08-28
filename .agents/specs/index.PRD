@@ -99,7 +99,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: 0047-fix-pr-batch-plan-exec.spec.md`)
 - [ ] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: 0049-configurable-memory-backends.spec.md`)
 - [ ] Research-driven spec-to-pr pipeline quality and integration (`spec: 0050-research-driven-pipeline-quality.spec.md`)
-- [ ] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: 0051-spec-dor-tdd-refinement-hardening.spec.md`)
+- [x] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: 0051-spec-dor-tdd-refinement-hardening.spec.md`)
 - [ ] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: spec-prefix-ordering.spec.md`)
 
 
@@ -168,10 +168,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 52 | `fix-pr-batch-plan-exec` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix-pr: plan substep (reviewer model) then execute (fix model) per batch |
 | 53 | `configurable-memory-backends` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing |
 | 54 | `research-driven-pipeline-quality` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Research-driven spec-to-pr pipeline quality and integration |
-| 55 | `spec-dor-tdd-refinement-hardening` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
+| 55 | `spec-dor-tdd-refinement-hardening` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
 | 56 | `spec-prefix-ordering` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional chronological spec filename prefixes and ws-spec-organizer |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`, `fix-pr-batch-plan-exec`, `configurable-memory-backends`, `research-driven-pipeline-quality`, `spec-dor-tdd-refinement-hardening`, `spec-prefix-ordering`.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchmark`, `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `us-235`, `fix-pr-batch-plan-exec`, `configurable-memory-backends`, `research-driven-pipeline-quality`, `spec-prefix-ordering`.
 
 ## 9. Inbox
 
@@ -226,6 +226,7 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `harness-spec-benchm
 | 2026-08-22 | `fix-pr-proactive-class-sweep` | Proactive same-defect-class sweep in cooperative fix | [PR #231](https://github.com/jpolvora/workflow-skills/pull/231) (already in tree; index closed) |
 | 2026-08-22 | `specify-closure-pack` | Specify-time closure pack for score-10 spec delivery | [PR #231](https://github.com/jpolvora/workflow-skills/pull/231) (`89e7c96`) |
 | 2026-08-23 | `us-236` | Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill | [PR #238](https://github.com/jpolvora/workflow-skills/pull/238) |
+| 2026-08-28 | `spec-dor-tdd-refinement-hardening` | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol | [PR #254](https://github.com/jpolvora/workflow-skills/pull/254) |
 
 ## 11. Maintenance checklist
 
