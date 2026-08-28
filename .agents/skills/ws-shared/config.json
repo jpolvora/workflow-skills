@@ -143,7 +143,7 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Seed default+cursor ship a full explicit steps map.",
+    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Seed default+cursor fill 0–1 / 6–9 / roles; leave 2–5 empty for lite phase fallthrough.",
     "modelsPreset": "cursor",
     "modelPresets": {
       "default": {
@@ -154,10 +154,10 @@
         "steps": {
           "0": "cursor-grok-4.6-high",
           "1": "cursor-grok-4.6-high",
-          "2": "cursor-grok-4.6-high",
-          "3": "cursor-grok-4.6-high",
-          "4": "composer-2.5",
-          "5": "cursor-grok-4.6-medium",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
           "6": "cursor-grok-4.6-medium",
           "7": "composer-2.5",
           "8": "current",
@@ -177,10 +177,10 @@
         "steps": {
           "0": "cursor-grok-4.6-high",
           "1": "cursor-grok-4.6-high",
-          "2": "cursor-grok-4.6-high",
-          "3": "cursor-grok-4.6-high",
-          "4": "composer-2.5",
-          "5": "cursor-grok-4.6-medium",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
           "6": "cursor-grok-4.6-medium",
           "7": "composer-2.5",
           "8": "current",

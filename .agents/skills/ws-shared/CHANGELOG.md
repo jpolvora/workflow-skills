@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-28 02:20] Agent: Composer
+- **Prompt**: `/ws-goal-fix-pr` PR 255 round 1
+- **Done**: Empty cursor/default steps 2–5 for lite fallthrough; retarget autoload/CATALOG runtime keywords to `ws-memo`; MEMORY trap
+- **Result**: Pending resolve-thread + re-check
+
+
 ### [2026-08-28 02:05] Agent: Composer
 - **Prompt**: Fix GH #252/#253, bump version, commit, push, ship-pr, goal-fix-pr
 - **Done**: Seed `modelsPreset: cursor` with full `default`+`cursor` step maps; `ws-spec-memo` invocation `spec-memo-setup` + MCP template key `spec-memo`; package 0.3.48

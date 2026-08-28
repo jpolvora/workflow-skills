@@ -177,7 +177,7 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap) or copy a bundle's steps into stepModels. Seed default+cursor ship a full explicit steps map (0–9 + roles); other presets may leave numeric steps empty to fall through to phase keys (lite 0-1 planner, 2 execution, 3 reviewer, 4-5 session when empty).",
+    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap) or copy a bundle's steps into stepModels. Seed default+cursor fill 0–1 / 6–9 / roles explicitly; leave 2–5 empty so lite falls through phase keys (0-1 planner, 2 execution, 3 reviewer, 4-5 session) while standard still resolves via phase keys.",
     "modelsPreset": "cursor",
     "modelPresets": {
       "default": {
@@ -188,10 +188,10 @@
         "steps": {
           "0": "cursor-grok-4.6-high",
           "1": "cursor-grok-4.6-high",
-          "2": "cursor-grok-4.6-high",
-          "3": "cursor-grok-4.6-high",
-          "4": "composer-2.5",
-          "5": "cursor-grok-4.6-medium",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
           "6": "cursor-grok-4.6-medium",
           "7": "composer-2.5",
           "8": "current",
@@ -211,10 +211,10 @@
         "steps": {
           "0": "cursor-grok-4.6-high",
           "1": "cursor-grok-4.6-high",
-          "2": "cursor-grok-4.6-high",
-          "3": "cursor-grok-4.6-high",
-          "4": "composer-2.5",
-          "5": "cursor-grok-4.6-medium",
+          "2": "",
+          "3": "",
+          "4": "",
+          "5": "",
           "6": "cursor-grok-4.6-medium",
           "7": "composer-2.5",
           "8": "current",

@@ -74,10 +74,10 @@ const STEP_TEMPLATE_KEYS = [
 const CURSOR_NATIVE_STEPS = {
   '0': 'cursor-grok-4.6-high',
   '1': 'cursor-grok-4.6-high',
-  '2': 'cursor-grok-4.6-high',
-  '3': 'cursor-grok-4.6-high',
-  '4': 'composer-2.5',
-  '5': 'cursor-grok-4.6-medium',
+  '2': '',
+  '3': '',
+  '4': '',
+  '5': '',
   '6': 'cursor-grok-4.6-medium',
   '7': 'composer-2.5',
   '8': 'current',
@@ -96,7 +96,7 @@ for (const name of ['default', 'cursor', 'deepseek', 'opencode', 'cheap']) {
   }
   if (name === 'default' || name === 'cursor') {
     for (const [key, expected] of Object.entries(CURSOR_NATIVE_STEPS)) {
-      assert(steps[key] === expected, `example ${name}.steps.${key} is ${expected}`);
+      assert(steps[key] === expected, `example ${name}.steps.${key} is ${JSON.stringify(expected)}`);
     }
   } else {
     assert(steps['4'] === '' && steps['5'] === '', `example ${name}.steps 4 and 5 stay empty for lite session`);
@@ -261,34 +261,47 @@ assert(
   'lite applies stepModels 0-5',
 );
 assert(
-  resolvePhaseModel(liteDefaults, { step: 3, pipeline: 'lite', sessionModel: session }) ===
-    'cursor-grok-4.6-high',
-  'lite step 3 uses explicit cursor seed step map',
+  resolvePhaseModel(
+    { ...liteDefaults, stepModels: {} },
+    { step: 2, pipeline: 'lite', sessionModel: session },
+  ) === 'composer-2.5',
+  'lite step 2 falls through to executionModel when steps 2 empty',
 );
 assert(
-  resolvePhaseModel(liteDefaults, { step: 4, pipeline: 'lite', sessionModel: session }) ===
-    'composer-2.5',
-  'lite step 4 uses explicit cursor seed step map',
+  resolvePhaseModel(
+    { ...liteDefaults, stepModels: {} },
+    { step: 3, pipeline: 'lite', sessionModel: session },
+  ) === 'cursor-grok-4.6-medium',
+  'lite step 3 falls through to reviewerModel when steps 3 empty',
 );
 assert(
-  resolvePhaseModel(liteDefaults, { step: 5, pipeline: 'lite', sessionModel: session }) ===
-    'cursor-grok-4.6-medium',
-  'lite step 5 uses explicit cursor seed step map',
+  resolvePhaseModel(
+    { ...liteDefaults, stepModels: {} },
+    { step: 4, pipeline: 'lite', sessionModel: session },
+  ) === session,
+  'lite steps 4-5 default to session when steps empty',
+);
+assert(
+  resolvePhaseModel(
+    { ...liteDefaults, stepModels: {} },
+    { step: 5, pipeline: 'lite', sessionModel: session },
+  ) === session,
+  'lite step 5 defaults to session when steps empty',
 );
 assert(
   resolvePhaseModel(liteDefaults, { step: 5, role: 'reviewFix', pipeline: 'lite', sessionModel: session }) ===
-    'cursor-grok-4.6-medium',
-  'lite ignores reviewFix role and keeps numeric step map',
+    session,
+  'lite ignores reviewFix role',
 );
 assert(
   resolvePhaseModel(liteDefaults, { step: 5, role: 'fixPrPlan', pipeline: 'lite', sessionModel: session }) ===
-    'cursor-grok-4.6-medium',
-  'lite ignores fixPrPlan role and keeps numeric step map',
+    session,
+  'lite ignores fixPrPlan role',
 );
 assert(
   resolvePhaseModel(liteDefaults, { step: 5, role: 'fixPrExec', pipeline: 'lite', sessionModel: session }) ===
-    'cursor-grok-4.6-medium',
-  'lite ignores fixPrExec role and keeps numeric step map',
+    session,
+  'lite ignores fixPrExec role',
 );
 
 const dispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
