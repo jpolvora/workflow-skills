@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 42, `extra` = 6). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 42, `extra` = 7). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -20,6 +20,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Pipeline review dry-run via external reviewer (Extra) |
+| `ws-run-benchmark` | `.agents/skills/ws-run-benchmark/SKILL.md` | Live/static benchmark (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |
 
 ### Layer 1 — Engineering standards
@@ -136,6 +137,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | New skill / skill rewrite | `ws-write-a-skill` |
 | Show active harness | `ws-show-harness` |
 | Pipeline review / preview CI review | `ws-preview` |
+| Harness benchmark | `ws-run-benchmark` |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Check workflows | `ws-check-workflows` |
@@ -189,7 +191,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 | Global-scope variants | add `--global` / `-g` (project scope is `--project` / `-p`; global root override `WORKFLOW_SKILLS_GLOBAL_DIR`) |
 | Integrity digests | `npm run generate-integrity` then `npm run verify-integrity` (must exit 0) |
 | Catalog / site | `node bin/build-site.js` (catalog only) · `node bin/build-site.js --check` (read-only verification) · `npm run build-site:bump` (release bump + footer) |
-| Harness benchmark (upstream only) | `npm run benchmark:static` · live: `prepare --fixture fx-config-merge` then `collect --sandbox <path>` · `table --fixture fx-config-merge` · `compare --from <old> --to <new>` |
+| Harness benchmark (upstream only) | `ws-run-benchmark` · `npm run benchmark:static` · `prepare --fixture` · `collect --sandbox` |
 | Installed-skill audit | `node bin/cli.js integrity` · `node bin/cli.js --check` (version + `fullPackageDigest` vs `main`) |
 
 **Never run install/update against this package root.** The installer writes into `.agents/skills/`, which is the upstream SoT here — it would overwrite the skills you are authoring. Always target a scratch directory (or the trees under `test/`), and prefer local `node bin/cli.js` / `./install-skills.sh` over remote `npx` (§ [Consumer CLI](#consumer-cli-install--update--uninstall)).

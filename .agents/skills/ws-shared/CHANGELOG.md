@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-08-28 09:40] Agent: Cursor Grok 4.6
+- **Prompt**: Create skill run-benchmark to automate prepare → orch → collect → snapshot
+- **Done**: Extra skill `ws-run-benchmark` with `context.cjs`, orch dispatch notes, Extra package registration, tests
+- **Result**: `/ws-run-benchmark --fixture fx-node-helper` runs live flow from the package root
+
+
 ### [2026-08-28 08:40] Agent: Cursor Grok 4.6
 - **Prompt**: Create a mid-to-high use case as the frozen benchmark corpus; record scores per version; compare versions in a table
 - **Done**: Added `fx-config-merge` (10 ACs, standard orch) plus `table` CLI; live collect now records `wallSec`

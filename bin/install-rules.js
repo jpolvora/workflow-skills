@@ -16,6 +16,7 @@ export const HUB_WHITELIST = [
   'setup.md',
   'gates.md',
   'config-resolution.md',
+  'host-dispatch.md',
   'scm-provider-contract.md',
   'AGENTS.md',
   'CATALOG.md',

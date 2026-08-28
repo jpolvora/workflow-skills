@@ -77,7 +77,8 @@
         "ws-preview",
         "ws-activity-report",
         "ws-fable-domain",
-        "ws-update-plan-implementation"
+        "ws-update-plan-implementation",
+        "ws-run-benchmark"
       ],
       "ensureHub": false,
       "shortcut": "e",
@@ -237,7 +238,8 @@
     "ws-spec-memo": [
       "ws-configure-project",
       "ws-self-learning"
-    ]
+    ],
+    "ws-run-benchmark": []
   },
   "autoloadOnly": [],
   "selectOffRule": "no-cascade-deselect"

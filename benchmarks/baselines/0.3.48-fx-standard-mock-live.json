@@ -2,20 +2,24 @@
   "meta": {
     "packageVersion": "0.3.48",
     "gitSha": "414b5da29a87de813a558c94bdf9b3011df6b378",
-    "fixtureId": "fx-lite-readme",
-    "mode": "static",
-    "orch": "lite",
+    "fixtureId": "fx-standard-mock",
+    "mode": "live",
+    "orch": "standard",
     "dryRun": true,
-    "timestamp": "2026-08-28T18:10:07.649Z"
+    "timestamp": "2026-08-28T15:01:31.503Z",
+    "wallSec": null,
+    "models": {
+      "modelsPreset": "cursor"
+    }
   },
   "dimensions": {
     "completeness": 10,
-    "verifyScore": null,
-    "judge": null,
+    "verifyScore": 10,
+    "judge": 10,
     "discrimination": null,
-    "efficiency": 10,
+    "efficiency": null,
     "time": null,
-    "honesty": null
+    "honesty": 10
   },
   "index": {
     "value": 100,
@@ -29,5 +33,5 @@
       "honesty": 5
     }
   },
-  "fixtureId": "fx-lite-readme"
+  "fixtureId": "fx-standard-mock"
 }
