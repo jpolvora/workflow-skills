@@ -74,6 +74,22 @@ try {
   );
   fs.writeFileSync(path.join(pendingShip, 'step-08-pending-ship.result.md'), 'closed\n', 'utf8');
 
+  const prOpen = path.join(plans, 'pr-open-slug');
+  fs.mkdirSync(prOpen, { recursive: true });
+  fs.writeFileSync(
+    path.join(prOpen, 'pr-open-slug-20260101T000000Z.state.md'),
+    'status: completed\nshipStatus: pr-open\nslug: pr-open-slug\n',
+    'utf8',
+  );
+
+  const pushed = path.join(plans, 'pushed-slug');
+  fs.mkdirSync(pushed, { recursive: true });
+  fs.writeFileSync(
+    path.join(pushed, 'pushed-slug-20260101T000000Z.state.md'),
+    'status: completed\nshipStatus: pushed\nslug: pushed-slug\n',
+    'utf8',
+  );
+
   const active = path.join(plans, 'active-slug');
   fs.mkdirSync(path.join(active, '.runtime'), { recursive: true });
   fs.writeFileSync(path.join(active, '.runtime', 'final.md'), 'x', 'utf8');
@@ -137,6 +153,14 @@ try {
   assert(
     !paths.includes('.agents/plans/pending-ship'),
     'completed with shipStatus pending is not a shipped plan root',
+  );
+  assert(
+    !paths.includes('.agents/plans/pr-open-slug'),
+    'completed with shipStatus pr-open is not a shipped plan root',
+  );
+  assert(
+    !paths.includes('.agents/plans/pushed-slug'),
+    'completed with shipStatus pushed is not a shipped plan root',
   );
   assert(
     !paths.includes('.agents/plans/active-slug'),

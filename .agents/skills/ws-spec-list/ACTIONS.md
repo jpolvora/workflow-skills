@@ -17,6 +17,7 @@ Disclosed reference for [`SKILL.md`](SKILL.md).
 |-------|--------------|-------|
 | `us` / `slug` | Slug | Prefer `slug`, else `us`, else parent folder name |
 | `status` | Status | `active` \| `completed` \| `cancelled` \| `failed` |
+| `shipStatus` | Shipping | `pending` \| `pushed` \| `pr-open` \| `merged` \| `skipped` \| `stopped`; omit on pre-0.3.52 legacy rows. When `status` is `completed`, use with ACTIONS Continue/Archive rules (non-terminal → Continue; terminal → Archive) |
 | `workflowType` | Type | `standard` \| `lite` (unknown → `—`) |
 | `currentStep` | Step | Integer; show as `N/max` |
 | `completedSteps` | Done% | `round(100 * len / max)`; max = 10 standard (0–9), 6 lite (0–5) |

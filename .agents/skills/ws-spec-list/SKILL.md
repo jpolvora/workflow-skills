@@ -52,7 +52,7 @@ Canonical `step-00-*.spec.md` under `{plansDir}` is a **plan artifact**, not a S
 
 2. **Discover (keep sets separate)** — Agent scan (no helper script):
    - **Specs:** Glob `{specsDir}/**/*.spec.md` only. Slug from frontmatter `slug:` or filename stem. Do **not** add `{plansDir}/**/step-00-*.spec.md` to the Spec set.
-   - **Plans:** Glob `{plansDir}/**/*.state.md` (include `*.archive/` paths; mark `archived: true`). Parse frontmatter: `workflowId`, `us`/`slug`, `status`, `workflowType`, `currentStep`, `completedSteps`, `prUrl`/`prNumber`, `specPath` when present (ACTIONS § Fields).
+   - **Plans:** Glob `{plansDir}/**/*.state.md` (include `*.archive/` paths; mark `archived: true`). Parse frontmatter: `workflowId`, `us`/`slug`, `status`, `shipStatus`, `workflowType`, `currentStep`, `completedSteps`, `prUrl`/`prNumber`, `specPath` when present (ACTIONS § Fields).
    - **Link by slug:** same slug in both sets → Spec shows linked plan status; Plan shows `Spec: yes|no` / path under `{specsDir}` when found.
    - Done when: two row sets built (either may be empty).
 
