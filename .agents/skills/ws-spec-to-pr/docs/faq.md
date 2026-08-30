@@ -160,15 +160,16 @@ flowchart TD
 *   **Executor**: Verifier subagent (`ws-testing` / `ws-testing`).
 *   **Role**: Writes a test plan and executes unit, integration, and optionally browser verification. Optional **mutation testing** runs after green suite checks when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; score below `verification.mutationThreshold` fails Step 7 (strengthen tests before Advance). Lite has no Step 7 — mutation is standard-only.
 
-### Step 8: Ship
-*   **Executor**: Orchestrator + ship subagent (`ws-ship-pr` / `ws-ship-pr`).
-*   **Role**: Compiles the delivery summary in `step-08-{slug}.result.md` (including benchmark telemetry) and presents the **Combined Ship Gate**:
-    1.  Commit configured delivery artifacts, then create PR
-    2.  Commit configured delivery artifacts, push only
-    3.  Commit configured delivery artifacts, skip PR
-    4.  Skip delivery commit and skip shipping
+### Step 8: Close implementation, then ship
+*   **Executor**: Orchestrator (close) + ship subagent (`ws-ship-pr`) for push/PR only.
+*   **Role**: Compiles the delivery summary in `step-08-{slug}.result.md` (including benchmark telemetry), then **closes implementation** (G2-delivery optional, MEMORY, changelog, `status: completed`, `shipStatus: pending`), then presents the **Ship gate**:
+    1.  Create PR
+    2.  Push only
+    3.  Skip PR
+    4.  Skip shipping entirely
     5.  Pause
-*   **Artifact commits**: Stage only artifacts enabled by `defaults.deliveryCommitArtifacts` (see `ARTIFACTS.md` § Step 8). Mid-workflow plan files remain forbidden until Step 8. Product/source files were already committed after verify and after review-fix.
+*   **Close gate** (before ship): Commit configured delivery artifacts **or** skip delivery commit (still closes implementation).
+*   **Artifact commits**: Stage only artifacts enabled by `defaults.deliveryCommitArtifacts` (see `ARTIFACTS.md` § Step 8) at **close**. Mid-workflow plan files remain forbidden until close. Product/source files were already committed after verify and after review-fix.
 
 ### Step 9: Fix-PR
 *   **Executor**: PR fixing subagent (`ws-fix-pr` / `ws-goal-fix-pr`).
@@ -299,7 +300,7 @@ Workflows do not provide an in-gate model selector.
 4.  The orchestrator detects the new session model, updates `currentModel` in state, and logs the transition.
 
 ### Stale `uswf/` tags, worktrees, or branches after a workflow
-On successful end-of-workflow (`status: completed`), orch always runs **Phase A** git runtime cleanup for that `{workflow-id}` via:
+On terminal shipping (`shipStatus`: `skipped`, `merged`, or `stopped`), orch runs **Phase A** git runtime cleanup for that `{workflow-id}` via:
 
 ```bash
 python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}

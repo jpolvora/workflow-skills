@@ -35,7 +35,7 @@
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
 | **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; tracker close-loop via `comment-issue`. |
 | **Safe shell recipes** | Phase 5a blocks nested-quote `python -c` / `node -e` one-liners. Use `extract_frontmatter_field.cjs` for YAML fields. |
-| **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until ship. |
+| **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until Step 8 / lite 4 **close**. Workflow `status: completed` means implementation is done, before push/PR. |
 | **Definition of Ready and TDD** | Authoring requires Definition of Ready, Validation & Observation Notes, and Negative & Failing Test Scenarios (`validate_spec.cjs --mode=authoring` fails closed). Interview audits failing tests. Implement is red-then-green. Uncovered negative scenarios cap verify at 8. |
 | **Dual memory routing** | Local MEMORY files and/or an external spec-memo vault via `enableMemoryFiles` / `enableSpecMemoIntegration`. `ws-spec-memo` is the setup/bridge; runtime vault ops use `ws-memo`. |
 | **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |

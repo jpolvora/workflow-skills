@@ -90,16 +90,27 @@ function dirSize(abs) {
   return total;
 }
 
-function readStateStatus(planDir) {
+function readStateFields(planDir) {
   let status = null;
-  if (!fs.existsSync(planDir)) return status;
+  let shipStatus = null;
+  if (!fs.existsSync(planDir)) return { status, shipStatus };
   for (const name of fs.readdirSync(planDir)) {
     if (!name.endsWith('.state.md')) continue;
     const text = fs.readFileSync(path.join(planDir, name), 'utf8');
-    const m = text.match(/^status:\s*(\S+)/m);
-    if (m) status = m[1].trim().toLowerCase();
+    const sm = text.match(/^status:\s*(\S+)/m);
+    if (sm) status = sm[1].trim().toLowerCase();
+    const hm = text.match(/^shipStatus:\s*(\S+)/m);
+    if (hm) shipStatus = hm[1].trim().toLowerCase();
   }
-  return status;
+  return { status, shipStatus };
+}
+
+function isPlanRootDisposable(status, shipStatus, isArchive) {
+  if (isArchive) return true;
+  if (status === 'cancelled' || status === 'failed') return true;
+  if (status !== 'completed') return false;
+  if (!shipStatus) return true;
+  return ['skipped', 'merged', 'stopped'].includes(shipStatus);
 }
 
 function pushCandidate(list, item) {
@@ -302,15 +313,14 @@ function main() {
 
       if (opts.scratchOnly) continue;
 
-      const status = readStateStatus(abs);
+      const { status, shipStatus } = readStateFields(abs);
       const isArchive = /\.archive$/i.test(name);
-      const shipped =
-        isArchive || status === 'completed' || status === 'cancelled' || status === 'failed';
+      const shipped = isPlanRootDisposable(status, shipStatus, isArchive);
       if (!shipped) {
-        if (status === 'active' || status === 'paused') {
+        if (status === 'active' || status === 'paused' || (status === 'completed' && !isPlanRootDisposable(status, shipStatus, false))) {
           skipped.push({
             path: `${plansPosix}/${name}`,
-            reason: `active-workflow:${status || 'unknown'}`,
+            reason: status === 'completed' ? `shipping-pending:${shipStatus || 'unknown'}` : `active-workflow:${status || 'unknown'}`,
           });
         }
         continue;

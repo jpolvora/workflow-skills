@@ -327,8 +327,8 @@ function testProtocolMandatoryVsOptionalSplit() {
     'protocol says Phase B optional',
   );
   assert(
-    protocol.includes('status → completed') || protocol.includes('status→completed'),
-    'protocol ties Phase A to completed',
+    protocol.includes('shipStatus') || protocol.includes('shipping is terminal') || protocol.includes('shipping reaches'),
+    'protocol ties Phase A to shipping terminal',
   );
 }
 

@@ -585,7 +585,35 @@ assert.notStrictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--
 stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-08-lite.result.md', 8, 'lite', 'wf-lite');
 assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:10.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:11.000Z', ...liteCommon]).status, 0);
+const liteClosed = JSON.parse(fs.readFileSync(path.join(liteRoot, liteStateRel.replace(/\.state\.md$/, '.state.json')), 'utf8'));
+assert.strictEqual(liteClosed.status, 'completed', 'lite close finish sets workflow status completed');
+assert.strictEqual(liteClosed.shipStatus, 'pending', 'lite close finish defaults shipStatus pending');
 assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 5 accepts step-08 result');
+
+const stdRoot = temp('ws-state-std-close-');
+const stdStateRel = '.agents/plans/std/wf.state.md';
+write(path.join(stdRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' }, verification: {}, defaults: {}, fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(stdRoot, stdStateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: wf-std
+slug: std
+workflowType: standard
+status: active
+currentStep: 8
+completedSteps: [0,1,2,3,4,5,6,7]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+---
+# State
+`);
+const stdCommon = ['--repo-root', stdRoot, '--jsonl-out', '.agents/plans/std/telemetry/step-08.jsonl'];
+assert.strictEqual(run(update, ['finish', stdStateRel, '--step', '8', '--timestamp', '2026-08-21T20:00:11.000Z', ...stdCommon]).status, 0);
+const stdClosed = JSON.parse(fs.readFileSync(path.join(stdRoot, stdStateRel.replace(/\.state\.md$/, '.state.json')), 'utf8'));
+assert.strictEqual(stdClosed.status, 'completed', 'standard close sets workflow status completed');
+assert.strictEqual(stdClosed.shipStatus, 'pending', 'standard close defaults shipStatus pending');
 
 const barePreAdvance = run(validate, [stateRel, '--pre-advance', '--repo-root', root]);
 assert.notStrictEqual(barePreAdvance.status, 0, 'bare --pre-advance is rejected');

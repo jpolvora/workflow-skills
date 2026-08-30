@@ -71,7 +71,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch model in IDE/agent host → Resume`.
    - Do **not** store or apply `modelChain`.
    - `strict` → full US verification at Step 5 (standard orch only).
-2a. **Gate contract**: Load [`gates.md`](gates.md) — universal step controls, combined delivery + ship gate at standard Step 8 / lite Step 4, separate fix-PR at standard Step 9 / lite Step 5. Config/SCM: [`config-resolution.md`](config-resolution.md).
+2a. **Gate contract**: Load [`gates.md`](gates.md) — universal step controls, close implementation + ship gates at standard Step 8 / lite Step 4, separate fix-PR at standard Step 9 / lite Step 5. Config/SCM: [`config-resolution.md`](config-resolution.md).
 2b. **Mode hint (new workflow only):** If user did not pass density flags and invoked full `ws-spec-to-pr` without `--full`/`auto`, optionally offer once: **Full pipeline** (rec) / **Use lite instead** (`/ws-spec-to-pr-lite`) — see gates.md Mode selection. Skip when already on lite.
 3. **Log parsed args and switch states**: Write a banner to step output showing all switches and their resolved values:
    ```markdown
@@ -168,7 +168,7 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 1. When `{plansDir}/index.json` is missing **or** this is the first bootstrap after a package update / the resume list looks incomplete, run `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs rebuild-index` (lite orch: the lite `validate_state.cjs` wrapper; same module).
 2. `Read` `{plansDir}/index.json` **once**. Use `workflows[]` fields (`status`, `workflowId`, `slug`, `pipeline`/`workflowType`, `currentStep`, `statePath`). If an expected active/paused workflow is still absent, run `rebuild-index` once more before concluding no unfinished workflows exist. Do not `Glob`/`Read` every `*.state.md` unless the index is corrupt — then `rebuild-index` and retry once.
 3. Filter by `workflowType` / `pipeline` match (`standard` vs `lite`).
-   - **Completed Workflow Check:** If an existing workflow matches the target US/slug and has `status: completed` (or all steps finished):
+   - **Completed Workflow Check:** If an existing workflow matches the target US/slug and has `status: completed` **and** shipping is terminal (`shipStatus` is `skipped`, `merged`, or `stopped`; or legacy state with no `shipStatus` and Step 9 in `completedSteps` / explicit skip-ship recorded):
      Prompt via `user-gate`:
      ```text
      Completed workflow state detected for US {us} ({slug}):
@@ -179,7 +179,8 @@ Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      3. View completed results & exit
      ```
      Choosing Option 1 sets `scoreAndRefine: true` and dispatches Score Analysis / 2nd Pass execution (wide-context overengineering sweep per [`gates.md`](gates.md) § Score & Refine).
-   - **Unfinished Workflow Check:** Filter `status: active` or `status: paused`. Present as **selectable list** via user-gate:
+   - **Implementation closed, shipping pending:** If `status: completed` but `shipStatus` is `pending`, `pushed`, or `pr-open` (or Step 8 in `completedSteps` without terminal ship), treat as **unfinished** — resume at ship gate or Step 9 (same as active resume for that `currentStep`).
+   - **Unfinished Workflow Check:** Filter `status: active` or `status: paused`, **or** `status: completed` with non-terminal `shipStatus`. Present as **selectable list** via user-gate:
      ```text
      Found {N} unfinished workflow(s):
      

@@ -14,7 +14,7 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 |------|--------|
 | **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. `ws-update-plan-implementation` is optional Extra (invoke when installed). |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
-| **One combined delivery + ship ask** | Orchestrator presents the combined gate once at standard Step 8 / lite Step 4. [`ws-ship-pr`](../ws-ship-pr/SKILL.md) in workflow mode **executes** the chosen option — does **not** re-ask at user-gate. Standalone `/ship-pr` may ask. |
+| **Close then ship (two gates)** | Orchestrator presents **close implementation** then **ship** at standard Step 8 / lite Step 4. Close sets `status: completed` before push/PR. [`ws-ship-pr`](../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship option (push/PR only) — does **not** re-ask delivery commit or workflow close. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
@@ -177,23 +177,35 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 
 ---
 
-## Combined delivery + ship gate (one user-gate)
+## Close implementation gate (standard Step 8 / lite Step 4 — phase A)
 
-Replaces the old separate delivery (Step 12) and ship (Step 13) gates. Presented by the orchestrator at **standard Step 8** / **lite Step 4**:
+**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`.
 
-1. **Commit configured delivery artifacts, then create PR** (Recommended when `fullMode`)
-2. **Commit configured delivery artifacts, push only**
-3. **Commit configured delivery artifacts, skip PR**
-4. **Skip delivery commit and skip shipping**
-5. **Pause** (to change model: switch in IDE/agent host, then resume)
+1. **Commit configured delivery artifacts** (Recommended when `fullMode`)
+2. **Skip delivery commit** (still closes implementation: MEMORY + changelog + `status: completed`)
+3. **Pause** (to change model: switch in IDE/agent host, then resume)
 
-When `fullMode` is false, Recommended = **Skip delivery commit and skip shipping** (option 4) unless user explicitly wants push-only. When `fullMode` is true, Recommended = **Commit configured delivery artifacts, then create PR** (option 1).
+When `fullMode` is false, Recommended = **Skip delivery commit** (option 2) unless user explicitly wants delivery artifacts committed. When `fullMode` is true, Recommended = **Commit configured delivery artifacts** (option 1).
 
 G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
 
-MEMORY.md / ws-self-learning sweep runs automatically after a successful delivery commit (no separate §Doc gate).
+After successful close (options 1 or 2): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md)).
 
-Pass the selected ship intent into `ws-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`.
+`ws-spec-index sync` on close uses **implementation** evidence only — not merged/shipped.
+
+## Ship gate (standard Step 8 / lite Step 4 — phase B)
+
+**After close.** Same run; workflow already `status: completed`.
+
+1. **Create PR** (Recommended when `fullMode`)
+2. **Push only**
+3. **Skip PR** (no create)
+4. **Skip shipping entirely**
+5. **Pause**
+
+When `fullMode` is false, Recommended = **Skip shipping entirely** (option 4) unless user explicitly wants push-only. When `fullMode` is true, Recommended = **Create PR** (option 1).
+
+Pass the selected ship intent into `ws-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`. Update `shipStatus` per outcome (`pushed`, `pr-open`, `skipped`, `stopped`). `ws-ship-pr` in `workflowMode` does **not** own delivery commit or workflow completion.
 
 ---
 
@@ -247,7 +259,7 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 |------|-------|
 | HS-1 / HS-2 / HS-2a | Both orch |
 | G2-code | Required: **G2-code after Step 5 before Step 6** (standard) / **G2-code after Step 2 before Step 3** (lite); post-review-fix when product files remain. Optional: Step 4 / Step 7 fix More-options Commit |
-| G2-delivery | Inside combined delivery + ship gate above |
+| G2-delivery | Inside close implementation gate (phase A) |
 | Review findings | Lite Step 3; full Step 6 — fix → re-review until clean (max 3); Pause on residual Critical/Warning |
 | Active Resume | `setup.md` |
 
@@ -260,8 +272,10 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 | Transition | Next (Advance) |
 | Feature branch (new start) | Stay on current (detached `HEAD`: create `feat/{slug}` from HEAD; never persist `HEAD`; `ls-remote` auth/network → local-check-only) |
 | Feature branch resume mismatch | Check out `state.branch` |
-| Combined delivery + ship (`fullMode`) | Commit configured delivery artifacts, then create PR |
-| Combined delivery + ship (not `fullMode`) | Skip delivery commit and skip shipping |
+| Close implementation (`fullMode`) | Commit configured delivery artifacts |
+| Close implementation (not `fullMode`) | Skip delivery commit |
+| Ship after close (`fullMode`) | Create PR |
+| Ship after close (not `fullMode`) | Skip shipping entirely |
 | Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
 | Check-implementation below minVerifyScore | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |

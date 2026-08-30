@@ -27,7 +27,7 @@ Scan enclosure: `{plansDir}` (required), `{reviewsDir}` (code-review rounds), op
 Eligible **only** when:
 
 1. Folder is `{plansDir}/{slug}/` or `{plansDir}/{slug}.archive/`, and
-2. `*.state.md` has `status: completed` \| `cancelled` \| `failed`, **or** the folder name ends with `.archive`, and
+2. `*.state.md` has `status: completed` **and** terminal `shipStatus` (`skipped` \| `merged` \| `stopped`; or legacy pre-0.3.52: no `shipStatus` — old `completed` meant fully ended), **or** `status: cancelled` \| `failed`, **or** the folder name ends with `.archive`, and
 3. No path under the folder is git-tracked.
 
 Active / paused / unknown status → list scratch children only; skip deleting the plan root.

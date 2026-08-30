@@ -34,7 +34,7 @@ Fill 4–8 `*` bullets from that analysis. Do **not** copy a canned list from a 
 | 5 | `dispatch-agent` `ws-verify-plan` **quick-score default** vs refined spec ‖ spec; full matrix if score `< minVerifyScore` or `--strict`; **Regression Sabotage Check** when required (missing required → fail-closed below the Advance bar (`knownDefect` caps at 8)); **below-bar gate** (`scoreAndRefine` until ≥ `minVerifyScore`); then **Reach-10 offer** when conditions in [`gates.md`](../ws-shared/gates.md) hold; then **G2-code after Step 5 before Step 6** (skip if empty) | `step-05-{slug}.plan.report.md` |
 | 6 | Fail-closed dirty preflight; `dispatch-agent` `ws-code-review` (`git diff {base}...HEAD`). When `defaults.reviewJury.size` is 2 or 3, dispatch that many independent reviews against the same commit, then for each juror run `node {skillsRoot}/ws-code-review/scripts/write_review_round.cjs … --jury-out {us-dir}/.runtime/step-06-{slug}.juror-{N}.json`, then `node {skillsRoot}/ws-spec-to-pr/scripts/merge_review_jury.cjs --review … --output {us-dir}/step-06-{slug}.jury.json --canonical-review-out {us-dir}/step-06-{slug}.review.md`. Union never drops Warning/Critical; identical findings collapse. Size 1 matches today. When `defaults.contextHygiene.backgroundVerboseSteps` is true, orch **may** use non-blocking `dispatch-agent` for Steps 6/7 if the host supports it; otherwise log `background-unsupported` and run blocking (no HS-5). Critical/Warning → **fix → re-review** via `ws-implement-tasks` (max 3; not a separate step); then G2-code of review fixes if dirty; soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
 | 7 | Machine probe first: `node {skillsRoot}/ws-testing/scripts/probe_test_surface.cjs --json`. Auto-skip **only** when `skipTesting` (`finish --reason testing-disabled`) or probe `hasTestSurface` is false and unit aliases are green (`finish --reason no-test-surface`). Agent judgment cannot skip. Else `dispatch-agent` `ws-testing`. Inside Step 7, optional **mutation** substep runs only when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; skip (log) otherwise. When mutation skipped/unset, **regression sabotage** via `run_sabotage.py`. Mutation score &lt; `verification.mutationThreshold` (default 80) or runner non-zero → Step 7 **fail-closed** (no Advance to 8); hand off to `ws-implement-tasks` fix mode. FSM stays 0–9 (no new step). | `step-07-{slug}.testing.*` |
-| 8 | Delivery result + **combined ship gate** ([`gates.md`](../ws-shared/gates.md)) → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`). **`comment-issue`** on PR create when tracker id present; **`check-pr-status`** for CI triage. MEMORY sweep after delivery commit. | `step-08-{slug}.result.md` |
+| 8 | **Close implementation** then **ship** ([`gates.md`](../ws-shared/gates.md)): delivery result → close gate (G2-delivery, MEMORY, changelog, `status: completed`, `shipStatus: pending`) → ship gate → `ws-ship-pr` (`workflowMode: true`, `stopBeforeFixPr: true`, push/PR only). **`comment-issue`** on PR create when tracker id present; **`check-pr-status`** for CI triage. | `step-08-{slug}.result.md` |
 | 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists. CI fixes use **`check-pr-status`** only (baseline vs diff + one flake rerun). **`comment-issue`** on in-session merge when applicable. | PR threads / merge |
 
 ### Post-mutating transition (after step N completes)
@@ -94,28 +94,41 @@ Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate and �
 
 Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3` in gate history. Contract: [`ws-code-review`](../ws-code-review/SKILL.md) § Fix → re-review loop. **Do not dispatch** review while uncommitted workflow product files remain.
 
-### Step 8 — Ship (delivery + push/PR)
+### Step 8 — Close implementation, then ship
 
-**Order:** [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**) → render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)) → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+**Semantics:** `status: completed` marks **end of spec/plan implementation**, not PR merge. `shipStatus` tracks shipping (`pending` → `skipped` \| `pushed` \| `pr-open` \| `merged` \| `stopped`). Phase A git cleanup runs when shipping is **terminal**, not when `status` flips to `completed`.
 
-**Phase A git cleanup:** If this Step 8 ends the workflow with `status → completed` (no Step 9 / skip-PR), run Phase A **once** before claiming ended (`python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`). If advancing to Step 9, defer Phase A until Step 9 sets `completed` — never run Phase A at both steps. Exit 0 proceed; exit 2 surface leftovers (may claim ended); exit 1 do not claim ended.
+**A. Close implementation (always before any remote ship):**
+
+1. [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**).
+2. Render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)).
+3. **Close implementation gate** ([`gates.md`](../ws-shared/gates.md) § Close implementation):
+   - Commit configured delivery artifacts (G2-delivery) **or** skip that commit.
+   - Pause remains available.
+4. After successful close (even when delivery commit skipped): MEMORY sweep → `ws-changelog`.
+5. Set `status: completed`, `endedAt`, `shipStatus: pending`. `finish --step 8` records step 8; overall workflow `status` is set here, **not** in Step 9.
+6. [`ws-spec-index`](../ws-spec-index/SKILL.md) `sync` with `{slug}` and **implementation** evidence only — do not treat as merged/shipped.
+7. Optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) (close gate option).
 
 When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
 
 Dispatch/finish timestamps still required under `autoMode`/`fullMode` (State Hygiene → HS-5 if missing). Authored `--elapsed` is rejected.
 
-**Combined gate** ([`gates.md`](../ws-shared/gates.md)):
-
-1. **Commit configured delivery artifacts, then create PR** (Recommended when `fullMode`)
-2. **Commit configured delivery artifacts, push only**
-3. **Commit configured delivery artifacts, skip PR**
-4. **Skip delivery commit and skip shipping**
-5. **Pause**
-
 G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8.
 
-Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no goal-fix loop inside ship**; orch Advance to 9 when PR created.
-After delivery commit / PR creation, auto-run [`ws-spec-index`](../ws-spec-index/SKILL.md) `sync` with `{slug}` and `shipEvidence`.
+**B. Ship (same run, optional; after close):**
+
+**Ship gate** ([`gates.md`](../ws-shared/gates.md) § Ship after close):
+
+1. **Create PR** (Recommended when `fullMode`)
+2. **Push only**
+3. **Skip PR** (no create)
+4. **Skip shipping entirely**
+5. **Pause**
+
+Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**; orch advances to Step 9 when `shipAction: create-pr` and PR exists. Update `shipStatus` to `pushed` \| `pr-open` \| `skipped` \| `stopped` per outcome.
+
+**Phase A git cleanup:** Run **once** when shipping is terminal — skip-ship after close (`shipStatus: skipped`), skip-PR with no Step 9, or after Step 9 stop/merge (`python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`). **Do not** run Phase A at close when ship is still `pending`/`pr-open`/`pushed`. Exit 0 proceed; exit 2 surface leftovers (may claim ended); exit 1 do not claim ended.
 
 ### Step 9 — Fix-PR
 
@@ -125,6 +138,6 @@ After Step 8 when `shipAction: create-pr` and PR exists:
 2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot) once under the outer numeric Step 9 model. Each internal batch then runs `fixPrPlan` before `fixPrExec`: emit ordered `dispatch --step 9 --substep fixPrPlan` and `dispatch --step 9 --substep fixPrExec` JSONL events with actual models when `dispatch-agent` is available. The plan role may write only its complete gate; execution validates/follows it and records amendments before deviations. Internal roles never call `finish --step 9`; JSONL is their history while compact `stepDispatches` keeps only the latest Step 9 dispatch.
 3. Continue until **no open issues** (`activeThreads == 0`), then **merge** via SCM provider `merge-pr` only when required checks are green. The outer orchestrator calls `finish --step 9` exactly once after convergence or terminal stop. Never merge with open review threads or failing required checks.
 
-When setting `status → completed` after convergence (or equivalent terminal end), run **Phase A** git cleanup once before claiming ended — see [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Do not also run Phase A at Step 8 when Step 9 ran.
+When shipping reaches a **terminal** `shipStatus` after Step 9 convergence (or skip-ship/skip-PR after close), run **Phase A** git cleanup once before claiming the run fully ended — see [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Do **not** set `status: completed` again in Step 9 (`status` was set at close). Update `shipStatus` to `merged` or `stopped`. Do not run Phase A at both Step 8 close and Step 9.
 
 Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · checks red after convergence attempts.

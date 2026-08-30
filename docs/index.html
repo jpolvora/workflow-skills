@@ -1813,7 +1813,7 @@
           <ul>
             <li><strong>Standard:</strong> after Step 5 verify (score ≥ <code>defaults.minVerifyScore</code>, default 9), then Step 6 reviews <code>git diff {base}...HEAD</code>. Review fixes get a second product commit.</li>
             <li><strong>Lite:</strong> after Step 2 implement, then Step 3 review; second commit after review fixes if any.</li>
-            <li><strong>Ship (Step 8 / lite Step 4):</strong> configured plan-dir delivery artifacts + push/PR. Plan files stay uncommitted until then.</li>
+            <li><strong>Ship (Step 8 / lite Step 4):</strong> close implementation first (plan-dir G2-delivery, MEMORY, changelog, <code>status: completed</code>), then optional push/PR. Plan files stay uncommitted until close. Shipping uses <code>shipStatus</code>, not workflow completion.</li>
           </ul>
           <p>Only workflow-touched created/updated/deleted product paths are staged. Never <code>git add -A</code>. Review fails closed if those files are still uncommitted.</p>
         </div>
@@ -2086,7 +2086,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.50 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.52 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

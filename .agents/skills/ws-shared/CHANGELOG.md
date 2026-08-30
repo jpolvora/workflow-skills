@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-08-30 00:15] Agent: Cursor Grok 4.6
+- **Prompt**: bump, verify, review, docs, commit, push, /ws-ship-pr
+- **Done**: Persist `shipStatus` on close finish; cleanup skips pending-ship plan roots; spec `0053`; version 0.3.52
+- **Result**: `npm run test` exit 0; integrity OK
+
+### [2026-08-29 23:58] Agent: Cursor Composer
+- **Prompt**: Complete implementation before opening the PR — close workflow (artifacts, MEMORY, changelog, status completed) before ship
+- **Done**: Split Step 8 / lite 4 into close-then-ship gates; added `shipStatus`; decoupled Phase A from `status: completed`; `ws-ship-pr` workflow mode push/PR only; updated resume/boards/multi-spec already-implemented; v0.3.51 + integrity
+- **Result**: Harness tests pass; implementation complete is no longer tied to PR merge
+
 ### [2026-08-28 18:28] Agent: Cursor Grok 4.6
 - **Prompt**: ws-goal-fix-pr PR 256 round 2
 - **Done**: Aligned ORCH.md with Step 5 and prepare baseline; added defaults.hostAdapter to schema and example

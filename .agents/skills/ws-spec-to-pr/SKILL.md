@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.3.50
+version: 0.3.52
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -35,7 +35,7 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 
 ## Goals & Invariants
 
-1. **Scope:** Steps 0–7 local (first **required** product commit is G2-code after Step 5, not Step 8); Step 8 delivery+ship; Step 9 fix-pr. No push before Step 8 ship action.
+1. **Scope:** Steps 0–7 local (first **required** product commit is G2-code after Step 5, not Step 8); Step 8 close implementation then ship; Step 9 fix-pr. No push before Step 8 ship phase. `status: completed` = implementation done (close), not PR merge.
 2. **Auth:** Gate required for G1+. Cancel → HS-1. Commit → G2 + menu (HS-2).
 3. **Isolation:** Subagent per step. Checkpoint tag `uswf/{id}/before-step-{N}`. Branch-direct default; worktree when `plans.useWorktrees=true`.
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `{workflow-id}.state.json` is machine SoT (`.state.md` is the render); `{sharedDir}/MEMORY.md` generalizable.
@@ -77,4 +77,4 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--sk
 
 ## Exit & Handoff
 
-Complete when Step 8 (or Step 9 PR merge) outputs `status: completed`.
+Complete when Step 8 **close** sets `status: completed` (implementation done). Shipping (push/PR) and Step 9 fix-pr may continue in the same run; `shipStatus` tracks shipping separately.

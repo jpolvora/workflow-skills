@@ -177,8 +177,7 @@ function hasMergedDelivery(plansDir, slug) {
     if (
       /\bmerged:\s*true\b/i.test(text) ||
       /\bstate:\s*MERGED\b/i.test(text) ||
-      mergedPrPhrase ||
-      /^status:\s*completed\s*$/im.test(text)
+      mergedPrPhrase
     ) {
       return true;
     }
