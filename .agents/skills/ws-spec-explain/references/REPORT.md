@@ -18,8 +18,8 @@ Print these headings in order. Empty subsections allowed; mark gaps explicitly.
 | Label | When |
 |-------|------|
 | `not-started` | Spec exists; no `{us-dir}` / state, or state never left step 0 without product commits |
-| `in-progress` | `status: active` / `paused`, or open PR not merged |
-| `delivered` | `status: completed`, or PR merged, or `step-08-*.result.md` + merged evidence |
+| `in-progress` | `status: active` / `paused`, or `status: completed` with non-terminal `shipStatus` (`pending`/`pushed`/`pr-open`), or open PR not merged |
+| `delivered` | Terminal `shipStatus` (`merged`/`skipped`/`stopped`) with merge evidence when applicable, or PR merged, or `step-08-*.result.md` + merged evidence |
 | `blocked` | `status: failed` / `cancelled`, or explicit blocker in state/result |
 | `unknown` | Conflicting signals; list the conflict under Evidence |
 

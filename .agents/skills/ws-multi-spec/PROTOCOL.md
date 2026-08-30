@@ -96,7 +96,7 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
     - **Resume (Recommended):** Re-sync feature branch with `baseBranch` and re-dispatch worker or convergence gate for same spec.
     - **Skip:** Mark item `status: skipped`, record `reason`, proceed to next item.
     - **Abort run:** Mark run state `status: paused`, exit loop to Phase 6.
-- **Child git cleanup (Phase A):** Successful child workers run mandatory Phase A via their own orch (`ws-spec-to-pr` / lite) when the child sets `status: completed` — shared script `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {child-workflow-id}` ([`../ws-spec-to-pr/protocols/artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md)). Skipped / failed / aborted children do **not** auto-clean. The batch `runId` is **not** a `uswf/{workflow-id}` cleanup target.
+- **Child git cleanup (Phase A):** Successful child workers run mandatory Phase A via their own orch (`ws-spec-to-pr` / lite) when child **shipping is terminal** — shared script `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {child-workflow-id}` ([`../ws-spec-to-pr/protocols/artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md)). Skipped / failed / aborted children do **not** auto-clean. The batch `runId` is **not** a `uswf/{workflow-id}` cleanup target.
 
 ### Phase 6: Final Report
 - Summarize run metrics (total items, shipped & merged, skipped, failed, flow mode breakdown, `baseBranch`).

@@ -226,12 +226,16 @@ const completed = run([
   tmp,
 ]);
 const completedJson = JSON.parse(completed.stdout);
-assert.strictEqual(completedJson.pending.length, 0, 'status completed omits pending');
+assert.strictEqual(completedJson.pending.length, 1, 'status completed alone stays pending');
 assert.ok(
-  completedJson.omitted.some(
+  completedJson.pending.some((r) => r.slug === 'done-complete'),
+  'implementation closed without merge is not already-implemented',
+);
+assert.ok(
+  !completedJson.omitted.some(
     (r) => r.slug === 'done-complete' && r.reason === 'already-implemented',
   ),
-  'status completed reason',
+  'status completed in step-08 does not omit spec',
 );
 
 const blockedDir = path.join(tmp, 'blocked-specs');

@@ -1,6 +1,6 @@
 # Delivery Result Protocol (Step 8)
 
-Before combined delivery+ship gate. `dryRun`: simulate result + plan edits + benchmark; no real commit.
+Before close implementation gate. `dryRun`: simulate result + plan edits + benchmark; no real commit.
 
 ## Steps
 

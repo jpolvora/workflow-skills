@@ -35,7 +35,7 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 5 | Spec-compliance scoring 0–10 (`ws-verify-plan`); **advances only at ≥ `defaults.minVerifyScore`** (default 9) | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
-| 8 | Delivery result, ship gate, push and PR creation (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
+| 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then ship gate, push/PR (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
 | 9 | PR thread convergence: one gate-only `fixPrPlan` then `fixPrExec` per Act-round/standalone batch, then merge | plan gate + resolved threads / merge |
 
 Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md).
@@ -50,7 +50,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 | 1 | Planning (design-intent git log) | `ws-write-plan` |
 | 2 | Implementation (defect-class repo sweep) | `ws-implement-tasks` |
 | 3 | Review (+ fix loop, sibling modules) | `ws-code-review` |
-| 4 | Ship (CI triage + tracker comment) | `ws-ship-pr` |
+| 4 | Close implementation, then ship (CI triage + tracker comment) | orch close + `ws-ship-pr` |
 | 5 | Fix-PR (plan-before-edit inline on current model) | `ws-goal-fix-pr` / `ws-fix-pr` |
 
 ### 1.3 Batch delivery — `ws-multi-spec`
@@ -85,7 +85,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 ## 3. Commit and artifact discipline
 
-- **Product code and plan files are committed separately.** Product files commit after verify (standard) or after implement (lite); plan artifacts wait for the Step 8 delivery commit.
+- **Product code and plan files are committed separately.** Product files commit after verify (standard) or after implement (lite); plan artifacts commit at Step 8 **close** (G2-delivery). **`status: completed`** marks implementation done at close, before push/PR; `shipStatus` tracks shipping.
 - **Review fixes get their own commit**, so a reviewer can see what the review changed.
 - **`deliveryCommitArtifacts`** selects exactly which plan artifacts enter the delivery commit (refined plan on by default; result, spec, check report, review, and testing report opt-in).
 - **Checkpoint tags** (`uswf/{workflow-id}/before-step-{N}`) are written at each transition, so a run can be inspected or rolled back per step.
@@ -262,6 +262,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-28).
 | **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName`; Extra `ws-run-benchmark` automates live prepare → orch → collect → snapshot |
 | **0.3.47** | Aug 28 | **Docs/site:** LLM-agnostic From Spec to Delivery hero and CTAs; honest remaining-todo roadmap; DoR/TDD and spec-memo dual routing on FEATURES, README, and the public site |
 | **0.3.46** | Aug 27 | **Spec DoR + TDD:** authoring-mode `Definition of Ready` / Validation Notes, interview failing-test audit, implement-tasks red-then-green, verify-plan negative-test coverage |
+| **0.3.52** | Aug 30 | **Close before ship:** Step 8 / lite 4 close sets `status: completed` + `shipStatus` before push/PR; `update_state` persists close; Phase A on shipping terminal; `ws-ship-pr` workflow mode push/PR only |
 | **0.3.45** | Aug 27 | **Research-driven pipeline quality:** JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `defaults.providerCompat` / `contextHygiene` / `reviewJury`, memory write sanitizer, pipeline handoff harness check |
 | **0.3.43** | Aug 27 | **Retired artifact hygiene:** `update`/hub refresh prunes session-lease schema, `defaults.sessionLeases` / `enableAuditing` / `patterns*` config keys, and retired `ws-patterns*` / `ws-audit` folders; `ws-doctor` warns on leftovers; harness forbidden-id scan extended |
 | **0.3.42** | Aug 26 | Configurable memory storage backends (`enableMemoryFiles` & `enableSpecMemoIntegration`), `ws-spec-memo` integration bridge, wizard interview updates & tests |

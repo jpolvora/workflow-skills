@@ -1,15 +1,15 @@
 # Post-workflow cleanup
 
-Two phases. **Phase A (git runtime)** is mandatory when the orchestrator sets `status: completed`. **Phase B (plan-dir temps)** runs only when the user chooses delete temps. Never run auto-cleanup while `status: active`, on **Pause workflow**, or for `failed` / `cancelled` / `paused` (those skip Phase A unless the script is invoked explicitly).
+Two phases. **Phase A (git runtime)** is mandatory when **shipping is terminal** (`shipStatus`: `skipped` \| `merged` \| `stopped`, or equivalent skip-ship after close with no Step 9). **Phase B (plan-dir temps)** runs only when the user chooses delete temps. Never run auto-cleanup while `status: active`, on **Pause workflow**, or for `failed` / `cancelled` / `paused` (those skip Phase A unless the script is invoked explicitly).
 
-Gate options for Phase B (folded into combined Step 8 / lite Step 4 gate "delete temps" in [`gates.md`](../../ws-shared/gates.md)):
+Gate options for Phase B (folded into close implementation gate "delete temps" in [`gates.md`](../../ws-shared/gates.md)):
 
 - **Delete temporary artifacts** — plan-dir exec/dag/issue/report/testing files, baseline, archive only
 - **Keep all artifacts** (audit) — still runs **Phase A**; skips Phase B only
 
 ## Phase A — Mandatory git runtime cleanup
 
-**When:** Once, when orch transitions `status → completed` (after Step 9 merge/convergence, or after Step 8 when there is no Step 9 / skip-PR; lite: after Step 5 fix-pr convergence or Step 4 when skip ship/fix-pr). Run **before** claiming the workflow fully ended. Do **not** invoke Phase A at both Step 8 and Step 9.
+**When:** Once, when shipping reaches a **terminal** state: after Step 9 merge/convergence or stop; after Step 8 ship phase when user skips ship/PR (no Step 9); lite: after Step 5 fix-pr convergence or Step 4 when skip ship/fix-pr. Run **before** claiming the run fully ended. **`status: completed` alone is not the trigger** — close may set `completed` while `shipStatus` is still `pending`/`pr-open`/`pushed`. Do **not** invoke Phase A at close and again at Step 9.
 
 **Skip auto-invoke:** `status: active` / Pause · `failed` · `cancelled` · `paused` (manual re-run allowed).
 
@@ -60,4 +60,4 @@ Script behavior (namespace `uswf/{workflow-id}` only):
 
 ## Shared contract
 
-Standard (`ws-spec-to-pr`), lite (`ws-spec-to-pr-lite`), and per-child `ws-multi-spec` workers use this protocol and the same script path. Batch `runId` is not a `uswf/` cleanup target — child orchs clean their own `{workflow-id}` on child `completed`.
+Standard (`ws-spec-to-pr`), lite (`ws-spec-to-pr-lite`), and per-child `ws-multi-spec` workers use this protocol and the same script path. Batch `runId` is not a `uswf/` cleanup target — child orchs clean their own `{workflow-id}` when child shipping is terminal.

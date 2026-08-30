@@ -13,7 +13,7 @@ Sibling protocol files under [`protocols/`](protocols/) remain authoritative for
 | G0 | Read, RO reports | — |
 | G1 | Edit WT, plans, impl (no commit) | Transition gate |
 | G2-code | `git commit` workflow product `files_touched` only (path-scoped; never `{plansDir}`) | Required: **G2-code after Step 5 before Step 6**; after Step 6 review-fix if dirty. Optional: Step 4 / Step 7 fix |
-| G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 combined delivery+ship gate |
+| G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 close implementation gate |
 | G3 | `git push`, PR create/merge | Step 8 **ship action** (within combined gate) |
 
 ```text
@@ -190,29 +190,35 @@ Failure (max 3): **Apply fixes and revalidate** (rec) / **Accept with reservatio
 
 Orch `git add` must be path-scoped — never `git add .` / `git add -A` on code-commit steps. Messages: `feat({slug}): verified implementation` then `fix({slug}): code-review fixes`. Record `{sha, step, message}` in `commits[]`.
 
-### Ship — delivery + push/PR (Step 8)
+### Ship — close implementation, then push/PR (Step 8)
 
 → [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md`)
 
-**Order:** delivery result → **combined delivery + ship user-gate** → on delivery commit: MEMORY sweep → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+**Order:** delivery result → **close implementation gate** (G2-delivery, MEMORY, changelog, `status: completed`, `shipStatus: pending`) → **ship gate** → `ws-ship-pr` (push/PR only) → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
 
-**Terminal completed (Phase A — once):** When orch sets `status → completed` (after Step 9 convergence **or** after Step 8 when there is no Step 9 / skip-PR), run mandatory Phase A git cleanup **before** claiming ended:
+**Terminal shipping (Phase A — once):** When `shipStatus` is terminal (`skipped`, `merged`, `stopped`, or skip-ship after close with no Step 9), run mandatory Phase A git cleanup **before** claiming the run fully ended:
 
 ```bash
 python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}
 ```
 
-Do **not** invoke Phase A at both Step 8 and Step 9. Phase B stays optional (delete-temps only). Keep-all still runs Phase A. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.
+Do **not** invoke Phase A at close when `shipStatus` is still `pending`/`pr-open`/`pushed`. Phase B stays optional (delete-temps only). Keep-all still runs Phase A when shipping is terminal. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.
 
-**Combined gate** ([`gates.md`](../ws-shared/gates.md) + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
+**Close gate** ([`gates.md`](../ws-shared/gates.md) § Close implementation + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
 
-1. **Commit configured delivery artifacts, then create PR** (Recommended when `fullMode`)
-2. **Commit configured delivery artifacts, push only**
-3. **Commit configured delivery artifacts, skip PR**
-4. **Skip delivery commit and skip shipping**
+1. **Commit configured delivery artifacts** (Recommended when `fullMode`)
+2. **Skip delivery commit**
+3. **Pause**
+
+**Ship gate** (after close):
+
+1. **Create PR** (Recommended when `fullMode`)
+2. **Push only**
+3. **Skip PR**
+4. **Skip shipping entirely**
 5. **Pause**
 
-Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no goal-fix loop inside ship**. Advance to Step 9 when PR created and `fullMode` / user chose create-pr.
+Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**. Advance to Step 9 when PR created and user chose create-pr.
 
 ### Fix-PR (Step 9)
 
@@ -258,7 +264,7 @@ Shared defaults: [`gates.md`](../ws-shared/gates.md) § Auto-gate defaults. Log 
 
 ### Checkpoints
 
-Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `before-step-1` = `baselineCommit`. Mirror in `checkpoints[]`. **Delete on completion:** Phase A via [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) when `status → completed` (mandatory git runtime cleanup — not gated on delete-temps). Dry-run: log only (`--dry-run`).
+Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `before-step-1` = `baselineCommit`. Mirror in `checkpoints[]`. **Delete on shipping terminal:** Phase A via [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) when `shipStatus` is terminal (mandatory git runtime cleanup — not gated on delete-temps). Dry-run: log only (`--dry-run`).
 
 ### Safe Revert & Backward Navigation
 

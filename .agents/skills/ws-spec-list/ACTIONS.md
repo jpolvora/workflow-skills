@@ -74,11 +74,11 @@ Empty set: print the section header and `_(none)_` — do not invent rows.
 
 | Action | When offered | Effect |
 |--------|--------------|--------|
-| **Continue** | `active` or `failed` (live state) | Load orch matching `workflowType` (`ws-spec-to-pr` / `ws-spec-to-pr-lite`) with state path; hand off; stop list skill |
+| **Continue** | `active` or `failed`, **or** `completed` with non-terminal `shipStatus` (`pending`/`pushed`/`pr-open`) | Load orch matching `workflowType` (`ws-spec-to-pr` / `ws-spec-to-pr-lite`) with state path; hand off at ship gate or Step 9; stop list skill |
 | **Start** | no live state for slug, or user wants a fresh run | Start orch (prefer linked `{specsDir}` path when Spec=`yes`; else `{us-dir}/step-00-*.spec.md` if present); hand off; stop |
-| **Finish** | `active` or `failed` | Confirm → set `status: completed`, `endedAt: ISO`; do **not** invent PR |
+| **Finish** | `active` or `failed` | Confirm → set `status: completed`, `endedAt: ISO`, `shipStatus: skipped` (manual close); do **not** invent PR |
 | **Cancel** | `active` or `failed` | Confirm → set `status: cancelled`, `endedAt: ISO` |
-| **Archive** | live row with terminal or stale state (`completed`/`cancelled`/`failed`, or user insists on active) | Confirm → move `{workflow-id}.state.md` (and sibling stale copies per ARTIFACTS) into `{us-dir}/{workflow-id}.archive/` |
+| **Archive** | live row with terminal state (`completed` + terminal `shipStatus`, or `cancelled`/`failed`), or user insists on active | Confirm → move `{workflow-id}.state.md` (and sibling stale copies per ARTIFACTS) into `{us-dir}/{workflow-id}.archive/` |
 | **Remove** | any plan row | Confirm (type slug) → delete `{us-dir}/` only; never delete `{sharedDir}`; never delete `{specsDir}` files unless user also confirmed a spec Remove |
 | **Open PR** | Delivery has URL or `#N` | Print URL / `gh pr view` via SCM provider if configured; read-only |
 | **Back** | always | Return to Select |

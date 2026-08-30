@@ -18,6 +18,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --step {N} \
   --status {completed|failed|skipped} \
+  --ship-status {pending|skipped|pushed|pr-open|merged|stopped} \
   --commit {sha} \
   --model {modelName} \
   --substep {dag|scoreAndRefine|reviewFix} \
@@ -31,6 +32,8 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
 ```
 
 `--jsonl-out` is **mandatory** on every call (zero-padded `NN` = step number). Creates `{plansDir}/{slug}/telemetry/` lazily. When quality gates are bypassed, run the `bypass` operation with `--gate` and `--reason`.
+
+On **close** (standard Step 8 / lite Step 4) `finish --status completed`, the helper sets workflow `status: completed`, `endedAt`, and `shipStatus: pending` unless `--ship-status` is passed. Later ship/fix-pr finishes update `--ship-status` only — they do **not** re-set `status`.
 
 Step 9 internal Fix-PR roles are dispatch-only: append `fixPrPlan` then `fixPrExec` with their actual models to the same Step 9 JSONL. They bypass numeric Step 9 model fallback and never use the `finish` recipe. JSONL preserves both role dispatches; compact `stepDispatches` intentionally retains only the latest numeric Step 9 row. The outer orchestrator alone calls `finish --step 9` once after convergence or terminal stop. Preserve nested `telemetry.loc` while updating either role.
 

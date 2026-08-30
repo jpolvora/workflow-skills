@@ -11,6 +11,10 @@
     "slug": { "type": "string", "minLength": 1 },
     "workflowType": { "enum": ["standard", "lite"] },
     "status": { "enum": ["active", "blocked", "completed", "cancelled", "failed"] },
+    "shipStatus": {
+      "enum": ["pending", "skipped", "pushed", "pr-open", "merged", "stopped"],
+      "description": "Shipping lifecycle after implementation close. Terminal: skipped | merged | stopped. Phase A git cleanup runs when shipStatus is terminal, not when status alone is completed."
+    },
     "currentStep": { "type": "integer", "minimum": 0, "maximum": 9 },
     "completedSteps": {
       "type": "array",

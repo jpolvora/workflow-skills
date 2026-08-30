@@ -136,7 +136,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - **Session model:** orch stays on `currentModel` (Pause → host → Resume; no `--model` / `--model-chain`). Subagent models: `defaults.modelsPreset` / `modelPresets` / `stepModels` / legacy phase keys; standard `dispatch-agent` only (lite inline). Fix-PR batches use `fixPrPlan` → `reviewerModel`, then `fixPrExec` → `executionModel`; both bypass numeric Step 9 and emit dispatch events only. `defaults.enableDag` default `false` = sequential; `true` = DAG. `defaults.verboseMode` explicit `true` = start-of-step `*` preview (schema seed writes `true`). Review-model tip at Advance into Step 6 (full orch)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Shared pipeline skills stay orch-agnostic
-- **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 / lite Step 4). Review uses `git diff {base}...HEAD`. No push before ship.
+- **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 close / lite Step 4 close). **`status: completed`** at close (implementation done), before push/PR; `shipStatus` tracks shipping. Review uses `git diff {base}...HEAD`. No push before ship phase.
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
@@ -153,7 +153,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-verify-plan` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap 8); product commit before review |
 | `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
-| `ws-ship-pr` | 8 | Delivery artifacts + push/PR (product already committed) |
+| `ws-ship-pr` | 8 | Push/PR after close (G2-delivery at close; product already committed) |
 | `ws-fix-pr` | 9 | Batch gate-only plan → execute/proactive fix |
 | `ws-goal-fix-pr` | 9 | Repeat plan/execute batches until zero threads |
 | `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas |

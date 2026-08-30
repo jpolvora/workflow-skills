@@ -100,6 +100,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: 0049-configurable-memory-backends.spec.md`)
 - [x] Research-driven spec-to-pr pipeline quality and integration (`spec: 0050-research-driven-pipeline-quality.spec.md`)
 - [x] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: 0051-spec-dor-tdd-refinement-hardening.spec.md`)
+- [x] Close implementation before opening the PR (`spec: 0053-close-implementation-before-pr.spec.md`)
 - [ ] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: spec-prefix-ordering.spec.md`)
 
 
@@ -170,6 +171,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 54 | `research-driven-pipeline-quality` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Research-driven spec-to-pr pipeline quality and integration |
 | 55 | `spec-dor-tdd-refinement-hardening` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
 | 56 | `spec-prefix-ordering` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional chronological spec filename prefixes and ws-spec-organizer |
+| 57 | `close-implementation-before-pr` | `[x]` done | Phase 4 | Close implementation (`status: completed`) before push/PR; `shipStatus` tracks shipping |
 
 Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`, `us-235`, `spec-prefix-ordering`. Other new work goes to Inbox, then promote.
 
@@ -231,6 +233,7 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming
 | 2026-08-27 | `research-driven-pipeline-quality` | Research-driven spec-to-pr pipeline quality and integration | Shipped 0.3.45 |
 | 2026-08-28 | `spec-dor-tdd-refinement-hardening` | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol | [PR #254](https://github.com/jpolvora/workflow-skills/pull/254) |
 | 2026-08-28 | `harness-spec-benchmark` | Harness spec-run benchmark with snapshot compare | Implemented (v0.3.49) |
+| 2026-08-30 | `close-implementation-before-pr` | Close implementation before opening the PR | Shipping 0.3.52 |
 
 ## 11. Maintenance checklist
 

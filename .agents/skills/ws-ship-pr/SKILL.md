@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.50
+version: 0.3.52
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -34,7 +34,7 @@ Standalone:
 /ship-pr [commit-title] [base=<branch>] [head=<branch>] [dry-run] [no-merge] [skip-gates] [max <n>]
 ```
 
-Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with `workflowMode: true`, `shipAction`, and typically `stopBeforeFixPr: true`: create/push PR and STOP; orch Step 9 runs `ws-goal-fix-pr`/`fix-pr`.
+Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with `workflowMode: true`, `shipAction`, and typically `stopBeforeFixPr: true`: **push/create PR only** (delivery commit and workflow close already done by orch); orch Step 9 runs `ws-goal-fix-pr`/`fix-pr`.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -79,7 +79,7 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
 3. **Code-review loop**: skip if already reviewed under `ws-spec-to-pr` Step 6 or `ws-spec-to-pr-lite` Step 3 (record on board). Otherwise load [ws-code-review](../ws-code-review/SKILL.md) against `base` and run the fix → re-review loop for Critical/Warning (max 3 rounds; Pause on residual).
    - Done when: review clean, Pause after 3-iteration cap with residual documented, or skipped with evidence.
 
-4. **Commit & push**: only after Step 2 is green. When performing a **delivery commit** of plan-dir artifacts (standalone `/ship-pr` or `workflowMode`), stage **only** paths resolved from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8:
+4. **Commit & push**: only after Step 2 is green. **Workflow mode (`workflowMode: true`):** skip delivery commit — orch already ran G2-delivery at close (or skipped). Push ship-scope product changes and `git push -u {gitRemote} {shipHead}`. **Standalone `/ship-pr`:** when performing a **delivery commit** of plan-dir artifacts, stage **only** paths resolved from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8:
    - Read `{sharedDir}/config.json` → `defaults.deliveryCommitArtifacts`; missing object/keys merge to AC1 defaults (`includeRefinedPlan: true`, `includeDeliveryResult: false`, all opt-ins `false`).
    - When `includeRefinedPlan` is true: stage `step-02-{slug}.plan.refined.md` if present, else `step-01-{slug}.plan.md`; if **neither** exists → **STOP** with a clear error.
    - When `includeDeliveryResult` is false: do **not** `git add` `step-08-{slug}.result.md` (file may still exist / be written earlier for orch evidence).
@@ -87,7 +87,7 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
    - If the resolved stage set is empty → **STOP** (no empty plan-artifact delivery commit).
    - Never invent missing artifact content. Product/source staging (`commit-code` / ship-scope product files) is unchanged and separate from this delivery set.
    - Commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
-   Then commit remaining ship-scope changes (delivery commit may already exist under `workflowMode`); `git push -u {gitRemote} {shipHead}` (or dispatch `push-branch`). Skip push when `shipAction: skip` or `dry-run`.
+   **Standalone only:** then commit remaining ship-scope changes. **Workflow mode:** delivery commit already exists or was skipped at close — push only. `git push -u {gitRemote} {shipHead}` (or dispatch `push-branch`). Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
 5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL. When workflow state or spec frontmatter has tracker `id`, dispatch provider **`comment-issue`** (alias `close-loop`) with PR URL + one-paragraph summary (`dry-run` when parent is dry-run). Skip when `id` is null / `source: local`.
@@ -99,7 +99,7 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
 7. **Merge**: only when Step 6 converged and checks green. Configured SCM provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. When merge runs in-session and tracker `id` is present, dispatch **`comment-issue`** again (merged follow-up). Never delete the resolved PR head (`shipHead`: workflow `state.branch`; standalone `workingBranch` or explicit `head=`).
    - Done when: merged via configured SCM provider or explicitly skipped; `shipHead` intact.
 
-8. **Telemetry aggregate** (post-delivery, non-blocking): after successful ship completion — PR created (`stopBeforeFixPr` / workflow Step 8 handoff), merge done (standalone or full convergence), or `shipAction: skip` with workflow delivery marked complete — run `node bin/generate-telemetry-aggregate.cjs` (writes `{plansDir}/telemetry/aggregate.json`). When `stopBeforeFixPr`, orchestrator Step 9 also runs this after `ws-goal-fix-pr` convergence (idempotent). On failure: **warn and continue** — do not block ship, merge, or PR handoff.
+8. **Telemetry aggregate** (post-delivery, non-blocking): after successful ship completion — PR created (`stopBeforeFixPr` / workflow ship phase handoff), merge done (standalone or full convergence), or `shipAction: skip` with `shipStatus` terminal — run `node bin/generate-telemetry-aggregate.cjs` (writes `{plansDir}/telemetry/aggregate.json`). When `stopBeforeFixPr`, orchestrator Step 9 also runs this after `ws-goal-fix-pr` convergence (idempotent). On failure: **warn and continue** — do not block ship, merge, or PR handoff.
    - Done when: aggregate script ran or failure warned; delivery outcome already reported.
 
 ## Output

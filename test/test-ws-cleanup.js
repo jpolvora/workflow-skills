@@ -65,6 +65,15 @@ try {
     'utf8',
   );
 
+  const pendingShip = path.join(plans, 'pending-ship');
+  fs.mkdirSync(pendingShip, { recursive: true });
+  fs.writeFileSync(
+    path.join(pendingShip, 'pending-ship-20260101T000000Z.state.md'),
+    'status: completed\nshipStatus: pending\nslug: pending-ship\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(pendingShip, 'step-08-pending-ship.result.md'), 'closed\n', 'utf8');
+
   const active = path.join(plans, 'active-slug');
   fs.mkdirSync(path.join(active, '.runtime'), { recursive: true });
   fs.writeFileSync(path.join(active, '.runtime', 'final.md'), 'x', 'utf8');
@@ -124,6 +133,10 @@ try {
   assert(
     paths.includes('.agents/plans/done-slug'),
     'shipped plan listed',
+  );
+  assert(
+    !paths.includes('.agents/plans/pending-ship'),
+    'completed with shipStatus pending is not a shipped plan root',
   );
   assert(
     !paths.includes('.agents/plans/active-slug'),

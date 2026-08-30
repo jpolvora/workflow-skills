@@ -83,18 +83,18 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
 | **5** | Check-implementation | `ws-verify-plan` quick-score; `scoreAndRefine` until score ≥ `defaults.minVerifyScore` (default 9) (auto pauses only after max rounds still below bar); then simulate G2-code of workflow product files |
 | **6** | Code Review (+ fix → re-review) | `ws-code-review` on committed `{base}...HEAD`; on Critical/Warning: fix → re-review max 3; simulate G2-code of review fixes if any; Pause on residual |
 | **7** | Testing | May auto-skip (`skipTesting` / no surface); else `ws-testing` without browser |
-| **8** | Ship | Delivery result + combined gate → simulate delivery-artifact commit + PR (`ws-ship-pr`; product already committed) |
+| **8** | Close + ship | Delivery result + close gate (`status: completed`, `shipStatus: pending`) → ship gate → simulate push/PR (`ws-ship-pr` push-only in workflow mode; product already committed) |
 | **9** | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr` when PR created (`full`) |
 
 ## Verification Points
 
-After the workflow completes (`status: completed`), confirm:
+After close (`status: completed`, `shipStatus` set) and optional ship phase, confirm:
 
 ### Artifacts created (under `{plansDir}/test-workflow/`)
 
 | Artifact | Expected |
 |----------|----------|
-| `{workflow-id}.state.md` | Status: `completed`, `dryRun: true`, completed steps through 8 (and 9 if PR simulated) |
+| `{workflow-id}.state.md` | Status: `completed`, `shipStatus` terminal or `pending` after close, `dryRun: true`, completed steps through 8 (and 9 if PR simulated) |
 | `step-00-test-workflow.spec.md` | Copied from `specs/` |
 | `step-01-test-workflow.plan.md` | Present |
 | `step-02-test-workflow.plan.refined.md` | Present (or skipped if Step 2 bypassed) |

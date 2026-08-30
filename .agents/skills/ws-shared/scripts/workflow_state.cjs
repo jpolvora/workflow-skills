@@ -25,6 +25,8 @@ const SKIP_REASONS = new Set([
   'no-test-surface',
   'fix-pr-not-applicable',
 ]);
+const SHIP_STATUSES = new Set(['pending', 'skipped', 'pushed', 'pr-open', 'merged', 'stopped']);
+const CLOSE_STEP = { standard: 8, lite: 4 };
 const RUNTIME_NAMES = [
   /^started-at\.txt$/,
   /^workflow-id\.txt$/,
@@ -109,6 +111,7 @@ function finishFingerprint(state, output) {
     commits: state.commits,
     verificationScore: state.verificationScore,
     fableVerdict: state.fableVerdict,
+    shipStatus: state.shipStatus,
     outputSummary: String(output?.summary || ''),
     outputFindings: findingsHistogram(output?.findings),
   }));
@@ -527,6 +530,22 @@ function parseArgs(argv) {
     }
   }
   return { positional, options };
+}
+
+function applyCloseAndShipStatus(state, options, pipeline, step, finishedAt, stepFinishStatus) {
+  if (options.shipStatus !== undefined) {
+    const value = String(options.shipStatus);
+    if (!SHIP_STATUSES.has(value)) {
+      throw new Error(`shipStatus must be one of: ${[...SHIP_STATUSES].join(', ')}`);
+    }
+    state.shipStatus = value;
+  }
+  const closeStep = CLOSE_STEP[pipeline];
+  if (step === closeStep && stepFinishStatus === 'completed') {
+    state.status = 'completed';
+    state.endedAt = finishedAt;
+    if (!state.shipStatus) state.shipStatus = 'pending';
+  }
 }
 
 function requirePreAdvanceStep(value) {
@@ -999,6 +1018,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         state.commits.push({ sha: commitSha, step: Number(step) });
       }
     }
+    applyCloseAndShipStatus(state, options, pipeline, step, finishedAt, status);
     event = {
       ...commonEvent(state, pipeline, step, 'finish', finishedAt, options, context),
       dispatchedAt: dispatchedAt || null,

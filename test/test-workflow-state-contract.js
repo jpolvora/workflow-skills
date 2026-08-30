@@ -585,6 +585,9 @@ assert.notStrictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--
 stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-08-lite.result.md', 8, 'lite', 'wf-lite');
 assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:10.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:11.000Z', ...liteCommon]).status, 0);
+const liteClosed = JSON.parse(fs.readFileSync(path.join(liteRoot, liteStateRel.replace(/\.state\.md$/, '.state.json')), 'utf8'));
+assert.strictEqual(liteClosed.status, 'completed', 'lite close finish sets workflow status completed');
+assert.strictEqual(liteClosed.shipStatus, 'pending', 'lite close finish defaults shipStatus pending');
 assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 5 accepts step-08 result');
 
 const barePreAdvance = run(validate, [stateRel, '--pre-advance', '--repo-root', root]);
