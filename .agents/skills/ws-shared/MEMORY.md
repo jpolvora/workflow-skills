@@ -21,8 +21,8 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Severity**: `Medium`
 - **PathPattern**: `.agents/skills/ws-run-benchmark/references/ORCH.md;.agents/skills/ws-run-benchmark/SKILL.md`
 - **Scenario / Context**: Companion header said load at Step 4 while SKILL.md Step 4 is Prepare and Step 5 is Orch.
-- **DO NOT**: Label ORCH.md as Step 4 when prepare is Step 4 and orch dispatch is Step 5.
-- **INSTEAD DO**: Keep the companion header aligned with the numbered SKILL.md step that actually loads it (Step 5).
+- **DO NOT**: Label ORCH.md as Step 4 when prepare is Step 4 and orch dispatch is Step 5. Never load this file from `ws-spec-to-pr`, `ws-spec-to-pr-lite`, or `ws-testing` — pipeline Step 5 is verify-plan, not this Extra skill.
+- **INSTEAD DO**: Load ORCH.md only for explicit `/ws-run-benchmark` from the workflow-skills package root (that skill's Step 5). Keep the companion header aligned with that skill's numbered steps.
 
 ### [2026-08-28] Spec resolver must fail closed when prefixed and unprefixed files both exist
 - **Layer**: `Harness`
@@ -32,15 +32,6 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: When both `{slug}.spec.md` and `NNNN-{slug}.spec.md` exist, last-wins readdir made the spec of record filesystem-order dependent. Partial migrations then wrote the wrong file.
 - **DO NOT**: Overwrite `existingSpecFile` on every match, or pick last readdir hit when both shapes exist.
 - **INSTEAD DO**: Detect prefixed and unprefixed hits separately and throw `Ambiguous spec of record` so callers fail closed until one file remains.
-
-### [2026-08-28] Spec path resolver dual-file fail-closed
-- **Layer**: `infrastructure`
-- **Module**: `ws-spec-organizer`
-- **Severity**: `High`
-- **PathPattern**: `**/resolve_spec_path.cjs`
-- **Scenario / Context**: PR #256 fix-pr on spec-prefix-ordering — dual on-disk candidates.
-- **DO NOT**: Prefer one of two on-disk candidates when both `NNNN-{slug}.spec.md` and `{slug}.spec.md` exist.
-- **INSTEAD DO**: Fail closed when prefixed and unprefixed files both exist for the same slug.
 
 ### [2026-08-28] Spec of record filenames may use a four-digit chronological prefix
 - **Layer**: `harness`
