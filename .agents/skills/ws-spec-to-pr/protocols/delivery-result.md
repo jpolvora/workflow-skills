@@ -1,6 +1,8 @@
 # Delivery Result Protocol (Step 8)
 
-Before close implementation gate. `dryRun`: simulate result + plan edits + benchmark; no real commit.
+Before close implementation gate. `dryRun`: simulate result + plan edits + timing rollup; no real commit.
+
+**Harness benchmark is forbidden in this workflow.** Do not load `ws-run-benchmark`, do not run `npm run benchmark` or `npm run benchmark:static`, and do not invoke `scripts/harness-benchmark/cli.cjs`. Those compare versions of the upstream `workflow-skills` package at that package root only. Step `elapsedSec` values are reporting telemetry only.
 
 ## Steps
 
@@ -30,17 +32,17 @@ Before close implementation gate. `dryRun`: simulate result + plan edits + bench
    - Baseline: `git ls-files src/ web/ tests/ | xargs git show {baselineCommit}: 2>/dev/null | wc -l`
    - Final: `git ls-files src/ web/ tests/ | xargs wc -l 2>/dev/null | tail -1 | awk '{print $1}'`
    - Diff: `git diff --stat {baselineCommit} -- src/ web/ tests/ | tail -1` → parse added/removed → `telemetry.loc`
-4. **Compute benchmark:** sum `telemetry.steps[].elapsedSec` (treat `null` as 0) → `totalElapsedSec`; sum tokens → `totalTokens`; `netDelta = added - removed`. Persist into state `telemetry`.
-5. **Append Benchmark** (template below) to `step-08-{slug}.result.md`. **Mandatory** in `autoMode` / `fullMode` — do not replace with a Mode/Commits-only table.
+4. **Sum step elapsed times:** sum `telemetry.steps[].elapsedSec` (treat `null` as 0) → `totalElapsedSec`; sum tokens → `totalTokens`; `netDelta = added - removed`. Persist into state `telemetry`. Do not start a harness benchmark to obtain these numbers.
+5. **Append Timing** (template below) to `step-08-{slug}.result.md`. **Mandatory** in `autoMode` / `fullMode` — do not replace with a Mode/Commits-only table.
 6. **Render Step 8 final board** Telemetry block from [`progress-board.md`](progress-board.md) (Total time + tokens + LOC). Same for auto.
 7. **Update plan checkmarks:** `[x]` per verify report + `completedTasks` + `completedSteps` ≥4.
 8. Register `resultSnapshot` + `telemetry.workflowEndedAt` in state `## Artifacts`.
 9. **G2-delivery** (inside combined Step 8 gate) → resolve stage list from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ARTIFACTS.md) § Step 8 → `git commit -m "docs({slug}): configured delivery artifacts"`.
 10. Log `step-8-delivery-commit | {sha}` in `## Gate history` and `commits[]`.
 
-**HS-5:** If any non-skipped completed step lacks a numeric `elapsedSec` in `telemetry.steps[]`, or Benchmark omits **Total wall-clock time**, STOP before final board / ship gate.
+**HS-5:** If any non-skipped completed step lacks a numeric `elapsedSec` in `telemetry.steps[]`, or Timing omits **Total wall-clock time**, STOP before final board / ship gate.
 
-## Telemetry & benchmark
+## Telemetry (reporting only)
 
 Gate time (user-gate waiting) excluded — agent execution time only.
 
@@ -75,12 +77,12 @@ step-output:
 
 Missing telemetry → **HS-5**.
 
-### Benchmark template (append to result)
+### Timing template (append to result)
 
 **Required rows:** Total wall-clock time, Steps executed, Total tokens, LOC lines. Optional Mode/Commits rows may follow; they must not replace Total wall-clock time.
 
 ```markdown
-## Benchmark
+## Timing
 
 | Metric | Value |
 |--------|-------|

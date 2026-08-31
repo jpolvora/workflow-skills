@@ -146,7 +146,7 @@ git tag -l "uswf/*"
 - All banners prefixed with `[DRY-RUN]`
 - No writes to `src/`, `web/`, or any source paths
 - `MEMORY.md` changes logged in `## Doc consolidation log` only
-- Step 8 benchmark: `final LOC: null`
+- Step 8 timing: `final LOC: null`
 - Step 8/9 PR: simulated, no real `gh pr create`
 
 ## Cleanup

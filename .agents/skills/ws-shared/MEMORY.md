@@ -6,14 +6,32 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-31] Spec-to-PR must not start harness benchmarks
+- **Layer**: `Harness`
+- **Module**: `ws-spec-to-pr / delivery timing`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/**;.agents/skills/ws-spec-to-pr-lite/SKILL.md;.agents/skills/ws-testing/SKILL.md;.agents/skills/ws-run-benchmark/**`
+- **Scenario / Context**: Step 8 used to say "Benchmark" for elapsed-time reporting. Agents loaded `ws-run-benchmark` (or `npm run benchmark`) during consumer and dogfood delivery, which starts a live fixture orch and inflates wall-clock time.
+- **DO NOT**: Load `ws-run-benchmark`, run `npm run benchmark` / `benchmark:static`, or invoke `scripts/harness-benchmark` from spec-to-pr, lite, or ws-testing. Do not treat Timing / `elapsedSec` as a request to start a benchmark. Do not load `ws-run-benchmark/references/ORCH.md` at spec-to-pr Step 5 (that file is the Extra skill's own step 5).
+- **INSTEAD DO**: Sum `telemetry.steps[].elapsedSec` into the Timing section (reporting only). Harness benchmarks stay explicit `/ws-run-benchmark` from the workflow-skills package root.
+
+### [2026-08-31] Conflicting MEMORY traps can undo a High forbid
+- **Layer**: `Harness`
+- **Module**: `ws-shared / MEMORY compile`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/MEMORY.md;.agents/skills/ws-shared/memory/**`
+- **Scenario / Context**: A High trap forbade loading `ws-run-benchmark/references/ORCH.md` during spec-to-pr, while an older Medium trap still normalized "ORCH.md loads at Step 5" with no pipeline exclude. Agents consulting MEMORY during Step 5 could follow the older guidance.
+- **DO NOT**: Leave overlapping MEMORY traps where a newer High forbid and an older Medium step-label tip can both match the same Step 5 / ORCH phrase.
+- **INSTEAD DO**: When narrowing a forbid, update every related trap source under `memory/` in the same change (explicit exclude on legacy tips) and recompile; lock the invariant in a regression test that reads MEMORY.
+
 ### [2026-08-28] ws-run-benchmark ORCH.md loads at Step 5
 - **Layer**: `Harness`
 - **Module**: `ws-run-benchmark`
 - **Severity**: `Medium`
 - **PathPattern**: `.agents/skills/ws-run-benchmark/references/ORCH.md;.agents/skills/ws-run-benchmark/SKILL.md`
 - **Scenario / Context**: Companion header said load at Step 4 while SKILL.md Step 4 is Prepare and Step 5 is Orch.
-- **DO NOT**: Label ORCH.md as Step 4 when prepare is Step 4 and orch dispatch is Step 5.
-- **INSTEAD DO**: Keep the companion header aligned with the numbered SKILL.md step that actually loads it (Step 5).
+- **DO NOT**: Label ORCH.md as Step 4 when prepare is Step 4 and orch dispatch is Step 5. Never load this file from `ws-spec-to-pr`, `ws-spec-to-pr-lite`, or `ws-testing` — pipeline Step 5 is verify-plan, not this Extra skill.
+- **INSTEAD DO**: Load ORCH.md only for explicit `/ws-run-benchmark` from the workflow-skills package root (that skill's Step 5). Keep the companion header aligned with that skill's numbered steps.
 
 ### [2026-08-28] Spec resolver must fail closed when prefixed and unprefixed files both exist
 - **Layer**: `Harness`

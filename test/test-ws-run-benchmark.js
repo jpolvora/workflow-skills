@@ -52,9 +52,11 @@ assert.match(
 );
 
 const orchMd = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-run-benchmark/references/ORCH.md'), 'utf8');
-assert.match(orchMd, /load at Step 5 only/);
+assert.match(orchMd, /ws-run-benchmark skill step 5 only/);
+assert.match(orchMd, /Never load this file from `ws-spec-to-pr`/);
 assert.match(orchMd, /\.benchmark-baseline-sha/);
 assert.doesNotMatch(orchMd, /git diff HEAD/);
 assert.match(skill, /5\. \*\*Orch\*\*/);
+assert.match(skill, /Never part of consumer delivery/);
 
 console.log('test-ws-run-benchmark: ok');

@@ -1,7 +1,7 @@
 ---
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
-version: 0.3.52
+version: 0.3.53
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -85,6 +85,7 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 
 - No code fixes: report gaps (including surviving mutants) and hand off to [ws-implement-tasks (fix mode)](../ws-implement-tasks/SKILL.md) rather than editing code.
 - Do not vendor a mutation engine — consumers own `verification.mutationTest`.
+- Never run `npm run benchmark`, `npm run benchmark:static`, `ws-run-benchmark`, or `scripts/harness-benchmark/**`. Those compare versions of the upstream `workflow-skills` package at that package root only. Do not treat Timing / `elapsedSec` as a request to start a benchmark.
 
 ## Subagent contract
 

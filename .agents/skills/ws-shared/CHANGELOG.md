@@ -1,5 +1,16 @@
 # Changelog
 
+### [2026-08-31 16:25] Agent: Cursor Composer
+- **Prompt**: bump, commit, push, /ws-ship-pr
+- **Done**: Bumped package to `0.3.53`; synced skill frontmatters / packageVersion / integrity / site; shipping Timing-vs-benchmark isolation
+- **Result**: Release `0.3.53` prepared for PR
+
+### [2026-08-31 16:20] Agent: Cursor Grok 4.6
+- **Prompt**: Remove any call that could start harness benchmarks during consumer spec-to-pr delivery; keep step elapsed times for reporting only
+- **Done**: Renamed Step 8 Benchmark to Timing; forbade ws-run-benchmark / npm run benchmark / harness-benchmark from orch, lite, and ws-testing; hardened Extra skill as explicit package-root only; added regression test
+- **Result**: tests:harness-efficiency exit 0; integrity OK; site catalog current
+
+
 ### [2026-08-30 00:15] Agent: Cursor Grok 4.6
 - **Prompt**: bump, verify, review, docs, commit, push, /ws-ship-pr
 - **Done**: Persist `shipStatus` on close finish; cleanup skips pending-ship plan roots; spec `0053`; version 0.3.52

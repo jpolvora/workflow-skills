@@ -1,4 +1,6 @@
-# Live orch dispatch (load at Step 5 only)
+# Live orch dispatch (ws-run-benchmark skill step 5 only)
+
+Never load this file from `ws-spec-to-pr` or `ws-spec-to-pr-lite`. Numbering here is this Extra skill's own steps, not the Spec-to-PR pipeline.
 
 Parent session stays on the **package root**. Orch work happens only under `{sandbox}`.
 
