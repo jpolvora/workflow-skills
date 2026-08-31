@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.3.52
+version: 0.3.53
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -32,6 +32,8 @@ Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`.
 | Browser (7) | `browser-mcp` | Normal, non-dry-run, non-skip, gated |
 
 Subagents return parseable `step-output`. Gate contexts: transitions, entry/resume/config, G2-code, Step 8 ship, Step 9 fix-pr.
+
+**Forbidden during this workflow:** do not load `ws-run-benchmark`, and do not run `npm run benchmark`, `npm run benchmark:static`, or `scripts/harness-benchmark`. Those compare versions of the upstream package at that root only. Step `elapsedSec` is reporting telemetry for the Timing section.
 
 ## Goals & Invariants
 

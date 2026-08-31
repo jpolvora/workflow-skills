@@ -162,7 +162,7 @@ flowchart TD
 
 ### Step 8: Close implementation, then ship
 *   **Executor**: Orchestrator (close) + ship subagent (`ws-ship-pr`) for push/PR only.
-*   **Role**: Compiles the delivery summary in `step-08-{slug}.result.md` (including benchmark telemetry), then **closes implementation** (G2-delivery optional, MEMORY, changelog, `status: completed`, `shipStatus: pending`), then presents the **Ship gate**:
+*   **Role**: Compiles the delivery summary in `step-08-{slug}.result.md` (including step elapsed timing), then **closes implementation** (G2-delivery optional, MEMORY, changelog, `status: completed`, `shipStatus: pending`), then presents the **Ship gate**:
     1.  Create PR
     2.  Push only
     3.  Skip PR

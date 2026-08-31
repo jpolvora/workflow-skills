@@ -100,7 +100,7 @@ Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3`
 
 **A. Close implementation (always before any remote ship):**
 
-1. [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Benchmark Total wall-clock time**).
+1. [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Timing Total wall-clock time**). Never load `ws-run-benchmark` or run `npm run benchmark` / `benchmark:static` / `scripts/harness-benchmark` here.
 2. Render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)).
 3. **Close implementation gate** ([`gates.md`](../ws-shared/gates.md) § Close implementation):
    - Commit configured delivery artifacts (G2-delivery) **or** skip that commit.

@@ -192,7 +192,7 @@ Orch `git add` must be path-scoped — never `git add .` / `git add -A` on code-
 
 ### Ship — close implementation, then push/PR (Step 8)
 
-→ [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md`)
+→ [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` with Timing totals from step `elapsedSec` only; never start a harness benchmark)
 
 **Order:** delivery result → **close implementation gate** (G2-delivery, MEMORY, changelog, `status: completed`, `shipStatus: pending`) → **ship gate** → `ws-ship-pr` (push/PR only) → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
 

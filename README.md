@@ -225,7 +225,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 | [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Pipeline review dry-run via external reviewer (Extra) |
-| [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | Live/static harness benchmark runner (Extra, upstream package root) |
+| [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | Live/static harness benchmark runner (Extra, upstream package root; never spec-to-pr) |
 
 ### Pipeline & providers
 

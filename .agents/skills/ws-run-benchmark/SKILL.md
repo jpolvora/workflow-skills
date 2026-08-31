@@ -1,10 +1,9 @@
 ---
 name: ws-run-benchmark
-version: 0.3.52
+version: 0.3.53
 description: >-
-  Upstream harness benchmark runner (static or live prepare → orch → collect →
-  snapshot). Trigger on run-benchmark, live benchmark, prepare then collect,
-  or snapshot a fixture score.
+  Upstream-only package-root fixture compare. Never during ws-spec-to-pr.
+  Trigger only on explicit /ws-run-benchmark from the workflow-skills source tree.
 disable-model-invocation: true
 invocation_names:
   - ws-run-benchmark
@@ -16,6 +15,8 @@ invocation_names:
 > When this skill is loaded, output "ws-run-benchmark loaded."
 
 Automates the upstream harness benchmark CLI. **Package root only.** Does not replace `npm run benchmark:static` for CI.
+
+**Never part of consumer delivery.** Do not load this skill from `ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-testing`, or Step 8 Timing. Explicit `/ws-run-benchmark` from the `workflow-skills` source tree only.
 
 **Config-independent.** Gate is the CLI path below, not `config.json`.
 

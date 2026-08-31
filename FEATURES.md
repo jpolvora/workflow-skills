@@ -262,6 +262,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-28).
 | **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName`; Extra `ws-run-benchmark` automates live prepare → orch → collect → snapshot |
 | **0.3.47** | Aug 28 | **Docs/site:** LLM-agnostic From Spec to Delivery hero and CTAs; honest remaining-todo roadmap; DoR/TDD and spec-memo dual routing on FEATURES, README, and the public site |
 | **0.3.46** | Aug 27 | **Spec DoR + TDD:** authoring-mode `Definition of Ready` / Validation Notes, interview failing-test audit, implement-tasks red-then-green, verify-plan negative-test coverage |
+| **0.3.53** | Aug 31 | **No harness benchmark in delivery:** Step 8 Timing is elapsed-time reporting only; orch/lite/testing forbid `ws-run-benchmark` / `npm run benchmark` during consumer runs |
 | **0.3.52** | Aug 30 | **Close before ship:** Step 8 / lite 4 close sets `status: completed` + `shipStatus` before push/PR; `update_state` persists close; Phase A on shipping terminal; `ws-ship-pr` workflow mode push/PR only |
 | **0.3.45** | Aug 27 | **Research-driven pipeline quality:** JSON-primary `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `defaults.providerCompat` / `contextHygiene` / `reviewJury`, memory write sanitizer, pipeline handoff harness check |
 | **0.3.43** | Aug 27 | **Retired artifact hygiene:** `update`/hub refresh prunes session-lease schema, `defaults.sessionLeases` / `enableAuditing` / `patterns*` config keys, and retired `ws-patterns*` / `ws-audit` folders; `ws-doctor` warns on leftovers; harness forbidden-id scan extended |
@@ -380,7 +381,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | W | Read-only install and runtime diagnosis |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
-| [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | E | Upstream live/static harness benchmark runner |
+| [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | E | Upstream live/static harness benchmark runner (package root only; never spec-to-pr) |
 
 ### Memory and conventions
 

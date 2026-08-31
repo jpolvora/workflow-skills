@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-08-31] Spec-to-PR must not start harness benchmarks
+- **Layer**: `Harness`
+- **Module**: `ws-spec-to-pr / delivery timing`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/**;.agents/skills/ws-spec-to-pr-lite/SKILL.md;.agents/skills/ws-testing/SKILL.md;.agents/skills/ws-run-benchmark/**`
+- **Scenario / Context**: Step 8 used to say "Benchmark" for elapsed-time reporting. Agents loaded `ws-run-benchmark` (or `npm run benchmark`) during consumer and dogfood delivery, which starts a live fixture orch and inflates wall-clock time.
+- **DO NOT**: Load `ws-run-benchmark`, run `npm run benchmark` / `benchmark:static`, or invoke `scripts/harness-benchmark` from spec-to-pr, lite, or ws-testing. Do not treat Timing / `elapsedSec` as a request to start a benchmark. Do not load `ws-run-benchmark/references/ORCH.md` at spec-to-pr Step 5 (that file is the Extra skill's own step 5).
+- **INSTEAD DO**: Sum `telemetry.steps[].elapsedSec` into the Timing section (reporting only). Harness benchmarks stay explicit `/ws-run-benchmark` from the workflow-skills package root.
+
 ### [2026-08-28] ws-run-benchmark ORCH.md loads at Step 5
 - **Layer**: `Harness`
 - **Module**: `ws-run-benchmark`
@@ -23,6 +32,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: When both `{slug}.spec.md` and `NNNN-{slug}.spec.md` exist, last-wins readdir made the spec of record filesystem-order dependent. Partial migrations then wrote the wrong file.
 - **DO NOT**: Overwrite `existingSpecFile` on every match, or pick last readdir hit when both shapes exist.
 - **INSTEAD DO**: Detect prefixed and unprefixed hits separately and throw `Ambiguous spec of record` so callers fail closed until one file remains.
+
+### [2026-08-28] Spec path resolver dual-file fail-closed
+- **Layer**: `infrastructure`
+- **Module**: `ws-spec-organizer`
+- **Severity**: `High`
+- **PathPattern**: `**/resolve_spec_path.cjs`
+- **Scenario / Context**: PR #256 fix-pr on spec-prefix-ordering — dual on-disk candidates.
+- **DO NOT**: Prefer one of two on-disk candidates when both `NNNN-{slug}.spec.md` and `{slug}.spec.md` exist.
+- **INSTEAD DO**: Fail closed when prefixed and unprefixed files both exist for the same slug.
 
 ### [2026-08-28] Spec of record filenames may use a four-digit chronological prefix
 - **Layer**: `harness`

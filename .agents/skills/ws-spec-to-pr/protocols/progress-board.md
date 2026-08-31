@@ -26,9 +26,9 @@ Round {r}/3 · blocking: {n}
 
 Suffixes: `← next` · `⏭ skipped` · `↻ repeating` · `⏮ reopened`.
 
-## Step 8 final board (after benchmark)
+## Step 8 final board (after timing rollup)
 
-**Mandatory** after Step 8 benchmark — including `autoMode` / `fullMode` / `dryRun`. Source: state `telemetry` (sum of step `elapsedSec`; null → 0). Missing Total time → **HS-5**.
+**Mandatory** after Step 8 timing rollup — including `autoMode` / `fullMode` / `dryRun`. Source: state `telemetry` (sum of step `elapsedSec`; null → 0). Missing Total time → **HS-5**. Do not start a harness benchmark for this board.
 
 ```markdown
 ### Telemetry

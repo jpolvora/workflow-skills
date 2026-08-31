@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.52
+version: 0.3.53
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -34,6 +34,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
 9. **MEMORY Consult:** In Steps 1, 2, and 3: grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `memory_consult` in step outputs.
 10. **Verbose preview:** When `defaults.verboseMode` is explicit `true`, the session model (lite is inline) must **analyze this run** and print `Starting step {N} ({Label}):` plus 4–8 `*` bullets before any tool call for that step (goal, lookups, actions, conditional writes, next-step readiness). Do **not** copy a canned list. Omitted/`false` → silent. Schema/`ws-configure-project` seed writes `true`.
+11. **Harness benchmark forbidden:** do not load `ws-run-benchmark`, and do not run `npm run benchmark`, `npm run benchmark:static`, or `scripts/harness-benchmark`. Step `elapsedSec` is reporting telemetry for [`delivery-result.md`](../ws-spec-to-pr/protocols/delivery-result.md) Timing only.
 
 ## Steps 0–5 Index
 
