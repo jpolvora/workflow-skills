@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-02 15:27] Agent: Cursor Composer
+- **Prompt**: /ws-ship-pr (develop → main)
+- **Done**: Prepared board green; opened PR 265; 0 threads; checks green; merged
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/265 MERGED
+
 ### [2026-09-02 09:46] Agent: Cursor Composer
 - **Prompt**: bump version, update docs, commit, push, ws-ship-pr + ws-goal-fix-pr
 - **Done**: Released 0.3.55; PR 264 merged after catalog/bootstrap/check handoff fixes + integrity; activeThreads 0
