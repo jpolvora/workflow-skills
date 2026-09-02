@@ -41,23 +41,29 @@ function pathExists(p) {
   }
 }
 
-function resolveWsMemoSkill(repoRoot) {
+function resolveSpecMemoRuntimeSkill(repoRoot, skillId) {
   const localSkillsRoot = path.join(repoRoot, '.agents', 'skills');
-  const local = path.join(localSkillsRoot, 'ws-memo', 'SKILL.md');
+  const local = path.join(localSkillsRoot, skillId, 'SKILL.md');
   if (pathExists(local)) {
     return {
       installed: true,
       skillPath: toRepoRelative(repoRoot, local, { allowOutside: true }),
     };
   }
-  const global = path.join(resolveGlobalSkillsRoot(), 'ws-memo', 'SKILL.md');
+  const global = path.join(resolveGlobalSkillsRoot(), skillId, 'SKILL.md');
   if (pathExists(global)) {
-    return { installed: true, skillPath: 'ws-memo/SKILL.md (global install)' };
+    return { installed: true, skillPath: `${skillId}/SKILL.md (global install)` };
   }
+  const hintById = {
+    'ws-memo':
+      'Load /ws-memo (spec-memo package). If missing: /ws-memo install_skills (global or product) or copy from spec-memo .agents/skills/ws-memo/; then use /ws-memo for vault memory ops.',
+    'ws-session-tracking':
+      'Load /ws-session-tracking (spec-memo package). install_skills defaults include it with ws-memo; use for prompt/session/activity via MCP prompt — not ws-activity-report plan timesheets.',
+  };
   return {
     installed: false,
-    skillPath: '.agents/skills/ws-memo/SKILL.md',
-    hint: 'Copy from spec-memo .agents/skills/ws-memo/ or install beside other ws-* skills; then use /ws-memo for runtime ops.',
+    skillPath: `.agents/skills/${skillId}/SKILL.md`,
+    hint: hintById[skillId] || `Load /${skillId} from the spec-memo package (install_skills).`,
   };
 }
 
@@ -148,9 +154,12 @@ function printHuman(report) {
     lines.push('', 'Recommendation: run `/ws-spec-memo import` then `memo hook install` or `/ws-cleanup`.');
   }
   if (report.runtimeHandoff) {
-    lines.push('', '## Runtime handoff (ws-memo)');
+    lines.push('', '## Runtime handoff (spec-memo skills)');
     lines.push(`- MCP server expected: ${report.runtimeHandoff.mcpServerName}`);
     lines.push(`- ws-memo skill: ${report.runtimeHandoff.wsMemo.installed ? 'installed' : 'missing'} (${report.runtimeHandoff.wsMemo.skillPath})`);
+    lines.push(
+      `- ws-session-tracking skill: ${report.runtimeHandoff.wsSessionTracking.installed ? 'installed' : 'missing'} (${report.runtimeHandoff.wsSessionTracking.skillPath})`,
+    );
     if (report.runtimeHandoff.warnings.length > 0) {
       report.runtimeHandoff.warnings.forEach((w) => lines.push(`- Warning: ${w}`));
     }
@@ -176,13 +185,19 @@ function main() {
   const vaultActive = memoryRouting.enableSpecMemoIntegration;
   const healthy = vaultActive ? vaultReady : true;
 
-  const wsMemo = resolveWsMemoSkill(repoRoot);
+  const wsMemo = resolveSpecMemoRuntimeSkill(repoRoot, 'ws-memo');
+  const wsSessionTracking = resolveSpecMemoRuntimeSkill(repoRoot, 'ws-session-tracking');
   const mcpServerName = specMemo.mcpServerName || 'spec-memo';
   const runtimeWarnings = [];
   if (vaultActive) {
     if (!wsMemo.installed) {
       runtimeWarnings.push(
-        'ws-memo skill not found — copy from spec-memo .agents/skills/ws-memo/; runtime ops use /ws-memo, not ws-spec-memo.',
+        'ws-memo skill not found — load /ws-memo install_skills (or copy from spec-memo .agents/skills/ws-memo/); vault memory ops use /ws-memo, not ws-spec-memo.',
+      );
+    }
+    if (!wsSessionTracking.installed) {
+      runtimeWarnings.push(
+        'ws-session-tracking skill not found — /ws-memo install_skills installs it with ws-memo; use for prompt/session/activity (MCP prompt). Plan-folder Spec-to-PR timesheets stay on ws-activity-report.',
       );
     }
     runtimeWarnings.push(
@@ -211,7 +226,7 @@ function main() {
     vault: { ok: doctor.ok, error: doctor.error || null },
     pollution,
     runtimeHandoff: vaultActive
-      ? { mcpServerName, wsMemo, warnings: runtimeWarnings }
+      ? { mcpServerName, wsMemo, wsSessionTracking, warnings: runtimeWarnings }
       : null,
     configPath: pathExists(ctx.configPath)
       ? toRepoRelative(repoRoot, ctx.configPath, { allowOutside: true })

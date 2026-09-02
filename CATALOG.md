@@ -86,7 +86,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update specs after code changes |
-| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | External vault setup/bridge (MCP/CLI) |
+| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Harness ↔ spec-memo **bridge** only (`config.json`, import, hybrid fallback); runtime vault ops → `ws-memo` |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
 | `grill-with-docs` | `(global)` | Docs grill |
@@ -124,15 +124,16 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
-| Timesheet / activity hours for a delivery day | `ws-activity-report` (Extra) |
 | Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
-| spec-memo vault setup/bridge | `ws-spec-memo` |
-| Runtime spec-memo vault ops (search, upsert, canvas) | `ws-memo` |
+| spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
+| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` |
+| Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` |
+| Spec-to-PR plan-folder timesheet for a civil day | `ws-activity-report` (Extra) |
 | GitHub issue/PR ops | `ws-github-provider` |
 | ADO WI/PR ops | `ws-azure-devops-provider` |
 | Local `*.spec.md` | `ws-local-spec-provider` |
@@ -149,8 +150,6 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Convergence loop | `ws-goal-loop` |
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` |
-| spec-memo-setup / configure vault / import MEMORY | `ws-spec-memo` |
-| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas) | `ws-memo` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 
 ---
@@ -228,7 +227,8 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in § [Ups
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
 | GitHub issue → spec / fix | `ws-github-provider` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) or orchestrator with issue URL |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
-| Timesheet / activity hours | `ws-activity-report` (Extra) |
+| Timesheet / activity hours (Spec-to-PR plan folder) | `ws-activity-report` (Extra) |
+| Vault prompt/session activity | `ws-session-tracking` |
 | Explain spec / US status | `ws-spec-explain` |
 | Archive plans into `index.PRD` | `ws-spec-archive` |
 | Clean workflow leftovers | `ws-cleanup` |

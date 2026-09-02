@@ -1,6 +1,6 @@
 ---
 name: ws-activity-report
-version: 0.3.54
+version: 0.3.55
 description: >-
   Timesheet entries (date, start, end, description) for ws-spec-to-pr /
   ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
@@ -17,6 +17,8 @@ invocation_names:
 > When this skill is loaded, output "ws-activity-report loaded."
 
 Read-only timesheet builder for a civil day. Emits **entries** + **technical table** + **summary**. Does not commit, push, or post PR comments.
+
+**Not** vault prompt/session billing: that is **`/ws-session-tracking`** (`memo activity` / MCP `prompt`) from [spec-memo](https://github.com/jpolvora/spec-memo). This skill only clocks Spec-to-PR / lite plan folders.
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 

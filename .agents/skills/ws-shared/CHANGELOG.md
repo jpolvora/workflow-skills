@@ -1,5 +1,25 @@
 # Changelog
 
+### [2026-09-02 09:30] Agent: Cursor Composer
+- **Prompt**: bump version, update docs, commit, push, ws-ship-pr + ws-goal-fix-pr
+- **Done**: Bumped 0.3.54→0.3.55; bridge/session-tracking docs; integrity + site; prepare verify green
+- **Result**: Releasing via ship-pr develop→main
+
+### [2026-09-02 09:25] Agent: Cursor Composer
+- **Prompt**: Verificar integração com ws-session-tracking
+- **Done**: Mapped `/ws-session-tracking` vs `/ws-memo` vs `ws-activity-report`; preflight warns on missing session-tracking; routers/INTEGRATION/evals updated
+- **Result**: `test-spec-memo-scripts` ok; both runtime skills detected in global install
+
+### [2026-09-02 09:10] Agent: Cursor Composer
+- **Prompt**: Check /ws-memo and update /ws-spec-memo bridge so skills stay non-overlapping
+- **Done**: Product-role tables + seamless path in `ws-spec-memo`; INTEGRATION ownership/`memo setup` split; fixed configure-project session handoff to `/ws-memo` bootstrap; aligned AGENTS/tools/FEATURES/CATALOG/evals
+- **Result**: Bridge owns config/backends only; runtime stays on `/ws-memo`
+
+### [2026-09-02 09:06] Agent: Cursor Grok 4.6
+- **Prompt**: Step 9 ws-goal-fix-pr for PR 263 (ws-doctor-json-esm)
+- **Done**: Polled after 30s; 0 active threads; waited for review check then re-polled green; merged via provider merge-pr (no Act round)
+- **Result**: PR 263 MERGED; activeThreads 0; checks green; no product edits
+
 ### [2026-09-02 08:59] Agent: Cursor Grok 4.6
 - **Prompt**: Auto full Spec-to-PR close for ws-doctor-json-esm (Step 7 pass → Step 8)
 - **Done**: Testing green + sabotage passed; wrote delivery result (Timing 44m 22s); G2-delivery refined plan; index sync
