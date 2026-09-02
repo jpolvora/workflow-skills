@@ -4,7 +4,7 @@
 
 ## Ownership (no overlap)
 
-Two products, two skills. Load **one** for the job; do not merge bodies or re-document the other package's protocol here.
+Two products, three agent skills (one bridge + two spec-memo runtime companions). Load **one** for the job; do not merge bodies or re-document the other package's protocol here.
 
 | Product | Skill | Owns | Does not own |
 |---------|-------|------|--------------|
