@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-02 09:06] Agent: Cursor Grok 4.6
+- **Prompt**: Step 9 ws-goal-fix-pr for PR 263 (ws-doctor-json-esm)
+- **Done**: Polled after 30s; 0 active threads; waited for review check then re-polled green; merged via provider merge-pr (no Act round)
+- **Result**: PR 263 MERGED; activeThreads 0; checks green; no product edits
+
 ### [2026-09-02 08:59] Agent: Cursor Grok 4.6
 - **Prompt**: Auto full Spec-to-PR close for ws-doctor-json-esm (Step 7 pass → Step 8)
 - **Done**: Testing green + sabotage passed; wrote delivery result (Timing 44m 22s); G2-delivery refined plan; index sync

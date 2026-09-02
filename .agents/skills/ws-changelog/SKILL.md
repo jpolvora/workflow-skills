@@ -32,6 +32,8 @@ Resolve the target file from `{sharedDir}/config.json`:
 
 Do **not** create or require a repo-root `CHANGELOG.md` unless the consumer explicitly set `rules.changelogFile` to that path (e.g. `"CHANGELOG.md"`).
 
+**Vault dual-write:** when `enableSpecMemoIntegration: true`, also follow [`tools.md`](../ws-shared/tools.md) **`update-ws-changelog`** (vault `append` via **`/ws-memo`**). Do not load `ws-spec-memo` for the append itself. Skip the in-repo file when `enableMemoryFiles` is false and vault-only mode is active.
+
 ## Process
 
 1. **Analyze context** — What was the prompt? What did the agent (you) actually do? What was the final result?

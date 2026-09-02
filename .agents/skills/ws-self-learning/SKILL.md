@@ -20,8 +20,8 @@ Expand path tokens first ([`tools.md`](../ws-shared/tools.md) § Path tokens): `
 Consumer-owned memory routing is configured via `config.json` (`enableMemoryFiles` and `enableSpecMemoIntegration`):
 
 - **Local markdown files (`enableMemoryFiles: true`)**: entries in `{sharedDir}/memory/YYYY-MM-DD-[slug].md`, compiled index in `{sharedDir}/MEMORY.md`.
-- **Spec-memo vault (`enableSpecMemoIntegration: true`)**: records queried/persisted via `spec-memo` MCP server (`bootstrap`, `search`, `upsert --kind trap`) or CLI `memo`.
-- Both can be enabled (dual-mode) or both disabled.
+- **Spec-memo vault (`enableSpecMemoIntegration: true`)**: records queried/persisted via **`/ws-memo`** (`bootstrap`, `search`, `upsert --kind trap`) or `{specMemo.cli}`. Setup/disable → `ws-spec-memo`.
+- Both can be enabled (dual-mode) or both disabled. Routing map: [`ws-spec-memo/references/INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
 
 ## When to run
 
@@ -44,7 +44,7 @@ Resolve routing via `resolveMemoryRouting` / [`tools.md`](../ws-shared/tools.md)
 
 1. Identify 3–8 keywords and touched file paths from the task (e.g. `bash`, `CRLF`, `launcher`, `verify.sh`, `managed skill`, `encoding`, touched files like `src/Controllers/Auth.cs` or `bin/cli.js`).
 2. Query matching memories **per enabled backend** (skip a backend only when its flag is false or the store is unavailable — record that skip; do not skip an enabled backend):
-   - **`enableSpecMemoIntegration: true`:** MCP `bootstrap` / `search` (prefer host namespace `spec-memo` / `user-spec-memo` / `specMemo.mcpServerName`) or `{specMemo.cli} bootstrap` / `search` with the same keywords/paths. Runtime follow-ups → **`/ws-memo`**.
+   - **`enableSpecMemoIntegration: true`:** **`/ws-memo`** `bootstrap` / `search` (prefer host namespace `spec-memo` / `user-spec-memo` / `specMemo.mcpServerName`) or `{specMemo.cli}` with the same keywords/paths. Do not load `ws-spec-memo` for this consult.
    - **`enableMemoryFiles: true`:** Keyword grep in `{sharedDir}/MEMORY.md` or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --query <keyword>`; path match with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <touched_files...>`.
    - **Both true (dual):** vault first, then supplement with local files. **Both false:** no hits; continue without inventing traps from empty consult.
 3. If a hit is Severity Medium+, fold its **DO NOT** / **INSTEAD DO** directives into the plan or first edit. Do not re-discover the same failure mode.
@@ -60,8 +60,8 @@ Agents often attempt to save turn tokens by defaulting to `Learning: N/A`. To en
 ## Adversarial Reflection Trigger (`ws-fable-judge`)
 
 When [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audits work and returns a verdict of **`REFUTED`** or **`VERIFIED WITH CAVEATS`** (due to weakened assertions, false completion, scope creep, or unauthorized actions):
-1. Create a mandatory reflection entry in `{sharedDir}/memory/YYYY-MM-DD-fable-[slug].md`.
-2. Set `Severity: High` (for caveats/scope creep) or `Severity: Critical` (for refuted fraud/regressions).
+1. Persist via **`update-memory`** (local `{sharedDir}/memory/YYYY-MM-DD-fable-[slug].md` + compile when `enableMemoryFiles`; **`/ws-memo`** `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Skip the local file when files are disabled.
+2. Set `Severity: High` (for caveats/scope creep) or `Severity: Critical` (for refuted fraud/regressions). Vault frontmatter `severity` must be lowercase (`high` / `critical`).
 3. Document the precise mechanism of divergence in **DO NOT** and the verified invariant in **INSTEAD DO**.
 
 ## Post fix-pr round (`ws-goal-fix-pr` / `ws-fix-pr`)
@@ -76,15 +76,18 @@ After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record 
 
 ## Process (write after)
 
+Follow [`tools.md`](../ws-shared/tools.md) **`update-memory`**: skip steps 3–4 when `enableMemoryFiles` is false; skip vault upsert when `enableSpecMemoIntegration` is false.
+
 1. **Analyze context** — What did we try that failed? What non-obvious constraint or pitfall did we hit?
 2. **Sanitize draft body** — Run `node {skillsRoot}/ws-self-learning/scripts/sanitize_memory.cjs <draft>` (non-zero exit → revise body to remove injection-only patterns or unescaped tool calls).
-3. **Write to `{sharedDir}/memory/`** — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
-4. **Compile `MEMORY.md`** — Expand tokens, then run (only after the memory file exists on disk; never in the same parallel tool batch as the `Write`):
+3. **Write to `{sharedDir}/memory/`** (files backend only) — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
+4. **Compile `MEMORY.md`** (files backend only) — Expand tokens, then run (only after the memory file exists on disk; never in the same parallel tool batch as the `Write`):
    ```bash
    node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
    ```
    Compile fails closed (exit 1, no `MEMORY.md` rewrite) when any `memory/*.md` lacks `### [YYYY-MM-DD]` or both **DO NOT** (or Trap Avoided) and **INSTEAD DO** (or Solution). The Python path is a thin exec of this Node SoT.
-5. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` (only when valid per rules above) in the final proof; one-line summary in the reply.
+5. **Vault upsert** (`enableSpecMemoIntegration` only) — **`/ws-memo`** `upsert --kind trap` after the sanitizer. Protocol (enums, required `body`) lives in that skill. Dual: do this in addition to steps 3–4. Vault-only: skip 3–4.
+6. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` (only when valid per rules above) in the final proof; one-line summary in the reply.
 
 ## Conflict Resolution
 

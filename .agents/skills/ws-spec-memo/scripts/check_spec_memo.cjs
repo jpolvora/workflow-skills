@@ -57,7 +57,7 @@ function resolveWsMemoSkill(repoRoot) {
   return {
     installed: false,
     skillPath: '.agents/skills/ws-memo/SKILL.md',
-    hint: 'Copy from spec-memo .agents/skills/ws-memo/ or install beside other ws-* skills; then use /ws-memo for runtime ops.',
+    hint: 'Load /ws-memo (spec-memo package). If missing: /ws-memo install_skills (global or product) or copy from spec-memo .agents/skills/ws-memo/; then use /ws-memo for runtime ops.',
   };
 }
 
@@ -182,7 +182,7 @@ function main() {
   if (vaultActive) {
     if (!wsMemo.installed) {
       runtimeWarnings.push(
-        'ws-memo skill not found — copy from spec-memo .agents/skills/ws-memo/; runtime ops use /ws-memo, not ws-spec-memo.',
+        'ws-memo skill not found — load /ws-memo install_skills (or copy from spec-memo .agents/skills/ws-memo/); runtime ops use /ws-memo, not ws-spec-memo.',
       );
     }
     runtimeWarnings.push(
