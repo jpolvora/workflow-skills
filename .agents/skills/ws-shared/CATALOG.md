@@ -72,7 +72,6 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO User Stories → local specs | `ws-spec-from-provider` |
 | Timesheet / activity hours for a Spec-to-PR delivery day (plan folder) | `ws-activity-report` (Extra) |
-| Vault prompt/session activity / invoicing by client | `ws-session-tracking` |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
@@ -81,7 +80,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | spec-memo / external vault setup/bridge | `ws-spec-memo` |
 | Runtime spec-memo vault ops | `ws-memo` |
-| Prompt/session / vault activity | `ws-session-tracking` |
+| Prompt/session tracking, vault activity, invoicing by client (`/ws-session-tracking`) | `ws-session-tracking` |
 | Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
 | Fable Method 7-step loop | `ws-fable-method` |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
