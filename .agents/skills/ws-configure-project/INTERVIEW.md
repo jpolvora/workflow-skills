@@ -207,7 +207,7 @@ node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repo
   --bootstrap-on-session {true|false} [--cli "memo"]
 ```
 
-When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md). Next action after enable: register MCP, then **`/ws-memo`** for runtime vault ops (session bootstrap included). Do **not** point session start at `/ws-spec-memo bootstrap` unless MCP/CLI is down and mode is hybrid. Never commit `{sharedDir}/config.json`.
+When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md). Next action after enable: register MCP, then **`/ws-memo`** for runtime vault ops (session bootstrap included). Prefer `/ws-memo` bootstrap when MCP is up; `/ws-spec-memo bootstrap` only when MCP is down (CLI any vault mode; hybrid MEMORY fallback on CLI fail). Never commit `{sharedDir}/config.json`.
 
 ## Write rules
 

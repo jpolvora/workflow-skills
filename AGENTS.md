@@ -276,7 +276,7 @@ Optional external vault ([spec-memo](https://github.com/jpolvora/spec-memo)) and
 | **Setup/bridge** | **`ws-spec-memo`** only (this package): `enableMemoryFiles`, `enableSpecMemoIntegration`, `specMemo.*`, import, dual-mode fallback, check/hybrid-bootstrap/disable. Map: [`ws-spec-memo/references/INTEGRATION.md`](.agents/skills/ws-spec-memo/references/INTEGRATION.md). Do not catalog MCP tools here. |
 | **Write-block hook** | CLI-only: `memo hook install [--productRoot {repo}]` (blocks committing vault residue / workflow scratch). Bypass: `SKIP_MEMO_HOOK=1`. Setup interview may offer this via `ws-spec-memo`; do not invent a custom hook script. |
 
-When spec-memo integration is on: session consult → **`/ws-memo`** bootstrap; new traps → `update-memory`; task log → `update-ws-changelog`. Dual mode persists to both local files and vault. `/ws-spec-memo bootstrap` is hybrid fallback only (MCP/CLI down). `memo setup` (CLI) wires host MCP / deployment mode — it does **not** replace `/ws-spec-memo` for harness `config.json`.
+When spec-memo integration is on: session consult → **`/ws-memo`** bootstrap when MCP is registered; new traps → `update-memory`; task log → `update-ws-changelog`. Dual mode persists to both local files and vault. `/ws-spec-memo bootstrap` is for MCP-down: CLI bootstrap in any vault mode; hybrid falls back to in-repo MEMORY on CLI failure; vault-only STOPs. `memo setup` (CLI) wires host MCP / deployment mode — it does **not** replace `/ws-spec-memo` for harness `config.json`.
 
 ### 6. Write a spec (on demand)
 

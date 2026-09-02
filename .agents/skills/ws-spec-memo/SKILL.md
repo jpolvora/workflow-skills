@@ -58,7 +58,7 @@ Do **not** merge these skills. Do **not** vendor spec-memo `SURFACE.md` or re-li
 |------------|--------|
 | *(default)* / `setup` | Detect `{specMemo.cli}`, interview flags, optional import + write-block hook, print MCP snippet, hand off to `/ws-memo` |
 | `check` | Harness health: CLI, config routing, in-repo pollution, `ws-memo` present |
-| `bootstrap` | **Hybrid fallback only** — MCP already registered → load `/ws-memo` and stop; else CLI brief or in-repo MEMORY |
+| `bootstrap` | MCP registered → load `/ws-memo` and stop. MCP down + vault enabled → `{specMemo.cli} bootstrap` (any vault mode). CLI failure: hybrid → in-repo MEMORY once; vault-only → STOP with fix steps |
 | `import` | One-shot `{specMemo.cli} import --from {repoRoot}` |
 | `disable` | `specMemo.enabled: false` (keeps vault data; restores in-repo memory when vault was the only backend) |
 

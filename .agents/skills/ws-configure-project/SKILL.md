@@ -89,7 +89,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
    - Never auto-installed or enforced on install; presented strictly as an optional interview gate.
    - Done when: user selection handled; hook installed if explicitly requested.
 
-9. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). For specMemo: re-run `check_spec_memo.cjs` when section ran. Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`; when vault enabled and MCP registered, session brief → **`/ws-memo` bootstrap** (`/ws-spec-memo bootstrap` is hybrid fallback only).
+9. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). For specMemo: re-run `check_spec_memo.cjs` when section ran. Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`; when vault enabled and MCP registered, session brief → **`/ws-memo` bootstrap**. When MCP is down, `/ws-spec-memo bootstrap` may run CLI bootstrap (any vault mode); hybrid falls back to MEMORY on CLI failure; vault-only STOPs.
    - Done when: summary shown; `--detect-only` ends after step 2 with no write.
 
 ## Rules

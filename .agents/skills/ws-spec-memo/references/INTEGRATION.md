@@ -99,7 +99,7 @@ workflow-skills hooks stay named `read-memory` / `update-memory` / `update-ws-ch
 
 | Moment | Local Markdown (`enableMemoryFiles`) | Vault (`enableSpecMemoIntegration`) |
 |--------|---------------------------------------|-------------------------------------|
-| Session start (`bootstrapOnSession`) | `Grep`/`Read` `MEMORY.md` | `/ws-memo` bootstrap (MCP preferred). `/ws-spec-memo bootstrap` only when MCP/CLI is down and mode is hybrid |
+| Session start (`bootstrapOnSession`) | `Grep`/`Read` `MEMORY.md` | Prefer `/ws-memo` bootstrap when MCP is up. When MCP is down: `/ws-spec-memo bootstrap` → `{specMemo.cli} bootstrap` (any vault mode); CLI fail + hybrid → local MEMORY; CLI fail + vault-only → STOP |
 | Pre-plan / fix-pr / implement consult (`read-memory`) | `ws-self-learning` `--match-paths` / `Grep` `MEMORY.md` — **same evidence class as code** | `/ws-memo` bootstrap / search `kinds: ["trap"]` — **required when this flag is true**; dual → vault first then local |
 | New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `/ws-memo` upsert `kind: trap` with DO NOT / INSTEAD DO; MCP frontmatter `severity`: `low`\|`medium`\|`high`\|`critical` (lowercase only — Title-Case `High` fails vault validation) |
 | Failure reflection ($\ge 2$ friction) | Mandatory trap in `{sharedDir}/memory/` | Mandatory vault upsert |

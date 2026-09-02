@@ -174,6 +174,10 @@ process.exit(0);
     healthyReport.runtimeHandoff.wsSessionTracking.installed === false,
     'healthy fixture without ws-session-tracking seed reports missing',
   );
+  assert(
+    healthyReport.runtimeHandoff.warnings.some((w) => w.includes('ws-session-tracking')),
+    'missing ws-session-tracking emits runtime handoff warning',
+  );
   assert(checkHealthy.status === 0, 'missing ws-memo warns but does not fail healthy vault check');
 
   const memoSkillDir = path.join(tmp, '.agents', 'skills', 'ws-memo');
