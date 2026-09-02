@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-02 08:59] Agent: Cursor Grok 4.6
+- **Prompt**: Auto full Spec-to-PR close for ws-doctor-json-esm (Step 7 pass → Step 8)
+- **Done**: Testing green + sabotage passed; wrote delivery result (Timing 44m 22s); G2-delivery refined plan; index sync
+- **Result**: Implementation closed (`status: completed`, `shipStatus: pending`) before PR
+
 ### [2026-09-02 08:53] Agent: Cursor Grok 4.6
 - **Prompt**: Auto full Spec-to-PR for ws-doctor-json-esm (Step 6 review-fix)
 - **Done**: Closed CR-001 by restoring out-of-slug spec-memo bodies from `e1a0ac7f`; kept 0.3.54 stamps and doctor product; recorded G2-code `files_touched` trap
