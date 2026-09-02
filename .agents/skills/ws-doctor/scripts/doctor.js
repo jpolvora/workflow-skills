@@ -1302,7 +1302,7 @@ function main() {
   });
 
   if (args.json) {
-    console.log(JSON.stringify(report, null, 2));
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   } else {
     console.log(asciiSafe(formatMarkdown(report)));
   }

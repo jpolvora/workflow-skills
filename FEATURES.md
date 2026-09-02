@@ -154,7 +154,7 @@ The suite accumulates project knowledge instead of relearning it each session.
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
 | Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
 | Append-only task history | `ws-changelog` | `rules.changelogFile` |
-| External vault bridge: configure spec-memo MCP/CLI, import legacy `.agents` tree, bootstrap session brief, and dual memory routing (`enableMemoryFiles` / `enableSpecMemoIntegration`); plan/implement/fix-pr `read-memory` consults every enabled backend as code-class evidence | `ws-spec-memo` | `~/.spec-memo/projects/<projectId>/` when `enableSpecMemoIntegration: true` |
+| External vault bridge: configure spec-memo MCP/CLI, import legacy `.agents` tree, dual memory routing (`enableMemoryFiles` / `enableSpecMemoIntegration`), and lifecycle alias translation; runtime vault ops (search/upsert/bootstrap) use `ws-memo`; plan/implement/fix-pr `read-memory` consults every enabled backend as code-class evidence | `ws-spec-memo` + `ws-memo` | `~/.spec-memo/projects/<projectId>/` when `enableSpecMemoIntegration: true` |
 | Domain authority, minimum evidence sets, and fraud definitions per domain | `ws-fable-domain` | domain adapters |
 
 Steps 4 and 6 of the standard pipeline require **proof** of memory consultation in the subagent's step output; a missing consult is a gate failure, not a warning.
@@ -259,6 +259,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-28).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.54** | Sep 2 | **ws-doctor JSON contract:** skill-local ESM `package.json` marker so copied `doctor.js` loads under CJS/typeless ancestors; `--json` writes one parseable object via `process.stdout.write` (#260 / amended #261) |
 | **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName`; Extra `ws-run-benchmark` automates live prepare → orch → collect → snapshot |
 | **0.3.47** | Aug 28 | **Docs/site:** LLM-agnostic From Spec to Delivery hero and CTAs; honest remaining-todo roadmap; DoR/TDD and spec-memo dual routing on FEATURES, README, and the public site |
 | **0.3.46** | Aug 27 | **Spec DoR + TDD:** authoring-mode `Definition of Ready` / Validation Notes, interview failing-test audit, implement-tasks red-then-green, verify-plan negative-test coverage |
@@ -358,7 +359,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → write-spec + register |
 | [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
-| [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Configure spec-memo external vault bridge (MCP/CLI) |
+| [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo setup/bridge; runtime vault ops are `ws-memo` |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 

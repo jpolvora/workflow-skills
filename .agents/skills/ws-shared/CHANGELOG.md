@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-02 08:05] Agent: Cursor Grok 4.6
+- **Prompt**: Check /ws-memo and update /ws-spec-memo integration/bridge so the skills do not overlap
+- **Done**: Rewrote `ws-spec-memo` as harness setup/bridge; moved vault protocol and changelog append to `/ws-memo`; added lifecycle translation map
+- **Result**: Targeted tests + integrity + site check passed; dual-mode trap recorded
+
+### [2026-09-02 08:15] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-write-spec from open GitHub issues; validate each; skip invalid; include ACs, failing tests, surgical review-proof fixes
+- **Done**: Wrote `.agents/specs/ws-doctor-json-esm.spec.md` (+ context); included #260 and amended #261; skipped #259 and #262; authoring PASS; tracked `index.PRD`
+- **Result**: Spec of record ready; not registered to a plan folder
+
 ### [2026-08-31 16:25] Agent: Cursor Composer
 - **Prompt**: bump, commit, push, /ws-ship-pr
 - **Done**: Bumped package to `0.3.53`; synced skill frontmatters / packageVersion / integrity / site; shipping Timing-vs-benchmark isolation

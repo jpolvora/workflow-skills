@@ -271,12 +271,12 @@ Optional external vault ([spec-memo](https://github.com/jpolvora/spec-memo)) and
 
 | Piece | Use |
 |-------|-----|
-| **MCP** | When the host exposes namespace `spec-memo`, `user-spec-memo`, or `specMemo.mcpServerName`, prefer those tools. Discover schema before invoke. Core tools: `bootstrap`, `search`, `get`, `upsert`, `append`, `forget`, `gc`, `promote`. Do **not** invent a ninth MCP tool. Host snippet: [`.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json`](.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json) (stdio `{cli} serve`). |
-| **Runtime skill** | Load **`ws-memo`** from `{globalSkillsRoot}/ws-memo/SKILL.md` (shipped by spec-memo; install/copy into global or project `{skillsRoot}` — not authored under this package). Prefer MCP; CLI (`memo` / `npx -y spec-memo`) for extras. |
-| **Setup/bridge** | **`ws-spec-memo`** only: `enableMemoryFiles`, `enableSpecMemoIntegration`, `specMemo.*`, import, dual-mode fallback, check/bootstrap/disable. Map: [`ws-spec-memo/references/INTEGRATION.md`](.agents/skills/ws-spec-memo/references/INTEGRATION.md). |
+| **MCP** | When the host exposes namespace `spec-memo`, `user-spec-memo`, or `specMemo.mcpServerName`, prefer those tools. Discover schema before invoke. Do not invent vault tools. Host snippet: [`.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json`](.agents/skills/ws-spec-memo/references/MCP-TEMPLATE.json) (stdio `{cli} serve`). |
+| **Runtime skill** | Load **`ws-memo`** from `{globalSkillsRoot}/ws-memo/SKILL.md` (shipped by spec-memo; install/copy into global or project `{skillsRoot}` — not authored under this package). Prefer MCP; CLI (`{specMemo.cli}`) for extras. Vault tool protocol lives only there. |
+| **Setup/bridge** | **`ws-spec-memo`** only: `enableMemoryFiles`, `enableSpecMemoIntegration`, `specMemo.*`, import, dual-mode fallback, check/hybrid-bootstrap/disable. Map: [`ws-spec-memo/references/INTEGRATION.md`](.agents/skills/ws-spec-memo/references/INTEGRATION.md). |
 | **Write-block hook** | CLI-only: `memo hook install [--productRoot {repo}]` (blocks committing vault residue / workflow scratch). Bypass: `SKIP_MEMO_HOOK=1`. Setup interview may offer this via `ws-spec-memo`; do not invent a custom hook script. |
 
-When spec-memo integration is on: session consult → MCP `bootstrap` (or `memo bootstrap`); new traps → `upsert`; task log → `append`; follow [`tools.md`](.agents/skills/ws-shared/tools.md) `read-memory` / `update-memory` vault reroutes. Dual mode persists to both local files and vault.
+When spec-memo integration is on: session consult → **`/ws-memo`** bootstrap; new traps → `update-memory`; task log → `update-ws-changelog`. Dual mode persists to both local files and vault. `/ws-spec-memo bootstrap` is hybrid fallback only.
 
 ### 6. Write a spec (on demand)
 

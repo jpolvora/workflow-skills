@@ -31,11 +31,22 @@
     {
       "id": 4,
       "prompt": "After ws-spec-memo setup with vault enabled, agent needs memo search or promote format=skill",
-      "expected_output": "Agent loads ws-memo from spec-memo for runtime ops; does not invent a ninth MCP tool or duplicate SURFACE.md in ws-spec-memo",
+      "expected_output": "Agent loads ws-memo from spec-memo for runtime ops; does not invent a vault MCP tool or duplicate SURFACE.md in ws-spec-memo",
       "assertions": [
         "Points to /ws-memo or {skillsRoot}/ws-memo/SKILL.md",
         "Does not expand ws-spec-memo into full command encyclopedia",
         "Does not add new MCP tool beyond spec-memo contract"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Session has enableSpecMemoIntegration true and needs failure-reflection trap plus changelog append",
+      "expected_output": "Routes via update-memory / update-ws-changelog; vault half executed with /ws-memo upsert and append; does not load ws-spec-memo for those writes",
+      "assertions": [
+        "Uses tools.md aliases for backend selection",
+        "Loads /ws-memo for upsert and append protocol",
+        "Does not write local memory/*.md when enableMemoryFiles is false",
+        "ws-spec-memo stays unused for day-to-day vault mutations"
       ]
     }
   ]
