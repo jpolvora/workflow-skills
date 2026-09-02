@@ -1,5 +1,5 @@
 {
-  "_comment": "Canonical keys match specMemo.mcpServerName default (spec-memo) and spec-memo ws-memo/references/MCP-TEMPLATE.json. Use spec-memo-npx when cli is npx. Prefer npx -y github:jpolvora/spec-memo; npm package `npx -y spec-memo serve` is an alternate. SSE/status/canvas ports and serve flags live in the spec-memo ws-memo template — do not duplicate them here.",
+  "_comment": "Canonical keys match specMemo.mcpServerName default (spec-memo) and spec-memo ws-memo/references/MCP-TEMPLATE.json. Use spec-memo-npx when cli is npx. Prefer npx -y github:jpolvora/spec-memo; npm package `npx -y spec-memo serve` is an alternate. For SSE (3000), status (3001), canvas (4100), see that upstream template.",
   "mcpServers": {
     "spec-memo": {
       "command": "memo",

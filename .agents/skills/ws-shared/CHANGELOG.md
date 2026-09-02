@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-02 08:53] Agent: Cursor Grok 4.6
+- **Prompt**: Auto full Spec-to-PR for ws-doctor-json-esm (Step 6 review-fix)
+- **Done**: Closed CR-001 by restoring out-of-slug spec-memo bodies from `e1a0ac7f`; kept 0.3.54 stamps and doctor product; recorded G2-code `files_touched` trap
+- **Result**: Round 2 review clean; `fix(ws-doctor-json-esm): code-review fixes`
+
 ### [2026-09-02 08:05] Agent: Cursor Grok 4.6
 - **Prompt**: Check /ws-memo and update /ws-spec-memo integration/bridge so the skills do not overlap
 - **Done**: Rewrote `ws-spec-memo` as harness setup/bridge; moved vault protocol and changelog append to `/ws-memo`; added lifecycle translation map

@@ -86,7 +86,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
 | `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update specs after code changes |
-| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Harness ↔ spec-memo setup/bridge (`config.json`, import, hybrid fallback) |
+| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | External vault setup/bridge (MCP/CLI) |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
 | `grill-with-docs` | `(global)` | Docs grill |
@@ -131,8 +131,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-sync-spec` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
-| spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
-| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` |
+| spec-memo vault setup/bridge | `ws-spec-memo` |
+| Runtime spec-memo vault ops (search, upsert, canvas) | `ws-memo` |
 | GitHub issue/PR ops | `ws-github-provider` |
 | ADO WI/PR ops | `ws-azure-devops-provider` |
 | Local `*.spec.md` | `ws-local-spec-provider` |
@@ -149,8 +149,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Convergence loop | `ws-goal-loop` |
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` |
-| spec-memo-setup / configure vault / import MEMORY / hybrid fallback | `ws-spec-memo` |
-| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` |
+| spec-memo-setup / configure vault / import MEMORY | `ws-spec-memo` |
+| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas) | `ws-memo` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 
 ---

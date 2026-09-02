@@ -180,7 +180,7 @@ Configure memory storage backends: local markdown files (`enableMemoryFiles`) an
 | `enableMemoryFiles` | boolean | `true` | When `true`, write traps/learnings to `{sharedDir}/memory/*.md` and `MEMORY.md` |
 | `enableSpecMemoIntegration` | boolean | `false` | When `true`, route memory ops to `spec-memo` MCP server / CLI |
 | `specMemo.cli` | string | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
-| `specMemo.bootstrapOnSession` | boolean | `true` | Recommend `/ws-memo` bootstrap at session start when enabled |
+| `specMemo.bootstrapOnSession` | boolean | `true` | Recommend `memo bootstrap` at session start when enabled |
 | `specMemo.writeBlockHook` | boolean | `false` | Set true when `memo hook install` succeeds |
 | `specMemo.importOnEnable` | boolean | `true` | Whether setup runs one-shot import |
 | `specMemo.mcpServerName` | string | `spec-memo` | Expected MCP namespace in agent host |
@@ -207,7 +207,7 @@ node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repo
   --bootstrap-on-session {true|false} [--cli "memo"]
 ```
 
-When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md). Next action after enable: **`/ws-memo`**. Never commit `{sharedDir}/config.json`.
+When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md) pointer. Never commit `{sharedDir}/config.json`.
 
 ## Write rules
 

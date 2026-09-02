@@ -2,35 +2,6 @@
 
 **Audience:** agents running `ws-spec-memo` or vault-mode memory/changelog.
 
-## Ownership (no overlap)
-
-Two complementary skills. Load one for the job; do not merge them.
-
-| Need | Skill | Package |
-|------|-------|---------|
-| Enable/disable vault, interview `specMemo.*`, import MEMORY, hybrid fallback, harness preflight | **`ws-spec-memo`** | workflow-skills (this skill) |
-| Day-to-day vault MCP/CLI (bootstrap, search, get, upsert, append, forget, gc, promote, prompt, canvas, doctor, rank, sync, install_skills) | **`/ws-memo`** | [spec-memo](https://github.com/jpolvora/spec-memo) (not packaged here) |
-| Local trap files + compile | **`ws-self-learning`** | workflow-skills |
-| Local changelog body | **`ws-changelog`** | workflow-skills |
-| Seed `config.json` including memory backends | **`ws-configure-project`** `--section specMemo` | workflow-skills |
-
-`ws-spec-memo` does **not** own the vault tool catalog, SSE/canvas ports, or `install_skills`. Do not duplicate [SURFACE.md](https://github.com/jpolvora/spec-memo/blob/develop/.agents/skills/ws-memo/references/SURFACE.md) here. If `/ws-memo` consumer-handoff wording drifts, open a spec-memo issue ([companion](https://github.com/jpolvora/spec-memo/issues/17)) — do not vendor a second encyclopedia.
-
-### Agent decision tree
-
-```text
-Configure / import / disable / harness check / MCP down + hybrid fallback
-  → ws-spec-memo
-
-Search / get / upsert / append / bootstrap (MCP up) / canvas / doctor / sync / prompt
-  → /ws-memo  (require enableSpecMemoIntegration: true)
-
-read-memory / update-memory / update-ws-changelog
-  → tools.md aliases (this map) ; vault half executed via /ws-memo
-```
-
-`specMemo.bootstrapOnSession: true` means recommend **`/ws-memo` bootstrap** at session start when MCP is registered — not `/ws-spec-memo bootstrap`.
-
 ## Problem
 
 workflow-skills stores agent working state in-repo by default:
@@ -52,11 +23,11 @@ workflow-skills stores agent working state in-repo by default:
 | Key | Default | Role |
 |-----|---------|------|
 | `enableMemoryFiles` | `true` | When `true`, write traps/learnings to `{sharedDir}/memory/*.md` and compiled `MEMORY.md` |
-| `enableSpecMemoIntegration` | `false` | When `true`, route memory reads/writes to spec-memo MCP or `{specMemo.cli}` |
+| `enableSpecMemoIntegration` | `false` | When `true`, route memory reads/writes to `spec-memo` MCP server tools or CLI |
 | `specMemo.mode` | (`local` when files-only) | Persisted label: `local` \| `vault` \| `hybrid` \| `disabled`. When either boolean flag is **absent**, `resolveMemoryRouting` derives both flags from `mode` (incomplete merges must not silently re-enable local files). Explicit boolean flags always win. |
-| `specMemo.cli` | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) — always expand this token; never hardcode `memo` |
+| `specMemo.cli` | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
 | `specMemo.vaultRoot` | `""` | Override `$SPEC_MEMO_ROOT`; empty uses `~/.spec-memo` |
-| `specMemo.bootstrapOnSession` | `true` | Recommend `/ws-memo` bootstrap at session start when vault enabled |
+| `specMemo.bootstrapOnSession` | `true` | Recommend `bootstrap` at session start when spec-memo enabled |
 | `specMemo.writeBlockHook` | `false` | Whether setup ran `memo hook install` |
 | `specMemo.importOnEnable` | `true` | Whether setup ran one-shot `memo import` |
 | `specMemo.mcpServerName` | `spec-memo` | Expected MCP namespace id in agent host |
@@ -66,28 +37,24 @@ workflow-skills stores agent working state in-repo by default:
 | `enableMemoryFiles` | `enableSpecMemoIntegration` | Mode Name | Read Behavior (`read-memory`) | Write Behavior (`update-memory`) |
 |---|---|---|---|---|
 | `true` | `false` | Local Files Only (Default) | `Grep`/`Read` `{sharedDir}/MEMORY.md` | Write `{sharedDir}/memory/*.md` + `--compile` |
-| `false` | `true` | Spec-Memo Only (Vault) | `/ws-memo` bootstrap or search | `/ws-memo` upsert `kind: trap` (no local files created) |
-| `true` | `true` | Dual Mode (Both) | Query vault first, supplement with `MEMORY.md` | Persist to both local markdown files and vault |
+| `false` | `true` | Spec-Memo Only (Vault) | MCP/CLI `bootstrap` or `search` | `upsert --kind trap` (no local files created) |
+| `true` | `true` | Dual Mode (Both) | Query MCP/CLI first, supplement with `MEMORY.md` | Persist to both local markdown files and vault |
 | `false` | `false` | Disabled (None) | Returns empty results (no error) | Skips persistence; records `Learning: N/A` |
 
-## Lifecycle translation
+## Operation routing
 
-workflow-skills hooks stay named `read-memory` / `update-memory` / `update-ws-changelog`. This bridge decides backends; `/ws-memo` executes vault tools (discover schema first). Sanitize trap bodies with `sanitize_memory.cjs` before either backend.
-
-| Moment | Local Markdown (`enableMemoryFiles`) | Vault (`enableSpecMemoIntegration`) |
-|--------|---------------------------------------|-------------------------------------|
-| Session start (`bootstrapOnSession`) | `Grep`/`Read` `MEMORY.md` | `/ws-memo` bootstrap (MCP preferred). `/ws-spec-memo bootstrap` only when MCP/CLI is down and mode is hybrid |
-| Pre-plan / fix-pr / implement consult (`read-memory`) | `ws-self-learning` `--match-paths` / `Grep` `MEMORY.md` — **same evidence class as code** | `/ws-memo` bootstrap / search `kinds: ["trap"]` — **required when this flag is true**; dual → vault first then local |
-| New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `/ws-memo` upsert `kind: trap` with DO NOT / INSTEAD DO; MCP frontmatter `severity`: `low`\|`medium`\|`high`\|`critical` (lowercase only — Title-Case `High` fails vault validation) |
-| Failure reflection ($\ge 2$ friction) | Mandatory trap in `{sharedDir}/memory/` | Mandatory vault upsert |
-| Adversarial audit (`REFUTED` / `CAVEATS`) | Mandatory reflection in `memory/` when files enabled | High/Critical vault upsert when vault enabled |
-| Task done changelog | Append `{changelogFile}` | `/ws-memo` append (`event`) |
-| Fix-PR learning | `memory/*` + compile | `/ws-memo` upsert `kind: trap` |
-| Legacy migration | Manual copy | `{specMemo.cli} import --from {repoRoot}` (this skill's `import` subcommand) |
-| Pollution scan | `ws-cleanup` | Harness: `check_spec_memo.cjs`. Vault residue: `/ws-memo` doctor |
-| Promote ADR to product | Edit `docs/` manually | `/ws-memo` promote (formats live in that skill) |
-
-After a vault trap write succeeds, do **not** also write `{sharedDir}/memory/*.md` unless **dual** (both flags true). Hybrid fallback writes local files only when the vault write **failed**.
+| Moment | Local Markdown (`enableMemoryFiles`) | Spec-Memo MCP/CLI (`enableSpecMemoIntegration`) |
+|--------|---------------------------------------|-------------------------------------------------|
+| Session start | `Grep`/`Read` `MEMORY.md` | `memo bootstrap` or MCP `bootstrap` |
+| Pre-plan / fix-pr / implement consult (`read-memory`) | `ws-self-learning` `--match-paths` / `Grep` `MEMORY.md` — **same evidence class as code** | `bootstrap` / `search --kind trap` (MCP preferred) — **required when this flag is true**; dual → vault first then local |
+| New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `upsert --kind trap` with DO NOT / INSTEAD DO body; MCP frontmatter `severity`: `low`\|`medium`\|`high`\|`critical` (lowercase only) |
+| Failure reflection ($\ge 2$ friction) | Mandatory trap in `{sharedDir}/memory/` | Mandatory `upsert --kind trap` |
+| Adversarial audit (`REFUTED` / `CAVEATS`) | Mandatory reflection in `memory/` | High/Critical `upsert --kind trap` |
+| Task done changelog | Append `{changelogFile}` | `append --event "…"` (event log) |
+| Fix-PR learning | `memory/*` + compile | `upsert --kind trap` |
+| Legacy migration | Manual copy | `memo import --from {repoRoot}` |
+| Pollution scan | `ws-cleanup` | `memo doctor` + `ws-cleanup` for untracked scratch |
+| Promote ADR to product | Edit `docs/` manually | `memo promote {id} --to docs/…` (via `ws-memo`) |
 
 ## Import mapping (`memo import`)
 
@@ -108,17 +75,26 @@ Specs of record may remain in `{specsDir}` for Spec-to-PR register flow; vault h
 
 **Must not be committed when vault mode is active:** `{plansDir}/`, `{sharedDir}/MEMORY.md`, `{sharedDir}/memory/*`, agent changelogs, `.state.md`, `telemetry.jsonl`.
 
-Setup may offer `memo hook install` to block accidental commits of those paths. Bypass: `SKIP_MEMO_HOOK=1`. Do not invent a custom hook script.
+Install `memo hook install` to block accidental commits of those paths.
 
-## Runtime handoff (after setup)
+## Two-skill split (setup vs runtime)
 
-When `enableSpecMemoIntegration: true` (or `specMemo.enabled: true`) and the host has registered the `spec-memo` MCP server (or `{specMemo.cli} serve`):
+| Skill | Package | Role |
+|-------|---------|------|
+| **`ws-spec-memo`** | workflow-skills (this repo) | Setup/bridge only: `specMemo.*` in `{sharedDir}/config.json`, import, hybrid MEMORY fallback, write-block hook interview, check/bootstrap |
+| **`ws-memo`** | [spec-memo](https://github.com/jpolvora/spec-memo) | Runtime vault ops: search, get, forget, gc, promote (formats), canvas, SSE, status, rank, sync/backup, hooks |
 
-1. Finish wiring with **`ws-spec-memo`** (setup, check, import, disable, hybrid bootstrap fallback).
-2. Ensure **`ws-memo`** is loadable:
-   - `{skillsRoot}/ws-memo/SKILL.md` or `{globalSkillsRoot}/ws-memo/SKILL.md`
-   - if missing: user runs **`/ws-memo`** `install_skills` (that skill owns the command)
-3. Use **`/ws-memo`** for day-to-day vault operations — this skill stops.
+**`ws-spec-memo` does not own** search, get, gc, promote, canvas, SSE, status monitor, rank, vault sync/backup, or the full MCP/CLI catalog. Do not duplicate [SURFACE.md](https://github.com/jpolvora/spec-memo/blob/develop/.agents/skills/ws-memo/references/SURFACE.md) here.
+
+### Runtime handoff (after setup)
+
+When `specMemo.enabled: true` and the host has registered the `spec-memo` MCP server (or `{specMemo.cli} serve`):
+
+1. Finish wiring with **`ws-spec-memo`** (setup, check, bootstrap, import, disable).
+2. Load **`ws-memo`** from the spec-memo package or clone:
+   - `{skillsRoot}/ws-memo/SKILL.md` when installed beside other `ws-*` skills, **or**
+   - copy from `spec-memo/.agents/skills/ws-memo/` into `{skillsRoot}/ws-memo/`.
+3. Use **`/ws-memo`** (or invoke that skill) for day-to-day vault operations — not an expanded `ws-spec-memo` body.
 
 `check_spec_memo.cjs` may **warn** when `ws-memo` is missing while vault is enabled; it must not fail the Recommended disabled-vault path.
 
@@ -126,10 +102,10 @@ When `enableSpecMemoIntegration: true` (or `specMemo.enabled: true`) and the hos
 
 | Skill | Relationship |
 |-------|--------------|
-| `ws-spec-memo` | Setup, check, import, disable, hybrid fallback (this skill) |
+| `ws-spec-memo` | Setup, check, bootstrap bridge (this skill) |
 | `ws-memo` | Runtime vault ops (spec-memo package; load after setup) |
-| `ws-self-learning` | In-repo trap engine; local half of `read-memory` / `update-memory` |
-| `ws-changelog` | In-repo history; local half of `update-ws-changelog` |
+| `ws-self-learning` | In-repo trap engine; hybrid fallback |
+| `ws-changelog` | In-repo history; hybrid may dual-write |
 | `ws-configure-project` | Seeds `config.json`; optional `--section specMemo` for vault setup |
 | `ws-cleanup` | Removes in-tree disposable scratch after import |
 | `ws-doctor` | Diagnoses ws-* install; not vault health |
