@@ -259,6 +259,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-08-28).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.54** | Sep 2 | **ws-doctor JSON contract:** skill-local ESM `package.json` marker so copied `doctor.js` loads under CJS/typeless ancestors; `--json` writes one parseable object via `process.stdout.write` (#260 / amended #261) |
 | **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName`; Extra `ws-run-benchmark` automates live prepare → orch → collect → snapshot |
 | **0.3.47** | Aug 28 | **Docs/site:** LLM-agnostic From Spec to Delivery hero and CTAs; honest remaining-todo roadmap; DoR/TDD and spec-memo dual routing on FEATURES, README, and the public site |
 | **0.3.46** | Aug 27 | **Spec DoR + TDD:** authoring-mode `Definition of Ready` / Validation Notes, interview failing-test audit, implement-tasks red-then-green, verify-plan negative-test coverage |

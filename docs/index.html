@@ -1903,7 +1903,7 @@
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p>Yes. Dual routing is controlled by <code>enableMemoryFiles</code> and <code>enableSpecMemoIntegration</code>. Default is local MEMORY files on and spec-memo off unless you opt in.</p>
-          <p><code>ws-spec-memo</code> is the setup/bridge (wizard, import, MCP/CLI paths). Runtime vault ops use <code>ws-memo</code> from the spec-memo package. When both backends are on, consult the vault first, then local MEMORY.</p>
+          <p><code>ws-spec-memo</code> is the harness setup/bridge (wizard, import, <code>config.json</code> flags, hybrid fallback). Runtime vault ops (search, upsert, bootstrap, canvas) use <code>ws-memo</code> from the spec-memo package. When both backends are on, consult the vault first, then local MEMORY.</p>
         </div>
       </div>
     </div>
@@ -2086,7 +2086,7 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.53 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.54 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Modal -->

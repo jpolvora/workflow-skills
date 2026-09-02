@@ -19,6 +19,11 @@ const DOCTOR = path.join(
   REPO_ROOT,
   '.agents/skills/ws-doctor/scripts/doctor.js',
 );
+const SHIPPED_DOCTOR_PACKAGE_JSON = path.join(
+  REPO_ROOT,
+  '.agents/skills/ws-doctor/package.json',
+);
+const ROOT_PACKAGE_JSON = path.join(REPO_ROOT, 'package.json');
 
 const tmpRoots = [];
 let failures = 0;
@@ -99,7 +104,7 @@ function testJsonReportShape() {
 
   let report = null;
   try {
-    report = JSON.parse((r.stdout || '').trim());
+    report = parseStdoutStrict(r.stdout || '');
   } catch (err) {
     fail(`--json stdout is parseable JSON: ${err.message}`);
     return;
@@ -114,22 +119,134 @@ function testJsonReportShape() {
   );
 }
 
+function testJsonStdoutIsExactlyOneObject() {
+  console.log('\n--- testJsonStdoutIsExactlyOneObject ---');
+  const r = run('node', [DOCTOR, '--json', '--skill', 'ws-doctor']);
+  assert(r.status === 0, `--json exits 0 (got ${r.status})`);
+  let report;
+  try {
+    report = parseStdoutStrict(r.stdout || '');
+  } catch (err) {
+    fail(`stdout is exactly one JSON object: ${err.message}`);
+    return;
+  }
+  ok('stdout is exactly one JSON object with optional single trailing newline');
+  assert(report.tool === 'ws-doctor', 'report.tool is ws-doctor');
+}
+
+function testJsonStdoutHasNoTrailerText() {
+  console.log('\n--- testJsonStdoutHasNoTrailerText ---');
+  const r = run('node', [DOCTOR, '--json', '--skill', 'ws-doctor']);
+  assert(r.status === 0, `--json exits 0 (got ${r.status})`);
+  const stdout = String(r.stdout || '');
+  assert(!/MODULE_TYPELESS/i.test(stdout), 'stdout has no MODULE_TYPELESS warning');
+  assert(!/Persisted /i.test(stdout), 'stdout has no persist text');
+  assert(!/Usage:/i.test(stdout), 'stdout has no usage text');
+  try {
+    parseStdoutStrict(stdout);
+    ok('full stdout strict JSON.parse succeeds (NS2)');
+  } catch (err) {
+    fail(`strict stdout parse (NS2): ${err.message}`);
+  }
+}
+
+function testCopiedDoctorUnderCommonjsAncestor() {
+  console.log('\n--- testCopiedDoctorUnderCommonjsAncestor ---');
+  const root = mkTmp('ws-doctor-cjs-ancestor-');
+  const { doctorScript } = setupTmpDoctorProject(root, { ancestorType: 'commonjs' });
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-doctor'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(exitedOk, `copied doctor under commonjs ancestor exits 0: ${error || ''}`);
+  assert(report && report.tool === 'ws-doctor', 'copied doctor emits ws-doctor JSON report');
+}
+
+function testCopiedDoctorUnderTypelessAncestor() {
+  console.log('\n--- testCopiedDoctorUnderTypelessAncestor ---');
+  const root = mkTmp('ws-doctor-typeless-ancestor-');
+  const { doctorScript } = setupTmpDoctorProject(root, { ancestorType: 'omit' });
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-doctor'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(exitedOk, `copied doctor under typeless ancestor exits 0: ${error || ''}`);
+  assert(report && report.tool === 'ws-doctor', 'copied doctor emits ws-doctor JSON report');
+}
+
+function testFixtureCopiesShippedEsmMarker() {
+  console.log('\n--- testFixtureCopiesShippedEsmMarker ---');
+  const root = mkTmp('ws-doctor-esm-marker-');
+  const { doctorDir } = setupTmpDoctorProject(root, { ancestorType: 'commonjs' });
+  const rootPkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  assert(rootPkg.type !== 'module', 'fixture repo root is not type module (NS3)');
+  assert(
+    fs.existsSync(path.join(doctorDir, 'package.json')),
+    'fixture copies shipped ws-doctor/package.json beside doctor.js',
+  );
+  const markerPkg = JSON.parse(fs.readFileSync(path.join(doctorDir, 'package.json'), 'utf8'));
+  assert(markerPkg.type === 'module', 'shipped skill marker declares type module');
+}
+
+function testRootPackageJsonTypeModuleUnchanged() {
+  console.log('\n--- testRootPackageJsonTypeModuleUnchanged ---');
+  const rootPkg = JSON.parse(fs.readFileSync(ROOT_PACKAGE_JSON, 'utf8'));
+  assert(rootPkg.type === 'module', 'root package.json keeps type module (AC6)');
+}
+
+function testPersistPathOnStderrOnly() {
+  console.log('\n--- testPersistPathOnStderrOnly ---');
+  const root = mkTmp('ws-doctor-persist-');
+  const { doctorScript } = setupTmpDoctorProject(root, { ancestorType: 'commonjs' });
+  const r = run(
+    'node',
+    [doctorScript, '--json', '--persist', '--skill', 'ws-doctor'],
+    { cwd: root },
+  );
+  assert(r.status === 0, `--json --persist exits 0 (got ${r.status})`);
+  assert(/Persisted /i.test(r.stderr || ''), 'persist path printed on stderr');
+  assert(!/Persisted /i.test(r.stdout || ''), 'persist path not on stdout');
+  try {
+    parseStdoutStrict(r.stdout || '');
+    ok('stdout still one JSON object with --persist');
+  } catch (err) {
+    fail(`stdout JSON with --persist: ${err.message}`);
+  }
+}
+
+function testBareDoctorJsCopyWithoutMarkerFails() {
+  console.log('\n--- testBareDoctorJsCopyWithoutMarkerFails ---');
+  const root = mkTmp('ws-doctor-bare-copy-');
+  writeAncestorPackageJson(root, 'commonjs');
+  const scriptsDir = path.join(root, '.agents', 'skills', 'ws-doctor', 'scripts');
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.copyFileSync(DOCTOR, path.join(scriptsDir, 'doctor.js'));
+  const r = run('node', [path.join(scriptsDir, 'doctor.js'), '--json', '--skill', 'ws-doctor'], {
+    cwd: root,
+  });
+  assert(r.status !== 0, `bare doctor.js without marker exits non-zero (got ${r.status})`);
+  assert(
+    /Cannot use import statement outside a module/i.test(r.stderr || ''),
+    'stderr reports ESM import error',
+  );
+  assert(!(r.stdout || '').trim(), 'stdout empty when marker missing (NS1)');
+}
+
 function testMissingConfigDoesNotInventValues() {
   console.log('\n--- testMissingConfigDoesNotInventValues ---');
   const root = mkTmp('ws-doctor-missing-cfg-');
-  // Local package.json so Node treats copied doctor.js as ESM without warnings.
-  fs.writeFileSync(path.join(root, 'package.json'), '{"type":"module"}\n', 'utf8');
+  writeAncestorPackageJson(root, 'commonjs');
   const skillsRoot = path.join(root, '.agents', 'skills');
   const skillDir = path.join(skillsRoot, 'ws-doctor');
-  const scriptsDir = path.join(skillDir, 'scripts');
-  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.mkdirSync(skillDir, { recursive: true });
   // Stub skill only — no ws-shared/config.json
   fs.writeFileSync(
     path.join(skillDir, 'SKILL.md'),
     '# ws-doctor\n\nStub for missing-config smoke.\n',
     'utf8',
   );
-  fs.copyFileSync(DOCTOR, path.join(scriptsDir, 'doctor.js'));
+  copyShippedDoctor(skillDir);
+  const scriptsDir = path.join(skillDir, 'scripts');
 
   const marker = path.join(skillsRoot, '.doctor-readonly-marker');
   fs.writeFileSync(marker, 'untouched\n', 'utf8');
@@ -148,7 +265,7 @@ function testMissingConfigDoesNotInventValues() {
 
   let report = null;
   try {
-    report = JSON.parse((r.stdout || '').trim());
+    report = parseStdoutStrict(r.stdout || '');
   } catch (err) {
     fail(`missing-config --json parseable: ${err.message}`);
     return;
@@ -197,16 +314,54 @@ function listRelFiles(dir) {
   return out;
 }
 
+function parseStdoutStrict(stdout) {
+  const raw = String(stdout ?? '');
+  const withoutTrailingNl = raw.endsWith('\n') ? raw.slice(0, -1) : raw;
+  const report = JSON.parse(withoutTrailingNl);
+  const closingIdx = withoutTrailingNl.lastIndexOf('}');
+  if (closingIdx === -1) {
+    throw new Error('stdout JSON missing closing brace');
+  }
+  const after = withoutTrailingNl.slice(closingIdx + 1);
+  if (after.trim().length > 0) {
+    throw new Error(`extra data after JSON object: ${JSON.stringify(after)}`);
+  }
+  return report;
+}
+
+function copyShippedDoctor(skillDir) {
+  const scriptsDir = path.join(skillDir, 'scripts');
+  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.copyFileSync(DOCTOR, path.join(scriptsDir, 'doctor.js'));
+  assert(
+    fs.existsSync(SHIPPED_DOCTOR_PACKAGE_JSON),
+    'shipped ws-doctor/package.json exists beside doctor.js',
+  );
+  fs.copyFileSync(SHIPPED_DOCTOR_PACKAGE_JSON, path.join(skillDir, 'package.json'));
+}
+
 function runDoctorJson(args, opts = {}) {
   const doctorPath = opts.doctor || DOCTOR;
   const r = run('node', [doctorPath, '--json', ...args], opts);
   if (r.status !== 0) {
-    return { ok: false, error: (r.stderr || r.stdout || '').trim(), report: null };
+    return {
+      ok: false,
+      error: (r.stderr || r.stdout || '').trim(),
+      report: null,
+      stdout: r.stdout || '',
+      stderr: r.stderr || '',
+    };
   }
   try {
-    return { ok: true, report: JSON.parse((r.stdout || '').trim()), error: null };
+    return {
+      ok: true,
+      report: parseStdoutStrict(r.stdout || ''),
+      error: null,
+      stdout: r.stdout || '',
+      stderr: r.stderr || '',
+    };
   } catch (err) {
-    return { ok: false, error: err.message, report: null };
+    return { ok: false, error: err.message, report: null, stdout: r.stdout || '', stderr: r.stderr || '' };
   }
 }
 
@@ -216,20 +371,33 @@ function citedMatches(findings, pattern) {
   return findings.some((f) => re.test(String(f.cited || '')));
 }
 
-function setupTmpDoctorProject(root) {
-  fs.writeFileSync(path.join(root, 'package.json'), '{"type":"module"}\n', 'utf8');
+function writeAncestorPackageJson(root, ancestorType = 'commonjs') {
+  if (ancestorType === 'omit') {
+    fs.writeFileSync(path.join(root, 'package.json'), '{}\n', 'utf8');
+  } else {
+    fs.writeFileSync(
+      path.join(root, 'package.json'),
+      `${JSON.stringify({ type: ancestorType })}\n`,
+      'utf8',
+    );
+  }
+}
+
+function setupTmpDoctorProject(root, opts = {}) {
+  const ancestorType = opts.ancestorType || 'commonjs';
+  writeAncestorPackageJson(root, ancestorType);
   const skillsRoot = path.join(root, '.agents', 'skills');
   const sharedDir = path.join(skillsRoot, 'ws-shared');
   fs.mkdirSync(sharedDir, { recursive: true });
   const doctorDir = path.join(skillsRoot, 'ws-doctor');
-  const scriptsDir = path.join(doctorDir, 'scripts');
-  fs.mkdirSync(scriptsDir, { recursive: true });
+  fs.mkdirSync(doctorDir, { recursive: true });
   fs.writeFileSync(path.join(doctorDir, 'SKILL.md'), '# ws-doctor\n', 'utf8');
-  fs.copyFileSync(DOCTOR, path.join(scriptsDir, 'doctor.js'));
+  copyShippedDoctor(doctorDir);
   return {
     skillsRoot,
     sharedDir,
-    doctorScript: path.join(scriptsDir, 'doctor.js'),
+    doctorScript: path.join(doctorDir, 'scripts', 'doctor.js'),
+    doctorDir,
   };
 }
 
@@ -664,12 +832,25 @@ function testGlobalStaleConfigKeysReported() {
   );
 }
 
+function testWsDoctorSuiteExitZero() {
+  console.log('\n--- testWsDoctorSuiteExitZero ---');
+  ok('suite process will exit 0 when all prior tests pass (AC8)');
+}
+
 function main() {
   console.log('Running ws-doctor thin smoke tests...');
   try {
     testDoctorExistsAndSyntax();
     testHelp();
     testJsonReportShape();
+    testJsonStdoutIsExactlyOneObject();
+    testJsonStdoutHasNoTrailerText();
+    testRootPackageJsonTypeModuleUnchanged();
+    testPersistPathOnStderrOnly();
+    testCopiedDoctorUnderCommonjsAncestor();
+    testCopiedDoctorUnderTypelessAncestor();
+    testFixtureCopiesShippedEsmMarker();
+    testBareDoctorJsCopyWithoutMarkerFails();
     testMissingConfigDoesNotInventValues();
     testStaleRetiredArtifactsReported();
     testGlobalStaleHubFileReported();
@@ -685,6 +866,7 @@ function main() {
     testSkillFolderBacktickDocsFallsBackToProjectRoot();
     testGlobalSkillFolderDocsFileRelative();
     testGlobalSkillFolderDocsDoesNotUseProjectRoot();
+    testWsDoctorSuiteExitZero();
   } finally {
     cleanup();
   }
