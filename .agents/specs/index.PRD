@@ -94,14 +94,14 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Specify-time closure pack for score-10 spec delivery (`spec: 0040-specify-closure-pack.spec.md`)
 - [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: 0042-unique-skill-script-runtime.spec.md`)
 - [x] ~~Cooperative session leases~~ **retired 0.3.38** — historical spec only (`spec: 0043-workflow-session-leases.spec.md`; use worktrees for parallel work)
-- [ ] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: 0044-us-235.spec.md`)
+- [x] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: 0044-us-235.spec.md`)
 - [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: 0045-us-236.spec.md`)
 - [x] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: 0047-fix-pr-batch-plan-exec.spec.md`)
 - [x] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: 0049-configurable-memory-backends.spec.md`)
 - [x] Research-driven spec-to-pr pipeline quality and integration (`spec: 0050-research-driven-pipeline-quality.spec.md`)
 - [x] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: 0051-spec-dor-tdd-refinement-hardening.spec.md`)
 - [x] Close implementation before opening the PR (`spec: 0053-close-implementation-before-pr.spec.md`)
-- [ ] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: spec-prefix-ordering.spec.md`)
+- [x] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: spec-prefix-ordering.spec.md`)
 - [x] ws-doctor --json stdout contract and self-describing ESM entrypoint (`spec: ws-doctor-json-esm.spec.md`)
 
 
@@ -166,17 +166,17 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 48 | `unique-skill-script-runtime` | `[ ]` todo | Phase 4 | Node-only runtime for all packaged helper scripts |
 
 | 49 | `workflow-session-leases` | `[x]` retired | Phase 4 | **Removed 0.3.38** — historical spec; session leases / git.lock no longer ship |
-| 50 | `us-235` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist |
+| 50 | `us-235` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist |
 | 51 | `us-236` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill |
 | 52 | `fix-pr-batch-plan-exec` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix-pr: plan substep (reviewer model) then execute (fix model) per batch |
 | 53 | `configurable-memory-backends` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing |
 | 54 | `research-driven-pipeline-quality` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Research-driven spec-to-pr pipeline quality and integration |
 | 55 | `spec-dor-tdd-refinement-hardening` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol |
-| 56 | `spec-prefix-ordering` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional chronological spec filename prefixes and ws-spec-organizer |
+| 56 | `spec-prefix-ordering` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional chronological spec filename prefixes and ws-spec-organizer |
 | 57 | `close-implementation-before-pr` | `[x]` done | Phase 4 | Close implementation (`status: completed`) before push/PR; `shipStatus` tracks shipping |
 | 58 | `ws-doctor-json-esm` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor --json stdout contract and self-describing ESM entrypoint |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`, `us-235`, `spec-prefix-ordering`. Other new work goes to Inbox, then promote.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote.
 
 ## 9. Inbox
 
@@ -238,6 +238,8 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming
 | 2026-08-28 | `harness-spec-benchmark` | Harness spec-run benchmark with snapshot compare | Implemented (v0.3.49) |
 | 2026-08-30 | `close-implementation-before-pr` | Close implementation before opening the PR | Shipping 0.3.52 |
 | 2026-09-02 | `ws-doctor-json-esm` | ws-doctor --json stdout contract and self-describing ESM entrypoint | [PR #263](https://github.com/jpolvora/workflow-skills/pull/263) |
+| 2026-08-23 | `us-235` | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist | [PR #237](https://github.com/jpolvora/workflow-skills/pull/237) |
+| 2026-08-28 | `spec-prefix-ordering` | Optional chronological spec filename prefixes and ws-spec-organizer | [PR #256](https://github.com/jpolvora/workflow-skills/pull/256) |
 
 ## 11. Maintenance checklist
 
