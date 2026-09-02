@@ -237,7 +237,7 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming
 | 2026-08-28 | `spec-dor-tdd-refinement-hardening` | Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol | [PR #254](https://github.com/jpolvora/workflow-skills/pull/254) |
 | 2026-08-28 | `harness-spec-benchmark` | Harness spec-run benchmark with snapshot compare | Implemented (v0.3.49) |
 | 2026-08-30 | `close-implementation-before-pr` | Close implementation before opening the PR | Shipping 0.3.52 |
-| 2026-09-02 | `ws-doctor-json-esm` | ws-doctor --json stdout contract and self-describing ESM entrypoint | `1be7feb9` + `e8b03ca0` (PR pending) |
+| 2026-09-02 | `ws-doctor-json-esm` | ws-doctor --json stdout contract and self-describing ESM entrypoint | [PR #263](https://github.com/jpolvora/workflow-skills/pull/263) |
 
 ## 11. Maintenance checklist
 

@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-02 09:46] Agent: Cursor Composer
+- **Prompt**: bump version, update docs, commit, push, ws-ship-pr + ws-goal-fix-pr
+- **Done**: Released 0.3.55; PR 264 merged after catalog/bootstrap/check handoff fixes + integrity; activeThreads 0
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/264 MERGED
+
+### [2026-09-02 09:33] Agent: Cursor Composer
+- **Prompt**: Check leftover GH issues / state; close or implement the remaining open issue
+- **Done**: Reproduced `ws-doctor` for #259; packaged skills report `none`; closed #259 (ws-memo global FEATURES path is spec-memo, not this package)
+- **Result**: Zero open issues on workflow-skills
+
 ### [2026-09-02 09:30] Agent: Cursor Composer
 - **Prompt**: bump version, update docs, commit, push, ws-ship-pr + ws-goal-fix-pr
 - **Done**: Bumped 0.3.54→0.3.55; bridge/session-tracking docs; integrity + site; prepare verify green
