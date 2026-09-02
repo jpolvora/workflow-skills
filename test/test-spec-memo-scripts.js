@@ -170,19 +170,48 @@ process.exit(0);
   assert(healthyReport.runtimeHandoff !== null, 'runtimeHandoff required when vault active');
   assert(healthyReport.runtimeHandoff.mcpServerName === 'spec-memo', 'runtimeHandoff reports mcp server name');
   assert(healthyReport.runtimeHandoff.wsMemo.installed === false, 'healthy fixture without ws-memo seed reports missing');
+  assert(
+    healthyReport.runtimeHandoff.wsSessionTracking.installed === false,
+    'healthy fixture without ws-session-tracking seed reports missing',
+  );
   assert(checkHealthy.status === 0, 'missing ws-memo warns but does not fail healthy vault check');
 
   const memoSkillDir = path.join(tmp, '.agents', 'skills', 'ws-memo');
   fs.mkdirSync(memoSkillDir, { recursive: true });
   fs.writeFileSync(path.join(memoSkillDir, 'SKILL.md'), '---\nname: ws-memo\n---\n', 'utf8');
   const checkWithMemo = runNode(CHECK, ['--repo-root', tmp, '--json'], {
-    env: { WORKFLOW_SKILLS_SHARED_DIR: healthyHub },
+    env: {
+      WORKFLOW_SKILLS_SHARED_DIR: healthyHub,
+      WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobalSkills,
+    },
   });
   const withMemoReport = JSON.parse(checkWithMemo.stdout);
   assert(withMemoReport.runtimeHandoff.wsMemo.installed === true, 'local ws-memo skill detected');
   assert(
     withMemoReport.runtimeHandoff.wsMemo.skillPath.replace(/\\/g, '/').includes('.agents/skills/ws-memo/SKILL.md'),
     'reports repo-relative ws-memo path',
+  );
+  assert(
+    withMemoReport.runtimeHandoff.wsSessionTracking.installed === false,
+    'ws-memo alone does not imply ws-session-tracking installed',
+  );
+
+  const sessionSkillDir = path.join(tmp, '.agents', 'skills', 'ws-session-tracking');
+  fs.mkdirSync(sessionSkillDir, { recursive: true });
+  fs.writeFileSync(path.join(sessionSkillDir, 'SKILL.md'), '---\nname: ws-session-tracking\n---\n', 'utf8');
+  const checkWithBothRuntime = runNode(CHECK, ['--repo-root', tmp, '--json'], {
+    env: {
+      WORKFLOW_SKILLS_SHARED_DIR: healthyHub,
+      WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobalSkills,
+    },
+  });
+  const bothRuntimeReport = JSON.parse(checkWithBothRuntime.stdout);
+  assert(bothRuntimeReport.runtimeHandoff.wsSessionTracking.installed === true, 'local ws-session-tracking detected');
+  assert(
+    bothRuntimeReport.runtimeHandoff.wsSessionTracking.skillPath
+      .replace(/\\/g, '/')
+      .includes('.agents/skills/ws-session-tracking/SKILL.md'),
+    'reports repo-relative ws-session-tracking path',
   );
 
   const globalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'global-skills-'));

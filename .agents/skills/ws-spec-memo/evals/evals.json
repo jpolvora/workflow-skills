@@ -48,6 +48,16 @@
         "Does not write local memory/*.md when enableMemoryFiles is false",
         "ws-spec-memo stays unused for day-to-day vault mutations"
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "With vault enabled, user asks for prompt session tracking and a Spec-to-PR timesheet for yesterday",
+      "expected_output": "Routes prompt/session to /ws-session-tracking; routes civil-day Spec-to-PR timesheet to ws-activity-report; does not invent either protocol inside ws-spec-memo",
+      "assertions": [
+        "Loads /ws-session-tracking for MCP prompt / session_start|end / memo activity",
+        "Loads ws-activity-report for plan-folder activity-report {date}",
+        "Does not treat the two timesheet sources as interchangeable"
+      ]
     }
   ]
 }

@@ -4,17 +4,26 @@
 
 ## Ownership (no overlap)
 
-Two complementary skills. Load one for the job; do not merge them.
+Two products, two skills. Load **one** for the job; do not merge bodies or re-document the other package's protocol here.
 
-| Need | Skill | Package |
-|------|-------|---------|
-| Enable/disable vault, interview `specMemo.*`, import MEMORY, hybrid fallback, harness preflight | **`ws-spec-memo`** | workflow-skills (this skill) |
-| Day-to-day vault MCP/CLI (bootstrap, search, get, upsert, append, forget, gc, promote, prompt, canvas, doctor, rank, sync, install_skills) | **`/ws-memo`** | [spec-memo](https://github.com/jpolvora/spec-memo) (not packaged here) |
-| Local trap files + compile | **`ws-self-learning`** | workflow-skills |
-| Local changelog body | **`ws-changelog`** | workflow-skills |
-| Seed `config.json` including memory backends | **`ws-configure-project`** `--section specMemo` | workflow-skills |
+| Product | Skill | Owns | Does not own |
+|---------|-------|------|--------------|
+| **workflow-skills** | **`ws-spec-memo`** | `config.json` flags (`enableMemoryFiles`, `enableSpecMemoIntegration`, `specMemo.*`), setup/import/disable, harness preflight (`check_spec_memo.cjs`), hybrid fallback when MCP/CLI is down, **which** backends `read-memory` / `update-memory` / `update-ws-changelog` use | Vault MCP/CLI schemas, tool parameter matrices, doctor/canvas/sync/prompt recipes, `install_skills`, session/prompt tracking |
+| **spec-memo** | **`/ws-memo`** | Day-to-day vault memory MCP/CLI (bootstrap, search, get, upsert, append, forget, gc, promote, canvas, doctor, rank, sync), `install_skills` (defaults install **both** `ws-memo` + `ws-session-tracking`), host MCP wiring via `memo setup` | Writing workflow-skills `{sharedDir}/config.json` / `specMemo.*`; Spec-to-PR plan timesheets |
+| **spec-memo** | **`/ws-session-tracking`** | Prompt turn ingestion, `session_start` / `session_end`, intent stories, `derive_rules`, vault `memo activity` / MCP `prompt` (billing by client/session) | Harness `config.json`; plan-folder Spec-to-PR clocks (`ws-activity-report`); trap upsert protocol (`/ws-memo`) |
+| workflow-skills | **`ws-self-learning`** | Local trap files + compile | Vault upsert protocol |
+| workflow-skills | **`ws-changelog`** | Local changelog body | Vault `append` protocol |
+| workflow-skills | **`ws-activity-report`** (Extra) | Spec-to-PR / lite plan-folder timesheets (bootstrap → PR thread / delivery commit) | Vault `memo activity` / prompt sessions |
+| workflow-skills | **`ws-configure-project`** `--section specMemo` | Seeds flags by calling this bridge's scripts | Runtime vault ops |
 
-`ws-spec-memo` does **not** own the vault tool catalog, SSE/canvas ports, or `install_skills`. Do not duplicate [SURFACE.md](https://github.com/jpolvora/spec-memo/blob/develop/.agents/skills/ws-memo/references/SURFACE.md) here. If `/ws-memo` consumer-handoff wording drifts, open a spec-memo issue ([companion](https://github.com/jpolvora/spec-memo/issues/17)) — do not vendor a second encyclopedia.
+`ws-spec-memo` must **not** vendor [SURFACE.md](https://github.com/jpolvora/spec-memo/blob/develop/.agents/skills/ws-memo/references/SURFACE.md) or count MCP tools (that catalog drifts). If `/ws-memo` / `/ws-session-tracking` consumer-handoff wording drifts, open a [spec-memo](https://github.com/jpolvora/spec-memo) issue ([companion](https://github.com/jpolvora/spec-memo/issues/17)) — do not paste a second encyclopedia into this package.
+
+### Two different "setup" commands
+
+| Command | Package | Writes |
+|---------|---------|--------|
+| `/ws-spec-memo setup` or configure-project `--section specMemo` | workflow-skills | `{sharedDir}/config.json` → `specMemo.*` + memory flags |
+| `memo setup` (CLI) | spec-memo | Host MCP wiring + vault deployment mode (`local` / `hybrid` / `remote`) only — **not** harness `config.json` |
 
 ### Agent decision tree
 
@@ -22,15 +31,29 @@ Two complementary skills. Load one for the job; do not merge them.
 Configure / import / disable / harness check / MCP down + hybrid fallback
   → ws-spec-memo
 
-Search / get / upsert / append / bootstrap (MCP up) / canvas / doctor / sync / prompt
+Vault memory (search / get / upsert / append / bootstrap when MCP up / canvas / doctor / sync)
   → /ws-memo  (require enableSpecMemoIntegration: true)
+
+Prompt turns / session_start|end / derive_rules / vault activity report
+  → /ws-session-tracking  (MCP prompt; same vault as /ws-memo)
+
+Spec-to-PR plan-folder timesheet for a civil day
+  → ws-activity-report  (Extra; does not use vault prompt sessions)
 
 read-memory / update-memory / update-ws-changelog
   → tools.md aliases (this map) ; vault half executed via /ws-memo
 ```
 
-`specMemo.bootstrapOnSession: true` means recommend **`/ws-memo` bootstrap** at session start when MCP is registered — not `/ws-spec-memo bootstrap`.
+`specMemo.bootstrapOnSession: true` → recommend **`/ws-memo` bootstrap** at session start when MCP is registered — **not** `/ws-spec-memo bootstrap`. Optional: `/ws-session-tracking` `session_start` when the agent is tracking billable prompt turns (independent of memory bootstrap).
 
+### Seamless enable sequence
+
+```text
+1. /ws-spec-memo setup  (or ws-configure-project --section specMemo)
+2. Register MCP from MCP-TEMPLATE.json  ({specMemo.cli} serve)
+3. /ws-memo install_skills if ws-memo or ws-session-tracking SKILL.md missing
+4. Thereafter: tools.md aliases + /ws-memo for memory; /ws-session-tracking for prompt/session
+```
 ## Problem
 
 workflow-skills stores agent working state in-repo by default:
@@ -115,19 +138,22 @@ Setup may offer `memo hook install` to block accidental commits of those paths. 
 When `enableSpecMemoIntegration: true` (or `specMemo.enabled: true`) and the host has registered the `spec-memo` MCP server (or `{specMemo.cli} serve`):
 
 1. Finish wiring with **`ws-spec-memo`** (setup, check, import, disable, hybrid bootstrap fallback).
-2. Ensure **`ws-memo`** is loadable:
-   - `{skillsRoot}/ws-memo/SKILL.md` or `{globalSkillsRoot}/ws-memo/SKILL.md`
-   - if missing: user runs **`/ws-memo`** `install_skills` (that skill owns the command)
-3. Use **`/ws-memo`** for day-to-day vault operations — this skill stops.
+2. Ensure runtime skills are loadable (`/ws-memo` `install_skills` installs both by default):
+   - `{skillsRoot|globalSkillsRoot}/ws-memo/SKILL.md` — vault memory
+   - `{skillsRoot|globalSkillsRoot}/ws-session-tracking/SKILL.md` — prompt / session / vault activity
+3. Use **`/ws-memo`** for memory ops and **`/ws-session-tracking`** for prompt/session — this skill stops.
+4. Do **not** route Spec-to-PR civil-day timesheets through vault `memo activity`; that stays **`ws-activity-report`**.
 
-`check_spec_memo.cjs` may **warn** when `ws-memo` is missing while vault is enabled; it must not fail the Recommended disabled-vault path.
+`check_spec_memo.cjs` may **warn** when either runtime skill is missing while vault is enabled; it must not fail the Recommended disabled-vault path.
 
 ## Related skills
 
 | Skill | Relationship |
 |-------|--------------|
 | `ws-spec-memo` | Setup, check, import, disable, hybrid fallback (this skill) |
-| `ws-memo` | Runtime vault ops (spec-memo package; load after setup) |
+| `ws-memo` | Runtime vault **memory** (spec-memo package; load after setup) |
+| `ws-session-tracking` | Runtime prompt/session/activity (spec-memo package; same `install_skills`) |
+| `ws-activity-report` | Spec-to-PR plan-folder timesheet (workflow-skills Extra; not vault sessions) |
 | `ws-self-learning` | In-repo trap engine; local half of `read-memory` / `update-memory` |
 | `ws-changelog` | In-repo history; local half of `update-ws-changelog` |
 | `ws-configure-project` | Seeds `config.json`; optional `--section specMemo` for vault setup |

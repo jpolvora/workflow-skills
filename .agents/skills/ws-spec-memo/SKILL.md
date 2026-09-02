@@ -1,12 +1,12 @@
 ---
 name: ws-spec-memo
-version: 0.3.54
+version: 0.3.55
 disable-model-invocation: true
 description: >-
-  Setup/bridge only: enable or disable the external vault in config.json, import/migrate
-  MEMORY into the vault, run preflight check, or hybrid fallback when MCP/CLI is unavailable.
-  Do not trigger for day-to-day vault search/get/upsert/bootstrap when MCP is already registered
-  — use /ws-memo instead. Companion reverse-handoff: https://github.com/jpolvora/spec-memo/issues/17
+  workflow-skills ↔ spec-memo bridge only: wire config.json memory backends, import/migrate
+  MEMORY, harness preflight, disable vault, or hybrid fallback when MCP/CLI is down.
+  Never for day-to-day vault search/get/upsert/bootstrap/doctor when MCP is registered
+  — that is /ws-memo (spec-memo package). Companion: https://github.com/jpolvora/spec-memo/issues/17
 invocation_names:
   - ws-spec-memo
   - spec-memo-setup
@@ -16,17 +16,30 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-memo loaded."
 
-**Bridge skill (this package):** wires [workflow-skills](https://github.com/jpolvora/workflow-skills) memory, changelog, and lifecycle hooks to the [spec-memo](https://github.com/jpolvora/spec-memo) vault via `{sharedDir}/config.json`.
+**Product roles (keep separate):**
 
-**Runtime helper (not this package):** **`/ws-memo`** (shipped by spec-memo) teaches MCP/CLI vault usage. Do not copy that catalog here. Mapping → [`references/INTEGRATION.md`](references/INTEGRATION.md). Host snippet → [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json) (key `spec-memo` = `specMemo.mcpServerName`; [spec-memo#17](https://github.com/jpolvora/spec-memo/issues/17)).
+| Product | Skill | Focus |
+|---------|-------|-------|
+| [workflow-skills](https://github.com/jpolvora/workflow-skills) (this package) | **`ws-spec-memo`** (this skill) | Harness **integration**: which memory backends run, `config.json` / `specMemo.*`, import, disable, preflight, hybrid fallback |
+| [spec-memo](https://github.com/jpolvora/spec-memo) (external) | **`/ws-memo`** | Vault **memory** runtime: MCP/CLI protocol, schemas, doctor, canvas, sync, `install_skills` |
+| [spec-memo](https://github.com/jpolvora/spec-memo) (external) | **`/ws-session-tracking`** | Prompt/session runtime: MCP `prompt`, `session_start`/`end`, vault activity — not Spec-to-PR plan timesheets |
 
-| This skill owns | `/ws-memo` owns |
-|-----------------|-----------------|
-| `enableMemoryFiles` / `enableSpecMemoIntegration` / `specMemo.*` | MCP + CLI vault protocol (search, get, upsert, append, bootstrap, gc, promote, prompt, canvas, doctor, sync, …) |
-| Setup interview, import, disable, write-block hook gate | Installing the `ws-memo` skill (`install_skills`) |
-| Harness preflight (`check_spec_memo.cjs`) | Vault health (`memo doctor`) after the bridge reports a problem |
-| Dual-mode fallback when MCP/CLI is down | Day-to-day session brief and vault mutations when MCP is up |
-| Translating `read-memory` / `update-memory` / `update-ws-changelog` to backends | How to call each vault tool (schema, enums, preflight) |
+Do **not** merge these skills. Do **not** vendor spec-memo `SURFACE.md` or re-list MCP tool parameters here. Map → [`references/INTEGRATION.md`](references/INTEGRATION.md). Host snippet → [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json) (key `spec-memo` = `specMemo.mcpServerName`).
+
+| This skill owns | `/ws-memo` owns | `/ws-session-tracking` owns | Neither (other skills) |
+|-----------------|-----------------|-----------------------------|------------------------|
+| `enableMemoryFiles` / `enableSpecMemoIntegration` / `specMemo.*` | MCP + CLI vault **memory** (bootstrap, search, upsert, append, …) | MCP `prompt` / session lifecycle / vault `memo activity` | Local trap files → `ws-self-learning` |
+| Setup / import / disable / write-block hook gate | `install_skills` (also installs session-tracking), doctor, canvas, sync | Intent stories, `derive_rules` | Local changelog → `ws-changelog` |
+| Harness preflight (`check_spec_memo.cjs`) | Vault health after bridge flags a problem | — | Spec-to-PR day timesheet → `ws-activity-report` |
+| Backend choice for `read-memory` / `update-memory` / `update-ws-changelog` | How to invoke memory vault tools | How to invoke prompt/session tools | Seed wizard → `ws-configure-project --section specMemo` |
+| Hybrid fallback when MCP/CLI is down | Session **memory** brief when MCP is up | Billable prompt session boundaries | |
+
+**Seamless path (after user enables vault):**
+
+1. This skill (or configure-project) writes flags → print MCP snippet → stop.
+2. Host registers `spec-memo` MCP (`{specMemo.cli} serve`).
+3. Ensure `/ws-memo` (+ `/ws-session-tracking`) loadable — `/ws-memo` `install_skills` installs both by default.
+4. Day-to-day: aliases in [`tools.md`](../ws-shared/tools.md); memory vault half via **`/ws-memo`**; prompt/session via **`/ws-session-tracking`**. Session memory brief with `bootstrapOnSession` → **`/ws-memo` bootstrap**, not this skill.
 
 **Also invoked from:** [`ws-configure-project`](../ws-configure-project/SKILL.md) step 7 / `--section specMemo`.
 
@@ -61,7 +74,7 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell. Use `{
    ```bash
    node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json
    ```
-   Require exit 0 when `specMemo.enabled` is not explicit `true`; when enabled, require exit 0 only if `cli.available` and `doctor.ok` (alias `vault.ok`). Parse `pollution` and `runtimeHandoff.wsMemo` in all cases.
+   Require exit 0 when `specMemo.enabled` is not explicit `true`; when enabled, require exit 0 only if `cli.available` and `doctor.ok` (alias `vault.ok`). Parse `pollution` and `runtimeHandoff` (`wsMemo`, `wsSessionTracking`) in all cases.
    - Done when: preflight JSON is in context.
 
 2. **CLI gate** — When `cli.available` is false, `user-gate`:
@@ -85,8 +98,8 @@ Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell. Use `{
    Write `{choices.json}` as a short uncommitted temp with flags from step 3; delete after. Script merges `specMemo` into `{sharedDir}/config.json` only (never commit).
    - Done when: script exit 0; config summary printed.
 
-5. **MCP host + runtime skill** — When enabled: print [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json); remind the host to register server `spec-memo` (stdio: `{specMemo.cli} serve`). Vault identity binds via git remote; no in-repo pointer files. If preflight `wsMemo.installed` is false, tell the user the next action is **`/ws-memo`** `install_skills` (global or product) — do not paste the vault tool encyclopedia here.
-   - Done when: MCP snippet shown (or user skipped enable) and missing-`ws-memo` warning delivered when applicable.
+5. **MCP host + runtime skills** — When enabled: print [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json); remind the host to register server `spec-memo` (stdio: `{specMemo.cli} serve`). Vault identity binds via git remote; no in-repo pointer files. If preflight shows `wsMemo` or `wsSessionTracking` missing, tell the user the next action is **`/ws-memo`** `install_skills` (installs both by default) — do not paste the vault tool encyclopedia here.
+   - Done when: MCP snippet shown (or user skipped enable) and missing-runtime-skill warnings delivered when applicable.
 
 6. **Post-setup check** — Re-run `check_spec_memo.cjs`. When import ran, suggest `ws-cleanup` for disposable in-tree scratch after user confirms vault contents.
    - Done when: final report delivered; this skill stops; day-to-day vault ops → **`/ws-memo`**.
@@ -134,7 +147,7 @@ If MCP `user-spec-memo` / `spec-memo` is already registered, load **`/ws-memo`**
 
 ## Lifecycle translation
 
-Other skills keep their contracts. This skill owns **which backends** run; **`/ws-memo`** owns **how** vault tools are called. Follow [`tools.md`](../ws-shared/tools.md) aliases and [`INTEGRATION.md`](references/INTEGRATION.md) § Lifecycle translation:
+Other skills keep their contracts. This bridge owns **which backends** run; **`/ws-memo`** owns **how** vault tools are called. Never load this skill to execute upsert/append/search when MCP is registered — load `/ws-memo` instead. Follow [`tools.md`](../ws-shared/tools.md) and [`INTEGRATION.md`](references/INTEGRATION.md) § Lifecycle translation:
 
 | Hook | Alias | Local files | Vault (`enableSpecMemoIntegration`) |
 |------|-------|-------------|-------------------------------------|
@@ -147,7 +160,8 @@ Dual: vault first on read; persist to both. Vault write succeeded → do not als
 ## Rules
 
 - Never commit `{sharedDir}/config.json`.
-- Never vendor spec-memo `SURFACE.md` or the MCP tool encyclopedia into this skill.
+- Never write `specMemo.*` from `/ws-memo`; never run vault tool encyclopedia from this skill.
+- Never vendor spec-memo `SURFACE.md` or count/list MCP tool parameters here (drift trap).
 - Never write `{plansDir}`, `{sharedDir}/memory/*`, or agent changelogs into the product tree when vault-only mode is active.
-- Explicit launchers: `node` for skill scripts; `{specMemo.cli}` for vault CLI.
+- Explicit launchers: `node` for skill scripts; `{specMemo.cli}` for vault CLI (fallback bootstrap/import only).
 - Source anonymization: generic wording in reports; no private consumer hostnames in new issues.

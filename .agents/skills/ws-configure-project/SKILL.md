@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.3.54
+version: 0.3.55
 description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
 invocation_names:
   - configure-project
@@ -81,7 +81,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
         --import {true|false} --hook {true|false} \
         --bootstrap-on-session {true|false} [--cli "memo"]
       ```
-   5. When spec-memo enabled, print MCP snippet from [`ws-spec-memo/references/MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and note: register `spec-memo` MCP server in the agent host (`{cli} serve`). Full bridge map: [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
+   5. When spec-memo enabled, print MCP snippet from [`ws-spec-memo/references/MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and note: register `spec-memo` MCP server in the agent host (`{cli} serve`). Next runtime skill is **`/ws-memo`** (not this wizard; not `ws-spec-memo` for day-to-day vault calls). Full bridge map: [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
    - Done when: memory backend settings persisted in `config.json`; import/hook ran when user chose Yes; MCP snippet shown when spec-memo enabled.
 8. **Security pre-commit hook** — Ask via `user-gate`: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
    - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
@@ -89,7 +89,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
    - Never auto-installed or enforced on install; presented strictly as an optional interview gate.
    - Done when: user selection handled; hook installed if explicitly requested.
 
-9. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). For specMemo: re-run `check_spec_memo.cjs` when section ran. Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`; when vault enabled, `/ws-spec-memo bootstrap` at session start.
+9. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). For specMemo: re-run `check_spec_memo.cjs` when section ran. Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`; when vault enabled and MCP registered, session brief → **`/ws-memo` bootstrap** (`/ws-spec-memo bootstrap` is hybrid fallback only).
    - Done when: summary shown; `--detect-only` ends after step 2 with no write.
 
 ## Rules

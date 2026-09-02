@@ -108,6 +108,8 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | cleanup workflow, clean plan leftovers, delete telemetry/.runtime | `ws-cleanup` |
 | spec-memo-setup, /ws-spec-memo, external vault setup, off-repo memory, configure vault, import/migrate MEMORY, vault preflight check, hybrid fallback bootstrap | `ws-spec-memo` |
 | spec-memo search/get/upsert/bootstrap (runtime), /ws-memo, memo vault ops, canvas, doctor | `ws-memo` |
+| prompt tracking, session_start/end, vault activity report, /ws-session-tracking, derive_rules from prompts | `ws-session-tracking` |
+| Spec-to-PR plan-folder timesheet / activity-report {date} | `ws-activity-report` |
 
 ---
 
