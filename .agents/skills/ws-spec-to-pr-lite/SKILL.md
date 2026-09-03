@@ -20,7 +20,7 @@ Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap 
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/tools.md). Host mode: resolve `defaults.hostAdapter.mode` + `hasStructuredChoiceTool` per [`host-dispatch.md`](../ws-shared/host-dispatch.md) at bootstrap. At **every step boundary** in normal mode: use `user-gate` with ≥2 options per [`gates.md`](../ws-shared/gates.md) (modal choice tool when present — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); `autoMode` → auto-gate index 0; cancel → HS-1. Interactive cadence: One Step Per Turn — never start Step N+1 in the same turn as Step N completion/gate.
+Aliases: [`tools.md`](../ws-shared/tools.md). Host mode: resolve `defaults.hostAdapter.mode` + `hasStructuredChoiceTool` per [`host-dispatch.md`](../ws-shared/host-dispatch.md) at bootstrap. At **every step boundary** in normal mode: use `user-gate` with ≥2 options per [`gates.md`](../ws-shared/gates.md) (modal choice tool when present — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); cancel → HS-1. **`autoMode`:** no user-gate prompt, auto-select index 0 and proceed automatically. Interactive cadence: in normal mode, enforce One Step Per Turn — never start Step N+1 in the same turn as Step N completion/gate; in `autoMode`, proceed continuously without halting.
 
 ## Invariants & Mode Rules
 
