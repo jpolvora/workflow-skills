@@ -40,7 +40,7 @@ import {
   verifyClosure,
   writeJsonStable,
 } from './skill-integrity-lib.js';
-import { pruneRetiredConsumerArtifacts } from './consumer-migration.js';
+import { pruneRetiredConsumerArtifacts, listRetiredManifestIds } from './consumer-migration.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -99,6 +99,22 @@ const FRESH_CHANGELOG_MD = `# Changelog
 Append-only history written by the \`ws-changelog\` skill. Do not use this file for anti-regression context (use \`MEMORY.md\`).
 
 ---
+`;
+
+/**
+ * Thin local hub pointer for global-hybrid trees (us-272 AC3).
+ * Seeded only when the project-local ws-shared/ hub exists without AGENTS.md
+ * (e.g. hand-stripped local hub beside a global install). Normal updates
+ * already refresh AGENTS.md from HUB_WHITELIST; this covers the residual
+ * missing-file edge. Portable tokens only — no absolute paths.
+ */
+const LOCAL_HUB_POINTER_MD = `# Shared — Workflow Config & Consumer Data Hub (local pointer)
+
+This project uses a global-hybrid install: skill bodies load from \`{globalSkillsRoot}\` (\`~/.agents/skills\` or \`WORKFLOW_SKILLS_GLOBAL_DIR\`), while project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`MEMORY.md\`, \`memory/*\`, \`CHANGELOG.md\`, \`installed-skills.json\`).
+
+- Full hub contract: \`{globalSkillsRoot}/ws-shared/AGENTS.md\` (resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`ws-shared/scripts/resolve_consumer_root.cjs\`).
+- Config always resolves project-local first: \`$PWD/.agents/skills/ws-shared/config.json\` overrides the global hub.
+- \`rules.harness\` default (\`.agents/skills/ws-shared/AGENTS.md\`) resolves to this file; follow the canonical hub link above. Run installer \`update\` to refresh this pointer.
 `;
 
 /** Root host pointers are consumer/host-owned — installer never seeds or overwrites them. */
@@ -659,6 +675,14 @@ function ensureSharedHubInstalled(mode = 'install') {
   // Never overwrite consumer config.json / STACK.md / MEMORY.md / CHANGELOG.md from upstream
   ensureSharedConsumerArtifacts();
   pruneRetiredConsumerArtifacts(fs, path, { skillsDir: targetSkillsDir });
+  // Global-hybrid edge (us-272 AC3): seed a thin local pointer when the
+  // project hub lacks AGENTS.md. The HUB_WHITELIST copy above already
+  // refreshes it on normal updates; this covers the residual missing-file
+  // edge only. Never writes outside `.agents/skills/`.
+  if (!fs.existsSync(path.join(destShared, 'AGENTS.md'))) {
+    fs.writeFileSync(path.join(destShared, 'AGENTS.md'), LOCAL_HUB_POINTER_MD);
+    console.log('    Seeded thin local ws-shared/AGENTS.md pointer to the global hub');
+  }
   if (!isGlobalScope) {
     const globalDir = resolveGlobalSkillsDir();
     if (
@@ -1772,6 +1796,19 @@ function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts = {}) 
     extraSkills: newlyInstalled,
     extraSelected: newlyInstalled,
   });
+
+  // Fail closed when retired ids survive prune+sync (us-272 AC2/AC6):
+  // prune-then-sync ordering must never silently re-add retired entries.
+  {
+    const synced = readInstalledSkillsManifest();
+    const stale = synced ? listRetiredManifestIds(synced) : [];
+    if (stale.length > 0) {
+      console.error(
+        `Error: retired skill id(s) remain in ws-shared/${INSTALLED_SKILLS_FILE} after update: ${stale.join(', ')}`,
+      );
+      process.exit(1);
+    }
+  }
 
   const afterManifest = readInstalledSkillsManifest();
   const verifyIds = afterManifest

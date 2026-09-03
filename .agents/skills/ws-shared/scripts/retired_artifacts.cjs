@@ -54,6 +54,34 @@ const RETIRED_DEFAULTS_COMMENT_KEYS = [
   '_comment_patterns',
 ];
 
+/**
+ * Legacy bare install ids with no canonical target — manifest-prune only.
+ * Never treated as skill folders (no fs.rmSync): these never existed as
+ * `ws-*` directories, so folder removal must not touch them.
+ */
+const RETIRED_BARE_IDS = [
+  'azure-devops',
+  'caveman',
+  'code-review',
+  'fix-pr',
+  'plan-us',
+  'us-delivery-workflow',
+];
+
+/** Retired → canonical migration source of truth (0.3.56 family rename). */
+const RETIRED_TO_CANONICAL = {
+  'ws-write-spec': 'ws-spec-write',
+  'ws-sync-spec': 'ws-spec-update',
+  'ws-multi-spec': 'ws-spec-multi',
+  'ws-local-spec-provider': 'ws-spec-provider-local',
+  'ws-verify-plan': 'ws-plan-verify',
+  'ws-github-provider': 'ws-spec-provider-github',
+  'ws-azure-devops-provider': 'ws-spec-provider-azure-devops',
+  'ws-write-plan': 'ws-plan-write',
+  'ws-update-plan-implementation': 'ws-plan-update',
+  'ws-interview': 'ws-plan-interview',
+};
+
 /** Live skill/hub bodies must not invoke these (exempt CHANGELOG + LEGACY banners). */
 const STALE_LIVE_REFERENCE_PATTERNS = [
   { id: 'session_lease.cjs', re: /session_lease\.cjs/i, removedIn: '0.3.38' },
@@ -170,7 +198,7 @@ function pruneRetiredConsumerArtifacts(fs, path, options) {
   if (fs.existsSync(manifestPath)) {
     try {
       const data = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-      const retired = new Set(RETIRED_SKILL_DIRS);
+      const retired = new Set([...RETIRED_SKILL_DIRS, ...RETIRED_BARE_IDS]);
       const filterList = (list) =>
         Array.isArray(list) ? list.filter((id) => typeof id === 'string' && !retired.has(id)) : list;
       const nextSkills = filterList(data.skills);
@@ -195,14 +223,39 @@ function pruneRetiredConsumerArtifacts(fs, path, options) {
   return result;
 }
 
+/**
+ * List retired ids (ws-* retired dirs + bare legacy ids) still present in an
+ * installed-skills.json manifest object (`skills` / `selected` lists).
+ * @param {object} data - parsed manifest JSON
+ * @returns {string[]} deduped retired ids found
+ */
+function listRetiredManifestIds(data) {
+  if (!data || typeof data !== 'object') return [];
+  const retired = new Set([...RETIRED_SKILL_DIRS, ...RETIRED_BARE_IDS]);
+  const found = [];
+  for (const key of ['skills', 'selected']) {
+    const list = data[key];
+    if (!Array.isArray(list)) continue;
+    for (const id of list) {
+      if (typeof id === 'string' && retired.has(id) && !found.includes(id)) {
+        found.push(id);
+      }
+    }
+  }
+  return found;
+}
+
 module.exports = {
   RETIRED_HUB_FILES,
   RETIRED_SKILL_DIRS,
+  RETIRED_BARE_IDS,
+  RETIRED_TO_CANONICAL,
   RETIRED_DEFAULTS_KEYS,
   RETIRED_DEFAULTS_COMMENT_KEYS,
   STALE_LIVE_REFERENCE_PATTERNS,
   stripRetiredConfigKeys,
   listRetiredConfigKeys,
+  listRetiredManifestIds,
   findRetiredSkillDirsAtRoot,
   pruneRetiredConsumerArtifacts,
 };

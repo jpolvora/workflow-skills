@@ -11,6 +11,9 @@ const {
   pruneRetiredConsumerArtifacts,
   stripRetiredConfigKeys,
   STALE_LIVE_REFERENCE_PATTERNS,
+  RETIRED_BARE_IDS,
+  RETIRED_TO_CANONICAL,
+  listRetiredManifestIds,
 } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'));
 
 function tempDir() {
@@ -70,7 +73,39 @@ function tempDir() {
     fs.writeFileSync(
       path.join(sharedDir, 'installed-skills.json'),
       `${JSON.stringify(
-        { version: 1, skills: ['ws-spec-to-pr', 'ws-patterns', 'ws-audit', 'ws-write-spec', 'ws-interview'], selected: ['ws-spec-to-pr', 'ws-patterns', 'ws-write-spec'] },
+        {
+          version: 1,
+          skills: [
+            'ws-spec-to-pr',
+            'ws-patterns',
+            'ws-audit',
+            'ws-write-spec',
+            'ws-sync-spec',
+            'ws-multi-spec',
+            'ws-local-spec-provider',
+            'ws-verify-plan',
+            'ws-github-provider',
+            'ws-azure-devops-provider',
+            'ws-write-plan',
+            'ws-update-plan-implementation',
+            'ws-interview',
+            'azure-devops',
+            'caveman',
+            'code-review',
+            'fix-pr',
+            'plan-us',
+            'us-delivery-workflow',
+          ],
+          selected: [
+            'ws-spec-to-pr',
+            'ws-patterns',
+            'ws-write-spec',
+            'ws-sync-spec',
+            'ws-verify-plan',
+            'caveman',
+            'fix-pr',
+          ],
+        },
         null,
         2,
       )}\n`,
@@ -93,6 +128,10 @@ function tempDir() {
     assert.ok(result.configKeys.some((k) => k.includes('_comment_patterns')));
     assert.ok(result.configKeys.some((k) => k.includes('patterns')));
     assert.deepStrictEqual(result.skillDirs.sort(), ['ws-interview', 'ws-patterns', 'ws-write-spec'].sort());
+    // Bare legacy ids are manifest-prune only — never reported as removed folders.
+    for (const bare of ['azure-devops', 'caveman', 'code-review', 'fix-pr', 'plan-us', 'us-delivery-workflow']) {
+      assert.ok(!result.skillDirs.includes(bare), `bare id ${bare} must not be treated as a skill folder`);
+    }
     assert.ok(!fs.existsSync(path.join(skillsDir, 'ws-write-spec')));
     assert.ok(!fs.existsSync(path.join(skillsDir, 'ws-interview')));
     assert.ok(!fs.existsSync(path.join(sharedDir, 'session-lease.schema.json')));
@@ -105,9 +144,44 @@ function tempDir() {
     const manifest = JSON.parse(fs.readFileSync(path.join(sharedDir, 'installed-skills.json'), 'utf8'));
     assert.deepStrictEqual(manifest.skills, ['ws-spec-to-pr']);
     assert.deepStrictEqual(manifest.selected, ['ws-spec-to-pr']);
+    // Post-prune manifest carries zero retired ids (fail-closed helper).
+    assert.deepStrictEqual(listRetiredManifestIds(manifest), []);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+}
+
+{
+  // Retired → canonical map (0.3.56 family rename) is the migration source of truth.
+  assert.deepStrictEqual(RETIRED_TO_CANONICAL, {
+    'ws-write-spec': 'ws-spec-write',
+    'ws-sync-spec': 'ws-spec-update',
+    'ws-multi-spec': 'ws-spec-multi',
+    'ws-local-spec-provider': 'ws-spec-provider-local',
+    'ws-verify-plan': 'ws-plan-verify',
+    'ws-github-provider': 'ws-spec-provider-github',
+    'ws-azure-devops-provider': 'ws-spec-provider-azure-devops',
+    'ws-write-plan': 'ws-plan-write',
+    'ws-update-plan-implementation': 'ws-plan-update',
+    'ws-interview': 'ws-plan-interview',
+  });
+  assert.deepStrictEqual([...RETIRED_BARE_IDS].sort(), ['azure-devops', 'caveman', 'code-review', 'fix-pr', 'plan-us', 'us-delivery-workflow'].sort());
+  // Bare legacy ids are manifest-prune only: no generic bare-word STALE
+  // pattern may match them (false-positive rule — e.g. prose "fix-pr").
+  for (const bare of RETIRED_BARE_IDS) {
+    for (const pattern of STALE_LIVE_REFERENCE_PATTERNS) {
+      assert.ok(
+        !pattern.re.test(`unrelated prose mentioning ${bare} in passing`),
+        `STALE pattern ${pattern.id} must not match bare word ${bare}`,
+      );
+    }
+  }
+  // Helper flags stale ids in both manifest lists.
+  assert.deepStrictEqual(
+    listRetiredManifestIds({ skills: ['ws-spec-to-pr', 'ws-write-spec', 'caveman'], selected: ['ws-sync-spec', 'plan-us'] }).sort(),
+    ['caveman', 'plan-us', 'ws-sync-spec', 'ws-write-spec'].sort(),
+  );
+  assert.deepStrictEqual(listRetiredManifestIds({ skills: ['ws-spec-to-pr'], selected: ['ws-spec-to-pr'] }), []);
 }
 
 {

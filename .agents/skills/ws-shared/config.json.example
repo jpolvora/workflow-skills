@@ -86,7 +86,7 @@
       "owner": "<GITHUB_ORG>",
       "repo": "<GITHUB_REPO>",
       "cli": "gh",
-      "issueToSpecScript": ".agents/skills/ws-github-provider/scripts/github-issue-to-spec.py"
+      "issueToSpecScript": ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py"
     },
     "azureDevOps": {
       "enabled": false,
@@ -95,7 +95,7 @@
       "project": "",
       "patEnvVar": "ADO_PAT",
       "apiBase": "https://dev.azure.com",
-      "workItemToSpecScript": ".agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py"
+      "workItemToSpecScript": ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py"
     }
   },
 
@@ -350,7 +350,7 @@
   },
 
   "rules": {
-    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). seniorDeveloper = Code review proof checklist source (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = surgical-change skill; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
+    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). harness default is the project-local ws-shared/AGENTS.md; on global-hybrid installs resolve via the {globalSkillsRoot} fallback (config-resolution.md Harness entrypoint fallback); installer seeds a thin local pointer when missing. seniorDeveloper = Code review proof checklist source (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = surgical-change skill; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
     "harness": ".agents/skills/ws-shared/AGENTS.md",
     "seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md",
     "karpathyGuidelines": ".agents/skills/ws-karpathy-guidelines/SKILL.md",

@@ -8,7 +8,9 @@ const packed = spawnSync('npm', ['pack', '--dry-run', '--json'], {
   shell: process.platform === 'win32',
 });
 assert.strictEqual(packed.status, 0, packed.stderr);
-const files = JSON.parse(packed.stdout)[0].files.map((item) => item.path.replace(/\\/g, '/'));
+const envelope = JSON.parse(packed.stdout);
+const entry = Array.isArray(envelope) ? envelope[0] : envelope[Object.keys(envelope)[0]];
+const files = entry.files.map((item) => item.path.replace(/\\/g, '/'));
 for (const pattern of [
   /(?:^|\/)__pycache__(?:\/|$)/,
   /\.py[co]$/,
