@@ -11,6 +11,10 @@ import {
   isHomeDirectory,
   resolveGlobalSkillsDir,
   ensureWriteableDir,
+  GLOBAL_HOST_TARGETS,
+  getGlobalHostTargets,
+  resolveHostTargetPath,
+  projectSkillToTarget,
 } from '../bin/install-rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -2286,6 +2290,184 @@ child.on('close', async (code) => {
     }
     ok('installer auto-defaults scope to Global when cwd is user home directory');
     fs.rmSync(homeMockDir, { recursive: true, force: true });
+  }
+
+  // --- Phase 12: Multi-host global targets and symlink strategy ---
+  console.log('\n[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard...');
+  {
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+
+    // 1. Registry verification (AC1)
+    if (!Array.isArray(GLOBAL_HOST_TARGETS) || GLOBAL_HOST_TARGETS.length < 4) {
+      fail('GLOBAL_HOST_TARGETS must contain at least 4 host targets');
+    }
+    const ids = GLOBAL_HOST_TARGETS.map((t) => t.id);
+    for (const expected of ['canonical', 'claude', 'codex', 'gemini']) {
+      if (!ids.includes(expected)) fail(`GLOBAL_HOST_TARGETS missing target: ${expected}`);
+    }
+    ok('GLOBAL_HOST_TARGETS contains canonical, claude, codex, and gemini');
+
+    const mockHome = path.join(__dirname, '.mock-multi-host-home');
+    fs.rmSync(mockHome, { recursive: true, force: true });
+    fs.mkdirSync(mockHome, { recursive: true });
+
+    const hostTargets = getGlobalHostTargets(mockHome);
+    const claudeTarget = hostTargets.find((t) => t.id === 'claude');
+    if (!claudeTarget || claudeTarget.path !== path.join(mockHome, '.claude', 'skills')) {
+      fail(`claudeTarget path unexpected: ${claudeTarget?.path}`);
+    }
+    const geminiTarget = hostTargets.find((t) => t.id === 'gemini');
+    if (!geminiTarget || geminiTarget.path !== path.join(mockHome, '.gemini', 'config', 'skills')) {
+      fail(`geminiTarget path unexpected: ${geminiTarget?.path}`);
+    }
+    ok('getGlobalHostTargets resolves absolute target paths correctly');
+
+    // 2. Self-overwrite guard with global scope (AC5, NS3)
+    // Running from packageRoot with --project must fail (NS3)
+    const selfProjectRes = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-tdah', '--project', '--yes'],
+      {
+        cwd: parentDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+      }
+    );
+    if (selfProjectRes.status === 0 || !/Refusing to install into the workflow-skills source repository/i.test(selfProjectRes.stdout + selfProjectRes.stderr)) {
+      fail('Self-overwrite guard must block --project install when cwd is packageRoot');
+    }
+    ok('Self-overwrite guard continues to block --project install from package root (NS3)');
+
+    // Running from packageRoot with --global must succeed and NOT be blocked (AC5)
+    const mockGlobalRoot = path.join(mockHome, '.agents', 'skills');
+    const selfGlobalRes = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-tdah', '--global', '--targets', 'canonical,claude', '--yes'],
+      {
+        cwd: parentDir,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          HOME: mockHome,
+          USERPROFILE: mockHome,
+          FORCE_COLOR: '0',
+        },
+      }
+    );
+    if (selfGlobalRes.status !== 0) {
+      console.error(selfGlobalRes.stdout, selfGlobalRes.stderr);
+      fail('Global install from package root failed');
+    }
+    if (/Refusing to install into the workflow-skills source repository/i.test(selfGlobalRes.stdout + selfGlobalRes.stderr)) {
+      fail('Self-overwrite guard must not block global install when cwd is packageRoot (AC5)');
+    }
+    ok('assertNotSelfOverwrite allows global install from repository root (AC5)');
+
+    // 3. Multi-target installation and symlinks (AC2, AC3, AC4, AC6)
+    const canonicalTdah = path.join(mockGlobalRoot, 'ws-tdah', 'SKILL.md');
+    const claudeTdah = path.join(mockHome, '.claude', 'skills', 'ws-tdah', 'SKILL.md');
+    if (!fs.existsSync(canonicalTdah)) {
+      fail(`Canonical skill not installed at ${canonicalTdah}`);
+    }
+    if (!fs.existsSync(claudeTdah)) {
+      fail(`Secondary skill not linked at ${claudeTdah}`);
+    }
+    const claudeSkillDir = path.join(mockHome, '.claude', 'skills', 'ws-tdah');
+    const stat = fs.lstatSync(claudeSkillDir);
+    if (!stat.isSymbolicLink()) {
+      fail('Secondary skill should be a symlink or junction by default');
+    }
+    ok('multi-target global installation creates canonical skill and secondary symlink/junction');
+
+    // 4. Pre-existing non-workflow skill protection (NS2)
+    const unrelatedSkillDir = path.join(mockHome, '.claude', 'skills', 'atividades');
+    fs.mkdirSync(unrelatedSkillDir, { recursive: true });
+    fs.writeFileSync(path.join(unrelatedSkillDir, 'SKILL.md'), '# Atividades third-party skill\n');
+
+    // Run install of another skill
+    const secondInstall = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-karpathy-guidelines', '--global', '--targets', 'canonical,claude', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          HOME: mockHome,
+          USERPROFILE: mockHome,
+          FORCE_COLOR: '0',
+        },
+      }
+    );
+    if (secondInstall.status !== 0) fail('Second install failed');
+    if (!fs.existsSync(path.join(unrelatedSkillDir, 'SKILL.md'))) {
+      fail('Pre-existing non-workflow skill was deleted or clobbered (NS2)');
+    }
+    ok('Pre-existing non-workflow skills in secondary targets are preserved untouched (NS2)');
+
+    // 5. Fallback to direct directory copy (--no-symlink or error) (AC3, NS1)
+    const copyHome = path.join(__dirname, '.mock-copy-home');
+    fs.rmSync(copyHome, { recursive: true, force: true });
+    fs.mkdirSync(copyHome, { recursive: true });
+
+    const copyInstall = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-tdah', '--global', '--targets', 'canonical,gemini', '--no-symlink', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          HOME: copyHome,
+          USERPROFILE: copyHome,
+          FORCE_COLOR: '0',
+        },
+      }
+    );
+    if (copyInstall.status !== 0) fail('Copy fallback install failed');
+    const geminiTdahDir = path.join(copyHome, '.gemini', 'config', 'skills', 'ws-tdah');
+    if (!fs.existsSync(path.join(geminiTdahDir, 'SKILL.md'))) {
+      fail('Copy install did not produce SKILL.md in secondary target');
+    }
+    const geminiStat = fs.lstatSync(geminiTdahDir);
+    if (geminiStat.isSymbolicLink()) {
+      fail('With --no-symlink, destination should be a regular directory, not a symlink');
+    }
+    ok('Copy fallback mode (--no-symlink) produces direct directory copies');
+
+    // 6. Manifest records globalTargets and update synchronizes secondary targets (AC7)
+    const manifestPath = path.join(mockGlobalRoot, 'ws-shared', 'installed-skills.json');
+    if (!fs.existsSync(manifestPath)) fail('installed-skills.json missing in global hub');
+    const manifestData = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (!Array.isArray(manifestData.globalTargets) || !manifestData.globalTargets.some((t) => t.id === 'claude')) {
+      fail('installed-skills.json did not record secondary globalTargets');
+    }
+    ok('installed-skills.json records secondary globalTargets');
+
+    // Test update --global
+    const updateRes = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'update', '--global', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          HOME: mockHome,
+          USERPROFILE: mockHome,
+          FORCE_COLOR: '0',
+        },
+      }
+    );
+    if (updateRes.status !== 0) fail('Update --global failed');
+    if (!fs.existsSync(path.join(mockHome, '.claude', 'skills', 'ws-karpathy-guidelines', 'SKILL.md'))) {
+      fail('Update did not synchronize secondary targets');
+    }
+    ok('update command synchronizes secondary targets recorded in manifest (AC7)');
+
+    // Cleanup
+    fs.rmSync(mockHome, { recursive: true, force: true });
+    fs.rmSync(copyHome, { recursive: true, force: true });
   }
 
   console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, uninstall, and integrity all passed.');
