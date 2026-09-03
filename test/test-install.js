@@ -2534,6 +2534,21 @@ child.on('close', async (code) => {
     }
     ok('--targets without --global fails closed with a scope error');
 
+    // 12. update --targets without --global fails closed (symmetry with install case 9)
+    const projectUpdateTargetsRes = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'update', '--project', '--targets', 'claude', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+      }
+    );
+    if (projectUpdateTargetsRes.status === 0 || !/--targets requires --global/.test(projectUpdateTargetsRes.stdout + projectUpdateTargetsRes.stderr)) {
+      fail('Project-scope update with --targets must fail closed with a scope error');
+    }
+    ok('update --targets without --global fails closed with a scope error');
+
     // 10. Update with explicit --targets persists them to the manifest (round 2)
     const reinstallChangelog = cp.spawnSync(
       process.execPath,
