@@ -103,6 +103,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Close implementation before opening the PR (`spec: 0054-close-implementation-before-pr.spec.md`)
 - [x] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: 0053-spec-prefix-ordering.spec.md`)
 - [x] ws-doctor --json stdout contract and self-describing ESM entrypoint (`spec: 0055-ws-doctor-json-esm.spec.md`)
+- [ ] Agent-agnostic host detection, subagent fallback, and interactive gate execution (`spec: 0056-host-agent-environment-adapter.spec.md`)
+
 
 
 
@@ -175,8 +177,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 56 | `spec-prefix-ordering` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional chronological spec filename prefixes and ws-spec-organizer |
 | 57 | `close-implementation-before-pr` | `[x]` done | Phase 4 | Close implementation (`status: completed`) before push/PR; `shipStatus` tracks shipping |
 | 58 | `ws-doctor-json-esm` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor --json stdout contract and self-describing ESM entrypoint |
+| 59 | `host-agent-environment-adapter` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Agent-agnostic host detection, subagent fallback, and interactive gate execution |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `host-agent-environment-adapter`.
 
 ## 9. Inbox
 
