@@ -79,6 +79,7 @@ for (const relative of [
   assert.match(dispatch, /native-tool.*cli-command.*inline-isolated/s, 'host-dispatch.md resolves neutral modes only');
   const orch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
   assert.match(orch, /Inline Isolated Execution/, 'ws-spec-to-pr reconciles Orch-never-edits-code for Tier 3 (AC7)');
+  assert.match(orch, /One Step Per Turn/, 'ws-spec-to-pr enforces single-turn cadence (AC8)');
   const lite = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/SKILL.md'), 'utf8');
   assert.match(lite, /One Step Per Turn/, 'lite enforces single-turn cadence (AC8)');
   const stepDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');

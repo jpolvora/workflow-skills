@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f257c978e686b024c0707906acb90973197b4c012bcc41341153a2faf898ae8d",
+  "fullPackageDigest": "96f892abb790fc81c9293fea533d1cef7bffad635e8b8e179b0088bcabe36bd9",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
@@ -463,11 +463,11 @@
         "scripts/validate_state.cjs": "a548517237dee8462f3ab070a1c7f4a3c79961ee1c7e00f0d4dfc26935da189a",
         "scripts/validate_state.py": "337aa2d349b2a04b244025b85c8a5fe14bb21a40a77396b7c8434417eeb4092b",
         "scripts/write_sequential_dag.cjs": "32f83f2cb95d85520a11015bff562a7efd18d97844fafe9ee3cb3c69681a679c",
-        "SKILL.md": "6341ba3b955e017192c56747f42f0f763dfb9c99d24eab9a359143cdb1c9b067",
+        "SKILL.md": "0ec527658e352db32e47669e53690f20f72a55e99e9e10f5552e1e88458756c6",
         "STEP-DISPATCH.md": "d544b7ea19d864d5365e595a42f25e7c8f408fafa946506ec7223d09d7607b26",
         "ws-spec-to-pr-run-test.md": "d23e3a2e6ee392bd598539b3ee89d709656142e49f8290b7400b9d25278d94ea"
       },
-      "skillDigest": "194e10b30241fa6ed2cad6659740edf3d8a09d1511adf47f1a21ebbd9e99ea57"
+      "skillDigest": "8da4eda347e1e4dea358f69874a877b236005d8a6ee280481acf1dcc96595a36"
     },
     "ws-spec-to-pr-lite": {
       "files": {
