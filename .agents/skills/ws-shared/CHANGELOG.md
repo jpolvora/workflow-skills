@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-03 06:05] Agent: Antigravity
+- **Prompt**: mark as completed (sync index.PRD for 0056-host-agent-environment-adapter)
+- **Done**: Marked 0056 `host-agent-environment-adapter` as completed in `index.PRD` Feature map and Next-specs table; appended entry to Done log referencing PR #266.
+- **Result**: Spec index and roadmap synchronized with shipped PR #266.
+
 ### [2026-09-03 05:45] Agent: Composer
 - **Prompt**: Integrity consumer tree mismatch — ws-preview/scripts/run_dry_run.sh (extra)
 - **Done**: Install/update now prunes dest-only managed skill files after overlay copy; tests cover generic extras + retired run_dry_run.sh leftover
