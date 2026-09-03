@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-local
 description: Local Markdown spec provider — detects, normalizes, and registers hand-written *.spec.md feature specifications into canonical pipeline artifacts.
-version: 0.3.58
+version: 0.3.59
 disable-model-invocation: true
 invocation_names:
   - spec-provider-local
