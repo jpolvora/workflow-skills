@@ -1,0 +1,954 @@
+{
+  "schemaVersion": 1,
+  "revision": 7,
+  "workflowId": "modern-website-revamp",
+  "slug": "modern-website-revamp",
+  "specPath": ".agents/plans/modern-website-revamp/step-00-modern-website-revamp.spec.md",
+  "planIndexPath": ".agents/plans/modern-website-revamp/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Provide a unified CSS design system in docs/assets/css/style.css defining semantic CSS variables for dark and light themes, crisp 1px borders, and status accents without neon glow filters.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.221Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Replace the hero section in docs/index.html with a restrained engineering hero containing copyable terminal install tabs, package preset toggles, and verifiable proof metrics.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.223Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Remove the looping background video and poster assets from the primary layout to eliminate visual distraction while reducing initial page payload size.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.225Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Implement an interactive pipeline visualizer component displaying the 10-step Standard and 6-step Lite FSM transitions, gates, and handoff artifacts.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.227Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Present a technical verification showcase detailing the AC ledger, derived score thresholds, fail-closed gates, and the anti-regression memory engine.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-010"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.228Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Update the interactive skill catalog with instant client-side search, layer filtering, full versus lite profile toggles, and keyboard shortcut focus via slash key.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-011"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.230Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Render skill documentation in an accessible slide-over drawer component with clean markdown styling, close-on-escape handling, and backdrop dismiss.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-011"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.231Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Provide copyable configuration presets and integration snippets for major coding agent environments including Cursor, OpenCode, and CLI shells.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.233Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "Update bin/build-site.js to inject catalog layers and package presets into the revamped template structure while maintaining deterministic check verification.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.234Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "Retain all required documentation synchronization headings and package version strings validated by test/test-doc-sync.js.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-010",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.236Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "Achieve complete keyboard navigability and high contrast compliance across both light and dark themes throughout all site components.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3-L90",
+        "docs/index.html:L123-L200"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "planSections": [
+        "section-006",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3,
+          "lineEnd": 90,
+          "sha256": "56cc792e8cdf4d62676d503db935ebf1695ee9ce28704f79902d327bfbc00fdc"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 123,
+          "lineEnd": 200,
+          "sha256": "c5f27e4d5535a469508be9279140ee4ff28ad1579987f4c856b96664e39fadf0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43fe5700",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.237Z"
+        },
+        {
+          "name": "V10:doc-sync-headings",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V11:contrast-accessibility",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Stale build check fails: executing `node bin/build-site.js --check` on an unbuilt or mismatched `docs/index.html` exits with non-zero code 1 and logs `docs/index.html is stale; run node bin/build-site.js`.",
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.237Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-imp-step4"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Missing synchronization headings: deleting any required heading from `docs/index.html` causes `node test/test-doc-sync.js` to fail with an assertion error naming the missing heading.",
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.237Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-imp-step4"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Broken search query handling: searching for non-existent terms in the skill search input displays the `#no-results` container and hides all layer groupings.",
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:01:56.237Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-imp-step4"
+      ]
+    }
+  ],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 110,
+    "totalUnits": 110,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-09-03T11:03:13.534Z"
+  }
+}

@@ -1,0 +1,610 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/modern-website-revamp/step-01-modern-website-revamp.plan.md",
+    "sha256": "2bd3a8b2da570f0869be841275684c96409400a4d088e08fc15022e5f5e1e3b2",
+    "bytes": 6477,
+    "lines": 76
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "Overview",
+      "level": 2,
+      "byteStart": 232,
+      "byteEnd": 984,
+      "lineStart": 7,
+      "lineEnd": 10,
+      "sha256": "cd14e292b79154664763314c815cfba4bd6612160bed0594110d19316ae56707",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V4"
+      ]
+    },
+    {
+      "id": "section-002",
+      "title": "Proposed Architecture & File Changes",
+      "level": 2,
+      "byteStart": 984,
+      "byteEnd": 3527,
+      "lineStart": 11,
+      "lineEnd": 33,
+      "sha256": "f201622bdecd79897c188b7f6c6a92f5bb485d2a32cf9042afa799f31db1c29a",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "1. Unified CSS Design System (`docs/assets/css/style.css`)",
+      "level": 3,
+      "byteStart": 1025,
+      "byteEnd": 1822,
+      "lineStart": 13,
+      "lineEnd": 18,
+      "sha256": "71e1a95a8757fb06271d58941bd8c9593d57368bf4a97664da363eb171c24954",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "docs/assets/css/style.css"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-004",
+      "title": "2. Modern Technical Website Layout (`docs/index.html`)",
+      "level": 3,
+      "byteStart": 1822,
+      "byteEnd": 3200,
+      "lineStart": 19,
+      "lineEnd": 26,
+      "sha256": "d2e6b689c65a34fe783a12bf551eec7d9dadb89b0b01525b7a5bd0e04106b938",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-005",
+      "title": "3. Build & Doc Sync Verification (`bin/build-site.js`, `test/test-doc-sync.js`)",
+      "level": 3,
+      "byteStart": 3200,
+      "byteEnd": 3527,
+      "lineStart": 27,
+      "lineEnd": 33,
+      "sha256": "f0cab37e325138d6862f8686dd4af352396e7467580584a8926b9e8366f78c30",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-006",
+      "title": "Tasks & Acceptance Criteria Traceability",
+      "level": 2,
+      "byteStart": 3527,
+      "byteEnd": 6477,
+      "lineStart": 34,
+      "lineEnd": 76,
+      "sha256": "1e13825afa99187da337344189db078395a18ad135edf22ce820900f13ecd784",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10",
+        "AC11"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "section-007",
+      "title": "Task T01: CSS Design System Overhaul (`docs/assets/css/style.css`)",
+      "level": 3,
+      "byteStart": 3572,
+      "byteEnd": 4006,
+      "lineStart": 36,
+      "lineEnd": 41,
+      "sha256": "eb2a06049639e96b72625cb445efceba3d38ccbaf9d9d3b9d70291579c8d7dc1",
+      "acRefs": [
+        "AC1",
+        "AC11"
+      ],
+      "taskIds": [
+        "T01"
+      ],
+      "expectedFiles": [
+        "docs/assets/css/style.css"
+      ],
+      "expectedTestNames": [
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "section-008",
+      "title": "Task T02: Hero Section Modernization & Video Asset Removal (`docs/index.html`)",
+      "level": 3,
+      "byteStart": 4006,
+      "byteEnd": 4439,
+      "lineStart": 42,
+      "lineEnd": 47,
+      "sha256": "1fc2736fa4110650f3df6538ef3a86f42aa9e341a5e1a4624437585156ec06ad",
+      "acRefs": [
+        "AC2",
+        "AC3"
+      ],
+      "taskIds": [
+        "T02"
+      ],
+      "expectedFiles": [
+        "docs/assets/css/style.css",
+        "docs/index.html"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-009",
+      "title": "Task T03: Interactive Pipeline Visualizer Component (`docs/index.html`, `docs/assets/css/style.css`)",
+      "level": 3,
+      "byteStart": 4439,
+      "byteEnd": 4850,
+      "lineStart": 48,
+      "lineEnd": 53,
+      "sha256": "37af9c155029f78d8460bc9afbcb50ead57d529a79563395d69e6d07d3008e1a",
+      "acRefs": [
+        "AC4"
+      ],
+      "taskIds": [
+        "T03"
+      ],
+      "expectedFiles": [
+        "docs/assets/css/style.css",
+        "docs/index.html"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-010",
+      "title": "Task T04: Technical Verification Showcase (`docs/index.html`, `docs/assets/css/style.css`)",
+      "level": 3,
+      "byteStart": 4850,
+      "byteEnd": 5231,
+      "lineStart": 54,
+      "lineEnd": 59,
+      "sha256": "dbbe5572cb7881dd1dd23971d09c7f0856893fcc78c8730de43e3d6ae3ffd4eb",
+      "acRefs": [
+        "AC5",
+        "AC10"
+      ],
+      "taskIds": [
+        "T04"
+      ],
+      "expectedFiles": [
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings"
+      ]
+    },
+    {
+      "id": "section-011",
+      "title": "Task T05: Interactive Skill Catalog & Slide-Over Drawer (`docs/index.html`, `docs/assets/css/style.css`)",
+      "level": 3,
+      "byteStart": 5231,
+      "byteEnd": 5709,
+      "lineStart": 60,
+      "lineEnd": 65,
+      "sha256": "e975c7cf974653819cb559a5527b1a66f5587c907c7d2992991126d95d28f6a4",
+      "acRefs": [
+        "AC6",
+        "AC7"
+      ],
+      "taskIds": [
+        "T05"
+      ],
+      "expectedFiles": [
+        "docs/assets/css/style.css",
+        "docs/index.html"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-012",
+      "title": "Task T06: Developer Environment Configuration Presets (`docs/index.html`, `docs/assets/css/style.css`)",
+      "level": 3,
+      "byteStart": 5709,
+      "byteEnd": 6038,
+      "lineStart": 66,
+      "lineEnd": 71,
+      "sha256": "874953cb82e5c22f3b21d369672d1c59784e0b918cb84c5010425e0580073958",
+      "acRefs": [
+        "AC8"
+      ],
+      "taskIds": [
+        "T06"
+      ],
+      "expectedFiles": [
+        "docs/assets/css/style.css",
+        "docs/index.html"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-013",
+      "title": "Task T07: Automated Site Build & CI Synchronization Verification (`bin/build-site.js`, `test/test-doc-sync.js`)",
+      "level": 3,
+      "byteStart": 6038,
+      "byteEnd": 6477,
+      "lineStart": 72,
+      "lineEnd": 76,
+      "sha256": "1ab0fe85e243a91105608074694b67b47e22cef86e76c75a076ad8916bf02a69",
+      "acRefs": [
+        "AC9",
+        "AC10"
+      ],
+      "taskIds": [
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings"
+      ]
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Provide a unified CSS design system in docs/assets/css/style.css defining semantic CSS variables for dark and light themes, crisp 1px borders, and status accents without neon glow filters.",
+      "planSectionIds": [
+        "section-006",
+        "section-007"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Replace the hero section in docs/index.html with a restrained engineering hero containing copyable terminal install tabs, package preset toggles, and verifiable proof metrics.",
+      "planSectionIds": [
+        "section-006",
+        "section-008"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Remove the looping background video and poster assets from the primary layout to eliminate visual distraction while reducing initial page payload size.",
+      "planSectionIds": [
+        "section-006",
+        "section-008"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Implement an interactive pipeline visualizer component displaying the 10-step Standard and 6-step Lite FSM transitions, gates, and handoff artifacts.",
+      "planSectionIds": [
+        "section-006",
+        "section-009"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Present a technical verification showcase detailing the AC ledger, derived score thresholds, fail-closed gates, and the anti-regression memory engine.",
+      "planSectionIds": [
+        "section-006",
+        "section-010"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Update the interactive skill catalog with instant client-side search, layer filtering, full versus lite profile toggles, and keyboard shortcut focus via slash key.",
+      "planSectionIds": [
+        "section-006",
+        "section-011"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Render skill documentation in an accessible slide-over drawer component with clean markdown styling, close-on-escape handling, and backdrop dismiss.",
+      "planSectionIds": [
+        "section-006",
+        "section-011"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Provide copyable configuration presets and integration snippets for major coding agent environments including Cursor, OpenCode, and CLI shells.",
+      "planSectionIds": [
+        "section-006",
+        "section-012"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "Update bin/build-site.js to inject catalog layers and package presets into the revamped template structure while maintaining deterministic check verification.",
+      "planSectionIds": [
+        "section-006",
+        "section-013"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "Retain all required documentation synchronization headings and package version strings validated by test/test-doc-sync.js.",
+      "planSectionIds": [
+        "section-006",
+        "section-010",
+        "section-013"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "Achieve complete keyboard navigability and high contrast compliance across both light and dark themes throughout all site components.",
+      "planSectionIds": [
+        "section-006",
+        "section-007"
+      ],
+      "taskIds": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07"
+      ],
+      "expectedFiles": [
+        "bin/build-site.js",
+        "docs/assets/css/style.css",
+        "docs/index.html",
+        "test/test-doc-sync.js"
+      ],
+      "expectedTestNames": [
+        "V10:doc-sync-headings",
+        "V11:contrast-accessibility"
+      ]
+    }
+  ]
+}
