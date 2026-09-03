@@ -440,6 +440,36 @@ print('ok')`,
   console.log('OK ado clean_html preserves img markdown');
 }
 
+// ADO Original Issue Context keeps raw HTML (not clean_html output)
+{
+  const proc = spawnSync(
+    PYTHON,
+    [
+      '-c',
+      `import importlib.util, json, tempfile, os
+spec = importlib.util.spec_from_file_location('ado', r'${ADO_SCRIPT.replace(/\\/g, '\\\\')}')
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+wi = {
+  'id': 42,
+  'fields': {
+    'System.Title': 'HTML audit',
+    'System.Description': '<table><tr><td>cell</td></tr></table>',
+    'Microsoft.VSTS.Common.AcceptanceCriteria': '<p><strong>AC</strong></p>',
+  },
+}
+md = mod.build_spec_md(wi, 'org', 'proj')
+assert '<table>' in md, 'description HTML preserved in Original Issue Context'
+assert '<p><strong>AC</strong></p>' in md, 'acceptance criteria HTML preserved'
+assert '## Description' in md
+print('ok')`,
+    ],
+    { encoding: 'utf8', cwd: REPO },
+  );
+  assert.strictEqual(proc.status, 0, proc.stderr || proc.stdout);
+  console.log('OK ado Original Issue Context preserves raw HTML');
+}
+
 // Register copies assets
 {
   const { tmp, specs, plans } = createTempProject();

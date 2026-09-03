@@ -187,7 +187,11 @@ def fetch_comments(org: str, project: str, work_item_id: int, pat: str, api_base
     try:
         with urlopen_retry(request, timeout=90) as response:
             payload = json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError:
+    except urllib.error.HTTPError as exc:
+        print(
+            f"Warning: WIT comments API unavailable ({exc.code}); comment images skipped.",
+            file=sys.stderr,
+        )
         return []
     comments = payload.get("comments") or payload.get("value") or []
     return comments if isinstance(comments, list) else []
@@ -357,10 +361,10 @@ def build_spec_md(work_item: dict, org: str | None, project: str | None) -> str:
 
     body.append("## Original Issue Context")
     body.append("")
-    body.append(description_text or "_No description in the work item._")
-    if ac_text:
+    body.append((description_html or "").strip() or "_No description in the work item._")
+    if ac_html:
         body.append("")
-        body.append(ac_text)
+        body.append(ac_html.strip())
     body.append("")
 
     body.append("## Notes")

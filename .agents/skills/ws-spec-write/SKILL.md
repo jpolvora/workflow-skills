@@ -81,8 +81,9 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Done when: design-intent recorded or skip reason documented.
 
 4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
+   - **Preserve Visual References:** When the input spec already has `## Visual References` and `{specStem}.assets/` on disk, keep that section and repo-relative asset paths unchanged in the written spec (you may add captions or AC cross-refs; do not drop the section or revert to remote URLs).
    - **Gray area:** when a user-facing choice has two or more valid product options, write the companion at the path from `resolve_spec_path.cjs --slug {slug} --context` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
-   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
+   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), `## Visual References` when present on input with a populated `.assets/` sidecar, and `## Notes`.
 
 5. **Write** — Ensure `plans.enforceSpecPrefixOrdering` exists (see Write path), then resolve `SPEC_PATH` (and `CONTEXT_PATH` when a gray area exists):
 
