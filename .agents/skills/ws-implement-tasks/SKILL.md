@@ -36,7 +36,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 
 ## Build mode
 
-1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria.
+1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria. When the spec of record or `step-00` copy contains `## Visual References`, **Read** each `ok` image listed (skip PDF) before editing product files.
    - Done when: every task/step has an identified file list and AC.
 
 2. **Consult memory (`read-memory`)** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for 3–8 modules/paths/keywords in the plan (every enabled backend: local files and/or spec-memo vault); apply Medium+ Solutions before editing; record search keywords, backends queried, and hits.

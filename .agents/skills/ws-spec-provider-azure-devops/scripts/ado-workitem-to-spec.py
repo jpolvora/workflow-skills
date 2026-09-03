@@ -3,7 +3,7 @@
 Fetch or convert an Azure DevOps work item into the spec of record under {specsDir}.
 
 Fetch (live API):
-  set ADO_PAT=...   # or AZURE_DEVOPS_PAT
+  set ADO_PAT=...
   python ado-workitem-to-spec.py \\
     --org contoso --project MyProject --id 2416 \\
     --snapshot {plansDir}/us-2416/step-00-us-2416.issue.json
@@ -13,16 +13,8 @@ Convert (offline JSON from WIT API):
     --input workitem.json \\
     --org contoso --project MyProject
 
-Output defaults to `{specsDir}/us-{id}.spec.md` (`plans.specsDir` from
-ws-shared/config.json, default `.agents/specs`). Promote it to the workflow copy
-`{plansDir}/{slug}/step-00-{slug}.spec.md` with ws-spec-provider-local:
-
-  python register_local_spec.py --input {specsDir}/us-2416.spec.md --source azure-devops
-
-`--output` overrides the destination.
-
-API shape expected for --input: Azure DevOps WIT work item JSON
-(`GET .../_apis/wit/workitems/{id}?$expand=all&api-version=7.1`).
+Output defaults via `resolve_spec_path.cjs --slug {unprefixedSlug}`.
+`--skip-assets` skips the shared visual ingest helper (fixture/tests only).
 """
 from __future__ import annotations
 
@@ -32,7 +24,9 @@ import html
 import json
 import os
 import re
+import subprocess
 import sys
+import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -48,11 +42,12 @@ from http_retry import urlopen_retry  # noqa: E402
 
 ensure_utf8_stdio()
 
-
 DEFAULT_SPECS_DIR = ".agents/specs"
+WIT_COMMENTS_API_VERSION = "7.1-preview.4"
+_MD_IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
+
 
 def resolve_specs_dir(repo_root: Path, override: str | None = None) -> Path:
-    """Absolute specsDir from --specs-dir, else plans.specsDir, else the portable default."""
     rel = (override or "").strip()
     if not rel:
         cfg: dict = {}
@@ -67,16 +62,46 @@ def resolve_specs_dir(repo_root: Path, override: str | None = None) -> Path:
     return path.resolve() if path.is_absolute() else (repo_root / path).resolve()
 
 
+def resolve_default_output(repo_root: Path, slug: str) -> Path:
+    organizer = Path(__file__).resolve().parents[2] / "ws-spec-organizer" / "scripts" / "resolve_spec_path.cjs"
+    if organizer.is_file():
+        proc = subprocess.run(
+            ["node", str(organizer), "--slug", slug, "--repo-root", str(repo_root)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0:
+            rel = proc.stdout.strip()
+            return (repo_root / rel).resolve()
+    return resolve_specs_dir(repo_root) / f"{slug}.spec.md"
+
+
 _AC_HEADING = re.compile(
     r"^(?:#{1,6}\s*)?(crit[eé]rios?\s+de\s+aceite|acceptance\s+criteria|ac[s]?)\b\.?$",
     re.IGNORECASE,
 )
 
 
+def _img_tag_to_markdown(tag: str) -> str:
+    src = re.search(r'src=["\']([^"\']+)["\']', tag, re.IGNORECASE)
+    if not src:
+        return ""
+    alt = re.search(r'alt=["\']([^"\']*)["\']', tag, re.IGNORECASE)
+    alt_text = alt.group(1) if alt else ""
+    return f"![{alt_text}]({src.group(1)})"
+
+
 def clean_html(value: str | None) -> str:
     if not value:
         return ""
     text = re.sub(r"<br\s*/?>", "\n", value, flags=re.IGNORECASE)
+    text = re.sub(
+        r"<img\b[^>]*>",
+        lambda m: _img_tag_to_markdown(m.group(0)),
+        text,
+        flags=re.IGNORECASE,
+    )
     text = re.sub(r"</(p|div|h[1-6]|li|tr)\s*>", "\n", text, flags=re.IGNORECASE)
     text = re.sub(r"<(p|div|h[1-6]|li|tr)(\s[^>]*)?>", "\n", text, flags=re.IGNORECASE)
     text = re.sub(r"<[^>]+>", "", text)
@@ -85,7 +110,6 @@ def clean_html(value: str | None) -> str:
 
 
 def split_body(body: str) -> tuple[str, list[str]]:
-    """Return (description, acceptance-criteria items)."""
     body = (body or "").replace("\r\n", "\n").strip()
     if not body:
         return "", []
@@ -153,6 +177,22 @@ def fetch_work_item(org: str, project: str, work_item_id: int, pat: str, api_bas
     return json.loads(raw.decode("utf-8"))
 
 
+def fetch_comments(org: str, project: str, work_item_id: int, pat: str, api_base: str) -> list[dict]:
+    base = api_base.rstrip("/")
+    url = (
+        f"{base}/{urllib.parse.quote(org)}/{urllib.parse.quote(project)}"
+        f"/_apis/wit/workItems/{work_item_id}/comments?api-version={WIT_COMMENTS_API_VERSION}"
+    )
+    request = urllib.request.Request(url, method="GET", headers=auth_headers(pat))
+    try:
+        with urlopen_retry(request, timeout=90) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError:
+        return []
+    comments = payload.get("comments") or payload.get("value") or []
+    return comments if isinstance(comments, list) else []
+
+
 def load_work_item(raw: str) -> dict:
     data = json.loads(raw)
     if isinstance(data, list):
@@ -166,6 +206,61 @@ def work_item_slug(work_item: dict) -> str:
     fields = work_item.get("fields") or {}
     number = work_item.get("id") or fields.get("System.Id")
     return f"us-{number}" if number else "spec"
+
+
+def _add_url(urls: list[dict], seen: set[str], url: str, origin: str, alt: str = "", filename: str = "") -> None:
+    cleaned = (url or "").strip().strip("<>").strip()
+    if not cleaned or cleaned in seen:
+        return
+    seen.add(cleaned)
+    urls.append(
+        {
+            "url": cleaned,
+            "origin": origin,
+            "alt": alt or "",
+            "filename": filename or Path(cleaned).name,
+            "caption": alt or filename or Path(cleaned).name,
+        }
+    )
+
+
+def extract_urls_from_html(html_value: str, origin: str, urls: list[dict], seen: set[str]) -> None:
+    if not html_value:
+        return
+    for match in re.finditer(r"<img\b[^>]*>", html_value, flags=re.IGNORECASE):
+        tag = match.group(0)
+        src = re.search(r'src=["\']([^"\']+)["\']', tag, re.IGNORECASE)
+        alt = re.search(r'alt=["\']([^"\']*)["\']', tag, re.IGNORECASE)
+        if src:
+            _add_url(urls, seen, src.group(1), origin, alt=alt.group(1) if alt else "")
+    cleaned = clean_html(html_value)
+    for match in _MD_IMAGE_RE.finditer(cleaned):
+        _add_url(urls, seen, match.group(2), origin, alt=match.group(1))
+
+
+def extract_urls_from_text(text: str, origin: str, urls: list[dict], seen: set[str]) -> None:
+    if not text:
+        return
+    for match in _MD_IMAGE_RE.finditer(text):
+        _add_url(urls, seen, match.group(2), origin, alt=match.group(1))
+
+
+def collect_visual_urls(work_item: dict, comments: list[dict] | None = None) -> list[dict]:
+    urls: list[dict] = []
+    seen: set[str] = set()
+    fields = work_item.get("fields") or {}
+    description_html = fields.get("System.Description") or fields.get("Microsoft.VSTS.TCM.ReproSteps") or ""
+    ac_html = fields.get("Microsoft.VSTS.Common.AcceptanceCriteria") or ""
+    extract_urls_from_html(description_html, "body", urls, seen)
+    extract_urls_from_html(ac_html, "body", urls, seen)
+    for relation in work_item.get("relations") or []:
+        if (relation.get("rel") or "").endswith("AttachedFile"):
+            _add_url(urls, seen, relation.get("url") or "", "relation", filename=relation.get("attributes", {}).get("name", ""))
+    for comment in comments or []:
+        text = comment.get("text") or comment.get("body") or ""
+        extract_urls_from_html(text, "comment", urls, seen)
+        extract_urls_from_text(text, "comment", urls, seen)
+    return urls
 
 
 def build_spec_md(work_item: dict, org: str | None, project: str | None) -> str:
@@ -188,7 +283,6 @@ def build_spec_md(work_item: dict, org: str | None, project: str | None) -> str:
     description, ac_from_desc = split_body(description_text)
     ac_items: list[str] = []
     if ac_text:
-        # Prefer dedicated AcceptanceCriteria field when present
         _, ac_from_field = split_body(
             ac_text if _AC_HEADING.search(ac_text) else f"## Acceptance Criteria\n{ac_text}"
         )
@@ -201,10 +295,8 @@ def build_spec_md(work_item: dict, org: str | None, project: str | None) -> str:
                     ac_items.append(item)
     if not ac_items:
         ac_items = ac_from_desc
-        # Keep full description when ACs were only discovered inside it
         if not ac_from_desc:
             description = description_text
-    # When dedicated AC field supplied ACs, description already excludes the AC block via split_body
 
     if org and project and number:
         url = (
@@ -263,12 +355,62 @@ def build_spec_md(work_item: dict, org: str | None, project: str | None) -> str:
         )
     body.append("")
 
+    body.append("## Original Issue Context")
+    body.append("")
+    body.append(description_text or "_No description in the work item._")
+    if ac_text:
+        body.append("")
+        body.append(ac_text)
+    body.append("")
+
     body.append("## Notes")
     body.append("")
     body.append("_Automatically generated from Azure DevOps work item JSON._")
     body.append("")
 
     return "\n".join(fm + body)
+
+
+def invoke_ingest_helper(
+    spec_path: Path,
+    urls: list[dict],
+    skip_assets: bool,
+    api_base: str,
+    auth_env: str,
+    repo_root: Path | None = None,
+) -> int:
+    if skip_assets or not urls:
+        return 0
+    helper = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts" / "ingest_visual_attachments.cjs"
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as handle:
+        json.dump(urls, handle)
+        urls_path = handle.name
+    try:
+        cmd = [
+            "node",
+            str(helper),
+            "--spec-path",
+            str(spec_path),
+            "--urls-json",
+            urls_path,
+            "--provider",
+            "azure-devops",
+            "--api-base",
+            api_base,
+            "--auth-env",
+            auth_env,
+        ]
+        if repo_root is not None:
+            cmd.extend(["--repo-root", str(repo_root)])
+        if skip_assets:
+            cmd.append("--skip-assets")
+        proc = subprocess.run(cmd, check=False)
+        return proc.returncode
+    finally:
+        try:
+            os.unlink(urls_path)
+        except OSError:
+            pass
 
 
 def main() -> int:
@@ -280,7 +422,7 @@ def main() -> int:
     parser.add_argument("--input", help="Path to WIT JSON file, or '-' for stdin (offline mode)")
     parser.add_argument(
         "--output",
-        help="Output path for *.spec.md (default: {specsDir}/us-{id}.spec.md)",
+        help="Output path for *.spec.md (default: resolve_spec_path.cjs --slug {unprefixedSlug})",
     )
     parser.add_argument("--specs-dir", help="Override plans.specsDir for the default output path")
     parser.add_argument(
@@ -306,7 +448,14 @@ def main() -> int:
         action="store_true",
         help="Overwrite an existing spec of record when content differs",
     )
+    parser.add_argument(
+        "--skip-assets",
+        action="store_true",
+        help="Skip visual attachment ingest (fixture/tests only)",
+    )
     args = parser.parse_args()
+
+    comments: list[dict] = []
 
     if args.input:
         if args.input == "-":
@@ -322,12 +471,14 @@ def main() -> int:
         except (json.JSONDecodeError, ValueError) as exc:
             print(f"Error: invalid JSON — {exc}", file=sys.stderr)
             return 1
+        comments = work_item.get("comments") or []
     elif args.id is not None:
         if not args.org or not args.project:
             print("Error: --org and --project are required for live fetch", file=sys.stderr)
             return 1
         pat = resolve_pat(args.pat_env)
         work_item = fetch_work_item(args.org, args.project, args.id, pat, args.api_base)
+        comments = fetch_comments(args.org, args.project, args.id, pat, args.api_base)
         if args.snapshot:
             snap = Path(args.snapshot)
             snap.parent.mkdir(parents=True, exist_ok=True)
@@ -343,13 +494,14 @@ def main() -> int:
         snap.write_text(json.dumps(work_item, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"Snapshot written to: {snap}")
 
+    visual_urls = collect_visual_urls(work_item, comments)
     spec_md = build_spec_md(work_item, args.org or None, args.project or None)
 
+    repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
     if args.output:
         output_path = Path(args.output)
     else:
-        repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
-        output_path = resolve_specs_dir(repo_root, args.specs_dir) / f"{work_item_slug(work_item)}.spec.md"
+        output_path = resolve_default_output(repo_root, work_item_slug(work_item))
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists() and not args.force:
@@ -362,6 +514,18 @@ def main() -> int:
             )
             return 1
     output_path.write_text(spec_md, encoding="utf-8")
+
+    ingest_rc = invoke_ingest_helper(
+        output_path,
+        visual_urls,
+        args.skip_assets,
+        args.api_base,
+        args.pat_env,
+        repo_root,
+    )
+    if ingest_rc != 0:
+        print(f"Warning: visual ingest helper exited {ingest_rc}", file=sys.stderr)
+
     print(f"Spec written to: {output_path}")
     print("Next: register into the workflow copy via ws-spec-provider-local")
     print(f"  register_local_spec.py --input {output_path} --source azure-devops")

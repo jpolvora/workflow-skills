@@ -105,7 +105,7 @@ Nine required intents, enforced by `node test/test-provider-parity.js` in `npm r
 | Intent | Guarantee |
 |--------|-----------|
 | `validate-auth` | STOP on failure; no silent provider fallback |
-| `fetch-to-spec` | Writes the `{specsDir}` spec of record first, then the `step-00` workflow copy |
+| `fetch-to-spec` | Writes the `{specsDir}` spec of record first (downloads allowlisted visual attachments into `{specStem}.assets/` and `## Visual References` when present), then the `step-00` workflow copy and `{us-dir}/attachments/` at register |
 | `create-pr` | Reuses an existing open PR for the same head→base |
 | `list-threads` | Structured threads with an active count |
 | `sweep-prior-work` | Prior PR hits and recent commits, run before plan or code |

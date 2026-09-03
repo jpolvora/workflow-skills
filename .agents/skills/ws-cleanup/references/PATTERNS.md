@@ -49,6 +49,7 @@ Use this for leftovers after a shipped PR when only part of `{us-dir}` was commi
 - `{skillsRoot}/ws-*/**` skill bodies
 - `{sharedDir}/config.json`, `STACK.md`, `MEMORY.md`, `memory/**`, `CHANGELOG.md`, `installed-skills.json`
 - `{specsDir}/**` spec of record (unless it only exists as a disposable copy under a shipped plan being removed — plan-dir copies go with the plan)
+- `{specsDir}/**/*.assets/` and `manifest.json` inside those sidecars (spec-of-record visual templates)
 - Product source outside the enclosure above
 
 ## Gitignore suggestions (advisory)

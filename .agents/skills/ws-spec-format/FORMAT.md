@@ -55,6 +55,10 @@ specDate: 2026-07-02
 
 (optional — required for modification / bugfix tasks after `git log -p -S` or `git log -L`; skip greenfield with reason)
 
+## Visual References
+
+(optional — when `fetch-to-spec` downloaded allowlisted tracker images or attachments. Repo-relative markdown images or PDF file links plus a table of path, kind, origin, and caption. Omitted specs still pass `--mode=compat`.)
+
 ## Child Tasks
 
 (optional — when tracker had sub-tasks)

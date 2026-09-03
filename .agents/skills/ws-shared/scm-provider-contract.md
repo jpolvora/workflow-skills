@@ -26,7 +26,7 @@ Every implementer `SKILL.md` intent table and `INTENTS.md` `## \`intent\`` headi
 | Intent | Input | Output | Behavioral guarantee |
 |--------|-------|--------|----------------------|
 | `validate-auth` | none | Pass/fail + fixes | STOP on failure. No silent provider fallback. |
-| `fetch-to-spec` | Tracker id / URL | `{specsDir}` spec of record, then `{us-dir}/step-00` workflow copy | Write `{specsDir}` first via `ws-spec-write`. Register with `ws-spec-provider-local`. Never write `step-00` from the converter. |
+| `fetch-to-spec` | Tracker id / URL | `{specsDir}` spec of record (optional `{specStem}.assets/` sidecar + `## Visual References`), then `{us-dir}/step-00` workflow copy | Write `{specsDir}` first via `ws-spec-write`. When tracker content includes allowlisted images or attachments, download into `{specsDir}/{specStem}.assets/` via the shared ingest helper, patch `## Visual References`, and copy the sidecar to `{us-dir}/attachments/` at register. Register with `ws-spec-provider-local`. Never write `step-00` from the converter. |
 | `create-pr` | head, base, title/body | PR URL + id | Reuse an existing open PR for the same head→base when present. |
 | `list-threads` | PR id | Structured threads | Include thread id, path, line, comments, and an active count for `ws-fix-pr` / `ws-goal-fix-pr`. |
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | Prior PR hits + recent commits JSON | Run before plan/code; stdout uses repo-relative paths only; `validate-auth` first; advisory `dry-run` when auth missing (GitHub). |
@@ -40,7 +40,7 @@ Every implementer `SKILL.md` intent table and `INTENTS.md` `## \`intent\`` headi
 ## Shared rules
 
 1. **Entry check:** Follow [`config-resolution.md`](config-resolution.md) § Entry check.
-2. **Spec path order:** `fetch-to-spec` always writes `{specsDir}/{slug}.spec.md` first, then `{us-dir}/step-00-{slug}.spec.md`.
+2. **Spec path order:** `fetch-to-spec` always writes `{specsDir}/{slug}.spec.md` first (or `{specsDir}/NNNN-{slug}.spec.md` when prefix ordering applies), optionally `{specStem}.assets/` beside that spec, then `{us-dir}/step-00-{slug}.spec.md` with `{us-dir}/attachments/` when the sidecar exists.
 3. **No silent fallback:** auth or SCM resolution failure → STOP. Do not switch GitHub ↔ Azure without the user.
 4. **Working branch:** never delete `project.workingBranch` (default `develop`) after merge.
 5. **Dry-run:** `resolve-thread` (and any other mutating intent) must skip remote writes when the parent is `dry-run`.

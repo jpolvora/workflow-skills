@@ -73,6 +73,7 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Done when: lookup notes exist (hits or none) for code, MEMORY, and stack.
 
 2. **Parse & Ingest** — Infer or parse title, url-safe `slug`, and origin (`source`). For tracker issues, extract metadata (`id`, `url`, `labels`, `workItemType`).
+   - **Visual References (when present):** If `## Visual References` exists on the fetched spec, **Read** each `ok` image path listed there (skip PDF and non-image entries). Fold observed UI, layout, or template constraints into `## Description`, `## Acceptance Criteria`, or `## Notes`. Do not vision-analyze PDFs.
    - **Prior-work sweep (before plan/code):** When `source` is `github` or `azure-devops`, dispatch provider `sweep-prior-work` (`--issue {id}`, keywords from title/body). When `source: local` / `id: null`: keyword + `git log` on inferred paths; if `providers.scm` is github or azure-devops, also search PRs by title keywords via that provider (not via `ws-spec-provider-local`). Record findings under `## Original Issue Context` → `### Prior Work Sweep`. Exact open PR for the **same tracker id** → `user-gate` (Recommended: stop/reuse). Related hits: record and continue; `autoMode`: continue unless exact same-issue open PR (then Pause).
    - Done when: title, `slug`, `source`, metadata, and prior-work sweep (when required) are identified.
 
