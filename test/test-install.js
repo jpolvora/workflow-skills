@@ -1469,9 +1469,13 @@ child.on('close', async (code) => {
     fs.writeFileSync(path.join(shared, 'frontend.md.template'), '{}\n');
     fs.mkdirSync(path.join(skills, 'ws-patterns'), { recursive: true });
     fs.writeFileSync(path.join(skills, 'ws-patterns', 'SKILL.md'), '# retired\n');
+    for (const retired of ['ws-write-spec', 'ws-sync-spec', 'ws-interview', 'ws-github-provider']) {
+      fs.mkdirSync(path.join(skills, retired), { recursive: true });
+      fs.writeFileSync(path.join(skills, retired, 'SKILL.md'), '# retired 0.3.56\n');
+    }
     const manifestPath = path.join(shared, 'installed-skills.json');
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    manifest.skills = [...new Set([...(manifest.skills || []), 'ws-patterns'])];
+    manifest.skills = [...new Set([...(manifest.skills || []), 'ws-patterns', 'ws-write-spec', 'ws-interview'])];
     fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
     const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
@@ -1496,6 +1500,11 @@ child.on('close', async (code) => {
     if (fs.existsSync(path.join(skills, 'ws-patterns'))) {
       fail('update must remove retired ws-patterns folder');
     }
+    for (const retired of ['ws-write-spec', 'ws-sync-spec', 'ws-interview', 'ws-github-provider']) {
+      if (fs.existsSync(path.join(skills, retired))) {
+        fail(`update must remove retired ${retired} folder`);
+      }
+    }
     const afterCfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     if (afterCfg.defaults?.sessionLeases !== undefined) {
       fail('update must strip defaults.sessionLeases');
@@ -1510,8 +1519,13 @@ child.on('close', async (code) => {
     if (afterManifest.skills.includes('ws-patterns')) {
       fail('update must drop ws-patterns from installed-skills.json');
     }
+    for (const retired of ['ws-write-spec', 'ws-interview']) {
+      if (afterManifest.skills.includes(retired)) {
+        fail(`update must drop ${retired} from installed-skills.json`);
+      }
+    }
     fs.rmSync(pruneDir, { recursive: true, force: true });
-    ok('update prunes retired session-lease schema, config key, pattern templates, and ws-patterns');
+    ok('update prunes retired session-lease schema, config key, pattern templates, ws-patterns, and 0.3.56 family renames');
   }
 
   // --- Phase 10: installed-skills.json + uninstall cascade ---

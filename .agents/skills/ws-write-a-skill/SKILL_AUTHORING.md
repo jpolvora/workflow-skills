@@ -196,7 +196,7 @@ Every packaged `ws-*` skill folder and live reference follows the canonical patt
 | check / harness | `ws-check-harness`, `ws-check-workflows`, `ws-show-harness`, `ws-doctor` | `ws-harness-show`, `ws-harness-doctor` | `ws-check-*` already groups the auditors; doctor/show are distinct products |
 | pr | `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr` | `ws-pr-ship`, `ws-pr-fix` | Slash commands `/ship-pr` `/fix-pr` are established |
 | fable | `ws-fable-method`, `ws-fable-judge`, `ws-fable-domain` | (none) | Already grouped |
-| patterns | `ws-patterns-backend`, `ws-patterns-frontend` | (none here) | Separate catalog-cleanup spec owns a possible `ws-patterns` merge; do not collide |
+| patterns | `ws-patterns`, `ws-patterns-backend`, `ws-patterns-frontend` (all retired 0.3.38 — listed for context; do not reintroduce) | (none here) | Separate catalog-cleanup spec owns a possible `ws-patterns` merge; do not collide |
 | goal | `ws-goal-loop`, `ws-goal-fix-pr` | (none) | Already grouped |
 | other | `ws-write-a-skill`, `ws-classify-complexity`, `ws-implement-tasks`, `ws-code-review`, `ws-testing` | not required | No `spec` token; not a confused family |
 

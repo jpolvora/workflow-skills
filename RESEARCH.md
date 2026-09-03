@@ -157,7 +157,7 @@ Emerging patterns from multi-agent paper lists and systems research (e.g. [aweso
 | **Test-time compute scaling** | Parallel candidates, iterative self-correction | Accuracy without larger models |
 | **Deliberative evaluation** (ChatEval, Agent-as-a-Judge) | Multi-judge / debate panels | Reduces review bias on multi-file PRs |
 
-**Research takeaway for `ws-*`:** Standard orch already separates roles by step skill (`ws-write-plan`, `ws-implement-tasks`, `ws-code-review`, …). Opportunities: stronger subagent isolation for verbose steps, parallel verify paths, jury-style review where configured.
+**Research takeaway for `ws-*`:** Standard orch already separates roles by step skill (`ws-plan-write`, `ws-implement-tasks`, `ws-code-review`, …). Opportunities: stronger subagent isolation for verbose steps, parallel verify paths, jury-style review where configured.
 
 ---
 

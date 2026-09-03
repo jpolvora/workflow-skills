@@ -6,6 +6,13 @@
  *
  * Removed in 0.3.37: ws-audit, defaults.enableAuditing
  * Removed in 0.3.38: ws-patterns*, session leases / git.lock, defaults.sessionLeases
+ * Renamed in 0.3.56 (skill family naming, no compat dirs): ws-write-spec -> ws-spec-write,
+ *   ws-sync-spec -> ws-spec-update, ws-multi-spec -> ws-spec-multi,
+ *   ws-github-provider -> ws-spec-provider-github,
+ *   ws-azure-devops-provider -> ws-spec-provider-azure-devops,
+ *   ws-local-spec-provider -> ws-spec-provider-local, ws-write-plan -> ws-plan-write,
+ *   ws-verify-plan -> ws-plan-verify, ws-update-plan-implementation -> ws-plan-update,
+ *   ws-interview -> ws-plan-interview
  */
 
 const RETIRED_HUB_FILES = [
@@ -19,6 +26,16 @@ const RETIRED_SKILL_DIRS = [
   'ws-patterns-backend',
   'ws-patterns-frontend',
   'ws-audit',
+  'ws-write-spec',
+  'ws-sync-spec',
+  'ws-multi-spec',
+  'ws-github-provider',
+  'ws-azure-devops-provider',
+  'ws-local-spec-provider',
+  'ws-write-plan',
+  'ws-verify-plan',
+  'ws-update-plan-implementation',
+  'ws-interview',
 ];
 
 const RETIRED_DEFAULTS_KEYS = [
@@ -52,6 +69,17 @@ const STALE_LIVE_REFERENCE_PATTERNS = [
   { id: '_comment_patterns', re: /_comment_patterns(?:Backend|Frontend)?\b/, removedIn: '0.3.38' },
   { id: 'backend.md.template', re: /backend\.md\.template/i, removedIn: '0.3.38' },
   { id: 'frontend.md.template', re: /frontend\.md\.template/i, removedIn: '0.3.38' },
+  { id: 'ws-write-spec', re: /\bws-write-spec\b/, removedIn: '0.3.56' },
+  { id: 'ws-sync-spec', re: /\bws-sync-spec\b/, removedIn: '0.3.56' },
+  { id: 'ws-multi-spec', re: /\bws-multi-spec\b/, removedIn: '0.3.56' },
+  { id: 'ws-github-provider', re: /\bws-github-provider\b/, removedIn: '0.3.56' },
+  { id: 'ws-azure-devops-provider', re: /\bws-azure-devops-provider\b/, removedIn: '0.3.56' },
+  { id: 'ws-local-spec-provider', re: /\bws-local-spec-provider\b/, removedIn: '0.3.56' },
+  { id: 'ws-write-plan', re: /\bws-write-plan\b/, removedIn: '0.3.56' },
+  { id: 'ws-verify-plan', re: /\bws-verify-plan\b/, removedIn: '0.3.56' },
+  { id: 'ws-update-plan-implementation', re: /\bws-update-plan-implementation\b/, removedIn: '0.3.56' },
+  { id: 'ws-interview (retired folder)', re: /(?<!plan-)ws-interview\b/, removedIn: '0.3.56' },
+  { id: 'ws-*-spec family violation', re: /\bws-(?!spec-)[a-z0-9-]*spec[a-z0-9-]*/, removedIn: '0.3.56' },
 ];
 
 function stripRetiredConfigKeys(cfg) {

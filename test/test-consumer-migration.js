@@ -70,13 +70,17 @@ function tempDir() {
     fs.writeFileSync(
       path.join(sharedDir, 'installed-skills.json'),
       `${JSON.stringify(
-        { version: 1, skills: ['ws-spec-to-pr', 'ws-patterns', 'ws-audit'], selected: ['ws-spec-to-pr', 'ws-patterns'] },
+        { version: 1, skills: ['ws-spec-to-pr', 'ws-patterns', 'ws-audit', 'ws-write-spec', 'ws-interview'], selected: ['ws-spec-to-pr', 'ws-patterns', 'ws-write-spec'] },
         null,
         2,
       )}\n`,
     );
     fs.mkdirSync(path.join(skillsDir, 'ws-patterns'), { recursive: true });
     fs.writeFileSync(path.join(skillsDir, 'ws-patterns', 'SKILL.md'), '# retired');
+    fs.mkdirSync(path.join(skillsDir, 'ws-write-spec'), { recursive: true });
+    fs.writeFileSync(path.join(skillsDir, 'ws-write-spec', 'SKILL.md'), '# retired 0.3.56');
+    fs.mkdirSync(path.join(skillsDir, 'ws-interview'), { recursive: true });
+    fs.writeFileSync(path.join(skillsDir, 'ws-interview', 'SKILL.md'), '# retired 0.3.56');
 
     const logs = [];
     const result = pruneRetiredConsumerArtifacts(fs, path, {
@@ -88,7 +92,9 @@ function tempDir() {
     assert.ok(result.configKeys.some((k) => k.includes('sessionLeases')));
     assert.ok(result.configKeys.some((k) => k.includes('_comment_patterns')));
     assert.ok(result.configKeys.some((k) => k.includes('patterns')));
-    assert.deepStrictEqual(result.skillDirs, ['ws-patterns']);
+    assert.deepStrictEqual(result.skillDirs.sort(), ['ws-interview', 'ws-patterns', 'ws-write-spec'].sort());
+    assert.ok(!fs.existsSync(path.join(skillsDir, 'ws-write-spec')));
+    assert.ok(!fs.existsSync(path.join(skillsDir, 'ws-interview')));
     assert.ok(!fs.existsSync(path.join(sharedDir, 'session-lease.schema.json')));
     assert.ok(!fs.existsSync(path.join(sharedDir, 'backend.md.template')));
     assert.ok(!fs.existsSync(path.join(sharedDir, 'frontend.md.template')));
@@ -145,6 +151,17 @@ function tempDir() {
     '_comment_patterns',
     'backend.md.template',
     'frontend.md.template',
+    'ws-write-spec',
+    'ws-sync-spec',
+    'ws-multi-spec',
+    'ws-github-provider',
+    'ws-azure-devops-provider',
+    'ws-local-spec-provider',
+    'ws-write-plan',
+    'ws-verify-plan',
+    'ws-update-plan-implementation',
+    'ws-interview (retired folder)',
+    'ws-*-spec family violation',
   ];
   const staleIds = new Set(STALE_LIVE_REFERENCE_PATTERNS.map((pattern) => pattern.id));
   for (const id of requiredStaleIds) {

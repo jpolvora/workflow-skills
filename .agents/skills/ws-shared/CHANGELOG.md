@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-03 04:36] Agent: Muse Spark
+- **Prompt**: Senior review of 0037 skill-family-naming spec vs develop...main + fix stale skill references (report approved before execute)
+- **Done**: Extended `retired_artifacts.cjs` with 10 renamed 0.3.56 dirs + stale patterns (incl. generic `ws-*-spec` family-violation gate); hardened `ws-check-harness` PHASES fail-closed wording; covered installer `update` prune in `test-install.js` Phase 9b and `test-consumer-migration.js`; annotated FEATURES history, RESEARCH, SKILL_AUTHORING deferred row, AGENTS snapshot 0.3.56, banner-spect examples; regenerated integrity; consumer-migration/provider-parity/doc-sync/frontmatter/doctor/quality-gates/check_workflows/test-install green.
+- **Result**: AC13 prune + AC10 generic gate now enforced and tested; tree has 10 intended modified files, 0 live stale refs outside exempt history/test fixtures.
+
 ### [2026-09-03 04:18] Agent: Antigravity
 - **Prompt**: bump version and commit work
 - **Done**: Bumped 0.3.55→0.3.56; migrated skill family naming to `ws-{family}-{verb}` across 10 skills (spec, spec-provider, plan); updated dependency manifests, router/harness docs, fail-closed gates, test fixtures, integrity manifest, and website catalog; all 40+ test suites green.

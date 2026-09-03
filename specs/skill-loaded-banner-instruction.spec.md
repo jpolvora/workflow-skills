@@ -23,6 +23,6 @@ This directive is restricted strictly to the primary entry-point `SKILL.md` of e
 
 ## Notes
 
-- Banner format: The banner output string must follow the exact syntax `"{ws-skillName} loaded."` (e.g., `ws-write-spec loaded.`, `ws-write-plan loaded.`, `ws-implement-tasks loaded.`).
+- Banner format: The banner output string must follow the exact syntax `"{ws-skillName} loaded."` (e.g., `ws-spec-write loaded.`, `ws-plan-write loaded.`, `ws-implement-tasks loaded.`).
 - Placement: The directive should be placed near the top of each primary `SKILL.md` file (directly below the title heading or header section) to ensure early output upon skill activation.
 - Progressive disclosure: Auxiliary files loaded later by the main skill will not output banner strings, preserving clean log outputs.
