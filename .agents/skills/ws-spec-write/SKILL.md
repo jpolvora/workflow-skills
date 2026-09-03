@@ -14,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-**Write path:** resolve path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (honors `plans.enforceSpecPrefixOrdering`: `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
+**Write path:** Canonical prefix flag is `plans.enforceSpecPrefixOrdering` ([ws-spec-organizer](../ws-spec-organizer/SKILL.md)). Do **not** invent a second key name. If that key is **absent** from project `{sharedDir}/config.json`, insert it under `plans` (optional comment from `config.json.example`). Seed `true` when `{specsDir}` already has top-level `NNNN-*.spec.md`; otherwise seed `false`. Then resolve the path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (`false` → `{specsDir}/{slug}.spec.md`; `true` → `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
 
 **Do not** create `{plansDir}/{slug}/`, `step-00-*.spec.md`, state files, or any other plan/workflow artifact directly. Plan copies are owned by [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `fetch-to-spec` / `--register` when a workflow starts — never by this skill’s default write.
 
@@ -83,7 +83,7 @@ When writing a spec derived from a remote tracker issue or raw human description
    - **Gray area:** when a user-facing choice has two or more valid product options, write the companion at the path from `resolve_spec_path.cjs --slug {slug} --context` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
    - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
 
-5. **Write** — Resolve `SPEC_PATH` (and `CONTEXT_PATH` when a gray area exists):
+5. **Write** — Ensure `plans.enforceSpecPrefixOrdering` exists (see Write path), then resolve `SPEC_PATH` (and `CONTEXT_PATH` when a gray area exists):
 
    ```bash
    node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug} [--repo-root .]

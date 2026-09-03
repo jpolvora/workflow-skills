@@ -126,7 +126,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring` (fails closed). Required sections include **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios**. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-spec-write` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; persist `plans.enforceSpecPrefixOrdering` when that key is absent; authoring-validate with `validate_spec.cjs --mode=authoring` (fails closed). Required sections include **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios**. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-spec-write` |
 | Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), authoring-mode **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios** | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-spec-provider-local` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |

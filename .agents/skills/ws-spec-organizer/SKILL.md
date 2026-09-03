@@ -34,7 +34,7 @@ In `config.json`:
 - `plans.enforceSpecPrefixOrdering` (boolean, default: `false`):
   - `false`: Writers output `{specsDir}/{slug}.spec.md`.
   - `true`: Writers output `{specsDir}/NNNN-{slug}.spec.md` where `NNNN` is `max(existing 4-digit prefixes) + 1` (e.g. `0001`).
-  - Omitted, non-boolean, or missing config safely resolves to `false`.
+  - Omitted, non-boolean, or missing config: `resolve_spec_path.cjs` still treats the flag as `false` (fail-safe). Writers (`ws-spec-write`) **persist** this exact key under `plans` when it is absent so the convention is explicit. Do not invent a second key name.
 
 **Invariants:**
 - Frontmatter `slug` is always unprefixed (`slug: {slug}`).
