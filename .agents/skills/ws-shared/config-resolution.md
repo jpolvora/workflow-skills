@@ -40,6 +40,18 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 
 ---
 
+## Harness entrypoint fallback (global-hybrid)
+
+`rules.harness` defaults to the project-local `.agents/skills/ws-shared/AGENTS.md` (local-first; project config always overrides the global hub). On a global-hybrid install (skill bodies under `{globalSkillsRoot}`, project-local `ws-shared/` holding consumer data only), resolve the harness entrypoint in this order:
+
+1. Project-local `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
+2. Global `{globalSkillsRoot}/ws-shared/AGENTS.md` (`~/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`) — documented fallback when no local file exists.
+3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`ws-shared/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`.
+
+An agent reading the configured `rules.harness` path succeeds without manual fallback when either the local pointer or the global hub is present.
+
+---
+
 ## Path tokens (fixed + configurable)
 
 Load early with `toolsFile` (default `tools.md` § Path tokens).

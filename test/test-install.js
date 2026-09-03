@@ -1533,6 +1533,137 @@ child.on('close', async (code) => {
     ok('update prunes retired session-lease schema, config key, pattern templates, ws-patterns, and 0.3.56 family renames');
   }
 
+  // --- Phase 9c: pre-rename hybrid fixture migrates retired ids + seeds harness pointer (us-272 AC1-AC3/AC5-AC6) ---
+  console.log('\n[Phase 9c] update migrates pre-rename hybrid fixture...');
+  {
+    const hybridDir = path.join(__dirname, '.pkg-hybrid-rename');
+    fs.rmSync(hybridDir, { recursive: true, force: true });
+    fs.mkdirSync(hybridDir, { recursive: true });
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const inst = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--package', 'workflows', '--yes'],
+      {
+        cwd: hybridDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000,
+      },
+    );
+    if (inst.status !== 0) {
+      console.error(`${inst.stdout || ''}${inst.stderr || ''}`);
+      fail(`workflows install for hybrid fixture exited ${inst.status}`);
+    }
+    const skills = path.join(hybridDir, '.agents', 'skills');
+    const shared = path.join(skills, 'ws-shared');
+    const retiredWsIds = [
+      'ws-write-spec',
+      'ws-sync-spec',
+      'ws-multi-spec',
+      'ws-local-spec-provider',
+      'ws-verify-plan',
+      'ws-github-provider',
+      'ws-azure-devops-provider',
+      'ws-write-plan',
+      'ws-update-plan-implementation',
+      'ws-interview',
+    ];
+    const bareIds = ['azure-devops', 'caveman', 'code-review', 'fix-pr', 'plan-us', 'us-delivery-workflow'];
+    // Poison autoload.md with pre-rename ids + phantom links (AC1 pre-fix reproduction).
+    const staleAutoload = [
+      '# Autoload (stale pre-rename fixture)',
+      '',
+      '| Skill | Link |',
+      '|---|---|',
+      ...retiredWsIds.map((id) => `| \`${id}\` | [SKILL](../${id}/SKILL.md) |`),
+      '',
+    ].join('\n');
+    fs.writeFileSync(path.join(shared, 'autoload.md'), staleAutoload);
+    // Poison manifest with all 16 stale ids (AC2 pre-fix reproduction).
+    const manifestPath = path.join(shared, 'installed-skills.json');
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.skills = [...new Set([...(manifest.skills || []), ...retiredWsIds, ...bareIds])];
+    manifest.selected = [...new Set([...(manifest.selected || []), ...retiredWsIds.slice(0, 4), ...bareIds.slice(0, 2)])];
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+    for (const retired of retiredWsIds) {
+      fs.mkdirSync(path.join(skills, retired), { recursive: true });
+      fs.writeFileSync(path.join(skills, retired, 'SKILL.md'), '# retired 0.3.56\n');
+    }
+    // Hybrid edge: local hub without AGENTS.md while rules.harness points locally (AC3 pre-fix).
+    fs.rmSync(path.join(shared, 'AGENTS.md'), { force: true });
+    // Consumer-owned snapshots for preservation check (AC5).
+    const ownedFiles = ['config.json', 'STACK.md', 'MEMORY.md', 'CHANGELOG.md'];
+    const before = new Map(ownedFiles.map((f) => [f, fs.readFileSync(path.join(shared, f), 'utf8')]));
+    const runUpdate = () =>
+      cp.spawnSync(process.execPath, [cliPath, 'update'], {
+        cwd: hybridDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 120000,
+      });
+    const upd = runUpdate();
+    if (upd.status !== 0) {
+      console.error(`${upd.stdout || ''}${upd.stderr || ''}`);
+      fail(`hybrid fixture update exited ${upd.status}`);
+    }
+    // AC1: refreshed autoload has zero retired ids; links resolve under project skills root.
+    const afterAutoload = fs.readFileSync(path.join(shared, 'autoload.md'), 'utf8');
+    for (const retired of retiredWsIds) {
+      if (afterAutoload.includes(retired)) {
+        fail(`post-update autoload.md still cites retired ${retired} (AC1)`);
+      }
+    }
+    const linkTargets = [...afterAutoload.matchAll(/\.\.\/(ws-[A-Za-z0-9-]+)\/SKILL\.md/g)].map((m) => m[1]);
+    if (linkTargets.length === 0) {
+      fail('post-update autoload.md has no ../ws-*/SKILL.md links to resolve (AC1)');
+    }
+    for (const target of new Set(linkTargets)) {
+      if (!fs.existsSync(path.join(skills, target, 'SKILL.md'))) {
+        fail(`post-update autoload link target missing on disk: ${target}/SKILL.md (AC1)`);
+      }
+    }
+    // AC2: manifest has zero retired ids (ws-* + bare).
+    const afterManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    for (const stale of [...retiredWsIds, ...bareIds]) {
+      if ((afterManifest.skills || []).includes(stale) || (afterManifest.selected || []).includes(stale)) {
+        fail(`post-update installed-skills.json still lists retired ${stale} (AC2)`);
+      }
+    }
+    for (const retired of retiredWsIds) {
+      if (fs.existsSync(path.join(skills, retired))) {
+        fail(`update must remove retired ${retired} folder (AC2)`);
+      }
+    }
+    // AC3: configured rules.harness path resolves locally (full refresh or thin pointer).
+    const localAgents = path.join(shared, 'AGENTS.md');
+    if (!fs.existsSync(localAgents)) {
+      fail('post-update local ws-shared/AGENTS.md missing (AC3 harness pointer)');
+    }
+    // AC5: consumer-owned data byte-identical.
+    for (const f of ownedFiles) {
+      if (fs.readFileSync(path.join(shared, f), 'utf8') !== before.get(f)) {
+        fail(`update altered consumer-owned ws-shared/${f} (AC5)`);
+      }
+    }
+    // AC6: second update is idempotent (exit 0, no retired-id return, stable autoload).
+    const upd2 = runUpdate();
+    if (upd2.status !== 0) {
+      console.error(`${upd2.stdout || ''}${upd2.stderr || ''}`);
+      fail(`second hybrid update exited ${upd2.status} (AC6)`);
+    }
+    if (fs.readFileSync(path.join(shared, 'autoload.md'), 'utf8') !== afterAutoload) {
+      fail('second update changed autoload.md (AC6 idempotency)');
+    }
+    const afterManifest2 = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    for (const stale of [...retiredWsIds, ...bareIds]) {
+      if ((afterManifest2.skills || []).includes(stale) || (afterManifest2.selected || []).includes(stale)) {
+        fail(`second update re-introduced retired ${stale} (AC6)`);
+      }
+    }
+    fs.rmSync(hybridDir, { recursive: true, force: true });
+    ok('update migrates pre-rename hybrid fixture: canonical autoload, pruned manifest, local harness entrypoint, preserved consumer data, idempotent re-run (AC1-AC3/AC5-AC6)');
+  }
+
   // --- Phase 10: installed-skills.json + uninstall cascade ---
   console.log('\n[Phase 10] installed-skills.json + uninstall cascade...');
   {

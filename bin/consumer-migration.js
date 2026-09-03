@@ -10,6 +10,9 @@ export const {
   STALE_LIVE_REFERENCE_PATTERNS,
   RETIRED_HUB_FILES,
   RETIRED_SKILL_DIRS,
+  RETIRED_BARE_IDS,
+  RETIRED_TO_CANONICAL,
   listRetiredConfigKeys,
+  listRetiredManifestIds,
   stripRetiredConfigKeys,
 } = require(path.join(__dirname, '..', '.agents', 'skills', 'ws-shared', 'scripts', 'retired_artifacts.cjs'));

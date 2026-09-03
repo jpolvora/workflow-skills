@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "705421482281cca8364d374195ad2e98a2b79a53d15c479cb40462689df489ef",
+  "fullPackageDigest": "c721e0439343d7c99867b5693ab30e0c168231537c9b7b59d0ced08b8637e639",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
@@ -13,8 +13,8 @@
       "autoload.md": "f86d55b9e3e2c106f4641408612ad1c3a346a1d063b4a9443726b12a4ee979f3",
       "CATALOG.md": "a5c35128f7a1634d2a3bda23abd0dabbb8d6e1250ecc8bf4f8c9696c5990fe7b",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
-      "config-resolution.md": "f020460e31215f777ffbf4edc04db2c6be754adfd431c2e2025d2438211a2a35",
-      "config.json.example": "8a409759d8f3c66d1f64e9725843c856861f12a883d33ca2ac7d9cf7946b0875",
+      "config-resolution.md": "e42b15c97a86c40935936cb64a7b23f32ad0338551bc9709b68d5dc7faf815cc",
+      "config.json.example": "e07fa17116cd9c64858e1a6accaf7bd46382cfb923094cc646327e8f4ea5c27a",
       "config.schema.json": "764f5cc8b3697073b7503a15f29f439c11a826bfb853cfd30394bf1ba2de64e6",
       "CROSS-PLATFORM.md": "d70d5812d557519605ad15645e7cf1cd36c8e3f5bf68fa583237357405927d8e",
       "evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
@@ -35,7 +35,7 @@
       "scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
       "scripts/resolve_consumer_root.cjs": "0aaef641a6016097a04980b41eb58404453cd62b0d3be511b152b0e6df1c9686",
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
-      "scripts/retired_artifacts.cjs": "b44a17ef2d0f6da26aa43a2cef7c06bcc70be8d28e9ddf556b5bd3a3e16cbbe0",
+      "scripts/retired_artifacts.cjs": "512252528056874a8f9effeab5fdc09801cee0a8e8521f41e9f9be0958fd3890",
       "scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "scripts/workflow_state.cjs": "b59c21f31f3cb5d80fce9a45017b9bfda32f7f0a8038c1feb495e15f43a55374",
@@ -47,7 +47,7 @@
       "tools.md": "5ae38616d561f8a432f8c70a25437903bea56caa44c0f12ce472e85b17506baf",
       "workflow-state.schema.json": "86b41712a4a88dda1ac89b6937b19a73eea866350c27c94240c4c19115f8685b"
     },
-    "skillDigest": "bd105dff83b9cc41e9d940d608f89f8f213cc7411d6c3a0de324208580d772f0"
+    "skillDigest": "48ea71c666cf59fc4468c63ed9a2e4cf21d5eb5e213166cacbe0764c221fe1d7"
   },
   "packageVersion": "0.3.58",
   "skills": {
@@ -72,7 +72,7 @@
     "ws-check-harness": {
       "files": {
         "evals/evals.json": "8b5e01d5b9d12b5b6fdd94e8d1958fd1e53cd6aad1ab77675637ab83fe431f8e",
-        "PHASES.md": "67db73b859d3c31a6cf1a67621f4c6ae6baf7bebcda76753557a4f2e0421c3bd",
+        "PHASES.md": "c5518bed628268ab29cb38cf8dd5783436cc19a67d2487d7bb199ffeebc94fe1",
         "REPORT-FORMAT.md": "5fcefff1680ad2c2d286c9c0302c0c3c7006ff1cd682c92c5f68b801931b5aa7",
         "scripts/check_duplicates.cjs": "ff3737715f778a68a01a722668937cc9561b03b0337b3039979b22db758945dc",
         "scripts/check_pipeline_handoff.cjs": "e7448d3a0428e23b5ad4146c37b1b132a23c5e9eb775af0e313efa4b8981f21e",
@@ -80,7 +80,7 @@
         "scripts/measure_harness.cjs": "d664033129bbb109b8f9a87c6bae5973ffe415efca17d140c19e3bff29510125",
         "SKILL.md": "9904409dfe98d3a4751ef6347f95925b4f0ac6112306427ad1b96b9d72080592"
       },
-      "skillDigest": "244b1608abe755c23b5b377e83452622280d7a8aea6277602940797eba65a7f4"
+      "skillDigest": "5db779bac2df4c2f95aa85ac133f25a4e9a574cfbcce62388fec27a7b7930809"
     },
     "ws-check-workflows": {
       "files": {
