@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/installer-multi-host-global-targets/step-01-installer-multi-host-global-targets.plan.md",
+    "sha256": "6f598ac7bff5fcb1c605ec2138bd9969f3fc5358e983cc09f98ac7874207388c",
+    "bytes": 4251,
+    "lines": 54
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "Executive Summary",
+      "level": 2,
+      "byteStart": 84,
+      "byteEnd": 731,
+      "lineStart": 3,
+      "lineEnd": 5,
+      "sha256": "29d9c94e6239c7f0df8ae3e25ba2e2349f8a6c1ff3913e645738750610feeb4a",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-002",
+      "title": "Acceptance Criteria Mapping",
+      "level": 2,
+      "byteStart": 731,
+      "byteEnd": 1707,
+      "lineStart": 6,
+      "lineEnd": 15,
+      "sha256": "55de07f2dec87d755d908486434e10bb0cc61b4f5a3c414d4c09889134b76eeb",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "Proposed Code Changes",
+      "level": 2,
+      "byteStart": 1707,
+      "byteEnd": 3340,
+      "lineStart": 16,
+      "lineEnd": 42,
+      "sha256": "b85780abf5336e041c4238f6a8a02dc9972efff279b0ab6a2f571f1ca16ae977",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-004",
+      "title": "1. `bin/install-rules.js`",
+      "level": 3,
+      "byteStart": 1733,
+      "byteEnd": 2267,
+      "lineStart": 18,
+      "lineEnd": 27,
+      "sha256": "aee901023f07c9dfa6fcdb6b8eb5c8f361fc0ac6f5e87e46cf15834e4ae77b53",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/install-rules.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-005",
+      "title": "2. `bin/cli.js`",
+      "level": 3,
+      "byteStart": 2267,
+      "byteEnd": 2878,
+      "lineStart": 28,
+      "lineEnd": 34,
+      "sha256": "b18cc19c68a8d481a9165de6079a2762300c15ac921889315171cf28ebd14e9a",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-006",
+      "title": "3. `test/test-install.js`",
+      "level": 3,
+      "byteStart": 2878,
+      "byteEnd": 3340,
+      "lineStart": 35,
+      "lineEnd": 42,
+      "sha256": "c1b51e2089838f66adf2a6c95a158e4ad67f6b2d3b07ac7f7e2779924d74fd7c",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-007",
+      "title": "Negative & Edge Case Scenarios",
+      "level": 2,
+      "byteStart": 3340,
+      "byteEnd": 3730,
+      "lineStart": 43,
+      "lineEnd": 47,
+      "sha256": "6842e19ae44e73aca50f369df1fee46878ac0fa266fe17880be6fd3a1fbc5600",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-008",
+      "title": "Verification Tasks",
+      "level": 2,
+      "byteStart": 3730,
+      "byteEnd": 4251,
+      "lineStart": 48,
+      "lineEnd": 54,
+      "sha256": "fbbf9e1e7559b85ddb7a74e50be9750bc40132999fad1275f5d69f4570b0c0eb",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Define a registry of standard global host skill targets in bin/install-rules.js including canonical .agents, Claude Code, OpenAI Codex, and Gemini Antigravity paths.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC2",
+      "text": "Present a multi-target selection prompt during interactive global installation before the package selection screen with canonical .agents checked by default.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC3",
+      "text": "Provide an interactive choice for linking secondary targets to the canonical global skills root via directory symlinks or junctions with fallback to direct copy.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC4",
+      "text": "Implement individual per-skill directory symlinks for secondary targets to prevent overwriting pre-existing third-party skills in those directories.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC5",
+      "text": "Ensure assertNotSelfOverwrite evaluates the resolved installation target path rather than working directory when global scope is active.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC6",
+      "text": "Add non-interactive CLI flags --targets and --symlink allowing scriptable specification of secondary global host destinations.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC7",
+      "text": "Update the update command to synchronize both canonical skills and all linked or copied secondary host targets recorded in the global manifest.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC8",
+      "text": "Provide automated tests in test/test-install.js verifying multi-target global installation, symlink creation, copy fallback, and non-interactive target flags.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "bin/cli.js",
+        "bin/install-rules.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    }
+  ]
+}
