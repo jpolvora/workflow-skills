@@ -2534,6 +2534,56 @@ child.on('close', async (code) => {
     }
     ok('--targets without --global fails closed with a scope error');
 
+    // 10. Update with explicit --targets persists them to the manifest (round 2)
+    const reinstallChangelog = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-changelog', '--global', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, HOME: mockHome, USERPROFILE: mockHome, FORCE_COLOR: '0' },
+      }
+    );
+    if (reinstallChangelog.status !== 0) fail('Reinstall of ws-changelog failed');
+    const updateCodex = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'update', '--global', '--targets', 'codex', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, HOME: mockHome, USERPROFILE: mockHome, FORCE_COLOR: '0' },
+      }
+    );
+    if (updateCodex.status !== 0) {
+      console.error(updateCodex.stdout, updateCodex.stderr);
+      fail('Update --global --targets codex failed');
+    }
+    const manifestAfterUpdate = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (!Array.isArray(manifestAfterUpdate.globalTargets) || !manifestAfterUpdate.globalTargets.some((t) => t.id === 'codex')) {
+      fail('update --global --targets did not persist codex to installed-skills.json');
+    }
+    if (!fs.existsSync(path.join(mockHome, '.codex', 'skills', 'ws-changelog', 'SKILL.md'))) {
+      fail('update --global --targets did not project skills to codex');
+    }
+    ok('update --global --targets persists new targets to the manifest and projects skills');
+    const uninstallChangelog2 = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'uninstall', '--skills', 'ws-changelog', '--global', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, HOME: mockHome, USERPROFILE: mockHome, FORCE_COLOR: '0' },
+      }
+    );
+    if (uninstallChangelog2.status !== 0) fail('Uninstall of ws-changelog failed');
+    if (fs.existsSync(path.join(mockHome, '.codex', 'skills', 'ws-changelog'))) {
+      fail('Uninstall left stale codex projection behind');
+    }
+    if (!fs.existsSync(path.join(mockHome, '.codex', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('Uninstall removed codex projections of kept skills');
+    }
+    ok('uninstall cleans recorded codex projections of removed skills only');
+
     // Cleanup
     fs.rmSync(mockHome, { recursive: true, force: true });
     fs.rmSync(copyHome, { recursive: true, force: true });

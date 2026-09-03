@@ -1776,7 +1776,8 @@ function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts = {}) 
 
   // AC7: Synchronize secondary global targets recorded in manifest or specified via --targets
   if (isGlobalScope) {
-    const targetsToSync = (updateOpts.targets && updateOpts.targets.length > 0)
+    const explicitTargets = updateOpts.targets && updateOpts.targets.length > 0;
+    const targetsToSync = explicitTargets
       ? resolveSecondaryTargets(updateOpts.targets, updateOpts.symlink !== false)
       : (afterManifest?.globalTargets || []);
 
@@ -1786,6 +1787,9 @@ function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts = {}) 
         ...(fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? [HUB_DIR] : []),
       ];
       projectSkillsToSecondaryTargets(skillsToProject, targetsToSync);
+      if (explicitTargets) {
+        syncInstalledSkillsManifest({ globalTargets: targetsToSync });
+      }
     }
   }
 
