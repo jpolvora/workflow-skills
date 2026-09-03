@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-03 06:20] Agent: Antigravity
+- **Prompt**: bump version and prepare to ws-ship-pr
+- **Done**: Bumped package to `0.3.57`; synchronized version across all 50 SKILL.md frontmatters, test/package.json, AGENTS.md, docs/index.html, and dependency manifests; clarified normal mode vs autoMode for modal choice tool and single-turn interactive cadence; regenerated integrity manifest (v0.3.57).
+- **Result**: Release `0.3.57` prepared and verified with 100% test integrity.
+
 ### [2026-09-03 04:18] Agent: Antigravity
 - **Prompt**: bump version and commit work
 - **Done**: Bumped package to `0.3.56`; migrated skill family naming to `ws-{family}-{verb}` across 10 skills (spec, spec-provider, plan); synchronized version across all 50 SKILL.md frontmatters, test/package.json, AGENTS.md, FEATURES.md, and docs/index.html; updated dependency manifests, router/harness docs, fail-closed gates, test fixtures, and regenerated skill integrity checksums.

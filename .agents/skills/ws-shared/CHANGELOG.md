@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-03 06:20] Agent: Antigravity
+- **Prompt**: bump version and prepare to ws-ship-pr
+- **Done**: Bumped package to `0.3.57`; synchronized version across all 50 SKILL.md frontmatters, test/package.json, AGENTS.md, docs/index.html, and dependency manifests; clarified normal mode vs autoMode for modal choice tool and single-turn interactive cadence; regenerated integrity manifest (v0.3.57).
+- **Result**: Release `0.3.57` prepared and verified with 100% test integrity.
+
 ### [2026-09-03 06:05] Agent: Antigravity
 - **Prompt**: mark as completed (sync index.PRD for 0056-host-agent-environment-adapter)
 - **Done**: Marked 0056 `host-agent-environment-adapter` as completed in `index.PRD` Feature map and Next-specs table; appended entry to Done log referencing PR #266.
