@@ -1,9 +1,10 @@
 # Changelog
 
-### [2026-09-03 05:16] Agent: Composer
-- **Prompt**: Update config.json.example and docs/website for preview.dryRunCommand
-- **Done**: Enriched `preview` example comments; FEATURES/README; site FAQ + feature card for `/ws-preview` / `--section preview`; rebuilt catalog cards
-- **Result**: Human docs and website match tool-agnostic preview config
+### [2026-09-03 05:25] Agent: Composer
+- **Prompt**: Fix opencode-code-review.yml as the active GH Action in the pipeline
+- **Done**: Hardened OpenCode workflow — `--pr-id`, GraphQL unresolved-thread gate, fail on missing `OPENCODE_API_KEY`, concurrency, `workflow_dispatch` + PR types; Node 22.13
+- **Result**: Active reviewer recipe is correct once the trigger is on `main` (base still had `workflow_dispatch` only)
+
 
 
 
