@@ -1949,6 +1949,59 @@ child.on('close', async (code) => {
     }
     ok('update prunes retired ws-preview run_dry_run.sh leftover');
 
+    // Consumer-owned skill-local files must survive prune
+    {
+      const skillCfg = path.join(iDir, '.agents', 'skills', 'ws-tdah', 'config.json');
+      fs.writeFileSync(skillCfg, JSON.stringify({ _consumerLocal: true }), 'utf8');
+      const extraAgain = path.join(iDir, '.agents', 'skills', 'ws-tdah', 'integrity-extra.txt');
+      fs.writeFileSync(extraAgain, 'stale\n', 'utf8');
+      const upd2 = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 180000,
+      });
+      if (upd2.status !== 0) {
+        console.error(`${upd2.stdout || ''}${upd2.stderr || ''}`);
+        fail('update should succeed while preserving skill-local config.json');
+      }
+      if (!fs.existsSync(skillCfg)) fail('prune must not delete skill-local config.json');
+      if (JSON.parse(fs.readFileSync(skillCfg, 'utf8'))._consumerLocal !== true) {
+        fail('skill-local config.json content must be preserved');
+      }
+      if (fs.existsSync(extraAgain)) fail('managed extra must still be pruned');
+      fs.rmSync(skillCfg, { force: true });
+    }
+    ok('update prune preserves skill-local consumer-owned config.json');
+
+    // update --include-new prunes dest-only extras when target folder already exists
+    {
+      const customNewSkillDir = path.join(iDir, '.agents', 'skills', 'ws-preview');
+      fs.mkdirSync(customNewSkillDir, { recursive: true });
+      const staleInNew = path.join(customNewSkillDir, 'stale-leftover.txt');
+      fs.writeFileSync(staleInNew, 'stale\n', 'utf8');
+      const manifestPath = path.join(iDir, '.agents', 'skills', 'ws-shared', 'installed-skills.json');
+      if (fs.existsSync(manifestPath)) {
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        manifest.skills = (manifest.skills || []).filter((s) => s !== 'ws-preview');
+        fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+      }
+      const updInc = cp.spawnSync(process.execPath, [cliPath, 'update', '--include-new'], {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 180000,
+      });
+      if (updInc.status !== 0) {
+        console.error(`${updInc.stdout || ''}${updInc.stderr || ''}`);
+        fail('update --include-new should succeed');
+      }
+      if (fs.existsSync(staleInNew)) {
+        fail('update --include-new must prune dest-only managed extras in existing directory');
+      }
+    }
+    ok('update --include-new prunes dest-only extras in existing directory');
+
     // AC6: mutate managed skill → integrity fails
     const managedSkill = path.join(iDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md');
     fs.appendFileSync(managedSkill, '\n# mutated-after-install\n');

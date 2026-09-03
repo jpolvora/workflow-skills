@@ -1551,7 +1551,7 @@ function runUpdate(skills, includeNew, forceIntegrity = false) {
       const srcPath = path.join(packageSkillsDir, skillName);
       const destPath = path.join(targetSkillsDir, skillName);
       console.log(`  Installing new '${skillName}'...`);
-      copyDirSync(srcPath, destPath);
+      syncManagedSkillDir(srcPath, destPath);
       afterSkillCopy(skillName, destPath);
     }
     newlyInstalled = missingNew;
