@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-code-review loaded."
 
-Review modified files vs the base branch for correctness, security, policy, and diff quality. Clear Critical/Warning via fix → re-review before Advance. For external CI-shaped dry-run preview (no PR threads), use [`ws-preview`](../ws-preview/SKILL.md) instead.
+Review modified files vs the base branch for correctness, security, policy, and diff quality. Clear Critical/Warning via fix → re-review before Advance. For a consumer-configured local dry-run preview (no PR threads), use [`ws-preview`](../ws-preview/SKILL.md) instead.
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 

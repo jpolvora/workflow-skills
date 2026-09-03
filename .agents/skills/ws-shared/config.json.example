@@ -344,9 +344,8 @@
   },
 
   "preview": {
-    "_comment": "Optional ws-preview dry-run overrides. preview.backend is not required for v1 (defaults to cursor-reviewer).",
-    "stack": "",
-    "backend": "cursor-reviewer"
+    "_comment": "ws-preview runs this local dry-run command from the consumer repo root. Set a project-owned recipe (script, npm script, CLI). Empty → /ws-preview stops until configured.",
+    "dryRunCommand": ""
   },
 
   "rules": {

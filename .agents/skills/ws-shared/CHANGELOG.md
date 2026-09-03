@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-09-03 05:07] Agent: Composer
+- **Prompt**: Make ws-preview not tied to any specific code reviewer; use configured dry-run command locally
+- **Done**: Rewrote `ws-preview` to resolve `preview.dryRunCommand` from project config and run it in-repo; removed cursor-reviewer wrapper script; updated schema/example, catalogs, FEATURES, README, evals, integrity, site
+- **Result**: Tool-agnostic local dry-run skill; missing command fails closed
+
+
 ### [2026-09-03 04:36] Agent: Muse Spark
 - **Prompt**: Senior review of 0037 skill-family-naming spec vs develop...main + fix stale skill references (report approved before execute)
 - **Done**: Extended `retired_artifacts.cjs` with 10 renamed 0.3.56 dirs + stale patterns (incl. generic `ws-*-spec` family-violation gate); hardened `ws-check-harness` PHASES fail-closed wording; covered installer `update` prune in `test-install.js` Phase 9b and `test-consumer-migration.js`; annotated FEATURES history, RESEARCH, SKILL_AUTHORING deferred row, AGENTS snapshot 0.3.56, banner-spect examples; regenerated integrity; consumer-migration/provider-parity/doc-sync/frontmatter/doctor/quality-gates/check_workflows/test-install green.

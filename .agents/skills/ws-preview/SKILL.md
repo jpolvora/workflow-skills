@@ -1,12 +1,11 @@
 ---
 name: ws-preview
-description: External pipeline code-review dry-run on the current branch (optional uncommitted changes) without publishing PR threads.
+description: Run the consumer-configured local pipeline review dry-run command without publishing PR threads.
 version: 0.3.56
 disable-model-invocation: true
 invocation_names:
   - ws-preview
   - pipeline-review
-  - cursor-reviewer-dry-run
   - exec-code-review
 ---
 
@@ -14,51 +13,32 @@ invocation_names:
 
 > When this skill is loaded, output "ws-preview loaded."
 
-User-invoked **pipeline review dry-run** via the public cursor-reviewer `run.sh` backend. Complement to [`ws-code-review`](../ws-code-review/SKILL.md) (in-agent pre-push / orch Step 6) — this skill simulates CI-shaped external review output; it does not replace local fix → re-review.
+User-invoked **local pipeline review dry-run**. Resolve the command from the **project** `{sharedDir}/config.json` and run it in the consumer repo root. Complement to [`ws-code-review`](../ws-code-review/SKILL.md) (in-agent pre-push / orch Step 6) — this skill does **not** vendor or name a reviewer product; the consumer owns the recipe.
 
-**Always `--dry-run`.** Never publish PR threads. Default includes uncommitted changes; omit `--include-uncommitted` only when the user asks for committed-only.
+**Never publish PR threads.** Do not wrap the command through packaged `{skillsRoot}/ws-preview` scripts (none are required).
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
 ## Invocation
 
 ```
-/ws-preview [--stack <id>] [--target-branch refs/heads/<branch>] [--model <id>] [--committed-only]
+/ws-preview
 ```
 
-| Flag / config | Default | Notes |
-|---------------|---------|-------|
-| Stack | `config.json` → `preview.stack` if set, else `stack.id` | Pass `--stack` to override |
-| Target branch | `refs/heads/{project.baseBranch}` from config | Pass `--target-branch` to override |
-| Uncommitted | included | Drop only when user asks committed-only or passes `--committed-only` |
-| Backend key | `CURSOR_API_KEY` | Print `yes` / `empty` only — never echo secrets |
+| Config | Required | Notes |
+|--------|----------|-------|
+| `preview.dryRunCommand` | yes | Shell command string run from the consumer repo root (cwd = git top-level or `$PWD` when not a git tree) |
+
+Optional user wording after invoke (e.g. "committed only") is ignored unless the configured command already encodes that behavior — do not invent flags for a specific backend.
 
 ## Steps
 
-1. **Prereqs** — From repo root:
-   ```bash
-   echo "CURSOR_API_KEY set: ${CURSOR_API_KEY:+yes}"
-   node -v
-   ```
-   Resolve stack and target branch from config (table above) or flags.    Verify the target ref exists (use `project.gitRemote` from config, default `origin`):
-   ```bash
-   git rev-parse --verify {gitRemote}/<baseBranch> || git rev-parse --verify <baseBranch>
-   ```
-   - Done when: key status is known, Node is ≥ 22.13, and the target branch ref resolves.
-   - If the key is unset: stop and tell the user to export `CURSOR_API_KEY`. Print `yes`/`empty` only.
+1. **Resolve** — Read `{sharedDir}/config.json` → `preview.dryRunCommand` (trim). Expand path tokens from [`tools.md`](../ws-shared/tools.md) only if the string contains them.
+   - Done when: a non-empty command string is known.
+   - If missing/empty/whitespace-only: STOP. Tell the user to set `preview.dryRunCommand` in project `config.json` (or run `ws-configure-project`). Do not guess a default reviewer tool or download a backend.
 
-2. **Run** — From repo root, use a long-lived Shell call; set the block timeout to at least 600000 ms (10 minutes) so clone + `npm ci` + LLM is not killed. Keep `--dry-run` on every invocation.
-   ```bash
-   bash {skillsRoot}/ws-preview/scripts/run_dry_run.sh [--stack <id>] [--target-branch refs/heads/<branch>] [--model <id>] [--committed-only]
-   ```
-   Append extra flags only when the user asked for them.
-   - Done when: the process exits and stdout has the reviewer summary or a hard error. A timeout is a failed run.
+2. **Run** — From the consumer repo root, invoke the resolved command via `Shell` with an explicit launcher when the string is a script path (`bash` / `node` / `python` per [`tools.md`](../ws-shared/tools.md) § Script launchers). Use a long-lived call (block timeout ≥ 600000 ms / 10 minutes) so clone/install/LLM work inside the consumer recipe is not killed. Pass no extra skill-owned flags.
+   - Done when: the process exits (success or hard error). A timeout is a failed run.
 
-3. **Report** — Summarize finding counts and top issues in the consumer/session language (skill body en-us). `exit 0` with findings is a successful dry-run, not a clean review. Stop after the report (fixes only if the user asks).
+3. **Report** — Summarize finding counts and top issues in the consumer/session language (skill body en-us). Non-zero exit or findings are still a completed dry-run report unless the process never started. Stop after the report (fixes only if the user asks).
    - Done when: the user has the summary (or the hard-error cause) and no PR threads were published.
-
-## Runner (v1 backend)
-
-[`scripts/run_dry_run.sh`](scripts/run_dry_run.sh) downloads cursor-reviewer `release` `run.sh`, clones into `.tmp-cursor-reviewer`, runs `npm ci --omit=dev`, executes with `--dry-run --verbose`, and deletes the temp folder after. Diff scope: `{target}...HEAD` plus working tree when `--include-uncommitted` is set.
-
-Optional later: `preview.backend` in config (`cursor-reviewer` | `agentic-code-reviewers`) — not required for v1.

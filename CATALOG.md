@@ -19,7 +19,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
-| `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Pipeline review dry-run via external reviewer (Extra) |
+| `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer-configured local pipeline review dry-run (Extra) |
 | `ws-run-benchmark` | `.agents/skills/ws-run-benchmark/SKILL.md` | Upstream-only fixture compare (Extra; never spec-to-pr) |
 | `using-superpowers` | `(global)` | Skill discovery |
 
@@ -140,7 +140,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Format/review spec | `ws-spec-format` |
 | New skill / skill rewrite | `ws-write-a-skill` |
 | Show active harness | `ws-show-harness` |
-| Pipeline review / preview CI review | `ws-preview` |
+| Pipeline review / local dry-run preview | `ws-preview` |
 | Upstream package-version fixture compare (never spec-to-pr) | `ws-run-benchmark` |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |

@@ -171,7 +171,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
-| `ws-preview` | External code-review dry-run on the current branch without publishing PR threads |
+| `ws-preview` | Consumer-configured local pipeline review dry-run without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
 
 Harness dispatches use bounded `## Subagent contract` sections plus indexed plan slices. The fixed preamble is capped at 18 KB, matched MEMORY at 4 KB, and total dispatch context at `defaults.contextBudget` (32 KB by default). `measure_harness.cjs` reports the reduction against the measured baseline (each skill id is resolved locally then under `{globalSkillsRoot}` so hybrid consumers are not ENOENT), while `check_duplicates.cjs` rejects duplicated normative blocks. Phase 5a also runs `check_shell_quoting.cjs` to block nested-quote `python -c` / `node -e` one-liners.
@@ -373,7 +373,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | W | Adversarial audit of claimed work against git diffs |
 | [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | E | Domain adapters: authority, evidence sets, fraud definitions |
 | [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | W | Secrets and PII scan with optional pre-commit hook |
-| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | E | External reviewer dry-run without publishing threads |
+| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | E | Consumer-configured local dry-run without publishing threads |
 
 ### Harness and diagnostics
 

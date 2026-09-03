@@ -100,7 +100,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Record ws-changelog | `ws-changelog` |
 | Create / rewrite a skill | `ws-write-a-skill` (Extra) |
 | Show active harness | `ws-show-harness` (Extra) |
-| Pipeline review / preview CI review | `ws-preview` (Extra) |
+| Pipeline review / local dry-run preview | `ws-preview` (Extra) |
 | Live / static harness benchmark (upstream package root only; never spec-to-pr) | `ws-run-benchmark` (Extra) |
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
