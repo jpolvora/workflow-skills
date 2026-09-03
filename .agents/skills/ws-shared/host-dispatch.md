@@ -22,7 +22,7 @@ Shipped skills in this harness are **agent- and IDE-neutral**. Core workflows de
 
 ## 2. Host Capability Discovery (neutral matrix)
 
-Orchestrators inspect the active session tool palette and environment signals at bootstrap (and before first dispatch) to resolve three neutral flags. Config override `defaults.hostAdapter.mode` wins over auto-discovery when set to `native-tool` | `cli-command` | `inline-isolated`.
+Orchestrators resolve the binding at bootstrap (before the first `user-gate` or `dispatch-agent`) in this order: config override `defaults.hostAdapter.mode` when non-`auto` → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key → one active probe. Cache misses upsert only the current key (preserving others); missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0. Alias table and full protocol: [`tools.md`](tools.md) § Abstract host-tool aliases & binding cache.
 
 | Capability flag | Discovery signal | Meaning |
 |---|---|---|
@@ -100,6 +100,10 @@ Projects can configure and customize subagent dispatch behavior in `.agents/skil
 ```
 
 Legacy named host values (if present in older configs) resolve to neutral tiers: native-capable hosts → `native-tool`, runner-capable hosts → `cli-command`, otherwise → `inline-isolated`. New configs MUST use only the four neutral modes.
+
+### Probe cache file (`{sharedDir}/host-capabilities.json`)
+
+Consumer-local, gitignored (see `hub.gitignore`), never shipped upstream. JSON object mapping each `hostId::orchestratorModel` key to `{ binding: { askQuestionTool, subagentTool, backgroundTaskTool, browserTool }, probedAt: ISO, hostAdapterMode: string }`. Key segments are runtime data values; skill contract tables keep neutral alias names only.
 
 ---
 

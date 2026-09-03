@@ -12,6 +12,7 @@ backend.md
 frontend.md
 installed-skills.json
 skill-integrity-local.json
+host-capabilities.json
 memory/**
 !MEMORY.md.template
 !CHANGELOG.md.template

@@ -110,6 +110,19 @@ Resolution order: `defaults.hostAdapter.mode` when set to `native-tool` | `cli-c
 - **Tier 2 — cli-command:** no native tool but a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH. Launch the step as a background task via `run_command` using the configured template.
 - **Tier 3 — inline-isolated:** neither tool nor runner is available. Run Inline Isolated Execution per [`host-dispatch.md`](host-dispatch.md) § Inline Isolated Execution (adopt step persona, read pointers only, edit via native file tools, emit `step-output`, log `inline-isolated-step | step {N} | ISO`).
 
+### Abstract host-tool aliases & binding cache
+
+Workflows never name concrete session tools. They bind these portable aliases once at bootstrap:
+
+| Alias | Capability |
+|-------|------------|
+| `askQuestionTool` | Structured-choice gate tool (accepts options, blocks until submission), or `none` |
+| `subagentTool` | Native subagent dispatch tool, or `none` |
+| `backgroundTaskTool` | Background CLI runner entry, or `none` |
+| `browserTool` | Browser verification tool, or `none` |
+
+**Resolution order (first match wins):** `defaults.hostAdapter.mode` non-`auto` tier force → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key (`hostId` = session-reported neutral host identifier; `orchestratorModel` = bootstrap `currentModel` id with version) → one active probe asking the session to map each alias to its concrete tool or `none`. Normalize common spelling variants to one alias; unknown tools bind `none` without failure. Reuse the binding for the whole workflow (no per-step re-probe unless toolset change, explicit rebind, or key change). Cache misses upsert only the current key (preserving others) in the consumer-local gitignored `host-capabilities.json`; missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0 and persist as `state.hostBinding`.
+
 ### Subagent model preferences
 
 The orchestrator session ALWAYS runs under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels` (numeric `"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`), and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) in **standard** `dispatch-agent` dispatches only:

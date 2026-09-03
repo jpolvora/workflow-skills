@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.3.57
+version: 0.3.58
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -17,7 +17,7 @@ invocation_names:
 
 - **Dual-mode:** Shared pipeline skills stay interchangeable with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
 
-Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap (Feature branch gate: §5b).
+Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap (Feature branch gate: §5b). Resolve the host-tool binding once at bootstrap per [`host-dispatch.md`](../ws-shared/host-dispatch.md) (config force → `{sharedDir}/host-capabilities.json` hit → one probe; log `host-capability-bind | {hit|probe}`); never re-probe mid-workflow without toolset change, explicit rebind, or key change.
 
 ## Native Tool Contract
 
@@ -26,7 +26,7 @@ Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`.
 | Intent | Alias | Rule |
 |--------|-------|------|
 | Step work | `dispatch-agent` | `generalPurpose`\|`shell`; `description: "STP step {N} — {Label}"`; readonly step 5; step 4 DAG ≤3 parallel only when `defaults.enableDag: true` |
-| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** in normal mode use `user-gate` per [`gates.md`](../ws-shared/gates.md) (modal choice tool when present — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); ≥2 options; cancel → HS-1; **`autoMode`:** no prompt, auto-select recommended option (index 0) and proceed automatically |
+| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** in normal mode use `user-gate` per [`gates.md`](../ws-shared/gates.md) (cached `askQuestionTool` when bound — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); ≥2 options; cancel → HS-1; **`autoMode`:** zero prompts of any kind at every boundary, auto-select recommended option (index 0) and proceed automatically |
 | Verification / SCM | `Shell` | `config.json.verification`; cite real `gh`/`git` output |
 | State | `read-state` / `write-state` | Hygiene before Progress Board |
 | Browser (7) | `browser-mcp` | Normal, non-dry-run, non-skip, gated |
