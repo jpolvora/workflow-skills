@@ -1867,30 +1867,11 @@ child.on('close', async (code) => {
     const cfgBefore = fs.readFileSync(cfgPath, 'utf8');
     ok('post-install writes local integrity record');
 
-    // Post-verify must not bless a failed tree: extra unmanaged file → update fails,
-    // prior skill-integrity-local.json must stay unchanged (so audit still fails).
+    // Unmanaged extra under a managed skill: integrity audit fails; update prunes
+    // dest-only managed files so post-verify passes (latest layout).
     {
-      const priorLocal = fs.readFileSync(localRecord, 'utf8');
       const extraPath = path.join(iDir, '.agents', 'skills', 'ws-tdah', 'integrity-extra.txt');
       fs.writeFileSync(extraPath, 'not-in-manifest\n');
-      const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
-        cwd: iDir,
-        encoding: 'utf8',
-        env: { ...process.env, FORCE_COLOR: '0' },
-        timeout: 180000,
-      });
-      if (upd.status === 0) {
-        fail('update should fail post-verify when unmanaged extra file remains in skill tree');
-      }
-      if (!/consumer tree mismatch/i.test(`${upd.stdout || ''}${upd.stderr || ''}`)) {
-        fail(
-          `expected consumer mismatch on extra file\n${upd.stdout || ''}${upd.stderr || ''}`
-        );
-      }
-      const afterFail = fs.readFileSync(localRecord, 'utf8');
-      if (afterFail !== priorLocal) {
-        fail('post-verify failure must not rewrite skill-integrity-local.json from actual digests');
-      }
       const auditExtra = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
         cwd: iDir,
         encoding: 'utf8',
@@ -1898,21 +1879,75 @@ child.on('close', async (code) => {
         timeout: 60000,
       });
       if (auditExtra.status === 0) {
-        fail('integrity audit must still fail while extra unmanaged file remains');
+        fail('integrity audit must fail while unmanaged extra file remains');
       }
-      fs.unlinkSync(extraPath);
-      const restore = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+      if (!/integrity-extra\.txt/i.test(`${auditExtra.stdout || ''}${auditExtra.stderr || ''}`)) {
+        fail(
+          `integrity should report extra path\n${auditExtra.stdout || ''}${auditExtra.stderr || ''}`
+        );
+      }
+      const upd = cp.spawnSync(process.execPath, [cliPath, 'update'], {
         cwd: iDir,
         encoding: 'utf8',
         env: { ...process.env, FORCE_COLOR: '0' },
         timeout: 180000,
       });
-      if (restore.status !== 0) {
-        console.error(`${restore.stdout || ''}${restore.stderr || ''}`);
-        fail('failed to restore clean tree after extra-file post-verify test');
+      if (upd.status !== 0) {
+        console.error(`${upd.stdout || ''}${upd.stderr || ''}`);
+        fail('update should prune unmanaged extras from managed skill trees');
+      }
+      if (fs.existsSync(extraPath)) {
+        fail('update must remove files no longer present in the upstream skill package');
       }
     }
-    ok('post-verify failure does not bless bad local integrity record');
+    ok('update prunes managed skill extras (clears retired/extra files)');
+
+    // Retired packaged file (ws-preview dropped run_dry_run.sh): leftover must not
+    // survive update as integrity "extra".
+    {
+      const previewInstall = cp.spawnSync(
+        process.execPath,
+        [cliPath, 'install', '--skills', 'ws-preview', '--yes'],
+        {
+          cwd: iDir,
+          encoding: 'utf8',
+          env: { ...process.env, FORCE_COLOR: '0' },
+          timeout: 120000,
+        }
+      );
+      if (previewInstall.status !== 0) {
+        console.error(`${previewInstall.stdout || ''}${previewInstall.stderr || ''}`);
+        fail('failed to install ws-preview for retired-script prune test');
+      }
+      const previewScripts = path.join(iDir, '.agents', 'skills', 'ws-preview', 'scripts');
+      fs.mkdirSync(previewScripts, { recursive: true });
+      const staleSh = path.join(previewScripts, 'run_dry_run.sh');
+      fs.writeFileSync(staleSh, '#!/bin/sh\necho stale\n', 'utf8');
+      const updPreview = cp.spawnSync(process.execPath, [cliPath, 'update'], {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 180000,
+      });
+      if (updPreview.status !== 0) {
+        console.error(`${updPreview.stdout || ''}${updPreview.stderr || ''}`);
+        fail('update must prune retired ws-preview/scripts/run_dry_run.sh');
+      }
+      if (fs.existsSync(staleSh)) {
+        fail('retired run_dry_run.sh must be removed on update');
+      }
+      const auditOk = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
+        cwd: iDir,
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+        timeout: 60000,
+      });
+      if (auditOk.status !== 0) {
+        console.error(`${auditOk.stdout || ''}${auditOk.stderr || ''}`);
+        fail('integrity must pass after update pruned retired preview script');
+      }
+    }
+    ok('update prunes retired ws-preview run_dry_run.sh leftover');
 
     // AC6: mutate managed skill → integrity fails
     const managedSkill = path.join(iDir, '.agents', 'skills', 'ws-tdah', 'SKILL.md');

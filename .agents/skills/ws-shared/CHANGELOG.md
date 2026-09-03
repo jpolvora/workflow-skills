@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-09-03 05:45] Agent: Composer
+- **Prompt**: Integrity consumer tree mismatch — ws-preview/scripts/run_dry_run.sh (extra)
+- **Done**: Install/update now prunes dest-only managed skill files after overlay copy; tests cover generic extras + retired run_dry_run.sh leftover
+- **Result**: Update no longer fails integrity when upstream removed a packaged file; consumer-owned skill-local config.json still preserved
+
+
 ### [2026-09-03 05:31] Agent: Composer
 - **Prompt**: Ship/goal-fix-pr — OpenCode code-review failed
 - **Done**: Root cause CreditsError (OpenCode Go insufficient balance); switched active PR reviewer to Cursor; OpenCode → workflow_dispatch; hardened Cursor with --pr-id + GraphQL thread gate; CATALOG updated

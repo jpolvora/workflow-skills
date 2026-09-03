@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Vendor or download a named reviewer backend (e.g. cursor-reviewer `run.sh`), invent `CURSOR_API_KEY` / stack / backend flags, or ship a packaged `run_dry_run.sh` wrapper
 - **INSTEAD DO**: Read project `{sharedDir}/config.json` → `preview.dryRunCommand`; if empty STOP and ask the consumer to configure via `ws-configure-project --section preview` (infers from AGENTS/README/MEMORY/rules/scripts) or set the key; run that command from the consumer repo root with a long Shell timeout
 
+### [2026-09-03] Install/update must prune retired managed skill files
+- **Layer**: `harness`
+- **Module**: `bin/cli.js`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js`, `.agents/skills/ws-preview/**`
+- **Scenario / Context**: After removing a packaged file from a skill (e.g. `ws-preview/scripts/run_dry_run.sh`), consumer/global installs still had the leftover; merge-only copy left it on disk and post-copy integrity reported `extra` / exit 1 with no automatic rollback
+- **DO NOT**: Assume overwrite install/update replaces the whole skill tree, or leave dest-only managed files after overlay copy
+- **INSTEAD DO**: After `copyDirSync` into an existing skill dir, run `pruneManagedSkillExtras` (skip consumer-owned `config.json` / `MEMORY.md` / `memory/`); verify with install Phase 11 prune tests
+
 ### [2026-09-02] ws-spec-memo is harness bridge not vault encyclopedia
 - **Layer**: `Other`
 - **Module**: `ws-spec-memo / tools.md aliases`

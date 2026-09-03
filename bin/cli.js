@@ -452,43 +452,48 @@ function copyDirSync(src, dest) {
   }
 }
 
-function copyDirPreservingConfig(src, dest, preservedFile) {
-  fs.mkdirSync(dest, { recursive: true });
-  const entries = fs.readdirSync(src, { withFileTypes: true });
+/**
+ * Remove dest-only managed files/dirs so update matches upstream layout.
+ * Leaves consumer-owned names (config.json, MEMORY.md, memory/) untouched.
+ */
+function pruneManagedSkillExtras(src, dest) {
+  if (!fs.existsSync(dest)) return;
+  const entries = fs.readdirSync(dest, { withFileTypes: true });
   for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    // Never copy upstream consumer-owned artifacts; preserve existing or seed later.
     if (SKIP_INSTALL_FILES.has(entry.name) || shouldSkipInstallEntry(entry.name)) {
       continue;
     }
     if (isConsumerOwnedEntry(entry.name, entry.isDirectory())) {
-      if (entry.isDirectory() && CONSUMER_OWNED_DIRS.has(entry.name)) {
-        fs.mkdirSync(destPath, { recursive: true });
-        // Do not recurse into upstream memory/ — leave consumer entries untouched.
-        if (fs.existsSync(destPath)) {
-          console.log(`    Skipped (preserved): ${path.relative(dest, destPath) || entry.name}/`);
-        }
-      } else if (fs.existsSync(destPath)) {
-        console.log(`    Skipped (preserved): ${path.relative(dest, destPath) || entry.name}`);
-      }
       continue;
     }
-
-    let isPreserved = false;
-    if (fs.existsSync(destPath) && entry.name === preservedFile) {
-      isPreserved = true;
+    const destPath = path.join(dest, entry.name);
+    const srcPath = path.join(src, entry.name);
+    if (!fs.existsSync(srcPath)) {
+      fs.rmSync(destPath, { recursive: true, force: true });
+      continue;
     }
-
     if (entry.isDirectory()) {
-      copyDirPreservingConfig(srcPath, destPath, preservedFile);
-    } else if (isPreserved) {
-      console.log(`    Skipped (preserved): ${path.relative(dest, destPath) || entry.name}`);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
+      pruneManagedSkillExtras(srcPath, destPath);
+      // Drop empty leftover dirs after nested prune
+      try {
+        if (fs.readdirSync(destPath).length === 0) {
+          fs.rmSync(destPath, { recursive: true, force: true });
+        }
+      } catch {
+        /* ignore race / gone */
+      }
     }
   }
+}
+
+/**
+ * Managed skill packages: overlay upstream files, then prune retired managed paths.
+ * Consumer-owned skill-local files (config.json / MEMORY.md / memory/) are preserved.
+ * Hub consumer data is handled separately via ensureSharedHubInstalled.
+ */
+function syncManagedSkillDir(src, dest) {
+  copyDirSync(src, dest);
+  pruneManagedSkillExtras(src, dest);
 }
 
 /**
@@ -1069,7 +1074,7 @@ function installSelectedSkills(skills, selectedNames, { overwrite, forceIntegrit
         console.log(`  Skipped: ${skillName}`);
         continue;
       }
-      copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
+      syncManagedSkillDir(srcPath, destPath);
       afterSkillCopy(skillName, destPath);
       console.log(`  Installed: ${skillName} -> .agents/skills/${skillName}`);
       installedCount++;
@@ -1525,11 +1530,7 @@ function runUpdate(skills, includeNew, forceIntegrity = false) {
       const destPath = path.join(targetSkillsDir, skillName);
       if (!fs.existsSync(srcPath)) continue;
       console.log(`  Updating '${skillName}'...`);
-      if (fs.existsSync(destPath)) {
-        copyDirPreservingConfig(srcPath, destPath, CONFIG_FILE);
-      } else {
-        copyDirSync(srcPath, destPath);
-      }
+      syncManagedSkillDir(srcPath, destPath);
       afterSkillCopy(skillName, destPath);
     }
     if (shouldEnsureHub(existingSkills)) {
