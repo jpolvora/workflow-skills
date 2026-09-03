@@ -27,7 +27,7 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 ## User gates (`user-gate`)
 
 Portable alias: `user-gate`. Gate placement follows `defaults.gateGranularity`; hard stops are unchanged.
-Host binding: [`tools.md`](tools.md) § Host capability discovery & dispatch tiers (`hasStructuredChoiceTool`).
+Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`askQuestionTool`).
 
 1. Every normal-mode gate: use `user-gate` with ≥2 options; recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
 2. In normal mode, when the cached `askQuestionTool` binding (Step 0 probe or `{sharedDir}/host-capabilities.json` hit for the current `hostId::orchestratorModel` key) resolves to a concrete tool, the orchestrator and shared skills MUST invoke that tool for all `user-gate` occurrences rather than falling back to text. Log `user-gate-modal | {gate} | ISO`.

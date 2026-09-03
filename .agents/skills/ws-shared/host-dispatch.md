@@ -22,15 +22,15 @@ Shipped skills in this harness are **agent- and IDE-neutral**. Core workflows de
 
 ## 2. Host Capability Discovery (neutral matrix)
 
-Orchestrators resolve the binding at bootstrap (before the first `user-gate` or `dispatch-agent`) in this order: config override `defaults.hostAdapter.mode` when non-`auto` → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key → one active probe. Cache misses upsert only the current key (preserving others); missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0. Alias table and full protocol: [`tools.md`](tools.md) § Abstract host-tool aliases & binding cache.
+Orchestrators resolve the binding at bootstrap (before the first `user-gate` or `dispatch-agent`) in this order: config override `defaults.hostAdapter.mode` when non-`auto` → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key → one active probe. Cache misses upsert only the current key (preserving others); missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0. Alias table and full protocol: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers.
 
-| Capability flag | Discovery signal | Meaning |
-|---|---|---|
-| `hasStructuredChoiceTool` | A modal choice tool accepting structured options and blocking execution until user submission is declared in the session tool palette | in normal mode, `user-gate` binds to that modal tool; else markdown fallback with strict turn-yielding per [`gates.md`](gates.md). In `autoMode`, bypass prompts and use auto-gate index 0 |
-| `hasSubagentTool` | A native subagent dispatch tool is declared in the session tool palette | `dispatch-agent` uses Tier 1; else Tier 2 / Tier 3 |
-| `hasBrowserTool` | A browser verification tool is declared | Step 7 delegates browser verification to that tool via portable `browser-mcp`; else skip per test-surface probe |
+| Alias | Binding meaning |
+|---|---|
+| `askQuestionTool` | Bound → in normal mode, `user-gate` invokes that tool; `none` → markdown fallback with strict turn-yielding per [`gates.md`](gates.md). In `autoMode`, zero prompts — auto-apply index 0 |
+| `subagentTool` | Bound → `dispatch-agent` uses Tier 1; `none` → Tier 2 / Tier 3 |
+| `browserTool` | Bound → Step 7 delegates browser verification to that tool via portable `browser-mcp`; `none` → skip per test-surface probe |
 
-Log `host-capability-detect | subagent={mode} | gate={mode} | ISO` to step telemetry JSONL during Step 0. Record `user-gate-modal` or `user-gate-fallback` in gate history per [`gates.md`](gates.md).
+Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowserTool`) are derived readouts of this binding — see [`tools.md`](tools.md). Record `user-gate-modal`, `user-gate-fallback`, or `auto-gate-apply` in gate history per [`gates.md`](gates.md).
 
 ### Resolution Rules
 
@@ -45,13 +45,13 @@ Log `host-capability-detect | subagent={mode} | gate={mode} | ISO` to step telem
 
 ### Tier 1 — Native subagent tool
 
-- **When:** `hasSubagentTool` is true and resolved mode is `auto` or `native-tool`.
+- **When:** `subagentTool` is bound and resolved mode is `auto` or `native-tool`.
 - **How:** Dispatch via the native tool with `description: "STP step {N} — {Label}"`, model hint from `defaults.modelsPreset` / `stepModels` when the tool supports it, and discrete context pointers only (see §5).
 - **Telemetry:** standard dispatch/finish events.
 
 ### Tier 2 — Background CLI runner
 
-- **When:** no native tool is declared but a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH, and resolved mode is `auto` or `cli-command`.
+- **When:** `subagentTool` is `none` but `backgroundTaskTool` is bound or a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH, and resolved mode is `auto` or `cli-command`.
 - **How:** Launch the step as a background task via `run_command` using the configured CLI template, passing the same context-pointer payload as Tier 1. The template receives `{prompt}`, `{cwd}`, and `{slug}` substitutions.
 - **Example template shape (neutral):**
   ```text
@@ -60,7 +60,7 @@ Log `host-capability-detect | subagent={mode} | gate={mode} | ISO` to step telem
 
 ### Tier 3 — Inline Isolated Execution (Clean Context Pointer Mode)
 
-- **When:** neither a native tool nor a CLI runner is available, or resolved mode is `inline-isolated`.
+- **When:** both `subagentTool` and `backgroundTaskTool` are `none`, or resolved mode is `inline-isolated`.
 - **How:** The session model temporarily adopts the specific step persona (e.g. Coder for Step 4, Reviewer for Step 6) within a strict context boundary:
   1. Load **only** the pointed artifacts (`{us-dir}/handoff/step-{NN-1}.json`, `plan.index.json`, `ac-ledger.json`, spec/plan of record).
   2. Execute the step actions (reading, modifying via native file tools, running configured verification).
@@ -71,7 +71,7 @@ Log `host-capability-detect | subagent={mode} | gate={mode} | ISO` to step telem
 
 ### Browser verification (Step 7)
 
-- When `hasBrowserTool` is true, delegate browser UI verification via portable `browser-mcp` in normal, non-dry-run, gated runs.
+- When `browserTool` is bound, delegate browser UI verification via portable `browser-mcp` in normal, non-dry-run, gated runs.
 - Otherwise follow the `ws-testing` test-surface probe (skip only on `skipTesting` or no surface).
 
 ---

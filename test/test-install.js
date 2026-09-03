@@ -2584,6 +2584,64 @@ child.on('close', async (code) => {
     }
     ok('uninstall cleans recorded codex projections of removed skills only');
 
+    // 11. Targeted install merges (not replaces) recorded globalTargets
+    const mergeInstall = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-plan-write', '--global', '--targets', 'gemini', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, HOME: mockHome, USERPROFILE: mockHome, FORCE_COLOR: '0' },
+      }
+    );
+    if (mergeInstall.status !== 0) {
+      console.error(mergeInstall.stdout, mergeInstall.stderr);
+      fail('Targeted gemini install failed');
+    }
+    const manifestAfterMerge = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const mergedIds = (manifestAfterMerge.globalTargets || []).map((t) => t.id);
+    for (const expected of ['claude', 'codex', 'gemini']) {
+      if (!mergedIds.includes(expected)) fail(`merge-on-write dropped recorded target: ${expected}`);
+    }
+    ok('targeted install merges new targets with recorded globalTargets');
+    const geminiBase = path.join(mockHome, '.gemini', 'config', 'skills');
+    if (!fs.existsSync(path.join(geminiBase, 'ws-plan-write', 'SKILL.md'))) {
+      fail('merged install did not project ws-plan-write to gemini');
+    }
+    // Bare update backfills the new skill to every recorded target (AC7)
+    const backfillUpdate = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'update', '--global', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, HOME: mockHome, USERPROFILE: mockHome, FORCE_COLOR: '0' },
+      }
+    );
+    if (backfillUpdate.status !== 0) fail('Bare backfill update failed');
+    for (const [id, base] of [['claude', path.join(mockHome, '.claude', 'skills')], ['codex', path.join(mockHome, '.codex', 'skills')], ['gemini', geminiBase]]) {
+      if (!fs.existsSync(path.join(base, 'ws-plan-write', 'SKILL.md'))) {
+        fail(`backfill update did not project ws-plan-write to ${id}`);
+      }
+    }
+    ok('bare update backfills new skills to all recorded targets');
+    const uninstallMerge = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'uninstall', '--skills', 'ws-plan-write', '--global', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, HOME: mockHome, USERPROFILE: mockHome, FORCE_COLOR: '0' },
+      }
+    );
+    if (uninstallMerge.status !== 0) fail('Uninstall of ws-plan-write failed');
+    for (const [id, base] of [['claude', path.join(mockHome, '.claude', 'skills')], ['codex', path.join(mockHome, '.codex', 'skills')], ['gemini', geminiBase]]) {
+      if (fs.existsSync(path.join(base, 'ws-plan-write'))) {
+        fail(`Uninstall left stale ws-plan-write projection in ${id}`);
+      }
+    }
+    ok('uninstall cleans merged projections across all recorded targets');
+
     // Cleanup
     fs.rmSync(mockHome, { recursive: true, force: true });
     fs.rmSync(copyHome, { recursive: true, force: true });

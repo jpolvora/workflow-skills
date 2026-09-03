@@ -68,7 +68,7 @@ for (const relative of [
   assert.match(tools, /Tier 1/, 'tools.md documents Tier 1 native-tool (AC4)');
   assert.match(tools, /Tier 2/, 'tools.md documents Tier 2 cli-command (AC5)');
   assert.match(tools, /Tier 3/, 'tools.md documents Tier 3 inline-isolated (AC6)');
-  assert.match(tools, /host-capability-detect/, 'tools.md logs host-capability-detect telemetry');
+  assert.match(tools, /derived readouts/, 'tools.md keeps legacy flags as derived binding readouts (single contract)');
   const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/gates.md'), 'utf8');
   assert.match(gates, /user-gate-modal/, 'gates.md logs user-gate-modal (AC2)');
   assert.match(gates, /MUST NOT emit any tool calls in the same response turn/, 'gates.md enforces turn-yielding (AC3)');

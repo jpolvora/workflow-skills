@@ -132,7 +132,7 @@ Optional setting in `defaults.verboseMode` for `ws-spec-to-pr` / `ws-spec-to-pr-
 
 Optional setting in `defaults.hostAdapter` for host-agnostic subagent execution. See [`host-dispatch.md`](host-dispatch.md).
 
-1. **Auto-detection (default):** Inspect the session tool palette and environment at bootstrap to resolve `hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowserTool`, then Tier 1 (native-tool) → Tier 2 (cli-command) → Tier 3 (inline-isolated).
+1. **Binding resolution (default):** Resolve the host-tool binding once at bootstrap per `host-dispatch.md` — `defaults.hostAdapter.mode` force → `{sharedDir}/host-capabilities.json` hit → one active probe — then Tier 1 (native-tool) → Tier 2 (cli-command) → Tier 3 (inline-isolated).
 2. **Explicit override:** Set `defaults.hostAdapter.mode` (`"auto"`, `"native-tool"`, `"cli-command"`, `"inline-isolated"`). Explicit mode wins over auto-discovery.
 3. **Sparse context pointers:** Dispatches pass pointers to artifacts (`step-00-*.spec.md`, `plan.index.json`, `ac-ledger.json`, `handoff/step-*.json`) instead of full transcripts.
 

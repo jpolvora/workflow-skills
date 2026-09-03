@@ -172,6 +172,17 @@ function readInstalledSkillsManifest() {
   }
 }
 
+/**
+ * Merge-on-write for recorded secondary global targets by target id.
+ * Incoming entries win per id; an empty incoming list preserves existing.
+ */
+function mergeGlobalTargets(existing = [], incoming = []) {
+  if (!incoming.length) return existing;
+  const byId = new Map(existing.map((t) => [t.id, t]));
+  for (const t of incoming) byId.set(t.id, { ...byId.get(t.id), ...t });
+  return [...byId.values()];
+}
+
 function writeInstalledSkillsManifest(skillNames, selectedNames = null, globalTargets = null) {
   const destShared = path.join(targetSkillsDir, HUB_DIR);
   ensureWriteableDir(destShared);
@@ -184,7 +195,7 @@ function writeInstalledSkillsManifest(skillNames, selectedNames = null, globalTa
   );
   const existing = readInstalledSkillsManifest();
   const effectiveTargets = globalTargets !== null
-    ? globalTargets
+    ? mergeGlobalTargets(existing?.globalTargets || [], globalTargets)
     : (existing?.globalTargets || []);
   const payload = {
     version: 1,
