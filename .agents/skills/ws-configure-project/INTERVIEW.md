@@ -13,7 +13,7 @@ Disclosed detail for [`SKILL.md`](SKILL.md). Load when detecting or interviewing
 
 ## Optional (offer once, skippable)
 
-`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`autoload`** (persists `defaults.autoload` + optional `defaults.autoloadTaskLifecycle` + Always-applied path refresh; optional root `AGENTS.md` when enabled), **`specMemo`** (external vault bridge via `ws-spec-memo`; default disabled).
+`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`preview`** (`preview.dryRunCommand` for `ws-preview`; empty OK), **`autoload`** (persists `defaults.autoload` + optional `defaults.autoloadTaskLifecycle` + Always-applied path refresh; optional root `AGENTS.md` when enabled), **`specMemo`** (external vault bridge via `ws-spec-memo`; default disabled).
 
 ## Detection heuristics
 
@@ -44,6 +44,13 @@ Scan consumer **repo root** (not this skill package alone):
 | Existing `{sharedDir}/memory/` or `{plansDir}/` with content | Suggest **Import legacy tree** when enabling vault |
 | `memo` or `npx spec-memo` on PATH | `specMemo.cli` → `memo` (Recommended) |
 | CLI missing | Recommend `npm install -g spec-memo` or `specMemo.cli: "npx -y spec-memo"` before enable |
+| Non-empty `preview.dryRunCommand` already set | Keep current (**Recommended** unless `--force`) |
+| `package.json` scripts named like `preview`, `review:dry`, `pipeline-review`, `code-review:dry`, `*dry-run*review*`, `*review*dry*` | Suggest `npm run <script>` (or `npm run <script> -- …` only if the script docs require args) |
+| Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` / `python <relpath>` per extension ([`tools.md`](../ws-shared/tools.md) launchers) |
+| Consumer skill under `.agents/skills/` or `{globalSkillsRoot}` with id/name containing `preview`, `pipeline-review`, `dry-run`, or `code-review` (excluding packaged `ws-preview` / `ws-code-review` bodies) | Extract the primary Shell recipe from that `SKILL.md` (first concrete command block); cite skill path as source |
+| Harness prose hit (see § Preview scan list) with a concrete shell/`npm run` recipe for local/CI-shaped review dry-run | Suggest that exact command string; cite file:line or section |
+| Multiple candidates | Rank: existing config → `package.json` script → repo script file → consumer skill → harness prose; show top 3 in the gate |
+| No candidate | **Skip / leave empty (Recommended)** — do not invent a backend |
 
 ## Interview order
 
@@ -59,6 +66,7 @@ Scan consumer **repo root** (not this skill package alone):
 
    Write semantics: explicit JSON boolean `true` enables `NNNN-{slug}.spec.md` with a 4-digit zero-padded prefix for new spec-of-record writes and organizer; omitted, `false`, non-boolean, or missing config safely resolves to `false` (default `{slug}.spec.md`).
 4. `verification` (+ `orchestration` if detected). Also offer optional **mutation gate** keys when the stack has unit tests: `verification.mutationTest` (runner command; empty = skip), `verification.mutationThreshold` (default 80).
+4b. `preview` — optional `preview.dryRunCommand` (or standalone `--section preview`); see § Preview below
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
 7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, **minVerifyScore**, `convergence`, **`providerCompat`**, **`contextHygiene`**, **`reviewJury`**) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
@@ -121,6 +129,39 @@ Scan consumer **repo root** (not this skill package alone):
     - Execution on Yes: `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.
 
 Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.
+
+## Preview (`preview.dryRunCommand`)
+
+Optional. Feeds [`ws-preview`](../ws-preview/SKILL.md). Empty/unset → `/ws-preview` stops until configured. Never invent a reviewer product or download a backend during this interview.
+
+| Key | Type | Default | Meaning |
+|-----|------|---------|---------|
+| `preview.dryRunCommand` | string | `""` | Shell command run from the consumer repo root by `/ws-preview` |
+
+### Scan list (infer before the gate)
+
+Read/Grep in this order (stop early when a high-confidence recipe is found; still collect up to 3 candidates):
+
+1. Current `{sharedDir}/config.json` → `preview.dryRunCommand` (if non-empty)
+2. `package.json` → `scripts` keys matching preview / pipeline-review / review dry-run patterns (Detection table)
+3. Repo `scripts/`, `tools/`, `.agents/scripts/` — filenames matching those patterns
+4. Consumer-owned skills under project `.agents/skills/` and `{globalSkillsRoot}/` (skip packaged `ws-preview` / `ws-code-review` SoT bodies used only as docs)
+5. Harness / instruction surfaces (repo-relative):
+   - Root `AGENTS.md`, `{sharedDir}/AGENTS.md`, `{sharedDir}/STACK.md`, `{sharedDir}/MEMORY.md`, `{sharedDir}/memory/*.md`
+   - Root `README.md`, `FEATURES.md` (when present)
+   - `config.json` → `rules.*` path values that exist on disk (e.g. `rules.harness`, `rules.seniorDeveloper`, other consumer rule files)
+   - Host-private rule folders only when already present in the consumer tree (do not require or create them); treat as additional Grep targets if found
+6. Grep keywords (case-insensitive): `dryRunCommand`, `pipeline-review`, `pipeline review`, `review dry-run`, `dry-run` near `review`, `ws-preview`, `exec-code-review`, ``npm run`` / `bash ` / `node ` / `python ` on the same or following lines
+
+**Extract rule:** prefer a single copy-pasteable command line (with explicit `bash`/`node`/`python`/`npm` launcher). Strip markdown fences and leading `$ `. Reject curl-piped installers and any recipe that publishes PR threads. Cite `source` (path + short note) in the user-gate.
+
+### Gate
+
+| Gate | Writes | Options (Recommended first) |
+|------|--------|-----------------------------|
+| Set local pipeline review dry-run command for `/ws-preview`? | `preview.dryRunCommand` | **Accept inferred `<cmd>` (Recommended)** when a candidate exists · **Skip / leave empty (Recommended)** when none · Keep current · Edit… · alternate candidates (label each with source) |
+
+Write semantics: merge-write the trimmed string; empty string or omit key both mean unset. Preserve `_comment*` under `preview`. `autoMode`: accept Recommended (inferred if present, else leave empty).
 
 ## Security & Pre-Commit Hook
 
@@ -215,4 +256,5 @@ When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MC
 - Preserve `_comment*` keys from the example when present.
 - After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.
 - Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.
+- Preview writes: `preview.dryRunCommand` in `{sharedDir}/config.json` only (never commit). Cite inference source in the session summary when Accept inferred.
 - specMemo writes: `specMemo.*` in `{sharedDir}/config.json` only; optional `memo import` / `memo hook install` via `configure_spec_memo.cjs` when user opts in.

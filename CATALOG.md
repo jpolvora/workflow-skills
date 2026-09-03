@@ -19,7 +19,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
-| `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer-configured local pipeline review dry-run (Extra) |
+| `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
 | `ws-run-benchmark` | `.agents/skills/ws-run-benchmark/SKILL.md` | Upstream-only fixture compare (Extra; never spec-to-pr) |
 | `using-superpowers` | `(global)` | Skill discovery |
 

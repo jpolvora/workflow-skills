@@ -1,5 +1,12 @@
 # Changelog
 
+### [2026-09-03 05:16] Agent: Composer
+- **Prompt**: Update config.json.example and docs/website for preview.dryRunCommand
+- **Done**: Enriched `preview` example comments; FEATURES/README; site FAQ + feature card for `/ws-preview` / `--section preview`; rebuilt catalog cards
+- **Result**: Human docs and website match tool-agnostic preview config
+
+
+
 ### [2026-09-03 05:07] Agent: Composer
 - **Prompt**: Make ws-preview not tied to any specific code reviewer; use configured dry-run command locally
 - **Done**: Rewrote `ws-preview` to resolve `preview.dryRunCommand` from project config and run it in-repo; removed cursor-reviewer wrapper script; updated schema/example, catalogs, FEATURES, README, evals, integrity, site

@@ -224,7 +224,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs) |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
-| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Run consumer-configured local pipeline review dry-run (Extra) |
+| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Run consumer-configured local pipeline review dry-run via `preview.dryRunCommand` (Extra; configure with `/ws-configure-project --section preview`) |
 | [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | Live/static harness benchmark runner (Extra, upstream package root; never spec-to-pr) |
 
 ### Pipeline & providers
@@ -250,7 +250,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) (Extra) |
 | [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md) | Engineering-delivery gate and Code review proof source (default in `rules.seniorDeveloper`) |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
-| [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration (`--section specMemo` optional external vault setup) |
+| [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration (`--section preview` for local review dry-run; `--section specMemo` optional external vault setup) |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | Integration bridge to [spec-memo](https://github.com/jpolvora/spec-memo): `config.json` flags, setup, import, hybrid fallback. Runtime vault ops use **`ws-memo`** (spec-memo package). Dual routing: `enableMemoryFiles` / `enableSpecMemoIntegration` |
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) · [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) · [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, plan-history archive, feature spec sync, prompt-task lifecycle, format & goal loop |
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (Extra; plan bootstrap start → latest PR thread comment or delivery commit; human vs agent duration split) |

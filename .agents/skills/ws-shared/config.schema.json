@@ -386,7 +386,7 @@
       "properties": {
         "dryRunCommand": {
           "type": "string",
-          "description": "Shell command run from the consumer repo root by ws-preview. Required for /ws-preview; empty/unset → skill stops (no default backend)."
+          "description": "Shell command run from the consumer repo root by ws-preview. Set via ws-configure-project --section preview (infers from harness docs when possible) or manually. Empty/unset → skill stops (no default backend)."
         }
       }
     },

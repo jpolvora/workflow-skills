@@ -344,7 +344,8 @@
   },
 
   "preview": {
-    "_comment": "ws-preview runs this local dry-run command from the consumer repo root. Set a project-owned recipe (script, npm script, CLI). Empty → /ws-preview stops until configured.",
+    "_comment": "Optional. /ws-preview runs preview.dryRunCommand from the consumer repo root — no packaged reviewer backend. Prefer /ws-configure-project --section preview (infers from AGENTS.md, README, MEMORY, rules.*, package.json scripts, and local skills) or set the string below. Empty → /ws-preview stops until configured.",
+    "_comment_dryRunCommand": "Examples: npm run review:dry | bash scripts/pipeline-review-dry-run.sh | node tools/local-review-dry-run.cjs",
     "dryRunCommand": ""
   },
 

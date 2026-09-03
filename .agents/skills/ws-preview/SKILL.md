@@ -35,7 +35,7 @@ Optional user wording after invoke (e.g. "committed only") is ignored unless the
 
 1. **Resolve** — Read `{sharedDir}/config.json` → `preview.dryRunCommand` (trim). Expand path tokens from [`tools.md`](../ws-shared/tools.md) only if the string contains them.
    - Done when: a non-empty command string is known.
-   - If missing/empty/whitespace-only: STOP. Tell the user to set `preview.dryRunCommand` in project `config.json` (or run `ws-configure-project`). Do not guess a default reviewer tool or download a backend.
+   - If missing/empty/whitespace-only: STOP. Tell the user to set `preview.dryRunCommand` in project `config.json` (or run `ws-configure-project --section preview`). Do not guess a default reviewer tool or download a backend.
 
 2. **Run** — From the consumer repo root, invoke the resolved command via `Shell` with an explicit launcher when the string is a script path (`bash` / `node` / `python` per [`tools.md`](../ws-shared/tools.md) § Script launchers). Use a long-lived call (block timeout ≥ 600000 ms / 10 minutes) so clone/install/LLM work inside the consumer recipe is not killed. Pass no extra skill-owned flags.
    - Done when: the process exits (success or hard error). A timeout is a failed run.
