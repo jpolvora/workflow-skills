@@ -106,7 +106,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Agent-agnostic host detection, subagent fallback, and interactive gate execution (`spec: 0056-host-agent-environment-adapter.spec.md`)
 - [ ] Revamped Modern Technical Website for Workflow Skills (`spec: modern-website-revamp.spec.md`)
 - [ ] Installer Multi-Host Global Targets and Symlink Strategy (`spec: installer-multi-host-global-targets.spec.md`)
-- [ ] Active host tool capability binding with auto-gate hard bypass (`spec: 0059-host-capability-binding-v2.spec.md`)
+- [x] Active host tool capability binding with auto-gate hard bypass (`spec: 0059-host-capability-binding-v2.spec.md`)
 
 
 
@@ -186,9 +186,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 59 | `host-agent-environment-adapter` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Agent-agnostic host detection, subagent fallback, and interactive gate execution |
 | 60 | `modern-website-revamp` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Revamped Modern Technical Website for Workflow Skills |
 | 61 | `installer-multi-host-global-targets` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Installer Multi-Host Global Targets and Symlink Strategy |
-| 62 | `host-capability-binding-v2` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Active host tool capability binding with auto-gate hard bypass |
+| 62 | `host-capability-binding-v2` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Active host tool capability binding with auto-gate hard bypass |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `modern-website-revamp`, `installer-multi-host-global-targets`, `host-capability-binding-v2`.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `modern-website-revamp`, `installer-multi-host-global-targets`.
 
 ## 9. Inbox
 
@@ -253,6 +253,7 @@ Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming
 | 2026-08-23 | `us-235` | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist | [PR #237](https://github.com/jpolvora/workflow-skills/pull/237) |
 | 2026-08-28 | `spec-prefix-ordering` | Optional chronological spec filename prefixes and ws-spec-organizer | [PR #256](https://github.com/jpolvora/workflow-skills/pull/256) |
 | 2026-09-03 | `host-agent-environment-adapter` | Agent-agnostic host detection, subagent fallback, and interactive gate execution | [PR #266](https://github.com/jpolvora/workflow-skills/pull/266) |
+| 2026-09-03 | `host-capability-binding-v2` | Active host tool capability binding with auto-gate hard bypass | [PR #270](https://github.com/jpolvora/workflow-skills/pull/270) |
 
 ## 11. Maintenance checklist
 
