@@ -44,6 +44,16 @@ const writeSpecDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-spec-wri
 assert.match(writeSpecDoc, /resolve_spec_path\.cjs/, 'ws-spec-write SKILL.md references resolve_spec_path.cjs');
 assert.match(writeSpecDoc, /SPEC_PATH/, 'ws-spec-write numbered Write step uses SPEC_PATH');
 assert.match(writeSpecDoc, /ws-spec-organizer/, 'ws-spec-write names ws-spec-organizer on missing helper');
+assert.match(
+  writeSpecDoc,
+  /plans\.enforceSpecPrefixOrdering.*absent/s,
+  'ws-spec-write persists plans.enforceSpecPrefixOrdering when the key is absent',
+);
+assert.doesNotMatch(
+  writeSpecDoc,
+  /specNamingPrefixConvention/,
+  'ws-spec-write does not invent a second prefix-convention key name',
+);
 
 const fromProviderDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-spec-from-provider/SKILL.md'), 'utf8');
 assert.match(fromProviderDoc, /NNNN-us-\{id\}\.spec\.md/, 'ws-spec-from-provider SKILL.md references NNNN prefix');

@@ -61,6 +61,7 @@ export const CONSUMER_OWNED_HUB_FILES = new Set([
   'frontend.md',
   INSTALLED_SKILLS_FILE,
   SKILL_INTEGRITY_LOCAL_FILE,
+  'host-capabilities.json',
 ]);
 
 export const CONSUMER_OWNED_HUB_DIRS = new Set(['memory']);

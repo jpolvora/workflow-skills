@@ -51,7 +51,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
-| `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/us-{id}.spec.md` (agentic spec of record via `ws-spec-write`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + optional JSON snapshot | provider fetch → `ws-spec-write` (reformulate/enhance) → `register_local_spec.cjs` |
+| `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/{specStem}.spec.md` + optional `{specStem}.assets/` sidecar and `## Visual References` (agentic spec of record via `ws-spec-write`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + `{us-dir}/attachments/` when sidecar exists + optional JSON snapshot | provider fetch → shared ingest helper → `ws-spec-write` (reformulate/enhance) → `register_local_spec.cjs` |
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.py` |
 | `validate-auth` | none | Pass/fail + fixes | Org/project + PAT; optional WIT smoke |
 | `create-pr` | head, base, title/body | PR URL + id | Prefer `az repos pr create`; if `az` missing/fails → REST in INTENTS.md |

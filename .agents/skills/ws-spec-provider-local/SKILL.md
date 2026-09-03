@@ -64,6 +64,7 @@ Missing `specsDir`: ensure dir + write key into local `config.json` (gitignored)
 
 1. **Spec of record** — destination from `resolve_spec_path.cjs` when copying into `{specsDir}`; inputs that already live under `{specsDir}` (flat or nested, including `NNNN-` names) are normalized **in place**, so no duplicate flat twin is created.
 2. **Workflow copy** — `{us-dir}/step-00-{slug}.spec.md`, the canonical artifact every downstream step reads.
+3. **Attachments sidecar (when present)** — if `{specsDir}/{specStem}.assets/` exists beside the spec of record, recursively copy it to `{us-dir}/attachments/` (replace destination when source exists). Local provider does not download remote binaries.
 
 Registering never leaves a workflow copy without a spec of record.
 

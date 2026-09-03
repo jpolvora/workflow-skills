@@ -73,12 +73,12 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
 5. **Import each id** — For every id in `to_import`, in order:
 
    1. Snapshot + base converter via the active provider `fetch-to-spec` phase 1–2 recipes ([`ws-spec-provider-github/INTENTS.md`](../ws-spec-provider-github/INTENTS.md) / [`ws-spec-provider-azure-devops/INTENTS.md`](../ws-spec-provider-azure-devops/INTENTS.md)).
-   2. Load [`ws-spec-write`](../ws-spec-write/SKILL.md) and **agentically reformulate** the snapshot into `{specsDir}/us-{id}.spec.md` (`source: github` \| `azure-devops`). Do not leave converter-only ACs as final. Skip the standalone `index.PRD` gate (this skill owns the call).
+   2. Load [`ws-spec-write`](../ws-spec-write/SKILL.md) and **agentically reformulate** the snapshot into the path from `resolve_spec_path.cjs --slug us-{id}` (`source: github` \| `azure-devops`). Visual attachment ingest is inherited from provider `fetch-to-spec` via the shared ingest helper — **do not** add a second downloader in this skill. Skip the standalone `index.PRD` gate (this skill owns the call).
    3. Full register:
 
       ```bash
       node {skillsRoot}/ws-spec-provider-local/scripts/register_local_spec.cjs \
-        --input "{specsDir}/us-{id}.spec.md" --source {github|azure-devops}
+        --input "$(node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug us-{id})" --source {github|azure-devops}
       ```
 
    On any non-zero exit: record failure for that id; continue remaining ids (do not abort the batch unless auth/config broke).

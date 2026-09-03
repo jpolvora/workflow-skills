@@ -251,7 +251,7 @@ An HS-5 indicates that `state.md` YAML parsing or schema validation failed, or t
 6.  Run the Node `validate_state.cjs` pre-advance check, then type `/ws-spec-to-pr US {id}` to resume.
 
 ### Pre-advance fails: plans index missing workflow entry
-`{plansDir}/index.json` exists but omits this workflow (partial pre-0.3.37 index, copied `{us-dir}`, or prune drift). Rebuild from on-disk `*.state.md` files, then retry validate:
+`{plansDir}/index.json` exists but omits this workflow (partial pre-0.3.37 index, copied `{us-dir}`, or prune drift). Rebuild from on-disk `*.state.md` files, then retry validate. Catalog `generatedAt` is rebuild time; each `workflows[]` `updatedAt` is that workflow's last activity, not a global now stamp.
 
 ```bash
 node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs rebuild-index

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "revision": 6,
+  "workflowId": "provider-fetch-visual-attachments-20260903T131113Z",
+  "slug": "provider-fetch-visual-attachments",
+  "pipeline": "standard",
+  "status": "active",
+  "currentStep": 2,
+  "pendingGate": {
+    "gate": "step-entry",
+    "step": 0
+  },
+  "nextAction": "Finish step 2",
+  "acTotal": 28,
+  "acImplemented": 0,
+  "score": null,
+  "estimatedRemainingSec": 1770,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 41.5
+    },
+    {
+      "step": 3,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 54
+    },
+    {
+      "step": 4,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 599.5
+    },
+    {
+      "step": 5,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 180
+    },
+    {
+      "step": 6,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 270
+    },
+    {
+      "step": 7,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 180
+    },
+    {
+      "step": 8,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 85
+    },
+    {
+      "step": 9,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 360
+    }
+  ],
+  "statePath": ".agents/plans/provider-fetch-visual-attachments/provider-fetch-visual-attachments-20260903T131113Z.state.md",
+  "stateSha256": "e1eaecd98c551b7f042fce1e7913d38503297100ee11fbd96e5c3dce43595223"
+}

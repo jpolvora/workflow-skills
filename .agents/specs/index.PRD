@@ -107,6 +107,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Revamped Modern Technical Website for Workflow Skills (`spec: modern-website-revamp.spec.md`)
 - [ ] Installer Multi-Host Global Targets and Symlink Strategy (`spec: installer-multi-host-global-targets.spec.md`)
 - [x] Active host tool capability binding with auto-gate hard bypass (`spec: 0059-host-capability-binding-v2.spec.md`)
+- [ ] Download tracker images and attachments during fetch-to-spec (GitHub and Azure DevOps parity) (`spec: 0060-provider-fetch-visual-attachments.spec.md`)
+
 
 
 
@@ -187,8 +189,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 60 | `modern-website-revamp` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Revamped Modern Technical Website for Workflow Skills |
 | 61 | `installer-multi-host-global-targets` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Installer Multi-Host Global Targets and Symlink Strategy |
 | 62 | `host-capability-binding-v2` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Active host tool capability binding with auto-gate hard bypass |
+| 63 | `provider-fetch-visual-attachments` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Download tracker images and attachments during fetch-to-spec (GitHub and Azure DevOps parity) |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `modern-website-revamp`, `installer-multi-host-global-targets`.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `modern-website-revamp`, `installer-multi-host-global-targets`, `provider-fetch-visual-attachments`.
 
 ## 9. Inbox
 

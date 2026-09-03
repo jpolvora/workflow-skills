@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 10,
-  "generatedAt": "2026-09-03T02:58:20Z",
+  "revision": 6,
+  "generatedAt": "2026-09-03T13:22:42Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -11,7 +11,7 @@
       "stateSha256": "ed56ee9cdbf0c5e7da28766b2a4e0a9ab4cb86bae6b6cc00255838595266f922",
       "status": "completed",
       "currentStep": 10,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-08T08:30:09Z",
       "runPath": ".agents/plans/agents-skills-as-sot/run.json"
     },
     {
@@ -22,7 +22,7 @@
       "stateSha256": "678ce630c0eb9e8b9e22e49bfe8dc2cdf2250e47a7a3273252b71e094e341eaf",
       "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/auto-mode-model-preferences/auto-mode-model-preferences.archive/run.json"
     },
     {
@@ -33,7 +33,7 @@
       "stateSha256": "1c698f8ca4d9924a3a8c06c99a52492d2d85108fa297b1ffe684624920e2a1f2",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-08T22:30:00Z",
       "runPath": ".agents/plans/autoload-skills-overlap-audit/run.json"
     },
     {
@@ -44,7 +44,7 @@
       "stateSha256": "44558e381cdbdb3e8b3d0289603200b66e25311c1129c907c7caa918e8333f7b",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-08T22:34:00Z",
       "runPath": ".agents/plans/check-harness-upstream-sot/run.json"
     },
     {
@@ -55,7 +55,7 @@
       "stateSha256": "08dc995a85a12bbe8e9328b0da47f7a9e93aa3c973a34070768c1cddf4b0868c",
       "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/clear-learning-memory-instructions/clear-learning-memory-instructions-20260730T122000Z.archive/run.json"
     },
     {
@@ -66,7 +66,7 @@
       "stateSha256": "c065e5b5f0d68f2b8e88ef8fc88e2cf349edd18ef62b43563eaefa18e486d56f",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-10T20:09:04Z",
       "runPath": ".agents/plans/configurable-consumer-autoload/run.json"
     },
     {
@@ -77,7 +77,7 @@
       "stateSha256": "66a6516aa7b539abfb905e76c648f0071ad84aa6480ba7da47223b159b26d675",
       "status": "completed",
       "currentStep": 10,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-07-28T10:55:34Z",
       "runPath": ".agents/plans/continuous-ai-verification-quality-gates/continuous-ai-verification-quality-gates-20260728T091100Z.state.archive/run.json"
     },
     {
@@ -88,7 +88,7 @@
       "stateSha256": "555224ad9453d1ad3fd77a7954a67c71bced0b960e98663fa60c1314b7692ed4",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-24T02:35:46Z",
       "runPath": ".agents/plans/deepseek-harness-improvements/run.json"
     },
     {
@@ -99,7 +99,7 @@
       "stateSha256": "aeb408f9669b81b8d0852d3cdde61f2a22e8b3aa775a7b0a31d655452b5f355b",
       "status": "completed",
       "currentStep": 8,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-12T19:13:30Z",
       "runPath": ".agents/plans/enable-auditing/run.json"
     },
     {
@@ -110,19 +110,8 @@
       "stateSha256": "2d5c49232a10b78c8af09f99d90c1965be177983549b3ae61a86e999cd19d040",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-25T17:57:43Z",
       "runPath": ".agents/plans/fix-pr-batch-plan-exec/run.json"
-    },
-    {
-      "workflowId": "harness-spec-benchmark-20260828T113716Z",
-      "slug": "harness-spec-benchmark",
-      "pipeline": "standard",
-      "statePath": ".agents/plans/harness-spec-benchmark/harness-spec-benchmark-20260828T113716Z.state.md",
-      "stateSha256": "6136929a320a245cec71a648b199797be9b359dfcd7c484e52fc21ef3653e8be",
-      "status": "active",
-      "currentStep": 9,
-      "updatedAt": "2026-08-28T12:25:21Z",
-      "runPath": ".agents/plans/harness-spec-benchmark/run.json"
     },
     {
       "workflowId": "interview-project-context-auto-answer-20260808T034812Z",
@@ -132,7 +121,7 @@
       "stateSha256": "ef0ced75f7a66ad80cdf28dc5ad9ef8b8e74e84941cf4a055fd0f22f1bbc0d8a",
       "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-08T04:13:29Z",
       "runPath": ".agents/plans/interview-project-context-auto-answer/run.json"
     },
     {
@@ -143,7 +132,7 @@
       "stateSha256": "0197cb3571b606f9c9a97c235bfe95acdeeb02f0833ee3af035adaee04d0d675",
       "status": "completed",
       "currentStep": 8,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T18:51:10Z",
       "runPath": ".agents/plans/post-workflow-worktree-tag-cleanup/post-workflow-worktree-tag-cleanup-20260801T180142Z.archive/run.json"
     },
     {
@@ -154,8 +143,19 @@
       "stateSha256": "10b80886aeb1e5f70920e0ca0e9d3cccda075d7ced88b5f8c5c23ed6bec0a37c",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-22T23:00:20Z",
       "runPath": ".agents/plans/pr-232/run.json"
+    },
+    {
+      "workflowId": "provider-fetch-visual-attachments-20260903T131113Z",
+      "slug": "provider-fetch-visual-attachments",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/provider-fetch-visual-attachments/provider-fetch-visual-attachments-20260903T131113Z.state.md",
+      "stateSha256": "e1eaecd98c551b7f042fce1e7913d38503297100ee11fbd96e5c3dce43595223",
+      "status": "active",
+      "currentStep": 2,
+      "updatedAt": "2026-09-03T13:22:42Z",
+      "runPath": ".agents/plans/provider-fetch-visual-attachments/run.json"
     },
     {
       "workflowId": "refine-ws-activity-report-human-timing-20260812T023033Z",
@@ -165,7 +165,7 @@
       "stateSha256": "52c221a89e4b5a94a57379b1b84cce8ff798ad20294fcacde05e32a3f766035c",
       "status": "completed",
       "currentStep": 8,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-12T02:30:33Z",
       "runPath": ".agents/plans/refine-ws-activity-report-human-timing/run.json"
     },
     {
@@ -176,7 +176,7 @@
       "stateSha256": "b2793b6a83edef2c523a62ec275888bbe7e39acaa8644840b3095327e93e5b8e",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-09-03T13:12:02Z",
       "runPath": ".agents/plans/remove-consumer-agents-md-requirement/run.json"
     },
     {
@@ -187,7 +187,7 @@
       "stateSha256": "c0d116e3840acf341da4267d87adc49c7ea797701fdd455c531e3374c1d9c5f5",
       "status": "active",
       "currentStep": 5,
-      "updatedAt": "2026-09-03T02:58:20Z",
+      "updatedAt": "2026-09-03T01:55:28Z",
       "runPath": ".agents/plans/skill-family-naming/run.json"
     },
     {
@@ -198,7 +198,7 @@
       "stateSha256": "48441f71196e287d179d62a0d3e9bbede6a58714e1679f2e15edede7e56d0958",
       "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/skill-loaded-banner-instruction/skill-loaded-banner-instruction.archive/run.json"
     },
     {
@@ -206,10 +206,10 @@
       "slug": "spec-dor-tdd-refinement-hardening",
       "pipeline": "standard",
       "statePath": ".agents/plans/spec-dor-tdd-refinement-hardening/spec-dor-tdd-refinement-hardening-20260828T042229Z.state.md",
-      "stateSha256": "1a5964528c5b287b86d86688c8b6c9180c788de39e054abe9c09389c79e5cbd7",
+      "stateSha256": "97709458a47e66103d60a0934dc2f88a6b48c3b9101605d53326d7fd5ce58ba2",
       "status": "active",
-      "currentStep": 1,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "currentStep": 0,
+      "updatedAt": "2026-08-28T04:26:15Z",
       "runPath": ".agents/plans/spec-dor-tdd-refinement-hardening/run.json"
     },
     {
@@ -220,7 +220,7 @@
       "stateSha256": "953e4e935829d96075ab097b29ae5cdd89f9f5f47bb8f08aacf4f21cbeb4c469",
       "status": "completed",
       "currentStep": 8,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-15T16:55:00Z",
       "runPath": ".agents/plans/testing-executor-model/run.json"
     },
     {
@@ -231,7 +231,7 @@
       "stateSha256": "84ebc40e26593908c073691b3c133701025db7fd68dccf9e24759ccbb10ce756",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-07-22T20:22:30Z",
       "runPath": ".agents/plans/us-101/us-101.archive/run.json"
     },
     {
@@ -242,7 +242,7 @@
       "stateSha256": "b3ccd649c70d319d392bf6174452991cfaed503db3717da7531e026ba165f979",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-07-22T17:29:50Z",
       "runPath": ".agents/plans/us-103/us-103.archive/run.json"
     },
     {
@@ -253,7 +253,7 @@
       "stateSha256": "b8e98a787c255538d228638514038781a54f28a051086a09bce84e9c23bd12fc",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-07-23T21:26:46Z",
       "runPath": ".agents/plans/us-113/us-113-20260723-2121.archive/run.json"
     },
     {
@@ -264,7 +264,7 @@
       "stateSha256": "d1da7dabf6ab5932aa07d790279cec8c4859b687766432beb9b8ab599b353332",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-07-25T22:08:19Z",
       "runPath": ".agents/plans/us-125/us-125-20260725T220300Z.archive/run.json"
     },
     {
@@ -275,7 +275,7 @@
       "stateSha256": "c6bcbb9bcdb65bad7320117a78800e8ada69c24ba41c4ffaef3867605b0bc310",
       "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/us-129/us-129-20260725T231200Z.archive/run.json"
     },
     {
@@ -286,7 +286,7 @@
       "stateSha256": "3a0747787e7347c54885b7be72fc8ce58fc0498ce7f983e222f2219317bafa11",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-07-25T21:39:00Z",
       "runPath": ".agents/plans/us-134/us-134-20260725T213900Z.archive/run.json"
     },
     {
@@ -297,7 +297,7 @@
       "stateSha256": "a309ee30e402ce52970e9a652bf38ce9eef4d162445ebf3e21a00e8a0343bccb",
       "status": "completed",
       "currentStep": 8,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/us-150/us-150-20260726T204200Z.archive/run.json"
     },
     {
@@ -308,7 +308,7 @@
       "stateSha256": "d82d9b99321be285d94287a4e139e14c0f5cb59f066e0a41ddffc29089b4ecc9",
       "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-07-27T04:55:01Z",
       "runPath": ".agents/plans/us-153/us-153-20260727T042800Z.archive/run.json"
     },
     {
@@ -319,7 +319,7 @@
       "stateSha256": "5ddfe7dc18ebe1feea44eaa4133098331bbb584ebae8b2ee46b23f28446e4221",
       "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/us-156/us-156.archive/run.json"
     },
     {
@@ -330,7 +330,7 @@
       "stateSha256": "83c0b3b5eb0973fdb7bd9539ced4ecc24513d8251ddb74ef9feb7dfc36d7c2f9",
       "status": "completed",
       "currentStep": 10,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/us-168-resolve-review-thread/us-168-resolve-review-thread.archive/run.json"
     },
     {
@@ -341,7 +341,7 @@
       "stateSha256": "fab135be0f353dfecde3dae4c2bc2efe6d204d3e60bcc4de54e4b797709a5e32",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-09T03:19:07Z",
       "runPath": ".agents/plans/us-183/run.json"
     },
     {
@@ -352,7 +352,7 @@
       "stateSha256": "8ae4f586a55d181df447f16cd2bb5ca48ae09f084cf52522cbd9aa709499c54f",
       "status": "completed",
       "currentStep": 10,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-13T19:20:14Z",
       "runPath": ".agents/plans/us-202/run.json"
     },
     {
@@ -363,7 +363,7 @@
       "stateSha256": "988c320e5e39e0857136de898ab7b7d3b0048b4174049d611511682f6b1f6e19",
       "status": "completed",
       "currentStep": 5,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-24T02:35:46Z",
       "runPath": ".agents/plans/us-209/run.json"
     },
     {
@@ -374,7 +374,7 @@
       "stateSha256": "21c7ba4124130148384f033bf0988cffc927517dacae37c4b90933d4732992d3",
       "status": "completed",
       "currentStep": 5,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-15T19:12:13Z",
       "runPath": ".agents/plans/us-210/run.json"
     },
     {
@@ -385,7 +385,7 @@
       "stateSha256": "91173cec77e0cf9d46458accf6ad7b4a5718d23fee54088bbf84e934f719dba0",
       "status": "cancelled",
       "currentStep": 0,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-24T02:35:46Z",
       "runPath": ".agents/plans/us-211/run.json"
     },
     {
@@ -396,7 +396,7 @@
       "stateSha256": "3dd99628796c3b95eb48f9cf66474b451326cafeaa30428991ba3ec51d96be71",
       "status": "completed",
       "currentStep": 5,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-24T02:35:46Z",
       "runPath": ".agents/plans/us-211/run.json"
     },
     {
@@ -407,7 +407,7 @@
       "stateSha256": "a37ceb526e15f46c71e7c7910bf5b84878660bcf8a204ca8fa22f6a065fc81b7",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-24T02:35:46Z",
       "runPath": ".agents/plans/us-217/run.json"
     },
     {
@@ -418,7 +418,7 @@
       "stateSha256": "d67fa481ef1d2cee28c4707d73060f7ff398be9c121fe8e45becf35ba9147ae7",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-19T13:32:54Z",
       "runPath": ".agents/plans/us-220/run.json"
     },
     {
@@ -429,7 +429,7 @@
       "stateSha256": "c4c285da112bc06488815afb6f9aefd3668ec92feaa7950b15261c6d4c98d1b4",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-23T16:33:01Z",
       "runPath": ".agents/plans/us-235/run.json"
     },
     {
@@ -440,7 +440,7 @@
       "stateSha256": "bbdf8746a8317cfc5c6045094c18c8de0050c8b4d5a714d60ae7583856246c82",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-23T22:01:45Z",
       "runPath": ".agents/plans/us-236/run.json"
     },
     {
@@ -451,7 +451,7 @@
       "stateSha256": "df4f3db009aefa9a608f514361d8ef2380cdad2dc605ca5420837b8c44bc7241",
       "status": "active",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-26T05:36:22Z",
       "runPath": ".agents/plans/us-243/run.json"
     },
     {
@@ -459,10 +459,10 @@
       "slug": "us-250",
       "pipeline": "lite",
       "statePath": ".agents/plans/us-250/us-250-20260827T143734Z.state.md",
-      "stateSha256": "d7d4c88c35468e0f3de5c693f1bbfffcec716e011414df63a08a53a15e07c867",
+      "stateSha256": "2e3a68c65b1826c506e1e864e75255e05b4aebdb0ddc38b2e2aeef1b691a970c",
       "status": "active",
       "currentStep": 5,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-27T15:12:08Z",
       "runPath": ".agents/plans/us-250/run.json"
     },
     {
@@ -473,7 +473,7 @@
       "stateSha256": "ce738f59125ca81c121a965896ec4f47244c4f0b03f732a3c33d24750030f015",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/global-vs-project-skill-installation/us-global-vs-project-skill-installation.archive/run.json"
     },
     {
@@ -484,7 +484,7 @@
       "stateSha256": "099ffe1a0fc8faa8b2f7ee22b32c92223262205e6e61f0d0fb7dfeb538b3aef2",
       "status": "completed",
       "currentStep": 8,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-12T18:55:00Z",
       "runPath": ".agents/plans/workflow-bootstrap-feature-branch/run.json"
     },
     {
@@ -495,7 +495,7 @@
       "stateSha256": "de5da1faa26269527a76b891a9bdc7c57dfa1db5a21a609e904e0f1511766970",
       "status": "completed",
       "currentStep": 10,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-12T04:07:51Z",
       "runPath": ".agents/plans/ws-doctor/run.json"
     },
     {
@@ -506,7 +506,7 @@
       "stateSha256": "6d5a06215d00580a4a5f834ed8b5ed0614ba0de74d0e8f50c8618d8e45ba1e93",
       "status": "completed",
       "currentStep": 10,
-      "updatedAt": "2026-08-28T04:34:01Z",
+      "updatedAt": "2026-08-14T11:23:51Z",
       "runPath": ".agents/plans/ws-doctor-204-205/run.json"
     }
   ]

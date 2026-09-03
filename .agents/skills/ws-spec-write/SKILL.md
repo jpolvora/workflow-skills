@@ -14,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
 
-**Write path:** resolve path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (honors `plans.enforceSpecPrefixOrdering`: `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
+**Write path:** Canonical prefix flag is `plans.enforceSpecPrefixOrdering` ([ws-spec-organizer](../ws-spec-organizer/SKILL.md)). Do **not** invent a second key name. If that key is **absent** from project `{sharedDir}/config.json`, insert it under `plans` (optional comment from `config.json.example`). Seed `true` when `{specsDir}` already has top-level `NNNN-*.spec.md`; otherwise seed `false`. Then resolve the path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (`false` → `{specsDir}/{slug}.spec.md`; `true` → `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
 
 **Do not** create `{plansDir}/{slug}/`, `step-00-*.spec.md`, state files, or any other plan/workflow artifact directly. Plan copies are owned by [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `fetch-to-spec` / `--register` when a workflow starts — never by this skill’s default write.
 
@@ -73,6 +73,7 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Done when: lookup notes exist (hits or none) for code, MEMORY, and stack.
 
 2. **Parse & Ingest** — Infer or parse title, url-safe `slug`, and origin (`source`). For tracker issues, extract metadata (`id`, `url`, `labels`, `workItemType`).
+   - **Visual References (when present):** If `## Visual References` exists on the fetched spec, **Read** each `ok` image path listed there (skip PDF and non-image entries). Fold observed UI, layout, or template constraints into `## Description`, `## Acceptance Criteria`, or `## Notes`. Do not vision-analyze PDFs.
    - **Prior-work sweep (before plan/code):** When `source` is `github` or `azure-devops`, dispatch provider `sweep-prior-work` (`--issue {id}`, keywords from title/body). When `source: local` / `id: null`: keyword + `git log` on inferred paths; if `providers.scm` is github or azure-devops, also search PRs by title keywords via that provider (not via `ws-spec-provider-local`). Record findings under `## Original Issue Context` → `### Prior Work Sweep`. Exact open PR for the **same tracker id** → `user-gate` (Recommended: stop/reuse). Related hits: record and continue; `autoMode`: continue unless exact same-issue open PR (then Pause).
    - Done when: title, `slug`, `source`, metadata, and prior-work sweep (when required) are identified.
 
@@ -80,10 +81,11 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Done when: design-intent recorded or skip reason documented.
 
 4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
+   - **Preserve Visual References:** When the input spec already has `## Visual References` and `{specStem}.assets/` on disk, keep that section and repo-relative asset paths unchanged in the written spec (you may add captions or AC cross-refs; do not drop the section or revert to remote URLs).
    - **Gray area:** when a user-facing choice has two or more valid product options, write the companion at the path from `resolve_spec_path.cjs --slug {slug} --context` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
-   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), and `## Notes`.
+   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), `## Visual References` when present on input with a populated `.assets/` sidecar, and `## Notes`.
 
-5. **Write** — Resolve `SPEC_PATH` (and `CONTEXT_PATH` when a gray area exists):
+5. **Write** — Ensure `plans.enforceSpecPrefixOrdering` exists (see Write path), then resolve `SPEC_PATH` (and `CONTEXT_PATH` when a gray area exists):
 
    ```bash
    node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug} [--repo-root .]

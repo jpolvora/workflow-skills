@@ -115,6 +115,28 @@ function writeChecked(file, content, force) {
   return fs.existsSync(file) ? 'written' : 'overwritten';
 }
 
+function copyDirRecursive(srcDir, destDir) {
+  if (fs.existsSync(destDir)) {
+    fs.rmSync(destDir, { recursive: true, force: true });
+  }
+  fs.mkdirSync(destDir, { recursive: true });
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    const srcPath = path.join(srcDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
+    if (entry.isDirectory()) copyDirRecursive(srcPath, destPath);
+    else fs.copyFileSync(srcPath, destPath);
+  }
+}
+
+function copyAssetsSidecar(specPath, usDir) {
+  const specStem = path.basename(specPath).replace(/\.spec\.md$/i, '');
+  const assetsSrc = path.join(path.dirname(specPath), `${specStem}.assets`);
+  if (!fs.existsSync(assetsSrc) || !fs.statSync(assetsSrc).isDirectory()) return null;
+  const attachmentsDest = path.join(usDir, 'attachments');
+  copyDirRecursive(assetsSrc, attachmentsDest);
+  return attachmentsDest;
+}
+
 function main() {
   const args = argsOf(process.argv.slice(2));
   if (args.help) {
@@ -167,6 +189,7 @@ function main() {
   }
   const specsAction = writeChecked(specPath, content, args.force || inSpecs);
   const action = writeChecked(workflowPath, workflowContent, args.force || input === workflowPath);
+  const attachmentsPath = copyAssetsSidecar(specPath, usDir);
   const payload = {
     input: toRepoRelative(context.repoRoot, input),
     slug,
@@ -176,6 +199,7 @@ function main() {
     usDir: toRepoRelative(context.repoRoot, path.dirname(workflowPath)),
     source: args.source,
     action,
+    attachmentsPath: attachmentsPath ? toRepoRelative(context.repoRoot, attachmentsPath) : null,
   };
   process.stdout.write(args.json ? `${JSON.stringify(payload, null, 2)}\n` : Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join('\n') + '\n');
 }

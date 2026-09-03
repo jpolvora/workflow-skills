@@ -38,7 +38,7 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 ## Steps
 
-1. **Load spec, stack & memory** — Read the spec input and `config.json` layers/invariants; run **`read-memory`** for plan keywords (vault and/or `{sharedDir}/MEMORY.md` per `enableSpecMemoIntegration` / `enableMemoryFiles`).
+1. **Load spec, stack & memory** — Read the spec input and `config.json` layers/invariants; run **`read-memory`** for plan keywords (vault and/or `{sharedDir}/MEMORY.md` per `enableSpecMemoIntegration` / `enableMemoryFiles`). When `## Visual References` exists on the spec of record or `step-00` copy, **Read** each `ok` image listed (skip PDF) before drafting the plan.
    - **Design intent:** For modification / bugfix ACs, require `git log -p -S` and/or `git log -L` on touched symbols before recommending behavior changes; reference `### Design Intent` from the spec when present.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true` **and** the `ws-fable-domain` skill folder exists, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6. Missing folder: skip domain adapters (do not STOP).
    - Done when: stack and relevant memory entries (from every enabled backend) are identified.

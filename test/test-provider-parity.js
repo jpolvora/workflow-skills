@@ -93,6 +93,10 @@ assert(
   /hash-only/i.test(contractMd),
   'scm-provider-contract resolve-thread rejects hash-only comments',
 );
+assert(
+  /Visual References|\.assets/i.test(contractMd),
+  'scm-provider-contract fetch-to-spec documents visual ingest',
+);
 for (const id of [
   'validate-auth',
   'fetch-to-spec',
@@ -147,6 +151,11 @@ for (const skillId of implementers) {
   );
   assert(/dry-run/.test(intentsMd), `${skillId} INTENTS.md documents dry-run for mutating intents`);
   assert(/[Rr]euse/.test(intentsMd), `${skillId} INTENTS.md documents reuse open PR`);
+  const fetchSection = sectionAfterHeading(intentsMd, '`fetch-to-spec`');
+  assert(
+    /assets|Visual References/i.test(fetchSection),
+    `${skillId} INTENTS.md fetch-to-spec documents assets sidecar or Visual References`,
+  );
 }
 
 const gh = new Set(declared['ws-spec-provider-github'].tableIds);

@@ -50,7 +50,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provide
 
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
-| `fetch-to-spec` | Issue id / URL | **1.** `{specsDir}/us-{n}.spec.md` (agentic spec of record via `ws-spec-write`) → **2.** `{us-dir}/step-00-us-{n}.spec.md` (workflow copy, `source: github`) + optional `*.issue.json` snapshot | provider fetch → `ws-spec-write` (reformulate/enhance) → `register_local_spec.cjs` |
+| `fetch-to-spec` | Issue id / URL | **1.** `{specsDir}/{specStem}.spec.md` + optional `{specStem}.assets/` sidecar and `## Visual References` (agentic spec of record via `ws-spec-write`) → **2.** `{us-dir}/step-00-us-{n}.spec.md` (workflow copy, `source: github`) + `{us-dir}/attachments/` when sidecar exists + optional `*.issue.json` snapshot | provider fetch → shared ingest helper → `ws-spec-write` (reformulate/enhance) → `register_local_spec.cjs` |
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.py` |
 | `validate-auth` | none | Pass/fail + fixes | `gh auth status` + thread token note |
 | `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base) |

@@ -9,13 +9,11 @@ Usage:
     --input {plansDir}/us-1234/step-00-us-1234.issue.json \
     --repo {owner}/{repo}
 
-Output defaults to `{specsDir}/us-{n}.spec.md` (`plans.specsDir` from
-ws-shared/config.json, default `.agents/specs`). Promote it to the workflow copy
-`{plansDir}/{slug}/step-00-{slug}.spec.md` with ws-spec-provider-local:
-
-  python register_local_spec.py --input {specsDir}/us-1234.spec.md --source github
+Output defaults via `resolve_spec_path.cjs --slug {unprefixedSlug}`.
+Promote to workflow copy with ws-spec-provider-local register_local_spec.
 
 `--output` overrides the destination. `--input` also accepts `-` for stdin.
+`--skip-assets` skips the shared visual ingest helper (fixture/tests only).
 """
 from __future__ import annotations
 
@@ -23,7 +21,9 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -53,6 +53,16 @@ ensure_utf8_stdio()
 
 
 DEFAULT_SPECS_DIR = ".agents/specs"
+_MD_IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
+_HTML_IMG_RE = re.compile(
+    r'<img[^>]+src=["\']([^"\']+)["\'][^>]*?(?:alt=["\']([^"\']*)["\'])?[^>]*>',
+    re.IGNORECASE,
+)
+_GH_USER_ATTACH_RE = re.compile(
+    r"https?://github\.com/user-attachments/[^\s)>\]]+",
+    re.IGNORECASE,
+)
+
 
 def resolve_specs_dir(repo_root: Path, override: str | None = None) -> Path:
     """Absolute specsDir from --specs-dir, else plans.specsDir, else the portable default."""
@@ -70,6 +80,21 @@ def resolve_specs_dir(repo_root: Path, override: str | None = None) -> Path:
     return path.resolve() if path.is_absolute() else (repo_root / path).resolve()
 
 
+def resolve_default_output(repo_root: Path, slug: str) -> Path:
+    organizer = Path(__file__).resolve().parents[2] / "ws-spec-organizer" / "scripts" / "resolve_spec_path.cjs"
+    if organizer.is_file():
+        proc = subprocess.run(
+            ["node", str(organizer), "--slug", slug, "--repo-root", str(repo_root)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0:
+            rel = proc.stdout.strip()
+            return (repo_root / rel).resolve()
+    return resolve_specs_dir(repo_root) / f"{slug}.spec.md"
+
+
 def load_issue(raw: str) -> dict:
     data = json.loads(raw)
     if isinstance(data, list):  # `gh issue list --json` returns an array
@@ -84,11 +109,7 @@ _AC_HEADING = re.compile(
 
 
 def split_body(body: str) -> tuple[str, list[str]]:
-    """Return (description, acceptance-criteria items).
-
-    Splits the issue body at the first Acceptance Criteria heading, if any.
-    Bullet/numbered lines under that heading become AC items.
-    """
+    """Return (description, acceptance-criteria items)."""
     body = (body or "").replace("\r\n", "\n").strip()
     if not body:
         return "", []
@@ -123,6 +144,43 @@ def issue_slug(issue: dict) -> str:
     return f"us-{number}" if number else "spec"
 
 
+def _add_url(urls: list[dict], seen: set[str], url: str, origin: str, alt: str = "", filename: str = "") -> None:
+    cleaned = (url or "").strip().strip("<>").strip()
+    if not cleaned or cleaned in seen:
+        return
+    seen.add(cleaned)
+    urls.append(
+        {
+            "url": cleaned,
+            "origin": origin,
+            "alt": alt or "",
+            "filename": filename or Path(cleaned).name,
+            "caption": alt or filename or Path(cleaned).name,
+        }
+    )
+
+
+def extract_urls_from_text(text: str, origin: str, urls: list[dict], seen: set[str]) -> None:
+    if not text:
+        return
+    for match in _MD_IMAGE_RE.finditer(text):
+        _add_url(urls, seen, match.group(2), origin, alt=match.group(1))
+    for match in _HTML_IMG_RE.finditer(text):
+        _add_url(urls, seen, match.group(1), origin, alt=match.group(2) or "")
+    for match in _GH_USER_ATTACH_RE.finditer(text):
+        _add_url(urls, seen, match.group(0), origin)
+
+
+def collect_visual_urls(issue: dict) -> list[dict]:
+    urls: list[dict] = []
+    seen: set[str] = set()
+    body = issue.get("body") or ""
+    extract_urls_from_text(body, "body", urls, seen)
+    for comment in issue.get("comments") or []:
+        extract_urls_from_text((comment.get("body") or ""), "comment", urls, seen)
+    return urls
+
+
 def build_spec_md(issue: dict, repo: str | None) -> str:
     number = issue.get("number")
     slug = issue_slug(issue)
@@ -135,6 +193,7 @@ def build_spec_md(issue: dict, repo: str | None) -> str:
     assignees = [a.get("login") for a in (issue.get("assignees") or []) if a.get("login")]
 
     description, ac_items = split_body(issue.get("body") or "")
+    raw_body = (issue.get("body") or "").strip()
 
     fm = [
         "---",
@@ -153,7 +212,7 @@ def build_spec_md(issue: dict, repo: str | None) -> str:
     fm.append("---")
     fm.append("")
 
-    body: list[str] = [f"# Specification — {title}", ""]
+    body_lines: list[str] = [f"# Specification — {title}", ""]
     meta = []
     if state:
         meta.append(f"**State:** {state}")
@@ -162,40 +221,83 @@ def build_spec_md(issue: dict, repo: str | None) -> str:
     if labels:
         meta.append(f"**Labels:** {', '.join(labels)}")
     if meta:
-        body.extend(meta)
-        body.append("")
+        body_lines.extend(meta)
+        body_lines.append("")
 
-    body.append("## Description")
-    body.append("")
-    body.append(description or "_No description in the issue._")
-    body.append("")
+    body_lines.append("## Description")
+    body_lines.append("")
+    body_lines.append(description or "_No description in the issue._")
+    body_lines.append("")
 
-    body.append("## Acceptance Criteria")
-    body.append("")
+    body_lines.append("## Acceptance Criteria")
+    body_lines.append("")
     if ac_items:
         for idx, ac in enumerate(ac_items, 1):
-            body.append(f"- AC{idx}: {ac}")
+            body_lines.append(f"- AC{idx}: {ac}")
     else:
-        body.append("_No explicit acceptance criteria in the issue — extract/validate during refinement._")
-    body.append("")
+        body_lines.append("_No explicit acceptance criteria in the issue — extract/validate during refinement._")
+    body_lines.append("")
 
+    body_lines.append("## Original Issue Context")
+    body_lines.append("")
+    body_lines.append(raw_body or "_No description in the issue._")
+    body_lines.append("")
     comments = issue.get("comments") or []
     if comments:
-        body.append("## Comments (audit)")
-        body.append("")
+        body_lines.append("### Comments")
+        body_lines.append("")
         for c in comments:
             author = (c.get("author") or {}).get("login") or "?"
             text = (c.get("body") or "").strip()
             if text:
-                body.append(f"- **{author}:** {text}")
-        body.append("")
+                body_lines.append(f"- **{author}:** {text}")
+        body_lines.append("")
 
-    body.append("## Notes")
-    body.append("")
-    body.append("_Automatically generated from gh issue view JSON (GitHub)._")
-    body.append("")
+    body_lines.append("## Notes")
+    body_lines.append("")
+    body_lines.append("_Automatically generated from gh issue view JSON (GitHub)._")
+    body_lines.append("")
 
-    return "\n".join(fm + body)
+    return "\n".join(fm + body_lines)
+
+
+def invoke_ingest_helper(
+    spec_path: Path,
+    urls: list[dict],
+    skip_assets: bool,
+    repo_root: Path | None = None,
+    fetch_remap_file: Path | None = None,
+) -> int:
+    if skip_assets or not urls:
+        return 0
+    helper = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts" / "ingest_visual_attachments.cjs"
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as handle:
+        json.dump(urls, handle)
+        urls_path = handle.name
+    try:
+        cmd = [
+            "node",
+            str(helper),
+            "--spec-path",
+            str(spec_path),
+            "--urls-json",
+            urls_path,
+            "--provider",
+            "github",
+        ]
+        if repo_root is not None:
+            cmd.extend(["--repo-root", str(repo_root)])
+        if fetch_remap_file is not None:
+            cmd.extend(["--fetch-remap-file", str(fetch_remap_file)])
+        if skip_assets:
+            cmd.append("--skip-assets")
+        proc = subprocess.run(cmd, check=False, env=os.environ.copy())
+        return proc.returncode
+    finally:
+        try:
+            os.unlink(urls_path)
+        except OSError:
+            pass
 
 
 def main() -> int:
@@ -205,7 +307,7 @@ def main() -> int:
     parser.add_argument("--input", required=True, help="Path to JSON file (gh issue view --json ...) or '-' for stdin")
     parser.add_argument(
         "--output",
-        help="Output path for *.spec.md (default: {specsDir}/us-{n}.spec.md)",
+        help="Output path for *.spec.md (default: resolve_spec_path.cjs --slug {unprefixedSlug})",
     )
     parser.add_argument("--specs-dir", help="Override plans.specsDir for the default output path")
     parser.add_argument(
@@ -217,6 +319,15 @@ def main() -> int:
         "--force",
         action="store_true",
         help="Overwrite an existing spec of record when content differs",
+    )
+    parser.add_argument(
+        "--skip-assets",
+        action="store_true",
+        help="Skip visual attachment ingest (fixture/tests only)",
+    )
+    parser.add_argument(
+        "--fetch-remap-file",
+        help="Test fixture: JSON map of allowlisted URL to mock fetch target for ingest helper",
     )
     args = parser.parse_args()
 
@@ -236,12 +347,13 @@ def main() -> int:
         return 1
 
     spec_md = build_spec_md(issue, args.repo or None)
+    visual_urls = collect_visual_urls(issue)
 
+    repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
     if args.output:
         output_path = Path(args.output)
     else:
-        repo_root = resolve_repo_root(args.repo_root, script_file=__file__)
-        output_path = resolve_specs_dir(repo_root, args.specs_dir) / f"{issue_slug(issue)}.spec.md"
+        output_path = resolve_default_output(repo_root, issue_slug(issue))
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists() and not args.force:
@@ -254,6 +366,17 @@ def main() -> int:
             )
             return 1
     output_path.write_text(spec_md, encoding="utf-8")
+
+    ingest_rc = invoke_ingest_helper(
+        output_path,
+        visual_urls,
+        args.skip_assets,
+        repo_root,
+        Path(args.fetch_remap_file) if args.fetch_remap_file else None,
+    )
+    if ingest_rc != 0:
+        print(f"Warning: visual ingest helper exited {ingest_rc}", file=sys.stderr)
+
     print(f"Spec written to: {output_path}")
     print("Next: register into the workflow copy via ws-spec-provider-local")
     print(f"  register_local_spec.py --input {output_path} --source github")

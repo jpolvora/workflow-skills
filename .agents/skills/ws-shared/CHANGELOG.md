@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-09-03 09:15] Agent: Cursor Grok 4.6
+- **Prompt**: Fix `{plansDir}/index.json` so `updatedAt` changes only for the workflow being updated, not every `workflows[]` row
+- **Done**: `rebuildIndex` now derives each row `updatedAt` from that workflow's state activity; `updatePlansIndex` already upserted one `workflowId`; contract test covers sibling preservation plus rebuild
+- **Result**: Idle workflows keep their last activity time; catalog `generatedAt` remains rebuild time
+
+### [2026-09-03 08:59] Agent: Cursor Grok 4.6
+- **Prompt**: Persist and consume spec prefix naming from config; check ws-spec-organizer
+- **Done**: Seeded `plans.enforceSpecPrefixOrdering: true` in project config; ws-spec-write/organizer/AGENTS.md now persist that exact key when absent; renamed spec to `0060-provider-fetch-visual-attachments.spec.md`
+- **Result**: Resolver reports prefixed path with `enforceSpecPrefixOrdering: true`; no second key name
+
+### [2026-09-03 08:53] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-write improve providers (ado, gh) to download embedded images and attachments during fetch, with SCM parity
+- **Done**: Authored `.agents/specs/provider-fetch-visual-attachments.spec.md` + companion context; authoring validate PASS (28 ACs); tracked on `index.PRD`
+- **Result**: Spec of record ready; `fetch-to-spec` extension (no new intent); GitHub and Azure DevOps must ship together
+
 ### [2026-09-03 06:20] Agent: Antigravity
 - **Prompt**: bump version and prepare to ws-ship-pr
 - **Done**: Bumped package to `0.3.57`; synchronized version across all 50 SKILL.md frontmatters, test/package.json, AGENTS.md, docs/index.html, and dependency manifests; clarified normal mode vs autoMode for modal choice tool and single-turn interactive cadence; regenerated integrity manifest (v0.3.57).

@@ -286,7 +286,9 @@
     "_comment_specsDir": "Human-facing local specs dir. Skill token {specsDir} ← plans.specsDir (default .agents/specs). Prefer existing repo-root specs/ when already present. ws-spec-write writes here only; workflow step-00 copies under {plansDir}/{slug}/ come from providers or ws-spec-provider-local register.",
     "specsDir": ".agents/specs",
     "worktreesDir": ".agents/plans/{slug}/worktrees",
-    "useWorktrees": false
+    "useWorktrees": false,
+    "_comment_enforceSpecPrefixOrdering": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md under {specsDir}. Omitted, non-boolean, or missing config safely resolves to false until ws-spec-write persists this key. Seeded true here because this board already uses NNNN- filenames.",
+    "enforceSpecPrefixOrdering": true
   },
   "reviews": {
     "_comment": "Optional local review artifact root (fix-pr / ws-goal-fix-pr round reports).",

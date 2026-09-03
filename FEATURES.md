@@ -105,7 +105,7 @@ Nine required intents, enforced by `node test/test-provider-parity.js` in `npm r
 | Intent | Guarantee |
 |--------|-----------|
 | `validate-auth` | STOP on failure; no silent provider fallback |
-| `fetch-to-spec` | Writes the `{specsDir}` spec of record first, then the `step-00` workflow copy |
+| `fetch-to-spec` | Writes the `{specsDir}` spec of record first (downloads allowlisted visual attachments into `{specStem}.assets/` and `## Visual References` when present), then the `step-00` workflow copy and `{us-dir}/attachments/` at register |
 | `create-pr` | Reuses an existing open PR for the same head→base |
 | `list-threads` | Structured threads with an active count |
 | `sweep-prior-work` | Prior PR hits and recent commits, run before plan or code |
@@ -126,7 +126,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring` (fails closed). Required sections include **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios**. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-spec-write` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; persist `plans.enforceSpecPrefixOrdering` when that key is absent; authoring-validate with `validate_spec.cjs --mode=authoring` (fails closed). Required sections include **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios**. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-spec-write` |
 | Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), authoring-mode **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios** | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-spec-provider-local` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |

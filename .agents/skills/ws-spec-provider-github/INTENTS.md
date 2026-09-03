@@ -24,8 +24,9 @@ mkdir -p {plansDir}/us-{n}
 gh issue view {n} --json number,title,body,state,labels,assignees,comments,url \
   > {plansDir}/us-{n}/step-00-us-{n}.issue.json
 
-# 2. Spec of record → {specsDir}/us-{n}.spec.md (enhanced via ws-spec-write; resolves plans.specsDir)
-# Base converter or ws-spec-write parses the snapshot and builds an agentic-enhanced spec:
+# 2. Spec of record → {specsDir}/{specStem}.spec.md (enhanced via ws-spec-write; resolves plans.specsDir)
+# Base converter parses the snapshot, subprocesses ingest_visual_attachments.cjs for allowlisted images,
+# then ws-spec-write reformulates into an agentic-enhanced spec:
 python .agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py \
   --input {plansDir}/us-{n}/step-00-us-{n}.issue.json \
   --repo {owner}/{repo}
@@ -37,6 +38,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs \
 
 | Note | Detail |
 |------|--------|
+| Visual ingest | Converters extract image/attachment URLs from issue body + comments, then `node {sharedDir}/scripts/ingest_visual_attachments.cjs --provider github` downloads allowlisted assets into `{specsDir}/{specStem}.assets/`, patches `## Visual References` after `## Original Issue Context`, and rewrites remote links. Partial HTTP failure exits 0 when the spec was written. `--skip-assets` for fixtures only. |
 | Raw `*.issue.json` | Audit snapshot only — stays a plan artifact under `{us-dir}`; downstream steps never read it |
 | Agentic Reformulation | `ws-spec-write` reformulates and enhances raw issue descriptions into unambiguous, testable ACs while preserving human text in `## Original Issue Context` |
 | Re-fetch over an existing run | The converter (Step 2) refuses first when the spec of record differs (`--force` on the converter), and Step 3 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
