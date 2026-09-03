@@ -68,7 +68,7 @@ for (const relative of [
   assert.match(tools, /Tier 1/, 'tools.md documents Tier 1 native-tool (AC4)');
   assert.match(tools, /Tier 2/, 'tools.md documents Tier 2 cli-command (AC5)');
   assert.match(tools, /Tier 3/, 'tools.md documents Tier 3 inline-isolated (AC6)');
-  assert.match(tools, /host-capability-detect/, 'tools.md logs host-capability-detect telemetry');
+  assert.match(tools, /derived readouts/, 'tools.md keeps legacy flags as derived binding readouts (single contract)');
   const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/gates.md'), 'utf8');
   assert.match(gates, /user-gate-modal/, 'gates.md logs user-gate-modal (AC2)');
   assert.match(gates, /MUST NOT emit any tool calls in the same response turn/, 'gates.md enforces turn-yielding (AC3)');
@@ -84,6 +84,25 @@ for (const relative of [
   assert.match(lite, /One Step Per Turn/, 'lite enforces single-turn cadence (AC8)');
   const stepDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
   assert.match(stepDispatch, /Host execution mode/, 'STEP-DISPATCH honors detected host mode');
+}
+// Host capability binding v2 (0059): abstract aliases + probe-then-cache + autoMode hard bypass.
+{
+  const tools = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/tools.md'), 'utf8');
+  assert.match(tools, /askQuestionTool/, 'tools.md declares askQuestionTool alias (AC1)');
+  assert.match(tools, /subagentTool/, 'tools.md declares subagentTool alias (AC1)');
+  assert.match(tools, /backgroundTaskTool/, 'tools.md declares backgroundTaskTool alias (AC1)');
+  assert.match(tools, /host-capabilities\.json/, 'tools.md documents the disk probe cache (AC9)');
+  assert.match(tools, /host-capability-bind \| \{json\} \| \{hit\|probe\}/, 'tools.md logs hit|probe binding telemetry (AC8)');
+  const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/gates.md'), 'utf8');
+  assert.match(gates, /zero [`']?user-gate[`']? prompts of any kind/i, 'gates.md hard-bypasses all gates in autoMode (AC3)');
+  assert.match(gates, /askQuestionTool/, 'gates.md binds normal-mode gates to askQuestionTool (AC4)');
+  const dispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/host-dispatch.md'), 'utf8');
+  assert.match(dispatch, /host-capabilities\.json/, 'host-dispatch.md defines the probe cache file (AC9)');
+  assert.match(dispatch, /hostId::orchestratorModel/, 'host-dispatch.md keys the cache by host + model (AC10)');
+  const hubIgnore = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/hub.gitignore'), 'utf8');
+  assert.match(hubIgnore, /^host-capabilities\.json$/m, 'hub.gitignore keeps the probe cache consumer-local (AC9)');
+  const stepDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
+  assert.match(stepDispatch, /no mid-workflow re-probe/, 'STEP-DISPATCH forbids per-step re-probing (AC6)');
 }
 for (const relative of [
   '.agents/skills/ws-spec-to-pr/SKILL.md',

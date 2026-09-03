@@ -121,45 +121,23 @@
 </nav>
 
 <header class="hero">
-  <div class="prompt-box">
-    <span class="live-indicator"></span>
-    <span class="token-comment">// install @ npx</span>
-    <span class="token-keyword">github:jpolvora/workflow-skills</span>
-  </div>
-
-  <div class="hero-announcement">
-    <span>LLM-agnostic workflow skills</span>
-  </div>
-  <div class="hero-animation-wrap">
-    <video
-      class="hero-animation"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="metadata"
-      poster="assets/workflow-hero-poster.webp"
-      width="1280"
-      height="500"
-      aria-hidden="true"
-      disablepictureinpicture
-      disableremoteplayback
-    >
-      <source src="assets/workflow-hero.webm" type="video/webm">
-      <source src="assets/workflow-hero.mp4" type="video/mp4">
-    </video>
-  </div>
+  <a href="#features" class="hero-badge">
+    <span class="badge-dot"></span>
+    <span>Deterministic Spec-Driven Harness</span>
+    <span style="color:var(--text-dim)">&bull;</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.3.57</span>
+  </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
-  <p class="hero-subtitle">Spec in. Named pipeline. Reviewed pull request out. Any coding agent. GitHub or Azure DevOps.</p>
-  <p class="hero-proof">Verify advances only at a ledger-derived score (default 9). Agents cannot author that score.</p>
+  <p class="hero-subtitle">Spec in. Named pipeline. Reviewed pull request out. Any coding agent. GitHub and Azure DevOps.</p>
+  <div class="hero-proof">
+    <span class="hero-proof-tag">SCORE &ge; 9</span>
+    <span>Verification advances only at a ledger-derived score. Agents cannot author that score.</span>
+  </div>
 
   <div class="hero-cta-row">
-    <a href="#install" class="offer-cta-fill">
-      <span class="offer-cta-fill__bg"></span>
-      <span>Install with npx</span>
-    </a>
-    <a href="#how-it-works" class="btn-secondary">See the pipeline</a>
+    <a href="#install" class="offer-cta-fill">Install with npx</a>
+    <a href="#how-it-works" class="btn-secondary">Explore the pipeline &rarr;</a>
   </div>
 
   <div class="terminal-box">
@@ -169,36 +147,46 @@
         <div class="terminal-dot yellow"></div>
         <div class="terminal-dot green"></div>
       </div>
-      <div class="terminal-title">Quick Install — npx CLI</div>
+      <div class="terminal-scope-tabs" id="hero-scope-tabs">
+        <button type="button" class="terminal-scope-tab active" data-scope="interactive">Interactive</button>
+        <button type="button" class="terminal-scope-tab" data-scope="global">Global (~/.agents)</button>
+        <button type="button" class="terminal-scope-tab" data-scope="project">Project (.agents)</button>
+      </div>
+    </div>
+    <div class="terminal-presets" id="hero-presets-bar">
+      <span class="terminal-presets-label">Preset:</span>
+      <button type="button" class="terminal-preset-pill active" data-pkg="workflows">Workflows (Recommended)</button>
+      <button type="button" class="terminal-preset-pill" data-pkg="full">Full Package</button>
+      <button type="button" class="terminal-preset-pill" data-pkg="extra">Extra Tools</button>
     </div>
     <div class="terminal-body">
       <div class="terminal-cmd">
         <span class="terminal-prompt">$</span>
-        <span>npx --yes github:jpolvora/workflow-skills</span>
+        <span id="hero-cmd-text">npx --yes github:jpolvora/workflow-skills</span>
       </div>
-      <button type="button" class="terminal-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills">
+      <button type="button" class="terminal-copy-btn" id="hero-copy-btn" data-copy="npx --yes github:jpolvora/workflow-skills">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-        Copy Command
+        <span>Copy</span>
       </button>
     </div>
   </div>
 
   <div class="hero-metrics">
     <div class="metric-card">
-      <div class="metric-val cyan">48</div>
-      <div class="metric-lbl">Shipped skills</div>
+      <div class="metric-val emerald">&ge; 9 / 10</div>
+      <div class="metric-lbl">Ledger-derived verify score gate (fail-closed)</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val purple">LLM-agnostic</div>
-      <div class="metric-lbl">Any agent that loads SKILL.md</div>
+      <div class="metric-val cyan">50 Skills</div>
+      <div class="metric-lbl">Shipped across 6 architectural tiers</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val emerald">2 speeds</div>
-      <div class="metric-lbl">Standard and lite</div>
+      <div class="metric-val purple">2 Speeds</div>
+      <div class="metric-lbl">Standard (10 steps) &amp; Lite (6 steps)</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val amber">GitHub + Azure</div>
-      <div class="metric-lbl">Same PR intents</div>
+      <div class="metric-val amber">Dual SCM</div>
+      <div class="metric-lbl">Identical intents for GitHub &amp; Azure DevOps</div>
     </div>
   </div>
 </header>
@@ -317,6 +305,44 @@
       <p class="role-card-desc"><code>/ws-preview</code> runs your <code>preview.dryRunCommand</code> in-repo (no packaged reviewer). Configure with <code>/ws-configure-project --section preview</code> — it can infer the recipe from harness docs and scripts.</p>
     </div>
   </div>
+
+  <!-- Technical Verification Showcase -->
+  <div class="verification-showcase">
+    <div class="section-header" style="text-align:left;margin-bottom:16px;">
+      <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-heading);">Deterministic Verification Engine</h3>
+      <p class="section-subtitle" style="margin:0;">How Workflow Skills eliminates LLM hallucinations, fake passes, and regression drift.</p>
+    </div>
+    <div class="vs-grid">
+      <div class="vs-card">
+        <div class="vs-card-header">
+          <div class="vs-card-icon">AC</div>
+          <div class="vs-card-title">Acceptance Criteria Ledger</div>
+        </div>
+        <p class="vs-card-desc"><code>ac-ledger.json</code> mechanically links each spec requirement to concrete tasks, touched files, tests, commits, and sabotage checks. LLMs cannot fake completion without recorded evidence.</p>
+      </div>
+      <div class="vs-card">
+        <div class="vs-card-header">
+          <div class="vs-card-icon">&ge;9</div>
+          <div class="vs-card-title">Derived Score Threshold</div>
+        </div>
+        <p class="vs-card-desc">Standard Step 5 computes an objective score from the ledger: <code>score = 10 &times; (implemented / total)</code>, capped at 8 if any negative scenario remains uncovered. Agents cannot author or override this score.</p>
+      </div>
+      <div class="vs-card">
+        <div class="vs-card-header">
+          <div class="vs-card-icon">FC</div>
+          <div class="vs-card-title">Fail-Closed Quality Gates</div>
+        </div>
+        <p class="vs-card-desc">Before advancing to Step N, <code>validate_state.cjs --pre-advance N</code> verifies all required prerequisites exist on disk and match state hashes. Missing artifacts halt the pipeline immediately.</p>
+      </div>
+      <div class="vs-card">
+        <div class="vs-card-header">
+          <div class="vs-card-icon">M</div>
+          <div class="vs-card-title">Anti-Regression Memory Engine</div>
+        </div>
+        <p class="vs-card-desc"><code>ws-self-learning</code> inspects project <code>MEMORY.md</code> and external spec-memo vaults before planning or editing, turning previous coding mistakes into hard rules that subagents must respect.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="how-it-works">
@@ -326,6 +352,227 @@
   </div>
 
   <div class="how-container">
+    <!-- Interactive Pipeline Visualizer Component -->
+    <div class="pipeline-visualizer">
+      <div class="pv-header">
+        <div class="pv-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Pipeline FSM Transitions &amp; Gate Hierarchy</span>
+        </div>
+        <div class="pv-tabs" id="pv-tabs">
+          <button type="button" class="pv-tab-btn active" data-pv="standard">10-Step Standard (F0–F6)</button>
+          <button type="button" class="pv-tab-btn" data-pv="lite">6-Step Lite (F0–F4)</button>
+        </div>
+      </div>
+      <div class="pv-panel active" id="pv-panel-standard">
+        <div class="pv-steps-grid">
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 00</span>
+              <span class="pv-step-gate">Gate: G1 Auth</span>
+            </div>
+            <div class="pv-step-name">Spec &amp; Classification</div>
+            <div class="pv-step-desc">Transforms request into canonical *.spec.md with ACs and negative scenarios. Runs complexity classifier.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-00-*.spec.md</span>
+              <span class="pv-artifact-tag">ac-ledger.json</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 01</span>
+              <span class="pv-step-gate">Phase F1</span>
+            </div>
+            <div class="pv-step-name">Implementation Planning</div>
+            <div class="pv-step-desc">Binds stack companions and domain schema; maps tasks against acceptance criteria.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-01-*.plan.md</span>
+              <span class="pv-artifact-tag">plan.index.json</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 02</span>
+              <span class="pv-step-gate">Phase F1</span>
+            </div>
+            <div class="pv-step-name">Architecture Interview</div>
+            <div class="pv-step-desc">Audits plan against project rules; clarifies ambiguous edge cases via structured user gates.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-02-*.plan.refined.md</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 03</span>
+              <span class="pv-step-gate">Phase F2</span>
+            </div>
+            <div class="pv-step-name">Plan to Tasks Decomposition</div>
+            <div class="pv-step-desc">Deconstructs plan into sequential or DAG execution tasks with strict touch scopes.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-03-*.exec.dag.json</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 04</span>
+              <span class="pv-step-gate">Phase F2</span>
+            </div>
+            <div class="pv-step-name">Subagent Implementation</div>
+            <div class="pv-step-desc">Executes tasks with memory trap consulting, surgical diff hygiene, and red-to-green TDD.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">Product File Diffs</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 05</span>
+              <span class="pv-step-gate">Gate: Score &ge; 9</span>
+            </div>
+            <div class="pv-step-name">Plan &amp; Ledger Verification</div>
+            <div class="pv-step-desc">Readonly verifier derives score from ledger. Score &ge; 9 triggers product commit before code review.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-05-*.plan.report.md</span>
+              <span class="pv-artifact-tag">Product Commit</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 06</span>
+              <span class="pv-step-gate">Phase F4</span>
+            </div>
+            <div class="pv-step-name">Diff Code Review &amp; Fix</div>
+            <div class="pv-step-desc">Compares committed diff vs base branch. Automated fix subagent loops until review passes cleanly.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-06-*.review.md</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 07</span>
+              <span class="pv-step-gate">Phase F5</span>
+            </div>
+            <div class="pv-step-name">Machine Testing &amp; Mutation</div>
+            <div class="pv-step-desc">Runs unit, integration, coverage, regression sabotage, and optional mutation score checks.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-07-*.testing.report.md</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 08</span>
+              <span class="pv-step-gate">Gate: G2 Delivery</span>
+            </div>
+            <div class="pv-step-name">Close &amp; Ship PR</div>
+            <div class="pv-step-desc">Marks run completed, stages delivery artifacts, pushes branch, and creates PR on GitHub/ADO.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-08-*.result.md</span>
+              <span class="pv-artifact-tag">Pull Request</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Step 09</span>
+              <span class="pv-step-gate">Phase F6</span>
+            </div>
+            <div class="pv-step-name">Review Threads &amp; Merge</div>
+            <div class="pv-step-desc">Batches review thread fixes, verifies green CI status, and executes automatic SCM merge.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">Merged PR</span>
+              <span class="pv-artifact-tag">Synced Base</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pv-panel" id="pv-panel-lite">
+        <div class="pv-steps-grid">
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Lite Step 00</span>
+              <span class="pv-step-gate">Phase F0</span>
+            </div>
+            <div class="pv-step-name">Spec &amp; Fast Classification</div>
+            <div class="pv-step-desc">Normalizes spec, verifies low complexity (&le;3 tasks, &le;6 files, &le;2 layers), and initializes state.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-00-*.spec.md</span>
+              <span class="pv-artifact-tag">ac-ledger.json</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Lite Step 01</span>
+              <span class="pv-step-gate">Phase F1</span>
+            </div>
+            <div class="pv-step-name">Direct Implementation Plan</div>
+            <div class="pv-step-desc">Fast sequential planning skipping interview ceremony; directly targets acceptance criteria.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-01-*.plan.md</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Lite Step 02</span>
+              <span class="pv-step-gate">Gate: G2 Product Commit</span>
+            </div>
+            <div class="pv-step-name">Direct Implementation</div>
+            <div class="pv-step-desc">Executes code modifications, runs local verification, and commits product files before code review.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">Product Commit</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Lite Step 03</span>
+              <span class="pv-step-gate">Phase F2</span>
+            </div>
+            <div class="pv-step-name">Diff Code Review &amp; Fix</div>
+            <div class="pv-step-desc">Reviews committed diff vs base branch. Automatically fixes any issues with a follow-up commit.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-06-*.review.md</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Lite Step 04</span>
+              <span class="pv-step-gate">Gate: G2 Delivery</span>
+            </div>
+            <div class="pv-step-name">Close &amp; Ship PR</div>
+            <div class="pv-step-desc">Marks run completed, stages delivery artifacts, pushes branch, and creates pull request.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">step-08-*.result.md</span>
+              <span class="pv-artifact-tag">Pull Request</span>
+            </div>
+          </div>
+          <div class="pv-step-card">
+            <div class="pv-step-top">
+              <span class="pv-step-num">Lite Step 05</span>
+              <span class="pv-step-gate">Phase F4</span>
+            </div>
+            <div class="pv-step-name">Fix PR Convergence</div>
+            <div class="pv-step-desc">Resolves PR review threads, awaits green checks, and executes SCM merge into develop.</div>
+            <div class="pv-step-artifacts">
+              <span class="pv-artifact-label">Handoff:</span>
+              <span class="pv-artifact-tag">Merged PR</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="how-nav-tabs">
       <button type="button" class="how-tab-btn active" data-target="panel-standard">
         <span>Standard Pipeline</span>
@@ -901,7 +1148,9 @@
     <div class="filter-pills" id="filter-pills">
       <button type="button" class="filter-pill active" data-filter="all">All Skills</button>
       <button type="button" class="filter-pill" data-filter="layer-0">Layer 0 (Harness)</button>
-      <button type="button" class="filter-pill" data-filter="layer-2">Layer 2 (Pipeline)</button>
+      <button type="button" class="filter-pill" data-filter="layer-1">Layer 1 (Engineering standards)</button>
+      <button type="button" class="filter-pill" data-filter="layer-2">Layer 2 (Pipeline + providers)</button>
+      <!-- No layer-3 pill: Layer 3 is Discovery (reserved) with zero shipped skills; providers live in layer-2 -->
       <button type="button" class="filter-pill" data-filter="layer-4">Layer 4 (Audit)</button>
       <button type="button" class="filter-pill" data-filter="layer-5">Layer 5 (Utility)</button>
       <button type="button" class="filter-pill" data-filter="full">Full Profile</button>
@@ -1699,6 +1948,130 @@
       </div>
     </div>
   </div>
+
+  <!-- Coding Agent Environment Configuration Presets -->
+  <div class="agent-integration-section">
+    <div class="section-header" style="text-align:left;margin-top:40px;margin-bottom:16px;">
+      <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-heading);">Coding Agent Environment Configuration</h3>
+      <p class="section-subtitle" style="margin:0;">Copy-paste integration recipes for Cursor, OpenCode, Claude Code, and Antigravity.</p>
+    </div>
+
+    <div class="env-tabs-box">
+      <div class="env-tabs-header" id="env-tabs-header">
+        <button type="button" class="env-tab-btn active" data-env="cursor">Cursor IDE</button>
+        <button type="button" class="env-tab-btn" data-env="opencode">OpenCode</button>
+        <button type="button" class="env-tab-btn" data-env="claudecode">Claude Code</button>
+        <button type="button" class="env-tab-btn" data-env="antigravity">Antigravity / Gemini CLI</button>
+        <button type="button" class="env-tab-btn" data-env="shell">Universal Shell</button>
+      </div>
+
+      <div class="env-panel active" id="env-panel-cursor">
+        <div class="env-snippet-wrap">
+          <div class="env-snippet-top">
+            <span>.cursor/rules/workflow-skills.mdc</span>
+            <button type="button" class="cmd-copy-btn" data-copy="---
+description: Spec-driven harness and workflow skills router
+globs: .agents/**/*, **/*.spec.md
+---
+# Workflow Skills Harness
+Read .agents/skills/ws-shared/AGENTS.md for project configuration and task routing.
+Follow ws-spec-to-pr for standard pipeline, or ws-spec-to-pr-lite for low-complexity changes.">Copy</button>
+          </div>
+          <pre class="env-code-block"><code>---
+description: Spec-driven harness and workflow skills router
+globs: .agents/**/*, **/*.spec.md
+---
+# Workflow Skills Harness
+Read .agents/skills/ws-shared/AGENTS.md for project configuration and task routing.
+Follow ws-spec-to-pr for standard pipeline, or ws-spec-to-pr-lite for low-complexity changes.</code></pre>
+        </div>
+      </div>
+
+      <div class="env-panel" id="env-panel-opencode">
+        <div class="env-snippet-wrap">
+          <div class="env-snippet-top">
+            <span>opencode.json</span>
+            <button type="button" class="cmd-copy-btn" data-copy='{
+  "$schema": "https://opencode.ai/schema.json",
+  "instructions": [
+    ".agents/skills/ws-shared/AGENTS.md"
+  ],
+  "skills": {
+    "local": ".agents/skills",
+    "global": "~/.agents/skills"
+  }
+}'>Copy</button>
+          </div>
+          <pre class="env-code-block"><code>{
+  "$schema": "https://opencode.ai/schema.json",
+  "instructions": [
+    ".agents/skills/ws-shared/AGENTS.md"
+  ],
+  "skills": {
+    "local": ".agents/skills",
+    "global": "~/.agents/skills"
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="env-panel" id="env-panel-claudecode">
+        <div class="env-snippet-wrap">
+          <div class="env-snippet-top">
+            <span>CLAUDE.md / settings</span>
+            <button type="button" class="cmd-copy-btn" data-copy="# Claude Code Spec-Driven Instructions
+At session start, read .agents/skills/ws-shared/AGENTS.md.
+Use `npx --yes github:jpolvora/workflow-skills` to update or install skills.
+All changes require a spec file under .agents/specs/*.spec.md.">Copy</button>
+          </div>
+          <pre class="env-code-block"><code># Claude Code Spec-Driven Instructions
+At session start, read .agents/skills/ws-shared/AGENTS.md.
+Use `npx --yes github:jpolvora/workflow-skills` to update or install skills.
+All changes require a spec file under .agents/specs/*.spec.md.</code></pre>
+        </div>
+      </div>
+
+      <div class="env-panel" id="env-panel-antigravity">
+        <div class="env-snippet-wrap">
+          <div class="env-snippet-top">
+            <span>AGENTS.md / .agents/skills/</span>
+            <button type="button" class="cmd-copy-btn" data-copy="# Antigravity / Gemini CLI Instructions
+Load project settings from .agents/skills/ws-shared/config.json.
+When running multi-spec batches, invoke ws-spec-multi.
+Adhere to surgical code hygiene and verify ledger scoring.">Copy</button>
+          </div>
+          <pre class="env-code-block"><code># Antigravity / Gemini CLI Instructions
+Load project settings from .agents/skills/ws-shared/config.json.
+When running multi-spec batches, invoke ws-spec-multi.
+Adhere to surgical code hygiene and verify ledger scoring.</code></pre>
+        </div>
+      </div>
+
+      <div class="env-panel" id="env-panel-shell">
+        <div class="env-snippet-wrap">
+          <div class="env-snippet-top">
+            <span>Shell Recipes (Bash / PowerShell)</span>
+            <button type="button" class="cmd-copy-btn" data-copy="# Install global skills once
+npx --yes github:jpolvora/workflow-skills --global
+
+# Configure current project (in your coding agent)
+/ws-configure-project
+
+# Verify harness integrity (in your coding agent)
+/ws-check-harness">Copy</button>
+          </div>
+          <pre class="env-code-block"><code># Install global skills once
+npx --yes github:jpolvora/workflow-skills --global
+
+# Configure current project (in your coding agent)
+/ws-configure-project
+
+# Verify harness integrity (in your coding agent)
+/ws-check-harness</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="roadmap">
@@ -2111,26 +2484,29 @@
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.57 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.58 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
-<!-- Skill Viewer Modal -->
-<div id="skill-modal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span class="modal-title">Skill Details</span>
+<!-- Skill Viewer Slide-Over Drawer -->
+<div id="skill-modal" class="skill-drawer-overlay" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <div class="skill-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-wrap">
+        <span class="drawer-title" id="drawer-title">Skill Details</span>
+        <span class="drawer-version-tag">Portable SKILL.md</span>
+      </div>
       <div class="modal-actions">
         <button type="button" class="copy-btn modal-copy-btn">Copy Raw</button>
-        <button type="button" class="close-btn" aria-label="Close modal">&times;</button>
+        <button type="button" class="drawer-close-btn close-btn" aria-label="Close drawer">&times;</button>
       </div>
     </div>
     <div class="modal-tabs">
       <button type="button" class="modal-tab active" data-tab="preview">Preview</button>
-      <button type="button" class="modal-tab" data-tab="raw">Raw</button>
+      <button type="button" class="modal-tab" data-tab="raw">Raw Markdown</button>
     </div>
-    <div class="modal-body">
+    <div class="drawer-content">
       <div class="modal-panel" id="modal-panel-preview">
-        <div class="modal-markdown"></div>
+        <div class="modal-markdown drawer-markdown"></div>
       </div>
       <div class="modal-panel hidden" id="modal-panel-raw">
         <pre class="modal-raw"></pre>
@@ -2146,7 +2522,7 @@
 (function() {
   const RAW_BASE = 'https://raw.githubusercontent.com/jpolvora/workflow-skills/main/';
   const modal = document.getElementById('skill-modal');
-  const modalTitle = modal.querySelector('.modal-title');
+  const modalTitle = modal.querySelector('#drawer-title');
   const modalMarkdown = modal.querySelector('.modal-markdown');
   const modalRaw = modal.querySelector('.modal-raw');
   const closeBtn = modal.querySelector('.close-btn');
@@ -2156,13 +2532,15 @@
   const panelRaw = document.getElementById('modal-panel-raw');
   const toastContainer = document.getElementById('toast-container');
   const themeToggle = document.getElementById('theme-toggle');
-  const sunIcon = themeToggle.querySelector('.sun-icon');
-  const moonIcon = themeToggle.querySelector('.moon-icon');
+  const sunIcon = themeToggle ? themeToggle.querySelector('.sun-icon') : null;
+  const moonIcon = themeToggle ? themeToggle.querySelector('.moon-icon') : null;
 
   var rawFullText = '';
+  var lastActiveElement = null;
 
   /* ─── Toast Notifications ─── */
   function showToast(msg) {
+    if (!toastContainer) return;
     var toast = document.createElement('div');
     toast.className = 'toast';
     toast.innerHTML = '<span class="toast-icon">✓</span> <span>' + msg + '</span>';
@@ -2178,19 +2556,23 @@
     currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
-    if (theme === 'light') {
-      sunIcon.classList.remove('hidden');
-      moonIcon.classList.add('hidden');
-    } else {
-      sunIcon.classList.add('hidden');
-      moonIcon.classList.remove('hidden');
+    if (sunIcon && moonIcon) {
+      if (theme === 'light') {
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+      } else {
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+      }
     }
   }
   setTheme(currentTheme);
 
-  themeToggle.addEventListener('click', function() {
-    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-  });
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+      setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+  }
 
   /* ─── Clipboard Copy Handlers ─── */
   document.addEventListener('click', function(e) {
@@ -2217,49 +2599,138 @@
     }
   });
 
-  /* ─── Modal Handling ─── */
-  function closeModal() {
+  /* ─── Hero Terminal Scope & Preset Switcher ─── */
+  var heroScopeTabs = document.querySelectorAll('#hero-scope-tabs .terminal-scope-tab');
+  var heroPresetPills = document.querySelectorAll('#hero-presets-bar .terminal-preset-pill');
+  var heroCmdText = document.getElementById('hero-cmd-text');
+  var heroCopyBtn = document.getElementById('hero-copy-btn');
+
+  var currentScope = 'interactive';
+  var currentPkg = 'workflows';
+
+  function updateHeroCmd() {
+    var cmd = 'npx --yes github:jpolvora/workflow-skills';
+    if (currentScope === 'global') cmd += ' --global';
+    else if (currentScope === 'project') cmd += ' --project';
+
+    if (currentPkg === 'full') cmd += ' --full';
+    else if (currentPkg === 'extra') cmd += ' --package extra';
+    
+    if (heroCmdText) heroCmdText.textContent = cmd;
+    if (heroCopyBtn) heroCopyBtn.setAttribute('data-copy', cmd);
+  }
+
+  heroScopeTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      heroScopeTabs.forEach(function(t) { t.classList.remove('active'); });
+      this.classList.add('active');
+      currentScope = this.getAttribute('data-scope');
+      updateHeroCmd();
+    });
+  });
+
+  heroPresetPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      heroPresetPills.forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      currentPkg = this.getAttribute('data-pkg');
+      updateHeroCmd();
+    });
+  });
+
+  /* ─── Interactive Pipeline Visualizer Tabs ─── */
+  var pvTabBtns = document.querySelectorAll('#pv-tabs .pv-tab-btn');
+  var pvPanelStandard = document.getElementById('pv-panel-standard');
+  var pvPanelLite = document.getElementById('pv-panel-lite');
+
+  pvTabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      pvTabBtns.forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      var mode = this.getAttribute('data-pv');
+      if (mode === 'lite') {
+        if (pvPanelStandard) pvPanelStandard.classList.remove('active');
+        if (pvPanelLite) pvPanelLite.classList.add('active');
+      } else {
+        if (pvPanelStandard) pvPanelStandard.classList.add('active');
+        if (pvPanelLite) pvPanelLite.classList.remove('active');
+      }
+    });
+  });
+
+  /* ─── Agent Environment Presets Tabs ─── */
+  var envTabBtns = document.querySelectorAll('#env-tabs-header .env-tab-btn');
+  var envPanels = document.querySelectorAll('.env-panel');
+
+  envTabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      envTabBtns.forEach(function(b) { b.classList.remove('active'); });
+      envPanels.forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      var env = this.getAttribute('data-env');
+      var targetPanel = document.getElementById('env-panel-' + env);
+      if (targetPanel) targetPanel.classList.add('active');
+    });
+  });
+
+  /* ─── Slide-Over Drawer Handling ─── */
+  function closeDrawer() {
+    if (!modal) return;
     modal.classList.remove('open');
     document.body.style.overflow = '';
+    if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
+      lastActiveElement.focus();
+    }
   }
 
   function switchTab(tab) {
     tabs.forEach(function(t) {
       t.classList.toggle('active', t.dataset.tab === tab);
     });
-    panelPreview.classList.toggle('hidden', tab !== 'preview');
-    panelRaw.classList.toggle('hidden', tab !== 'raw');
+    if (panelPreview) panelPreview.classList.toggle('hidden', tab !== 'preview');
+    if (panelRaw) panelRaw.classList.toggle('hidden', tab !== 'raw');
   }
 
   tabs.forEach(function(tab) {
     tab.addEventListener('click', function() { switchTab(this.dataset.tab); });
   });
 
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
-
-  copyBtn.addEventListener('click', function() {
-    if (!rawFullText) return;
-    navigator.clipboard.writeText(rawFullText).then(function() {
-      showToast('Skill markdown copied!');
+  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeDrawer();
     });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+      closeDrawer();
+    }
   });
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+      if (!rawFullText) return;
+      navigator.clipboard.writeText(rawFullText).then(function() {
+        showToast('Skill markdown copied!');
+      });
+    });
+  }
 
   document.addEventListener('click', function(e) {
     var viewBtn = e.target.closest('.view-skill');
     if (!viewBtn) return;
 
     e.preventDefault();
+    lastActiveElement = viewBtn;
     var path = viewBtn.getAttribute('data-path');
     var card = viewBtn.closest('.skill-card, .workflow-card');
     var name = card ? (card.querySelector('.name') || card.querySelector('h3')).textContent.trim() : 'Skill';
     var url = RAW_BASE + path;
 
     rawFullText = '';
-    modalTitle.textContent = name;
-    modalMarkdown.innerHTML = '<p style="color:var(--text-muted)">Loading skill details...</p>';
-    modalRaw.textContent = '';
+    if (modalTitle) modalTitle.textContent = name;
+    if (modalMarkdown) modalMarkdown.innerHTML = '<p style="color:var(--text-muted)">Loading skill details...</p>';
+    if (modalRaw) modalRaw.textContent = '';
     switchTab('preview');
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -2272,12 +2743,12 @@
       .then(function(text) {
         rawFullText = text;
         var bodyText = text.replace(/^---[\s\S]*?---\n*/, '');
-        modalMarkdown.innerHTML = marked.parse(bodyText, { breaks: true, gfm: true });
-        modalRaw.textContent = text;
+        if (modalMarkdown) modalMarkdown.innerHTML = marked.parse(bodyText, { breaks: true, gfm: true });
+        if (modalRaw) modalRaw.textContent = text;
       })
       .catch(function(err) {
-        modalMarkdown.innerHTML = '<p style="color:var(--accent-rose)">Failed to load skill: ' + err.message + '</p>';
-        modalRaw.textContent = 'Error loading ' + url;
+        if (modalMarkdown) modalMarkdown.innerHTML = '<p style="color:var(--accent-rose)">Failed to load skill: ' + err.message + '</p>';
+        if (modalRaw) modalRaw.textContent = 'Error loading ' + url;
       });
   });
 
@@ -2314,7 +2785,9 @@
       
       var matchesFilter = true;
       if (currentFilter === 'layer-0') matchesFilter = layer.includes('layer-0');
+      else if (currentFilter === 'layer-1') matchesFilter = layer.includes('layer-1');
       else if (currentFilter === 'layer-2') matchesFilter = layer.includes('layer-2');
+      else if (currentFilter === 'layer-3') matchesFilter = layer.includes('layer-3');
       else if (currentFilter === 'layer-4') matchesFilter = layer.includes('layer-4');
       else if (currentFilter === 'layer-5') matchesFilter = layer.includes('layer-5');
       else if (currentFilter === 'full') matchesFilter = isFull;
@@ -2358,7 +2831,7 @@
 
     // Press '/' to focus search
     document.addEventListener('keydown', function(e) {
-      if (e.key === '/' && document.activeElement !== searchInput) {
+      if (e.key === '/' && document.activeElement !== searchInput && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
         e.preventDefault();
         searchInput.focus();
       }
@@ -2393,7 +2866,7 @@
     });
   });
 
-  /* ─── How It Works Tab Switcher ─── */
+  /* ─── How It Works Stepper Tab Switcher ─── */
   var howTabBtns = document.querySelectorAll('.how-tab-btn');
   var howPanels = document.querySelectorAll('.how-panel');
 

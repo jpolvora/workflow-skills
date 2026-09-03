@@ -94,21 +94,26 @@ Config override: `defaults.hostAdapter.mode` (`auto` default; `native-tool` | `c
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
 | `browser-mcp` | Browser integration test | Host browser verification tool when available (only normal mode, non-dry-run, gated) |
 
-### Host capability discovery & dispatch tiers
+### Host-tool binding & dispatch tiers (single contract)
 
-At bootstrap (and before first dispatch), inspect the session tool palette and environment signals to resolve three neutral flags:
+Workflows never name concrete session tools. At bootstrap (before the first `user-gate` or `dispatch-agent`), bind these portable aliases once:
 
-- `hasStructuredChoiceTool`: a modal choice tool accepting structured options and blocking until user submission is declared.
-- `hasSubagentTool`: a native subagent dispatch tool is declared.
-- `hasBrowserTool`: a browser verification tool is declared.
+| Alias | Capability |
+|-------|------------|
+| `askQuestionTool` | Structured-choice gate tool (accepts options, blocks until submission), or `none` |
+| `subagentTool` | Native subagent dispatch tool, or `none` |
+| `backgroundTaskTool` | Background CLI runner entry, or `none` |
+| `browserTool` | Browser verification tool, or `none` |
 
-Resolution order: `defaults.hostAdapter.mode` when set to `native-tool` | `cli-command` | `inline-isolated` → else auto-discovery above. Log `host-capability-detect | subagent={mode} | gate={mode} | ISO` to step telemetry JSONL during Step 0.
+**Resolution order (first match wins):** `defaults.hostAdapter.mode` non-`auto` tier force → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key (`hostId` = session-reported neutral host identifier; `orchestratorModel` = bootstrap `currentModel` id with version) → one active probe asking the session to map each alias to its concrete tool or `none`. Normalize common spelling variants to one alias; unknown tools bind `none` without failure. Reuse the binding for the whole workflow (no per-step re-probe unless toolset change, explicit rebind, or key change). Cache misses upsert only the current key (preserving others) in the consumer-local gitignored `host-capabilities.json`; missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0 and persist as `state.hostBinding`.
+
+Legacy neutral flags are derived readouts of this binding (not a separate discovery pass): `hasStructuredChoiceTool` ⟺ `askQuestionTool` bound; `hasSubagentTool` ⟺ `subagentTool` bound; `hasBrowserTool` ⟺ `browserTool` bound.
 
 `dispatch-agent` fallback ladder (honor resolved mode; pass discrete context pointers only — never full transcripts):
 
-- **Tier 1 — native-tool:** `hasSubagentTool` is true. Dispatch steps to that tool with pointers (`handoff/step-{N-1}.json`, `ac-ledger.json`, `plan.index.json`).
-- **Tier 2 — cli-command:** no native tool but a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH. Launch the step as a background task via `run_command` using the configured template.
-- **Tier 3 — inline-isolated:** neither tool nor runner is available. Run Inline Isolated Execution per [`host-dispatch.md`](host-dispatch.md) § Inline Isolated Execution (adopt step persona, read pointers only, edit via native file tools, emit `step-output`, log `inline-isolated-step | step {N} | ISO`).
+- **Tier 1 — native-tool:** `subagentTool` is bound. Dispatch steps to that tool with pointers (`handoff/step-{N-1}.json`, `ac-ledger.json`, `plan.index.json`).
+- **Tier 2 — cli-command:** `subagentTool` is `none` but `backgroundTaskTool` is bound or a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH. Launch the step as a background task via `run_command` using the configured template.
+- **Tier 3 — inline-isolated:** both aliases are `none`. Run Inline Isolated Execution per [`host-dispatch.md`](host-dispatch.md) § Inline Isolated Execution (adopt step persona, read pointers only, edit via native file tools, emit `step-output`, log `inline-isolated-step | step {N} | ISO`).
 
 ### Subagent model preferences
 

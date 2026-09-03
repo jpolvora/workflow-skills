@@ -27,14 +27,14 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 ## User gates (`user-gate`)
 
 Portable alias: `user-gate`. Gate placement follows `defaults.gateGranularity`; hard stops are unchanged.
-Host binding: [`tools.md`](tools.md) § Host capability discovery & dispatch tiers (`hasStructuredChoiceTool`).
+Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`askQuestionTool`).
 
 1. Every normal-mode gate: use `user-gate` with ≥2 options; recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
-2. In normal mode, when a modal choice tool (accepting structured options and blocking execution until user submission) is present in the session tool palette, the orchestrator and shared skills MUST invoke that tool for all `user-gate` occurrences rather than falling back to text. Log `user-gate-modal | {gate} | ISO`.
-3. If structured choice is unavailable → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
+2. In normal mode, when the cached `askQuestionTool` binding (Step 0 probe or `{sharedDir}/host-capabilities.json` hit for the current `hostId::orchestratorModel` key) resolves to a concrete tool, the orchestrator and shared skills MUST invoke that tool for all `user-gate` occurrences rather than falling back to text. Log `user-gate-modal | {gate} | ISO`.
+3. If `askQuestionTool` binds `none` → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
 5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-6. `autoMode` → no user-gate prompt (neither modal tool nor markdown); use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing.
+6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing.
 
 ## Interactive execution cadence (One Step Per Turn)
 

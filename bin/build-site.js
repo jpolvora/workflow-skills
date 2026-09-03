@@ -458,7 +458,9 @@ const newSection =
     <div class="filter-pills" id="filter-pills">
       <button type="button" class="filter-pill active" data-filter="all">All Skills</button>
       <button type="button" class="filter-pill" data-filter="layer-0">Layer 0 (Harness)</button>
-      <button type="button" class="filter-pill" data-filter="layer-2">Layer 2 (Pipeline)</button>
+      <button type="button" class="filter-pill" data-filter="layer-1">Layer 1 (Engineering standards)</button>
+      <button type="button" class="filter-pill" data-filter="layer-2">Layer 2 (Pipeline + providers)</button>
+      <!-- No layer-3 pill: Layer 3 is Discovery (reserved) with zero shipped skills; providers live in layer-2 -->
       <button type="button" class="filter-pill" data-filter="layer-4">Layer 4 (Audit)</button>
       <button type="button" class="filter-pill" data-filter="layer-5">Layer 5 (Utility)</button>
       <button type="button" class="filter-pill" data-filter="full">Full Profile</button>

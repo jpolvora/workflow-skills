@@ -1,6 +1,6 @@
 ---
 name: ws-spec-memo
-version: 0.3.57
+version: 0.3.58
 disable-model-invocation: true
 description: >-
   workflow-skills ↔ spec-memo bridge only: wire config.json memory backends, import/migrate

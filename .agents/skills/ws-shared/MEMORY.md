@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Vendor or download a named reviewer backend (e.g. cursor-reviewer `run.sh`), invent `CURSOR_API_KEY` / stack / backend flags, or ship a packaged `run_dry_run.sh` wrapper
 - **INSTEAD DO**: Read project `{sharedDir}/config.json` → `preview.dryRunCommand`; if empty STOP and ask the consumer to configure via `ws-configure-project --section preview` (infers from AGENTS/README/MEMORY/rules/scripts) or set the key; run that command from the consumer repo root with a long Shell timeout
 
+### [2026-09-03] Installer secondary-target lifecycle must be symmetric across install/update/uninstall
+- **Layer**: `harness`
+- **Module**: `bin/cli.js`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/cli.js`, `test/test-install.js`
+- **Scenario / Context**: Multi-host `--targets` flows added per-command (install persists, update syncs, uninstall removes) left asymmetric gaps found by PR review: install ignored manifest targets on repeat runs, `--targets` without `--global` was silently dropped, update never persisted explicit targets, uninstall never cleaned secondary projections
+- **DO NOT**: Add a scope-gated CLI flag that silently no-ops outside its scope, or resolve secondary targets in one command without persisting/reusing/cleaning them the way sibling commands do
+- **INSTEAD DO**: Fail closed on scope mismatch (`--targets` without `--global` errors); persist explicit targets to `installed-skills.json` on every mutating command; reuse recorded targets when flags are omitted; remove secondary projections on uninstall; cover incremental-reuse and uninstall-cleanup in Phase 12 tests
+
 ### [2026-09-03] Install/update must prune retired managed skill files
 - **Layer**: `harness`
 - **Module**: `bin/cli.js`
@@ -23,6 +32,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: After removing a packaged file from a skill (e.g. `ws-preview/scripts/run_dry_run.sh`), consumer/global installs still had the leftover; merge-only copy left it on disk and post-copy integrity reported `extra` / exit 1 with no automatic rollback
 - **DO NOT**: Assume overwrite install/update replaces the whole skill tree, or leave dest-only managed files after overlay copy
 - **INSTEAD DO**: After `copyDirSync` into an existing skill dir, run `pruneManagedSkillExtras` (skip consumer-owned `config.json` / `MEMORY.md` / `memory/`); verify with install Phase 11 prune tests
+
+### [2026-09-03] Generated site labels must match the taxonomy source and guards need symmetric tests
+- **Layer**: `harness`
+- **Module**: `bin/build-site.js`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/build-site.js`, `docs/index.html`, `test/test-install.js`
+- **Scenario / Context**: Site revamp hand-set catalog filter pills that contradicted the CATALOG.md layer taxonomy (dead Layer 3 filter, mislabeled Layer 1); installer scope guard existed on install but had no symmetric negative test on update
+- **DO NOT**: Hardcode display labels in generated-site templates that restate a taxonomy owned elsewhere, or add a guard on one command without the mirrored negative test on its sibling command
+- **INSTEAD DO**: Derive display labels from the canonical taxonomy (or assert pill labels against layer assignments in test-doc-sync); add fail-closed tests for every scope-gated flag on each command that parses it
 
 ### [2026-09-02] ws-spec-memo is harness bridge not vault encyclopedia
 - **Layer**: `Other`
