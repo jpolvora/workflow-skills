@@ -1,0 +1,12 @@
+{
+  "cursor::cursor-grok-4.6": {
+    "binding": {
+      "askQuestionTool": "AskQuestion",
+      "subagentTool": "Task",
+      "backgroundTaskTool": "none",
+      "browserTool": "cursor-ide-browser"
+    },
+    "probedAt": "2026-09-03T13:03:00Z",
+    "hostAdapterMode": "auto"
+  }
+}

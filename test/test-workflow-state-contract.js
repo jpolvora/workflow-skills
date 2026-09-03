@@ -668,6 +668,110 @@ assert.strictEqual(
 );
 
 {
+  const stampRoot = temp('ws-state-index-stamp-');
+  write(path.join(stampRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  const idleTs = '2026-08-01T00:00:00Z';
+  const liveTs = '2026-09-03T13:05:03Z';
+  const idleState = '.agents/plans/idle/wf-idle.state.md';
+  const liveState = '.agents/plans/live/wf-live.state.md';
+  write(path.join(stampRoot, idleState), `---
+stateVersion: 2
+revision: 4
+workflowId: wf-idle
+slug: idle
+workflowType: standard
+status: completed
+currentStep: 8
+completedSteps: [8]
+skippedSteps: []
+startedAt: "${idleTs}"
+endedAt: "${idleTs}"
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+---
+# State
+`);
+  write(path.join(stampRoot, liveState), `---
+stateVersion: 2
+revision: 1
+workflowId: wf-live
+slug: live
+workflowType: standard
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+startedAt: "${idleTs}"
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+---
+# State
+`);
+  const memoTs = '2026-07-15T12:00:00Z';
+  const memoState = '.agents/plans/memo/wf-memo.state.md';
+  write(path.join(stampRoot, memoState), `---
+workflowType: ws-multi-spec
+runId: wf-memo
+status: completed
+createdAt: "2026-07-15T11:00:00Z"
+updatedAt: "${memoTs}"
+---
+# Multi-spec
+`);
+  write(path.join(stampRoot, '.agents/plans/index.json'), JSON.stringify({
+    schemaVersion: 1,
+    revision: 4,
+    generatedAt: idleTs,
+    workflows: [
+      {
+        workflowId: 'wf-idle',
+        slug: 'idle',
+        pipeline: 'standard',
+        statePath: idleState,
+        stateSha256: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        status: 'completed',
+        currentStep: 8,
+        updatedAt: idleTs,
+        runPath: '.agents/plans/idle/run.json',
+      },
+      {
+        workflowId: 'wf-live',
+        slug: 'live',
+        pipeline: 'standard',
+        statePath: liveState,
+        stateSha256: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        status: 'active',
+        currentStep: 0,
+        updatedAt: idleTs,
+        runPath: '.agents/plans/live/run.json',
+      },
+    ],
+  }, null, 2));
+  const liveCommon = ['--repo-root', stampRoot, '--jsonl-out', '.agents/plans/live/telemetry/step-00.jsonl'];
+  const dispatchLive = run(update, ['dispatch', liveState, '--step', '0', '--timestamp', liveTs, ...liveCommon]);
+  assert.strictEqual(dispatchLive.status, 0, dispatchLive.stderr);
+  const rowById = (index, id) => index.workflows.find((row) => row.workflowId === id);
+  const afterUpdate = JSON.parse(fs.readFileSync(path.join(stampRoot, '.agents/plans/index.json'), 'utf8'));
+  assert.strictEqual(rowById(afterUpdate, 'wf-live').updatedAt, liveTs, 'update_state stamps only the current workflow updatedAt');
+  assert.strictEqual(rowById(afterUpdate, 'wf-idle').updatedAt, idleTs, 'update_state leaves sibling workflow updatedAt unchanged');
+  assert.strictEqual(run(validate, ['rebuild-index', '--repo-root', stampRoot]).status, 0, 'rebuild-index exits 0 with mixed workflows');
+  const afterRebuild = JSON.parse(fs.readFileSync(path.join(stampRoot, '.agents/plans/index.json'), 'utf8'));
+  assert.strictEqual(rowById(afterRebuild, 'wf-idle').updatedAt, idleTs, 'rebuild-index keeps idle workflow updatedAt from that workflow state');
+  assert.strictEqual(rowById(afterRebuild, 'wf-live').updatedAt, liveTs, 'rebuild-index keeps live workflow updatedAt from that workflow activity');
+  const memoRow = afterRebuild.workflows.find((row) => row.statePath && row.statePath.includes('/memo/'));
+  assert.ok(memoRow, 'rebuild-index includes the multi-spec state row');
+  assert.strictEqual(memoRow.updatedAt, memoTs, 'rebuild-index uses frontmatter updatedAt when dispatch timestamps are absent');
+  assert.notStrictEqual(
+    rowById(afterRebuild, 'wf-idle').updatedAt,
+    afterRebuild.generatedAt,
+    'rebuild-index generatedAt must not overwrite every workflow updatedAt',
+  );
+}
+
+{
   const mdPath = path.join(root, stateRel);
   assert.ok(fs.existsSync(path.join(root, '.agents/plans/demo/wf.state.json')), 'shared fixture has .state.json');
   const md = fs.readFileSync(mdPath, 'utf8');

@@ -165,7 +165,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
 **Normal — workflow discovery (mandatory before any new workflow):**
 
-1. When `{plansDir}/index.json` is missing **or** this is the first bootstrap after a package update / the resume list looks incomplete, run `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs rebuild-index` (lite orch: the lite `validate_state.cjs` wrapper; same module).
+1. When `{plansDir}/index.json` is missing **or** this is the first bootstrap after a package update / the resume list looks incomplete, run `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs rebuild-index` (lite orch: the lite `validate_state.cjs` wrapper; same module). Catalog `generatedAt` is rebuild time; each `workflows[]` `updatedAt` stays that workflow's last activity (`endedAt` / dispatch timestamps / `startedAt`), not a global now stamp.
 2. `Read` `{plansDir}/index.json` **once**. Use `workflows[]` fields (`status`, `workflowId`, `slug`, `pipeline`/`workflowType`, `currentStep`, `statePath`). If an expected active/paused workflow is still absent, run `rebuild-index` once more before concluding no unfinished workflows exist. Do not `Glob`/`Read` every `*.state.md` unless the index is corrupt — then `rebuild-index` and retry once.
 3. Filter by `workflowType` / `pipeline` match (`standard` vs `lite`).
    - **Completed Workflow Check:** If an existing workflow matches the target US/slug and has `status: completed` **and** shipping is terminal (`shipStatus` is `skipped`, `merged`, or `stopped`; or legacy state with no `shipStatus` and Step 9 in `completedSteps` / explicit skip-ship recorded):

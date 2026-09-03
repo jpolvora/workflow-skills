@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-03 09:15] Agent: Cursor Grok 4.6
+- **Prompt**: Fix `{plansDir}/index.json` so `updatedAt` changes only for the workflow being updated, not every `workflows[]` row
+- **Done**: `rebuildIndex` now derives each row `updatedAt` from that workflow's state activity; `updatePlansIndex` already upserted one `workflowId`; contract test covers sibling preservation plus rebuild
+- **Result**: Idle workflows keep their last activity time; catalog `generatedAt` remains rebuild time
+
 ### [2026-09-03 08:59] Agent: Cursor Grok 4.6
 - **Prompt**: Persist and consume spec prefix naming from config; check ws-spec-organizer
 - **Done**: Seeded `plans.enforceSpecPrefixOrdering: true` in project config; ws-spec-write/organizer/AGENTS.md now persist that exact key when absent; renamed spec to `0060-provider-fetch-visual-attachments.spec.md`

@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Invent `specNamingPrefixConvention` or other aliases. Do not concatenate `{specsDir}/{slug}.spec.md` when the organizer helper exists. Do not leave the prefix key omitted on a board that already uses `NNNN-*.spec.md`.
 - **INSTEAD DO**: Persist `plans.enforceSpecPrefixOrdering` under `plans` when absent (seed `true` if `{specsDir}` already has top-level `NNNN-*.spec.md`, else `false`). Then call `resolve_spec_path.cjs` and write only the returned `SPEC_PATH` / `--context` path. Frontmatter `slug` stays unprefixed.
 
+### [2026-09-03] Plans index updatedAt is per-workflow
+- **Layer**: `harness`
+- **Module**: `workflow_state / plans index`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/workflow_state.cjs`, `.agents/plans/index.json`
+- **Scenario / Context**: `{plansDir}/index.json` is rewritten on `update_state` and on `validate_state.cjs rebuild-index`. Agents often run rebuild-index during bootstrap when the resume list looks incomplete.
+- **DO NOT**: Stamp every `workflows[]` row `updatedAt` with `nowIso()` / catalog `generatedAt` during rebuild or a single-workflow update. That makes idle completed runs look freshly touched.
+- **INSTEAD DO**: `updatePlansIndex` upserts only the current `workflowId` row with the operation timestamp. `rebuildIndex` sets each row `updatedAt` from that workflow's own activity (`endedAt`, frontmatter `updatedAt`, latest dispatch timestamps, `startedAt`, `createdAt`) and keeps catalog `generatedAt` as rebuild time.
+
 ### [2026-09-03] Installer secondary-target lifecycle must be symmetric across install/update/uninstall
 - **Layer**: `harness`
 - **Module**: `bin/cli.js`

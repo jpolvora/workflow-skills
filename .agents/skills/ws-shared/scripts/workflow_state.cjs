@@ -236,6 +236,36 @@ function nowIso() {
   return new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
+function toIndexIso(value) {
+  const ms = Date.parse(value);
+  if (Number.isNaN(ms)) return null;
+  return new Date(ms).toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
+function workflowActivityIso(state) {
+  const candidates = [];
+  if (state && state.endedAt) candidates.push(state.endedAt);
+  if (state && state.updatedAt) candidates.push(state.updatedAt);
+  for (const item of Array.isArray(state?.stepDispatches) ? state.stepDispatches : []) {
+    if (!item || typeof item !== 'object') continue;
+    if (item.dispatchedAt) candidates.push(item.dispatchedAt);
+    if (item.finishedAt) candidates.push(item.finishedAt);
+    if (item.dispatched) candidates.push(item.dispatched);
+  }
+  if (state && state.startedAt) candidates.push(state.startedAt);
+  if (state && state.createdAt) candidates.push(state.createdAt);
+  let latestMs = NaN;
+  for (const value of candidates) {
+    const ms = Date.parse(value);
+    if (!Number.isNaN(ms) && (Number.isNaN(latestMs) || ms > latestMs)) latestMs = ms;
+  }
+  return Number.isNaN(latestMs) ? null : new Date(latestMs).toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
+function workflowIndexUpdatedAt(state, priorRow) {
+  return workflowActivityIso(state) || toIndexIso(priorRow?.updatedAt) || nowIso();
+}
+
 function cleanScalar(value) {
   const raw = String(value ?? '').trim();
   const unquoted = raw.replace(/^(['"])([\s\S]*)\1$/, '$2');
@@ -1303,8 +1333,22 @@ function resolveStateFile(input, context) {
   return direct;
 }
 
+function readPriorPlansIndex(context) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(plansIndexPath(context), 'utf8'));
+    return Array.isArray(parsed.workflows) ? parsed.workflows : [];
+  } catch {
+    return [];
+  }
+}
+
 function rebuildIndex(context, config) {
   const plansDir = resolveConfiguredPath(context.repoRoot, context.config?.plans?.dir, '.agents/plans');
+  const priorById = new Map(
+    readPriorPlansIndex(context)
+      .filter((item) => item && item.workflowId)
+      .map((item) => [String(item.workflowId), item]),
+  );
   const workflows = [];
   const stack = [plansDir];
   let maxRevision = 0;
@@ -1318,15 +1362,16 @@ function rebuildIndex(context, config) {
         const state = loaded.state;
         const hash = loaded.jsonText ? sha256(loaded.jsonText) : stateIdentityHash(fs.readFileSync(full, 'utf8'));
         maxRevision = Math.max(maxRevision, Number(state.revision || 0));
+        const workflowId = String(state.workflowId || '');
         workflows.push({
-          workflowId: state.workflowId,
+          workflowId,
           slug: state.slug || state.us,
           pipeline: state.workflowType || config.pipeline,
           statePath: toRepoRelative(context.repoRoot, full),
           stateSha256: hash,
           status: state.status,
           currentStep: Number(state.currentStep || 0),
-          updatedAt: nowIso(),
+          updatedAt: workflowIndexUpdatedAt(state, priorById.get(workflowId)),
           runPath: `${path.posix.dirname(toRepoRelative(context.repoRoot, full))}/run.json`,
         });
       }
