@@ -279,7 +279,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 ## Local dry-run: agentic code reviewers
 
-Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) (`opencode` / `opencode-go/muse-spark-1.3-contributor`). Cursor backup [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only. See [`README.md`](README.md) for human-oriented context; OpenCode dry-run:
+Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) (`cursor-sdk` / `composer-2.5`). OpenCode backup [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) is `workflow_dispatch` only (re-enable on `pull_request` when OpenCode Go billing has credits). See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
 
 ```bash
 # Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.
@@ -289,8 +289,8 @@ AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS=".agents/plans/**,.agents/specs/**
 bash /tmp/agentic-code-reviewers-run.sh \
   --dry-run \
   --gh \
-  --engine opencode \
-  --model opencode-go/muse-spark-1.3-contributor \
+  --engine cursor-sdk \
+  --model composer-2.5 \
   --variant high \
   --stack Custom \
   --custom-prompt .github/agentic-code-reviewers-prompt.md \
