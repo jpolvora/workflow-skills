@@ -130,10 +130,10 @@ Optional setting in `defaults.verboseMode` for `ws-spec-to-pr` / `ws-spec-to-pr-
 
 ## Host environment detection & subagent dispatch resolution (`defaults.hostAdapter`)
 
-Optional setting in `defaults.hostAdapter` for multi-IDE and multi-agent subagent execution. See [`host-dispatch.md`](host-dispatch.md).
+Optional setting in `defaults.hostAdapter` for host-agnostic subagent execution. See [`host-dispatch.md`](host-dispatch.md).
 
-1. **Auto-detection (default):** Detects Antigravity / Gemini IDE, Cursor, OpenCode, Claude Code, or Codex from host tools and environment.
-2. **Explicit override:** Set `defaults.hostAdapter.mode` (`"auto"`, `"native-tool"`, `"cli-command"`, `"inline-isolated"`, `"antigravity"`, `"cursor"`, `"opencode"`, `"claude"`).
+1. **Auto-detection (default):** Inspect the session tool palette and environment at bootstrap to resolve `hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowserTool`, then Tier 1 (native-tool) → Tier 2 (cli-command) → Tier 3 (inline-isolated).
+2. **Explicit override:** Set `defaults.hostAdapter.mode` (`"auto"`, `"native-tool"`, `"cli-command"`, `"inline-isolated"`). Explicit mode wins over auto-discovery.
 3. **Sparse context pointers:** Dispatches pass pointers to artifacts (`step-00-*.spec.md`, `plan.index.json`, `ac-ledger.json`, `handoff/step-*.json`) instead of full transcripts.
 
 

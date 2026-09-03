@@ -27,11 +27,18 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 ## User gates (`user-gate`)
 
 Portable alias: `user-gate`. Gate placement follows `defaults.gateGranularity`; hard stops are unchanged.
+Host binding: [`tools.md`](tools.md) § Host capability discovery & dispatch tiers (`hasStructuredChoiceTool`).
 
 1. Every normal-mode gate: use `user-gate` with ≥2 options; recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
-2. If structured choice is unavailable → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
-3. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-4. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
+2. When a modal choice tool (accepting structured options and blocking execution until user submission) is present in the session tool palette, the orchestrator and shared skills MUST invoke that tool for all `user-gate` occurrences rather than falling back to text. Log `user-gate-modal | {gate} | ISO`.
+3. If structured choice is unavailable → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
+4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
+5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
+6. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
+
+## Interactive execution cadence (One Step Per Turn)
+
+In interactive execution mode, completing Step N (dispatch, execution, state finish, pre-advance validation, and transition gate) must halt the turn. Step N+1 MUST never be initiated within the same interaction turn without explicit user confirmation. This prevents eager models from steamrolling past gates by generating a gate plus next-step tool calls in one response.
 
 **Orchestrator obligation:** both orchestrators resolve `defaults.gateGranularity` (`step` default, or `phase`). `step` runs `user-gate` at each step boundary. `phase` runs at most five blocking gates in a normal standard run: entry, plan approval, implementation approval, delivery, and fix-PR. Boundaries inside a phase advance after validation and state persistence without another blocking prompt. Hard stops, required save points, review findings, test failures, and safety checks never become implicit approvals.
 

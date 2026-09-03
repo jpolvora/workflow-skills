@@ -21,7 +21,7 @@ Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap 
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Entry check: [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Never narrate undone work. Orch never edits code; use `dispatch-agent` only.
+Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Entry check: [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve `defaults.hostAdapter.mode` + tool-palette flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowserTool`) per [`host-dispatch.md`](../ws-shared/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only.
 
 | Intent | Alias | Rule |
 |--------|-------|------|

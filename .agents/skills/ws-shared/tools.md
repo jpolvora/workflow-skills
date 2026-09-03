@@ -84,14 +84,31 @@ Entry / fetch: resolve `providers.active` → [`ws-spec-provider-github`](../ws-
 ## Agent dispatch tools
 
 Host environment detection & dispatch adapters: [`host-dispatch.md`](host-dispatch.md).
+Config override: `defaults.hostAdapter.mode` (`auto` default; `native-tool` | `cli-command` | `inline-isolated` forces a tier) wins over auto-discovery.
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided or via [`host-dispatch.md`](host-dispatch.md)); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
+| `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided or via [`host-dispatch.md`](host-dispatch.md) fallback ladder); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
 | `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | Subagent dispatch (host-provided) — same worktree, no file overlap |
-| `user-gate` | Ask question | Host structured-choice UI when available; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback when unavailable (see [`gates.md`](gates.md)); log `user-gate-fallback` |
+| `user-gate` | Ask question | Host structured-choice UI when available (modal tool preferred; blocks until submission); ≥2 options, recommended first; cancelled → HS-1. Markdown fallback when unavailable (see [`gates.md`](gates.md)); log `user-gate-modal` or `user-gate-fallback` |
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
-| `browser-mcp` | Browser integration test | Host browser MCP or `browser_subagent` when available (only normal mode, non-dry-run, gated) |
+| `browser-mcp` | Browser integration test | Host browser verification tool when available (only normal mode, non-dry-run, gated) |
+
+### Host capability discovery & dispatch tiers
+
+At bootstrap (and before first dispatch), inspect the session tool palette and environment signals to resolve three neutral flags:
+
+- `hasStructuredChoiceTool`: a modal choice tool accepting structured options and blocking until user submission is declared.
+- `hasSubagentTool`: a native subagent dispatch tool is declared.
+- `hasBrowserTool`: a browser verification tool is declared.
+
+Resolution order: `defaults.hostAdapter.mode` when set to `native-tool` | `cli-command` | `inline-isolated` → else auto-discovery above. Log `host-capability-detect | subagent={mode} | gate={mode} | ISO` to step telemetry JSONL during Step 0.
+
+`dispatch-agent` fallback ladder (honor resolved mode; pass discrete context pointers only — never full transcripts):
+
+- **Tier 1 — native-tool:** `hasSubagentTool` is true. Dispatch steps to that tool with pointers (`handoff/step-{N-1}.json`, `ac-ledger.json`, `plan.index.json`).
+- **Tier 2 — cli-command:** no native tool but a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH. Launch the step as a background task via `run_command` using the configured template.
+- **Tier 3 — inline-isolated:** neither tool nor runner is available. Run Inline Isolated Execution per [`host-dispatch.md`](host-dispatch.md) § Inline Isolated Execution (adopt step persona, read pointers only, edit via native file tools, emit `step-output`, log `inline-isolated-step | step {N} | ISO`).
 
 ### Subagent model preferences
 

@@ -95,3 +95,7 @@ This feature establishes an agent-agnostic host capability discovery protocol, a
 ### Design Intent
 
 Greenfield adaptation protocol. Not a regression restore of deleted code. Extends the portability contract of `workflow-skills` to actively discover session capabilities, bridging the gap between multi-agent hosts and single-session interactive environments in a clean, agent-agnostic manner.
+
+## Revision History
+
+### [2026-09-03] Revision: Verified in sync after Tier 1-3 + gate implementation (Prompt: "host-agent-environment-adapter context implement")

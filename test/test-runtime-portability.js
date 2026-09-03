@@ -49,10 +49,40 @@ assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true);
 for (const relative of [
   '.agents/skills/ws-shared/tools.md',
   '.agents/skills/ws-shared/gates.md',
+  '.agents/skills/ws-shared/host-dispatch.md',
+  '.agents/skills/ws-shared/config-resolution.md',
+  '.agents/skills/ws-spec-to-pr/SKILL.md',
+  '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md',
+  '.agents/skills/ws-spec-to-pr-lite/SKILL.md',
   '.agents/skills/ws-configure-project/INTERVIEW.md',
 ]) {
   const text = fs.readFileSync(path.join(repoRoot, relative), 'utf8');
   assert.doesNotMatch(text, /\b(?:Cursor|OpenCode|Antigravity)\b/i, `${relative} keeps runtime prose host-neutral`);
+}
+// Host-agent environment adapter (0056): neutral capability discovery + tier ladder + gate cadence.
+{
+  const tools = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/tools.md'), 'utf8');
+  assert.match(tools, /hasStructuredChoiceTool/, 'tools.md declares hasStructuredChoiceTool (AC1)');
+  assert.match(tools, /hasSubagentTool/, 'tools.md declares hasSubagentTool (AC1)');
+  assert.match(tools, /hasBrowserTool/, 'tools.md declares hasBrowserTool (AC1)');
+  assert.match(tools, /Tier 1/, 'tools.md documents Tier 1 native-tool (AC4)');
+  assert.match(tools, /Tier 2/, 'tools.md documents Tier 2 cli-command (AC5)');
+  assert.match(tools, /Tier 3/, 'tools.md documents Tier 3 inline-isolated (AC6)');
+  assert.match(tools, /host-capability-detect/, 'tools.md logs host-capability-detect telemetry');
+  const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/gates.md'), 'utf8');
+  assert.match(gates, /user-gate-modal/, 'gates.md logs user-gate-modal (AC2)');
+  assert.match(gates, /MUST NOT emit any tool calls in the same response turn/, 'gates.md enforces turn-yielding (AC3)');
+  assert.match(gates, /One Step Per Turn/, 'gates.md enforces One Step Per Turn cadence (AC8)');
+  const dispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/host-dispatch.md'), 'utf8');
+  assert.match(dispatch, /Inline Isolated Execution/, 'host-dispatch.md defines Inline Isolated Execution (AC6)');
+  assert.match(dispatch, /inline-isolated-step/, 'host-dispatch.md logs inline-isolated-step telemetry');
+  assert.match(dispatch, /native-tool.*cli-command.*inline-isolated/s, 'host-dispatch.md resolves neutral modes only');
+  const orch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
+  assert.match(orch, /Inline Isolated Execution/, 'ws-spec-to-pr reconciles Orch-never-edits-code for Tier 3 (AC7)');
+  const lite = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/SKILL.md'), 'utf8');
+  assert.match(lite, /One Step Per Turn/, 'lite enforces single-turn cadence (AC8)');
+  const stepDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
+  assert.match(stepDispatch, /Host execution mode/, 'STEP-DISPATCH honors detected host mode');
 }
 for (const relative of [
   '.agents/skills/ws-spec-to-pr/SKILL.md',
