@@ -26,7 +26,7 @@ Orchestrators inspect the active session tool palette and environment signals at
 
 | Capability flag | Discovery signal | Meaning |
 |---|---|---|
-| `hasStructuredChoiceTool` | A modal choice tool accepting structured options and blocking execution until user submission is declared in the session tool palette | `user-gate` binds to that modal tool; else markdown fallback with strict turn-yielding per [`gates.md`](gates.md) |
+| `hasStructuredChoiceTool` | A modal choice tool accepting structured options and blocking execution until user submission is declared in the session tool palette | in normal mode, `user-gate` binds to that modal tool; else markdown fallback with strict turn-yielding per [`gates.md`](gates.md). In `autoMode`, bypass prompts and use auto-gate index 0 |
 | `hasSubagentTool` | A native subagent dispatch tool is declared in the session tool palette | `dispatch-agent` uses Tier 1; else Tier 2 / Tier 3 |
 | `hasBrowserTool` | A browser verification tool is declared | Step 7 delegates browser verification to that tool via portable `browser-mcp`; else skip per test-surface probe |
 
