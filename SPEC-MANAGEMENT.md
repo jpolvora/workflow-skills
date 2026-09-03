@@ -17,42 +17,42 @@ write-spec → spec-format → spec-organizer ─┐
 spec-from-provider (bulk import) ──────────┘         ↓
                                               spec-index ↔ spec-archive
                                                      ↓
-                                                sync-spec (drift fix)
+                                                spec-update (drift fix)
 ```
 
 ## Quick Router Table
 
 | Skill | What it does | Use when |
 |-------|--------------|----------|
-| [`ws-write-spec`](#1-ws-write-spec--author) | Drafts / reformulates `{specsDir}/*.spec.md` from free-text or tracker snapshot | Creating a new spec, turning an issue into testable ACs |
+| [`ws-spec-write`](#1-ws-spec-write--author) | Drafts / reformulates `{specsDir}/*.spec.md` from free-text or tracker snapshot | Creating a new spec, turning an issue into testable ACs |
 | [`ws-spec-format`](#2-ws-spec-format--schema) | Canonical `*.spec.md` schema + validator | Creating, reviewing, or reformatting a spec; CI authoring gate |
 | [`ws-spec-organizer`](#3-ws-spec-organizer--paths) | Spec-of-record path resolver + `NNNN-` organizer | Resolving spec path, enabling chronological prefixes, organizing board |
-| [`ws-local-spec-provider`](#4-ws-local-spec-provider--bridge) | Bridge `{specsDir}` ↔ `{us-dir}/step-00-*.spec.md` | Registering a hand-written spec to start a workflow |
-| [`ws-spec-from-provider`](#5-ws-spec-from-provider--bulk-import) | Bulk-import GitHub issues / ADO stories → local specs + register | Importing tracker backlog for `ws-spec-list` / `ws-multi-spec` |
+| [`ws-spec-provider-local`](#4-ws-spec-provider-local--bridge) | Bridge `{specsDir}` ↔ `{us-dir}/step-00-*.spec.md` | Registering a hand-written spec to start a workflow |
+| [`ws-spec-from-provider`](#5-ws-spec-from-provider--bulk-import) | Bulk-import GitHub issues / ADO stories → local specs + register | Importing tracker backlog for `ws-spec-list` / `ws-spec-multi` |
 | [`ws-spec-list`](#6-ws-spec-list--board) | Dual board Specs vs Plans + manage menu | Listing, picking, Start / Continue / Finish / Cancel / Archive / Remove |
 | [`ws-spec-index`](#7-ws-spec-index--prd) | Manages `{specsDir}/index.PRD` init / sync / promote / track | Bootstrapping PRD, syncing shipped status, promoting ideas |
 | [`ws-spec-explain`](#8-ws-spec-explain--panorama) | Read-only panorama of one spec / US / issue | Asking status, what it delivers, how to check / test |
-| [`ws-sync-spec`](#9-ws-sync-spec--drift-fix) | Surgical body sync when code drifted from AC text | Fixing spec drift after prompt-driven code changes |
+| [`ws-spec-update`](#9-ws-spec-update--drift-fix) | Surgical body sync when code drifted from AC text | Fixing spec drift after prompt-driven code changes |
 | [`ws-spec-archive`](#10-ws-spec-archive--history) | Harvests `{plansDir}` facts → `index.PRD` Archive + cleanup proposal | Archiving shipped plan folders without losing history |
-| [`ws-multi-spec`](#11-ws-multi-spec--batch) | Sequential batch delivery over multiple specs | Delivering a queue spec-by-spec with auto lite/standard routing |
+| [`ws-spec-multi`](#11-ws-spec-multi--batch) | Sequential batch delivery over multiple specs | Delivering a queue spec-by-spec with auto lite/standard routing |
 
 ---
 
 ## Details
 
-### 1. `ws-write-spec` — Author
+### 1. `ws-spec-write` — Author
 
-**Path:** `.agents/skills/ws-write-spec/SKILL.md`
+**Path:** `.agents/skills/ws-spec-write/SKILL.md`
 
 **What:** Writes the spec of record under `{specsDir}` only. Reformulates raw human / tracker text into agentic-ready Description + atomic testable ACs + Out of Scope + Assumptions + DoR + Validation Notes + Original Issue Context. Validates with `validate_spec.cjs --mode=authoring`.
 
 **Use when:**
 
-- `/write-spec "<description>" [slug=...] [--register]`
-- `/write-spec --from-issue <json/md> [source=github|azure-devops]`
+- `/spec-write "<description>" [slug=...] [--register]`
+- `/spec-write --from-issue <json/md> [source=github|azure-devops]`
 - Orch Step 0 free-text entry (`source: local`) or tracker reformulation (`source: github|azure-devops`)
 
-**Don't use when:** you need the workflow copy — that is `ws-local-spec-provider --register`. No `{plansDir}` writes here.
+**Don't use when:** you need the workflow copy — that is `ws-spec-provider-local --register`. No `{plansDir}` writes here.
 
 <details>
 <summary>Inputs / outputs</summary>
@@ -79,7 +79,7 @@ spec-from-provider (bulk import) ──────────┘         ↓
 node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring|compat <spec>
 ```
 
-**Don't use when:** drafting free-text content — delegate to `ws-write-spec`.
+**Don't use when:** drafting free-text content — delegate to `ws-spec-write`.
 
 <details>
 <summary>Review checklist</summary>
@@ -120,23 +120,23 @@ node .agents/skills/ws-spec-organizer/scripts/organize_specs.cjs [--dry-run|--ap
 
 ---
 
-### 4. `ws-local-spec-provider` — Bridge
+### 4. `ws-spec-provider-local` — Bridge
 
-**Path:** `.agents/skills/ws-local-spec-provider/SKILL.md`
+**Path:** `.agents/skills/ws-spec-provider-local/SKILL.md`
 
 **What:** Filesystem entry + promotion primitive. Normalizes any `*.spec.md` into two ordered artifacts: (1) spec of record under `{specsDir}`, (2) workflow copy `{us-dir}/step-00-{slug}.spec.md`. This `register_local_spec.cjs` is the single promotion path all providers use.
 
 **Use when:**
 
-- `/ws-local-spec-provider fetch-to-spec <path|slug> [--source local|github|azure-devops] [--force]`
+- `/ws-spec-provider-local fetch-to-spec <path|slug> [--source local|github|azure-devops] [--force]`
 - Orch entry when `providers.active=local` or input is `*.spec.md`
-- After `ws-write-spec` when workflow needs a `step-00` copy (`--register`)
+- After `ws-spec-write` when workflow needs a `step-00` copy (`--register`)
 
 ```bash
-node .agents/skills/ws-local-spec-provider/scripts/register_local_spec.cjs --input path/to/feature.spec.md --source local
+node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs --input path/to/feature.spec.md --source local
 ```
 
-**Don't use when:** remote fetch is needed — use GitHub / ADO provider `fetch-to-spec` first, then reformulate via `ws-write-spec`.
+**Don't use when:** remote fetch is needed — use GitHub / ADO provider `fetch-to-spec` first, then reformulate via `ws-spec-write`.
 
 ---
 
@@ -144,7 +144,7 @@ node .agents/skills/ws-local-spec-provider/scripts/register_local_spec.cjs --inp
 
 **Path:** `.agents/skills/ws-spec-from-provider/SKILL.md`
 
-**What:** Batch tracker → local specs. Lists open GitHub issues (all assignees) or open ADO User Stories (`@Me`), skips already-imported ids, confirms via user-gate, then per id: provider snapshot → `ws-write-spec` reformulation → full register.
+**What:** Batch tracker → local specs. Lists open GitHub issues (all assignees) or open ADO User Stories (`@Me`), skips already-imported ids, confirms via user-gate, then per id: provider snapshot → `ws-spec-write` reformulation → full register.
 
 **Use when:**
 
@@ -154,7 +154,7 @@ node .agents/skills/ws-local-spec-provider/scripts/register_local_spec.cjs --inp
 /ws-spec-from-provider --limit N
 ```
 
-Importing backlog for `/ws-spec-list` or `/ws-multi-spec`.
+Importing backlog for `/ws-spec-list` or `/ws-spec-multi`.
 
 **Skip rule:** drops id when `{specsDir}/us-{id}.spec.md`, `NNNN-us-{id}.spec.md`, or `{plansDir}/us-{id}/step-00-*.spec.md` exists. No `--force` here.
 
@@ -162,7 +162,7 @@ Importing backlog for `/ws-spec-list` or `/ws-multi-spec`.
 <summary>Flow per id</summary>
 
 1. Provider `fetch-to-spec` phases 1–2 (snapshot + base converter)
-2. `ws-write-spec` agentic reformulation (`source: github|azure-devops`)
+2. `ws-spec-write` agentic reformulation (`source: github|azure-devops`)
 3. `register_local_spec.cjs --input "{specsDir}/us-{id}.spec.md" --source {github|azure-devops}`
 4. Report: imported / skipped / failed
 </details>
@@ -188,7 +188,7 @@ Importing backlog for `/ws-spec-list` or `/ws-multi-spec`.
 
 Listing, picking, Start / Continue (hands off to orch), Finish / Cancel / Archive / Remove (confirm required).
 
-**Don't use when:** rewriting AC bodies (`ws-sync-spec`) or editing `index.PRD` content (`ws-spec-index`).
+**Don't use when:** rewriting AC bodies (`ws-spec-update`) or editing `index.PRD` content (`ws-spec-index`).
 
 <details>
 <summary>Behavior notes</summary>
@@ -246,21 +246,21 @@ After `ws-ship-pr` / `ws-goal-fix-pr` chain, or when user asks "what does this s
 
 ---
 
-### 9. `ws-sync-spec` — Drift Fix
+### 9. `ws-spec-update` — Drift Fix
 
-**Path:** `.agents/skills/ws-sync-spec/SKILL.md`
+**Path:** `.agents/skills/ws-spec-update/SKILL.md`
 
 **What:** Surgical body updater when code drifted from AC text. Resolves spec of record via `ws-spec-organizer`, diffs `git status/diff` scope against spec, drafts in-place edits + Revision History entry, gates on user approval, then applies.
 
 **Use when:**
 
 ```text
-/ws-sync-spec [target-spec-or-component]
+/ws-spec-update [target-spec-or-component]
 ```
 
 Auto-run after task completion (alongside `ws-changelog`, `ws-self-learning`), or standalone when prompt changed controller/route/view/business logic weeks after delivery.
 
-**If no spec found:** reports `No existing spec found` + suggests `ws-write-spec`. Not `ws-spec-index sync` (that is checkboxes vs delivery evidence).
+**If no spec found:** reports `No existing spec found` + suggests `ws-spec-write`. Not `ws-spec-index sync` (that is checkboxes vs delivery evidence).
 
 ---
 
@@ -284,18 +284,18 @@ Auto-run after task completion (alongside `ws-changelog`, `ws-self-learning`), o
 
 ---
 
-### 11. `ws-multi-spec` — Batch
+### 11. `ws-spec-multi` — Batch
 
-**Path:** `.agents/skills/ws-multi-spec/SKILL.md` · Protocol: `.agents/skills/ws-multi-spec/PROTOCOL.md`
+**Path:** `.agents/skills/ws-spec-multi/SKILL.md` · Protocol: `.agents/skills/ws-spec-multi/PROTOCOL.md`
 
 **What:** Sequential multi-spec batch orchestrator with smart complexity + flow auto-detection. Blank scan lists only pending/unfinished specs. Per spec: classify (`ws-classify-complexity`) → `ws-spec-to-pr-lite` (≤3 steps / ≤6 files / ≤2 layers / `complexity: low`) else `ws-spec-to-pr` → fix-pr → merge → next.
 
 **Use when:**
 
 ```text
-/ws-multi-spec
-/ws-multi-spec {specsDir}/13-runner.spec.md {specsDir}/14-editor.spec.md
-/ws-multi-spec {plansDir}/ws-multi-spec/ms-20260725T220000Z.state.md
+/ws-spec-multi
+/ws-spec-multi {specsDir}/13-runner.spec.md {specsDir}/14-editor.spec.md
+/ws-spec-multi {plansDir}/ws-spec-multi/ms-20260725T220000Z.state.md
 ```
 
 Batch queues. Interactive pick-one delegates to `ws-spec-list`.
@@ -309,4 +309,4 @@ Batch queues. Interactive pick-one delegates to `ws-spec-list`.
 - Format SoT: `.agents/skills/ws-spec-format/FORMAT.md`
 - Router: `.agents/skills/ws-shared/autoload.md`
 - Hub: `AGENTS.md` · Consumer hub: `.agents/skills/ws-shared/AGENTS.md`
-- Related (not spec-management): `ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-write-plan`, `ws-verify-plan`, `ws-cleanup`, `ws-spec-memo`
+- Related (not spec-management): `ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-plan-write`, `ws-plan-verify`, `ws-cleanup`, `ws-spec-memo`

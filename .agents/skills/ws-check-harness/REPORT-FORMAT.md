@@ -37,7 +37,7 @@ Otherwise — **correction plan** (mandatory before editing):
 
 | # | Severity | File | Problem (error) | Proposed correction |
 |---|------------|---------|-----------------|-------------------|
-| 1 | critical | `AGENTS.md:L28` | Link `.agents/skills/foo` nonexistent | Replace with `.agents/skills/ws-write-plan/SKILL.md` |
+| 1 | critical | `AGENTS.md:L28` | Link `.agents/skills/foo` nonexistent | Replace with `.agents/skills/ws-plan-write/SKILL.md` |
 | 2 | warning | `AGENTS.md` | Skill `example` on disk without routing | Add line in § Skill loading table (see diff below) |
 
 #### Details per item (when diff does not fit in table)
@@ -102,8 +102,8 @@ Otherwise — **correction plan** (mandatory before editing):
 | Implementation | `ws-senior-developer` vs `ws-karpathy-guidelines` | complementary — macro delivery gate vs micro diff hygiene | ✅ Sharp | Distinct triggers; maintain scope vs diff boundary |
 | PR workflow | `ws-fix-pr` vs `ws-goal-fix-pr` | composed — `ws-goal-fix-pr` wraps `ws-fix-pr` & `ws-goal-loop` | ✅ Sharp | Keep composition; `ws-goal-fix-pr` delegates single-pass fix to `ws-fix-pr` |
 | Security | `ws-ship-pr` vs `ws-secrets-leak-review` | composed — `ws-ship-pr` invokes `ws-secrets-leak-review` pre-commit | ✅ Sharp | Maintain single security scanner primitive |
-| Planning | `ws-write-plan` vs `ws-interview` | complementary — create plan vs audit plan | ✅ Sharp | Sequential pipeline steps; distinct triggers |
-| Specs & Indexing | `ws-spec-format` vs `ws-write-spec` | composed — `ws-write-spec` outputs `ws-spec-format` schema | ✅ Sharp | Schema SoT cleanly separated from authoring step |
+| Planning | `ws-plan-write` vs `ws-plan-interview` | complementary — create plan vs audit plan | ✅ Sharp | Sequential pipeline steps; distinct triggers |
+| Specs & Indexing | `ws-spec-format` vs `ws-spec-write` | composed — `ws-spec-write` outputs `ws-spec-format` schema | ✅ Sharp | Schema SoT cleanly separated from authoring step |
 
 ### Simulated context load (Phase 5c.3)
 

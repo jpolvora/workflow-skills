@@ -21,7 +21,7 @@ const PROTOCOL = path.join(
 );
 const FAQ = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/docs/faq.md');
 const LITE_SKILL = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr-lite/SKILL.md');
-const MULTI_PROTOCOL = path.join(REPO_ROOT, '.agents/skills/ws-multi-spec/PROTOCOL.md');
+const MULTI_PROTOCOL = path.join(REPO_ROOT, '.agents/skills/ws-spec-multi/PROTOCOL.md');
 const STEP_DISPATCH = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 const ARTIFACTS = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md');
 

@@ -8,7 +8,7 @@ Referenced by [`SKILL.md`](SKILL.md). Other skills link here — do not duplicat
 |--------|---------|
 | Spec of record — default (`plans.enforceSpecPrefixOrdering: false`) | `{specsDir}/{slug}.spec.md` |
 | Spec of record — prefixed (`plans.enforceSpecPrefixOrdering: true`) | `{specsDir}/NNNN-{slug}.spec.md` |
-| Workflow copy (after `ws-local-spec-provider` register) | `{plansDir}/{slug}/step-00-{slug}.spec.md` |
+| Workflow copy (after `ws-spec-provider-local` register) | `{plansDir}/{slug}/step-00-{slug}.spec.md` |
 
 Slug: `us-{id}` for tracker ids; else basename without `.spec.md` (strip optional `step-00-` or leading `NNNN-`). Order is fixed: the `{specsDir}` spec of record is written **first** (resolved via `ws-spec-organizer`), then the `{plansDir}` workflow copy. Standalone `/write-spec` writes **only** the `{specsDir}` path — never creates `{plansDir}` artifacts.
 
@@ -99,7 +99,7 @@ specDate: 2026-07-02
 
 ## Closure sections (required for new specs)
 
-`ws-write-spec` and Step 0 **authoring** validation require these headings. Historical specs may omit them; `validate_spec.cjs` default `--mode=compat` warns without failing.
+`ws-spec-write` and Step 0 **authoring** validation require these headings. Historical specs may omit them; `validate_spec.cjs` default `--mode=compat` warns without failing.
 
 ### Out of Scope
 
@@ -141,9 +141,9 @@ Gray area with two or more valid product options → `{specsDir}/{slug}.context.
 
 1. ACs enumerable, deterministic, and testable — one line per AC (`- AC{N}: ...`).
 2. `source: local` → author drafts complete ACs from free-text requirements.
-3. `source: github` | `source: azure-devops` → `ws-write-spec` reformulates and enhances raw issue into agentic ACs while preserving human text in `## Original Issue Context`; **`### Prior Work Sweep` required** after sweep before plan/code.
+3. `source: github` | `source: azure-devops` → `ws-spec-write` reformulates and enhances raw issue into agentic ACs while preserving human text in `## Original Issue Context`; **`### Prior Work Sweep` required** after sweep before plan/code.
 4. Modification / bugfix specs → `### Design Intent` required (or documented skip for greenfield).
 5. `*.issue.json` is audit-only — downstream workflow skills read `step-00-*.spec.md` only.
-6. Local specs (`ws-write-spec` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
+6. Local specs (`ws-spec-write` / hand-written) live under `{specsDir}` (`plans.specsDir`, default `.agents/specs`); orch registers to canonical `step-00` under `{plansDir}` when a workflow starts.
 7. New specs: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring <spec>` must exit 0 (closure headings + tables, plus non-empty `## Definition of Ready (DoR)` and `## Validation & Observation Notes` including `### Negative & Failing Test Scenarios` with at least one non-placeholder bullet). Omit `--mode` (compat) for historical files: same errors as before, plus warnings for missing closure / DoR / Validation Notes.
 

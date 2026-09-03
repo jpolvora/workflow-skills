@@ -62,11 +62,11 @@ assert(
 );
 
 assert(
-  /ws-write-spec/.test(skill) &&
+  /ws-spec-write/.test(skill) &&
     /ws-spec-index/.test(skill) &&
     /track \{slug\}/.test(skill) &&
     /\[~\]/.test(skill),
-  'AC6/AC8: write-spec then spec-index track then [~] before product edits',
+  'AC6/AC8: spec-write then spec-index track then [~] before product edits',
 );
 assert(skill.includes('{specsDir}'), 'AC11: uses {specsDir} token');
 assert(

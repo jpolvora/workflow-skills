@@ -32,7 +32,7 @@ Scripts and skills that still mention those paths are **bugs** — fix to `{shar
 
 When skills are executed from a global install (`$HOME/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`), they target the local repository at `$PWD`.
 
-- **Config-Dependent Skills** (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`, `ws-write-plan`, `ws-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-verify-plan`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, providers):
+- **Config-Dependent Skills** (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-plan-write`, `ws-plan-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-plan-verify`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, providers):
   - **Entry Gate:** Must verify `$PWD/.agents/skills/ws-shared/config.json` exists and is non-empty.
   - **Missing Config:** If missing or unconfigured (`<...>` placeholders), trigger `user-gate` recommending running `ws-configure-project` (which seeds and populates `$PWD/.agents/skills/ws-shared/config.json`).
 - **Config-Independent / Standalone Skills** (`ws-configure-project`, `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`):
@@ -66,8 +66,8 @@ Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install lay
 
 | `providers.scm` | Skill |
 |-----------------|-------|
-| `github` | [`ws-github-provider`](../ws-github-provider/SKILL.md) |
-| `azure-devops` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) |
+| `github` | [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) |
+| `azure-devops` | [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) |
 
 Intent names, outputs, and shared rules: [`scm-provider-contract.md`](scm-provider-contract.md). GitHub and Azure DevOps must implement the same required intents. Callers use intent names only.
 
@@ -95,8 +95,8 @@ Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to
 1. Read `fable` object from `.agents/skills/ws-shared/config.json`.
 2. Default in fresh `config.json.example`: `enabled: true`. Default if absent in legacy config: `enabled: false` (strictly opt-in).
 3. When `fable.enabled: true`:
-   - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-verify-plan` (Step 5) run adversarial audit via `ws-fable-judge`.
-   - `autoDetectDomain` (default `true`): `ws-write-plan` (Step 1) auto-detects specialized stack files and applies `ws-fable-domain` evidence rules.
+   - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-plan-verify` (Step 5) run adversarial audit via `ws-fable-judge`.
+   - `autoDetectDomain` (default `true`): `ws-plan-write` (Step 1) auto-detects specialized stack files and applies `ws-fable-domain` evidence rules.
    - `auditVerdictsBlockShip` (default `"refuted"`): accepts `false`, `"refuted"`, or `"caveats"`. `REFUTED` is the unconditional safety floor and always blocks; `"caveats"` additionally blocks `VERIFIED WITH CAVEATS`.
 
 ---

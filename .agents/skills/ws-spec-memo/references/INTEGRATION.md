@@ -62,7 +62,7 @@ workflow-skills stores agent working state in-repo by default:
 |----------|--------------|-------|
 | Anti-regression traps | `{sharedDir}/memory/*.md` → `MEMORY.md` | `ws-self-learning` |
 | Task history | `{rules.changelogFile}` | `ws-changelog` |
-| Feature specs (of record) | `{specsDir}/*.spec.md` | `ws-write-spec`, providers |
+| Feature specs (of record) | `{specsDir}/*.spec.md` | `ws-spec-write`, providers |
 | Workflow run artifacts | `{plansDir}/{slug}/` | `ws-spec-to-pr*` |
 | PRD index | `{specsDir}/index.PRD` | `ws-spec-index` |
 

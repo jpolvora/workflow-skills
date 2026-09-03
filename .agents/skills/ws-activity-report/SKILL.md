@@ -1,6 +1,6 @@
 ---
 name: ws-activity-report
-version: 0.3.55
+version: 0.3.56
 description: >-
   Timesheet entries (date, start, end, description) for ws-spec-to-pr /
   ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
@@ -55,7 +55,7 @@ Output language: **en-us**. Clock rules: [`references/TIMING.md`](references/TIM
    Start = script `startIso`. Cross-check `startedAt` in state YAML for audit only (script applies bulk-sync override when needed). Do **not** use PR merge or mtime of steps 01+.
    - Done when: each candidate has `startIso` or a documented gap.
 
-4. **End clock** — Resolve PR from state (`prNumber` / `prId` / `prUrl`) or provider. Load threads via active SCM provider `list-threads` ([`ws-github-provider`](../ws-github-provider/SKILL.md) / [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md)). Compute `endIso` = **max** of:
+4. **End clock** — Resolve PR from state (`prNumber` / `prId` / `prUrl`) or provider. Load threads via active SCM provider `list-threads` ([`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) / [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md)). Compute `endIso` = **max** of:
    - latest non-deleted thread comment time (`publishedDate` / equivalent; fallback content-updated)
    - latest delivery commit time (PR head / state `commits[]` / `git log` on working branch)
    Prefer TIMING § End. Without auth → local commit/artifacts only + **Gaps**.

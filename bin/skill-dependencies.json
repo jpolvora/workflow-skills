@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.55",
+  "packageVersion": "0.3.56",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -25,21 +25,21 @@
       "skills": [
         "ws-spec-to-pr",
         "ws-spec-to-pr-lite",
-        "ws-write-spec",
+        "ws-spec-write",
         "ws-classify-complexity",
-        "ws-write-plan",
-        "ws-interview",
+        "ws-plan-write",
+        "ws-plan-interview",
         "ws-plan-to-tasks",
         "ws-implement-tasks",
-        "ws-verify-plan",
+        "ws-plan-verify",
         "ws-code-review",
         "ws-testing",
         "ws-ship-pr",
         "ws-fix-pr",
         "ws-goal-fix-pr",
-        "ws-github-provider",
-        "ws-azure-devops-provider",
-        "ws-local-spec-provider",
+        "ws-spec-provider-github",
+        "ws-spec-provider-azure-devops",
+        "ws-spec-provider-local",
         "ws-check-harness",
         "ws-check-workflows",
         "ws-doctor",
@@ -53,11 +53,11 @@
         "ws-configure-project",
         "ws-fable-method",
         "ws-fable-judge",
-        "ws-multi-spec",
+        "ws-spec-multi",
         "ws-spec-index",
         "ws-spec-list",
         "ws-spec-from-provider",
-        "ws-sync-spec",
+        "ws-spec-update",
         "ws-task-lifecycle",
         "ws-senior-developer",
         "ws-pre-daily",
@@ -78,7 +78,7 @@
         "ws-preview",
         "ws-activity-report",
         "ws-fable-domain",
-        "ws-update-plan-implementation",
+        "ws-plan-update",
         "ws-run-benchmark"
       ],
       "ensureHub": false,
@@ -88,21 +88,21 @@
   },
   "dependencies": {
     "ws-spec-to-pr": [
-      "ws-write-spec",
+      "ws-spec-write",
       "ws-classify-complexity",
-      "ws-write-plan",
-      "ws-interview",
+      "ws-plan-write",
+      "ws-plan-interview",
       "ws-plan-to-tasks",
       "ws-implement-tasks",
-      "ws-verify-plan",
+      "ws-plan-verify",
       "ws-code-review",
       "ws-testing",
       "ws-ship-pr",
       "ws-fix-pr",
       "ws-goal-fix-pr",
-      "ws-github-provider",
-      "ws-azure-devops-provider",
-      "ws-local-spec-provider",
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops",
+      "ws-spec-provider-local",
       "ws-check-harness",
       "ws-check-workflows",
       "ws-tdah",
@@ -116,17 +116,17 @@
       "ws-senior-developer"
     ],
     "ws-spec-to-pr-lite": [
-      "ws-write-spec",
+      "ws-spec-write",
       "ws-classify-complexity",
-      "ws-write-plan",
+      "ws-plan-write",
       "ws-implement-tasks",
       "ws-code-review",
       "ws-ship-pr",
       "ws-fix-pr",
       "ws-goal-fix-pr",
-      "ws-github-provider",
-      "ws-azure-devops-provider",
-      "ws-local-spec-provider",
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops",
+      "ws-spec-provider-local",
       "ws-tdah",
       "ws-karpathy-guidelines",
       "ws-spec-format",
@@ -136,22 +136,22 @@
       "ws-spec-index",
       "ws-senior-developer"
     ],
-    "ws-write-spec": [
+    "ws-spec-write": [
       "ws-spec-format",
-      "ws-local-spec-provider",
+      "ws-spec-provider-local",
       "ws-spec-organizer"
     ],
-    "ws-github-provider": [
+    "ws-spec-provider-github": [
       "ws-spec-format",
-      "ws-write-spec",
-      "ws-local-spec-provider"
+      "ws-spec-write",
+      "ws-spec-provider-local"
     ],
-    "ws-azure-devops-provider": [
+    "ws-spec-provider-azure-devops": [
       "ws-spec-format",
-      "ws-write-spec",
-      "ws-local-spec-provider"
+      "ws-spec-write",
+      "ws-spec-provider-local"
     ],
-    "ws-local-spec-provider": [
+    "ws-spec-provider-local": [
       "ws-spec-format",
       "ws-spec-organizer"
     ],
@@ -163,8 +163,8 @@
       "ws-goal-loop",
       "ws-self-learning"
     ],
-    "ws-write-plan": [],
-    "ws-verify-plan": [
+    "ws-plan-write": [],
+    "ws-plan-verify": [
       "ws-fable-judge"
     ],
     "ws-ship-pr": [
@@ -188,7 +188,7 @@
       "ws-tdah",
       "ws-karpathy-guidelines"
     ],
-    "ws-multi-spec": [
+    "ws-spec-multi": [
       "ws-spec-to-pr",
       "ws-spec-to-pr-lite",
       "ws-classify-complexity",
@@ -203,10 +203,10 @@
       "ws-configure-project"
     ],
     "ws-spec-from-provider": [
-      "ws-github-provider",
-      "ws-azure-devops-provider",
-      "ws-write-spec",
-      "ws-local-spec-provider",
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops",
+      "ws-spec-write",
+      "ws-spec-provider-local",
       "ws-spec-format",
       "ws-configure-project"
     ],
@@ -215,7 +215,7 @@
       "ws-configure-project"
     ],
     "ws-task-lifecycle": [
-      "ws-write-spec",
+      "ws-spec-write",
       "ws-spec-format",
       "ws-spec-index",
       "ws-karpathy-guidelines",
@@ -225,8 +225,8 @@
     ],
     "ws-spec-explain": [
       "ws-configure-project",
-      "ws-github-provider",
-      "ws-azure-devops-provider"
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops"
     ],
     "ws-cleanup": [
       "ws-configure-project"
@@ -234,8 +234,8 @@
     "ws-spec-archive": [
       "ws-configure-project",
       "ws-spec-index",
-      "ws-github-provider",
-      "ws-azure-devops-provider"
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops"
     ],
     "ws-doctor": [],
     "ws-spec-memo": [

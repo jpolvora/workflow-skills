@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const RESOLVE_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs');
 const ORGANIZE_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-organizer/scripts/organize_specs.cjs');
-const REGISTER_SCRIPT = path.join(REPO, '.agents/skills/ws-local-spec-provider/scripts/register_local_spec.cjs');
+const REGISTER_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
 const TRACK_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-index/scripts/track_index.cjs');
 
 console.log('--- Testing spec-prefix-ordering & ws-spec-organizer ---');
@@ -32,7 +32,7 @@ assert.match(configExample, /"enforceSpecPrefixOrdering":\s*false/, 'config.json
 console.log('2. Checking skill-dependencies.json registration');
 const deps = JSON.parse(fs.readFileSync(path.join(REPO, 'bin/skill-dependencies.json'), 'utf8'));
 assert.ok(deps.packages.workflows.skills.includes('ws-spec-organizer'), 'ws-spec-organizer in workflows package');
-assert.ok(deps.dependencies['ws-write-spec'].includes('ws-spec-organizer'), 'ws-write-spec depends on ws-spec-organizer');
+assert.ok(deps.dependencies['ws-spec-write'].includes('ws-spec-organizer'), 'ws-spec-write depends on ws-spec-organizer');
 assert.ok('ws-spec-organizer' in deps.dependencies, 'ws-spec-organizer registered in dependencies map');
 
 // 3. Documentation checks (AC4, AC17, AC18, AC19, AC20)
@@ -40,10 +40,10 @@ console.log('3. Checking documentation references');
 const interviewDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-configure-project/INTERVIEW.md'), 'utf8');
 assert.match(interviewDoc, /plans\.enforceSpecPrefixOrdering/, 'INTERVIEW.md contains enforceSpecPrefixOrdering gate');
 
-const writeSpecDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-write-spec/SKILL.md'), 'utf8');
-assert.match(writeSpecDoc, /resolve_spec_path\.cjs/, 'ws-write-spec SKILL.md references resolve_spec_path.cjs');
-assert.match(writeSpecDoc, /SPEC_PATH/, 'ws-write-spec numbered Write step uses SPEC_PATH');
-assert.match(writeSpecDoc, /ws-spec-organizer/, 'ws-write-spec names ws-spec-organizer on missing helper');
+const writeSpecDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-spec-write/SKILL.md'), 'utf8');
+assert.match(writeSpecDoc, /resolve_spec_path\.cjs/, 'ws-spec-write SKILL.md references resolve_spec_path.cjs');
+assert.match(writeSpecDoc, /SPEC_PATH/, 'ws-spec-write numbered Write step uses SPEC_PATH');
+assert.match(writeSpecDoc, /ws-spec-organizer/, 'ws-spec-write names ws-spec-organizer on missing helper');
 
 const fromProviderDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-spec-from-provider/SKILL.md'), 'utf8');
 assert.match(fromProviderDoc, /NNNN-us-\{id\}\.spec\.md/, 'ws-spec-from-provider SKILL.md references NNNN prefix');

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Thin shim — forwards to ws-azure-devops-provider canonical script."""
+"""Thin shim — forwards to ws-spec-provider-azure-devops canonical script."""
 from __future__ import annotations
 
 import runpy
@@ -8,7 +8,7 @@ from pathlib import Path
 
 _TARGET = (
     Path(__file__).resolve().parents[2]
-    / "ws-azure-devops-provider"
+    / "ws-spec-provider-azure-devops"
     / "scripts"
     / "ado-workitem-to-spec.py"
 )

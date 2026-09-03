@@ -111,8 +111,8 @@ const implementers = firstColumnSkillFolders(
   sectionAfterHeading(contractMd, 'SCM implementers'),
 );
 assert(
-  implementers.includes('ws-github-provider') &&
-    implementers.includes('ws-azure-devops-provider'),
+  implementers.includes('ws-spec-provider-github') &&
+    implementers.includes('ws-spec-provider-azure-devops'),
   'contract lists both SCM implementers',
 );
 
@@ -149,8 +149,8 @@ for (const skillId of implementers) {
   assert(/[Rr]euse/.test(intentsMd), `${skillId} INTENTS.md documents reuse open PR`);
 }
 
-const gh = new Set(declared['ws-github-provider'].tableIds);
-const ado = new Set(declared['ws-azure-devops-provider'].tableIds);
+const gh = new Set(declared['ws-spec-provider-github'].tableIds);
+const ado = new Set(declared['ws-spec-provider-azure-devops'].tableIds);
 const union = new Set([...gh, ...ado]);
 for (const intent of union) {
   if (required.includes(intent)) continue;
@@ -162,13 +162,13 @@ for (const intent of union) {
   }
   if (inGh && !inAdo) {
     assert(
-      allowedOn(allowlist, intent, 'ws-github-provider'),
+      allowedOn(allowlist, intent, 'ws-spec-provider-github'),
       `intent ${intent} is GitHub-only; add Azure mapping or an allowlist row`,
     );
   }
   if (inAdo && !inGh) {
     assert(
-      allowedOn(allowlist, intent, 'ws-azure-devops-provider'),
+      allowedOn(allowlist, intent, 'ws-spec-provider-azure-devops'),
       `intent ${intent} is Azure-only; add GitHub mapping or an allowlist row`,
     );
   }
@@ -179,7 +179,7 @@ const GOOD_RESOLUTION_NOTE =
 const THIN_RESOLUTION_NOTE = 'Corrigido em 3dc20274.';
 const THIN_RESOLUTION_ERROR = /must describe the correction/;
 
-const ghScript = path.join(SKILLS, 'ws-github-provider/scripts/resolve_thread.cjs');
+const ghScript = path.join(SKILLS, 'ws-spec-provider-github/scripts/resolve_thread.cjs');
 const ghDry = spawnSync(
   process.execPath,
   [ghScript, '--dry-run', 'thread-parity', GOOD_RESOLUTION_NOTE],
@@ -243,7 +243,7 @@ assert(
   'GitHub filler-only reject names the correction requirement',
 );
 
-const adoScript = path.join(SKILLS, 'ws-azure-devops-provider/scripts/fix_pr_azure_context.py');
+const adoScript = path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py');
 const pythonBin = process.platform === 'win32' ? 'python' : 'python3';
 const adoHelp = spawnSync(pythonBin, [adoScript, 'resolve-thread', '--help'], {
   encoding: 'utf8',
@@ -373,11 +373,11 @@ assert(
 );
 
 const delegated = required.filter((id) => id !== 'validate-auth' && id !== 'fetch-to-spec');
-const localSkill = read(path.join(SKILLS, 'ws-local-spec-provider/SKILL.md'));
-assert(/providers\.scm/.test(localSkill), 'ws-local-spec-provider delegates PR intents to providers.scm');
-assert(localSkill.includes('scm: "local"'), 'ws-local-spec-provider rejects scm local');
+const localSkill = read(path.join(SKILLS, 'ws-spec-provider-local/SKILL.md'));
+assert(/providers\.scm/.test(localSkill), 'ws-spec-provider-local delegates PR intents to providers.scm');
+assert(localSkill.includes('scm: "local"'), 'ws-spec-provider-local rejects scm local');
 for (const id of delegated) {
-  assert(localSkill.includes(`\`${id}\``) || localSkill.includes(id), `ws-local-spec-provider documents delegate ${id}`);
+  assert(localSkill.includes(`\`${id}\``) || localSkill.includes(id), `ws-spec-provider-local documents delegate ${id}`);
 }
 
 const sweepFlags = ['--issue', '--keywords', '--files', '--dry-run', '--repo-root'];
@@ -385,7 +385,7 @@ const commentFlags = ['--id', '--body-file', '--body', '--dry-run', '--repo-root
 const sweepKeys = ['status', 'provider', 'issue', 'keywords', 'pullRequests', 'commits', 'repoRoot'];
 const rowAliases = ['number', 'pullRequestId', 'title', 'state', 'status', 'url', 'headRefName', 'sourceRefName'];
 
-for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
+for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
   const sweepSrc = read(path.join(SKILLS, skillId, 'scripts/sweep_prior_work.py'));
   const commentSrc = read(path.join(SKILLS, skillId, 'scripts/comment_issue.py'));
   const intentsMd = read(path.join(SKILLS, skillId, 'INTENTS.md'));
@@ -402,7 +402,7 @@ for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
     assert(commentSrc.includes(flag), `${skillId} comment_issue.py has ${flag}`);
   }
   assert(commentSrc.includes('"skipped"'), `${skillId} comment_issue.py skips null tracker id`);
-  if (skillId === 'ws-azure-devops-provider') {
+  if (skillId === 'ws-spec-provider-azure-devops') {
     assert(
       commentSrc.includes('7.1-preview.4'),
       'ADO comment_issue.py uses WIT Comments api-version=7.1-preview.4',
@@ -429,25 +429,25 @@ for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
   );
 }
 
-const ghThreads = read(path.join(SKILLS, 'ws-github-provider/scripts/fetch_threads.cjs'));
-const adoThreads = read(path.join(SKILLS, 'ws-azure-devops-provider/scripts/fix_pr_azure_context.py'));
+const ghThreads = read(path.join(SKILLS, 'ws-spec-provider-github/scripts/fetch_threads.cjs'));
+const adoThreads = read(path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py'));
 assert(ghThreads.includes('activeThreads'), 'GitHub fetch_threads.cjs returns activeThreads');
 assert(adoThreads.includes('activeThreads'), 'Azure collect returns activeThreads');
 
 const ghSweepDry = spawnSync(
   'python',
-  [path.join(SKILLS, 'ws-github-provider/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
+  [path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
   { encoding: 'utf8', cwd: REPO },
 );
 assert(ghSweepDry.status === 0, 'GitHub sweep_prior_work.py --dry-run exits 0');
 const adoSweepDry = spawnSync(
   'python',
-  [path.join(SKILLS, 'ws-azure-devops-provider/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
+  [path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
   { encoding: 'utf8', cwd: REPO },
 );
 assert(adoSweepDry.status === 0, 'Azure sweep_prior_work.py --dry-run exits 0');
 
-const adoSweepScript = path.join(SKILLS, 'ws-azure-devops-provider/scripts/sweep_prior_work.py');
+const adoSweepScript = path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py');
 const prRowProbe = spawnSync(
   pythonBin,
   ['-'],
@@ -488,7 +488,7 @@ assert(prRow.status === 'active', 'ADO status keeps native value');
 assert(prRow.headRefName === 'feat/x', 'ADO headRefName is a bare branch');
 assert(prRow.sourceRefName === 'feat/x', 'ADO sourceRefName is a bare branch');
 
-for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
+for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
   const skip = spawnSync(
     'python',
     [path.join(SKILLS, skillId, 'scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
@@ -501,7 +501,7 @@ for (const skillId of ['ws-github-provider', 'ws-azure-devops-provider']) {
 const adoOverride = spawnSync(
   'python',
   [
-    path.join(SKILLS, 'ws-azure-devops-provider', 'scripts/comment_issue.py'),
+    path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.py'),
     '--org',
     '7focus',
     '--project',
@@ -531,7 +531,7 @@ delete adoOverrideEnv.AZURE_DEVOPS_PAT;
 const adoOverrideMutating = spawnSync(
   'python',
   [
-    path.join(SKILLS, 'ws-azure-devops-provider', 'scripts/comment_issue.py'),
+    path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.py'),
     '--org',
     'parity-org',
     '--project',

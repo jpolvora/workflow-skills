@@ -1,7 +1,7 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
@@ -18,7 +18,7 @@ Coordinator for **prompt-driven** implementation (direct user task). Not a secon
 
 **Default invoke:** slash / task-router (on-demand). Always-applied membership is opt-in via `defaults.autoloadTaskLifecycle` and `ws-configure-project --section autoload`. Shipped `{sharedDir}/autoload.md` Always-applied table does not list this skill.
 
-**Specs family:** Role = prompt-task cowork. Drafts → [`ws-write-spec`](../ws-write-spec/SKILL.md). Index checkboxes → [`ws-spec-index`](../ws-spec-index/SKILL.md) conventions. Body drift → [`ws-sync-spec`](../ws-sync-spec/SKILL.md) (optional, not this bus). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = prompt-task cowork. Drafts → [`ws-spec-write`](../ws-spec-write/SKILL.md). Index checkboxes → [`ws-spec-index`](../ws-spec-index/SKILL.md) conventions. Body drift → [`ws-spec-update`](../ws-spec-update/SKILL.md) (optional, not this bus). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before Reads. Never hardcode a specs directory path.
 
@@ -28,7 +28,7 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
    - Done when: the file was read, or a skip note records it is absent.
 2. If repo-root `PLAN.md` exists, Read it.
    - Done when: the file was read, or a skip note records it is absent.
-3. If the prompt is a product change and no matching `{specsDir}/{slug}.spec.md` exists, invoke `ws-write-spec`. Do not draft a full spec body in this file.
+3. If the prompt is a product change and no matching `{specsDir}/{slug}.spec.md` exists, invoke `ws-spec-write`. Do not draft a full spec body in this file.
    - Done when: a slice spec exists under `{specsDir}`, or the prompt is not a product change.
 4. When `{specsDir}/index.PRD` exists and the slug has no Feature map / Next-specs row, invoke [`ws-spec-index`](../ws-spec-index/SKILL.md) `track {slug}` (standalone Add path). Skip with a note when the row already exists or the index is absent.
    - Done when: the slug is on the board, already-tracked skip note, or index-absent skip note.
@@ -68,4 +68,4 @@ Then invoke [`ws-changelog`](../ws-changelog/SKILL.md), then [`ws-self-learning`
 
 - en-us; path tokens only; explicit `python` / `node` / `bash` launchers when running scripts.
 - Never `git add -A`. Never mkdir a workflow plan tree for a prompt task.
-- `ws-sync-spec` remains optional body-drift repair, not this tracking bus.
+- `ws-spec-update` remains optional body-drift repair, not this tracking bus.

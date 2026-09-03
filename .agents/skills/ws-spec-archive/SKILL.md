@@ -1,6 +1,6 @@
 ---
 name: ws-spec-archive
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 description: >-
   Harvests plansDir delivery facts into specsDir/index.PRD, then proposes
@@ -20,7 +20,7 @@ invocation_names:
 
 **Archive** `{plansDir}` workflow history into `{specsDir}/index.PRD` so shipped plan folders can be removed without losing delivery facts. Complements [`ws-spec-index`](../ws-spec-index/SKILL.md) (index status sync) and [`ws-cleanup`](../ws-cleanup/SKILL.md) (untracked scratch). Schema → [`references/ARCHIVE.md`](references/ARCHIVE.md).
 
-**Specs family:** Role = harvest plan-folder facts → enrich `index.PRD` Archive (+ missing Done-log rows) → propose cleanup commit. Does not rewrite AC bodies (`ws-sync-spec`) or run the dual board (`ws-spec-list`). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = harvest plan-folder facts → enrich `index.PRD` Archive (+ missing Done-log rows) → propose cleanup commit. Does not rewrite AC bodies (`ws-spec-update`) or run the dual board (`ws-spec-list`). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Invocation
 

@@ -33,21 +33,21 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 | Step | Skill | Path |
 |------|-------|------|
-| 00 | `ws-write-spec` | `.agents/skills/ws-write-spec/SKILL.md` |
-| 01 | `ws-write-plan` | `.agents/skills/ws-write-plan/SKILL.md` |
-| 02 | `ws-interview` | `.agents/skills/ws-interview/SKILL.md` |
+| 00 | `ws-spec-write` | `.agents/skills/ws-spec-write/SKILL.md` |
+| 01 | `ws-plan-write` | `.agents/skills/ws-plan-write/SKILL.md` |
+| 02 | `ws-plan-interview` | `.agents/skills/ws-plan-interview/SKILL.md` |
 | 03 | `ws-plan-to-tasks` | `.agents/skills/ws-plan-to-tasks/SKILL.md` |
 | 04 | `ws-implement-tasks` | `.agents/skills/ws-implement-tasks/SKILL.md` |
-| 05 | `ws-verify-plan` | `.agents/skills/ws-verify-plan/SKILL.md` |
+| 05 | `ws-plan-verify` | `.agents/skills/ws-plan-verify/SKILL.md` |
 | 06 | `ws-code-review` | `.agents/skills/ws-code-review/SKILL.md` |
 | 07 | `ws-testing` | `.agents/skills/ws-testing/SKILL.md` |
 | 08 | `ws-ship-pr` | `.agents/skills/ws-ship-pr/SKILL.md` |
 | 09 | `ws-fix-pr` | `.agents/skills/ws-fix-pr/SKILL.md` |
 | — | `ws-goal-fix-pr` | `.agents/skills/ws-goal-fix-pr/SKILL.md` |
-| Post | `ws-update-plan-implementation` | `.agents/skills/ws-update-plan-implementation/SKILL.md` (Extra) |
-| — | `ws-github-provider` | `.agents/skills/ws-github-provider/SKILL.md` |
-| — | `ws-azure-devops-provider` | `.agents/skills/ws-azure-devops-provider/SKILL.md` |
-| — | `ws-local-spec-provider` | `.agents/skills/ws-local-spec-provider/SKILL.md` |
+| Post | `ws-plan-update` | `.agents/skills/ws-plan-update/SKILL.md` (Extra) |
+| — | `ws-spec-provider-github` | `.agents/skills/ws-spec-provider-github/SKILL.md` |
+| — | `ws-spec-provider-azure-devops` | `.agents/skills/ws-spec-provider-azure-devops/SKILL.md` |
+| — | `ws-spec-provider-local` | `.agents/skills/ws-spec-provider-local/SKILL.md` |
 
 ### Layer 3 — Discovery (reserved)
 
@@ -68,7 +68,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Micro diff hygiene |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9) |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
-| `ws-multi-spec` | `.agents/skills/ws-multi-spec/SKILL.md` | Batch multi-spec delivery |
+| `ws-spec-multi` | `.agents/skills/ws-spec-multi/SKILL.md` | Batch multi-spec delivery |
 | `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop |
 | `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas (Extra) |
 | `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Canonical spec schema |
@@ -85,7 +85,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Status and delivery panorama |
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
-| `ws-sync-spec` | `.agents/skills/ws-sync-spec/SKILL.md` | Auto-update specs after code changes |
+| `ws-spec-update` | `.agents/skills/ws-spec-update/SKILL.md` | Auto-update specs after code changes |
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Harness ↔ spec-memo **bridge** only (`config.json`, import, hybrid fallback); runtime vault ops → `ws-memo` |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
@@ -98,12 +98,12 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Intent | Load |
 |--------|------|
-| Write a spec | This file § [6. Write a spec](#6-write-a-spec-on-demand) (live `ws-write-spec` only when authoring that skill) |
+| Write a spec | This file § [6. Write a spec](#6-write-a-spec-on-demand) (live `ws-spec-write` only when authoring that skill) |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
-| Plan implementation | `ws-write-plan` → `ws-interview` → `ws-plan-to-tasks` |
+| Plan implementation | `ws-plan-write` → `ws-plan-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
 | Engineering delivery gate / Code review proof | This file § [2. Delivery gate](#2-delivery-gate-ws-senior-developer) (live `ws-senior-developer` only when authoring that skill) |
-| Verify / check-implementation / verify score | `ws-verify-plan` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
+| Verify / check-implementation / verify score | `ws-plan-verify` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
 | SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — then one provider skill |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `ws-secrets-leak-review` |
@@ -120,7 +120,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Spec → PR E2E | `ws-spec-to-pr` |
 | Spec → PR lite | `ws-spec-to-pr-lite` |
 | Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
-| Batch spec delivery | `ws-multi-spec` |
+| Batch spec delivery | `ws-spec-multi` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
@@ -128,15 +128,15 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
-| Auto-update feature specs after code changes | `ws-sync-spec` |
+| Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
 | Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` |
 | Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` |
 | Spec-to-PR plan-folder timesheet for a civil day | `ws-activity-report` (Extra) |
-| GitHub issue/PR ops | `ws-github-provider` |
-| ADO WI/PR ops | `ws-azure-devops-provider` |
-| Local `*.spec.md` | `ws-local-spec-provider` |
+| GitHub issue/PR ops | `ws-spec-provider-github` |
+| ADO WI/PR ops | `ws-spec-provider-azure-devops` |
+| Local `*.spec.md` | `ws-spec-provider-local` |
 | Format/review spec | `ws-spec-format` |
 | New skill / skill rewrite | `ws-write-a-skill` |
 | Show active harness | `ws-show-harness` |
@@ -212,7 +212,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 
 #### Recommended DX autoload (upstream dogfood)
 
-In **this repo only**, apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) every session (inlined in this file; not a `SKILL.md`). That compact snapshot covers surgical scope, delivery gate, fable loop, reply shape, memory/changelog, and on-demand write-spec so authoring does **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-write-spec` SKILL.md at runtime.
+In **this repo only**, apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) every session (inlined in this file; not a `SKILL.md`). That compact snapshot covers surgical scope, delivery gate, fable loop, reply shape, memory/changelog, and on-demand write-spec so authoring does **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-spec-write` SKILL.md at runtime.
 
 Those live skills still ship to consumers. Consumer hubs autoload them (or keep them on-demand) from installed `.agents/skills/ws-*`. Load a live body here only when the task is to author or test that skill.
 
@@ -222,10 +222,10 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in § [Ups
 
 | Intent | Load |
 |--------|------|
-| Draft a spec | This file § [6. Write a spec](#6-write-a-spec-on-demand) → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-write-spec` / `ws-spec-format` only when authoring those skills. |
+| Draft a spec | This file § [6. Write a spec](#6-write-a-spec-on-demand) → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-spec-write` / `ws-spec-format` only when authoring those skills. |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
-| GitHub issue → spec / fix | `ws-github-provider` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) or orchestrator with issue URL |
+| GitHub issue → spec / fix | `ws-spec-provider-github` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) or orchestrator with issue URL |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Timesheet / activity hours (Spec-to-PR plan folder) | `ws-activity-report` (Extra) |
 | Vault prompt/session activity | `ws-session-tracking` |

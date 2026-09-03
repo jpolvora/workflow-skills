@@ -5,7 +5,7 @@ import utils from './harness-test-utils.cjs';
 const require = createRequire(import.meta.url);
 const resolver = require('../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs');
 const { assert, path, repoRoot, temp, run, write } = utils;
-const registerNode = path.join(repoRoot, '.agents/skills/ws-local-spec-provider/scripts/register_local_spec.cjs');
+const registerNode = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
 const probe = path.join(repoRoot, '.agents/skills/ws-testing/scripts/probe_test_surface.cjs');
 const root = temp('ws-runtime-portability-');
 write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
@@ -57,7 +57,7 @@ for (const relative of [
 for (const relative of [
   '.agents/skills/ws-spec-to-pr/SKILL.md',
   '.agents/skills/ws-spec-to-pr-lite/SKILL.md',
-  '.agents/skills/ws-local-spec-provider/SKILL.md',
+  '.agents/skills/ws-spec-provider-local/SKILL.md',
   '.agents/skills/ws-self-learning/SKILL.md',
 ]) {
   const text = fs.readFileSync(path.join(repoRoot, relative), 'utf8');

@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -41,8 +41,8 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
 
 | `providers.scm` | Provider skill | Intent used here |
 |-----------------|----------------|-------------------|
-| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `check-pr-status` |
-| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `check-pr-status` |
+| `github` | [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) | `list-threads`, `check-pr-status` |
+| `azure-devops` | [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) | `list-threads`, `check-pr-status` |
 
 Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** `check-pr-status` from the configured SCM provider reports all active code reviews and CI pipelines have completed (status is completed, not `pending`, `in_progress`, or `queued`).
 

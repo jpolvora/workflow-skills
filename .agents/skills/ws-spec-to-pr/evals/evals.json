@@ -16,7 +16,7 @@
       "prompt": "Run full spec-to-pr from GitHub issue #99",
       "expected_output": "Provider fetch-to-spec then steps 0–9 per STEP-DISPATCH.",
       "assertions": [
-        "Routes issue entry through github-provider fetch-to-spec",
+        "Routes issue entry through spec-provider-github fetch-to-spec",
         "Does not read live issue API after step-00 spec exists",
         "Uses path tokens ({skillsRoot}, {sharedDir}, {plansDir}) instead of hardcoded consumer paths"
       ]

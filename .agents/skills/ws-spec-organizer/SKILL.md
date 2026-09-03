@@ -1,6 +1,6 @@
 ---
 name: ws-spec-organizer
-version: 0.3.55
+version: 0.3.56
 description: Spec-of-record path resolution and chronological NNNN- spec organizer.
 disable-model-invocation: true
 invocation_names:
@@ -16,7 +16,7 @@ invocation_names:
 
 Single source of truth for resolving spec-of-record paths (with optional chronological `NNNN-` sequence prefix) and organizing existing consumer spec boards.
 
-**Specs family:** Role = spec path builder & board organizer. Writers (`ws-write-spec`, `ws-spec-from-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-spec-index`) call `resolve_spec_path.cjs` instead of constructing hardcoded path strings. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = spec path builder & board organizer. Writers (`ws-spec-write`, `ws-spec-from-provider`, `ws-spec-provider-local`, `ws-spec-update`, `ws-spec-index`) call `resolve_spec_path.cjs` instead of constructing hardcoded path strings. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 ## Configuration
 

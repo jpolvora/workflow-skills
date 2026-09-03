@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-03 04:18] Agent: Antigravity
+- **Prompt**: bump version and commit work
+- **Done**: Bumped 0.3.55→0.3.56; migrated skill family naming to `ws-{family}-{verb}` across 10 skills (spec, spec-provider, plan); updated dependency manifests, router/harness docs, fail-closed gates, test fixtures, integrity manifest, and website catalog; all 40+ test suites green.
+- **Result**: Release 0.3.56 verified and committed on develop.
+
 ### [2026-09-02 15:27] Agent: Cursor Composer
 - **Prompt**: /ws-ship-pr (develop → main)
 - **Done**: Prepared board green; opened PR 265; 0 threads; checks green; merged

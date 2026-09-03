@@ -24,7 +24,7 @@ if (featuresMdEnabled) requiredDocs.splice(1, 0, 'FEATURES.md');
 for (const relative of requiredDocs) {
   assert.doesNotMatch(fs.readFileSync(path.join(repoRoot, relative), 'utf8'), /^(?:<{7}|={7}|>{7})/m, `${relative} has no conflict marker`);
 }
-const writeSpec = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-write-spec/SKILL.md'), 'utf8');
+const writeSpec = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-write/SKILL.md'), 'utf8');
 assert.match(writeSpec, /Standalone `index\.PRD` gate/, 'write-spec standalone index.PRD gate');
 assert.match(writeSpec, /Add to index\.PRD \(Recommended\)/, 'write-spec index.PRD recommended option');
 const specIndex = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-index/SKILL.md'), 'utf8');

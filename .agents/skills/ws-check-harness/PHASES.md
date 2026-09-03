@@ -95,23 +95,23 @@ Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When
 
 | Folder (disk) | Frontmatter `name:` | FSM step (standard) | Role |
 |---------------|---------------------|---------------------|------|
-| `ws-write-spec` | `ws-write-spec` | 0 | Spec |
-| `ws-write-plan` | `ws-write-plan` | 1 | Plan |
-| `ws-interview` | `ws-interview` | 2 | Interview (plan grill) |
+| `ws-spec-write` | `ws-spec-write` | 0 | Spec |
+| `ws-plan-write` | `ws-plan-write` | 1 | Plan |
+| `ws-plan-interview` | `ws-plan-interview` | 2 | Interview (plan grill) |
 | `ws-plan-to-tasks` | `ws-plan-to-tasks` | 3 | DAG / exec |
 | `ws-implement-tasks` | `ws-implement-tasks` | 4 build; 6 fix→re-review | Implement |
-| `ws-verify-plan` | `ws-verify-plan` | 5 | Check-implementation |
+| `ws-plan-verify` | `ws-plan-verify` | 5 | Check-implementation |
 | `ws-code-review` | `ws-code-review` | 6 | Local review |
 | `ws-testing` | `ws-testing` | 7 | Testing (standard only; lite skips) |
 | `ws-ship-pr` | `ws-ship-pr` | 8 | Delivery + push/PR |
 | `ws-fix-pr` | `ws-fix-pr` | 9 | One-shot PR threads |
 | `ws-goal-fix-pr` | `ws-goal-fix-pr` | 9 | Thread convergence loop |
-| `ws-update-plan-implementation` | `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas after workflow when installed |
+| `ws-plan-update` | `ws-plan-update` | Post (optional Extra) | Plan deltas after workflow when installed |
 
 **Rules:**
 
-1. **Folder == frontmatter `name:`** for pipeline skills (`ws-*`). FSM step numbers stay `0`–`9` in tables; they are **not** part of the folder name. `ws-goal-fix-pr` shares FSM step **9** with `ws-fix-pr`; `ws-update-plan-implementation` is optional Extra Post (not a required Workflows FSM step).
-2. **`name:` / folder** use the `ws-` prefix (e.g. `ws-testing`, `ws-goal-fix-pr`). No numeric `NN-` folder prefixes.
+1. **Folder == frontmatter `name:`** for pipeline skills (`ws-*`). FSM step numbers stay `0`–`9` in tables; they are **not** part of the folder name. `ws-goal-fix-pr` shares FSM step **9** with `ws-fix-pr`; `ws-plan-update` is optional Extra Post (not a required Workflows FSM step).
+2. **`name:` / folder** use the `ws-` prefix and family-first naming (e.g. `ws-spec-write`, `ws-plan-write`, `ws-testing`, `ws-goal-fix-pr`). No numeric `NN-` folder prefixes.
 3. **`invocation_names`** should include bare short id and `ws-*` only — no retired `NN-*` folder aliases.
 4. **Orchestrator dispatch** (`ws-spec-to-pr/STEP-DISPATCH.md`, orch `SKILL.md`): use `ws-*` folder ids. STEP-DISPATCH is **standard-only** (0–9); lite keeps its own 0–5 table.
 5. **Upstream `bin/skill-dependencies.json`:** workflow package skill ids must match folder names on disk under the skills scan root (`.agents/skills/` when Install mode is upstream; `{skillsRoot}/` when consumer).
@@ -121,11 +121,21 @@ Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When
 | Forbidden (do not use as path or install id) | Canonical |
 |----------------------------------------------|-----------|
 | `00-write-spec` … `09-fix-pr` (numeric-prefixed folders) | matching `ws-*` folder |
-| bare `goal-fix-pr` / `update-plan-implementation` as **folder** / install id | `ws-goal-fix-pr` / `ws-update-plan-implementation` |
+| `ws-write-spec` | `ws-spec-write` |
+| `ws-write-plan` | `ws-plan-write` |
+| `ws-interview` | `ws-plan-interview` |
+| `ws-verify-plan` | `ws-plan-verify` |
+| `ws-update-plan-implementation` / bare `update-plan-implementation` | `ws-plan-update` |
+| `ws-github-provider` | `ws-spec-provider-github` |
+| `ws-azure-devops-provider` | `ws-spec-provider-azure-devops` |
+| `ws-local-spec-provider` | `ws-spec-provider-local` |
+| `ws-sync-spec` | `ws-spec-update` |
+| `ws-multi-spec` | `ws-spec-multi` |
+| bare `goal-fix-pr` as **folder** / install id | `ws-goal-fix-pr` |
 | `07-integration-validation` | `ws-testing` |
 | `08-fix-pr` | `ws-fix-pr` |
 | `09-goal-fix-pr` / `10-goal-fix-pr` | `ws-goal-fix-pr` |
-| `10-update-plan-implementation` / `11-update-plan-implementation` | `ws-update-plan-implementation` |
+| `10-update-plan-implementation` / `11-update-plan-implementation` | `ws-plan-update` |
 | `11-ship-pr` | `ws-ship-pr` |
 | `ws-integration-validation` (as skill id / path) | `ws-testing` |
 | Nested `ws-shared/<utility-skill>/` as skill folders | Top-level `.agents/skills/<skill>/` |
@@ -262,12 +272,12 @@ For each internal reference (post-expansion when applicable):
 | File exists | orphan link after rename (e.g., path ported from another project without adjustment). When Install mode is `upstream` and Skills scan root is `.agents/skills`, hub literals under `.agents/skills/…` must exist on disk (filesystem-true). **Consumer Install mode:** resolve and require the install-path / `{skillsRoot}` file on disk. |
 | Relative path correct | excessive or insufficient `../` from the source file (**Markdown links only**; token prose uses repo-root expand) |
 | Token in Markdown link target | `(...{sharedDir}...)` — GitHub cannot expand braces → **warning**: rewrite link target to a real relative/repo-root path; keep token form in surrounding prose if desired |
-| Numeric consistency | folder `ws-write-plan` vs. `name: ws-write-plan` (numeric prefix on filesystem only; `ws-` on `name:`) |
+| Numeric consistency | folder `ws-plan-write` vs. `name: ws-plan-write` (numeric prefix on filesystem only; `ws-` on `name:`) |
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
 | Bare relative link resolution | Link `docs/faq.md` inside a skill directory resolved from repo root (`docs/faq.md`) instead of containing folder (`.agents/skills/.../docs/faq.md`) → **warning**; resolution must use containing directory |
 | Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; FAQ/docs with an explicit LEGACY banner only |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-multi-spec`, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / `{sharedDir}/AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and `{sharedDir}/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
@@ -344,7 +354,7 @@ Check:
 5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
 6. **Orchestrator dependency closure** (when upstream `bin/skill-dependencies.json` present) — for each orchestrator (e.g. `ws-spec-to-pr`, `ws-spec-to-pr-lite`), extract every dispatched skill id (step-table `ws-*` ids, providers from the shared entry matrix, fix-pr loop skills) and assert each appears in `dependencies["<orch>"]`, directly or transitively via another listed dep. Missing id → **critical** (selective install of that orchestrator yields a broken workflow).
 7. **Skill integrity manifest** (upstream Install mode only) — when `bin/skill-integrity.json` is expected, confirm it is present and `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exits 0 (committed digests match hashed package SoT / installer inputs and `package.json` version). Stale/missing → **critical** for release hygiene. **Consumer Install mode:** skip / do not require `bin/skill-integrity.json`. **Correction (do not invent digests):** `npm run generate-integrity`, then re-run `--check`, and commit `bin/skill-integrity.json` with the skill/package change (root `AGENTS.md` § Upstream skill integrity regenerate). Never tell consumers to use `--force-integrity` as the fix for upstream drift.
-8. **SCM provider intent parity** (when both `ws-github-provider` and `ws-azure-devops-provider` exist) — required intents from [`../ws-shared/scm-provider-contract.md`](../ws-shared/scm-provider-contract.md) must appear in both `SKILL.md` intent tables and both `INTENTS.md` headings. An extra intent on one SCM without the other (and without an allowlist row) → **critical**. Mechanical check: `node test/test-provider-parity.js`.
+8. **SCM provider intent parity** (when both `ws-spec-provider-github` and `ws-spec-provider-azure-devops` exist) — required intents from [`../ws-shared/scm-provider-contract.md`](../ws-shared/scm-provider-contract.md) must appear in both `SKILL.md` intent tables and both `INTENTS.md` headings. An extra intent on one SCM without the other (and without an allowlist row) → **critical**. Mechanical check: `node test/test-provider-parity.js`.
 
 ### Phase 4 — Skills/rules not routed in the resolved hub
 
@@ -438,8 +448,7 @@ For each pair of files covering the same theme, verify:
 - **Conflict** — mutually exclusive instructions (e.g., divergent guardrails precedence between skills)
 - **Obsolete instruction** — reference to removed artifact (orphan paths, remnants of previous stack)
 - **Inflation** — `AGENTS.md`, skill, or orchestrator repeating full skill body or indexing specs (should be index + link to skills/docs)
-- **`name:` collision** — two `SKILL.md` declaring the same `name:` (breaks skill resolution)
-- **Strict Skill and Task Folder Reference matching** — Every reference to a subagent skill or task **folder** in workflow files must match the § 3b directory name on disk (e.g. `ws-verify-plan`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`). Retired or placeholder folder references (e.g. `00-write-spec`, bare `verify-plan` / `testing` / `goal-fix-pr` as a **path**, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `10-goal-fix-pr`, `11-update-plan-implementation`, `05-verify-sync-plan-us`) are **critical** in orchestrator dispatch / hubs / `skill-dependencies.json`, else **warning**. Prose labels (“Testing”, step titles) and short `invocation_names` are fine; folder / install ids stay `ws-*`.
+- **Strict Skill and Task Folder Reference matching** — Every reference to a subagent skill or task **folder** in workflow files must match the § 3b directory name on disk (e.g. `ws-plan-verify`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-plan-update`). Retired or placeholder folder references (e.g. `00-write-spec`, `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, bare `verify-plan` / `testing` / `goal-fix-pr` as a **path**, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `10-goal-fix-pr`, `11-update-plan-implementation`, `05-verify-sync-plan-us`) are **critical** in orchestrator dispatch / hubs / `skill-dependencies.json`, else **warning**. Prose labels (“Testing”, step titles) and short `invocation_names` are fine; folder / install ids stay `ws-*`.
 - **FSM step ↔ skill map** — Standard orch steps 0–9 must resolve to § 3b skills (`ws-testing`→7, `ws-ship-pr`→8, `ws-fix-pr`/`ws-goal-fix-pr`→9). Lite steps 0–5 must not require `ws-testing`. Mismatches in `STEP-DISPATCH.md` or orch skill tables → **critical**.
 - **Orchestrator dependency portability** — Verify that skills that are dependencies of the project's workflow orchestrator contain no hardcoded project-specific information, absolute paths, commands, or metadata. All project-specific parameterization must be read from a config file or stack document so that dependencies remain portable and project-agnostic. No hardcoded project names (e.g. `Matrix`) or stack-specific build/test files/commands (e.g. `dotnet build Matrix.slnx`) are allowed in generic skills or scripts.
 - **Language (en-us) compliance** — Verify that all skill content, script comments, prompt messages, and generated artifact structures contain no Portuguese (PT-BR) words, local date representations (e.g. `AAAA-MM-DD`), or colloquialisms. Everything must be strictly in English.
@@ -536,11 +545,11 @@ This phase generates three independent analyses that compose the **context simul
    |---------|----------|
    | Code review | Local review skill (`ws-code-review`), quality gates (`ws-fable-judge`) |
    | Security | Secrets leak review (`ws-secrets-leak-review`), adversarial audit (`ws-fable-judge`) |
-   | Planning | Write spec (`ws-write-spec`), write plan (`ws-write-plan`), interview (`ws-interview`), task DAG (`ws-plan-to-tasks`) |
+   | Planning | Write spec (`ws-spec-write`), write plan (`ws-plan-write`), interview (`ws-plan-interview`), task DAG (`ws-plan-to-tasks`) |
    | Implementation | Build executor (`ws-implement-tasks`), engineering delivery gate (`ws-senior-developer`), surgical diffs (`ws-karpathy-guidelines`) |
-   | Verification | Score verification (`ws-verify-plan`), pre-PR testing (`ws-testing`), pre-ship proof (`ws-senior-developer`) |
+   | Verification | Score verification (`ws-plan-verify`), pre-PR testing (`ws-testing`), pre-ship proof (`ws-senior-developer`) |
    | PR workflow | Thread resolution (`ws-fix-pr`), thread loop (`ws-goal-fix-pr`), delivery & ship (`ws-ship-pr`) |
-   | Specs & Indexing | Spec schema (`ws-spec-format`), project PRD index (`ws-spec-index`), auto-sync (`ws-sync-spec`) |
+   | Specs & Indexing | Spec schema (`ws-spec-format`), project PRD index (`ws-spec-index`), auto-sync (`ws-spec-update`) |
    | Documentation & Memory | Self-learning anti-regression (`ws-self-learning`), changelog (`ws-changelog`) |
    | Harness & Meta | Check harness (`ws-check-harness`), workflow simulation (`ws-check-workflows`), write a skill (`ws-write-a-skill`) |
 
@@ -548,7 +557,7 @@ This phase generates three independent analyses that compose the **context simul
 
    a. **Instruction Block Duplication**: Scan `SKILL.md` bodies for duplicated verbatim instruction blocks (e.g. repeated checklists, duplicated provider logic, parallel verification procedures). Skills must **delegate** to canonical composed primitives (e.g. `ws-fable-judge`, `ws-secrets-leak-review`, `ws-spec-format`, `ws-senior-developer`, `ws-karpathy-guidelines`) rather than copy-pasting parallel instructions.
    b. **Role Definition Clarity**: Assert that every skill defines a sharp, non-overlapping single responsibility in its frontmatter `description:` and header section.
-   c. **Composition Topology**: Verify that orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`) delegate step execution to pipeline skills, and high-level wrappers (e.g. `ws-goal-fix-pr`) compose underlying primitives (`ws-fix-pr`, `ws-goal-loop`) without implementing redundant inline logic.
+   c. **Composition Topology**: Verify that orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`) delegate step execution to pipeline skills, and high-level wrappers (e.g. `ws-goal-fix-pr`) compose underlying primitives (`ws-fix-pr`, `ws-goal-loop`) without implementing redundant inline logic.
 
 3. **Classify each overlap & duplication finding:**
 

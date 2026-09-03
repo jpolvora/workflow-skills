@@ -117,19 +117,19 @@ flowchart TD
 ## 4. FSM Steps 0–9 Breakdown
 
 ### Step 0: Spec Creation
-*   **Executor**: Orchestrator (dispatches provider skill or `ws-write-spec`).
+*   **Executor**: Orchestrator (dispatches provider skill or `ws-spec-write`).
 *   **Role**: Resolves the input description or ticket ID into a canonical spec:
-    *   **GitHub ID**: Dispatches [`ws-github-provider`](../../ws-github-provider/SKILL.md) to fetch the issue into `{specsDir}/{slug}.spec.md`, then register `step-00-{slug}.spec.md`.
-    *   **Azure DevOps ID**: Dispatches [`ws-azure-devops-provider`](../../ws-azure-devops-provider/SKILL.md) to fetch the work item into `{specsDir}/{slug}.spec.md`, then register `step-00-{slug}.spec.md`.
-    *   **Local Spec**: Normalizes into `{specsDir}`, then registers `step-00-{slug}.spec.md` using [`ws-local-spec-provider`](../../ws-local-spec-provider/SKILL.md).
-    *   **Free-text**: Invokes `ws-write-spec` → `{specsDir}/{slug}.spec.md`, then registers into `{us-dir}/step-00-` before planning.
+    *   **GitHub ID**: Dispatches [`ws-spec-provider-github`](../../ws-spec-provider-github/SKILL.md) to fetch the issue into `{specsDir}/{slug}.spec.md`, then register `step-00-{slug}.spec.md`.
+    *   **Azure DevOps ID**: Dispatches [`ws-spec-provider-azure-devops`](../../ws-spec-provider-azure-devops/SKILL.md) to fetch the work item into `{specsDir}/{slug}.spec.md`, then register `step-00-{slug}.spec.md`.
+    *   **Local Spec**: Normalizes into `{specsDir}`, then registers `step-00-{slug}.spec.md` using [`ws-spec-provider-local`](../../ws-spec-provider-local/SKILL.md).
+    *   **Free-text**: Invokes `ws-spec-write` → `{specsDir}/{slug}.spec.md`, then registers into `{us-dir}/step-00-` before planning.
 
 ### Step 1: Planning and Brainstorm
-*   **Executor**: Planner subagent (`ws-write-plan` / `ws-write-plan`).
+*   **Executor**: Planner subagent (`ws-plan-write` / `ws-plan-write`).
 *   **Role**: Analyzes the spec and codebase to write a plan file: `step-01-{slug}.plan.md`. This plan covers design, files to modify/create, and acceptance criteria checks.
 
 ### Step 2: Plan Refinement (Interview)
-*   **Executor**: Planner subagent (`ws-interview` / `ws-interview`).
+*   **Executor**: Planner subagent (`ws-plan-interview` / `ws-plan-interview`).
 *   **Role**: Audits the plan against the spec and codebase. If there are ambiguities, escalates to the user for confirmation (max 3 rounds) and outputs `step-02-{slug}.plan.refined.md`.
 *   **Conditional Skip**: Skipped automatically if complexity is simple, no open questions exist in the plan, and no blocking gaps are detected.
 
@@ -144,7 +144,7 @@ flowchart TD
 *   **Role**: Writes code to target paths inside a git worktree (if enabled) or directly on the branch. If parallel, spins up up to 3 parallel subagents per DAG level. The **required** product commit is after Step 5 (optional G2-code under More options only).
 
 ### Step 5: Check-implementation
-*   **Executor**: Verifier subagent (read-only) (`ws-verify-plan` / `ws-verify-plan`).
+*   **Executor**: Verifier subagent (read-only) (`ws-plan-verify` / `ws-plan-verify`).
 *   **Role**: Evaluates the written code against the spec/plan and publishes an integer score (0–10).
     *   **Score ≥ `defaults.minVerifyScore` (default 9)**: Passes gate, then **required G2-code** of workflow-touched product files (skip if the stage set is empty; never empty commit).
     *   **Score below `defaults.minVerifyScore`**: Runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ `defaults.minVerifyScore` (default 9) (max 3 rounds, then Pause). Product commit runs only after score ≥ `defaults.minVerifyScore` (default 9). Never auto-approve below bar.
@@ -322,5 +322,5 @@ This is **mandatory** even if you chose **Keep all artifacts** (that choice only
 Standard check-implementation advances only at overall score **≥ `defaults.minVerifyScore` (default 9)**. Score below `defaults.minVerifyScore` always runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ `defaults.minVerifyScore` (default 9). Max **3** rounds per Step 5 visit, then Pause (fail closed). Resume continues. Never auto-approve below bar, including in `autoMode`. Optional polish (Accept As-Is) only when the score is already ≥ `defaults.minVerifyScore` (default 9) and the `scoreAndRefine` flag is on; choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced artifacts. Lite has no Step 5 verify gate.
 
 ### Do GitHub and Azure DevOps support the same PR operations?
-Yes. Both implement the required intents in [`scm-provider-contract.md`](../../ws-shared/scm-provider-contract.md): `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, `merge-pr`. Host CLI recipes stay inside each provider `INTENTS.md`. An extra intent on one side without the other (and without an allowlist row) fails `npm run test` (`test/test-provider-parity.js`). [`ws-local-spec-provider`](../../ws-local-spec-provider/SKILL.md) is not an SCM implementer; it delegates PR intents to `providers.scm`.
+Yes. Both implement the required intents in [`scm-provider-contract.md`](../../ws-shared/scm-provider-contract.md): `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, `merge-pr`. Host CLI recipes stay inside each provider `INTENTS.md`. An extra intent on one side without the other (and without an allowlist row) fails `npm run test` (`test/test-provider-parity.js`). [`ws-spec-provider-local`](../../ws-spec-provider-local/SKILL.md) is not an SCM implementer; it delegates PR intents to `providers.scm`.
 

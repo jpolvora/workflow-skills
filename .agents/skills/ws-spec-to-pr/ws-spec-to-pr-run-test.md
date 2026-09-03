@@ -76,11 +76,11 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
 | Step | Label | Expected action |
 |------|-------|-----------------|
 | **0** | Spec Creation | Skipped — spec file provided directly |
-| **1** | Planning | Complexity gate; if simple → stub plan + jump to 4; else `ws-write-plan` |
-| **2** | Plan Refinement | Conditional skip or `ws-interview` (End refinement auto-confirms 2e) |
+| **1** | Planning | Complexity gate; if simple → stub plan + jump to 4; else `ws-plan-write` |
+| **2** | Plan Refinement | Conditional skip or `ws-plan-interview` (End refinement auto-confirms 2e) |
 | **3** | Execution Plan & DAG | `ws-plan-to-tasks` — sequential writes exec.md + dag.json (empty task groups) |
 | **4** | Implementation | `ws-implement-tasks` mode build |
-| **5** | Check-implementation | `ws-verify-plan` quick-score; `scoreAndRefine` until score ≥ `defaults.minVerifyScore` (default 9) (auto pauses only after max rounds still below bar); then simulate G2-code of workflow product files |
+| **5** | Check-implementation | `ws-plan-verify` quick-score; `scoreAndRefine` until score ≥ `defaults.minVerifyScore` (default 9) (auto pauses only after max rounds still below bar); then simulate G2-code of workflow product files |
 | **6** | Code Review (+ fix → re-review) | `ws-code-review` on committed `{base}...HEAD`; on Critical/Warning: fix → re-review max 3; simulate G2-code of review fixes if any; Pause on residual |
 | **7** | Testing | May auto-skip (`skipTesting` / no surface); else `ws-testing` without browser |
 | **8** | Close + ship | Delivery result + close gate (`status: completed`, `shipStatus: pending`) → ship gate → simulate push/PR (`ws-ship-pr` push-only in workflow mode; product already committed) |

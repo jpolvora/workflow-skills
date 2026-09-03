@@ -187,9 +187,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/ws-check-harness/SKILL.md',
     '.agents/skills/ws-shared/AGENTS.md',
     // Spec-source / SCM provider skills (packed under .agents/skills/)
-    '.agents/skills/ws-github-provider/SKILL.md',
-    '.agents/skills/ws-azure-devops-provider/SKILL.md',
-    '.agents/skills/ws-local-spec-provider/SKILL.md',
+    '.agents/skills/ws-spec-provider-github/SKILL.md',
+    '.agents/skills/ws-spec-provider-azure-devops/SKILL.md',
+    '.agents/skills/ws-spec-provider-local/SKILL.md',
     // Promoted top-level skills + dependency map
     'bin/skill-dependencies.json',
     '.agents/skills/ws-tdah/SKILL.md',
@@ -227,11 +227,11 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!depMap.packages?.workflows?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json workflows package missing ws-spec-to-pr');
   }
-  if (!depMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
-    fail('bin/skill-dependencies.json workflows package missing ws-multi-spec');
+  if (!depMap.packages?.workflows?.skills?.includes('ws-spec-multi')) {
+    fail('bin/skill-dependencies.json workflows package missing ws-spec-multi');
   }
-  if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-multi-spec')) {
-    fail('.agents/skills/ws-shared/skill-dependencies.json workflows package missing ws-multi-spec');
+  if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-spec-multi')) {
+    fail('.agents/skills/ws-shared/skill-dependencies.json workflows package missing ws-spec-multi');
   }
   if (!depMap.packages?.workflows?.skills?.includes('ws-senior-developer')) {
     fail('bin/skill-dependencies.json workflows package missing ws-senior-developer');
@@ -255,7 +255,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-run-benchmark');
   }
   {
-    const extraDemoted = ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation'];
+    const extraDemoted = ['ws-activity-report', 'ws-fable-domain', 'ws-plan-update'];
     for (const map of [depMap, sharedDepMap]) {
       const w = map.packages?.workflows?.skills || [];
       const e = map.packages?.extra?.skills || [];
@@ -273,16 +273,16 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
       }
     }
     const activityDeps = depMap.dependencies?.['ws-activity-report'] || [];
-    for (const forbidden of ['ws-github-provider', 'ws-azure-devops-provider', 'ws-configure-project']) {
+    for (const forbidden of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops', 'ws-configure-project']) {
       if (activityDeps.includes(forbidden)) {
         fail(`dependencies.ws-activity-report must not include ${forbidden}`);
       }
     }
-    if ((depMap.dependencies?.['ws-write-plan'] || []).includes('ws-fable-domain')) {
-      fail('dependencies.ws-write-plan must not include ws-fable-domain');
+    if ((depMap.dependencies?.['ws-plan-write'] || []).includes('ws-fable-domain')) {
+      fail('dependencies.ws-plan-write must not include ws-fable-domain');
     }
-    if ((depMap.dependencies?.['ws-spec-to-pr'] || []).includes('ws-update-plan-implementation')) {
-      fail('dependencies.ws-spec-to-pr must not include ws-update-plan-implementation');
+    if ((depMap.dependencies?.['ws-spec-to-pr'] || []).includes('ws-plan-update')) {
+      fail('dependencies.ws-spec-to-pr must not include ws-plan-update');
     }
     if ((depMap.dependencies?.['ws-fable-method'] || []).includes('ws-fable-domain')) {
       fail('dependencies.ws-fable-method must not include ws-fable-domain');
@@ -304,22 +304,22 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   if (
     !fs.existsSync(
-      path.join(parentDir, '.agents/skills/ws-github-provider/scripts/github-issue-to-spec.py')
+      path.join(parentDir, '.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py')
     )
   ) {
-    fail('Missing canonical github-issue-to-spec.py under ws-github-provider/scripts');
+    fail('Missing canonical github-issue-to-spec.py under ws-spec-provider-github/scripts');
   }
   if (
     !fs.existsSync(
-      path.join(parentDir, '.agents/skills/ws-azure-devops-provider/scripts/ado-workitem-to-spec.py')
+      path.join(parentDir, '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py')
     )
   ) {
-    fail('Missing canonical ado-workitem-to-spec.py under ws-azure-devops-provider/scripts');
+    fail('Missing canonical ado-workitem-to-spec.py under ws-spec-provider-azure-devops/scripts');
   }
-  // ws-local-spec-provider scripts (AC1)
+  // ws-spec-provider-local scripts (AC1)
   for (const rel of [
-    '.agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.py',
-    '.agents/skills/ws-local-spec-provider/scripts/register_local_spec.py'
+    '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.py',
+    '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.py'
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
   }
@@ -437,9 +437,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   // Provider SKILL.md smoke: frontmatter name + dual-mode sections
   const providerSkills = [
-    'ws-github-provider',
-    'ws-azure-devops-provider',
-    'ws-local-spec-provider'
+    'ws-spec-provider-github',
+    'ws-spec-provider-azure-devops',
+    'ws-spec-provider-local'
   ];
   for (const name of providerSkills) {
     const body = fs.readFileSync(
@@ -690,16 +690,16 @@ child.on('close', async (code) => {
   fs.writeFileSync(consumerConfig, JSON.stringify(marker, null, 2), 'utf8');
 
   // Plain `update` only refreshes skills already present. New upstream skill folders
-  // (e.g. ws-github-provider, ws-azure-devops-provider, ws-local-spec-provider) require
+  // (e.g. ws-spec-provider-github, ws-spec-provider-azure-devops, ws-spec-provider-local) require
   // `npx github:jpolvora/workflow-skills update --include-new` (or interactive install).
   const sourceSkills = listSkillDirs(rootSkillsDir);
   const installedBefore = listSkillDirs(testSkillsDir);
   // Prefer removing a provider skill so --include-new coverage matches consumer upgrades
   const removable = installedBefore.find(
     (s) =>
-      s === 'ws-local-spec-provider' ||
-      s === 'ws-github-provider' ||
-      s === 'ws-azure-devops-provider' ||
+      s === 'ws-spec-provider-local' ||
+      s === 'ws-spec-provider-github' ||
+      s === 'ws-spec-provider-azure-devops' ||
       s === 'ws-secrets-leak-review' ||
       s === 'ws-write-a-skill' ||
       s === 'ws-show-harness' ||
@@ -785,14 +785,14 @@ child.on('close', async (code) => {
   const installedAfter = listSkillDirs(testSkillsDir);
   const missingPipeline = [
     'ws-spec-to-pr',
-    'ws-write-spec',
+    'ws-spec-write',
     'ws-implement-tasks',
     'ws-testing',
     'ws-ship-pr',
     'ws-check-harness',
-    'ws-github-provider',
-    'ws-azure-devops-provider',
-    'ws-local-spec-provider'
+    'ws-spec-provider-github',
+    'ws-spec-provider-azure-devops',
+    'ws-spec-provider-local'
   ].filter((s) => !installedAfter.includes(s));
   if (missingPipeline.length) {
     fail(`Pipeline/provider skills missing after update: ${missingPipeline.join(', ')}`);
@@ -823,7 +823,7 @@ child.on('close', async (code) => {
     fail('Consumer ws-shared/AGENTS.md must route ws-check-harness and ws-check-workflows');
   }
   ok('ws-check-harness + ws-shared/AGENTS.md hub shipped to consumer (no stray docs above .agents/skills/)');
-  for (const name of ['ws-github-provider', 'ws-azure-devops-provider', 'ws-local-spec-provider']) {
+  for (const name of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops', 'ws-spec-provider-local']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
     }
@@ -832,8 +832,8 @@ child.on('close', async (code) => {
   for (const rel of [
     path.join('ws-spec-to-pr', 'scripts', 'github-issue-to-spec.py'),
     path.join('ws-spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
-    path.join('ws-local-spec-provider', 'scripts', 'detect_specs_dir.py'),
-    path.join('ws-local-spec-provider', 'scripts', 'register_local_spec.py'),
+    path.join('ws-spec-provider-local', 'scripts', 'detect_specs_dir.py'),
+    path.join('ws-spec-provider-local', 'scripts', 'register_local_spec.py'),
     path.join('ws-fix-pr', 'scripts', 'fetch_threads.cjs'),
     path.join('ws-fix-pr', 'scripts', 'resolve_thread.cjs'),
     path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.py')
@@ -983,7 +983,7 @@ child.on('close', async (code) => {
     );
     const register = path.join(
       testSkillsDir,
-      'ws-local-spec-provider',
+      'ws-spec-provider-local',
       'scripts',
       'register_local_spec.py'
     );
@@ -1116,7 +1116,7 @@ child.on('close', async (code) => {
     if (fs.existsSync(path.join(pkgSkills, 'security-review'))) {
       fail('Workflows package must not install Extra-only security-review');
     }
-    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation']) {
+    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-plan-update']) {
       if (fs.existsSync(path.join(pkgSkills, extra))) {
         fail(`Workflows package must not install Extra skill ${extra}`);
       }
@@ -1253,7 +1253,7 @@ child.on('close', async (code) => {
     }
     ok('install --package workflows --yes refreshes skills and preserves config.json');
 
-    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation']) {
+    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-plan-update']) {
       if (fs.existsSync(path.join(niDir, '.agents', 'skills', extra))) {
         fail(`install --package workflows --yes must not create Extra skill ${extra}`);
       }
@@ -1276,7 +1276,7 @@ child.on('close', async (code) => {
       console.error(`${fullExtra.stdout || ''}${fullExtra.stderr || ''}`);
       fail(`install --full --yes exited ${fullExtra.status}`);
     }
-    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-update-plan-implementation']) {
+    for (const extra of ['ws-activity-report', 'ws-fable-domain', 'ws-plan-update']) {
       if (!fs.existsSync(path.join(fullExtraDir, '.agents', 'skills', extra, 'SKILL.md'))) {
         fail(`Full install missing Extra skill ${extra}`);
       }

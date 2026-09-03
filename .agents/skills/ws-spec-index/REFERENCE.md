@@ -69,7 +69,7 @@ output:
 1. `ws-spec-to-pr` Step 8: Call `sync` after successful delivery commit and/or create-PR ship action.
 2. `ws-spec-to-pr-lite` Step 4: Call `sync` on ship path with delivery evidence.
 3. `ws-ship-pr`: Call `sync` after successful ship action.
-4. `ws-write-spec` standalone (after user-gate **Add to index.PRD**): Call `track` with `{slug}`. Skip when orch Step 0 invoked write-spec.
+4. `ws-spec-write` standalone (after user-gate **Add to index.PRD**): Call `track` with `{slug}`. Skip when orch Step 0 invoked write-spec.
 
 ## Out of Scope (v1)
 

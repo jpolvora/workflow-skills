@@ -2,7 +2,7 @@
 
 > **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract. Use this README + [`DIAGRAM.md`](DIAGRAM.md) for onboarding. FAQ sections that still mention steps 11–13 are **legacy**; trust [`SKILL.md`](SKILL.md) / this README for steps **0–9**.
 >
-> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`). Optional Extra post-workflow: `ws-update-plan-implementation` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/tools.md). Config: `.agents/skills/ws-shared/config.json`.
+> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/tools.md). Config: `.agents/skills/ws-shared/config.json`.
 >
 > **Identity:** `/ws-spec-to-pr`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
@@ -101,18 +101,18 @@ Node state helpers update the workflow atomically and publish deterministic `run
 
 | # | Name | Skill / action | Objective |
 |---|------|----------------|-----------|
-| **0** | Spec | providers / `ws-write-spec` (+ register) | `{specsDir}/{slug}.spec.md` spec of record first, then workflow `step-00-{slug}.spec.md` after register |
-| **1** | Plan | `ws-write-plan` | `step-01-{slug}.plan.md` |
-| **2** | Interview | `ws-interview` | `step-02-{slug}.plan.refined.md` |
+| **0** | Spec | providers / `ws-spec-write` (+ register) | `{specsDir}/{slug}.spec.md` spec of record first, then workflow `step-00-{slug}.spec.md` after register |
+| **1** | Plan | `ws-plan-write` | `step-01-{slug}.plan.md` |
+| **2** | Interview | `ws-plan-interview` | `step-02-{slug}.plan.refined.md` |
 | **3** | Plan-to-tasks | `ws-plan-to-tasks` | exec + DAG |
 | **4** | Implement | `ws-implement-tasks` | Code |
-| **5** | Check-implementation | `ws-verify-plan` | Score 0–10; ≥ `defaults.minVerifyScore` (default 9) to Advance (`scoreAndRefine` until bar); then required G2-code of workflow product files |
+| **5** | Check-implementation | `ws-plan-verify` | Score 0–10; ≥ `defaults.minVerifyScore` (default 9) to Advance (`scoreAndRefine` until bar); then required G2-code of workflow product files |
 | **6** | Code-review | `ws-code-review` (+ fix → re-review, max 3) | Committed `{base}...HEAD`; then G2-code of review fixes if any |
 | **7** | Testing | `ws-testing` | `step-07-{slug}.testing.*` |
 | **8** | Ship | `ws-ship-pr` | Delivery artifacts + push/PR → `step-08-{slug}.result.md` (product already committed) |
 | **9** | Fix-PR | `ws-fix-pr` / `ws-goal-fix-pr` | Threads → merge policy |
 
-Post-workflow QA deltas (optional Extra, when installed): `ws-update-plan-implementation`.
+Post-workflow QA deltas (optional Extra, when installed): `ws-plan-update`.
 
 ### Step 7 — Testing (summary)
 

@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -20,9 +20,9 @@ Ship from the resolved PR **head** to `config.project.baseBranch`: prepare board
 
 `ws-ship-pr` is **SCM-provider independent**. It reads `{sharedDir}/config.json` at runtime to determine the active SCM platform and dispatch the corresponding provider skill:
 
-- **`providers.scm: "github"`** → dispatches [`ws-github-provider`](../ws-github-provider/SKILL.md) (`gh` CLI / GitHub REST API)
-- **`providers.scm: "azure-devops"`** (or `"ado"`) → dispatches [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) (`az repos` / ADO REST API)
-- **`providers.scm: "local"`** → dispatches [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md)
+- **`providers.scm: "github"`** → dispatches [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) (`gh` CLI / GitHub REST API)
+- **`providers.scm: "azure-devops"`** (or `"ado"`) → dispatches [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) (`az repos` / ADO REST API)
+- **`providers.scm: "local"`** → dispatches [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md)
 
 Prepare board (mandatory): [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Wait/converge timing: [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md). Examples: [examples.md](examples.md).
 
@@ -90,7 +90,7 @@ See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Ship/PREPARE row
    **Standalone only:** then commit remaining ship-scope changes. **Workflow mode:** delivery commit already exists or was skipped at close — push only. `git push -u {gitRemote} {shipHead}` (or dispatch `push-branch`). Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
 
-5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL. When workflow state or spec frontmatter has tracker `id`, dispatch provider **`comment-issue`** (alias `close-loop`) with PR URL + one-paragraph summary (`dry-run` when parent is dry-run). Skip when `id` is null / `source: local`.
+5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/config-resolution.md) (`github` or `azure-devops` / `ado` only for create-pr; STOP if `local` or unresolved — do not invent a client). Load matching provider ([ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) or [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md)), `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL. When workflow state or spec frontmatter has tracker `id`, dispatch provider **`comment-issue`** (alias `close-loop`) with PR URL + one-paragraph summary (`dry-run` when parent is dry-run). Skip when `id` is null / `source: local`.
    - Done when: PR id/URL captured or reused; close-loop dispatched or skipped with reason. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).
 
 6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action / CI workflows to start on SCM infrastructure), then start [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks via provider **`check-pr-status`** (classify diff-regression vs baseline vs infra-flake; one flake rerun; baseline does not block merge only when reproduced on default branch and recorded) and `list-threads` via the configured SCM provider, and dispatch `ws-goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `ws-goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
@@ -113,7 +113,7 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 ## Dependencies
 
 - Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `bash {skillsRoot}/ws-ship-pr/scripts/verify.sh`
-- SCM Providers (configured via `config.json` `providers.scm`): [ws-github-provider](../ws-github-provider/SKILL.md) · [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) · [ws-local-spec-provider](../ws-local-spec-provider/SKILL.md)
+- SCM Providers (configured via `config.json` `providers.scm`): [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) · [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) · [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md)
 - Security: [ws-secrets-leak-review](../ws-secrets-leak-review/SKILL.md)
 - Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md)
 - Base detection: `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../ws-spec-to-pr/ARTIFACTS.md)

@@ -1,6 +1,6 @@
 ---
 name: ws-spec-explain
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 description: >-
   Read-only panorama of a spec or US/issue — status, what it does, what it
@@ -46,7 +46,7 @@ Report shape → [`references/REPORT.md`](references/REPORT.md). Output language
 2. **Collect local evidence** — Read in order when present: spec of record → `step-00-*.spec.md` → `*.state.md` → `step-01-*.plan.md` / refined → `step-08-*.result.md` → AC ledger / plan index if present. Record `status`, `currentStep`, `prNumber`/`prUrl`, `branch`, ACs.
    - Done when: local facts + gaps are listed (invent nothing).
 
-3. **Collect code & remote evidence** — Grep / Glob product paths named by the plan or ACs. If SCM configured and id/PR known, load **one** provider skill for issue/PR summary only ([`ws-github-provider`](../ws-github-provider/SKILL.md) / [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md)). Auth failure → gap `scm-skipped`.
+3. **Collect code & remote evidence** — Grep / Glob product paths named by the plan or ACs. If SCM configured and id/PR known, load **one** provider skill for issue/PR summary only ([`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) / [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md)). Auth failure → gap `scm-skipped`.
    - Done when: implementation signals (files, PR state) or gaps are attached.
 
 4. **Classify status** — One of: `not-started` · `in-progress` · `delivered` · `blocked` · `unknown` (see REPORT § Status). Prefer state `status` + PR merged/closed over guesswork.

@@ -1,6 +1,6 @@
 # Spec-to-PR — Diagrams (FSM 0–9)
 
-> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`; folder == `name:`). Optional Extra post-workflow: `ws-update-plan-implementation` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../ws-shared/gates.md), [`config-resolution.md`](../ws-shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
+> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`; folder == `name:`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../ws-shared/gates.md), [`config-resolution.md`](../ws-shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
 
 ---
 
@@ -67,17 +67,17 @@ flowchart TD
 
 | Step (standard) | Skill `name:` | Folder |
 |-----------------|---------------|--------|
-| 0 | `ws-write-spec` | `ws-write-spec` |
-| 1 | `ws-write-plan` | `ws-write-plan` |
-| 2 | `ws-interview` | `ws-interview` |
+| 0 | `ws-spec-write` | `ws-spec-write` |
+| 1 | `ws-plan-write` | `ws-plan-write` |
+| 2 | `ws-plan-interview` | `ws-plan-interview` |
 | 3 | `ws-plan-to-tasks` | `ws-plan-to-tasks` (skipped dispatch when `enableDag: false`) |
 | 4 / 6-fix | `ws-implement-tasks` | `ws-implement-tasks` |
-| 5 | `ws-verify-plan` | `ws-verify-plan` |
+| 5 | `ws-plan-verify` | `ws-plan-verify` |
 | 6 | `ws-code-review` | `ws-code-review` |
 | 7 | `ws-testing` | `ws-testing` |
 | 8 | `ws-ship-pr` | `ws-ship-pr` |
 | 9 | `ws-fix-pr` / `ws-goal-fix-pr` | `ws-fix-pr` / `ws-goal-fix-pr` |
-| Post | `ws-update-plan-implementation` (optional Extra) | invoke when installed |
+| Post | `ws-plan-update` (optional Extra) | invoke when installed |
 
 ---
 

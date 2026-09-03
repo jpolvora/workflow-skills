@@ -345,7 +345,7 @@
         "specsDir": {
           "type": "string",
           "default": ".agents/specs",
-          "description": "Repo-relative directory for human-facing local specs. Skill token {specsDir} ← plans.specsDir (default: .agents/specs). Prefer existing repo-root specs/ when already present. ws-write-spec writes here only; used by ws-local-spec-provider, ws-spec-index, ws-spec-list, ws-multi-spec, ws-sync-spec; workflow step-00 copies under plans.dir come from providers or register"
+          "description": "Repo-relative directory for human-facing local specs. Skill token {specsDir} ← plans.specsDir (default: .agents/specs). Prefer existing repo-root specs/ when already present. ws-spec-write writes here only; used by ws-spec-provider-local, ws-spec-index, ws-spec-list, ws-spec-multi, ws-spec-update; workflow step-00 copies under plans.dir come from providers or register"
         },
         "diagnosticsDir": {
           "type": "string",

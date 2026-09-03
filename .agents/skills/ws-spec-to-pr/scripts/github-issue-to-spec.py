@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compatibility shim — forwards to ws-github-provider canonical script."""
+"""Compatibility shim — forwards to ws-spec-provider-github canonical script."""
 from __future__ import annotations
 
 import subprocess
@@ -8,7 +8,7 @@ from pathlib import Path
 
 _TARGET = (
     Path(__file__).resolve().parents[2]
-    / "ws-github-provider"
+    / "ws-spec-provider-github"
     / "scripts"
     / "github-issue-to-spec.py"
 )

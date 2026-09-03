@@ -26,7 +26,7 @@ function read(rel) {
 const gates = read('.agents/skills/ws-shared/gates.md');
 const dispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 const implement = read('.agents/skills/ws-implement-tasks/SKILL.md');
-const verify = read('.agents/skills/ws-verify-plan/SKILL.md');
+const verify = read('.agents/skills/ws-plan-verify/SKILL.md');
 const lite = read('.agents/skills/ws-spec-to-pr-lite/SKILL.md');
 const schema = read('.agents/skills/ws-shared/config.schema.json');
 const example = read('.agents/skills/ws-shared/config.json.example');
@@ -90,7 +90,7 @@ assert(
 
 assert(
   /optional `scoreAndRefine` second pass/i.test(verify),
-  'ws-verify-plan handoff points at optional second pass',
+  'ws-plan-verify handoff points at optional second pass',
 );
 assert(
   /wide-context simplify per/i.test(lite),

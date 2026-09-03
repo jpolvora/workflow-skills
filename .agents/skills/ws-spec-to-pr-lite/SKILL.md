@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.55
+version: 0.3.56
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -14,7 +14,7 @@ invocation_names:
 
 Sequential spec→ship orchestrator executing inline steps (0–5) using the same pipeline skills as [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md). Do **not** use `STEP-DISPATCH.md` for lite step numbers.
 
-**Specs family:** Role = single-feature **lite** Spec→PR. Same entry rules as standard for specs (`{specsDir}` draft → authoring validate → register; tracker fetch → `ws-write-spec` agentic reformulation → authoring validate → register). Newly written spec with authoring validation non-zero: **skip** `ws-local-spec-provider` register. Pre-closure existing spec: register allowed under `validate_spec.cjs` `--mode=compat`. Downstream steps always read the enhanced local spec copy. Prefer when `ws-classify-complexity` recommends lite. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = single-feature **lite** Spec→PR. Same entry rules as standard for specs (`{specsDir}` draft → authoring validate → register; tracker fetch → `ws-spec-write` agentic reformulation → authoring validate → register). Newly written spec with authoring validation non-zero: **skip** `ws-spec-provider-local` register. Pre-closure existing spec: register allowed under `validate_spec.cjs` `--mode=compat`. Downstream steps always read the enhanced local spec copy. Prefer when `ws-classify-complexity` recommends lite. Batch → [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap (Feature branch gate: §5b; Resume pre-check vs `{integrationBranch}`: §4c).
 
@@ -40,14 +40,14 @@ Aliases: [`tools.md`](../ws-shared/tools.md). At **every step boundary** in norm
 
 | Step | Label | Skill / Action | Verifiable Exit Criteria (Done When) |
 |------|-------|----------------|--------------------------------------|
-| 0 | Spec | providers / `ws-write-spec` (+ authoring validate; skip register on fail); **prior-work sweep** before plan/code; after register `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs init --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/ac-ledger.json" --slug {slug} --workflow-id {workflow-id}` | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-write-spec`) **and** authoring validation PASS **and** `step-00-{slug}.spec.md` registered + `ac-ledger.json` + classifier user-gate completed |
-| 1 | Planning | `ws-write-plan` (design-intent git log for modifications); then `node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs build --plan "{us-dir}/step-01-{slug}.plan.md" --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/plan.index.json"` | `step-01-{slug}.plan.md` + `plan.index.json` created & validated |
+| 0 | Spec | providers / `ws-spec-write` (+ authoring validate; skip register on fail); **prior-work sweep** before plan/code; after register `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs init --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/ac-ledger.json" --slug {slug} --workflow-id {workflow-id}` | `{specsDir}/{slug}.spec.md` exists (enhanced via `ws-spec-write`) **and** authoring validation PASS **and** `step-00-{slug}.spec.md` registered + `ac-ledger.json` + classifier user-gate completed |
+| 1 | Planning | `ws-plan-write` (design-intent git log for modifications); then `node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs build --plan "{us-dir}/step-01-{slug}.plan.md" --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/plan.index.json"` | `step-01-{slug}.plan.md` + `plan.index.json` created & validated |
 | 2 | Implementation | `ws-implement-tasks` (**defect-class repo-wide sweep**; link spec Negative & Failing Test Scenarios into `ac-ledger.json`) | Code modified + build/tests pass (`config.json.verification`) + negative-scenario tests linked; then required G2-code (skip if empty) |
 | 3 | Review | `ws-code-review` (+ fix; sibling modules beyond diff) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |
 | 4 | Ship | orch: **close** (result, G2-delivery, MEMORY, changelog, `status: completed`, `shipStatus: pending`) then **ship** gate → `ws-ship-pr` (`check-pr-status` CI triage + **`comment-issue`** on create) | `step-08-{slug}.result.md` + PR created/skipped per ship gate |
 | 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr`: for each batch, write and validate the gate-only plan before any product edit, then execute inline (`check-pr-status` baseline vs diff); ignore role model switches | Complete plan + execute/proactive evidence; PR merged or zero active threads (`activeThreads == 0`) |
 
-**No Step 5/7 verify or testing:** lite does not dispatch `ws-verify-plan` or `ws-testing`. **Regression sabotage** and **mutation testing** are **standard-orch Steps 5 and 7 only** — out of scope for lite.
+**No Step 5/7 verify or testing:** lite does not dispatch `ws-plan-verify` or `ws-testing`. **Regression sabotage** and **mutation testing** are **standard-orch Steps 5 and 7 only** — out of scope for lite.
 
 ## Post-Mutating Transition Sequence (Steps 0–4 → 1–5)
 

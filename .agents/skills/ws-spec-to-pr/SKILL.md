@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-to-pr loaded."
 
-**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-write-spec` (`{specsDir}`) then `ws-local-spec-provider` register; tracker id (GitHub/ADO) → provider fetch + `ws-write-spec` agentic reformulation (`{specsDir}`) then `ws-local-spec-provider` register; existing `*.spec.md` → local-spec-provider. Downstream steps always read the enhanced local spec copy. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-spec-write` (`{specsDir}`) then `ws-spec-provider-local` register; tracker id (GitHub/ADO) → provider fetch + `ws-spec-write` agentic reformulation (`{specsDir}`) then `ws-spec-provider-local` register; existing `*.spec.md` → spec-provider-local. Downstream steps always read the enhanced local spec copy. Batch → [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 
 - **Dual-mode:** Shared pipeline skills stay interchangeable with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).

@@ -6,12 +6,12 @@ const path = require('path');
 const { resolveConsumerContext, resolveSkillMdPath, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
 
 const PIPELINE = [
-  'ws-write-spec',
-  'ws-write-plan',
-  'ws-interview',
+  'ws-spec-write',
+  'ws-plan-write',
+  'ws-plan-interview',
   'ws-plan-to-tasks',
   'ws-implement-tasks',
-  'ws-verify-plan',
+  'ws-plan-verify',
   'ws-code-review',
   'ws-testing',
   'ws-ship-pr',

@@ -73,7 +73,7 @@ Paths from `config.json.rules` and domain keys:
 | **Design tokens** | `domain.designTokens` | Optional |
 | **Changelog** | `rules.changelogFile` | Default `.agents/skills/ws-shared/CHANGELOG.md` |
 
-Delegated workflow skills (pipeline `ws-*` folders: `ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`) live under `.agents/skills/` — see [AGENTS.md](AGENTS.md) and orchestrator `SKILL.md` § Allowed deps.
+Delegated workflow skills (pipeline `ws-*` folders: `ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-plan-update`) live under `.agents/skills/` — see [AGENTS.md](AGENTS.md) and orchestrator `SKILL.md` § Allowed deps.
 
 ## Project Invariants (from config.json)
 

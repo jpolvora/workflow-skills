@@ -12,7 +12,7 @@ const skillsRoot = path.join(__dirname, '..', '.agents', 'skills');
 
 /** @type {Record<string, { evals: object[] }>} */
 const EVALS = {
-  'ws-write-spec': {
+  'ws-spec-write': {
     evals: [
       {
         id: 1,
@@ -20,7 +20,7 @@ const EVALS = {
         expected_output:
           'A local oauth-login.spec.md under {specsDir}/ with acceptance criteria per spec-format. No {plansDir} folder or step-00 file created.',
         assertions: [
-          'Agent loads ws-write-spec or write-spec before drafting',
+          'Agent loads ws-spec-write or spec-write before drafting',
           'Output path uses {specsDir} or plans.specsDir token, not {plansDir}',
           'Agent does not create {plansDir}/{slug}/ or step-00-*.spec.md unless --register',
           'Spec includes testable acceptance criteria',
@@ -33,7 +33,7 @@ const EVALS = {
         expected_output:
           'Casual prompt still yields a structured spec under {specsDir} with slug, scope, and acceptance criteria.',
         assertions: [
-          'Agent loads the write-spec skill despite informal phrasing',
+          'Agent loads the spec-write skill despite informal phrasing',
           'Spec sets source: local and id: null per spec-format',
           'Slug is derived and used in the artifact filename under {specsDir}',
         ],
@@ -51,14 +51,14 @@ const EVALS = {
       },
     ],
   },
-  'ws-write-plan': {
+  'ws-plan-write': {
     evals: [
       {
         id: 1,
         prompt: 'Create an implementation plan from specs/oauth-login/step-00-oauth-login.spec.md',
         expected_output: 'step-01-oauth-login.plan.md with phased implementation aligned to the spec.',
         assertions: [
-          'Agent loads ws-write-plan before planning',
+          'Agent loads ws-plan-write before planning',
           'Plan references the spec file, not live tracker APIs',
           'Output artifact name follows step-01-{slug}.plan.md pattern',
           'Plan includes verifiable implementation steps',
@@ -66,7 +66,7 @@ const EVALS = {
       },
       {
         id: 2,
-        prompt: '/ws-write-plan for slug billing-refactor — spec is already in {plansDir}/billing-refactor/',
+        prompt: '/ws-plan-write for slug billing-refactor — spec is already in {plansDir}/billing-refactor/',
         expected_output: 'Plan scoped to spec; no scope creep beyond the spec.',
         assertions: [
           'Agent reads the existing step-00 spec under {plansDir}',
@@ -76,7 +76,7 @@ const EVALS = {
       },
     ],
   },
-  'ws-interview': {
+  'ws-plan-interview': {
     evals: [
       {
         id: 1,
@@ -84,7 +84,7 @@ const EVALS = {
         expected_output:
           'Interview-style audit with questions or gaps; refined plan or confirmed shared understanding.',
         assertions: [
-          'Agent loads ws-interview',
+          'Agent loads ws-plan-interview',
           'Does not jump straight to implementation without plan review',
           'Surfaces ambiguities or missing decisions from the plan',
           'Runs project-context sweep (specs, MEMORY, codebase, architecture, rules) before asking the user',
@@ -174,14 +174,14 @@ const EVALS = {
       },
     ],
   },
-  'ws-verify-plan': {
+  'ws-plan-verify': {
     evals: [
       {
         id: 1,
         prompt: 'Verify implementation against {plansDir}/oauth-login/step-00-oauth-login.spec.md',
         expected_output: 'step-05 plan report with score 0–10 and gap list vs spec.',
         assertions: [
-          'Agent loads ws-verify-plan',
+          'Agent loads ws-plan-verify',
           'Compares implementation to spec, not to assumptions',
           'Produces a scored report artifact or structured verification output',
         ],
@@ -356,14 +356,14 @@ const EVALS = {
       },
     ],
   },
-  'ws-update-plan-implementation': {
+  'ws-plan-update': {
     evals: [
       {
         id: 1,
         prompt: 'Capture QA findings and update the oauth-login plan after ship.',
         expected_output: 'Plan deltas recorded in post-workflow update artifact.',
         assertions: [
-          'Agent loads ws-update-plan-implementation',
+          'Agent loads ws-plan-update',
           'Updates plan with findings, not a changelog dump',
           'References {plansDir} artifacts for the slug',
         ],
@@ -379,7 +379,7 @@ const EVALS = {
       },
     ],
   },
-  'ws-sync-spec': {
+  'ws-spec-update': {
     evals: [
       {
         id: 1,
@@ -387,7 +387,7 @@ const EVALS = {
         expected_output:
           'A drift analysis and surgical spec update proposal, with a Revision History entry, before any file is written.',
         assertions: [
-          'Agent loads ws-sync-spec and identifies modified implementation scope',
+          'Agent loads ws-spec-update and identifies modified implementation scope',
           'Compares actual code behavior against existing spec requirements and acceptance criteria',
           'Proposes updates and requests user approval before writing the spec',
         ],
@@ -422,7 +422,7 @@ const EVALS = {
         prompt: 'Run full spec-to-pr from GitHub issue #99',
         expected_output: 'Provider fetch-to-spec then steps 0–9 per STEP-DISPATCH.',
         assertions: [
-          'Routes issue entry through github-provider fetch-to-spec',
+          'Routes issue entry through spec-provider-github fetch-to-spec',
           'Does not read live issue API after step-00 spec exists',
         ],
       },
@@ -460,7 +460,7 @@ const EVALS = {
       },
     ],
   },
-  'ws-github-provider': {
+  'ws-spec-provider-github': {
     evals: [
       {
         id: 1,
@@ -468,7 +468,7 @@ const EVALS = {
         expected_output:
           'fetch-to-spec via github-issue-to-spec.py writes {specsDir}/us-{n}.spec.md, then register_local_spec.py copies to step-00 under {plansDir}.',
         assertions: [
-          'Agent loads ws-github-provider',
+          'Agent loads ws-spec-provider-github',
           'Uses scripts/github-issue-to-spec.py with python launcher',
           'Does not hardcode org/repo names',
         ],
@@ -478,13 +478,13 @@ const EVALS = {
         prompt: 'list open review threads on PR 15',
         expected_output: 'Structured thread list via fetch_threads.cjs.',
         assertions: [
-          'Uses github-provider scripts path',
+          'Uses spec-provider-github scripts path',
           'Auth resolved from config or gh CLI, not embedded tokens',
         ],
       },
     ],
   },
-  'ws-azure-devops-provider': {
+  'ws-spec-provider-azure-devops': {
     evals: [
       {
         id: 1,
@@ -492,7 +492,7 @@ const EVALS = {
         expected_output:
           'ado-workitem-to-spec.py writes {specsDir}/us-{id}.spec.md, then register_local_spec.py copies to step-00 under {plansDir}.',
         assertions: [
-          'Agent loads ws-azure-devops-provider',
+          'Agent loads ws-spec-provider-azure-devops',
           'Reads org/project from config.json issueTrackers.azureDevOps',
           'Uses python launcher on scripts/ado-workitem-to-spec.py',
         ],
@@ -508,14 +508,14 @@ const EVALS = {
       },
     ],
   },
-  'ws-local-spec-provider': {
+  'ws-spec-provider-local': {
     evals: [
       {
         id: 1,
-        prompt: 'Use @ws-local-spec-provider for a typical local-spec-provider task in this project.',
-        expected_output: 'Agent loads ws-local-spec-provider and follows its skill contract.',
+        prompt: 'Use @ws-spec-provider-local for a typical spec-provider-local task in this project.',
+        expected_output: 'Agent loads ws-spec-provider-local and follows its skill contract.',
         assertions: [
-          'Agent loads ws-local-spec-provider before acting',
+          'Agent loads ws-spec-provider-local before acting',
           'Follows skill steps and Done when criteria',
           'Uses path tokens from tools.md instead of hardcoded consumer paths',
           'Output is en-us and harness-neutral',
@@ -523,10 +523,10 @@ const EVALS = {
       },
       {
         id: 2,
-        prompt: '/local-spec-provider — edge case: missing or incomplete config.json',
+        prompt: '/spec-provider-local — edge case: missing or incomplete config.json',
         expected_output: 'Agent stops or bootstraps via configure-project/setup, not silent guessing.',
         assertions: [
-          'Recognizes ws-local-spec-provider trigger from slash or @ invocation',
+          'Recognizes ws-spec-provider-local trigger from slash or @ invocation',
           'References ws-shared/config.json or configure-project when config missing',
           'Does not invent project-specific metadata',
         ],

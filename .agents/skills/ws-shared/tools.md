@@ -70,7 +70,7 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `commit-code` | Commit workflow product files from `files_touched` | Path-scoped `Shell`: `HEAD` must equal `state.branch`; `git add -- <paths>` and `git add -u -- <deleted-paths>` from workflow `files_touched` (drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`). Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty `git diff --cached` → skip (no empty commit). Then `git commit -m "..."` |
 | `commit-delivery` | Commit configured delivery artifacts (Step 8) | Resolve stage list from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8; `Shell` `git add` only resolved `{us-dir}` paths then `git commit` (message may say “configured delivery artifacts”) |
 | `push-branch` | Push working branch | `Shell` `git push {gitRemote} {workingBranch}` — from `config.project` |
-| `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`ws-github-provider`](../ws-github-provider/SKILL.md) or [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
+| `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) or [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
 | `sweep-prior-work` | Search PRs + recent commits before plan/code | Same SCM provider as `create-pr` |
 | `check-pr-status` | CI/policy status + failed-log triage | Same SCM provider (`diff-regression` / `baseline` / `infra-flake`; one flake rerun) |
 | `comment-issue` | Post tracker comment (alias `close-loop`) | Same SCM provider; skip when tracker `id` is null |
@@ -78,7 +78,7 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `create-checkpoint` | Tag before step N | `Shell` `git tag uswf/{id}/before-step-{N}` |
 | `revert-to-checkpoint` | Revert to tag M | `Shell` `git reset --mixed {tag}` + per-path restore |
 
-Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` (remote fetch → [`ws-write-spec`](../ws-write-spec/SKILL.md) agentic reformulation → local-spec register). Consumers who already installed `ws-spec-to-pr` before these folders existed: `npx github:jpolvora/workflow-skills update --include-new`.
+Entry / fetch: resolve `providers.active` → [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) · [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) · [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) `fetch-to-spec` (remote fetch → [`ws-spec-write`](../ws-spec-write/SKILL.md) agentic reformulation → local-spec register). Consumers who already installed `ws-spec-to-pr` before these folders existed: `npx github:jpolvora/workflow-skills update --include-new`.
 
 
 ## Agent dispatch tools

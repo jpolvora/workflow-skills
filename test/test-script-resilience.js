@@ -7,8 +7,8 @@ const { fetchRetry } = require(path.join(repoRoot, '.agents/skills/ws-shared/scr
 
 const validate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs');
 const memory = path.join(repoRoot, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');
-const detect = path.join(repoRoot, '.agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.cjs');
-const register = path.join(repoRoot, '.agents/skills/ws-local-spec-provider/scripts/register_local_spec.cjs');
+const detect = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.cjs');
+const register = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
 const frozenUpdate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.py');
 
 for (const [script, needle] of [

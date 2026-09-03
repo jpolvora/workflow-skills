@@ -144,22 +144,22 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | Skill | Step(s) | Role |
 |-------|---------|------|
 | `ws-spec-to-pr` | Orchestrator | FSM dispatcher |
-| `ws-write-spec` | 0 | Spec from description |
+| `ws-spec-write` | 0 | Spec from description |
 | `ws-classify-complexity` | 0 (after spec) | Pipeline lite vs standard classifier |
-| `ws-write-plan` | 1 | Implementation plan |
-| `ws-interview` | 2 | Plan audit |
+| `ws-plan-write` | 1 | Implementation plan |
+| `ws-plan-interview` | 2 | Plan audit |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
-| `ws-verify-plan` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap 8); product commit before review |
+| `ws-plan-verify` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap 8); product commit before review |
 | `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Push/PR after close (G2-delivery at close; product already committed) |
 | `ws-fix-pr` | 9 | Batch gate-only plan → execute/proactive fix |
 | `ws-goal-fix-pr` | 9 | Repeat plan/execute batches until zero threads |
-| `ws-update-plan-implementation` | Post (optional Extra) | Plan deltas |
-| `ws-github-provider` | Provider | GitHub issue→spec + PR ops (same intents as Azure) |
-| `ws-azure-devops-provider` | Provider | ADO WI→spec + PR ops (same intents as GitHub) |
-| `ws-local-spec-provider` | Provider | Local `*.spec.md` |
+| `ws-plan-update` | Post (optional Extra) | Plan deltas |
+| `ws-spec-provider-github` | Provider | GitHub issue→spec + PR ops (same intents as Azure) |
+| `ws-spec-provider-azure-devops` | Provider | ADO WI→spec + PR ops (same intents as GitHub) |
+| `ws-spec-provider-local` | Provider | Local `*.spec.md` |
 | `ws-spec-format` | Protocol | Spec format |
 | `ws-goal-loop` | Primitive | Convergence loop |
 | `ws-spec-memo` | Utility | External spec-memo vault **setup/bridge** (`specMemo.*`, import, hybrid fallback, write-block hook interview) via `ws-configure-project --section specMemo` or `/ws-spec-memo`. Runtime vault ops → **`ws-memo`** from [spec-memo](https://github.com/jpolvora/spec-memo) (not packaged here) |
@@ -168,7 +168,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 
 ## Upstream session contract (this repo only)
 
-**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.3.50** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-write-spec`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
+**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.3.50** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
 
 Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this contract. A folder under `.agents/skills/` would be hashed and shipped. Summarize here; invoke live scripts by path; load a live body only when **authoring or testing that skill**. Orchestrators, providers, `ws-check-harness`: task router, one skill at a time.
 
@@ -280,12 +280,12 @@ When spec-memo integration is on: session consult → **`/ws-memo`** bootstrap w
 
 ### 6. Write a spec (on demand)
 
-When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-write-spec` / `ws-spec-format` unless authoring those skills.
+When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-spec-write` / `ws-spec-format` unless authoring those skills.
 
 Write `{specsDir}/{slug}.spec.md` (`plans.specsDir`, default `.agents/specs`). Create `{specsDir}` if missing. Do **not** create `{plansDir}/{slug}/` or `step-00-*.spec.md`. Lookup codebase, `{sharedDir}/MEMORY.md`, and the stack file **before** any `user-gate`. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, `## Validation & Observation Notes`, and `## Negative & Failing Test Scenarios`. Run `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring` and do not finish while non-zero. Gray area with ≥2 product options → `{specsDir}/{slug}.context.md` (never empty). When derived from a **public** tracker issue, reformulate into explicit, testable agentic ACs and keep human wording in `## Original Issue Context` (`source: github` | `source: azure-devops`). Private consumer pastes: paraphrase that section with generic examples. For free-text: `source: local`, `id: null`. After a **standalone** user invoke (not orch Step 0), present `user-gate`: **Add to index.PRD (Recommended)** / **Skip tracking**. On Add, load `ws-spec-index` `track {slug}` (Feature map `[ ]` + Next-specs only). Cancel → STOP; never infer yes. Optional `--register` / orch (skip register when authoring validation fails):
 
 ```bash
-python .agents/skills/ws-local-spec-provider/scripts/register_local_spec.py \
+node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs \
   --input "{specsDir}/{slug}.spec.md"
 ```
 
@@ -298,7 +298,7 @@ Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devop
 
 ## Skill loading (mandatory)
 
-**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. Do **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-write-spec` / `ws-spec-format` SKILL.md for session autoload. Do not `Read` a separate harness skill.
+**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. Do **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-spec-write` / `ws-spec-format` SKILL.md for session autoload. Do not `Read` a separate harness skill.
 
 [`ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md) still owns **specs vocabulary**, **specs skill router**, and **hub contracts** (SCM parity, verify score). Load those sections when the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill. Do **not** follow `autoload.md` § Always-applied in this repo (those rows point at live `ws-*` bodies).
 
@@ -321,15 +321,15 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 | Task with a clear intent | Match one row in § [Task router](#task-router) → load that single skill (or use § [6. Write a spec](#6-write-a-spec-on-demand)). Do not preload sibling or downstream skills. Duplicate `ws-*` paths: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory). |
 | Spec / plan / `index.PRD` / Spec-to-PR wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs vocabulary + § Specs skill router (or § Keyword → skill) → load **only** the matching skill, except standalone draft-spec uses § [6. Write a spec](#6-write-a-spec-on-demand). Never load the whole specs family. |
 | SCM / verify-score wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/autoload.md) § Hub contracts → then that hub file or one skill. |
-| Orchestrated run (`ws-spec-to-pr` / lite / `ws-multi-spec`) | The orchestrator owns loading. Load step skills via its dispatch table, one step at a time. |
+| Orchestrated run (`ws-spec-to-pr` / lite / `ws-spec-multi`) | The orchestrator owns loading. Load step skills via its dispatch table, one step at a time. |
 | Need config, tokens, or gate wording | Read `{sharedDir}/config.json` (shape: [`config.json.example`](.agents/skills/ws-shared/config.json.example)) + [`tools.md`](.agents/skills/ws-shared/tools.md) / [`gates.md`](.agents/skills/ws-shared/gates.md) — not a skill body. |
 | spec-memo / vault / memo MCP / write-block hook | § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (MCP + hooks). Setup → `ws-spec-memo`. Runtime → `{globalSkillsRoot}/ws-memo` (or project `{skillsRoot}/ws-memo`). Do not vendor `SURFACE.md` into this repo. |
-| Check-implementation / verify score / `scoreAndRefine` | Orchestrated: Step 5 via orch dispatch (`ws-verify-plan` only). Standalone: `ws-verify-plan`. Gate copy: `{sharedDir}/gates.md`. Advance only at `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to. |
+| Check-implementation / verify score / `scoreAndRefine` | Orchestrated: Step 5 via orch dispatch (`ws-plan-verify` only). Standalone: `ws-plan-verify`. Gate copy: `{sharedDir}/gates.md`. Advance only at `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to. |
 | SCM intents / GitHub vs Azure parity / `scm-provider-contract` | Read [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md). Load **one** provider `SKILL.md` when executing that SCM. Do not load both provider bodies to compare intents. |
 | A skill names a companion file (`PHASES.md`, `STEP-DISPATCH.md`, `FORMAT.md`, `scm-provider-contract.md`, …) | Read it **when that skill says to**, not upfront. |
 | No route matches | Ask via `user-gate` (or `find-skills` / `using-superpowers` to discover) instead of loading the catalog. |
 
-**Anti-patterns:** loading [`CATALOG.md`](CATALOG.md) rows as a batch · reading every `ws-spec-*` body to decide which applies · loading both `ws-github-provider` and `ws-azure-devops-provider` SKILL.md to compare intents (use `scm-provider-contract.md`) · loading `ws-check-harness` / `ws-check-workflows` before a change exists to audit · re-reading a skill already loaded this session · `Read`ing both copies of a duplicate `ws-*` id · editing `{globalSkillsRoot}/ws-*` from this package root.
+**Anti-patterns:** loading [`CATALOG.md`](CATALOG.md) rows as a batch · reading every `ws-spec-*` body to decide which applies · loading both `ws-spec-provider-github` and `ws-spec-provider-azure-devops` SKILL.md to compare intents (use `scm-provider-contract.md`) · loading `ws-check-harness` / `ws-check-workflows` before a change exists to audit · re-reading a skill already loaded this session · `Read`ing both copies of a duplicate `ws-*` id · editing `{globalSkillsRoot}/ws-*` from this package root.
 
 ### Dual-hub precedence (root override)
 
