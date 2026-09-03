@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "4f5d607e1568d7c747a714791a2ed9519bd936ffec6454c6f68144396349b2f4",
+  "fullPackageDigest": "705421482281cca8364d374195ad2e98a2b79a53d15c479cb40462689df489ef",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
@@ -31,7 +31,7 @@
       "scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
       "scripts/http_retry.py": "a0f742b2d2116d7da25578cc9f633f607e1fa3175b482df21cfe848965f4a42b",
-      "scripts/ingest_visual_attachments.cjs": "1e06a3100de12962bf1224fbe6788a329aba88aecb2cc43ba1a8f958bc25e1af",
+      "scripts/ingest_visual_attachments.cjs": "707096a3ce9adffc8d836a40f51b6e6d0ecb7e67f54672ac701571da8490deb9",
       "scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
       "scripts/resolve_consumer_root.cjs": "0aaef641a6016097a04980b41eb58404453cd62b0d3be511b152b0e6df1c9686",
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
@@ -47,7 +47,7 @@
       "tools.md": "5ae38616d561f8a432f8c70a25437903bea56caa44c0f12ce472e85b17506baf",
       "workflow-state.schema.json": "86b41712a4a88dda1ac89b6937b19a73eea866350c27c94240c4c19115f8685b"
     },
-    "skillDigest": "0af988ed23a559fc02a3154bbce38ef235c8b0a3e4c05a5802a3e5a3dd3fa581"
+    "skillDigest": "bd105dff83b9cc41e9d940d608f89f8f213cc7411d6c3a0de324208580d772f0"
   },
   "packageVersion": "0.3.58",
   "skills": {
@@ -418,12 +418,12 @@
         "INTENTS.md": "dab5ef046565f5f3fc29a4cbabaff2ac72e8d66479ede02f42ec31ae5179374e",
         "scripts/comment_issue.py": "a547dce26fada6f03c3cff367bf902f1ae4e8431b7699567dd38ed1ed9aa02bd",
         "scripts/fetch_threads.cjs": "6ba78b522babfe758f4777a1848b1201982ad3e55d23a7ecd9a177b53d9f8279",
-        "scripts/github-issue-to-spec.py": "5433ca9dcc8309010d8a6dcb48a07e07c5d1a8c1575a17b1bf1ebb2657902413",
+        "scripts/github-issue-to-spec.py": "6ddbdde02635df678242b83967cde8c0c3b16079fb271e0aff84f9cc20807f4c",
         "scripts/resolve_thread.cjs": "f22800d269b7e50f7c777dfe96e592ae6916e9d0afb27a8f89d621c1e37d3136",
         "scripts/sweep_prior_work.py": "8c894cfa0622be75a6f2f4226dce7a728c1d384bbd7d3a98cfd3c829993a7801",
         "SKILL.md": "d03bfe9b137ed124a56eb9c2876989fce35a694b079f5e9c13233d680fd3cb84"
       },
-      "skillDigest": "0fd57c28f76ef838a7c507ee1f3792eb4234b6a5fcf52b29af0a2eb715a14001"
+      "skillDigest": "e62f72ed3047736c07bedbc02726da1df1ad09dc8a73f9fc5af88759271fd8c0"
     },
     "ws-spec-provider-local": {
       "files": {

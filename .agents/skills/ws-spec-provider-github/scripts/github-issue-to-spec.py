@@ -261,7 +261,13 @@ def build_spec_md(issue: dict, repo: str | None) -> str:
     return "\n".join(fm + body_lines)
 
 
-def invoke_ingest_helper(spec_path: Path, urls: list[dict], skip_assets: bool, repo_root: Path | None = None) -> int:
+def invoke_ingest_helper(
+    spec_path: Path,
+    urls: list[dict],
+    skip_assets: bool,
+    repo_root: Path | None = None,
+    fetch_remap_file: Path | None = None,
+) -> int:
     if skip_assets or not urls:
         return 0
     helper = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts" / "ingest_visual_attachments.cjs"
@@ -281,9 +287,11 @@ def invoke_ingest_helper(spec_path: Path, urls: list[dict], skip_assets: bool, r
         ]
         if repo_root is not None:
             cmd.extend(["--repo-root", str(repo_root)])
+        if fetch_remap_file is not None:
+            cmd.extend(["--fetch-remap-file", str(fetch_remap_file)])
         if skip_assets:
             cmd.append("--skip-assets")
-        proc = subprocess.run(cmd, check=False)
+        proc = subprocess.run(cmd, check=False, env=os.environ.copy())
         return proc.returncode
     finally:
         try:
@@ -316,6 +324,10 @@ def main() -> int:
         "--skip-assets",
         action="store_true",
         help="Skip visual attachment ingest (fixture/tests only)",
+    )
+    parser.add_argument(
+        "--fetch-remap-file",
+        help="Test fixture: JSON map of allowlisted URL to mock fetch target for ingest helper",
     )
     args = parser.parse_args()
 
@@ -355,7 +367,13 @@ def main() -> int:
             return 1
     output_path.write_text(spec_md, encoding="utf-8")
 
-    ingest_rc = invoke_ingest_helper(output_path, visual_urls, args.skip_assets, repo_root)
+    ingest_rc = invoke_ingest_helper(
+        output_path,
+        visual_urls,
+        args.skip_assets,
+        repo_root,
+        Path(args.fetch_remap_file) if args.fetch_remap_file else None,
+    )
     if ingest_rc != 0:
         print(f"Warning: visual ingest helper exited {ingest_rc}", file=sys.stderr)
 

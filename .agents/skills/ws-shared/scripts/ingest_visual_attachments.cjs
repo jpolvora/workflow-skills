@@ -51,6 +51,7 @@ function parseArgs(argv) {
     skipAssets: false,
     json: false,
     repoRoot: process.cwd(),
+    fetchRemapFile: null,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
@@ -66,12 +67,14 @@ function parseArgs(argv) {
     else if (token === '--repo-root') options.repoRoot = argv[++i];
     else if (token === '--skip-assets') options.skipAssets = true;
     else if (token === '--json') options.json = true;
+    else if (token === '--fetch-remap-file') options.fetchRemapFile = argv[++i];
     else if (token.startsWith('--spec-path=')) options.specPath = token.slice('--spec-path='.length);
     else if (token.startsWith('--urls-json=')) options.urlsJson = token.slice('--urls-json='.length);
     else if (token.startsWith('--provider=')) options.provider = token.slice('--provider='.length);
     else if (token.startsWith('--api-base=')) options.apiBase = token.slice('--api-base='.length);
     else if (token.startsWith('--auth-env=')) options.authEnv = token.slice('--auth-env='.length);
     else if (token.startsWith('--repo-root=')) options.repoRoot = token.slice('--repo-root='.length);
+    else if (token.startsWith('--fetch-remap-file=')) options.fetchRemapFile = token.slice('--fetch-remap-file='.length);
     else throw new Error(`unknown argument: ${token}`);
   }
   return options;
@@ -150,16 +153,55 @@ function normalizeApiBase(apiBase) {
   }
 }
 
+const ADO_HOST_SUFFIXES = ['dev.azure.com', 'visualstudio.com'];
+
+function isAdoAttachmentHost(host) {
+  const h = String(host || '').toLowerCase();
+  return ADO_HOST_SUFFIXES.some((suffix) => h === suffix || h.endsWith(`.${suffix}`));
+}
+
 function isAdoAllowlisted(urlString, apiBase) {
   try {
     const parsed = new URL(urlString);
+    if (!parsed.pathname.includes('/_apis/wit/attachments/')) return false;
     const base = normalizeApiBase(apiBase);
-    const hostBase = `${parsed.protocol}//${parsed.host}`.toLowerCase();
-    if (base && hostBase !== base) return false;
-    return parsed.pathname.includes('/_apis/wit/attachments/');
+    if (base) {
+      const hostBase = `${parsed.protocol}//${parsed.host}`.toLowerCase();
+      if (hostBase === base) return true;
+    }
+    return isAdoAttachmentHost(parsed.host);
   } catch {
     return false;
   }
+}
+
+function resolveFetchUrl(urlString, fetchRemapFile = null) {
+  const file = fetchRemapFile || process.env.WS_VISUAL_INGEST_FETCH_REMAP_FILE;
+  if (file) {
+    try {
+      const map = JSON.parse(fs.readFileSync(path.resolve(file), 'utf8'));
+      const mapped = map[urlString];
+      if (process.env.WS_INGEST_DEBUG) {
+        process.stderr.write(
+          `remap lookup url=${JSON.stringify(urlString)} keys=${JSON.stringify(Object.keys(map))} hit=${Boolean(mapped)}\n`,
+        );
+      }
+      if (mapped) return mapped;
+    } catch (err) {
+      if (process.env.WS_INGEST_DEBUG) {
+        process.stderr.write(`remap error: ${err.message} file=${file}\n`);
+      }
+    }
+  }
+  const raw = process.env.WS_VISUAL_INGEST_FETCH_REMAP;
+  if (!raw) return urlString;
+  try {
+    const map = JSON.parse(raw);
+    if (map[urlString]) return map[urlString];
+  } catch {
+    // ignore invalid remap JSON
+  }
+  return urlString;
 }
 
 function isAllowlisted(urlString, provider, apiBase) {
@@ -293,6 +335,8 @@ async function ingestVisualAttachments(options) {
     skipAssets = false,
     fetchImpl = fetch,
     repoRoot = process.cwd(),
+    headersOverride = undefined,
+    fetchRemapFile = null,
   } = options;
 
   if (!specPath) throw new Error('specPath is required');
@@ -337,7 +381,7 @@ async function ingestVisualAttachments(options) {
     };
   }
 
-  const headers = authHeaders(provider, authEnv);
+  const headers = headersOverride !== undefined ? headersOverride : authHeaders(provider, authEnv);
   const replacements = [];
 
   for (const item of urls) {
@@ -372,18 +416,22 @@ async function ingestVisualAttachments(options) {
 
     if (!Object.keys(headers).length) {
       row.status = 'skipped';
-      row.skipReason = 'disallowed-host';
+      row.skipReason = 'missing-auth';
       skipCount += 1;
       manifest.push(row);
       continue;
     }
 
+    const fetchUrl = resolveFetchUrl(url, fetchRemapFile);
+    if (process.env.WS_INGEST_DEBUG) {
+      process.stderr.write(`fetching ${fetchUrl}\n`);
+    }
     let response;
     try {
       const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
       const timer = controller ? setTimeout(() => controller.abort(), TIMEOUT_MS) : null;
       response = await fetchRetry(
-        url,
+        fetchUrl,
         { headers, signal: controller ? controller.signal : undefined },
         { fetchImpl, attempts: 1 },
       );
@@ -497,8 +545,16 @@ async function main() {
   if (!args.specPath || !args.urlsJson || !args.provider) {
     throw new Error('--spec-path, --urls-json, and --provider are required');
   }
+  if (args.fetchRemapFile) {
+    process.env.WS_VISUAL_INGEST_FETCH_REMAP_FILE = path.resolve(args.fetchRemapFile);
+  }
   const urls = JSON.parse(fs.readFileSync(path.resolve(args.urlsJson), 'utf8'));
   const repoRoot = path.resolve(args.repoRoot || process.cwd());
+  if (process.env.WS_INGEST_DEBUG) {
+    process.stderr.write(
+      `ingest cli fetchRemapFile=${args.fetchRemapFile} resolved=${args.fetchRemapFile ? path.resolve(args.fetchRemapFile) : ''} exists=${args.fetchRemapFile ? fs.existsSync(path.resolve(args.fetchRemapFile)) : false}\n`,
+    );
+  }
   const result = await ingestVisualAttachments({
     specPath: args.specPath,
     urls,
@@ -507,6 +563,7 @@ async function main() {
     authEnv: args.authEnv,
     skipAssets: args.skipAssets,
     repoRoot,
+    fetchRemapFile: args.fetchRemapFile,
   });
 
   if (args.json) {
@@ -532,12 +589,14 @@ if (require.main === module) {
 
 module.exports = {
   ingestVisualAttachments,
+  parseArgs,
   specStemFromPath,
   sanitizeStem,
   classifyKind,
   isAllowlisted,
   isGithubAllowlisted,
   isAdoAllowlisted,
+  resolveFetchUrl,
   sniffMime,
   ALLOWED_MIME,
   PER_FILE_LIMIT,

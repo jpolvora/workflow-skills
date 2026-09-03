@@ -7,7 +7,7 @@ import fs from 'fs';
 import http from 'http';
 import os from 'os';
 import path from 'path';
-import { spawnSync } from 'child_process';
+import { spawnSync, spawn } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { createRequire } from 'module';
 
@@ -132,6 +132,22 @@ async function startMockServer(files) {
   };
 }
 
+function spawnAsync(command, args, options = {}) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(command, args, options);
+    let stdout = '';
+    let stderr = '';
+    proc.stdout?.on('data', (chunk) => {
+      stdout += chunk;
+    });
+    proc.stderr?.on('data', (chunk) => {
+      stderr += chunk;
+    });
+    proc.on('error', reject);
+    proc.on('close', (code) => resolve({ status: code ?? 1, stdout, stderr }));
+  });
+}
+
 console.log('--- test-visual-attachment-ingest ---');
 
 process.env.GITHUB_TOKEN = process.env.GITHUB_TOKEN || 'fixture-token';
@@ -147,6 +163,7 @@ assert.ok(isGithubAllowlisted('https://user-images.githubusercontent.com/u/1/x.p
 assert.ok(isGithubAllowlisted('https://github.com/user-attachments/assets/abc'));
 assert.ok(!isGithubAllowlisted('https://example.com/x.png'));
 assert.ok(isAdoAllowlisted('https://dev.azure.com/org/_apis/wit/attachments/guid', 'https://dev.azure.com'));
+assert.ok(isAdoAllowlisted('https://contoso.visualstudio.com/_apis/wit/attachments/guid', 'https://dev.azure.com'));
 assert.ok(!isAdoAllowlisted('https://example.com/x.png', 'https://dev.azure.com'));
 assert.strictEqual(sniffMime(PNG_1X1, ''), 'image/png');
 
@@ -246,7 +263,26 @@ assert.strictEqual(sniffMime(PNG_1X1, ''), 'image/png');
   console.log('OK pdf file link');
 }
 
-// GitHub converter extracts URLs; helper ingests with mock fetch (converter subprocess uses real fetch)
+{
+  const { tmp, specs } = createTempProject();
+  const specPath = path.join(specs, '0001-us-missing-auth.spec.md');
+  writeMinimalSpec(specPath, 'us-missing-auth');
+  const good = 'https://user-images.githubusercontent.com/u/1/abc-login.png';
+  const result = await ingestVisualAttachments({
+    specPath,
+    provider: 'github',
+    repoRoot: tmp,
+    headersOverride: {},
+    urls: [{ url: good, origin: 'body', alt: 'login', filename: 'login.png' }],
+    fetchImpl: mockFetch({ [good]: () => okResponse(PNG_1X1, 'image/png') }),
+  });
+  assert.strictEqual(result.okCount, 0);
+  assert.ok(result.manifest.some((row) => row.skipReason === 'missing-auth'));
+  fs.rmSync(tmp, { recursive: true, force: true });
+  console.log('OK missing-auth skipReason');
+}
+
+// GitHub converter end-to-end: subprocess ingest helper with mock HTTP remap
 {
   const mock = await startMockServer({
     '/gh.png': { body: PNG_1X1, mime: 'image/png' },
@@ -265,81 +301,44 @@ assert.strictEqual(sniffMime(PNG_1X1, ''), 'image/png');
   };
   const input = path.join(tmp, 'issue.json');
   fs.writeFileSync(input, JSON.stringify(issue), 'utf8');
-  const proc = spawnSync(
+  const remapPath = path.join(tmp, 'fetch-remap.json');
+  fs.writeFileSync(
+    remapPath,
+    JSON.stringify({
+      [ghUrl]: `${mock.base}/gh.png`,
+      [missingUrl]: `${mock.base}/missing.png`,
+    }),
+    'utf8',
+  );
+  const proc = await spawnAsync(
     PYTHON,
-    [GH_SCRIPT, '--input', input, '--repo', 'o/r', '--repo-root', tmp, '--force', '--skip-assets'],
-    { encoding: 'utf8', cwd: REPO },
+    [GH_SCRIPT, '--input', input, '--repo', 'o/r', '--repo-root', tmp, '--force', '--fetch-remap-file', remapPath],
+    {
+      encoding: 'utf8',
+      cwd: REPO,
+      env: {
+        ...process.env,
+        GITHUB_TOKEN: 'fixture-token',
+      },
+    },
   );
   assert.strictEqual(proc.status, 0, proc.stderr || proc.stdout);
   const specPath = path.join(specs, '0001-us-42.spec.md');
   assert.ok(fs.existsSync(specPath), 'github spec written');
-  const extract = spawnSync(
-    PYTHON,
-    [
-      '-c',
-      `import importlib.util, json, sys
-spec = importlib.util.spec_from_file_location('gh', r'${GH_SCRIPT.replace(/\\/g, '\\\\')}')
-mod = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(mod)
-issue = json.load(open(r'${input.replace(/\\/g, '\\\\')}', encoding='utf-8'))
-urls = mod.collect_visual_urls(issue)
-print(len(urls))`,
-    ],
-    { encoding: 'utf8', cwd: REPO },
-  );
-  assert.strictEqual(extract.status, 0, extract.stderr);
-  assert.ok(Number(extract.stdout.trim()) >= 2, 'github extract finds body + comment urls');
-  const result = await ingestVisualAttachments({
-    specPath,
-    provider: 'github',
-    repoRoot: tmp,
-    urls: [
-      { url: `${mock.base}/gh.png`, origin: 'body', alt: 'screen', filename: 'screen.png' },
-      { url: `${mock.base}/missing.png`, origin: 'comment', alt: 'gone', filename: 'gone.png' },
-    ],
-    fetchImpl: mockFetch({
-      [`${mock.base}/gh.png`]: () => okResponse(PNG_1X1, 'image/png'),
-      [`${mock.base}/missing.png`]: () => ({
-        ok: false,
-        status: 404,
-        headers: { get: () => null },
-        arrayBuffer: async () => Buffer.alloc(0),
-      }),
-    }),
-  });
-  // Remap test uses direct helper with mock host; verify github allowlist on real pattern separately
-  assert.ok(isGithubAllowlisted(ghUrl));
-  assert.strictEqual(result.okCount, 0);
-  assert.strictEqual(result.skipCount, 2);
-  writeMinimalSpec(specPath);
-  const remapped = await ingestVisualAttachments({
-    specPath,
-    provider: 'github',
-    repoRoot: tmp,
-    urls: [
-      { url: ghUrl, origin: 'body', alt: 'screen', filename: 'screen.png' },
-      { url: missingUrl, origin: 'comment', alt: 'gone', filename: 'gone.png' },
-    ],
-    fetchImpl: mockFetch({
-      [ghUrl]: () => okResponse(PNG_1X1, 'image/png'),
-      [missingUrl]: () => ({
-        ok: false,
-        status: 404,
-        headers: { get: () => null },
-        arrayBuffer: async () => Buffer.alloc(0),
-      }),
-    }),
-  });
-  assert.strictEqual(remapped.okCount, 1);
-  assert.strictEqual(remapped.failCount, 1);
-  assert.match(fs.readFileSync(specPath, 'utf8'), /## Visual References/);
-  assert.ok(fs.existsSync(path.join(specs, '0001-us-42.assets', '01-screenshot-screen.png')));
+  const specText = fs.readFileSync(specPath, 'utf8');
+  assert.match(specText, /## Visual References/);
+  const assetsDir = path.join(specs, '0001-us-42.assets');
+  assert.ok(fs.existsSync(path.join(assetsDir, 'manifest.json')));
+  const manifest = JSON.parse(fs.readFileSync(path.join(assetsDir, 'manifest.json'), 'utf8'));
+  assert.ok(manifest.files.some((row) => row.status === 'ok' && row.sha256 && row.kind));
+  assert.ok(manifest.files.some((row) => row.status === 'failed'));
+  assert.ok(fs.existsSync(path.join(assetsDir, '01-screenshot-screen.png')));
   await mock.close();
   fs.rmSync(tmp, { recursive: true, force: true });
-  console.log('OK github converter fixture mock http');
+  console.log('OK github converter subprocess ingest e2e');
 }
 
-// ADO converter extracts URLs; full ingest via helper + mock fetch (api-base remap in subprocess is integration-tested separately)
+// ADO converter end-to-end: subprocess ingest helper against mock api-base
 {
   const mock = await startMockServer({
     '/org/_apis/wit/attachments/guid': { body: PNG_1X1, mime: 'image/png' },
@@ -360,7 +359,7 @@ print(len(urls))`,
   };
   const input = path.join(tmp, 'wi.json');
   fs.writeFileSync(input, JSON.stringify(workItem), 'utf8');
-  const proc = spawnSync(
+  const proc = await spawnAsync(
     PYTHON,
     [
       ADO_SCRIPT,
@@ -375,45 +374,21 @@ print(len(urls))`,
       '--repo-root',
       tmp,
       '--force',
-      '--skip-assets',
     ],
     { encoding: 'utf8', cwd: REPO, env: { ...process.env, ADO_PAT: 'fixture-pat' } },
   );
   assert.strictEqual(proc.status, 0, proc.stderr || proc.stdout);
   const specPath = path.join(specs, '0001-us-99.spec.md');
   const specText = fs.readFileSync(specPath, 'utf8');
-  assert.match(specText, /!\[wireframe dashboard\]/);
-  const extract = spawnSync(
-    PYTHON,
-    [
-      '-c',
-      `import importlib.util, json
-spec = importlib.util.spec_from_file_location('ado', r'${ADO_SCRIPT.replace(/\\/g, '\\\\')}')
-mod = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(mod)
-wi = json.load(open(r'${input.replace(/\\/g, '\\\\')}', encoding='utf-8'))
-urls = mod.collect_visual_urls(wi, wi.get('comments') or [])
-print(len(urls))`,
-    ],
-    { encoding: 'utf8', cwd: REPO },
-  );
-  assert.ok(Number(extract.stdout.trim()) >= 1, 'ado extract finds attachment urls');
-  const result = await ingestVisualAttachments({
-    specPath,
-    provider: 'azure-devops',
-    apiBase: mock.base,
-    repoRoot: tmp,
-    urls: [{ url: attachUrl, origin: 'body', alt: 'wireframe dashboard', filename: 'wireframe-dashboard.png' }],
-    fetchImpl: mockFetch({
-      [attachUrl]: () => okResponse(PNG_1X1, 'image/png'),
-    }),
-  });
-  assert.strictEqual(result.okCount, 1);
-  assert.match(fs.readFileSync(specPath, 'utf8'), /## Visual References/);
-  assert.ok(fs.existsSync(path.join(specs, '0001-us-99.assets')));
+  assert.match(specText, /## Visual References/);
+  const assetsDir = path.join(specs, '0001-us-99.assets');
+  assert.ok(fs.existsSync(path.join(assetsDir, 'manifest.json')));
+  const manifest = JSON.parse(fs.readFileSync(path.join(assetsDir, 'manifest.json'), 'utf8'));
+  assert.ok(manifest.files.some((row) => row.status === 'ok' && row.sha256 && row.kind));
+  assert.ok(fs.existsSync(path.join(assetsDir, manifest.files.find((row) => row.status === 'ok').localPath)));
   await mock.close();
   fs.rmSync(tmp, { recursive: true, force: true });
-  console.log('OK ado converter fixture mock http');
+  console.log('OK ado converter subprocess ingest e2e');
 }
 
 // ADO clean_html preserves img markdown
