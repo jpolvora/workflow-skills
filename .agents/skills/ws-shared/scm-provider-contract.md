@@ -1,10 +1,10 @@
 # SCM provider feature contract
 
-**Audience: agents** implementing or extending [`ws-github-provider`](../ws-github-provider/SKILL.md) and [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md).
+**Audience: agents** implementing or extending [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) and [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md).
 
 GitHub and Azure DevOps are **interchangeable SCM backends**. Orchestrators, [`ws-ship-pr`](../ws-ship-pr/SKILL.md), [`ws-fix-pr`](../ws-fix-pr/SKILL.md), and [`ws-goal-fix-pr`](../ws-goal-fix-pr/SKILL.md) call intents **by name**. Host CLI recipes stay inside each provider's `INTENTS.md`. Do not embed `gh` or `az` in those callers.
 
-[`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) implements `fetch-to-spec` / `validate-auth` only and **delegates** PR intents to `providers.scm`. Local is not an SCM implementer. Reject `scm: "local"` for PR/thread/merge.
+[`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) implements `fetch-to-spec` / `validate-auth` only and **delegates** PR intents to `providers.scm`. Local is not an SCM implementer. Reject `scm: "local"` for PR/thread/merge.
 
 **Parity check:** `node test/test-provider-parity.js` (also `npm run test`). Missing required intent, or an extra intent on one SCM without the other (and without an allowlist row) → fail.
 
@@ -14,8 +14,8 @@ GitHub and Azure DevOps are **interchangeable SCM backends**. Orchestrators, [`w
 
 | Skill folder | `providers.scm` | Procedures |
 |--------------|-----------------|------------|
-| `ws-github-provider` | `github` | [`../ws-github-provider/INTENTS.md`](../ws-github-provider/INTENTS.md) |
-| `ws-azure-devops-provider` | `azure-devops` | [`../ws-azure-devops-provider/INTENTS.md`](../ws-azure-devops-provider/INTENTS.md) |
+| `ws-spec-provider-github` | `github` | [`../ws-spec-provider-github/INTENTS.md`](../ws-spec-provider-github/INTENTS.md) |
+| `ws-spec-provider-azure-devops` | `azure-devops` | [`../ws-spec-provider-azure-devops/INTENTS.md`](../ws-spec-provider-azure-devops/INTENTS.md) |
 
 ---
 
@@ -26,7 +26,7 @@ Every implementer `SKILL.md` intent table and `INTENTS.md` `## \`intent\`` headi
 | Intent | Input | Output | Behavioral guarantee |
 |--------|-------|--------|----------------------|
 | `validate-auth` | none | Pass/fail + fixes | STOP on failure. No silent provider fallback. |
-| `fetch-to-spec` | Tracker id / URL | `{specsDir}` spec of record, then `{us-dir}/step-00` workflow copy | Write `{specsDir}` first via `ws-write-spec`. Register with `ws-local-spec-provider`. Never write `step-00` from the converter. |
+| `fetch-to-spec` | Tracker id / URL | `{specsDir}` spec of record, then `{us-dir}/step-00` workflow copy | Write `{specsDir}` first via `ws-spec-write`. Register with `ws-spec-provider-local`. Never write `step-00` from the converter. |
 | `create-pr` | head, base, title/body | PR URL + id | Reuse an existing open PR for the same head→base when present. |
 | `list-threads` | PR id | Structured threads | Include thread id, path, line, comments, and an active count for `ws-fix-pr` / `ws-goal-fix-pr`. |
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | Prior PR hits + recent commits JSON | Run before plan/code; stdout uses repo-relative paths only; `validate-auth` first; advisory `dry-run` when auth missing (GitHub). |

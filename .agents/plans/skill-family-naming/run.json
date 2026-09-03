@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "revision": 10,
+  "workflowId": "skill-family-naming-20260902T215014Z",
+  "slug": "skill-family-naming",
+  "pipeline": "standard",
+  "status": "active",
+  "currentStep": 5,
+  "pendingGate": null,
+  "nextAction": "Run step 5",
+  "acTotal": 17,
+  "acImplemented": 0,
+  "score": null,
+  "estimatedRemainingSec": 1075,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "skipped",
+      "skipReason": "dag-disabled",
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 180
+    },
+    {
+      "step": 6,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 270
+    },
+    {
+      "step": 7,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 180
+    },
+    {
+      "step": 8,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 85
+    },
+    {
+      "step": 9,
+      "status": "pending",
+      "skipReason": null,
+      "estimatedRemainingSec": 360
+    }
+  ],
+  "statePath": ".agents/plans/skill-family-naming/skill-family-naming-20260902T215014Z.state.md",
+  "stateSha256": "c0d116e3840acf341da4267d87adc49c7ea797701fdd455c531e3374c1d9c5f5"
+}

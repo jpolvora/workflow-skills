@@ -3,23 +3,23 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Import all open GitHub issues into local specs for later multi-spec.",
-      "expected_output": "Resolves github from config, lists via list_open_issues.py, skips existing {specsDir}/us-{id}.spec.md or {plansDir}/us-{id}/step-00-us-{id}.spec.md, write-spec enhance + register_local_spec per id.",
+      "prompt": "Use @ws-spec-from-provider for a typical spec-from-provider task in this project.",
+      "expected_output": "Agent loads ws-spec-from-provider and follows its skill contract.",
       "assertions": [
-        "Agent loads ws-spec-from-provider",
-        "Uses python launcher on scripts/list_open_issues.py",
-        "Registers via register_local_spec.cjs with --source github",
-        "Does not hardcode org/repo names"
+        "Agent loads ws-spec-from-provider before acting",
+        "Follows skill steps and Done when criteria",
+        "Uses path tokens from tools.md instead of hardcoded consumer paths",
+        "Output is en-us and harness-neutral"
       ]
     },
     {
       "id": 2,
-      "prompt": "/ws-spec-from-provider --dry-run on an ADO project",
-      "expected_output": "Lists open User Stories assigned to @Me via list_my_user_stories.py; no writes.",
+      "prompt": "/spec-from-provider — edge case: missing or incomplete config.json",
+      "expected_output": "Agent stops or bootstraps via configure-project/setup, not silent guessing.",
       "assertions": [
-        "Uses python launcher on scripts/list_my_user_stories.py",
-        "Auth from issueTrackers.azureDevOps patEnvVar / ADO_PAT",
-        "Stops after listing when --dry-run"
+        "Recognizes ws-spec-from-provider trigger from slash or @ invocation",
+        "References ws-shared/config.json or configure-project when config missing",
+        "Does not invent project-specific metadata"
       ]
     }
   ]

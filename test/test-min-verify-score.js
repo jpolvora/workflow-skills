@@ -62,8 +62,8 @@ assert(
   'gates.md Fix-PR gate documents batch plan/exec contract',
 );
 
-const verify = read('.agents/skills/ws-verify-plan/SKILL.md');
-assert(verify.includes('defaults.minVerifyScore'), 'ws-verify-plan names defaults.minVerifyScore');
+const verify = read('.agents/skills/ws-plan-verify/SKILL.md');
+assert(verify.includes('defaults.minVerifyScore'), 'ws-plan-verify names defaults.minVerifyScore');
 
 const interview = read('.agents/skills/ws-configure-project/INTERVIEW.md');
 assert(interview.includes('minVerifyScore'), 'INTERVIEW.md asks minVerifyScore');

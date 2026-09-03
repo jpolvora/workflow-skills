@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-09-03 05:31] Agent: Composer
+- **Prompt**: Ship/goal-fix-pr — OpenCode code-review failed
+- **Done**: Root cause CreditsError (OpenCode Go insufficient balance); switched active PR reviewer to Cursor; OpenCode → workflow_dispatch; hardened Cursor with --pr-id + GraphQL thread gate; CATALOG updated
+- **Result**: Pipeline unblocked pending Cursor review green on PR 266
+
+
+
+
+
+### [2026-09-03 05:07] Agent: Composer
+- **Prompt**: Make ws-preview not tied to any specific code reviewer; use configured dry-run command locally
+- **Done**: Rewrote `ws-preview` to resolve `preview.dryRunCommand` from project config and run it in-repo; removed cursor-reviewer wrapper script; updated schema/example, catalogs, FEATURES, README, evals, integrity, site
+- **Result**: Tool-agnostic local dry-run skill; missing command fails closed
+
+
+### [2026-09-03 04:36] Agent: Muse Spark
+- **Prompt**: Senior review of 0037 skill-family-naming spec vs develop...main + fix stale skill references (report approved before execute)
+- **Done**: Extended `retired_artifacts.cjs` with 10 renamed 0.3.56 dirs + stale patterns (incl. generic `ws-*-spec` family-violation gate); hardened `ws-check-harness` PHASES fail-closed wording; covered installer `update` prune in `test-install.js` Phase 9b and `test-consumer-migration.js`; annotated FEATURES history, RESEARCH, SKILL_AUTHORING deferred row, AGENTS snapshot 0.3.56, banner-spect examples; regenerated integrity; consumer-migration/provider-parity/doc-sync/frontmatter/doctor/quality-gates/check_workflows/test-install green.
+- **Result**: AC13 prune + AC10 generic gate now enforced and tested; tree has 10 intended modified files, 0 live stale refs outside exempt history/test fixtures.
+
+### [2026-09-03 04:18] Agent: Antigravity
+- **Prompt**: bump version and commit work
+- **Done**: Bumped 0.3.55→0.3.56; migrated skill family naming to `ws-{family}-{verb}` across 10 skills (spec, spec-provider, plan); updated dependency manifests, router/harness docs, fail-closed gates, test fixtures, integrity manifest, and website catalog; all 40+ test suites green.
+- **Result**: Release 0.3.56 verified and committed on develop.
+
+### [2026-09-02 15:27] Agent: Cursor Composer
+- **Prompt**: /ws-ship-pr (develop → main)
+- **Done**: Prepared board green; opened PR 265; 0 threads; checks green; merged
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/265 MERGED
+
 ### [2026-09-02 09:46] Agent: Cursor Composer
 - **Prompt**: bump version, update docs, commit, push, ws-ship-pr + ws-goal-fix-pr
 - **Done**: Released 0.3.55; PR 264 merged after catalog/bootstrap/check handoff fixes + integrity; activeThreads 0

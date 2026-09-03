@@ -27,19 +27,19 @@ function read(rel) {
 }
 
 const contract = read('.agents/skills/ws-shared/scm-provider-contract.md');
-const ghSkill = read('.agents/skills/ws-github-provider/SKILL.md');
-const ghIntents = read('.agents/skills/ws-github-provider/INTENTS.md');
-const adoSkill = read('.agents/skills/ws-azure-devops-provider/SKILL.md');
-const adoIntents = read('.agents/skills/ws-azure-devops-provider/INTENTS.md');
+const ghSkill = read('.agents/skills/ws-spec-provider-github/SKILL.md');
+const ghIntents = read('.agents/skills/ws-spec-provider-github/INTENTS.md');
+const adoSkill = read('.agents/skills/ws-spec-provider-azure-devops/SKILL.md');
+const adoIntents = read('.agents/skills/ws-spec-provider-azure-devops/INTENTS.md');
 const stepDispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 const lite = read('.agents/skills/ws-spec-to-pr-lite/SKILL.md');
 const implement = read('.agents/skills/ws-implement-tasks/SKILL.md');
 const review = read('.agents/skills/ws-code-review/SKILL.md');
-const verify = read('.agents/skills/ws-verify-plan/SKILL.md');
+const verify = read('.agents/skills/ws-plan-verify/SKILL.md');
 const testing = read('.agents/skills/ws-testing/SKILL.md');
-const writeSpec = read('.agents/skills/ws-write-spec/SKILL.md');
+const writeSpec = read('.agents/skills/ws-spec-write/SKILL.md');
 const format = read('.agents/skills/ws-spec-format/FORMAT.md');
-const writePlan = read('.agents/skills/ws-write-plan/SKILL.md');
+const writePlan = read('.agents/skills/ws-plan-write/SKILL.md');
 const ship = read('.agents/skills/ws-ship-pr/SKILL.md');
 const fixPr = read('.agents/skills/ws-fix-pr/SKILL.md');
 const goalFix = read('.agents/skills/ws-goal-fix-pr/SKILL.md');
@@ -99,7 +99,7 @@ assert(/prior-work|sabotage|check-pr-status|comment-issue/i.test(catalog), 'cata
 const sweepDry = spawnSync(
   'python',
   [
-    path.join(SKILLS, 'ws-github-provider/scripts/sweep_prior_work.py'),
+    path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.py'),
     '--dry-run',
     '--keywords',
     'hermes',
@@ -115,7 +115,7 @@ assert(!/^[A-Za-z]:/.test(JSON.stringify(sweepJson)), 'GitHub sweep JSON no driv
 const adoSweepDry = spawnSync(
   'python',
   [
-    path.join(SKILLS, 'ws-azure-devops-provider/scripts/sweep_prior_work.py'),
+    path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py'),
     '--dry-run',
     '--keywords',
     'hermes',
@@ -136,7 +136,7 @@ assert(
 // comment_issue skip + dry-run
 const commentSkip = spawnSync(
   'python',
-  [path.join(SKILLS, 'ws-github-provider/scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
+  [path.join(SKILLS, 'ws-spec-provider-github/scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
   { cwd: REPO, encoding: 'utf8' },
 );
 assert(commentSkip.status === 0, 'comment_issue null id skipped');
@@ -221,10 +221,10 @@ assert(sabotageFail.status === 1, 'simulate restore failure aborts non-zero');
 fs.rmSync(fixtureDir, { recursive: true, force: true });
 
 const pyScripts = [
-  'ws-github-provider/scripts/sweep_prior_work.py',
-  'ws-github-provider/scripts/comment_issue.py',
-  'ws-azure-devops-provider/scripts/sweep_prior_work.py',
-  'ws-azure-devops-provider/scripts/comment_issue.py',
+  'ws-spec-provider-github/scripts/sweep_prior_work.py',
+  'ws-spec-provider-github/scripts/comment_issue.py',
+  'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py',
+  'ws-spec-provider-azure-devops/scripts/comment_issue.py',
   'ws-testing/scripts/run_sabotage.py',
 ];
 for (const rel of pyScripts) {

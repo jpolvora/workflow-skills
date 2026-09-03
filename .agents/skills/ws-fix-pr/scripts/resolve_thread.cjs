@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 /**
- * Compatibility shim — forwards to ws-github-provider canonical script.
+ * Compatibility shim — forwards to ws-spec-provider-github canonical script.
  */
 const { spawnSync } = require('child_process');
 const path = require('path');
@@ -10,7 +10,7 @@ const target = path.join(
   __dirname,
   '..',
   '..',
-  'ws-github-provider',
+  'ws-spec-provider-github',
   'scripts',
   'resolve_thread.cjs'
 );

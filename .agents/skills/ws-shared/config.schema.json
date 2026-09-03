@@ -345,7 +345,7 @@
         "specsDir": {
           "type": "string",
           "default": ".agents/specs",
-          "description": "Repo-relative directory for human-facing local specs. Skill token {specsDir} ← plans.specsDir (default: .agents/specs). Prefer existing repo-root specs/ when already present. ws-write-spec writes here only; used by ws-local-spec-provider, ws-spec-index, ws-spec-list, ws-multi-spec, ws-sync-spec; workflow step-00 copies under plans.dir come from providers or register"
+          "description": "Repo-relative directory for human-facing local specs. Skill token {specsDir} ← plans.specsDir (default: .agents/specs). Prefer existing repo-root specs/ when already present. ws-spec-write writes here only; used by ws-spec-provider-local, ws-spec-index, ws-spec-list, ws-spec-multi, ws-spec-update; workflow step-00 copies under plans.dir come from providers or register"
         },
         "diagnosticsDir": {
           "type": "string",
@@ -381,18 +381,12 @@
     },
     "preview": {
       "type": "object",
-      "description": "Optional ws-preview pipeline review dry-run settings.",
+      "description": "Optional ws-preview local pipeline review dry-run settings.",
       "additionalProperties": true,
       "properties": {
-        "stack": {
+        "dryRunCommand": {
           "type": "string",
-          "description": "Stack id override for external review dry-run (defaults to stack.id when unset)."
-        },
-        "backend": {
-          "type": "string",
-          "enum": ["cursor-reviewer", "agentic-code-reviewers"],
-          "default": "cursor-reviewer",
-          "description": "External review backend. v1 uses cursor-reviewer only; agentic-code-reviewers reserved for future."
+          "description": "Shell command run from the consumer repo root by ws-preview. Set via ws-configure-project --section preview (infers from harness docs when possible) or manually. Empty/unset → skill stops (no default backend)."
         }
       }
     },

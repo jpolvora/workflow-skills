@@ -56,7 +56,7 @@ Two delivery workflows (install independently; both share `.agents/skills/ws-sha
 |----------|----------|---------|
 | **[`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md)** | Thorough delivery | Spec → plan → interview → implement → check → **product commit** → review → **review-fix commit** → test → ship → fix-pr (FSM steps 0–9) |
 | **[`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md)** | Fast iteration | Spec → plan → implement → **product commit** → review → **review-fix commit** → ship → fix-pr (steps 0–5) |
-| **[`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue (blank scan lists pending/unfinished specs only) with smart flow auto-detection (`ws-spec-to-pr` vs `ws-spec-to-pr-lite` per spec complexity) |
+| **[`ws-spec-multi`](.agents/skills/ws-spec-multi/SKILL.md)** | Smart batch delivery | Sequential multi-spec queue (blank scan lists pending/unfinished specs only) with smart flow auto-detection (`ws-spec-to-pr` vs `ws-spec-to-pr-lite` per spec complexity) |
 | **[`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
 
 Fix-PR batches plan before they edit: `fixPrPlan` uses reviewer-class model resolution to write the complete gate, then `fixPrExec` uses execution-class resolution to validate and apply it. Standard keeps this inside outer Step 9; lite runs the same order inline on its current session model.
@@ -224,7 +224,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs) |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
-| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Pipeline review dry-run via external reviewer (Extra) |
+| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Run consumer-configured local pipeline review dry-run via `preview.dryRunCommand` (Extra; configure with `/ws-configure-project --section preview`) |
 | [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | Live/static harness benchmark runner (Extra, upstream package root; never spec-to-pr) |
 
 ### Pipeline & providers
@@ -232,8 +232,8 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | Skill | Role |
 |-------|------|
 | [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | Orchestrators |
-| [`ws-write-spec`](.agents/skills/ws-write-spec/SKILL.md) … [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` (`ws-*`; FSM steps 0–9). Optional Extra post-workflow: [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) |
-| [`ws-github-provider`](.agents/skills/ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](.agents/skills/ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](.agents/skills/ws-local-spec-provider/SKILL.md) | Issue/WI → **spec of record** under `{specsDir}` then workflow `step-00` under `{plansDir}` + PR ops. Shared SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) |
+| [`ws-spec-write`](.agents/skills/ws-spec-write/SKILL.md) … [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` (`ws-*`; FSM steps 0–9). Optional Extra post-workflow: [`ws-plan-update`](.agents/skills/ws-plan-update/SKILL.md) |
+| [`ws-spec-provider-github`](.agents/skills/ws-spec-provider-github/SKILL.md) · [`ws-spec-provider-azure-devops`](.agents/skills/ws-spec-provider-azure-devops/SKILL.md) · [`ws-spec-provider-local`](.agents/skills/ws-spec-provider-local/SKILL.md) | Issue/WI → **spec of record** under `{specsDir}` then workflow `step-00` under `{plansDir}` + PR ops. Shared SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) |
 
 ### Review & audit
 
@@ -250,9 +250,9 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | Domain adapter generator & schemas (DevOps, Data, Research) (Extra) |
 | [`ws-senior-developer`](.agents/skills/ws-senior-developer/SKILL.md) | Engineering-delivery gate and Code review proof source (default in `rules.seniorDeveloper`) |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) · [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | Operational guidelines & response style |
-| [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration (`--section specMemo` optional external vault setup) |
+| [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) · [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) · [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | Memory, history & project configuration (`--section preview` for local review dry-run; `--section specMemo` optional external vault setup) |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | Integration bridge to [spec-memo](https://github.com/jpolvora/spec-memo): `config.json` flags, setup, import, hybrid fallback. Runtime vault ops use **`ws-memo`** (spec-memo package). Dual routing: `enableMemoryFiles` / `enableSpecMemoIntegration` |
-| [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) · [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) · [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, plan-history archive, feature spec sync, prompt-task lifecycle, format & goal loop |
+| [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) · [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) · [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) · [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) · [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) · [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) · [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | Spec index, dual specs/plans board, plan-history archive, feature spec sync, prompt-task lifecycle, format & goal loop |
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (Extra; plan bootstrap start → latest PR thread comment or delivery commit; human vs agent duration split) |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | Standup briefing of the last 36 hours |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | Spec/US status panorama — what it does, what it delivered, how to check & test |
@@ -261,7 +261,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 
 ### Spec → plan path (v0.3+)
 
-Standalone `/write-spec` and provider `fetch-to-spec` write the **spec of record** to `{specsDir}/{slug}.spec.md` first (`plans.specsDir`, default `.agents/specs`). After a **manual** `/write-spec`, the agent asks whether to add that slug to `{specsDir}/index.PRD` (`ws-spec-index track`). Orchestrators then register a workflow copy as `{plansDir}/{slug}/step-00-{slug}.spec.md`. Re-fetch refuses to clobber a differing spec of record or `step-00` unless `--force` is passed (converter first, then register).
+Standalone `/spec-write` and provider `fetch-to-spec` write the **spec of record** to `{specsDir}/{slug}.spec.md` first (`plans.specsDir`, default `.agents/specs`). After a **manual** `/spec-write`, the agent asks whether to add that slug to `{specsDir}/index.PRD` (`ws-spec-index track`). Orchestrators then register a workflow copy as `{plansDir}/{slug}/step-00-{slug}.spec.md`. Re-fetch refuses to clobber a differing spec of record or `step-00` unless `--force` is passed (converter first, then register).
 
 ---
 

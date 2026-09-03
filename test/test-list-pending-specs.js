@@ -1,5 +1,5 @@
 /**
- * Fixture coverage for ws-multi-spec list_pending_specs.cjs.
+ * Fixture coverage for ws-spec-multi list_pending_specs.cjs.
  * Run: node test/test-list-pending-specs.js
  */
 import assert from 'assert';
@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SCRIPT = path.join(
   REPO,
-  '.agents/skills/ws-multi-spec/scripts/list_pending_specs.cjs',
+  '.agents/skills/ws-spec-multi/scripts/list_pending_specs.cjs',
 );
 
 function run(args, cwd = REPO) {

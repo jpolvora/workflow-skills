@@ -79,7 +79,7 @@ Frontmatter (`name`, `description`) is injected into the agent's discovery index
 
 ```yaml
 ---
-name: ws-write-spec
+name: ws-spec-write
 description: Drafts canonical *.spec.md feature specifications from an issue or user prompt. Trigger when user asks to plan a new feature, draft a spec, or convert an issue into a spec.
 ---
 ```
@@ -139,7 +139,7 @@ When skills are installed globally (`$HOME/.agents/skills` or `WORKFLOW_SKILLS_G
 ### Classification of Skills
 
 1. **Config-Dependent Skills:**
-   - Skills that require project identity, verification commands, SCM providers, stack companions, or artifact output paths (e.g. `ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`, `ws-write-plan`, `ws-implement-tasks`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-configure-project`).
+   - Skills that require project identity, verification commands, SCM providers, stack companions, or artifact output paths (e.g. `ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-plan-write`, `ws-implement-tasks`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-spec-provider-github`, `ws-spec-provider-azure-devops`, `ws-configure-project`).
    - **Mandatory Entry Gate:** Must check if `$PWD/.agents/skills/ws-shared/config.json` exists in the consuming repository.
    - **Missing Config Protocol:** If missing or unconfigured, the skill MUST trigger a `user-gate` telling the user to run `ws-configure-project` (or offer an option/gate to invoke `ws-configure-project` immediately to seed and configure `.agents/skills/ws-shared/config.json`).
 2. **Config-Independent / Standalone Skills:**
@@ -163,3 +163,40 @@ Review and testing steps return structured findings in the handoff JSON (counts 
 ### JSON vs Markdown for machine-mutated workflow artifacts
 
 Machine-mutated workflow state uses JSON as SoT (`{workflow-id}.state.json`, ledgers, indexes, handoff). Markdown is a rendered human view. Do not treat YAML frontmatter as the only writer target when a JSON schema exists.
+
+---
+
+## 11. Skill Family Naming (`ws-{family}-{skillName}`)
+
+Every packaged `ws-*` skill folder and live reference follows the canonical pattern:
+1. **Pattern:** `ws-{family}-{skillName}` in kebab-case. `{family}` is a short noun grouping related skills (`spec`, `plan`, `check`, `fable`, `patterns`, `goal`).
+2. **Specs family hard rule:** Every packaged skill whose id contains the token `spec` MUST start with `ws-spec-`. Forbidden: `ws-write-spec`, `ws-sync-spec`, `ws-multi-spec`, `ws-local-spec-provider`, `ws-github-provider`, `ws-azure-devops-provider`, or any future `ws-{other}-spec*` / host-first `ws-{host}-provider` for spec/SCM entry.
+3. **Spec providers subfamily:** GitHub, Azure DevOps, and local are three implementations of the same role (tracker/filesystem → `{specsDir}` + register/promote; GitHub/Azure also own SCM intents). Canonical id shape: `ws-spec-provider-{backend}` with `{backend}` ∈ `github` | `azure-devops` | `local`. There is no separate installable meta-skill named `ws-spec-providers`.
+4. **Consistency:** Folder name, SKILL.md `name:`, dependency graph keys, and hub router rows must be the exact same string.
+
+### In-scope rename table
+
+| Current id | New id | Family | Notes |
+|------------|--------|--------|-------|
+| `ws-write-spec` | `ws-spec-write` | spec | Draft / reformulate `{specsDir}/{slug}.spec.md` only |
+| `ws-sync-spec` | `ws-spec-update` | spec | Surgical spec-body sync after prompt-driven code change; plus memory hook |
+| `ws-multi-spec` | `ws-spec-multi` | spec | Batch orch; was `ws-{verb}-spec` |
+| `ws-github-provider` | `ws-spec-provider-github` | spec-provider | Spec-provider implementation for GitHub issues + SCM intents |
+| `ws-azure-devops-provider` | `ws-spec-provider-azure-devops` | spec-provider | Spec-provider implementation for ADO work items + SCM intents |
+| `ws-local-spec-provider` | `ws-spec-provider-local` | spec-provider | Spec-provider implementation for filesystem `{specsDir}` register/fetch (promotion primitive) |
+| `ws-write-plan` | `ws-plan-write` | plan | Same verb-after-family pattern as `ws-spec-write` |
+| `ws-verify-plan` | `ws-plan-verify` | plan | Step 5 check-implementation |
+| `ws-update-plan-implementation` | `ws-plan-update` | plan | Post-delivery plan deltas |
+| `ws-interview` | `ws-plan-interview` | plan | Plan audit; name currently hides the family |
+
+### Deferred optional families
+
+| Family | Current ids | Optional future ids | Why deferred |
+|--------|-------------|---------------------|--------------|
+| check / harness | `ws-check-harness`, `ws-check-workflows`, `ws-show-harness`, `ws-doctor` | `ws-harness-show`, `ws-harness-doctor` | `ws-check-*` already groups the auditors; doctor/show are distinct products |
+| pr | `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr` | `ws-pr-ship`, `ws-pr-fix` | Slash commands `/ship-pr` `/fix-pr` are established |
+| fable | `ws-fable-method`, `ws-fable-judge`, `ws-fable-domain` | (none) | Already grouped |
+| patterns | `ws-patterns`, `ws-patterns-backend`, `ws-patterns-frontend` (all retired 0.3.38 — listed for context; do not reintroduce) | (none here) | Separate catalog-cleanup spec owns a possible `ws-patterns` merge; do not collide |
+| goal | `ws-goal-loop`, `ws-goal-fix-pr` | (none) | Already grouped |
+| other | `ws-write-a-skill`, `ws-classify-complexity`, `ws-implement-tasks`, `ws-code-review`, `ws-testing` | not required | No `spec` token; not a confused family |
+

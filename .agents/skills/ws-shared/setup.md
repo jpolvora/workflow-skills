@@ -31,17 +31,17 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 
 Same entry paths for **standard** and **lite**. Resolve provider from `config.json` `providers.active` (or legacy `issueTrackers.*.enabled` inference).
 
-**Spec-before-plan rule (all entries):** every entry path first produces the **spec of record** `{specsDir}/{slug}.spec.md` (via `ws-write-spec` or local file normalization), then the **workflow copy** `{us-dir}/step-00-{slug}.spec.md` (via `ws-local-spec-provider` register). For remote tracker inputs, `ws-write-spec` reformulates the raw issue into an agentic-ready spec with deterministic ACs while retaining original human context. Downstream workflow skills always read `step-00-{slug}.spec.md`.
+**Spec-before-plan rule (all entries):** every entry path first produces the **spec of record** `{specsDir}/{slug}.spec.md` (via `ws-spec-write` or local file normalization), then the **workflow copy** `{us-dir}/step-00-{slug}.spec.md` (via `ws-spec-provider-local` register). For remote tracker inputs, `ws-spec-write` reformulates the raw issue into an agentic-ready spec with deterministic ACs while retaining original human context. Downstream workflow skills always read `step-00-{slug}.spec.md`.
 
 | Input | Provider / skill | Step 0 action |
 |-------|------------------|---------------|
-| GitHub `{n}` / `US {n}` | [`ws-github-provider`](../ws-github-provider/SKILL.md) `fetch-to-spec` | Issue snapshot → `ws-write-spec` enhancement → `{specsDir}/us-{n}.spec.md` → register `step-00` (`source: github`) |
-| ADO `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `fetch-to-spec` | WI snapshot → `ws-write-spec` enhancement → `{specsDir}/us-{id}.spec.md` → register `step-00` (`source: azure-devops`) |
-| Hand-written `*.spec.md` (any path) | [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` | Normalize into `{specsDir}` (in place when already there) → register `step-00` |
-| Free-text feature description (no spec) | `ws-write-spec` (standard or lite) | Brainstorm → `{specsDir}/{slug}.spec.md` only, then `ws-local-spec-provider` register → `{us-dir}/step-00-{slug}.spec.md` |
-| Plain text in invocation (no issue id, no `*.spec.md` path) | `ws-write-spec` | Same as free-text row |
+| GitHub `{n}` / `US {n}` | [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) `fetch-to-spec` | Issue snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{n}.spec.md` → register `step-00` (`source: github`) |
+| ADO `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) `fetch-to-spec` | WI snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{id}.spec.md` → register `step-00` (`source: azure-devops`) |
+| Hand-written `*.spec.md` (any path) | [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) `fetch-to-spec` | Normalize into `{specsDir}` (in place when already there) → register `step-00` |
+| Free-text feature description (no spec) | `ws-spec-write` (standard or lite) | Brainstorm → `{specsDir}/{slug}.spec.md` only, then `ws-spec-provider-local` register → `{us-dir}/step-00-{slug}.spec.md` |
+| Plain text in invocation (no issue id, no `*.spec.md` path) | `ws-spec-write` | Same as free-text row |
 
-Standalone `/write-spec` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDir`, default `.agents/specs`); the workflow `step-00-{slug}.spec.md` under `{us-dir}` is created by register (or provider fetch) when a run starts. Downstream workflow skills **always** read `step-00-{slug}.spec.md` under `{us-dir}` — never `{specsDir}` and never `*.issue.json`.
+Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDir`, default `.agents/specs`); the workflow `step-00-{slug}.spec.md` under `{us-dir}` is created by register (or provider fetch) when a run starts. Downstream workflow skills **always** read `step-00-{slug}.spec.md` under `{us-dir}` — never `{specsDir}` and never `*.issue.json`.
 
 
 1. **Config check**: Check if `.agents/skills/ws-shared/config.json` exists (fresh install normally seeds it from `config.json.example`).

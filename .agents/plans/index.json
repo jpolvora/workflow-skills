@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 16,
-  "generatedAt": "2026-08-28T12:25:21Z",
+  "revision": 10,
+  "generatedAt": "2026-09-03T02:58:20Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -178,6 +178,17 @@
       "currentStep": 9,
       "updatedAt": "2026-08-28T04:34:01Z",
       "runPath": ".agents/plans/remove-consumer-agents-md-requirement/run.json"
+    },
+    {
+      "workflowId": "skill-family-naming-20260902T215014Z",
+      "slug": "skill-family-naming",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/skill-family-naming/skill-family-naming-20260902T215014Z.state.md",
+      "stateSha256": "c0d116e3840acf341da4267d87adc49c7ea797701fdd455c531e3374c1d9c5f5",
+      "status": "active",
+      "currentStep": 5,
+      "updatedAt": "2026-09-03T02:58:20Z",
+      "runPath": ".agents/plans/skill-family-naming/run.json"
     },
     {
       "workflowId": "skill-loaded-banner-instruction",

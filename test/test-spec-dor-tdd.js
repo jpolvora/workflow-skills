@@ -13,12 +13,12 @@ assert.match(format, /Readiness Item/);
 assert.match(format, /Negative & Failing Test Scenarios/);
 assert.match(format, /authoring validation fails if/i);
 
-const writeSpec = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-write-spec/SKILL.md'), 'utf8');
+const writeSpec = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-write/SKILL.md'), 'utf8');
 assert.match(writeSpec, /Definition of Ready/);
 assert.match(writeSpec, /negative failure/i);
 assert.match(writeSpec, /observation notes/i);
 
-const interview = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-interview/SKILL.md'), 'utf8');
+const interview = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-plan-interview/SKILL.md'), 'utf8');
 assert.match(interview, /Definition of Ready/);
 assert.match(interview, /failing test baseline/i);
 
@@ -29,7 +29,7 @@ assert.match(implement, /--negative/);
 assert.match(implement, /Lite orch/);
 assert.doesNotMatch(implement, /Step 5 fail-closes/);
 
-const verify = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-verify-plan/SKILL.md'), 'utf8');
+const verify = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-plan-verify/SKILL.md'), 'utf8');
 assert.match(verify, /negative test/i);
 assert.match(verify, /negativeScenarios/);
 

@@ -1,7 +1,7 @@
 ---
 name: ws-classify-complexity
 description: Pipeline complexity classifier — analyzes a spec against config.json dagThresholds and recommends ws-spec-to-pr-lite or ws-spec-to-pr (standard).
-version: 0.3.55
+version: 0.3.56
 invocation_names:
   - classify-complexity
   - ws-classify-complexity
@@ -15,7 +15,7 @@ invocation_names:
 
 Analyze a feature spec and emit a reasoned execution profile for pipeline, execution mode, interview, testing, and estimated elapsed time. Writes `{us-dir}/step-00-{slug}.classify.md`.
 
-**Specs family:** Role = orch chooser after a workflow `step-00` exists (or classify a `{specsDir}` file once registered). Used by Step 0 and [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = orch chooser after a workflow `step-00` exists (or classify a `{specsDir}` file once registered). Used by Step 0 and [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 **Harness-neutral:** use portable aliases from [`../ws-shared/tools.md`](../ws-shared/tools.md). Thresholds / scoreAndRefine detail: [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 
@@ -90,7 +90,7 @@ See [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 
 ## Related skills
 
-- [`ws-multi-spec`](../ws-multi-spec/SKILL.md) — batch Smart Flow prefers this skill (or live `dagThresholds`) for lite vs standard selection.
+- [`ws-spec-multi`](../ws-spec-multi/SKILL.md) — batch Smart Flow prefers this skill (or live `dagThresholds`) for lite vs standard selection.
 - [`ws-plan-to-tasks`](../ws-plan-to-tasks/SKILL.md) — DAG sequential detection uses the same `dagThresholds` for plan size.
 - [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) — orchestrators wire Step 0 classify and `--classify` flag.
 

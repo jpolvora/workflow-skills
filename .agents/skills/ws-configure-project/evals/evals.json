@@ -45,6 +45,17 @@
         "Uses configure_spec_memo.cjs with explicit launchers",
         "Shows MCP-TEMPLATE.json when vault enabled"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "/ws-configure-project --section preview",
+      "expected_output": "Agent infers preview.dryRunCommand from harness docs/scripts when possible, then user-gates Accept inferred / Skip / Keep / Edit; never invents a reviewer backend.",
+      "assertions": [
+        "Loads --section preview flow from SKILL.md / INTERVIEW.md § Preview",
+        "Scans config, package.json scripts, repo scripts, consumer skills, AGENTS/README/MEMORY/rules before asking",
+        "Recommended is Accept inferred when a candidate exists, else Skip / leave empty",
+        "Writes preview.dryRunCommand only after user-gate; does not download a reviewer tool"
+      ]
     }
   ]
 }

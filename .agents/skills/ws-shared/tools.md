@@ -70,7 +70,7 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `commit-code` | Commit workflow product files from `files_touched` | Path-scoped `Shell`: `HEAD` must equal `state.branch`; `git add -- <paths>` and `git add -u -- <deleted-paths>` from workflow `files_touched` (drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`). Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty `git diff --cached` → skip (no empty commit). Then `git commit -m "..."` |
 | `commit-delivery` | Commit configured delivery artifacts (Step 8) | Resolve stage list from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8; `Shell` `git add` only resolved `{us-dir}` paths then `git commit` (message may say “configured delivery artifacts”) |
 | `push-branch` | Push working branch | `Shell` `git push {gitRemote} {workingBranch}` — from `config.project` |
-| `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`ws-github-provider`](../ws-github-provider/SKILL.md) or [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
+| `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) or [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
 | `sweep-prior-work` | Search PRs + recent commits before plan/code | Same SCM provider as `create-pr` |
 | `check-pr-status` | CI/policy status + failed-log triage | Same SCM provider (`diff-regression` / `baseline` / `infra-flake`; one flake rerun) |
 | `comment-issue` | Post tracker comment (alias `close-loop`) | Same SCM provider; skip when tracker `id` is null |
@@ -78,20 +78,37 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `create-checkpoint` | Tag before step N | `Shell` `git tag uswf/{id}/before-step-{N}` |
 | `revert-to-checkpoint` | Revert to tag M | `Shell` `git reset --mixed {tag}` + per-path restore |
 
-Entry / fetch: resolve `providers.active` → [`ws-github-provider`](../ws-github-provider/SKILL.md) · [`ws-azure-devops-provider`](../ws-azure-devops-provider/SKILL.md) · [`ws-local-spec-provider`](../ws-local-spec-provider/SKILL.md) `fetch-to-spec` (remote fetch → [`ws-write-spec`](../ws-write-spec/SKILL.md) agentic reformulation → local-spec register). Consumers who already installed `ws-spec-to-pr` before these folders existed: `npx github:jpolvora/workflow-skills update --include-new`.
+Entry / fetch: resolve `providers.active` → [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) · [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) · [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) `fetch-to-spec` (remote fetch → [`ws-spec-write`](../ws-spec-write/SKILL.md) agentic reformulation → local-spec register). Consumers who already installed `ws-spec-to-pr` before these folders existed: `npx github:jpolvora/workflow-skills update --include-new`.
 
 
 ## Agent dispatch tools
 
 Host environment detection & dispatch adapters: [`host-dispatch.md`](host-dispatch.md).
+Config override: `defaults.hostAdapter.mode` (`auto` default; `native-tool` | `cli-command` | `inline-isolated` forces a tier) wins over auto-discovery.
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided or via [`host-dispatch.md`](host-dispatch.md)); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
+| `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided or via [`host-dispatch.md`](host-dispatch.md) fallback ladder); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
 | `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | Subagent dispatch (host-provided) — same worktree, no file overlap |
-| `user-gate` | Ask question | Host structured-choice UI when available; ≥2 options, recommended first; cancelled → HS-1. Markdown fallback when unavailable (see [`gates.md`](gates.md)); log `user-gate-fallback` |
+| `user-gate` | Ask question | Host structured-choice UI when available (modal tool preferred; blocks until submission); ≥2 options, recommended first; cancelled → HS-1. Markdown fallback when unavailable (see [`gates.md`](gates.md)); log `user-gate-modal` or `user-gate-fallback` |
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
-| `browser-mcp` | Browser integration test | Host browser MCP or `browser_subagent` when available (only normal mode, non-dry-run, gated) |
+| `browser-mcp` | Browser integration test | Host browser verification tool when available (only normal mode, non-dry-run, gated) |
+
+### Host capability discovery & dispatch tiers
+
+At bootstrap (and before first dispatch), inspect the session tool palette and environment signals to resolve three neutral flags:
+
+- `hasStructuredChoiceTool`: a modal choice tool accepting structured options and blocking until user submission is declared.
+- `hasSubagentTool`: a native subagent dispatch tool is declared.
+- `hasBrowserTool`: a browser verification tool is declared.
+
+Resolution order: `defaults.hostAdapter.mode` when set to `native-tool` | `cli-command` | `inline-isolated` → else auto-discovery above. Log `host-capability-detect | subagent={mode} | gate={mode} | ISO` to step telemetry JSONL during Step 0.
+
+`dispatch-agent` fallback ladder (honor resolved mode; pass discrete context pointers only — never full transcripts):
+
+- **Tier 1 — native-tool:** `hasSubagentTool` is true. Dispatch steps to that tool with pointers (`handoff/step-{N-1}.json`, `ac-ledger.json`, `plan.index.json`).
+- **Tier 2 — cli-command:** no native tool but a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH. Launch the step as a background task via `run_command` using the configured template.
+- **Tier 3 — inline-isolated:** neither tool nor runner is available. Run Inline Isolated Execution per [`host-dispatch.md`](host-dispatch.md) § Inline Isolated Execution (adopt step persona, read pointers only, edit via native file tools, emit `step-output`, log `inline-isolated-step | step {N} | ISO`).
 
 ### Subagent model preferences
 

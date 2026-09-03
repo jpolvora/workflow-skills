@@ -4,7 +4,7 @@ Cooperative PR thread resolution skill for **GitHub** and **Azure DevOps**.
 
 Merged from the former `solve-pr` (GitHub) and `ws-fix-pr` (Azure DevOps) skills.
 
-Thread list/resolve I/O goes through `config.providers.scm` → [ws-github-provider](../ws-github-provider/SKILL.md) or [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md). Prefer those skills’ intents and canonical scripts; do not treat a single host CLI as the only happy path.
+Thread list/resolve I/O goes through `config.providers.scm` → [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) or [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md). Prefer those skills’ intents and canonical scripts; do not treat a single host CLI as the only happy path.
 
 ## Dependencies
 
@@ -14,11 +14,11 @@ Thread list/resolve I/O goes through `config.providers.scm` → [ws-github-provi
 | Convergence loop | `.agents/skills/ws-goal-fix-pr/SKILL.md` — `/ws-goal-fix-pr <PR-ID>` |
 | Code review (pre-push) | `.agents/skills/ws-code-review/SKILL.md` |
 | SCM config | `providers.scm` in `.agents/skills/ws-shared/config.json` (`github` \| `azure-devops`) |
-| GitHub provider | `.agents/skills/ws-github-provider/SKILL.md` — `list-threads` / `resolve-thread` |
-| Azure DevOps provider | `.agents/skills/ws-azure-devops-provider/SKILL.md` — `list-threads` / `resolve-thread` |
-| GitHub list (canonical) | `node .agents/skills/ws-github-provider/scripts/fetch_threads.cjs` |
-| GitHub resolve (canonical) | `node .agents/skills/ws-github-provider/scripts/resolve_thread.cjs` |
-| Azure DevOps collect/resolve (canonical) | `python .agents/skills/ws-azure-devops-provider/scripts/fix_pr_azure_context.py` |
+| GitHub provider | `.agents/skills/ws-spec-provider-github/SKILL.md` — `list-threads` / `resolve-thread` |
+| Azure DevOps provider | `.agents/skills/ws-spec-provider-azure-devops/SKILL.md` — `list-threads` / `resolve-thread` |
+| GitHub list (canonical) | `node .agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs` |
+| GitHub resolve (canonical) | `node .agents/skills/ws-spec-provider-github/scripts/resolve_thread.cjs` |
+| Azure DevOps collect/resolve (canonical) | `python .agents/skills/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py` |
 | Legacy shims (forward only) | `node`/`python` + `.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs`, `resolve_thread.cjs`, `fix_pr_azure_context.py` |
 
 ## Platform support

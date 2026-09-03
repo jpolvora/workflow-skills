@@ -20,7 +20,7 @@
 | `ws-spec-index` | [`../ws-spec-index/SKILL.md`](../ws-spec-index/SKILL.md) |
 | `ws-spec-list` | [`../ws-spec-list/SKILL.md`](../ws-spec-list/SKILL.md) |
 | `ws-spec-from-provider` | [`../ws-spec-from-provider/SKILL.md`](../ws-spec-from-provider/SKILL.md) |
-| `ws-sync-spec` | [`../ws-sync-spec/SKILL.md`](../ws-sync-spec/SKILL.md) |
+| `ws-spec-update` | [`../ws-spec-update/SKILL.md`](../ws-spec-update/SKILL.md) |
 | `ws-spec-memo` | [`../ws-spec-memo/SKILL.md`](../ws-spec-memo/SKILL.md) |
 | `ws-task-lifecycle` | [`../ws-task-lifecycle/SKILL.md`](../ws-task-lifecycle/SKILL.md) |
 | `ws-pre-daily` | [`../ws-pre-daily/SKILL.md`](../ws-pre-daily/SKILL.md) |
@@ -51,11 +51,11 @@ Present only after Extra or Full install. If a path is missing, treat as intenti
 | `ws-run-benchmark` | [`../ws-run-benchmark/SKILL.md`](../ws-run-benchmark/SKILL.md) — Extra; upstream package-root version compare only; **never** load during spec-to-pr |
 | `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-fable-domain` | [`../ws-fable-domain/SKILL.md`](../ws-fable-domain/SKILL.md) |
-| `ws-update-plan-implementation` | [`../ws-update-plan-implementation/SKILL.md`](../ws-update-plan-implementation/SKILL.md) |
+| `ws-plan-update` | [`../ws-plan-update/SKILL.md`](../ws-plan-update/SKILL.md) |
 
 ### Intentionally orch-only (not duplicated here)
 
-Pipeline folders `ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-multi-spec`), and providers are discovered via host invoke / orch dispatch — not listed as promoted utilities. `ws-update-plan-implementation` is Extra (optional post-workflow).
+Pipeline folders `ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`, orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`), and providers are discovered via host invoke / orch dispatch — not listed as promoted utilities. `ws-plan-update` is Extra (optional post-workflow).
 
 Install packages and dependency map: upstream `bin/skill-dependencies.json` in [workflow-skills](https://github.com/jpolvora/workflow-skills) (not vendored in consumer clones).
 
@@ -67,7 +67,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 |--------|------|
 | Spec → PR E2E | `ws-spec-to-pr` |
 | Spec → PR lite | `ws-spec-to-pr-lite` |
-| Batch spec delivery | `ws-multi-spec` |
+| Batch spec delivery | `ws-spec-multi` |
 | Project spec index init/sync/promote/track | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO User Stories → local specs | `ws-spec-from-provider` |
@@ -76,7 +76,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
-| Auto-update feature specs after code changes | `ws-sync-spec` |
+| Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | spec-memo / external vault setup/bridge | `ws-spec-memo` |
 | Runtime spec-memo vault ops | `ws-memo` |
@@ -94,13 +94,13 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Format/review spec | `ws-spec-format` |
 | Specs vocabulary / which specs skill to load | [`autoload.md`](autoload.md) § Specs skill router |
-| Verify / check-implementation / verify score | `ws-verify-plan` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
+| Verify / check-implementation / verify score | `ws-plan-verify` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
 | SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](scm-provider-contract.md) — then one provider skill |
 | Record learning | `ws-self-learning` |
 | Record ws-changelog | `ws-changelog` |
 | Create / rewrite a skill | `ws-write-a-skill` (Extra) |
 | Show active harness | `ws-show-harness` (Extra) |
-| Pipeline review / preview CI review | `ws-preview` (Extra) |
+| Pipeline review / local dry-run preview | `ws-preview` (Extra) |
 | Live / static harness benchmark (upstream package root only; never spec-to-pr) | `ws-run-benchmark` (Extra) |
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).

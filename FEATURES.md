@@ -27,12 +27,12 @@ A finite state machine that carries one feature from an idea to a merged pull re
 
 | Step | What happens | Artifact |
 |------|--------------|----------|
-| 0 | Entry gate, tracker fetch, **prior-work sweep**, spec authoring (`ws-write-spec`), register, `ac_ledger.cjs init` | `{specsDir}/{slug}.spec.md` → `step-00-{slug}.spec.md` + `ac-ledger.json` |
-| 1 | Implementation plan (`ws-write-plan`), MEMORY conflict check, `plan_index.cjs build` | `step-01-{slug}.plan.md` + `plan.index.json` |
-| 2 | Optional plan interrogation (`ws-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan.refined.md` |
+| 0 | Entry gate, tracker fetch, **prior-work sweep**, spec authoring (`ws-spec-write`), register, `ac_ledger.cjs init` | `{specsDir}/{slug}.spec.md` → `step-00-{slug}.spec.md` + `ac-ledger.json` |
+| 1 | Implementation plan (`ws-plan-write`), MEMORY conflict check, `plan_index.cjs build` | `step-01-{slug}.plan.md` + `plan.index.json` |
+| 2 | Optional plan interrogation (`ws-plan-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan.refined.md` |
 | 3 | Sequential exec stub (`write_sequential_dag.cjs`) unless `enableDag: true` then `ws-plan-to-tasks` | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
 | 4 | Implementation (`ws-implement-tasks`) with memory consult proof | code + build/test verification |
-| 5 | Spec-compliance scoring 0–10 (`ws-verify-plan`); **advances only at ≥ `defaults.minVerifyScore`** (default 9) | `step-05-{slug}.plan.report.md` |
+| 5 | Spec-compliance scoring 0–10 (`ws-plan-verify`); **advances only at ≥ `defaults.minVerifyScore`** (default 9) | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
 | 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then ship gate, push/PR (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
@@ -46,16 +46,16 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 
 | Step | Stage | Skill |
 |------|-------|-------|
-| 0 | Spec (+ prior-work sweep) | providers / `ws-write-spec` |
-| 1 | Planning (design-intent git log) | `ws-write-plan` |
+| 0 | Spec (+ prior-work sweep) | providers / `ws-spec-write` |
+| 1 | Planning (design-intent git log) | `ws-plan-write` |
 | 2 | Implementation (defect-class repo sweep) | `ws-implement-tasks` |
 | 3 | Review (+ fix loop, sibling modules) | `ws-code-review` |
 | 4 | Close implementation, then ship (CI triage + tracker comment) | orch close + `ws-ship-pr` |
 | 5 | Fix-PR (plan-before-edit inline on current model) | `ws-goal-fix-pr` / `ws-fix-pr` |
 
-### 1.3 Batch delivery — `ws-multi-spec`
+### 1.3 Batch delivery — `ws-spec-multi`
 
-Runs a queue of specs one at a time. A blank `/ws-multi-spec` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state.
+Runs a queue of specs one at a time. A blank `/ws-spec-multi` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state.
 
 ### 1.4 Direct problem solving — `ws-fable-method`
 
@@ -69,9 +69,9 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 | Gate | Rule | Owner |
 |------|------|-------|
-| **Derived verify score** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. Uncovered spec Negative & Failing Test Scenarios (`negativeScenarios` without an observed passing test) are a known defect and cap the score at 8. | `ws-verify-plan` |
-| **Configurable verify bar (`defaults.minVerifyScore`)** | Default 9, range 1–10, omitted → 9. Below the bar it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). Optional Reach-10 user-gate when effort is low. | `ws-verify-plan` |
-| **Score & refine** | When a score is already ≥ `minVerifyScore` and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-verify-plan` |
+| **Derived verify score** | Standard Step 5 derives the integer 0–10 score from `ac-ledger.json`. The score cannot be authored or overridden. Uncovered spec Negative & Failing Test Scenarios (`negativeScenarios` without an observed passing test) are a known defect and cap the score at 8. | `ws-plan-verify` |
+| **Configurable verify bar (`defaults.minVerifyScore`)** | Default 9, range 1–10, omitted → 9. Below the bar it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). Optional Reach-10 user-gate when effort is low. | `ws-plan-verify` |
+| **Score & refine** | When a score is already ≥ `minVerifyScore` and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-plan-verify` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |
 | **Commit before review** | Product files must be committed before a review is dispatched, so the review always diffs a real `{base}...HEAD`. Uncommitted product files STOP the step. | `gates.md` (G2-code) |
 | **Regression sabotage** | When mutation testing is unset, Step 7 deliberately breaks assertions to confirm the suite actually catches regressions. | `ws-testing` (`run_sabotage.py`) |
@@ -116,7 +116,7 @@ Nine required intents, enforced by `node test/test-provider-parity.js` in `npm r
 
 Adding an intent to only one provider fails CI unless an allowlist row explains why the other host cannot mirror it. Contract: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md).
 
-`ws-local-spec-provider` implements `fetch-to-spec` and `validate-auth` only, and delegates all PR operations to `providers.scm`.
+`ws-spec-provider-local` implements `fetch-to-spec` and `validate-auth` only, and delegates all PR operations to `providers.scm`.
 
 ---
 
@@ -126,18 +126,18 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 
 | Capability | Skill |
 |------------|-------|
-| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring` (fails closed). Required sections include **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios**. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-write-spec` |
+| Draft a spec from free text, or reformulate a tracker issue into structured acceptance criteria. Lookup codebase/MEMORY/stack before any user-gate; authoring-validate with `validate_spec.cjs --mode=authoring` (fails closed). Required sections include **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios**. Standalone invoke always `user-gate`s **Add to index.PRD** vs skip (not workflow `--register`). | `ws-spec-write` |
 | Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), authoring-mode **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios** | `ws-spec-format` |
-| Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-local-spec-provider` |
+| Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-spec-provider-local` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register | `ws-spec-from-provider` |
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
-| Update spec bodies when code drifted after ad-hoc prompts | `ws-sync-spec` |
+| Update spec bodies when code drifted after ad-hoc prompts | `ws-spec-update` |
 | Resolve spec-of-record path and optionally prefix `{specsDir}` files with chronological `NNNN-` when `plans.enforceSpecPrefixOrdering` is true (default false) | `ws-spec-organizer` |
 | Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
-| Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-interview` / `ws-implement-tasks` / `ws-verify-plan` |
+| Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-plan-interview` / `ws-implement-tasks` / `ws-plan-verify` |
 
 Every entry path — free text, local file, GitHub issue, Azure work item — produces the spec of record under `{specsDir}` **before** any plan artifact exists. Re-fetching refuses to clobber a differing spec unless `--force` is passed.
 
@@ -171,7 +171,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
-| `ws-preview` | External code-review dry-run on the current branch without publishing PR threads |
+| `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
 
 Harness dispatches use bounded `## Subagent contract` sections plus indexed plan slices. The fixed preamble is capped at 18 KB, matched MEMORY at 4 KB, and total dispatch context at `defaults.contextBudget` (32 KB by default). `measure_harness.cjs` reports the reduction against the measured baseline (each skill id is resolved locally then under `{globalSkillsRoot}` so hybrid consumers are not ENOENT), while `check_duplicates.cjs` rejects duplicated normative blocks. Phase 5a also runs `check_shell_quoting.cjs` to block nested-quote `python -c` / `node -e` one-liners.
@@ -200,7 +200,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-karpathy-guidelines` | Micro diff hygiene — surgical changes, minimal diff footprint, surfaced assumptions |
 | `ws-tdah` | Action-first reply shape and operational judgment |
 | `ws-goal-loop` | Generic convergence primitive: sentinel management, heartbeat and settle timers, re-check control. Backs `ws-goal-fix-pr` |
-| `ws-update-plan-implementation` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
+| `ws-plan-update` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
 
 Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
 
@@ -221,7 +221,7 @@ Everything project-specific lives in one consumer-owned, gitignored file: `.agen
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
 | `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, and legacy per-phase model identifiers |
-| `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and dry-run backend |
+| `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and `preview.dryRunCommand` (consumer local dry-run for `/ws-preview`; set via `--section preview`) |
 | `rules` | Guardrail paths: harness, senior developer, karpathy, stack file, changelog file |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
@@ -239,7 +239,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`, `ws-run-benchmark`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -253,12 +253,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.55)
+## 12. Recent evolution (0.3.22 → 0.3.56)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-02).
+Derived from recent commits on `develop` (2026-08-16 → 2026-09-03).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.56** | Sep 3 | **Skill family naming migration (`ws-{family}-{verb}`):** Renamed 10 skills across `spec`, `spec-provider`, and `plan` families (`ws-spec-write`, `ws-spec-update`, `ws-spec-multi`, `ws-spec-provider-github`, `ws-spec-provider-azure-devops`, `ws-spec-provider-local`, `ws-plan-write`, `ws-plan-verify`, `ws-plan-update`, `ws-plan-interview`); fail-closed harness gate `ws-(?!spec-).*spec`; anti-regression memory hook in `ws-spec-update` |
 | **0.3.55** | Sep 2 | **spec-memo bridge clarity:** `ws-spec-memo` owns harness config only; `/ws-memo` memory + `/ws-session-tracking` prompt/session; preflight warns on missing runtime skills; configure-project session handoff fixed |
 | **0.3.54** | Sep 2 | **ws-doctor JSON contract:** skill-local ESM `package.json` marker so copied `doctor.js` loads under CJS/typeless ancestors; `--json` writes one parseable object via `process.stdout.write` (#260 / amended #261) |
 | **0.3.48** | Aug 28 | Seed `modelsPreset: cursor` with full explicit `default`+`cursor` step maps; `ws-spec-memo` drops colliding `spec-memo` invocation and aligns MCP template key with `specMemo.mcpServerName`; Extra `ws-run-benchmark` automates live prepare → orch → collect → snapshot |
@@ -276,14 +277,14 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-02).
 | **0.3.37** | Aug 23 | Close stale unfinished workflow states; track us-236 on `index.PRD`; `tracking.featuresMdEnabled` makes FEATURES.md optional; remove `ws-audit` and `defaults.enableAuditing`; package stamp + site footer |
 | **0.3.36** | Aug 22 | ADO `comment_issue.py` accepts optional `--org`/`--project`/`--api-base`/`--pat-env` overrides (same flags as work-item fetch) |
 | **0.3.35** | Aug 22 | `validate_spec.cjs` `--help`/`-h` prints usage (exit 0); unknown dash flags are rejected instead of opened as spec paths |
-| **0.3.34** | Aug 22 | Extra demotion (`ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation`); merge `ws-patterns-*` into `ws-patterns`; specify-time closure pack (`Out of Scope` / Assumptions, `validate_spec --mode=authoring`, write-spec lookup + `{slug}.context.md`, Step 0 skip-register, lite >5-step valve) |
+| **0.3.34** | Aug 22 | Extra demotion (`ws-activity-report`, `ws-fable-domain`, `ws-update-plan-implementation` — now `ws-plan-update`); merge `ws-patterns-*` into `ws-patterns`; specify-time closure pack (`Out of Scope` / Assumptions, `validate_spec --mode=authoring`, write-spec lookup + `{slug}.context.md`, Step 0 skip-register, lite >5-step valve) |
 | **0.3.33** | Aug 22 | scoreAndRefine second pass (score already ≥ 9) reviews the full Pass 1 diff: simplify overengineered ACs/tasks; remove unused workflow-introduced files/tests/methods/classes |
 | **0.3.32** | Aug 22 | Runtime audit suggestion categories already shipped; cooperative session leases (`defaults.sessionLeases`, default on) with same-slug exclusive lock + short git critical section; schema/CLI/tests/docs |
-| **0.3.31** | Aug 22 | Nested-quote `python -c` / `node -e` audit classify + draft-remediation user-gate; `ws-fix-pr` / `ws-goal-fix-pr` proactive same-class sweep (multi-source discovery before resolve); standalone `ws-write-spec` gates `index.PRD` track via `ws-spec-index` |
+| **0.3.31** | Aug 22 | Nested-quote `python -c` / `node -e` audit classify + draft-remediation user-gate; `ws-fix-pr` / `ws-goal-fix-pr` proactive same-class sweep (multi-source discovery before resolve); standalone `ws-write-spec` (now `ws-spec-write`) gates `index.PRD` track via `ws-spec-index` |
 | **0.3.30** | Aug 21 | SCM provider parity tests, LF-pinned `bin/skill-integrity.json`, and a site/catalog stamp for the 48-skill inventory |
 | **0.3.29** | Aug 21 | Added `ws-spec-explain` (spec/US delivery panorama), `ws-cleanup` (confirm-gated leftover cleanup + `.gitignore` suggestions), and `ws-spec-archive` (harvest `{plansDir}` into `index.PRD` Archive + propose shipped-plan cleanup) to the Workflows package |
 | **0.3.22** | Aug 17 | DeepSeek harness hardening (PR #216): inline-dict commit SHA scanning in `validate_state`, the AC9 resume gate retargeted from the base branch to the integration branch, audit config resolved from the repo root, goal-loop runtime confined to `{us-dir}/.runtime` |
-| **0.3.23** | Aug 19 | Remote tracker issues now enter through `ws-write-spec` agentic reformulation instead of a raw converter dump, so a GitHub issue or Azure work item becomes a structured spec with real acceptance criteria |
+| **0.3.23** | Aug 19 | Remote tracker issues now enter through `ws-write-spec` (now `ws-spec-write`) agentic reformulation instead of a raw converter dump, so a GitHub issue or Azure work item becomes a structured spec with real acceptance criteria |
 | **0.3.24** | Aug 19 | Subagents must prove they consulted `backend.md`, `frontend.md`, and `MEMORY.md`; fix-mode consults gate on `defaults` flags; pattern templates fall back in memory rather than mutating disk |
 | **0.3.25** | Aug 19 | `ws-pre-daily` ported upstream (36-hour standup briefing), with hardened base-branch verification and PR field parsing |
 | **0.3.26** | Aug 20 | Self-learning gains a failure reflection hook (no `Learning: N/A` when session friction is high), `PathPattern` compilation with `--match-paths` querying, and an adversarial trigger from `ws-fable-judge` |
@@ -321,34 +322,34 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 |-------|-----|------|
 | [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) | W | Standard end-to-end pipeline, FSM steps 0–9 |
 | [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | W | Fast pipeline, steps 0–5 |
-| [`ws-multi-spec`](.agents/skills/ws-multi-spec/SKILL.md) | W | Sequential batch queue with per-spec flow auto-detection |
+| [`ws-spec-multi`](.agents/skills/ws-spec-multi/SKILL.md) | W | Sequential batch queue with per-spec flow auto-detection |
 | [`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md) | W | 7-step structured problem-solving loop |
 
 ### Pipeline stages
 
 | Skill | Pkg | Role |
 |-------|-----|------|
-| [`ws-write-spec`](.agents/skills/ws-write-spec/SKILL.md) | W | Draft and reformulate `*.spec.md` from free text or tracker issues |
+| [`ws-spec-write`](.agents/skills/ws-spec-write/SKILL.md) | W | Draft and reformulate `*.spec.md` from free text or tracker issues |
 | [`ws-classify-complexity`](.agents/skills/ws-classify-complexity/SKILL.md) | W | Recommend lite versus standard against `dagThresholds` |
-| [`ws-write-plan`](.agents/skills/ws-write-plan/SKILL.md) | W | Turn a spec into a structured implementation plan |
-| [`ws-interview`](.agents/skills/ws-interview/SKILL.md) | W | Interrogate a plan for hidden assumptions and ambiguities |
+| [`ws-plan-write`](.agents/skills/ws-plan-write/SKILL.md) | W | Turn a spec into a structured implementation plan |
+| [`ws-plan-interview`](.agents/skills/ws-plan-interview/SKILL.md) | W | Interrogate a plan for hidden assumptions and ambiguities |
 | [`ws-plan-to-tasks`](.agents/skills/ws-plan-to-tasks/SKILL.md) | W | Break a plan into an atomic, dependency-mapped task DAG |
 | [`ws-implement-tasks`](.agents/skills/ws-implement-tasks/SKILL.md) | W | Build features from the DAG, or apply surgical review fixes |
-| [`ws-verify-plan`](.agents/skills/ws-verify-plan/SKILL.md) | W | Score spec compliance 0–10; gate at ≥ `defaults.minVerifyScore` (default 9) |
+| [`ws-plan-verify`](.agents/skills/ws-plan-verify/SKILL.md) | W | Score spec compliance 0–10; gate at ≥ `defaults.minVerifyScore` (default 9) |
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
 | [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | One batch-wide reviewer-plan then execution pass; durable gate, amendment-before-deviation, proactive same-class sweep, verification, resolution comments that describe the correction (not hash-only), learning, push |
 | [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | W | Iterative Act-round batches until threads hit zero and checks pass; requires both plan and execute evidence before resolve/push |
-| [`ws-update-plan-implementation`](.agents/skills/ws-update-plan-implementation/SKILL.md) | E | Post-ship QA delta capture, planning, and execution |
+| [`ws-plan-update`](.agents/skills/ws-plan-update/SKILL.md) | E | Post-ship QA delta capture, planning, and execution |
 
 ### Providers
 
 | Skill | Pkg | Role |
 |-------|-----|------|
-| [`ws-github-provider`](.agents/skills/ws-github-provider/SKILL.md) | W | GitHub issue → spec and PR operations |
-| [`ws-azure-devops-provider`](.agents/skills/ws-azure-devops-provider/SKILL.md) | W | Azure DevOps work item → spec and PR operations |
-| [`ws-local-spec-provider`](.agents/skills/ws-local-spec-provider/SKILL.md) | W | Detect, normalize, and register hand-written local specs |
+| [`ws-spec-provider-github`](.agents/skills/ws-spec-provider-github/SKILL.md) | W | GitHub issue → spec and PR operations |
+| [`ws-spec-provider-azure-devops`](.agents/skills/ws-spec-provider-azure-devops/SKILL.md) | W | Azure DevOps work item → spec and PR operations |
+| [`ws-spec-provider-local`](.agents/skills/ws-spec-provider-local/SKILL.md) | W | Detect, normalize, and register hand-written local specs |
 
 ### Spec management
 
@@ -358,8 +359,8 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | W | `index.PRD` lifecycle: init, sync, promote, track |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Harvest plan history into `index.PRD` Archive; propose shipped-plan cleanup |
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
-| [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → write-spec + register |
-| [`ws-sync-spec`](.agents/skills/ws-sync-spec/SKILL.md) | W | Update spec bodies when code drifts |
+| [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register |
+| [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` (spec-memo) |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
@@ -372,7 +373,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-fable-judge`](.agents/skills/ws-fable-judge/SKILL.md) | W | Adversarial audit of claimed work against git diffs |
 | [`ws-fable-domain`](.agents/skills/ws-fable-domain/SKILL.md) | E | Domain adapters: authority, evidence sets, fraud definitions |
 | [`ws-secrets-leak-review`](.agents/skills/ws-secrets-leak-review/SKILL.md) | W | Secrets and PII scan with optional pre-commit hook |
-| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | E | External reviewer dry-run without publishing threads |
+| [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | E | Consumer-configured local dry-run without publishing threads |
 
 ### Harness and diagnostics
 
@@ -398,7 +399,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 
 | Skill | Pkg | Role |
 |-------|-----|------|
-| [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | W | Interactive `config.json` wizard (optional `--section specMemo` for external vault setup) |
+| [`ws-configure-project`](.agents/skills/ws-configure-project/SKILL.md) | W | Interactive `config.json` wizard (optional `--section preview` for dry-run command; `--section specMemo` for external vault setup) |
 | [`ws-goal-loop`](.agents/skills/ws-goal-loop/SKILL.md) | W | Generic convergence loop primitive |
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | E | Timesheet entries for a delivery day |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | W | 36-hour standup briefing |

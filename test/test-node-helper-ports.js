@@ -2,7 +2,7 @@ import fs from 'fs';
 import utils from './harness-test-utils.cjs';
 
 const { assert, path, repoRoot, temp, run, write } = utils;
-const localScripts = path.join(repoRoot, '.agents/skills/ws-local-spec-provider/scripts');
+const localScripts = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts');
 const memoryScript = path.join(repoRoot, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');
 const root = temp('ws-node-ports-');
 write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
@@ -87,8 +87,8 @@ assert.strictEqual(run(memoryScript, ['--compile', '--repo-root', root]).status,
 assert.match(fs.readFileSync(path.join(root, '.agents/skills/ws-shared/MEMORY.md'), 'utf8'), /Node port/);
 
 for (const relative of [
-  '.agents/skills/ws-local-spec-provider/scripts/register_local_spec.py',
-  '.agents/skills/ws-local-spec-provider/scripts/detect_specs_dir.py',
+  '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.py',
+  '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.py',
   '.agents/skills/ws-self-learning/scripts/self_learning.py',
   '.agents/skills/ws-spec-to-pr/scripts/update_state.py',
   '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.py',

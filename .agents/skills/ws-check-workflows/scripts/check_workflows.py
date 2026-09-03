@@ -192,12 +192,12 @@ class WorkflowChecker:
 
         # Step definitions for Standard FSM
         expected_steps = {
-            0: ("Spec Creation", "ws-write-spec"),
-            1: ("Plan Creation", "ws-write-plan"),
-            2: ("Plan Interview", "ws-interview"),
+            0: ("Spec Creation", "ws-spec-write"),
+            1: ("Plan Creation", "ws-plan-write"),
+            2: ("Plan Interview", "ws-plan-interview"),
             3: ("Plan to Tasks", "ws-plan-to-tasks"),
             4: ("Task Implementation", "ws-implement-tasks"),
-            5: ("Plan Verification", "ws-verify-plan"),
+            5: ("Plan Verification", "ws-plan-verify"),
             6: ("Code Review", "ws-code-review"),
             7: ("Testing", "ws-testing"),
             8: ("Ship PR", "ws-ship-pr"),
@@ -247,7 +247,7 @@ class WorkflowChecker:
             }
 
         # Check auxiliary skills dispatched by standard workflow
-        aux_skills = ["ws-goal-fix-pr", "ws-github-provider", "ws-azure-devops-provider", "ws-local-spec-provider"]
+        aux_skills = ["ws-goal-fix-pr", "ws-spec-provider-github", "ws-spec-provider-azure-devops", "ws-spec-provider-local"]
         for aux in aux_skills:
             if (SKILLS_DIR / aux / "SKILL.md").exists():
                 dispatched_skills.add(aux)
@@ -287,8 +287,8 @@ class WorkflowChecker:
         text = lite_skill_path.read_text(encoding="utf-8", errors="replace")
 
         expected_steps = {
-            0: ("Spec Creation", "ws-write-spec"),
-            1: ("Plan Creation", "ws-write-plan"),
+            0: ("Spec Creation", "ws-spec-write"),
+            1: ("Plan Creation", "ws-plan-write"),
             2: ("Implementation", "ws-implement-tasks"),
             3: ("Code Review", "ws-code-review"),
             4: ("Ship PR", "ws-ship-pr"),
@@ -336,7 +336,7 @@ class WorkflowChecker:
             }
 
         # Check auxiliary skills dispatches
-        aux_skills = ["ws-goal-fix-pr", "ws-github-provider", "ws-azure-devops-provider", "ws-local-spec-provider"]
+        aux_skills = ["ws-goal-fix-pr", "ws-spec-provider-github", "ws-spec-provider-azure-devops", "ws-spec-provider-local"]
         for aux in aux_skills:
             if (SKILLS_DIR / aux / "SKILL.md").exists():
                 dispatched_skills.add(aux)
@@ -359,35 +359,35 @@ class WorkflowChecker:
             self.simulation_results["lite"]["status"] = "FAIL"
 
     def simulate_multi_spec_workflow(self) -> None:
-        """Simulate Smart Multi-Spec ws-multi-spec workflow."""
-        ms_skill_path = SKILLS_DIR / "ws-multi-spec" / "SKILL.md"
+        """Simulate Smart Multi-Spec ws-spec-multi workflow."""
+        ms_skill_path = SKILLS_DIR / "ws-spec-multi" / "SKILL.md"
         if not ms_skill_path.exists():
             self.add_issue(
                 "CRITICAL",
                 "Workflow Structure",
-                "ws-multi-spec/SKILL.md",
-                "ws-multi-spec SKILL.md file is missing.",
-                "Ensure .agents/skills/ws-multi-spec/SKILL.md exists.",
+                "ws-spec-multi/SKILL.md",
+                "ws-spec-multi SKILL.md file is missing.",
+                "Ensure .agents/skills/ws-spec-multi/SKILL.md exists.",
             )
             self.simulation_results["multi_spec"]["status"] = "FAIL"
             return
 
         ms_files = ["PROTOCOL.md", "STATE.md", "EXAMPLES.md", "evals/evals.json"]
         for fname in ms_files:
-            fpath = SKILLS_DIR / "ws-multi-spec" / fname
+            fpath = SKILLS_DIR / "ws-spec-multi" / fname
             if not fpath.exists():
                 self.add_issue(
                     "CRITICAL",
                     "Workflow Structure",
-                    f"ws-multi-spec/{fname}",
-                    f"ws-multi-spec artifact {fname} is missing.",
-                    f"Create .agents/skills/ws-multi-spec/{fname}.",
+                    f"ws-spec-multi/{fname}",
+                    f"ws-spec-multi artifact {fname} is missing.",
+                    f"Create .agents/skills/ws-spec-multi/{fname}.",
                 )
                 self.simulation_results["multi_spec"]["status"] = "FAIL"
             else:
                 self.simulation_results["multi_spec"]["steps"][f"Artifact: {fname}"] = {
                     "status": "PASS",
-                    "skill": "ws-multi-spec",
+                    "skill": "ws-spec-multi",
                     "details": [f"File verified: {fname}"],
                 }
 
@@ -398,8 +398,8 @@ class WorkflowChecker:
                 self.add_issue(
                     "CRITICAL",
                     "Worker Target Link",
-                    f"ws-multi-spec -> {target}",
-                    f"ws-multi-spec dispatches missing worker target '{target}'.",
+                    f"ws-spec-multi -> {target}",
+                    f"ws-spec-multi dispatches missing worker target '{target}'.",
                     f"Ensure .agents/skills/{target}/SKILL.md exists.",
                 )
                 self.simulation_results["multi_spec"]["status"] = "FAIL"
@@ -635,7 +635,7 @@ class WorkflowChecker:
         lines.append("## 🔄 Workflow Simulations")
         lines.append("")
 
-        for wf_key, wf_title in [("standard", "Standard (`ws-spec-to-pr`)"), ("lite", "Lite (`ws-spec-to-pr-lite`)"), ("multi_spec", "Smart Multi-Spec (`ws-multi-spec`)")]:
+        for wf_key, wf_title in [("standard", "Standard (`ws-spec-to-pr`)"), ("lite", "Lite (`ws-spec-to-pr-lite`)"), ("multi_spec", "Smart Multi-Spec (`ws-spec-multi`)")]:
             wf_data = self.simulation_results[wf_key]
             wf_status_icon = "✅" if wf_data["status"] == "PASS" else "❌"
             lines.append(f"### {wf_title} — {wf_status_icon} {wf_data['status']}")

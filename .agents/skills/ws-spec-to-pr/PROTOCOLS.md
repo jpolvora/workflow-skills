@@ -51,7 +51,7 @@ Available at **every** transition gate (normal mode; under **More options…** w
 
 ### Refinement FSM (Step 2)
 
-2a/2b/2d → `ws-interview`. Orch: 2c Escalate, 2e Shared Understanding, redispatch.
+2a/2b/2d → `ws-plan-interview`. Orch: 2c Escalate, 2e Shared Understanding, redispatch.
 
 | State | Owner | Output |
 |-------|-------|--------|
@@ -145,22 +145,22 @@ All recorded learnings and memory entries must use clear, direct, and actionable
 
 ### Specification Protocol
 
-[`ws-spec-format`](../ws-spec-format/SKILL.md). Canonical spec for planning: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. When entering from remote trackers (GitHub/ADO), `ws-write-spec` reformulates and enhances the fetched issue into an agentic spec of record `{specsDir}/{slug}.spec.md` (unambiguous ACs, technical boundaries, edge cases, while preserving human issue context in `## Original Issue Context`) before `ws-local-spec-provider` registers `{us-dir}/step-00-{slug}.spec.md`.
+[`ws-spec-format`](../ws-spec-format/SKILL.md). Canonical spec for planning: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. When entering from remote trackers (GitHub/ADO), `ws-spec-write` reformulates and enhances the fetched issue into an agentic spec of record `{specsDir}/{slug}.spec.md` (unambiguous ACs, technical boundaries, edge cases, while preserving human issue context in `## Original Issue Context`) before `ws-spec-provider-local` registers `{us-dir}/step-00-{slug}.spec.md`.
 
 | Input | Tracker / provider | Action | Uses Step 0? |
 |-------|--------------------|--------|--------------|
-| `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` (snapshot → `ws-write-spec` enhancement → `{specsDir}/us-{n}.spec.md` → register `{us-dir}/step-00-us-{n}.spec.md`) | No — skip to Step 1 |
-| `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-azure-devops-provider` | `fetch-to-spec` (snapshot → `ws-write-spec` enhancement → `{specsDir}` → register `step-00`) | No — skip to Step 1 |
-| `*.spec.md` | `ws-local-spec-provider` | `fetch-to-spec` → `{specsDir}` → register `step-00` | No — skip to Step 1 |
-| free-text / no args | none | `ws-write-spec` → `{specsDir}/{slug}.spec.md`, then `ws-local-spec-provider` register → `{us-dir}/step-00-{slug}.spec.md` | Yes — `dispatch-agent` `ws-write-spec` (+ register before Step 1) |
+| `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` (snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{n}.spec.md` → register `{us-dir}/step-00-us-{n}.spec.md`) | No — skip to Step 1 |
+| `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-spec-provider-azure-devops` | `fetch-to-spec` (snapshot → `ws-spec-write` enhancement → `{specsDir}` → register `step-00`) | No — skip to Step 1 |
+| `*.spec.md` | `ws-spec-provider-local` | `fetch-to-spec` → `{specsDir}` → register `step-00` | No — skip to Step 1 |
+| free-text / no args | none | `ws-spec-write` → `{specsDir}/{slug}.spec.md`, then `ws-spec-provider-local` register → `{us-dir}/step-00-{slug}.spec.md` | Yes — `dispatch-agent` `ws-spec-write` (+ register before Step 1) |
 
 Provider resolution and `fetch-to-spec` dispatch: load active provider skill; auth failure → STOP (no silent fallback). Details in each provider `SKILL.md`.
 
 ### Step 0 Entry Gate
 
-1. **Tracker id** → provider `fetch-to-spec` (fetch snapshot + `ws-write-spec` agentic reformulation + register) → skip Step 0 → Step 1 gate.
-2. **Local `*.spec.md`** → `ws-local-spec-provider` → skip Step 0 → Step 1 gate.
-3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`ws-write-spec` → `{specsDir}` only, then register to `{us-dir}` before planning).
+1. **Tracker id** → provider `fetch-to-spec` (fetch snapshot + `ws-spec-write` agentic reformulation + register) → skip Step 0 → Step 1 gate.
+2. **Local `*.spec.md`** → `ws-spec-provider-local` → skip Step 0 → Step 1 gate.
+3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`ws-spec-write` → `{specsDir}` only, then register to `{us-dir}` before planning).
 
 Store `specPath` in state `## Artifacts` (always points to the registered `step-00-{slug}.spec.md`).
 
@@ -364,4 +364,4 @@ Retry: max 3; backoff 0s→30s→60s. Revert: Checkpoint Algorithm only. Conduct
 
 ## Post-workflow (outside this agent)
 
-Manual QA after workflow completion (or pause before Step 8) not resumed here. Optional Extra skill [`ws-update-plan-implementation`](../ws-update-plan-implementation/SKILL.md) (invoke when installed) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix → re-review loop (in-pipeline review fixes). Not a required FSM step.
+Manual QA after workflow completion (or pause before Step 8) not resumed here. Optional Extra skill [`ws-plan-update`](../ws-plan-update/SKILL.md) (invoke when installed) — append plan §9, implement delta, update `step-08-{slug}.result.md`, certify for PR. Distinct from Step 6 fix → re-review loop (in-pipeline review fixes). Not a required FSM step.

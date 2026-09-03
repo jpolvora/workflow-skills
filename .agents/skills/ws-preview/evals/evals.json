@@ -4,10 +4,11 @@
     {
       "id": 1,
       "prompt": "Use @ws-preview for a typical preview task in this project.",
-      "expected_output": "Agent loads ws-preview and follows its skill contract.",
+      "expected_output": "Agent loads ws-preview, reads preview.dryRunCommand from project config, runs that command locally, and reports.",
       "assertions": [
         "Agent loads ws-preview before acting",
-        "Follows skill steps and Done when criteria",
+        "Resolves preview.dryRunCommand from project ws-shared/config.json",
+        "Runs the configured command in the consumer repo root (no packaged reviewer backend)",
         "Uses path tokens from tools.md instead of hardcoded consumer paths",
         "Output is en-us and harness-neutral"
       ]
@@ -18,8 +19,8 @@
       "expected_output": "Agent stops or bootstraps via configure-project/setup, not silent guessing.",
       "assertions": [
         "Recognizes ws-preview trigger from slash or @ invocation",
-        "References ws-shared/config.json or configure-project when config missing",
-        "Does not invent project-specific metadata"
+        "Stops when preview.dryRunCommand is missing/empty (or config missing)",
+        "Does not invent a default reviewer tool or download a backend"
       ]
     }
   ]

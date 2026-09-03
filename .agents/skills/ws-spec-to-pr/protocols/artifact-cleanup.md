@@ -60,4 +60,4 @@ Script behavior (namespace `uswf/{workflow-id}` only):
 
 ## Shared contract
 
-Standard (`ws-spec-to-pr`), lite (`ws-spec-to-pr-lite`), and per-child `ws-multi-spec` workers use this protocol and the same script path. Batch `runId` is not a `uswf/` cleanup target — child orchs clean their own `{workflow-id}` when child shipping is terminal.
+Standard (`ws-spec-to-pr`), lite (`ws-spec-to-pr-lite`), and per-child `ws-spec-multi` workers use this protocol and the same script path. Batch `runId` is not a `uswf/` cleanup target — child orchs clean their own `{workflow-id}` when child shipping is terminal.

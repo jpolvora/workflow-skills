@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -47,8 +47,8 @@ Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `pro
 
 | `providers.scm` | Skill | Intents used here |
 |-----------------|-------|-------------------|
-| `github` | [ws-github-provider](../ws-github-provider/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
-| `azure-devops` | [ws-azure-devops-provider](../ws-azure-devops-provider/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
+| `github` | [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
+| `azure-devops` | [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
 
 ## Internal model roles
 

@@ -1,7 +1,7 @@
 ---
 name: ws-configure-project
-version: 0.3.55
-description: Project configuration wizard — detects project settings and conducts interactive interviews to populate ws-shared/config.json.
+version: 0.3.56
+description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
   - ws-configure-project
@@ -25,9 +25,11 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 | Flag | Effect |
 |------|--------|
-| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`autoload`**, **`specMemo`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
+| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`preview`**, **`autoload`**, **`specMemo`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
+
+**`--section preview`:** optional `preview.dryRunCommand` for [`ws-preview`](../ws-preview/SKILL.md). Infer a local dry-run recipe from harness docs / package scripts / consumer skills (see [`INTERVIEW.md`](INTERVIEW.md) § Preview); user-gate; write the string or leave empty (Skip). Empty is valid — `/ws-preview` fails closed until set. Never invent or download a reviewer backend.
 
 **`--section autoload`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`) and optional `defaults.autoloadTaskLifecycle` (default / Recommended = `false`). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
 
@@ -38,19 +40,25 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 1. **Ensure file** — If `config.json` missing: `cp` from `config.json.example`. If example missing, STOP (hub not installed). For `--section autoload`, still ensure `config.json` exists (seed from example) because the section persists `defaults.autoload`.
    - Done when: `config.json` exists on disk (or detect-only with example readable).
 
-2. **Detect** — Before stack scanning, run `node {skillsRoot}/ws-configure-project/scripts/stack_fingerprint.cjs check`. When it returns `skipDetection: true`, reuse the current stack detection; otherwise scan the consumer repo for stack, SCM, and commands, apply heuristics in [`INTERVIEW.md`](INTERVIEW.md) § Detection, and after accepted detection run the helper's `write` command to store `stackFingerprint` in `STACK.md` frontmatter. Build a suggestion map (path → value) without writing config yet. For `--section autoload`, detect per-skill install scope only (project-local vs global) and current `defaults.autoload` / `defaults.autoloadTaskLifecycle`. For `--section specMemo`, run `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json` and record `cli.available`, `pollution`, and current `specMemo.*`.
-   - Done when: suggestion map covers at least `project`, `providers`/`issueTrackers`, `verification`, and `plans.dir` (defaults OK); or autoload path map + effective flag is ready; or specMemo preflight JSON is ready.
+2. **Detect** — Before stack scanning, run `node {skillsRoot}/ws-configure-project/scripts/stack_fingerprint.cjs check`. When it returns `skipDetection: true`, reuse the current stack detection; otherwise scan the consumer repo for stack, SCM, and commands, apply heuristics in [`INTERVIEW.md`](INTERVIEW.md) § Detection, and after accepted detection run the helper's `write` command to store `stackFingerprint` in `STACK.md` frontmatter. Build a suggestion map (path → value) without writing config yet. For `--section preview` (or full interview optional extras): infer `preview.dryRunCommand` candidates per [`INTERVIEW.md`](INTERVIEW.md) § Preview (scan harness docs, `package.json` scripts, consumer skills/scripts — do not invent a backend). For `--section autoload`, detect per-skill install scope only (project-local vs global) and current `defaults.autoload` / `defaults.autoloadTaskLifecycle`. For `--section specMemo`, run `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json` and record `cli.available`, `pollution`, and current `specMemo.*`.
+   - Done when: suggestion map covers at least `project`, `providers`/`issueTrackers`, `verification`, and `plans.dir` (defaults OK); or preview candidate list (possibly empty) is ready; or autoload path map + effective flag is ready; or specMemo preflight JSON is ready.
 
-3. **Gap list** — Compare current `config.json` to required keys in INTERVIEW.md § Required. Mark each: filled / placeholder (`<…>` or empty) / missing. For `--section autoload`, gap is `defaults.autoload` (+ root file consistency when true) and `defaults.autoloadTaskLifecycle`. For `--section specMemo`, gap is `specMemo.enabled` (+ CLI availability when user wants enable).
+3. **Gap list** — Compare current `config.json` to required keys in INTERVIEW.md § Required. Mark each: filled / placeholder (`<…>` or empty) / missing. For `--section preview`, gap is `preview.dryRunCommand` (empty = optional gap still offered once). For `--section autoload`, gap is `defaults.autoload` (+ root file consistency when true) and `defaults.autoloadTaskLifecycle`. For `--section specMemo`, gap is `specMemo.enabled` (+ CLI availability when user wants enable).
    - Done when: gap list exists; `--force` treats filled as re-ask candidates.
 
 4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never commit `config.json`. Autoload enablement gate: see step 6 (Recommended = No / `false`).
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
-5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload` or `--section specMemo`.
+5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
    - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
    - If the resolved target is missing: offer **Generate** into `.agents/skills/ws-shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/ws-shared/` unless the user explicitly chose another path.
    - Done when: config points at an existing companion, or user skipped.
+
+5b. **Preview dry-run command (optional)** — Run when full interview reaches optional extras (after verification), or immediately for `--section preview`. See [`INTERVIEW.md`](INTERVIEW.md) § Preview. Skip core project interview when `--section preview` only.
+   1. Infer candidates (ranked) from harness instructions and local recipes; cite the winning source path in the gate.
+   2. user-gate: **Set `preview.dryRunCommand` for `/ws-preview`?** — **Accept inferred (Recommended)** when a candidate exists / **Skip / leave empty (Recommended)** when none / Keep current / Edit… / other ranked candidates.
+   3. On Accept/Edit: write `preview.dryRunCommand` (trim; portable relative path or `npm run …` / explicit `bash`/`node`/`python` launcher). On Skip: leave empty or omit. Never download a reviewer tool or invent a product-specific default.
+   - Done when: key written, kept, or explicitly left empty; summary shows value or `(empty)`.
 
 6. **Autoload** — Run when full interview reaches optional extras, or immediately for `--section autoload`. See [`INTERVIEW.md`](INTERVIEW.md) § Autoload.
    1. Ensure `{sharedDir}/autoload.md` exists (installer hub template). user-gate: **Enable consumer root autoload of Always-applied skills?** — **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
@@ -101,3 +109,4 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Delivery commit artifacts (`defaults.deliveryCommitArtifacts`): interview under `defaults` / `--section defaults` per [`INTERVIEW.md`](INTERVIEW.md); recommended = refined plan on, delivery result off, opt-ins off (see [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8).
 - Models (`defaults` / `--section defaults`): pick `modelsPreset` from shipped `config.json.example` sample keys, then optional `stepModels` (`"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`); keep empty legacy phase keys unless the user wants an advanced override. Token `"current"` uses the session model. Explain that `fixPrPlan` falls back to `reviewerModel`, `fixPrExec` falls back to `executionModel`, both bypass numeric `"9"`, and lite ignores role model switches while preserving plan-before-edit.
 - Min verify score (`defaults` / `--section defaults`): interview `defaults.minVerifyScore` per [`INTERVIEW.md`](INTERVIEW.md) (Recommended 9; runtime omitted/invalid → 9).
+- Preview (`preview` / `--section preview`): interview `preview.dryRunCommand` per [`INTERVIEW.md`](INTERVIEW.md) § Preview; infer from harness docs before asking; empty is allowed.

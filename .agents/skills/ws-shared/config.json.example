@@ -329,7 +329,7 @@
   "plans": {
     "dir": ".agents/plans",
     "_comment_plansDir": "Resolve skill token {plansDir} from plans.dir (there is no separate plansDir key).",
-    "_comment_specsDir": "Human-facing local specs dir. Skill token {specsDir} ← plans.specsDir (default .agents/specs). Prefer existing repo-root specs/ when already present. ws-write-spec writes here only; workflow step-00 copies under {plansDir}/{slug}/ come from providers or ws-local-spec-provider register.",
+    "_comment_specsDir": "Human-facing local specs dir. Skill token {specsDir} ← plans.specsDir (default .agents/specs). Prefer existing repo-root specs/ when already present. ws-spec-write writes here only; workflow step-00 copies under {plansDir}/{slug}/ come from providers or ws-spec-provider-local register.",
     "specsDir": ".agents/specs",
     "diagnosticsDir": ".agents/plans/diagnostics",
     "worktreesDir": ".agents/plans/{slug}/worktrees",
@@ -344,9 +344,9 @@
   },
 
   "preview": {
-    "_comment": "Optional ws-preview dry-run overrides. preview.backend is not required for v1 (defaults to cursor-reviewer).",
-    "stack": "",
-    "backend": "cursor-reviewer"
+    "_comment": "Optional. /ws-preview runs preview.dryRunCommand from the consumer repo root — no packaged reviewer backend. Prefer /ws-configure-project --section preview (infers from AGENTS.md, README, MEMORY, rules.*, package.json scripts, and local skills) or set the string below. Empty → /ws-preview stops until configured.",
+    "_comment_dryRunCommand": "Examples: npm run review:dry | bash scripts/pipeline-review-dry-run.sh | node tools/local-review-dry-run.cjs",
+    "dryRunCommand": ""
   },
 
   "rules": {

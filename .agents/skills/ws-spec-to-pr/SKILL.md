@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.3.55
+version: 0.3.56
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-to-pr loaded."
 
-**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-write-spec` (`{specsDir}`) then `ws-local-spec-provider` register; tracker id (GitHub/ADO) → provider fetch + `ws-write-spec` agentic reformulation (`{specsDir}`) then `ws-local-spec-provider` register; existing `*.spec.md` → local-spec-provider. Downstream steps always read the enhanced local spec copy. Batch → [`ws-multi-spec`](../ws-multi-spec/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-spec-write` (`{specsDir}`) then `ws-spec-provider-local` register; tracker id (GitHub/ADO) → provider fetch + `ws-spec-write` agentic reformulation (`{specsDir}`) then `ws-spec-provider-local` register; existing `*.spec.md` → spec-provider-local. Downstream steps always read the enhanced local spec copy. Batch → [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
 
 
 - **Dual-mode:** Shared pipeline skills stay interchangeable with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
@@ -21,12 +21,12 @@ Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap 
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Entry check: [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Never narrate undone work. Orch never edits code; use `dispatch-agent` only.
+Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Entry check: [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve `defaults.hostAdapter.mode` + tool-palette flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowserTool`) per [`host-dispatch.md`](../ws-shared/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only. Interactive cadence: One Step Per Turn — never start Step N+1 in the same turn as Step N completion/gate.
 
 | Intent | Alias | Rule |
 |--------|-------|------|
 | Step work | `dispatch-agent` | `generalPurpose`\|`shell`; `description: "STP step {N} — {Label}"`; readonly step 5; step 4 DAG ≤3 parallel only when `defaults.enableDag: true` |
-| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** use `user-gate` per [`gates.md`](../ws-shared/gates.md) (host structured-choice when available; markdown fallback); ≥2 options; cancel → HS-1; auto → index 0 |
+| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** use `user-gate` per [`gates.md`](../ws-shared/gates.md) (modal choice tool when present — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); ≥2 options; cancel → HS-1; auto → index 0 |
 | Verification / SCM | `Shell` | `config.json.verification`; cite real `gh`/`git` output |
 | State | `read-state` / `write-state` | Hygiene before Progress Board |
 | Browser (7) | `browser-mcp` | Normal, non-dry-run, non-skip, gated |

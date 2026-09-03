@@ -12,7 +12,7 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 
 | Rule | Detail |
 |------|--------|
-| **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. `ws-update-plan-implementation` is optional Extra (invoke when installed). |
+| **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. `ws-plan-update` is optional Extra (invoke when installed). |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
 | **Close then ship (two gates)** | Orchestrator presents **close implementation** then **ship** at standard Step 8 / lite Step 4. Close sets `status: completed` before push/PR. [`ws-ship-pr`](../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship option (push/PR only) — does **not** re-ask delivery commit or workflow close. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
@@ -27,11 +27,18 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 ## User gates (`user-gate`)
 
 Portable alias: `user-gate`. Gate placement follows `defaults.gateGranularity`; hard stops are unchanged.
+Host binding: [`tools.md`](tools.md) § Host capability discovery & dispatch tiers (`hasStructuredChoiceTool`).
 
 1. Every normal-mode gate: use `user-gate` with ≥2 options; recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
-2. If structured choice is unavailable → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
-3. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-4. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
+2. When a modal choice tool (accepting structured options and blocking execution until user submission) is present in the session tool palette, the orchestrator and shared skills MUST invoke that tool for all `user-gate` occurrences rather than falling back to text. Log `user-gate-modal | {gate} | ISO`.
+3. If structured choice is unavailable → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
+4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
+5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
+6. `autoMode` → no user-gate prompt; use orch auto-gate table (index 0).
+
+## Interactive execution cadence (One Step Per Turn)
+
+In interactive execution mode, completing Step N (dispatch, execution, state finish, pre-advance validation, and transition gate) must halt the turn. Step N+1 MUST never be initiated within the same interaction turn without explicit user confirmation. This prevents eager models from steamrolling past gates by generating a gate plus next-step tool calls in one response.
 
 **Orchestrator obligation:** both orchestrators resolve `defaults.gateGranularity` (`step` default, or `phase`). `step` runs `user-gate` at each step boundary. `phase` runs at most five blocking gates in a normal standard run: entry, plan approval, implementation approval, delivery, and fix-PR. Boundaries inside a phase advance after validation and state persistence without another blocking prompt. Hard stops, required save points, review findings, test failures, and safety checks never become implicit approvals.
 
@@ -118,7 +125,7 @@ Skip Step 2 (mark skipped, log) when **all** hold:
 - No `blocking` gaps from a 30s orch skim / prior step-output
 - `check_memory_conflict.py --json` did not return `force_interview: true`
 
-Otherwise run `ws-interview` (project-context sweep before escalate; in `autoMode`, sweep-miss blocking gaps close as model-inferred — no `user-gate`). A High or Critical MEMORY trap whose `PathPattern` matches a touched plan path forces this interview even when every other skip condition passes. Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
+Otherwise run `ws-plan-interview` (project-context sweep before escalate; in `autoMode`, sweep-miss blocking gaps close as model-inferred — no `user-gate`). A High or Critical MEMORY trap whose `PathPattern` matches a touched plan path forces this interview even when every other skip condition passes. Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
 
 ---
 
@@ -129,7 +136,7 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 | Score | Behavior |
 |-------|----------|
 | ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
-| below `defaults.minVerifyScore` | Run **scoreAndRefine** until overall score ≥ `defaults.minVerifyScore` (default 9) (even when `defaults.scoreAndRefine` is false). Write `step-05-{slug}.score-analysis.md`, re-dispatch `ws-implement-tasks` for tasks scoring below `defaults.minVerifyScore`, re-run `ws-verify-plan`. Max **3** rounds per Step 5 visit; log `score-refine round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Refine runs **before** the product commit. Never Advance or auto-approve below `defaults.minVerifyScore`. |
+| below `defaults.minVerifyScore` | Run **scoreAndRefine** until overall score ≥ `defaults.minVerifyScore` (default 9) (even when `defaults.scoreAndRefine` is false). Write `step-05-{slug}.score-analysis.md`, re-dispatch `ws-implement-tasks` for tasks scoring below `defaults.minVerifyScore`, re-run `ws-plan-verify`. Max **3** rounds per Step 5 visit; log `score-refine round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Refine runs **before** the product commit. Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
 `autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`.
 
@@ -231,7 +238,7 @@ Step 5 overall score **must be ≥ `defaults.minVerifyScore` (default 9)** to Ad
 When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefine` mode / completed-workflow bootstrap):
 
 1. **Pass 1 Score Analysis:** Score plan tasks against acceptance criteria (`step-05-{slug}.score-analysis.md`). Flag tasks scoring below `defaults.minVerifyScore`.
-2. **Below-bar loop (mandatory):** If overall score below `defaults.minVerifyScore`, do **not** offer Accept First Pass As-Is. Re-dispatch `ws-implement-tasks` for flagged tasks with scoring context, then re-run `ws-verify-plan`. Repeat until overall score ≥ `defaults.minVerifyScore` (default 9). Max **3** rounds per Step 5 visit; log `score-refine | round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Never Advance or auto-approve below `defaults.minVerifyScore`.
+2. **Below-bar loop (mandatory):** If overall score below `defaults.minVerifyScore`, do **not** offer Accept First Pass As-Is. Re-dispatch `ws-implement-tasks` for flagged tasks with scoring context, then re-run `ws-plan-verify`. Repeat until overall score ≥ `defaults.minVerifyScore` (default 9). Max **3** rounds per Step 5 visit; log `score-refine | round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Never Advance or auto-approve below `defaults.minVerifyScore`.
 3. **Optional polish (overall already ≥ `defaults.minVerifyScore` (default 9) and `scoreAndRefine` flag):** present `user-gate`:
    ```text
    Score Analysis Complete:
@@ -248,7 +255,7 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
    - Apply Pass 1 scoring recommendations for flagged tasks (Option 1: all flagged; Option 3: chosen tasks only). Option 1 runs even when zero tasks are flagged.
    - **Overengineering sweep:** if any AC/task implementation can be simpler and still meet the AC, simplify it.
    - **Dead artifact removal:** delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs or spec requirements.
-   Then re-run `ws-verify-plan`. Record simplifications and deletions in `step-08-{slug}.second-pass-report.md`. Post-simplify score must stay ≥ defaults.minVerifyScore (default 9).
+   Then re-run `ws-plan-verify`. Record simplifications and deletions in `step-08-{slug}.second-pass-report.md`. Post-simplify score must stay ≥ defaults.minVerifyScore (default 9).
 5. **Comparative Delivery Gate:** When a 2nd pass ran, compare Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, and test metrics before ship/commit.
 
 ---

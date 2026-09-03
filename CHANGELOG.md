@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-03 04:18] Agent: Antigravity
+- **Prompt**: bump version and commit work
+- **Done**: Bumped package to `0.3.56`; migrated skill family naming to `ws-{family}-{verb}` across 10 skills (spec, spec-provider, plan); synchronized version across all 50 SKILL.md frontmatters, test/package.json, AGENTS.md, FEATURES.md, and docs/index.html; updated dependency manifests, router/harness docs, fail-closed gates, test fixtures, and regenerated skill integrity checksums.
+- **Result**: Release `0.3.56` prepared, verified, and committed.
+
 ### [2026-08-28 14:38] Agent: Antigravity AI (Gemini 3.7 Flash)
 - **Prompt**: bump again, commit and push, then start next shipping version - get next spec to implement (/ws-spec-to-pr)
 - **Done**: Bumped package to `0.3.50`; synchronized version across all 49 SKILL.md frontmatters, test/package.json, AGENTS.md, FEATURES.md, and docs/index.html; updated index.PRD with completed harness-spec-benchmark (0041); regenerated integrity checksums.

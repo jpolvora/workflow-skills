@@ -80,7 +80,7 @@ function main() {
     return { skill, bytes: bytes(section(fs.readFileSync(file, 'utf8'), 'Subagent contract')) };
   });
   const targetSkills = options.scenario === 'standard'
-    ? ['ws-write-spec', 'ws-write-plan', 'ws-interview', 'ws-implement-tasks', 'ws-verify-plan', 'ws-code-review', 'ws-testing', 'ws-ship-pr', 'ws-goal-fix-pr']
+    ? ['ws-spec-write', 'ws-plan-write', 'ws-plan-interview', 'ws-implement-tasks', 'ws-plan-verify', 'ws-code-review', 'ws-testing', 'ws-ship-pr', 'ws-goal-fix-pr']
     : [];
   const targetSources = targetSkills.map((skill) => {
     const file = resolveSkillMdPath(context, skill);
