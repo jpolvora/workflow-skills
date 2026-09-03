@@ -292,6 +292,40 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
 }
 
 /**
+ * Removes uninstalled skills from secondary global targets (symlink or copy).
+ * Only removes exact `<target>/<skillName>` entries; never touches the canonical tree.
+ */
+function removeSkillsFromSecondaryTargets(skillNames, secondaryTargets) {
+  if (!Array.isArray(skillNames) || skillNames.length === 0) return 0;
+  if (!Array.isArray(secondaryTargets) || secondaryTargets.length === 0) return 0;
+  let removedCount = 0;
+  for (const target of secondaryTargets) {
+    if (!target || !target.path) continue;
+    for (const skillName of skillNames) {
+      const destSkill = path.join(target.path, skillName);
+      try {
+        const stat = fs.lstatSync(destSkill);
+        if (stat.isSymbolicLink()) {
+          fs.unlinkSync(destSkill);
+          removedCount++;
+        } else if (stat.isDirectory()) {
+          fs.rmSync(destSkill, { recursive: true, force: true });
+          removedCount++;
+        } else if (stat.isFile()) {
+          fs.unlinkSync(destSkill);
+          removedCount++;
+        }
+      } catch (err) {
+        if (err?.code !== 'ENOENT') {
+          console.log(`    Note: Could not remove '${skillName}' from [${target.id}]: ${err.message}`);
+        }
+      }
+    }
+  }
+  return removedCount;
+}
+
+/**
  * Compute uninstall set using selected roots:
  * reverse-cascade dependents of named skills, then keep = closure(remaining selected).
  */
@@ -981,7 +1015,7 @@ Non-interactive install:
   --yes  Overwrite existing skill dirs without prompts; always preserves ws-shared/ consumer data
   --force-integrity  Unsafe: skip source/consumer integrity gates (still writes local record)
   --global, -g       Install globally into user home directory (~/.agents/skills)
-  --targets <csv>    Global host targets: canonical, claude, codex, gemini, or custom paths
+  --targets <csv>    Global host targets: canonical, claude, codex, gemini, or custom paths (requires --global)
   --symlink          Link secondary global targets via directory symlinks/junctions (default)
   --no-symlink       Copy skill folders into secondary global targets instead of symlinking
   Non-TTY (CI/agents): --yes is required
@@ -1275,6 +1309,11 @@ async function runInstall(skills, opts) {
   console.log(`Target: ${targetSkillsDir} [${isGlobalScope ? 'Global Scope' : 'Project Scope'}]`);
   console.log('------------------------------------------------------------');
 
+  if (opts.targets?.length && !isGlobalScope) {
+    console.error('Error: --targets requires --global (secondary host projection is global-only)');
+    process.exit(1);
+  }
+
   const selected = buildSelectedFromInstallOpts(skills, opts);
   const selectedNames = skills.filter((_, i) => selected[i]);
   if (selectedNames.length === 0) {
@@ -1296,7 +1335,14 @@ async function runInstall(skills, opts) {
     }
   }
 
-  const secondaryTargets = resolveSecondaryTargets(opts.targets, opts.symlink);
+  let secondaryTargets = resolveSecondaryTargets(opts.targets, opts.symlink);
+  if (secondaryTargets.length === 0 && isGlobalScope && (!opts.targets || opts.targets.length === 0)) {
+    const existingManifest = readInstalledSkillsManifest();
+    if (existingManifest?.globalTargets?.length) {
+      console.log(`Reusing ${existingManifest.globalTargets.length} recorded global target(s) from ${INSTALLED_SKILLS_FILE} (--targets omitted).`);
+      secondaryTargets = existingManifest.globalTargets.map((t) => ({ ...t }));
+    }
+  }
   const installedCount = installSelectedSkills(skills, selectedNames, {
     overwrite,
     forceIntegrity: !!opts.forceIntegrity,
@@ -1443,6 +1489,10 @@ async function main() {
       }
     }
     assertNotSelfOverwrite();
+    if (updateOpts.targets?.length && !isGlobalScope) {
+      console.error('Error: --targets requires --global (secondary host projection is global-only)');
+      process.exit(1);
+    }
     runUpdate(skills, includeNew, forceIntegrity, updateOpts);
   } else {
     const forceIntegrity = args.includes('--force-integrity');
@@ -1582,6 +1632,15 @@ async function runUninstall(_upstreamSkills, argv) {
       removedCount++;
     } else {
       console.log(`  Missing on disk (manifest only): ${skillName}`);
+    }
+  }
+
+  if (isGlobalScope) {
+    const manifestForTargets = readInstalledSkillsManifest();
+    const recordedTargets = manifestForTargets?.globalTargets || [];
+    if (recordedTargets.length > 0) {
+      const secondaryRemoved = removeSkillsFromSecondaryTargets(remove, recordedTargets);
+      console.log(`  Removed ${secondaryRemoved} secondary projection(s) from ${recordedTargets.length} recorded global target(s).`);
     }
   }
 

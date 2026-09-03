@@ -2465,6 +2465,75 @@ child.on('close', async (code) => {
     }
     ok('update command synchronizes secondary targets recorded in manifest (AC7)');
 
+    // 7. Incremental global install reuses manifest globalTargets when --targets omitted
+    const incrementalInstall = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-changelog', '--global', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          HOME: mockHome,
+          USERPROFILE: mockHome,
+          FORCE_COLOR: '0',
+        },
+      }
+    );
+    if (incrementalInstall.status !== 0) {
+      console.error(incrementalInstall.stdout, incrementalInstall.stderr);
+      fail('Incremental global install without --targets failed');
+    }
+    if (!/Reusing \d+ recorded global target/.test(incrementalInstall.stdout + incrementalInstall.stderr)) {
+      fail('Incremental install did not report manifest globalTargets reuse');
+    }
+    if (!fs.existsSync(path.join(mockHome, '.claude', 'skills', 'ws-changelog', 'SKILL.md'))) {
+      fail('Incremental install did not project new skill to recorded secondary target');
+    }
+    ok('incremental global install without --targets reuses manifest globalTargets');
+
+    // 8. Global uninstall removes secondary projections
+    const uninstallRes = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'uninstall', '--skills', 'ws-changelog', '--global', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          HOME: mockHome,
+          USERPROFILE: mockHome,
+          FORCE_COLOR: '0',
+        },
+      }
+    );
+    if (uninstallRes.status !== 0) {
+      console.error(uninstallRes.stdout, uninstallRes.stderr);
+      fail('Global uninstall failed');
+    }
+    if (fs.existsSync(path.join(mockHome, '.claude', 'skills', 'ws-changelog'))) {
+      fail('Uninstall left stale secondary projection behind');
+    }
+    if (!fs.existsSync(path.join(mockHome, '.claude', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('Uninstall removed secondary projections of kept skills');
+    }
+    ok('global uninstall cleans secondary projections of removed skills only');
+
+    // 9. --targets without --global fails closed instead of silent ignore
+    const projectTargetsRes = cp.spawnSync(
+      process.execPath,
+      [cliPath, 'install', '--skills', 'ws-tdah', '--project', '--targets', 'claude', '--yes'],
+      {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, FORCE_COLOR: '0' },
+      }
+    );
+    if (projectTargetsRes.status === 0 || !/--targets requires --global/.test(projectTargetsRes.stdout + projectTargetsRes.stderr)) {
+      fail('Project-scope install with --targets must fail closed with a scope error');
+    }
+    ok('--targets without --global fails closed with a scope error');
+
     // Cleanup
     fs.rmSync(mockHome, { recursive: true, force: true });
     fs.rmSync(copyHome, { recursive: true, force: true });
