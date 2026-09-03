@@ -23,6 +23,10 @@ import {
   getHomeDir,
   isHomeDirectory,
   ensureWriteableDir,
+  GLOBAL_HOST_TARGETS,
+  getGlobalHostTargets,
+  resolveHostTargetPath,
+  projectSkillToTarget,
 } from './install-rules.js';
 import {
   MANIFEST_REL,
@@ -160,14 +164,15 @@ function readInstalledSkillsManifest() {
     // Legacy / bootstrap: if selected missing, treat all skills as roots.
     if (!selected) selected = [...skills];
     selected = selected.filter((s) => skills.includes(s)).sort((a, b) => a.localeCompare(b));
-    return { version: data.version || 1, updatedAt: data.updatedAt || null, skills, selected };
+    const globalTargets = Array.isArray(data.globalTargets) ? data.globalTargets : [];
+    return { version: data.version || 1, updatedAt: data.updatedAt || null, skills, selected, globalTargets };
   } catch {
     console.warn(`Warning: could not parse ${INSTALLED_SKILLS_FILE}; will rebootstrap.`);
     return null;
   }
 }
 
-function writeInstalledSkillsManifest(skillNames, selectedNames = null) {
+function writeInstalledSkillsManifest(skillNames, selectedNames = null, globalTargets = null) {
   const destShared = path.join(targetSkillsDir, HUB_DIR);
   ensureWriteableDir(destShared);
   const skills = [...new Set(skillNames.filter((s) => s && s !== HUB_DIR))].sort((a, b) =>
@@ -177,14 +182,19 @@ function writeInstalledSkillsManifest(skillNames, selectedNames = null) {
   const selected = [...new Set(selectedSource.filter((s) => skills.includes(s)))].sort((a, b) =>
     a.localeCompare(b)
   );
+  const existing = readInstalledSkillsManifest();
+  const effectiveTargets = globalTargets !== null
+    ? globalTargets
+    : (existing?.globalTargets || []);
   const payload = {
     version: 1,
     updatedAt: new Date().toISOString(),
     skills,
     selected,
+    ...(effectiveTargets.length > 0 ? { globalTargets: effectiveTargets } : {}),
   };
   fs.writeFileSync(installedSkillsManifestPath(), `${JSON.stringify(payload, null, 2)}\n`);
-  return { skills, selected };
+  return { skills, selected, globalTargets: effectiveTargets };
 }
 
 /**
@@ -196,6 +206,7 @@ function syncInstalledSkillsManifest({
   extraSelected = [],
   replaceWith = null,
   replaceSelected = null,
+  globalTargets = null,
 } = {}) {
   const existing = readInstalledSkillsManifest();
   let skills;
@@ -210,7 +221,74 @@ function syncInstalledSkillsManifest({
     skills = [...baseSkills, ...extraSkills];
     selected = [...baseSelected, ...extraSelected];
   }
-  return writeInstalledSkillsManifest(skills, selected);
+  return writeInstalledSkillsManifest(skills, selected, globalTargets);
+}
+
+/**
+ * Resolves secondary global host targets from CLI arguments or preset list.
+ * Excludes canonical target (~/.agents/skills) which is always the primary installation root.
+ */
+function resolveSecondaryTargets(targetsList, symlink = true) {
+  if (!isGlobalScope || !targetsList || targetsList.length === 0) return [];
+  const allHostTargets = getGlobalHostTargets();
+  const isAll = targetsList.some((t) => t.toLowerCase() === 'all');
+  const secondary = [];
+
+  for (const host of allHostTargets) {
+    if (host.id === 'canonical') continue;
+    if (isAll || targetsList.some((t) => t.toLowerCase() === host.id.toLowerCase())) {
+      secondary.push({
+        id: host.id,
+        name: host.name,
+        path: host.path,
+        symlink,
+      });
+    }
+  }
+
+  for (const raw of targetsList) {
+    const lower = raw.toLowerCase();
+    if (lower === 'all' || lower === 'canonical') continue;
+    if (!allHostTargets.some((h) => h.id.toLowerCase() === lower)) {
+      secondary.push({
+        id: path.basename(raw),
+        name: path.basename(raw),
+        path: path.resolve(raw),
+        symlink,
+      });
+    }
+  }
+  return secondary;
+}
+
+/**
+ * Projects installed skills to secondary global targets using symlinks/junctions (with copy fallback).
+ */
+function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
+  if (!Array.isArray(secondaryTargets) || secondaryTargets.length === 0) return;
+  console.log(`\nProjecting skills to ${secondaryTargets.length} secondary global target(s)...`);
+  for (const target of secondaryTargets) {
+    const targetPath = target.path;
+    const useSymlink = target.symlink !== false;
+    const typeLabel = useSymlink ? (process.platform === 'win32' ? 'junction' : 'symlink') : 'copy';
+    console.log(`  Target [${target.id}]: ${targetPath} (${typeLabel})`);
+    ensureWriteableDir(targetPath);
+
+    for (const skillName of skillNames) {
+      const srcSkill = path.join(targetSkillsDir, skillName);
+      const destSkill = path.join(targetPath, skillName);
+      if (!fs.existsSync(srcSkill)) continue;
+
+      const result = projectSkillToTarget(srcSkill, destSkill, {
+        symlink: useSymlink,
+        copyFn: (s, d) => syncManagedSkillDir(s, d),
+      });
+
+      if (result.fallback) {
+        console.log(`    Note: Symlink failed for '${skillName}' (${result.error}). Fell back to directory copy.`);
+      }
+    }
+  }
 }
 
 /**
@@ -554,15 +632,15 @@ function ensureSharedHubInstalled(mode = 'install') {
 
 /** Block installing into the source package itself (except test/ consumer). */
 function assertNotSelfOverwrite() {
-  const cwd = path.resolve(targetDir);
+  const dest = isGlobalScope ? resolveGlobalSkillsDir() : path.resolve(targetDir);
   const root = path.resolve(packageRoot);
 
-  if (!isBlockedInstallTarget(cwd, root)) return;
+  if (!isBlockedInstallTarget(dest, root)) return;
 
-  const sourceRoot = findWorkflowSkillsSourceRoot(cwd);
+  const sourceRoot = findWorkflowSkillsSourceRoot(dest);
   console.error('Error: Refusing to install into the workflow-skills source repository.');
   console.error(`  CLI package:  ${root}`);
-  console.error(`  Current dir:  ${cwd}`);
+  console.error(`  Current dir:  ${path.resolve(targetDir)}`);
   if (sourceRoot && sourceRoot !== root) {
     console.error(`  Detected upstream source root at: ${sourceRoot}`);
     console.error('  Remote npx cannot install into the canonical upstream repo.');
@@ -899,9 +977,13 @@ Curl shim (same argv; requires Node.js):
   curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/install-skills.sh | bash -s -- uninstall --skills ws-goal-fix-pr --yes
 
 Non-interactive install:
-  install --full|--package <key>|--skills <csv> [--yes] [--force-integrity]
+  install --full|--package <key>|--skills <csv> [--yes] [--force-integrity] [--global] [--targets <csv>] [--symlink|--no-symlink]
   --yes  Overwrite existing skill dirs without prompts; always preserves ws-shared/ consumer data
   --force-integrity  Unsafe: skip source/consumer integrity gates (still writes local record)
+  --global, -g       Install globally into user home directory (~/.agents/skills)
+  --targets <csv>    Global host targets: canonical, claude, codex, gemini, or custom paths
+  --symlink          Link secondary global targets via directory symlinks/junctions (default)
+  --no-symlink       Copy skill folders into secondary global targets instead of symlinking
   Non-TTY (CI/agents): --yes is required
 
 Non-interactive uninstall:
@@ -953,6 +1035,8 @@ function parseInstallArgs(args) {
   let packageKey = null;
   let skillCsv = null;
   let forceIntegrity = false;
+  let targets = null;
+  let symlink = true;
 
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i];
@@ -992,12 +1076,33 @@ function parseInstallArgs(args) {
       }
       continue;
     }
+    if (a === '--targets') {
+      const val = rest[++i];
+      if (!val) {
+        console.error('Error: --targets requires a comma-separated list of targets');
+        process.exit(1);
+      }
+      targets = val.split(',').map((s) => s.trim()).filter(Boolean);
+      continue;
+    }
+    if (a.startsWith('--targets=')) {
+      targets = a.slice('--targets='.length).split(',').map((s) => s.trim()).filter(Boolean);
+      continue;
+    }
+    if (a === '--symlink' || a === '--symlink=true') {
+      symlink = true;
+      continue;
+    }
+    if (a === '--no-symlink' || a === '--symlink=false') {
+      symlink = false;
+      continue;
+    }
     if (a === '--help' || a === '-h') {
       printHelp();
       process.exit(0);
     }
     console.error(`Error: Unknown install argument: ${a}`);
-    console.error('Use: install --full|--package <key>|--skills <csv> [--yes] [--force-integrity]');
+    console.error('Use: install --full|--package <key>|--skills <csv> [--yes] [--force-integrity] [--targets <csv>] [--symlink|--no-symlink]');
     process.exit(1);
   }
 
@@ -1029,7 +1134,7 @@ function parseInstallArgs(args) {
     }
   }
 
-  return { yes, full, packageKey, skillNames, forceIntegrity };
+  return { yes, full, packageKey, skillNames, forceIntegrity, targets, symlink };
 }
 
 function buildSelectedFromInstallOpts(skills, opts) {
@@ -1053,7 +1158,11 @@ function buildSelectedFromInstallOpts(skills, opts) {
 }
 
 /** Shared post-selection install: copy skills and ws-shared hub. */
-function installSelectedSkills(skills, selectedNames, { overwrite, forceIntegrity = false }) {
+function installSelectedSkills(
+  skills,
+  selectedNames,
+  { overwrite, forceIntegrity = false, secondaryTargets = [] }
+) {
   let installedCount = 0;
   let hubEnsured = false;
   const includeHub = willIncludeHub(selectedNames);
@@ -1102,6 +1211,7 @@ function installSelectedSkills(skills, selectedNames, { overwrite, forceIntegrit
   syncInstalledSkillsManifest({
     extraSkills: selectedNames,
     extraSelected: roots,
+    globalTargets: secondaryTargets.length > 0 ? secondaryTargets : undefined,
   });
 
   // Post-verify the skills that were selected (closure), including skipped-overwrite
@@ -1114,6 +1224,14 @@ function installSelectedSkills(skills, selectedNames, { overwrite, forceIntegrit
     force: forceIntegrity,
     manifest,
   });
+
+  if (secondaryTargets.length > 0) {
+    const skillsToProject = [...selectedNames];
+    if (fs.existsSync(path.join(targetSkillsDir, HUB_DIR))) {
+      skillsToProject.push(HUB_DIR);
+    }
+    projectSkillsToSecondaryTargets(skillsToProject, secondaryTargets);
+  }
 
   return installedCount;
 }
@@ -1178,9 +1296,11 @@ async function runInstall(skills, opts) {
     }
   }
 
+  const secondaryTargets = resolveSecondaryTargets(opts.targets, opts.symlink);
   const installedCount = installSelectedSkills(skills, selectedNames, {
     overwrite,
     forceIntegrity: !!opts.forceIntegrity,
+    secondaryTargets,
   });
 
   console.log('');
@@ -1306,8 +1426,24 @@ async function main() {
     }
     const includeNew = args.includes('--include-new');
     const forceIntegrity = args.includes('--force-integrity');
+    const updateOpts = {};
+    for (let i = 1; i < args.length; i++) {
+      const a = args[i];
+      if (a === '--global' || a === '-g') setScope(true);
+      if (a === '--project' || a === '-p') setScope(false);
+      if (a === '--targets') {
+        const val = args[++i];
+        if (val) updateOpts.targets = val.split(',').map((s) => s.trim()).filter(Boolean);
+      } else if (a.startsWith('--targets=')) {
+        updateOpts.targets = a.slice('--targets='.length).split(',').map((s) => s.trim()).filter(Boolean);
+      } else if (a === '--no-symlink' || a === '--symlink=false') {
+        updateOpts.symlink = false;
+      } else if (a === '--symlink' || a === '--symlink=true') {
+        updateOpts.symlink = true;
+      }
+    }
     assertNotSelfOverwrite();
-    runUpdate(skills, includeNew, forceIntegrity);
+    runUpdate(skills, includeNew, forceIntegrity, updateOpts);
   } else {
     const forceIntegrity = args.includes('--force-integrity');
     assertNotSelfOverwrite();
@@ -1458,7 +1594,7 @@ async function runUninstall(_upstreamSkills, argv) {
   process.exit(0);
 }
 
-function runUpdate(skills, includeNew, forceIntegrity = false) {
+function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts = {}) {
   console.log('============================================================');
   console.log('  Workflow Skills - Auto Updater');
   console.log('============================================================');
@@ -1579,6 +1715,21 @@ function runUpdate(skills, includeNew, forceIntegrity = false) {
     });
   }
 
+  // AC7: Synchronize secondary global targets recorded in manifest or specified via --targets
+  if (isGlobalScope) {
+    const targetsToSync = (updateOpts.targets && updateOpts.targets.length > 0)
+      ? resolveSecondaryTargets(updateOpts.targets, updateOpts.symlink !== false)
+      : (afterManifest?.globalTargets || []);
+
+    if (targetsToSync.length > 0) {
+      const skillsToProject = [
+        ...(afterManifest?.skills || existingSkills),
+        ...(fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? [HUB_DIR] : []),
+      ];
+      projectSkillsToSecondaryTargets(skillsToProject, targetsToSync);
+    }
+  }
+
   console.log('\nUpdate complete!');
   console.log(`Note: Existing '${CONFIG_FILE}' and ws-shared/ consumer files were preserved and NOT overwritten.`);
   console.log(
@@ -1622,6 +1773,62 @@ async function runInteractive(skills, forceIntegrity = false) {
         }
       }
       console.log('');
+    }
+  }
+
+  let interactiveSecondaryTargets = [];
+  if (isGlobalScope && process.stdin.isTTY) {
+    const hostTargets = getGlobalHostTargets();
+    const secondaryList = hostTargets.filter((t) => t.id !== 'canonical');
+    const targetSelected = new Array(secondaryList.length).fill(false);
+
+    while (true) {
+      console.log('Select agent host targets to install into:');
+      console.log('  [x] 1) Canonical Agents (~/.agents/skills) [Default / Primary]');
+      for (let i = 0; i < secondaryList.length; i++) {
+        const mark = targetSelected[i] ? 'x' : ' ';
+        const t = secondaryList[i];
+        console.log(`  [${mark}] ${i + 2}) ${t.name} (~/${t.subpath.replace(/\\/g, '/')})`);
+      }
+      console.log('');
+      const ans = (await rl.question("Toggle targets (2-4), 'a' for all, or press Enter to continue [Default: 1]: ")).trim().toLowerCase();
+      if (!ans) break;
+      if (ans === 'a') {
+        const allOn = targetSelected.every(Boolean);
+        targetSelected.fill(!allOn);
+      } else {
+        const parts = ans.split(/[\s,]+/);
+        for (const p of parts) {
+          const num = parseInt(p, 10);
+          if (num >= 2 && num <= secondaryList.length + 1) {
+            targetSelected[num - 2] = !targetSelected[num - 2];
+          }
+        }
+      }
+      console.log('');
+    }
+
+    const anySecondary = targetSelected.some(Boolean);
+    let useSymlink = true;
+    if (anySecondary) {
+      console.log('Link secondary targets to canonical skills root via directory symlinks/junctions?');
+      console.log('  1) Symlinks / Junctions (Recommended — zero duplicate disk space, auto-sync) [Default]');
+      console.log('  2) Direct Copy (Independent full copies of skill folders)');
+      const linkAns = (await rl.question('Choice (1 or 2, default 1): ')).trim();
+      if (linkAns === '2') {
+        useSymlink = false;
+      }
+      console.log('');
+      for (let i = 0; i < secondaryList.length; i++) {
+        if (targetSelected[i]) {
+          interactiveSecondaryTargets.push({
+            id: secondaryList[i].id,
+            name: secondaryList[i].name,
+            path: secondaryList[i].path,
+            symlink: useSymlink,
+          });
+        }
+      }
     }
   }
 
@@ -1715,6 +1922,7 @@ async function runInteractive(skills, forceIntegrity = false) {
   const installedCount = installSelectedSkills(skills, selectedNames, {
     overwrite,
     forceIntegrity,
+    secondaryTargets: interactiveSecondaryTargets,
   });
 
   console.log('');

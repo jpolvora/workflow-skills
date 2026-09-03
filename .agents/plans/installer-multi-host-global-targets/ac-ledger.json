@@ -1,0 +1,572 @@
+{
+  "schemaVersion": 1,
+  "revision": 7,
+  "workflowId": "installer-multi-host-global-targets",
+  "slug": "installer-multi-host-global-targets",
+  "specPath": ".agents/plans/installer-multi-host-global-targets/step-00-installer-multi-host-global-targets.spec.md",
+  "planIndexPath": ".agents/plans/installer-multi-host-global-targets/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Define a registry of standard global host skill targets in bin/install-rules.js including canonical .agents, Claude Code, OpenAI Codex, and Gemini Antigravity paths.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.061Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Present a multi-target selection prompt during interactive global installation before the package selection screen with canonical .agents checked by default.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.064Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Provide an interactive choice for linking secondary targets to the canonical global skills root via directory symlinks or junctions with fallback to direct copy.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.066Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Implement individual per-skill directory symlinks for secondary targets to prevent overwriting pre-existing third-party skills in those directories.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.068Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Ensure assertNotSelfOverwrite evaluates the resolved installation target path rather than working directory when global scope is active.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.070Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Add non-interactive CLI flags --targets and --symlink allowing scriptable specification of secondary global host destinations.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.071Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Update the update command to synchronize both canonical skills and all linked or copied secondary host targets recorded in the global manifest.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.073Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Provide automated tests in test/test-install.js verifying multi-target global installation, symlink creation, copy fallback, and non-interactive target flags.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L634-L655",
+        "bin/install-rules.js:L267-L375",
+        "test/test-install.js:L2296-L2470"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 634,
+          "lineEnd": 655,
+          "sha256": "8965e6ce76b5e23c26a313fa4402f57f0384813d5e4074cfe65bff3ba93a383a"
+        },
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 267,
+          "lineEnd": 375,
+          "sha256": "adfaca24fa626b49b4b462f72cadc6da93de3faf6ff82da0eddd84dfef2d062d"
+        },
+        {
+          "path": "test/test-install.js",
+          "lineStart": 2296,
+          "lineEnd": 2470,
+          "sha256": "e37cd95f07a0531f1757a37865d29536dc10670ff0febccbe10869c18e9de69c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a0873454",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.075Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-imp-step4",
+        "evt-product-commit-step5"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Symlink permission failure test: when symlink creation throws an `EPERM` error, the installer catches the exception, logs a fallback notice, and successfully completes via direct folder copy.",
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.075Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-imp-step4"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Pre-existing non-workflow skill protection: when a secondary target directory contains an unrelated skill (e.g. `atividades`), installing workflow skills does not overwrite, delete, or hide the existing skill.",
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.075Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-imp-step4"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Self-overwrite protection remains intact for project-local scope: executing project-local install (`--project`) inside the source repository still aborts with `Refusing to install into the workflow-skills source repository`.",
+      "tests": [
+        {
+          "name": "[Phase 12] Multi-host global targets, symlink strategy, and self-overwrite guard",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T11:17:49.076Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-imp-step4"
+      ]
+    }
+  ],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 80,
+    "totalUnits": 80,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-09-03T11:19:21.573Z"
+  }
+}

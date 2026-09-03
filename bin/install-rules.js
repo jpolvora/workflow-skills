@@ -261,3 +261,118 @@ export function resolveTargetSkillsDir(options = {}) {
   return path.join(baseDir, '.agents', 'skills');
 }
 
+/**
+ * Standard global host skill target definitions.
+ */
+export const GLOBAL_HOST_TARGETS = [
+  {
+    id: 'canonical',
+    name: 'Canonical Agents',
+    subpath: path.join('.agents', 'skills'),
+    defaultSelected: true,
+    description: 'Cursor, OpenCode, Codex, and portable agents (~/.agents/skills)',
+  },
+  {
+    id: 'claude',
+    name: 'Claude Code',
+    subpath: path.join('.claude', 'skills'),
+    defaultSelected: false,
+    description: 'Claude Code user skills (~/.claude/skills)',
+  },
+  {
+    id: 'codex',
+    name: 'OpenAI Codex',
+    subpath: path.join('.codex', 'skills'),
+    defaultSelected: false,
+    description: 'OpenAI Codex / GPT agent skills (~/.codex/skills)',
+  },
+  {
+    id: 'gemini',
+    name: 'Gemini CLI / Antigravity IDE',
+    subpath: path.join('.gemini', 'config', 'skills'),
+    defaultSelected: false,
+    description: 'Gemini CLI & Antigravity IDE global customizations (~/.gemini/config/skills)',
+  },
+];
+
+/**
+ * Returns the list of standard global host targets with absolute paths resolved against homeDir.
+ * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
+ * @returns {Array<{ id: string, name: string, subpath: string, path: string, defaultSelected: boolean, description: string }>}
+ */
+export function getGlobalHostTargets(homeDir = getHomeDir()) {
+  return GLOBAL_HOST_TARGETS.map((t) => ({
+    ...t,
+    path: path.join(homeDir, t.subpath),
+  }));
+}
+
+/**
+ * Resolves a target identifier or custom path to an absolute path.
+ * @param {string} idOrPath - Target ID ('canonical', 'claude', 'codex', 'gemini') or custom path
+ * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
+ * @returns {string} Absolute path to resolved target directory
+ */
+export function resolveHostTargetPath(idOrPath, homeDir = getHomeDir()) {
+  const match = GLOBAL_HOST_TARGETS.find((t) => t.id === idOrPath.toLowerCase().trim());
+  if (match) {
+    return path.join(homeDir, match.subpath);
+  }
+  return path.resolve(idOrPath);
+}
+
+function simpleCopyDir(src, dest) {
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      simpleCopyDir(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+/**
+ * Projects a single skill directory from canonical location to a secondary target
+ * via directory symlink (junction on Windows, dir on POSIX) with graceful fallback to copy.
+ * @param {string} srcSkillPath - Absolute path to skill in canonical global root
+ * @param {string} destSkillPath - Absolute path to skill destination in secondary target root
+ * @param {Object} [options]
+ * @param {boolean} [options.symlink] - Whether to attempt symlink creation (default true)
+ * @param {Function} [options.copyFn] - Custom copy function (default simple recursive copy)
+ * @returns {{ mode: 'symlink' | 'copy', fallback: boolean, error?: string }}
+ */
+export function projectSkillToTarget(srcSkillPath, destSkillPath, options = {}) {
+  const useSymlink = options.symlink !== false;
+  const copyFn = typeof options.copyFn === 'function' ? options.copyFn : simpleCopyDir;
+
+  ensureWriteableDir(path.dirname(destSkillPath));
+
+  if (fs.existsSync(destSkillPath)) {
+    try {
+      fs.rmSync(destSkillPath, { recursive: true, force: true });
+    } catch {
+      /* ignore */
+    }
+  }
+
+  if (useSymlink) {
+    try {
+      const type = process.platform === 'win32' ? 'junction' : 'dir';
+      fs.symlinkSync(srcSkillPath, destSkillPath, type);
+      return { mode: 'symlink', fallback: false };
+    } catch (err) {
+      copyFn(srcSkillPath, destSkillPath);
+      return { mode: 'copy', fallback: true, error: err.message };
+    }
+  } else {
+    copyFn(srcSkillPath, destSkillPath);
+    return { mode: 'copy', fallback: false };
+  }
+}
+
