@@ -93,6 +93,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    | `branch` | `{branch}` |
    | `baseBranch` | `{baseBranch}` |
    ```
+   When `autoMode` is true, append one line immediately after the table: `autoMode: gates automatic; FSM 0→9 intact; no product code until Step 4 after plan artifacts exist on disk.`
    Write this block immediately after flag parsing, before auto-resume. Applies in all modes (normal, auto, dry-run). In `dryRun`, prefix with `[DRY-RUN]`.
 4. **Auto resume** or **Active Resume** (see [Resume / reset](#resume--reset)).
 5. **Identity**: `workflow-id`, `slug`, `us-dir`.
@@ -114,6 +115,8 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    Never `git reset`, never `git branch -D`, never overwrite an existing feature branch. Re-run the same local + `ls-remote` check on a user-entered alternate name before any `git checkout -b {name}`. If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), STOP and `user-gate`: **Retry** / **Proceed with local check only** / **Cancel (HS-1)**. Never infer "branch absent" from a failed `ls-remote`.
 
    **`autoMode`:** no `user-gate`. If `{currentBranch}` is `HEAD` (detached): do **not** stay — if `feat/{slug}` exists locally or `ls-remote` shows it, check it out (`checkout-existing`; fetch first when the name is remote-only, per the table below); else create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`). If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), fall back to **local check only**: create `feat/{slug}` from HEAD only when `git branch --list feat/{slug}` is empty, and log `branch-gate | auto | local-check-only | {branch} | ISO`; never infer "branch absent" from a failed `ls-remote`. Never persist the literal `HEAD` as `state.branch`. Otherwise **stay** on current HEAD (no git mutation), `branchStrategy: stay`. Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|checkout-existing|local-check-only | {branch} | ISO`.
+
+   **Child slug on existing parent branch:** when the workflow slug is a child bug/task id and HEAD is already on a parent feature branch (e.g. `feat/{parent}`), that does not waive Steps 1–3 for the **child slug** — run the full planning chain unless the user explicitly overrides.
 
    **`dryRun`:** prefix `[DRY-RUN]`; show the gate choices (or auto default) and the git commands that **would** run; **no ref mutation** (do not run `git checkout -b`, `git checkout`, or `git fetch`).
 

@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.3.59
+version: 0.3.60
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -42,6 +42,17 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 3. **Isolation:** Subagent per step. Checkpoint tag `uswf/{id}/before-step-{N}`. Branch-direct default; worktree when `plans.useWorktrees=true`.
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `{workflow-id}.state.json` is machine SoT (`.state.md` is the render); `{sharedDir}/MEMORY.md` generalizable.
 5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` (numeric + `dag` / `scoreAndRefine` / `reviewFix` / `fixPrPlan` / `fixPrExec`), and legacy phase keys — pass the resolved id on `dispatch-agent` and `--model` / `--substep` to `update_state.cjs`. Step 7: `testingModel` → `executionModel` → session after overrides; `reviewerModel` is Steps 5–6 only. Internal Step 9 roles resolve `fixPrPlan` → `reviewerModel` and `fixPrExec` → `executionModel`, never numeric `"9"`; capture the session fallback before either dispatch, append both ordered dispatch events, and let only the outer Step 9 call `finish`. **Config switches (not invocation flags):** `defaults.enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `defaults.verboseMode` (explicit `true` → executing model reasons and prints a start-of-step `*` list; omitted/`false` → silent; schema/`ws-configure-project` seed writes `true`); `defaults.providerCompat` (optional host hints only); `defaults.contextHygiene` (`pruneAfterStep` default true; `backgroundVerboseSteps` falls back to blocking `dispatch-agent`); `defaults.reviewJury.size` 1–3 (size > 1 is standard Step 6 only).
+
+### autoMode ≠ skip planning
+
+| Does | Never |
+|------|-------|
+| Auto-select recommended gate option (index 0) at every boundary | Skip Steps 1–3 |
+| Proceed continuously across step boundaries (no One Step Per Turn halt) | Edit product code before `step-01-*.plan.md` and other advance-to-4 artifacts exist on disk |
+| | Ignore classifier `runInterview` / `execMode` to waive planning |
+| | Treat an existing parent feature branch plus a child slug as a planning waiver |
+
+First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `validate_state.cjs --pre-advance 4` exits 0, unless `--skip-gates` / `skipQualityGates` is active (omit the pre-advance and log `gate-bypass | pre-advance` per [`gates.md`](../ws-shared/gates.md) § Quality gate bypass). Bypass does **not** weaken autoMode ≠ skip planning. Guard failure → **HS-5** STOP — no product-file edits, no Step 4 dispatch.
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Product G2-code after Step 5 and after Step 6 review-fix uses path-scoped `files_touched` only. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
 7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset. **Resume pre-check (AC9):** on resume, before re-implementing, resolve `{integrationBranch}` = `config.project.workingBranch` when set, else `{baseBranch}`; if `{gitRemote}` exists, run `git fetch {gitRemote} {integrationBranch}` first (auth/network failure → skip-check `fetch-failed`, proceed, never mark completed); then run `git rev-list --count origin/{integrationBranch}..HEAD` (do **not** compare only to `origin/{baseBranch}` when `workingBranch` is set — stale tips merged into `develop` can still be ahead of `main`). Count `0` → mark `completed` (already merged) **only when** the workflow has product commits (`state.commits` non-empty or Step 5 in `completedSteps`) **and** `HEAD` ≠ `baselineCommit`; bare `0` on a branch that never committed is pre-first-commit resume — proceed normally. When `state.branch` equals `{integrationBranch}` (stay-on-integration), skip the count, log `resume-gate | skip-check | stay-on-integration | {branch} vs {integrationBranch} | ISO`, and proceed (do **not** mark completed). Skip-check when `origin/{integrationBranch}` is unavailable (see [`setup.md`](../ws-shared/setup.md) §4c).
 8. **Reproducible-artifact invariant (AC6):** every step artifact a later step reads must be reconstructable from state + committed diff, enforced by the pre-advance `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance <N>` check: if a required artifact or its metadata for advancing to step N is missing, validation exits non-zero and advance is blocked (fail closed).

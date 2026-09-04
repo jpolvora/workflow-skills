@@ -105,6 +105,8 @@ In-flight resume: backfill `plan.index.json` / `ac-ledger.json` before validate.
 | exit 0 | Continue → Progress Board → Transition Gate → dispatch N+1 |
 | exit ≠ 0 | **HS-5** — STOP; no board, no gate, no dispatch |
 
+**Step 4 pre-dispatch (standard only):** Before the first Step 4 `dispatch-agent`, unless `--skip-gates` / `skipQualityGates` is active (see Bypass below), run `--pre-advance 4` even when jumping from an incomplete planning state — post-step `{N+1}` hygiene does not cover a direct implement attempt. Exit ≠ 0 → **HS-5** STOP; no product edits; no Step 4 dispatch.
+
 **Bypass (this gate only):** When `--skip-gates` or `skipQualityGates` is active, skip this shell call. Record bypass with `update_state.cjs bypass --gate pre-advance --reason skip-gates`. Does not bypass build/test/security, HS-1–HS-4, or other quality gates.
 
 Fail hygiene or pre-advance → **HS-5** (STOP before Progress Board).
