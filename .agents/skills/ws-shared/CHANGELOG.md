@@ -1,5 +1,42 @@
 # Changelog
 
+### [2026-09-04 14:55] Agent: Cursor Grok 4.6
+- **Prompt**: implement 0063-ws-megabrain, bump, ship
+- **Done**: Spec aligned to companion-load + autoload; skill + specialists; workflows deps; Always-applied; catalog/README/FEATURES
+- **Result**: Ready for 0.3.61 bump, integrity, tests, PR
+
+### [2026-09-04 14:50] Agent: Cursor Grok 4.6
+### [2026-09-04 14:50] Agent: Cursor Grok 4.6
+- **Prompt**: copy fable-method loop into ws-megabrain; no external skill deps
+- **Done**: Steps Analyze/Act/Verify/Report in SKILL.md; specialists no longer hand off to other `ws-*`; deps `[]`; spec AC20
+- **Result**: Megabrain executes the chosen slice itself after the gate
+
+### [2026-09-04 14:45] Agent: Cursor Grok 4.6
+- **Prompt**: add reverse engineering specialist to ws-megabrain
+- **Done**: `references/REVERSE.md` (in-tree archaeology); SKILL.md domain row `reverse`; spec AC19
+- **Result**: Kind `reverse` loads after the gate; third-party product raids stay out of scope
+
+### [2026-09-04 14:40] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-spec-write` `/ws-write-a-skill` ws-megabrain plus specialist domain personas (DEVELOPMENT, DDD, …)
+- **Done**: Router `ws-megabrain/SKILL.md`; five `references/*.md` specialists; spec `0063-ws-megabrain.spec.md` (18 ACs, authoring PASS); registered in workflows deps + catalogs
+- **Result**: Invoke `/ws-megabrain` → scan/gate → Read ≤2 specialists → one downstream skill
+
+### [2026-09-03 23:10] Agent: Cursor Grok 4.6
+### [2026-09-03 23:10] Agent: Cursor Grok 4.6
+- **Prompt**: bump, commit, push, goal loop fix-pr
+- **Done**: Bumped 0.3.60; Fix-PR round 1 for PR 276 aligned skipQualityGates omit of `--pre-advance 4`, required completed Step 1, added missing-refined and skip-step-1 tests
+- **Result**: PR 276 green (review + tests), `activeThreads: []`, mergeable; not merged (Fix-PR does not merge)
+
+### [2026-09-03 22:50] Agent: Cursor Grok 4.6
+- **Prompt**: `/ws-spec-to-pr .agents/specs/0062-us-275.spec.md full auto ws-ship`
+- **Done**: Planned Steps 0–3 then fail-closed `--pre-advance 4`; implemented autoMode ≠ skip-planning docs + `validateSnapshot` HS-5; verify 10/10; G2-code `cd95e7f7`; review clean; tests green
+- **Result**: Implementation ready for close + PR develop→main for GitHub issue 275
+
+### [2026-09-03 13:42] Agent: Composer 2.5
+- **Prompt**: Step 8 close + ship for us-272 (retired skill-id migration on installer update + hybrid harness fallback)
+- **Done**: Wrote step-08 delivery result (Timing 38m 16s, +327/-14); G2-delivery commit `64465777` (refined plan only); MEMORY trap `2026-09-03-npm-pack-json-envelope.md` + compile; shipped develop→main PR with issue #272 close-loop comment
+- **Result**: Implementation closed, shipStatus pending; Step 9 owns fix-pr convergence (no merge)
+
 ### [2026-09-03 09:15] Agent: Cursor Grok 4.6
 - **Prompt**: Fix `{plansDir}/index.json` so `updatedAt` changes only for the workflow being updated, not every `workflows[]` row
 - **Done**: `rebuildIndex` now derives each row `updatedAt` from that workflow's state activity; `updatePlansIndex` already upserted one `workflowId`; contract test covers sibling preservation plus rebuild

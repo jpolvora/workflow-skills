@@ -81,6 +81,7 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',
+    'ws-megabrain',
   ];
   if (withLocalSkills) {
     for (const id of skills) {
@@ -182,6 +183,7 @@ function parseJsonOut(result) {
     'ws-changelog',
     'ws-fable-method',
     'ws-tdah',
+    'ws-megabrain',
   ]) {
     const d = path.join(globalRoot, id);
     fs.mkdirSync(d, { recursive: true });

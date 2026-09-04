@@ -19,6 +19,7 @@ When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unl
 | `ws-changelog` | `{skillsRoot}/ws-changelog/SKILL.md` | Every task completion — append-only history |
 | `ws-fable-method` | `{skillsRoot}/ws-fable-method/SKILL.md` | Every prompt — structured investigate/act/verify when non-trivial |
 | `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
+| `ws-megabrain` | `{skillsRoot}/ws-megabrain/SKILL.md` | Every prompt — vibe-coding implementer (no spec required); defer when orch owns the session |
 | `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start / working memory — off-repo vault memory via spec-memo MCP |
 | `ws-session-tracking` | `{skillsRoot}/ws-session-tracking/SKILL.md` | Every session — prompt turns, task boundaries & deliverable tracking |
 | `ws-spec-memo` | `{skillsRoot}/ws-spec-memo/SKILL.md` | Config preflight & bridge — wire config.json memory backends & hybrid fallback |
@@ -33,7 +34,8 @@ Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win
 4. `ws-senior-developer` (delivery gate + Code review proof; opt out `stop ws-senior-developer`)
 5. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
 6. `ws-tdah` (reply shape; does not override senior proof depth)
-7. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
+7. `ws-megabrain` (vibe implementer; **consumes** fable — do not duplicate the loop; **defer** when orch owns the session; opt out `stop ws-megabrain`)
+8. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
 
 **Fable vs senior (single rule):** Orch or confirmed senior plan → no fable Plan-First / competing plan ceremony. Fable Verify does not replace senior Code review proof.
 
@@ -82,6 +84,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Resolve spec-of-record path or organize/prefix existing specs chronologically | [`ws-spec-organizer`](../ws-spec-organizer/SKILL.md) | Does not reformulate requirements (that is spec-write); does not edit index.PRD status |
 | Spec text drifted from implemented code after prompts | [`ws-spec-update`](../ws-spec-update/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
 | Prompt-driven product work (not Spec-to-PR) | [`ws-task-lifecycle`](../ws-task-lifecycle/SKILL.md) | Does not mkdir `{plansDir}` or write `step-00`; does not invoke spec-to-pr / lite |
+| Vibe-coding implement / what-next / plan or research without a spec | [`ws-megabrain`](../ws-megabrain/SKILL.md) | Does not replace spec-to-pr; defers when orch owns the session |
 | Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
 | Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
 | Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
@@ -103,6 +106,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | resolve spec path, organize specs, prefix specs NNNN, spec-organizer, enforceSpecPrefixOrdering | `ws-spec-organizer` |
 | sync spec to code, spec drift, update AC after code change | `ws-spec-update` |
 | prompt-driven task, task lifecycle, cowork without spec-to-pr | `ws-task-lifecycle` |
+| vibe coding, megabrain, implement without spec, what next | `ws-megabrain` |
 | spec to pr, full pipeline, standard orch | `ws-spec-to-pr` |
 | lite / fast spec to pr | `ws-spec-to-pr-lite` |
 | classify complexity, lite or standard? | `ws-classify-complexity` |
