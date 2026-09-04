@@ -923,4 +923,161 @@ Dogfood: plan must exist before product-path edits outside {plansDir}.
   assert.match(err, /HS-5/, 'pre-advance 4 stderr includes HS-5 token');
 }
 
+// PR 276 — Step 2 completed, Step 3 dag-disabled, no refined plan → pre-advance 4 fails
+{
+  const pa4Root = temp('ws-state-pa4-norefined-');
+  const slug = 'pa4noref';
+  const workflowId = 'wf-pa4noref';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(pa4Root, '.agents/plans', slug);
+  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  write(path.join(pa4Root, stateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 3
+completedSteps: [0, 1, 2]
+skippedSteps: [{step: 3, reason: dag-disabled}]
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  write(path.join(usDir, `step-00-${slug}.spec.md`), `---
+id: null
+slug: ${slug}
+title: Missing refined plan
+source: local
+specDate: 2026-09-03
+step: 0
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+## Description
+Interview completed requires refined plan before implement.
+## Acceptance Criteria
+- AC1: Guard names missing refined plan.
+`);
+  write(path.join(usDir, `step-01-${slug}.plan.md`), `---
+step: 1
+slug: ${slug}
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+# Plan
+
+## Work
+
+T00 implements AC1 in \`src/noref.js\` with V1:noref-test.
+`);
+  write(path.join(usDir, 'ac-ledger.json'), JSON.stringify({
+    schemaVersion: 1,
+    revision: 1,
+    workflowId,
+    slug,
+    specPath: `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+    planIndexPath: null,
+    declaredGaps: [],
+    aliasResults: [],
+    testingSkip: null,
+    acceptanceCriteria: [{ id: 'AC1', text: 'Guard names missing refined plan.', status: 'Pending', evidence: [], tasks: [], planSections: [], files: [], commits: [], tests: [], verdicts: [], findings: [], sabotage: { required: false, status: 'not-required', exitCode: null }, linkEventIds: [] }],
+    scoreState: null,
+  }));
+  assert.strictEqual(run(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/plan_index.cjs'), [
+    'build', '--plan', `.agents/plans/${slug}/step-01-${slug}.plan.md`, '--spec', `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+    '--output', `.agents/plans/${slug}/plan.index.json`, '--repo-root', pa4Root,
+  ]).status, 0);
+  assert.strictEqual(run(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/write_sequential_dag.cjs'), [
+    '--slug', slug, '--workflow-id', workflowId, '--plan', `.agents/plans/${slug}/step-01-${slug}.plan.md`,
+    '--exec-out', `.agents/plans/${slug}/step-03-${slug}.plan.exec.md`,
+    '--dag-out', `.agents/plans/${slug}/step-03-${slug}.exec.dag.json`,
+    '--timestamp', '2026-08-21T20:00:10.000Z', '--repo-root', pa4Root,
+  ]).status, 0);
+  const failRefined = run(validate, [stateRel, '--pre-advance', '4', '--repo-root', pa4Root]);
+  assert.notStrictEqual(failRefined.status, 0, 'pre-advance 4 rejects completed Step 2 without refined plan');
+  assert.match(`${failRefined.stdout}${failRefined.stderr}`, /step-02-.*\.plan\.refined\.md/, 'pre-advance 4 stderr names missing refined plan');
+}
+
+// PR 276 — skipped Step 1 is not enough for --pre-advance 4
+{
+  const pa4Root = temp('ws-state-pa4-skip1-');
+  const slug = 'pa4skip1';
+  const workflowId = 'wf-pa4skip1';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(pa4Root, '.agents/plans', slug);
+  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  write(path.join(pa4Root, stateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 1
+completedSteps: [0]
+skippedSteps: [{step: 1, reason: dag-disabled}]
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  write(path.join(usDir, `step-00-${slug}.spec.md`), `---
+id: null
+slug: ${slug}
+title: Skip step 1 blocked
+source: local
+specDate: 2026-09-03
+step: 0
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+## Description
+Step 1 skip cannot waive plan-of-record.
+## Acceptance Criteria
+- AC1: Guard requires completed Step 1.
+`);
+  write(path.join(usDir, 'ac-ledger.json'), JSON.stringify({
+    schemaVersion: 1,
+    revision: 1,
+    workflowId,
+    slug,
+    specPath: `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+    planIndexPath: null,
+    declaredGaps: [],
+    aliasResults: [],
+    testingSkip: null,
+    acceptanceCriteria: [{ id: 'AC1', text: 'Guard requires completed Step 1.', status: 'Pending', evidence: [], tasks: [], planSections: [], files: [], commits: [], tests: [], verdicts: [], findings: [], sabotage: { required: false, status: 'not-required', exitCode: null }, linkEventIds: [] }],
+    scoreState: null,
+  }));
+  const failSkip1 = run(validate, [stateRel, '--pre-advance', '4', '--repo-root', pa4Root]);
+  assert.notStrictEqual(failSkip1.status, 0, 'pre-advance 4 rejects skipped Step 1');
+  assert.match(`${failSkip1.stdout}${failSkip1.stderr}`, /step 1 must be completed before implement/);
+}
+
 console.log('test-workflow-state-contract: ok');

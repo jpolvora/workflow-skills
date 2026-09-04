@@ -1276,11 +1276,11 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
       const slug = state.slug || state.us;
       const usDir = path.dirname(mdPath);
       const step2Reason = skippedReason(state, 2);
+      if (!stepCompleted(state, 1)) {
+        errors.push('step 1 must be completed before implement');
+      }
       if (!stepCompleted(state, 2) && step2Reason !== 'interview-not-required') {
         errors.push('step 2 must be completed or skipped with reason interview-not-required before implement');
-      }
-      if (!stepCompleted(state, 1) && !stepSkipped(state, 1)) {
-        errors.push('step 1 must be completed or skipped before implement');
       }
       const step3Reason = skippedReason(state, 3);
       if (!stepCompleted(state, 3) && step3Reason !== 'dag-disabled') {
