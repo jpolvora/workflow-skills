@@ -858,4 +858,69 @@ acImplemented: 0
   assert.strictEqual(updatedPayload.summary, 'Updated subagent summary', 'non-identical replay updates handoff summary');
 }
 
+// AC6 / NS1 — autoMode + standard + Step 0 only → pre-advance 4 fails (no plan → no code)
+{
+  const pa4Root = temp('ws-state-pa4-missing-');
+  const slug = 'pa4miss';
+  const workflowId = 'wf-pa4miss';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(pa4Root, '.agents/plans', slug);
+  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  write(path.join(pa4Root, stateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  write(path.join(usDir, `step-00-${slug}.spec.md`), `---
+id: null
+slug: ${slug}
+title: Missing plan guard
+source: local
+specDate: 2026-09-03
+step: 0
+workflowId: ${workflowId}
+---
+## Description
+Dogfood: plan must exist before product-path edits outside {plansDir}.
+## Acceptance Criteria
+- AC1: Guard blocks implement without step-01.
+`);
+  write(path.join(usDir, 'ac-ledger.json'), JSON.stringify({
+    schemaVersion: 1,
+    revision: 1,
+    workflowId,
+    slug,
+    specPath: `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+    planIndexPath: null,
+    declaredGaps: [],
+    aliasResults: [],
+    testingSkip: null,
+    acceptanceCriteria: [{ id: 'AC1', text: 'Guard blocks implement without step-01.', status: 'Pending', evidence: [], tasks: [], planSections: [], files: [], commits: [], tests: [], verdicts: [], findings: [], sabotage: { required: false, status: 'not-required', exitCode: null }, linkEventIds: [] }],
+    scoreState: null,
+  }));
+  const fail = run(validate, [stateRel, '--pre-advance', '4', '--repo-root', pa4Root]);
+  assert.notStrictEqual(fail.status, 0, 'pre-advance 4 rejects Step 0-only autoMode standard workflow');
+  const err = `${fail.stdout}${fail.stderr}`;
+  assert.match(err, /step-01.*\.plan\.md/, 'pre-advance 4 stderr names missing step-01 plan');
+  assert.match(err, /plan\.index\.json/, 'pre-advance 4 stderr names missing plan.index.json');
+  assert.match(err, /HS-5/, 'pre-advance 4 stderr includes HS-5 token');
+}
+
 console.log('test-workflow-state-contract: ok');

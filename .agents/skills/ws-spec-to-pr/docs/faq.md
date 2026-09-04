@@ -242,7 +242,7 @@ If you rollback, Nav Backward, or Undo, the orchestrator resets the working tree
 ## 7. Troubleshooting
 
 ### My workflow paused with HS-5. What do I do?
-An HS-5 indicates that `state.md` YAML parsing or schema validation failed, or that a pre-advance check exited non-zero (missing required artifact).
+An HS-5 indicates that `state.md` YAML parsing or schema validation failed, or that a pre-advance check exited non-zero (missing required artifact). `autoMode` does not skip planning — missing `step-01-*.plan.md`, `plan.index.json`, or exec-plan artifacts before Step 4 also fail pre-advance with HS-5.
 1.  Open the state file in your editor: `{plansDir}/us-{id}/{workflow-id}.state.md`.
 2.  Fix any malformed YAML characters (e.g. unquoted colons, unresolved strings, or syntax errors).
 3.  If stderr includes `plan.index.json is required before implement`, backfill that file (next item) before retrying validate.

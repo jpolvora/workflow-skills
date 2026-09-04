@@ -1171,6 +1171,14 @@ function skippedReason(state, step) {
   return item && item.reason ? String(item.reason) : '';
 }
 
+function stepCompleted(state, step) {
+  return (state.completedSteps || []).map(Number).includes(Number(step));
+}
+
+function stepSkipped(state, step) {
+  return (state.skippedSteps || []).some((row) => Number(row.step) === Number(step));
+}
+
 function requiredAdvanceArtifact(pipeline, next, state) {
   const slug = state.slug || state.us;
   if (!slug) return null;
@@ -1264,6 +1272,29 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
     }
     const ledgerFile = path.join(path.dirname(mdPath), 'ac-ledger.json');
     if (next >= 1 && !fs.existsSync(ledgerFile)) errors.push('ac-ledger.json is required before advance');
+    if (Number(next) === 4 && flow === 'standard') {
+      const slug = state.slug || state.us;
+      const usDir = path.dirname(mdPath);
+      const step2Reason = skippedReason(state, 2);
+      if (!stepCompleted(state, 2) && step2Reason !== 'interview-not-required') {
+        errors.push('step 2 must be completed or skipped with reason interview-not-required before implement');
+      }
+      if (!stepCompleted(state, 1) && !stepSkipped(state, 1)) {
+        errors.push('step 1 must be completed or skipped before implement');
+      }
+      const step3Reason = skippedReason(state, 3);
+      if (!stepCompleted(state, 3) && step3Reason !== 'dag-disabled') {
+        errors.push('step 3 must be completed or skipped with reason dag-disabled before implement');
+      }
+      if (slug) {
+        const needRefined = stepCompleted(state, 2) && step2Reason !== 'interview-not-required';
+        const planFile = needRefined ? `step-02-${slug}.plan.refined.md` : `step-01-${slug}.plan.md`;
+        const planPath = path.join(usDir, planFile);
+        if (!fs.existsSync(planPath)) {
+          errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, planPath, { allowOutside: true })}`);
+        }
+      }
+    }
     if (next >= 6 && fs.existsSync(ledgerFile)) {
       const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
       const boundary = next === 6 ? 'pre-step6' : next >= 9 ? 'ship' : 'step5';
@@ -1384,8 +1415,11 @@ function rebuildIndex(context, config) {
 }
 
 function runValidateCli(config) {
+  let options = {};
   try {
-    const { positional, options } = parseArgs(process.argv.slice(2));
+    const parsed = parseArgs(process.argv.slice(2));
+    options = parsed.options;
+    const { positional } = parsed;
     if (options.help) {
       process.stdout.write('Usage: validate_state.cjs <state|workflowId|rebuild-index> [--pre-advance N] [--repo-root DIR]\n');
       return;
@@ -1409,7 +1443,11 @@ function runValidateCli(config) {
     });
     process.stdout.write(`${JSON.stringify({ ...result, state: toRepoRelative(context.repoRoot, stateFile, { allowOutside: true }) }, null, 2)}\n`);
   } catch (error) {
-    process.stderr.write(`ERROR: ${error.message}\n`);
+    let message = error.message;
+    if (options.preAdvance !== undefined && Number(requirePreAdvanceStep(options.preAdvance)) === 4 && config.pipeline === 'standard' && !message.includes('HS-5')) {
+      message = `${message}; HS-5`;
+    }
+    process.stderr.write(`ERROR: ${message}\n`);
     process.exitCode = 1;
   }
 }

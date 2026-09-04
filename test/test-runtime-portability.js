@@ -104,6 +104,18 @@ for (const relative of [
   const stepDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
   assert.match(stepDispatch, /no mid-workflow re-probe/, 'STEP-DISPATCH forbids per-step re-probing (AC6)');
 }
+// autoMode ≠ skip planning (us-275): doc tables + child-slug rule stay host-neutral.
+{
+  const skill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
+  const stepDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
+  const setup = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/setup.md'), 'utf8');
+  assert.match(skill, /autoMode ≠ skip planning/, 'SKILL.md documents autoMode ≠ skip planning');
+  assert.match(stepDispatch, /autoMode ≠ skip planning/, 'STEP-DISPATCH documents autoMode ≠ skip planning');
+  assert.match(setup, /not waive Steps 1[–-]3/, 'setup.md documents child slug planning waiver rule');
+  for (const text of [skill, stepDispatch, setup]) {
+    assert.doesNotMatch(text, /\b(?:Cursor|OpenCode|Antigravity)\b/i, 'autoMode skip-planning prose stays host-neutral');
+  }
+}
 for (const relative of [
   '.agents/skills/ws-spec-to-pr/SKILL.md',
   '.agents/skills/ws-spec-to-pr-lite/SKILL.md',

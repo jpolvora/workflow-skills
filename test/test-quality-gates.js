@@ -395,6 +395,62 @@ function testPreAdvanceHS5() {
     /omit.*pre-advance|skipQualityGates|--skip-gates/i.test(read(STEP_DISPATCH)),
     'testPreAdvanceHS5: STEP-DISPATCH documents skip of pre-advance under skipQualityGates',
   );
+  const step4 = read(STEP_DISPATCH);
+  assert(
+    /--pre-advance 4/.test(step4) && /HS-5.*STOP|STOP.*HS-5/s.test(step4),
+    'testPreAdvanceHS5: Step 4 Action documents --pre-advance 4 HS-5 STOP before dispatch',
+  );
+  assert(
+    /no product|do not edit product|no product-file/i.test(step4),
+    'testPreAdvanceHS5: Step 4 guard failure forbids product edits',
+  );
+}
+
+function testPreAdvance4MissingPlan() {
+  const hub = mkTmp('qg-pa4-miss-');
+  writeValidateHub(hub);
+  const slug = 'qg-pa4-miss';
+  const workflowId = `${slug}-wf`;
+  const usDir = path.join(hub, '.agents/plans', slug);
+  const statePath = writeState(
+    usDir,
+    slug,
+    workflowId,
+    `workflowType: standard\nautoMode: true\n`,
+    { dryRun: false },
+  );
+  stampSpec(usDir, slug, workflowId);
+  writeLedger(usDir, slug, workflowId);
+  const { status, stderr, stdout } = preAdvanceJson(statePath, 4, { repoRoot: hub });
+  const blob = `${stdout}${stderr}`;
+  assert(status !== 0, 'testPreAdvance4MissingPlan: Step 0-only workflow blocks pre-advance 4');
+  assert(/step-01.*\.plan\.md/.test(blob), 'testPreAdvance4MissingPlan: stderr names step-01 plan');
+  assert(/plan\.index\.json/.test(blob), 'testPreAdvance4MissingPlan: stderr names plan.index.json');
+  assert(/HS-5/.test(blob), 'testPreAdvance4MissingPlan: stderr includes HS-5');
+}
+
+function testAutoModeSkipPlanningDocs() {
+  const skill = read(path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/SKILL.md'));
+  const dispatch = read(STEP_DISPATCH);
+  const gates = read(path.join(REPO_ROOT, '.agents/skills/ws-shared/gates.md'));
+  const setup = read(SETUP_MD);
+  const heading = /autoMode ≠ skip planning/;
+  assert(heading.test(skill), 'testAutoModeSkipPlanningDocs: SKILL.md has autoMode ≠ skip planning subsection');
+  assert(heading.test(dispatch), 'testAutoModeSkipPlanningDocs: STEP-DISPATCH.md has autoMode ≠ skip planning subsection');
+  assert(/skip Steps 1[–-]3/i.test(skill) && /step-01/i.test(skill), 'testAutoModeSkipPlanningDocs: SKILL.md table forbids skip planning');
+  assert(/runInterview|execMode/.test(dispatch), 'testAutoModeSkipPlanningDocs: STEP-DISPATCH table mentions classifier outputs');
+  assert(
+    /child.*slug|child bug|child task/i.test(gates) && /does not waive Steps 1[–-]3|not waive Steps 1[–-]3/i.test(gates),
+    'testAutoModeSkipPlanningDocs: gates.md child slug does not waive planning',
+  );
+  assert(
+    /child.*slug|child bug|child task/i.test(setup) && /does not waive Steps 1[–-]3|not waive Steps 1[–-]3/i.test(setup),
+    'testAutoModeSkipPlanningDocs: setup.md child slug does not waive planning',
+  );
+  assert(
+    /autoMode.*true[\s\S]*FSM 0→9|when `autoMode` is true[\s\S]*no product code until Step 4/i.test(setup),
+    'testAutoModeSkipPlanningDocs: setup.md init banner reminds autoMode planning chain',
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -822,6 +878,8 @@ try {
   testMonotonicityGap();
   testMonotonicityValid();
   testPreAdvanceHS5();
+  testPreAdvance4MissingPlan();
+  testAutoModeSkipPlanningDocs();
 
   console.log('\n[AC3] Complexity classifier');
   testClassifyOutput();

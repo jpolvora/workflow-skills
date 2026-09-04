@@ -34,7 +34,7 @@ Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`ask
 3. If `askQuestionTool` binds `none` → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
 5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing.
+6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing. **`autoMode` does not skip planning:** the full FSM 0→9 still runs; only gates are automatic. An existing parent feature branch (e.g. `feat/{parent}`) plus a child bug/task slug does not waive Steps 1–3 for the **child slug** — only an explicit user override may shorten planning.
 
 ## Interactive execution cadence (One Step Per Turn)
 
