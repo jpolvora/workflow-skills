@@ -1080,4 +1080,148 @@ Step 1 skip cannot waive plan-of-record.
   assert.match(`${failSkip1.stdout}${failSkip1.stderr}`, /step 1 must be completed before implement/);
 }
 
+function seedPa4PlanningFiles(pa4Root, slug, workflowId, opts = {}) {
+  const usDir = path.join(pa4Root, '.agents/plans', slug);
+  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  write(path.join(usDir, `step-00-${slug}.spec.md`), `---
+id: null
+slug: ${slug}
+title: ${opts.title || 'pa4'}
+source: local
+specDate: 2026-09-03
+step: 0
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+## Description
+${opts.title || 'pa4'}
+## Acceptance Criteria
+- AC1: Guard.
+`);
+  write(path.join(usDir, `step-01-${slug}.plan.md`), `---
+step: 1
+slug: ${slug}
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+# Plan
+
+## Work
+
+T00 implements AC1 in \`src/${slug}.js\` with V1:${slug}.
+`);
+  write(path.join(usDir, 'ac-ledger.json'), JSON.stringify({
+    schemaVersion: 1,
+    revision: 1,
+    workflowId,
+    slug,
+    specPath: `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+    planIndexPath: null,
+    declaredGaps: [],
+    aliasResults: [],
+    testingSkip: null,
+    acceptanceCriteria: [{ id: 'AC1', text: 'Guard.', status: 'Pending', evidence: [], tasks: [], planSections: [], files: [], commits: [], tests: [], verdicts: [], findings: [], sabotage: { required: false, status: 'not-required', exitCode: null }, linkEventIds: [] }],
+    scoreState: null,
+  }));
+  if (opts.refined) {
+    write(path.join(usDir, `step-02-${slug}.plan.refined.md`), `---
+step: 2
+slug: ${slug}
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+# Refined plan
+
+## Work
+
+T00 implements AC1 in \`src/${slug}.js\` with V1:${slug}.
+`);
+  }
+  const planRel = opts.refined
+    ? `.agents/plans/${slug}/step-02-${slug}.plan.refined.md`
+    : `.agents/plans/${slug}/step-01-${slug}.plan.md`;
+  assert.strictEqual(run(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/plan_index.cjs'), [
+    'build', '--plan', planRel, '--spec', `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+    '--output', `.agents/plans/${slug}/plan.index.json`, '--repo-root', pa4Root,
+  ]).status, 0);
+  assert.strictEqual(run(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/write_sequential_dag.cjs'), [
+    '--slug', slug, '--workflow-id', workflowId, '--plan', planRel,
+    '--exec-out', `.agents/plans/${slug}/step-03-${slug}.plan.exec.md`,
+    '--dag-out', `.agents/plans/${slug}/step-03-${slug}.exec.dag.json`,
+    '--timestamp', '2026-08-21T20:00:10.000Z', '--repo-root', pa4Root,
+  ]).status, 0);
+}
+
+// PR 276 r2 — Step 1 done, Step 2 neither completed nor skipped, Step 3 dag-disabled
+{
+  const pa4Root = temp('ws-state-pa4-skip2-');
+  const slug = 'pa4skip2';
+  const workflowId = 'wf-pa4skip2';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  seedPa4PlanningFiles(pa4Root, slug, workflowId, { title: 'Step 2 incomplete' });
+  write(path.join(pa4Root, stateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 1
+completedSteps: [0, 1]
+skippedSteps: [{step: 3, reason: dag-disabled}]
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const failSkip2 = run(validate, [stateRel, '--pre-advance', '4', '--repo-root', pa4Root]);
+  assert.notStrictEqual(failSkip2.status, 0, 'pre-advance 4 rejects incomplete Step 2');
+  assert.match(`${failSkip2.stdout}${failSkip2.stderr}`, /step 2 must be completed or skipped with reason interview-not-required/);
+}
+
+// PR 276 r2 — Steps 1–2 done, Step 3 neither completed nor dag-disabled skip
+{
+  const pa4Root = temp('ws-state-pa4-nostep3-');
+  const slug = 'pa4nostep3';
+  const workflowId = 'wf-pa4nostep3';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  seedPa4PlanningFiles(pa4Root, slug, workflowId, { title: 'Step 3 incomplete', refined: true });
+  write(path.join(pa4Root, stateRel), `---
+stateVersion: 2
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 2
+completedSteps: [0, 1, 2]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const failStep3 = run(validate, [stateRel, '--pre-advance', '4', '--repo-root', pa4Root]);
+  assert.notStrictEqual(failStep3.status, 0, 'pre-advance 4 rejects incomplete Step 3');
+  assert.match(`${failStep3.stdout}${failStep3.stderr}`, /step 3 must be completed or skipped with reason dag-disabled/);
+}
+
 console.log('test-workflow-state-contract: ok');
