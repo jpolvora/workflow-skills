@@ -26,7 +26,7 @@ Do **not** copy companion protocols into this file. Load them:
 | Reply shape | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) |
 | MEMORY before mutate | `read-memory` ([`../ws-shared/tools.md`](../ws-shared/tools.md)) |
 
-**Entry:** Expand `{sharedDir}` / `{skillsRoot}` / `{plansDir}` / `{specsDir}` / `{reviewsDir}` from [`../ws-shared/tools.md`](../ws-shared/tools.md). Missing config → defaults (`.agents/plans`, `.agents/specs`) and gap `config-missing`. Do not run `ws-spec-write` unless the user asked for a spec.
+**Entry:** Expand `{sharedDir}` / `{skillsRoot}` / `{plansDir}` / `{specsDir}` / `{reviewsDir}` from [`../ws-shared/tools.md`](../ws-shared/tools.md). Missing config → defaults (`.agents/plans`, `.agents/specs`), `defaults.autoMode` treated as `false`, and gap `config-missing`. Do not run `ws-spec-write` unless the user asked for a spec.
 
 ## Invocation
 

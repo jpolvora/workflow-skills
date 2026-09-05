@@ -34,6 +34,7 @@ assert(skill.includes('../ws-karpathy-guidelines/SKILL.md'), 'consumes karpathy'
 assert(skill.includes('../ws-tdah/SKILL.md'), 'consumes tdah');
 assert(skill.includes('/ws-megabrain plan'), 'plan mode');
 assert(skill.includes('/ws-megabrain research'), 'research mode');
+assert(/defaults\.autoMode.*treated as `false`/.test(skill), 'missing-config autoMode fallback');
 assert(fs.existsSync(path.join(root, '.agents/skills/ws-megabrain/references/REVERSE.md')), 'REVERSE.md');
 assert(fs.existsSync(path.join(root, '.agents/skills/ws-megabrain/references/DDD.md')), 'DDD.md');
 const refLinks = [
