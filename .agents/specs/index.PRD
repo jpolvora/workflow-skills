@@ -90,7 +90,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: 0028-audit-performance-correctness-and-reusable-scripts.spec.md`)
 - [x] `ws-fix-pr` proactive same-category discovery before resolve (`spec: 0038-fix-pr-proactive-class-sweep.spec.md`)
 - [x] Harness spec-run benchmark with snapshot compare (`spec: 0041-harness-spec-benchmark.spec.md`)
-- [~] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: 0037-skill-family-naming.spec.md`) — active workflow `skill-family-naming-20260902T215014Z` steps 0–6, uncommitted plan artifacts
+- [x] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: 0037-skill-family-naming.spec.md`) — delivered via release 0.3.56, PR #266 MERGED
 - [x] Specify-time closure pack for score-10 spec delivery (`spec: 0040-specify-closure-pack.spec.md`)
 - [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: 0042-unique-skill-script-runtime.spec.md`)
 - [x] ~~Cooperative session leases~~ **retired 0.3.38** — historical spec only (`spec: 0043-workflow-session-leases.spec.md`; use worktrees for parallel work)
@@ -179,7 +179,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 43 | `audit-performance-correctness-and-reusable-scripts` | `[x]` done | Phase 4 | Runtime audit suggestions for perf/correctness/reusable tooling |
 | 44 | `fix-pr-proactive-class-sweep` | `[x]` done | Phase 4 | Proactive same-defect-class sweep in cooperative fix |
 | 45 | `harness-spec-benchmark` | `[x]` done | Phase 4 | Upstream harness fixture benchmark + snapshot compare |
-| 46 | `skill-family-naming` | `[~]` partial | Phase 4 | Regroup skill ids as `ws-{family}-{verb}` (spec family first) — workflow active steps 0–6 |
+| 46 | `skill-family-naming` | `[x]` done | Phase 4 | Regroup skill ids as `ws-{family}-{verb}` (spec family first) — delivered 0.3.56 (PR #266) |
 | 47 | `specify-closure-pack` | `[x]` done | Phase 4 | Specify-time closure pack for score-10 delivery |
 | 48 | `unique-skill-script-runtime` | `[ ]` todo | Phase 4 | Node-only runtime for all packaged helper scripts |
 
@@ -205,7 +205,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-Open Next-spec: `skill-family-naming` (partial, active workflow). Only true todo left: `unique-skill-script-runtime`.
+All Next-specs closed except true todo: `unique-skill-script-runtime`.
 
 ## 9. Inbox
 
@@ -281,6 +281,7 @@ Open Next-spec: `skill-family-naming` (partial, active workflow). Only true todo
 | 2026-08-25 | `parametrized-min-verify-score` | Parametrized min verify score (`defaults.minVerifyScore`, default 9) | Implemented (config + `workflow_state.cjs` + `merge_verify_review.cjs` + `classify.cjs`) |
 | 2026-09-05 | `ws-megabrain` | ws-megabrain vibe-coding skill + 3 fix-pr rounds (precedence, autoMode fallback, changelog, ref coverage) | [PR #277](https://github.com/jpolvora/workflow-skills/pull/277) |
 | 2026-09-05 | `hermes-spec-to-pr-enhancements` | Hermes Agent Inspirations: duplicate sweep, design intent, class fixes, sabotage, CI triage, close-loop (verify 10/10) | [PR #278](https://github.com/jpolvora/workflow-skills/pull/278) |
+| 2026-09-03 | `skill-family-naming` | Regroup skill ids as `ws-{family}-{verb}` (10 renames, release 0.3.56) | [PR #266](https://github.com/jpolvora/workflow-skills/pull/266) |
 
 ## 11. Maintenance checklist
 
