@@ -68,7 +68,7 @@ No hit → router only. Never Read the whole folder.
 
 ## Steps
 
-1. **Bind host** — `askQuestionTool` from `{sharedDir}/host-capabilities.json` or one probe ([`../ws-shared/tools.md`](../ws-shared/tools.md)). `user-gate` / markdown yield ([`../ws-shared/gates.md`](../ws-shared/gates.md)). `autoMode` → recommended option 1.
+1. **Bind host** — `askQuestionTool` from `{sharedDir}/host-capabilities.json` or one probe ([`../ws-shared/tools.md`](../ws-shared/tools.md)). `user-gate` / markdown yield ([`../ws-shared/gates.md`](../ws-shared/gates.md)). `autoMode` (`defaults.autoMode`; missing `config.json` → `false`, interactive `user-gate`) → recommended option 1.
    - Done when: `askQuestionTool` is a tool name or `none`.
 
 2. **Mode** — `plan` → fable **Plan-First** then STOP. `research` / Question wording → fable **Question** (no Act). Else **Task** (implement, no spec required). Autoload with a clear task → skip the menu. `/ws-megabrain` with no task, or "what next" → Step 3. Orch owns session → stop this skill.

@@ -346,6 +346,7 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 5. Delivery gate (§ [2. Delivery gate](#2-delivery-gate-ws-senior-developer); opt out `stop ws-senior-developer`)
 6. Investigate loop (§ [3. Investigate loop](#3-investigate-loop-ws-fable-method); defer Plan-First when orch owns session or senior plan already confirmed)
 7. Reply shape (§ [4. Reply shape](#4-reply-shape-ws-tdah); opt out `stop ws-tdah` / `stop verbosity` / `normal mode`)
+8. `ws-megabrain` when autoloaded (defer orch; opt out `stop ws-megabrain`)
 
 ### Opt-out
 
