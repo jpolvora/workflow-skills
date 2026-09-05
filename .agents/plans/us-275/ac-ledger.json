@@ -1,0 +1,611 @@
+{
+  "schemaVersion": 1,
+  "revision": 24,
+  "workflowId": "us-275-20260904T020000Z",
+  "slug": "us-275",
+  "specPath": ".agents/plans/us-275/step-00-us-275.spec.md",
+  "planIndexPath": ".agents/plans/us-275/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`ws-spec-to-pr/SKILL.md` and `STEP-DISPATCH.md` each contain a dedicated **autoMode ≠ skip planning** subsection with a two-column table listing what `autoMode` does (auto gate index 0, continuous step boundaries) vs what it never does (skip Steps 1–3, edit product code before `step-01-*.plan.md`, ignore classifier `runInterview` / `execMode`).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md:L46-L55",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L9-L16"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009",
+        "section-010",
+        "section-011",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+          "lineStart": 46,
+          "lineEnd": 55,
+          "sha256": "64be2ac5d99ec2fdae5de5d4c9254aaa4a6c5fa9e802352be9ec14ce2f802c41"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 9,
+          "lineEnd": 16,
+          "sha256": "87ccd64689a0626cbdbd1b3665cde1ac5f54ae9a96652c24654c7d68dbbcac8d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testAutoModeSkipPlanningDocs: SKILL.md has autoMode ≠ skip planning subsection",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:22.754Z"
+        },
+        {
+          "name": "testAutoModeSkipPlanningDocs: STEP-DISPATCH.md has autoMode ≠ skip planning subsection",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:22.755Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`ws-shared/gates.md` and `ws-shared/setup.md` state that an existing parent feature branch plus a child bug/task id does **not** waive Steps 1–3 for the child slug; only an explicit user override may shorten planning.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/gates.md:L37-L37",
+        ".agents/skills/ws-shared/setup.md:L119-L119"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-007",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/gates.md",
+          "lineStart": 37,
+          "lineEnd": 37,
+          "sha256": "23cb67f481fe66a57224b94be996474b7e9e170f4ca363a5755b1d06c5686fa3"
+        },
+        {
+          "path": ".agents/skills/ws-shared/setup.md",
+          "lineStart": 119,
+          "lineEnd": 119,
+          "sha256": "7f6fe4424feed2cb9ff95ba50c449833505e14e0e88f0889ca9a2c8befe03aed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testAutoModeSkipPlanningDocs: gates.md child slug does not waive planning",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:22.842Z"
+        },
+        {
+          "name": "testAutoModeSkipPlanningDocs: setup.md child slug does not waive planning",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:22.843Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`setup.md` init banner (or equivalent bootstrap output) prints, when `autoMode: true`, a one-line reminder: gates are automatic, FSM 0→9 stays intact, no product code until Step 4 after plan artifacts exist on disk.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/setup.md:L96-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/setup.md",
+          "lineStart": 96,
+          "lineEnd": 96,
+          "sha256": "7f6fe4424feed2cb9ff95ba50c449833505e14e0e88f0889ca9a2c8befe03aed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testAutoModeSkipPlanningDocs: setup.md init banner reminds autoMode planning chain",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:22.909Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Before the first Step 4 `dispatch-agent`, the orchestrator runs a fail-closed guard (`validate_state.cjs --pre-advance 4` or a documented `pre-implement-guard` wrapper) that exits non-zero when advance-to-4 prerequisites from `ARTIFACTS.md` are missing; stderr lists missing artifacts and references HS-5.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L1275-L1296",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs:L1447-L1450",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L18-L18",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L45-L45"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 1275,
+          "lineEnd": 1296,
+          "sha256": "8ec50f23524563433413fd58867bab37361808a227c55ef903bdda0a36636ad4"
+        },
+        {
+          "path": ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+          "lineStart": 1447,
+          "lineEnd": 1450,
+          "sha256": "8ec50f23524563433413fd58867bab37361808a227c55ef903bdda0a36636ad4"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 18,
+          "lineEnd": 18,
+          "sha256": "87ccd64689a0626cbdbd1b3665cde1ac5f54ae9a96652c24654c7d68dbbcac8d"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 45,
+          "lineEnd": 45,
+          "sha256": "87ccd64689a0626cbdbd1b3665cde1ac5f54ae9a96652c24654c7d68dbbcac8d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "pre-advance 4 stderr includes HS-5 token",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:22.990Z"
+        },
+        {
+          "name": "testPreAdvance4MissingPlan: stderr includes HS-5",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:22.990Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "When the guard fails, the orchestrator does not invoke product-file edits or Step 4 dispatch; it stops with HS-5 and names the missing files (`step-01-*.plan.md`, `plan.index.json`, `step-03-*.plan.exec.md`, interview refined plan when required, etc.).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md:L55-L55",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L45-L45",
+        ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L108-L108"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+          "lineStart": 108,
+          "lineEnd": 108,
+          "sha256": "0200f736bf82135c9c6bfcc4afffd3b0d4d6233f4a207ddb0496ad9f4533ccc4"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 55,
+          "sha256": "64be2ac5d99ec2fdae5de5d4c9254aaa4a6c5fa9e802352be9ec14ce2f802c41"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 45,
+          "lineEnd": 45,
+          "sha256": "87ccd64689a0626cbdbd1b3665cde1ac5f54ae9a96652c24654c7d68dbbcac8d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testPreAdvanceHS5: Step 4 guard failure forbids product edits",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:23.062Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "A documented dogfood conformance case (test fixture or `ws-spec-to-pr` docs) asserts that under `autoMode` with `workflowType: standard`, `step-01-{slug}.plan.md` exists before any product-path edit outside `{plansDir}` / workflow state for that slug.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/docs/faq.md:L244-L245",
+        "test/test-workflow-state-contract.js:L861-L924"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/docs/faq.md",
+          "lineStart": 244,
+          "lineEnd": 245,
+          "sha256": "9b443f3eaf96f06574328fc67920e40169f4bddcf7bfbfa1d07a36bb8d787b3c"
+        },
+        {
+          "path": "test/test-workflow-state-contract.js",
+          "lineStart": 861,
+          "lineEnd": 924,
+          "sha256": "8f576a966b498f8a2dc194f5bc9168f0fc07428c52ba8426ee8dbe11000fab00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "pre-advance 4 rejects Step 0-only autoMode standard workflow",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:23.136Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`ws-check-harness` and existing mechanical gates (`check_duplicates`, `measure_harness`, `check_shell_quoting`, `check_pipeline_handoff`) still exit 0 after the doc and script changes.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/skill-integrity.json:L1-L8",
+        "test/test-quality-gates.js:L382-L407"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": "bin/skill-integrity.json",
+          "lineStart": 1,
+          "lineEnd": 8,
+          "sha256": "9b4199419684c750bbadef4dd80ad5cca4bb63af1dbf34c5cd4d6827e546d573"
+        },
+        {
+          "path": "test/test-quality-gates.js",
+          "lineStart": 382,
+          "lineEnd": 407,
+          "sha256": "173c2a9739a652fa501aae1895cf0ac79fddc8f33f231615bc488933969d82f5"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "All quality-gates tests passed.",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:23.214Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "No host product names, consumer repo names, or private paths appear in shipped skill bodies, gates, or templates added by this work (generic wording only).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md:L46-L55",
+        "test/test-runtime-portability.js:L107-L117"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009",
+        "section-010",
+        "section-011",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+          "lineStart": 46,
+          "lineEnd": 55,
+          "sha256": "64be2ac5d99ec2fdae5de5d4c9254aaa4a6c5fa9e802352be9ec14ce2f802c41"
+        },
+        {
+          "path": "test/test-runtime-portability.js",
+          "lineStart": 107,
+          "lineEnd": 117,
+          "sha256": "c684ffe2624315c29ad3e08e5db13a77a903f9b375c964cd3f230c8a8401b677"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "cd95e7f715e88d0560f8b0b8dc64139f2736e6bb",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "autoMode skip-planning prose stays host-neutral",
+          "sourceFile": "test/test-runtime-portability.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:23.296Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-us-275-cd95e7f7",
+        "verify-us-275-step5-ac8"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "NS1: Orchestrator sets `autoMode: true`, finishes Step 0 partial artifacts only, attempts Step 4 dispatch → guard exits non-zero, no product edits, HS-5 message lists missing `step-01-*.plan.md` and `plan.index.json`.",
+      "tests": [
+        {
+          "name": "pre-advance 4 stderr includes HS-5 token",
+          "sourceFile": "test/test-workflow-state-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:12:46.322Z"
+        },
+        {
+          "name": "testPreAdvance4MissingPlan: stderr names step-01 plan",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:23.357Z"
+        }
+      ],
+      "linkEventIds": [
+        "link-ns1",
+        "verify-us-275-step5-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "NS2: Child bug slug on existing `feat/{parent}` branch with `runInterview: true` in classify output → orchestrator must not skip interview/refined plan without documented Step 2 skip reason.",
+      "tests": [
+        {
+          "name": "testAutoModeSkipPlanningDocs: gates.md child slug does not waive planning",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:23.427Z"
+        }
+      ],
+      "linkEventIds": [
+        "link-ns2",
+        "verify-us-275-step5-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "NS3: Agent interprets `autoMode` as \"skip gates and planning\" → blocked by docs table and validate_state; session stops fail-closed rather than committing orphan product diff.",
+      "tests": [
+        {
+          "name": "testAutoModeSkipPlanningDocs: SKILL.md table forbids skip planning",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:35:23.491Z"
+        },
+        {
+          "name": "testPreAdvance4MissingPlan: stderr includes HS-5",
+          "sourceFile": "test/test-quality-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-04T02:12:46.464Z"
+        }
+      ],
+      "linkEventIds": [
+        "link-ns3",
+        "verify-us-275-step5-ns3"
+      ]
+    }
+  ],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 80,
+    "totalUnits": 80,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-09-04T02:49:14.972Z"
+  }
+}

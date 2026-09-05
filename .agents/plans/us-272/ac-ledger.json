@@ -1,0 +1,616 @@
+{
+  "schemaVersion": 1,
+  "revision": 23,
+  "workflowId": "us-272-20260903T165000Z",
+  "slug": "us-272",
+  "specPath": ".agents/plans/us-272/step-00-us-272.spec.md",
+  "planIndexPath": ".agents/plans/us-272/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0,
+      "skipReason": "baseline-dirty"
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "After running installer `update` on a pre-rename consumer tree, project-local `ws-shared/autoload.md` contains zero retired skill ids (`ws-write-spec`, `ws-sync-spec`, `ws-multi-spec`, `ws-local-spec-provider`, `ws-verify-plan`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-interview`, `ws-write-plan`, `ws-update-plan-implementation`) and all `../ws-*/SKILL.md` link targets resolve under project `{skillsRoot}` or `{globalSkillsRoot}` hybrid resolution.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/config-resolution.md:L43-L51",
+        "bin/cli.js:L678-L685"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008",
+        "section-010"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/config-resolution.md",
+          "lineStart": 43,
+          "lineEnd": 51,
+          "sha256": "55dfdf742ca3272d43c8c5474a7235ed0a021ca173b26eb6b409480d91fd4b69"
+        },
+        {
+          "path": "bin/cli.js",
+          "lineStart": 678,
+          "lineEnd": 685,
+          "sha256": "15cd0046ed4c58d36a570256870c31b40f2408a688810b2da32309aaad34594d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "346b2adf",
+          "step": 5
+        },
+        {
+          "sha": "93a2f3fc",
+          "step": 7
+        }
+      ],
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:13.099Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-step7-93a2f3fc",
+        "g2-step5-346b2adf",
+        "step5-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "After running installer `update`, consumer `installed-skills.json` contains zero retired ids (the ten `ws-*` retired ids plus legacy bare ids `azure-devops`, `caveman`, `code-review`, `fix-pr`, `plan-us`, `us-delivery-workflow` are pruned or mapped to canonical ids) and a subsequent `update`/`uninstall` operates only on installed canonical skills.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs:L188-L221",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs:L62-L83",
+        "bin/cli.js:L1800-L1811",
+        "bin/consumer-migration.js:L1-L18"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+          "lineStart": 62,
+          "lineEnd": 83,
+          "sha256": "f5e68d95e73f602020042fbf094b03e001d6f56907a9b3bb9d21991feff4b6e1"
+        },
+        {
+          "path": ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+          "lineStart": 188,
+          "lineEnd": 221,
+          "sha256": "f5e68d95e73f602020042fbf094b03e001d6f56907a9b3bb9d21991feff4b6e1"
+        },
+        {
+          "path": "bin/cli.js",
+          "lineStart": 1800,
+          "lineEnd": 1811,
+          "sha256": "15cd0046ed4c58d36a570256870c31b40f2408a688810b2da32309aaad34594d"
+        },
+        {
+          "path": "bin/consumer-migration.js",
+          "lineStart": 1,
+          "lineEnd": 18,
+          "sha256": "d26f88b84371124f2c462249b2ffaaa63b37f1fa6147a6b64e55ee0e4a6cd07f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "346b2adf",
+          "step": 5
+        },
+        {
+          "sha": "93a2f3fc",
+          "step": 7
+        }
+      ],
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:17.835Z"
+        },
+        {
+          "name": "pruneRetiredConsumerArtifacts",
+          "sourceFile": "test/test-consumer-migration.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:17.836Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-step7-93a2f3fc",
+        "g2-step5-346b2adf",
+        "step5-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "On a global-hybrid install (skills under `{globalSkillsRoot}`, project-local `ws-shared/` with consumer data only), the configured `rules.harness` path resolves: either the installer seeds a thin local `ws-shared/AGENTS.md` pointer to the global hub, or the `rules.harness` default plus comment documents the `{globalSkillsRoot}` fallback, so an agent reading the configured path succeeds without manual fallback.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/config-resolution.md:L43-L51",
+        ".agents/skills/ws-shared/config.json.example:L350-L355",
+        "bin/cli.js:L104-L120",
+        "bin/cli.js:L678-L685"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-010"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/config-resolution.md",
+          "lineStart": 43,
+          "lineEnd": 51,
+          "sha256": "55dfdf742ca3272d43c8c5474a7235ed0a021ca173b26eb6b409480d91fd4b69"
+        },
+        {
+          "path": ".agents/skills/ws-shared/config.json.example",
+          "lineStart": 350,
+          "lineEnd": 355,
+          "sha256": "4de714f26188daf3552fa1729ffef539c884d06868f45312ab26a4a496cd2152"
+        },
+        {
+          "path": "bin/cli.js",
+          "lineStart": 104,
+          "lineEnd": 120,
+          "sha256": "15cd0046ed4c58d36a570256870c31b40f2408a688810b2da32309aaad34594d"
+        },
+        {
+          "path": "bin/cli.js",
+          "lineStart": 678,
+          "lineEnd": 685,
+          "sha256": "15cd0046ed4c58d36a570256870c31b40f2408a688810b2da32309aaad34594d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "346b2adf",
+          "step": 5
+        },
+        {
+          "sha": "93a2f3fc",
+          "step": 7
+        }
+      ],
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:22.226Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-step7-93a2f3fc",
+        "g2-step5-346b2adf",
+        "step5-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`ws-check-harness` Phases 0-5c on the updated consumer hybrid fixture reports no retired-id findings for `autoload.md` / `installed-skills.json` / harness resolution, and the four mechanical gates (`check_duplicates`, `measure_harness`, `check_shell_quoting`, `check_pipeline_handoff`) plus `configure_autoload.py --check` still exit 0.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/PHASES.md:L119-L135"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/PHASES.md",
+          "lineStart": 119,
+          "lineEnd": 135,
+          "sha256": "2810235473da96ea941b4981221995a8e74b28636ce5a7fd32b61265fbf98298"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "346b2adf",
+          "step": 5
+        },
+        {
+          "sha": "93a2f3fc",
+          "step": 7
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_pipeline_handoff: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_pipeline_handoff.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:47.745Z"
+        },
+        {
+          "name": "check_shell_quoting",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_shell_quoting.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:47.738Z"
+        },
+        {
+          "name": "Harness:",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:47.745Z"
+        },
+        {
+          "name": "No duplicated normative blocks.",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_duplicates.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:47.737Z"
+        },
+        {
+          "name": "STALE_LIVE_REFERENCE_PATTERNS",
+          "sourceFile": "test/test-consumer-migration.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:47.746Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-step7-93a2f3fc",
+        "g2-step5-346b2adf",
+        "step5-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "`update` preserves consumer-owned data: project `config.json` user values, `STACK.md`, `MEMORY.md`, `memory/*`, and `CHANGELOG.md` remain byte-identical except for explicitly migrated keys documented in the plan.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L644-L663"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 644,
+          "lineEnd": 663,
+          "sha256": "15cd0046ed4c58d36a570256870c31b40f2408a688810b2da32309aaad34594d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "346b2adf",
+          "step": 5
+        },
+        {
+          "sha": "93a2f3fc",
+          "step": 7
+        }
+      ],
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:52.410Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-step7-93a2f3fc",
+        "g2-step5-346b2adf",
+        "step5-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Re-running installer `update` a second time on the migrated tree is idempotent: no additional file diffs, exit code 0, and no re-introduction of retired ids.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L1800-L1811"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 1800,
+          "lineEnd": 1811,
+          "sha256": "15cd0046ed4c58d36a570256870c31b40f2408a688810b2da32309aaad34594d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "346b2adf",
+          "step": 5
+        },
+        {
+          "sha": "93a2f3fc",
+          "step": 7
+        }
+      ],
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:18:57.100Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-step7-93a2f3fc",
+        "g2-step5-346b2adf",
+        "step5-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Any other shipped template embedding skill ids or links (hub templates beside `autoload.md` refreshed by `update`) uses canonical ids after migration; a repo-wide search for the retired ids across managed template sources returns zero hits.",
+      "status": "ImplementedDifferently",
+      "evidence": [
+        ".agents/skills/ws-shared/config-resolution.md:L31-L40",
+        ".agents/skills/ws-shared/config.json.example:L85-L100"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008",
+        "section-010"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/config-resolution.md",
+          "lineStart": 31,
+          "lineEnd": 40,
+          "sha256": "55dfdf742ca3272d43c8c5474a7235ed0a021ca173b26eb6b409480d91fd4b69"
+        },
+        {
+          "path": ".agents/skills/ws-shared/config.json.example",
+          "lineStart": 85,
+          "lineEnd": 100,
+          "sha256": "4de714f26188daf3552fa1729ffef539c884d06868f45312ab26a4a496cd2152"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "346b2adf",
+          "step": 5
+        },
+        {
+          "sha": "93a2f3fc",
+          "step": 7
+        }
+      ],
+      "tests": [
+        {
+          "name": "STALE_LIVE_REFERENCE_PATTERNS",
+          "sourceFile": "test/test-consumer-migration.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:02.265Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-step7-93a2f3fc",
+        "g2-step5-346b2adf",
+        "step5-ac7"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Pre-fix fixture run: retired-id search returns hits in `autoload.md` and `installed-skills.json`, and local `ws-shared/AGENTS.md` is absent while `rules.harness` points locally, reproducing all three issue sections before the fix.",
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.613Z"
+        },
+        {
+          "name": "pruneRetiredConsumerArtifacts",
+          "sourceFile": "test/test-consumer-migration.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.613Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-ns"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Partial-migration run (templates refreshed but tracking file untouched): `update`/`uninstall` still references phantom skill folders and fails or warns, proving both files must migrate together.",
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.621Z"
+        },
+        {
+          "name": "pruneRetiredConsumerArtifacts",
+          "sourceFile": "test/test-consumer-migration.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.621Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-ns"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Missing-pointer run (no local `AGENTS.md` seed and no fallback doc): agent harness resolution against the configured local path fails on a global-hybrid tree, proving the AC3 pointer/fallback is required.",
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.622Z"
+        },
+        {
+          "name": "pruneRetiredConsumerArtifacts",
+          "sourceFile": "test/test-consumer-migration.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.622Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-ns"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Destructive run (consumer `MEMORY.md` or `config.json` values altered by `update`): checksum comparison fails the run, proving preservation logic is required.",
+      "tests": [
+        {
+          "name": "Phase 9c",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.622Z"
+        },
+        {
+          "name": "pruneRetiredConsumerArtifacts",
+          "sourceFile": "test/test-consumer-migration.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T17:19:07.622Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-ns"
+      ]
+    }
+  ],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-09-03T17:44:59.125Z"
+  }
+}

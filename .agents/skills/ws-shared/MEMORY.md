@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-04] Step 4 pre-advance docs must name skipQualityGates
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr / STEP-DISPATCH`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/SKILL.md`, `.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md`, `.agents/skills/ws-spec-to-pr/protocols/state-hygiene.md`
+- **Scenario / Context**: Reviewer scored 6 on PR 276 because Step 4 Action and autoMode paragraphs called `--pre-advance 4` mandatory while `gates.md` / `state-hygiene.md` already omit that call under `--skip-gates` / `skipQualityGates`.
+- **DO NOT**: Document `--pre-advance 4` as unconditional, or treat `skipQualityGates` as a waiver of autoMode planning (Steps 1–3 still required unless that bypass is explicit).
+- **INSTEAD DO**: Same unless-clause in SKILL.md, STEP-DISPATCH (preamble + Step 4 row), and state-hygiene: omit and log `gate-bypass | pre-advance`. Keep autoMode ≠ skip planning.
+
+### [2026-09-04] Isolate Step 2 and Step 3 --pre-advance 4 negatives
+- **Layer**: `harness`
+- **Module**: `workflow_state / contract tests`
+- **Severity**: `High`
+- **PathPattern**: `test/test-workflow-state-contract.js`, `.agents/skills/ws-shared/scripts/workflow_state.cjs`
+- **Scenario / Context**: After adding Step 1 skip and missing-refined fixtures, review still scored 6 because Step 2 incomplete and Step 3 incomplete paths had no isolated asserts.
+- **DO NOT**: Treat Step-0-only or happy skip-interview `--pre-advance 4` as covering every completion-or-skip branch.
+- **INSTEAD DO**: Add one fixture per check (Step 1 completed, Step 2 incomplete, Step 3 incomplete) with artifacts on disk so the named error string is asserted.
+
 ### [2026-09-03] ws-preview uses preview.dryRunCommand only
 - **Layer**: `harness`
 - **Module**: `ws-preview`
@@ -24,6 +42,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Invent `specNamingPrefixConvention` or other aliases. Do not concatenate `{specsDir}/{slug}.spec.md` when the organizer helper exists. Do not leave the prefix key omitted on a board that already uses `NNNN-*.spec.md`.
 - **INSTEAD DO**: Persist `plans.enforceSpecPrefixOrdering` under `plans` when absent (seed `true` if `{specsDir}` already has top-level `NNNN-*.spec.md`, else `false`). Then call `resolve_spec_path.cjs` and write only the returned `SPEC_PATH` / `--context` path. Frontmatter `slug` stays unprefixed.
 
+### [2026-09-03] Sabotage leftover .runtime files fail validate_state
+- **Layer**: `Harness`
+- **Module**: `ws-spec-to-pr / workflow_state`
+- **Severity**: `High`
+- **PathPattern**: `.agents/plans/**/.runtime/*;.agents/skills/ws-shared/scripts/workflow_state.cjs;.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs`
+- **Scenario / Context**: Step 5/7 sabotage writes `qg.bak` or invert patches under `{us-dir}/.runtime/`. `validate_state` treats unknown `.runtime` names as HS-5. `ac_ledger.cjs link` also nulls `scoreState`, so a later `--pre-advance` can fail until `score --boundary` matches the next step.
+- **DO NOT**: Leave sabotage backups in `.runtime/`, or assume `scoreState` survives a ledger `link`.
+- **INSTEAD DO**: Delete non-allowlisted `.runtime` files before `validate_state`. Re-run `ac_ledger.cjs score --boundary step5|pre-step6` after any `link` that cleared `scoreState`.
+
 ### [2026-09-03] Plans index updatedAt is per-workflow
 - **Layer**: `harness`
 - **Module**: `workflow_state / plans index`
@@ -32,6 +59,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: `{plansDir}/index.json` is rewritten on `update_state` and on `validate_state.cjs rebuild-index`. Agents often run rebuild-index during bootstrap when the resume list looks incomplete.
 - **DO NOT**: Stamp every `workflows[]` row `updatedAt` with `nowIso()` / catalog `generatedAt` during rebuild or a single-workflow update. That makes idle completed runs look freshly touched.
 - **INSTEAD DO**: `updatePlansIndex` upserts only the current `workflowId` row with the operation timestamp. `rebuildIndex` sets each row `updatedAt` from that workflow's own activity (`endedAt`, frontmatter `updatedAt`, latest dispatch timestamps, `startedAt`, `createdAt`) and keeps catalog `generatedAt` as rebuild time.
+
+### [2026-09-03] npm pack --json envelope shape varies by npm major
+- **Layer**: `tests`
+- **Module**: `test-package-runtime-exclusions`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-package-runtime-exclusions.js`
+- **Scenario / Context**: `test-package-runtime-exclusions.js` parsed `npm pack --dry-run --json` output as a legacy array envelope (`parsed[0].files`); under npm 12 the same command prints an object envelope keyed by package name, crashing before any file-list assertion and failing the full `npm run test` alias
+- **DO NOT**: Assume `npm pack --json` always returns an array envelope, or index `[0]` without checking the parsed shape
+- **INSTEAD DO**: Normalize the envelope first (array item or first object value, e.g. `envelope[Object.keys(envelope)[0]]`) so the test passes on both legacy-array and object-envelope npm majors
 
 ### [2026-09-03] Installer secondary-target lifecycle must be symmetric across install/update/uninstall
 - **Layer**: `harness`

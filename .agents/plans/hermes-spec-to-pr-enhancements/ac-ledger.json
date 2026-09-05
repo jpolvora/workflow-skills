@@ -1,0 +1,400 @@
+{
+  "schemaVersion": 1,
+  "revision": 17,
+  "workflowId": "hermes-spec-to-pr-enhancements-20260905T015600Z",
+  "slug": "hermes-spec-to-pr-enhancements",
+  "specPath": ".agents/plans/hermes-spec-to-pr-enhancements/step-00-hermes-spec-to-pr-enhancements.spec.md",
+  "planIndexPath": ".agents/plans/hermes-spec-to-pr-enhancements/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "hermes-targeted",
+      "commandHash": "625b6948fc0f7452552a8889dca4c49bc8e0f692a86a71d85fc66fbdf76581db",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "parity-targeted",
+      "commandHash": "3af4c602af3c25e92abfbb8f8bac91eb723929934f3e60b2a9aa428a1ac8bceb",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "**Pre-flight Duplicate & Prior Work Sweep (Step 0 & SCM Providers)**: Add `sweep-prior-work` capability to `ws-github-provider`, `ws-azure-devops-provider`, and Step 0 intake in `ws-spec-to-pr` / `ws-write-spec`. Before authoring plans or code, the agent searches open/merged PRs (by issue number and keyword variants) and recent git commits to verify if the issue or symptom was already addressed, recording findings in `step-00` context.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scm-provider-contract.md:L32-L32",
+        ".agents/skills/ws-spec-provider-azure-devops/INTENTS.md:L50-L50",
+        ".agents/skills/ws-spec-provider-github/INTENTS.md:L49-L49"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scm-provider-contract.md",
+          "lineStart": 32,
+          "lineEnd": 32,
+          "sha256": "d686c441ad5de76b07b4ed668505226b65d0db512d3886a63d3ea9a9c4d230b0"
+        },
+        {
+          "path": ".agents/skills/ws-spec-provider-azure-devops/INTENTS.md",
+          "lineStart": 50,
+          "lineEnd": 50,
+          "sha256": "e47ece35d60b2a6f010b94b68c4dcb597f6704dfff6b6ff195ede81cd0bb2c8b"
+        },
+        {
+          "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+          "lineStart": 49,
+          "lineEnd": 49,
+          "sha256": "affffbe777d53db3ec6244dce81de2fea73abef856687ca4aa98e491756b9729"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "b11664e74f4003c97ceed93f41b1eab2962020e9",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "sweep-prior-work",
+          "sourceFile": "test/test-hermes-spec-to-pr-enhancements.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-05T02:11:46.689Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "step5-AC1",
+        "step5-g2code"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "**Design Intent & Historical Commit Inspection (Step 0/1 & Spec/Plan)**: Enhance `ws-write-spec`, `ws-spec-format`, and `ws-write-plan` with mandatory checks for code modification tasks: agents must inspect historical commit intent (`git log -p -S \"<symbol>\"` or `git log -L`) on target functions/files to confirm that the reported \"bug\" or missing behavior is not an intentional architectural restriction or design choice before formulating changes.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-plan-write/SKILL.md:L42-L42",
+        ".agents/skills/ws-spec-format/FORMAT.md:L56-L56",
+        ".agents/skills/ws-spec-write/SKILL.md:L80-L80"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-plan-write/SKILL.md",
+          "lineStart": 42,
+          "lineEnd": 42,
+          "sha256": "88b01993cc2991367a270173f55255ddb8b31526169d134da9e5a74f522c4b48"
+        },
+        {
+          "path": ".agents/skills/ws-spec-format/FORMAT.md",
+          "lineStart": 56,
+          "lineEnd": 56,
+          "sha256": "f7ac213fa85bc110249ecbc87cbd1f1428a9a8905ceb99beea479cd5004108e0"
+        },
+        {
+          "path": ".agents/skills/ws-spec-write/SKILL.md",
+          "lineStart": 80,
+          "lineEnd": 80,
+          "sha256": "f07b9e759b63c261334e69a20f531703a6d0abb5c50fee4053f6919d344ad579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "b11664e74f4003c97ceed93f41b1eab2962020e9",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "write-spec design intent git log",
+          "sourceFile": "test/test-hermes-spec-to-pr-enhancements.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-05T02:11:57.366Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "step5-AC2",
+        "step5-g2code"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "**Defect Class & Sibling Call Site Remediation (Step 4 & Step 6)**: Update `ws-implement-tasks` and `ws-code-review` with a \"Fix the Entire Defect Class\" rule. When fixing a bug or applying a pattern, the coder and reviewer agents must search sibling call sites and modules for the same pattern/vulnerability and either fix the full class or explicitly justify exemptions.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-code-review/SKILL.md:L77-L77",
+        ".agents/skills/ws-implement-tasks/SKILL.md:L51-L51",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L45-L45"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-005",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-code-review/SKILL.md",
+          "lineStart": 77,
+          "lineEnd": 77,
+          "sha256": "f8ac43eae24a49c9eaa63481df9c48aeaac9eecd4f5ee24cba5c4e35e2e9579f"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 51,
+          "lineEnd": 51,
+          "sha256": "9b0f520652cff6015e3786a0f2fb878e709ef9da3c50c995ca27a5d70eb22935"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 45,
+          "lineEnd": 45,
+          "sha256": "a3288b109cabcaf60bf50731a230f7558bfbf7612db296fb5dbc82dfa56f11f4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "b11664e74f4003c97ceed93f41b1eab2962020e9",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "sibling",
+          "sourceFile": "test/test-hermes-spec-to-pr-enhancements.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-05T02:11:57.687Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "step5-AC3",
+        "step5-g2code"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "**Zero-Dependency Sabotage Verification / Fault Injection Proof (Step 5 & Step 7)**: Enhance `ws-verify-plan` and `ws-testing` with a built-in sabotage verification protocol for bug fixes and regression tests. The verifier validates that newly added test assertions fail when the fix is temporarily disabled or inverted (sabotage run) and pass when restored, ensuring tests truly bite without requiring external mutation testing binaries.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-plan-verify/SKILL.md:L58-L58",
+        ".agents/skills/ws-testing/SKILL.md:L79-L79"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-plan-verify/SKILL.md",
+          "lineStart": 58,
+          "lineEnd": 58,
+          "sha256": "e4dbe6433da1c86a338ca8fb6f54b3031fdf68b3c39e48edbbd93be10fa00c82"
+        },
+        {
+          "path": ".agents/skills/ws-testing/SKILL.md",
+          "lineStart": 79,
+          "lineEnd": 79,
+          "sha256": "dc5da421affb89e30df50284b53ff2cbde9be212e0587a202fe399e14e952c61"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "b11664e74f4003c97ceed93f41b1eab2962020e9",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "sabotage",
+          "sourceFile": "test/test-hermes-spec-to-pr-enhancements.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-05T02:12:02.444Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "step5-AC4",
+        "step5-g2code"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "**CI Baseline vs Diff Failure Triage (Step 8 & Step 9)**: Update `ws-ship-pr`, `ws-fix-pr`, and `ws-goal-fix-pr` with CI failure triage discipline: inspect detailed failure logs (`gh pr checks` / `gh run view --log-failed`), reproduce suspected baseline failures against the default branch, allow a single rerun for confirmed infrastructure flakes, and isolate genuine diff regressions for targeted fixes.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fix-pr/SKILL.md:L86-L86",
+        ".agents/skills/ws-shared/scm-provider-contract.md:L33-L33",
+        ".agents/skills/ws-ship-pr/SKILL.md:L96-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fix-pr/SKILL.md",
+          "lineStart": 86,
+          "lineEnd": 86,
+          "sha256": "4c45dd4a8d967a71082777cd7d5af3fcbe7e12a064dcd8d3c97093797d05bcc1"
+        },
+        {
+          "path": ".agents/skills/ws-shared/scm-provider-contract.md",
+          "lineStart": 33,
+          "lineEnd": 33,
+          "sha256": "d686c441ad5de76b07b4ed668505226b65d0db512d3886a63d3ea9a9c4d230b0"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/SKILL.md",
+          "lineStart": 96,
+          "lineEnd": 96,
+          "sha256": "66e017660ca8a1fdf48940cda1a9b7c246aced2040acca073befad50d94ba5c2"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "b11664e74f4003c97ceed93f41b1eab2962020e9",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "triage",
+          "sourceFile": "test/test-hermes-spec-to-pr-enhancements.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-05T02:12:02.712Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "step5-AC5",
+        "step5-g2code"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "**Issue Tracker Close-Loop Reporting (Step 8/9 & Providers)**: Add `comment-issue` / `close-loop` intent to SCM providers (`ws-github-provider`, `ws-azure-devops-provider`) and dispatch it in `ws-ship-pr` upon PR creation and/or merge. Posts a concise traceable resolution comment linking the PR and summary back to the original tracker issue.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scm-provider-contract.md:L35-L35",
+        ".agents/skills/ws-ship-pr/SKILL.md:L93-L93"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scm-provider-contract.md",
+          "lineStart": 35,
+          "lineEnd": 35,
+          "sha256": "d686c441ad5de76b07b4ed668505226b65d0db512d3886a63d3ea9a9c4d230b0"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/SKILL.md",
+          "lineStart": 93,
+          "lineEnd": 93,
+          "sha256": "66e017660ca8a1fdf48940cda1a9b7c246aced2040acca073befad50d94ba5c2"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "b11664e74f4003c97ceed93f41b1eab2962020e9",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "close-loop",
+          "sourceFile": "test/test-hermes-spec-to-pr-enhancements.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-05T02:12:03.028Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "step5-AC6",
+        "step5-g2code"
+      ]
+    }
+  ],
+  "negativeScenarios": [],
+  "scoreState": null
+}

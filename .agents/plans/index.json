@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 6,
-  "generatedAt": "2026-09-03T13:22:42Z",
+  "revision": 18,
+  "generatedAt": "2026-09-05T02:30:46Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -114,6 +114,17 @@
       "runPath": ".agents/plans/fix-pr-batch-plan-exec/run.json"
     },
     {
+      "workflowId": "hermes-spec-to-pr-enhancements-20260905T015600Z",
+      "slug": "hermes-spec-to-pr-enhancements",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/hermes-spec-to-pr-enhancements/hermes-spec-to-pr-enhancements-20260905T015600Z.state.md",
+      "stateSha256": "b440e874577df08bb5bc497a8eb008d290ef802ba9e6834fcb48265086ef723c",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-05T02:21:19Z",
+      "runPath": ".agents/plans/hermes-spec-to-pr-enhancements/run.json"
+    },
+    {
       "workflowId": "interview-project-context-auto-answer-20260808T034812Z",
       "slug": "interview-project-context-auto-answer",
       "pipeline": "lite",
@@ -151,10 +162,10 @@
       "slug": "provider-fetch-visual-attachments",
       "pipeline": "standard",
       "statePath": ".agents/plans/provider-fetch-visual-attachments/provider-fetch-visual-attachments-20260903T131113Z.state.md",
-      "stateSha256": "e1eaecd98c551b7f042fce1e7913d38503297100ee11fbd96e5c3dce43595223",
-      "status": "active",
-      "currentStep": 2,
-      "updatedAt": "2026-09-03T13:22:42Z",
+      "stateSha256": "6c4ee85b84706f96fd8fc0f29d50ff8e84aee7424d5feda42b4d0543d7d39428",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-03T15:12:17Z",
       "runPath": ".agents/plans/provider-fetch-visual-attachments/run.json"
     },
     {
@@ -184,10 +195,10 @@
       "slug": "skill-family-naming",
       "pipeline": "standard",
       "statePath": ".agents/plans/skill-family-naming/skill-family-naming-20260902T215014Z.state.md",
-      "stateSha256": "c0d116e3840acf341da4267d87adc49c7ea797701fdd455c531e3374c1d9c5f5",
-      "status": "active",
-      "currentStep": 5,
-      "updatedAt": "2026-09-03T01:55:28Z",
+      "stateSha256": "7ae052fa90fc0b3b274a390c4027aa7b49e07b0c87399656b23bfdc0dfc8b7a1",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-05T02:30:46Z",
       "runPath": ".agents/plans/skill-family-naming/run.json"
     },
     {
@@ -464,6 +475,28 @@
       "currentStep": 5,
       "updatedAt": "2026-08-27T15:12:08Z",
       "runPath": ".agents/plans/us-250/run.json"
+    },
+    {
+      "workflowId": "us-272-20260903T165000Z",
+      "slug": "us-272",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-272/us-272-20260903T165000Z.state.md",
+      "stateSha256": "ebfaf64624938ba1f291603797e23cba7a847841f64f85041f6b5d78588cd49e",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-03T17:51:28Z",
+      "runPath": ".agents/plans/us-272/run.json"
+    },
+    {
+      "workflowId": "us-275-20260904T020000Z",
+      "slug": "us-275",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-275/us-275-20260904T020000Z.state.md",
+      "stateSha256": "f44f73599d51fcdf7bb476cd91534de0437381598cfa1c7a44b12fadd90eb103",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-04T02:50:19Z",
+      "runPath": ".agents/plans/us-275/run.json"
     },
     {
       "workflowId": "us-global-vs-project-skill-installation",

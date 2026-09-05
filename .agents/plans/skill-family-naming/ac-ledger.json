@@ -1,22 +1,52 @@
 {
   "schemaVersion": 1,
-  "revision": 6,
+  "revision": 40,
   "workflowId": "skill-family-naming",
   "slug": "skill-family-naming",
   "specPath": ".agents/plans/skill-family-naming/step-00-skill-family-naming.spec.md",
   "planIndexPath": ".agents/plans/skill-family-naming/plan.index.json",
   "declaredGaps": [],
-  "aliasResults": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "harness-pipeline-handoff",
+      "commandHash": "a9b0e39a93ab1f2dc7a4e45382e2302d87570c3640b5b36175c7438e946dfb71",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "retired-dirs-scan",
+      "commandHash": "5db979597d5f450f0fb1dc88ae40baa90b3621d64c2b313960a72b82ed97087c",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "verify-integrity",
+      "commandHash": "b964195e87fceab283886ed88e48c9ea139202e5ffc38f7ced3938d07dceeb4c",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
   "testingSkip": null,
   "acceptanceCriteria": [
     {
       "id": "AC1",
       "text": "Directory `.agents/skills/ws-spec-write/` exists with `SKILL.md` `name: ws-spec-write` and load banner `ws-spec-write loaded.`. Directory `.agents/skills/ws-write-spec/` does not exist in the SoT.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-spec-write/SKILL.md:L1-L12",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -36,9 +66,30 @@
         "section-003",
         "section-004"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-write/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "f07b9e759b63c261334e69a20f531703a6d0abb5c50fee4053f6919d344ad579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-write",
+          "sourceFile": ".agents/skills/ws-spec-write/SKILL.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:09.248Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -48,16 +99,21 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac-evidence",
+        "step5-ac01-test"
+      ]
     },
     {
       "id": "AC2",
       "text": "Directory `.agents/skills/ws-spec-update/` exists with `name: ws-spec-update` and banner `ws-spec-update loaded.`. Directory `.agents/skills/ws-sync-spec/` does not exist in the SoT.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-spec-update/SKILL.md:L1-L12",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -77,9 +133,30 @@
         "section-003",
         "section-005"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-update/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "baac35e612083d074ace02b700948fee68e325212799568f47a290b852e7ed1f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-update",
+          "sourceFile": ".agents/skills/ws-spec-update/SKILL.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:09.345Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -89,16 +166,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac02"
+      ]
     },
     {
       "id": "AC3",
       "text": "Directory `.agents/skills/ws-spec-multi/` exists with `name: ws-spec-multi`. Directory `.agents/skills/ws-multi-spec/` does not exist in the SoT.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-spec-multi/SKILL.md:L1-L12",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -118,9 +199,30 @@
         "section-003",
         "section-006"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "c80678a88b5ca3552651322320c5ac8e87e76bc705e6847494fc7cfffbcb187e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-multi",
+          "sourceFile": ".agents/skills/ws-spec-multi/SKILL.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:09.836Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -130,16 +232,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac03"
+      ]
     },
     {
       "id": "AC4",
       "text": "Directories `.agents/skills/ws-spec-provider-github/`, `ws-spec-provider-azure-devops/`, and `ws-spec-provider-local/` exist with matching `name:` fields and load banners. Directories `ws-github-provider`, `ws-azure-devops-provider`, and `ws-local-spec-provider` do not exist in the SoT. Scripts and INTENTS move with each folder; callers use the new paths.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-spec-provider-github/SKILL.md:L1-L20",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -159,9 +265,30 @@
         "section-003",
         "section-006"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-github/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 20,
+          "sha256": "978c278f69e5a1ce6b63a4bdbc88fc4b7808f574122c7ca7a4dead5fd90033f8"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-provider-github",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:17.499Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -171,16 +298,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac04"
+      ]
     },
     {
       "id": "AC5",
       "text": "Directories `ws-plan-write`, `ws-plan-verify`, `ws-plan-update`, and `ws-plan-interview` exist with matching `name:` fields. Directories `ws-write-plan`, `ws-verify-plan`, `ws-update-plan-implementation`, and `ws-interview` do not exist in the SoT.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-plan-write/SKILL.md:L1-L12",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -199,9 +330,30 @@
         "section-003",
         "section-007"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-plan-write/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "88b01993cc2991367a270173f55255ddb8b31526169d134da9e5a74f522c4b48"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-plan-write",
+          "sourceFile": ".agents/skills/ws-plan-write/SKILL.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:17.587Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -211,16 +363,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac05"
+      ]
     },
     {
       "id": "AC6",
       "text": "Every packaged skill id that contains the substring `spec` (folder name and `name:`) matches `^ws-spec-`. A repo-wide grep of hashed skill trees and `bin/skill-dependencies.json` finds zero live ids `ws-write-spec`, `ws-sync-spec`, `ws-multi-spec`, `ws-local-spec-provider`, `ws-github-provider`, or `ws-azure-devops-provider`.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
+        "bin/skill-dependencies.json:L20-L60",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -239,9 +395,30 @@
         "section-003",
         "section-008"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": "bin/skill-dependencies.json",
+          "lineStart": 20,
+          "lineEnd": 60,
+          "sha256": "3d3f5350a91dbfad27f884ac6ff78fe6df28a11d5db924a3d0c757faa32b30af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-write",
+          "sourceFile": "bin/skill-dependencies.json",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:17.671Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -251,16 +428,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac06"
+      ]
     },
     {
       "id": "AC7",
       "text": "`bin/skill-dependencies.json` and `{sharedDir}/skill-dependencies.json` use only the new ids in `packages.*` and `dependencies` keys/arrays. Graph edges that pointed at old ids point at the successors (including orch deps that listed `ws-write-spec` or the three old provider ids).",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-shared/skill-dependencies.json:L1-L30",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -279,9 +460,30 @@
         "section-003",
         "section-007"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/skill-dependencies.json",
+          "lineStart": 1,
+          "lineEnd": 30,
+          "sha256": "3d3f5350a91dbfad27f884ac6ff78fe6df28a11d5db924a3d0c757faa32b30af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-provider-github",
+          "sourceFile": "bin/skill-dependencies.json",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:22.121Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -291,16 +493,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac07"
+      ]
     },
     {
       "id": "AC8",
       "text": "Root `AGENTS.md`, `{sharedDir}/AGENTS.md`, `{sharedDir}/autoload.md` (specs vocabulary, router, keyword table, ASCII flow), `CATALOG.md` (root and hub), `FEATURES.md`, `README.md`, `tools.md`, `setup.md`, `config-resolution.md`, `scm-provider-contract.md`, and `ws-spec-format` / `FORMAT.md` name only the new ids for live routing. Specs router maps “write a spec” → `ws-spec-write`, “sync spec to code / spec drift” → `ws-spec-update`, and provider keywords (GitHub / ADO / local register) → the matching `ws-spec-provider-*` skill. Authoring prose may describe the trio as **spec providers** (`ws-spec-provider-*`); it MUST NOT invent a fourth installable skill folder named `ws-spec-providers`.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-shared/autoload.md:L1-L40",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -319,9 +525,30 @@
         "section-003",
         "section-009"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/autoload.md",
+          "lineStart": 1,
+          "lineEnd": 40,
+          "sha256": "f088aa319f61b25cd3256706bbab0e312511cd6966655d82e037c8569c5698d4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-write",
+          "sourceFile": ".agents/skills/ws-shared/autoload.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:22.187Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -331,16 +558,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac08"
+      ]
     },
     {
       "id": "AC9",
       "text": "`SKILL_AUTHORING.md` states the `ws-{family}-{skillName}` rule, the specs-family hard rule (`ws-spec-*` only), and the `ws-spec-provider-{backend}` subfamily rule. It lists the in-scope rename table and the deferred optional families from this spec’s Description.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-write-a-skill/SKILL_AUTHORING.md:L169-L200",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -359,9 +590,30 @@
         "section-003",
         "section-009"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-write-a-skill/SKILL_AUTHORING.md",
+          "lineStart": 169,
+          "lineEnd": 200,
+          "sha256": "34767ca536c7315f9de022d1150a0babdff2100705086067e81f6c8ccf71fb07"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-{family}-{skillName}",
+          "sourceFile": ".agents/skills/ws-write-a-skill/SKILL_AUTHORING.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:22.253Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -371,16 +623,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac09"
+      ]
     },
     {
       "id": "AC10",
       "text": "`ws-check-harness` fails closed (critical) when a packaged skill folder or `skill-dependencies.json` id matches `^ws-(?!spec-)[a-z0-9-]*spec` (token `spec` not immediately after `ws-`) or equals a retired host-first provider id (`ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`). Existing `ws-spec-*` ids pass.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-check-harness/PHASES.md:L270-L282",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -400,9 +656,30 @@
         "section-003",
         "section-010"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/PHASES.md",
+          "lineStart": 270,
+          "lineEnd": 282,
+          "sha256": "2810235473da96ea941b4981221995a8e74b28636ce5a7fd32b61265fbf98298"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "^ws-(?!spec-)[a-z0-9-]*spec",
+          "sourceFile": ".agents/skills/ws-check-harness/PHASES.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:26.758Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -412,16 +689,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac10"
+      ]
     },
     {
       "id": "AC11",
       "text": "`ws-spec-update/SKILL.md` requires, after approved spec-body edits: if the triggering change was a correction/fix that ACs missed, write a `ws-self-learning` memory entry (missed requirement + `DO NOT` / `INSTEAD DO`) and compile; if wording-only alignment, skip memory and report that skip. It still distinguishes itself from `ws-spec-index` sync.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-spec-update/SKILL.md:L60-L70",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -441,9 +722,30 @@
         "section-003",
         "section-004"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-update/SKILL.md",
+          "lineStart": 60,
+          "lineEnd": 70,
+          "sha256": "baac35e612083d074ace02b700948fee68e325212799568f47a290b852e7ed1f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Self-Learning Memory Hook",
+          "sourceFile": ".agents/skills/ws-spec-update/SKILL.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:26.827Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -453,16 +755,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac11"
+      ]
     },
     {
       "id": "AC12",
       "text": "`invocation_names` for renamed skills include the new short names (`spec-write`, `spec-update`, `spec-multi`, `spec-provider-github`, `spec-provider-azure-devops`, `spec-provider-local`, `plan-write`, `plan-verify`, `plan-update`, `plan-interview`). Retired folder ids are not required as `name:`.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-plan-interview/SKILL.md:L1-L12",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -483,9 +789,30 @@
         "section-005",
         "section-006"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-plan-interview/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "79e6c241780263fac04623f54917af6caf9dd93d615f0c36f47b47daca362087"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "spec-write",
+          "sourceFile": ".agents/skills/ws-spec-write/SKILL.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:26.893Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -495,16 +822,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac12"
+      ]
     },
     {
       "id": "AC13",
       "text": "Installer `update` in a scratch tree that already had the old folders results in only the new folders on disk (retired directories absent). Tests under `test/` that hardcoded old folder names use the new names and still pass `npm run test`.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs:L25-L45",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -524,9 +855,30 @@
         "section-003",
         "section-011"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+          "lineStart": 25,
+          "lineEnd": 45,
+          "sha256": "f5e68d95e73f602020042fbf094b03e001d6f56907a9b3bb9d21991feff4b6e1"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "RETIRED_SKILL_DIRS",
+          "sourceFile": ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:30.270Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -536,16 +888,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac13"
+      ]
     },
     {
       "id": "AC14",
       "text": "`ws-spec-provider-github` and `ws-spec-provider-azure-devops` fetch-to-spec prose and scripts invoke `ws-spec-write` then `ws-spec-provider-local` register (not the retired ids). Shared SCM intents remain defined once in `scm-provider-contract.md` and implemented by both remote providers.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-spec-provider-github/SKILL.md:L53-L76",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -566,9 +922,30 @@
         "section-005",
         "section-008"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-github/SKILL.md",
+          "lineStart": 53,
+          "lineEnd": 76,
+          "sha256": "978c278f69e5a1ce6b63a4bdbc88fc4b7808f574122c7ca7a4dead5fd90033f8"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-provider-local",
+          "sourceFile": ".agents/skills/ws-spec-provider-github/SKILL.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:30.329Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -578,16 +955,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac14"
+      ]
     },
     {
       "id": "AC15",
       "text": "`config.json` `providers.active` / `providers.scm` enum strings remain `github` | `azure-devops` | `local`. Live resolution docs and scripts load `ws-spec-provider-github`, `ws-spec-provider-azure-devops`, or `ws-spec-provider-local` from those values. `ws-ship-pr`, `ws-fix-pr`, `ws-spec-to-pr`, and `ws-spec-to-pr-lite` keep those orchestrator folder ids unchanged.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/skills/ws-shared/scm-provider-contract.md:L15-L29",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -608,9 +989,30 @@
         "section-005",
         "section-008"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scm-provider-contract.md",
+          "lineStart": 15,
+          "lineEnd": 29,
+          "sha256": "d686c441ad5de76b07b4ed668505226b65d0db512d3886a63d3ea9a9c4d230b0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ws-spec-provider-github",
+          "sourceFile": ".agents/skills/ws-shared/scm-provider-contract.md",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T00:02:30.385Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -620,16 +1022,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac15"
+      ]
     },
     {
       "id": "AC16",
       "text": "After hashed content changes, `npm run generate-integrity` and `npm run verify-integrity` exit 0 in the same ship commit. Site catalog rebuild (`npm run build-site:bump` at ship) lists the new ids. `ws-check-harness` Phases 0–5c report 0 critical findings for the renamed ids and hub drift.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
+        "bin/skill-integrity.json:L1-L10",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -649,9 +1055,30 @@
         "section-003",
         "section-012"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": "bin/skill-integrity.json",
+          "lineStart": 1,
+          "lineEnd": 10,
+          "sha256": "05001dffd178b219fe58f18c2eefdd8e4ca9df7760eed927a655b38953f3fe4f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "verify-integrity",
+          "sourceFile": "package.json",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-05T02:30:08.937Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -661,16 +1088,21 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "resume-step8-relink-ac16",
+        "step5-ac16"
+      ]
     },
     {
       "id": "AC17",
       "text": "Archived plan/spec history may still contain retired ids; no AC requires rewriting `{plansDir}` archives or past changelog entries.",
-      "status": "Satisfied",
+      "status": "Implemented",
       "evidence": [
-        "Skill folder moved and verified under .agents/skills/",
-        "SKILL.md frontmatter name and load banner updated",
+        ".agents/plans/skill-family-naming/step-00-skill-family-naming.spec.md:L75-L81",
         "References updated across codebase and tests",
+        "SKILL.md frontmatter name and load banner updated",
+        "Skill folder moved and verified under .agents/skills/",
         "npm test and npm run verify-integrity passed clean"
       ],
       "tasks": [
@@ -689,9 +1121,30 @@
         "section-003",
         "section-009"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/plans/skill-family-naming/step-00-skill-family-naming.spec.md",
+          "lineStart": 75,
+          "lineEnd": 81,
+          "sha256": "c2eedbcdc257fd61e659aad044c1cba4a2860e4ebabbcba08d7bdceef6f40c73"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3479171be14d35f8f37de25642200017ecaee03e",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC17",
+          "sourceFile": ".agents/plans/skill-family-naming/step-02-skill-family-naming.plan.refined.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-05T00:02:33.926Z"
+        }
+      ],
       "verdicts": [
         "PASS"
       ],
@@ -701,9 +1154,21 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-commit-link",
+        "step5-ac17"
+      ]
     }
   ],
   "negativeScenarios": [],
-  "scoreState": null
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 170,
+    "totalUnits": 170,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-09-05T02:30:09.022Z"
+  }
 }
