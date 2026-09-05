@@ -82,6 +82,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import GH/ADO issues → specs |
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries for delivery (Extra) |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
+| `ws-megabrain` | `.agents/skills/ws-megabrain/SKILL.md` | Vibe-coding implementer + specialists |
 | `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Status and delivery panorama |
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
@@ -111,6 +112,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Fable Method 7-step loop | This file § [3. Investigate loop](#3-investigate-loop-ws-fable-method) (live `ws-fable-method` only when authoring that skill) |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
+| What next / vibe-coding implement / megabrain | `ws-megabrain` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |

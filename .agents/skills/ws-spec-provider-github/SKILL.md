@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-github
 description: GitHub issue→spec and PR ops. Same required intents as Azure DevOps (scm-provider-contract). Trigger when providers.scm is github.
-version: 0.3.60
+version: 0.3.61
 disable-model-invocation: true
 invocation_names:
   - spec-provider-github

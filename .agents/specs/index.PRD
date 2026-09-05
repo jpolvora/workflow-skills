@@ -108,6 +108,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Installer Multi-Host Global Targets and Symlink Strategy (`spec: installer-multi-host-global-targets.spec.md`)
 - [x] Active host tool capability binding with auto-gate hard bypass (`spec: 0059-host-capability-binding-v2.spec.md`)
 - [ ] Download tracker images and attachments during fetch-to-spec (GitHub and Azure DevOps parity) (`spec: 0060-provider-fetch-visual-attachments.spec.md`)
+- [ ] ws-spec-to-pr: orquestrador implementou sem plano/refino — autoMode não deve pular Steps 1–3 (`spec: 0062-us-275.spec.md`)
+- [ ] ws-megabrain: senior product-manager router with specialist personas (`spec: 0063-ws-megabrain.spec.md`)
+
+
 
 
 
@@ -190,8 +194,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 61 | `installer-multi-host-global-targets` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Installer Multi-Host Global Targets and Symlink Strategy |
 | 62 | `host-capability-binding-v2` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Active host tool capability binding with auto-gate hard bypass |
 | 63 | `provider-fetch-visual-attachments` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Download tracker images and attachments during fetch-to-spec (GitHub and Azure DevOps parity) |
+| 64 | `us-275` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: orquestrador implementou sem plano/refino — autoMode não deve pular Steps 1–3 |
+| 65 | `ws-megabrain` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-megabrain: senior product-manager router with specialist personas |
 
-Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `modern-website-revamp`, `installer-multi-host-global-targets`, `provider-fetch-visual-attachments`.
+Open Next-spec: `hermes-spec-to-pr-enhancements` (partial), `skill-family-naming`, `unique-skill-script-runtime`. Other new work goes to Inbox, then promote, `modern-website-revamp`, `installer-multi-host-global-targets`, `provider-fetch-visual-attachments`, `us-275`, `ws-megabrain`.
 
 ## 9. Inbox
 

@@ -49,6 +49,7 @@ DEFAULT_ALWAYS_APPLIED: list[tuple[str, str]] = [
     ("ws-changelog", "Every task completion — append-only history"),
     ("ws-fable-method", "Every prompt — structured investigate/act/verify when non-trivial"),
     ("ws-tdah", "Every prompt — action-first shape + judgment"),
+    ("ws-megabrain", "Every prompt — vibe-coding implementer (no spec required); defer when orch owns the session"),
 ]
 
 # Author-machine absolute paths (Windows drive, UNC, POSIX home/opt). Never emit these.

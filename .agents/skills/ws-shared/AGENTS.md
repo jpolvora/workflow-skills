@@ -67,7 +67,7 @@
 
 Default **shared hub only** (typical consumer install): `ws-tdah` and `ws-senior-developer` are **on-demand** — `ws-tdah` via explicit invoke; `ws-senior-developer` via `rules.seniorDeveloper` or explicit invoke. Neither is in the mandatory autoload table above.
 
-Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (installer never writes it; generate via [`ws-configure-project`](../ws-configure-project/SKILL.md) `--section autoload`) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an **intentional consumer override**, not a shared-hub defect. Effective autoload is **false** when `config.json` is missing, the key is omitted, or the value is not explicit `true`. **`ws-karpathy-guidelines` remains in this hub's mandatory Skill loading table** and is not part of the Always-applied promotion set (see `autoload.md` complement note).
+Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (installer never writes it; generate via [`ws-configure-project`](../ws-configure-project/SKILL.md) `--section autoload`) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an intentional root override, not a hub defect. Effective autoload is **false** when `config.json` is missing, the key is omitted, or the value is not explicit `true`. **`ws-karpathy-guidelines` remains in this hub's mandatory Skill loading table** and is not part of the Always-applied promotion set (see `autoload.md` complement note).
 
 **Specs progressive disclosure:** when the user mentions specs, plans, Spec-to-PR, `index.PRD`, or related keywords without naming a skill, load [`autoload.md`](autoload.md) § Specs vocabulary and § Specs skill router — then load **only** the matching skill.
 
@@ -75,7 +75,7 @@ Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (ins
 
 When **both** hubs load in one session, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions over shared-hub opt-in wording here.
 
-See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGENTS.md` § Upstream session contract (dogfood; not live skill autoload).
+See also: [`setup.md`](setup.md) § External dependencies.
 
 ### Precedence (highest first)
 
@@ -86,12 +86,14 @@ See also: [`setup.md`](setup.md) § External dependencies · upstream root `AGEN
 5. `ws-senior-developer` when autoloaded (root hub, `autoload.md`, or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
 6. `ws-fable-method` when autoloaded (root / `autoload.md`; defer Plan-First when orch owns session or senior plan already confirmed)
 7. `ws-tdah` when autoloaded (root hub, `autoload.md`, or `/ws-tdah`; opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`)
+8. `ws-megabrain` when autoloaded (defer orch; `stop ws-megabrain`)
 
 ### Opt-out
 
 | Phrase | Effect |
 |--------|--------|
 | `stop ws-tdah` / `stop verbosity` / `normal mode` | Disable ws-tdah |
+| `stop ws-megabrain` | Disable ws-megabrain |
 | `stop ws-gabarito` / `sem ws-gabarito` | Same disable (retired alias) |
 | `stop ws-senior-developer` | Disable ws-senior-developer when autoloaded |
 | `/ws-tdah` · `/tdah` · `start ws-tdah` · `start ws-gabarito` | Activate (single default mode) |
@@ -124,8 +126,6 @@ Skills under `.agents/skills/` (except consumer-owned `ws-shared/` data) are **m
 | **Consumer repo / CI / Actions** | Verify a real runtime bug with evidence. If a lasting skill/script fix is needed, **tell the user to fix upstream** ([workflow-skills](https://github.com/jpolvora/workflow-skills) PR) or open that PR; local experiments are temporary only. | Autonomously reorder, “hygiene-refactor,” or rewrite managed skill scripts from a false positive (e.g. Python same-module call-before-`def` is not a `NameError`). |
 | **Managed script calls** | Invoke with explicit launchers (`python` / `node` / `bash`) per [`tools.md`](tools.md) § Script launchers. On failure: report and stop. | Rewrite managed scripts for shell quirks, or invent temp scanners/bridges when a recipe fails. |
 | **Agent shell scans** | Prefer `python -m py_compile` on real `*.py` paths, or a short **uncommitted** temp script if a one-liner heredoc breaks on quoting. Delete temps when done. | Commit throwaway scanners into the consumer tree, or treat shell `SyntaxError` in an embedded heredoc as a skill-script bug. |
-
-Prefer reporting + upstream suggestion over silent local churn.
 
 ---
 

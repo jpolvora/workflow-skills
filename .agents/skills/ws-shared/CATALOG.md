@@ -24,6 +24,7 @@
 | `ws-spec-memo` | [`../ws-spec-memo/SKILL.md`](../ws-spec-memo/SKILL.md) |
 | `ws-task-lifecycle` | [`../ws-task-lifecycle/SKILL.md`](../ws-task-lifecycle/SKILL.md) |
 | `ws-pre-daily` | [`../ws-pre-daily/SKILL.md`](../ws-pre-daily/SKILL.md) |
+| `ws-megabrain` | [`../ws-megabrain/SKILL.md`](../ws-megabrain/SKILL.md) |
 | `ws-spec-explain` | [`../ws-spec-explain/SKILL.md`](../ws-spec-explain/SKILL.md) |
 | `ws-spec-archive` | [`../ws-spec-archive/SKILL.md`](../ws-spec-archive/SKILL.md) |
 | `ws-cleanup` | [`../ws-cleanup/SKILL.md`](../ws-cleanup/SKILL.md) |
@@ -73,6 +74,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Bulk-import GH issues / ADO User Stories → local specs | `ws-spec-from-provider` |
 | Timesheet / activity hours for a Spec-to-PR delivery day (plan folder) | `ws-activity-report` (Extra) |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
+| What next / vibe-coding implement / megabrain | `ws-megabrain` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |

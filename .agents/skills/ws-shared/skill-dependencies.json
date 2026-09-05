@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.3.60",
+  "packageVersion": "0.3.61",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -61,6 +61,7 @@
         "ws-task-lifecycle",
         "ws-senior-developer",
         "ws-pre-daily",
+        "ws-megabrain",
         "ws-spec-explain",
         "ws-cleanup",
         "ws-spec-archive",
@@ -213,6 +214,14 @@
     "ws-activity-report": [],
     "ws-pre-daily": [
       "ws-configure-project"
+    ],
+    "ws-megabrain": [
+      "ws-fable-method",
+      "ws-senior-developer",
+      "ws-karpathy-guidelines",
+      "ws-tdah",
+      "ws-self-learning",
+      "ws-changelog"
     ],
     "ws-task-lifecycle": [
       "ws-spec-write",
