@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/us-272/step-02-us-272.plan.refined.md",
+    "sha256": "b5793d777c3284b0c18b64f4124d270f8d06549359b810dac2a5150e0e1678dc",
+    "bytes": 20800,
+    "lines": 123
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "0. Summary & Business Rules",
+      "level": 2,
+      "byteStart": 220,
+      "byteEnd": 2864,
+      "lineStart": 10,
+      "lineEnd": 25,
+      "sha256": "8ee0d29cd857e19c073808035d3277a3bed8033c95406cbd1af4ceb98552a1aa",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        "bin/skill-integrity.json"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-002",
+      "title": "1. Definition of Ready & Scope",
+      "level": 2,
+      "byteStart": 2864,
+      "byteEnd": 4540,
+      "lineStart": 26,
+      "lineEnd": 41,
+      "sha256": "effc610f50999a14e0246862e4f82317c99f234b7f6412d6d0bb793d250d0f7f",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-*",
+        "bin/skill-dependencies.json"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "2. Technical Design & Architecture",
+      "level": 2,
+      "byteStart": 4540,
+      "byteEnd": 9210,
+      "lineStart": 42,
+      "lineEnd": 60,
+      "sha256": "c70a2513b6d320be042e3668c65380cd9cf0e713a6786368eb76b7d08b702445",
+      "acRefs": [
+        "AC3"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/",
+        ".agents/skills/ws-azure-devops-provider/...",
+        ".agents/skills/ws-github-provider/...",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "AGENTS.md",
+        "bin/*.js",
+        "bin/cli.js",
+        "bin/consumer-migration.js",
+        "bin/skill-dependencies.json",
+        "test/",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-004",
+      "title": "3. Step-by-Step Plan",
+      "level": 2,
+      "byteStart": 9210,
+      "byteEnd": 12482,
+      "lineStart": 61,
+      "lineEnd": 70,
+      "sha256": "5ec9fa450c73687bf2dee90f190022048e62dae3e6ae88621e326bf392b49700",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC6",
+        "AC7"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-check-harness/",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-shared/",
+        ".agents/skills/ws-shared/config-resolution.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "AGENTS.md",
+        "bin/",
+        "bin/cli.js",
+        "bin/consumer-migration.js",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "test/test-consumer-migration.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-005",
+      "title": "4. Permissions, Tenancy & i18n",
+      "level": 2,
+      "byteStart": 12482,
+      "byteEnd": 12883,
+      "lineStart": 71,
+      "lineEnd": 74,
+      "sha256": "8cd9b61397a080a03c75ed568e261470bedf12c4e93ead6a993e858085146c04",
+      "acRefs": [
+        "AC5"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-006",
+      "title": "5. Test Coverage",
+      "level": 2,
+      "byteStart": 12883,
+      "byteEnd": 14664,
+      "lineStart": 75,
+      "lineEnd": 85,
+      "sha256": "de96e490c76e2273e6c036c76bd6104fb39df982a1fd2c8626e1d7294ffecad4",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "AGENTS.md",
+        "test-consumer-migration.js",
+        "test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-007",
+      "title": "6. Invariants (Do Not Violate)",
+      "level": 2,
+      "byteStart": 14664,
+      "byteEnd": 15598,
+      "lineStart": 86,
+      "lineEnd": 94,
+      "sha256": "fa8145e01519f794a3fb0590be9209460b70402a76217b79989d62dc92b02243",
+      "acRefs": [
+        "AC5"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        "bin/cli.js",
+        "bin/skill-dependencies.json"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-008",
+      "title": "7. Pre-PR Checklist",
+      "level": 2,
+      "byteStart": 15598,
+      "byteEnd": 15994,
+      "lineStart": 95,
+      "lineEnd": 103,
+      "sha256": "99cbe230b5c47608ddebad46f8ce2fd5e7aa646f649684706612b5cd1808d872",
+      "acRefs": [
+        "AC1",
+        "AC7"
+      ],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-009",
+      "title": "8. Open Questions — resolved (autoMode, Step 2 interview)",
+      "level": 2,
+      "byteStart": 15994,
+      "byteEnd": 17042,
+      "lineStart": 104,
+      "lineEnd": 108,
+      "sha256": "5e9cbce507a85eae0cb6515d57a54606843971560979686acae7d84c3741afe2",
+      "acRefs": [
+        "AC3"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        "AGENTS.md",
+        "bin/cli.js",
+        "bin/install-rules.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-010",
+      "title": "Interview registry",
+      "level": 2,
+      "byteStart": 17042,
+      "byteEnd": 20800,
+      "lineStart": 109,
+      "lineEnd": 123,
+      "sha256": "bf464ec491d2537099eb92e0f09747bcf77356a0c36733b2ccf3a2aa4a590863",
+      "acRefs": [
+        "AC1",
+        "AC3",
+        "AC7"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-shared/config.json.example:89,98",
+        ".agents/skills/ws-shared/scripts/resolve_consumer_root.cjs:99-107",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs:24-39,169-193",
+        "AGENTS.md",
+        "bin/cli.js:617-620",
+        "bin/cli.js:622-627",
+        "bin/cli.js:628-676",
+        "bin/consumer-migration.js",
+        "bin/consumer-migration.js:8-15",
+        "bin/install-rules.js:11-40",
+        "bin/install-rules.js:11-40,55-65"
+      ],
+      "expectedTestNames": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "After running installer `update` on a pre-rename consumer tree, project-local `ws-shared/autoload.md` contains zero retired skill ids (`ws-write-spec`, `ws-sync-spec`, `ws-multi-spec`, `ws-local-spec-provider`, `ws-verify-plan`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-interview`, `ws-write-plan`, `ws-update-plan-implementation`) and all `../ws-*/SKILL.md` link targets resolve under project `{skillsRoot}` or `{globalSkillsRoot}` hybrid resolution.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-check-harness/",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-shared/",
+        ".agents/skills/ws-shared/config-resolution.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/config.json.example:89,98",
+        ".agents/skills/ws-shared/scripts/resolve_consumer_root.cjs:99-107",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs:24-39,169-193",
+        "AGENTS.md",
+        "bin/",
+        "bin/cli.js",
+        "bin/cli.js:617-620",
+        "bin/cli.js:622-627",
+        "bin/cli.js:628-676",
+        "bin/consumer-migration.js",
+        "bin/consumer-migration.js:8-15",
+        "bin/install-rules.js:11-40",
+        "bin/install-rules.js:11-40,55-65",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test/test-consumer-migration.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC2",
+      "text": "After running installer `update`, consumer `installed-skills.json` contains zero retired ids (the ten `ws-*` retired ids plus legacy bare ids `azure-devops`, `caveman`, `code-review`, `fix-pr`, `plan-us`, `us-delivery-workflow` are pruned or mapped to canonical ids) and a subsequent `update`/`uninstall` operates only on installed canonical skills.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-check-harness/",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-shared/",
+        ".agents/skills/ws-shared/config-resolution.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "AGENTS.md",
+        "bin/",
+        "bin/cli.js",
+        "bin/consumer-migration.js",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test/test-consumer-migration.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC3",
+      "text": "On a global-hybrid install (skills under `{globalSkillsRoot}`, project-local `ws-shared/` with consumer data only), the configured `rules.harness` path resolves: either the installer seeds a thin local `ws-shared/AGENTS.md` pointer to the global hub, or the `rules.harness` default plus comment documents the `{globalSkillsRoot}` fallback, so an agent reading the configured path succeeds without manual fallback.",
+      "planSectionIds": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-azure-devops-provider/...",
+        ".agents/skills/ws-check-harness/",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-github-provider/...",
+        ".agents/skills/ws-shared/",
+        ".agents/skills/ws-shared/config-resolution.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/config.json.example:89,98",
+        ".agents/skills/ws-shared/scripts/resolve_consumer_root.cjs:99-107",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs:24-39,169-193",
+        "AGENTS.md",
+        "bin/",
+        "bin/*.js",
+        "bin/cli.js",
+        "bin/cli.js:617-620",
+        "bin/cli.js:622-627",
+        "bin/cli.js:628-676",
+        "bin/consumer-migration.js",
+        "bin/consumer-migration.js:8-15",
+        "bin/install-rules.js",
+        "bin/install-rules.js:11-40",
+        "bin/install-rules.js:11-40,55-65",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test/",
+        "test/test-consumer-migration.js",
+        "test/test-install.js",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC4",
+      "text": "`ws-check-harness` Phases 0-5c on the updated consumer hybrid fixture reports no retired-id findings for `autoload.md` / `installed-skills.json` / harness resolution, and the four mechanical gates (`check_duplicates`, `measure_harness`, `check_shell_quoting`, `check_pipeline_handoff`) plus `configure_autoload.py --check` still exit 0.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-check-harness/",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-shared/",
+        ".agents/skills/ws-shared/config-resolution.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "AGENTS.md",
+        "bin/",
+        "bin/cli.js",
+        "bin/consumer-migration.js",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test/test-consumer-migration.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC5",
+      "text": "`update` preserves consumer-owned data: project `config.json` user values, `STACK.md`, `MEMORY.md`, `memory/*`, and `CHANGELOG.md` remain byte-identical except for explicitly migrated keys documented in the plan.",
+      "planSectionIds": [
+        "section-002",
+        "section-005",
+        "section-006",
+        "section-007"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-*",
+        "AGENTS.md",
+        "bin/cli.js",
+        "bin/skill-dependencies.json",
+        "test-consumer-migration.js",
+        "test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC6",
+      "text": "Re-running installer `update` a second time on the migrated tree is idempotent: no additional file diffs, exit code 0, and no re-introduction of retired ids.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-check-harness/",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-shared/",
+        ".agents/skills/ws-shared/config-resolution.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        "AGENTS.md",
+        "bin/",
+        "bin/cli.js",
+        "bin/consumer-migration.js",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test/test-consumer-migration.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC7",
+      "text": "Any other shipped template embedding skill ids or links (hub templates beside `autoload.md` refreshed by `update`) uses canonical ids after migration; a repo-wide search for the retired ids across managed template sources returns zero hits.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008",
+        "section-010"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/",
+        ".agents/skills/ws-*",
+        ".agents/skills/ws-check-harness/",
+        ".agents/skills/ws-check-harness/PHASES.md",
+        ".agents/skills/ws-shared/",
+        ".agents/skills/ws-shared/config-resolution.md",
+        ".agents/skills/ws-shared/config.json.example",
+        ".agents/skills/ws-shared/config.json.example:89,98",
+        ".agents/skills/ws-shared/scripts/resolve_consumer_root.cjs:99-107",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs",
+        ".agents/skills/ws-shared/scripts/retired_artifacts.cjs:24-39,169-193",
+        "AGENTS.md",
+        "bin/",
+        "bin/cli.js",
+        "bin/cli.js:617-620",
+        "bin/cli.js:622-627",
+        "bin/cli.js:628-676",
+        "bin/consumer-migration.js",
+        "bin/consumer-migration.js:8-15",
+        "bin/install-rules.js:11-40",
+        "bin/install-rules.js:11-40,55-65",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "test-consumer-migration.js",
+        "test-install.js",
+        "test/test-consumer-migration.js",
+        "test/test-install.js"
+      ],
+      "expectedTestNames": []
+    }
+  ]
+}

@@ -1,19 +1,45 @@
 {
   "schemaVersion": 1,
-  "revision": 2,
+  "revision": 46,
   "workflowId": "provider-fetch-visual-attachments-20260903T131113Z",
   "slug": "provider-fetch-visual-attachments",
   "specPath": ".agents/plans/provider-fetch-visual-attachments/step-00-provider-fetch-visual-attachments.spec.md",
   "planIndexPath": ".agents/plans/provider-fetch-visual-attachments/plan.index.json",
   "declaredGaps": [],
-  "aliasResults": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "faf5a0b7d3731bacbf19e9d4c832813d4d7b88c10632cfe20d070260ccd2fbd3",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 1,
+      "skipReason": "baseline-dirty"
+    },
+    {
+      "alias": "providerParityTest",
+      "commandHash": "3af4c602af3c25e92abfbb8f8bac91eb723929934f3e60b2a9aa428a1ac8bceb",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "visualIngestTest",
+      "commandHash": "8ae8c725e375cbdf834f4cb35a46a8b4c13a6d85dbe46a673a2d363860874573",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
   "testingSkip": null,
   "acceptanceCriteria": [
     {
       "id": "AC1",
       "text": "The change extends `fetch-to-spec` on both SCM implementers in the same ship. No new intent id is added. The provider-specific allowlist stays empty.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scm-provider-contract.md:L29-L29",
+        "test/test-provider-parity.js:L90-L99"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -23,9 +49,36 @@
         "section-026",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scm-provider-contract.md",
+          "lineStart": 29,
+          "lineEnd": 29,
+          "sha256": "d686c441ad5de76b07b4ed668505226b65d0db512d3886a63d3ea9a9c4d230b0"
+        },
+        {
+          "path": "test/test-provider-parity.js",
+          "lineStart": 90,
+          "lineEnd": 99,
+          "sha256": "00a7a205d304b3c074828395d688344bce866bc8955aab0fd057ae703166f4f7"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "required intents count >= 9",
+          "sourceFile": "test/test-provider-parity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:27.950Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -33,13 +86,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC1"
+      ]
     },
     {
       "id": "AC2",
       "text": "GitHub `fetch-to-spec` extracts image and user-attachment URLs from the issue body and every comment (markdown images, HTML `img`, and `github.com/user-attachments/` file links).",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py:L163-L180"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -48,9 +106,30 @@
         "section-016",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py",
+          "lineStart": 163,
+          "lineEnd": 180,
+          "sha256": "5433ca9dcc8309010d8a6dcb48a07e07c5d1a8c1575a17b1bf1ebb2657902413"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "github extract finds body + comment urls",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.014Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -58,13 +137,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC2"
+      ]
     },
     {
       "id": "AC3",
       "text": "Azure DevOps `fetch-to-spec` extracts image and attachment URLs from Description HTML, Acceptance Criteria HTML, `AttachedFile` relations, and WIT comments.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py:L248-L261"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -73,9 +157,30 @@
         "section-017",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py",
+          "lineStart": 248,
+          "lineEnd": 261,
+          "sha256": "8b04e003826860a8de7fd1ebb9ad8a3c2cff794b49bbc28d3be546ef73370d17"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ado extract finds attachment urls",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.080Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -83,13 +188,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC3"
+      ]
     },
     {
       "id": "AC4",
       "text": "URL discovery may differ by host. Download, naming, manifest schema, Visual References shape, failure policy, and register copy are identical for GitHub and Azure DevOps.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L286-L305",
+        ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py:L384-L384",
+        ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py:L267-L267"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -101,11 +213,45 @@
         "section-017",
         "section-019",
         "section-028",
-        "section-031"
+        "section-031",
+        "section-032"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 286,
+          "lineEnd": 305,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        },
+        {
+          "path": ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py",
+          "lineStart": 384,
+          "lineEnd": 384,
+          "sha256": "8b04e003826860a8de7fd1ebb9ad8a3c2cff794b49bbc28d3be546ef73370d17"
+        },
+        {
+          "path": ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py",
+          "lineStart": 267,
+          "lineEnd": 267,
+          "sha256": "5433ca9dcc8309010d8a6dcb48a07e07c5d1a8c1575a17b1bf1ebb2657902413"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "helper ok image + disallowed host",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.151Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -113,13 +259,19 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC4"
+      ]
     },
     {
       "id": "AC5",
       "text": "Both converters call one shared ingest helper under `{sharedDir}/scripts/` that writes `{specsDir}/{specStem}.assets/` where `{specStem}` is the spec filename without `.spec.md`.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L303-L305",
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L80-L84"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -129,11 +281,39 @@
         "section-015",
         "section-016",
         "section-017",
-        "section-028"
+        "section-028",
+        "section-032"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 80,
+          "lineEnd": 84,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        },
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 303,
+          "lineEnd": 305,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "register copies assets",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.215Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -141,13 +321,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC5"
+      ]
     },
     {
       "id": "AC6",
       "text": "Each saved file is named `{NN}-{kind}-{sanitized-stem}{ext}` with `NN` starting at `01`. Kind is `screenshot`, `template`, `example`, `inline`, `comment`, or `attached`.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L100-L112"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -156,9 +341,30 @@
         "section-015",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 100,
+          "lineEnd": 112,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "01-screenshot-login.png",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.275Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -166,24 +372,51 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC6"
+      ]
     },
     {
       "id": "AC7",
       "text": "Kind prefers alt-text or original-filename keywords (`screenshot`/`print`, `template`/`mock`/`wireframe`, `example`/`sample`). Else origin maps body→`inline`, comment→`comment`, relation→`attached`. Unlabeled images default to `screenshot`.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L100-L112"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
         "section-004",
         "section-014",
         "section-015",
-        "section-028"
+        "section-028",
+        "section-032"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 100,
+          "lineEnd": 112,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "wireframe nav",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.339Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -191,13 +424,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC7"
+      ]
     },
     {
       "id": "AC8",
       "text": "Downloads reuse provider `validate-auth` credentials (GitHub token from `gh`/env, ADO PAT from the configured env var). Auth failure still STOPs the whole fetch with no silent GitHub↔Azure fallback.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L198-L228"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -211,9 +449,30 @@
         "section-018",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 198,
+          "lineEnd": 228,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "partial HTTP failure",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.394Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -221,24 +480,51 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC8"
+      ]
     },
     {
       "id": "AC9",
       "text": "URLs outside the GitHub user-attachment/user-image host allowlist or the ADO `{apiBase}` WIT attachments API are skipped as `disallowed-host`.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L133-L170"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
         "section-004",
         "section-014",
         "section-015",
-        "section-028"
+        "section-028",
+        "section-032"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 133,
+          "lineEnd": 170,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "helper ok image + disallowed host",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.476Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -246,13 +532,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC9"
+      ]
     },
     {
       "id": "AC10",
       "text": "Per-file size above 10 MiB or run total above 50 MiB is skipped as `size-limit` without failing `fetch-to-spec`.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L9-L10"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -261,9 +552,30 @@
         "section-015",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 9,
+          "lineEnd": 10,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "size-limit skip",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.564Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -271,13 +583,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC10"
+      ]
     },
     {
       "id": "AC11",
       "text": "HTTP 404, 403, or timeout on one URL records `failed` in the manifest and leaves `fetch-to-spec` exit 0 when the spec file was written.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L398-L402"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -288,9 +605,30 @@
         "section-015",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 398,
+          "lineEnd": 402,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "partial HTTP failure",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.623Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -298,24 +636,51 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC11"
+      ]
     },
     {
       "id": "AC12",
       "text": "After at least one `ok` image, the spec of record contains `## Visual References` with repo-relative markdown images plus a table of path, kind, origin, and caption.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L268-L281"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
         "section-004",
         "section-014",
         "section-015",
-        "section-028"
+        "section-028",
+        "section-032"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 268,
+          "lineEnd": 281,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "## Visual References",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.703Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -323,13 +688,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC12"
+      ]
     },
     {
       "id": "AC13",
       "text": "Zero `ok` assets means no assets directory, no Visual References heading, and `fetch-to-spec` still succeeds.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L360-L361"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -338,9 +708,30 @@
         "section-015",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 360,
+          "lineEnd": 361,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "size-limit skip",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.795Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -348,13 +739,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC13"
+      ]
     },
     {
       "id": "AC14",
       "text": "`register_local_spec.cjs` copies `{specsDir}/{specStem}.assets/` to `{us-dir}/attachments/` when the source assets directory exists.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs:L133-L137"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -363,11 +759,33 @@
         "section-014",
         "section-019",
         "section-026",
-        "section-028"
+        "section-028",
+        "section-032"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs",
+          "lineStart": 133,
+          "lineEnd": 137,
+          "sha256": "246f0963b86d37444d9d7158d1e3616e501653147286ffb5a97488b067fc2d82"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "register copies assets",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.851Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -375,13 +793,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC14"
+      ]
     },
     {
       "id": "AC15",
       "text": "`ws-spec-write` Reads each `ok` image during reformulation and writes observed UI, layout, or template constraints into Description, ACs, or Notes.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-write/SKILL.md:L76-L76"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -390,9 +813,30 @@
         "section-021",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-write/SKILL.md",
+          "lineStart": 76,
+          "lineEnd": 76,
+          "sha256": "db69c6102b5624803c211b133fe2f3a2fc6176a76a29c7f3ad608f7e13ba557e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Visual References",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.921Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -400,13 +844,20 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC15"
+      ]
     },
     {
       "id": "AC16",
       "text": "`ws-plan-write`, `ws-plan-interview`, and `ws-implement-tasks` SKILL.md require reading Visual References images before planning or editing product files when that heading exists.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L39-L39",
+        ".agents/skills/ws-plan-interview/SKILL.md:L53-L53",
+        ".agents/skills/ws-plan-write/SKILL.md:L41-L41"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -415,9 +866,42 @@
         "section-022",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 39,
+          "lineEnd": 39,
+          "sha256": "55c2dee02c178fccd73a88374f1d7df1417e1bd179158e98e59dc1f994048378"
+        },
+        {
+          "path": ".agents/skills/ws-plan-interview/SKILL.md",
+          "lineStart": 53,
+          "lineEnd": 53,
+          "sha256": "ee443cb3de7c5417b80896523ec6f4f4d212a18fc4a8fe342f9fe9c4a292a311"
+        },
+        {
+          "path": ".agents/skills/ws-plan-write/SKILL.md",
+          "lineStart": 41,
+          "lineEnd": 41,
+          "sha256": "bbbcc0b4a02d7112d783adf4a4ce52af728ea3694bf01b3de60c2ade7f0f36d8"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Visual References",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:28.994Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -425,13 +909,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC16"
+      ]
     },
     {
       "id": "AC17",
       "text": "`FORMAT.md` documents optional `## Visual References`. Specs without that heading still pass `--mode=compat`.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-format/FORMAT.md:L58-L58"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -440,9 +929,30 @@
         "section-020",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-format/FORMAT.md",
+          "lineStart": 58,
+          "lineEnd": 58,
+          "sha256": "f7ac213fa85bc110249ecbc87cbd1f1428a9a8905ceb99beea479cd5004108e0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "compat validate without Visual References heading requirement",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.049Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -450,13 +960,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC17"
+      ]
     },
     {
       "id": "AC18",
       "text": "The `fetch-to-spec` row in `scm-provider-contract.md` states that inbound fetch downloads visual attachments when present and writes the shared assets sidecar plus Visual References.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scm-provider-contract.md:L29-L29"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -465,9 +980,30 @@
         "section-018",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scm-provider-contract.md",
+          "lineStart": 29,
+          "lineEnd": 29,
+          "sha256": "d686c441ad5de76b07b4ed668505226b65d0db512d3886a63d3ea9a9c4d230b0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "scm-provider-contract fetch-to-spec documents visual ingest",
+          "sourceFile": "test/test-provider-parity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.112Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -475,13 +1011,19 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC18"
+      ]
     },
     {
       "id": "AC19",
       "text": "Both provider `INTENTS.md` `## \\`fetch-to-spec\\`` procedures include the ingest step with the same output paths. `node test/test-provider-parity.js` exits 0.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-provider-azure-devops/INTENTS.md:L12-L42",
+        ".agents/skills/ws-spec-provider-github/INTENTS.md:L15-L41"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -490,9 +1032,36 @@
         "section-018",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-azure-devops/INTENTS.md",
+          "lineStart": 12,
+          "lineEnd": 42,
+          "sha256": "e47ece35d60b2a6f010b94b68c4dcb597f6704dfff6b6ff195ede81cd0bb2c8b"
+        },
+        {
+          "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+          "lineStart": 15,
+          "lineEnd": 41,
+          "sha256": "affffbe777d53db3ec6244dce81de2fea73abef856687ca4aa98e491756b9729"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "fetch-to-spec documents assets sidecar or Visual References",
+          "sourceFile": "test/test-provider-parity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.180Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -500,13 +1069,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC19"
+      ]
     },
     {
       "id": "AC20",
       "text": "The parity test asserts both INTENTS `fetch-to-spec` sections mention the assets sidecar (or `Visual References`) so a one-sided doc change fails CI.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        "test/test-provider-parity.js:L154-L157"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -515,9 +1089,30 @@
         "section-018",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": "test/test-provider-parity.js",
+          "lineStart": 154,
+          "lineEnd": 157,
+          "sha256": "00a7a205d304b3c074828395d688344bce866bc8955aab0fd057ae703166f4f7"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "fetch-to-spec documents assets sidecar or Visual References",
+          "sourceFile": "test/test-provider-parity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.234Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -525,13 +1120,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC20"
+      ]
     },
     {
       "id": "AC21",
       "text": "Disallowed MIME (`image/svg+xml`, HTML, executables) is skipped as `disallowed-type`. Allowed types are `image/png`, `image/jpeg`, `image/gif`, `image/webp`, and `application/pdf`.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L13-L28"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -541,9 +1141,30 @@
         "section-026",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 13,
+          "lineEnd": 28,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "helper ok image + disallowed host",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.288Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -551,13 +1172,19 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC21"
+      ]
     },
     {
       "id": "AC22",
       "text": "PDF files appear in Visual References as file links, not markdown images, and are not vision-analyzed.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs:L273-L274",
+        ".agents/skills/ws-spec-write/SKILL.md:L76-L76"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -567,9 +1194,36 @@
         "section-021",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs",
+          "lineStart": 273,
+          "lineEnd": 274,
+          "sha256": "89e2b6058f01c7576af5861eaf722f25110b8df08c05f243665bfd1ad498ffed"
+        },
+        {
+          "path": ".agents/skills/ws-spec-write/SKILL.md",
+          "lineStart": 76,
+          "lineEnd": 76,
+          "sha256": "db69c6102b5624803c211b133fe2f3a2fc6176a76a29c7f3ad608f7e13ba557e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "pdf file link",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.356Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -577,13 +1231,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC22"
+      ]
     },
     {
       "id": "AC23",
       "text": "ADO `clean_html` converts `<img src alt>` to markdown images before tag strip so Original Issue Context keeps local rewritten paths after ingest.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py:L95-L101"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -592,9 +1251,30 @@
         "section-017",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py",
+          "lineStart": 95,
+          "lineEnd": 101,
+          "sha256": "8b04e003826860a8de7fd1ebb9ad8a3c2cff794b49bbc28d3be546ef73370d17"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ado clean_html preserves img markdown",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.419Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -602,13 +1282,19 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC23"
+      ]
     },
     {
       "id": "AC24",
       "text": "Offline `--input` still extracts URLs and attempts download when auth exists. Unreachable URLs are `skipped` or `failed` without aborting conversion.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py:L17-L17",
+        ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py:L16-L16"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -619,11 +1305,39 @@
         "section-016",
         "section-017",
         "section-026",
-        "section-028"
+        "section-028",
+        "section-032"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py",
+          "lineStart": 17,
+          "lineEnd": 17,
+          "sha256": "8b04e003826860a8de7fd1ebb9ad8a3c2cff794b49bbc28d3be546ef73370d17"
+        },
+        {
+          "path": ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py",
+          "lineStart": 16,
+          "lineEnd": 16,
+          "sha256": "5433ca9dcc8309010d8a6dcb48a07e07c5d1a8c1575a17b1bf1ebb2657902413"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "github converter fixture mock http",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.494Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -631,13 +1345,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC24"
+      ]
     },
     {
       "id": "AC25",
       "text": "Fixture tests with a mock HTTP layer cover **both** converters and assert renamed files, manifest fields (`sha256`, `kind`, `origin`, `status`), rewritten spec links, and fetch success when one URL 404s.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        "test/test-visual-attachment-ingest.js:L249-L340"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -648,9 +1367,38 @@
         "section-026",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": "test/test-visual-attachment-ingest.js",
+          "lineStart": 249,
+          "lineEnd": 340,
+          "sha256": "c3cab9f2c703801883e2aaeda18e65d5207a6e9047ca9fdc3e66ef3da7a48e7c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "ado converter fixture mock http",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.550Z"
+        },
+        {
+          "name": "github converter fixture mock http",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.549Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -658,13 +1406,19 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC25",
+        "step5-verify-20260903-AC25-files"
+      ]
     },
     {
       "id": "AC26",
       "text": "`ws-spec-from-provider` inherits ingest through `fetch-to-spec`. The bulk skill adds no second downloader.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-from-provider/SKILL.md:L75-L76"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -673,9 +1427,30 @@
         "section-023",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-from-provider/SKILL.md",
+          "lineStart": 75,
+          "lineEnd": 76,
+          "sha256": "ee8a3243a3f4d10496eeb94915d4027bf951ecb747b1dc7c2e401ffc2c4ca2ee"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "second downloader",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.612Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -683,13 +1458,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC26"
+      ]
     },
     {
       "id": "AC27",
       "text": "`ws-cleanup` must not delete `{specsDir}/{specStem}.assets/`. `{us-dir}/attachments/` remains a plan artifact eligible for plan-dir cleanup.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-cleanup/references/PATTERNS.md:L52-L52"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -699,9 +1479,30 @@
         "section-026",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-cleanup/references/PATTERNS.md",
+          "lineStart": 52,
+          "lineEnd": 52,
+          "sha256": "c8559185cc54cd65da4f69102e3f298e1b0cfff6f0b9d3617765ec4ab92bfbea"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": ".assets/",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.675Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -709,13 +1510,18 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC27"
+      ]
     },
     {
       "id": "AC28",
       "text": "`FEATURES.md` § SCM provider parity describes visual attachment ingest as part of `fetch-to-spec`, not as a separate intent.",
-      "status": "Pending",
-      "evidence": [],
+      "status": "Implemented",
+      "evidence": [
+        "FEATURES.md:L108-L108"
+      ],
       "tasks": [],
       "planSections": [
         "section-002",
@@ -724,9 +1530,30 @@
         "section-025",
         "section-028"
       ],
-      "files": [],
-      "commits": [],
-      "tests": [],
+      "files": [
+        {
+          "path": "FEATURES.md",
+          "lineStart": 108,
+          "lineEnd": 108,
+          "sha256": "d46a2eb7792b16d22a0dbd52f2b43526fcbd196f98e5b1604e80f419b5c09abf"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "8880b876",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Visual References|\\.assets",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.731Z"
+        }
+      ],
       "verdicts": [],
       "findings": [],
       "sabotage": {
@@ -734,58 +1561,158 @@
         "status": "not-required",
         "exitCode": null
       },
-      "linkEventIds": []
+      "linkEventIds": [
+        "g2-step5-8880b876",
+        "step5-verify-20260903-AC28"
+      ]
     }
   ],
   "negativeScenarios": [
     {
       "id": "NS1",
       "text": "**Scenario 1 (Parity split):** GitHub INTENTS documents asset ingest and Azure INTENTS does not (or the reverse). `test-provider-parity.js` fails (violates AC1, AC19, AC20).",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "fetch-to-spec documents assets sidecar or Visual References",
+          "sourceFile": "test/test-provider-parity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.789Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS1"
+      ]
     },
     {
       "id": "NS2",
       "text": "**Scenario 2 (New intent leak):** A `fetch-assets` (or similar) heading/table row exists on only one SCM without an allowlist row. Parity test fails (violates AC1).",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "required intents count >= 9",
+          "sourceFile": "test/test-provider-parity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.848Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS2"
+      ]
     },
     {
       "id": "NS3",
       "text": "**Scenario 3 (Silent host switch):** ADO PAT missing causes the agent to run GitHub download instead of STOP. Violates AC8 and contract shared rule 3.",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "partial HTTP failure",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.908Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS3"
+      ]
     },
     {
       "id": "NS4",
       "text": "**Scenario 4 (Stripped ADO images):** Description HTML contains `<img src=\"…/_apis/wit/attachments/…\">` and `clean_html` drops the src so ingest finds nothing. Fixture test fails (violates AC3, AC23).",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "ado clean_html preserves img markdown",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:29.960Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS4"
+      ]
     },
     {
       "id": "NS5",
       "text": "**Scenario 5 (Remote leftover):** Spec of record still points at `user-images.githubusercontent.com` or an ADO attachment URL after a successful `ok` download. Fixture test fails (violates AC12).",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "user-images.githubusercontent.com",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:30.018Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS5"
+      ]
     },
     {
       "id": "NS6",
       "text": "**Scenario 6 (Hard fail on one 404):** A single missing attachment exits the converter non-zero and skips spec write. Fixture test fails (violates AC11).",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "partial HTTP failure",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:30.072Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS6"
+      ]
     },
     {
       "id": "NS7",
       "text": "**Scenario 7 (Disallowed host):** Markdown image points at an arbitrary `https://example.com/x.png` and the helper downloads it. Fixture test fails (violates AC9).",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "helper ok image + disallowed host",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:30.125Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS7"
+      ]
     },
     {
       "id": "NS8",
       "text": "**Scenario 8 (Plan-only assets):** Files exist only under `{us-dir}/attachments/` and `{specsDir}/{specStem}.assets/` is missing, so `ws-cleanup` of the plan dir loses templates. Violates AC5, AC27.",
-      "tests": [],
-      "linkEventIds": []
+      "tests": [
+        {
+          "name": "register copied attachments",
+          "sourceFile": "test/test-visual-attachment-ingest.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-03T14:37:30.179Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260903-NS8"
+      ]
     }
   ],
-  "scoreState": null
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 280,
+    "totalUnits": 280,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "computedAt": "2026-09-03T14:42:42.950Z"
+  }
 }

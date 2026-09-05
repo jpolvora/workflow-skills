@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "revision": 19,
+  "workflowId": "hermes-spec-to-pr-enhancements-20260905T015600Z",
+  "slug": "hermes-spec-to-pr-enhancements",
+  "pipeline": "standard",
+  "status": "completed",
+  "currentStep": 9,
+  "pendingGate": null,
+  "nextAction": "Run step 9",
+  "acTotal": 6,
+  "acImplemented": 6,
+  "score": 10,
+  "estimatedRemainingSec": 360,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "skipped",
+      "skipReason": "dag-disabled",
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 6,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 7,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 8,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 9,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 360
+    }
+  ],
+  "statePath": ".agents/plans/hermes-spec-to-pr-enhancements/hermes-spec-to-pr-enhancements-20260905T015600Z.state.md",
+  "stateSha256": "b440e874577df08bb5bc497a8eb008d290ef802ba9e6834fcb48265086ef723c"
+}

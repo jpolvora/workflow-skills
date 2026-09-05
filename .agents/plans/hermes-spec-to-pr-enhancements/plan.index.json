@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/hermes-spec-to-pr-enhancements/step-02-hermes-spec-to-pr-enhancements.plan.refined.md",
+    "sha256": "906f1de62d3f8d0db28f50ba3474d48602f79bdf3eeddee157c0252dd5b1751d",
+    "bytes": 13092,
+    "lines": 157
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "0. Summary & Business Rules",
+      "level": 2,
+      "byteStart": 387,
+      "byteEnd": 2700,
+      "lineStart": 14,
+      "lineEnd": 32,
+      "sha256": "eea6a43d3db24a1e258d581e9b132a714df93ad9e1093a923cf95c0d394daa83",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-*",
+        "test-hermes-spec-to-pr-enhancements.js",
+        "test-provider-parity.js",
+        "test/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-002",
+      "title": "1. Definition of Ready & Scope",
+      "level": 2,
+      "byteStart": 2700,
+      "byteEnd": 5372,
+      "lineStart": 33,
+      "lineEnd": 62,
+      "sha256": "61ba163bd89a9151d3362a9b43be9e832bb7627696678ed9bbabf3512879adec",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/specs/index.PRD"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "2. Technical Design & Architecture",
+      "level": 2,
+      "byteStart": 5372,
+      "byteEnd": 7577,
+      "lineStart": 63,
+      "lineEnd": 85,
+      "sha256": "fc54e9d24f392eebeeb2549043d8d31b052f45ef7395011834d18537a950bcb1",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-004",
+      "title": "3. Step-by-Step Plan",
+      "level": 2,
+      "byteStart": 7577,
+      "byteEnd": 8819,
+      "lineStart": 86,
+      "lineEnd": 106,
+      "sha256": "6408b62e0b045cd0b1b2f9f6ca09e47538068fcb2bdb9fc81aca3034487c8f54",
+      "acRefs": [
+        "AC1",
+        "AC3",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-005",
+      "title": "E1 — D1 dispatch reminder (AC3/S12)",
+      "level": 3,
+      "byteStart": 7645,
+      "byteEnd": 7881,
+      "lineStart": 90,
+      "lineEnd": 94,
+      "sha256": "c172a0486d7830582d187289b4e9885a96d5e88914d6a02d0fe53771dd95d897",
+      "acRefs": [
+        "AC3"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-006",
+      "title": "E2 — Empirical re-verification matrix (AC1–AC6)",
+      "level": 3,
+      "byteStart": 7881,
+      "byteEnd": 8289,
+      "lineStart": 95,
+      "lineEnd": 98,
+      "sha256": "9f7c6d4f76d7fbd6cbf5cb2a17b5d58edd1861f514405a60d1a06cef8e003801",
+      "acRefs": [
+        "AC1",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-007",
+      "title": "E3 — Gates (all ACs)",
+      "level": 3,
+      "byteStart": 8289,
+      "byteEnd": 8819,
+      "lineStart": 99,
+      "lineEnd": 106,
+      "sha256": "35ec267201014f67c76f268ce173c8def2742cf1c088624e48793510a95b02be",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-008",
+      "title": "4. Permissions, Tenancy & i18n",
+      "level": 2,
+      "byteStart": 8819,
+      "byteEnd": 8982,
+      "lineStart": 107,
+      "lineEnd": 110,
+      "sha256": "0f12bc78074d0a2219712e2defd4381600092346e5fe152afe2d69d35da1f6f3",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-009",
+      "title": "5. Test Coverage",
+      "level": 2,
+      "byteStart": 8982,
+      "byteEnd": 9643,
+      "lineStart": 111,
+      "lineEnd": 122,
+      "sha256": "08410da11c2cde313ff0ca695bbcdb84c1ed1188be21b560835a3c9e7697f591",
+      "acRefs": [
+        "AC1",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-hermes-spec-to-pr-enhancements.js",
+        "test/test-provider-parity.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-010",
+      "title": "6. Invariants (Do Not Violate)",
+      "level": 2,
+      "byteStart": 9643,
+      "byteEnd": 10691,
+      "lineStart": 123,
+      "lineEnd": 138,
+      "sha256": "a1b2ca31f197cf25ae62cbea578b2ccb2f0435ee6e9fb26c4b7c07d27c8cfcde",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-011",
+      "title": "7. Pre-PR Checklist",
+      "level": 2,
+      "byteStart": 10691,
+      "byteEnd": 11198,
+      "lineStart": 139,
+      "lineEnd": 146,
+      "sha256": "66aad56ac7859beed6d417e3bcd5b639b2275663dadf60416e4089bd4538a1bf",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-012",
+      "title": "8. Open Questions",
+      "level": 2,
+      "byteStart": 11198,
+      "byteEnd": 11478,
+      "lineStart": 147,
+      "lineEnd": 150,
+      "sha256": "3a5cf43c37a96acaca80446842b83d9a8b4d3ff16307c0e97511e6846c77da2d",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-013",
+      "title": "Interview registry",
+      "level": 2,
+      "byteStart": 11478,
+      "byteEnd": 13092,
+      "lineStart": 151,
+      "lineEnd": 157,
+      "sha256": "24e029929ad5fff4a63a4692aec26b30fbf68ca2c88969b5ea940fc3a9ec0f68",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "**Pre-flight Duplicate & Prior Work Sweep (Step 0 & SCM Providers)**: Add `sweep-prior-work` capability to `ws-github-provider`, `ws-azure-devops-provider`, and Step 0 intake in `ws-spec-to-pr` / `ws-write-spec`. Before authoring plans or code, the agent searches open/merged PRs (by issue number and keyword variants) and recent git commits to verify if the issue or symptom was already addressed, recording findings in `step-00` context.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/specs/index.PRD",
+        "test/test-hermes-spec-to-pr-enhancements.js",
+        "test/test-provider-parity.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC2",
+      "text": "**Design Intent & Historical Commit Inspection (Step 0/1 & Spec/Plan)**: Enhance `ws-write-spec`, `ws-spec-format`, and `ws-write-plan` with mandatory checks for code modification tasks: agents must inspect historical commit intent (`git log -p -S \"<symbol>\"` or `git log -L`) on target functions/files to confirm that the reported \"bug\" or missing behavior is not an intentional architectural restriction or design choice before formulating changes.",
+      "planSectionIds": [
+        "section-002"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/specs/index.PRD"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC3",
+      "text": "**Defect Class & Sibling Call Site Remediation (Step 4 & Step 6)**: Update `ws-implement-tasks` and `ws-code-review` with a \"Fix the Entire Defect Class\" rule. When fixing a bug or applying a pattern, the coder and reviewer agents must search sibling call sites and modules for the same pattern/vulnerability and either fix the full class or explicitly justify exemptions.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-005",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/specs/index.PRD",
+        "test/test-hermes-spec-to-pr-enhancements.js",
+        "test/test-provider-parity.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC4",
+      "text": "**Zero-Dependency Sabotage Verification / Fault Injection Proof (Step 5 & Step 7)**: Enhance `ws-verify-plan` and `ws-testing` with a built-in sabotage verification protocol for bug fixes and regression tests. The verifier validates that newly added test assertions fail when the fix is temporarily disabled or inverted (sabotage run) and pass when restored, ensuring tests truly bite without requiring external mutation testing binaries.",
+      "planSectionIds": [
+        "section-002",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/specs/index.PRD",
+        "test/test-hermes-spec-to-pr-enhancements.js",
+        "test/test-provider-parity.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC5",
+      "text": "**CI Baseline vs Diff Failure Triage (Step 8 & Step 9)**: Update `ws-ship-pr`, `ws-fix-pr`, and `ws-goal-fix-pr` with CI failure triage discipline: inspect detailed failure logs (`gh pr checks` / `gh run view --log-failed`), reproduce suspected baseline failures against the default branch, allow a single rerun for confirmed infrastructure flakes, and isolate genuine diff regressions for targeted fixes.",
+      "planSectionIds": [
+        "section-002",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/specs/index.PRD",
+        "test/test-hermes-spec-to-pr-enhancements.js",
+        "test/test-provider-parity.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC6",
+      "text": "**Issue Tracker Close-Loop Reporting (Step 8/9 & Providers)**: Add `comment-issue` / `close-loop` intent to SCM providers (`ws-github-provider`, `ws-azure-devops-provider`) and dispatch it in `ws-ship-pr` upon PR creation and/or merge. Posts a concise traceable resolution comment linking the PR and summary back to the original tracker issue.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/specs/index.PRD",
+        "test/test-hermes-spec-to-pr-enhancements.js",
+        "test/test-provider-parity.js"
+      ],
+      "expectedTestNames": []
+    }
+  ]
+}

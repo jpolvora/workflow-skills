@@ -1,0 +1,543 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "path": ".agents/plans/us-275/step-02-us-275.plan.refined.md",
+    "sha256": "2a2e8ac95c8f527e6c08776dd8845ac4e39661a5beac26dd06604963b445687f",
+    "bytes": 23709,
+    "lines": 190
+  },
+  "ordering": {
+    "acceptanceCriteria": "numeric AC id",
+    "expectedFiles": "repo-relative POSIX lexicographic",
+    "expectedTestNames": "lexicographic",
+    "sections": "source byteStart",
+    "taskIds": "execution order"
+  },
+  "sections": [
+    {
+      "id": "section-001",
+      "title": "0. Summary & Business Rules",
+      "level": 2,
+      "byteStart": 274,
+      "byteEnd": 2564,
+      "lineStart": 12,
+      "lineEnd": 30,
+      "sha256": "f25c57d1f7ccdb4a0303e90cacc13d619b1ffd10cc288c6d00a70f2271a58605",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "test-runtime-portability.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-002",
+      "title": "1. Definition of Ready & Scope",
+      "level": 2,
+      "byteStart": 2564,
+      "byteEnd": 6356,
+      "lineStart": 31,
+      "lineEnd": 69,
+      "sha256": "277108dc8e6f3e90da00fd30f68f53a91068525b25bdf8cc09e38505cc6cb681",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-003",
+      "title": "Resolved assumptions (from spec + interview; no blockers)",
+      "level": 3,
+      "byteStart": 2601,
+      "byteEnd": 3943,
+      "lineStart": 33,
+      "lineEnd": 46,
+      "sha256": "87c40bf5744a207d537fb7213f5e2ac5622ea6224618374776c1e3dd3f206a7a",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-004",
+      "title": "Acceptance Criteria (measurable)",
+      "level": 3,
+      "byteStart": 3943,
+      "byteEnd": 5758,
+      "lineStart": 47,
+      "lineEnd": 57,
+      "sha256": "ea4ee548448541d5462350c80e04d4b78b177a091874f59e34932652c39a7da7",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-005",
+      "title": "Out of scope",
+      "level": 3,
+      "byteStart": 5758,
+      "byteEnd": 6356,
+      "lineStart": 58,
+      "lineEnd": 69,
+      "sha256": "21e19929ff2f43e1090914bc48b2a103c28d6e4f306ce4da8ed1c226fb0defd8",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-006",
+      "title": "2. Technical Design & Architecture",
+      "level": 2,
+      "byteStart": 6356,
+      "byteEnd": 11248,
+      "lineStart": 70,
+      "lineEnd": 100,
+      "sha256": "15021e1d24ff29ad19f10164560e956aac19560775a58c7b08cc94f8c65db092",
+      "acRefs": [
+        "AC1",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-007",
+      "title": "3. Step-by-Step Plan",
+      "level": 2,
+      "byteStart": 11248,
+      "byteEnd": 14639,
+      "lineStart": 101,
+      "lineEnd": 116,
+      "sha256": "913b7acee984ed2da324049fadf433459757e4c81b0d203dc6255da8a9363600",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        "test-runtime-portability.js"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-008",
+      "title": "4. Permissions, Tenancy & i18n",
+      "level": 2,
+      "byteStart": 14639,
+      "byteEnd": 14953,
+      "lineStart": 117,
+      "lineEnd": 120,
+      "sha256": "9e4b9323857693f82637f5c03d87a05990dd7b6f47144bf8d6cb2b79e1fe4ce8",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-009",
+      "title": "5. Test Coverage",
+      "level": 2,
+      "byteStart": 14953,
+      "byteEnd": 17324,
+      "lineStart": 121,
+      "lineEnd": 137,
+      "sha256": "5fc572ea4d29439ccd4f8dd6dcacd3965d0de61ba3a075b0fc2e49065a0bdc61",
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        "test-runtime-portability.js",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-010",
+      "title": "6. Invariants (Do Not Violate)",
+      "level": 2,
+      "byteStart": 17324,
+      "byteEnd": 18690,
+      "lineStart": 138,
+      "lineEnd": 151,
+      "sha256": "f90fe6feb858f223ad03d84995dd821dbea985a2da2cc318660495de46f694c5",
+      "acRefs": [
+        "AC1",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-011",
+      "title": "7. Pre-PR Checklist",
+      "level": 2,
+      "byteStart": 18690,
+      "byteEnd": 19237,
+      "lineStart": 152,
+      "lineEnd": 162,
+      "sha256": "537aafbc6f9d54ffbee92083b480e5eca7e38df7574ed5f3b504bf9acb5be10f",
+      "acRefs": [
+        "AC1",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-012",
+      "title": "8. Open Questions",
+      "level": 2,
+      "byteStart": 19237,
+      "byteEnd": 19943,
+      "lineStart": 163,
+      "lineEnd": 172,
+      "sha256": "d455dbb2f83ecab5e9f9abdd79a3427a1817080a426442885ef265cc10e0d0de",
+      "acRefs": [],
+      "taskIds": [],
+      "expectedFiles": [
+        "test-workflow-state-contract.js",
+        "testPreAdvanceHS5"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "section-013",
+      "title": "Interview registry",
+      "level": 2,
+      "byteStart": 19943,
+      "byteEnd": 23709,
+      "lineStart": 173,
+      "lineEnd": 190,
+      "sha256": "eae2ceb359e70ce3e5adef20e69b52627a18d5af22d926ceb169404f00cfdb60",
+      "acRefs": [
+        "AC1",
+        "AC4",
+        "AC8"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        "test-runtime-portability.js",
+        "test/test-quality-gates.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5"
+      ],
+      "expectedTestNames": []
+    }
+  ],
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`ws-spec-to-pr/SKILL.md` and `STEP-DISPATCH.md` each contain a dedicated **autoMode ≠ skip planning** subsection with a two-column table listing what `autoMode` does (auto gate index 0, continuous step boundaries) vs what it never does (skip Steps 1–3, edit product code before `step-01-*.plan.md`, ignore classifier `runInterview` / `execMode`).",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009",
+        "section-010",
+        "section-011",
+        "section-013"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/",
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test-runtime-portability.js",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC2",
+      "text": "`ws-shared/gates.md` and `ws-shared/setup.md` state that an existing parent feature branch plus a child bug/task id does **not** waive Steps 1–3 for the child slug; only an explicit user override may shorten planning.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-007",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        "test-runtime-portability.js",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC3",
+      "text": "`setup.md` init banner (or equivalent bootstrap output) prints, when `autoMode: true`, a one-line reminder: gates are automatic, FSM 0→9 stays intact, no product code until Step 4 after plan artifacts exist on disk.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test-runtime-portability.js",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC4",
+      "text": "Before the first Step 4 `dispatch-agent`, the orchestrator runs a fail-closed guard (`validate_state.cjs --pre-advance 4` or a documented `pre-implement-guard` wrapper) that exits non-zero when advance-to-4 prerequisites from `ARTIFACTS.md` are missing; stderr lists missing artifacts and references HS-5.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009",
+        "section-013"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test-runtime-portability.js",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC5",
+      "text": "When the guard fails, the orchestrator does not invoke product-file edits or Step 4 dispatch; it stops with HS-5 and names the missing files (`step-01-*.plan.md`, `plan.index.json`, `step-03-*.plan.exec.md`, interview refined plan when required, etc.).",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test-runtime-portability.js",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC6",
+      "text": "A documented dogfood conformance case (test fixture or `ws-spec-to-pr` docs) asserts that under `autoMode` with `workflowType: standard`, `step-01-{slug}.plan.md` exists before any product-path edit outside `{plansDir}` / workflow state for that slug.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test-runtime-portability.js",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC7",
+      "text": "`ws-check-harness` and existing mechanical gates (`check_duplicates`, `measure_harness`, `check_shell_quoting`, `check_pipeline_handoff`) still exit 0 after the doc and script changes.",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test-runtime-portability.js",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5",
+        "tests"
+      ],
+      "expectedTestNames": []
+    },
+    {
+      "id": "AC8",
+      "text": "No host product names, consumer repo names, or private paths appear in shipped skill bodies, gates, or templates added by this work (generic wording only).",
+      "planSectionIds": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-009",
+        "section-010",
+        "section-011",
+        "section-013"
+      ],
+      "taskIds": [],
+      "expectedFiles": [
+        ".agents/skills",
+        ".agents/skills/",
+        ".agents/skills/ws-shared/gates.md",
+        ".agents/skills/ws-shared/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/setup.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/scripts/validate_state.cjs",
+        "docs/faq.md",
+        "test-runtime-portability.js",
+        "test/",
+        "test/test-quality-gates.js",
+        "test/test-runtime-portability.js",
+        "test/test-workflow-state-contract.js",
+        "testPreAdvanceHS5",
+        "tests"
+      ],
+      "expectedTestNames": []
+    }
+  ]
+}

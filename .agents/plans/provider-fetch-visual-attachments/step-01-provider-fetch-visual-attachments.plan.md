@@ -1,4 +1,6 @@
 ---
+superseded: true
+supersededBy: step-02-provider-fetch-visual-attachments.plan.refined.md
 slug: provider-fetch-visual-attachments
 title: Download tracker images and attachments during fetch-to-spec (GitHub and Azure DevOps parity)
 status: active

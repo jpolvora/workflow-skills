@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "revision": 24,
+  "workflowId": "us-275-20260904T020000Z",
+  "slug": "us-275",
+  "pipeline": "standard",
+  "status": "completed",
+  "currentStep": 9,
+  "pendingGate": null,
+  "nextAction": "Finish step 9",
+  "acTotal": 8,
+  "acImplemented": 8,
+  "score": 10,
+  "estimatedRemainingSec": 360,
+  "steps": [
+    {
+      "step": 0,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 1,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 2,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 3,
+      "status": "skipped",
+      "skipReason": "dag-disabled",
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 4,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 5,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 6,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 7,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 8,
+      "status": "completed",
+      "skipReason": null,
+      "estimatedRemainingSec": 0
+    },
+    {
+      "step": 9,
+      "status": "active",
+      "skipReason": null,
+      "estimatedRemainingSec": 360
+    }
+  ],
+  "statePath": ".agents/plans/us-275/us-275-20260904T020000Z.state.md",
+  "stateSha256": "f44f73599d51fcdf7bb476cd91534de0437381598cfa1c7a44b12fadd90eb103"
+}

@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-05 02:35] Agent: ws-spec-multi worker (standard pipeline)
+- **Prompt**: resume ws-spec-to-pr for skill-family-naming (steps 0-6 done) → re-verify → close → ship
+- **Done**: Step 5 re-verified (ledger 10/10 after AC16 hash relink, npm test exit 0, verify-integrity exit 0); Step 6 clean (no fix); Step 7 PASS confirmed fresh; Step 8 closed with step-08 result + Timing; Phase A git cleanup done
+- **Result**: status completed, shipStatus skipped (Recommended gates, not fullMode); no push, no PR; master owns convergence + merge; Learning: N/A (standard implementation)
+
+### [2026-09-05 03:10] Agent: ws-spec-multi worker (standard pipeline)
+- **Prompt**: run ws-spec-to-pr end-to-end for 0035-hermes-spec-to-pr-enhancements (resume prior partial run)
+- **Done**: E1 D1 clause in STEP-DISPATCH Step 4 row + integrity regen (commit b11664e7); E2 AC1-AC6 re-verified, no regressions; verify 10/10; review round 1 clean (fable VERIFIED); testing pass; implementation closed
+- **Result**: status completed, shipStatus pending; PR creation next via ws-ship-pr (workflowMode, stopBeforeFixPr); no merge
+
 ### [2026-09-04 14:55] Agent: Cursor Grok 4.6
 - **Prompt**: implement 0063-ws-megabrain, bump, ship
 - **Done**: Spec aligned to companion-load + autoload; skill + specialists; workflows deps; Always-applied; catalog/README/FEATURES
