@@ -36,6 +36,18 @@ assert(skill.includes('/ws-megabrain plan'), 'plan mode');
 assert(skill.includes('/ws-megabrain research'), 'research mode');
 assert(fs.existsSync(path.join(root, '.agents/skills/ws-megabrain/references/REVERSE.md')), 'REVERSE.md');
 assert(fs.existsSync(path.join(root, '.agents/skills/ws-megabrain/references/DDD.md')), 'DDD.md');
+const refLinks = [
+  ...new Set(
+    [...skill.matchAll(/references\/([A-Za-z0-9_.-]+\.md)/g)].map((m) => m[1]),
+  ),
+];
+assert(refLinks.length > 0, `router/domain refs found (${refLinks.length})`);
+for (const ref of refLinks) {
+  assert(
+    fs.existsSync(path.join(root, '.agents/skills/ws-megabrain/references', ref)),
+    `ref on disk: ${ref}`,
+  );
+}
 assert(!fs.existsSync(path.join(root, '.agents/skills/ws-megabrain/scripts')), 'no scripts/ dir');
 
 const deps = JSON.parse(fs.readFileSync(depsPath, 'utf8'));
