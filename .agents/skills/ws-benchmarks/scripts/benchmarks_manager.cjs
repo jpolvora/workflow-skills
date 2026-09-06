@@ -283,9 +283,15 @@ function updateComparisonFiles(repoRoot, options = {}) {
   }
 
   const generatedFiles = [evolutionFile];
+  const resultsRootResolved = path.resolve(resultsRoot);
   for (const [v, rows] of Object.entries(byVersion)) {
     const vMd = renderEvolutionMarkdown(rows, { version: v });
     const vFile = path.join(resultsRoot, `table-${v}.md`);
+    const resolved = path.resolve(vFile);
+    const rel = path.relative(resultsRootResolved, resolved);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) {
+      throw new Error(`unsafe version segment: ${v}`);
+    }
     fs.writeFileSync(vFile, vMd, 'utf8');
     generatedFiles.push(vFile);
   }
