@@ -56,17 +56,6 @@
         "Recommended is Accept inferred when a candidate exists, else Skip / leave empty",
         "Writes preview.dryRunCommand only after user-gate; does not download a reviewer tool"
       ]
-    },
-    {
-      "id": 6,
-      "prompt": "/ws-configure-project --auto",
-      "expected_output": "Agent auto-detects env and fills only config.json gaps from schema defaults without prompting; existing filled keys are kept.",
-      "assertions": [
-        "Loads --auto flow from SKILL.md step 4b / INTERVIEW.md § Auto",
-        "Runs auto_configure.cjs without any user-gate",
-        "Skips existing filled keys (no overwrite without --force)",
-        "Never invents org/repoUrl/PAT secrets; reports unresolved + requiredGaps"
-      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.3.62
+version: 0.3.61
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -20,7 +20,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 ## Invocation
 
 ```
-/ws-configure-project [--section <name>] [--detect-only] [--force] [--auto]
+/ws-configure-project [--section <name>] [--detect-only] [--force]
 ```
 
 | Flag | Effect |
@@ -28,15 +28,12 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 | `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`preview`**, **`autoload`**, **`specMemo`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
-| `--auto` | Non-interactive auto-configure: detect env + fill gaps from schema defaults; **skip existing filled keys** (no user-gate, no overwrite). Combinable with `--section` (scope) and `--force` (refill filled keys with auto values). Mutually exclusive with `--detect-only`. See **`--auto`** below. |
 
 **`--section preview`:** optional `preview.dryRunCommand` for [`ws-preview`](../ws-preview/SKILL.md). Infer a local dry-run recipe from harness docs / package scripts / consumer skills (see [`INTERVIEW.md`](INTERVIEW.md) § Preview); user-gate; write the string or leave empty (Skip). Empty is valid — `/ws-preview` fails closed until set. Never invent or download a reviewer backend.
 
 **`--section autoload`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`) and optional `defaults.autoloadTaskLifecycle` (default / Recommended = `false`). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
 
 **`--section specMemo`:** optional external vault bridge via [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Runs preflight, interviews enable/mode/import/hook/bootstrap, writes `specMemo.*` through `configure_spec_memo.cjs`. Default / Recommended = `specMemo.enabled: false` (in-repo MEMORY). After enable: **`/ws-memo`** for runtime vault ops (not this wizard).
-
-**`--auto`:** non-interactive auto-configure — detect env, then fill **only gaps** (missing / empty-required / `<placeholder>`) with auto values; **existing filled keys are never changed and never asked about**. No `user-gate` at all. Value precedence per gap: detected suggestion → JSON-Schema `default` → concrete `config.json.example` value. Never invents secrets: undetectable `org` / `repoUrl` / PAT keys stay unresolved for manual fill. Safe side-effect-free optionals: `preview.dryRunCommand` stays empty, `defaults.autoload` / `autoloadTaskLifecycle` stay `false` (no root `AGENTS.md`), `specMemo` stays local-only, security hook is never installed. Helper: `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs [--repo-root {repoRoot}] [--section <name>] [--force] [--dry-run] [--json]`. `--section` scopes the fill to one top-level key; `--force` refills filled keys with auto values instead of skipping; `--dry-run` reports without writing; `--json` emits machine output (`filled` / `skipped` / `overwritten` / `unresolved` + `requiredGaps`). `--auto` + `--detect-only` is an error (pick one). After the helper, run `stack_fingerprint.cjs write` (fail-open) and finish at step 9 Validate & handoff.
 
 ## Steps
 
@@ -49,15 +46,8 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 3. **Gap list** — Compare current `config.json` to required keys in INTERVIEW.md § Required. Mark each: filled / placeholder (`<…>` or empty) / missing. For `--section preview`, gap is `preview.dryRunCommand` (empty = optional gap still offered once). For `--section autoload`, gap is `defaults.autoload` (+ root file consistency when true) and `defaults.autoloadTaskLifecycle`. For `--section specMemo`, gap is `specMemo.enabled` (+ CLI availability when user wants enable).
    - Done when: gap list exists; `--force` treats filled as re-ask candidates.
 
-4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never commit `config.json`. Autoload enablement gate: see step 6 (Recommended = No / `false`). Skip this step entirely under `--auto` (see step 4b).
+4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never commit `config.json`. Autoload enablement gate: see step 6 (Recommended = No / `false`).
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
-
-4b. **Auto (`--auto` only)** — Non-interactive; replaces steps 3–8 (no user-gate, no hook install, no root `AGENTS.md`):
-   1. Ensure `config.json` (the helper copies from `config.json.example` when missing; errors when the example is missing).
-   2. Run `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs [--repo-root {repoRoot}] [--section <name>] [--force] [--json]` — fills only gaps (missing / empty-required / `<placeholder>`), skips existing filled keys (`--force` refills them with auto values instead).
-   3. Run `node {skillsRoot}/ws-configure-project/scripts/stack_fingerprint.cjs write` (fail-open; records `stackFingerprint` without asking).
-   4. Continue at step 9 Validate & handoff; report `filled` / `skipped` / `unresolved` and any remaining `requiredGaps` for manual follow-up.
-   - Done when: helper JSON shows `written: true` (or `dryRun` report shown); no prompt was presented.
 
 5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
    - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
@@ -108,7 +98,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
    - Done when: user selection handled; hook installed if explicitly requested.
 
 9. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). For specMemo: re-run `check_spec_memo.cjs` when section ran. Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`; when vault enabled and MCP registered, session brief → **`/ws-memo` bootstrap**. When MCP is down, `/ws-spec-memo bootstrap` may run CLI bootstrap (any vault mode); hybrid falls back to MEMORY on CLI failure; vault-only STOPs.
-   - Done when: summary shown; `--detect-only` ends after step 2 with no write; `--auto` ends after step 4b + this validate with no prompt.
+   - Done when: summary shown; `--detect-only` ends after step 2 with no write.
 
 ## Rules
 
@@ -120,4 +110,3 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Models (`defaults` / `--section defaults`): pick `modelsPreset` from shipped `config.json.example` sample keys, then optional `stepModels` (`"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`); keep empty legacy phase keys unless the user wants an advanced override. Token `"current"` uses the session model. Explain that `fixPrPlan` falls back to `reviewerModel`, `fixPrExec` falls back to `executionModel`, both bypass numeric `"9"`, and lite ignores role model switches while preserving plan-before-edit.
 - Min verify score (`defaults` / `--section defaults`): interview `defaults.minVerifyScore` per [`INTERVIEW.md`](INTERVIEW.md) (Recommended 9; runtime omitted/invalid → 9).
 - Preview (`preview` / `--section preview`): interview `preview.dryRunCommand` per [`INTERVIEW.md`](INTERVIEW.md) § Preview; infer from harness docs before asking; empty is allowed.
-- Auto (`--auto`): never user-gate, never overwrite filled keys (unless `--force`), never invent secrets, never commit `config.json`, never install hooks or write root `AGENTS.md`; report `unresolved` + `requiredGaps` instead of asking. See [`INTERVIEW.md`](INTERVIEW.md) § Auto.

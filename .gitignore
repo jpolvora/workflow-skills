@@ -57,6 +57,3 @@ check-workflows-report.md
 
 # Harness benchmark full run reports (upstream maintainer only)
 benchmarks/runs/
-
-# spec-memo host-hook scratch (session ids, fail-open telemetry)
-.spec-memo/
