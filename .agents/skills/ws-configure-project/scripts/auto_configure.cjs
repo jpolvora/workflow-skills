@@ -443,14 +443,14 @@ function buildWanted(repoRoot, example, schema) {
   if (hasNode) {
     want('stack.backend.language', 'TypeScript', 'fallback');
     want('stack.backend.solutionFile', 'package.json', 'detected');
-    want('stack.backend.srcDir', fileExists(repoRoot, 'src') ? 'src' : 'src', 'fallback');
+    want('stack.backend.srcDir', 'src', 'fallback');
   } else if (hasDotnet) {
     want('stack.backend.language', 'C#', 'fallback');
-    want('stack.backend.srcDir', fileExists(repoRoot, 'src') ? 'src' : 'src', 'fallback');
+    want('stack.backend.srcDir', 'src', 'fallback');
   } else if (hasPython) {
     want('stack.backend.language', 'Python', 'fallback');
     want('stack.backend.solutionFile', fileExists(repoRoot, 'pyproject.toml') ? 'pyproject.toml' : 'requirements.txt', 'detected');
-    want('stack.backend.srcDir', fileExists(repoRoot, 'src') ? 'src' : 'src', 'fallback');
+    want('stack.backend.srcDir', 'src', 'fallback');
   }
   if (pkg && isPlainObject(pkg.scripts)) {
     if (typeof pkg.scripts.dev === 'string' && pkg.scripts.dev.trim()) want('stack.orchestration.devCommand', 'npm run dev', 'detected');
