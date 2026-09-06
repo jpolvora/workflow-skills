@@ -267,7 +267,8 @@
       "ws-classify-complexity",
       "ws-configure-project"
     ],
-    "ws-run-benchmark": []
+    "ws-run-benchmark": [],
+    "ws-benchmarks": []
   },
   "autoloadOnly": [],
   "selectOffRule": "no-cascade-deselect"

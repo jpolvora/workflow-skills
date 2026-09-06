@@ -5,10 +5,12 @@ const SESSION_FILE = '.spec-memo/.active-session-id';
 
 function readSessionId() {
   try {
-    return fs.readFileSync(SESSION_FILE, 'utf8').trim();
+    const raw = fs.readFileSync(SESSION_FILE, 'utf8').trim();
+    if (/^[a-zA-Z0-9_-]+$/.test(raw)) return raw;
   } catch {
-    return `hook-${Date.now()}`;
+    // fall through
   }
+  return `hook-${Date.now()}`;
 }
 
 function writeSessionId(id) {
@@ -21,7 +23,7 @@ function writeSessionId(id) {
 async function runMemo(args) {
   const { spawn } = await import('node:child_process');
   return new Promise((resolve) => {
-    const child = spawn('memo', args, { stdio: 'ignore', shell: true });
+    const child = spawn('memo', args, { stdio: 'ignore', shell: false });
     const timer = setTimeout(() => {
       try { child.kill('SIGTERM'); } catch {}
       resolve(0);

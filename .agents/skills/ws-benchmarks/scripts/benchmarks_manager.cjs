@@ -277,7 +277,7 @@ function updateComparisonFiles(repoRoot, options = {}) {
   // Also write per-version table if requested
   const byVersion = {};
   for (const row of baselines) {
-    const v = row.packageVersion || 'unversioned';
+    const v = safePackageVersionSegment(row.packageVersion);
     if (!byVersion[v]) byVersion[v] = [];
     byVersion[v].push(row);
   }
@@ -296,6 +296,12 @@ function updateComparisonFiles(repoRoot, options = {}) {
     snapshotCount: baselines.length,
     versions: Object.keys(byVersion),
   };
+}
+
+function safePackageVersionSegment(version) {
+  const v = String(version || 'unversioned').trim();
+  if (v === 'unversioned') return v;
+  return /^[0-9]+\.[0-9]+\.[0-9]+$/.test(v) ? v : 'invalid-version';
 }
 
 function main() {

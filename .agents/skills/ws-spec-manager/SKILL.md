@@ -6,8 +6,6 @@ disable-model-invocation: true
 invocation_names:
   - ws-spec-manager
   - spec-manager
-  - spec
-  - specs
 ---
 
 # ws-spec-manager
@@ -16,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Verify that `{sharedDir}/config.json` exists in the current repository. If missing or unconfigured, halt and prompt via `user-gate` recommending running `ws-configure-project`.
 
-Single memorable entry point (`/spec`, `/specs`, `/spec-manager`) and authoritative router for all specification operations across the `ws-spec-*` family.
+Single memorable entry point (`/spec-manager`, `/ws-spec-manager`) and authoritative router for all specification operations across the `ws-spec-*` family.
 
 ---
 

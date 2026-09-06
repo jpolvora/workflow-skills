@@ -21,9 +21,11 @@ const skillContent = fs.readFileSync(skillFile, 'utf8');
 assert.match(skillContent, /^name:\s*ws-spec-manager/m, 'frontmatter name is ws-spec-manager');
 assert.match(skillContent, /^version:\s*0\.3\.62/m, 'frontmatter version matches package 0.3.62');
 assert.match(skillContent, /^disable-model-invocation:\s*true/m, 'disable-model-invocation is true');
-for (const alias of ['ws-spec-manager', 'spec-manager', 'spec', 'specs']) {
+for (const alias of ['ws-spec-manager', 'spec-manager']) {
   assert.ok(skillContent.includes(`- ${alias}`), `invocation_names includes ${alias}`);
 }
+assert.ok(!skillContent.match(/^invocation_names:[\s\S]*?^- spec$/m), 'invocation_names excludes bare spec alias');
+assert.ok(!skillContent.match(/^invocation_names:[\s\S]*?^- specs$/m), 'invocation_names excludes bare specs alias');
 assert.match(skillContent, /> When this skill is loaded, output "ws-spec-manager loaded\."/, 'loaded banner directive present');
 assert.match(skillContent, /config-resolution\.md/, 'entry check cites config-resolution.md');
 
