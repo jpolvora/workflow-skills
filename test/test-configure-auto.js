@@ -295,6 +295,24 @@ function writeConfig(root, config) {
   }
 }
 
+// 13. --section reports global ok separately from section success.
+{
+  const root = mkTmp('ws-auto-sectionscope-');
+  seedHub(root, { withConfig: false });
+  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ name: 'scope-pkg' }), 'utf8');
+  const result = runAuto(['--repo-root', root, '--section', 'project', '--json']);
+  const data = parseJson(result, 'section scope');
+  if (data) {
+    assert(result.status === 0, 'clean section exits 0 despite global gaps');
+    assert(data.ok === false, 'ok stays global (verification gap remains)');
+    assert(data.sectionOk === true, 'sectionOk reports section success');
+    assert(
+      (data.requiredGaps || []).some((g) => String(g).startsWith('verification')),
+      'requiredGaps still lists the global verification gap',
+    );
+  }
+}
+
 cleanup();
 
 if (failures > 0) {

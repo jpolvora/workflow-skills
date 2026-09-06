@@ -17,9 +17,10 @@
  *   dagThresholds, defaults, plans, reviews, preview, rules, invariants,
  *   tracking, specMemo, fable, pathTokens, toolsFile.
  *
- * Exit codes: 0 = write (or dry-run) succeeded with no required gaps
- * remaining; 1 = completed but required gaps remain unresolved
- * (`ok:false`); 2 = usage / missing hub / unreadable JSON.
+ * Exit codes: 0 = requested scope clean (global run: no required gaps
+ * remaining; `--section` run: no section gaps remaining); 1 = gaps remain
+ * in the requested scope (`ok:false` globally, or `sectionOk:false` for
+ * `--section`); 2 = usage / missing hub / unreadable JSON.
  */
 
 const fs = require('fs');
@@ -682,7 +683,9 @@ function main() {
   const sectionGaps = args.section
     ? gaps.filter((g) => g === args.section || g.startsWith(`${args.section}.`) || (args.section === 'verification' && g.startsWith('verification')))
     : gaps;
-  const ok = sectionGaps.length === 0;
+  // `ok` is global readiness; `--section` callers check `sectionOk` plus the
+  // exit code (section-scoped) instead of overloading `ok`.
+  const ok = gaps.length === 0;
 
   let written = false;
   if (!args.dryRun) {
@@ -692,6 +695,7 @@ function main() {
 
   const result = {
     ok,
+    sectionOk: args.section ? sectionGaps.length === 0 : undefined,
     repoRoot: toRepoRelative(repoRoot, repoRoot),
     configPath: toRepoRelative(repoRoot, configPath, { allowOutside: true }),
     section: args.section,
@@ -701,6 +705,7 @@ function main() {
     createdFromExample,
     stats,
     requiredGaps: gaps,
+    sectionRequiredGaps: args.section ? sectionGaps : undefined,
     changes: details.filter((d) => d.action === 'filled' || d.action === 'overwritten'),
     skipped: details.filter((d) => d.action === 'skipped').length,
     unresolved: details.filter((d) => d.action === 'unresolved').map((d) => d.path),
@@ -717,7 +722,9 @@ function main() {
     }
     if (!ok) console.log(`required gaps remain: ${gaps.join(', ')}`);
   }
-  if (!ok) process.exit(1);
+  // Exit reflects the requested scope: section gaps for `--section`, else global gaps.
+  const exitGaps = args.section ? sectionGaps : gaps;
+  if (exitGaps.length !== 0) process.exit(1);
 }
 
 try {
