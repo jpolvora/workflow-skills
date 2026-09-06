@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.3.61
+version: 0.3.62
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -20,7 +20,7 @@ Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap 
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/tools.md). Host mode: resolve the host-tool binding once at bootstrap per [`host-dispatch.md`](../ws-shared/host-dispatch.md) (config force → `{sharedDir}/host-capabilities.json` hit → one probe; no mid-workflow re-probe). At **every step boundary** in normal mode: use `user-gate` with ≥2 options per [`gates.md`](../ws-shared/gates.md) (cached `askQuestionTool` when bound — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); cancel → HS-1. **`autoMode`:** zero user-gate prompts of any kind at every boundary, auto-select index 0 and proceed automatically. Interactive cadence: in normal mode, enforce One Step Per Turn — never start Step N+1 in the same turn as Step N completion/gate; in `autoMode`, proceed continuously without halting.
+Aliases: [`tools.md`](../ws-shared/tools.md). Host mode: resolve the host-tool binding once at bootstrap per [`host-dispatch.md`](../ws-shared/host-dispatch.md) (config force → `{sharedDir}/host-capabilities.json` hit → one probe; no mid-workflow re-probe). At **every step boundary** in normal mode: use `user-gate` with ≥2 options per [`gates.md`](../ws-shared/gates.md) (cached `askQuestionTool` when bound — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); cancel → HS-1. **`autoMode`:** zero user-gate prompts of any kind at every boundary, auto-select index 0 and proceed automatically. Interactive cadence: in normal mode, enforce One Step Per Turn per [`gates.md`](../ws-shared/gates.md) — markdown fallback never starts Step N+1 in the same turn as the gate; native modal gate returning **Next** proceeds to Step N+1 in the same turn; in `autoMode`, proceed continuously without halting.
 
 ## Invariants & Mode Rules
 

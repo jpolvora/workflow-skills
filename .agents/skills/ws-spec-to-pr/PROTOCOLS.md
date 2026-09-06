@@ -346,7 +346,7 @@ Post-step: `update_state` (+ JSONL) → checkpoint (`Shell` tag) → pre-advance
 | auto | auto-gate table → immediate `dispatch-agent`/`Shell` |
 | normal | Prefer `user-gate`; slim menu per [`gates.md`](../ws-shared/gates.md) |
 
-Shows gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only.
+Shows gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only. Native modal gate returning **Next** is explicit confirmation — dispatch Step N+1 in the same turn; markdown fallback yields the turn and never dispatches in the same turn (see [`gates.md`](../ws-shared/gates.md) § Interactive execution cadence).
 
 ---
 

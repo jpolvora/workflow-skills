@@ -250,6 +250,25 @@ node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repo
 
 When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md). Next action after enable: register MCP, then **`/ws-memo`** for runtime vault ops (session bootstrap included). Prefer `/ws-memo` bootstrap when MCP is up; `/ws-spec-memo bootstrap` only when MCP is down (CLI any vault mode; hybrid MEMORY fallback on CLI fail). Never commit `{sharedDir}/config.json`.
 
+## Auto (`--auto`)
+
+Non-interactive auto-configure. Replaces gaps without prompting (SKILL.md step 4b). Helper (agents and tests):
+
+```bash
+node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs [--repo-root {repoRoot}] [--section <name>] [--force] [--dry-run] [--json]
+```
+
+| Aspect | Rule |
+|--------|------|
+| Gap | Missing key, empty-required (`project.name`, `project.baseBranch`, `providers.active`/`scm`, `plans.dir`), or `<placeholder>` string. Empty strings elsewhere are intentional (fall-through / unset) and kept. |
+| Precedence | Detected env suggestion → JSON-Schema `default` → concrete `config.json.example` value. |
+| Skip existing | Filled keys are kept and never asked about. `--force` refills filled keys with auto values instead of skipping. |
+| Scope | `--section <name>` fills only that top-level key (same names as `--section`). No `--section` fills all keys. |
+| Secrets | Never invent `org` / `repoUrl` / PAT values; undetectable secrets stay unresolved for manual fill. |
+| Optionals | `preview.dryRunCommand` stays empty (never invent a backend); `defaults.autoload` / `autoloadTaskLifecycle` stay `false` (no root `AGENTS.md` write); `specMemo` stays local-only (no import/hook/bootstrap); security hook is never installed. |
+| After | Run `stack_fingerprint.cjs write` (fail-open), then validate required keys and report `filled` / `skipped` / `unresolved` + remaining `requiredGaps`. |
+| Conflicts | `--auto` + `--detect-only` is an error (pick write or report-only). `--dry-run` is the report-only form of `--auto`. |
+
 ## Write rules
 
 - Merge into existing JSON; do not delete unknown keys.
@@ -258,3 +277,4 @@ When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MC
 - Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.
 - Preview writes: `preview.dryRunCommand` in `{sharedDir}/config.json` only (never commit). Cite inference source in the session summary when Accept inferred.
 - specMemo writes: `specMemo.*` in `{sharedDir}/config.json` only; optional `memo import` / `memo hook install` via `configure_spec_memo.cjs` when user opts in.
+- Auto writes (`--auto` via `auto_configure.cjs`): merge-only into existing JSON (never delete unknown keys, never overwrite filled keys unless `--force`); preserve `_comment*` keys; carry missing `_comment*` from the example; never commit `config.json`.
