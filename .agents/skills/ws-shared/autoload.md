@@ -75,6 +75,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
+| Manage / route / index / handle all spec operations (unified front door) | [`ws-spec-manager`](../ws-spec-manager/SKILL.md) | Central router and interactive menu; delegates to specialized `ws-spec-*` skills |
 | Draft a new local spec or reformulate tracker issue | [`ws-spec-write`](../ws-spec-write/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch. Standalone: `user-gate` then `ws-spec-index` `track` |
 | Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../ws-spec-format/FORMAT.md) |
 | Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) | Not for free-text draft (use spec-write first); PR ops delegate to `providers.scm` |
@@ -96,6 +97,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 
 | Keywords / phrases | Invoke |
 |--------------------|--------|
+| manage specs, spec manager, /spec, /specs, /spec-manager, spec lifecycle, spec menu | `ws-spec-manager` |
 | write a spec, draft spec, brainstorm feature spec, reformulate issue | `ws-spec-write` |
 | format spec, validate AC, spec-format, missing acceptance criteria | `ws-spec-format` |
 | register spec, fetch-to-spec (file), promote spec into a workflow run | `ws-spec-provider-local` |

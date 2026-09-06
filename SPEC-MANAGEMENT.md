@@ -24,6 +24,7 @@ spec-from-provider (bulk import) ──────────┘         ↓
 
 | Skill | What it does | Use when |
 |-------|--------------|----------|
+| [`ws-spec-manager`](#0-ws-spec-manager--unified-front-door) | Unified front-door router (`/spec`, `/specs`) | Single memorable entry point; routes to any specialized spec skill |
 | [`ws-spec-write`](#1-ws-spec-write--author) | Drafts / reformulates `{specsDir}/*.spec.md` from free-text or tracker snapshot | Creating a new spec, turning an issue into testable ACs |
 | [`ws-spec-format`](#2-ws-spec-format--schema) | Canonical `*.spec.md` schema + validator | Creating, reviewing, or reformatting a spec; CI authoring gate |
 | [`ws-spec-organizer`](#3-ws-spec-organizer--paths) | Spec-of-record path resolver + `NNNN-` organizer | Resolving spec path, enabling chronological prefixes, organizing board |
@@ -39,6 +40,19 @@ spec-from-provider (bulk import) ──────────┘         ↓
 ---
 
 ## Details
+
+### 0. `ws-spec-manager` — Unified Front Door
+
+**Path:** `.agents/skills/ws-spec-manager/SKILL.md`
+
+**What:** Single memorable entry point (`/spec`, `/specs`, `/spec-manager`) that routes commands or interactive menus to specialized `ws-spec-*` skills. Enforces strict boundary separation (e.g. `ws-spec-update` for body drift vs. `ws-spec-index sync` for status/checkboxes).
+
+**Use when:**
+
+- `/spec` or `/specs` — interactive guided menu with 11 categorized actions
+- Subcommands: `/spec create`, `/spec list`, `/spec explain <slug>`, `/spec update [slug]`, `/spec sync [slug]`, `/spec track <slug>`, `/spec organize`, `/spec archive`, `/spec validate <file>`, `/spec import`, `/spec run <slug>`
+
+---
 
 ### 1. `ws-spec-write` — Author
 

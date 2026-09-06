@@ -1,136 +1,308 @@
-# CATALOG.md — Promoted skill index (on demand)
+# CATALOG.md — Skill inventory (on demand)
 
-**Audience: agents.** Load when listing promoted installables or the consumer task router inventory. Hub routing rules stay in `AGENTS.md`.
+**Audience: agents.** Load this file when you need the full skill inventory or intent→skill router tables. Do **not** load it every prompt. Root `AGENTS.md` keeps progressive-disclosure rules; this companion holds the indexes.
 
-## Promoted skills (top-level installables)
+Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
-### Utilities (Workflows package)
+## Skill catalog (layers)
 
-| Skill | Path |
-|-------|------|
-| `ws-tdah` | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) |
-| `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) |
-| `ws-fable-method` | [`../ws-fable-method/SKILL.md`](../ws-fable-method/SKILL.md) |
-| `ws-spec-format` | [`../ws-spec-format/SKILL.md`](../ws-spec-format/SKILL.md) |
-| `ws-classify-complexity` | [`../ws-classify-complexity/SKILL.md`](../ws-classify-complexity/SKILL.md) |
-| `ws-configure-project` | [`../ws-configure-project/SKILL.md`](../ws-configure-project/SKILL.md) |
-| `ws-goal-loop` | [`../ws-goal-loop/SKILL.md`](../ws-goal-loop/SKILL.md) |
-| `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../ws-self-learning/SKILL.md) |
-| `ws-changelog` | [`../ws-changelog/SKILL.md`](../ws-changelog/SKILL.md) |
-| `ws-spec-index` | [`../ws-spec-index/SKILL.md`](../ws-spec-index/SKILL.md) |
-| `ws-spec-list` | [`../ws-spec-list/SKILL.md`](../ws-spec-list/SKILL.md) |
-| `ws-spec-from-provider` | [`../ws-spec-from-provider/SKILL.md`](../ws-spec-from-provider/SKILL.md) |
-| `ws-spec-update` | [`../ws-spec-update/SKILL.md`](../ws-spec-update/SKILL.md) |
-| `ws-spec-memo` | [`../ws-spec-memo/SKILL.md`](../ws-spec-memo/SKILL.md) |
-| `ws-task-lifecycle` | [`../ws-task-lifecycle/SKILL.md`](../ws-task-lifecycle/SKILL.md) |
-| `ws-pre-daily` | [`../ws-pre-daily/SKILL.md`](../ws-pre-daily/SKILL.md) |
-| `ws-megabrain` | [`../ws-megabrain/SKILL.md`](../ws-megabrain/SKILL.md) |
-| `ws-spec-explain` | [`../ws-spec-explain/SKILL.md`](../ws-spec-explain/SKILL.md) |
-| `ws-spec-archive` | [`../ws-spec-archive/SKILL.md`](../ws-spec-archive/SKILL.md) |
-| `ws-cleanup` | [`../ws-cleanup/SKILL.md`](../ws-cleanup/SKILL.md) |
-| `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 43, `extra` = 8). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+>
+> **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
-### Harness & review (Workflows package)
+### Layer 0 — Harness
 
-| Skill | Path |
-|-------|------|
-| `ws-check-harness` | [`../ws-check-harness/SKILL.md`](../ws-check-harness/SKILL.md) |
-| `ws-check-workflows` | [`../ws-check-workflows/SKILL.md`](../ws-check-workflows/SKILL.md) |
-| `ws-doctor` | [`../ws-doctor/SKILL.md`](../ws-doctor/SKILL.md) |
-| `ws-secrets-leak-review` | [`../ws-secrets-leak-review/SKILL.md`](../ws-secrets-leak-review/SKILL.md) — scan; optional pre-commit hook is user-requested only |
-| `ws-fable-judge` | [`../ws-fable-judge/SKILL.md`](../ws-fable-judge/SKILL.md) |
+| Skill | Path | Description |
+|-------|------|-------------|
+| `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
+| `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
+| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics |
+| `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
+| `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
+| `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
+| `ws-run-benchmark` | `.agents/skills/ws-run-benchmark/SKILL.md` | Upstream-only fixture compare (Extra; never spec-to-pr) |
+| `ws-benchmarks` | `.agents/skills/ws-benchmarks/SKILL.md` | Benchmark management suite & evolution reporting (Extra; never spec-to-pr) |
+| `using-superpowers` | `(global)` | Skill discovery |
 
-### Extra package (optional)
+### Layer 1 — Engineering standards
 
-Present only after Extra or Full install. If a path is missing, treat as intentional omission (not a broken route).
+| Skill | Path | Description |
+|-------|------|-------------|
+| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Optional engineering-delivery gate and Code review proof source |
 
-| Skill | Path |
-|-------|------|
-| `ws-write-a-skill` | [`../ws-write-a-skill/SKILL.md`](../ws-write-a-skill/SKILL.md) |
-| `ws-show-harness` | [`../ws-show-harness/SKILL.md`](../ws-show-harness/SKILL.md) |
-| `ws-preview` | [`../ws-preview/SKILL.md`](../ws-preview/SKILL.md) |
-| `ws-run-benchmark` | [`../ws-run-benchmark/SKILL.md`](../ws-run-benchmark/SKILL.md) — Extra; upstream package-root version compare only; **never** load during spec-to-pr |
-| `ws-benchmarks` | [`../ws-benchmarks/SKILL.md`](../ws-benchmarks/SKILL.md) — Extra; benchmark management suite & evolution reporting; **never** load during spec-to-pr |
-| `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
-| `ws-fable-domain` | [`../ws-fable-domain/SKILL.md`](../ws-fable-domain/SKILL.md) |
-| `ws-plan-update` | [`../ws-plan-update/SKILL.md`](../ws-plan-update/SKILL.md) |
+### Layer 2 — Pipeline + providers
 
-### Intentionally orch-only (not duplicated here)
+| Step | Skill | Path |
+|------|-------|------|
+| 00 | `ws-spec-write` | `.agents/skills/ws-spec-write/SKILL.md` |
+| 01 | `ws-plan-write` | `.agents/skills/ws-plan-write/SKILL.md` |
+| 02 | `ws-plan-interview` | `.agents/skills/ws-plan-interview/SKILL.md` |
+| 03 | `ws-plan-to-tasks` | `.agents/skills/ws-plan-to-tasks/SKILL.md` |
+| 04 | `ws-implement-tasks` | `.agents/skills/ws-implement-tasks/SKILL.md` |
+| 05 | `ws-plan-verify` | `.agents/skills/ws-plan-verify/SKILL.md` |
+| 06 | `ws-code-review` | `.agents/skills/ws-code-review/SKILL.md` |
+| 07 | `ws-testing` | `.agents/skills/ws-testing/SKILL.md` |
+| 08 | `ws-ship-pr` | `.agents/skills/ws-ship-pr/SKILL.md` |
+| 09 | `ws-fix-pr` | `.agents/skills/ws-fix-pr/SKILL.md` |
+| — | `ws-goal-fix-pr` | `.agents/skills/ws-goal-fix-pr/SKILL.md` |
+| Post | `ws-plan-update` | `.agents/skills/ws-plan-update/SKILL.md` (Extra) |
+| — | `ws-spec-provider-github` | `.agents/skills/ws-spec-provider-github/SKILL.md` |
+| — | `ws-spec-provider-azure-devops` | `.agents/skills/ws-spec-provider-azure-devops/SKILL.md` |
+| — | `ws-spec-provider-local` | `.agents/skills/ws-spec-provider-local/SKILL.md` |
 
-Pipeline folders `ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`, orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`), and providers are discovered via host invoke / orch dispatch — not listed as promoted utilities. `ws-plan-update` is Extra (optional post-workflow).
+### Layer 3 — Discovery (reserved)
 
-Install packages and dependency map: upstream `bin/skill-dependencies.json` in [workflow-skills](https://github.com/jpolvora/workflow-skills) (not vendored in consumer clones).
+Install via `using-superpowers` / `find-skills` until routed here.
+
+### Layer 4 — Review & audit
+
+| Skill | Path | Description |
+|-------|------|-------------|
+| `ws-secrets-leak-review` | `.agents/skills/ws-secrets-leak-review/SKILL.md` | Secrets and PII leak scan with optional hook |
+| `ws-fable-judge` | `.agents/skills/ws-fable-judge/SKILL.md` | Adversarial audit, fraud detection & diff verification |
+
+### Layer 5 — Utility & meta
+
+| Skill | Path | Notes |
+|-------|------|-------|
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first reply shape |
+| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Micro diff hygiene |
+| `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9) |
+| `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
+| `ws-spec-multi` | `.agents/skills/ws-spec-multi/SKILL.md` | Batch multi-spec delivery |
+| `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop |
+| `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas (Extra) |
+| `ws-spec-format` | `.agents/skills/ws-spec-format/SKILL.md` | Canonical spec schema |
+| `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
+| `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Anti-regression memory engine |
+| `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Append-only task history |
+| `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interactive config.json wizard |
+| `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence loop primitive |
+| `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
+| `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs vs plans + menu |
+| `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import GH/ADO issues → specs |
+| `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries for delivery (Extra) |
+| `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
+| `ws-megabrain` | `.agents/skills/ws-megabrain/SKILL.md` | Vibe-coding implementer + specialists |
+| `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Status and delivery panorama |
+| `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
+| `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
+| `ws-spec-update` | `.agents/skills/ws-spec-update/SKILL.md` | Auto-update specs after code changes |
+| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Harness ↔ spec-memo **bridge** only (`config.json`, import, hybrid fallback); runtime vault ops → `ws-memo` |
+| `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
+| `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
+| `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
+| `grill-with-docs` | `(global)` | Docs grill |
+| `find-skills` | via `using-superpowers` | Discover/install |
 
 ---
 
-## Task router (consumer)
+## Task router
 
 | Intent | Load |
 |--------|------|
-| Spec → PR E2E | `ws-spec-to-pr` |
-| Spec → PR lite | `ws-spec-to-pr-lite` |
-| Batch spec delivery | `ws-spec-multi` |
-| Project spec index init/sync/promote/track | `ws-spec-index` |
-| List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
-| Bulk-import GH issues / ADO User Stories → local specs | `ws-spec-from-provider` |
-| Timesheet / activity hours for a Spec-to-PR delivery day (plan folder) | `ws-activity-report` (Extra) |
+| Write a spec | This file § [6. Write a spec](#6-write-a-spec-on-demand) (live `ws-spec-write` only when authoring that skill) |
+| Classify spec pipeline complexity | `ws-classify-complexity` |
+| Plan implementation | `ws-plan-write` → `ws-plan-interview` → `ws-plan-to-tasks` |
+| Implement | `ws-implement-tasks` |
+| Engineering delivery gate / Code review proof | This file § [2. Delivery gate](#2-delivery-gate-ws-senior-developer) (live `ws-senior-developer` only when authoring that skill) |
+| Verify / check-implementation / verify score | `ws-plan-verify` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
+| SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) — then one provider skill |
+| Local code review | `ws-code-review` |
+| Secrets / leaks | `ws-secrets-leak-review` |
+| Adversarial audit / fraud scan | `ws-fable-judge` |
+| Fable Method 7-step loop | This file § [3. Investigate loop](#3-investigate-loop-ws-fable-method) (live `ws-fable-method` only when authoring that skill) |
+| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | What next / vibe-coding implement / megabrain | `ws-megabrain` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
+| Testing pre-PR | `ws-testing` |
+| Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
+| Ship PR | `ws-ship-pr` |
+| Spec → PR E2E | `ws-spec-to-pr` |
+| Spec → PR lite | `ws-spec-to-pr-lite` |
+| Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
+| Batch spec delivery | `ws-spec-multi` |
+| Project spec index init/sync/promote | `ws-spec-index` |
+| List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
+| Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Always-applied |
+| Specs keywords / which skill to invoke | [`{sharedDir}/autoload.md`](.agents/skills/ws-shared/autoload.md) § Specs skill router |
+| Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
+| Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
-| spec-memo / external vault setup/bridge | `ws-spec-memo` |
-| Runtime spec-memo vault ops | `ws-memo` |
-| Prompt/session tracking, vault activity, invoicing by client (`/ws-session-tracking`) | `ws-session-tracking` |
-| Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
-| Fable Method 7-step loop | `ws-fable-method` |
-| Classify spec pipeline complexity | `ws-classify-complexity` |
-| Adversarial audit / fraud scan | `ws-fable-judge` |
-| Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
-| Engineering delivery gate / Code review proof | `ws-senior-developer` (default on-demand; opt in via `rules.seniorDeveloper`; root `AGENTS.md` may autoload — see § Consumer root override) |
-| Fill / update `config.json` | `ws-configure-project` (optional suggestion only for secrets pre-commit hook — never required) |
+| Manage / route all spec operations (unified front door) | `ws-spec-manager` |
+| spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
+| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` |
+| Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` |
+| Spec-to-PR plan-folder timesheet for a civil day | `ws-activity-report` (Extra) |
+| GitHub issue/PR ops | `ws-spec-provider-github` |
+| ADO WI/PR ops | `ws-spec-provider-azure-devops` |
+| Local `*.spec.md` | `ws-spec-provider-local` |
+| Format/review spec | `ws-spec-format` |
+| New skill / skill rewrite | `ws-write-a-skill` |
+| Show active harness | `ws-show-harness` |
+| Pipeline review / local dry-run preview | `ws-preview` |
+| Upstream package-version fixture compare (never spec-to-pr) | `ws-run-benchmark` |
+| Harness benchmark suite & evolution reporting (never spec-to-pr) | `ws-benchmarks` (Extra) |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Check workflows | `ws-check-workflows` |
-| Secrets / leaks | `ws-secrets-leak-review` |
-| Format/review spec | `ws-spec-format` |
-| Specs vocabulary / which specs skill to load | [`autoload.md`](autoload.md) § Specs skill router |
-| Verify / check-implementation / verify score | `ws-plan-verify` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
-| SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](scm-provider-contract.md) — then one provider skill |
-| Record learning | `ws-self-learning` |
-| Record ws-changelog | `ws-changelog` |
-| Create / rewrite a skill | `ws-write-a-skill` (Extra) |
-| Show active harness | `ws-show-harness` (Extra) |
-| Pipeline review / local dry-run preview | `ws-preview` (Extra) |
-| Live / static harness benchmark (upstream package root only; never spec-to-pr) | `ws-run-benchmark` (Extra) |
-| Benchmark suite & evolution reports (upstream package root only; never spec-to-pr) | `ws-benchmarks` (Extra) |
-
-Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
-
-**Product-commit order (both orch):** after verify (standard Step 5, score ≥ `defaults.minVerifyScore` (default 9)) or after implement (lite Step 2), commit workflow-touched product files; then code-review against `{base}...HEAD`; then a second product commit for review fixes if any. `{plansDir}` still only at Step 8 / lite Step 4 delivery. Never `git add -A`.
+| Grill plan vs docs | `grill-with-docs` |
+| Record learning | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-self-learning` only when authoring that skill) |
+| Convergence loop | `ws-goal-loop` |
+| Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
+| Fill / update `config.json` | `ws-configure-project` |
+| Discover/install skills | `find-skills` or `using-superpowers` |
 
 ---
 
+### Upstream developer workflow (this repo only)
+
+**Local project rule** for agents in `jpolvora/workflow-skills`. Consumers dogfood the same skills via install but follow [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) — not this section.
+
+#### Skill tree (authoritative source)
+
+- **Develop and test** under **`.agents/skills/ws-*`** — pipeline, providers, utilities, and hub templates shipped with skills. This is the **only** upstream skill-content SoT (see § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory)). Host-listed `{globalSkillsRoot}/ws-*` duplicates: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory) (default invoke global; edit local only).
+- **Consumer hub data** under **`.agents/skills/ws-shared/`** in this repo (`config.json`, MEMORY, STACK, memory, installed-skills) stays local/temp consumer-style data — never published as skill SoT.
+- **Package and publish** from `.agents/skills/ws-*` via the installer/CLI (`bin/cli.js`, `bin/skill-dependencies.json`, `bin/skill-integrity.json`) into consumer **project-local** (`.agents/skills`) or **global** (`$HOME/.agents/skills`) installs.
+- **Lasting changes** belong in upstream PRs (`develop` → `main`); consumer copies are managed and overwritten on `update` (project `ws-shared` consumer data preserved).
+
+#### Skill authoring contract
+
+| Topic | Canonical doc |
+|-------|----------------|
+| Skill design, pruning & protocol rules (mandatory) | [`SKILL_AUTHORING.md`](.agents/skills/ws-write-a-skill/SKILL_AUTHORING.md) |
+| Portability, language, folder naming | This file § [Portability & harness neutrality](#portability--harness-neutrality-mandatory) |
+| Script launchers (`python` / `node` / `bash`) | [`ws-shared/tools.md`](.agents/skills/ws-shared/tools.md) § Script launchers |
+| New or rewritten skills (markdown + scripts) | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) |
+| Spec shape / review | [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) |
+
+Managed script calls use explicit launchers; do not rewrite skill scripts for shell quirks in consumer trees — fix upstream.
+
+#### Development commands (this repo)
+
+**Dependencies:** none to install. `package.json` declares no `dependencies` / `devDependencies`, so the toolchain is Node.js (ESM, `"type": "module"`) plus `npm`; `npm install` is optional and only writes a lockfile. Tests and scripts run straight from a fresh clone.
+
+| Task | Command |
+|------|---------|
+| Install dependencies | Not required — see above. Run `node -v` to confirm Node is on PATH. |
+| Full test suite | `npm run test` (alias `npm run tests`; `pretests` runs `npm pack` first, so it exercises the real tarball) |
+| Harness efficiency suite | `npm run tests:harness-efficiency` |
+| Same suite against the remote installer | `npm run tests:remote` |
+| CLI surface / flags | `node bin/cli.js --help` |
+| Local install dry run | `cd <scratch-dir> && node <repo>/bin/cli.js install --package workflows --yes --project` |
+| Local update / uninstall | `node <repo>/bin/cli.js update` · `node <repo>/bin/cli.js uninstall --skills <csv> --yes` |
+| Global-scope variants | add `--global` / `-g` (project scope is `--project` / `-p`; global root override `WORKFLOW_SKILLS_GLOBAL_DIR`) |
+| Integrity digests | `npm run generate-integrity` then `npm run verify-integrity` (must exit 0) |
+| Catalog / site | `node bin/build-site.js` (catalog only) · `node bin/build-site.js --check` (read-only verification) · `npm run build-site:bump` (release bump + footer) |
+| Harness benchmark (upstream package root only; never spec-to-pr) | `ws-benchmarks` · `ws-run-benchmark` · `npm run benchmark:static` · `prepare --fixture` · `collect --sandbox` |
+| Installed-skill audit | `node bin/cli.js integrity` · `node bin/cli.js --check` (version + `fullPackageDigest` vs `main`) |
+
+**Never run install/update against this package root.** The installer writes into `.agents/skills/`, which is the upstream SoT here — it would overwrite the skills you are authoring. Always target a scratch directory (or the trees under `test/`), and prefer local `node bin/cli.js` / `./install-skills.sh` over remote `npx` (§ [Consumer CLI](#consumer-cli-install--update--uninstall)).
+
+#### Review & audit commands
+
+| Review | How |
+|--------|-----|
+| Local code review of the working branch | `ws-code-review` → `/code-review [base=<ref>] [plan=<plan-path>]` (commits `{base}...HEAD`, fix → re-review rounds, max 3) |
+| Harness integrity | `ws-check-harness` (Phases 0–5c) → 0 critical |
+| Workflow / FSM simulation | `ws-check-workflows`, or `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` |
+| Secrets / PII scan | `ws-secrets-leak-review` |
+| Adversarial audit of claimed work | `ws-fable-judge` |
+| External agentic reviewer (optional) | § [Local dry-run: agentic code reviewers](#local-dry-run-agentic-code-reviewers) |
+| PR review threads after ship | `ws-fix-pr` / `ws-goal-fix-pr` |
+
+#### Recommended DX autoload (upstream dogfood)
+
+In **this repo only**, apply `AGENTS.md` § Upstream session contract every session (covers surgical scope, delivery gate, fable loop, reply shape, memory/changelog, and write-spec without reading live `ws-*` bodies at runtime).
+
+Those live skills still ship to consumers. Consumer hubs autoload them (or keep them on-demand) from installed `.agents/skills/ws-*`. Load a live body here only when authoring or testing that skill.
+
+Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in `AGENTS.md`.
+
+#### Start work
+
+| Intent | Load |
+|--------|------|
+| Draft a spec | `AGENTS.md` § Write a spec → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-spec-write` only when authoring that skill. |
+| Spec → PR (full) | `ws-spec-to-pr` |
+| Spec → PR (fast) | `ws-spec-to-pr-lite` |
+| GitHub issue → spec / fix | `ws-spec-provider-github` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) |
+| Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
+| Timesheet / activity hours (Spec-to-PR plan folder) | `ws-activity-report` (Extra) |
+| Vault prompt/session activity | `ws-session-tracking` |
+| Explain spec / US status | `ws-spec-explain` |
+| Archive plans into `index.PRD` | `ws-spec-archive` |
+| Clean workflow leftovers | `ws-cleanup` |
+
+**Spec-of-record rule:** canonical spec lives under `{specsDir}`; workflow `step-00` is registered under `{plansDir}/{slug}/`. Re-fetch uses `--force` when content differs.
+
+Workflow artifacts: prefer `{specsDir}` from `config.json` → `plans.specsDir` (default `.agents/specs`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
+
+#### After changes (recommend / gate)
+
+After edits under `.agents/skills/ws-*`, hubs, `docs/`, `bin/`, or installer inputs:
+
+1. Run **`ws-check-harness`** (Phases 0–5c) — see also § [Harness change protocol](#harness-change-protocol).
+2. Resolve **critical** findings before claim complete / merge.
+
+#### Before ship PR — upstream `ws-ship-pr` mandatory gate (this repo only)
+
+**Scope:** `jpolvora/workflow-skills` package root only — not consumer projects.  
+**Trigger:** Every time an agent runs `ws-ship-pr` / `/ship-pr` here, Step 2 (Prepare to PR) **must** execute this checklist before commit, push, or PR creation. `ws-ship-pr` discovers it via root `AGENTS.md` (Prepare row 5). Any ❌ → STOP (no push/PR).
+
+Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PREPARE-CHECKLIST.md`](.agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md)).
+
+| # | Check | Command / skill | When required |
+|---|-------|-----------------|---------------|
+| 1 | **Install tests** | `npm run test` (or `npm run tests` during dev) | Always — installer, integrity, tree verification |
+| 2 | **Website / catalog** | `npm run build-site:bump` when shipping package content; else `node bin/build-site.js` for catalog-only | Skills/hubs/CLI/installer changed → bump + rebuild `docs/index.html`; verify no merge-conflict markers |
+| 3 | **Version** | `package.json` patch bump via step 2; `bin/skill-dependencies.json` → `packageVersion` stays aligned | **CI deploy on `main` never bumps** — bump locally once per release PR before push |
+| 4 | **Installer (Node CLI)** | Review/fix `bin/cli.js`, `bin/install-rules.js` | Install/update/uninstall behavior or hub paths changed |
+| 5 | **Installer (npx + bash shim)** | `install-skills.sh` argv/help aligned with `bin/cli.js --help`; consumer docs in `README.md` if UX changed | Shim or npx surface changed |
+| 6 | **Skill dependency graph** | `bin/skill-dependencies.json` (+ `.agents/skills/ws-shared/skill-dependencies.json` when packaged graph ships) | Skills added/removed/renamed, package membership, or orch dispatch changed |
+| 7 | **Integrity digests** | `npm run generate-integrity` && `npm run verify-integrity` | Any hashed install content changed (`bin/skill-integrity.json` must exit 0 on `--check`) |
+| 8 | **Harness audit** | `ws-check-harness` Phases 0–5c → 0 critical | New/changed skills, hubs, routing, links, portability, en-us; Phase 3/4b must cover new skill ids and dependency graph |
+| 9 | **Workflow simulation** | `ws-check-workflows` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | Orchestrator FSM, step dispatch, gates, or simulation docs changed — 0 critical |
+| 10 | **Hub drift** | Sync root `AGENTS.md` + `ws-shared/AGENTS.md` (+ `ws-shared/autoload.md` when the Always-applied set or specs router changed) | Routing tables or skill index changed |
+| 11 | **Human docs** | `README.md` when install/usage/safety narrative changed | Not required for skill-only doc fixes |
+| 12 | **Ship** | `ws-ship-pr` / `/ship-pr` after rows 1–11 are ✅ or justified ⏭ | Commit → push → create PR |
+| 13 | **Review convergence** | Wait **30s** after PR creation for code-review Action/CI to start, then `ws-goal-fix-pr` (default **300s** heartbeats per [`ws-ship-pr/GOAL-OVERRIDES.md`](.agents/skills/ws-ship-pr/GOAL-OVERRIDES.md)) until `activeThreads == 0` or escalate | Standalone ship-pr Step 6; orch Step 9 when `stopBeforeFixPr` |
+
+**Upstream skill integrity regenerate (step 7 detail):** Hashed paths include **`.agents/skills/ws-*`** skill content, `bin/` installer inputs, and hub templates packed by the CLI. Regenerate and commit `bin/skill-integrity.json` in the **same** commit as content changes; `npm run generate-integrity` and `npm run verify-integrity` must exit 0 before ship.
+
+**Version bump (step 3 detail):** One patch bump per release PR (`npm run build-site:bump` stamps site footer + `package.json`). Do not rely on GitHub Actions to bump — Actions deploy site on `main` only.
+
+**Post-ship:** Do not merge while review threads are open or required checks are red. `ws-goal-fix-pr` owns the fix loop; `ws-ship-pr` merges only after convergence (unless `no-merge` / orch `stopBeforeFixPr`).
+
+*Note:* Consumers use [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) § Recommended Feature Delivery Checklist — not this table.
+
 ---
 
-## External dependencies
+## Local dry-run: agentic code reviewers
 
-Not shipped in the hub package (except where noted). Resolve each dependency in **order** (first match wins). Read paths from `config.json` when present. Do **not** assume host-private rule folders.
+Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) (`cursor-sdk` / `composer-2.5`). OpenCode backup [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) is `workflow_dispatch` only (re-enable on `pull_request` when OpenCode Go billing has credits). See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
 
-| Dependency | Resolve (first match) |
-|------------|------------------------|
-| `senior-developer` | `config.json` → `rules.seniorDeveloper` (set path to opt in; default on-demand in shared hub) → local skill (`senior-developer/SKILL.md`) → global/user skill. Root `AGENTS.md` may autoload — see § Consumer root override |
-| `ws-karpathy-guidelines` | `config.json` → `rules.karpathyGuidelines` → shipped `../ws-karpathy-guidelines/SKILL.md` → global skill |
-| Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/ws-shared/STACK.md`) — consumer-owned under `ws-shared/` |
-| Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) |
-| Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
-| Optional consumer rules | Other `config.json` `rules.*` paths when set — do not invent filenames |
-| Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (token `{specsDir}`; default `.agents/specs`) · optional `reviews.dir` (token `{reviewsDir}`; default `.agents/codereviews`) |
+```bash
+# Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.
+curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh \
+  -o /tmp/agentic-code-reviewers-run.sh
+AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS=".agents/plans/**,.agents/specs/**" \
+bash /tmp/agentic-code-reviewers-run.sh \
+  --dry-run \
+  --gh \
+  --engine cursor-sdk \
+  --model composer-2.5 \
+  --variant high \
+  --stack Custom \
+  --custom-prompt .github/agentic-code-reviewers-prompt.md \
+  --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
+  --target-branch refs/heads/main \
+  --source-branch refs/heads/develop
+```
 
-Bootstrap notes: [`setup.md`](setup.md). Config resolution: [`config-resolution.md`](config-resolution.md).
-
-### Code review proof
-
-When skills ask for **Code review proof**, use the checklist from the **resolved** `rules.seniorDeveloper` skill. Do **not** paste or duplicate that checklist here.
+---
