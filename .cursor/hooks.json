@@ -4,19 +4,19 @@
     "sessionStart": [
       {
         "command": ".cursor/hooks/spec-memo-bootstrap.sh",
-        "timeout": 1
+        "timeout": 5
       }
     ],
     "beforeSubmitPrompt": [
       {
         "command": ".cursor/hooks/spec-memo-record.sh",
-        "timeout": 1
+        "timeout": 5
       }
     ],
     "sessionEnd": [
       {
         "command": ".cursor/hooks/spec-memo-session-end.sh",
-        "timeout": 1
+        "timeout": 5
       }
     ]
   },

@@ -17,8 +17,9 @@
  *   dagThresholds, defaults, plans, reviews, preview, rules, invariants,
  *   tracking, specMemo, fable, pathTokens, toolsFile.
  *
- * Exit codes: 0 = write (or dry-run) succeeded (`ok:false` when required gaps
- * remain unresolved); 2 = usage / missing hub / unreadable JSON.
+ * Exit codes: 0 = write (or dry-run) succeeded with no required gaps
+ * remaining; 1 = completed but required gaps remain unresolved
+ * (`ok:false`); 2 = usage / missing hub / unreadable JSON.
  */
 
 const fs = require('fs');
@@ -337,19 +338,33 @@ function buildWanted(repoRoot, example, schema) {
         return hit || null;
       } catch { return null; }
     })();
-    want('verification.backendBuild', sln ? `dotnet build ${sln}` : 'dotnet build', 'detected');
-    want('verification.backendTest', 'dotnet test', 'detected');
+    // Never overwrite verification aliases already detected from a
+    // higher-precedence stack (e.g. Node in a polyglot repo).
+    if (getByPath(wanted, 'verification.backendBuild') === undefined) {
+      want('verification.backendBuild', sln ? `dotnet build ${sln}` : 'dotnet build', 'detected');
+    }
+    if (getByPath(wanted, 'verification.backendTest') === undefined) {
+      want('verification.backendTest', 'dotnet test', 'detected');
+    }
   }
   if (hasPython && getByPath(wanted, 'verification.backendTest') === undefined) {
     want('verification.backendTest', 'pytest', 'detected');
   }
   if (hasGo) {
-    want('verification.backendBuild', 'go build ./...', 'detected');
-    want('verification.backendTest', 'go test ./...', 'detected');
+    if (getByPath(wanted, 'verification.backendBuild') === undefined) {
+      want('verification.backendBuild', 'go build ./...', 'detected');
+    }
+    if (getByPath(wanted, 'verification.backendTest') === undefined) {
+      want('verification.backendTest', 'go test ./...', 'detected');
+    }
   }
   if (hasRust) {
-    want('verification.backendBuild', 'cargo build', 'detected');
-    want('verification.backendTest', 'cargo test', 'detected');
+    if (getByPath(wanted, 'verification.backendBuild') === undefined) {
+      want('verification.backendBuild', 'cargo build', 'detected');
+    }
+    if (getByPath(wanted, 'verification.backendTest') === undefined) {
+      want('verification.backendTest', 'cargo test', 'detected');
+    }
   }
   if (!hasNode && !hasDotnet && !hasPython && !hasGo && !hasRust && fileExists(repoRoot, '.agents', 'skills')) {
     want('verification.backendTest', 'python .agents/skills/ws-check-workflows/scripts/check_workflows.py', 'detected');
@@ -702,6 +717,7 @@ function main() {
     }
     if (!ok) console.log(`required gaps remain: ${gaps.join(', ')}`);
   }
+  if (!ok) process.exit(1);
 }
 
 try {

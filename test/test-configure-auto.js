@@ -262,6 +262,39 @@ function writeConfig(root, config) {
   assert((evals.evals || []).some((e) => /--auto/.test(e.prompt || '')), 'evals cover --auto');
 }
 
+// 11. Polyglot: Node-first repo keeps npm verification aliases (dotnet must not overwrite).
+{
+  const root = mkTmp('ws-auto-polyglot-');
+  seedHub(root, { withConfig: false });
+  fs.writeFileSync(
+    path.join(root, 'package.json'),
+    JSON.stringify({ name: 'poly-pkg', scripts: { build: 'tsc', test: 'vitest run' } }),
+    'utf8',
+  );
+  fs.writeFileSync(path.join(root, 'app.sln'), 'polyglot sln stub', 'utf8');
+  const result = runAuto(['--repo-root', root, '--json']);
+  const data = parseJson(result, 'polyglot repo');
+  if (data) {
+    const cfg = readConfig(root);
+    assert(cfg.stack.id === 'node', 'polyglot stack.id stays node-first');
+    assert(cfg.verification.backendBuild === 'npm run build', 'polyglot backendBuild not overwritten by dotnet');
+    assert(cfg.verification.backendTest === 'npm test', 'polyglot backendTest not overwritten by dotnet');
+  }
+}
+
+// 12. Partial success exits non-zero when required gaps remain.
+{
+  const root = mkTmp('ws-auto-gaps-');
+  seedHub(root, { withConfig: false });
+  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ name: 'gaps-pkg' }), 'utf8');
+  const result = runAuto(['--repo-root', root, '--json']);
+  const data = parseJson(result, 'gaps remain');
+  if (data) {
+    assert(data.ok === false, 'bare package.json leaves required gaps');
+    assert(result.status === 1, 'required gaps exit 1 (not silent 0)');
+  }
+}
+
 cleanup();
 
 if (failures > 0) {
