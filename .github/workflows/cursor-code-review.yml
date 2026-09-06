@@ -1,10 +1,9 @@
 name: Agentic Code Review (Cursor)
 
-# Active PR reviewer for PRs into main (OpenCode is workflow_dispatch-only until billing is funded).
+# Disabled for automatic PR reviews. Active reviewer is opencode-code-review.yml.
+# Kept as workflow_dispatch backup (requires CURSOR_API_KEY). Re-enable pull_request here
+# only after disabling opencode-code-review.yml pull_request triggers.
 on:
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:

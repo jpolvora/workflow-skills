@@ -285,7 +285,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 ## Local dry-run: agentic code reviewers
 
-Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) (`cursor-sdk` / `composer-2.5`). OpenCode backup [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) is `workflow_dispatch` only (re-enable on `pull_request` when OpenCode Go billing has credits). See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
+Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) (`opencode` / `opencode-go/muse-spark-1.3-contributor`; `OPENCODE_API_KEY`). Cursor backup [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only. See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
 
 ```bash
 # Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.
