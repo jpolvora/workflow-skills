@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-06] Strip comments and string literals before evaluating static invariant rules
+- **Layer**: `harness`
+- **Module**: `ws-shared / scan_stack_invariants.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/scan_stack_invariants.cjs`
+- **Scenario / Context**: Running static invariant scanners for forbidden synchronous calls, blocked symbols, or architectural constraints.
+- **DO NOT**: Test raw code lines with regexes without stripping comments and string literals, which produces false-positive violations on documentation, explanatory comments, and log strings that mention forbidden constructs (e.g. `// Note: do not call .Wait() or .Result`).
+- **INSTEAD DO**: Preprocess lines through language-aware comment and literal parsers (`cleanCSharpLine`, `cleanPhpComments`) to strip single-line (`//`, `#`), block (`/* ... */`), verbatim (`@""`), and interpolated string/char literals before testing AST/regex invariant rules.
+
 ### [2026-09-06] Scope static scanner authorization checks to enclosing classes
 - **Layer**: `harness`
 - **Module**: `ws-shared / scan_stack_invariants.cjs`
@@ -23,6 +32,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: `verify-integrity` passed locally but failed on CI with a stale manifest after a refocus that removed skill-tree files.
 - **DO NOT**: Trust a local `verify-integrity OK` when untracked files sit under `.agents/skills/` — the walker hashes on-disk bytes (not git state), so local-only files pollute the manifest and CI fails.
 - **INSTEAD DO**: Move untracked skill-tree files aside, regenerate, verify, commit, then restore them; confirm the digest actually changed in the commit.
+
+### [2026-09-06] Framework trap seeding must write persistent memory files with valid schemas
+- **Layer**: `harness`
+- **Module**: `ws-configure-project / auto_configure.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/auto_configure.cjs`
+- **Scenario / Context**: Auto-configuring project repositories and seeding framework-specific traps.
+- **DO NOT**: Inject free-form text or unformatted headings directly into `MEMORY.md` without corresponding markdown files in `memory/`, which causes `self_learning.cjs --compile` to discard or fail validation on seeded traps.
+- **INSTEAD DO**: Format framework traps with valid dated headings (`### [YYYY-MM-DD]`), `Layer`, `Severity`, `DO NOT:`, and `INSTEAD DO:` fields, and write them directly into `.agents/skills/ws-shared/memory/framework-trap-${framework}.md` before synchronizing `MEMORY.md`.
+
+### [2026-09-06] Comprehensive argument parsing for raw SQL injection scanners
+- **Layer**: `harness`
+- **Module**: `ws-shared / scan_stack_invariants.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/scan_stack_invariants.cjs`
+- **Scenario / Context**: Scanning PHP/Laravel raw database queries (`DB::raw`, `DB::select`, `whereRaw`, `selectRaw`) for SQL injection vulnerabilities.
+- **DO NOT**: Match raw SQL calls with single-quote or superficial regexes that only test `DB::raw` with leading variables, missing concatenation (`. $var`, `$var .`), double-quote variable interpolation (`"SELECT ... $var"`), and method variants (`whereRaw`, `selectRaw`, `orderByRaw`).
+- **INSTEAD DO**: Extract the first argument cleanly using a balanced parenthesis/quote parser (`extractFirstArgument`), check for unescaped variable interpolation, concatenation, and bare variables across all raw query methods, and ignore parameterized bindings in subsequent arguments (`['%' . $var . '%']`).
 
 ### [2026-09-06] Bounded attribute and modifier matching in regex AST scanners
 - **Layer**: `harness`
