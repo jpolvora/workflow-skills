@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-06 12:00] Agent: opencode (muse-spark)
+- **Prompt**: fix issue #280 (standard workflow stalls after native transition gate Step 0 → Step 1); check all step transitions for manual/auto continuation; bump version and ship PR
+- **Done**: Clarified the gate contract in `ws-shared/gates.md` (markdown fallback yields the turn; native modal `Next` dispatches Step N+1 in the same turn; stall named as bug), applied the same distinction to `ws-spec-to-pr` SKILL/STEP-DISPATCH/PROTOCOLS and `ws-spec-to-pr-lite`; added blanket all-gates continuation rule plus classifier/safety-valve auto-gate rows; added `test/test-transition-gate-continuation.js` regression test; bumped package to `0.3.62` with frontmatter/manifest/site sync.
+- **Result**: Release `0.3.62` prepared; PR closes #280.
+
 ### [2026-09-03 06:20] Agent: Antigravity
 - **Prompt**: bump version and prepare to ws-ship-pr
 - **Done**: Bumped package to `0.3.57`; synchronized version across all 50 SKILL.md frontmatters, test/package.json, AGENTS.md, docs/index.html, and dependency manifests; clarified normal mode vs autoMode for modal choice tool and single-turn interactive cadence; regenerated integrity manifest (v0.3.57).

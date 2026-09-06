@@ -35,10 +35,16 @@ Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`ask
 4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
 5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
 6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing. **`autoMode` does not skip planning:** the full FSM 0→9 still runs; only gates are automatic. An existing parent feature branch (e.g. `feat/{parent}`) plus a child bug/task slug does not waive Steps 1–3 for the **child slug** — only an explicit user override may shorten planning.
+7. Gate continuation (all gates, every step boundary 0→1 through 8→9 / lite 0→1 through 4→5): a native modal `user-gate` return is already explicit confirmation — selecting the recommended advance option (Next / Accept / Commit then advance / Reach-10 advance / close / ship intent) MUST continue in the same turn (record the decision, run the gated action, present the next gate or dispatch next). A markdown fallback gate MUST yield the turn per rule 4; the user's next reply is consumed as that gate's decision before any other tool call. This applies equally to transition gates and intermediate gates (classifier, safety valve, Reach-10, scoreAndRefine, G2-code, close, ship).
 
 ## Interactive execution cadence (One Step Per Turn)
 
-In interactive execution mode (normal mode), completing Step N (dispatch, execution, state finish, pre-advance validation, and transition gate) must halt the turn. Step N+1 MUST never be initiated within the same interaction turn without explicit user confirmation. This prevents eager models from steamrolling past gates by generating a gate plus next-step tool calls in one response. **`autoMode` exception:** when running with `autoMode: true`, interactive single-turn halting does not apply; the orchestrator automatically applies the recommended option (index 0) from the auto-gate table and proceeds continuously across step boundaries.
+In interactive execution mode (normal mode), the turn boundary depends on how the transition `user-gate` was presented. This prevents eager models from steamrolling past gates by generating a gate plus next-step tool calls in one response.
+
+- **Markdown fallback (no bound `askQuestionTool`):** completing Step N (dispatch, execution, state finish, pre-advance validation, and text gate) must halt the turn. Step N+1 MUST never be initiated within the same interaction turn. The returned user reply in a later turn is the explicit confirmation.
+- **Native modal gate (bound `askQuestionTool` returns a selection):** the returned selection is already explicit user confirmation. When it returns any recommended advance option from rule 7 (**Next**, **Accept recommendation**, **Continue lite**, Commit-then-advance, Reach-10 advance, close, or ship intent), the orchestrator MUST record the gate decision and continue in the same turn (dispatch Step N+1, apply classifier routing, present the next gate, or run the gated action). Stopping after a native advance selection while state already implies progression (e.g. `completedSteps: [N]`, `currentStep: N+1`, no corresponding dispatch) is a stall bug — it leaves an apparently advanced state with no corresponding next-step dispatch or pending continuation marker.
+
+**`autoMode` exception:** when running with `autoMode: true`, interactive single-turn halting does not apply; the orchestrator automatically applies the recommended option (index 0) from the auto-gate table and proceeds continuously across step boundaries.
 
 **Orchestrator obligation:** both orchestrators resolve `defaults.gateGranularity` (`step` default, or `phase`). `step` runs `user-gate` at each step boundary. `phase` runs at most five blocking gates in a normal standard run: entry, plan approval, implementation approval, delivery, and fix-PR. Boundaries inside a phase advance after validation and state persistence without another blocking prompt. Hard stops, required save points, review findings, test failures, and safety checks never become implicit approvals.
 
@@ -277,6 +283,8 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 | Context | Index 0 |
 |---------|---------|
 | Transition | Next (Advance) |
+| Classifier (Step 0) | Accept recommendation |
+| Lite safety valve | Continue lite |
 | Feature branch (new start) | Stay on current (detached `HEAD`: create `feat/{slug}` from HEAD; never persist `HEAD`; `ls-remote` auth/network → local-check-only) |
 | Feature branch resume mismatch | Check out `state.branch` |
 | Close implementation (`fullMode`) | Commit configured delivery artifacts |
