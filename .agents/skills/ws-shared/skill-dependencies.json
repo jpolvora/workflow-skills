@@ -80,7 +80,8 @@
         "ws-activity-report",
         "ws-fable-domain",
         "ws-plan-update",
-        "ws-run-benchmark"
+        "ws-run-benchmark",
+        "ws-benchmarks"
       ],
       "ensureHub": false,
       "shortcut": "e",

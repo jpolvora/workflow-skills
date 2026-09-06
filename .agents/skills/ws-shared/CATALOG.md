@@ -50,6 +50,7 @@ Present only after Extra or Full install. If a path is missing, treat as intenti
 | `ws-show-harness` | [`../ws-show-harness/SKILL.md`](../ws-show-harness/SKILL.md) |
 | `ws-preview` | [`../ws-preview/SKILL.md`](../ws-preview/SKILL.md) |
 | `ws-run-benchmark` | [`../ws-run-benchmark/SKILL.md`](../ws-run-benchmark/SKILL.md) — Extra; upstream package-root version compare only; **never** load during spec-to-pr |
+| `ws-benchmarks` | [`../ws-benchmarks/SKILL.md`](../ws-benchmarks/SKILL.md) — Extra; benchmark management suite & evolution reporting; **never** load during spec-to-pr |
 | `ws-activity-report` | [`../ws-activity-report/SKILL.md`](../ws-activity-report/SKILL.md) |
 | `ws-fable-domain` | [`../ws-fable-domain/SKILL.md`](../ws-fable-domain/SKILL.md) |
 | `ws-plan-update` | [`../ws-plan-update/SKILL.md`](../ws-plan-update/SKILL.md) |
@@ -104,6 +105,7 @@ Install packages and dependency map: upstream `bin/skill-dependencies.json` in [
 | Show active harness | `ws-show-harness` (Extra) |
 | Pipeline review / local dry-run preview | `ws-preview` (Extra) |
 | Live / static harness benchmark (upstream package root only; never spec-to-pr) | `ws-run-benchmark` (Extra) |
+| Benchmark suite & evolution reports (upstream package root only; never spec-to-pr) | `ws-benchmarks` (Extra) |
 
 Pipeline steps 0–9: use orchestrator dispatch (do not invent alternate folder ids).
 

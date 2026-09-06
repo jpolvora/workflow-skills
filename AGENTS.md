@@ -163,6 +163,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-spec-format` | Protocol | Spec format |
 | `ws-goal-loop` | Primitive | Convergence loop |
 | `ws-spec-memo` | Utility | External spec-memo vault **setup/bridge** (`specMemo.*`, import, hybrid fallback, write-block hook interview) via `ws-configure-project --section specMemo` or `/ws-spec-memo`. Runtime vault ops → **`ws-memo`** from [spec-memo](https://github.com/jpolvora/spec-memo) (not packaged here) |
+| `ws-benchmarks` | Utility | Harness benchmark management suite — interactive menu to inspect evolution results, run static/live benchmarks, and update comparison reports (Extra) |
 
 ---
 
