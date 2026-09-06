@@ -26,6 +26,10 @@ const readme = fs.readFileSync(
   path.join(repoRoot, '.agents/skills/ws-spec-to-pr/README.md'),
   'utf8',
 );
+const protocols = fs.readFileSync(
+  path.join(repoRoot, '.agents/skills/ws-spec-to-pr/PROTOCOLS.md'),
+  'utf8',
+);
 
 // Shared contract keeps both halves: markdown yield + native continuation.
 assert.match(gates, /One Step Per Turn/, 'gates.md keeps One Step Per Turn cadence');
@@ -83,6 +87,7 @@ for (const [name, body] of [
   ['ws-spec-to-pr', orch],
   ['STEP-DISPATCH', stepDispatch],
   ['ws-spec-to-pr-lite', lite],
+  ['PROTOCOLS', protocols],
 ]) {
   assert.match(body, /One Step Per Turn/, `${name} keeps single-turn cadence`);
   assert.match(
