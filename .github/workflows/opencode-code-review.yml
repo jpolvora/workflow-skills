@@ -1,12 +1,15 @@
 name: Agentic Code Review (OpenCode)
 
-# Manual / backup reviewer. Active PR reviewer is cursor-code-review.yml until
-# OpenCode Go billing has credits (last failure: CreditsError / insufficient balance).
+# Active PR reviewer (OpenCode Go). Uses OPENCODE_API_KEY repository secret.
+# cursor-code-review.yml is workflow_dispatch-only backup until re-enabled.
 on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:
-        description: Pull request number to review (required)
+        description: Pull request number to review (required for manual runs)
         required: true
         type: string
 
@@ -51,10 +54,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          PR="${{ github.event.inputs.pr_number }}"
-          [[ -n "$PR" ]] || { echo "::error::workflow_dispatch requires pr_number"; exit 1; }
-          HEAD_REF="$(gh pr view "$PR" --json headRefName --jq .headRefName)"
-          BASE_REF="$(gh pr view "$PR" --json baseRefName --jq .baseRefName)"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            PR="${{ github.event.pull_request.number }}"
+            HEAD_REF="${{ github.head_ref }}"
+            BASE_REF="${{ github.event.pull_request.base.ref }}"
+          else
+            PR="${{ github.event.inputs.pr_number }}"
+            [[ -n "$PR" ]] || { echo "::error::workflow_dispatch requires pr_number"; exit 1; }
+            HEAD_REF="$(gh pr view "$PR" --json headRefName --jq .headRefName)"
+            BASE_REF="$(gh pr view "$PR" --json baseRefName --jq .baseRefName)"
+          fi
           echo "number=$PR" >> "$GITHUB_OUTPUT"
           echo "head_ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
           echo "base_ref=$BASE_REF" >> "$GITHUB_OUTPUT"

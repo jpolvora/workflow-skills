@@ -259,6 +259,12 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!sharedDepMap.packages?.extra?.skills?.includes('ws-run-benchmark')) {
     fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-run-benchmark');
   }
+  if (!depMap.packages?.extra?.skills?.includes('ws-benchmarks')) {
+    fail('bin/skill-dependencies.json Extra package missing ws-benchmarks');
+  }
+  if (!sharedDepMap.packages?.extra?.skills?.includes('ws-benchmarks')) {
+    fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-benchmarks');
+  }
   {
     const extraDemoted = ['ws-activity-report', 'ws-fable-domain', 'ws-plan-update'];
     for (const map of [depMap, sharedDepMap]) {

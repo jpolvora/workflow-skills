@@ -1,0 +1,32 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/spec-memo-bootstrap.sh"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/spec-memo-record.sh"
+      }
+    ],
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/spec-memo-checkpoint.sh"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "type": "command",
+        "command": ".claude/hooks/spec-memo-session-end.sh"
+      }
+    ]
+  },
+  "spec-memo": {
+    "version": "0.25.0",
+    "generatedBy": "spec-memo@0.25.0"
+  }
+}

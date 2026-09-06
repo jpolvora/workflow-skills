@@ -1135,7 +1135,7 @@
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">51</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">53</strong> skills available</span>
     </div>
   </div>
 
@@ -1163,9 +1163,19 @@
   <div class="layer" data-layer-id="layer-0">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 0</span> — Harness</h3>
-      <span class="count">7 skills</span>
+      <span class="count">8 skills</span>
     </div>
     <div class="skill-grid">
+      <div class="skill-card" data-path=".agents/skills/ws-benchmarks/SKILL.md" data-name="ws-benchmarks" data-slug="ws-benchmarks" data-desc="benchmark management suite — interactive menu to inspect version-over-version evolution results, run static/live benchmarks, and update comparison reports." data-deps="" data-layer="layer-0" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-benchmarks</div>
+        </div>
+        <div class="desc">Benchmark management suite — interactive menu to inspect version-over-version evolution results, run static/live benchmarks, and update comparison reports.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-benchmarks/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
       <div class="skill-card" data-path=".agents/skills/ws-check-harness/SKILL.md" data-name="ws-check-harness" data-slug="ws-check-harness" data-desc="meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology." data-deps="" data-layer="layer-0" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-check-harness</div>
@@ -1519,7 +1529,7 @@
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">26 skills</span>
+      <span class="count">27 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1734,6 +1744,16 @@
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-list/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-manager/SKILL.md" data-name="ws-spec-manager" data-slug="ws-spec-manager" data-desc="unified specification router and lifecycle manager — routes spec creation, listing, inspection, drift updating, index synchronization, organization, and archiving to specialized ws-spec-* skills." data-deps="ws-spec-write ws-spec-list ws-spec-index ws-spec-update ws-spec-explain ws-spec-organizer ws-spec-archive ws-spec-format ws-spec-from-provider ws-classify-complexity ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-manager</div>
+        </div>
+        <div class="desc">Unified specification router and lifecycle manager — routes spec creation, listing, inspection, drift updating, index synchronization, organization, and archiving to specialized ws-spec-* skills.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (11):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-spec-list">ws-spec-list</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-spec-update">ws-spec-update</span><span class="dep-pill" data-dep="ws-spec-explain">ws-spec-explain</span><span class="dep-pill" data-dep="ws-spec-organizer">ws-spec-organizer</span><span class="dep-pill" data-dep="ws-spec-archive">ws-spec-archive</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-spec-from-provider">ws-spec-from-provider</span><span class="dep-pill" data-dep="ws-classify-complexity">ws-classify-complexity</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-manager/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-memo/SKILL.md" data-name="ws-spec-memo" data-slug="ws-spec-memo" data-desc="workflow-skills ↔ spec-memo bridge only: wire config.json memory backends, import/migrate memory, harness preflight, disable vault, or hybrid fallback when mcp/cli is down. never for day-to-day vault search/get/upsert/bootstrap/doctor when mcp is registered — that is /ws-memo (spec-memo package). companion: https://github.com/jpolvora/spec-memo/issues/17" data-deps="ws-configure-project ws-self-learning" data-layer="layer-5" data-full="false" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-spec-memo</div>
@@ -1865,9 +1885,9 @@
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 44 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 45 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+36)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+37)
       </div>
     </div>
 
@@ -1876,9 +1896,9 @@
         <span class="package-shortcut">Shortcut: <code>e</code></span>
       </div>
       <h4>Extra Package</h4>
-      <p class="package-desc">Extra package — 7 optional authoring/review skills. Does not install workflow orchestrators or hub by default.</p>
+      <p class="package-desc">Extra package — 8 optional authoring/review skills. Does not install workflow orchestrators or hub by default.</p>
       <div class="package-preview">
-        <strong>Includes:</strong> <code>ws-write-a-skill</code>, <code>ws-show-harness</code>, <code>ws-preview</code>, <code>ws-activity-report</code>, <code>ws-fable-domain</code>, <code>ws-plan-update</code>, <code>ws-run-benchmark</code>
+        <strong>Includes:</strong> <code>ws-write-a-skill</code>, <code>ws-show-harness</code>, <code>ws-preview</code>, <code>ws-activity-report</code>, <code>ws-fable-domain</code>, <code>ws-plan-update</code>, <code>ws-run-benchmark</code>, <code>ws-benchmarks</code>
       </div>
     </div>
   </div>
@@ -2494,7 +2514,7 @@ npx --yes github:jpolvora/workflow-skills --global
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.62 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.3.63 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->

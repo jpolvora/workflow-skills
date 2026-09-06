@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 43, `extra` = 7). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 45, `extra` = 8). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -21,6 +21,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
 | `ws-run-benchmark` | `.agents/skills/ws-run-benchmark/SKILL.md` | Upstream-only fixture compare (Extra; never spec-to-pr) |
+| `ws-benchmarks` | `.agents/skills/ws-benchmarks/SKILL.md` | Benchmark management suite & evolution reporting (Extra; never spec-to-pr) |
 | `using-superpowers` | `(global)` | Skill discovery |
 
 ### Layer 1 — Engineering standards
@@ -89,6 +90,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-update` | `.agents/skills/ws-spec-update/SKILL.md` | Auto-update specs after code changes |
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Harness ↔ spec-memo **bridge** only (`config.json`, import, hybrid fallback); runtime vault ops → `ws-memo` |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
+| `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -132,6 +134,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
+| Manage / route all spec operations (unified front door) | `ws-spec-manager` |
 | spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
 | Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` |
 | Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` |
@@ -144,6 +147,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Show active harness | `ws-show-harness` |
 | Pipeline review / local dry-run preview | `ws-preview` |
 | Upstream package-version fixture compare (never spec-to-pr) | `ws-run-benchmark` |
+| Harness benchmark suite & evolution reporting (never spec-to-pr) | `ws-benchmarks` (Extra) |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Check workflows | `ws-check-workflows` |
@@ -195,7 +199,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 | Global-scope variants | add `--global` / `-g` (project scope is `--project` / `-p`; global root override `WORKFLOW_SKILLS_GLOBAL_DIR`) |
 | Integrity digests | `npm run generate-integrity` then `npm run verify-integrity` (must exit 0) |
 | Catalog / site | `node bin/build-site.js` (catalog only) · `node bin/build-site.js --check` (read-only verification) · `npm run build-site:bump` (release bump + footer) |
-| Harness benchmark (upstream package root only; never spec-to-pr) | `ws-run-benchmark` · `npm run benchmark:static` · `prepare --fixture` · `collect --sandbox` |
+| Harness benchmark (upstream package root only; never spec-to-pr) | `ws-benchmarks` · `ws-run-benchmark` · `npm run benchmark:static` · `prepare --fixture` · `collect --sandbox` |
 | Installed-skill audit | `node bin/cli.js integrity` · `node bin/cli.js --check` (version + `fullPackageDigest` vs `main`) |
 
 **Never run install/update against this package root.** The installer writes into `.agents/skills/`, which is the upstream SoT here — it would overwrite the skills you are authoring. Always target a scratch directory (or the trees under `test/`), and prefer local `node bin/cli.js` / `./install-skills.sh` over remote `npx` (§ [Consumer CLI](#consumer-cli-install--update--uninstall)).
@@ -204,7 +208,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 
 | Review | How |
 |--------|-----|
-| Local code review of the working branch | `ws-code-review` skill → `/code-review [base=<ref>] [plan=<plan-path>]`; reviews committed `{base}...HEAD`; runs fix → re-review rounds (max 3) and writes `{us-dir}/step-06-{slug}.review.md` |
+| Local code review of the working branch | `ws-code-review` → `/code-review [base=<ref>] [plan=<plan-path>]` (commits `{base}...HEAD`, fix → re-review rounds, max 3) |
 | Harness integrity | `ws-check-harness` (Phases 0–5c) → 0 critical |
 | Workflow / FSM simulation | `ws-check-workflows`, or `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` |
 | Secrets / PII scan | `ws-secrets-leak-review` |
@@ -214,20 +218,20 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 
 #### Recommended DX autoload (upstream dogfood)
 
-In **this repo only**, apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) every session (inlined in this file; not a `SKILL.md`). That compact snapshot covers surgical scope, delivery gate, fable loop, reply shape, memory/changelog, and on-demand write-spec so authoring does **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-spec-write` SKILL.md at runtime.
+In **this repo only**, apply `AGENTS.md` § Upstream session contract every session (covers surgical scope, delivery gate, fable loop, reply shape, memory/changelog, and write-spec without reading live `ws-*` bodies at runtime).
 
-Those live skills still ship to consumers. Consumer hubs autoload them (or keep them on-demand) from installed `.agents/skills/ws-*`. Load a live body here only when the task is to author or test that skill.
+Those live skills still ship to consumers. Consumer hubs autoload them (or keep them on-demand) from installed `.agents/skills/ws-*`. Load a live body here only when authoring or testing that skill.
 
-Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only).
+Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in `AGENTS.md`.
 
 #### Start work
 
 | Intent | Load |
 |--------|------|
-| Draft a spec | This file § [6. Write a spec](#6-write-a-spec-on-demand) → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-spec-write` / `ws-spec-format` only when authoring those skills. |
+| Draft a spec | `AGENTS.md` § Write a spec → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-spec-write` only when authoring that skill. |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
-| GitHub issue → spec / fix | `ws-spec-provider-github` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) or orchestrator with issue URL |
+| GitHub issue → spec / fix | `ws-spec-provider-github` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Timesheet / activity hours (Spec-to-PR plan folder) | `ws-activity-report` (Extra) |
 | Vault prompt/session activity | `ws-session-tracking` |
@@ -235,9 +239,9 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in § [Ups
 | Archive plans into `index.PRD` | `ws-spec-archive` |
 | Clean workflow leftovers | `ws-cleanup` |
 
-**Spec-of-record rule:** providers and standalone write-spec land the canonical file under `{specsDir}`; workflow `step-00` is always a registered copy under `{plansDir}/{slug}/`. Re-fetch uses `--force` on the converter first when the spec of record differs, then on register when `step-00` differs.
+**Spec-of-record rule:** canonical spec lives under `{specsDir}`; workflow `step-00` is registered under `{plansDir}/{slug}/`. Re-fetch uses `--force` when content differs.
 
-Workflow artifacts: prefer `{specsDir}` from `config.json` → `plans.specsDir` (default `.agents/specs`; this upstream may also keep legacy repo-root `specs/`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
+Workflow artifacts: prefer `{specsDir}` from `config.json` → `plans.specsDir` (default `.agents/specs`); consumers use `config.json` → `plans.dir` / `plans.specsDir`.
 
 #### After changes (recommend / gate)
 
@@ -281,7 +285,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 ## Local dry-run: agentic code reviewers
 
-Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) (`cursor-sdk` / `composer-2.5`). OpenCode backup [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) is `workflow_dispatch` only (re-enable on `pull_request` when OpenCode Go billing has credits). See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
+Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) (`opencode` / `opencode-go/muse-spark-1.3-contributor`; `OPENCODE_API_KEY`). Cursor backup [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only. See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
 
 ```bash
 # Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.

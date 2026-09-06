@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/spec-memo-bootstrap.sh",
+        "timeout": 5
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/spec-memo-record.sh",
+        "timeout": 5
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": ".cursor/hooks/spec-memo-session-end.sh",
+        "timeout": 5
+      }
+    ]
+  },
+  "spec-memo": {
+    "version": "0.25.0",
+    "generatedBy": "spec-memo@0.25.0"
+  }
+}
