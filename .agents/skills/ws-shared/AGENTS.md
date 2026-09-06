@@ -149,16 +149,7 @@ Run this checklist prior to triggering `/ship-pr` or shipping features in a cons
 
 ### Upstream Maintainers (`jpolvora/workflow-skills` source repo only)
 
-Additional obligations when maintaining and releasing the upstream skills package:
-
-- [ ] **1. Run Package Tests**: Execute `npm run test` (runs installer, integrity checks, and tree verification).
-- [ ] **2. Single Version Bump**: `package.json` `version` (and aligned `packageVersion` + site footer) strictly higher than PR merge-base before ship; one patch bump per release PR (`npm run build-site:bump` when shipping package content).
-- [ ] **3. Regenerate Integrity Manifest**: Run `npm run generate-integrity` and `npm run verify-integrity`.
-- [ ] **4. Harness Audit**: Run `ws-check-harness` to ensure 0 critical findings.
-- [ ] **5. Hub Sync**: Keep the upstream root `AGENTS.md` and this hub (`ws-shared/AGENTS.md` + [`autoload.md`](autoload.md)) in sync before shipping PR.
-- [ ] **6. FEATURES Sync**: When `tracking.featuresMdEnabled` is not `false` and package-root `FEATURES.md` is in use (upstream clone only — **not** shipped to consumer installs), update it when shipped capabilities change. Set `tracking.featuresMdEnabled: false` to disable.
-
-**Version bump (mandatory before PR):** When shipping **package content** from this repo, `package.json` `version` (and aligned `packageVersion` in `bin/skill-dependencies.json` + site footer) must be **strictly higher than the version on the PR merge-base** (typically `main` or `develop`) before commit, push, or PR creation. **One patch bump per release PR** — not per commit, review-fix commit, or `ws-goal-fix-pr` round on the same PR. If the branch version is unchanged vs the base, run `npm run build-site:bump`, commit the bump with ship-scope changes, then ship. Catalog-only doc fixes may use `node bin/build-site.js` without a version bump per root [`AGENTS.md`](../../../AGENTS.md) and [`CATALOG.md`](../../../CATALOG.md) Before ship PR rows 2–3. CI on `main` never bumps — bump locally before push.
+See root [`CATALOG.md`](../../../CATALOG.md) § Before ship PR and root [`AGENTS.md`](../../../AGENTS.md) § Upstream developer workflow.
 
 ---
 
