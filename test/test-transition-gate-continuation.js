@@ -87,7 +87,6 @@ for (const [name, body] of [
   ['ws-spec-to-pr', orch],
   ['STEP-DISPATCH', stepDispatch],
   ['ws-spec-to-pr-lite', lite],
-  ['PROTOCOLS', protocols],
 ]) {
   assert.match(body, /One Step Per Turn/, `${name} keeps single-turn cadence`);
   assert.match(
@@ -107,6 +106,18 @@ assert.match(
   readme,
   /After Transition Gate \*\*Next\*\*, dispatch the next step in the \*\*same turn\*\*/,
   'README golden rule requires same-turn dispatch after Next',
+);
+
+// PROTOCOLS.md transition section carries the same continuation wording.
+assert.match(
+  protocols,
+  /Native modal gate returning \*\*Next\*\*.*same turn/s,
+  'PROTOCOLS.md continues in the same turn after native Next',
+);
+assert.match(
+  protocols,
+  /markdown fallback yields the turn/s,
+  'PROTOCOLS.md yields the turn on markdown fallback',
 );
 
 console.log('test-transition-gate-continuation: ok');
