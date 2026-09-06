@@ -117,6 +117,38 @@ try {
   const cleanJson = JSON.parse(cleanRes.stdout);
   assert(cleanJson.passed === true && cleanJson.violations.length === 0, 'clean scan has 0 violations');
 
+  // 4. Multi-controller endpoint authorization scoping
+  const csAuthTmp = mkTmp('ws-cs-auth-');
+  fs.writeFileSync(path.join(csAuthTmp, 'Controllers.cs'), [
+    '[Authorize]',
+    'public class SecureController : AbpController {',
+    '    public async Task<int> ActionOne() { return 1; }',
+    '}',
+    'public class OpenController : AbpController {',
+    '    public async Task<int> ActionTwo() { return 2; }',
+    '}',
+  ].join('\n'));
+  const csAuthRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', csAuthTmp, '--stack', 'abp-angular', '--json'], { encoding: 'utf8' });
+  assert(csAuthRes.status === 1, 'scan_stack_invariants exits 1 when an unsecured controller in multi-controller file lacks authorization');
+  const csAuthJson = JSON.parse(csAuthRes.stdout);
+  assert(csAuthJson.violations.some((v) => v.rule === 'missing-endpoint-authorization' && v.line === 6), 'OpenController ActionTwo flagged for missing authorization');
+
+  // 5. TS floating promise and void checks
+  const fpTmp = mkTmp('ws-ts-fp-');
+  fs.writeFileSync(path.join(fpTmp, 'floating.ts'), [
+    'new Promise((resolve) => resolve(1));',
+    'fetch("https://example.com");',
+    'void new Promise((resolve) => resolve(2));',
+    'const p = new Promise((resolve) => resolve(3));',
+    'await fetch("https://example.com");',
+  ].join('\n'));
+  const fpRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', fpTmp, '--stack', 'typescript-node', '--json'], { encoding: 'utf8' });
+  assert(fpRes.status === 1, 'scan_stack_invariants exits 1 on floating promises');
+  const fpJson = JSON.parse(fpRes.stdout);
+  const fpViolations = fpJson.violations.filter((v) => v.rule === 'no-floating-promises');
+  assert(fpViolations.length === 2, `detected exactly 2 floating promises (got ${fpViolations.length})`);
+  assert(fpViolations[0].line === 1 && fpViolations[1].line === 2, 'lines 1 and 2 flagged, void/const/await lines not flagged');
+
   const implementTasksContent = fs.readFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-implement-tasks', 'SKILL.md'), 'utf8');
   assert(implementTasksContent.includes('stack-invariant-scan: pass | fail'), 'ws-implement-tasks documents stack-invariant-scan');
 

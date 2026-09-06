@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "6b4fbd2a1f7dfe508ae5b0cb581bfade1add474103dcfceb7bdf7033485c22de",
+  "fullPackageDigest": "dec5ce2c5d28e494b672d562068714231ac66fbd2677deab89b6e2e31cc91ac1",
   "hub": {
     "files": {
       "ac-ledger.schema.json": "5184614c30fa70faf50b69eba272dbeee589497b7fb845f8201818e85c7c6e3b",
@@ -36,7 +36,7 @@
       "scripts/resolve_consumer_root.cjs": "0aaef641a6016097a04980b41eb58404453cd62b0d3be511b152b0e6df1c9686",
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
       "scripts/retired_artifacts.cjs": "512252528056874a8f9effeab5fdc09801cee0a8e8521f41e9f9be0958fd3890",
-      "scripts/scan_stack_invariants.cjs": "ca5e6b7410ddea713ed0be7fa0cb9c2b2e32462902035dc4db6995275f1b814f",
+      "scripts/scan_stack_invariants.cjs": "e33fe09453003b378827f05d771437443a8bfe646c24bedd2ff718da56f2223e",
       "scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "scripts/workflow_state.cjs": "53a2b593c640b8f825ef133dc55ad7ae690b20ac9ee36b1e84e7521623e1b390",
@@ -52,7 +52,7 @@
       "tools.md": "5ae38616d561f8a432f8c70a25437903bea56caa44c0f12ce472e85b17506baf",
       "workflow-state.schema.json": "86b41712a4a88dda1ac89b6937b19a73eea866350c27c94240c4c19115f8685b"
     },
-    "skillDigest": "127c56ea979e5d6e5505ecbb815c184717111e01d654fabb3038596d609b2e30"
+    "skillDigest": "5a2049284ec525c5788a38420381d2f19acf179d6667342815b92eeabf3f154d"
   },
   "packageVersion": "0.3.64",
   "skills": {

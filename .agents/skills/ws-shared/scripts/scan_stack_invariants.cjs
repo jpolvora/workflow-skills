@@ -151,15 +151,30 @@ function scanFile(file, stack, repoRoot) {
 
     // Rule 3: Endpoint protection in Controller or AppService
     if (/class\s+\w+(?:Controller|AppService)\b/.test(content)) {
-      const hasClassAuth = /\[(?:Authorize|AllowAnonymous)[\s(]/.test(content);
-      if (!hasClassAuth) {
-        // Inspect public methods
-        lines.forEach((line, idx) => {
-          const lineNum = idx + 1;
-          if (/public\s+(?:async\s+)?(?:Task(?:<[\w\s,<>]+>)?|IActionResult|ActionResult)\s+\w+\s*\(/.test(line)) {
-            // Check preceding 4 lines for authorization attribute
-            const prev = lines.slice(Math.max(0, idx - 4), idx).join('\n');
-            if (!/\[(?:Authorize|AllowAnonymous)[\s(]/.test(prev)) {
+      lines.forEach((line, idx) => {
+        const lineNum = idx + 1;
+        if (/public\s+(?:async\s+)?(?:Task(?:<[\w\s,<>]+>)?|IActionResult|ActionResult)\s+\w+\s*\(/.test(line)) {
+          // Find the nearest enclosing class/record declaration preceding line idx
+          let classLineIdx = -1;
+          let isControllerOrAppService = false;
+          for (let c = idx - 1; c >= 0; c -= 1) {
+            const classMatch = lines[c].match(/(?:class|record)\s+(\w+)\b/);
+            if (classMatch) {
+              classLineIdx = c;
+              isControllerOrAppService = /(?:Controller|AppService)$/.test(classMatch[1]);
+              break;
+            }
+          }
+          if (classLineIdx !== -1 && isControllerOrAppService) {
+            // Check method's preceding lines for authorization attribute
+            const methodPrev = lines.slice(Math.max(classLineIdx + 1, idx - 6), idx).join('\n');
+            const hasMethodAuth = /\[(?:Authorize|AllowAnonymous)[\s(]/.test(methodPrev);
+
+            // Check enclosing class's preceding lines for authorization attribute
+            const classPrev = lines.slice(Math.max(0, classLineIdx - 6), classLineIdx).join('\n');
+            const hasClassAuth = /\[(?:Authorize|AllowAnonymous)[\s(]/.test(classPrev);
+
+            if (!hasMethodAuth && !hasClassAuth) {
               violations.push({
                 rule: 'missing-endpoint-authorization',
                 file: relPath,
@@ -169,8 +184,8 @@ function scanFile(file, stack, repoRoot) {
               });
             }
           }
-        });
-      }
+        }
+      });
     }
   }
 
@@ -213,13 +228,19 @@ function scanFile(file, stack, repoRoot) {
       }
 
       // Rule 2: Floating Promise check
-      if (/\bnew\s+Promise\b/.test(line) && !/(?:await|return|const|let|var)\s+/.test(line) && !line.includes('.catch(')) {
+      const isPromiseConstruct = /\bnew\s+Promise\b/.test(line);
+      const isAsyncCall = /(?:^|\s+)(?:fetch|[a-zA-Z0-9_]+Async)\s*\(/.test(line);
+      if ((isPromiseConstruct || isAsyncCall) &&
+          !/(?:await|return|const|let|var|void)\s+/.test(line) &&
+          !line.includes('.catch(') &&
+          !line.trim().startsWith('//') &&
+          !line.trim().startsWith('*')) {
         violations.push({
           rule: 'no-floating-promises',
           file: relPath,
           line: lineNum,
           severity: 'Critical',
-          message: 'Floating Promise instantiated without await, assignment, or error handler.',
+          message: 'Floating Promise instantiated or called without await, assignment, void, or error handler.',
         });
       }
 
@@ -284,15 +305,33 @@ function scanFile(file, stack, repoRoot) {
       lines.forEach((line, idx) => {
         const lineNum = idx + 1;
         if (/public\s+function\s+(?:store|update|destroy)\s*\(/.test(line)) {
-          const methodBody = lines.slice(idx, Math.min(lines.length, idx + 15)).join('\n');
-          if (!methodBody.includes('$this->authorize') && !methodBody.includes('Gate::authorize') && !content.includes('middleware(\'can:')) {
-            violations.push({
-              rule: 'laravel-missing-authorize',
-              file: relPath,
-              line: lineNum,
-              severity: 'Critical',
-              message: 'Mutating controller action missing authorization policy check ($this->authorize).',
-            });
+          let classLineIdx = -1;
+          let isController = false;
+          for (let c = idx - 1; c >= 0; c -= 1) {
+            const classMatch = lines[c].match(/class\s+(\w+)\b/);
+            if (classMatch) {
+              classLineIdx = c;
+              isController = /Controller$/.test(classMatch[1]);
+              break;
+            }
+          }
+          if (classLineIdx !== -1 && isController) {
+            const methodBody = lines.slice(idx, Math.min(lines.length, idx + 15)).join('\n');
+            const classConstructor = lines.slice(classLineIdx, Math.min(lines.length, classLineIdx + 40)).join('\n');
+            const hasAuthorize = methodBody.includes('$this->authorize') ||
+              methodBody.includes('Gate::authorize') ||
+              classConstructor.includes("middleware('can:") ||
+              classConstructor.includes('middleware("can:');
+
+            if (!hasAuthorize) {
+              violations.push({
+                rule: 'laravel-missing-authorize',
+                file: relPath,
+                line: lineNum,
+                severity: 'Critical',
+                message: 'Mutating controller action missing authorization policy check ($this->authorize).',
+              });
+            }
           }
         }
       });
