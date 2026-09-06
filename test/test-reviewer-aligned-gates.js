@@ -17,6 +17,7 @@ const NODE = process.execPath;
 const SCAN_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'scripts', 'scan_stack_invariants.cjs');
 const AC_LEDGER_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs');
 const AUTO_CONFIG_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-configure-project', 'scripts', 'auto_configure.cjs');
+const SELF_LEARNING_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-self-learning', 'scripts', 'self_learning.cjs');
 
 const tmpDirs = [];
 let failures = 0;
@@ -231,6 +232,54 @@ try {
   const fpNsViolations = fpNsJson.violations.filter((v) => v.rule === 'no-floating-promises');
   assert(fpNsViolations.length === 3, `detected exactly 3 floating client calls (got ${fpNsViolations.length})`);
 
+  // 11. C# comment and string stripping eliminates false positives for sync-over-async and Guid.Empty
+  const csCommentsTmp = mkTmp('ws-cs-comments-');
+  fs.writeFileSync(path.join(csCommentsTmp, 'CommentsAndStrings.cs'), [
+    'public class SafeService {',
+    '    // Note: Do not call task.Result or task.Wait() because it blocks threads',
+    '    /* Multi-line comment explaining Guid.Empty and .GetAwaiter().GetResult() */',
+    '    public void LogInfo() {',
+    '        _logger.LogInformation("Processing complete with no .Wait() or .Result calls");',
+    '        var note = "Default Id is Guid.Empty in legacy systems";',
+    '    }',
+    '}',
+  ].join('\n'));
+  const csCommentsRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', csCommentsTmp, '--stack', 'abp-angular', '--json'], { encoding: 'utf8' });
+  assert(csCommentsRes.status === 0, 'scan_stack_invariants exits 0 when sync-over-async and Guid.Empty only appear in comments or strings');
+  const csCommentsJson = JSON.parse(csCommentsRes.stdout);
+  assert(csCommentsJson.violations.length === 0, `zero violations on comments and strings (got ${csCommentsJson.violations.length})`);
+
+  // 12. PHP raw SQL injection catches concatenated bindings and query variants while allowing safe queries
+  const phpSqlTmp = mkTmp('ws-php-sql-');
+  fs.writeFileSync(path.join(phpSqlTmp, 'SqlTests.php'), [
+    '<?php',
+    'class QueryService {',
+    '    public function badCalls($id, $status, $order, $alias) {',
+    '        DB::raw("SELECT * FROM users WHERE id = $id");',
+    '        DB::raw(\'SELECT * FROM users WHERE id = \' . $id);',
+    '        DB::select(\'SELECT * FROM users WHERE id = \' . $id);',
+    '        DB::select("SELECT * FROM users WHERE id = $id");',
+    '        $query->whereRaw(\'status = \' . $status);',
+    '        $query->whereRaw("status = $status");',
+    '        $query->selectRaw(\'count(*) as \' . $alias);',
+    '        $query->orderByRaw("FIELD(id, $order)");',
+    '    }',
+    '    public function safeCalls($id, $status, $name) {',
+    '        // DB::raw("SELECT * FROM users WHERE id = $id");',
+    '        # DB::select(\'SELECT * FROM users WHERE id = \' . $id);',
+    '        DB::select(\'SELECT * FROM users WHERE name LIKE ?\', [\'%\' . $name . \'%\']);',
+    '        $query->whereRaw(\'status = ?\', [$status]);',
+    '        DB::raw(\'COUNT(*) as total\');',
+    '    }',
+    '}',
+  ].join('\n'));
+  const phpSqlRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', phpSqlTmp, '--stack', 'php-laravel', '--json'], { encoding: 'utf8' });
+  assert(phpSqlRes.status === 1, 'scan_stack_invariants exits 1 on raw SQL injection variants');
+  const phpSqlJson = JSON.parse(phpSqlRes.stdout);
+  const phpSqlViolations = phpSqlJson.violations.filter((v) => v.rule === 'laravel-raw-sql-injection');
+  assert(phpSqlViolations.length === 8, `detected exactly 8 raw SQL injection calls (got ${phpSqlViolations.length})`);
+  assert(phpSqlViolations.every((v) => v.line >= 4 && v.line <= 11), 'all flagged lines are in badCalls (lines 4-11), safeCalls and comments not flagged');
+
   const implementTasksContent = fs.readFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-implement-tasks', 'SKILL.md'), 'utf8');
   assert(implementTasksContent.includes('stack-invariant-scan: pass | fail'), 'ws-implement-tasks documents stack-invariant-scan');
 
@@ -299,6 +348,14 @@ try {
   assert(abpAutoJson.trapsSeeded === true, 'trapsSeeded is true for ABP Angular');
   const abpMemory = fs.readFileSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
   assert(abpMemory.includes('ABP / Angular: Avoid sync-over-async'), 'ABP traps present in MEMORY.md');
+  const abpTrapFile = path.join(abpProj, '.agents', 'skills', 'ws-shared', 'memory', 'framework-trap-abp-angular.md');
+  assert(fs.existsSync(abpTrapFile), 'framework trap file created under memory/ for ABP Angular');
+
+  // Verify self_learning compile succeeds and retains the trap
+  const compileRes = cp.spawnSync(NODE, [SELF_LEARNING_SCRIPT, '--compile', '--repo-root', abpProj], { encoding: 'utf8' });
+  assert(compileRes.status === 0, `self_learning.cjs --compile succeeds after framework trap seeding: ${compileRes.stderr}`);
+  const abpCompiledMemory = fs.readFileSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
+  assert(abpCompiledMemory.includes('ABP / Angular: Avoid sync-over-async'), 'ABP traps preserved in MEMORY.md after self_learning compile');
 
   // Idempotency check: running again does not duplicate
   const abpAuto2 = cp.spawnSync(NODE, [AUTO_CONFIG_SCRIPT, '--repo-root', abpProj, '--json'], { encoding: 'utf8' });

@@ -234,19 +234,23 @@ function globExists(repoRoot, pattern) {
 const FRAMEWORK_TRAPS = {
   'abp-angular': {
     title: 'ABP / Angular: Avoid sync-over-async and template permission bypass',
-    body: `### [Trap] ABP / Angular: Avoid sync-over-async and template permission bypass\n- **Tags:** ABP, Angular, Concurrency, Security\n- **Rule:** DO NOT use .Result, .Wait(), or .GetAwaiter().GetResult() in asynchronous C# methods.\n- **Instead:** INSTEAD DO use async Task and await operations with cancellation tokens to prevent deadlocks.\n- **Rule:** DO NOT omit *abpPermission on interactive Angular buttons or endpoints.\n- **Instead:** INSTEAD DO protect UI buttons with *abpPermission="'Permission.Name'" and endpoints with [Authorize].`,
+    filename: 'framework-trap-abp-angular.md',
+    body: `### [2026-09-06] ABP / Angular: Avoid sync-over-async and template permission bypass\n- **Layer**: Architecture\n- **Severity**: Critical\n- **PathPattern**: **/*.{cs,html}\n- **Scenario / Context**: C# asynchronous pipelines and Angular UI permission directives in ABP applications\n- **DO NOT**: Use .Result, .Wait(), or .GetAwaiter().GetResult() in asynchronous C# methods, or omit *abpPermission on interactive Angular buttons\n- **INSTEAD DO**: Use async Task with await operations and cancellation tokens, protect UI buttons with *abpPermission, and protect endpoints with [Authorize]`,
   },
   'nextjs-react': {
     title: 'Next.js / React: Prevent client credential leak and unhandled hook subscriptions',
-    body: `### [Trap] Next.js / React: Prevent client credential leak and unhandled hook subscriptions\n- **Tags:** Next.js, React, Security, Lifecycle\n- **Rule:** DO NOT import server packages or process.env secrets into 'use client' components.\n- **Instead:** INSTEAD DO keep sensitive credentials in Server Components or Route Handlers.\n- **Rule:** DO NOT attach listeners or intervals in useEffect without returning a cleanup function.\n- **Instead:** INSTEAD DO return a cleanup function () => { clearInterval(id); } from useEffect.`,
+    filename: 'framework-trap-nextjs-react.md',
+    body: `### [2026-09-06] Next.js / React: Prevent client credential leak and unhandled hook subscriptions\n- **Layer**: Security\n- **Severity**: Critical\n- **PathPattern**: **/*.{tsx,jsx,ts,js}\n- **Scenario / Context**: Next.js client components and React effect hooks with subscriptions\n- **DO NOT**: Import server packages or process.env secrets into 'use client' components, or attach listeners/intervals in useEffect without returning a cleanup function\n- **INSTEAD DO**: Keep sensitive credentials in Server Components or Route Handlers, and return a cleanup function from useEffect`,
   },
   'typescript-node': {
     title: 'TypeScript / Node: Avoid unchecked any and floating promises',
-    body: `### [Trap] TypeScript / Node: Avoid unchecked any and floating promises\n- **Tags:** TypeScript, Node, Types, Concurrency\n- **Rule:** DO NOT use unchecked any or as any type assertions without runtime narrowing.\n- **Instead:** INSTEAD DO use precise interfaces, unknown with type guards, or Zod schemas.\n- **Rule:** DO NOT leave Promises floating without await, void, or .catch().\n- **Instead:** INSTEAD DO await every Promise or handle rejections explicitly.`,
+    filename: 'framework-trap-typescript-node.md',
+    body: `### [2026-09-06] TypeScript / Node: Avoid unchecked any and floating promises\n- **Layer**: Quality\n- **Severity**: Critical\n- **PathPattern**: **/*.{ts,tsx,js,mjs,cjs}\n- **Scenario / Context**: TypeScript type safety and asynchronous Promise handling\n- **DO NOT**: Use unchecked any or as any type assertions without runtime narrowing, or leave Promises floating without await, void, or .catch()\n- **INSTEAD DO**: Use precise interfaces, unknown with type guards, or Zod schemas, and await every Promise or handle rejections explicitly`,
   },
   'php-laravel': {
     title: 'PHP / Laravel: Enforce policy authorization and prevent mass assignment',
-    body: `### [Trap] PHP / Laravel: Enforce policy authorization and prevent mass assignment\n- **Tags:** PHP, Laravel, Security, Validation\n- **Rule:** DO NOT mutate resources in controllers without $this->authorize() checks.\n- **Instead:** INSTEAD DO call $this->authorize('update', $model) or use route can: middleware.\n- **Rule:** DO NOT accept raw unvalidated inputs or use unescaped DB::raw().\n- **Instead:** INSTEAD DO use FormRequest validation and parameterized query bindings.`,
+    filename: 'framework-trap-php-laravel.md',
+    body: `### [2026-09-06] PHP / Laravel: Enforce policy authorization and prevent mass assignment\n- **Layer**: Security\n- **Severity**: Critical\n- **PathPattern**: **/*.php\n- **Scenario / Context**: Laravel controllers, query building, and input handling\n- **DO NOT**: Mutate resources in controllers without $this->authorize() checks, or accept raw unvalidated inputs or use unescaped DB::raw()\n- **INSTEAD DO**: Call $this->authorize('update', $model) or use route can: middleware, and use FormRequest validation and parameterized query bindings`,
   },
 };
 
@@ -268,21 +272,34 @@ function detectFrameworkStack(repoRoot, pkg) {
 
 function seedFrameworkTraps(sharedDir, framework, dryRun) {
   if (!framework || !FRAMEWORK_TRAPS[framework]) return false;
-  const memoryFile = path.join(sharedDir, 'MEMORY.md');
   const trap = FRAMEWORK_TRAPS[framework];
-  let content = '';
+  const memoryDir = path.join(sharedDir, 'memory');
+  const trapFile = path.join(memoryDir, trap.filename || `framework-trap-${framework}.md`);
+  const memoryFile = path.join(sharedDir, 'MEMORY.md');
+
+  let memoryContent = '';
   if (fs.existsSync(memoryFile)) {
-    content = fs.readFileSync(memoryFile, 'utf8');
-    if (content.includes(trap.title)) {
-      return false;
-    }
+    memoryContent = fs.readFileSync(memoryFile, 'utf8');
   } else {
-    content = '# Memory\n\n';
+    memoryContent = '# Memory\n\n';
   }
+
+  const fileExists = fs.existsSync(trapFile);
+  const alreadyInCompiled = memoryContent.includes(trap.title);
+
+  if (fileExists && alreadyInCompiled) {
+    return false;
+  }
+
   if (!dryRun) {
-    fs.mkdirSync(path.dirname(memoryFile), { recursive: true });
-    const separator = content.endsWith('\n\n') ? '' : content.endsWith('\n') ? '\n' : '\n\n';
-    fs.writeFileSync(memoryFile, `${content}${separator}${trap.body}\n`, 'utf8');
+    fs.mkdirSync(memoryDir, { recursive: true });
+    if (!fileExists) {
+      fs.writeFileSync(trapFile, `${trap.body}\n`, 'utf8');
+    }
+    if (!alreadyInCompiled) {
+      const separator = memoryContent.endsWith('\n\n') ? '' : memoryContent.endsWith('\n') ? '\n' : '\n\n';
+      fs.writeFileSync(memoryFile, `${memoryContent}${separator}${trap.body}\n`, 'utf8');
+    }
   }
   return true;
 }

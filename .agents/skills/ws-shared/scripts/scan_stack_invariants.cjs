@@ -116,6 +116,216 @@ function discoverFiles(repoRoot, providedFiles) {
   return [...files];
 }
 
+function cleanCSharpLine(line, state) {
+  let code = '';
+  let inString = false;
+  let isVerbatim = false;
+  let escaping = false;
+
+  let i = 0;
+  while (i < line.length) {
+    if (state.inBlockComment) {
+      if (line[i] === '*' && line[i + 1] === '/') {
+        state.inBlockComment = false;
+        i += 2;
+      } else {
+        i += 1;
+      }
+      continue;
+    }
+
+    if (inString) {
+      if (isVerbatim) {
+        if (line[i] === '"') {
+          if (line[i + 1] === '"') {
+            i += 2;
+          } else {
+            inString = false;
+            i += 1;
+          }
+        } else {
+          i += 1;
+        }
+      } else {
+        if (escaping) {
+          escaping = false;
+          i += 1;
+        } else if (line[i] === '\\') {
+          escaping = true;
+          i += 1;
+        } else if (line[i] === '"') {
+          inString = false;
+          i += 1;
+        } else {
+          i += 1;
+        }
+      }
+      continue;
+    }
+
+    // Skip character literals 'c' or '\n'
+    if (line[i] === "'") {
+      if (line[i + 1] === '\\' && line[i + 3] === "'") {
+        i += 4;
+        continue;
+      }
+      if (line[i + 2] === "'") {
+        i += 3;
+        continue;
+      }
+    }
+
+    // Line comment
+    if (line[i] === '/' && line[i + 1] === '/') {
+      break;
+    }
+
+    // Block comment
+    if (line[i] === '/' && line[i + 1] === '*') {
+      state.inBlockComment = true;
+      i += 2;
+      continue;
+    }
+
+    // Strings
+    if (line[i] === '@' && line[i + 1] === '"') {
+      inString = true;
+      isVerbatim = true;
+      i += 2;
+      continue;
+    }
+    if ((line[i] === '$' && line[i + 1] === '@' && line[i + 2] === '"') ||
+        (line[i] === '@' && line[i + 1] === '$' && line[i + 2] === '"')) {
+      inString = true;
+      isVerbatim = true;
+      i += 3;
+      continue;
+    }
+    if (line[i] === '$' && line[i + 1] === '"') {
+      inString = true;
+      isVerbatim = false;
+      i += 2;
+      continue;
+    }
+    if (line[i] === '"') {
+      inString = true;
+      isVerbatim = false;
+      i += 1;
+      continue;
+    }
+
+    code += line[i];
+    i += 1;
+  }
+
+  return code;
+}
+
+function cleanPhpComments(line, state) {
+  let code = '';
+  let inString = false;
+  let stringChar = '';
+  let escaping = false;
+
+  let i = 0;
+  while (i < line.length) {
+    if (state.inBlockComment) {
+      if (line[i] === '*' && line[i + 1] === '/') {
+        state.inBlockComment = false;
+        i += 2;
+      } else {
+        i += 1;
+      }
+      continue;
+    }
+
+    if (inString) {
+      code += line[i];
+      if (escaping) {
+        escaping = false;
+        i += 1;
+      } else if (line[i] === '\\') {
+        escaping = true;
+        i += 1;
+      } else if (line[i] === stringChar) {
+        inString = false;
+        i += 1;
+      } else {
+        i += 1;
+      }
+      continue;
+    }
+
+    if ((line[i] === '/' && line[i + 1] === '/') || line[i] === '#') {
+      break;
+    }
+
+    if (line[i] === '/' && line[i + 1] === '*') {
+      state.inBlockComment = true;
+      i += 2;
+      continue;
+    }
+
+    if (line[i] === "'" || line[i] === '"') {
+      inString = true;
+      stringChar = line[i];
+      code += line[i];
+      i += 1;
+      continue;
+    }
+
+    code += line[i];
+    i += 1;
+  }
+
+  return code;
+}
+
+function extractFirstArgument(str) {
+  let depth = 0;
+  let inQuote = null;
+  let escaping = false;
+  let arg = '';
+  for (let i = 0; i < str.length; i += 1) {
+    const ch = str[i];
+    if (inQuote) {
+      arg += ch;
+      if (escaping) {
+        escaping = false;
+      } else if (ch === '\\') {
+        escaping = true;
+      } else if (ch === inQuote) {
+        inQuote = null;
+      }
+      continue;
+    }
+    if (ch === "'" || ch === '"') {
+      inQuote = ch;
+      arg += ch;
+      continue;
+    }
+    if (ch === '(' || ch === '[' || ch === '{') {
+      depth += 1;
+      arg += ch;
+      continue;
+    }
+    if (ch === ')' || ch === ']' || ch === '}') {
+      if (depth === 0) break;
+      depth -= 1;
+      arg += ch;
+      continue;
+    }
+    if (ch === ',' && depth === 0) {
+      break;
+    }
+    if (ch === ';' && depth === 0) {
+      break;
+    }
+    arg += ch;
+  }
+  return arg.trim();
+}
+
 function scanFile(file, stack, repoRoot) {
   const violations = [];
   const relPath = toRepoRelative(repoRoot, file);
@@ -130,10 +340,12 @@ function scanFile(file, stack, repoRoot) {
 
   // C# checks
   if (ext === '.cs') {
+    const csState = { inBlockComment: false };
     lines.forEach((line, idx) => {
       const lineNum = idx + 1;
+      const code = cleanCSharpLine(line, csState);
       // Rule 1: No sync-over-async (.Result, .Wait(), .GetAwaiter().GetResult())
-      if (/\.Result\b|\.Wait\(\)|\.GetAwaiter\(\)\.GetResult\(\)/.test(line)) {
+      if (/\.Result\b|\.Wait\(\)|\.GetAwaiter\(\)\.GetResult\(\)/.test(code)) {
         violations.push({
           rule: 'no-sync-over-async',
           file: relPath,
@@ -143,7 +355,7 @@ function scanFile(file, stack, repoRoot) {
         });
       }
       // Rule 2: Guid.Empty in entity assignments/defaults
-      if (/\bGuid\.Empty\b/.test(line) && /(?:Id|Key)\s*=\s*Guid\.Empty/.test(line)) {
+      if (/\bGuid\.Empty\b/.test(code) && /(?:Id|Key)\s*=\s*Guid\.Empty/.test(code)) {
         violations.push({
           rule: 'no-guid-empty-identity',
           file: relPath,
@@ -158,6 +370,9 @@ function scanFile(file, stack, repoRoot) {
     if (/class\s+\w+(?:Controller|AppService)\b/.test(content)) {
       lines.forEach((line, idx) => {
         const lineNum = idx + 1;
+        if (line.trim().startsWith('//') || line.trim().startsWith('*') || line.trim().startsWith('/*')) {
+          return;
+        }
         if (/public\s+(?:(?:virtual|override|sealed|static|new|async)\s+)*(?:Task(?:<[\w\s,<>\[\]]+>)?|IActionResult|ActionResult(?:<[\w\s,<>\[\]]+>)?|void|[\w<>\[\]]+)\s+\w+\s*\(/.test(line)) {
           // Find the nearest enclosing class/record declaration preceding line idx
           let classLineIdx = -1;
@@ -243,8 +458,16 @@ function scanFile(file, stack, repoRoot) {
     lines.forEach((line, idx) => {
       const lineNum = idx + 1;
 
+      // Skip comment-only lines
+      if (line.trim().startsWith('//') || line.trim().startsWith('*') || line.trim().startsWith('/*')) {
+        return;
+      }
+
       // Rule 1: No unchecked any
-      if (/:\s*any\b|as\s+any\b/.test(line) && !line.includes('// @suppress-any') && !line.includes('eslint-disable')) {
+      const commentIdx = line.indexOf('//');
+      const codePart = commentIdx !== -1 ? line.slice(0, commentIdx) : line;
+      const cleanCode = codePart.replace(/'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`/g, '""');
+      if (/:\s*any\b|as\s+any\b/.test(cleanCode) && !line.includes('// @suppress-any') && !line.includes('eslint-disable')) {
         violations.push({
           rule: 'no-unchecked-any',
           file: relPath,
@@ -306,10 +529,14 @@ function scanFile(file, stack, repoRoot) {
 
   // PHP checks
   if (ext === '.php') {
+    const phpState = { inBlockComment: false };
     lines.forEach((line, idx) => {
       const lineNum = idx + 1;
+      const code = cleanPhpComments(line, phpState);
+      if (!code.trim()) return;
+
       // Rule: unescaped Blade
-      if (/\{!!\s*\$[a-zA-Z0-9_]+.*!!\}/.test(line)) {
+      if (/\{!!\s*\$[a-zA-Z0-9_]+.*!!\}/.test(code)) {
         violations.push({
           rule: 'laravel-unescaped-blade',
           file: relPath,
@@ -318,21 +545,36 @@ function scanFile(file, stack, repoRoot) {
           message: 'Unescaped Blade expression {!! ... !!} detected. Use {{ ... }} to prevent XSS.',
         });
       }
-      // Rule: raw SQL without bindings
-      if (/DB::raw\s*\(\s*['"][^'"]*\$[a-zA-Z0-9_]+/.test(line)) {
-        violations.push({
-          rule: 'laravel-raw-sql-injection',
-          file: relPath,
-          line: lineNum,
-          severity: 'Critical',
-          message: 'Unescaped variable concatenated in DB::raw. Pass bindings as second parameter.',
-        });
+
+      // Rule: raw SQL injection
+      const rawSqlMethodMatch = code.match(/(?:DB::(?:raw|select|statement|unprepared|selectOne|insert|update|delete)|->(?:whereRaw|orWhereRaw|havingRaw|orHavingRaw|selectRaw|orderByRaw|groupByRaw))\s*\(([\s\S]*)/);
+      if (rawSqlMethodMatch) {
+        let callRemainder = rawSqlMethodMatch[1];
+        if (!callRemainder.trim() && idx + 1 < lines.length) {
+          callRemainder = lines.slice(idx + 1, Math.min(lines.length, idx + 6)).map((l) => cleanPhpComments(l, { inBlockComment: false })).join(' ');
+        }
+        const firstArg = extractFirstArgument(callRemainder);
+        const hasConcatenation = /\.\s*\$[a-zA-Z0-9_]+|\$[a-zA-Z0-9_]+(?:->[a-zA-Z0-9_]+)*\s*\./.test(firstArg);
+        const hasInterpolation = /"[^"\\]*(?:\\.[^"\\]*)*\$[a-zA-Z0-9_{]/.test(firstArg);
+        const isBareVar = /^\$[a-zA-Z0-9_]+/.test(firstArg);
+        if (hasConcatenation || hasInterpolation || isBareVar) {
+          violations.push({
+            rule: 'laravel-raw-sql-injection',
+            file: relPath,
+            line: lineNum,
+            severity: 'Critical',
+            message: 'Unescaped variable concatenated or interpolated in raw SQL statement. Pass bindings as second parameter or use parameterized queries.',
+          });
+        }
       }
     });
 
     if (/class\s+\w+Controller\b/.test(content)) {
       lines.forEach((line, idx) => {
         const lineNum = idx + 1;
+        if (line.trim().startsWith('//') || line.trim().startsWith('*') || line.trim().startsWith('/*') || line.trim().startsWith('#')) {
+          return;
+        }
         if (/public\s+function\s+(?:index|show|create|store|edit|update|destroy)\s*\(/.test(line)) {
           let classLineIdx = -1;
           let isController = false;
