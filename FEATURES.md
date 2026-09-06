@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.62** · 51 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.63** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -240,7 +240,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (43 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (45 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`, `ws-benchmarks`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -254,12 +254,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.56)
+## 12. Recent evolution (0.3.22 → 0.3.63)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-03).
+Derived from recent commits on `develop` (2026-08-16 → 2026-09-06).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.3.63** | Sep 6 | **OpenCode agentic PR reviews + new skills:** CI switches active reviewer to OpenCode (`opencode-code-review.yml`); ships `ws-benchmarks` (interactive benchmark suite) and `ws-spec-manager` (unified spec router); catalog counts and dependency graph aligned (45 workflows / 8 extra) |
 | **0.3.56** | Sep 3 | **Skill family naming migration (`ws-{family}-{verb}`):** Renamed 10 skills across `spec`, `spec-provider`, and `plan` families (`ws-spec-write`, `ws-spec-update`, `ws-spec-multi`, `ws-spec-provider-github`, `ws-spec-provider-azure-devops`, `ws-spec-provider-local`, `ws-plan-write`, `ws-plan-verify`, `ws-plan-update`, `ws-plan-interview`); fail-closed harness gate `ws-(?!spec-).*spec`; anti-regression memory hook in `ws-spec-update` |
 | **0.3.55** | Sep 2 | **spec-memo bridge clarity:** `ws-spec-memo` owns harness config only; `/ws-memo` memory + `/ws-session-tracking` prompt/session; preflight warns on missing runtime skills; configure-project session handoff fixed |
 | **0.3.54** | Sep 2 | **ws-doctor JSON contract:** skill-local ESM `package.json` marker so copied `doctor.js` loads under CJS/typeless ancestors; `--json` writes one parseable object via `process.stdout.write` (#260 / amended #261) |
@@ -315,7 +316,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 
 ## 14. Full skill catalog
 
-50 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+53 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -360,6 +361,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | W | `index.PRD` lifecycle: init, sync, promote, track |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Harvest plan history into `index.PRD` Archive; propose shipped-plan cleanup |
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
+| [`ws-spec-manager`](.agents/skills/ws-spec-manager/SKILL.md) | W | Unified router for spec create/list/update/sync/track/organize/archive/validate/import/run |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register |
 | [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` (spec-memo) |
@@ -386,6 +388,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
 | [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | E | Upstream live/static harness benchmark runner (package root only; never spec-to-pr) |
+| [`ws-benchmarks`](.agents/skills/ws-benchmarks/SKILL.md) | E | Interactive benchmark evolution menu (inspect results, run static/live, update comparison tables) |
 
 ### Memory and conventions
 

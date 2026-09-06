@@ -19,7 +19,7 @@ assert.ok(fs.existsSync(skillFile), 'SKILL.md exists');
 const skillContent = fs.readFileSync(skillFile, 'utf8');
 
 assert.match(skillContent, /^name:\s*ws-spec-manager/m, 'frontmatter name is ws-spec-manager');
-assert.match(skillContent, /^version:\s*0\.3\.62/m, 'frontmatter version matches package 0.3.62');
+assert.match(skillContent, /^version:\s*0\.3\.63/m, 'frontmatter version matches package 0.3.63');
 assert.match(skillContent, /^disable-model-invocation:\s*true/m, 'disable-model-invocation is true');
 for (const alias of ['ws-spec-manager', 'spec-manager']) {
   assert.ok(skillContent.includes(`- ${alias}`), `invocation_names includes ${alias}`);
