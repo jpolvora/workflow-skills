@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "packageVersion": "0.3.50",
+    "gitSha": "79612045c80157f84e01a09daf30dc142ba30547",
+    "fixtureId": "fx-lite-readme",
+    "mode": "static",
+    "orch": "lite",
+    "dryRun": true,
+    "timestamp": "2026-08-28T21:43:58.986Z"
+  },
+  "dimensions": {
+    "completeness": 10,
+    "verifyScore": null,
+    "judge": null,
+    "discrimination": null,
+    "efficiency": 10,
+    "time": null,
+    "honesty": null
+  },
+  "index": {
+    "value": 100,
+    "weights": {
+      "completeness": 20,
+      "verifyScore": 20,
+      "judge": 15,
+      "discrimination": 15,
+      "efficiency": 15,
+      "time": 10,
+      "honesty": 5
+    }
+  },
+  "fixtureId": "fx-lite-readme"
+}
