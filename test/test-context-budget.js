@@ -7,6 +7,7 @@ const contextScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/
 const measureScript = path.join(repoRoot, '.agents/skills/ws-check-harness/scripts/measure_harness.cjs');
 const duplicateScript = path.join(repoRoot, '.agents/skills/ws-check-harness/scripts/check_duplicates.cjs');
 const SHARED_AGENTS_UTF8_LIMIT = 18000;
+const fixture = path.join(repoRoot, 'test', `.tmp-context-${process.pid}`);
 
 try {
   write(path.join(fixture, 'spec.md'), '## Acceptance Criteria\n- AC1: Build context.\n');
