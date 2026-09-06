@@ -117,6 +117,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Native gate advance options continue same-turn across all step boundaries, markdown fallback yields (issue #280, prompt-driven fix, no spec) — PR #281 MERGED
 - [ ] ws-benchmarks: benchmark commands and evolution report manager (`spec: 0064-ws-benchmarks-skill.spec.md`)
 - [ ] ws-spec-manager: unified specification router and lifecycle manager (`spec: 0065-ws-spec-manager-skill.spec.md`)
+- [ ] Separate consumer ws-shared hub from upstream root AGENTS.md (`spec: 0066-ws-shared-hub-agents-separation.spec.md`)
+- [x] Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention (`spec: 0067-reviewer-aligned-implementation-gates.spec.md`)
+
+
 
 
 
@@ -215,6 +219,10 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`.
 | 70 | `ws-benchmarks-skill` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
 
 | 71 | `ws-spec-manager-skill` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
+
+| 72 | `ws-shared-hub-agents-separation` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate consumer ws-shared hub from upstream root AGENTS.md |
+
+| 73 | `reviewer-aligned-implementation-gates` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention |
 
 ## 9. Inbox
 

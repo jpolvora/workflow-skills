@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.3.63
+version: 0.3.64
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -51,10 +51,13 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 5. **Fix the Entire Defect Class** — After Implement (build mode), repo-wide search/grep for the same defect pattern or vulnerability class (not style-only). Fix same-class siblings in scope; list remaining hits or exemptions (path + reason) in `step-output.summary`. Fix mode step 4 widens sibling sweep from modified directories to **repo-wide same pattern** with the same exemption rule.
    - Done when: search performed; remaining hits listed or justified.
 
-6. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
+6. **Stack Invariant Scan** — Run deterministic static check `node {skillsRoot}/ws-shared/scripts/scan_stack_invariants.cjs` against modified files and project stack rule pack (`{sharedDir}/stacks/`). Detect framework anti-patterns (`.Result`, `.Wait()`, missing `[Authorize]`, unchecked `any`, floating Promises, unmanaged subscriptions) before declaring the task done.
+   - Done when: scan exits 0 with zero Critical violations.
+
+7. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
    - Done when: applicable verification commands exit 0 (or failures are listed in step-output with `status: failed`).
 
-7. **Report** — Return the modified/created file lists and test output details.
+8. **Report** — Return the modified/created file lists and test output details.
    - Done when: the step-output below is populated.
 
 ## Fix mode
@@ -65,8 +68,6 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 2. **Consult memory (`read-memory`)** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths (every enabled backend); reuse known Solutions before inventing fixes.
    - Done when: relevant entries noted or none found.
 
-
-
 3. **Correct** — Apply minimal, targeted fixes per [ws-karpathy-guidelines](../ws-karpathy-guidelines/SKILL.md).
    - Done when: every enumerated finding has a corresponding edit.
 
@@ -76,7 +77,10 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 5. **Anti-regression test** — Write a unit test covering the corrected defect scenario.
    - Done when: each fixed finding has a covering test.
 
-6. **Validate** — Run project build and test suites from `config.json.verification`.
+6. **Stack Invariant Scan** — Run `node {skillsRoot}/ws-shared/scripts/scan_stack_invariants.cjs` against touched files to ensure fixes maintain framework invariants.
+   - Done when: scan exits 0 with zero Critical violations.
+
+7. **Validate** — Run project build and test suites from `config.json.verification`.
    - Done when: applicable verification commands exit 0 (or failures are listed in step-output with `status: failed`).
 
 ## Output (both modes)
@@ -98,6 +102,7 @@ verification:
   files_on_disk: pass | fail
   build: pass | fail | skipped
   tests: pass | fail | skipped
+  stack-invariant-scan: pass | fail
 summary: |
   (Summary text of changes and verifications)
 ```

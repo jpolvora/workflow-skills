@@ -141,7 +141,7 @@ Load [`CROSS-PLATFORM.md`](CROSS-PLATFORM.md) before creating shell recipes or t
 
 Run this checklist prior to triggering `/ship-pr` or shipping features in a consumer project:
 
-- [ ] **1. Run Tests & Verification**: Execute local test commands (`verification.backendTest` / `verification.frontendTest` or project test scripts).
+- [ ] **1. Run Tests & Verification**: Execute local test commands (`verification.backendTest` / `verification.frontendTest` or project test scripts) and stack invariant scan (`node .agents/skills/ws-shared/scripts/scan_stack_invariants.cjs`).
 - [ ] **2. Harness & Workflow Audit**: Run `ws-check-harness` / `ws-check-workflows` to ensure 0 critical findings.
 - [ ] **3. Configure & Verify Project**: Verify `.agents/skills/ws-shared/config.json` settings and stack definitions.
 - [ ] **4. Clean Docs & Artifacts**: Ensure documentation files have no merge conflict markers or uncommitted scratch files.

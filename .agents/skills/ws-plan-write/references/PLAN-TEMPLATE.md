@@ -22,14 +22,19 @@ RBAC permissions, tenant data leakage isolation checks, dynamic i18n strings.
 ## 5. Test Coverage
 Map each AC (AC1, AC2, ...) to specific test cases and method names.
 
-## 6. Invariants (Do Not Violate)
-Reiterate strict architectural invariants from config.json.invariants.
+## 6. Stack & Security Invariants Verification Plan
+Reiterate strict architectural invariants from config.json.invariants and project stack rule pack ({sharedDir}/stacks/{stack}.md). Explicitly identify touched framework boundaries:
+- Authorization & endpoint protection (attributes, policies, route guards)
+- Concurrency & async safety (zero sync-over-async, cancellation propagation, floating promises)
+- Input validation & DTO boundary (schemas, attributes, injection defenses)
+- Subscription & lifecycle cleanup (unsubscriptions, hook cleanup, stream disposal)
 
 ## 7. Pre-PR Checklist
 - [ ] Layer boundaries respected.
 - [ ] Domain entities and mappings encapsulated.
 - [ ] Schema migrations created.
 - [ ] Authorization checks applied.
+- [ ] Stack & security invariants verified (auth, async, validation, cleanup).
 - [ ] i18n keys declared.
 - [ ] Test cases cover all ACs.
 

@@ -231,6 +231,79 @@ function globExists(repoRoot, pattern) {
   return fileExists(repoRoot, pattern);
 }
 
+const FRAMEWORK_TRAPS = {
+  'abp-angular': {
+    title: 'ABP / Angular: Avoid sync-over-async and template permission bypass',
+    filename: 'framework-trap-abp-angular.md',
+    body: `### [2026-09-06] ABP / Angular: Avoid sync-over-async and template permission bypass\n- **Layer**: Architecture\n- **Severity**: Critical\n- **PathPattern**: **/*.{cs,html}\n- **Scenario / Context**: C# asynchronous pipelines and Angular UI permission directives in ABP applications\n- **DO NOT**: Use .Result, .Wait(), or .GetAwaiter().GetResult() in asynchronous C# methods, or omit *abpPermission on interactive Angular buttons\n- **INSTEAD DO**: Use async Task with await operations and cancellation tokens, protect UI buttons with *abpPermission, and protect endpoints with [Authorize]`,
+  },
+  'nextjs-react': {
+    title: 'Next.js / React: Prevent client credential leak and unhandled hook subscriptions',
+    filename: 'framework-trap-nextjs-react.md',
+    body: `### [2026-09-06] Next.js / React: Prevent client credential leak and unhandled hook subscriptions\n- **Layer**: Security\n- **Severity**: Critical\n- **PathPattern**: **/*.{tsx,jsx,ts,js}\n- **Scenario / Context**: Next.js client components and React effect hooks with subscriptions\n- **DO NOT**: Import server packages or process.env secrets into 'use client' components, or attach listeners/intervals in useEffect without returning a cleanup function\n- **INSTEAD DO**: Keep sensitive credentials in Server Components or Route Handlers, and return a cleanup function from useEffect`,
+  },
+  'typescript-node': {
+    title: 'TypeScript / Node: Avoid unchecked any and floating promises',
+    filename: 'framework-trap-typescript-node.md',
+    body: `### [2026-09-06] TypeScript / Node: Avoid unchecked any and floating promises\n- **Layer**: Quality\n- **Severity**: Critical\n- **PathPattern**: **/*.{ts,tsx,js,mjs,cjs}\n- **Scenario / Context**: TypeScript type safety and asynchronous Promise handling\n- **DO NOT**: Use unchecked any or as any type assertions without runtime narrowing, or leave Promises floating without await, void, or .catch()\n- **INSTEAD DO**: Use precise interfaces, unknown with type guards, or Zod schemas, and await every Promise or handle rejections explicitly`,
+  },
+  'php-laravel': {
+    title: 'PHP / Laravel: Enforce policy authorization and prevent mass assignment',
+    filename: 'framework-trap-php-laravel.md',
+    body: `### [2026-09-06] PHP / Laravel: Enforce policy authorization and prevent mass assignment\n- **Layer**: Security\n- **Severity**: Critical\n- **PathPattern**: **/*.php\n- **Scenario / Context**: Laravel controllers, query building, and input handling\n- **DO NOT**: Mutate resources in controllers without $this->authorize() checks, or accept raw unvalidated inputs or use unescaped DB::raw()\n- **INSTEAD DO**: Call $this->authorize('update', $model) or use route can: middleware, and use FormRequest validation and parameterized query bindings`,
+  },
+};
+
+function detectFrameworkStack(repoRoot, pkg) {
+  const deps = { ...(pkg?.dependencies || {}), ...(pkg?.devDependencies || {}) };
+  if (deps['@abp/ng.core'] || deps['@abp/ng.theme.shared']) return 'abp-angular';
+  if (deps['next']) return 'nextjs-react';
+  if (globExists(repoRoot, '*.sln') || globExists(repoRoot, '*.slnx') || globExists(repoRoot, '*.csproj')) {
+    if (fileExists(repoRoot, 'angular.json') || deps['@angular/core']) return 'abp-angular';
+  }
+  if (fileExists(repoRoot, 'artisan') || fileExists(repoRoot, 'composer.json')) {
+    return 'php-laravel';
+  }
+  if (pkg || fileExists(repoRoot, 'tsconfig.json')) {
+    return 'typescript-node';
+  }
+  return null;
+}
+
+function seedFrameworkTraps(sharedDir, framework, dryRun) {
+  if (!framework || !FRAMEWORK_TRAPS[framework]) return false;
+  const trap = FRAMEWORK_TRAPS[framework];
+  const memoryDir = path.join(sharedDir, 'memory');
+  const trapFile = path.join(memoryDir, trap.filename || `framework-trap-${framework}.md`);
+  const memoryFile = path.join(sharedDir, 'MEMORY.md');
+
+  let memoryContent = '';
+  if (fs.existsSync(memoryFile)) {
+    memoryContent = fs.readFileSync(memoryFile, 'utf8');
+  } else {
+    memoryContent = '# Memory\n\n';
+  }
+
+  const fileExists = fs.existsSync(trapFile);
+  const alreadyInCompiled = memoryContent.includes(trap.title);
+
+  if (fileExists && alreadyInCompiled) {
+    return false;
+  }
+
+  if (!dryRun) {
+    fs.mkdirSync(memoryDir, { recursive: true });
+    if (!fileExists) {
+      fs.writeFileSync(trapFile, `${trap.body}\n`, 'utf8');
+    }
+    if (!alreadyInCompiled) {
+      const separator = memoryContent.endsWith('\n\n') ? '' : memoryContent.endsWith('\n') ? '\n' : '\n\n';
+      fs.writeFileSync(memoryFile, `${memoryContent}${separator}${trap.body}\n`, 'utf8');
+    }
+  }
+  return true;
+}
+
 function schemaDefault(schema, dotPath) {
   const parts = dotPath.split('.');
   let node = schema;
@@ -693,6 +766,13 @@ function main() {
     written = true;
   }
 
+  const pkg = readPackageJson(repoRoot);
+  const detectedFramework = detectFrameworkStack(repoRoot, pkg);
+  let trapsSeeded = false;
+  if (!args.section || args.section === 'stack') {
+    trapsSeeded = seedFrameworkTraps(sharedDir, detectedFramework, args.dryRun);
+  }
+
   const result = {
     ok,
     sectionOk: args.section ? sectionGaps.length === 0 : undefined,
@@ -704,6 +784,8 @@ function main() {
     written,
     createdFromExample,
     stats,
+    detectedFramework,
+    trapsSeeded,
     requiredGaps: gaps,
     sectionRequiredGaps: args.section ? sectionGaps : undefined,
     changes: details.filter((d) => d.action === 'filled' || d.action === 'overwritten'),
@@ -716,6 +798,7 @@ function main() {
   } else {
     console.log(`auto-configure ${args.section || 'all'}: filled=${stats.filled} overwritten=${stats.overwritten} skipped=${stats.skipped} unresolved=${stats.unresolved} written=${written}`);
     for (const c of result.changes) console.log(`  + ${c.path} (${c.source})`);
+    if (trapsSeeded) console.log(`  + seeded framework traps into MEMORY.md for stack: ${detectedFramework}`);
     if (result.unresolved.length) {
       console.log('unresolved (no detection/default — fill manually):');
       for (const u of result.unresolved) console.log(`  ? ${u}`);

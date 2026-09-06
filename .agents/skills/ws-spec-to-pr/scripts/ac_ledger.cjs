@@ -22,7 +22,7 @@ function sha256(value) {
 function parseArgs(argv) {
   const positional = [];
   const options = {};
-  const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult']);
+  const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult', 'invariantViolation']);
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (!token.startsWith('--')) positional.push(token);
@@ -118,6 +118,7 @@ function init(options, context) {
     testingSkip: null,
     acceptanceCriteria: criteria.map((criterion) => defaultRow(criterion, planIndex)),
     negativeScenarios: negativeScenariosFromSpec(fs.readFileSync(spec, 'utf8')),
+    invariantViolations: [],
     scoreState: null,
   };
   writeJson(path.resolve(context.repoRoot, options.output), ledger);
@@ -287,6 +288,30 @@ function link(options, context) {
     ledger.testingSkip = { reason: item.reason, evidence: toRepoRelative(context.repoRoot, evidence), sha256: sha256(fs.readFileSync(evidence)) };
   }
   if (options.gap) ledger.declaredGaps = [...new Set([...ledger.declaredGaps, options.gap])].sort();
+  if (options.invariantViolation) {
+    ledger.invariantViolations ||= [];
+    for (const value of options.invariantViolation) {
+      const item = parseObject(value, 'invariant-violation');
+      if (!item.rule || !['Critical', 'Warning', 'Suggestion'].includes(item.severity) || !item.evidence) {
+        throw new Error('invariant-violation requires rule, severity Critical|Warning|Suggestion, and evidence');
+      }
+      let normEvidence = item.evidence;
+      const single = normEvidence.match(/^(.+):L?([1-9][0-9]*)$/);
+      if (single) normEvidence = `${single[1]}:L${single[2]}-L${single[2]}`;
+      evidenceFile(normEvidence, context);
+      const normalized = {
+        rule: item.rule,
+        severity: item.severity,
+        evidence: normEvidence,
+        message: item.message || item.description || '',
+      };
+      if (options.eventId) normalized.linkEventId = options.eventId;
+      ledger.invariantViolations = [
+        ...ledger.invariantViolations.filter((entry) => !(entry.rule === normalized.rule && entry.evidence === normalized.evidence)),
+        normalized,
+      ].sort((a, b) => a.rule.localeCompare(b.rule) || a.evidence.localeCompare(b.evidence));
+    }
+  }
   ledger.revision += 1;
   ledger.scoreState = null;
   writeJson(file, ledger);
@@ -347,12 +372,24 @@ function scoreLedger(ledger, boundary, context) {
   const missingNegative = (ledger.negativeScenarios || []).some((row) =>
     !row.tests.some((test) => test.phase === 'observed' && Number(test.exitCode) === 0));
   if (missingNegative) knownDefect = true;
+  const criticalInvariants = (ledger.invariantViolations || []).filter((item) => item.severity === 'Critical');
+  if (criticalInvariants.length > 0) knownDefect = true;
   let score = total ? Math.floor((10 * earned) / total) : 0;
-  if (knownDefect) score = Math.min(score, 8);
+  if (criticalInvariants.length > 0) score = Math.min(score, 7);
+  else if (knownDefect) score = Math.min(score, 8);
   else if (missingEvidence) score = Math.min(score, 9);
   const completeTen = !knownDefect && !missingEvidence && !errors.length && ledger.acceptanceCriteria.every((row) => row.status === 'Implemented' || row.status === 'ImplementedDifferently');
   if (!completeTen) score = Math.min(score, 9);
-  return { boundary, score, earnedUnits: earned, totalUnits: total, knownDefect, missingEvidence, errors };
+  return {
+    boundary,
+    score,
+    earnedUnits: earned,
+    totalUnits: total,
+    knownDefect,
+    missingEvidence,
+    errors,
+    invariantViolations: ledger.invariantViolations || [],
+  };
 }
 
 function verify(options, context, persistScore) {

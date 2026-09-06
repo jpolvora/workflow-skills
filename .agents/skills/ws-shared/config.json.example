@@ -110,6 +110,8 @@
     "mutationTest": "",
     "mutationThreshold": 80,
     "_comment_mutationThreshold": "Minimum mutation score percent (killed/(killed+survived)*100). Used when mutationTest is set and skipMutationTesting is false.",
+    "localReviewCommand": "",
+    "_comment_localReviewCommand": "Optional local review runner command (e.g. cursor-reviewer dry-run). When configured or detected, ws-code-review offers a pre-PR dry-run pass before Step 8 ship.",
     "testGlobs": ["test/**/*.js", "tests/**/*", "**/*.test.*", "**/*.spec.*"],
     "_comment_testGlobs": "Machine test-surface probe patterns. Step 7 auto-skip requires no non-empty test alias and no matching file."
   },
@@ -346,7 +348,9 @@
   "preview": {
     "_comment": "Optional. /ws-preview runs preview.dryRunCommand from the consumer repo root — no packaged reviewer backend. Prefer /ws-configure-project --section preview (infers from AGENTS.md, README, MEMORY, rules.*, package.json scripts, and local skills) or set the string below. Empty → /ws-preview stops until configured.",
     "_comment_dryRunCommand": "Examples: npm run review:dry | bash scripts/pipeline-review-dry-run.sh | node tools/local-review-dry-run.cjs",
-    "dryRunCommand": ""
+    "dryRunCommand": "",
+    "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | python scripts/cursor-reviewer/cli.py --dry-run",
+    "localReviewCommand": ""
   },
 
   "rules": {

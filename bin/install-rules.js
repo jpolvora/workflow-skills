@@ -37,6 +37,7 @@ export const HUB_WHITELIST = [
   'CHANGELOG.md.template',
   'skill-dependencies.json',
   'scripts',
+  'stacks',
 ];
 
 /** Dest name when whitelist source name differs (pack vs consumer layout). */

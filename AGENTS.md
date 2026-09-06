@@ -146,14 +146,14 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | Skill | Step(s) | Role |
 |-------|---------|------|
 | `ws-spec-to-pr` | Orchestrator | FSM dispatcher |
-| `ws-spec-write` | 0 | Spec from description |
+| `ws-spec-write` | 0 | Spec from description (injects stack invariants into DoR & negative scenarios) |
 | `ws-classify-complexity` | 0 (after spec) | Pipeline lite vs standard classifier |
-| `ws-plan-write` | 1 | Implementation plan |
-| `ws-plan-interview` | 2 | Plan audit |
+| `ws-plan-write` | 1 | Implementation plan (includes Section 6 Stack & Security Invariants Verification Plan) |
+| `ws-plan-interview` | 2 | Plan audit (audits Section 6 verification checks for touched framework boundaries) |
 | `ws-plan-to-tasks` | 3 | DAG tasks |
-| `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix |
-| `ws-plan-verify` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap 8); product commit before review |
-| `ws-code-review` | 6 | Local review of committed diff vs base (fix → re-review, max 3; then product commit) |
+| `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix (runs pre-completion static scan `scan_stack_invariants.cjs`) |
+| `ws-plan-verify` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap 8; critical stack invariant violations cap at 7); product commit before review |
+| `ws-code-review` | 6 | Local review of committed diff vs base (two-phase adversarial model, stack rule pack, `localReviewCommand` dry-run, fix → re-review, max 3; then product commit) |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Push/PR after close (G2-delivery at close; product already committed) |
 | `ws-fix-pr` | 9 | Batch gate-only plan → execute/proactive fix |

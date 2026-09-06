@@ -5,17 +5,17 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "39dd7b40b83b4a9252843538a8a10e9d44435d39d8d862db9728f3377d742359",
+  "fullPackageDigest": "85bbddb3f5e35873620f47d931038fb320b70f9f01511dfdbe1ccc3cc52bb9a9",
   "hub": {
     "files": {
-      "ac-ledger.schema.json": "a55c7e99dbe89a23d295658924f4f3e062f104a06e39f53c890206d041d50538",
-      "AGENTS.md": "185cdcd651cc2138387565594359b09df2e315117d468866acd49614a628ad18",
+      "ac-ledger.schema.json": "5184614c30fa70faf50b69eba272dbeee589497b7fb845f8201818e85c7c6e3b",
+      "AGENTS.md": "9d559804927ea00176bb69ff9325aff8ba56a09aa152ffad49f8aa5bb7023b97",
       "autoload.md": "536fcb5971c23db99b42a1f207d7d36cd47f7f7fb587c06db4083dbe5817244b",
-      "CATALOG.md": "dfc79e7f84f449c4eaef6726cc986fde3754fb3b6e828d24aed98e4e06e7adcf",
+      "CATALOG.md": "0e97a36fed8d781f53d784dd956a72809ed940c63def58e376f0fe23b755c939",
       "CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "config-resolution.md": "40bc2f6999696c95709a7b6fc3746e7b7b5125a02be0235626473afd43864c6f",
-      "config.json.example": "e07fa17116cd9c64858e1a6accaf7bd46382cfb923094cc646327e8f4ea5c27a",
-      "config.schema.json": "764f5cc8b3697073b7503a15f29f439c11a826bfb853cfd30394bf1ba2de64e6",
+      "config.json.example": "3dcd7f9b52af0a863c8ea9b80d3f2be8bc9d47adb07085e41acfd89d45ae039d",
+      "config.schema.json": "2da306cb15223a40bbcf29eac6365074a1367dc669c04a6835a0f635d5e1f03d",
       "CROSS-PLATFORM.md": "d70d5812d557519605ad15645e7cf1cd36c8e3f5bf68fa583237357405927d8e",
       "evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "gates.md": "3b6c835f3d230819e578548edf652c05ccd14eb1433d41ee21cdb87fec2e0566",
@@ -36,20 +36,25 @@
       "scripts/resolve_consumer_root.cjs": "0aaef641a6016097a04980b41eb58404453cd62b0d3be511b152b0e6df1c9686",
       "scripts/resolve_consumer_root.py": "6e135f99ba3293f54d3d8ebe787f4b7324046412cff7db8a5e7d4779b298f717",
       "scripts/retired_artifacts.cjs": "512252528056874a8f9effeab5fdc09801cee0a8e8521f41e9f9be0958fd3890",
+      "scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "scripts/workflow_state.cjs": "53a2b593c640b8f825ef133dc55ad7ae690b20ac9ee36b1e84e7521623e1b390",
       "setup.md": "c24ea1c91bdaabb358725821278768728c5d8667ef46d04c77c23bac8bfa07ae",
-      "skill-dependencies.json": "f6338d3283040ad3690c6f208cf24a2788ac2cfe532783a49ec05dc8a70ea328",
+      "skill-dependencies.json": "a1bdf6dbbfd9780379f831adffd6b34b5571dee80e71fcd64b0619c961813fec",
       "STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8",
+      "stacks/abp-angular.md": "385e15a5ff3332dd95a07a71ece8398dcd1343659df133bff5cee7c105300d20",
+      "stacks/nextjs-react.md": "b5edfcf209a69ecba5325e707adb6ca2a86516a28df5465c5ba5a3cc89399b0c",
+      "stacks/php-laravel.md": "bd2d65ad83fb62334deac130b51cbd496818b1102bab20cfc6b6b8662d28d6a3",
+      "stacks/typescript-node.md": "b2d9f85ebde3362483d7653d39a74c53bc56a0cedf4d67a0761811d350410062",
       "step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "telemetry.schema.json": "d3e3a82a9b98478168b7e4090d68032883839d6fca17472be1215f338eb91f0a",
       "tools.md": "5ae38616d561f8a432f8c70a25437903bea56caa44c0f12ce472e85b17506baf",
       "workflow-state.schema.json": "86b41712a4a88dda1ac89b6937b19a73eea866350c27c94240c4c19115f8685b"
     },
-    "skillDigest": "486e77e7eef3b292068cdd7e0d0732187c58878e720fe0dd4171304d0a789649"
+    "skillDigest": "100716077954310565bba136e19ec92d69ac081864275130e1db65792dd9908e"
   },
-  "packageVersion": "0.3.63",
+  "packageVersion": "0.3.64",
   "skills": {
     "ws-activity-report": {
       "files": {
@@ -58,23 +63,23 @@
         "references/TIMING.md": "504805638eb45f26547d66efc6ed2b0e96ce95e2ae79c879fc149075f50d6fda",
         "scripts/bootstrap_start.py": "77be7c93fc40d5242007a87294830221cdfd882be32427417095cfe7c7b6a673",
         "scripts/infer_human_timing.py": "51b6947e3f563317bc77362c4ef9597887c229542d0b7a899bed2e3be27bc700",
-        "SKILL.md": "457a19b55d92207c184f506e6c4b9da7a793b1d1a6ad69f8d48bbba4e9bc3e63"
+        "SKILL.md": "3c749a0ae7424b8137de3d8d9a20f5cde06106a6c536437c833c1f007ec8eebf"
       },
-      "skillDigest": "fb2a8a84625a1df8c75eff64b82b87f3edebfa0d8c956d665ed7afb75df6a128"
+      "skillDigest": "633021679a82b9c066189feeec10d35b5443e3094ed05a2940e9557273b03e06"
     },
     "ws-benchmarks": {
       "files": {
         "scripts/benchmarks_manager.cjs": "a24601fa0dfb7b640f2f85343b308eb4828b18208289f486b76aa96a80a4001e",
-        "SKILL.md": "9fb19794a645425539bcc9b8e2612148317cb2158beeb0ec89fad187839859ad"
+        "SKILL.md": "b58f4328fd2293e8c7afb38d271ac169d35b163bc7bf03c43fb076320dc2c659"
       },
-      "skillDigest": "0dbd4225a4c08a7ebfa6565b33ee4dacf058b68a747436b71952ea2ad37b599c"
+      "skillDigest": "b9295c8cf1741a60da4183c45bd4bf2669558dc6663fafb9b32053f94688e2b8"
     },
     "ws-changelog": {
       "files": {
         "evals/evals.json": "4facea2c6981974d41a949d7a55af5838bed174bbcac61a5b6d69b0fc3fd1c52",
-        "SKILL.md": "60751a46d2570a06cecc6a561aa35c7e032a4b819e5ac259de19c599e9c73cc1"
+        "SKILL.md": "8d0f1c7c2ec06f738ef8a3645352d98a6f02b22c12a90e513387dc69ffc1aaac"
       },
-      "skillDigest": "dc369139562900165f6023f6823d9c092d40d2010640a03fc8b8ebc41f1ba5bd"
+      "skillDigest": "c5a589245c1359bd57038fdebc9d8915282cbe2b58a6eeddf33ef4ab032417af"
     },
     "ws-check-harness": {
       "files": {
@@ -85,26 +90,26 @@
         "scripts/check_pipeline_handoff.cjs": "e7448d3a0428e23b5ad4146c37b1b132a23c5e9eb775af0e313efa4b8981f21e",
         "scripts/check_shell_quoting.cjs": "c65d46afe4e3c281e5c5aca698447aca14382d46325c8bc0bc493824ac7e3eab",
         "scripts/measure_harness.cjs": "d664033129bbb109b8f9a87c6bae5973ffe415efca17d140c19e3bff29510125",
-        "SKILL.md": "5dfc79fec4037c07e6542731152c2714ae0535245017060dddc745705f2ad822"
+        "SKILL.md": "4175ceb9adc13cadeb9c5221b2b486e5d32d59885f615d25bc86bb9ce3a9c9ab"
       },
-      "skillDigest": "bead9ffcb5afa3a10a702dfdb45d91ace9bc0e51cd718eaa2ba67b7a88c6a0c8"
+      "skillDigest": "76c41fc56aa7a2f8f0abc9b8c7f49526c5e58702bc3ae790ae922c39798a85c3"
     },
     "ws-check-workflows": {
       "files": {
         "evals/evals.json": "375f3826cdaed450aba3d701b2bd0e9566c74139a033d0c5cb9de48f0e8f6a6c",
         "scripts/check_workflows.py": "913a65dd42af4a8dee5cc7b85644b6de79d8b467e4993bc54bf6a4ead977dafc",
-        "SKILL.md": "ee40e4bc297619e17199c403baf2801f09f52a6d6504d92ce64fe45519c90431"
+        "SKILL.md": "5c79f66c9cce91f8465f334d3fb8ef2eab5bc5a8f48374014348976cdce55adb"
       },
-      "skillDigest": "c7c71ec64fb37fd72a48a0c83ac8d00a772f69d7dac09f4d10ff57b45d7a0b2b"
+      "skillDigest": "eb110b21e4c6d707e6169afff720f6bdd7842c656040b6fddc5f96dc50784e91"
     },
     "ws-classify-complexity": {
       "files": {
         "evals/evals.json": "504884fb9b89dec24d41c219daa4a093bfff24832dbdb8f30ab704cc09fec88e",
         "references/THRESHOLDS.md": "45d724631af87b31faf41f5a7ea88a7233f498438f5382405b86655e424f41ff",
         "scripts/classify.cjs": "86572352902556449cec2af084058cccfad6fb523f027849ddfea994d2aa8914",
-        "SKILL.md": "a171d327376bad1fe9312fcf8c576dd9600967f09b1aa2bdc7b07c12a8622ac2"
+        "SKILL.md": "88ba65aa9939db5a447f8915ee4eb006b4d18b75110ad06847ad2ed8a29cd713"
       },
-      "skillDigest": "0bdfe0b46e075e5f9db6313a5e022a622d4c9831c63733e581f47f08f06dbd78"
+      "skillDigest": "2c77ff5592581070b70276b9aeb8804334987b7a8f654ac0a8d3b6193c317573"
     },
     "ws-cleanup": {
       "files": {
@@ -112,37 +117,37 @@
         "references/PATTERNS.md": "3a6f1d1578f1da1972b25667859f0ae19de78b70861b51e282e60f76adfa6fe9",
         "scripts/apply_cleanup.cjs": "9f7453adc6035a7fa0d72f4180e5548ffee8cb6e3c7dda8e83b1b0fb4247b79e",
         "scripts/list_disposable.cjs": "1414267f0035aa9c8952bce1d8f6f4d7eb835328ba8848aacbb4a6c959ada449",
-        "SKILL.md": "735faa57d8663c10b3a889151b378c033d2ad689bfe147c2de13517339bf0fef"
+        "SKILL.md": "67fb5d88cbc93d70b07889aab1ab774c21cee048af124dca99cb918f72361bc0"
       },
-      "skillDigest": "29001242ae0703b48760fe60c353cc578541d91cfcac4d745b66cd79d3182a6e"
+      "skillDigest": "43479fd7f83fbdd714925eb3c301119413ac73546661876c8c97d0ad4bcab361"
     },
     "ws-code-review": {
       "files": {
         "evals/evals.json": "b7773666e6a6dec840f6711d2b32762662f89da533bbe660fd4a581593762fb7",
         "scripts/write_review_round.cjs": "57acd1277a6ad034b65012d8865168ef06e062464d65da6b7e7b34197a44aff2",
-        "SKILL.md": "2d440f37288d5fb30a6d3b3fc08fd515de0fabac7643195c54364bb24ec949fe"
+        "SKILL.md": "7c8ec23ee6d7f35322230d8ebc04773f7e0b80375964f4f4f1ba274bfc79827c"
       },
-      "skillDigest": "4aa730f5de58e1f310eff991e99d13f0bdff78ddf5bffd839fc7b4777a675e21"
+      "skillDigest": "cb9545f6c8b14c53edafd0461dfeb53284685c6b9c9b6901e0e70ae4fb9e9667"
     },
     "ws-configure-project": {
       "files": {
         "evals/evals.json": "f2718d3d49e903ebe9fde09d8c28c94d6b52c5f36040abe2aba05fc5b46e434d",
         "INTERVIEW.md": "6c1163fb0d22fff1eab739d76f344f7de336f6b177a3ac128e57629e6e75433c",
-        "scripts/auto_configure.cjs": "b66b79508357387b2b4bcdc65cd09eee8f4410ac406bebf70fe44bd949df45e3",
+        "scripts/auto_configure.cjs": "d21e3591df9460a362d694f0814e0fdad59bb3f298cd52513e2aedf8cafa6251",
         "scripts/configure_autoload.py": "f4e9c07dee62a4ed464401f20889db9abf21f9266472f342f20dfb0ef2ab7cda",
         "scripts/stack_fingerprint.cjs": "96285aea1b6aa471a4218ecea83c764efb6e9202c7c9f439056127af2ddffdba",
-        "SKILL.md": "1ccf94728a2f23d07532d368170899e74521b2141619119642d776fcc549aa06"
+        "SKILL.md": "f25d89ea0634bf803bc2206a816123aea6f2f6c1ca787f1a22f7c653bc8c69e3"
       },
-      "skillDigest": "69eb827363f560b6f3daaf8a5f67bb4d88de8bd5de23c5d1ff9702f470f599db"
+      "skillDigest": "ece95ed26563d6bdc08cccaf1e396dde03af84568fb7d09f032706a078d04fe1"
     },
     "ws-doctor": {
       "files": {
         "evals/evals.json": "3f6ce20f565e7d7c51542fa94e1a3c7c2b61b6dff13ee3693448fa78e46714d3",
         "package.json": "6b1856f50f456e053eef434583ab05be2b2e1667e4fe0d796ebeb38e84e822da",
         "scripts/doctor.js": "e2a6065038739bd94601b836e7aee21cdd3a82ed613ca50c1e5c644f4c1f7060",
-        "SKILL.md": "2dea69008c3b21a50e6644eb69fb557f2ce3532b3fcd550824c0f626daca3820"
+        "SKILL.md": "ca866bd994291ef7ac56af54ac6e911b0d6923b0113f2dd2539df62c7c23a5c7"
       },
-      "skillDigest": "40bf419e2eef7402337fff9f5ad3a3587f11823ea0e54b026711f0596a772c78"
+      "skillDigest": "a1d0ddf181013ea901cf80ece15c6506c73cd2af71f792a224d52798a78498c6"
     },
     "ws-fable-domain": {
       "files": {
@@ -150,24 +155,24 @@
         "references/devops.md": "a632eec8bcb1402a91055056f1b930ddbb6bf60e97939915eb78085ee36ddeb0",
         "references/research.md": "14ce979c0650621b64d4103f412ff219ecc19650ad17e412c39bf7e08d0be02b",
         "references/TEMPLATE.md": "8710e759422b6080f48b0e9f0b52b5d27b60d926122c6cc19580287aaa3c6f46",
-        "SKILL.md": "7f16cdfb910ed72c89d2a0947e73d4ce6d18fc9638b94a79958a893eeb258567"
+        "SKILL.md": "1bbce9e8916b9ca84cce65fef29c0a108c4aedad0761b628ab72eec5fa1a237b"
       },
-      "skillDigest": "1d3947f99873aeab7f7b4fecc35f650c3874bbf5e6e76243ab061f0442d27744"
+      "skillDigest": "19a4c7e28c8219586d9f67f8065cee7276e081fadd5274a4c6937d93407182ca"
     },
     "ws-fable-judge": {
       "files": {
         "evals/evals.json": "eac7a9dd0a23e1ba21505be5f1a894e87357181f863ea20309e1f9bc8a0a05ff",
         "references/REPORT.md": "6f9ccaea1f4471b0ddc1ed8afedd582432dc658e49a94e8a21456f3db94fecf7",
-        "SKILL.md": "be153c794766cc0f8eea94e4b9878341d55e13701ffa6f9349092bfdebd740dc"
+        "SKILL.md": "e85dbe689067ecf98c7943bb21b48f6d619bc7e69e0ba1f38505aed9846fb923"
       },
-      "skillDigest": "2755aa07cac1dd2bce490b67849376e9d970d05508d2ad2a3ec57edd5944325e"
+      "skillDigest": "3e339aa105220c46b5dd9571a0a6bc8302718c3eb12c35fa3545748e15d1ef7f"
     },
     "ws-fable-method": {
       "files": {
         "evals/evals.json": "b3ad528d2a09a5bf979f832a8f2357fe3a520e511ce2ccbdaf4ecd8e14f90ef3",
-        "SKILL.md": "7da8f12d68d1b729c25a84ddb6cf1146862c603e770762137f6db29be7869899"
+        "SKILL.md": "3bad1a2767cd66050aa511a2a395fed2b4f261857ba96b6317f70bf9fbd82389"
       },
-      "skillDigest": "b00bc75238c4a5f5e159d990bcc733e74c8891843a242170170390e4bab4a784"
+      "skillDigest": "802b8651c59ef3bae664459a786fcde907e0a1233e3ad3d183e802fd948d96de"
     },
     "ws-fix-pr": {
       "files": {
@@ -178,40 +183,40 @@
         "scripts/fetch_threads.cjs": "ad555cfd34e9d0e0893d514a09e2ea52ea850c8889dfdbdf888e38bf0e26e203",
         "scripts/fix_pr_azure_context.py": "6af4a5712c2dc0ce377985dc3617b7184599f6bab1741a65a1b75ff7c5c0bad8",
         "scripts/resolve_thread.cjs": "597aa82018ca462ad117a22357696411fa73daa7bf4614522ab25afb4b543c9c",
-        "SKILL.md": "01f74367a214b1e64e462593ad615c07e42fad25101a8101080ac4077f289967"
+        "SKILL.md": "7d2016e0a88471ebca874f3f92c028cc8ac3e0750e7eed2084a3a90aa5d66cd1"
       },
-      "skillDigest": "f6801e443df18d009e0bd44ede693228c462e1fe5223ec58204dbc62a74ece2c"
+      "skillDigest": "3278b434761812382d287587d72086717823fca82be46271d16f74442ebfa3b6"
     },
     "ws-goal-fix-pr": {
       "files": {
         "evals/evals.json": "0c298f37295d8820666aa7f6f7c73e3ba203abed088c4126c9d9f71c1fee31cf",
         "examples.md": "5b556ba1020dcfb084e1d3c83fc81232e048a207c6706e5ec0627b9bfbe48e76",
-        "SKILL.md": "9c16594f6a8bb6aa307724ed210f2f902c1a02000d6b490c5017766ffdb92c04"
+        "SKILL.md": "41745794f6c6f832edeb63bd735c670b2ce2680563a5fc1fa0adfbc542a73353"
       },
-      "skillDigest": "a0b655f93e338334b5aedfa86df701f27fd02c0a5795b9c3b0a52a03a6717731"
+      "skillDigest": "6b78d87b104d8702463a7bb4f9c31f79a42e4c5b528d2af1ae9cc03108c1e6b3"
     },
     "ws-goal-loop": {
       "files": {
         "evals/evals.json": "d0b82a8f4d3bcb21a2f24574c4a95f47ec877e4606a8071739f644f63ac0cc43",
         "scripts/convergence.cjs": "7b8834967dd0cceb859df10e2eb4fc35e8df5071cc226176cd263ad02dd5beb2",
-        "SKILL.md": "54c4b2ec9255ce58ba0e3b3dbcc69b5c8b5da150618895e44c2445d33deb3608",
+        "SKILL.md": "7948e0075dd2281f38c02dd775f9246ffdc30c62cbf93255b4e44ca1bf4e0474",
         "TEMPLATES.md": "4d759f447b7ac57cf1d139ba3eb0a883be4b4a8eefcaecd248af23b9c5b81ba9"
       },
-      "skillDigest": "ef54bda09894de0ad020e2859df3ea820b6532f79dd98901eb981ef37936cdca"
+      "skillDigest": "160360ceaaf9c5b37e6c1e7c383a9ce43bbd0bfe2b31f2793d281bc5655b2755"
     },
     "ws-implement-tasks": {
       "files": {
         "evals/evals.json": "86e574825c0d3729712a279c84e23f8143eacd41a1c8bb8aeff2ba32ad14cb69",
-        "SKILL.md": "cbca359e5961215fffeaeed2543e650217998840f68dea46f2d4b26ec6e4785b"
+        "SKILL.md": "689ca4d489da4e9d900eb46a6249bb9440ed0561bd8a2074120d06a4600ac8d3"
       },
-      "skillDigest": "ee1d12ecadf5317c8809b383ecbcbdf7792c12fcc6d1f305ff80135281d64aa6"
+      "skillDigest": "0b21b379b92fecd01a0ae21279c4493ecbf851c52d5d22c00778af01fa1785dc"
     },
     "ws-karpathy-guidelines": {
       "files": {
         "evals/evals.json": "9a3ec664f2b1c7550f22a690f190fa7a8041cb769f3c669c2c7a51f5d27e4b4f",
-        "SKILL.md": "f240914e3a644909c23354e4d711636f1814ee8f042b248eecb107c0f85e300d"
+        "SKILL.md": "fad2a24f7cb2280324b9ed1387dfaff4315cc8fdf08704aef73871e46f82479b"
       },
-      "skillDigest": "22c66996cde76b1a722aeed96d693378d7e32c1a8161e88d8fcb570bb04c0c8b"
+      "skillDigest": "adcddd62c4fe326c68b5afa8e3b5ed8d62df3e0411ba870d939b3a1c7724b029"
     },
     "ws-megabrain": {
       "files": {
@@ -230,72 +235,72 @@
         "references/REFACTOR.md": "7dfd0773d7695d4665485ed762b18520b9b8292ef4df71cf51897587045ba01f",
         "references/REVERSE.md": "8289ec36324e8ce47413bb185519252f88ed25ce0822db489a3eaf8a23cf5f33",
         "references/REVIEW.md": "a3f71f7906163ac411e3ccbe5e4ad2b59aa1671bfc5256de96f2cee2e3688573",
-        "SKILL.md": "67b162085adcc1e8855ebb75b018e283b8d10c9dc18be5d118f738c7a0e0d0e1"
+        "SKILL.md": "cc566464f354408f296f7892a3766e2bfeef350675a76beddcc713a6a7f34103"
       },
-      "skillDigest": "2447186f8cba6aa224e3ed03e69741765e60cb838192415c2ba3587138ed5235"
+      "skillDigest": "35cac96751b179e92141c456917a960e5c501edada53788f51e8a3799713052d"
     },
     "ws-plan-interview": {
       "files": {
         "evals/evals.json": "c72760474f383e5d64a11908a3193b97438a86ccd0b712521f5bce0ed134f823",
-        "SKILL.md": "2f85eea17b26843f2df16cb55557372ffef9f6720e961f31f0a22114b36db3a1"
+        "SKILL.md": "36cdc1129e9b742e69d916b5bdad265fd36cc10715287b6773f6743dc6333a7b"
       },
-      "skillDigest": "6851d5e4ce5f5a7894c96a0a310ac02c6e33a1bff7906ba87c751195334aa2fd"
+      "skillDigest": "bc4701fa77e5698723a9045d64ea095629ce10d7d24b25177636f49def362a41"
     },
     "ws-plan-to-tasks": {
       "files": {
         "evals/evals.json": "97e04ad88e779e2596dd88b08c2c52671f19d30fa34e3e25f252fd1daf09e3dd",
-        "SKILL.md": "705218821b0ed587850c1a0e88fe25fbd4c96a3b25d2e4666418c2f2591e2a69"
+        "SKILL.md": "44d072e728b32b36887427a9c895fd76cf703f114bacd32410fb5729595be75d"
       },
-      "skillDigest": "a0cb4dbb97fb5c315e8c82e9bbd6f50a0f8bb36420351643d06fba011ea6f261"
+      "skillDigest": "5f438828b71a32617ab065eec81f30287a0316463582d78fd56699c05331bf82"
     },
     "ws-plan-update": {
       "files": {
         "evals/evals.json": "82d070f0a926287f5cf6213fa9a95811daca68a41771c71635ed19e5be90de1f",
         "plan-delta-template.md": "cadb53588e983efbd627f588b49bedb635b32e44cd38ad190c36cab011a2e03a",
-        "SKILL.md": "53b1d0b7210e693c5b02c8ac98c33cc077795dbf54493ccd3e0ad8977def7aba"
+        "SKILL.md": "f308e2021f3fe0505da9a54353e5afe048d3d64d61bc576d754f7052c1e91411"
       },
-      "skillDigest": "5391727b1ba580e1f3a4fb57d0419d5de27184ff05b7999197b52ea2ba714aec"
+      "skillDigest": "057782f343937fbf994e9321bd90822b5a51e100649c14c76bb4a3f27d3aaaf4"
     },
     "ws-plan-verify": {
       "files": {
         "evals/evals.json": "e661409d737ca37bd03d663ecb0f80c9d374942157ac62aafcbed4ffe6100b04",
-        "SKILL.md": "b287e71e4855543d9e67e4e6e60b444e2ed1453cbdeedb93d11345ec33d9ed6c",
+        "SKILL.md": "d079166ea27bf2f1894e5886ae3050b9ad7bafb4f9dc36d7214cf61148f56033",
         "TEMPLATE.md": "b21c8434669b14c9ea808da6f9d29a75e4d04a026908a67c846f4eeeda08cbb8"
       },
-      "skillDigest": "4c1229dc5600a29f0d82d479db28af362086ad8d8f8a096aee10170c72387e2a"
+      "skillDigest": "1b75ab7b85b93f8b4eadd14ef21c6f6af7f1e67c638a0272441e7ea8d80f7737"
     },
     "ws-plan-write": {
       "files": {
         "evals/evals.json": "d62212860d20688778b68e2fa3a89b8a87b84ff3a8996e61bb5083eba7a6acbb",
-        "references/PLAN-TEMPLATE.md": "670183925bed060412e477332b60ee912299b6cb1bf79df0c9a26cb40afcad86",
-        "SKILL.md": "ab74d96afad6039dc70f60700c1800525d97ce4131cbf75402ffe88762b8670b"
+        "references/PLAN-TEMPLATE.md": "196c93590586dcd680228f04554d522b7c2afcf64fb93b8fea69d91eb6c27b8c",
+        "SKILL.md": "859394bf576133ec7905de383b7985b71e267503bbc7f70a25a80a26d1766e69"
       },
-      "skillDigest": "3955f97f3f77026cb0907498a1c2e6e83169933744f34a32e8f2d368725c0f77"
+      "skillDigest": "48b2558c8d85af823aaf230084110d6fcf60f9afa9d6c54c0b2cd3c199857977"
     },
     "ws-pre-daily": {
       "files": {
         "evals/evals.json": "e81878b76a28edc64a85e0af82f56150f09ea00645999222b3e86615ebb8c17c",
         "references/OUTPUT.md": "15960b94dfd0bcf8b172e9d6e21ec6c70636cad6abea6b1ffe4bfdc13a22c290",
         "scripts/collect_window.py": "b21946a38479dddc7cb328d5d4082a4b52400f0b9a8790d100b111cfe1d7c4a1",
-        "SKILL.md": "65d0f5fd0ea741c1fb542bfd0e957fb820ef310b190e0eab89c6d1744d5af6fc"
+        "SKILL.md": "554417e495e77908aeedb6e564457d04438850b98f4e97d8766c90ff46d512fd"
       },
-      "skillDigest": "97743487cdaa1f3dced4acaf1ce14656b8f2cffb964ff8238d724bfe8a6d0e11"
+      "skillDigest": "b7dad84265af4ffd22a2332e4555f1b6eba6f6502c887c37b86a18b5d2e44b3e"
     },
     "ws-preview": {
       "files": {
         "evals/evals.json": "6837216b22a9cfff23c03a084821e5cdd79a3457b3a11a7b6777289f58c85f24",
-        "SKILL.md": "60ff723d5d43f5fe7dd33000ecdfc5c602a26ca0c08aeb99a618190b37d26607"
+        "SKILL.md": "edebeca6c962d8b414fedc53e4455b9bc312db43ffcda7eff6cfb56cdcb01f39"
       },
-      "skillDigest": "7e8c2ef23c5468d6a7d1f913b63769a5ca27e5ca56c3d053a0a788624aba60b7"
+      "skillDigest": "b65646a5aa9f90ebe45fb37c3b4dc6bde553121d6c5ebc97c9f40bdb62e04bbb"
     },
     "ws-run-benchmark": {
       "files": {
         "evals/evals.json": "7e7dc926f0825ab89b490702b25072347913c993bbcc2f9ec7d50273f65ba022",
         "references/ORCH.md": "f931cc7c0da9329240d3a29dcde075adf86b7efa4ec54996e599caeb8f82c03f",
         "scripts/context.cjs": "9ff8fcc44290d878558394070f1dcc44df60f8d5aef1d87a19b70e1f77d6466a",
-        "SKILL.md": "97500d7a388d1dac559971ea5cd1072cae44b9d649f1e310a289c7a6b7a7d04d"
+        "SKILL.md": "76f16578d57d546b6a858ae3a38a937477caeb1f15387102e3e526943af7d5c9"
       },
-      "skillDigest": "5a8a87ba869b3c77677e8854a683b26d87be51d8e69e996287bba2e271dc9d41"
+      "skillDigest": "37dbb947824b3b90f5f87fab5110ec1caed9afeeb45a7de63ec883dbf912c9f1"
     },
     "ws-secrets-leak-review": {
       "files": {
@@ -304,9 +309,9 @@
         "scripts/install-hook.sh": "2e042d0dee339ad4045e02a71ff4a2be0cc34d39c8805af1f030a7060bbed84c",
         "scripts/pre-commit.sh": "ba74e0bdb2e4e530b599d798c424bf74eb0914f68360cfbc0b755e7d24c28dd6",
         "scripts/secrets_scanner.sh": "95f5a57a60c97bcec17d4f1fea0239d87f18cf03e5df200432fed2c8dab1633a",
-        "SKILL.md": "62a02c750c0ebddf2180b75eec3cc60147d95473f32fb495a48d2cd3563b11dd"
+        "SKILL.md": "5eca8bc1ae7a7f2759c2cc829280ada31433ddb298066d17976972fd0b3b753a"
       },
-      "skillDigest": "6c01565ec08fdd0153b17ef9157b6f6ecb1c9ba9044f24ee95e2e8ebc5314d57"
+      "skillDigest": "7104e343bf70e21b77725fe3e7c001056fcf8a41d09daf0f8f4d30cea0f5d714"
     },
     "ws-self-learning": {
       "files": {
@@ -314,16 +319,16 @@
         "scripts/sanitize_memory.cjs": "24005b4c3d10a691907d71041c410d4620459cf166ebc73bd34fd7431aa2f6fc",
         "scripts/self_learning.cjs": "0ce3ca0f0f197fa73c89423b860c83cd047e2ed7981bfa9b38af41a814dced80",
         "scripts/self_learning.py": "b082a3db572941f48850a12bed40437e70d9b98ced4fceeacf3b25d1a78243df",
-        "SKILL.md": "1eeb46233bbe6602ff5e30d609342ece1c52a113cc3a9c718c75f441ff841682"
+        "SKILL.md": "00c3ce9a3d318424d83b33a4bbaefa0c37fc4d829baad2eeed9709679a1e369d"
       },
-      "skillDigest": "5ba4b7a324861a5eea3d76b1ea0f69e8f9fdac97bdcac16fd5a3ab9c2df45c3a"
+      "skillDigest": "b4a8b52f0dcd7b0e65c3ed353dff22f8ecef85de993d0eb1006da835a0980aee"
     },
     "ws-senior-developer": {
       "files": {
         "evals/evals.json": "2103b32abcc20544d91305b9bb7cb3411700151c26d45caaf4c4edd48e8bf400",
-        "SKILL.md": "69b5d1b8ebb18d7db3d56cf961e5871852cc05850cc997cf5a5074ced64419e8"
+        "SKILL.md": "6e7f2ac5adcf4285787b6084958ff697e8ef68fba652557335803418b1d31e94"
       },
-      "skillDigest": "4712441d9877246e8e9610a79ca5e74014f3817bfb60213ce73ecbb999e65588"
+      "skillDigest": "82a1ff6cd0da552ec9d974ea37463e89b7b83fc84539890c0b9c770c0d0ce63d"
     },
     "ws-ship-pr": {
       "files": {
@@ -333,16 +338,16 @@
         "PREPARE-CHECKLIST.md": "52fc9e5c2b57646c4cdbbe78a13b30ad4c93bc13057cd899eff021acfa7036f1",
         "scripts/detect-base-branch.sh": "8435a94884d1ce3653159f2ffdee12829b758c8eb69cb9481d51ff8916c756fd",
         "scripts/verify.sh": "6d4599feb7a67f8f74aab3ce8c5191d3b6bee31fea5d3993ff667a3e13ef8c88",
-        "SKILL.md": "31a6f6635e232d8e57ec802da853b11445d8c4bf85f101a54eef4f5da8470801"
+        "SKILL.md": "9ebda56a0b92c7ab53605fa4b0014e88482440849a82e94d6d43713cd943e899"
       },
-      "skillDigest": "39b8e08bec0d557b0079442a038ae47ae1a4ef34cc1fcc8e3d10cfffe3e2e182"
+      "skillDigest": "3f73e909dfdbcf4b89c9be4980e197387817fa2ecdbe3a2543c3d05a1006db81"
     },
     "ws-show-harness": {
       "files": {
         "evals/evals.json": "80d85366dce73ffc24defe925eca2c7fdeafae1a07b1af2c093062d1b9769c87",
-        "SKILL.md": "b94eff24faeb6a6934c95f1446b63bc0b233845ae23191ca9e753fff0eae64c1"
+        "SKILL.md": "dab581053deb180e10c61e6ab7ea581d26fa50d1cab27e1afe1591ec22319ff1"
       },
-      "skillDigest": "64a9c77686a52e7b00b8effdc9d28cf2bec1bd4ce9bd27d0af34ff613cda66bf"
+      "skillDigest": "431cc6ce27601cd4e360feeccd94bec8ecce50f070d6ee973366697736b0be23"
     },
     "ws-spec-archive": {
       "files": {
@@ -350,35 +355,35 @@
         "references/ARCHIVE.md": "a6ca528e2121786b3096780fa1a5d55a6307c543e844c89eb1774a2818b4629c",
         "scripts/apply_archive.cjs": "2a9677627a87fc21f2cc4dfce2dd5e849f0731412dd5cc4ad439774b6b695d10",
         "scripts/scan_plans.cjs": "21ba1b60878294e64f4212ae5a5d9808f4ce29adc514d56add28349329a55c57",
-        "SKILL.md": "f4c32aa05f1a015eb61fa0d1a493eeed7f2298a2d4d85466cbacecd55477ea1b"
+        "SKILL.md": "6aef6a9d717ce19ca558810ac528dd11305857ce4adc82032620bc5e60f8fe93"
       },
-      "skillDigest": "d6f5d7179270cbd4e0afb403c7cb208be4afcb4a25b86adf8d9a9fa1601f2364"
+      "skillDigest": "ad1d1bc19be36dfee8c661a2d057a9624bac7e92296480b4475c61e3c7cc8f50"
     },
     "ws-spec-explain": {
       "files": {
         "evals/evals.json": "c1fa928e8f47e07dfe04d16176f2aba2e8bf37808dac70d816b44147d07c6bee",
         "references/REPORT.md": "266f4130d7bf3379cf0e5a07e36a157d96114fb4f050d9a82366c7432bd9968f",
-        "SKILL.md": "678868cb0b69d14ff1bfa302afa7e365634e015fc38521447a0ebb5c09b2fe95"
+        "SKILL.md": "3e0dc36d8a45bb5ae859ff9f997294fc29b24b6c8c1d687a2b41ac75f4976bd2"
       },
-      "skillDigest": "758b8f42ae428899424bf280163dca1cb7ae7fc82be7b07d1c61fbb2c0c99194"
+      "skillDigest": "b3cb56d6dafd9f612887c06c45ddfdebfc9b9c1e637a4c673e18654600d0dd58"
     },
     "ws-spec-format": {
       "files": {
         "evals/evals.json": "8e46f00ac900804789f2e263d1feb0cb37edb484c37ffe9f2b8d806355047c1e",
         "FORMAT.md": "05852a705f08772e5a68d52571808cec2b003fbbfd521e57d902b7e6b970ed1e",
         "scripts/validate_spec.cjs": "9bdc4432af1c0987d765f8d378d24f85c901940388a73839a8430b13534c9dcc",
-        "SKILL.md": "5b95a226470a52545edd4603efef379ea2b30879abd1b9acf41d040856766f9b"
+        "SKILL.md": "d03a5644f5ea25a2641b336ca5cfbe1335daea46fd456f53f006ff74b348e415"
       },
-      "skillDigest": "1cb587d449072fc591c359140132ce9d4b58c3923ac4d4422c1a766596f2e25e"
+      "skillDigest": "cd8fc6b91ad1473141ca8a34e7176a2979a48ede7b1598df412cc806f84f9c5c"
     },
     "ws-spec-from-provider": {
       "files": {
         "evals/evals.json": "122c759303df2bee8cfd895a5f864aeef183df64b2428ce2ebca467bf5760217",
         "scripts/list_my_user_stories.py": "9c35d6cc868675a9d33144e0610d8d2469c390bd84f39cda68816ff6e98af33f",
         "scripts/list_open_issues.py": "2d1969cca39504f3b39e5534a8000d6897f163c201a973b4fab2d1e8615a8ecc",
-        "SKILL.md": "82ddfc04b5215a036fbe0080996dc5eaad5c69d074dc0eca2ee7136b33e0087a"
+        "SKILL.md": "2555da6f288b95177238a7ee54829cc7b89d013c42f0b6babb7741d231f2b1cd"
       },
-      "skillDigest": "2d071d250c8af0ca6ee85ca4440d6e6406502e69902c632e28b6c226c993f9f1"
+      "skillDigest": "7c5ece3fd8be46b2151586c7d2ebca9287a9c0ee110583274120f9e613c3bd3d"
     },
     "ws-spec-index": {
       "files": {
@@ -386,23 +391,23 @@
         "INDEX-TEMPLATE.md": "40fd1879ab56eabf8065be738b7e4c19df6d94086e9e84641fc90b978d46f453",
         "REFERENCE.md": "72ad9d4597288937388632c76aaa90c1baa73fdd7351c1e5edb377e25b9e968b",
         "scripts/track_index.cjs": "328e5c05e16f95b08032f67edac4b4d306b329f7e9a4dc32ac167b7e15a2be49",
-        "SKILL.md": "6c58d3ae78f14fce45aa342c5440c1c090b8716fd066c821e64d2be1a48c97c6"
+        "SKILL.md": "1a499ea0714a8b9d998fc6b913673a10a32882115f3c8867098a07f98ddb072e"
       },
-      "skillDigest": "b7708f25673320f8b9d3e32233b5976fefbc45da9fdc3320a490becda6c33141"
+      "skillDigest": "ec4834e5637d78778809a149c89d48b43b4d67f20551f95125ae912ae165d59d"
     },
     "ws-spec-list": {
       "files": {
         "ACTIONS.md": "561c1438d11e631513037cb814e154bc66e2e7444e2cfeeed988c0c23e9a1110",
         "evals/evals.json": "c0b8d2eae540da6bcb6021de5d4c614436af6139e7692f751b6329ac840ff4b0",
-        "SKILL.md": "719d77c4a32b23558295f8222dff55897932fac35cf98591baafc91dd5a30620"
+        "SKILL.md": "e7cf1c02255df1ca484520a311b63112aaf88b55876d8fa70d6471be97735fcb"
       },
-      "skillDigest": "9684bccba7e11a503bf0261e16190efb399708e6c79463a0ec458fbe53e8f001"
+      "skillDigest": "d16004778d770d9347de63f22ab007491f92539cea584a82112fed33dd6a436f"
     },
     "ws-spec-manager": {
       "files": {
-        "SKILL.md": "89e94c326a0627b6ec9ee2e5b4fe319266c54615368787b8a638e5e5d4d67260"
+        "SKILL.md": "63f3157341c353fc1cdf13c28b19546f49c36259f73e94fefc6a5b96aaec2836"
       },
-      "skillDigest": "221432bc5f9f530088d7b6d87191c50fa1e5d157704c3746aeab6d6b38a9c942"
+      "skillDigest": "ba6f200d5f5de4295b89b6b90a6a03c63b1d54a2b32984cd7fb28d0e251a4135"
     },
     "ws-spec-memo": {
       "files": {
@@ -411,9 +416,9 @@
         "references/MCP-TEMPLATE.json": "ff557c53c84fcba9e5b3ea7b8149f2fedeab9f42ca659f02014f5c23a64d79b1",
         "scripts/check_spec_memo.cjs": "39e2a945e4e70ba337405bbc0a085b14b8a6a5072d890492289fc8a3b1225b62",
         "scripts/configure_spec_memo.cjs": "bde59b86ea95e2bef5e408324721e4ee6abeac4611a3db63fd5b1e25c88b2b5b",
-        "SKILL.md": "bff2b14293468fba6e28f061db39c0a11d08b6d199e82db837bc6ff1c7edb82f"
+        "SKILL.md": "176d1ab4b8c478bc2fb44297f5c8afffca016071f6f8d690334c6f9f8bcb0ff1"
       },
-      "skillDigest": "c9ad59aa1891380b5a70d2cac59d5b15cf76aae586a361cc77c2dd201d280e06"
+      "skillDigest": "95247a0a4155d88010a820c40a36f1b7d77058d6e22ac24b8cdf84ac287a8083"
     },
     "ws-spec-multi": {
       "files": {
@@ -421,19 +426,19 @@
         "EXAMPLES.md": "05beee619341579c2868b339ca44b14150f1e18a4e56334d20acdf47cddb6062",
         "PROTOCOL.md": "7735c1ba7dbca8aa7db6bf03755ca98e9f3642d7bc186a8e768945917c5f363a",
         "scripts/list_pending_specs.cjs": "cee46e3114f38502fcd2ca0e441c8bd3384e638283c33b4fdd35c84113119341",
-        "SKILL.md": "bebbefad4d557064dc2b8b18397eec7432cd1849b7b9d7cefc78ca95f5fd671c",
+        "SKILL.md": "928c7e30065adaba12735e93eddc265d9f27d7253faec1bfc39522af2107d3f8",
         "STATE.md": "2f1353324d89530801a07987bd1a62161cecba8ed7c20bf8ec503315e21cfd33"
       },
-      "skillDigest": "a2b1e3a3009a502eeb8ce77f805bc74966e0aaf1d519ba46e902e999cb794f3e"
+      "skillDigest": "5ba7db86ff4fe8fe2b7b45305b83946e123e40eb44187e4fb22f92e1aa36f77f"
     },
     "ws-spec-organizer": {
       "files": {
         "evals/evals.json": "4037614c3e8bc9723121062e1ccfde25569d5265574b07c26e4e716f51ecca04",
         "scripts/organize_specs.cjs": "d8a31d1a57e971b7306f66c809ebb2da779784794a53435edfc2463abad36231",
         "scripts/resolve_spec_path.cjs": "2f1e73d45d6a42ff2642281d18b65da83842b715fb9e1db5e2b1b196773d4aba",
-        "SKILL.md": "31c25ca642aabc89701c373df6396b2c56e942088951cbf54d2e515be6e75073"
+        "SKILL.md": "b48fdae1cd21ffec614fb5403ff49c8890a07d7d539754c97723654eeaaa300d"
       },
-      "skillDigest": "4bfdd122fac83a44d3c01f95ad962fa13c66bf17fff4bf24ba5fcb4e9863edbf"
+      "skillDigest": "b27f098223e7aa064a7ed774ec515701105d4e9ffd43d7fb842426fccd33d115"
     },
     "ws-spec-provider-azure-devops": {
       "files": {
@@ -443,9 +448,9 @@
         "scripts/comment_issue.py": "2d19a68f9f0a05bdb8390031875fc1bbba460d8318efa95d1ac29eda11c062d5",
         "scripts/fix_pr_azure_context.py": "827efcc137b01a6818411a6dc3e017bb790f6646ce0e02163c5f8b28d6b07501",
         "scripts/sweep_prior_work.py": "61245daa22db3c92195d68b498deb972ed51a2b2270b153e634db53da8aada29",
-        "SKILL.md": "0e179d005e62c909258b3b24645e8e3b46e3192a7a7258145566d8c6ca040d85"
+        "SKILL.md": "d2053093d13e1eb5677327411ea950cc427dced1df23d553684e34f2c9b042f5"
       },
-      "skillDigest": "7d5560d9ef1f9220ae26234c945e45bc865801b1959617b720637f71e1fb9402"
+      "skillDigest": "8f20f32a7507da89eca5adffc1f756411b63759e6ad883f3926fc04e249b610a"
     },
     "ws-spec-provider-github": {
       "files": {
@@ -456,9 +461,9 @@
         "scripts/github-issue-to-spec.py": "6ddbdde02635df678242b83967cde8c0c3b16079fb271e0aff84f9cc20807f4c",
         "scripts/resolve_thread.cjs": "f22800d269b7e50f7c777dfe96e592ae6916e9d0afb27a8f89d621c1e37d3136",
         "scripts/sweep_prior_work.py": "8c894cfa0622be75a6f2f4226dce7a728c1d384bbd7d3a98cfd3c829993a7801",
-        "SKILL.md": "f813530c9b97112580288d55b36e934ef9f2ce94c05b51555435aae5f7f49004"
+        "SKILL.md": "eb44540526969e7f9233559374f3775ac6707053bd1f975b51cbecec8ad3b743"
       },
-      "skillDigest": "dc79c194085fc538a42724fb06d4f11b1fa467de36ac52ed7ada2e3c933c7872"
+      "skillDigest": "30c61c6a12f5f81df5591ce5084039046536ff8947a509234714d90c36b0d434"
     },
     "ws-spec-provider-local": {
       "files": {
@@ -467,9 +472,9 @@
         "scripts/detect_specs_dir.py": "ba3c0c4f1c5eb3c6b38ec017acaf01c882bb269e1afad0c455e9b0e538ac77f7",
         "scripts/register_local_spec.cjs": "9dc2136eade69ab7aca91268ec4a150ee817b6b1b302a0053b115406970cb474",
         "scripts/register_local_spec.py": "8debfd12d6abe80a30c7ecb9205d0f7b6709c1fdde12fc896f6bf0a17963a8be",
-        "SKILL.md": "4582fd1726617e28457ee9830912eb8fb5a1b5b0a6472a27a120b824408cd76d"
+        "SKILL.md": "4d7056d02a74e97bc0c9cc34c291f0794cb217fb7c7ccbdb1442a271e4575b55"
       },
-      "skillDigest": "79a1889c4bea9b6d7b941b1b0a69e36d75daaf0ecf94651124b01685ae4d02a5"
+      "skillDigest": "05877093463e58cfcd83b39e49f4e0c51335074fa4e965eca0d55e8bee9648f6"
     },
     "ws-spec-to-pr": {
       "files": {
@@ -483,7 +488,7 @@
         "protocols/progress-board.md": "70b39d7711dbb8c3d8868b37e125a9630c63e4e22dff7923c51af9f5ab89ba58",
         "protocols/state-hygiene.md": "0b01c53291cbce2e068a8e0b80f0d3eaf87264bfdf11c96ee44f518e574c8163",
         "README.md": "cc5ce7a1b4f425963af97d9b236cbc01baa4803a8ec9984ea33ce454169347ee",
-        "scripts/ac_ledger.cjs": "95ec7465a647cfecd3b20351217f11a7fedfaea90b642005281a9fd5b87ad844",
+        "scripts/ac_ledger.cjs": "9508c23e4340a73057687c2083288eaa302a5bcd961e0dbd3146b64f17613bab",
         "scripts/ado-workitem-to-spec.py": "e9c9c07f3b19606fa3b986c0a8d66d388a7a2bbb2af83dee4e3a188fbbe1e460",
         "scripts/build_dispatch_context.cjs": "5ae13b39c8bb39a0be3e73780931a48438a8448728935097310171b1beed4a60",
         "scripts/check_memory_conflict.py": "323314cafd55d1aef19062101c32d74f2be7c0291b4fc46bc25a1e2591c39eb6",
@@ -498,11 +503,11 @@
         "scripts/validate_state.cjs": "a548517237dee8462f3ab070a1c7f4a3c79961ee1c7e00f0d4dfc26935da189a",
         "scripts/validate_state.py": "337aa2d349b2a04b244025b85c8a5fe14bb21a40a77396b7c8434417eeb4092b",
         "scripts/write_sequential_dag.cjs": "32f83f2cb95d85520a11015bff562a7efd18d97844fafe9ee3cb3c69681a679c",
-        "SKILL.md": "39e681934754d9026e4972974f65660b33743348460f3544b384a5a29f327003",
+        "SKILL.md": "18dcae216e1befc375a79125c0d6b97526014d1b765ce815b82fb9548dfe0a3e",
         "STEP-DISPATCH.md": "5cd42694fb915affecdaaea7c48f60ff5587cdf1df11045e0d983980309bfc6e",
         "ws-spec-to-pr-run-test.md": "d23e3a2e6ee392bd598539b3ee89d709656142e49f8290b7400b9d25278d94ea"
       },
-      "skillDigest": "a919ae28ab216ec774f1b01c8b522ac2a66278964401af33e78d318f1ff10b21"
+      "skillDigest": "5e7d132a0ca66255ca87b402807a7d42d2c634bf2f6e3ea59998c589686945ec"
     },
     "ws-spec-to-pr-lite": {
       "files": {
@@ -511,48 +516,48 @@
         "scripts/update_state.py": "690739a90528736479c396840b1f5adc67dd792aaddb92e42c5122ac0e646cd9",
         "scripts/validate_state.cjs": "506cf4dae9da6605843374733daedab8733548c36aa878ad37bf266905cc22fc",
         "scripts/validate_state.py": "898006751edc0ab2393423ac8c57c7dd57d822e50d83aaf2058f35fee6516888",
-        "SKILL.md": "7ce42a00e4fdbd59ee22ba67e1db9ca9e96a48e6b75344a2feec0269a594f759"
+        "SKILL.md": "13c731bfec0b07b03b07f23c2b3e9077efe7ed03b1e8acc8d034635f2085cbe6"
       },
-      "skillDigest": "219ebfde2b46c0a2e742aa0c4d54dbb532049288e562852fcf142146e6ec7436"
+      "skillDigest": "c1bad8c8d4374c5c5a77b65b74f341eeb592eb98ca64eed43c077c3172a1be1b"
     },
     "ws-spec-update": {
       "files": {
         "evals/evals.json": "1b3553307f8525cd49a446f16f740483744d338d6af75a85394bdab40d84cfb8",
-        "SKILL.md": "88a0384cf63ad291f0959fd17bd8b3eb0cfdab961b7bd67281acad086e978f71"
+        "SKILL.md": "b28a4e862433d43aadd997113da5669dcc20e49120bb34a20d9d7456d485212a"
       },
-      "skillDigest": "15f682879d5344228f1d292d22c3204dc1b49ec48387bb0176f76156592f09af"
+      "skillDigest": "abbef9e59639dde295d46e3e3a79dad4e240eccb6c30a9331e84facc940fe12a"
     },
     "ws-spec-write": {
       "files": {
         "evals/evals.json": "78a994ee05d916fe2c383ead18506b3ce6690805cdd42f156b45b87dc2a79dc5",
-        "SKILL.md": "4d9e6f62203801f245fbb574e70197ec11feab684d6bc6fb499d923679869bb4"
+        "SKILL.md": "9dbb1e322c7ea565dfdd9d0c8809d644656bbfc3c147cb79914e641687b39c3b"
       },
-      "skillDigest": "44852fce2a2d18df375aa553ef6c2c8356db2654bab17dbcd7fb5cf1fd9b3631"
+      "skillDigest": "9b90e79aa9f59246f90879bd7e7ac434aac1285e91319b3b57d03ef423ffd13c"
     },
     "ws-task-lifecycle": {
       "files": {
         "evals/evals.json": "29c7ea9b29d75f4c554cdc7bd375ad7e94a8d0e09081a384c47004a5d01b043d",
-        "SKILL.md": "5e97707e969b48f3fe8330ceb4ca499db8b2aa6934afcdfe64663263af11aff6"
+        "SKILL.md": "11f868f3ab7992279b7cad27787306b4610015016143e4e60c34ad1de09ba3b9"
       },
-      "skillDigest": "d0fb6038e3b16cd8330a72f9de6e3fc51b5992ebc81fad56780b50ecb95e9002"
+      "skillDigest": "289209d92074e988b648ab8b753ed69a70cd29494412446313dd75e1a15ca83d"
     },
     "ws-tdah": {
       "files": {
         "evals/evals.json": "4e836f8c63876660ca739b79754a73b40a4c06c8ae21709a1752d393b0c2c01c",
         "EXAMPLES.md": "4b5cb053b84d728987bda9b273cbe56961ac73dd9ca9b4646dea6072b52a3f15",
         "README.md": "bbd9399634db32da24df5102bf3dadfb35047acf8c8b2a4a2de53acc267e8fbf",
-        "SKILL.md": "39aa586556e2cbdcf25f6d48ba3a081d546dca21f62d0579843b74983a984cad"
+        "SKILL.md": "88ec8dde095d8cccd9ee0bcc9cf06e36cc4618849e616f13266a4918a148c4bd"
       },
-      "skillDigest": "3eb3c9715d8e863143c752eac9a0aedee07d0f92e623b4d9f75b26cdcb78ed0e"
+      "skillDigest": "c956dc1ce9e9717eee521d53fc2108a0d8809c532e37c238f051fef908e8bb0b"
     },
     "ws-testing": {
       "files": {
         "evals/evals.json": "b05e7fb7b7a3aa4d4e1baad7c1f265872245b909fa800a8f5e57be3341d6f6a2",
         "scripts/probe_test_surface.cjs": "838b11544b3e1f5416658cbbb8bf0d3b296ca0e6d5cb193135ebbb2a5dcbe8f0",
         "scripts/run_sabotage.py": "736fc866ee64d42353bfaed9d47bc1d04569162e9a3a6c53c3f34eeb027e23fb",
-        "SKILL.md": "f4ab8633d4da51224874f6b11be81606bfa0d47d44360ff3729a230537d6c000"
+        "SKILL.md": "69d58ff64b60e45b05a847a495a7a5307573a098f8b32106ea1fcebba495ae14"
       },
-      "skillDigest": "9a4b8745a3045b35065dec3bc0b99dd5b5852b69eaa00b2986ce55808f209d6c"
+      "skillDigest": "65e9c14150f59be5623cee862644674237206aac59c44217065fbf1efd1f7b6f"
     },
     "ws-write-a-skill": {
       "files": {
@@ -560,9 +565,9 @@
         "evals/evals.json": "a41127f34401c2297ca3c36cf955b18cea99d9aaa1a8b7095da3f4151cd9ed85",
         "GLOSSARY.md": "fa6c499a74cefa5ccd90f961a8bcf9206ebf9ea6bf6b30cb30283a59d21dda11",
         "SKILL_AUTHORING.md": "83f2a0aec8cd6a6988554c7bdc047852203237daf1f4ae41ada5875557603f42",
-        "SKILL.md": "8c3d8827f1e2ce35f8ed16eed39d567b3fe8fe28dc68c5f545bcfa7b4f5be921"
+        "SKILL.md": "18f947e86f48f6125341513a53d25839c98a407e921ce195922fa4cd3024750e"
       },
-      "skillDigest": "50b9ab6bad9702cd5be174892c5bdd3f7c8c030c60d2539b41ce2688f0df7444"
+      "skillDigest": "ce3e782f4c0d29367fe5b35ceea76cd50489d69072625c1d0c39b3393022b0a2"
     }
   }
 }

@@ -41,6 +41,7 @@
 | **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |
 | **Two speeds, one config** | Standard and lite share `config.json`. Isolated state (`workflowType`); no cross-resume. New runs ask stay-on-branch or `feat/{slug}`. |
 | **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Fresh `ws-configure-project` / `config.json.example` seed `defaults.verboseMode: true` (reasoned start-of-step preview); omitted or `false` at runtime is silent. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
+| **Reviewer-aligned gates** | Structured stack invariant rules (`ws-shared/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run gate (`localReviewCommand`), and initial framework traps seeded in `MEMORY.md`. |
 
 ### Roadmap
 
