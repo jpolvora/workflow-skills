@@ -91,6 +91,10 @@
           "default": 80,
           "description": "Minimum mutation score percent (killed/(killed+survived)*100) required to pass Step 7 when mutation runs."
         },
+        "localReviewCommand": {
+          "type": "string",
+          "description": "Optional local code review runner command (e.g. cursor-reviewer dry-run). When set, ws-code-review offers or executes a pre-PR local review pass before Step 8 ship."
+        },
         "testGlobs": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
@@ -387,6 +391,10 @@
         "dryRunCommand": {
           "type": "string",
           "description": "Shell command run from the consumer repo root by ws-preview. Set via ws-configure-project --section preview (infers from harness docs when possible) or manually. Empty/unset → skill stops (no default backend)."
+        },
+        "localReviewCommand": {
+          "type": "string",
+          "description": "Optional local code review runner command (e.g. cursor-reviewer dry-run). When set, ws-code-review offers or executes a pre-PR local review pass before Step 8 ship."
         }
       }
     },

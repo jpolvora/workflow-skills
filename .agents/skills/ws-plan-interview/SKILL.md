@@ -1,7 +1,7 @@
 ---
 name: ws-plan-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.3.63
+version: 0.3.64
 disable-model-invocation: true
 invocation_names:
   - plan-interview
@@ -50,7 +50,7 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 
 ## Steps
 
-1. **Audit** — Scan sections 0-8 of the plan, run scenario probes (soft-deletion, concurrency, list sizing, rate limits), and register each finding in a `gap_registry` (`id`, `class`, `section`, `gap`, `recommendation`, `status`, `dependsOn`). When the source spec contains `## Visual References`, **Read** each `ok` image listed (skip PDF) before auditing UI/layout assumptions. Classify each gap `blocking` (prevents development or changes AC) or `non-blocking` (quality/optimization, apply via defaults). Audit the plan against the spec `## Definition of Ready (DoR)`. Register a **blocking** gap when a task lacks a failing test baseline (no named red test or negative scenario before implementation).
+1. **Audit** — Scan sections 0-8 of the plan, run scenario probes (soft-deletion, concurrency, list sizing, rate limits), and register each finding in a `gap_registry` (`id`, `class`, `section`, `gap`, `recommendation`, `status`, `dependsOn`). When the source spec contains `## Visual References`, **Read** each `ok` image listed (skip PDF) before auditing UI/layout assumptions. Classify each gap `blocking` (prevents development or changes AC) or `non-blocking` (quality/optimization, apply via defaults). Audit the plan against the spec `## Definition of Ready (DoR)` and mandate the Section 6 Stack & Security Invariants Verification Plan. Register a **blocking** gap when a task lacks a failing test baseline (no named red test or negative scenario before implementation) or when touched framework boundaries lack explicit invariant checks (authorization, async safety, DTO validation, subscription cleanup).
    - Done when: every section 0-8 has been scanned and every finding is registered.
 
 2. **Resolve** — For each registered gap, run the project-context sweep. On a confident project hit: close the gap, set `resolutionSource: project`, and append evidence (path(s) + short rationale) to the registry (embed in `resolution` if the orch only reads that string). Prefer project-sourced answers over model preference. Non-blocking gaps with no project hit: apply sensible defaults (`resolutionSource: assumed-default`) without escalating.

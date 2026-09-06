@@ -1,7 +1,7 @@
 ---
 name: ws-spec-write
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.3.63
+version: 0.3.64
 disable-model-invocation: true
 invocation_names:
   - spec-write
@@ -56,11 +56,11 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Every AC must have clear pass/fail conditions suitable for agentic coding and verification.
    - Detail error handling, edge cases, input validation, and boundary conditions explicitly.
    - Draft at least one **negative failure** scenario per feature (expected red test or error state).
-3. **Validation & Observation Notes:**
+3. **Validation & Observation Notes & Negative Scenarios:**
    - Record named commands, logs, or scores under `## Validation & Observation Notes` → Telemetry.
-   - List negative failure scenarios under `### Negative & Failing Test Scenarios`.
+   - List negative failure scenarios under `### Negative & Failing Test Scenarios`. When a stack rule pack applies (from `{sharedDir}/stacks/`), inject at least one negative scenario validating stack safety and invariant compliance (e.g. unauthenticated access rejection, sync-over-async deadlock prevention, or permission gate enforcement).
 4. **Definition of Ready:**
-   - Fill `## Definition of Ready (DoR)` with bounded scope, atomic criteria, failure modes, observation telemetry, and zero open blockers (or `N/A because`).
+   - Fill `## Definition of Ready (DoR)` with bounded scope, atomic criteria, failure modes, observation telemetry, and zero open blockers (or `N/A because`). For detected project stacks, inject applicable architectural and security invariants (authorization boundaries, concurrency safety, DTO validation, subscription cleanup).
 5. **Preserve Human Origin (`## Original Issue Context`):**
    - For remote tracker issues, preserve the original human-authored title, description, and discussion comments verbatim in `## Original Issue Context` so humans can trace intent back to the source issue.
 6. **Frontmatter Integrity:**
@@ -80,10 +80,10 @@ When writing a spec derived from a remote tracker issue or raw human description
 3. **Design intent (modification tasks)** — Before treating a behavior gap as a bug, inspect `git log -p -S "<symbol>"` and/or `git log -L :<func>:<file>`. Record `### Design Intent` under Notes or Original Issue Context (intentional constraint vs accidental gap). Greenfield new files: skip with reason. Mandatory for "fix bug / restore behavior" wording.
    - Done when: design-intent recorded or skip reason documented.
 
-4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
+4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Detect the project stack from `config.json` / stack markers / `rules.stackFile` and load applicable stack invariants from `{sharedDir}/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`). Automatically inject applicable stack architectural and security invariants into `## Definition of Ready (DoR)` and `### Negative & Failing Test Scenarios`. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
    - **Preserve Visual References:** When the input spec already has `## Visual References` and `{specStem}.assets/` on disk, keep that section and repo-relative asset paths unchanged in the written spec (you may add captions or AC cross-refs; do not drop the section or revert to remote URLs).
    - **Gray area:** when a user-facing choice has two or more valid product options, write the companion at the path from `resolve_spec_path.cjs --slug {slug} --context` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
-   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR, observation notes, `## Original Issue Context` (when derived from tracker issue), `## Visual References` when present on input with a populated `.assets/` sidecar, and `## Notes`.
+   - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR with stack invariants, observation notes with negative scenarios, `## Original Issue Context` (when derived from tracker issue), `## Visual References` when present on input with a populated `.assets/` sidecar, and `## Notes`.
 
 5. **Write** — Ensure `plans.enforceSpecPrefixOrdering` exists (see Write path), then resolve `SPEC_PATH` (and `CONTEXT_PATH` when a gray area exists):
 

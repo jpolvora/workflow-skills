@@ -1,6 +1,6 @@
 ---
 name: ws-secrets-leak-review
-version: 0.3.63
+version: 0.3.64
 description: Secrets & PII leak auditor with an optional runtime-resolving pre-commit hook for local or global installs.
 allowed-tools: Read, Grep, Glob
 invocation_names:

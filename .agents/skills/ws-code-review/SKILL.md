@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.3.63
+version: 0.3.64
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -65,13 +65,18 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 ## Steps
 
-1. **Detect stack & diff**: read `config.json.stack` to scope backend/frontend layers; exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
-   - Done when: the in-scope modified file list is known.
+1. **Detect stack, diff & rule pack**: read `config.json.stack` and load the applicable project stack invariant rule pack from `{sharedDir}/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`, or custom override in `$PWD/.agents/skills/ws-shared/stacks/`). Exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
+   - Done when: the in-scope modified file list and active stack invariant rule pack are known.
 
-2. **Triage**: flag lines with defect hypotheses; discard cosmetic nits, untouched pre-existing code, and low-risk UI without security surface.
+2. **Phase 1: Triage**: adversarial scan of the committed diff against loaded stack invariant rules and domain constraints. Flag lines with concrete defect hypotheses; discard cosmetic nits, untouched pre-existing code, and low-risk UI without security or concurrency surface.
    - Done when: a hypothesis list of candidate findings exists.
 
-3. **Investigate**: for each hypothesis, complete all four proof steps: Evidence Read, Failure Scenario, Missing Protection, Discards. Drop any hypothesis that cannot complete all four.
+3. **Phase 2: Adversarial Investigation (4-part Proof of Exploitability)**: for each hypothesis, document and prove all four parts:
+   1. **Read Evidence**: exact committed `file:Lstart-Lend` ground truth.
+   2. **Executable Failure Scenario**: concrete runtime path, user action, or concurrent payload triggering the failure.
+   3. **Missing Protection**: the specific framework attribute, guard, policy, DTO validation, or unsubscription omitted.
+   4. **Discards**: why alternative defenses, upstream middleware, or non-obvious caller contracts do not mitigate the defect.
+   Drop any hypothesis that cannot satisfy all four proof parts.
    - Done when: every retained finding has all four proof steps documented.
 
 4. **Generalize defect class**: for each proven finding, search the full diff **and sibling modules beyond the diff** for the same vulnerability/pattern; report as a class finding or named exemption (path + reason). Critical if an unfixed sibling of a proven defect remains without exemption.
@@ -81,13 +86,14 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
    - Read compiled `{sharedDir}/MEMORY.md` entries (titles, Module/Layer tags, and `DO NOT` / `INSTEAD DO` directives) against the in-scope modified file list and plan keywords; report confirmed violations as Warning or Critical by severity.
    - Done when: memory entries have been swept against the diff, and any confirmed violations are listed.
 
-
-
-6. **Check invariants**: cross-check `config.json.invariants` / `config.json.rules`: tenancy filters, DB-migrations-CLI-only, domain rules, React hook cleanup/dependency arrays, and i18n keys present in every locale from `config.json.stack.frontend.i18n.locales[]`.
+6. **Check invariants & Local Reviewer Dry-Run**:
+   - Run deterministic scan `node {skillsRoot}/ws-shared/scripts/scan_stack_invariants.cjs` against modified files.
+   - Cross-check `config.json.invariants` and the project stack rule pack (`{sharedDir}/stacks/`).
+   - **Local CI Reviewer Dry-Run Gate:** When `cursor-reviewer` or an equivalent review runner is detected in the workspace (`scripts/cursor-reviewer` or `config.json.verification.localReviewCommand` / `config.json.preview.localReviewCommand`), execute the local dry-run command (`--dry-run` against the diff) in read-only mode to catch reviewer-aligned defects before Step 8 ship. Ingest any reported critical issues into the review findings.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) for Weakened Checks, False Completion, Scope Creep, Unauthorized Action. Report detected frauds as Critical or Warning.
-   - Done when: each applicable checklist item is checked.
+   - Done when: stack invariant scan, local reviewer dry-run (if configured/detected), and invariant checklists are evaluated.
 
-7. **Write report**: draft the report, then persist it with `write_review_round.cjs` (stamps step-artifact metadata: `step`, `slug`, `workflowId`, `status`, `startedAt`, `endedAt`, `acRefs`). No findings: write `No feedback` and stop (clean). Every finding heading is `### CR-NNN [Critical|Warning|Suggestion] open|closed path:Lstart-Lend`; retain the same stable id in later rounds and close it only after an earlier round opened it. An ineffective assertion, test, gate, or check is minimum Warning. Include description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?** (workflow: answer follows the loop table above).
+7. **Write report**: draft the report, then persist it with `write_review_round.cjs` (stamps step-artifact metadata: `step`, `slug`, `workflowId`, `status`, `startedAt`, `endedAt`, `acRefs`). No findings: write `No feedback` and stop (clean). Include `### Stack Invariant Compliance` section documenting checklist status. Every finding heading is `### CR-NNN [Critical|Warning|Suggestion] open|closed path:Lstart-Lend`; retain the same stable id in later rounds and close it only after an earlier round opened it. An ineffective assertion, test, gate, or check is minimum Warning. Include description, score `/10`, sibling occurrences, and a `suggestion` block; end with **Apply fixes?** (workflow: answer follows the loop table above).
    - Done when: the report file matches the format described above.
 
 8. **Apply fixes + re-review**: under workflow (and standalone after YES), run the fix → re-review loop (max 3). Each round: surgical fixes via `ws-implement-tasks` `mode=fix`, run `config.json.verification` build/test aliases for touched layers, re-review, update `step-06-{slug}.fix.report.md`, record state/memory. Stop when clean or after round 3 with Pause on residual Critical/Warning.

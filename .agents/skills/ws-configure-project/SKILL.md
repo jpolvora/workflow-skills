@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.3.63
+version: 0.3.64
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -49,10 +49,11 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never commit `config.json`. Autoload enablement gate: see step 6 (Recommended = No / `false`).
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
-5. **Stack companion** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
+5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
    - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
    - If the resolved target is missing: offer **Generate** into `.agents/skills/ws-shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/ws-shared/` unless the user explicitly chose another path.
-   - Done when: config points at an existing companion, or user skipped.
+   - **Framework Anti-Regression Traps:** When configuring project stack, `auto_configure.cjs` automatically detects the framework (`abp-angular`, `nextjs-react`, `typescript-node`, `php-laravel`) and seeds the initial framework traps into `{sharedDir}/MEMORY.md` (idempotent, skipping if already present).
+   - Done when: config points at an existing companion, framework traps seeded if detected, or user skipped.
 
 5b. **Preview dry-run command (optional)** — Run when full interview reaches optional extras (after verification), or immediately for `--section preview`. See [`INTERVIEW.md`](INTERVIEW.md) § Preview. Skip core project interview when `--section preview` only.
    1. Infer candidates (ranked) from harness instructions and local recipes; cite the winning source path in the gate.

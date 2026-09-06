@@ -212,6 +212,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 | Harness integrity | `ws-check-harness` (Phases 0–5c) → 0 critical |
 | Workflow / FSM simulation | `ws-check-workflows`, or `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` |
 | Secrets / PII scan | `ws-secrets-leak-review` |
+| Stack invariant static scan | `node .agents/skills/ws-shared/scripts/scan_stack_invariants.cjs [--stack <name>]` |
 | Adversarial audit of claimed work | `ws-fable-judge` |
 | External agentic reviewer (optional) | § [Local dry-run: agentic code reviewers](#local-dry-run-agentic-code-reviewers) |
 | PR review threads after ship | `ws-fix-pr` / `ws-goal-fix-pr` |

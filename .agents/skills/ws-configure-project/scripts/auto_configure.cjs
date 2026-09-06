@@ -231,6 +231,62 @@ function globExists(repoRoot, pattern) {
   return fileExists(repoRoot, pattern);
 }
 
+const FRAMEWORK_TRAPS = {
+  'abp-angular': {
+    title: 'ABP / Angular: Avoid sync-over-async and template permission bypass',
+    body: `### [Trap] ABP / Angular: Avoid sync-over-async and template permission bypass\n- **Tags:** ABP, Angular, Concurrency, Security\n- **Rule:** DO NOT use .Result, .Wait(), or .GetAwaiter().GetResult() in asynchronous C# methods.\n- **Instead:** INSTEAD DO use async Task and await operations with cancellation tokens to prevent deadlocks.\n- **Rule:** DO NOT omit *abpPermission on interactive Angular buttons or endpoints.\n- **Instead:** INSTEAD DO protect UI buttons with *abpPermission="'Permission.Name'" and endpoints with [Authorize].`,
+  },
+  'nextjs-react': {
+    title: 'Next.js / React: Prevent client credential leak and unhandled hook subscriptions',
+    body: `### [Trap] Next.js / React: Prevent client credential leak and unhandled hook subscriptions\n- **Tags:** Next.js, React, Security, Lifecycle\n- **Rule:** DO NOT import server packages or process.env secrets into 'use client' components.\n- **Instead:** INSTEAD DO keep sensitive credentials in Server Components or Route Handlers.\n- **Rule:** DO NOT attach listeners or intervals in useEffect without returning a cleanup function.\n- **Instead:** INSTEAD DO return a cleanup function () => { clearInterval(id); } from useEffect.`,
+  },
+  'typescript-node': {
+    title: 'TypeScript / Node: Avoid unchecked any and floating promises',
+    body: `### [Trap] TypeScript / Node: Avoid unchecked any and floating promises\n- **Tags:** TypeScript, Node, Types, Concurrency\n- **Rule:** DO NOT use unchecked any or as any type assertions without runtime narrowing.\n- **Instead:** INSTEAD DO use precise interfaces, unknown with type guards, or Zod schemas.\n- **Rule:** DO NOT leave Promises floating without await, void, or .catch().\n- **Instead:** INSTEAD DO await every Promise or handle rejections explicitly.`,
+  },
+  'php-laravel': {
+    title: 'PHP / Laravel: Enforce policy authorization and prevent mass assignment',
+    body: `### [Trap] PHP / Laravel: Enforce policy authorization and prevent mass assignment\n- **Tags:** PHP, Laravel, Security, Validation\n- **Rule:** DO NOT mutate resources in controllers without $this->authorize() checks.\n- **Instead:** INSTEAD DO call $this->authorize('update', $model) or use route can: middleware.\n- **Rule:** DO NOT accept raw unvalidated inputs or use unescaped DB::raw().\n- **Instead:** INSTEAD DO use FormRequest validation and parameterized query bindings.`,
+  },
+};
+
+function detectFrameworkStack(repoRoot, pkg) {
+  const deps = { ...(pkg?.dependencies || {}), ...(pkg?.devDependencies || {}) };
+  if (deps['@abp/ng.core'] || deps['@abp/ng.theme.shared']) return 'abp-angular';
+  if (deps['next']) return 'nextjs-react';
+  if (globExists(repoRoot, '*.sln') || globExists(repoRoot, '*.slnx') || globExists(repoRoot, '*.csproj')) {
+    if (fileExists(repoRoot, 'angular.json') || deps['@angular/core']) return 'abp-angular';
+  }
+  if (fileExists(repoRoot, 'artisan') || fileExists(repoRoot, 'composer.json')) {
+    return 'php-laravel';
+  }
+  if (pkg || fileExists(repoRoot, 'tsconfig.json')) {
+    return 'typescript-node';
+  }
+  return null;
+}
+
+function seedFrameworkTraps(sharedDir, framework, dryRun) {
+  if (!framework || !FRAMEWORK_TRAPS[framework]) return false;
+  const memoryFile = path.join(sharedDir, 'MEMORY.md');
+  const trap = FRAMEWORK_TRAPS[framework];
+  let content = '';
+  if (fs.existsSync(memoryFile)) {
+    content = fs.readFileSync(memoryFile, 'utf8');
+    if (content.includes(trap.title)) {
+      return false;
+    }
+  } else {
+    content = '# Memory\n\n';
+  }
+  if (!dryRun) {
+    fs.mkdirSync(path.dirname(memoryFile), { recursive: true });
+    const separator = content.endsWith('\n\n') ? '' : content.endsWith('\n') ? '\n' : '\n\n';
+    fs.writeFileSync(memoryFile, `${content}${separator}${trap.body}\n`, 'utf8');
+  }
+  return true;
+}
+
 function schemaDefault(schema, dotPath) {
   const parts = dotPath.split('.');
   let node = schema;
@@ -693,6 +749,13 @@ function main() {
     written = true;
   }
 
+  const pkg = readPackageJson(repoRoot);
+  const detectedFramework = detectFrameworkStack(repoRoot, pkg);
+  let trapsSeeded = false;
+  if (!args.section || args.section === 'stack') {
+    trapsSeeded = seedFrameworkTraps(sharedDir, detectedFramework, args.dryRun);
+  }
+
   const result = {
     ok,
     sectionOk: args.section ? sectionGaps.length === 0 : undefined,
@@ -704,6 +767,8 @@ function main() {
     written,
     createdFromExample,
     stats,
+    detectedFramework,
+    trapsSeeded,
     requiredGaps: gaps,
     sectionRequiredGaps: args.section ? sectionGaps : undefined,
     changes: details.filter((d) => d.action === 'filled' || d.action === 'overwritten'),
@@ -716,6 +781,7 @@ function main() {
   } else {
     console.log(`auto-configure ${args.section || 'all'}: filled=${stats.filled} overwritten=${stats.overwritten} skipped=${stats.skipped} unresolved=${stats.unresolved} written=${written}`);
     for (const c of result.changes) console.log(`  + ${c.path} (${c.source})`);
+    if (trapsSeeded) console.log(`  + seeded framework traps into MEMORY.md for stack: ${detectedFramework}`);
     if (result.unresolved.length) {
       console.log('unresolved (no detection/default — fill manually):');
       for (const u of result.unresolved) console.log(`  ? ${u}`);

@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.63** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.3.64** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 | Doc | Purpose |
 |-----|---------|
@@ -138,6 +138,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
 | Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-plan-interview` / `ws-implement-tasks` / `ws-plan-verify` |
+| Reviewer-aligned implementation gates: structured stack invariant rules (`ws-shared/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run adapter (`localReviewCommand`), and initial framework traps in MEMORY.md | `ws-shared` / `ws-spec-write` / `ws-plan-write` / `ws-implement-tasks` / `ws-plan-verify` / `ws-code-review` / `ws-configure-project` |
 
 Every entry path — free text, local file, GitHub issue, Azure work item — produces the spec of record under `{specsDir}` **before** any plan artifact exists. Re-fetching refuses to clobber a differing spec unless `--force` is passed.
 

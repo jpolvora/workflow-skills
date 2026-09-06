@@ -1,7 +1,7 @@
 ---
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
-version: 0.3.63
+version: 0.3.64
 invocation_names:
   - spec-format
   - ws-spec-format
@@ -30,7 +30,7 @@ CLI: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs [--help] [--mod
 ## Review (Done when report emitted; no edit without approval)
 
 1. Read `*.spec.md` (or `{us-dir}/`).
-2. Validate frontmatter, required sections, AC quality per [`FORMAT.md`](FORMAT.md). Tracker specs (`github` / `azure-devops`) must include `### Prior Work Sweep` when sweep ran. Modification/bugfix specs must include `### Design Intent` or documented greenfield skip. New specs: authoring-mode closure (`## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, `## Validation & Observation Notes`).
+2. Validate frontmatter, required sections, AC quality per [`FORMAT.md`](FORMAT.md). Tracker specs (`github` / `azure-devops`) must include `### Prior Work Sweep` when sweep ran. Modification/bugfix specs must include `### Design Intent` or documented greenfield skip. New specs: authoring-mode closure (`## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)` incorporating applicable stack invariants, and `## Validation & Observation Notes` with `### Negative & Failing Test Scenarios`).
 3. Cross-check architecture docs when present (`CONTEXT.md`, stack file, `config.json.domain`).
 4. Emit check table (Frontmatter / Description / ACs → OK|FAIL + fix).
 5. Edit only on explicit `apply fixes` / `format`.
