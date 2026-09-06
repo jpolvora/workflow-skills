@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Trust a local `verify-integrity OK` when untracked files sit under `.agents/skills/` — the walker hashes on-disk bytes (not git state), so local-only files pollute the manifest and CI fails.
 - **INSTEAD DO**: Move untracked skill-tree files aside, regenerate, verify, commit, then restore them; confirm the digest actually changed in the commit.
 
+### [2026-09-06] Bounded attribute and modifier matching in regex AST scanners
+- **Layer**: `harness`
+- **Module**: `ws-shared / scan_stack_invariants.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/scan_stack_invariants.cjs`
+- **Scenario / Context**: Scanning multi-class or multi-method source files (C#, PHP) for authorization attributes or method bodies using regex.
+- **DO NOT**: Take fixed backward line slices (e.g. `idx - 6`) that cross class or block boundaries, or assume strict method modifier ordering without supporting `virtual`, `override`, `sealed`, `async`, or new keywords.
+- **INSTEAD DO**: Scan backwards only through contiguous attribute/annotation lines stopping at non-attribute statements or block closers (`}`), allow optional modifier groups (`(?:(?:virtual|override|sealed|static|new|async)\s+)*`), and bound method body searches by stopping before subsequent method declarations.
+
 ### [2026-09-06] Auto-configure detection precedence and fail-closed exit
 - **Layer**: `harness`
 - **Module**: `ws-configure-project / auto_configure.cjs`
@@ -32,6 +41,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Review threads on PR #281 showed `--auto` emitting a Node-labelled stack with dotnet verification aliases in polyglot repos, and exiting 0 while required gaps remained.
 - **DO NOT**: Let later stack-detection blocks unconditionally overwrite `verification.*` aliases set by higher-precedence stacks, or exit 0 when `requiredGaps` is non-empty.
 - **INSTEAD DO**: Guard every stack's verification writes with `getByPath(wanted, ...) === undefined` (dotnet/go/rust, matching the python branch); `process.exit(1)` when `!ok`; cover with polyglot and gaps-remain fixtures.
+
+### [2026-09-06] Accurate fixed-column slicing for git porcelain status parsing
+- **Layer**: `harness`
+- **Module**: `ws-shared / scan_stack_invariants.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/scripts/scan_stack_invariants.cjs`
+- **Scenario / Context**: Parsing `git status --porcelain` output to find modified/untracked files.
+- **DO NOT**: Trim each line before slicing or use fixed string offsets on trimmed porcelain lines (`line.trim().slice(2)`), which corrupts paths for unstaged changes (e.g. `' M file.ts'` trimmed becomes `'M file.ts'` where offset 2 cuts into the filename).
+- **INSTEAD DO**: Inspect fixed status columns directly on untrimmed lines (`line.slice(0, 2)`), slice from column 3 onwards (`line.slice(3).trim()`), and resolve rename/copy destination paths by splitting on `' -> '`.
 
 ### [2026-09-04] Step 4 pre-advance docs must name skipQualityGates
 - **Layer**: `harness`
