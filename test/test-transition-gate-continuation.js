@@ -45,8 +45,8 @@ assert.match(
 );
 assert.match(
   gates,
-  /Native modal gate.*returns?\s+\*\*Next\*\*.*same turn/s,
-  'gates.md requires same-turn dispatch after native Next',
+  /Native modal gate.*recommended advance option from rule 7.*same turn/s,
+  'gates.md requires same-turn continuation for any native recommended advance option',
 );
 assert.match(
   gates,
@@ -91,8 +91,8 @@ for (const [name, body] of [
   assert.match(body, /One Step Per Turn/, `${name} keeps single-turn cadence`);
   assert.match(
     body,
-    /native modal.*Next.*same turn/i,
-    `${name} continues in the same turn after native Next`,
+    /native modal.*recommended advance option.*same turn/i,
+    `${name} continues in the same turn for any native recommended advance option (not Next-only)`,
   );
   assert.match(
     body,
@@ -111,8 +111,8 @@ assert.match(
 // PROTOCOLS.md transition section carries the same continuation wording.
 assert.match(
   protocols,
-  /Native modal gate returning \*\*Next\*\*.*same turn/s,
-  'PROTOCOLS.md continues in the same turn after native Next',
+  /Native modal gate returning any recommended advance option.*same turn/s,
+  'PROTOCOLS.md continues in the same turn for any native recommended advance option',
 );
 assert.match(
   protocols,
