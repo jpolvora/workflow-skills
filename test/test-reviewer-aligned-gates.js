@@ -149,6 +149,88 @@ try {
   assert(fpViolations.length === 2, `detected exactly 2 floating promises (got ${fpViolations.length})`);
   assert(fpViolations[0].line === 1 && fpViolations[1].line === 2, 'lines 1 and 2 flagged, void/const/await lines not flagged');
 
+  // 6. Git status porcelain parsing (unstaged ' M ...' and rename 'R  old -> new')
+  const gitTmp = mkTmp('ws-git-status-');
+  cp.spawnSync('git', ['init'], { cwd: gitTmp, stdio: 'ignore' });
+  cp.spawnSync('git', ['config', 'user.name', 'test'], { cwd: gitTmp, stdio: 'ignore' });
+  cp.spawnSync('git', ['config', 'user.email', 'test@example.com'], { cwd: gitTmp, stdio: 'ignore' });
+  fs.writeFileSync(path.join(gitTmp, 'clean.ts'), 'const a = 1;\n');
+  fs.writeFileSync(path.join(gitTmp, 'old.ts'), 'const b = 1;\n');
+  cp.spawnSync('git', ['add', '.'], { cwd: gitTmp, stdio: 'ignore' });
+  cp.spawnSync('git', ['commit', '-m', 'init'], { cwd: gitTmp, stdio: 'ignore' });
+  // Unstaged modification (produces ' M clean.ts')
+  fs.writeFileSync(path.join(gitTmp, 'clean.ts'), 'const a = (x as any).foo;\n');
+  // Staged rename (produces 'R  old.ts -> renamed.ts')
+  cp.spawnSync('git', ['mv', 'old.ts', 'renamed.ts'], { cwd: gitTmp, stdio: 'ignore' });
+  fs.writeFileSync(path.join(gitTmp, 'renamed.ts'), 'const b = (y as any).bar;\n');
+  const gitRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', gitTmp, '--stack', 'typescript-node', '--json'], { encoding: 'utf8' });
+  assert(gitRes.status === 1, 'scan_stack_invariants discovers unstaged and renamed files via git status');
+  const gitJson = JSON.parse(gitRes.stdout);
+  assert(gitJson.violations.some((v) => v.file.includes('clean.ts')), 'unstaged clean.ts with leading space status discovered and scanned');
+  assert(gitJson.violations.some((v) => v.file.includes('renamed.ts')), 'renamed file destination discovered and scanned');
+
+  // 7. C# method modifier variations (virtual, override, sealed, async, custom return type)
+  const csModTmp = mkTmp('ws-cs-mod-');
+  fs.writeFileSync(path.join(csModTmp, 'ModifierController.cs'), [
+    'public class ModifierController : AbpController {',
+    '    public virtual async Task<IActionResult> ActionVirtual() { return null; }',
+    '    public override async Task ActionOverride() { }',
+    '    public sealed async ValueTask<int> ActionSealed() { return 1; }',
+    '    [Authorize]',
+    '    public async Task<int> ActionAuthorized() { return 2; }',
+    '}',
+  ].join('\n'));
+  const csModRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', csModTmp, '--stack', 'abp-angular', '--json'], { encoding: 'utf8' });
+  assert(csModRes.status === 1, 'scan_stack_invariants exits 1 on modifier variations lacking authorize');
+  const csModJson = JSON.parse(csModRes.stdout);
+  const csModViolations = csModJson.violations.filter((v) => v.rule === 'missing-endpoint-authorization');
+  assert(csModViolations.length === 3, `flags all 3 unauthorized modified actions (got ${csModViolations.length})`);
+
+  // 8. Angular button [disabled] does not exempt from *abpPermission
+  const ngDisTmp = mkTmp('ws-ng-dis-');
+  fs.writeFileSync(path.join(ngDisTmp, 'action.component.html'), [
+    '<button [disabled]="isSubmitting" (click)="submit()">Submit</button>',
+    '<button *abpPermission="\'App.Create\'" (click)="create()">Create</button>',
+  ].join('\n'));
+  const ngDisRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', ngDisTmp, '--stack', 'abp-angular', '--json'], { encoding: 'utf8' });
+  assert(ngDisRes.status === 0, 'scan_stack_invariants exits 0 when violations are warnings only');
+  const ngDisJson = JSON.parse(ngDisRes.stdout);
+  const ngDisViolations = ngDisJson.violations.filter((v) => v.rule === 'angular-missing-abp-permission');
+  assert(ngDisViolations.length === 1 && ngDisViolations[0].line === 1, 'flags line 1 [disabled] button, line 2 with *abpPermission passes');
+
+  // 9. PHP Laravel read actions (index, show) flagged when unauthorized
+  const phpActionsTmp = mkTmp('ws-php-actions-');
+  fs.writeFileSync(path.join(phpActionsTmp, 'OrderController.php'), [
+    '<?php',
+    'class OrderController extends Controller {',
+    '    public function index() { return Order::all(); }',
+    '    public function show($id) { return Order::find($id); }',
+    '    public function create() { return view("orders.create"); }',
+    '    public function edit($id) { return view("orders.edit"); }',
+    '    public function store() { $this->authorize("create", Order::class); }',
+    '}',
+  ].join('\n'));
+  const phpActionsRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', phpActionsTmp, '--stack', 'php-laravel', '--json'], { encoding: 'utf8' });
+  assert(phpActionsRes.status === 1, 'scan_stack_invariants exits 1 when controller read actions lack authorization');
+  const phpActionsJson = JSON.parse(phpActionsRes.stdout);
+  const phpViolations = phpActionsJson.violations.filter((v) => (v.rule || '').includes('laravel-missing-authorize'));
+  assert(phpViolations.length === 4, `flags index, show, create, edit lacking authorize (got ${phpViolations.length})`);
+
+  // 10. TS floating promises with async client namespaces
+  const fpNsTmp = mkTmp('ws-ts-fp-ns-');
+  fs.writeFileSync(path.join(fpNsTmp, 'client-calls.ts'), [
+    'axios.get("/api/users");',
+    'prisma.user.findMany();',
+    'db.query("SELECT 1");',
+    'void axios.post("/api/users", {});',
+    'await client.send();',
+  ].join('\n'));
+  const fpNsRes = cp.spawnSync(NODE, [SCAN_SCRIPT, '--repo-root', fpNsTmp, '--stack', 'typescript-node', '--json'], { encoding: 'utf8' });
+  assert(fpNsRes.status === 1, 'scan_stack_invariants flags floating promises from async client namespaces');
+  const fpNsJson = JSON.parse(fpNsRes.stdout);
+  const fpNsViolations = fpNsJson.violations.filter((v) => v.rule === 'no-floating-promises');
+  assert(fpNsViolations.length === 3, `detected exactly 3 floating client calls (got ${fpNsViolations.length})`);
+
   const implementTasksContent = fs.readFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-implement-tasks', 'SKILL.md'), 'utf8');
   assert(implementTasksContent.includes('stack-invariant-scan: pass | fail'), 'ws-implement-tasks documents stack-invariant-scan');
 
@@ -181,6 +263,8 @@ try {
     description: 'Found .Result call in async method',
   }), '--repo-root', ledgerTmp], { encoding: 'utf8' });
   assert(linkViol.status === 0, `ac_ledger link with --invariant-violation succeeds: ${linkViol.stderr}`);
+  const ledgerContent = JSON.parse(fs.readFileSync(path.join(ledgerTmp, 'ledger.json'), 'utf8'));
+  assert(ledgerContent.invariantViolations[0].message === 'Found .Result call in async method', 'ac_ledger preserves description as message when normalizing invariant violations');
 
   // score boundary step5
   const scoreRes = cp.spawnSync(NODE, [AC_LEDGER_SCRIPT, 'score', '--ledger', 'ledger.json', '--boundary', 'step5', '--repo-root', ledgerTmp], { encoding: 'utf8' });

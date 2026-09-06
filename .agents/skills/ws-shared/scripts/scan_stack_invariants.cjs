@@ -95,9 +95,14 @@ function discoverFiles(repoRoot, providedFiles) {
     const status = spawnSync('git', ['status', '--porcelain'], { cwd: repoRoot, encoding: 'utf8' });
     if (status.status === 0 && status.stdout) {
       for (const line of status.stdout.split('\n')) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith('D ')) continue;
-        const filePath = trimmed.slice(3).trim().replace(/^"|"$/g, '');
+        if (!line || line.length < 4) continue;
+        const x = line[0];
+        const y = line[1];
+        if (x === 'D' || y === 'D') continue;
+        let rawPath = line.slice(3).trim();
+        const arrow = rawPath.lastIndexOf(' -> ');
+        let filePath = arrow !== -1 ? rawPath.slice(arrow + 4).trim() : rawPath;
+        filePath = filePath.replace(/^"|"$/g, '');
         const abs = path.resolve(repoRoot, filePath);
         if (fs.existsSync(abs) && fs.statSync(abs).isFile()) {
           files.add(abs);
@@ -153,7 +158,7 @@ function scanFile(file, stack, repoRoot) {
     if (/class\s+\w+(?:Controller|AppService)\b/.test(content)) {
       lines.forEach((line, idx) => {
         const lineNum = idx + 1;
-        if (/public\s+(?:async\s+)?(?:Task(?:<[\w\s,<>]+>)?|IActionResult|ActionResult)\s+\w+\s*\(/.test(line)) {
+        if (/public\s+(?:(?:virtual|override|sealed|static|new|async)\s+)*(?:Task(?:<[\w\s,<>\[\]]+>)?|IActionResult|ActionResult(?:<[\w\s,<>\[\]]+>)?|void|[\w<>\[\]]+)\s+\w+\s*\(/.test(line)) {
           // Find the nearest enclosing class/record declaration preceding line idx
           let classLineIdx = -1;
           let isControllerOrAppService = false;
@@ -166,13 +171,35 @@ function scanFile(file, stack, repoRoot) {
             }
           }
           if (classLineIdx !== -1 && isControllerOrAppService) {
-            // Check method's preceding lines for authorization attribute
-            const methodPrev = lines.slice(Math.max(classLineIdx + 1, idx - 6), idx).join('\n');
-            const hasMethodAuth = /\[(?:Authorize|AllowAnonymous)[\s(]/.test(methodPrev);
+            // Check method's preceding contiguous attribute lines for authorization
+            let hasMethodAuth = false;
+            for (let m = idx - 1; m > classLineIdx; m -= 1) {
+              const prev = lines[m].trim();
+              if (prev.startsWith('[') && prev.endsWith(']')) {
+                if (/\[(?:.*,)?\s*(?:Authorize|AllowAnonymous)(?:\(.*?\))?\s*(?:,.*)?\]/.test(prev)) {
+                  hasMethodAuth = true;
+                }
+              } else if (prev === '' || prev.startsWith('//') || prev.startsWith('/*')) {
+                continue;
+              } else {
+                break;
+              }
+            }
 
-            // Check enclosing class's preceding lines for authorization attribute
-            const classPrev = lines.slice(Math.max(0, classLineIdx - 6), classLineIdx).join('\n');
-            const hasClassAuth = /\[(?:Authorize|AllowAnonymous)[\s(]/.test(classPrev);
+            // Check enclosing class's preceding contiguous attribute lines for authorization
+            let hasClassAuth = false;
+            for (let a = classLineIdx - 1; a >= 0; a -= 1) {
+              const prev = lines[a].trim();
+              if (prev.startsWith('[') && prev.endsWith(']')) {
+                if (/\[(?:.*,)?\s*(?:Authorize|AllowAnonymous)(?:\(.*?\))?\s*(?:,.*)?\]/.test(prev)) {
+                  hasClassAuth = true;
+                }
+              } else if (prev === '' || prev.startsWith('//') || prev.startsWith('/*')) {
+                continue;
+              } else {
+                break;
+              }
+            }
 
             if (!hasMethodAuth && !hasClassAuth) {
               violations.push({
@@ -193,7 +220,7 @@ function scanFile(file, stack, repoRoot) {
   if (ext === '.html' && (stack === 'abp-angular' || relPath.includes('angular') || relPath.includes('src/app'))) {
     lines.forEach((line, idx) => {
       const lineNum = idx + 1;
-      if (/<button\b/.test(line) && /(?:\(click\)|type="submit")/.test(line) && !line.includes('*abpPermission') && !line.includes('[disabled]')) {
+      if (/<button\b/.test(line) && /(?:\(click\)|type="submit")/.test(line) && !line.includes('*abpPermission')) {
         // Warning: mutation button without permission gate in ABP Angular template
         violations.push({
           rule: 'angular-missing-abp-permission',
@@ -228,8 +255,10 @@ function scanFile(file, stack, repoRoot) {
       }
 
       // Rule 2: Floating Promise check
+      // Note: Pure heuristic static scan without compiler type-checking. Full type-informed floating-promise
+      // enforcement still requires @typescript-eslint/no-floating-promises in the project linter.
       const isPromiseConstruct = /\bnew\s+Promise\b/.test(line);
-      const isAsyncCall = /(?:^|\s+)(?:fetch|[a-zA-Z0-9_]+Async)\s*\(/.test(line);
+      const isAsyncCall = /(?:^|\s+)(?:fetch|[a-zA-Z0-9_]+Async|(?:axios|prisma|db|client|service|repository|queue|sender)(?:\.[a-zA-Z0-9_]+)+)\s*\(/.test(line);
       if ((isPromiseConstruct || isAsyncCall) &&
           !/(?:await|return|const|let|var|void)\s+/.test(line) &&
           !line.includes('.catch(') &&
@@ -304,7 +333,7 @@ function scanFile(file, stack, repoRoot) {
     if (/class\s+\w+Controller\b/.test(content)) {
       lines.forEach((line, idx) => {
         const lineNum = idx + 1;
-        if (/public\s+function\s+(?:store|update|destroy)\s*\(/.test(line)) {
+        if (/public\s+function\s+(?:index|show|create|store|edit|update|destroy)\s*\(/.test(line)) {
           let classLineIdx = -1;
           let isController = false;
           for (let c = idx - 1; c >= 0; c -= 1) {
@@ -316,7 +345,14 @@ function scanFile(file, stack, repoRoot) {
             }
           }
           if (classLineIdx !== -1 && isController) {
-            const methodBody = lines.slice(idx, Math.min(lines.length, idx + 15)).join('\n');
+            let methodEnd = lines.length;
+            for (let m = idx + 1; m < lines.length; m += 1) {
+              if (/(?:public|protected|private)\s+function\s+/.test(lines[m])) {
+                methodEnd = m;
+                break;
+              }
+            }
+            const methodBody = lines.slice(idx, Math.min(methodEnd, idx + 25)).join('\n');
             const classConstructor = lines.slice(classLineIdx, Math.min(lines.length, classLineIdx + 40)).join('\n');
             const hasAuthorize = methodBody.includes('$this->authorize') ||
               methodBody.includes('Gate::authorize') ||
@@ -329,7 +365,7 @@ function scanFile(file, stack, repoRoot) {
                 file: relPath,
                 line: lineNum,
                 severity: 'Critical',
-                message: 'Mutating controller action missing authorization policy check ($this->authorize).',
+                message: 'Controller action modifying or displaying resources is missing authorization policy check ($this->authorize or can: middleware).',
               });
             }
           }

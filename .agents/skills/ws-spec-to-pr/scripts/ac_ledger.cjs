@@ -303,7 +303,7 @@ function link(options, context) {
         rule: item.rule,
         severity: item.severity,
         evidence: normEvidence,
-        message: item.message || '',
+        message: item.message || item.description || '',
       };
       if (options.eventId) normalized.linkEventId = options.eventId;
       ledger.invariantViolations = [
