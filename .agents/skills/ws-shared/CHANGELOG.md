@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-07 15:30] Agent: opencode (judge fix for 0068)
+- **Prompt**: review committed 0068 consolidation (cacc0408) → approved fix plan → execute workstreams 1-5
+- **Done**: pruned dead run.json/RUN.md paths + renderRun + rebuildIndex runPath; aligned ARTIFACTS.md runtime/prereq/read-contract/never-staged/ownership; aligned lite SKILL telemetry + plan-index (handoff substring kept for pipeline check); added handoffs/acLedger to state schema with file-first fold-in; hardened telemetry legacy redirect regex; regen + verify integrity
+- **Result**: test-workflow-state-contract, telemetry-observability, quality-gates, update-state-yaml, hybrid-consumer-root pass; check_pipeline_handoff OK (11 skills)
+
 ### [2026-09-05 02:35] Agent: ws-spec-multi worker (standard pipeline)
 - **Prompt**: resume ws-spec-to-pr for skill-family-naming (steps 0-6 done) → re-verify → close → ship
 - **Done**: Step 5 re-verified (ledger 10/10 after AC16 hash relink, npm test exit 0, verify-integrity exit 0); Step 6 clean (no fix); Step 7 PASS confirmed fresh; Step 8 closed with step-08 result + Timing; Phase A git cleanup done

@@ -54,16 +54,16 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 | 1 | `step-00-{slug}.spec.md` + `ac-ledger.json` |
 | 2 | `step-00-{slug}.spec.md` + `step-01-{slug}.plan.md` |
 | 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` (Step 2 skipped `interview-not-required`) |
-| 4 | plan of record + `plan.index.json` (plus `step-03-{slug}.plan.exec.md` when `enableDag` is true; sequential mode skips Step 3 with `dag-disabled`) |
+| 4 | plan of record + `.runtime/plan.index.json` (plus `step-03-{slug}.plan.exec.md` when `enableDag` is true; sequential mode skips Step 3 with `dag-disabled`, no stubs written) |
 | 5 | plan or refined plan + implementation tree (state manifest `created` / `artifacts` non-empty, or `dryRun`) |
 | 6 | `step-05-{slug}.plan.report.md` |
 | 7 | `step-06-{slug}.review.md` when code review ran |
 | 8 | `step-07-{slug}.testing.report.md` when Step 7 completed (not skipped `testing-disabled` / `no-test-surface`) |
 | 9 | `step-08-{slug}.result.md` + PR exists (ship evidence) |
 
-**Plan index read contract:** Steps 3–7 resolve plan text through `{us-dir}/plan.index.json` (`plan_index.cjs read --ac AC{n}` or `build_dispatch_context.cjs`). Do not read a `superseded: true` `step-01` body. Rebuild the index after Step 2 stamps `--draft` on step-01.
+**Plan index read contract:** Steps 3–7 resolve plan text through `{us-dir}/.runtime/plan.index.json` (`plan_index.cjs read --ac AC{n}` or `build_dispatch_context.cjs`; legacy root `{us-dir}/plan.index.json` read as fallback only, never written). Do not read a `superseded: true` `step-01` body. Rebuild the index after Step 2 stamps `--draft` on step-01.
 
-**Lite orch:** mirrors advance-to steps **1–5** with lite artifact names (`step-06` review at lite Step 3; `step-08` result at lite Step 4). Same `ac-ledger.json` / `plan.index.json` rules. Lite ship still uses `step-08-{slug}.result.md` at delivery.
+**Lite orch:** mirrors advance-to steps **1–5** with lite artifact names (`step-06` review at lite Step 3; `step-08` result at lite Step 4). Same `ac-ledger.json` / `.runtime/plan.index.json` rules. Lite ship still uses `step-08-{slug}.result.md` at delivery.
 
 `step-00-{slug}.classify.md` is advisory (Step 0); it is **not** a prerequisite for advance-to.
 
@@ -102,7 +102,7 @@ Stage **only** artifacts enabled by `config.json` → `defaults.deliveryCommitAr
 5. `git add` only resolved paths under `{us-dir}`; commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
 6. Product/source staging remains separate (`commit-code`: path-scoped workflow `files_touched`, not directory roots).
 
-**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `{workflow-id}.state.json`, `handoff/step-{NN}.json`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, `plan.index.json`, `ac-ledger.json`, `run.json`, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
+**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `{workflow-id}.state.json`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, `.runtime/plan.index.json`, `ac-ledger.json`, `run.json`, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
 
 Result file may still be **written** for orch evidence when `includeDeliveryResult` is false — it simply is not staged.
 
@@ -137,7 +137,7 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 | Path | Purpose |
 |------|---------|
 | `{us-dir}/.runtime/` | Sentinels, PIDs, temp wake signals (not `/tmp`) |
-| `{us-dir}/telemetry/` | Per-step JSONL telemetry (`step-{NN}.jsonl`); append on each `update_state` invocation for that step |
+| `{us-dir}/telemetry.jsonl` | Single append-only JSONL telemetry stream for all steps; append on each `update_state` dispatch/finish (legacy `telemetry/step-{NN}.jsonl` tree not written) |
 | `{plansDir}/telemetry/` | Project-wide aggregate output (`aggregate.json`; not per-workflow) |
 | `{worktrees-dir}/step-{N}/` | Step isolation (code steps preferred) |
 | `{us-dir}/{workflow-id}.archive/` | Archived stale workflows |
@@ -151,7 +151,7 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 
 | 1 | `ws-plan-write` |
 | 2 | `ws-plan-interview` |
-| 3 | `ws-plan-to-tasks` (only when `enableDag: true`; else orch `write_sequential_dag.cjs`) |
+| 3 | `ws-plan-to-tasks` (only when `enableDag: true`; sequential mode skips Step 3 with `dag-disabled`, no stub files written) |
 | 4 | `ws-implement-tasks` (build) |
 | 5 | `ws-plan-verify` |
 | 6 | `ws-code-review` (+ `ws-implement-tasks` fix → re-review, max 3) |

@@ -69,6 +69,8 @@
     },
     "workflowManifest": { "type": "object" },
     "telemetry": { "type": "object" },
+    "handoffs": { "type": "object", "description": "Unified step handoffs keyed by step number (0.4.0 consolidation, replaces handoff/step-NN.json files)." },
+    "acLedger": { "type": "object", "description": "Folded AC verification ledger (0.4.0 consolidation, replaces standalone ac-ledger.json reads)." },
     "commits": {
       "type": "array",
       "items": {

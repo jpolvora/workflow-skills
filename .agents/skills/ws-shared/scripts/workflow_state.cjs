@@ -692,25 +692,6 @@ function estimatedSteps(context, pipeline, maxStep) {
   ));
 }
 
-function renderRun(run, labels) {
-  const lines = [
-    '# Workflow progress',
-    '',
-    `Workflow: ${run.workflowId}`,
-    `Status: ${run.status}`,
-    `Current step: ${run.currentStep}`,
-    `Next action: ${run.nextAction}`,
-    '',
-    '| Step | Label | Status | Remaining |',
-    '|---:|---|---|---:|',
-  ];
-  for (const step of run.steps) {
-    lines.push(`| ${step.step} | ${labels[step.step] || `Step ${step.step}`} | ${step.status} | ${step.estimatedRemainingSec}s |`);
-  }
-  lines.push('', `ACs: ${run.acImplemented}/${run.acTotal}`, `Score: ${run.score ?? 'n/a'}`, '');
-  return lines.join('\n');
-}
-
 function buildRun(state, pipeline, maxStep, labels, stateHash, medians) {
   const currentStep = Number(state.currentStep || 0);
   const completed = new Set((state.completedSteps || []).map(Number));
@@ -790,8 +771,6 @@ function statePaths(stateFile, context) {
   return {
     statePath,
     usDir: path.dirname(mdPath),
-    runFile: path.join(path.dirname(mdPath), 'run.json'),
-    runMarkdown: path.join(path.dirname(mdPath), 'RUN.md'),
     jsonFile: jsonStatePath(mdPath),
   };
 }
@@ -1021,9 +1000,12 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     let derivedScore = null;
     if (options.verificationScore !== undefined) {
       const ledgerFile = path.join(paths.usDir, 'ac-ledger.json');
-      let ledger = state.acLedger;
-      if (!ledger && fs.existsSync(ledgerFile)) {
+      let ledger = null;
+      if (fs.existsSync(ledgerFile)) {
         ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+        state.acLedger = ledger;
+      } else {
+        ledger = state.acLedger;
       }
       if (!ledger) throw new Error('verification score requires ac-ledger.json or state.acLedger');
       const derived = scoreLedger(ledger, options.scoreBoundary || 'step5', context);
@@ -1116,11 +1098,11 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   const run = buildRun(state, pipeline, maxStep, labels, stateHash, medians);
   const index = updatePlansIndex(context, run, timestamp);
   const defaultTelemetry = path.join(paths.usDir, 'telemetry.jsonl');
+  const rawJsonlOut = String(options.jsonlOut || '');
+  const isLegacyStepStream = /(^|[\\/])telemetry[\\/]step-\d+\.jsonl$/.test(rawJsonlOut);
   const telemetryFile = path.resolve(
     context.repoRoot,
-    options.jsonlOut && !options.jsonlOut.includes('telemetry/step-')
-      ? options.jsonlOut
-      : defaultTelemetry,
+    rawJsonlOut && !isLegacyStepStream ? rawJsonlOut : defaultTelemetry,
   );
 
   if (!isIdempotentFinish) {
@@ -1288,8 +1270,8 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
         }
       }
     }
-    if (next >= 6 && (state.acLedger || fs.existsSync(ledgerFile))) {
-      const ledger = state.acLedger || JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+    if (next >= 6 && (fs.existsSync(ledgerFile) || state.acLedger)) {
+      const ledger = fs.existsSync(ledgerFile) ? JSON.parse(fs.readFileSync(ledgerFile, 'utf8')) : state.acLedger;
       const boundary = next === 6 ? 'pre-step6' : next >= 9 ? 'ship' : 'step5';
       let derived;
       try {
@@ -1396,7 +1378,7 @@ function rebuildIndex(context, config) {
           status: state.status,
           currentStep: Number(state.currentStep || 0),
           updatedAt: workflowIndexUpdatedAt(state, priorById.get(workflowId)),
-          runPath: `${path.posix.dirname(toRepoRelative(context.repoRoot, full))}/run.json`,
+          runPath: toRepoRelative(context.repoRoot, jsonStatePath(full)),
         });
       }
     }
@@ -1460,7 +1442,6 @@ module.exports = {
   serializeFrontmatter,
   normalizeFable,
   fableBlocks,
-  renderRun,
   validateGateDecision,
   artifactMetadata,
   upsertArtifactFrontmatter,
