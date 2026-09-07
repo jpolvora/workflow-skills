@@ -1716,6 +1716,9 @@ child.on('close', async (code) => {
       fail(`deps should not be selected roots: ${JSON.stringify(manifest.selected)}`);
     }
     ok('install writes installed-skills.json with transitive deps');
+    if (manifest.skills.includes('ws-memo') || manifest.skills.includes('ws-session-tracking')) {
+      fail('installed-skills.json must not list spec-memo external companions');
+    }
 
     const markerCfg = path.join(uDir, '.agents', 'skills', 'ws-shared', 'config.json');
     fs.writeFileSync(

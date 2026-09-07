@@ -20,8 +20,6 @@ When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unl
 | `ws-fable-method` | `{skillsRoot}/ws-fable-method/SKILL.md` | Every prompt — structured investigate/act/verify when non-trivial |
 | `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
 | `ws-megabrain` | `{skillsRoot}/ws-megabrain/SKILL.md` | Every prompt — vibe-coding implementer (no spec required); defer when orch owns the session |
-| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start / working memory — off-repo vault memory via spec-memo MCP |
-| `ws-session-tracking` | `{skillsRoot}/ws-session-tracking/SKILL.md` | Every session — prompt turns, task boundaries & deliverable tracking |
 | `ws-spec-memo` | `{skillsRoot}/ws-spec-memo/SKILL.md` | Config preflight & bridge — wire config.json memory backends & hybrid fallback |
 
 Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for **membership of the Always-applied set above**; shared-hub mandatory skills (including `ws-karpathy-guidelines`) still load. See [`AGENTS.md`](AGENTS.md) § Consumer root override.
@@ -38,6 +36,17 @@ Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win
 8. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
 
 **Fable vs senior (single rule):** Orch or confirmed senior plan → no fable Plan-First / competing plan ceremony. Fable Verify does not replace senior Code review proof.
+
+## External companion skills (optional)
+
+These ids are **not** members of this package (`skill-dependencies.json` → `externalSkills`). They ship from the spec-memo package. Do **not** `Read` a missing `SKILL.md` at session start. Skip when absent; load when present under `{skillsRoot}` or `{globalSkillsRoot}` (local wins). Setup/bridge for vault flags remains packaged `ws-spec-memo`.
+
+| Skill | Resolve when present | Trigger |
+|-------|----------------------|---------|
+| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` or `{globalSkillsRoot}/ws-memo/SKILL.md` | Session working memory / vault runtime — skip if neither path exists |
+| `ws-session-tracking` | `{skillsRoot}/ws-session-tracking/SKILL.md` or `{globalSkillsRoot}/ws-session-tracking/SKILL.md` | Prompt/session vault activity — skip if neither path exists |
+
+`ws-check-harness` treats missing local bodies for `externalSkills` as **intentional omission** (not `phantom_routes` critical). Hybrid presence under `{globalSkillsRoot}` is healthy.
 
 ---
 
@@ -116,8 +125,8 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | explain spec, spec status, what did US deliver, /explain | `ws-spec-explain` |
 | cleanup workflow, clean plan leftovers, delete telemetry/.runtime | `ws-cleanup` |
 | spec-memo-setup, /ws-spec-memo, external vault setup, off-repo memory, configure vault, import/migrate MEMORY, vault preflight check, hybrid fallback bootstrap | `ws-spec-memo` |
-| spec-memo search/get/upsert/bootstrap (runtime), /ws-memo, memo vault ops, canvas, doctor | `ws-memo` |
-| prompt tracking, session_start/end, vault activity report, /ws-session-tracking, derive_rules from prompts | `ws-session-tracking` |
+| spec-memo search/get/upsert/bootstrap (runtime), /ws-memo, memo vault ops, canvas, doctor | `ws-memo` (external; skip if `SKILL.md` missing) |
+| prompt tracking, session_start/end, vault activity report, /ws-session-tracking, derive_rules from prompts | `ws-session-tracking` (external; skip if `SKILL.md` missing) |
 | Spec-to-PR plan-folder timesheet / activity-report {date} | `ws-activity-report` |
 
 ---

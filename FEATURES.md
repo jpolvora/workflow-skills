@@ -261,6 +261,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-06).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.3** | Sep 7 | **External spec-memo companions:** `externalSkills` for `ws-memo` / `ws-session-tracking`; Always-applied no longer mandates them; consumer CATALOG membership links shipped `skill-dependencies.json`; `ws-check-harness` treats missing companions as intentional omission |
 | **0.3.63** | Sep 6 | **OpenCode agentic PR reviews + new skills:** CI switches active reviewer to OpenCode (`opencode-code-review.yml`); ships `ws-benchmarks` (interactive benchmark suite) and `ws-spec-manager` (unified spec router); catalog counts and dependency graph aligned (45 workflows / 8 extra) |
 | **0.3.56** | Sep 3 | **Skill family naming migration (`ws-{family}-{verb}`):** Renamed 10 skills across `spec`, `spec-provider`, and `plan` families (`ws-spec-write`, `ws-spec-update`, `ws-spec-multi`, `ws-spec-provider-github`, `ws-spec-provider-azure-devops`, `ws-spec-provider-local`, `ws-plan-write`, `ws-plan-verify`, `ws-plan-update`, `ws-plan-interview`); fail-closed harness gate `ws-(?!spec-).*spec`; anti-regression memory hook in `ws-spec-update` |
 | **0.3.55** | Sep 2 | **spec-memo bridge clarity:** `ws-spec-memo` owns harness config only; `/ws-memo` memory + `/ws-session-tracking` prompt/session; preflight warns on missing runtime skills; configure-project session handoff fixed |
@@ -365,7 +366,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-manager`](.agents/skills/ws-spec-manager/SKILL.md) | W | Unified router for spec create/list/update/sync/track/organize/archive/validate/import/run |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register |
 | [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |
-| [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` (spec-memo) |
+| [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` / `ws-session-tracking` (`externalSkills`, spec-memo package) |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 

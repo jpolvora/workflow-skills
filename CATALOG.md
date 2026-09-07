@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 45, `extra` = 8). Extra rows are absent from Workflows-only installs. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 45, `extra` = 8). Extra rows are absent from Workflows-only installs. `externalSkills` are not packaged here. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -136,8 +136,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | Manage / route all spec operations (unified front door) | `ws-spec-manager` |
 | spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
-| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` |
-| Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` |
+| Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` (external; skip if missing) |
+| Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` (external; skip if missing) |
 | Spec-to-PR plan-folder timesheet for a civil day | `ws-activity-report` (Extra) |
 | GitHub issue/PR ops | `ws-spec-provider-github` |
 | ADO WI/PR ops | `ws-spec-provider-azure-devops` |
@@ -235,7 +235,7 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in `AGENTS
 | GitHub issue → spec / fix | `ws-spec-provider-github` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Timesheet / activity hours (Spec-to-PR plan folder) | `ws-activity-report` (Extra) |
-| Vault prompt/session activity | `ws-session-tracking` |
+| Vault prompt/session activity | `ws-session-tracking` (external; skip if missing) |
 | Explain spec / US status | `ws-spec-explain` |
 | Archive plans into `index.PRD` | `ws-spec-archive` |
 | Clean workflow leftovers | `ws-cleanup` |

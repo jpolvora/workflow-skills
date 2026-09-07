@@ -131,6 +131,21 @@ function loadSkillGraph() {
   return skillGraph;
 }
 
+/** Spec-memo companions and other foreign skill ids — not this package's membership. */
+function loadExternalSkillIds(graph = loadSkillGraph()) {
+  const raw = graph.externalSkills || [];
+  return new Set(
+    raw
+      .map((item) => (typeof item === 'string' ? item : item && item.id))
+      .filter((id) => typeof id === 'string' && id)
+  );
+}
+
+function excludeExternalSkillIds(names, graph = loadSkillGraph()) {
+  const external = loadExternalSkillIds(graph);
+  return names.filter((name) => !external.has(name));
+}
+
 function listSkillDirs(dir) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir).filter((name) => {
@@ -160,10 +175,14 @@ function installedSkillsManifestPath() {
   return path.join(targetSkillsDir, HUB_DIR, INSTALLED_SKILLS_FILE);
 }
 
-/** Disk scan: top-level skill folders with SKILL.md (excludes ws-shared/). */
+/** Disk scan: top-level skill folders with SKILL.md (excludes ws-shared/).
+ * Foreign trees listed in skill-dependencies.json `externalSkills` (e.g. spec-memo
+ * `ws-memo`) are not this package's membership and must not be bootstrapped into
+ * installed-skills.json or pruned as managed extras solely because they are untracked.
+ */
 function scanInstalledSkillsOnDisk() {
   if (!fs.existsSync(targetSkillsDir)) return [];
-  return listInstallableSkills(targetSkillsDir);
+  return excludeExternalSkillIds(listInstallableSkills(targetSkillsDir));
 }
 
 function readInstalledSkillsManifest() {
@@ -202,9 +221,9 @@ function mergeGlobalTargets(existing = [], incoming = []) {
 function writeInstalledSkillsManifest(skillNames, selectedNames = null, globalTargets = null) {
   const destShared = path.join(targetSkillsDir, HUB_DIR);
   ensureWriteableDir(destShared);
-  const skills = [...new Set(skillNames.filter((s) => s && s !== HUB_DIR))].sort((a, b) =>
-    a.localeCompare(b)
-  );
+  const skills = excludeExternalSkillIds(
+    [...new Set(skillNames.filter((s) => s && s !== HUB_DIR))]
+  ).sort((a, b) => a.localeCompare(b));
   const selectedSource = selectedNames == null ? skills : selectedNames;
   const selected = [...new Set(selectedSource.filter((s) => skills.includes(s)))].sort((a, b) =>
     a.localeCompare(b)

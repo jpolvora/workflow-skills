@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-07 17:45] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr issue 288 full auto — real vs check-harness noise; portable hub/harness fixes; ship
+- **Done**: Declared `externalSkills` (ws-memo, ws-session-tracking); removed them from Always-applied; consumer CATALOG membership link; harness intentional-omission; installer bootstrap excludes foreign ids; regression tests; 0.4.3 bump
+- **Result**: npm test exit 0; Phase 5a gates exit 0; integrity OK; Learning: N/A (standard implementation)
+
 ### [2026-09-07 17:30] Agent: opencode (dispatch-guard orphan-orch fix)
 - **Prompt**: judge + code review latest commit vs previous diff, stepwise awaited dispatch → approved full 6-item plan → implement simplified, test, ship
 - **Done**: workflow_state.cjs dispatch-6 requires defined score >= minVerifyScore (closes undefined-score orphan); step-4 guard unconditional except dag substep (fresh-state + dag role both correct); plan/index content checks (non-empty + valid JSON); fixPrPlan/fixPrExec internal-substep finish stays active; gates.md + STEP-DISPATCH.md await wording; 7 new contract asserts; 0.4.2 bump + integrity regen
