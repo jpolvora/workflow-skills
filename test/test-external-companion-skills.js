@@ -209,6 +209,38 @@ try {
     /external companion `ws-memo`/i.test(messages),
     `configure_autoload --check should warn when Always-applied lists ws-memo\n${messages}\n${check.stderr}`,
   );
+  assert(
+    !/Always-applied skill `ws-memo` missing/i.test(messages),
+    `external companion must not also get Install/missing-skill guidance\n${messages}`,
+  );
+
+  const rootArgs = ['--write-root-agents', '--repo-root', poisoned];
+  let wroteRoot = { status: 1, stdout: '', stderr: '' };
+  for (const spec of [
+    { cmd: PYTHON, prefix: [] },
+    { cmd: 'py', prefix: ['-3'] },
+    { cmd: 'python3', prefix: [] },
+    { cmd: 'python', prefix: [] },
+  ]) {
+    if (!spec.cmd) continue;
+    const attempt = cp.spawnSync(spec.cmd, [...spec.prefix, script, ...rootArgs], {
+      encoding: 'utf8',
+    });
+    if (attempt.status === 0) {
+      wroteRoot = attempt;
+      break;
+    }
+    wroteRoot = attempt;
+  }
+  assert(
+    wroteRoot.status === 0,
+    `write-root-agents failed\n${wroteRoot.stderr}\n${wroteRoot.stdout}`,
+  );
+  const rootAgents = fs.readFileSync(path.join(poisoned, 'AGENTS.md'), 'utf8');
+  assert(
+    !/\| `ws-memo` \|/.test(rootAgents),
+    'write-root-agents must drop poisoned external Always-applied rows',
+  );
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

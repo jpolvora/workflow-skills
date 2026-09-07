@@ -437,6 +437,7 @@ def write_root_agents(
         )
         if preserved:
             membership = preserved
+    membership = drop_external_companion_members(membership, repo_root)
 
     table_lines = [
         "| Skill | Path |",
@@ -624,6 +625,9 @@ def check_autoload(
                     "fix": "Remove the Always-applied row; keep the optional companion section",
                 }
             )
+            # External companions are optional; absence is healthy. Do not emit
+            # path-portability or missing-skill Install guidance for them.
+            continue
         if not path_form_ok(row["path"]):
             findings.append(
                 {
