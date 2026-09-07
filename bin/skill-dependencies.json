@@ -1,11 +1,25 @@
 {
   "version": 1,
-  "packageVersion": "0.4.2",
+  "packageVersion": "0.4.3",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
     "note": "Managed skills ship from this upstream. Lasting improvements must be submitted as PRs there; consumer copies are overwritten on update."
   },
+  "externalSkills": [
+    {
+      "id": "ws-memo",
+      "sourcePackage": "spec-memo",
+      "sourceUrl": "https://github.com/jpolvora/spec-memo",
+      "note": "Runtime vault memory. Not hashed or installed by this package. Optional under {globalSkillsRoot} or {skillsRoot} via spec-memo install_skills. Skip hub Read when SKILL.md is absent."
+    },
+    {
+      "id": "ws-session-tracking",
+      "sourcePackage": "spec-memo",
+      "sourceUrl": "https://github.com/jpolvora/spec-memo",
+      "note": "Prompt/session vault activity. Not hashed or installed by this package. Optional under {globalSkillsRoot} or {skillsRoot} via spec-memo install_skills. Skip hub Read when SKILL.md is absent."
+    }
+  ],
   "hub": {
     "dir": "ws-shared",
     "ensureWhen": [

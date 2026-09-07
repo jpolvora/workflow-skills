@@ -260,6 +260,41 @@ def emit_skill_path(
     return f"{{skillsRoot}}/{skill_id}/SKILL.md", True
 
 
+def load_external_skill_ids(repo_root: Path) -> set[str]:
+    """Ids in skill-dependencies.json externalSkills (spec-memo companions, not packaged)."""
+    candidates = [
+        repo_root / "bin" / "skill-dependencies.json",
+        repo_root / ".agents" / "skills" / "ws-shared" / "skill-dependencies.json",
+    ]
+    for candidate in candidates:
+        if not candidate.is_file():
+            continue
+        try:
+            data = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            continue
+        raw = data.get("externalSkills") or []
+        ids: set[str] = set()
+        if not isinstance(raw, list):
+            continue
+        for item in raw:
+            if isinstance(item, str) and item.startswith("ws-"):
+                ids.add(item)
+            elif isinstance(item, dict):
+                skill_id = str(item.get("id") or "").strip()
+                if skill_id.startswith("ws-"):
+                    ids.add(skill_id)
+        return ids
+    return set()
+
+
+def drop_external_companion_members(membership: list[dict], repo_root: Path) -> list[dict]:
+    external = load_external_skill_ids(repo_root)
+    if not external:
+        return membership
+    return [row for row in membership if row.get("skill") not in external]
+
+
 def default_always_applied_membership() -> list[dict]:
     """Default Always-applied skill ids + triggers (membership seed)."""
     return [{"skill": skill_id, "trigger": trigger} for skill_id, trigger in DEFAULT_ALWAYS_APPLIED]
@@ -317,6 +352,7 @@ def ensure_autoload_md(
     existing = parse_always_applied_rows(text)
     preserved = membership_from_existing_rows(existing)
     membership = preserved if preserved else default_always_applied_membership()
+    membership = drop_external_companion_members(membership, repo_root)
     if resolve_autoload_task_lifecycle(repo_root):
         membership = ensure_task_lifecycle_member(membership)
     else:
@@ -401,6 +437,7 @@ def write_root_agents(
         )
         if preserved:
             membership = preserved
+    membership = drop_external_companion_members(membership, repo_root)
 
     table_lines = [
         "| Skill | Path |",
@@ -576,6 +613,21 @@ def check_autoload(
         )
 
     for row in parse_always_applied_rows(text):
+        if row["skill"] in load_external_skill_ids(repo_root):
+            findings.append(
+                {
+                    "severity": "warning",
+                    "file": ".agents/skills/ws-shared/autoload.md",
+                    "message": (
+                        f"Always-applied lists external companion `{row['skill']}` "
+                        "(not packaged here); move to External companion skills and skip when absent"
+                    ),
+                    "fix": "Remove the Always-applied row; keep the optional companion section",
+                }
+            )
+            # External companions are optional; absence is healthy. Do not emit
+            # path-portability or missing-skill Install guidance for them.
+            continue
         if not path_form_ok(row["path"]):
             findings.append(
                 {
