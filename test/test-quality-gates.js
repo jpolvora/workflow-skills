@@ -103,7 +103,7 @@ us: null
 slug: ${slug}
 status: active
 currentStep: 0
-stateVersion: 2
+stateVersion: 3
 revision: 0
 dryRun: ${dryRun}
 completedSteps: []
@@ -536,11 +536,11 @@ function testJsonlFieldsLazyDirNoPiiDualWrite() {
   const usDir = path.join(root, '.agents/plans', slug);
   const stateRel = `.agents/plans/${slug}/${workflowId}.state.md`;
   const statePath = writeState(usDir, slug, workflowId);
-  const jsonlRel = `.agents/plans/${slug}/telemetry/step-00.jsonl`;
+  const jsonlRel = `.agents/plans/${slug}/telemetry.jsonl`;
   const jsonlPath = path.join(root, jsonlRel);
   const common = ['--repo-root', root, '--jsonl-out', jsonlRel];
 
-  assert(!fs.existsSync(path.join(usDir, 'telemetry')), 'testJsonl*: telemetry/ absent before update');
+  assert(!fs.existsSync(jsonlPath), 'testJsonl*: telemetry.jsonl absent before update');
 
   const dispatched = run(process.execPath, [
     UPDATE_STATE, 'dispatch', stateRel, '--step', '0',
@@ -559,7 +559,7 @@ function testJsonlFieldsLazyDirNoPiiDualWrite() {
   ]);
 
   assert(r.status === 0, `testJsonl*: update_state exits 0 (${r.stderr || r.stdout || ''})`);
-  assert(fs.existsSync(jsonlPath), 'testJsonlLazyDir: creates telemetry/ and jsonl');
+  assert(fs.existsSync(jsonlPath), 'testJsonlLazyDir: creates telemetry.jsonl');
 
   const lines = read(jsonlPath).trim().split(/\r?\n/).filter(Boolean).map((row) => JSON.parse(row));
   const rec = lines.find((row) => row.type === 'finish');
@@ -644,7 +644,7 @@ function testSkipGatesBypassedJsonlField() {
   const usDir = path.join(root, '.agents/plans', slug);
   const stateRel = `.agents/plans/${slug}/${workflowId}.state.md`;
   writeState(usDir, slug, workflowId);
-  const jsonlRel = `.agents/plans/${slug}/telemetry/step-00.jsonl`;
+  const jsonlRel = `.agents/plans/${slug}/telemetry.jsonl`;
   const jsonlPath = path.join(root, jsonlRel);
   const common = ['--repo-root', root, '--jsonl-out', jsonlRel];
 

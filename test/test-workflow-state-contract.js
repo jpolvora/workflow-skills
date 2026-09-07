@@ -41,9 +41,9 @@ assert.strictEqual(run(update, [
 ]).status, 0);
 
 const state = fs.readFileSync(path.join(root, stateRel), 'utf8');
-assert.match(state, /stateVersion: 2/);
+assert.match(state, /stateVersion: 3/);
 assert.match(state, /gateDecision:/);
-const events = fs.readFileSync(path.join(root, '.agents/plans/demo/telemetry/step-00.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
+const events = fs.readFileSync(path.join(root, '.agents/plans/demo/telemetry.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
 assert.deepStrictEqual(events.map((event) => event.type), ['dispatch', 'finish']);
 assert.strictEqual(events[1].elapsedSec, 5);
 assert.strictEqual(events[1].estimated, false);
@@ -115,7 +115,7 @@ function setupPreAdvance6Fixture(options = {}) {
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(pa6Root, stateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: ${workflowId}
 slug: ${slug}
@@ -256,7 +256,7 @@ verificationScore: 9
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(runtimeRoot, runtimeStateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-rt
 slug: rt
@@ -293,7 +293,7 @@ acImplemented: 0
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(hashRoot, hashStateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-hash
 slug: hash
@@ -312,32 +312,25 @@ acImplemented: 0
   assert.strictEqual(run(update, ['dispatch', hashStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:00.000Z', ...hashCommon]).status, 0);
   assert.strictEqual(run(update, ['finish', hashStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z', ...hashCommon]).status, 0);
   const stateText = fs.readFileSync(path.join(hashRoot, hashStateRel), 'utf8');
-  const runJson = JSON.parse(fs.readFileSync(path.join(hashRoot, '.agents/plans/hash/run.json'), 'utf8'));
+  const plansIndex = JSON.parse(fs.readFileSync(path.join(hashRoot, '.agents/plans/index.json'), 'utf8'));
+  const row = plansIndex.workflows.find((item) => item.workflowId === 'wf-hash');
   const jsonText = fs.readFileSync(path.join(hashRoot, '.agents/plans/hash/wf.state.json'), 'utf8');
   const jsonHash = sha256(jsonText);
   const fullHash = sha256(stateText);
-  assert.strictEqual(runJson.stateSha256, jsonHash);
-  assert.notStrictEqual(runJson.stateSha256, fullHash);
+  assert.strictEqual(row.stateSha256, jsonHash);
+  assert.notStrictEqual(row.stateSha256, fullHash);
   const appended = `${stateText.replace(/\s*$/, '\n\n')}## Gate history\n- checkpoint\n`;
   fs.writeFileSync(path.join(hashRoot, hashStateRel), appended, 'utf8');
   assert.strictEqual(run(validate, [hashStateRel, '--repo-root', hashRoot]).status, 0, 'gate history append does not break hash');
 }
 
-// Legacy full-file stateSha256 still passes pre-advance 6
+// Index stateSha256 passes pre-advance 6
 {
   const { pa6Root, stateRel } = setupPreAdvance6Fixture({ includeFormatSkip: true });
-  const stateFile = path.join(pa6Root, stateRel);
-  const stateText = fs.readFileSync(stateFile, 'utf8');
-  const fullHash = sha256(stateText);
-  assert.notStrictEqual(fullHash, stateIdentityHash(stateText), 'legacy full-file digest differs from frontmatter hash');
-  const runPath = path.join(pa6Root, '.agents/plans/pa6/run.json');
-  const runJson = JSON.parse(fs.readFileSync(runPath, 'utf8'));
-  runJson.stateSha256 = fullHash;
-  fs.writeFileSync(runPath, `${JSON.stringify(runJson, null, 2)}\n`);
   assert.strictEqual(
     run(validate, [stateRel, '--pre-advance', '6', '--repo-root', pa6Root]).status,
     0,
-    'legacy full-file run.json hash accepted until next performUpdate',
+    'pre-advance 6 passes with valid index and state',
   );
 }
 
@@ -351,7 +344,7 @@ acImplemented: 0
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(commitRoot, commitStateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-cm
 slug: cm
@@ -393,7 +386,7 @@ write(path.join(skipRoot, '.agents/skills/ws-shared/config.json'), JSON.stringif
   fable: { auditVerdictsBlockShip: 'refuted' },
 }));
 write(path.join(skipRoot, skipStateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-skip
 slug: skip
@@ -514,7 +507,7 @@ write(path.join(liteRoot, '.agents/skills/ws-shared/config.json'), JSON.stringif
   fable: { auditVerdictsBlockShip: 'refuted' },
 }));
 write(path.join(liteRoot, liteStateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-lite
 slug: lite
@@ -596,7 +589,7 @@ write(path.join(stdRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify
   plans: { dir: '.agents/plans' }, verification: {}, defaults: {}, fable: { auditVerdictsBlockShip: 'refuted' },
 }));
 write(path.join(stdRoot, stdStateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-std
 slug: std
@@ -639,7 +632,7 @@ write(path.join(indexGapRoot, '.agents/skills/ws-shared/config.json'), JSON.stri
 }));
 const gapStateRel = '.agents/plans/gap/wf-gap.state.md';
 write(path.join(indexGapRoot, gapStateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 5
 workflowId: wf-gap
 slug: gap
@@ -680,7 +673,7 @@ assert.strictEqual(
   const idleState = '.agents/plans/idle/wf-idle.state.md';
   const liveState = '.agents/plans/live/wf-live.state.md';
   write(path.join(stampRoot, idleState), `---
-stateVersion: 2
+stateVersion: 3
 revision: 4
 workflowId: wf-idle
 slug: idle
@@ -696,7 +689,7 @@ workflowManifest: {"created":[],"modified":[],"deleted":[]}
 # State
 `);
   write(path.join(stampRoot, liveState), `---
-stateVersion: 2
+stateVersion: 3
 revision: 1
 workflowId: wf-live
 slug: live
@@ -735,7 +728,7 @@ updatedAt: "${memoTs}"
         status: 'completed',
         currentStep: 8,
         updatedAt: idleTs,
-        runPath: '.agents/plans/idle/run.json',
+        runPath: '.agents/plans/idle/wf.state.json',
       },
       {
         workflowId: 'wf-live',
@@ -746,7 +739,7 @@ updatedAt: "${memoTs}"
         status: 'active',
         currentStep: 0,
         updatedAt: idleTs,
-        runPath: '.agents/plans/live/run.json',
+        runPath: '.agents/plans/live/wf.state.json',
       },
     ],
   }, null, 2));
@@ -791,7 +784,7 @@ updatedAt: "${memoTs}"
   }));
   const idempState = '.agents/plans/idemp/wf.state.md';
   write(path.join(idempRoot, idempState), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-idemp
 slug: idemp
@@ -826,8 +819,9 @@ acImplemented: 0
   assert.strictEqual(mdData.currentStep, jsonState.currentStep, '.state.md currentStep matches JSON');
   assert.strictEqual(mdData.revision, jsonState.revision, '.state.md revision matches JSON');
   const firstHash = sha256(jsonText);
-  const runJson = JSON.parse(fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/run.json'), 'utf8'));
-  assert.strictEqual(runJson.stateSha256, firstHash, 'run.json hash matches JSON SoT');
+  const plansIndex = JSON.parse(fs.readFileSync(path.join(idempRoot, '.agents/plans/index.json'), 'utf8'));
+  const idempRow = plansIndex.workflows.find((item) => item.workflowId === 'wf-idemp');
+  assert.strictEqual(idempRow.stateSha256, firstHash, 'index stateSha256 matches JSON SoT');
   const second = run(update, [
     'finish', idempState, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z',
     '--step-output', JSON.stringify({ summary: 'Rich subagent summary' }),
@@ -835,13 +829,10 @@ acImplemented: 0
   ], noPython);
   assert.strictEqual(second.status, 0, second.stderr);
   assert.strictEqual(sha256(fs.readFileSync(jsonPath, 'utf8')), firstHash, 'identical finish is idempotent for state.json');
-  const handoff = path.join(idempRoot, '.agents/plans/idemp/handoff/step-00.json');
-  assert.ok(fs.existsSync(handoff), 'finish writes handoff/step-00.json');
-  const payload = JSON.parse(fs.readFileSync(handoff, 'utf8'));
-  assert.strictEqual(payload.step, 0);
-  assert.strictEqual(payload.summary, 'Rich subagent summary', 'idempotent finish preserves original rich handoff summary');
-  assert.ok(Buffer.byteLength(JSON.stringify(payload), 'utf8') <= 8192);
-  const finishLines = fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/telemetry/step-00.jsonl'), 'utf8')
+  assert.strictEqual(jsonState.handoffs['0'].step, 0);
+  assert.strictEqual(jsonState.handoffs['0'].summary, 'Rich subagent summary', 'idempotent finish preserves original rich handoff summary');
+  assert.ok(Buffer.byteLength(JSON.stringify(jsonState.handoffs['0']), 'utf8') <= 8192);
+  const finishLines = fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/telemetry.jsonl'), 'utf8')
     .trim().split('\n').map(JSON.parse).filter((row) => row.type === 'finish');
   assert.strictEqual(finishLines.length, 1, 'idempotent finish does not duplicate finish telemetry');
   const finishLine = finishLines[0];
@@ -854,8 +845,8 @@ acImplemented: 0
     '--gate-decision', gate, ...idempCommon,
   ], noPython);
   assert.strictEqual(third.status, 0, third.stderr);
-  const updatedPayload = JSON.parse(fs.readFileSync(handoff, 'utf8'));
-  assert.strictEqual(updatedPayload.summary, 'Updated subagent summary', 'non-identical replay updates handoff summary');
+  const updatedState = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  assert.strictEqual(updatedState.handoffs['0'].summary, 'Updated subagent summary', 'non-identical replay updates handoff summary');
 }
 
 // AC6 / NS1 — autoMode + standard + Step 0 only → pre-advance 4 fails (no plan → no code)
@@ -872,7 +863,7 @@ acImplemented: 0
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(pa4Root, stateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: ${workflowId}
 slug: ${slug}
@@ -937,7 +928,7 @@ Dogfood: plan must exist before product-path edits outside {plansDir}.
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(pa4Root, stateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: ${workflowId}
 slug: ${slug}
@@ -1028,7 +1019,7 @@ T00 implements AC1 in \`src/noref.js\` with V1:noref-test.
     fable: { auditVerdictsBlockShip: 'refuted' },
   }));
   write(path.join(pa4Root, stateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: ${workflowId}
 slug: ${slug}
@@ -1174,7 +1165,7 @@ T00 implements AC1 in \`src/${slug}.js\` with V1:${slug}.
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   seedPa4PlanningFiles(pa4Root, slug, workflowId, { title: 'Step 2 incomplete' });
   write(path.join(pa4Root, stateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: ${workflowId}
 slug: ${slug}
@@ -1203,7 +1194,7 @@ acImplemented: 0
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   seedPa4PlanningFiles(pa4Root, slug, workflowId, { title: 'Step 3 incomplete', refined: true });
   write(path.join(pa4Root, stateRel), `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: ${workflowId}
 slug: ${slug}

@@ -25,18 +25,17 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 | Artifact | Filename | Produced by | Committable |
 |----------|----------|-------------|-------------|
 | State | `{workflow-id}.state.md` | Orchestrator (rendered view) | No |
-| State JSON | `{workflow-id}.state.json` | Orchestrator (`update_state` machine SoT) | No |
-| Step handoff | `handoff/step-{NN}.json` | Every `update_state finish` | No |
+| State JSON | `{workflow-id}.state.json` | Orchestrator (`update_state` machine SoT, embedded `handoffs`) | No |
+| Telemetry stream | `telemetry.jsonl` | Orchestrator (`update_state` events stream) | No |
 | Issue snapshot | `step-00-{slug}.issue.json` | Step 0 / issue fetch | No |
 | **Spec (canonical)** | `step-00-{slug}.spec.md` | Step 0 / issue→spec / local register | **Yes (Step 8)** when `includeSpec` |
 | Complexity classification | `step-00-{slug}.classify.md` | Step 0 (`ws-classify-complexity`) | No |
 | Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 8)** when `includeRefinedPlan` and no refined plan |
 | Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 8)** when `includeRefinedPlan` and present (replaces plan) |
-| Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 (orch stub or `ws-plan-to-tasks`) | No |
-| DAG | `step-03-{slug}.exec.dag.json` | Step 3 (`write_sequential_dag.cjs` when `enableDag` is false; `ws-plan-to-tasks` when true) | No |
-| Plan index | `plan.index.json` | Step 1 (`plan_index.cjs build`; rebuild after Step 2) | No |
+| Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 (`ws-plan-to-tasks` when `enableDag` is true) | No |
+| DAG | `step-03-{slug}.exec.dag.json` | Step 3 (`ws-plan-to-tasks` when `enableDag` is true) | No |
+| Plan index | `.runtime/plan.index.json` | Step 1 (`plan_index.cjs build`; rebuild after Step 2; root fallback) | No |
 | AC ledger | `ac-ledger.json` | Step 0 (`ac_ledger.cjs init`) | No |
-| Live run | `run.json` / `RUN.md` | Every `update_state` transition | No |
 | Check-implementation report | `step-05-{slug}.plan.report.md` | Step 5 | **Yes (Step 8)** when `includeCheckReport` |
 | Code review | `step-06-{slug}.review.md` | Step 6 | **Yes (Step 8)** when `includeCodeReview` |
 | Review fix report | `step-06-{slug}.fix.report.md` | Step 6 fix → re-review loop | No |
@@ -44,7 +43,7 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 | Testing report | `step-07-{slug}.testing.report.md` | Step 7 | **Yes (Step 8)** when `includeTestingReport` |
 | Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** when `includeDeliveryResult` |
 
-**Do not write obsolete names:** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md`.
+**Do not write obsolete names:** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md`, `run.json`, `RUN.md`.
 
 ## Step input prerequisites
 
@@ -55,7 +54,7 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 | 1 | `step-00-{slug}.spec.md` + `ac-ledger.json` |
 | 2 | `step-00-{slug}.spec.md` + `step-01-{slug}.plan.md` |
 | 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` (Step 2 skipped `interview-not-required`) |
-| 4 | plan of record + `plan.index.json` + `step-03-{slug}.plan.exec.md` (sequential stub when `enableDag` is false) |
+| 4 | plan of record + `plan.index.json` (plus `step-03-{slug}.plan.exec.md` when `enableDag` is true; sequential mode skips Step 3 with `dag-disabled`) |
 | 5 | plan or refined plan + implementation tree (state manifest `created` / `artifacts` non-empty, or `dryRun`) |
 | 6 | `step-05-{slug}.plan.report.md` |
 | 7 | `step-06-{slug}.review.md` when code review ran |

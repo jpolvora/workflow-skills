@@ -16,7 +16,7 @@ const { scoreLedger } = require('../../ws-spec-to-pr/scripts/ac_ledger.cjs');
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
 const { loadJsonSchema, validateNode } = require('./validate_json_schema.cjs');
 
-const STATE_VERSION = 2;
+const STATE_VERSION = 3;
 const SCHEMA_VERSION = 1;
 const SKIP_REASONS = new Set([
   'interview-not-required',
@@ -85,18 +85,13 @@ function jsonIdentityHash(state) {
   return sha256(canonicalStateJson(state));
 }
 
-function readPriorHandoffOutput(usDir, step) {
-  const file = path.join(usDir, 'handoff', `step-${String(step).padStart(2, '0')}.json`);
-  if (!fs.existsSync(file)) return null;
-  try {
-    const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
-    return {
-      summary: String(raw.summary || ''),
-      findings: raw.findings ?? null,
-    };
-  } catch {
-    return null;
-  }
+function readPriorHandoffOutput(state, step) {
+  const raw = state?.handoffs?.[String(step)];
+  if (!raw) return null;
+  return {
+    summary: String(raw.summary || ''),
+    findings: raw.findings ?? null,
+  };
 }
 
 function finishFingerprint(state, output) {
@@ -226,10 +221,9 @@ function writeHandoffFile({ usDir, state, pipeline, step, options, context, outp
   }
   const errors = validateNode(payload, loadJsonSchema(schemaPath, 'handoff schema'), 'handoff');
   if (errors.length) throw new Error(errors.join('; '));
-  const text = truncateHandoff(payload);
-  const target = path.join(usDir, 'handoff', `step-${String(step).padStart(2, '0')}.json`);
-  atomicWrite(target, text);
-  return Buffer.byteLength(text, 'utf8');
+  state.handoffs = state.handoffs && typeof state.handoffs === 'object' ? state.handoffs : {};
+  state.handoffs[String(step)] = payload;
+  return Buffer.byteLength(JSON.stringify(payload), 'utf8');
 }
 
 function nowIso() {
@@ -770,7 +764,7 @@ function updatePlansIndex(context, run, timestamp) {
     status: run.status,
     currentStep: run.currentStep,
     updatedAt: timestamp,
-    runPath: `${path.posix.dirname(run.statePath)}/run.json`,
+    runPath: run.statePath.replace(/\.state\.md$/, '.state.json'),
   };
   index.schemaVersion = SCHEMA_VERSION;
   index.revision = run.revision;
@@ -951,7 +945,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   if (!Number.isInteger(step) || step < 0 || step > maxStep) throw new Error(`step must be in range 0..${maxStep}`);
   const timestamp = String(options.timestamp || options.finishedAt || options.dispatchedAt || nowIso());
   const paths = statePaths(absoluteState, context);
-  const priorHandoffOutput = operation === 'finish' ? readPriorHandoffOutput(paths.usDir, step) : null;
+  const priorHandoffOutput = operation === 'finish' ? readPriorHandoffOutput(loaded.state, step) : null;
   const priorFingerprint = finishFingerprint(loaded.state, priorHandoffOutput);
   syncAcCountsFromLedger(state, paths.usDir);
   state.stateVersion = STATE_VERSION;
@@ -1027,8 +1021,11 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     let derivedScore = null;
     if (options.verificationScore !== undefined) {
       const ledgerFile = path.join(paths.usDir, 'ac-ledger.json');
-      if (!fs.existsSync(ledgerFile)) throw new Error('verification score requires ac-ledger.json');
-      const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+      let ledger = state.acLedger;
+      if (!ledger && fs.existsSync(ledgerFile)) {
+        ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+      }
+      if (!ledger) throw new Error('verification score requires ac-ledger.json or state.acLedger');
       const derived = scoreLedger(ledger, options.scoreBoundary || 'step5', context);
       if (Number(options.verificationScore) !== derived.score) {
         throw new Error(`verification score mismatch: supplied ${options.verificationScore}, derived ${derived.score}`);
@@ -1092,8 +1089,25 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       delete state[key];
     });
     Object.assign(state, restored);
+    event.idempotentReplay = true;
   } else if (operation === 'finish') {
     body = compactOutputs(body, step, finishOutput);
+    event.handoffBytes = writeHandoffFile({
+      usDir: paths.usDir,
+      state,
+      pipeline,
+      step,
+      options,
+      context,
+      output: finishOutput,
+    });
+  }
+  if (operation === 'finish') {
+    const hygiene = resolveContextHygiene(context.config);
+    event.pruneAfterStep = hygiene.pruneAfterStep;
+    if (pipeline === 'lite' && resolveReviewJurySize(context.config) > 1 && Number(step) === 3) {
+      event.juryIgnored = 'lite-inline';
+    }
   }
   const jsonText = canonicalStateJson(state);
   const stateHash = sha256(jsonText);
@@ -1101,42 +1115,26 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   const medians = estimatedSteps(context, pipeline, maxStep);
   const run = buildRun(state, pipeline, maxStep, labels, stateHash, medians);
   const index = updatePlansIndex(context, run, timestamp);
-  const telemetryFile = path.resolve(context.repoRoot, options.jsonlOut || path.join(paths.usDir, 'telemetry', `step-${String(step).padStart(2, '0')}.jsonl`));
-
-  if (operation === 'finish') {
-    const hygiene = resolveContextHygiene(context.config);
-    if (!isIdempotentFinish) {
-      event.handoffBytes = writeHandoffFile({
-        usDir: paths.usDir,
-        state,
-        pipeline,
-        step,
-        options,
-        context,
-        output: finishOutput,
-      });
-    }
-    event.pruneAfterStep = hygiene.pruneAfterStep;
-    if (pipeline === 'lite' && resolveReviewJurySize(context.config) > 1 && Number(step) === 3) {
-      event.juryIgnored = 'lite-inline';
-    }
-    if (isIdempotentFinish) event.idempotentReplay = true;
-  }
+  const defaultTelemetry = path.join(paths.usDir, 'telemetry.jsonl');
+  const telemetryFile = path.resolve(
+    context.repoRoot,
+    options.jsonlOut && !options.jsonlOut.includes('telemetry/step-')
+      ? options.jsonlOut
+      : defaultTelemetry,
+  );
 
   if (!isIdempotentFinish) {
     appendJsonl(telemetryFile, event);
   }
   atomicWrite(paths.jsonFile, jsonText);
   atomicWrite(absoluteState, stateContent);
-  atomicWrite(paths.runFile, `${JSON.stringify(run, null, 2)}\n`);
-  atomicWrite(paths.runMarkdown, renderRun(run, labels));
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
   if (operation === 'finish') {
     const artifact = finishArtifactName(state.slug, step);
     if (artifact) stampStepArtifact(path.join(paths.usDir, artifact), state, step);
   }
-  validateSnapshot({ stateFile: absoluteState, runFile: paths.runFile, indexFile: index.file, context, maxStep, pipeline });
-  return { ok: true, operation, step, revision: state.revision, stateSha256: stateHash, runPath: toRepoRelative(context.repoRoot, paths.runFile) };
+  validateSnapshot({ stateFile: absoluteState, indexFile: index.file, context, maxStep, pipeline });
+  return { ok: true, operation, step, revision: state.revision, stateSha256: stateHash, runPath: toRepoRelative(context.repoRoot, paths.jsonFile) };
 }
 
 function artifactMetadata(file, expectedStep, state) {
@@ -1192,6 +1190,7 @@ function requiredAdvanceArtifact(pipeline, next, state) {
     return lite[next] || null;
   }
   if (next === 3 && skippedReason(state, 2) === 'interview-not-required') return null;
+  if (next === 4 && skippedReason(state, 3) === 'dag-disabled') return null;
   if (next === 8) {
     const skip = skippedReason(state, 7);
     if (skip === 'testing-disabled' || skip === 'no-test-surface') return null;
@@ -1209,7 +1208,7 @@ function requiredAdvanceArtifact(pipeline, next, state) {
   return standard[next] || null;
 }
 
-function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, preAdvance, pipeline }) {
+function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, pipeline }) {
   const mdPath = markdownStatePath(stateFile);
   const jsonPath = jsonStatePath(stateFile);
   const mdText = fs.existsSync(mdPath) ? fs.readFileSync(mdPath, 'utf8') : '';
@@ -1236,14 +1235,6 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
     errors.push(...validateNode(state, loadJsonSchema(path.join(__dirname, '..', 'workflow-state.schema.json'), 'workflow state schema'), 'state.json'));
   }
   const actualHash = jsonText ? sha256(jsonText) : stateIdentityHash(mdText);
-  if (fs.existsSync(runFile)) {
-    const run = JSON.parse(fs.readFileSync(runFile, 'utf8'));
-    if (run.revision !== Number(state.revision) || !snapshotHashMatches(run.stateSha256, mdText, jsonText)) {
-      errors.push('run.json revision/state hash mismatch');
-    }
-    const runSchema = path.join(__dirname, '..', 'run.schema.json');
-    errors.push(...validateNode(run, loadJsonSchema(runSchema, 'run schema'), 'run.json'));
-  }
   if (fs.existsSync(indexFile) && inside(path.resolve(mdPath), context.repoRoot)) {
     const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
     const row = index.workflows?.find((item) => item.workflowId === state.workflowId);
@@ -1267,11 +1258,13 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
       }
     }
     const implementFrom = flow === 'lite' ? 2 : 4;
-    if (next >= implementFrom && !fs.existsSync(path.join(path.dirname(mdPath), 'plan.index.json'))) {
+    const planIndex = path.join(path.dirname(mdPath), 'plan.index.json');
+    const runtimePlanIndex = path.join(path.dirname(mdPath), '.runtime', 'plan.index.json');
+    if (next >= implementFrom && !fs.existsSync(planIndex) && !fs.existsSync(runtimePlanIndex)) {
       errors.push('plan.index.json is required before implement');
     }
     const ledgerFile = path.join(path.dirname(mdPath), 'ac-ledger.json');
-    if (next >= 1 && !fs.existsSync(ledgerFile)) errors.push('ac-ledger.json is required before advance');
+    if (next >= 1 && !state.acLedger && !fs.existsSync(ledgerFile)) errors.push('ac-ledger.json is required before advance');
     if (Number(next) === 4 && flow === 'standard') {
       const slug = state.slug || state.us;
       const usDir = path.dirname(mdPath);
@@ -1295,8 +1288,8 @@ function validateSnapshot({ stateFile, runFile, indexFile, context, maxStep, pre
         }
       }
     }
-    if (next >= 6 && fs.existsSync(ledgerFile)) {
-      const ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+    if (next >= 6 && (state.acLedger || fs.existsSync(ledgerFile))) {
+      const ledger = state.acLedger || JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
       const boundary = next === 6 ? 'pre-step6' : next >= 9 ? 'ship' : 'step5';
       let derived;
       try {
@@ -1434,7 +1427,6 @@ function runValidateCli(config) {
     if (!fs.existsSync(stateFile)) throw new Error(`state file not found: ${positional[0]}`);
     const result = validateSnapshot({
       stateFile,
-      runFile: path.join(path.dirname(stateFile), 'run.json'),
       indexFile: plansIndexPath(context),
       context,
       maxStep: config.maxStep,

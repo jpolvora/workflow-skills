@@ -14,10 +14,21 @@ function countsFromLedger(ledger) {
 }
 
 function syncAcCountsFromLedger(target, usDir) {
-  const ledgerFile = path.join(usDir, 'ac-ledger.json');
-  if (!fs.existsSync(ledgerFile) || !target || typeof target !== 'object') return target;
+  if (!target || typeof target !== 'object') return target;
+  let ledger = target.acLedger;
+  if (!ledger) {
+    const ledgerFile = path.join(usDir, 'ac-ledger.json');
+    if (fs.existsSync(ledgerFile)) {
+      try {
+        ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+      } catch {
+        /* unreadable */
+      }
+    }
+  }
+  if (!ledger) return target;
   try {
-    const counts = countsFromLedger(JSON.parse(fs.readFileSync(ledgerFile, 'utf8')));
+    const counts = countsFromLedger(ledger);
     target.acTotal = counts.acTotal;
     target.acImplemented = counts.acImplemented;
   } catch {

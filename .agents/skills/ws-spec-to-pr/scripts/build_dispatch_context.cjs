@@ -48,7 +48,15 @@ function bytes(value) {
 
 function indexedSlices(context, indexFile, acIds) {
   if (!indexFile || !acIds.length) return '';
-  const index = JSON.parse(fs.readFileSync(path.resolve(context.repoRoot, indexFile), 'utf8'));
+  let targetFile = indexFile;
+  const direct = path.resolve(context.repoRoot, targetFile);
+  if (!fs.existsSync(direct)) {
+    const runtimeAlt = path.join(path.dirname(direct), '.runtime', path.basename(direct));
+    if (fs.existsSync(runtimeAlt)) targetFile = runtimeAlt;
+  }
+  const resolved = path.resolve(context.repoRoot, targetFile);
+  if (!fs.existsSync(resolved)) return '';
+  const index = JSON.parse(fs.readFileSync(resolved, 'utf8'));
   const source = fs.readFileSync(path.resolve(context.repoRoot, index.source.path));
   const sourceHash = crypto.createHash('sha256').update(source).digest('hex');
   if (sourceHash !== index.source.sha256) throw new Error('plan index source hash mismatch');
@@ -78,34 +86,64 @@ function memorySlice(context, paths) {
 
 function optionalFile(context, file) {
   if (!file) return '';
-  const absolute = path.resolve(context.repoRoot, file);
-  return fs.existsSync(absolute) ? fs.readFileSync(absolute, 'utf8').replace(/\r\n?/g, '\n') : '';
+  const candidate = path.resolve(context.repoRoot, file);
+  return fs.existsSync(candidate) ? fs.readFileSync(candidate, 'utf8') : '';
 }
 
-function latestHandoff(context, stateRel, explicit) {
-  const target = explicit
-    ? path.resolve(context.repoRoot, explicit)
-    : stateRel
-      ? path.join(path.dirname(path.resolve(context.repoRoot, stateRel)), 'handoff')
-      : '';
-  if (!target) return '';
-  let file = target;
-  if (fs.existsSync(target) && fs.statSync(target).isDirectory()) {
-    const names = fs.readdirSync(target).filter((name) => /^step-\d+\.json$/.test(name)).sort();
-    if (!names.length) return '';
-    file = path.join(target, names[names.length - 1]);
-  }
-  if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) return '';
-  const raw = fs.readFileSync(file, 'utf8');
-  let parsed;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (error) {
-    throw new Error(`handoff JSON unreadable: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })} (${error.message})`);
-  }
+function formatHandoffPayload(parsed) {
   const pretty = `## Handoff\n\n\`\`\`json\n${JSON.stringify(parsed)}\n\`\`\`\n`;
   if (bytes(pretty) <= 8192) return pretty;
   return `## Handoff\n\n${String(parsed.summary || '').slice(0, 500)}\n`;
+}
+
+function latestHandoff(context, stateRel, explicit) {
+  if (explicit) {
+    const file = path.resolve(context.repoRoot, explicit);
+    if (fs.existsSync(file)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+        return formatHandoffPayload(parsed);
+      } catch (error) {
+        throw new Error(`handoff JSON unreadable: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })} (${error.message})`);
+      }
+    }
+  }
+  if (stateRel) {
+    const stateAbs = path.resolve(context.repoRoot, stateRel);
+    const jsonPath = stateAbs.endsWith('.json')
+      ? stateAbs
+      : path.join(path.dirname(stateAbs), `${path.basename(stateAbs, '.md')}.json`);
+    const altJsonPath = stateAbs.replace(/\.state\.md$/, '.state.json');
+    const targetJson = fs.existsSync(jsonPath) ? jsonPath : fs.existsSync(altJsonPath) ? altJsonPath : null;
+    if (targetJson) {
+      try {
+        const state = JSON.parse(fs.readFileSync(targetJson, 'utf8'));
+        if (state.handoffs && typeof state.handoffs === 'object') {
+          const steps = Object.keys(state.handoffs).map(Number).filter((n) => !Number.isNaN(n)).sort((a, b) => a - b);
+          if (steps.length) {
+            const parsed = state.handoffs[String(steps[steps.length - 1])];
+            if (parsed) return formatHandoffPayload(parsed);
+          }
+        }
+      } catch (error) {
+        throw new Error(`state JSON unreadable: ${toRepoRelative(context.repoRoot, targetJson, { allowOutside: true })} (${error.message})`);
+      }
+    }
+    const target = path.join(path.dirname(stateAbs), 'handoff');
+    if (fs.existsSync(target) && fs.statSync(target).isDirectory()) {
+      const names = fs.readdirSync(target).filter((name) => /^step-\d+\.json$/.test(name)).sort();
+      if (names.length) {
+        const file = path.join(target, names[names.length - 1]);
+        try {
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          return formatHandoffPayload(parsed);
+        } catch (error) {
+          throw new Error(`handoff JSON unreadable: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })} (${error.message})`);
+        }
+      }
+    }
+  }
+  return '';
 }
 
 function main() {

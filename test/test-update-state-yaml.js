@@ -214,7 +214,7 @@ function testLocNestedMappingRoundTrip() {
 function testFixPrRoleDispatchesPreserveNestedLoc() {
   const dir = mkTmp('ws-update-state-fix-pr-roles-');
   const { statePath, stateRel } = writeLocFixture(dir);
-  const jsonlRel = '.agents/plans/us-202/telemetry/step-09.jsonl';
+  const jsonlRel = '.agents/plans/us-202/telemetry.jsonl';
 
   for (const [substep, model, second] of [
     ['fixPrPlan', 'reviewer-role', '10'],
@@ -404,7 +404,7 @@ function testStateVersionStampAndReject() {
       console.error(r.stderr);
     }
     const fm = extractFrontmatter(path.join(dir, stateRel));
-    assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': stateVersion: 2 stamped after first write');
+    assert(/^stateVersion:\s*3\s*$/m.test(fm), copy + ': stateVersion: 3 stamped after first write');
   }
 
   for (const [copy, script] of [
@@ -425,11 +425,11 @@ function testStateVersionStampAndReject() {
     }
     assert(r1.status === 0, copy + ': update_state clamps unknown stateVersion 7 (exit 0)');
     let fm = extractFrontmatter(path.join(dir, stateRel));
-    assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': unknown 7 clamped to stateVersion: 2');
+    assert(/^stateVersion:\s*3\s*$/m.test(fm), copy + ': unknown 7 clamped to stateVersion: 3');
     const r2 = finishStep(script, dir, stateRel, 2);
     assert(r2.status === 0, copy + ': retry after clamp still exit 0');
     fm = extractFrontmatter(path.join(dir, stateRel));
-    assert(/^stateVersion:\s*2\s*$/m.test(fm), copy + ': retry keeps stateVersion: 2');
+    assert(/^stateVersion:\s*3\s*$/m.test(fm), copy + ': retry keeps stateVersion: 3');
   }
 
   const dir = mkTmp('ws-stateversion-reject-');
@@ -457,7 +457,7 @@ function testStateVersionStampAndReject() {
     }
   }
 
-  const good = writeStateVersionFixture(dir, 'stateVersion: 2\nrevision: 0', 'good');
+  const good = writeStateVersionFixture(dir, 'stateVersion: 3\nrevision: 0', 'good');
   const rGood = runPython(VALIDATE_STANDARD, [good]);
   assert(rGood.status === 0, 'current stateVersion: validate_state exits 0');
 
@@ -472,7 +472,7 @@ function testStateVersionStampAndReject() {
   const cjsM = cjsSrc.match(/^const STATE_VERSION = (\d+);/m);
   assert(cjsM, 'workflow_state.cjs STATE_VERSION found');
   const nodeVersion = parseInt(cjsM[1], 10);
-  assert(nodeVersion === 2, 'Node STATE_VERSION is 2');
+  assert(nodeVersion === 3, 'Node STATE_VERSION is 3');
 }
 
 function stampArtifact(usDir, fileName, fields) {
@@ -521,7 +521,7 @@ function writeArtifactFixture(dir, slug) {
     'slug: ' + slug + NL +
     'status: active' + NL +
     'currentStep: 0' + NL +
-    'stateVersion: 2' + NL +
+    'stateVersion: 3' + NL +
     'revision: 0' + NL +
     'dryRun: true' + NL +
     'completedSteps: [0]' + NL +
@@ -586,7 +586,7 @@ function writeInlineCommitFixture(dir, commitsYaml, dryRun, label) {
     'slug: commits-' + label + NL +
     'status: active' + NL +
     'currentStep: 5' + NL +
-    'stateVersion: 2' + NL +
+    'stateVersion: 3' + NL +
     'revision: 0' + NL +
     'dryRun: ' + (dryRun ? 'true' : 'false') + NL +
     'completedSteps: [0, 1, 2, 3, 4, 5]' + NL +

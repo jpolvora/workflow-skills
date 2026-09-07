@@ -42,21 +42,21 @@ Script behavior (namespace `uswf/{workflow-id}` only):
 
 **Only when** user chose **Delete temporary artifacts**. Independent of Phase A (Keep all still runs Phase A).
 
-1. Delete temp files:
+1. Delete temp files (if present):
    ```bash
-   rm {us-dir}/step-03-{slug}.plan.exec.md
-   rm {us-dir}/step-03-{slug}.exec.dag.json
-   rm {us-dir}/step-00-{slug}.issue.json
-   rm {us-dir}/step-05-{slug}.plan.report.md
-   rm {us-dir}/step-06-{slug}.review.md
-   rm {us-dir}/step-06-{slug}.fix.report.md
-   rm {us-dir}/step-07-{slug}.testing.plan.md
-   rm {us-dir}/step-07-{slug}.testing.report.md
+   rm -f {us-dir}/step-03-{slug}.plan.exec.md
+   rm -f {us-dir}/step-03-{slug}.exec.dag.json
+   rm -f {us-dir}/step-00-{slug}.issue.json
+   rm -f {us-dir}/step-05-{slug}.plan.report.md
+   rm -f {us-dir}/step-06-{slug}.review.md
+   rm -f {us-dir}/step-06-{slug}.fix.report.md
+   rm -f {us-dir}/step-07-{slug}.testing.plan.md
+   rm -f {us-dir}/step-07-{slug}.testing.report.md
    ```
 2. Remove baseline: `rm -rf {us-dir}/{workflow-id}.baseline/`
 3. Remove archive: `rm -rf {us-dir}/{workflow-id}.archive/`
 
-**Preserved:** `step-01-{slug}.plan.md`, `step-02-{slug}.plan.refined.md`, `step-08-{slug}.result.md`, `step-00-{slug}.spec.md`, `{workflow-id}.state.md` (while `status: active`).
+**Preserved:** `step-01-{slug}.plan.md`, `step-02-{slug}.plan.refined.md`, `step-08-{slug}.result.md`, `step-00-{slug}.spec.md`, `{workflow-id}.state.md`, `{workflow-id}.state.json`, `telemetry.jsonl` (while `status: active`).
 
 ## Shared contract
 
