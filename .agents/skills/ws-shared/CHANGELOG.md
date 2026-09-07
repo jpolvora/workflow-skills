@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-09-07 17:50] Agent: Cursor Grok 4.6
+- **Prompt**: PR 289 review threads on configure_autoload externalSkills handling
+- **Done**: Skip remaining Always-applied checks after companion warning; drop external ids in write_root_agents; poison tests for missing-skill suppression and root pointer
+- **Result**: test-external-companion-skills + test-autoload-configure exit 0; Learning: Always-applied writers and checkers must both skip externalSkills
+
+
 ### [2026-09-07 17:45] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-to-pr issue 288 full auto — real vs check-harness noise; portable hub/harness fixes; ship
 - **Done**: Declared `externalSkills` (ws-memo, ws-session-tracking); removed them from Always-applied; consumer CATALOG membership link; harness intentional-omission; installer bootstrap excludes foreign ids; regression tests; 0.4.3 bump
