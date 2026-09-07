@@ -89,8 +89,8 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 - **Review fixes get their own commit**, so a reviewer can see what the review changed.
 - **`deliveryCommitArtifacts`** selects exactly which plan artifacts enter the delivery commit (refined plan on by default; result, spec, check report, review, and testing report opt-in).
 - **Checkpoint tags** (`uswf/{workflow-id}/before-step-{N}`) are written at each transition, so a run can be inspected or rolled back per step.
-- **Telemetry** is emitted as JSONL per step under `{plansDir}/{slug}/telemetry/`.
-- **State is transactional and indexed.** Atomic Node state updates publish `run.json`, `run.md`, and the repo-level plans index with repo-relative POSIX paths and closed skip reasons.
+- **Telemetry** is emitted as a single append-only stream under `{plansDir}/{slug}/telemetry.jsonl`.
+- **State is transactional and indexed.** Atomic Node state updates publish `{workflow-id}.state.json` (machine SoT with embedded handoffs), `{workflow-id}.state.md`, and the repo-level plans index with repo-relative POSIX paths and closed skip reasons.
 - **Acceptance criteria are traceable.** Orchestrator Step 0 runs `ac_ledger.cjs init`; Step 1 (and Step 2 after interview) runs `plan_index.cjs build`. Downstream steps read AC slices from `plan.index.json`. The ledger links each AC to semantic evidence, files, tests, commits, findings, and sabotage outcomes.
 - **Review history is immutable.** Every review round is preserved as `.review.rN.md`; the canonical review file points at the latest validated round.
 

@@ -1215,4 +1215,57 @@ acImplemented: 0
   assert.match(`${failStep3.stdout}${failStep3.stderr}`, /step 3 must be completed or skipped with reason dag-disabled/);
 }
 
+// Step 5 scoreAndRefine and Step 6 dispatch guard tests
+{
+  const guardRoot = temp('ws-state-guard-s5-');
+  const slug = 'guards5';
+  const workflowId = 'wf-guards5';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const common = ['--repo-root', guardRoot, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
+  write(path.join(guardRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'guard' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  write(path.join(guardRoot, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 5
+completedSteps: [0, 1, 2, 3, 4]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 1
+verificationScore: 7
+---
+# State
+`);
+
+  // 1. Dispatching step 6 when Step 5 is not completed and score is 7/10 fails closed
+  const failDispatch6 = run(update, ['dispatch', stateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:00.000Z', ...common]);
+  assert.notStrictEqual(failDispatch6.status, 0, 'dispatch step 6 fails when step 5 is not completed');
+  assert.match(`${failDispatch6.stdout}${failDispatch6.stderr}`, /cannot dispatch step 6/);
+
+  // 2. Finishing scoreAndRefine substep keeps currentStep at 5 and stepStatus active
+  const refineFinish = run(update, [
+    'finish', stateRel, '--step', '5', '--substep', 'scoreAndRefine',
+    '--timestamp', '2026-08-21T21:01:00.000Z', ...common,
+  ]);
+  assert.strictEqual(refineFinish.status, 0, refineFinish.stderr);
+  const jsonPath = path.join(guardRoot, `.agents/plans/${slug}/wf.state.json`);
+  const refinedState = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  assert.strictEqual(refinedState.currentStep, 5, 'scoreAndRefine finish keeps currentStep at 5');
+  assert.strictEqual(refinedState.stepStatus['5'], 'active', 'step 5 remains active during scoreAndRefine');
+  assert.ok(!refinedState.completedSteps.includes(5), 'step 5 is not marked completed during scoreAndRefine');
+
+  // 3. Dispatching step 4 without plan artifacts fails closed
+  const failDispatch4 = run(update, ['dispatch', stateRel, '--step', '4', '--timestamp', '2026-08-21T21:02:00.000Z', ...common]);
+  assert.notStrictEqual(failDispatch4.status, 0, 'dispatch step 4 fails when plan artifacts missing on disk');
+  assert.match(`${failDispatch4.stdout}${failDispatch4.stderr}`, /plan artifact missing|plan\.index\.json is required/);
+}
+
 console.log('test-workflow-state-contract: ok');
