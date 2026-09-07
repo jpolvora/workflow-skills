@@ -17,7 +17,7 @@ write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
   fable: { auditVerdictsBlockShip: 'refuted' },
 }));
 const fixState = path.join(plans, 'fix-pr', 'fix-pr.state.md');
-const fixJsonlRel = '.agents/plans/fix-pr/telemetry/step-09.jsonl';
+const fixJsonlRel = '.agents/plans/fix-pr/telemetry.jsonl';
 write(fixState, `---
 workflowId: fix-pr-telemetry
 slug: fix-pr
@@ -52,7 +52,7 @@ const fixEvents = fs.readFileSync(path.join(root, fixJsonlRel), 'utf8')
 assert.deepStrictEqual(fixEvents.map((event) => event.substep), ['fixPrPlan', 'fixPrExec']);
 assert.deepStrictEqual(fixEvents.map((event) => event.model), ['reviewer-role', 'execution-role']);
 assert.ok(fixEvents.every((event) => event.type === 'dispatch'));
-const telemetry = path.join(plans, 'demo', 'telemetry', 'step-04.jsonl');
+const telemetry = path.join(plans, 'demo', 'telemetry.jsonl');
 write(telemetry, [
   JSON.stringify({
     schemaVersion: 1, type: 'finish', timestamp: '2026-08-21T20:00:12.000Z',

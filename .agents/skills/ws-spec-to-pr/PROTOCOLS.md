@@ -85,7 +85,7 @@ Any step **may** use a worktree when `useWorktrees=true`. **Preferred** for code
 
 → [`protocols/state-hygiene.md`](protocols/state-hygiene.md)
 
-Every step: call `update_state.cjs dispatch` before execution and `finish` afterward. The helper derives elapsed time and rejects authored `--elapsed`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl`. After checkpoint, run the Node pre-advance validator (see [`state-hygiene.md`](protocols/state-hygiene.md)). Missing boundary telemetry, hygiene failure, or pre-advance exit ≠ 0 → **HS-5**.
+Every step: call `update_state.cjs dispatch` before execution and `finish` afterward. The helper derives elapsed time and rejects authored `--elapsed`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry.jsonl` (single stream for all steps). After checkpoint, run the Node pre-advance validator (see [`state-hygiene.md`](protocols/state-hygiene.md)). Missing boundary telemetry, hygiene failure, or pre-advance exit ≠ 0 → **HS-5**.
 
 ### Model readiness
 

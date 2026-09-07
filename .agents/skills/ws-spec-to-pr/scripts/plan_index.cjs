@@ -15,6 +15,10 @@ function parseArgs(argv) {
   const options = {};
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     if (token.startsWith('--')) options[token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[++index];
     else positional.push(token);
   }
@@ -177,7 +181,9 @@ function readSlice(options) {
 
 try {
   const { command, options } = parseArgs(process.argv.slice(2));
-  if (command === 'build') {
+  if (options.help) {
+    process.stdout.write('Usage: plan_index.cjs build|read|verify [options]\n');
+  } else if (command === 'build') {
     const result = build(options);
     process.stdout.write(`${JSON.stringify({ ok: true, sections: result.sections.length, acceptanceCriteria: result.acceptanceCriteria.length })}\n`);
   } else if (command === 'read') readSlice(options);

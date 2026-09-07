@@ -27,9 +27,9 @@ flowchart TD
   S0[0 Spec] --> S1[1 Plan]
   S1 --> S2[2 Interview]
   S2 --> S3{enableDag}
-  S3 -->|false default| Stub[write_sequential_dag.cjs]
+  S3 -->|false default| Skip[skip dag-disabled, no stubs]
   S3 -->|true| Dag[ws-plan-to-tasks]
-  Stub --> S4[4 Implement]
+  Skip --> S4[4 Implement]
   Dag --> S4
   S4 --> S5[5 Check-implementation]
   S5 -->|≥ minVerifyScore| C1[G2-code verified implementation]

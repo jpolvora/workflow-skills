@@ -428,13 +428,15 @@ assert(dagFinish.status === 0, `dag finish: ${dagFinish.stderr}`);
 assert(/currentModel: dag-worker/.test(fs.readFileSync(roleState, 'utf8')), 'finish without --substep keeps persisted dag role');
 assert(!/currentModel: sequential-exec/.test(fs.readFileSync(roleState, 'utf8')), 'finish does not fall back to step-4 execution bucket');
 
-const fixState = path.join(tempStateDir, 'fix-pr.state.md');
-const fixJsonl = path.join(tempStateDir, 'telemetry/step-09.jsonl');
+const fixStateDir = path.join(tempRoot, '.agents/plans/fix-pr');
+fs.mkdirSync(fixStateDir, { recursive: true });
+const fixState = path.join(fixStateDir, 'fix-pr.state.md');
+const fixJsonl = path.join(fixStateDir, 'telemetry.jsonl');
 fs.writeFileSync(
   fixState,
   `---
 workflowId: wf-fix-pr
-slug: slug
+slug: fix-pr
 status: active
 currentStep: 9
 currentModel: captured-session

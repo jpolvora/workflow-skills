@@ -9,13 +9,17 @@ function parseArgs(argv) {
   const options = { keyword: [] };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
     const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
     const value = argv[++index];
     if (key === 'keyword') options.keyword.push(value);
     else options[key] = value;
   }
-  if (!options.slug && !options.keyword.length) throw new Error('--slug or --keyword is required');
+  if (!options.slug && !options.keyword.length && !options.help) throw new Error('--slug or --keyword is required');
   return options;
 }
 
@@ -36,6 +40,10 @@ function candidateFiles(directory) {
 
 function main() {
   const options = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    process.stdout.write('Usage: search_plan_history.cjs --slug SLUG|--keyword WORD [--json]\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const plansDir = resolveConfiguredPath(context.repoRoot, context.config?.plans?.dir || '.agents/plans');
   const indexFile = path.join(plansDir, 'index.json');

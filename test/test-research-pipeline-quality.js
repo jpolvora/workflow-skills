@@ -156,7 +156,7 @@ skippedSteps: []
 const liteCommon = ['--repo-root', liteRoot, '--jsonl-out', '.agents/plans/lite/telemetry/step-03.jsonl'];
 assert.strictEqual(run(lite, ['dispatch', liteState, '--step', '3', '--timestamp', '2026-08-27T07:00:00.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(lite, ['finish', liteState, '--step', '3', '--timestamp', '2026-08-27T07:00:05.000Z', ...liteCommon]).status, 0);
-const liteEvent = fs.readFileSync(path.join(liteRoot, '.agents/plans/lite/telemetry/step-03.jsonl'), 'utf8')
+const liteEvent = fs.readFileSync(path.join(liteRoot, '.agents/plans/lite/telemetry.jsonl'), 'utf8')
   .trim().split('\n').map(JSON.parse).find((row) => row.type === 'finish');
 assert.strictEqual(liteEvent.juryIgnored, 'lite-inline');
 
@@ -273,7 +273,7 @@ const stateRel = '.agents/plans/demo/wf.state.md';
 const statePath = path.join(handoffFixture, stateRel);
 fs.mkdirSync(path.dirname(statePath), { recursive: true });
 write(statePath, `---
-stateVersion: 2
+stateVersion: 3
 revision: 0
 workflowId: wf-demo
 slug: demo
@@ -302,9 +302,8 @@ const finishRes = run(updateStateScript, [
   '--repo-root', handoffFixture,
 ]);
 assert.strictEqual(finishRes.status, 0, finishRes.stderr);
-const handoffJsonPath = path.join(handoffFixture, '.agents/plans/demo/handoff/step-04.json');
-assert.ok(fs.existsSync(handoffJsonPath), 'step-04 handoff JSON exists');
-const handoffData = JSON.parse(fs.readFileSync(handoffJsonPath, 'utf8'));
-assert.deepStrictEqual(handoffData.artifactPaths, ['src/abs-created.js', 'src/abs-modified.js']);
+const stateJson = JSON.parse(fs.readFileSync(path.join(handoffFixture, '.agents/plans/demo/wf.state.json'), 'utf8'));
+assert.ok(stateJson.handoffs && stateJson.handoffs['4'], 'step-04 handoff exists in state.handoffs');
+assert.deepStrictEqual(stateJson.handoffs['4'].artifactPaths, ['src/abs-created.js', 'src/abs-modified.js']);
 
 console.log('test-research-pipeline-quality: ok');
