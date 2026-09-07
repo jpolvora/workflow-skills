@@ -25,6 +25,10 @@ function parseArgs(argv) {
   const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult', 'invariantViolation']);
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     if (!token.startsWith('--')) positional.push(token);
     else {
       const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
@@ -465,6 +469,10 @@ function syncPlanIndex(options, context) {
 
 function main() {
   const { command, options } = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    process.stdout.write('Usage: ac_ledger.cjs init|link|sync-plan-index|verify|score|report [options]\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   let result;
   if (command === 'init') result = init(options, context);

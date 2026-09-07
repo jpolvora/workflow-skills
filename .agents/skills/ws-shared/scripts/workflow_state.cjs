@@ -38,6 +38,7 @@ const RUNTIME_NAMES = [
   /^final\.md$/,
   /^plan-gate\.md$/,
   /^resolve-[A-Za-z0-9_-]+\.txt$/,
+  /^plan\.index\.json$/,
   /\.(cjs|patch|md)$/,
 ];
 
@@ -1305,6 +1306,10 @@ function runUpdateCli(config) {
       return;
     }
     const [operation, stateFile] = positional;
+    if (!['dispatch', 'finish', 'bypass'].includes(operation)) {
+      throw new Error('operation must be dispatch, finish, or bypass');
+    }
+    if (!stateFile) throw new Error('state path or workflow id is required');
     options.scriptFile = config.scriptFile;
     const result = performUpdate(config, operation, stateFile, options);
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
@@ -1418,7 +1423,13 @@ function runValidateCli(config) {
     process.stdout.write(`${JSON.stringify({ ...result, state: toRepoRelative(context.repoRoot, stateFile, { allowOutside: true }) }, null, 2)}\n`);
   } catch (error) {
     let message = error.message;
-    if (options.preAdvance !== undefined && Number(requirePreAdvanceStep(options.preAdvance)) === 4 && config.pipeline === 'standard' && !message.includes('HS-5')) {
+    let preAdvanceStep = null;
+    try {
+      preAdvanceStep = options.preAdvance === undefined ? null : requirePreAdvanceStep(options.preAdvance);
+    } catch {
+      preAdvanceStep = null;
+    }
+    if (preAdvanceStep === 4 && config.pipeline === 'standard' && !message.includes('HS-5')) {
       message = `${message}; HS-5`;
     }
     process.stderr.write(`ERROR: ${message}\n`);

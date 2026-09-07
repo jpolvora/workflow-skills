@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-07 16:10] Agent: opencode (script first-run safety audit fixes)
+- **Prompt**: audit spec-to-pr/lite scripts for first-time-run failures → approved → implement P0 + papercuts + doc alignment
+- **Done**: .runtime allowlist accepts plan.index.json; update_state positional guard; validate catch rethrow fixed; --help usage in 7 scripts; STEP-DISPATCH/PROTOCOLS/state-hygiene/DIAGRAM point at telemetry.jsonl + .runtime index + dag-disabled skip; 6 suites + handoff check + integrity pass
+- **Result**: uncommitted fix set (13 files + integrity); benchmark timestamp dirt left untouched
+
 ### [2026-09-07 15:30] Agent: opencode (judge fix for 0068)
 - **Prompt**: review committed 0068 consolidation (cacc0408) → approved fix plan → execute workstreams 1-5
 - **Done**: pruned dead run.json/RUN.md paths + renderRun + rebuildIndex runPath; aligned ARTIFACTS.md runtime/prereq/read-contract/never-staged/ownership; aligned lite SKILL telemetry + plan-index (handoff substring kept for pipeline check); added handoffs/acLedger to state schema with file-first fold-in; hardened telemetry legacy redirect regex; regen + verify integrity

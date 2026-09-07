@@ -11,10 +11,14 @@ function parseArgs(argv) {
   const options = {};
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
     options[token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[++index];
   }
-  for (const key of ['verify', 'review', 'output']) if (!options[key]) throw new Error(`--${key} is required`);
+  for (const key of ['verify', 'review', 'output']) if (!options[key] && !options.help) throw new Error(`--${key} is required`);
   return options;
 }
 
@@ -67,6 +71,10 @@ function mergeJuryReports(reports) {
 
 function main() {
   const options = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    process.stdout.write('Usage: merge_verify_review.cjs --verify FILE --review FILE --output FILE\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const minVerifyScore = resolveMinVerifyScore(context.config);
   const verify = readPayload(path.resolve(context.repoRoot, options.verify), 'verify');

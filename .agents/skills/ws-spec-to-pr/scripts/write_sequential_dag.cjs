@@ -9,17 +9,25 @@ function parseArgs(argv) {
   const options = {};
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
     options[token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[++index];
   }
   for (const key of ['slug', 'workflowId', 'plan', 'execOut', 'dagOut']) {
-    if (!options[key]) throw new Error(`--${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)} is required`);
+    if (!options[key] && !options.help) throw new Error(`--${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)} is required`);
   }
   return options;
 }
 
 function main() {
   const options = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    process.stdout.write('Usage: write_sequential_dag.cjs --slug SLUG --workflow-id ID --plan FILE --exec-out FILE --dag-out FILE\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const plan = path.resolve(context.repoRoot, options.plan);
   const execOut = path.resolve(context.repoRoot, options.execOut);

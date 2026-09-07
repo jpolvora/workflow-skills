@@ -10,13 +10,17 @@ function parseArgs(argv) {
   const options = { reviews: [] };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
     const key = token.slice(2).replace(/-([a-z])/g, (_, character) => character.toUpperCase());
     if (key === 'review') options.reviews.push(argv[++index]);
     else options[key] = argv[++index];
   }
-  if (options.reviews.length < 2) throw new Error('merge_review_jury requires at least two --review files');
-  if (!options.output) throw new Error('--output is required');
+  if (options.reviews.length < 2 && !options.help) throw new Error('merge_review_jury requires at least two --review files');
+  if (!options.output && !options.help) throw new Error('--output is required');
   return options;
 }
 
@@ -45,6 +49,10 @@ function formatCanonicalReviewMarkdown(result, slug) {
 
 function main() {
   const options = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    process.stdout.write('Usage: merge_review_jury.cjs --review FILE --review FILE --output FILE [--canonical-review-out FILE]\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const expectedSize = Number(context.config?.defaults?.reviewJury?.size || 0);
   if (expectedSize > 1 && options.reviews.length !== expectedSize) {

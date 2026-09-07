@@ -20,12 +20,16 @@ function parseArgs(argv) {
   const options = { ac: [], paths: [] };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === '--help' || token === '-h') {
+      options.help = true;
+      continue;
+    }
     const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
     if (key === 'ac' || key === 'path') options[key === 'path' ? 'paths' : key].push(argv[++index]);
     else options[key] = argv[++index];
   }
-  if (!options.skill) throw new Error('--skill is required');
+  if (!options.skill && !options.help) throw new Error('--skill is required');
   return options;
 }
 
@@ -148,6 +152,10 @@ function latestHandoff(context, stateRel, explicit) {
 
 function main() {
   const options = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    process.stdout.write('Usage: build_dispatch_context.cjs --skill FILE [--ac ACn ...] [options]\n');
+    return;
+  }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const skillPath = path.resolve(context.repoRoot, options.skill);
   const targetText = fs.readFileSync(skillPath, 'utf8');

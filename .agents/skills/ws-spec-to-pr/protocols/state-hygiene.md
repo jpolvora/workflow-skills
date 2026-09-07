@@ -12,7 +12,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs dispatch \
   --step {N} \
   --model {modelName} \
   --substep {dag|scoreAndRefine|reviewFix|fixPrPlan|fixPrExec} \
-  --jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl
+  --jsonl-out {plansDir}/{slug}/telemetry.jsonl
 
 node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   {plansDir}/{slug}/{workflow-id}.state.md \
@@ -28,10 +28,10 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   --modified "{comma_separated_modified_files}" \
   --deleted "{comma_separated_deleted_files}" \
   --gate-decision '{"gate":"transition","choice":"{choice}","reason":"{reason}","round":{round}}' \
-  --jsonl-out {plansDir}/{slug}/telemetry/step-{NN}.jsonl
+  --jsonl-out {plansDir}/{slug}/telemetry.jsonl
 ```
 
-`--jsonl-out` is **mandatory** on every call (zero-padded `NN` = step number). Creates `{plansDir}/{slug}/telemetry/` lazily. When quality gates are bypassed, run the `bypass` operation with `--gate` and `--reason`.
+`--jsonl-out` is **mandatory** on every call pointing at `{plansDir}/{slug}/telemetry.jsonl` (single append-only stream for all steps). When quality gates are bypassed, run the `bypass` operation with `--gate` and `--reason`.
 
 On **close** (standard Step 8 / lite Step 4) `finish --status completed`, the helper sets workflow `status: completed`, `endedAt`, and `shipStatus: pending` unless `--ship-status` is passed. Later ship/fix-pr finishes update `--ship-status` only — they do **not** re-set `status`.
 
