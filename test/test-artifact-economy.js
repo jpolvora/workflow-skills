@@ -32,7 +32,7 @@ assert.strictEqual(dag.skipReason, 'dag-disabled');
 const dispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
 assert.match(dispatch, /ac_ledger\.cjs init/);
 assert.match(dispatch, /plan_index\.cjs build/);
-assert.match(dispatch, /write_sequential_dag\.cjs/);
+assert.match(dispatch, /dag-disabled/);
 assert.match(dispatch, /probe_test_surface\.cjs/);
 assert.match(dispatch, /force_interview/);
 const artifacts = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md'), 'utf8');

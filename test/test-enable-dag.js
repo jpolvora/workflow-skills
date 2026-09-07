@@ -110,8 +110,8 @@ assert(
   'STEP-DISPATCH.md documents defaults.enableDag evaluation in Step 3',
 );
 assert(
-  stepDispatch.includes('write_sequential_dag.cjs'),
-  'STEP-DISPATCH.md writes sequential DAG via script when enableDag is false',
+  /dag-disabled/.test(stepDispatch),
+  'STEP-DISPATCH.md skips Step 3 with dag-disabled when enableDag is false',
 );
 assert(
   /do \*\*not\*\* `dispatch-agent`/.test(stepDispatch),
