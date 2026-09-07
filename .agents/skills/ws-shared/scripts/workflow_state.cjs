@@ -943,6 +943,44 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   let finishOutput = {};
 
   if (operation === 'dispatch') {
+    if (pipeline === 'standard') {
+      const minVerifyScore = resolveMinVerifyScore(context.config);
+      if (step === 6) {
+        if (!stepCompleted(state, 5)) {
+          throw new Error('cannot dispatch step 6: step 5 must be completed first');
+        }
+        if (state.verificationScore === undefined || Number(state.verificationScore) < minVerifyScore) {
+          throw new Error(`cannot dispatch step 6: step 5 score (${state.verificationScore}) is below minVerifyScore (${minVerifyScore}); scoreAndRefine is required`);
+        }
+      } else if (step === 4 && normalizeSubstep(options.substep) !== 'dag') {
+        if (!stepCompleted(state, 1)) {
+          throw new Error('cannot dispatch step 4: step 1 must be completed before implement');
+        }
+        const step2Reason = skippedReason(state, 2);
+        if (!stepCompleted(state, 2) && step2Reason !== 'interview-not-required') {
+          throw new Error('cannot dispatch step 4: step 2 must be completed or skipped with reason interview-not-required before implement');
+        }
+        const step3Reason = skippedReason(state, 3);
+        if (!stepCompleted(state, 3) && step3Reason !== 'dag-disabled') {
+          throw new Error('cannot dispatch step 4: step 3 must be completed or skipped with reason dag-disabled before implement');
+        }
+        const slug = state.slug || state.us;
+        if (slug) {
+          const needRefined = stepCompleted(state, 2) && step2Reason !== 'interview-not-required';
+          const planFile = needRefined ? `step-02-${slug}.plan.refined.md` : `step-01-${slug}.plan.md`;
+          const planPath = path.join(paths.usDir, planFile);
+          if (!isNonEmptyFile(planPath)) {
+            throw new Error(`cannot dispatch step 4: required plan artifact missing: ${toRepoRelative(context.repoRoot, planPath, { allowOutside: true })}`);
+          }
+          const planIndex = path.join(paths.usDir, 'plan.index.json');
+          const runtimePlanIndex = path.join(paths.usDir, '.runtime', 'plan.index.json');
+          const indexPath = fs.existsSync(planIndex) ? planIndex : runtimePlanIndex;
+          if (!isParseableJsonObject(indexPath)) {
+            throw new Error(`cannot dispatch step 4: plan.index.json is required before implement: ${toRepoRelative(context.repoRoot, indexPath, { allowOutside: true })}`);
+          }
+        }
+      }
+    }
     state.currentStep = step;
     state.stepStatus[String(step)] = 'active';
     const dispatch = { step, dispatchedAt: timestamp };
@@ -971,12 +1009,20 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         evidence: String(options.evidence || ''),
       }].sort((a, b) => a.step - b.step);
     }
-    state.completedSteps = [...new Set([...(state.completedSteps || []).map(Number), step])].sort((a, b) => a - b);
-    state.stepStatus[String(step)] = status;
-    state.currentStep = Math.min(maxStep, step + 1);
+    const isInternalSubstep = options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep);
+    if (!isInternalSubstep) {
+      state.completedSteps = [...new Set([...(state.completedSteps || []).map(Number), step])].sort((a, b) => a - b);
+      state.stepStatus[String(step)] = status;
+      state.currentStep = Math.min(maxStep, step + 1);
+    } else {
+      state.currentStep = step;
+      state.stepStatus[String(step)] = 'active';
+    }
     state.currentModel = resolveRecordedModel(options, context, state, pipeline, step);
     options.model = state.currentModel;
-    state.nextAction = status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
+    state.nextAction = isInternalSubstep
+      ? `Resume step ${step} (${options.substep})`
+      : status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
     const output = readStepOutput(options.stepOutput, context);
     finishOutput = output;
     const created = listArg(options.created || output.files_touched?.created?.join(','));
@@ -1156,6 +1202,24 @@ function stepCompleted(state, step) {
   return (state.completedSteps || []).map(Number).includes(Number(step));
 }
 
+function isNonEmptyFile(file) {
+  try {
+    const stat = fs.statSync(file);
+    return stat.isFile() && stat.size > 0;
+  } catch {
+    return false;
+  }
+}
+
+function isParseableJsonObject(file) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return parsed !== null && typeof parsed === 'object';
+  } catch {
+    return false;
+  }
+}
+
 function stepSkipped(state, step) {
   return (state.skippedSteps || []).some((row) => Number(row.step) === Number(step));
 }
@@ -1269,6 +1333,11 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
         if (!fs.existsSync(planPath)) {
           errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, planPath, { allowOutside: true })}`);
         }
+      }
+    }
+    if (Number(next) === 6 && flow === 'standard') {
+      if (!stepCompleted(state, 5)) {
+        errors.push('step 5 must be completed before step 6');
       }
     }
     if (next >= 6 && (fs.existsSync(ledgerFile) || state.acLedger)) {

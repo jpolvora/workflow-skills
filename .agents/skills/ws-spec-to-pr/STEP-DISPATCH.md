@@ -88,9 +88,11 @@ When overall score is below `minVerifyScore`, run `scoreAndRefine` even if `defa
 | Score | Behavior |
 |-------|----------|
 | ≥ `minVerifyScore` | Complete step 5; **Reach-10 offer** when conditions in [`gates.md`](../ws-shared/gates.md) hold; **G2-code after Step 5 before Step 6** (skip if empty); then dispatch 6 |
-| below `minVerifyScore` | **scoreAndRefine** until ≥ `minVerifyScore` (max 3 rounds, then Pause). Never Advance or auto-approve below `minVerifyScore`. Refine runs **before** the product commit. |
+| below `minVerifyScore` | **scoreAndRefine** until ≥ `minVerifyScore` (max 3 rounds, then Pause). Never Advance, complete Step 5, or auto-approve below `minVerifyScore`. Refine runs **before** the product commit. |
 
-`autoMode`: auto-run scoreAndRefine rounds; do **not** auto-approve below `minVerifyScore` — Pause only after max rounds still below `minVerifyScore`.
+`autoMode`: auto-run scoreAndRefine rounds; auto-select **Proceed with Second Pass Refinement**; do **not** call `update_state finish --step 5` or dispatch Step 6 below `minVerifyScore` — Pause only after max rounds still below `minVerifyScore`. When refinement completes: re-verify, G2-code if score ≥ `minVerifyScore`, then complete Step 5 and dispatch Step 6.
+
+Await each `dispatch-agent` subagent before its matching `finish`: dispatching the next step while a refine or fix runner is still active orphans it, and the Step 6 dispatch and pre-advance guards stay red until the active round finishes.
 
 Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate and § Score & Refine gate.
 

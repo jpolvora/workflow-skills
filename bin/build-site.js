@@ -389,14 +389,14 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <div class="role-card-icon">N</div>
         <h4 class="role-card-title">Atomic Node state runtime</h4>
       </div>
-      <p class="role-card-desc">Portable Node helpers write <code>{workflow-id}.state.json</code> first, render <code>.state.md</code>, and publish derived <code>run.json</code>, <code>run.md</code>, step handoff JSON, plans-index, and progress artifacts for reliable resume and inspection.</p>
+      <p class="role-card-desc">Portable Node helpers write <code>{workflow-id}.state.json</code> first (machine SoT with embedded handoffs), render <code>.state.md</code>, and append a single <code>telemetry.jsonl</code> stream plus the repo plans index for reliable resume and inspection.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">T</div>
         <h4 class="role-card-title">Telemetry and deterministic reporting</h4>
       </div>
-      <p class="role-card-desc">Per-step JSONL telemetry captures lifecycle, gate, skip, revision, and timing evidence. Aggregate and report commands summarize audit counts and median elapsed time by pipeline and step.</p>
+      <p class="role-card-desc">A single append-only <code>telemetry.jsonl</code> stream captures lifecycle, gate, skip, revision, and timing evidence. Aggregate and report commands summarize audit counts and median elapsed time by pipeline and step.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">

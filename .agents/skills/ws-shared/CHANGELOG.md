@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-07 17:30] Agent: opencode (dispatch-guard orphan-orch fix)
+- **Prompt**: judge + code review latest commit vs previous diff, stepwise awaited dispatch → approved full 6-item plan → implement simplified, test, ship
+- **Done**: workflow_state.cjs dispatch-6 requires defined score >= minVerifyScore (closes undefined-score orphan); step-4 guard unconditional except dag substep (fresh-state + dag role both correct); plan/index content checks (non-empty + valid JSON); fixPrPlan/fixPrExec internal-substep finish stays active; gates.md + STEP-DISPATCH.md await wording; 7 new contract asserts; 0.4.2 bump + integrity regen
+- **Result**: contract, models-preset, min-verify-score, score-refine, enable-dag, artifact-economy, transition-gate, resume-gate, telemetry, update-state-yaml, quality-gates, research-quality, fix-pr-sweep, doc-sync, frontmatter, invariant scan green; Learning: dispatch guards belong at transition time (dispatch/pre-advance), not record time (finish)
+
 ### [2026-09-07 16:10] Agent: opencode (script first-run safety audit fixes)
 - **Prompt**: audit spec-to-pr/lite scripts for first-time-run failures → approved → implement P0 + papercuts + doc alignment
 - **Done**: .runtime allowlist accepts plan.index.json; update_state positional guard; validate catch rethrow fixed; --help usage in 7 scripts; STEP-DISPATCH/PROTOCOLS/state-hygiene/DIAGRAM point at telemetry.jsonl + .runtime index + dag-disabled skip; 6 suites + handoff check + integrity pass

@@ -1215,4 +1215,215 @@ acImplemented: 0
   assert.match(`${failStep3.stdout}${failStep3.stderr}`, /step 3 must be completed or skipped with reason dag-disabled/);
 }
 
+// Step 5 scoreAndRefine and Step 6 dispatch guard tests
+{
+  const guardRoot = temp('ws-state-guard-s5-');
+  const slug = 'guards5';
+  const workflowId = 'wf-guards5';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const common = ['--repo-root', guardRoot, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
+  write(path.join(guardRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'guard' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  write(path.join(guardRoot, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 5
+completedSteps: [0, 1, 2, 3, 4]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 1
+verificationScore: 7
+---
+# State
+`);
+
+  // 1. Dispatching step 6 when Step 5 is not completed and score is 7/10 fails closed
+  const failDispatch6 = run(update, ['dispatch', stateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:00.000Z', ...common]);
+  assert.notStrictEqual(failDispatch6.status, 0, 'dispatch step 6 fails when step 5 is not completed');
+  assert.match(`${failDispatch6.stdout}${failDispatch6.stderr}`, /cannot dispatch step 6/);
+
+  // 2. Finishing scoreAndRefine substep keeps currentStep at 5 and stepStatus active
+  const refineFinish = run(update, [
+    'finish', stateRel, '--step', '5', '--substep', 'scoreAndRefine',
+    '--timestamp', '2026-08-21T21:01:00.000Z', ...common,
+  ]);
+  assert.strictEqual(refineFinish.status, 0, refineFinish.stderr);
+  const jsonPath = path.join(guardRoot, `.agents/plans/${slug}/wf.state.json`);
+  const refinedState = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  assert.strictEqual(refinedState.currentStep, 5, 'scoreAndRefine finish keeps currentStep at 5');
+  assert.strictEqual(refinedState.stepStatus['5'], 'active', 'step 5 remains active during scoreAndRefine');
+  assert.ok(!refinedState.completedSteps.includes(5), 'step 5 is not marked completed during scoreAndRefine');
+
+  // 3. Dispatching step 4 without plan artifacts fails closed
+  const failDispatch4 = run(update, ['dispatch', stateRel, '--step', '4', '--timestamp', '2026-08-21T21:02:00.000Z', ...common]);
+  assert.notStrictEqual(failDispatch4.status, 0, 'dispatch step 4 fails when plan artifacts missing on disk');
+  assert.match(`${failDispatch4.stdout}${failDispatch4.stderr}`, /plan artifact missing|plan\.index\.json is required/);
+}
+
+// Step 6 dispatch requires a passing Step 5 score even when Step 5 is completed
+for (const [name, scoreLine, shouldPass] of [
+  ['below-min', 'verificationScore: 7', false],
+  ['undefined-score', '', false],
+  ['passing', 'verificationScore: 9', true],
+]) {
+  const scoreRoot = temp(`ws-state-guard-s6-${name}-`);
+  const scoreStateRel = '.agents/plans/guards6/wf.state.md';
+  write(path.join(scoreRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'guard' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  write(path.join(scoreRoot, scoreStateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: wf-guards6
+slug: guards6
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 5
+completedSteps: [0, 1, 2, 3, 4, 5]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 1
+${scoreLine}
+---
+# State
+`);
+  const scoreCommon = ['--repo-root', scoreRoot, '--jsonl-out', '.agents/plans/guards6/telemetry.jsonl'];
+  const dispatch6 = run(update, ['dispatch', scoreStateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:00.000Z', ...scoreCommon]);
+  if (shouldPass) {
+    assert.strictEqual(dispatch6.status, 0, `dispatch step 6 succeeds with passing score (${name})`);
+  } else {
+    assert.notStrictEqual(dispatch6.status, 0, `dispatch step 6 fails closed (${name})`);
+    assert.match(`${dispatch6.stdout}${dispatch6.stderr}`, /cannot dispatch step 6/);
+  }
+}
+
+// Step 4 dispatch guard applies to fresh states with no completed steps
+{
+  const emptyRoot = temp('ws-state-guard-s4empty-');
+  const slug = 'guardempty';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  write(path.join(emptyRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'guard' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  write(path.join(emptyRoot, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: wf-guardempty
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const emptyCommon = ['--repo-root', emptyRoot, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
+  const failEmpty4 = run(update, ['dispatch', stateRel, '--step', '4', '--timestamp', '2026-08-21T21:00:00.000Z', ...emptyCommon]);
+  assert.notStrictEqual(failEmpty4.status, 0, 'dispatch step 4 fails on a fresh state with no completed steps');
+  assert.match(`${failEmpty4.stdout}${failEmpty4.stderr}`, /step 1 must be completed before implement/);
+}
+
+// Finishing a Fix-PR internal substep keeps Step 9 active instead of completing it
+{
+  const fixRoot = temp('ws-state-guard-fixpr-');
+  const slug = 'guardfixpr';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  write(path.join(fixRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'guard' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  write(path.join(fixRoot, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: wf-guardfixpr
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 9
+completedSteps: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 1
+verificationScore: 9
+---
+# State
+`);
+  const fixCommon = ['--repo-root', fixRoot, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
+  const planFinish = run(update, [
+    'finish', stateRel, '--step', '9', '--substep', 'fixPrPlan',
+    '--timestamp', '2026-08-21T21:00:00.000Z', ...fixCommon,
+  ]);
+  assert.strictEqual(planFinish.status, 0, planFinish.stderr);
+  const fixState = JSON.parse(fs.readFileSync(path.join(fixRoot, `.agents/plans/${slug}/wf.state.json`), 'utf8'));
+  assert.strictEqual(fixState.currentStep, 9, 'fixPrPlan finish keeps currentStep at 9');
+  assert.strictEqual(fixState.stepStatus['9'], 'active', 'step 9 remains active during fixPrPlan');
+  assert.ok(!fixState.completedSteps.includes(9), 'step 9 is not marked completed during fixPrPlan');
+}
+
+// Dispatching step 4 with corrupt or empty plan artifacts fails closed
+{
+  const corruptRoot = temp('ws-state-guard-s4corrupt-');
+  const slug = 'guardcorrupt';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(corruptRoot, '.agents/plans', slug);
+  write(path.join(corruptRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'guard' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  write(path.join(corruptRoot, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: wf-guardcorrupt
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 3
+completedSteps: [0, 1]
+skippedSteps: [{step: 2, reason: interview-not-required}, {step: 3, reason: dag-disabled}]
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const corruptCommon = ['--repo-root', corruptRoot, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
+  write(path.join(usDir, `step-01-${slug}.plan.md`), `---
+step: 1
+slug: ${slug}
+workflowId: wf-guardcorrupt
+status: completed
+---
+# Plan
+`);
+  write(path.join(usDir, 'plan.index.json'), '{invalid json');
+  const failCorrupt = run(update, ['dispatch', stateRel, '--step', '4', '--timestamp', '2026-08-21T21:00:00.000Z', ...corruptCommon]);
+  assert.notStrictEqual(failCorrupt.status, 0, 'dispatch step 4 fails when plan.index.json is corrupt');
+  assert.match(`${failCorrupt.stdout}${failCorrupt.stderr}`, /plan\.index\.json is required/);
+  write(path.join(usDir, `step-01-${slug}.plan.md`), '');
+  write(path.join(usDir, 'plan.index.json'), JSON.stringify({ acceptanceCriteria: [] }));
+  const failEmpty = run(update, ['dispatch', stateRel, '--step', '4', '--timestamp', '2026-08-21T21:01:00.000Z', ...corruptCommon]);
+  assert.notStrictEqual(failEmpty.status, 0, 'dispatch step 4 fails when the plan file is empty');
+  assert.match(`${failEmpty.stdout}${failEmpty.stderr}`, /plan artifact missing/);
+}
+
 console.log('test-workflow-state-contract: ok');

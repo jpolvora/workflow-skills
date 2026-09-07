@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.4.0",
+  "packageVersion": "0.4.2",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
