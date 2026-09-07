@@ -92,6 +92,8 @@ When overall score is below `minVerifyScore`, run `scoreAndRefine` even if `defa
 
 `autoMode`: auto-run scoreAndRefine rounds; auto-select **Proceed with Second Pass Refinement**; do **not** call `update_state finish --step 5` or dispatch Step 6 below `minVerifyScore` — Pause only after max rounds still below `minVerifyScore`. When refinement completes: re-verify, G2-code if score ≥ `minVerifyScore`, then complete Step 5 and dispatch Step 6.
 
+Await each `dispatch-agent` subagent before its matching `finish`: dispatching the next step while a refine or fix runner is still active orphans it, and the Step 6 dispatch and pre-advance guards stay red until the active round finishes.
+
 Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate and § Score & Refine gate.
 
 ### Step 6 — Code-review + fix → re-review loop (substep)

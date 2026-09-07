@@ -949,10 +949,10 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         if (!stepCompleted(state, 5)) {
           throw new Error('cannot dispatch step 6: step 5 must be completed first');
         }
-        if (state.verificationScore !== undefined && Number(state.verificationScore) < minVerifyScore) {
+        if (state.verificationScore === undefined || Number(state.verificationScore) < minVerifyScore) {
           throw new Error(`cannot dispatch step 6: step 5 score (${state.verificationScore}) is below minVerifyScore (${minVerifyScore}); scoreAndRefine is required`);
         }
-      } else if (step === 4 && state.completedSteps.length > 0) {
+      } else if (step === 4 && normalizeSubstep(options.substep) !== 'dag') {
         if (!stepCompleted(state, 1)) {
           throw new Error('cannot dispatch step 4: step 1 must be completed before implement');
         }
@@ -969,13 +969,14 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
           const needRefined = stepCompleted(state, 2) && step2Reason !== 'interview-not-required';
           const planFile = needRefined ? `step-02-${slug}.plan.refined.md` : `step-01-${slug}.plan.md`;
           const planPath = path.join(paths.usDir, planFile);
-          if (!fs.existsSync(planPath)) {
+          if (!isNonEmptyFile(planPath)) {
             throw new Error(`cannot dispatch step 4: required plan artifact missing: ${toRepoRelative(context.repoRoot, planPath, { allowOutside: true })}`);
           }
           const planIndex = path.join(paths.usDir, 'plan.index.json');
           const runtimePlanIndex = path.join(paths.usDir, '.runtime', 'plan.index.json');
-          if (!fs.existsSync(planIndex) && !fs.existsSync(runtimePlanIndex)) {
-            throw new Error('cannot dispatch step 4: plan.index.json is required before implement');
+          const indexPath = fs.existsSync(planIndex) ? planIndex : runtimePlanIndex;
+          if (!isParseableJsonObject(indexPath)) {
+            throw new Error(`cannot dispatch step 4: plan.index.json is required before implement: ${toRepoRelative(context.repoRoot, indexPath, { allowOutside: true })}`);
           }
         }
       }
@@ -1008,7 +1009,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         evidence: String(options.evidence || ''),
       }].sort((a, b) => a.step - b.step);
     }
-    const isInternalSubstep = options.substep && ['scoreAndRefine', 'reviewFix'].includes(options.substep);
+    const isInternalSubstep = options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep);
     if (!isInternalSubstep) {
       state.completedSteps = [...new Set([...(state.completedSteps || []).map(Number), step])].sort((a, b) => a - b);
       state.stepStatus[String(step)] = status;
@@ -1199,6 +1200,24 @@ function skippedReason(state, step) {
 
 function stepCompleted(state, step) {
   return (state.completedSteps || []).map(Number).includes(Number(step));
+}
+
+function isNonEmptyFile(file) {
+  try {
+    const stat = fs.statSync(file);
+    return stat.isFile() && stat.size > 0;
+  } catch {
+    return false;
+  }
+}
+
+function isParseableJsonObject(file) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return parsed !== null && typeof parsed === 'object';
+  } catch {
+    return false;
+  }
 }
 
 function stepSkipped(state, step) {

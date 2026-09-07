@@ -144,7 +144,7 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 | ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
 | below `defaults.minVerifyScore` | Run **scoreAndRefine** until overall score ≥ `defaults.minVerifyScore` (default 9) (even when `defaults.scoreAndRefine` is false). Write `step-05-{slug}.score-analysis.md`, re-dispatch `ws-implement-tasks` for tasks scoring below `defaults.minVerifyScore`, re-run `ws-plan-verify`. Max **3** rounds per Step 5 visit; log `score-refine round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Refine runs **before** the product commit. Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
-`autoMode`: auto-run scoreAndRefine rounds; automatically select **Proceed with Second Pass Refinement**; do **not** auto-approve or advance to Step 6 below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`.
+`autoMode`: auto-run scoreAndRefine rounds; automatically select **Proceed with Second Pass Refinement**; do **not** auto-approve or advance to Step 6 below `defaults.minVerifyScore` — do **not** call `update_state finish --step 5` or dispatch Step 6 below `minVerifyScore`; Pause only after max rounds still below `defaults.minVerifyScore`.
 
 ---
 
