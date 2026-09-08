@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-09-08 09:47] Agent: GPT-5.6 Luna
+- **Prompt**: Run the live `fx-node-helper` benchmark for 0.4.4.
+- **Done**: Completed the isolated lite workflow, collected the live report, promoted `0.4.4-fx-node-helper-live`, refreshed comparison reports, and compared it with the 0.3.61 live baseline.
+- **Result**: Live run PASS at 81/100, up from 78; completeness, verification, and discrimination remained stable; wall time scored 10. Learning: N/A (standard benchmark run)
+
+### [2026-09-08 09:30] Agent: GPT-5.6 Luna
+- **Prompt**: Promote the 0.4.4 benchmark runs and generate `table-0.4.4.md`.
+- **Done**: Snapshotted all 5 static 0.4.4 fixture runs into named baselines and regenerated the evolution and per-version reports.
+- **Result**: Snapshot commands exit 0; comparison update exit 0; `table-0.4.4.md` reports 5 PASS / 0 FAIL. Learning: N/A (standard benchmark report update)
+
+### [2026-09-08 09:26] Agent: GPT-5.6 Luna
+- **Prompt**: Run new benchmarks to update results via `/ws-benchmarks`.
+- **Done**: Completed static benchmark run `static-2026-09-08T132552461Z` across 5 fixtures and refreshed the evolution plus version-specific result reports.
+- **Result**: Benchmark run exit 0; comparison update exit 0; 5/5 fixtures completed; 13 historical snapshots remain 13 PASS / 0 FAIL. Learning: N/A (standard benchmark run)
+
 ### [2026-09-08 08:10] Agent: GPT-5.6 Luna
 - **Prompt**: Implement `0070-ws-shared-hybrid-config-layout`.
 - **Done**: Split managed hub content into manifest-classified `runtime/` and `templates/` trees; aligned hybrid resolution, installer migration, integrity, configure-project reporting, docs, and regression coverage.

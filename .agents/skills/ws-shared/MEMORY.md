@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Leave flat managed-path assumptions or treat the generated root `autoload.md` mirror as an independent runtime source.
 - **INSTEAD DO**: Resolve managed paths from `hub-layout.json`; keep consumer configuration at `{sharedDir}`; use the selected local/global runtime and template source; exclude manifest-classified generated copies from duplicate-content audits.
 
+### [2026-09-08] Ship gates must isolate benchmark-generated artifacts
+- **Layer**: `Tests`
+- **Module**: `ws-ship-pr / test and benchmark outputs`
+- **Severity**: `Medium`
+- **PathPattern**: `benchmarks/results/**`; `benchmarks/baselines/**`; `.agents/skills/ws-shared/CHANGELOG.md`
+- **Scenario / Context**: Running the package test or benchmark tooling during a ship audit can rewrite generated report timestamps, create versioned benchmark baselines, and append a changelog entry while another worker is active. Those files are outside the committed release range and may be concurrent work.
+- **DO NOT**: Stage or delete benchmark outputs or consumer-owned changelog changes merely because the ship audit made the tree dirty. Do not claim a clean worktree without checking after the final audit.
+- **INSTEAD DO**: Capture the initial status, preserve unrelated worker files, restore only test artifacts created by this session, and verify the committed `base...HEAD` range separately before push/PR.
+
 ### [2026-09-07] Do not vendor spec-memo runtime skills into this package
 - **Scenario / Context**: Consumer ws-check-harness reported phantom routes for ws-memo / ws-session-tracking after a workflows install. Those ids are owned by spec-memo, not this SoT.
 - **DO NOT**: Add them to packages.workflows or Extra, add Layer rows with `.agents/skills/ws-memo/SKILL.md` literals, or list them in Always-applied as mandatory.
