@@ -104,5 +104,5 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 - Require one complete plan gate and one execute/proactive evidence set for each Act-round batch before resolve or push; never call `finish --step 9` from an internal role.
 - After every Act round, record accepted reviewer/CI defects via `ws-self-learning` (and pattern files when those flags are on).
 - Return rounds, stop condition, final active-thread evidence, remaining blockers, and `Learning:` titles.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

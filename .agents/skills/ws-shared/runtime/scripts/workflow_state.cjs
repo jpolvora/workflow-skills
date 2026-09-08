@@ -169,19 +169,36 @@ function findingsHistogram(value) {
 }
 
 function truncateHandoff(payload) {
-  let text = `${JSON.stringify(payload)}\n`;
   const limit = 8192;
-  if (Buffer.byteLength(text, 'utf8') <= limit) return text;
-  const copy = {
-    ...payload,
+  const serialized = (value) => `${JSON.stringify(value)}\n`;
+  if (Buffer.byteLength(serialized(payload), 'utf8') <= limit) return payload;
+
+  const compact = {
+    step: payload.step,
+    slug: String(payload.slug || '').slice(0, 256),
+    workflowId: String(payload.workflowId || '').slice(0, 256),
+    workflowType: payload.workflowType,
+    status: String(payload.status || '').slice(0, 256),
+    artifactPaths: (Array.isArray(payload.artifactPaths) ? payload.artifactPaths : [])
+      .map((item) => String(item).slice(0, 256))
+      .slice(0, 8),
+    acRefs: (Array.isArray(payload.acRefs) ? payload.acRefs : [])
+      .map((item) => String(item).slice(0, 32))
+      .slice(0, 32),
     summary: String(payload.summary || '').slice(0, 200),
-    artifactPaths: (payload.artifactPaths || []).slice(0, 8),
+    nextAction: String(payload.nextAction || '').slice(0, 200),
+    findings: findingsHistogram(payload.findings),
   };
-  text = `${JSON.stringify(copy)}\n`;
-  if (Buffer.byteLength(text, 'utf8') <= limit) return text;
-  copy.summary = String(copy.summary || '').slice(0, 80);
-  copy.artifactPaths = [];
-  return `${JSON.stringify(copy)}\n`;
+  if (Buffer.byteLength(serialized(compact), 'utf8') <= limit) return compact;
+
+  compact.artifactPaths = [];
+  compact.acRefs = [];
+  compact.summary = compact.summary.slice(0, 80);
+  compact.nextAction = compact.nextAction.slice(0, 80);
+  compact.slug = compact.slug.slice(0, 80);
+  compact.workflowId = compact.workflowId.slice(0, 80);
+  compact.status = compact.status.slice(0, 80);
+  return compact;
 }
 
 function normalizeHandoffPaths(repoRoot, paths) {
@@ -220,6 +237,7 @@ function writeHandoffFile({ usDir, state, pipeline, step, options, context, outp
       findings: findingsHistogram(output.findings),
     };
   }
+  payload = truncateHandoff(payload);
   const errors = validateNode(payload, loadJsonSchema(schemaPath, 'handoff schema'), 'handoff');
   if (errors.length) throw new Error(errors.join('; '));
   state.handoffs = state.handoffs && typeof state.handoffs === 'object' ? state.handoffs : {};

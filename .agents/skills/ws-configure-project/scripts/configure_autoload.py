@@ -376,6 +376,22 @@ def drop_external_companion_members(membership: list[dict], repo_root: Path) -> 
     return [row for row in membership if row.get("skill") not in external]
 
 
+def render_consumer_autoload(text: str) -> str:
+    """Adjust runtime-relative hub links for the generated hub-root copy."""
+    for runtime_file in (
+        "AGENTS.md",
+        "CROSS-PLATFORM.md",
+        "config-resolution.md",
+        "gates.md",
+        "host-dispatch.md",
+        "scm-provider-contract.md",
+        "setup.md",
+        "tools.md",
+    ):
+        text = text.replace(f"]({runtime_file})", f"](runtime/{runtime_file})")
+    return re.sub(r"\]\(\.\.\/\.\.\/(ws-[^)]+)\)", r"](../\1)", text)
+
+
 def default_always_applied_membership() -> list[dict]:
     """Default Always-applied skill ids + triggers (membership seed)."""
     return [{"skill": skill_id, "trigger": trigger} for skill_id, trigger in DEFAULT_ALWAYS_APPLIED]
@@ -438,9 +454,17 @@ def ensure_autoload_md(
             raise SystemExit(f"ERROR: missing {source} (install hub runtime)")
         if not dry_run:
             autoload_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, autoload_path)
+            autoload_path.write_text(
+                render_consumer_autoload(source.read_text(encoding="utf-8")),
+                encoding="utf-8",
+                newline="\n",
+            )
 
-    text = (autoload_path if autoload_path.is_file() else source).read_text(encoding="utf-8")
+    text = render_consumer_autoload(
+        autoload_path.read_text(encoding="utf-8")
+        if autoload_path.is_file()
+        else source.read_text(encoding="utf-8")
+    )
     existing = parse_always_applied_rows(text)
     preserved = membership_from_existing_rows(existing)
     membership = preserved if preserved else default_always_applied_membership()

@@ -158,7 +158,7 @@
       "pruneAfterStep": true,
       "backgroundVerboseSteps": false
     },
-    "_comment_contextHygiene": "pruneAfterStep default true: next step reads handoff/step-NN.json. backgroundVerboseSteps default false; unsupported hosts log background-unsupported and block.",
+    "_comment_contextHygiene": "pruneAfterStep default true: next step reads the prior state.handoffs entry. backgroundVerboseSteps default false; unsupported hosts log background-unsupported and block.",
     "reviewJury": {
       "size": 1
     },

@@ -65,5 +65,5 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 - Map every AC to implementation work, expected files, and a named test so `plan_index.cjs` can build `{us-dir}/plan.index.json`.
 - Record unresolved design choices explicitly instead of choosing silently.
 - Write only the assigned plan artifact and return its path.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

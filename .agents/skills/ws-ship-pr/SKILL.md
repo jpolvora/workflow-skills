@@ -125,5 +125,5 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 - Stop before any external mutation unless the caller supplied the selected ship intent.
 - Return the prepare board, resulting refs/URL when applicable, and unresolved blockers.
 - Never weaken REFUTED handling or infer approval from cancellation.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

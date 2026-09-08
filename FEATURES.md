@@ -15,6 +15,7 @@ The shared hub keeps its stable consumer root while separating managed package c
 - Root `config.json` and maintained `STACK.md` are consumer-owned and trackable when non-secret.
 - `MEMORY.md`, `memory/`, `CHANGELOG.md`, installer manifests, integrity records, and host caches are generated/local by default.
 - A global `ws-configure-project` run resolves runtime/templates from the executing global hub and writes only the target project's consumer configuration and accepted pointers/autoload files. A project-local run uses the local hub without copying global content.
+- Generated hub-root `autoload.md` rewrites links for its root-relative location; `ws-doctor` validates the selected local/global runtime source; external companion skill IDs stay outside installer manifest and integrity ownership.
 
 The machine-readable classification source is [`.agents/skills/ws-shared/runtime/hub-layout.json`](.agents/skills/ws-shared/runtime/hub-layout.json). Configure-project JSON output includes the corresponding source-control matrix.
 

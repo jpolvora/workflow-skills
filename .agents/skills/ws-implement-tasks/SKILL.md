@@ -125,4 +125,4 @@ No commit/push (orch/user owns staging). Surgical scope only. Schema migrations 
 - Run the named configured verification commands after each task batch.
 - Never write workflow state or ledger files; return structured evidence to the orchestrator.
 - Report exact touched files, memory consult, checks, and remaining gaps.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.

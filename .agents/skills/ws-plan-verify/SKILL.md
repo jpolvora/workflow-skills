@@ -76,5 +76,5 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
 - Link only observed semantic, file-line, test, alias, sabotage, and verdict evidence.
 - Derive the score through `ac_ledger.cjs`; never author or override it.
 - Write only the assigned verification report and return score plus findings.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

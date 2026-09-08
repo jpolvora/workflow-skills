@@ -94,4 +94,4 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 - Derive sabotage status from the helper exit code and preserve byte-identical restoration.
 - Write only testing plan/report artifacts; hand product fixes back to implementation.
 - Return observed tests or machine skip evidence from `probe_test_surface.cjs` (never skip on judgment alone).
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.

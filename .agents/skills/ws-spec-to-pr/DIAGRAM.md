@@ -90,7 +90,7 @@ flowchart LR
   Context --> Disp[dispatch-agent / inline]
   Disp --> Ingest[Validate step-output + AC evidence]
   Ingest --> State[Atomic Node state update]
-  State --> Derived[run.json + run.md + plans index + telemetry]
+  State --> Derived[state.json + state.md + plans index + telemetry]
   Derived --> Gate
 ```
 

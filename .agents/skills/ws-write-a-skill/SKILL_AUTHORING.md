@@ -154,7 +154,7 @@ When a skill mentions model hosts, keep HTTP and thinking-mode flags in `default
 
 ### Inter-step prune and handoff
 
-Orchestrators persist `{us-dir}/handoff/step-{NN}.json` on `update_state finish`. The next step loads that file plus compact state. Do not instruct a full reread of prior step markdown unless ARTIFACTS.md requires it.
+Orchestrators persist each handoff in `{workflow-id}.state.json` under `state.handoffs` on `update_state finish`. The next step loads that state entry plus compact state. Do not instruct a full reread of prior step markdown unless ARTIFACTS.md requires it.
 
 ### Verbose-step return recipes
 

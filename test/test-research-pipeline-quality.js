@@ -306,4 +306,41 @@ const stateJson = JSON.parse(fs.readFileSync(path.join(handoffFixture, '.agents/
 assert.ok(stateJson.handoffs && stateJson.handoffs['4'], 'step-04 handoff exists in state.handoffs');
 assert.deepStrictEqual(stateJson.handoffs['4'].artifactPaths, ['src/abs-created.js', 'src/abs-modified.js']);
 
+const largeHandoffPath = path.join(handoffFixture, 'large-handoff.json');
+const largeOutputPath = path.join(handoffFixture, 'large-output.json');
+write(largeOutputPath, JSON.stringify({ summary: 'bounded custom handoff' }));
+write(
+  largeHandoffPath,
+  JSON.stringify({
+    step: 4,
+    slug: 'demo',
+    workflowId: 'wf-demo',
+    workflowType: 'standard',
+    status: 'completed',
+    artifactPaths: Array.from({ length: 1000 }, (_, index) => `src/generated-${index}.js`),
+    acRefs: Array.from({ length: 1000 }, () => 'AC1'),
+    summary: 's'.repeat(10000),
+    nextAction: 'n'.repeat(10000),
+    findings: { critical: 0, warning: 0, suggestion: 0, info: 0 },
+  }),
+);
+const boundedFinish = run(updateStateScript, [
+  'finish',
+  stateRel,
+  '--step', '4',
+  '--handoff', 'large-handoff.json',
+  '--step-output', 'large-output.json',
+  '--timestamp', '2026-08-27T12:00:00.000Z',
+  '--jsonl-out', '.agents/plans/demo/telemetry/step-04-bounded.jsonl',
+  '--repo-root', handoffFixture,
+]);
+assert.strictEqual(boundedFinish.status, 0, boundedFinish.stderr);
+const boundedState = JSON.parse(
+  fs.readFileSync(path.join(handoffFixture, '.agents/plans/demo/wf.state.json'), 'utf8'),
+);
+assert(
+  Buffer.byteLength(`${JSON.stringify(boundedState.handoffs['4'])}\n`, 'utf8') <= 8192,
+  'custom handoff payload is bounded to 8 KiB before state serialization',
+);
+
 console.log('test-research-pipeline-quality: ok');

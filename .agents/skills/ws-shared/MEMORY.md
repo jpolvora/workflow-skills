@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Stage or delete benchmark outputs or consumer-owned changelog changes merely because the ship audit made the tree dirty. Do not claim a clean worktree without checking after the final audit.
 - **INSTEAD DO**: Capture the initial status, preserve unrelated worker files, restore only test artifacts created by this session, and verify the committed `base...HEAD` range separately before push/PR.
 
+### [2026-09-08] Ship audit leak-scan observability
+- **Layer**: `Tooling`
+- **Module**: `ws-ship-pr / ws-secrets-leak-review`
+- **Severity**: `High`
+- **PathPattern**: `bin/**;.agents/skills/ws-ship-pr/**;test/**`
+- **Scenario / Context**: An ignore-aware search invocation failed on a Windows path form during a pre-ship leak audit. Known secret-pattern checks and sensitive-file globs returned no high-confidence findings, but the optional connection-string and internal-host pass was not fully observed.
+- **DO NOT**: Claim a complete leak audit from partial pattern coverage when a scanner invocation failed.
+- **INSTEAD DO**: Record the failed pattern pass as `UNVERIFIABLE`, retry with a supported ignore-aware path form or inspect the changed-file scope manually, and retain the ship-gate caveat until evidence is complete.
+
 ### [2026-09-07] Do not vendor spec-memo runtime skills into this package
 - **Scenario / Context**: Consumer ws-check-harness reported phantom routes for ws-memo / ws-session-tracking after a workflows install. Those ids are owned by spec-memo, not this SoT.
 - **DO NOT**: Add them to packages.workflows or Extra, add Layer rows with `.agents/skills/ws-memo/SKILL.md` literals, or list them in Always-applied as mandatory.

@@ -30,7 +30,8 @@
 | **Spec to reviewed PR** | Standard pipeline: spec, plan, interview, implement, verify, commit, review, test, ship, fix threads with a proactive same-class sweep before resolve (steps 0–9). |
 | **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
 | **A configurable verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ `defaults.minVerifyScore`** (default **9**, range 1–10). Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. Below the bar, scoreAndRefine re-implements flagged tasks. Optional Reach-10 user-gate when effort is low. When already ≥ the bar, optional `scoreAndRefine` second pass reviews the full diff for overengineering and unused workflow-introduced artifacts. |
-| **Verifiable runtime artifacts** | Atomic Node state updates publish `{workflow-id}.state.json` (machine SoT with embedded handoffs and AC ledger), `{workflow-id}.state.md`, a repo plans index, a single `telemetry.jsonl` stream, and deterministic scoring. |
+| **Verifiable runtime artifacts** | Atomic Node state updates publish `{workflow-id}.state.json` (machine SoT with embedded `state.handoffs` and AC ledger), `{workflow-id}.state.md`, a repo plans index, a single `telemetry.jsonl` stream, and deterministic scoring. |
+| **Hybrid-safe hub tooling** | Consumer-root `autoload.md` receives root-relative hub/skill links, `ws-doctor` validates the local or global runtime source, and installer manifests exclude external companion skills from update/integrity ownership. |
 | **Smaller dispatch context** | Bounded subagent contracts and indexed plan slices replace repeated full-document payloads. Context and MEMORY budgets fail closed when exceeded. |
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
 | **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; tracker close-loop via `comment-issue`. |
@@ -238,7 +239,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 |-------|-------------|
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | Audit routing, links, portability |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
-| [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs) |
+| [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs, hybrid runtime source) |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 | [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Run consumer-configured local pipeline review dry-run via `preview.dryRunCommand` (Extra; configure with `/ws-configure-project --section preview`) |

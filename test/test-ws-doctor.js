@@ -832,6 +832,50 @@ function testGlobalStaleConfigKeysReported() {
   );
 }
 
+function testGlobalHybridUsesGlobalRuntimeSource() {
+  console.log('\n--- testGlobalHybridUsesGlobalRuntimeSource ---');
+  const project = mkTmp('ws-doctor-hybrid-runtime-project-');
+  const globalRoot = mkTmp('ws-doctor-hybrid-runtime-global-');
+  const projectShared = path.join(project, '.agents', 'skills', 'ws-shared');
+  fs.mkdirSync(projectShared, { recursive: true });
+  fs.writeFileSync(
+    path.join(projectShared, 'config.json'),
+    `${JSON.stringify({ project: { name: 'hybrid', baseBranch: 'main' } }, null, 2)}\n`,
+    'utf8',
+  );
+
+  const globalDoctorDir = path.join(globalRoot, 'ws-doctor');
+  fs.mkdirSync(path.join(globalDoctorDir, 'scripts'), { recursive: true });
+  fs.copyFileSync(DOCTOR, path.join(globalDoctorDir, 'scripts', 'doctor.js'));
+  fs.copyFileSync(SHIPPED_DOCTOR_PACKAGE_JSON, path.join(globalDoctorDir, 'package.json'));
+  const globalRuntime = path.join(globalRoot, 'ws-shared', 'runtime');
+  fs.mkdirSync(path.join(globalRuntime, 'scripts'), { recursive: true });
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs'),
+    path.join(globalRuntime, 'scripts', 'resolve_consumer_root.cjs'),
+  );
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config.schema.json'),
+    path.join(globalRuntime, 'config.schema.json'),
+  );
+
+  const { ok: exitedOk, report, error } = runDoctorJson([], {
+    cwd: project,
+    doctor: path.join(globalDoctorDir, 'scripts', 'doctor.js'),
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  assert(exitedOk, `global-hybrid runtime doctor exits 0: ${error || ''}`);
+  if (!report) return;
+  assert(
+    report.sections.configuration?.available === true,
+    'global-hybrid runtime keeps project config available',
+  );
+  assert(
+    report.sections.configuration?.schemaAware === true,
+    'global-hybrid runtime resolves config.schema.json from the global hub',
+  );
+}
+
 function testWsDoctorSuiteExitZero() {
   console.log('\n--- testWsDoctorSuiteExitZero ---');
   ok('suite process will exit 0 when all prior tests pass (AC8)');
@@ -855,6 +899,7 @@ function main() {
     testStaleRetiredArtifactsReported();
     testGlobalStaleHubFileReported();
     testGlobalStaleConfigKeysReported();
+    testGlobalHybridUsesGlobalRuntimeSource();
     testGithubCanonicalRegisterRowHasNodeLauncher();
     testAzureCanonicalRegisterRowHasNodeLauncher();
     testProviderRegisterRowsNotMissingLaunchers();

@@ -112,4 +112,4 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 - Treat ineffective assertions, tests, gates, and checks as minimum Warning.
 - Write only the assigned review draft; the orchestrator persists rounds and ledger links.
 - Return findings sorted by severity, path, line, and id.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.

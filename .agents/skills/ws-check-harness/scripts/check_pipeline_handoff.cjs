@@ -43,8 +43,8 @@ function main() {
       continue;
     }
     const text = fs.readFileSync(file, 'utf8');
-    if (!text.includes('handoff/step-')) {
-      missing.push({ id, reason: 'missing handoff/step- substring', path: toRepoRelative(context.repoRoot, file, { allowOutside: true }) });
+    if (!text.includes('state.handoffs')) {
+      missing.push({ id, reason: 'missing state.handoffs substring', path: toRepoRelative(context.repoRoot, file, { allowOutside: true }) });
     }
   }
   const payload = {
@@ -54,7 +54,7 @@ function main() {
   if (options.json) process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
   else if (payload.ok) process.stdout.write(`check_pipeline_handoff: OK (${PIPELINE.length} skills)\n`);
   else {
-    process.stderr.write(`check_pipeline_handoff: missing handoff/step- in ${missing.map((item) => item.id).join(', ')}\n`);
+    process.stderr.write(`check_pipeline_handoff: missing state.handoffs in ${missing.map((item) => item.id).join(', ')}\n`);
   }
   if (!payload.ok) process.exitCode = 1;
 }

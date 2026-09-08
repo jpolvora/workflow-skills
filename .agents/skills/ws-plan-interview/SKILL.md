@@ -94,5 +94,5 @@ needs_user:
 - Resolve project-observable gaps before escalating one blocking question.
 - Preserve every AC mapping and record resolution source.
 - Write only the refined plan and return the closed/open registry.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

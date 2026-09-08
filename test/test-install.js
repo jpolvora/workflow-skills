@@ -1659,7 +1659,14 @@ child.on('close', async (code) => {
         fail(`update altered consumer-owned ws-shared/${f} (AC5)`);
       }
     }
-    // AC6: second update is idempotent (exit 0, no retired-id return, stable autoload).
+    // AC6: update repairs root-relative hub links in an otherwise current autoload.
+    const brokenLinksAutoload = afterAutoload
+      .replaceAll('](runtime/tools.md)', '](tools.md)')
+      .replaceAll('](../ws-spec-manager/SKILL.md)', '](../../ws-spec-manager/SKILL.md)');
+    if (brokenLinksAutoload === afterAutoload) {
+      fail('hybrid autoload fixture did not contain expected managed links (AC6)');
+    }
+    fs.writeFileSync(path.join(shared, 'autoload.md'), brokenLinksAutoload);
     const upd2 = runUpdate();
     if (upd2.status !== 0) {
       console.error(`${upd2.stdout || ''}${upd2.stderr || ''}`);
@@ -1727,6 +1734,41 @@ child.on('close', async (code) => {
     if (manifest.skills.includes('ws-memo') || manifest.skills.includes('ws-session-tracking')) {
       fail('installed-skills.json must not list spec-memo external companions');
     }
+    const poisonedManifest = {
+      ...manifest,
+      skills: [...manifest.skills, 'ws-memo', 'ws-session-tracking'],
+      selected: [...manifest.selected, 'ws-memo'],
+    };
+    fs.writeFileSync(manifestPath, `${JSON.stringify(poisonedManifest, null, 2)}\n`);
+    const poisonedAudit = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
+      cwd: uDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 120000,
+    });
+    if (poisonedAudit.status !== 0) {
+      console.error(`${poisonedAudit.stdout || ''}${poisonedAudit.stderr || ''}`);
+      fail('integrity audit must ignore external companion ids in an existing manifest');
+    }
+    const poisonedUpdate = cp.spawnSync(process.execPath, [cliPath, 'update', '--yes'], {
+      cwd: uDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 120000,
+    });
+    if (poisonedUpdate.status !== 0) {
+      console.error(`${poisonedUpdate.stdout || ''}${poisonedUpdate.stderr || ''}`);
+      fail('update must sanitize external companion ids from an existing manifest');
+    }
+    const sanitizedManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (
+      sanitizedManifest.skills.includes('ws-memo') ||
+      sanitizedManifest.skills.includes('ws-session-tracking') ||
+      sanitizedManifest.selected.includes('ws-memo')
+    ) {
+      fail('update left external companion ids in installed-skills.json');
+    }
+    ok('integrity/update ignore and remove external companion ids from legacy manifests');
 
     const markerCfg = path.join(uDir, '.agents', 'skills', 'ws-shared', 'config.json');
     fs.writeFileSync(

@@ -136,6 +136,11 @@ function parseJsonOut(result) {
       autoText.includes('.agents/skills/ws-senior-developer/SKILL.md'),
       'local install emits .agents/skills paths in autoload.md',
     );
+    assert(autoText.includes('](runtime/tools.md)'), 'consumer autoload rewrites runtime-relative hub links');
+    assert(
+      autoText.includes('](../ws-spec-manager/SKILL.md)'),
+      'consumer autoload rewrites skill-relative links',
+    );
     assert(
       rootText.includes('autoload.md') && rootText.includes('ws-shared/AGENTS.md'),
       'root AGENTS.md references shared hub + autoload.md',

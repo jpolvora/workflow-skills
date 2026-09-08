@@ -127,10 +127,30 @@ const LOCAL_HUB_POINTER_MD = `# Shared — Workflow Config & Consumer Data Hub (
 
 This is the project-local pointer for global-hybrid installs. Managed hub runtime is resolved from the project-local \`runtime/\` when present, otherwise from \`{globalSkillsRoot}/ws-shared/runtime/\`. Project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`MEMORY.md\`, \`memory/*\`, \`CHANGELOG.md\`, \`installed-skills.json\`).
 
-- Full hub contract: \`{globalSkillsRoot}/ws-shared/runtime/AGENTS.md\` (resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`ws-shared/runtime/scripts/resolve_consumer_root.cjs\`).
+- Full hub contract: \`runtime/AGENTS.md\` (resolve the managed runtime locally or from \`{globalSkillsRoot}/ws-shared/runtime/\`; resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`ws-shared/runtime/scripts/resolve_consumer_root.cjs\`).
 - Config always resolves project-local first: \`$PWD/.agents/skills/ws-shared/config.json\` overrides the global hub.
-- \`rules.harness\` default (\`.agents/skills/ws-shared/AGENTS.md\`) resolves to this file; follow the canonical hub link above. Run installer \`update\` to refresh this pointer.
+- \`rules.harness\` default (\`.agents/skills/ws-shared/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
 `;
+
+function renderConsumerAutoloadText(text) {
+  for (const runtimeFile of [
+    'AGENTS.md',
+    'CROSS-PLATFORM.md',
+    'config-resolution.md',
+    'gates.md',
+    'host-dispatch.md',
+    'scm-provider-contract.md',
+    'setup.md',
+    'tools.md',
+  ]) {
+    text = text.split(`](${runtimeFile})`).join(`](runtime/${runtimeFile})`);
+  }
+  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, '](../$1)');
+}
+
+function renderConsumerAutoload(sourcePath) {
+  return renderConsumerAutoloadText(fs.readFileSync(sourcePath, 'utf8'));
+}
 
 /** Root host pointers are consumer/host-owned — installer never seeds or overwrites them. */
 
@@ -206,10 +226,14 @@ function readInstalledSkillsManifest() {
   try {
     const data = JSON.parse(fs.readFileSync(p, 'utf8'));
     const skills = Array.isArray(data.skills)
-      ? [...new Set(data.skills.filter((s) => typeof s === 'string' && s && s !== HUB_DIR))].sort()
+      ? excludeExternalSkillIds(
+        [...new Set(data.skills.filter((s) => typeof s === 'string' && s && s !== HUB_DIR))]
+      ).sort()
       : [];
     let selected = Array.isArray(data.selected)
-      ? [...new Set(data.selected.filter((s) => typeof s === 'string' && s && s !== HUB_DIR))]
+      ? excludeExternalSkillIds(
+        [...new Set(data.selected.filter((s) => typeof s === 'string' && s && s !== HUB_DIR))]
+      )
       : null;
     // Legacy / bootstrap: if selected missing, treat all skills as roots.
     if (!selected) selected = [...skills];
@@ -832,8 +856,15 @@ function ensureSharedHubInstalled(mode = 'install') {
       return new RegExp(`\\b${escaped}\\b`).test(fs.readFileSync(autoloadPath, 'utf8'));
     });
   if (fs.existsSync(autoloadSource) && (!fs.existsSync(autoloadPath) || staleAutoload)) {
-    fs.copyFileSync(autoloadSource, autoloadPath);
+    fs.writeFileSync(autoloadPath, renderConsumerAutoload(autoloadSource));
     if (staleAutoload) console.log('    Refreshed stale ws-shared/autoload.md');
+  } else if (fs.existsSync(autoloadPath)) {
+    const currentAutoload = fs.readFileSync(autoloadPath, 'utf8');
+    const renderedAutoload = renderConsumerAutoloadText(currentAutoload);
+    if (renderedAutoload !== currentAutoload) {
+      fs.writeFileSync(autoloadPath, renderedAutoload);
+      console.log('    Refreshed ws-shared/autoload.md links');
+    }
   }
   pruneRetiredConsumerArtifacts(fs, path, { skillsDir: targetSkillsDir });
   // Global-hybrid edge (us-272 AC3): seed a thin local pointer when the

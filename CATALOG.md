@@ -16,7 +16,7 @@ Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool 
 |-------|------|-------------|
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
-| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics |
+| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics, including hybrid local/global hub resolution |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |

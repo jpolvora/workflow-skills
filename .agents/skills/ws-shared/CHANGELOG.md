@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-08 10:18] Agent: GPT-5.6 Luna
+- **Prompt**: `/ws-ship-pr` after applying the approved installer, hybrid-runtime, handoff-size, and artifact-reference fixes.
+- **Done**: Completed pre-ship verification, corrected remaining root-relative autoload repair coverage, regenerated integrity, and prepared the `develop` → `main` PR handoff with merge disabled.
+- **Result**: `npm run test`, targeted regression tests, integrity, site, workflow, invariant, and harness gates passed; no high-confidence leak findings. Learning: retain an explicit caveat when optional leak-scan patterns are not observable.
+
 ### [2026-09-08 09:47] Agent: GPT-5.6 Luna
 - **Prompt**: Run the live `fx-node-helper` benchmark for 0.4.4.
 - **Done**: Completed the isolated lite workflow, collected the live report, promoted `0.4.4-fx-node-helper-live`, refreshed comparison reports, and compared it with the 0.3.61 live baseline.

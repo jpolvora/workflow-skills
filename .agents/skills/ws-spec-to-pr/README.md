@@ -93,7 +93,7 @@ The orchestrator session always executes under the active session model (`curren
 
 ### Evidence runtime
 
-Node state helpers update the workflow atomically and publish deterministic `run.json`, `run.md`, plans-index, and JSONL telemetry artifacts. `plan.index.json` provides hash-checked plan slices. `ac-ledger.json` is the sole source of the derived verification score and links ACs to files, tests, commits, findings, Fable verdicts, and sabotage results.
+Node state helpers update the workflow atomically and publish deterministic `{workflow-id}.state.json`, `{workflow-id}.state.md`, plans-index, and JSONL telemetry artifacts. `state.handoffs` carries compact step handoffs. `plan.index.json` provides hash-checked plan slices. `ac-ledger.json` is the sole source of the derived verification score and links ACs to files, tests, commits, findings, Fable verdicts, and sabotage results.
 
 ---
 

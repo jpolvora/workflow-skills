@@ -222,7 +222,7 @@ Every step transition exposes:
 
 ### Which machine-readable artifacts prove progress?
 
-The Node state runtime writes the frontmatter state atomically, then publishes `run.json`, `run.md`, and the repo-level plans index from that committed snapshot. Per-step JSONL records contain dispatch, finish, and bypass evidence. `plan.index.json` hash-checks plan slices, while `ac-ledger.json` links every acceptance criterion to observed files, tests, commits, findings, and sabotage results. The Step 5 score is derived from that ledger and cannot be overridden.
+The Node state runtime writes `{workflow-id}.state.json` and the rendered `{workflow-id}.state.md` atomically, then publishes the repo-level plans index from that committed snapshot. `state.handoffs` contains compact per-step handoffs. Per-step JSONL records contain dispatch, finish, and bypass evidence. `plan.index.json` hash-checks plan slices, while `ac-ledger.json` links every acceptance criterion to observed files, tests, commits, findings, and sabotage results. The Step 5 score is derived from that ledger and cannot be overridden.
 
 ### Path Tokens
 All file references in workflow logs use bracketed path tokens which are resolved against `.agents/skills/ws-shared/config.json`:

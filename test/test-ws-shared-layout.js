@@ -200,6 +200,15 @@ try {
   assert(fs.existsSync(path.join(legacyShared, 'templates', 'config.json.example')), 'migration installs templates');
   assert(!fs.existsSync(path.join(legacyShared, 'tools.md')), 'migration removes the legacy flat runtime file');
   assert(fs.existsSync(path.join(legacyShared, '.gitignore')), 'migration installs the aliased hub ignore file');
+  const localPointer = fs.readFileSync(path.join(legacyShared, 'AGENTS.md'), 'utf8');
+  assert(localPointer.includes('`runtime/AGENTS.md`'), 'local hub pointer links to the installed runtime contract');
+  assert(
+    !localPointer.includes('{globalSkillsRoot}/ws-shared/runtime/AGENTS.md'),
+    'local hub pointer does not require a global-only runtime path',
+  );
+  const installedAutoload = fs.readFileSync(path.join(legacyShared, 'autoload.md'), 'utf8');
+  assert(installedAutoload.includes('](runtime/tools.md)'), 'hub-root autoload rewrites runtime-relative hub links');
+  assert(installedAutoload.includes('](../ws-spec-manager/SKILL.md)'), 'hub-root autoload rewrites skill-relative links');
   for (const [name, content] of Object.entries(preserved)) {
     assert(
       fs.readFileSync(path.join(legacyShared, name), 'utf8') === content,

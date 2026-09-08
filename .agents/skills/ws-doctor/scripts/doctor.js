@@ -14,6 +14,14 @@ import { fileURLToPath } from 'url';
 
 const require = createRequire(import.meta.url);
 const __doctorDir = path.dirname(fileURLToPath(import.meta.url));
+let resolveConsumerContext = null;
+try {
+  ({ resolveConsumerContext } = require(
+    path.join(__doctorDir, '../../ws-shared/runtime/scripts/resolve_consumer_root.cjs'),
+  ));
+} catch {
+  // Standalone ws-doctor installs may not include the optional shared hub runtime.
+}
 
 let retiredArtifactsModule = null;
 function getRetiredArtifactsModule() {
@@ -208,6 +216,23 @@ function resolveGlobalSkillsRoot() {
   const env = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
   if (env && String(env).trim()) return path.resolve(String(env).trim());
   return path.join(os.homedir(), '.agents', 'skills');
+}
+
+function resolveDoctorContext(projectRoot) {
+  if (resolveConsumerContext) {
+    return resolveConsumerContext({ repoRoot: projectRoot, scriptFile: path.join(__doctorDir, 'doctor.js') });
+  }
+  const globalSkillsRoot = resolveGlobalSkillsRoot();
+  const projectSharedDir = resolveProjectSharedDir(projectRoot);
+  const localConfig = path.join(projectSharedDir, 'config.json');
+  const globalConfig = path.join(globalSkillsRoot, 'ws-shared', 'config.json');
+  const scriptRel = path.relative(globalSkillsRoot, __doctorDir);
+  const runningFromGlobal = scriptRel === '' || (!scriptRel.startsWith('..') && !path.isAbsolute(scriptRel));
+  const configPath = fs.existsSync(localConfig) || !runningFromGlobal ? localConfig : globalConfig;
+  const localRuntime = path.join(projectSharedDir, 'runtime');
+  const globalRuntime = path.join(globalSkillsRoot, 'ws-shared', 'runtime');
+  const runtimeSource = fs.existsSync(localRuntime) || !runningFromGlobal ? localRuntime : globalRuntime;
+  return { configPath, runtimeSource };
 }
 
 /**
@@ -1188,9 +1213,9 @@ function main() {
   }
 
   const projectRoot = path.resolve(process.cwd());
-  const projectSharedDir = resolveProjectSharedDir(projectRoot);
-  const configPath = path.join(projectSharedDir, 'config.json');
-  const schemaPath = path.join(projectSharedDir, 'runtime', 'config.schema.json');
+  const context = resolveDoctorContext(projectRoot);
+  const configPath = context.configPath;
+  const schemaPath = path.join(context.runtimeSource, 'config.schema.json');
 
   const configLoad = loadJson(configPath);
   const schemaLoad = loadJson(schemaPath);
@@ -1226,10 +1251,18 @@ function main() {
     const candidates = [
       path.join(projectRoot, 'AGENTS.md'),
       path.join(sharedDirAbs, 'AGENTS.md'),
-      path.join(sharedDirAbs, 'tools.md'),
       path.join(sharedDirAbs, 'autoload.md'),
-      path.join(sharedDirAbs, 'gates.md'),
-      path.join(sharedDirAbs, 'setup.md'),
+      ...[
+        'AGENTS.md',
+        'CROSS-PLATFORM.md',
+        'autoload.md',
+        'config-resolution.md',
+        'gates.md',
+        'host-dispatch.md',
+        'scm-provider-contract.md',
+        'setup.md',
+        'tools.md',
+      ].map((name) => path.join(context.runtimeSource, name)),
     ];
     for (const c of candidates) {
       if (isFile(c)) hubFiles.push(c);

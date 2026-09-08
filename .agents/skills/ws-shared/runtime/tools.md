@@ -111,7 +111,7 @@ Legacy neutral flags are derived readouts of this binding (not a separate discov
 
 `dispatch-agent` fallback ladder (honor resolved mode; pass discrete context pointers only — never full transcripts):
 
-- **Tier 1 — native-tool:** `subagentTool` is bound. Dispatch steps to that tool with pointers (`handoff/step-{N-1}.json`, `ac-ledger.json`, `plan.index.json`).
+- **Tier 1 — native-tool:** `subagentTool` is bound. Dispatch steps to that tool with pointers (`{workflow-id}.state.json` → `state.handoffs[String(N-1)]`, `ac-ledger.json`, `plan.index.json`).
 - **Tier 2 — cli-command:** `subagentTool` is `none` but `backgroundTaskTool` is bound or a CLI subagent runner is configured (`defaults.hostAdapter.cliTemplate`) or available in PATH. Launch the step as a background task via `run_command` using the configured template.
 - **Tier 3 — inline-isolated:** both aliases are `none`. Run Inline Isolated Execution per [`host-dispatch.md`](host-dispatch.md) § Inline Isolated Execution (adopt step persona, read pointers only, edit via native file tools, emit `step-output`, log `inline-isolated-step | step {N} | ISO`).
 
