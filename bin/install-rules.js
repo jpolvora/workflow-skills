@@ -180,6 +180,20 @@ export function shouldSkipInstallEntry(name) {
   );
 }
 
+/**
+ * True for manual backup/scratch files left in ws-shared/ (for example
+ * `CATALOG.md.bak_20260907-1756` or `AGENTS.md.bak`). These are not managed
+ * hub entries and are pruned during layout migration instead of failing update.
+ */
+export function isHubBackupArtifact(name) {
+  return (
+    name.startsWith('.tmp-') ||
+    /\.bak_/i.test(name) ||
+    /\.bak$/i.test(name) ||
+    name.endsWith('~')
+  );
+}
+
 /** True when this entry must never be copied from upstream (consumer-owned). */
 export function isConsumerOwnedEntry(entryName, isDirectory) {
   if (CONSUMER_OWNED_FILES.has(entryName)) return true;
