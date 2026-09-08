@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-08 08:01] Agent: GPT-5.6 Luna
+- **Prompt**: Define a clearer ws-shared layout and local/global configuration contract for hybrid installations.
+- **Done**: Added and validated the `ws-shared-hybrid-config-layout` specification and context companion; tracked the spec in `index.PRD`.
+- **Result**: Authoring validation passed with 17 acceptance criteria; implementation remains for a follow-up workflow. Learning: N/A (standard specification authoring)
+
 ### [2026-09-07 17:50] Agent: Cursor Grok 4.6
 - **Prompt**: PR 289 review threads on configure_autoload externalSkills handling
 - **Done**: Skip remaining Always-applied checks after companion warning; drop external ids in write_root_agents; poison tests for missing-skill suppression and root pointer
