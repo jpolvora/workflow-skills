@@ -56,7 +56,22 @@ function getRetiredArtifactsModule() {
         'backend.md.template',
         'frontend.md.template',
       ],
-      RETIRED_SKILL_DIRS: ['ws-patterns', 'ws-patterns-backend', 'ws-patterns-frontend', 'ws-audit'],
+      RETIRED_SKILL_DIRS: [
+        'ws-patterns',
+        'ws-patterns-backend',
+        'ws-patterns-frontend',
+        'ws-audit',
+        'ws-write-spec',
+        'ws-sync-spec',
+        'ws-multi-spec',
+        'ws-github-provider',
+        'ws-azure-devops-provider',
+        'ws-local-spec-provider',
+        'ws-write-plan',
+        'ws-verify-plan',
+        'ws-update-plan-implementation',
+        'ws-interview',
+      ],
       findRetiredSkillDirsAtRoot(fsMod, pathMod, skillsDirAbs) {
         if (!skillsDirAbs) return [];
         const root = pathMod.resolve(skillsDirAbs);
@@ -65,6 +80,16 @@ function getRetiredArtifactsModule() {
           'ws-patterns-backend',
           'ws-patterns-frontend',
           'ws-audit',
+          'ws-write-spec',
+          'ws-sync-spec',
+          'ws-multi-spec',
+          'ws-github-provider',
+          'ws-azure-devops-provider',
+          'ws-local-spec-provider',
+          'ws-write-plan',
+          'ws-verify-plan',
+          'ws-update-plan-implementation',
+          'ws-interview',
         ];
         return retiredSkillDirs.filter((id) => fsMod.existsSync(pathMod.join(root, id)));
       },

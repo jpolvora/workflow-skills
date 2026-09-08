@@ -723,6 +723,38 @@ function testStaleRetiredArtifactsReported() {
   );
 }
 
+function testStandaloneFallbackRetiredRenameDirsReported() {
+  console.log('\n--- testStandaloneFallbackRetiredRenameDirsReported ---');
+  const root = mkTmp('ws-doctor-fallback-retired-');
+  const { skillsRoot, sharedDir, doctorScript } = setupTmpDoctorProject(root);
+  fs.writeFileSync(
+    path.join(sharedDir, 'config.json'),
+    `${JSON.stringify({ defaults: {} }, null, 2)}\n`,
+    'utf8',
+  );
+  const renamedRetiredDirs = [
+    'ws-write-spec',
+    'ws-sync-spec',
+    'ws-multi-spec',
+    'ws-github-provider',
+    'ws-azure-devops-provider',
+    'ws-local-spec-provider',
+    'ws-write-plan',
+    'ws-verify-plan',
+    'ws-update-plan-implementation',
+    'ws-interview',
+  ];
+  for (const id of renamedRetiredDirs) fs.mkdirSync(path.join(skillsRoot, id));
+
+  const { ok: exitedOk, report, error } = runDoctorJson([], { cwd: root, doctor: doctorScript });
+  assert(exitedOk, `standalone fallback doctor exits 0: ${error || ''}`);
+  if (!report) return;
+  const found = report.sections.configuration?.staleRetired?.skillDirs?.project || [];
+  for (const id of renamedRetiredDirs) {
+    assert(found.includes(id), `standalone fallback reports renamed retired folder ${id}`);
+  }
+}
+
 function testGlobalStaleHubFileReported() {
   console.log('\n--- testGlobalStaleHubFileReported ---');
   const project = mkTmp('ws-doctor-stale-proj-');
@@ -897,6 +929,7 @@ function main() {
     testBareDoctorJsCopyWithoutMarkerFails();
     testMissingConfigDoesNotInventValues();
     testStaleRetiredArtifactsReported();
+    testStandaloneFallbackRetiredRenameDirsReported();
     testGlobalStaleHubFileReported();
     testGlobalStaleConfigKeysReported();
     testGlobalHybridUsesGlobalRuntimeSource();

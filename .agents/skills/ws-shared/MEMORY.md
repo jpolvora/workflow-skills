@@ -42,6 +42,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Claim a complete leak audit from partial pattern coverage when a scanner invocation failed.
 - **INSTEAD DO**: Record the failed pattern pass as `UNVERIFIABLE`, retry with a supported ignore-aware path form or inspect the changed-file scope manually, and retain the ship-gate caveat until evidence is complete.
 
+### [2026-09-08] Doctor fallback retired registry parity
+- **Layer**: `Tooling`
+- **Module**: `ws-doctor` standalone and hybrid retired-artifact diagnostics`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-doctor/scripts/doctor.js;test/test-ws-doctor.js`
+- **Scenario / Context**: When the optional shared runtime is absent, `ws-doctor` uses a local retired-artifact fallback. A partial fallback registry can miss renamed legacy skill folders even though the canonical runtime registry detects them.
+- **DO NOT**: Maintain the standalone fallback retired-skill list as a subset of the canonical registry or test only the runtime-backed path.
+- **INSTEAD DO**: Mirror every canonical retired skill ID in the fallback and exercise all renamed IDs through a fixture that omits the shared runtime helper.
+
 ### [2026-09-07] Do not vendor spec-memo runtime skills into this package
 - **Scenario / Context**: Consumer ws-check-harness reported phantom routes for ws-memo / ws-session-tracking after a workflows install. Those ids are owned by spec-memo, not this SoT.
 - **DO NOT**: Add them to packages.workflows or Extra, add Layer rows with `.agents/skills/ws-memo/SKILL.md` literals, or list them in Always-applied as mandatory.

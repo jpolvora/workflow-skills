@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-08 14:37] Agent: GPT-5.6 Luna
+- **Prompt**: `/ws-ship-pr` resumed after PR #290 review identified an incomplete standalone `ws-doctor` retired-skill fallback.
+- **Done**: Mirrored all canonical 0.3.56 retired skill IDs in the no-runtime fallback, added coverage for every renamed folder, regenerated integrity, and completed targeted plus full regression verification.
+- **Result**: Review fix is ready to push; PR remains open and unmerged. Learning: fallback registries must be tested without their optional canonical runtime.
+
 ### [2026-09-08 10:18] Agent: GPT-5.6 Luna
 - **Prompt**: `/ws-ship-pr` after applying the approved installer, hybrid-runtime, handoff-size, and artifact-reference fixes.
 - **Done**: Completed pre-ship verification, corrected remaining root-relative autoload repair coverage, regenerated integrity, and prepared the `develop` → `main` PR handoff with merge disabled.
