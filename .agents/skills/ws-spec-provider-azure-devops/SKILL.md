@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-azure-devops
 description: Azure DevOps work-item→spec and PR ops. Same required intents as GitHub (scm-provider-contract). Trigger when providers.scm is azure-devops.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - spec-provider-azure-devops
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-provider-azure-devops loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Integrate Azure DevOps Work Items and Pull Requests with workflow-skills. Pipeline skills (`ws-spec-write`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, `ws-spec-to-pr`) link here instead of embedding `az` / REST recipes.
 
@@ -47,7 +47,7 @@ Auth/config failure → **STOP**. No silent provider fallback.
 
 ## Intent contract
 
-Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). This table is the Azure DevOps mapping. Do not add an intent here without the same intent on [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) (or an allowlist row).
+Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md). This table is the Azure DevOps mapping. Do not add an intent here without the same intent on [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) (or an allowlist row).
 
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|

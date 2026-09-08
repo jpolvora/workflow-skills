@@ -20,7 +20,7 @@ const {
   resolveConsumerContext,
   toRepoRelative,
   resolveMinVerifyScore,
-} = require(path.resolve(SCRIPT_DIR, '..', '..', 'ws-shared', 'scripts', 'resolve_consumer_root.cjs'));
+} = require(path.resolve(SCRIPT_DIR, '..', '..', 'ws-shared', 'runtime', 'scripts', 'resolve_consumer_root.cjs'));
 
 function usage() {
   console.error(
@@ -97,7 +97,7 @@ function loadJsonIfExists(filePath) {
 
 function loadConfig(context) {
   const configPath = context.configPath;
-  const examplePath = path.join(context.sharedDir, 'config.json.example');
+  const examplePath = path.join(context.templateSource, 'config.json.example');
   const config = context.config || loadJsonIfExists(examplePath) || {};
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(config.dagThresholds || {}) };
   const scoreAndRefine = Boolean(config.defaults && config.defaults.scoreAndRefine);

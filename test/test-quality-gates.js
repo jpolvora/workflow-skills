@@ -36,10 +36,10 @@ const CLASSIFY_SKILL = path.join(
   REPO_ROOT,
   '.agents/skills/ws-classify-complexity/SKILL.md',
 );
-const SETUP_MD = path.join(REPO_ROOT, '.agents/skills/ws-shared/setup.md');
+const SETUP_MD = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/setup.md');
 const CONFIG_EXAMPLE = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-shared/config.json.example',
+  '.agents/skills/ws-shared/templates/config.json.example',
 );
 const SHIP_SKILL = path.join(REPO_ROOT, '.agents/skills/ws-ship-pr/SKILL.md');
 const STEP_DISPATCH = path.join(
@@ -432,7 +432,7 @@ function testPreAdvance4MissingPlan() {
 function testAutoModeSkipPlanningDocs() {
   const skill = read(path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/SKILL.md'));
   const dispatch = read(STEP_DISPATCH);
-  const gates = read(path.join(REPO_ROOT, '.agents/skills/ws-shared/gates.md'));
+  const gates = read(path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/gates.md'));
   const setup = read(SETUP_MD);
   const heading = /autoMode ≠ skip planning/;
   assert(heading.test(skill), 'testAutoModeSkipPlanningDocs: SKILL.md has autoMode ≠ skip planning subsection');

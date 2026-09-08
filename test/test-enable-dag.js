@@ -26,14 +26,14 @@ function read(relPath) {
 }
 
 const example = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.json.example'), 'utf8'),
+  fs.readFileSync(path.join(SHARED, 'templates', 'config.json.example'), 'utf8'),
 );
 const configPath = path.join(SHARED, 'config.json');
 const config = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, 'utf8'))
   : null;
 const schema = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.schema.json'), 'utf8'),
+  fs.readFileSync(path.join(SHARED, 'runtime', 'config.schema.json'), 'utf8'),
 );
 
 const defaultsProps = schema.properties?.defaults?.properties || {};
@@ -124,7 +124,7 @@ assert(
   'PROTOCOLS.md documents defaults.enableDag in Step 4 dispatch',
 );
 
-const configResolution = read('.agents/skills/ws-shared/config-resolution.md');
+const configResolution = read('.agents/skills/ws-shared/runtime/config-resolution.md');
 assert(
   configResolution.includes('defaults.enableDag'),
   'config-resolution.md has Parallel DAG task execution resolution section',

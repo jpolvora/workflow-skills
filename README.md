@@ -18,7 +18,7 @@
 | **[`AGENTS.md`](AGENTS.md)** | Agents (upstream) | Full skill router, layers, verification, portability |
 | **[`CATALOG.md`](CATALOG.md)** | Agents + site generator | On-demand skill inventory, task router, and upstream maintenance commands |
 | **[`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)** | Agents (after install) | Consumer hub: config, gates, external dependencies (installed with `ws-shared/`) |
-| **[`.agents/skills/ws-shared/autoload.md`](.agents/skills/ws-shared/autoload.md)** | Agents (every session) | Always-applied skill set + specs progressive-disclosure router + hub contracts (SCM parity, verify score) |
+| **[`.agents/skills/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md)** | Agents (every session) | Always-applied skill set + specs progressive-disclosure router + hub contracts (SCM parity, verify score) |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to `AGENTS.md` if your IDE needs one — not required by skills |
 
 ---
@@ -32,7 +32,7 @@
 | **A configurable verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ `defaults.minVerifyScore`** (default **9**, range 1–10). Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. Below the bar, scoreAndRefine re-implements flagged tasks. Optional Reach-10 user-gate when effort is low. When already ≥ the bar, optional `scoreAndRefine` second pass reviews the full diff for overengineering and unused workflow-introduced artifacts. |
 | **Verifiable runtime artifacts** | Atomic Node state updates publish `{workflow-id}.state.json` (machine SoT with embedded handoffs and AC ledger), `{workflow-id}.state.md`, a repo plans index, a single `telemetry.jsonl` stream, and deterministic scoring. |
 | **Smaller dispatch context** | Bounded subagent contracts and indexed plan slices replace repeated full-document payloads. Context and MEMORY budgets fail closed when exceeded. |
-| **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
+| **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
 | **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; tracker close-loop via `comment-issue`. |
 | **Safe shell recipes** | Phase 5a blocks nested-quote `python -c` / `node -e` one-liners. Use `extract_frontmatter_field.cjs` for YAML fields. |
 | **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until Step 8 / lite 4 **close**. Workflow `status: completed` means implementation is done, before push/PR. |
@@ -41,7 +41,7 @@
 | **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |
 | **Two speeds, one config** | Standard and lite share `config.json`. Isolated state (`workflowType`); no cross-resume. New runs ask stay-on-branch or `feat/{slug}`. |
 | **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Fresh `ws-configure-project` / `config.json.example` seed `defaults.verboseMode: true` (reasoned start-of-step preview); omitted or `false` at runtime is silent. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
-| **Reviewer-aligned gates** | Structured stack invariant rules (`ws-shared/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run gate (`localReviewCommand`), and initial framework traps seeded in `MEMORY.md`. |
+| **Reviewer-aligned gates** | Structured stack invariant rules (`ws-shared/runtime/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run gate (`localReviewCommand`), and initial framework traps seeded in `MEMORY.md`. |
 
 ### Roadmap
 
@@ -62,7 +62,7 @@ Two delivery workflows (install independently; both share `.agents/skills/ws-sha
 
 Fix-PR batches plan before they edit: `fixPrPlan` uses reviewer-class model resolution to write the complete gate, then `fixPrExec` uses execution-class resolution to validate and apply it. Standard keeps this inside outer Step 9; lite runs the same order inline on its current session model.
 
-See **Features** above for the operating model. Gates: [`gates.md`](.agents/skills/ws-shared/gates.md). Agent contract: [`AGENTS.md`](AGENTS.md) § Dual-mode. Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md). Site FAQ: [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills#faq).
+See **Features** above for the operating model. Gates: [`gates.md`](.agents/skills/ws-shared/runtime/gates.md). Agent contract: [`AGENTS.md`](AGENTS.md) § Dual-mode. Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md). Site FAQ: [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills#faq).
 
 ### Contribution policy
 
@@ -71,7 +71,7 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 1. Change this repo → PR to `develop`
 2. After merge, in the consumer: `npx --yes github:jpolvora/workflow-skills update`
 
-**Always preserved** under `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). The consumer agent contract is [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) — the installer ships no separate packaged index and never writes repo-root files. Do not treat in-place skill edits in a consumer as permanent.
+**Always preserved** under `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). Managed package content is split into `runtime/` and `templates/`, classified by `runtime/hub-layout.json`. The consumer agent contract is [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), with the full runtime contract in [`ws-shared/runtime/AGENTS.md`](.agents/skills/ws-shared/runtime/AGENTS.md). The installer ships no separate packaged index and never writes repo-root files. Do not treat in-place skill edits in a consumer as permanent.
 
 ---
 
@@ -124,8 +124,22 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills ws-tdah --global --
 When skills live under `$HOME/.agents/skills` (global) or a mix of global + project-local trees, managed scripts still read and write **consumer** data from the open project — not from the global hub beside the script on disk.
 
 - **Consumer root:** `$PWD/.agents/skills/ws-shared/config.json` (or `config.json.example`) when present; otherwise pass `--repo-root <dir>` to target the project explicitly.
-- **Skill scripts:** recipes expand `{skillsRoot}/ws-<id>/scripts/...` when that path exists in the project, then fall back to `{globalSkillsRoot}` (see [`tools.md`](.agents/skills/ws-shared/tools.md) rule 10).
+- **Skill scripts:** recipes expand `{skillsRoot}/ws-<id>/scripts/...` when that path exists in the project, then fall back to `{globalSkillsRoot}` (see [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) rule 10).
 - **Project-local scripts** (installed under the consumer `.agents/skills/`, not under the global root) resolve the consumer via `parents[4]` from the script path when cwd has no hub.
+
+`ws-configure-project` keeps the scope boundary explicit. A project-local invocation reads the local `runtime/` and `templates/` and updates only the project consumer root. A global invocation reads the executing global hub and writes only project `config.json` plus accepted consumer-owned companions or pointer/autoload files; it does not copy runtime/templates, package manifests, integrity files, or global memory/history. Running from a global skills root without `--repo-root` stops with an actionable error.
+
+#### ws-shared source-control boundary
+
+| Path | Consumer default |
+|------|------------------|
+| `.agents/skills/ws-shared/config.json` | Track when non-secret; keep provider credentials as environment-variable references |
+| `.agents/skills/ws-shared/STACK.md` | Track when maintained |
+| `.agents/skills/ws-shared/runtime/` and `templates/` | Installer-managed; safe to omit from consumer commits |
+| `MEMORY.md`, `memory/`, `CHANGELOG.md` | Generated local state; ignore by default |
+| `installed-skills.json`, `skill-integrity-local.json`, `host-capabilities.json` | Installer/machine metadata; ignore |
+
+`ws-configure-project --auto --json` reports the same matrix from `runtime/hub-layout.json`.
 
 #### Troubleshooting
 
@@ -149,19 +163,21 @@ curl -fsSL https://raw.githubusercontent.com/jpolvora/workflow-skills/main/insta
 
 From a **local clone** of this repo: `./install-skills.sh` → `node bin/cli.js` (includes uncommitted changes).
 
-### Consumer-owned `shared/` data
+### Consumer-owned `ws-shared/` data
 
-Edit under `.agents/skills/ws-shared/` — never overwritten by upstream:
+Edit only the consumer-owned entries under `.agents/skills/ws-shared/`. The installer manages `runtime/` and `templates/`; those copies are refreshed on update.
 
 | File | Role |
 |------|------|
-| `config.json` | Project identity, stack, verification, providers, and optional path tokens. **Fresh install seeds** from `config.json.example`; fill via `/ws-configure-project`. New runtime controls include test globs, context budget, optional parallel verify/review, step or phase gates, adaptive convergence, diagnostics storage, portable phase-model identifiers, optional provider-compat host hints, inter-step prune (`contextHygiene`), and optional review jury. `fable.auditVerdictsBlockShip` defaults to `"refuted"`; `"caveats"` is an explicit stricter policy. Gitignored and never committed. |
-| `STACK.md` | Human stack notes (seeded from `STACK.md.example`) |
+| `config.json` | Project identity, stack, verification, providers, and optional path tokens. **Fresh install seeds** from `templates/config.json.example`; fill via `/ws-configure-project`. New runtime controls include test globs, context budget, optional parallel verify/review, step or phase gates, adaptive convergence, diagnostics storage, portable phase-model identifiers, optional provider-compat host hints, inter-step prune (`contextHygiene`), and optional review jury. `fable.auditVerdictsBlockShip` defaults to `"refuted"`; `"caveats"` is an explicit stricter policy. Track when non-secret. |
+| `STACK.md` | Human stack notes (seeded from `templates/STACK.md.example`); track when maintained |
 | `MEMORY.md` | Anti-regression index (`ws-self-learning`) |
 | `memory/*.md` | Individual memory entries |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` |
 | `skill-integrity-local.json` | Local digest record after install/update (gitignored; never overwritten from upstream) |
-| `AGENTS.md` | Consumer hub: skill loading, config, gates, external dependencies (installed with `shared/`) |
+| `AGENTS.md` | Consumer hub entrypoint; full skill loading, config, gates, and external dependencies are in `runtime/AGENTS.md` |
+| `runtime/` | Managed workflow contracts, schemas, scripts, stacks, and `hub-layout.json`; do not hand-edit in consumers |
+| `templates/` | Managed setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore` |
 | `CHANGELOG.md` | Append-only history (seeded empty; `rules.changelogFile` defaults here) |
 
 ### Optional root / host configuration
@@ -174,7 +190,7 @@ Installer **never** writes consumer repo-root files. Consumers may add a thin ro
 | Host pointer (name varies by IDE) | Minimal pointer so agents follow project `AGENTS.md` or load skills from `.agents/skills/` |
 | `rules.changelogFile` target | Append-only history (default under `ws-shared/`; optional root `CHANGELOG.md` when configured) |
 
-Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/ws-shared/config.json` (defaults: `.agents/plans`, `.agents/specs`, `.agents/codereviews`). Skill tokens: `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`, `{reviewsDir}` ← `reviews.dir`. Existing repo-root `specs/` is kept when already present and `plans.specsDir` is omitted. Optional `pathTokens` documents fixed install roots for agents (`{skillsRoot}` / `{sharedDir}`); see [`tools.md`](.agents/skills/ws-shared/tools.md) § Path tokens — not relocatable like `plans.dir`.
+Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/ws-shared/config.json` (defaults: `.agents/plans`, `.agents/specs`, `.agents/codereviews`). Skill tokens: `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`, `{reviewsDir}` ← `reviews.dir`. Existing repo-root `specs/` is kept when already present and `plans.specsDir` is omitted. Optional `pathTokens` documents fixed install roots for agents (`{skillsRoot}` / `{sharedDir}`); see [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Path tokens — not relocatable like `plans.dir`.
 
 ### Optional engineering delivery gate
 
@@ -189,16 +205,16 @@ The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **This clone vs a global install:** you may have `ws-*` both here (`.agents/skills/`) and under `~/.agents/skills` (`WORKFLOW_SKILLS_GLOBAL_DIR` if set). Edit only this clone. Do not edit, uninstall, or “sync” the global copies from a session in this repo. Details: [This clone vs a global install](#this-clone-vs-a-global-install).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
-- **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `ws-shared/` hub templates. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `ws-shared/skill-integrity-local.json` from actual digests).
+- **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `ws-shared/runtime/` + `templates/` content. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `ws-shared/skill-integrity-local.json` from actual digests).
 - **Upstream regenerate (authors):** any change to hashed skill/hub/install inputs must run `npm run generate-integrity` and commit `bin/skill-integrity.json` in the same change; `npm run verify-integrity` must pass before claim complete / PR (see root `AGENTS.md`). `ws-check-harness` and install tests fail closed on a stale manifest.
 - **Audit:** `integrity` recomputes digests for skills listed in `installed-skills.json` and compares to `skill-integrity-local.json` (selective installs only require their closure). `--check` compares semver **and** `fullPackageDigest` when the remote integrity manifest is reachable.
 - **Consumer-owned exclusions:** `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `CHANGELOG.md`, and `skill-integrity-local.json` are never hashed and never fail integrity when edited.
 - **Trust limit:** the integrity manifest is **unsigned**. Fetching it shares the same trust boundary as today’s remote `package.json` / raw GitHub fetch (no publisher signing in this release).
 - **Source anonymization:** when a pasted error comes from a private consumer app, agents must not name that project in reports, commits, specs, or new GitHub issues. Use generic wording. See root `AGENTS.md`.
-- **Latest layout only:** no folder renames on update — install/update always copies the current skill tree. **Retired artifact hygiene:** `update` / hub refresh also prunes removed features from consumer `ws-shared/` (for example `session-lease.schema.json`, `defaults.sessionLeases`, retired `ws-patterns*` / `ws-audit` folders) without overwriting your config values.
+- **Latest layout:** install/update migrates known flat managed hub files into `runtime/` and `templates/`, fails closed on unknown entries or destination collisions, and is idempotent. **Retired artifact hygiene:** `update` / hub refresh also prunes removed features from consumer `ws-shared/` (for example `session-lease.schema.json`, `defaults.sessionLeases`, retired `ws-patterns*` / `ws-audit` folders) without overwriting your config values.
 - **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
-- **Script runtimes:** **Node** is required for install/CLI. **New** managed skill scripts are Node `.cjs` only. Existing `.py` helpers stay until a tracked migration; consumers still need Python to run those leftovers. See [`tools.md`](.agents/skills/ws-shared/tools.md) § Script launchers.
+- **Script runtimes:** **Node** is required for install/CLI. **New** managed skill scripts are Node `.cjs` only. Existing `.py` helpers stay until a tracked migration; consumers still need Python to run those leftovers. See [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Script launchers.
 
 ### Verify the package
 
@@ -234,7 +250,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 |-------|------|
 | [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | Orchestrators |
 | [`ws-spec-write`](.agents/skills/ws-spec-write/SKILL.md) … [`ws-goal-fix-pr`](.agents/skills/ws-goal-fix-pr/SKILL.md) | Pipeline `00`–`09` + `ws-goal-fix-pr` (`ws-*`; FSM steps 0–9). Optional Extra post-workflow: [`ws-plan-update`](.agents/skills/ws-plan-update/SKILL.md) |
-| [`ws-spec-provider-github`](.agents/skills/ws-spec-provider-github/SKILL.md) · [`ws-spec-provider-azure-devops`](.agents/skills/ws-spec-provider-azure-devops/SKILL.md) · [`ws-spec-provider-local`](.agents/skills/ws-spec-provider-local/SKILL.md) | Issue/WI → **spec of record** under `{specsDir}` then workflow `step-00` under `{plansDir}` + PR ops. Shared SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md) |
+| [`ws-spec-provider-github`](.agents/skills/ws-spec-provider-github/SKILL.md) · [`ws-spec-provider-azure-devops`](.agents/skills/ws-spec-provider-azure-devops/SKILL.md) · [`ws-spec-provider-local`](.agents/skills/ws-spec-provider-local/SKILL.md) | Issue/WI → **spec of record** under `{specsDir}` then workflow `step-00` under `{plansDir}` + PR ops. Shared SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md) |
 
 ### Review & audit
 

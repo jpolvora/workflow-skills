@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const { runValidateCli } = require('../../ws-shared/scripts/workflow_state.cjs');
+const { runValidateCli } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 runValidateCli({
   pipeline: 'standard',

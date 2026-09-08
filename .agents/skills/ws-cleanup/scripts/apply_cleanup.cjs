@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { resolveConsumerContext, inside } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, inside } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 function parseArgs(argv) {
   const opts = { confirm: false, repoRoot: null, pathsFile: null };

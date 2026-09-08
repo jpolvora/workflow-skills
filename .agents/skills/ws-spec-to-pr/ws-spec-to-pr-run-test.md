@@ -15,7 +15,7 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
 
 ## Prerequisites
 
-1. **BOOTSTRAP** section in [`setup.md`](../ws-shared/setup.md) — ensure `.agents/skills/ws-shared/config.json` points at this repo. If absent, create one:
+1. **BOOTSTRAP** section in [`setup.md`](../ws-shared/runtime/setup.md) — ensure `.agents/skills/ws-shared/config.json` points at this repo. If absent, create one:
 
     ```json
     {

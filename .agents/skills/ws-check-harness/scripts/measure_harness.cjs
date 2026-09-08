@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, resolveSkillMdPath } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, resolveSkillMdPath } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const BASELINE_HARNESS = 962298;
 const BASELINE_REREADS = 368038;

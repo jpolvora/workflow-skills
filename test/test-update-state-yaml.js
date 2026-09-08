@@ -466,7 +466,7 @@ function testStateVersionStampAndReject() {
 
   const CJS_STATE = path.join(
     REPO_ROOT,
-    '.agents/skills/ws-shared/scripts/workflow_state.cjs',
+    '.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs',
   );
   const cjsSrc = fs.readFileSync(CJS_STATE, 'utf8');
   const cjsM = cjsSrc.match(/^const STATE_VERSION = (\d+);/m);

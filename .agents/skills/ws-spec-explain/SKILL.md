@@ -1,6 +1,6 @@
 ---
 name: ws-spec-explain
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 description: >-
   Read-only panorama of a spec or US/issue — status, what it does, what it
@@ -18,7 +18,7 @@ invocation_names:
 
 Read-only status + delivery panorama for one target. Does not edit code, specs, or git state.
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check when config is present. Missing config → local-paths mode with gap `config-missing`.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check when config is present. Missing config → local-paths mode with gap `config-missing`.
 
 ## Invocation
 
@@ -40,7 +40,7 @@ Report shape → [`references/REPORT.md`](references/REPORT.md). Output language
 
 ## Steps
 
-1. **Resolve target** — Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` from config + [`../ws-shared/tools.md`](../ws-shared/tools.md). Map arg → slug + candidate paths (`{specsDir}/{slug}.spec.md`, `{plansDir}/{slug}/`, state files). URL → provider id only when `providers.scm` is set.
+1. **Resolve target** — Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` from config + [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Map arg → slug + candidate paths (`{specsDir}/{slug}.spec.md`, `{plansDir}/{slug}/`, state files). URL → provider id only when `providers.scm` is set.
    - Done when: slug (or explicit gap) and search roots are fixed.
 
 2. **Collect local evidence** — Read in order when present: spec of record → `step-00-*.spec.md` → `*.state.md` → `step-01-*.plan.md` / refined → `step-08-*.result.md` → AC ledger / plan index if present. Record `status`, `currentStep`, `prNumber`/`prUrl`, `branch`, ACs.

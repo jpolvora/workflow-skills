@@ -1,7 +1,7 @@
 ---
 name: ws-classify-complexity
 description: Pipeline complexity classifier — analyzes a spec against config.json dagThresholds and recommends ws-spec-to-pr-lite or ws-spec-to-pr (standard).
-version: 0.4.3
+version: 0.4.4
 invocation_names:
   - classify-complexity
   - ws-classify-complexity
@@ -11,22 +11,22 @@ invocation_names:
 
 > When this skill is loaded, output "ws-classify-complexity loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Analyze a feature spec and emit a reasoned execution profile for pipeline, execution mode, interview, testing, and estimated elapsed time. Writes `{us-dir}/step-00-{slug}.classify.md`.
 
-**Specs family:** Role = orch chooser after a workflow `step-00` exists (or classify a `{specsDir}` file once registered). Used by Step 0 and [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = orch chooser after a workflow `step-00` exists (or classify a `{specsDir}` file once registered). Used by Step 0 and [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
-**Harness-neutral:** use portable aliases from [`../ws-shared/tools.md`](../ws-shared/tools.md). Thresholds / scoreAndRefine detail: [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
+**Harness-neutral:** use portable aliases from [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Thresholds / scoreAndRefine detail: [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 
 ## Orthogonality to Complexity gate
 
-This skill recommends **orchestrator choice** (`lite` | `standard`). It is **orthogonal** to the full-orch **Complexity gate** in [`../ws-shared/gates.md`](../ws-shared/gates.md) (`simple` | `standard` | `complex`), which runs before Step 1 and controls whether Steps 1–2–3 are skipped.
+This skill recommends **orchestrator choice** (`lite` | `standard`). It is **orthogonal** to the full-orch **Complexity gate** in [`../ws-shared/runtime/gates.md`](../ws-shared/runtime/gates.md) (`simple` | `standard` | `complex`), which runs before Step 1 and controls whether Steps 1–2–3 are skipped.
 
 | Axis | Values | When | Purpose |
 |------|--------|------|---------|
 | **Pipeline classifier** (this skill) | `lite` \| `standard` | Step 0 (after spec exists) or `--classify` | Pick `ws-spec-to-pr-lite` vs `ws-spec-to-pr` |
-| **Complexity gate** ([`gates.md`](../ws-shared/gates.md)) | `simple` \| `standard` \| `complex` | Full orch before Step 1 | Skip or enforce plan / interview / DAG steps |
+| **Complexity gate** ([`gates.md`](../ws-shared/runtime/gates.md)) | `simple` \| `standard` \| `complex` | Full orch before Step 1 | Skip or enforce plan / interview / DAG steps |
 
 Do not merge the two axes. A `lite` recommendation does not imply `simple`; a `standard` recommendation does not imply `complex`.
 

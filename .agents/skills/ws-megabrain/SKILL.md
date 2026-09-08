@@ -1,6 +1,6 @@
 ---
 name: ws-megabrain
-version: 0.4.3
+version: 0.4.4
 description: >-
   Vibe-coding task implementer without a spec. Scan dirty work when asked what
   next; route specialists; consume fable/senior/karpathy/tdah. Trigger on
@@ -24,9 +24,9 @@ Do **not** copy companion protocols into this file. Load them:
 | Surgical diffs | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) |
 | Extras, ambiguity `user-gate`, Code review proof | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
 | Reply shape | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) |
-| MEMORY before mutate | `read-memory` ([`../ws-shared/tools.md`](../ws-shared/tools.md)) |
+| MEMORY before mutate | `read-memory` ([`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md)) |
 
-**Entry:** Expand `{sharedDir}` / `{skillsRoot}` / `{plansDir}` / `{specsDir}` / `{reviewsDir}` from [`../ws-shared/tools.md`](../ws-shared/tools.md). Missing config → defaults (`.agents/plans`, `.agents/specs`), `defaults.autoMode` treated as `false`, and gap `config-missing`. Do not run `ws-spec-write` unless the user asked for a spec.
+**Entry:** Expand `{sharedDir}` / `{skillsRoot}` / `{plansDir}` / `{specsDir}` / `{reviewsDir}` from [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Missing config → defaults (`.agents/plans`, `.agents/specs`), `defaults.autoMode` treated as `false`, and gap `config-missing`. Do not run `ws-spec-write` unless the user asked for a spec.
 
 ## Invocation
 
@@ -68,7 +68,7 @@ No hit → router only. Never Read the whole folder.
 
 ## Steps
 
-1. **Bind host** — `askQuestionTool` from `{sharedDir}/host-capabilities.json` or one probe ([`../ws-shared/tools.md`](../ws-shared/tools.md)). `user-gate` / markdown yield ([`../ws-shared/gates.md`](../ws-shared/gates.md)). `autoMode` (`defaults.autoMode`; missing `config.json` → `false`, interactive `user-gate`) → recommended option 1.
+1. **Bind host** — `askQuestionTool` from `{sharedDir}/host-capabilities.json` or one probe ([`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md)). `user-gate` / markdown yield ([`../ws-shared/runtime/gates.md`](../ws-shared/runtime/gates.md)). `autoMode` (`defaults.autoMode`; missing `config.json` → `false`, interactive `user-gate`) → recommended option 1.
    - Done when: `askQuestionTool` is a tool name or `none`.
 
 2. **Mode** — `plan` → fable **Plan-First** then STOP. `research` / Question wording → fable **Question** (no Act). Else **Task** (implement, no spec required). Autoload with a clear task → skip the menu. `/ws-megabrain` with no task, or "what next" → Step 3. Orch owns session → stop this skill.

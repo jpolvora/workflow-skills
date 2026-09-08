@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const NODE = process.execPath;
 
-const SCAN_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'scripts', 'scan_stack_invariants.cjs');
+const SCAN_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'scripts', 'scan_stack_invariants.cjs');
 const AC_LEDGER_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs');
 const AUTO_CONFIG_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-configure-project', 'scripts', 'auto_configure.cjs');
 const SELF_LEARNING_SCRIPT = path.join(REPO_ROOT, '.agents', 'skills', 'ws-self-learning', 'scripts', 'self_learning.cjs');
@@ -54,7 +54,7 @@ function cleanup() {
 
 try {
   console.log('--- AC1: Structured stacks catalog & whitelist & config schema ---');
-  const stacksDir = path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'stacks');
+  const stacksDir = path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'stacks');
   const expectedStacks = ['abp-angular.md', 'typescript-node.md', 'nextjs-react.md', 'php-laravel.md'];
   for (const file of expectedStacks) {
     const fullPath = path.join(stacksDir, file);
@@ -65,13 +65,13 @@ try {
 
   const installRulesPath = path.join(REPO_ROOT, 'bin', 'install-rules.js');
   const installRulesContent = fs.readFileSync(installRulesPath, 'utf8');
-  assert(installRulesContent.includes("'stacks'"), 'bin/install-rules.js HUB_WHITELIST includes stacks');
+  assert(installRulesContent.includes('HUB_LAYOUT'), 'bin/install-rules.js derives hub rules from HUB_LAYOUT');
 
-  const configSchema = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.schema.json'), 'utf8'));
+  const configSchema = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'), 'utf8'));
   assert(configSchema.properties.verification.properties.localReviewCommand !== undefined, 'config.schema.json defines verification.localReviewCommand');
   assert(configSchema.properties.preview.properties.localReviewCommand !== undefined, 'config.schema.json defines preview.localReviewCommand');
 
-  const configExample = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.json.example'), 'utf8'));
+  const configExample = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'), 'utf8'));
   assert(configExample.verification.localReviewCommand !== undefined, 'config.json.example includes verification.localReviewCommand');
 
   console.log('--- AC2: ws-spec-write & ws-spec-format stack invariant injection ---');
@@ -338,8 +338,11 @@ try {
   console.log('--- AC8: auto_configure.cjs initial framework traps in MEMORY.md ---');
   // 1. ABP Angular detection
   const abpProj = mkTmp('ws-auto-abp-');
-  fs.mkdirSync(path.join(abpProj, '.agents', 'skills', 'ws-shared'), { recursive: true });
-  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.json.example'), path.join(abpProj, '.agents', 'skills', 'ws-shared', 'config.json.example'));
+  fs.mkdirSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'templates'), { recursive: true });
+  fs.mkdirSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'), path.join(abpProj, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'), path.join(abpProj, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'), path.join(abpProj, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'));
   fs.writeFileSync(path.join(abpProj, 'package.json'), JSON.stringify({ name: 'my-abp-app', scripts: { test: 'dotnet test' }, dependencies: { '@abp/ng.core': '^7.0.0' } }));
   const abpAuto = cp.spawnSync(NODE, [AUTO_CONFIG_SCRIPT, '--repo-root', abpProj, '--json'], { encoding: 'utf8' });
   assert(abpAuto.status === 0, `auto_configure for ABP succeeds: ${abpAuto.stderr}`);
@@ -367,8 +370,11 @@ try {
 
   // 2. Next.js React detection
   const nextProj = mkTmp('ws-auto-next-');
-  fs.mkdirSync(path.join(nextProj, '.agents', 'skills', 'ws-shared'), { recursive: true });
-  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.json.example'), path.join(nextProj, '.agents', 'skills', 'ws-shared', 'config.json.example'));
+  fs.mkdirSync(path.join(nextProj, '.agents', 'skills', 'ws-shared', 'templates'), { recursive: true });
+  fs.mkdirSync(path.join(nextProj, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'), path.join(nextProj, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'), path.join(nextProj, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'), path.join(nextProj, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'));
   fs.writeFileSync(path.join(nextProj, 'package.json'), JSON.stringify({ name: 'my-next-app', scripts: { test: 'npm test' }, dependencies: { 'next': '^14.0.0' } }));
   const nextAuto = cp.spawnSync(NODE, [AUTO_CONFIG_SCRIPT, '--repo-root', nextProj, '--json'], { encoding: 'utf8' });
   assert(nextAuto.status === 0, `auto_configure for Next.js succeeds: ${nextAuto.stderr}`);
@@ -379,8 +385,11 @@ try {
 
   // 3. PHP Laravel detection
   const phpProj = mkTmp('ws-auto-php-');
-  fs.mkdirSync(path.join(phpProj, '.agents', 'skills', 'ws-shared'), { recursive: true });
-  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.json.example'), path.join(phpProj, '.agents', 'skills', 'ws-shared', 'config.json.example'));
+  fs.mkdirSync(path.join(phpProj, '.agents', 'skills', 'ws-shared', 'templates'), { recursive: true });
+  fs.mkdirSync(path.join(phpProj, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'), path.join(phpProj, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'), path.join(phpProj, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'), path.join(phpProj, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'));
   fs.writeFileSync(path.join(phpProj, 'package.json'), JSON.stringify({ name: 'my-php-app', scripts: { test: 'php artisan test' } }));
   fs.writeFileSync(path.join(phpProj, 'composer.json'), JSON.stringify({ name: 'vendor/my-laravel-app' }));
   const phpAuto = cp.spawnSync(NODE, [AUTO_CONFIG_SCRIPT, '--repo-root', phpProj, '--json'], { encoding: 'utf8' });
@@ -392,8 +401,11 @@ try {
 
   // 4. TypeScript / Node detection
   const tsProj = mkTmp('ws-auto-ts-');
-  fs.mkdirSync(path.join(tsProj, '.agents', 'skills', 'ws-shared'), { recursive: true });
-  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.json.example'), path.join(tsProj, '.agents', 'skills', 'ws-shared', 'config.json.example'));
+  fs.mkdirSync(path.join(tsProj, '.agents', 'skills', 'ws-shared', 'templates'), { recursive: true });
+  fs.mkdirSync(path.join(tsProj, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'), path.join(tsProj, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'), path.join(tsProj, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'));
+  fs.copyFileSync(path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'), path.join(tsProj, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'));
   fs.writeFileSync(path.join(tsProj, 'package.json'), JSON.stringify({ name: 'my-ts-app', scripts: { test: 'npm test' }, devDependencies: { 'typescript': '^5.0.0' } }));
   const tsAuto = cp.spawnSync(NODE, [AUTO_CONFIG_SCRIPT, '--repo-root', tsProj, '--json'], { encoding: 'utf8' });
   assert(tsAuto.status === 0, `auto_configure for TS succeeds: ${tsAuto.stderr}`);

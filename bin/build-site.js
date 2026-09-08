@@ -64,7 +64,7 @@ if (shouldBump) {
 
   for (const rel of [
     path.join(root, 'bin', 'skill-dependencies.json'),
-    path.join(root, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json'),
+    path.join(root, '.agents', 'skills', 'ws-shared', 'runtime', 'skill-dependencies.json'),
   ]) {
     if (!fs.existsSync(rel)) continue;
     const deps = JSON.parse(fs.readFileSync(rel, 'utf-8'));

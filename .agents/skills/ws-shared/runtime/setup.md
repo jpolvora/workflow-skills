@@ -1,9 +1,9 @@
 # Setup & Bootstrap — Shared Workflow Entry
 
 Initialization, configuration bootstrap, flags, resume logic, and first-run setup.
-Shared by [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
+Shared by [`ws-spec-to-pr`](../../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../../ws-spec-to-pr-lite/SKILL.md).
 
-Artifact paths: [`../ws-spec-to-pr/ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md). Resume rules in this file are canonical; FAQ/DIAGRAM must link here.
+Artifact paths: [`../ws-spec-to-pr/ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md). Resume rules in this file are canonical; FAQ/DIAGRAM must link here.
 
 ---
 
@@ -35,20 +35,20 @@ Same entry paths for **standard** and **lite**. Resolve provider from `config.js
 
 | Input | Provider / skill | Step 0 action |
 |-------|------------------|---------------|
-| GitHub `{n}` / `US {n}` | [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) `fetch-to-spec` | Issue snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{n}.spec.md` → register `step-00` (`source: github`) |
-| ADO `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) `fetch-to-spec` | WI snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{id}.spec.md` → register `step-00` (`source: azure-devops`) |
-| Hand-written `*.spec.md` (any path) | [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) `fetch-to-spec` | Normalize into `{specsDir}` (in place when already there) → register `step-00` |
+| GitHub `{n}` / `US {n}` | [`ws-spec-provider-github`](../../ws-spec-provider-github/SKILL.md) `fetch-to-spec` | Issue snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{n}.spec.md` → register `step-00` (`source: github`) |
+| ADO `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | [`ws-spec-provider-azure-devops`](../../ws-spec-provider-azure-devops/SKILL.md) `fetch-to-spec` | WI snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{id}.spec.md` → register `step-00` (`source: azure-devops`) |
+| Hand-written `*.spec.md` (any path) | [`ws-spec-provider-local`](../../ws-spec-provider-local/SKILL.md) `fetch-to-spec` | Normalize into `{specsDir}` (in place when already there) → register `step-00` |
 | Free-text feature description (no spec) | `ws-spec-write` (standard or lite) | Brainstorm → `{specsDir}/{slug}.spec.md` only, then `ws-spec-provider-local` register → `{us-dir}/step-00-{slug}.spec.md` |
 | Plain text in invocation (no issue id, no `*.spec.md` path) | `ws-spec-write` | Same as free-text row |
 
 Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDir`, default `.agents/specs`); the workflow `step-00-{slug}.spec.md` under `{us-dir}` is created by register (or provider fetch) when a run starts. Downstream workflow skills **always** read `step-00-{slug}.spec.md` under `{us-dir}` — never `{specsDir}` and never `*.issue.json`.
 
 
-1. **Config check**: Check if `.agents/skills/ws-shared/config.json` exists (fresh install normally seeds it from `config.json.example`).
-   - If missing: `cp .agents/skills/ws-shared/config.json.example .agents/skills/ws-shared/config.json`.
+1. **Config check**: Check if `.agents/skills/ws-shared/config.json` exists (fresh install normally seeds it from `templates/config.json.example`).
+   - If missing: `cp .agents/skills/ws-shared/templates/config.json.example .agents/skills/ws-shared/config.json`.
    - Load path tokens early ([`tools.md`](tools.md) § Path tokens): `pathTokens.skillsRoot` / `sharedDir` (defaults `.agents/skills` / `.agents/skills/ws-shared`) plus `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Expand braces before Read/Grep/Shell.
    - User-gate: **Configure now (Recommended)** / **Skip**.
-   - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`ws-configure-project`](../ws-configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
+   - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`ws-configure-project`](../../ws-configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
    - If **Skip**: continue with example defaults; warn that providers/verification may be wrong until ws-configure-project runs.
 1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `.agents/skills/ws-shared/STACK.md`). Prefer ws-configure-project step 5 when that skill just ran. If config still points at a missing root `STACK.md`/`stack.md` while `.agents/skills/ws-shared/STACK.md` exists, set `rules.stackFile` to the shared path (no root file required). Else `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
@@ -59,7 +59,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      - **Project structure**: List top-level directories (`src/`, `web/`, `tests/`, `app/`, `lib/`, `cmd/`, etc.) and infer conventional layers.
      - **Tool versions**: `node --version`, `dotnet --version`, `python --version`, `go version` (if installed).
      - **Build/test commands**: Check `package.json` `scripts` (`build`, `test`, `lint`, `dev`), `Makefile` targets, existing CI configs (`.github/workflows/`, `.gitlab-ci.yml`).
-   - Generate companion from the detected information using [`STACK.md.example`](STACK.md.example) as format reference.
+   - Generate companion from the detected information using [`STACK.md.example`](../templates/STACK.md.example) as format reference.
    - Write to `.agents/skills/ws-shared/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/ws-shared/`). Do **not** create a repo-root stack file.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `stack companion bootstrapped: {stackFile}`.
@@ -209,8 +209,8 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 4d. **Step 5 verify score integrity on resume:** If resumed `currentStep >= 6` in a standard workflow, verify that Step 5 actually completed with score ≥ `defaults.minVerifyScore` (default 9) (`state.verificationScore` or derived from `state.acLedger`). If Step 5 scored below `defaults.minVerifyScore`: do **not** jump to Step 6. Rewind `currentStep` to 5 (`state.currentStep = 5`, remove 5 from `completedSteps`), log `score-refine | resume-rewind | score < minVerifyScore | ISO` in `## Gate history`, and resume at the Step 5 `scoreAndRefine` loop. In `autoMode`, the gate choice is automatically **Proceed with Second Pass Refinement** (`scoreAndRefine`). The agent must align the implementation with the specification, re-verify until score ≥ `minVerifyScore`, execute required G2-code, and only then advance to Step 6.
 
 5a. **Session model refresh (mandatory on every resume):** Re-read the executing session model → update `currentModel`. If changed vs prior frontmatter value, log `model-change | step {currentStep} | {old} → {new} | ISO` in ## Gate history. Ignore leftover `modelChain` keys in old state files.
-5c. **Missing `plan.index.json` (resume of pre-0.3.37 runs):** If `{us-dir}/plan.index.json` is absent and the next pre-advance is implement or later (standard ≥ 4 / lite ≥ 2), backfill with `plan_index.cjs build` before validate. Recipe: [`ws-spec-to-pr/docs/faq.md`](../ws-spec-to-pr/docs/faq.md) § Pre-advance fails: plan.index.json is required before implement.
-5d. **Missing `ac-ledger.json` (resume of pre-0.3.37 runs):** If `{us-dir}/ac-ledger.json` is absent, `ac_ledger.cjs init` from `step-00-{slug}.spec.md` before `--pre-advance 1` (or any later advance). Recipe: [`ws-spec-to-pr/docs/faq.md`](../ws-spec-to-pr/docs/faq.md) § Pre-advance fails: ac-ledger.json is required before advance.
+5c. **Missing `plan.index.json` (resume of pre-0.3.37 runs):** If `{us-dir}/plan.index.json` is absent and the next pre-advance is implement or later (standard ≥ 4 / lite ≥ 2), backfill with `plan_index.cjs build` before validate. Recipe: [`ws-spec-to-pr/docs/faq.md`](../../ws-spec-to-pr/docs/faq.md) § Pre-advance fails: plan.index.json is required before implement.
+5d. **Missing `ac-ledger.json` (resume of pre-0.3.37 runs):** If `{us-dir}/ac-ledger.json` is absent, `ac_ledger.cjs init` from `step-00-{slug}.spec.md` before `--pre-advance 1` (or any later advance). Recipe: [`ws-spec-to-pr/docs/faq.md`](../../ws-spec-to-pr/docs/faq.md) § Pre-advance fails: ac-ledger.json is required before advance.
 6. Paused: resume at same step (checkpoint revert M=currentStep → hygiene → board → gate).
 7. No unfinished workflows: skip list, proceed to bootstrap.
 

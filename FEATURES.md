@@ -4,7 +4,19 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.3.64** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.4** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+
+### ws-shared hybrid configuration boundary
+
+The shared hub keeps its stable consumer root while separating managed package content:
+
+- `runtime/` contains contracts, schemas, scripts, stack rule packs, and `hub-layout.json` required by workflow execution.
+- `templates/` contains setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore`.
+- Root `config.json` and maintained `STACK.md` are consumer-owned and trackable when non-secret.
+- `MEMORY.md`, `memory/`, `CHANGELOG.md`, installer manifests, integrity records, and host caches are generated/local by default.
+- A global `ws-configure-project` run resolves runtime/templates from the executing global hub and writes only the target project's consumer configuration and accepted pointers/autoload files. A project-local run uses the local hub without copying global content.
+
+The machine-readable classification source is [`.agents/skills/ws-shared/runtime/hub-layout.json`](.agents/skills/ws-shared/runtime/hub-layout.json). Configure-project JSON output includes the corresponding source-control matrix.
 
 | Doc | Purpose |
 |-----|---------|
@@ -114,7 +126,7 @@ Nine required intents, enforced by `node test/test-provider-parity.js` in `npm r
 | `comment-issue` | Posts the PR URL and summary back to the tracker; skipped for local specs |
 | `merge-pr` | Waits for required checks; never deletes `project.workingBranch` |
 
-Adding an intent to only one provider fails CI unless an allowlist row explains why the other host cannot mirror it. Contract: [`scm-provider-contract.md`](.agents/skills/ws-shared/scm-provider-contract.md).
+Adding an intent to only one provider fails CI unless an allowlist row explains why the other host cannot mirror it. Contract: [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md).
 
 `ws-spec-provider-local` implements `fetch-to-spec` and `validate-auth` only, and delegates all PR operations to `providers.scm`.
 
@@ -138,7 +150,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
 | Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-plan-interview` / `ws-implement-tasks` / `ws-plan-verify` |
-| Reviewer-aligned implementation gates: structured stack invariant rules (`ws-shared/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run adapter (`localReviewCommand`), and initial framework traps in MEMORY.md | `ws-shared` / `ws-spec-write` / `ws-plan-write` / `ws-implement-tasks` / `ws-plan-verify` / `ws-code-review` / `ws-configure-project` |
+| Reviewer-aligned implementation gates: structured stack invariant rules (`ws-shared/runtime/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run adapter (`localReviewCommand`), and initial framework traps in MEMORY.md | `ws-shared` / `ws-spec-write` / `ws-plan-write` / `ws-implement-tasks` / `ws-plan-verify` / `ws-code-review` / `ws-configure-project` |
 
 Every entry path — free text, local file, GitHub issue, Azure work item — produces the spec of record under `{specsDir}` **before** any plan artifact exists. Re-fetching refuses to clobber a differing spec unless `--force` is passed.
 
@@ -212,7 +224,7 @@ Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autolo
 
 ## 10. Configuration surface
 
-Everything project-specific lives in one consumer-owned, gitignored file: `.agents/skills/ws-shared/config.json` (seeded from `config.json.example`, validated by `config.schema.json`, filled interactively by `ws-configure-project`).
+Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (seeded from `templates/config.json.example`, validated by `runtime/config.schema.json`, filled by `ws-configure-project`). Track it when non-secret; keep generated memory/history and installer metadata local. Managed execution content is under `runtime/`, and setup-only seeds are under `templates/`.
 
 | Section | Controls |
 |---------|----------|

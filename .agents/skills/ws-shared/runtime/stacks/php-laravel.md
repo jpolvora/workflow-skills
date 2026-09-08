@@ -40,6 +40,6 @@ Non-negotiable architectural, security, concurrency, and lifecycle invariant rul
 - [ ] Verify FormRequest validation on all mutation endpoints.
 - [ ] Verify zero unparameterized `DB::raw()` queries.
 - [ ] Verify Blade templates avoid unescaped `{!! !!}`.
-- [ ] Run invariant scan: `node .agents/skills/ws-shared/scripts/scan_stack_invariants.cjs --stack php-laravel`
+- [ ] Run invariant scan: `node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs --stack php-laravel`
 - [ ] Run PHPStan / Pint: `./vendor/bin/phpstan analyse`
 - [ ] Run Pest / PHPUnit tests: `php artisan test`

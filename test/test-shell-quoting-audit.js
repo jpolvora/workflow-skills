@@ -16,7 +16,7 @@ const CHECK = path.join(
 );
 const EXTRACT = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-shared/scripts/extract_frontmatter_field.cjs',
+  '.agents/skills/ws-shared/runtime/scripts/extract_frontmatter_field.cjs',
 );
 
 let failures = 0;

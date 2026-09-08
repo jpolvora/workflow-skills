@@ -1,6 +1,6 @@
 ---
 name: ws-activity-report
-version: 0.4.3
+version: 0.4.4
 description: >-
   Timesheet entries (date, start, end, description) for ws-spec-to-pr /
   ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
@@ -20,7 +20,7 @@ Read-only timesheet builder for a civil day. Emits **entries** + **technical tab
 
 **Not** vault prompt/session billing: that is **`/ws-session-tracking`** (`memo activity` / MCP `prompt`) from [spec-memo](https://github.com/jpolvora/spec-memo). This skill only clocks Spec-to-PR / lite plan folders.
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 ## Invocation
 
@@ -42,7 +42,7 @@ Output language: **en-us**. Clock rules: [`references/TIMING.md`](references/TIM
 
 ## Steps
 
-1. **Resolve day** — Parse `{date}` + `--tz`. Expand `{plansDir}` / `{sharedDir}` / `{skillsRoot}` from config + [`../ws-shared/tools.md`](../ws-shared/tools.md).
+1. **Resolve day** — Parse `{date}` + `--tz`. Expand `{plansDir}` / `{sharedDir}` / `{skillsRoot}` from config + [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md).
    - Done when: target civil day and timezone are fixed.
 
 2. **Discover plans** — Glob `{plansDir}/**/*.state.md` (include archives). Keep folders with state or `step-00-*`. Include if interval crosses target day, or if user listed ids.

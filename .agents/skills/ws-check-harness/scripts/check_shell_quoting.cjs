@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const SKIP_DIR_NAMES = new Set([
   'node_modules',
@@ -146,7 +146,7 @@ function main() {
     findingCount: findings.length,
     findings: findings,
     remediation:
-      'Replace nested-quote python -c / node -e recipes with a permanent script file + explicit launcher (CROSS-PLATFORM.md). For YAML frontmatter fields use ws-shared/scripts/extract_frontmatter_field.cjs.',
+      'Replace nested-quote python -c / node -e recipes with a permanent script file + explicit launcher (CROSS-PLATFORM.md). For YAML frontmatter fields use ws-shared/runtime/scripts/extract_frontmatter_field.cjs.',
   };
 
   if (options.json) {

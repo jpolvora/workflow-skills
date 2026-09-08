@@ -1,7 +1,7 @@
 ---
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-testing loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Plan and execute the pre-PR **testing** battery: unit tests, integration/E2E flows, coverage signals, testing quality (assertions, fixtures, flakiness), feature quality against acceptance criteria, and an optional **mutation testing** substep (kill/survive score vs threshold).
 
@@ -71,7 +71,7 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 6. **Run UI/E2E validation**: run browser automation or visual checks unless `skip-browser` is set.
    - Done when: UI/E2E checks ran or were explicitly skipped.
 
-7. **Mutation testing** (optional): only after Steps 2–3 (and other planned suite checks that apply) succeed. If skip rules apply → record Mutation `skipped` + reason and continue to Report. Else run `verification.mutationTest` with an explicit launcher per [`tools.md`](../ws-shared/tools.md) § Script launchers; compare score to threshold.
+7. **Mutation testing** (optional): only after Steps 2–3 (and other planned suite checks that apply) succeed. If skip rules apply → record Mutation `skipped` + reason and continue to Report. Else run `verification.mutationTest` with an explicit launcher per [`tools.md`](../ws-shared/runtime/tools.md) § Script launchers; compare score to threshold.
    - **Pass:** score ≥ threshold → Mutation `status: passed` (include score; killed/survived when known).
    - **Fail:** score &lt; threshold or non-zero exit → Mutation `status: failed`; **do not** treat Step 7 as complete for Advance — orch/`user-gate` offers handoff to [`ws-implement-tasks`](../ws-implement-tasks/SKILL.md) fix mode to strengthen tests (kill survivors). This skill does not edit product or test code.
    - Done when: Mutation recorded as `passed` | `failed` | `skipped`.

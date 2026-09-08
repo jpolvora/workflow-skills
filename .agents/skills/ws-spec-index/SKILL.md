@@ -1,7 +1,7 @@
 ---
 name: ws-spec-index
 description: Project PRD index manager — initializes, synchronizes, and promotes feature specifications within the project index (index.PRD).
-version: 0.4.3
+version: 0.4.4
 invocation_names:
   - spec-index
   - ws-spec-index
@@ -11,11 +11,11 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-index loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifications. Disclosed reference: [`REFERENCE.md`](REFERENCE.md), template: [`INDEX-TEMPLATE.md`](INDEX-TEMPLATE.md).
 
-**Specs family:** Role = `index.PRD` init / status sync / promote. **Not** code↔spec body drift (`ws-spec-update`), **not** `{plansDir}` history harvest (`ws-spec-archive`), and **not** the dual board (`ws-spec-list`). Optional stub on promote still follows [`ws-spec-format`](../ws-spec-format/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = `index.PRD` init / status sync / promote. **Not** code↔spec body drift (`ws-spec-update`), **not** `{plansDir}` history harvest (`ws-spec-archive`), and **not** the dual board (`ws-spec-list`). Optional stub on promote still follows [`ws-spec-format`](../ws-spec-format/SKILL.md). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 ## Subcommands
 

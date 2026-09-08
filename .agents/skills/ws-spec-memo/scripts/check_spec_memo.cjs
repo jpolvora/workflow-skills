@@ -13,7 +13,7 @@ const {
   resolveGlobalSkillsRoot,
   resolveMemoryRouting,
   toRepoRelative,
-} = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const SCRIPT_FILE = __filename;
 

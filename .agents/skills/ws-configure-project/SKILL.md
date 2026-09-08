@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.3
+version: 0.4.4
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -13,14 +13,16 @@ invocation_names:
 
 Fill or refresh consumer `config.json` via detect → suggest → user-gate. Portable: no host-product names; paths use `{plansDir}` tokens after write.
 
-**Config path:** `{sharedDir}/config.json` (gitignored). Template: [`ws-shared/config.json.example`](../ws-shared/config.json.example). Schema: [`shared/config.schema.json`](../ws-shared/config.schema.json).
+**Config path:** `{sharedDir}/config.json` (consumer-owned). Templates are under `{sharedDir}/templates/`; runtime contracts and scripts are under `{sharedDir}/runtime/`. Template: [`ws-shared/templates/config.json.example`](../ws-shared/templates/config.json.example). Schema: [`ws-shared/runtime/config.schema.json`](../ws-shared/runtime/config.schema.json).
 
-**Callers:** standalone anytime; [`ws-shared/setup.md`](../ws-shared/setup.md) bootstrap step 1; post-install when user opts in.
+**Hybrid behavior:** When this skill executes from a global skills root, it resolves runtime/templates from the executing global `ws-shared/` and writes only the consumer project's `{sharedDir}/config.json` (plus optional consumer-owned `STACK.md`, memory, changelog, and autoload outputs). When it executes from a project-local installation, it uses the local hub and updates that same local config without copying global files. The layout manifest is `{sharedDir}/runtime/hub-layout.json`.
+
+**Callers:** standalone anytime; [`ws-shared/runtime/setup.md`](../ws-shared/runtime/setup.md) bootstrap step 1; post-install when user opts in.
 
 ## Invocation
 
 ```
-/ws-configure-project [--section <name>] [--detect-only] [--force]
+/ws-configure-project [--section <name>] [--detect-only] [--force] [--auto]
 ```
 
 | Flag | Effect |
@@ -28,6 +30,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 | `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`preview`**, **`autoload`**, **`specMemo`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
+| `--auto` | Run non-interactive `auto_configure.cjs`; fills only gaps, emits JSON when requested, and never invents secrets |
 
 **`--section preview`:** optional `preview.dryRunCommand` for [`ws-preview`](../ws-preview/SKILL.md). Infer a local dry-run recipe from harness docs / package scripts / consumer skills (see [`INTERVIEW.md`](INTERVIEW.md) § Preview); user-gate; write the string or leave empty (Skip). Empty is valid — `/ws-preview` fails closed until set. Never invent or download a reviewer backend.
 
@@ -37,7 +40,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 ## Steps
 
-1. **Ensure file** — If `config.json` missing: `cp` from `config.json.example`. If example missing, STOP (hub not installed). For `--section autoload`, still ensure `config.json` exists (seed from example) because the section persists `defaults.autoload`.
+1. **Ensure file** — If `config.json` missing: copy from `{templateSource}/config.json.example`. If the template is missing, STOP (hub runtime/templates are not installed). For `--section autoload`, still ensure `config.json` exists (seed from the resolved template) because the section persists `defaults.autoload`.
    - Done when: `config.json` exists on disk (or detect-only with example readable).
 
 2. **Detect** — Before stack scanning, run `node {skillsRoot}/ws-configure-project/scripts/stack_fingerprint.cjs check`. When it returns `skipDetection: true`, reuse the current stack detection; otherwise scan the consumer repo for stack, SCM, and commands, apply heuristics in [`INTERVIEW.md`](INTERVIEW.md) § Detection, and after accepted detection run the helper's `write` command to store `stackFingerprint` in `STACK.md` frontmatter. Build a suggestion map (path → value) without writing config yet. For `--section preview` (or full interview optional extras): infer `preview.dryRunCommand` candidates per [`INTERVIEW.md`](INTERVIEW.md) § Preview (scan harness docs, `package.json` scripts, consumer skills/scripts — do not invent a backend). For `--section autoload`, detect per-skill install scope only (project-local vs global) and current `defaults.autoload` / `defaults.autoloadTaskLifecycle`. For `--section specMemo`, run `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json` and record `cli.available`, `pollution`, and current `specMemo.*`.
@@ -46,8 +49,11 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 3. **Gap list** — Compare current `config.json` to required keys in INTERVIEW.md § Required. Mark each: filled / placeholder (`<…>` or empty) / missing. For `--section preview`, gap is `preview.dryRunCommand` (empty = optional gap still offered once). For `--section autoload`, gap is `defaults.autoload` (+ root file consistency when true) and `defaults.autoloadTaskLifecycle`. For `--section specMemo`, gap is `specMemo.enabled` (+ CLI availability when user wants enable).
    - Done when: gap list exists; `--force` treats filled as re-ask candidates.
 
-4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never commit `config.json`. Autoload enablement gate: see step 6 (Recommended = No / `false`).
+4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never write credentials into `config.json`; track it only when it contains non-secret project settings. Autoload enablement gate: see step 6 (Recommended = No / `false`).
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
+
+**Step 4b. Auto mode** — When `--auto` is explicit, run `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` after resolving the execution scope. It fills only missing, empty-required, or placeholder values, preserves existing consumer files, skips framework memory seeding for global execution, and reports `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, and the manifest-derived source-control matrix.
+   - Done when: the command exits 0 for the requested scope, or reports unresolved required gaps with exit 1; never continue after exit 2.
 
 5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
    - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
@@ -107,6 +113,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Do not invent org/repo secrets; leave PAT/env keys as env-var names only.
 - `providers.scm` never `local`; hybrid `active=local` + `scm=github|azure-devops` allowed.
 - Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/ws-shared/CHANGELOG.md` unless user picks otherwise.
+- Hub source control: track `config.json` and maintained consumer-owned companions such as `STACK.md`; ignore managed `runtime/` and `templates/` copies, generated root `AGENTS.md` / `autoload.md`, memory/history, and installer metadata. Use `auto_configure.cjs --json` for the manifest-derived report; credentials remain environment references.
 - Delivery commit artifacts (`defaults.deliveryCommitArtifacts`): interview under `defaults` / `--section defaults` per [`INTERVIEW.md`](INTERVIEW.md); recommended = refined plan on, delivery result off, opt-ins off (see [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8).
 - Models (`defaults` / `--section defaults`): pick `modelsPreset` from shipped `config.json.example` sample keys, then optional `stepModels` (`"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`); keep empty legacy phase keys unless the user wants an advanced override. Token `"current"` uses the session model. Explain that `fixPrPlan` falls back to `reviewerModel`, `fixPrExec` falls back to `executionModel`, both bypass numeric `"9"`, and lite ignores role model switches while preserving plan-before-edit.
 - Min verify score (`defaults` / `--section defaults`): interview `defaults.minVerifyScore` per [`INTERVIEW.md`](INTERVIEW.md) (Recommended 9; runtime omitted/invalid → 9).

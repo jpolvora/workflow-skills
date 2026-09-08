@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { fetchRetry } = require('../../ws-shared/scripts/http_retry.cjs');
+const { fetchRetry } = require('../../ws-shared/runtime/scripts/http_retry.cjs');
 
 const RESOLUTION_MARKER = '<!-- resolution-reply -->';
 const MODEL_FOOTER_PREFIX = 'LLM model:';

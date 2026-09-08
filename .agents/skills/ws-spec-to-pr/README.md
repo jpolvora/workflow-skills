@@ -2,7 +2,7 @@
 
 > **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract. Use this README + [`DIAGRAM.md`](DIAGRAM.md) for onboarding. FAQ sections that still mention steps 11–13 are **legacy**; trust [`SKILL.md`](SKILL.md) / this README for steps **0–9**.
 >
-> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/tools.md). Config: `.agents/skills/ws-shared/config.json`.
+> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/runtime/tools.md). Config: `.agents/skills/ws-shared/config.json`.
 >
 > **Identity:** `/ws-spec-to-pr`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
@@ -52,7 +52,7 @@ Lite: 0 Spec → 1 Plan → 2 Implement → G2-code → 3 Review → G2-code (fi
   → 8 Ship (delivery artifacts + push/PR) → 9 Fix-PR
 ```
 
-Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/setup.md).
+Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/runtime/setup.md).
 
 ---
 
@@ -85,7 +85,7 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 | `strict` | Full verification matrix at Step 5 |
 | `score-and-refine` | Optional extra polish when Step 5 score is already ≥ `defaults.minVerifyScore` (default 9) (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score below `defaults.minVerifyScore` always runs this loop until ≥ `defaults.minVerifyScore` (default 9) |
 
-**Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/setup.md).
+**Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/runtime/setup.md).
 
 ### Model selection
 
@@ -120,7 +120,7 @@ Unit + integration/E2E + coverage + feature-quality checks, plus optional **muta
 
 ### Golden rule
 
-After Transition Gate **Next**, dispatch the next step in the **same turn**. Universal controls: Next / Previous / Replay / Refine→Replay / Commit / Undo ([`gates.md`](../ws-shared/gates.md)).
+After Transition Gate **Next**, dispatch the next step in the **same turn**. Universal controls: Next / Previous / Replay / Refine→Replay / Commit / Undo ([`gates.md`](../ws-shared/runtime/gates.md)).
 
 ---
 
@@ -139,6 +139,6 @@ Same skills, `ws-shared/config.json`, `gates.md`. `workflowType`: `standard` | `
 ## Related
 
 - Lite orchestrator: [`ws-spec-to-pr-lite/SKILL.md`](../ws-spec-to-pr-lite/SKILL.md)
-- Shared bootstrap: [`setup.md`](../ws-shared/setup.md)
+- Shared bootstrap: [`setup.md`](../ws-shared/runtime/setup.md)
 - Step dispatch (standard only): [`STEP-DISPATCH.md`](STEP-DISPATCH.md)
 - Dry-run FSM test runbook: [`ws-spec-to-pr-run-test.md`](ws-spec-to-pr-run-test.md)

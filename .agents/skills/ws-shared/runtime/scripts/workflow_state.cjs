@@ -12,7 +12,7 @@ const {
   inside,
   resolveMinVerifyScore,
 } = require('./resolve_consumer_root.cjs');
-const { scoreLedger } = require('../../ws-spec-to-pr/scripts/ac_ledger.cjs');
+const { scoreLedger } = require('../../../ws-spec-to-pr/scripts/ac_ledger.cjs');
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
 const { loadJsonSchema, validateNode } = require('./validate_json_schema.cjs');
 

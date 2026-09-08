@@ -1,7 +1,7 @@
 ---
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
-version: 0.4.3
+version: 0.4.4
 invocation_names:
   - spec-format
   - ws-spec-format
@@ -13,7 +13,7 @@ invocation_names:
 
 Create, review, or format `*.spec.md`. Canonical format SoT — other skills **reference** this skill; they do not duplicate frontmatter/sections. Schema: [`FORMAT.md`](FORMAT.md). Language: **en-us**.
 
-**Specs family:** Role = schema + validate/reshape. Free-text draft → [`ws-spec-write`](../ws-spec-write/SKILL.md) (writes `{specsDir}`); register → [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = schema + validate/reshape. Free-text draft → [`ws-spec-write`](../ws-spec-write/SKILL.md) (writes `{specsDir}`); register → [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 ## Modes
 

@@ -7,7 +7,7 @@ const {
   resolveConsumerContext,
   resolveConfiguredPath,
   toRepoRelative,
-} = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 function parseArgs(argv) {
   const args = { json: false, ensure: false };
@@ -55,7 +55,7 @@ function main() {
     if (!fs.statSync(specsDir).isDirectory()) throw new Error(`specsDir is not a directory: ${specsDir}`);
   }
   if ((args.configure || args.ensure) && !config.plans?.specsDir) {
-    config.$schema ||= './config.schema.json';
+    config.$schema ||= './runtime/config.schema.json';
     config.plans ||= {};
     config.plans.specsDir = toRepoRelative(context.repoRoot, specsDir, { allowOutside: true });
     save(configFile, config);

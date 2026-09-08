@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-goal-fix-pr loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
 
@@ -37,7 +37,7 @@ Before executing, restate the parsed parameters: PR number, success criterion, m
 
 ## SCM resolution
 
-Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
+Resolve per [config-resolution.md](../ws-shared/runtime/config-resolution.md).
 
 | `providers.scm` | Provider skill | Intent used here |
 |-----------------|----------------|-------------------|

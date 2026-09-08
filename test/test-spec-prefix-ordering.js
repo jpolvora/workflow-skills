@@ -20,12 +20,12 @@ console.log('--- Testing spec-prefix-ordering & ws-spec-organizer ---');
 
 // 1. Schema & Config Example Checks (AC1, AC2)
 console.log('1. Checking config schema and config.json.example');
-const schema = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/config.schema.json'), 'utf8'));
+const schema = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/runtime/config.schema.json'), 'utf8'));
 assert.ok(schema.properties.plans.properties.enforceSpecPrefixOrdering, 'schema defines enforceSpecPrefixOrdering');
 assert.strictEqual(schema.properties.plans.properties.enforceSpecPrefixOrdering.type, 'boolean');
 assert.strictEqual(schema.properties.plans.properties.enforceSpecPrefixOrdering.default, false);
 
-const configExample = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/config.json.example'), 'utf8');
+const configExample = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/templates/config.json.example'), 'utf8');
 assert.match(configExample, /"enforceSpecPrefixOrdering":\s*false/, 'config.json.example contains enforceSpecPrefixOrdering');
 
 // 2. Dependencies Checks (AC5)
@@ -61,10 +61,10 @@ assert.match(fromProviderDoc, /NNNN-us-\{id\}\.spec\.md/, 'ws-spec-from-provider
 const formatDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-spec-format/FORMAT.md'), 'utf8');
 assert.match(formatDoc, /NNNN-\{slug\}\.spec\.md/, 'FORMAT.md documents NNNN pattern');
 
-const autoloadDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/autoload.md'), 'utf8');
+const autoloadDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/runtime/autoload.md'), 'utf8');
 assert.match(autoloadDoc, /ws-spec-organizer/, 'autoload.md references ws-spec-organizer');
 
-const toolsDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/tools.md'), 'utf8');
+const toolsDoc = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/runtime/tools.md'), 'utf8');
 assert.match(toolsDoc, /resolve_spec_path\.cjs/, 'tools.md documents resolve_spec_path.cjs');
 assert.match(toolsDoc, /organize_specs\.cjs/, 'tools.md documents organize_specs.cjs');
 

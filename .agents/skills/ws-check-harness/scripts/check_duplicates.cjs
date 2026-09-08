@@ -4,7 +4,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 function parseArgs(argv) {
   const options = { paths: [], minLines: 6, json: false };
@@ -23,6 +23,16 @@ function parseArgs(argv) {
 }
 
 function shippedMarkdown(context) {
+  const generatedHubMarkdown = new Set();
+  try {
+    const layoutPath = path.join(context.runtimeSource, 'hub-layout.json');
+    const layout = JSON.parse(fs.readFileSync(layoutPath, 'utf8'));
+    for (const entry of layout.categories?.generatedLocal?.paths || []) {
+      if (String(entry).toLowerCase().endsWith('.md')) generatedHubMarkdown.add(String(entry));
+    }
+  } catch {
+    // A consumer may rely on a global hub without a local layout manifest.
+  }
   const roots = ['AGENTS.md', 'CATALOG.md', 'README.md', 'FEATURES.md']
     .map((item) => path.join(context.repoRoot, item))
     .filter((item) => fs.existsSync(item));
@@ -35,10 +45,17 @@ function shippedMarkdown(context) {
       const relative = toRepoRelative(context.repoRoot, full);
       if (entry.isDirectory()) {
         if (!/^\.agents\/skills\/ws-shared\/memory(?:\/|$)/.test(relative)) stack.push(full);
-      } else if (
-        entry.name.endsWith('.md') &&
-        !/^\.agents\/skills\/ws-shared\/(?:MEMORY|CHANGELOG|STACK|backend|frontend)\.md$/.test(relative)
-      ) roots.push(full);
+      } else if (entry.name.endsWith('.md')) {
+        if (relative.startsWith('.agents/skills/ws-shared/')) {
+          const hubRelative = relative.slice('.agents/skills/ws-shared/'.length);
+          if (generatedHubMarkdown.has(hubRelative)) continue;
+        }
+        if (
+          !/^\.agents\/skills\/ws-shared\/(?:MEMORY|CHANGELOG|STACK|backend|frontend)\.md$/.test(relative)
+        ) {
+          roots.push(full);
+        }
+      }
     }
   }
   return roots.map((item) => toRepoRelative(context.repoRoot, item)).sort();

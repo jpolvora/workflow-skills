@@ -1,6 +1,6 @@
 ---
 name: ws-spec-multi
-version: 0.4.3
+version: 0.4.4
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:
@@ -12,22 +12,22 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-multi loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Sequential multi-spec batch delivery orchestrator with **smart complexity & flow auto-detection**.
 
-**Specs family:** Role = master batch loop over `{specsDir}` (or explicit paths). Blank scan lists **only pending/unfinished** specs (see [`PROTOCOL.md`](PROTOCOL.md) Phase 2). Per spec: classify → `ws-spec-to-pr-lite` or `ws-spec-to-pr` worker → fix-pr → merge → next. Interactive pick-one → [`ws-spec-list`](../ws-spec-list/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = master batch loop over `{specsDir}` (or explicit paths). Blank scan lists **only pending/unfinished** specs (see [`PROTOCOL.md`](PROTOCOL.md) Phase 2). Per spec: classify → `ws-spec-to-pr-lite` or `ws-spec-to-pr` worker → fix-pr → merge → next. Interactive pick-one → [`ws-spec-list`](../ws-spec-list/SKILL.md). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 ## Audience & Load
 
 - **Master Orchestrator (this file):** Loop FSM + tool bindings + flow auto-detection.
 - **Protocol & State:** [`PROTOCOL.md`](PROTOCOL.md) · [`STATE.md`](STATE.md).
 - **Examples & Evals:** [`EXAMPLES.md`](EXAMPLES.md) · [`evals/evals.json`](evals/evals.json).
-- **On-demand:** [`../ws-spec-to-pr/SKILL.md`](../ws-spec-to-pr/SKILL.md) · [`../ws-spec-to-pr-lite/SKILL.md`](../ws-spec-to-pr-lite/SKILL.md) · [`../ws-ship-pr/SKILL.md`](../ws-ship-pr/SKILL.md) · [`../ws-goal-fix-pr/SKILL.md`](../ws-goal-fix-pr/SKILL.md) · [`../ws-shared/tools.md`](../ws-shared/tools.md).
+- **On-demand:** [`../ws-spec-to-pr/SKILL.md`](../ws-spec-to-pr/SKILL.md) · [`../ws-spec-to-pr-lite/SKILL.md`](../ws-spec-to-pr-lite/SKILL.md) · [`../ws-ship-pr/SKILL.md`](../ws-ship-pr/SKILL.md) · [`../ws-goal-fix-pr/SKILL.md`](../ws-goal-fix-pr/SKILL.md) · [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md).
 
 ## Native Tool Contract
 
-Aliases: [`../ws-shared/tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Never narrate undone work. Master orchestrator never edits code directly — dispatches worker skills via `dispatch-agent`.
+Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Params: `{sharedDir}/config.json`. Never narrate undone work. Master orchestrator never edits code directly — dispatches worker skills via `dispatch-agent`.
 
 | Intent | Alias | Rule |
 |--------|-------|------|

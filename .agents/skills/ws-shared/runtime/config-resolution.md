@@ -17,7 +17,7 @@ Resolve the project-local `{sharedDir}/config.json` before any config-dependent 
 .agents/skills/ws-shared/config.json
 ```
 
-Template: [`config.json.example`](config.json.example). Schema: [`config.schema.json`](config.schema.json).
+Template: [`config.json.example`](../templates/config.json.example). Schema: [`config.schema.json`](config.schema.json).
 
 **Forbidden as primary runtime config:**
 
@@ -46,7 +46,7 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 
 1. Project-local `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
 2. Global `{globalSkillsRoot}/ws-shared/AGENTS.md` (`~/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`) — documented fallback when no local file exists.
-3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`ws-shared/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`.
+3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`ws-shared/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`.
 
 An agent reading the configured `rules.harness` path succeeds without manual fallback when either the local pointer or the global hub is present.
 
@@ -78,8 +78,8 @@ Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install lay
 
 | `providers.scm` | Skill |
 |-----------------|-------|
-| `github` | [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) |
-| `azure-devops` | [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) |
+| `github` | [`ws-spec-provider-github`](../../ws-spec-provider-github/SKILL.md) |
+| `azure-devops` | [`ws-spec-provider-azure-devops`](../../ws-spec-provider-azure-devops/SKILL.md) |
 
 Intent names, outputs, and shared rules: [`scm-provider-contract.md`](scm-provider-contract.md). GitHub and Azure DevOps must implement the same required intents. Callers use intent names only.
 

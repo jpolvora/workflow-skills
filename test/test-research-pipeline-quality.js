@@ -4,11 +4,11 @@ import utils from './harness-test-utils.cjs';
 
 const require = createRequire(import.meta.url);
 const { assert, path, repoRoot, temp, run, write } = utils;
-const { validateNode, loadJsonSchema } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/validate_json_schema.cjs'));
+const { validateNode, loadJsonSchema } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs'));
 const { sanitizeMemoryBody } = require(path.join(repoRoot, '.agents/skills/ws-self-learning/scripts/sanitize_memory.cjs'));
 const { mergeJuryReports } = require(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/merge_verify_review.cjs'));
 
-const schema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/config.schema.json'), 'config');
+const schema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/runtime/config.schema.json'), 'config');
 const defaultsSchema = schema.properties.defaults;
 assert.ok(defaultsSchema.properties.providerCompat, 'providerCompat in schema');
 assert.ok(defaultsSchema.properties.contextHygiene, 'contextHygiene in schema');
@@ -241,7 +241,7 @@ try {
   fs.rmSync(corruptFixture, { recursive: true, force: true });
 }
 
-const telemetrySchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/telemetry.schema.json'), 'telemetry');
+const telemetrySchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/runtime/telemetry.schema.json'), 'telemetry');
 const sampleEvent = {
   schemaVersion: 1,
   type: 'dispatch',

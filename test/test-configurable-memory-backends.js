@@ -14,7 +14,7 @@ const CHECK = path.join(REPO_ROOT, '.agents/skills/ws-spec-memo/scripts/check_sp
 const CONFIGURE = path.join(REPO_ROOT, '.agents/skills/ws-spec-memo/scripts/configure_spec_memo.cjs');
 const SELF_LEARNING = path.join(REPO_ROOT, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');
 const { resolveMemoryRouting } = await import(
-  '../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs'
+  '../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs'
 );
 
 let failures = 0;
@@ -41,11 +41,11 @@ function runNode(script, args, opts = {}) {
 
 function seedHub(root, { sharedRel = '.agents/skills/ws-shared' } = {}) {
   const shared = path.join(root, sharedRel);
-  fs.mkdirSync(shared, { recursive: true });
+  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.writeFileSync(
-    path.join(shared, 'config.json.example'),
+    path.join(shared, 'templates', 'config.json.example'),
     JSON.stringify({
-      toolsFile: 'tools.md',
+      toolsFile: 'runtime/tools.md',
       project: { name: 'test', baseBranch: 'main' },
       verification: {},
       plans: { dir: '.agents/plans' },
@@ -346,7 +346,7 @@ process.exit(0);
 
   // Test tools.md alias consistency (knowledge-tool rows must stay on new flags)
   const toolsMd = fs.readFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/tools.md'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/tools.md'),
     'utf8'
   );
   assert(

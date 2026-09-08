@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-fix-pr loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Fetch, score, and systematically resolve active PR review threads on GitHub or Azure DevOps: local fixes, test validation, thread resolution, and push back to the remote branch.
 
@@ -38,12 +38,12 @@ A **batch** is all active threads fetched and scored in one standalone invocatio
 ## Prerequisites
 
 - Local branch checked out matches the PR source branch.
-- `{sharedDir}/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../ws-shared/config-resolution.md).
+- `{sharedDir}/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../ws-shared/runtime/config-resolution.md).
 - Provider skill's `validate-auth` passes before mutating remote threads.
 
 ## SCM provider resolution
 
-Resolve per [config-resolution.md](../ws-shared/config-resolution.md): read `providers.active` / `providers.scm`; if absent, prefer an enabled GitHub tracker, else Azure DevOps; reject `scm: "local"`.
+Resolve per [config-resolution.md](../ws-shared/runtime/config-resolution.md): read `providers.active` / `providers.scm`; if absent, prefer an enabled GitHub tracker, else Azure DevOps; reject `scm: "local"`.
 
 | `providers.scm` | Skill | Intents used here |
 |-----------------|-------|-------------------|

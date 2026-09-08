@@ -3,12 +3,12 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 const {
   parseFrontmatter,
   upsertArtifactFrontmatter,
   artifactStampFields,
-} = require('../../ws-shared/scripts/workflow_state.cjs');
+} = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 function parseArgs(argv) {
   const options = {};

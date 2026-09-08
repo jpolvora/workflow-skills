@@ -1,6 +1,6 @@
 ---
 name: ws-self-learning
-version: 0.4.3
+version: 0.4.4
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 invocation_names:
   - self-learning
@@ -11,11 +11,11 @@ invocation_names:
 
 > When this skill is loaded, output "ws-self-learning loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 **Bidirectional gate** — MEMORY is both input (avoid known traps) and output (record new ones).
 
-Expand path tokens first ([`tools.md`](../ws-shared/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`.
+Expand path tokens first ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`.
 
 Consumer-owned memory routing is configured via `config.json` (`enableMemoryFiles` and `enableSpecMemoIntegration`):
 
@@ -40,7 +40,7 @@ Task is **not done** until the completion side runs (write or valid `Learning: N
 
 ## Pre-work consult (mandatory for mutating work)
 
-Resolve routing via `resolveMemoryRouting` / [`tools.md`](../ws-shared/tools.md) alias **`read-memory`** (same evidence class as code/docs — not optional flavor text).
+Resolve routing via `resolveMemoryRouting` / [`tools.md`](../ws-shared/runtime/tools.md) alias **`read-memory`** (same evidence class as code/docs — not optional flavor text).
 
 1. Identify 3–8 keywords and touched file paths from the task (e.g. `bash`, `CRLF`, `launcher`, `verify.sh`, `managed skill`, `encoding`, touched files like `src/Controllers/Auth.cs` or `bin/cli.js`).
 2. Query matching memories **per enabled backend** (skip a backend only when its flag is false or the store is unavailable — record that skip; do not skip an enabled backend):
@@ -70,13 +70,13 @@ After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record 
 
 1. Collect **accepted defects**: threads scored 6–10 that received a code fix, plus `check-pr-status` **diff-regression** failures this round fixed.
 2. Skip: score 0–5 no-change threads, baseline noise, infra-flake, wrong reviewer claims justified with no code change, and classes already covered by a Medium+ hit from the **`read-memory`** consult (local and/or vault).
-3. For each remaining class: persist via [`tools.md`](../ws-shared/tools.md) **`update-memory`** (local `{sharedDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` + `--compile` when `enableMemoryFiles`; vault `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Concrete **DO NOT** / **INSTEAD DO** required.
+3. For each remaining class: persist via [`tools.md`](../ws-shared/runtime/tools.md) **`update-memory`** (local `{sharedDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` + `--compile` when `enableMemoryFiles`; vault `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Concrete **DO NOT** / **INSTEAD DO** required.
 4. Round report `Learning:` must list new entry titles. **Forbidden:** `Learning: N/A` when step 1 had any accepted defect that was not already covered by `read-memory`.
 5. `dry-run`: skip memory writes (analysis-only).
 
 ## Process (write after)
 
-Follow [`tools.md`](../ws-shared/tools.md) **`update-memory`**: skip steps 3–4 when `enableMemoryFiles` is false; skip vault upsert when `enableSpecMemoIntegration` is false.
+Follow [`tools.md`](../ws-shared/runtime/tools.md) **`update-memory`**: skip steps 3–4 when `enableMemoryFiles` is false; skip vault upsert when `enableSpecMemoIntegration` is false.
 
 1. **Analyze context** — What did we try that failed? What non-obvious constraint or pitfall did we hit?
 2. **Sanitize draft body** — Run `node {skillsRoot}/ws-self-learning/scripts/sanitize_memory.cjs <draft>` (non-zero exit → revise body to remove injection-only patterns or unescaped tool calls).
@@ -110,7 +110,7 @@ This rebuilds a clean index from `{sharedDir}/memory/` (per-file entries do not 
 - **INSTEAD DO**: [What specific correct implementation pattern or action to use instead]
 ```
 
-Path tokens: [`tools.md`](../ws-shared/tools.md) § Path tokens.
+Path tokens: [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens.
 
 ## Done when
 

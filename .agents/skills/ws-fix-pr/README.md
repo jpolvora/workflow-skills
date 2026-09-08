@@ -28,7 +28,7 @@ Thread list/resolve I/O goes through `config.providers.scm` → [ws-spec-provide
 | **GitHub** (`scm: github`) | Provider intents `list-threads` / `resolve-thread` → `node …/fetch_threads.cjs` / `node …/resolve_thread.cjs` | `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` / `GITHUB_TOKEN` / `GH_TOKEN` (+ `gh` for CLI flows) |
 | **Azure DevOps** (`scm: azure-devops`) | Provider intents `list-threads` / `resolve-thread` → `python …/fix_pr_azure_context.py` collect / resolve-thread | PAT via `issueTrackers.azureDevOps.patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` |
 
-Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should call the provider skill or canonical paths with explicit launchers ([`tools.md`](../ws-shared/tools.md) § Script launchers).
+Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should call the provider skill or canonical paths with explicit launchers ([`tools.md`](../ws-shared/runtime/tools.md) § Script launchers).
 
 ## Flow summary
 

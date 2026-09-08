@@ -56,6 +56,18 @@
         "Recommended is Accept inferred when a candidate exists, else Skip / leave empty",
         "Writes preview.dryRunCommand only after user-gate; does not download a reviewer tool"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "/ws-configure-project --auto in a global-hybrid consumer project",
+      "expected_output": "Agent runs auto_configure.cjs with explicit repo scope, preserves existing consumer data, and reports the manifest-derived source-control matrix without copying runtime/templates or global memory/history.",
+      "assertions": [
+        "Loads the Auto section from SKILL.md / INTERVIEW.md",
+        "Reports executionScope, runtimeSource, templateSource, layoutManifest, and copiedPaths",
+        "Uses the project config as the consumer write target",
+        "Does not copy managed runtime/templates or global memory/history",
+        "Keeps credentials as environment-variable references"
+      ]
     }
   ]
 }

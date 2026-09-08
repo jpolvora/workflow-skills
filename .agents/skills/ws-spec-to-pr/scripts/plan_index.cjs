@@ -4,7 +4,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { toRepoRelative, resolveConsumerContext } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { toRepoRelative, resolveConsumerContext } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 function hash(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');

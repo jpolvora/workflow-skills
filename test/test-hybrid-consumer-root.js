@@ -182,12 +182,13 @@ function scaffoldProjectLocalSelfLearning(projectRoot) {
     '.agents',
     'skills',
     'ws-shared',
+    'runtime',
     'scripts',
   );
   fs.mkdirSync(skillScripts, { recursive: true });
   fs.mkdirSync(sharedScripts, { recursive: true });
   fs.copyFileSync(
-    path.join(GLOBAL_SKILLS, 'ws-shared', 'scripts', 'resolve_consumer_root.cjs'),
+    path.join(GLOBAL_SKILLS, 'ws-shared', 'runtime', 'scripts', 'resolve_consumer_root.cjs'),
     path.join(sharedScripts, 'resolve_consumer_root.cjs'),
   );
   fs.copyFileSync(

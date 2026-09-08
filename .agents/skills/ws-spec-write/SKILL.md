@@ -1,7 +1,7 @@
 ---
 name: ws-spec-write
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - spec-write
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-write loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 **Write path:** Canonical prefix flag is `plans.enforceSpecPrefixOrdering` ([ws-spec-organizer](../ws-spec-organizer/SKILL.md)). Do **not** invent a second key name. If that key is **absent** from project `{sharedDir}/config.json`, insert it under `plans` (optional comment from `config.json.example`). Seed `true` when `{specsDir}` already has top-level `NNNN-*.spec.md`; otherwise seed `false`. Then resolve the path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (`false` → `{specsDir}/{slug}.spec.md`; `true` → `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
 
@@ -20,7 +20,7 @@ invocation_names:
 
 **Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` (free-text) or keep tracker origin `source: github` | `source: azure-devops`. New writes must pass `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring`.
 
-**Specs family:** Role = draft / reformulate under `{specsDir}` only. Router / vocabulary: [`../ws-shared/autoload.md`](../ws-shared/autoload.md). Next: format → `ws-spec-format`; standalone → `index.PRD` user-gate (`ws-spec-index` `track`); start workflow → `ws-spec-provider-local` register; browse → `ws-spec-list`.
+**Specs family:** Role = draft / reformulate under `{specsDir}` only. Router / vocabulary: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md). Next: format → `ws-spec-format`; standalone → `index.PRD` user-gate (`ws-spec-index` `track`); start workflow → `ws-spec-provider-local` register; browse → `ws-spec-list`.
 
 ## Invocation
 
@@ -58,7 +58,7 @@ When writing a spec derived from a remote tracker issue or raw human description
    - Draft at least one **negative failure** scenario per feature (expected red test or error state).
 3. **Validation & Observation Notes & Negative Scenarios:**
    - Record named commands, logs, or scores under `## Validation & Observation Notes` → Telemetry.
-   - List negative failure scenarios under `### Negative & Failing Test Scenarios`. When a stack rule pack applies (from `{sharedDir}/stacks/`), inject at least one negative scenario validating stack safety and invariant compliance (e.g. unauthenticated access rejection, sync-over-async deadlock prevention, or permission gate enforcement).
+   - List negative failure scenarios under `### Negative & Failing Test Scenarios`. When a stack rule pack applies (from `{sharedDir}/runtime/stacks/`), inject at least one negative scenario validating stack safety and invariant compliance (e.g. unauthenticated access rejection, sync-over-async deadlock prevention, or permission gate enforcement).
 4. **Definition of Ready:**
    - Fill `## Definition of Ready (DoR)` with bounded scope, atomic criteria, failure modes, observation telemetry, and zero open blockers (or `N/A because`). For detected project stacks, inject applicable architectural and security invariants (authorization boundaries, concurrency safety, DTO validation, subscription cleanup).
 5. **Preserve Human Origin (`## Original Issue Context`):**
@@ -80,7 +80,7 @@ When writing a spec derived from a remote tracker issue or raw human description
 3. **Design intent (modification tasks)** — Before treating a behavior gap as a bug, inspect `git log -p -S "<symbol>"` and/or `git log -L :<func>:<file>`. Record `### Design Intent` under Notes or Original Issue Context (intentional constraint vs accidental gap). Greenfield new files: skip with reason. Mandatory for "fix bug / restore behavior" wording.
    - Done when: design-intent recorded or skip reason documented.
 
-4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Detect the project stack from `config.json` / stack markers / `rules.stackFile` and load applicable stack invariants from `{sharedDir}/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`). Automatically inject applicable stack architectural and security invariants into `## Definition of Ready (DoR)` and `### Negative & Failing Test Scenarios`. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
+4. **Draft / Reformulate** — Build the enhanced spec per [ws-spec-format](../ws-spec-format/SKILL.md) and § Agentic Reformulation & Enhancement Protocol. Detect the project stack from `config.json` / stack markers / `rules.stackFile` and load applicable stack invariants from `{sharedDir}/runtime/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`). Automatically inject applicable stack architectural and security invariants into `## Definition of Ready (DoR)` and `### Negative & Failing Test Scenarios`. Include `## Out of Scope`, `## Assumptions & Open Questions`, `## Definition of Ready (DoR)`, and `## Validation & Observation Notes`. Map each obviously present implicit-requirement dimension from FORMAT.md to an AC **or** collapse remaining absent dimensions into **one** Assumptions row (`N/A because [reason]`). Do not invent ACs for absent dimensions.
    - **Preserve Visual References:** When the input spec already has `## Visual References` and `{specStem}.assets/` on disk, keep that section and repo-relative asset paths unchanged in the written spec (you may add captions or AC cross-refs; do not drop the section or revert to remote URLs).
    - **Gray area:** when a user-facing choice has two or more valid product options, write the companion at the path from `resolve_spec_path.cjs --slug {slug} --context` with headings Feature Boundary, Implementation Decisions, and Deferred Ideas. Create no `context.md` when no gray area is detected. Never write an empty `context.md`.
    - Done when: frontmatter is complete; body contains agentic `## Description`, enumerable and testable `## Acceptance Criteria`, closure tables, DoR with stack invariants, observation notes with negative scenarios, `## Original Issue Context` (when derived from tracker issue), `## Visual References` when present on input with a populated `.assets/` sidecar, and `## Notes`.

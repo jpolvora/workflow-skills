@@ -56,7 +56,7 @@ assert.ok(versionKey('0.3.61') > versionKey('0.3.48'));
 const extra = JSON.parse(fs.readFileSync(path.join(repoRoot, 'bin/skill-dependencies.json'), 'utf8'));
 assert.ok(extra.packages.extra.skills.includes('ws-benchmarks'), 'bin/skill-dependencies.json Extra package includes ws-benchmarks');
 
-const sharedExtra = JSON.parse(fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/skill-dependencies.json'), 'utf8'));
-assert.ok(sharedExtra.packages.extra.skills.includes('ws-benchmarks'), 'ws-shared/skill-dependencies.json Extra package includes ws-benchmarks');
+const sharedExtra = JSON.parse(fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'), 'utf8'));
+assert.ok(sharedExtra.packages.extra.skills.includes('ws-benchmarks'), 'ws-shared/runtime/skill-dependencies.json Extra package includes ws-benchmarks');
 
 console.log('test-ws-benchmarks: ok');

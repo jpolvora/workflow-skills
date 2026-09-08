@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -14,9 +14,9 @@ invocation_names:
 
 Execute the coding and testing steps from the plan (build mode) or correct defects from a review or test report (fix mode). Surgical edits only; match stack patterns; no duplication.
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
-**Reads:** `{us-dir}/plan.index.json` AC slices via `plan_index.cjs read --ac` when that file exists (do not read a `superseded: true` step-01). Else execution plan (`step-03-*.plan.exec.md`), refined plan, or draft plan; `config.json` for stack layers; consult knowledge via [`tools.md`](../ws-shared/tools.md) **`read-memory`** / [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/tools.md)).
+**Reads:** `{us-dir}/plan.index.json` AC slices via `plan_index.cjs read --ac` when that file exists (do not read a `superseded: true` step-01). Else execution plan (`step-03-*.plan.exec.md`), refined plan, or draft plan; `config.json` for stack layers; consult knowledge via [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** / [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (expand tokens per [`tools.md`](../ws-shared/runtime/tools.md)).
 
 ## Invocation
 
@@ -51,7 +51,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 5. **Fix the Entire Defect Class** — After Implement (build mode), repo-wide search/grep for the same defect pattern or vulnerability class (not style-only). Fix same-class siblings in scope; list remaining hits or exemptions (path + reason) in `step-output.summary`. Fix mode step 4 widens sibling sweep from modified directories to **repo-wide same pattern** with the same exemption rule.
    - Done when: search performed; remaining hits listed or justified.
 
-6. **Stack Invariant Scan** — Run deterministic static check `node {skillsRoot}/ws-shared/scripts/scan_stack_invariants.cjs` against modified files and project stack rule pack (`{sharedDir}/stacks/`). Detect framework anti-patterns (`.Result`, `.Wait()`, missing `[Authorize]`, unchecked `any`, floating Promises, unmanaged subscriptions) before declaring the task done.
+6. **Stack Invariant Scan** — Run deterministic static check `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against modified files and project stack rule pack (`{sharedDir}/runtime/stacks/`). Detect framework anti-patterns (`.Result`, `.Wait()`, missing `[Authorize]`, unchecked `any`, floating Promises, unmanaged subscriptions) before declaring the task done.
    - Done when: scan exits 0 with zero Critical violations.
 
 7. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
@@ -77,7 +77,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 5. **Anti-regression test** — Write a unit test covering the corrected defect scenario.
    - Done when: each fixed finding has a covering test.
 
-6. **Stack Invariant Scan** — Run `node {skillsRoot}/ws-shared/scripts/scan_stack_invariants.cjs` against touched files to ensure fixes maintain framework invariants.
+6. **Stack Invariant Scan** — Run `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against touched files to ensure fixes maintain framework invariants.
    - Done when: scan exits 0 with zero Critical violations.
 
 7. **Validate** — Run project build and test suites from `config.json.verification`.
@@ -110,7 +110,7 @@ summary: |
 
 ## ScoreAndRefine second pass
 
-When the orchestrator dispatches this skill for optional polish (Pass 1 score already ≥ `defaults.minVerifyScore` (default 9), `scoreAndRefine` flag): follow [`gates.md`](../ws-shared/gates.md) § Score & Refine gate item 4. Load the **full** Pass 1 diff, every plan task, and every AC — not only flagged task ids. Simplify overengineered implementations that still meet the AC. Delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs. Re-run configured verification.
+When the orchestrator dispatches this skill for optional polish (Pass 1 score already ≥ `defaults.minVerifyScore` (default 9), `scoreAndRefine` flag): follow [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine gate item 4. Load the **full** Pass 1 diff, every plan task, and every AC — not only flagged task ids. Simplify overengineered implementations that still meet the AC. Delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs. Re-run configured verification.
 
 - Done when: each AC still met; unused workflow-introduced artifacts removed or justified in `summary`; verification green.
 

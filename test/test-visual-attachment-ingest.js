@@ -24,9 +24,9 @@ const {
   isAdoAllowlisted,
   sniffMime,
   PER_FILE_LIMIT,
-} = require(path.join(REPO, '.agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs'));
+} = require(path.join(REPO, '.agents/skills/ws-shared/runtime/scripts/ingest_visual_attachments.cjs'));
 
-const HELPER = path.join(REPO, '.agents/skills/ws-shared/scripts/ingest_visual_attachments.cjs');
+const HELPER = path.join(REPO, '.agents/skills/ws-shared/runtime/scripts/ingest_visual_attachments.cjs');
 const GH_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py');
 const ADO_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py');
 const REGISTER_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
@@ -482,6 +482,6 @@ const compat = spawnSync(process.execPath, [VALIDATE_SCRIPT, '--mode=compat', co
 assert.strictEqual(compat.status, 0, 'compat validate without Visual References heading requirement');
 
 assert.ok(fs.existsSync(HELPER));
-assert.ok(!fs.existsSync(path.join(REPO, '.agents/skills/ws-shared/scripts/ingest_visual_attachments.py')));
+assert.ok(!fs.existsSync(path.join(REPO, '.agents/skills/ws-shared/runtime/scripts/ingest_visual_attachments.py')));
 
 console.log('\nAll visual-attachment-ingest checks passed.');

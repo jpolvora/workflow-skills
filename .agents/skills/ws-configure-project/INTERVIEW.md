@@ -46,11 +46,23 @@ Scan consumer **repo root** (not this skill package alone):
 | CLI missing | Recommend `npm install -g spec-memo` or `specMemo.cli: "npx -y spec-memo"` before enable |
 | Non-empty `preview.dryRunCommand` already set | Keep current (**Recommended** unless `--force`) |
 | `package.json` scripts named like `preview`, `review:dry`, `pipeline-review`, `code-review:dry`, `*dry-run*review*`, `*review*dry*` | Suggest `npm run <script>` (or `npm run <script> -- …` only if the script docs require args) |
-| Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` / `python <relpath>` per extension ([`tools.md`](../ws-shared/tools.md) launchers) |
+| Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` / `python <relpath>` per extension ([`tools.md`](../ws-shared/runtime/tools.md) launchers) |
 | Consumer skill under `.agents/skills/` or `{globalSkillsRoot}` with id/name containing `preview`, `pipeline-review`, `dry-run`, or `code-review` (excluding packaged `ws-preview` / `ws-code-review` bodies) | Extract the primary Shell recipe from that `SKILL.md` (first concrete command block); cite skill path as source |
 | Harness prose hit (see § Preview scan list) with a concrete shell/`npm run` recipe for local/CI-shaped review dry-run | Suggest that exact command string; cite file:line or section |
 | Multiple candidates | Rank: existing config → `package.json` script → repo script file → consumer skill → harness prose; show top 3 in the gate |
 | No candidate | **Skip / leave empty (Recommended)** — do not invent a backend |
+
+## Hub layout, install scope, and source control
+
+The stable consumer root is `{sharedDir}`. The managed runtime contract, schemas, scripts, and stack companions live under `{sharedDir}/runtime/`; setup-only seed assets live under `{sharedDir}/templates/`; the classification manifest is `{sharedDir}/runtime/hub-layout.json`.
+
+| Execution scope | Runtime/template source | Write target |
+|-----------------|-------------------------|--------------|
+| Project-local | Project `{sharedDir}/runtime` and `{sharedDir}/templates` | Project `{sharedDir}/config.json` and accepted consumer-owned companions |
+| Global-hybrid | Executing `{globalSkillsRoot}/ws-shared/runtime` and `/templates` | Explicit or cwd project `{sharedDir}` only |
+| Global-root cwd | Global source root | Refuse without explicit `--repo-root` |
+
+The configure result includes `executionScope`, `runtimeSource`, `templateSource`, `layoutManifest`, and a manifest-derived `sourceControl` matrix. Track non-secret `config.json` and a maintained `STACK.md`; omit managed `runtime/` and `templates/`, generated memory/history and local entrypoints, and installer metadata from consumer commits. Keep credentials as environment-variable references.
 
 ## Interview order
 
@@ -163,6 +175,10 @@ Read/Grep in this order (stop early when a high-confidence recipe is found; stil
 
 Write semantics: merge-write the trimmed string; empty string or omit key both mean unset. Preserve `_comment*` under `preview`. `autoMode`: accept Recommended (inferred if present, else leave empty).
 
+## Auto
+
+`/ws-configure-project --auto` runs `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` without user-gates. It fills only gaps, preserves existing consumer-owned bytes, and returns `executionScope`, `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, and a source-control matrix derived from `{sharedDir}/runtime/hub-layout.json`. Global execution writes only project configuration and accepted pointer/autoload outputs; it does not copy managed runtime/templates or global memory/history. Exit `1` means required gaps remain; exit `2` is a setup or usage failure.
+
 ## Security & Pre-Commit Hook
 
 Optional interview gate to install secrets leak scanning into consumer `.git/hooks/pre-commit`.
@@ -248,13 +264,13 @@ node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repo
   --bootstrap-on-session {true|false} [--cli "memo"]
 ```
 
-When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md). Next action after enable: register MCP, then **`/ws-memo`** for runtime vault ops (session bootstrap included). Prefer `/ws-memo` bootstrap when MCP is up; `/ws-spec-memo bootstrap` only when MCP is down (CLI any vault mode; hybrid MEMORY fallback on CLI fail). Never commit `{sharedDir}/config.json`.
+When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md). Next action after enable: register MCP, then **`/ws-memo`** for runtime vault ops (session bootstrap included). Prefer `/ws-memo` bootstrap when MCP is up; `/ws-spec-memo bootstrap` only when MCP is down (CLI any vault mode; hybrid MEMORY fallback on CLI fail). Never write credentials to `{sharedDir}/config.json`.
 
 ## Write rules
 
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
-- After write: show path `.agents/skills/ws-shared/config.json` and remind it is gitignored.
+- After write: show path `.agents/skills/ws-shared/config.json` and remind the user to track it only when it contains non-secret project settings.
 - Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.
 - Preview writes: `preview.dryRunCommand` in `{sharedDir}/config.json` only (never commit). Cite inference source in the session summary when Accept inferred.
 - specMemo writes: `specMemo.*` in `{sharedDir}/config.json` only; optional `memo import` / `memo hook install` via `configure_spec_memo.cjs` when user opts in.

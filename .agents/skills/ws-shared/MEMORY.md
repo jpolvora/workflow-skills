@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-08] ws-shared runtime/templates migration path audit
+- **Layer**: `Tooling`
+- **Module**: `ws-shared installer, configure-project, and harness checks`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/{runtime,templates}/**; bin/**; test/**`
+- **Scenario / Context**: Moving managed hub content below `runtime/` and `templates/` requires updating consumers, tests, documentation links, integrity enumeration, and generated root autoload copies together.
+- **DO NOT**: Leave flat managed-path assumptions or treat the generated root `autoload.md` mirror as an independent runtime source.
+- **INSTEAD DO**: Resolve managed paths from `hub-layout.json`; keep consumer configuration at `{sharedDir}`; use the selected local/global runtime and template source; exclude manifest-classified generated copies from duplicate-content audits.
+
 ### [2026-09-07] Do not vendor spec-memo runtime skills into this package
 - **Scenario / Context**: Consumer ws-check-harness reported phantom routes for ws-memo / ws-session-tracking after a workflows install. Those ids are owned by spec-memo, not this SoT.
 - **DO NOT**: Add them to packages.workflows or Extra, add Layer rows with `.agents/skills/ws-memo/SKILL.md` literals, or list them in Always-applied as mandatory.

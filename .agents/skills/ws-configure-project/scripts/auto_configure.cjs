@@ -27,7 +27,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const SCRIPT_FILE = __filename;
 
@@ -216,6 +216,75 @@ function readPackageJson(repoRoot) {
 
 function fileExists(repoRoot, ...rel) {
   return fs.existsSync(path.join(repoRoot, ...rel));
+}
+
+function portableSourcePath(repoRoot, absolutePath, suffix) {
+  const relative = path.relative(path.resolve(repoRoot), path.resolve(absolutePath));
+  if (relative && !relative.startsWith('..') && !path.isAbsolute(relative)) {
+    return relative.replace(/\\/g, '/');
+  }
+  return `{globalSkillsRoot}/ws-shared/${suffix}`;
+}
+
+function readHubLayout(runtimeSource) {
+  const manifestPath = path.join(runtimeSource, 'hub-layout.json');
+  let layout;
+  try {
+    layout = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  } catch (err) {
+    throw new Error(`could not read ws-shared layout manifest (${err.message})`);
+  }
+  const categories = layout && layout.categories;
+  const required = ['runtime', 'templates', 'consumerOwned', 'generatedLocal', 'installerMetadata'];
+  if (layout.version !== 1 || !categories || required.some((name) => !categories[name])) {
+    throw new Error('invalid ws-shared layout manifest: all five categories are required');
+  }
+  const seen = new Map();
+  for (const [category, value] of Object.entries(categories)) {
+    for (const entry of [...(value.roots || []), ...(value.paths || [])]) {
+      const previous = seen.get(entry);
+      if (previous) throw new Error(`invalid ws-shared layout manifest: ${entry} classified as ${previous} and ${category}`);
+      seen.set(entry, category);
+    }
+  }
+  return layout;
+}
+
+function sourceControlPath(pathEntry) {
+  return `{sharedDir}/${String(pathEntry).replace(/\\/g, '/')}`;
+}
+
+function buildSourceControlReport(layout) {
+  const category = (name, requiredToRun, recommendation, safeToOmit = !requiredToRun || recommendation.includes('ignore')) => {
+    const value = layout.categories[name];
+    const paths = [...(value.roots || []).map((entry) => `${entry}/**`), ...(value.paths || [])]
+      .map(sourceControlPath);
+    return {
+      category: name,
+      paths,
+      requiredToRun,
+      recommendation,
+      safeToOmit,
+    };
+  };
+  const consumerOwned = layout.categories.consumerOwned;
+  const projectConfiguration = {
+    category: 'projectConfiguration',
+    paths: [...(consumerOwned.paths || [])].map(sourceControlPath),
+    requiredToRun: true,
+    recommendation: 'track non-secret project configuration and maintained consumer companions',
+    safeToOmit: false,
+  };
+  return {
+    categories: [
+      projectConfiguration,
+      category('runtime', true, 'managed by the installer; do not hand-edit or require consumer commits', true),
+      category('templates', false, 'managed setup assets; safe to omit from consumer commits'),
+      category('generatedLocal', false, 'ignore generated memory/history and local entrypoints by default'),
+      category('installerMetadata', false, 'ignore installer, integrity, and host cache metadata'),
+    ],
+    credentials: 'Keep provider credentials in environment variables; do not write secrets to config.json.',
+  };
 }
 
 function globExists(repoRoot, pattern) {
@@ -705,11 +774,14 @@ function main() {
   const repoRoot = ctx.repoRoot;
   const sharedDir = ctx.sharedDir;
   const configPath = path.join(sharedDir, 'config.json');
-  const examplePath = path.join(sharedDir, 'config.json.example');
-  const schemaPath = path.join(sharedDir, 'config.schema.json');
+  const examplePath = path.join(ctx.templateSource, 'config.json.example');
+  const schemaPath = path.join(ctx.runtimeSource, 'config.schema.json');
+  const layout = readHubLayout(ctx.runtimeSource);
 
   if (!fs.existsSync(examplePath)) {
-    console.error(`ERROR: missing ${toRepoRelative(repoRoot, examplePath, { allowOutside: true })} (hub not installed)`);
+    console.error(
+      `ERROR: missing ${toRepoRelative(repoRoot, examplePath, { allowOutside: true })} (hub runtime/templates not installed)`,
+    );
     process.exit(2);
   }
 
@@ -769,7 +841,11 @@ function main() {
   const pkg = readPackageJson(repoRoot);
   const detectedFramework = detectFrameworkStack(repoRoot, pkg);
   let trapsSeeded = false;
-  if (!args.section || args.section === 'stack') {
+  const trapsSkippedReason =
+    ctx.executionScope === 'global' && (!args.section || args.section === 'stack')
+      ? 'global execution writes only consumer configuration'
+      : null;
+  if (ctx.executionScope !== 'global' && (!args.section || args.section === 'stack')) {
     trapsSeeded = seedFrameworkTraps(sharedDir, detectedFramework, args.dryRun);
   }
 
@@ -778,6 +854,10 @@ function main() {
     sectionOk: args.section ? sectionGaps.length === 0 : undefined,
     repoRoot: toRepoRelative(repoRoot, repoRoot),
     configPath: toRepoRelative(repoRoot, configPath, { allowOutside: true }),
+    executionScope: ctx.executionScope,
+    runtimeSource: portableSourcePath(repoRoot, ctx.runtimeSource, 'runtime'),
+    templateSource: portableSourcePath(repoRoot, ctx.templateSource, 'templates'),
+    layoutManifest: portableSourcePath(repoRoot, path.join(ctx.runtimeSource, 'hub-layout.json'), 'runtime/hub-layout.json'),
     section: args.section,
     force: args.force,
     dryRun: args.dryRun,
@@ -786,17 +866,22 @@ function main() {
     stats,
     detectedFramework,
     trapsSeeded,
+    trapsSkippedReason,
     requiredGaps: gaps,
     sectionRequiredGaps: args.section ? sectionGaps : undefined,
     changes: details.filter((d) => d.action === 'filled' || d.action === 'overwritten'),
     skipped: details.filter((d) => d.action === 'skipped').length,
     unresolved: details.filter((d) => d.action === 'unresolved').map((d) => d.path),
+    copiedPaths: createdFromExample && !args.dryRun ? [toRepoRelative(repoRoot, configPath, { allowOutside: true })] : [],
+    sourceControl: buildSourceControlReport(layout),
   };
 
   if (args.json) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } else {
     console.log(`auto-configure ${args.section || 'all'}: filled=${stats.filled} overwritten=${stats.overwritten} skipped=${stats.skipped} unresolved=${stats.unresolved} written=${written}`);
+    console.log(`  executionScope=${result.executionScope} runtimeSource=${result.runtimeSource} templateSource=${result.templateSource}`);
+    console.log('  source-control: track non-secret config.json and maintained STACK.md; ignore runtime/templates copies, generated memory/history, and installer metadata');
     for (const c of result.changes) console.log(`  + ${c.path} (${c.source})`);
     if (trapsSeeded) console.log(`  + seeded framework traps into MEMORY.md for stack: ${detectedFramework}`);
     if (result.unresolved.length) {

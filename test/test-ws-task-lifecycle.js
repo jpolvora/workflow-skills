@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SKILL_MD = path.join(REPO_ROOT, '.agents/skills/ws-task-lifecycle/SKILL.md');
 const EVALS = path.join(REPO_ROOT, '.agents/skills/ws-task-lifecycle/evals/evals.json');
-const AUTOLOAD = path.join(REPO_ROOT, '.agents/skills/ws-shared/autoload.md');
+const AUTOLOAD = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md');
 
 let failures = 0;
 

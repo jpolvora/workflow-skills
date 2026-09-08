@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
-const setupMd = path.join(REPO_ROOT, '.agents/skills/ws-shared/setup.md');
+const setupMd = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/setup.md');
 const skillMd = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/SKILL.md');
 
 const tmpRoots = [];

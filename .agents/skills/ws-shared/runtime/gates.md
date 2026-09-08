@@ -1,10 +1,10 @@
 # Shared Gate Contract — Dual-Mode
 
-Canonical gate UX for [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
+Canonical gate UX for [`ws-spec-to-pr`](../../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../../ws-spec-to-pr-lite/SKILL.md).
 Both orchestrators MUST follow this file so shared pipeline skills stay interchangeable.
 
-Artifact paths: [`../ws-spec-to-pr/ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md).
-Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`config-resolution.md`](config-resolution.md).
+Artifact paths: [`../ws-spec-to-pr/ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md).
+Config: [`.agents/skills/ws-shared/config.json`](../config.json) only — see [`config-resolution.md`](config-resolution.md).
 
 ---
 
@@ -14,7 +14,7 @@ Config: [`.agents/skills/ws-shared/config.json`](config.json) only — see [`con
 |------|--------|
 | **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. `ws-plan-update` is optional Extra (invoke when installed). |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
-| **Close then ship (two gates)** | Orchestrator presents **close implementation** then **ship** at standard Step 8 / lite Step 4. Close sets `status: completed` before push/PR. [`ws-ship-pr`](../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship option (push/PR only) — does **not** re-ask delivery commit or workflow close. Standalone `/ship-pr` may ask. |
+| **Close then ship (two gates)** | Orchestrator presents **close implementation** then **ship** at standard Step 8 / lite Step 4. Close sets `status: completed` before push/PR. [`ws-ship-pr`](../../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship option (push/PR only) — does **not** re-ask delivery commit or workflow close. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
@@ -166,7 +166,7 @@ Choosing Reach 10 runs one `scoreAndRefine` polish round (role `scoreAndRefine`)
 
 ## Required G2-code save points (both orch)
 
-Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-code-review`](../ws-code-review/SKILL.md) does **not** commit. `skipQualityGates` does **not** skip these save points or the dirty-tree STOP.
+Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-code-review`](../../ws-code-review/SKILL.md) does **not** commit. `skipQualityGates` does **not** skip these save points or the dirty-tree STOP.
 
 **Staging:** union of workflow `files_touched` (created/updated/deleted) still dirty in `git status`. Drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`. `git add -- <paths>` and `git add -u --` for those deletes. Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty staged set → skip, log `g2-code | skip | empty-stage | ISO`, continue. Before add/commit: `HEAD` must equal `state.branch` (checkout `state.branch` only if drifted; never reset / `-D`).
 
@@ -200,9 +200,9 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 
 When `fullMode` is false, Recommended = **Skip delivery commit** (option 2) unless user explicitly wants delivery artifacts committed. When `fullMode` is true, Recommended = **Commit configured delivery artifacts** (option 1).
 
-G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
+G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
 
-After successful close (options 1 or 2): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md)).
+After successful close (options 1 or 2): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../../ws-spec-to-pr/protocols/artifact-cleanup.md)).
 
 `ws-spec-index sync` on close uses **implementation** evidence only — not merged/shipped.
 
@@ -314,7 +314,7 @@ Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`. Or
 
 **Telemetry:** Append `{"type":"gate-bypass","gate":"{name}","reason":"skip-gates|config","timestamp":"ISO"}` to step JSONL. Pass `--bypassed` to `update_state`. Banner: **`[GATES BYPASSED]`**.
 
-Ship/PREPARE nuances (row 5 visibility): [`../ws-ship-pr/PREPARE-CHECKLIST.md`](../ws-ship-pr/PREPARE-CHECKLIST.md) § 5.
+Ship/PREPARE nuances (row 5 visibility): [`../ws-ship-pr/PREPARE-CHECKLIST.md`](../../ws-ship-pr/PREPARE-CHECKLIST.md) § 5.
 
 ## Flags
 

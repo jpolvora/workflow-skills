@@ -671,7 +671,7 @@ function testStaleRetiredArtifactsReported() {
   const scriptsDir = path.join(sharedDir, 'scripts');
   fs.mkdirSync(scriptsDir, { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/retired_artifacts.cjs'),
     path.join(scriptsDir, 'retired_artifacts.cjs'),
   );
   fs.writeFileSync(
@@ -731,7 +731,7 @@ function testGlobalStaleHubFileReported() {
   const scriptsDir = path.join(sharedDir, 'scripts');
   fs.mkdirSync(scriptsDir, { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/retired_artifacts.cjs'),
     path.join(scriptsDir, 'retired_artifacts.cjs'),
   );
   fs.writeFileSync(
@@ -784,7 +784,7 @@ function testGlobalStaleConfigKeysReported() {
   const scriptsDir = path.join(sharedDir, 'scripts');
   fs.mkdirSync(scriptsDir, { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/retired_artifacts.cjs'),
     path.join(scriptsDir, 'retired_artifacts.cjs'),
   );
   fs.writeFileSync(

@@ -1,7 +1,7 @@
 ---
 name: ws-plan-update
 description: Post-ship QA delta manager — captures manual QA findings, plans delta fixes, executes modifications, and updates delivery summaries.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - plan-update
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-plan-update loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Post-workflow delta corrections: capture manual QA findings, plan and implement delta fixes, and update the delivery result summary after the main workflow has finished.
 

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-08 08:10] Agent: GPT-5.6 Luna
+- **Prompt**: Implement `0070-ws-shared-hybrid-config-layout`.
+- **Done**: Split managed hub content into manifest-classified `runtime/` and `templates/` trees; aligned hybrid resolution, installer migration, integrity, configure-project reporting, docs, and regression coverage.
+- **Result**: `npm test`, `npm run verify-integrity`, spec validation, and Phase 5a harness gates passed. Learning: flat hub path assumptions must be resolved through `hub-layout.json`; generated root autoload mirrors are not independent runtime sources.
+
 ### [2026-09-08 08:01] Agent: GPT-5.6 Luna
 - **Prompt**: Define a clearer ws-shared layout and local/global configuration contract for hybrid installations.
 - **Done**: Added and validated the `ws-shared-hybrid-config-layout` specification and context companion; tracked the spec in `index.PRD`.

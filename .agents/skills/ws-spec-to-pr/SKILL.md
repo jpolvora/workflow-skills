@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -12,21 +12,21 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-to-pr loaded."
 
-**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-spec-write` (`{specsDir}`) then `ws-spec-provider-local` register; tracker id (GitHub/ADO) → provider fetch + `ws-spec-write` agentic reformulation (`{specsDir}`) then `ws-spec-provider-local` register; existing `*.spec.md` → spec-provider-local. Downstream steps always read the enhanced local spec copy. Batch → [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = single-feature **standard** Spec→PR. Free-text Step 0 → `ws-spec-write` (`{specsDir}`) then `ws-spec-provider-local` register; tracker id (GitHub/ADO) → provider fetch + `ws-spec-write` agentic reformulation (`{specsDir}`) then `ws-spec-provider-local` register; existing `*.spec.md` → spec-provider-local. Downstream steps always read the enhanced local spec copy. Batch → [`ws-spec-multi`](../ws-spec-multi/SKILL.md). Fast path → [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 
 - **Dual-mode:** Shared pipeline skills stay interchangeable with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md).
 
-Before Step 0, on-demand load [`setup.md`](../ws-shared/setup.md) for bootstrap (Feature branch gate: §5b). Resolve the host-tool binding once at bootstrap per [`host-dispatch.md`](../ws-shared/host-dispatch.md) (config force → `{sharedDir}/host-capabilities.json` hit → one probe; log `host-capability-bind | {hit|probe}`); never re-probe mid-workflow without toolset change, explicit rebind, or key change.
+Before Step 0, on-demand load [`setup.md`](../ws-shared/runtime/setup.md) for bootstrap (Feature branch gate: §5b). Resolve the host-tool binding once at bootstrap per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) (config force → `{sharedDir}/host-capabilities.json` hit → one probe; log `host-capability-bind | {hit|probe}`); never re-probe mid-workflow without toolset change, explicit rebind, or key change.
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/tools.md). Params: `{sharedDir}/config.json`. Entry check: [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve the host-tool binding (abstract aliases → concrete session tools) per [`host-dispatch.md`](../ws-shared/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only. Interactive cadence: in normal mode, enforce One Step Per Turn per [`gates.md`](../ws-shared/gates.md) — markdown fallback never starts Step N+1 in the same turn as the gate; native modal `user-gate` returning any recommended advance option continues in the same turn (rule 7: **Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent); in `autoMode`, auto-select index 0 and proceed automatically without halting.
+Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Params: `{sharedDir}/config.json`. Entry check: [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve the host-tool binding (abstract aliases → concrete session tools) per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only. Interactive cadence: in normal mode, enforce One Step Per Turn per [`gates.md`](../ws-shared/runtime/gates.md) — markdown fallback never starts Step N+1 in the same turn as the gate; native modal `user-gate` returning any recommended advance option continues in the same turn (rule 7: **Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent); in `autoMode`, auto-select index 0 and proceed automatically without halting.
 
 | Intent | Alias | Rule |
 |--------|-------|------|
 | Step work | `dispatch-agent` | `generalPurpose`\|`shell`; `description: "STP step {N} — {Label}"`; readonly step 5; step 4 DAG ≤3 parallel only when `defaults.enableDag: true` |
-| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** in normal mode use `user-gate` per [`gates.md`](../ws-shared/gates.md) (cached `askQuestionTool` when bound — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); ≥2 options; cancel → HS-1; **`autoMode`:** zero prompts of any kind at every boundary, auto-select recommended option (index 0) and proceed automatically |
+| User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** in normal mode use `user-gate` per [`gates.md`](../ws-shared/runtime/gates.md) (cached `askQuestionTool` when bound — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); ≥2 options; cancel → HS-1; **`autoMode`:** zero prompts of any kind at every boundary, auto-select recommended option (index 0) and proceed automatically |
 | Verification / SCM | `Shell` | `config.json.verification`; cite real `gh`/`git` output |
 | State | `read-state` / `write-state` | Hygiene before Progress Board |
 | Browser (7) | `browser-mcp` | Normal, non-dry-run, non-skip, gated |
@@ -52,9 +52,9 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 | | Ignore classifier `runInterview` / `execMode` to waive planning |
 | | Treat an existing parent feature branch plus a child slug as a planning waiver |
 
-First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `validate_state.cjs --pre-advance 4` exits 0, unless `--skip-gates` / `skipQualityGates` is active (omit the pre-advance and log `gate-bypass | pre-advance` per [`gates.md`](../ws-shared/gates.md) § Quality gate bypass). Bypass does **not** weaken autoMode ≠ skip planning. Guard failure → **HS-5** STOP — no product-file edits, no Step 4 dispatch.
+First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `validate_state.cjs --pre-advance 4` exits 0, unless `--skip-gates` / `skipQualityGates` is active (omit the pre-advance and log `gate-bypass | pre-advance` per [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass). Bypass does **not** weaken autoMode ≠ skip planning. Guard failure → **HS-5** STOP — no product-file edits, no Step 4 dispatch.
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Product G2-code after Step 5 and after Step 6 review-fix uses path-scoped `files_touched` only. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
-7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset. **Resume pre-check (AC9):** on resume, before re-implementing, resolve `{integrationBranch}` = `config.project.workingBranch` when set, else `{baseBranch}`; if `{gitRemote}` exists, run `git fetch {gitRemote} {integrationBranch}` first (auth/network failure → skip-check `fetch-failed`, proceed, never mark completed); then run `git rev-list --count origin/{integrationBranch}..HEAD` (do **not** compare only to `origin/{baseBranch}` when `workingBranch` is set — stale tips merged into `develop` can still be ahead of `main`). Count `0` → mark `completed` (already merged) **only when** the workflow has product commits (`state.commits` non-empty or Step 5 in `completedSteps`) **and** `HEAD` ≠ `baselineCommit`; bare `0` on a branch that never committed is pre-first-commit resume — proceed normally. When `state.branch` equals `{integrationBranch}` (stay-on-integration), skip the count, log `resume-gate | skip-check | stay-on-integration | {branch} vs {integrationBranch} | ISO`, and proceed (do **not** mark completed). Skip-check when `origin/{integrationBranch}` is unavailable (see [`setup.md`](../ws-shared/setup.md) §4c).
+7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset. **Resume pre-check (AC9):** on resume, before re-implementing, resolve `{integrationBranch}` = `config.project.workingBranch` when set, else `{baseBranch}`; if `{gitRemote}` exists, run `git fetch {gitRemote} {integrationBranch}` first (auth/network failure → skip-check `fetch-failed`, proceed, never mark completed); then run `git rev-list --count origin/{integrationBranch}..HEAD` (do **not** compare only to `origin/{baseBranch}` when `workingBranch` is set — stale tips merged into `develop` can still be ahead of `main`). Count `0` → mark `completed` (already merged) **only when** the workflow has product commits (`state.commits` non-empty or Step 5 in `completedSteps`) **and** `HEAD` ≠ `baselineCommit`; bare `0` on a branch that never committed is pre-first-commit resume — proceed normally. When `state.branch` equals `{integrationBranch}` (stay-on-integration), skip the count, log `resume-gate | skip-check | stay-on-integration | {branch} vs {integrationBranch} | ISO`, and proceed (do **not** mark completed). Skip-check when `origin/{integrationBranch}` is unavailable (see [`setup.md`](../ws-shared/runtime/setup.md) §4c).
 8. **Reproducible-artifact invariant (AC6):** every step artifact a later step reads must be reconstructable from state + committed diff, enforced by the pre-advance `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance <N>` check: if a required artifact or its metadata for advancing to step N is missing, validation exits non-zero and advance is blocked (fail closed).
 
 ## Phases F0–F6 & Step Index
@@ -69,7 +69,7 @@ First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `val
 | F5 Testing | 7 | Verifier + optional browser | 7 |
 | F6 Ship + Fix-PR | 8–9 | Orch + shell (+ fix-pr) | 8 (ship) / 9 (fix-pr complete) |
 
-Worktree & complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). Setup: [`setup.md`](../ws-shared/setup.md). Dispatch bodies: [`STEP-DISPATCH.md`](STEP-DISPATCH.md). Filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
+Worktree & complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). Setup: [`setup.md`](../ws-shared/runtime/setup.md). Dispatch bodies: [`STEP-DISPATCH.md`](STEP-DISPATCH.md). Filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
 
 ## Step 0 — Pipeline Classifier
 
@@ -80,7 +80,7 @@ After `step-00-{slug}.spec.md` exists and before Step 1:
 
 ## Quality Gate Bypass (`skipQualityGates`)
 
-See [`gates.md`](../ws-shared/gates.md) § Quality gate bypass. Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
+See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
 
 ## Invocation
 

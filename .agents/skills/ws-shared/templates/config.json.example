@@ -1,10 +1,10 @@
 {
-  "$schema": "./config.schema.json",
-  "_comment": "Fresh install seeds this file as config.json (gitignored — never commit). Fill via ws-configure-project. toolsFile points to the tool vocabulary all agents use.",
-  "toolsFile": "tools.md",
+  "$schema": "./runtime/config.schema.json",
+  "_comment": "Fresh install seeds this file as config.json. Track it only when it contains project settings and environment-variable references. Fill via ws-configure-project. toolsFile points to the tool vocabulary all agents use.",
+  "toolsFile": "runtime/tools.md",
 
   "pathTokens": {
-    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
+    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
     "skillsRoot": ".agents/skills",
     "sharedDir": ".agents/skills/ws-shared"
   },

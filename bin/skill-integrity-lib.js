@@ -201,11 +201,20 @@ export function enumerateHubFiles(sharedRoot) {
     if (st.isDirectory()) {
       const nested = enumerateSkillFiles(abs);
       for (const [rel, dig] of Object.entries(nested)) {
-        files[toPosix(path.join(name, rel))] = dig;
+        const sourceName = toPosix(path.join(name, rel));
+        if (Object.prototype.hasOwnProperty.call(HUB_DEST_ALIASES, sourceName)) continue;
+        files[sourceName] = dig;
       }
     } else {
       files[toPosix(name)] = hashFileBytes(fs.readFileSync(abs));
     }
+  }
+  for (const [sourceName, destinationName] of Object.entries(HUB_DEST_ALIASES)) {
+    const sourcePath = path.join(sharedRoot, sourceName);
+    const destinationPath = path.join(sharedRoot, destinationName);
+    const digestPath = fs.existsSync(sourcePath) ? sourcePath : destinationPath;
+    if (!fs.existsSync(digestPath) || fs.statSync(digestPath).isDirectory()) continue;
+    files[toPosix(destinationName)] = hashFileBytes(fs.readFileSync(digestPath));
   }
   return files;
 }

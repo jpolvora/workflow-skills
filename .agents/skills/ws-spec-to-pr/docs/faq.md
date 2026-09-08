@@ -3,10 +3,10 @@
 This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0–9) and **Spec-to-PR Lite** (Steps 0–5) orchestrated workflows.
 
 > **Architecture:**
-> - Shared config: [`.agents/skills/ws-shared/config.json`](../../ws-shared/config.json) (see [`config-resolution.md`](../../ws-shared/config-resolution.md))
-> - Shared gates: [`gates.md`](../../ws-shared/gates.md)
-> - SCM intents: [`scm-provider-contract.md`](../../ws-shared/scm-provider-contract.md) (GitHub and Azure DevOps implement the same required intents)
-> - Dynamic paths: [Path tokens](../../ws-shared/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
+> - Shared config: [`.agents/skills/ws-shared/config.json`](../../ws-shared/config.json) (see [`config-resolution.md`](../../ws-shared/runtime/config-resolution.md))
+> - Shared gates: [`gates.md`](../../ws-shared/runtime/gates.md)
+> - SCM intents: [`scm-provider-contract.md`](../../ws-shared/runtime/scm-provider-contract.md) (GitHub and Azure DevOps implement the same required intents)
+> - Dynamic paths: [Path tokens](../../ws-shared/runtime/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
 > - Model Selection: Switch model only via **Pause → IDE/Agent model picker → Resume** (no in-gate model picker or CLI flags).
 
 ---
@@ -322,5 +322,5 @@ This is **mandatory** even if you chose **Keep all artifacts** (that choice only
 Standard check-implementation advances only at overall score **≥ `defaults.minVerifyScore` (default 9)**. Score below `defaults.minVerifyScore` always runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until ≥ `defaults.minVerifyScore` (default 9). Max **3** rounds per Step 5 visit, then Pause (fail closed). Resume continues. Never auto-approve below bar, including in `autoMode`. Optional polish (Accept As-Is) only when the score is already ≥ `defaults.minVerifyScore` (default 9) and the `scoreAndRefine` flag is on; choosing Second Pass reviews the full Pass 1 diff for overengineering and unused workflow-introduced artifacts. Lite has no Step 5 verify gate.
 
 ### Do GitHub and Azure DevOps support the same PR operations?
-Yes. Both implement the required intents in [`scm-provider-contract.md`](../../ws-shared/scm-provider-contract.md): `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, `merge-pr`. Host CLI recipes stay inside each provider `INTENTS.md`. An extra intent on one side without the other (and without an allowlist row) fails `npm run test` (`test/test-provider-parity.js`). [`ws-spec-provider-local`](../../ws-spec-provider-local/SKILL.md) is not an SCM implementer; it delegates PR intents to `providers.scm`.
+Yes. Both implement the required intents in [`scm-provider-contract.md`](../../ws-shared/runtime/scm-provider-contract.md): `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, `merge-pr`. Host CLI recipes stay inside each provider `INTENTS.md`. An extra intent on one side without the other (and without an allowlist row) fails `npm run test` (`test/test-provider-parity.js`). [`ws-spec-provider-local`](../../ws-spec-provider-local/SKILL.md) is not an SCM implementer; it delegates PR intents to `providers.scm`.
 

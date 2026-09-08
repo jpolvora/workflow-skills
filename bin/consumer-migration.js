@@ -15,4 +15,13 @@ export const {
   listRetiredConfigKeys,
   listRetiredManifestIds,
   stripRetiredConfigKeys,
-} = require(path.join(__dirname, '..', '.agents', 'skills', 'ws-shared', 'scripts', 'retired_artifacts.cjs'));
+} = require(path.join(
+  __dirname,
+  '..',
+  '.agents',
+  'skills',
+  'ws-shared',
+  'runtime',
+  'scripts',
+  'retired_artifacts.cjs',
+));

@@ -1,6 +1,6 @@
 ---
 name: ws-spec-list
-version: 0.4.3
+version: 0.4.4
 description: Dual board for specs vs plan workflows plus manage menu. Trigger when listing, picking, or managing specs/plans.
 disable-model-invocation: true
 invocation_names:
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-list loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Interactive **two-board + menu** for the current project. **Specs ≠ plans** — never merge them into one inventory.
 
@@ -23,7 +23,7 @@ Interactive **two-board + menu** for the current project. **Specs ≠ plans** �
 
 Canonical `step-00-*.spec.md` under `{plansDir}` is a **plan artifact**, not a Spec-board row. Not `ws-spec-index` / `ws-spec-archive` (those own `index.PRD` content). Action details: [`ACTIONS.md`](ACTIONS.md).
 
-**Specs family:** Role = dual board + manage menu (Specs ≠ Plans). Start/Continue hands off to orch; does not rewrite AC bodies (`ws-spec-update`) or `index.PRD` (`ws-spec-index`). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = dual board + manage menu (Specs ≠ Plans). Start/Continue hands off to orch; does not rewrite AC bodies (`ws-spec-update`) or `index.PRD` (`ws-spec-index`). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 ## Invocation
 
@@ -47,7 +47,7 @@ Canonical `step-00-*.spec.md` under `{plansDir}` is a **plan artifact**, not a S
 
 ## Steps
 
-1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Load [`../ws-shared/tools.md`](../ws-shared/tools.md) Path tokens + [`../ws-shared/gates.md`](../ws-shared/gates.md) for `user-gate`.
+1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Load [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md) Path tokens + [`../ws-shared/runtime/gates.md`](../ws-shared/runtime/gates.md) for `user-gate`.
    - Done when: both roots resolved (missing config → stop and point to `ws-configure-project`).
 
 2. **Discover (keep sets separate)** — Agent scan (no helper script):

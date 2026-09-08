@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, resolveConfiguredPath } = require('../../../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, resolveConfiguredPath } = require('../../../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const INDEX_WEIGHTS = {
   completeness: 20,
@@ -28,7 +28,7 @@ function resolvePaths(options = {}) {
   const packageJsonPath = path.join(repoRoot, 'package.json');
   const measureHarnessScript = path.join(repoRoot, '.agents/skills/ws-check-harness/scripts/measure_harness.cjs');
   const validateSpecScript = path.join(repoRoot, '.agents/skills/ws-spec-format/scripts/validate_spec.cjs');
-  const validateSchemaScript = path.join(repoRoot, '.agents/skills/ws-shared/scripts/validate_json_schema.cjs');
+  const validateSchemaScript = path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs');
   const acLedgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
   const runSabotageScript = path.join(repoRoot, '.agents/skills/ws-testing/scripts/run_sabotage.py');
   const cliScript = path.join(repoRoot, 'scripts/harness-benchmark/cli.cjs');

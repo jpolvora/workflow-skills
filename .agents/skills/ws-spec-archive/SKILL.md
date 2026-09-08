@@ -1,6 +1,6 @@
 ---
 name: ws-spec-archive
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 description: >-
   Harvests plansDir delivery facts into specsDir/index.PRD, then proposes
@@ -16,11 +16,11 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-archive loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check when config is present. Missing config → local-path defaults with gap `config-missing`.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check when config is present. Missing config → local-path defaults with gap `config-missing`.
 
 **Archive** `{plansDir}` workflow history into `{specsDir}/index.PRD` so shipped plan folders can be removed without losing delivery facts. Complements [`ws-spec-index`](../ws-spec-index/SKILL.md) (index status sync) and [`ws-cleanup`](../ws-cleanup/SKILL.md) (untracked scratch). Schema → [`references/ARCHIVE.md`](references/ARCHIVE.md).
 
-**Specs family:** Role = harvest plan-folder facts → enrich `index.PRD` Archive (+ missing Done-log rows) → propose cleanup commit. Does not rewrite AC bodies (`ws-spec-update`) or run the dual board (`ws-spec-list`). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = harvest plan-folder facts → enrich `index.PRD` Archive (+ missing Done-log rows) → propose cleanup commit. Does not rewrite AC bodies (`ws-spec-update`) or run the dual board (`ws-spec-list`). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 ## Invocation
 
@@ -39,7 +39,7 @@ archive plans
 
 ## Steps
 
-1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` from [`../ws-shared/tools.md`](../ws-shared/tools.md). Changelog path ← `rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`).
+1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` from [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Changelog path ← `rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`).
    - Done when: roots are fixed (missing config → defaults `.agents/plans`, `.agents/specs`).
 
 2. **Scan** — Run:

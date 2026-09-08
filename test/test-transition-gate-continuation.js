@@ -7,7 +7,7 @@ const { assert, fs, path, repoRoot } = utils;
 // A native Next must never leave currentStep advanced with no N+1 dispatch.
 
 const gates = fs.readFileSync(
-  path.join(repoRoot, '.agents/skills/ws-shared/gates.md'),
+  path.join(repoRoot, '.agents/skills/ws-shared/runtime/gates.md'),
   'utf8',
 );
 const orch = fs.readFileSync(

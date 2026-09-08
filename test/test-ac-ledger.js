@@ -4,7 +4,7 @@ import utils from './harness-test-utils.cjs';
 
 const require = createRequire(import.meta.url);
 const { assert, path, repoRoot, temp, run, write } = utils;
-const { loadJsonSchema, validateNode } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/validate_json_schema.cjs'));
+const { loadJsonSchema, validateNode } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs'));
 const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
 const reviewScript = path.join(repoRoot, '.agents/skills/ws-code-review/scripts/write_review_round.cjs');
 const root = temp('ws-ac-ledger-');
@@ -73,7 +73,7 @@ assert.ok(aliasScore.errors.some((error) => error.includes('backendTest')), 'uno
 assert.ok(!aliasScore.errors.some((error) => error.includes('_comment_mutationTest')), 'comment key is not a required alias');
 
 // AC2 — example config has no _comment_mutationTest
-const exampleConfig = JSON.parse(fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/config.json.example'), 'utf8'));
+const exampleConfig = JSON.parse(fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/templates/config.json.example'), 'utf8'));
 assert.strictEqual(exampleConfig.verification._comment_mutationTest, undefined);
 
 // AC3 — skipReason enum validation at link
@@ -136,7 +136,7 @@ assert.ok(!skipScore.errors.some((error) => error.includes('backendFormat')), 's
 assert.strictEqual(skipScore.knownDefect, false, 'skip does not set knownDefect');
 assert.ok(skipScore.score > 8, 'skip with non-zero exit does not cap score at 8');
 
-const ledgerSchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/ac-ledger.schema.json'), 'ac ledger');
+const ledgerSchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/runtime/ac-ledger.schema.json'), 'ac ledger');
 const skipLedger = JSON.parse(fs.readFileSync(path.join(skipRoot, 'ac-ledger.json'), 'utf8'));
 const schemaErrors = validateNode(skipLedger, ledgerSchema, 'ac-ledger.json');
 assert.ok(

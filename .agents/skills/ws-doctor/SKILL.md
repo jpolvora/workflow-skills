@@ -1,7 +1,7 @@
 ---
 name: ws-doctor
 description: Workflow skills diagnostic inspector — read-only diagnose of path errors, tool/script recipes, config switches, and missing references across installed ws-* skills.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - doctor
@@ -16,7 +16,7 @@ invocation_names:
 
 Read-only by default (v1): emit one structured report, then **stop**. No file edits; no fix-apply mode.
 
-Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-shared/tools.md) only (`user-gate`, path tokens, explicit `python` / `node` / `bash` launchers).
+Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-shared/runtime/tools.md) only (`user-gate`, path tokens, explicit `python` / `node` / `bash` launchers).
 
 ## Boundaries
 
@@ -45,7 +45,7 @@ Also: `@ws-doctor`, “diagnose skills”, “doctor the harness”.
 
 ## Hybrid & config
 
-1. Expand `{skillsRoot}` **independently** from `{sharedDir}` (and related tokens) per [`tools.md`](../ws-shared/tools.md) § Path tokens · [`config-resolution.md`](../ws-shared/config-resolution.md).
+1. Expand `{skillsRoot}` **independently** from `{sharedDir}` (and related tokens) per [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens · [`config-resolution.md`](../ws-shared/runtime/config-resolution.md).
 2. Project `{sharedDir}/config.json` **always wins** over any global hub config. Never read project config from the global hub when a project hub exists.
 3. Missing `{sharedDir}/config.json`: still run path / script / reference checks against the resolved skills root; report Configuration as **unavailable**; `user-gate` recommending [`ws-configure-project`](../ws-configure-project/SKILL.md) (native structured choice when available; markdown fallback). Do **not** invent config values.
 

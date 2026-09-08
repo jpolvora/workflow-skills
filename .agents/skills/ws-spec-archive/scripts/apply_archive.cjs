@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { resolveConsumerContext } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const KEEP_STATUS = new Set(['active', 'paused']);
 const ARCHIVE_HEADING = /^#{2,}\s+(?:\d+\.\s+)?(?:Delivery archive|Archive)\b.*$/im;

@@ -19,7 +19,7 @@ let retiredArtifactsModule = null;
 function getRetiredArtifactsModule() {
   if (retiredArtifactsModule) return retiredArtifactsModule;
   try {
-    retiredArtifactsModule = require(path.join(__doctorDir, '../../ws-shared/scripts/retired_artifacts.cjs'));
+    retiredArtifactsModule = require(path.join(__doctorDir, '../../ws-shared/runtime/scripts/retired_artifacts.cjs'));
   } catch {
     retiredArtifactsModule = {
       listRetiredConfigKeys(cfg) {
@@ -52,7 +52,13 @@ function getRetiredArtifactsModule() {
       findRetiredSkillDirsAtRoot(fsMod, pathMod, skillsDirAbs) {
         if (!skillsDirAbs) return [];
         const root = pathMod.resolve(skillsDirAbs);
-        return this.RETIRED_SKILL_DIRS.filter((id) => fsMod.existsSync(pathMod.join(root, id)));
+        const retiredSkillDirs = [
+          'ws-patterns',
+          'ws-patterns-backend',
+          'ws-patterns-frontend',
+          'ws-audit',
+        ];
+        return retiredSkillDirs.filter((id) => fsMod.existsSync(pathMod.join(root, id)));
       },
     };
   }
@@ -1184,7 +1190,7 @@ function main() {
   const projectRoot = path.resolve(process.cwd());
   const projectSharedDir = resolveProjectSharedDir(projectRoot);
   const configPath = path.join(projectSharedDir, 'config.json');
-  const schemaPath = path.join(projectSharedDir, 'config.schema.json');
+  const schemaPath = path.join(projectSharedDir, 'runtime', 'config.schema.json');
 
   const configLoad = loadJson(configPath);
   const schemaLoad = loadJson(schemaPath);

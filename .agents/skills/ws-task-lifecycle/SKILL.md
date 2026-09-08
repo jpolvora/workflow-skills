@@ -1,7 +1,7 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
@@ -12,13 +12,13 @@ invocation_names:
 
 > When this skill is loaded, output "ws-task-lifecycle loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Coordinator for **prompt-driven** implementation (direct user task). Not a second FSM. Do **not** invoke `ws-spec-to-pr` or `ws-spec-to-pr-lite` from this skill. Do **not** create `{plansDir}/{slug}/` or write `step-00-*.spec.md`.
 
 **Default invoke:** slash / task-router (on-demand). Always-applied membership is opt-in via `defaults.autoloadTaskLifecycle` and `ws-configure-project --section autoload`. Shipped `{sharedDir}/autoload.md` Always-applied table does not list this skill.
 
-**Specs family:** Role = prompt-task cowork. Drafts → [`ws-spec-write`](../ws-spec-write/SKILL.md). Index checkboxes → [`ws-spec-index`](../ws-spec-index/SKILL.md) conventions. Body drift → [`ws-spec-update`](../ws-spec-update/SKILL.md) (optional, not this bus). Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = prompt-task cowork. Drafts → [`ws-spec-write`](../ws-spec-write/SKILL.md). Index checkboxes → [`ws-spec-index`](../ws-spec-index/SKILL.md) conventions. Body drift → [`ws-spec-update`](../ws-spec-update/SKILL.md) (optional, not this bus). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before Reads. Never hardcode a specs directory path.
 

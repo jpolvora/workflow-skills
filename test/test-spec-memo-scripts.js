@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const CHECK = path.join(REPO_ROOT, '.agents/skills/ws-spec-memo/scripts/check_spec_memo.cjs');
 const CONFIGURE = path.join(REPO_ROOT, '.agents/skills/ws-spec-memo/scripts/configure_spec_memo.cjs');
-const EXAMPLE = path.join(REPO_ROOT, '.agents/skills/ws-shared/config.json.example');
+const EXAMPLE = path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example');
 
 let failures = 0;
 function ok(msg) {
@@ -38,8 +38,8 @@ function runNode(script, args, opts = {}) {
 
 function seedHub(root, { sharedRel = '.agents/skills/ws-shared' } = {}) {
   const shared = path.join(root, sharedRel);
-  fs.mkdirSync(shared, { recursive: true });
-  fs.copyFileSync(EXAMPLE, path.join(shared, 'config.json.example'));
+  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
+  fs.copyFileSync(EXAMPLE, path.join(shared, 'templates', 'config.json.example'));
 }
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'spec-memo-test-'));
@@ -127,7 +127,7 @@ try {
   seedHub(tmp, { sharedRel: enabledHubRel });
   const enabledHub = path.join(tmp, enabledHubRel);
   const enabledCfgPath = path.join(enabledHub, 'config.json');
-  fs.copyFileSync(path.join(enabledHub, 'config.json.example'), enabledCfgPath);
+  fs.copyFileSync(path.join(enabledHub, 'templates', 'config.json.example'), enabledCfgPath);
   const enabledCfg = JSON.parse(fs.readFileSync(enabledCfgPath, 'utf8'));
   enabledCfg.specMemo = { enabled: true, cli: 'memo-unavailable-for-test' };
   fs.writeFileSync(enabledCfgPath, `${JSON.stringify(enabledCfg, null, 2)}\n`, 'utf8');
@@ -153,7 +153,7 @@ process.exit(0);
   seedHub(tmp, { sharedRel: healthyHubRel });
   const healthyHub = path.join(tmp, healthyHubRel);
   const healthyCfgPath = path.join(healthyHub, 'config.json');
-  fs.copyFileSync(path.join(healthyHub, 'config.json.example'), healthyCfgPath);
+  fs.copyFileSync(path.join(healthyHub, 'templates', 'config.json.example'), healthyCfgPath);
   const healthyCfg = JSON.parse(fs.readFileSync(healthyCfgPath, 'utf8'));
   healthyCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
   fs.writeFileSync(healthyCfgPath, `${JSON.stringify(healthyCfg, null, 2)}\n`, 'utf8');
@@ -227,7 +227,7 @@ process.exit(0);
   seedHub(globalTmp, { sharedRel: globalOnlyHubRel });
   const globalOnlyHub = path.join(globalTmp, globalOnlyHubRel);
   const globalCfgPath = path.join(globalOnlyHub, 'config.json');
-  fs.copyFileSync(path.join(globalOnlyHub, 'config.json.example'), globalCfgPath);
+  fs.copyFileSync(path.join(globalOnlyHub, 'templates', 'config.json.example'), globalCfgPath);
   const globalCfg = JSON.parse(fs.readFileSync(globalCfgPath, 'utf8'));
   globalCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
   fs.writeFileSync(globalCfgPath, `${JSON.stringify(globalCfg, null, 2)}\n`, 'utf8');
@@ -251,7 +251,7 @@ process.exit(0);
   seedHub(bothTmp, { sharedRel: bothHubRel });
   const bothHub = path.join(bothTmp, bothHubRel);
   const bothCfgPath = path.join(bothHub, 'config.json');
-  fs.copyFileSync(path.join(bothHub, 'config.json.example'), bothCfgPath);
+  fs.copyFileSync(path.join(bothHub, 'templates', 'config.json.example'), bothCfgPath);
   const bothCfg = JSON.parse(fs.readFileSync(bothCfgPath, 'utf8'));
   bothCfg.specMemo = { enabled: true, cli: `node ${healthyStub}` };
   fs.writeFileSync(bothCfgPath, `${JSON.stringify(bothCfg, null, 2)}\n`, 'utf8');

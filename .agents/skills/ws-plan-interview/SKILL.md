@@ -1,7 +1,7 @@
 ---
 name: ws-plan-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - plan-interview
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-plan-interview loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants.
 
@@ -26,7 +26,7 @@ Standalone:
 @[refine] <plan-path> [spec=<spec-path>]
 ```
 
-Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip interview (see [gates.md](../ws-shared/gates.md) conditional interview). May be skipped entirely for simple plans.
+Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip interview (see [gates.md](../ws-shared/runtime/gates.md) conditional interview). May be skipped entirely for simple plans.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|

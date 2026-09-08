@@ -1,6 +1,6 @@
 # ws-spec-provider-azure-devops — Intent procedures
 
-Load when executing an intent from [`SKILL.md`](SKILL.md). Shared intent ids: [`../ws-shared/scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` from `issueTrackers.azureDevOps` — never consumer literals.
+Load when executing an intent from [`SKILL.md`](SKILL.md). Shared intent ids: [`../ws-shared/runtime/scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md). Expand `{plansDir}` (`plans.dir`, default `.agents/plans`) and `{specsDir}` (`plans.specsDir`, default `.agents/specs`) from config. Resolve `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` from `issueTrackers.azureDevOps` — never consumer literals.
 
 ## `validate-auth`
 
@@ -39,7 +39,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs \
 
 | Note | Detail |
 |------|--------|
-| Visual ingest | Converter extracts images from Description/AC HTML, `AttachedFile` relations, and WIT comments (live GET comments API `7.1-preview.4`; offline uses `comments` on `--input` JSON). Then `node {sharedDir}/scripts/ingest_visual_attachments.cjs --provider azure-devops --api-base {apiBase}` writes `{specsDir}/{specStem}.assets/`, patches `## Visual References` after `## Original Issue Context`, and rewrites remote links. Partial HTTP failure exits 0 when the spec was written. `--skip-assets` for fixtures only. |
+| Visual ingest | Converter extracts images from Description/AC HTML, `AttachedFile` relations, and WIT comments (live GET comments API `7.1-preview.4`; offline uses `comments` on `--input` JSON). Then `node {sharedDir}/runtime/scripts/ingest_visual_attachments.cjs --provider azure-devops --api-base {apiBase}` writes `{specsDir}/{specStem}.assets/`, patches `## Visual References` after `## Original Issue Context`, and rewrites remote links. Partial HTTP failure exits 0 when the spec was written. `--skip-assets` for fixtures only. |
 | Raw snapshot JSON | Audit artifact only — stays under `{us-dir}`; downstream steps never read it |
 | Agentic Reformulation | `ws-spec-write` reformulates and enhances raw work item descriptions into unambiguous, testable ACs while preserving human text in `## Original Issue Context` |
 | Re-fetch over an existing run | The converter (Step 2) refuses first when the spec of record differs (`--force` on the converter), and Step 3 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
@@ -103,7 +103,7 @@ az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}
 
 ## `comment-issue`
 
-Alias in [`tools.md`](../ws-shared/tools.md): `close-loop`.
+Alias in [`tools.md`](../ws-shared/runtime/tools.md): `close-loop`.
 
 ```bash
 python .agents/skills/ws-spec-provider-azure-devops/scripts/comment_issue.py \

@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, resolveSkillMdPath, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, resolveSkillMdPath, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const PIPELINE = [
   'ws-spec-write',

@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SHARED = path.join(REPO, '.agents/skills/ws-shared');
-const { resolvePhaseModel } = require(path.join(SHARED, 'scripts/workflow_state.cjs'));
+const { resolvePhaseModel } = require(path.join(SHARED, 'runtime', 'scripts', 'workflow_state.cjs'));
 
 let failures = 0;
 
@@ -29,8 +29,8 @@ function read(rel) {
   return fs.readFileSync(path.join(REPO, rel), 'utf8');
 }
 
-const example = JSON.parse(fs.readFileSync(path.join(SHARED, 'config.json.example'), 'utf8'));
-const schema = JSON.parse(fs.readFileSync(path.join(SHARED, 'config.schema.json'), 'utf8'));
+const example = JSON.parse(fs.readFileSync(path.join(SHARED, 'templates', 'config.json.example'), 'utf8'));
+const schema = JSON.parse(fs.readFileSync(path.join(SHARED, 'runtime', 'config.schema.json'), 'utf8'));
 const defaultsProps = schema.properties?.defaults?.properties || {};
 
 assert(defaultsProps.modelsPreset?.type === 'string', 'schema defaults.modelsPreset is string');
@@ -311,7 +311,7 @@ assert(dispatch.includes('fixPrPlan') && dispatch.includes('fixPrExec'), 'STEP-D
 assert(/never consult numeric[^\n]*9/i.test(dispatch), 'STEP-DISPATCH reserves numeric Step 9 for outer skill');
 assert(dispatch.includes('enableDag: false'), 'STEP-DISPATCH mentions sequential step 4');
 
-const tools = read('.agents/skills/ws-shared/tools.md');
+const tools = read('.agents/skills/ws-shared/runtime/tools.md');
 assert(tools.includes('stepModels[role|N]'), 'tools.md documents resolve order');
 assert(
   tools.includes('fixPrPlan') && tools.includes('fixPrExec') && /rejected|unsupported/i.test(tools),

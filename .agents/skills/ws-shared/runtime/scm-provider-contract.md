@@ -1,10 +1,10 @@
 # SCM provider feature contract
 
-**Audience: agents** implementing or extending [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) and [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md).
+**Audience: agents** implementing or extending [`ws-spec-provider-github`](../../ws-spec-provider-github/SKILL.md) and [`ws-spec-provider-azure-devops`](../../ws-spec-provider-azure-devops/SKILL.md).
 
-GitHub and Azure DevOps are **interchangeable SCM backends**. Orchestrators, [`ws-ship-pr`](../ws-ship-pr/SKILL.md), [`ws-fix-pr`](../ws-fix-pr/SKILL.md), and [`ws-goal-fix-pr`](../ws-goal-fix-pr/SKILL.md) call intents **by name**. Host CLI recipes stay inside each provider's `INTENTS.md`. Do not embed `gh` or `az` in those callers.
+GitHub and Azure DevOps are **interchangeable SCM backends**. Orchestrators, [`ws-ship-pr`](../../ws-ship-pr/SKILL.md), [`ws-fix-pr`](../../ws-fix-pr/SKILL.md), and [`ws-goal-fix-pr`](../../ws-goal-fix-pr/SKILL.md) call intents **by name**. Host CLI recipes stay inside each provider's `INTENTS.md`. Do not embed `gh` or `az` in those callers.
 
-[`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) implements `fetch-to-spec` / `validate-auth` only and **delegates** PR intents to `providers.scm`. Local is not an SCM implementer. Reject `scm: "local"` for PR/thread/merge.
+[`ws-spec-provider-local`](../../ws-spec-provider-local/SKILL.md) implements `fetch-to-spec` / `validate-auth` only and **delegates** PR intents to `providers.scm`. Local is not an SCM implementer. Reject `scm: "local"` for PR/thread/merge.
 
 **Parity check:** `node test/test-provider-parity.js` (also `npm run test`). Missing required intent, or an extra intent on one SCM without the other (and without an allowlist row) → fail.
 
@@ -14,8 +14,8 @@ GitHub and Azure DevOps are **interchangeable SCM backends**. Orchestrators, [`w
 
 | Skill folder | `providers.scm` | Procedures |
 |--------------|-----------------|------------|
-| `ws-spec-provider-github` | `github` | [`../ws-spec-provider-github/INTENTS.md`](../ws-spec-provider-github/INTENTS.md) |
-| `ws-spec-provider-azure-devops` | `azure-devops` | [`../ws-spec-provider-azure-devops/INTENTS.md`](../ws-spec-provider-azure-devops/INTENTS.md) |
+| `ws-spec-provider-github` | `github` | [`../ws-spec-provider-github/INTENTS.md`](../../ws-spec-provider-github/INTENTS.md) |
+| `ws-spec-provider-azure-devops` | `azure-devops` | [`../ws-spec-provider-azure-devops/INTENTS.md`](../../ws-spec-provider-azure-devops/INTENTS.md) |
 
 ---
 

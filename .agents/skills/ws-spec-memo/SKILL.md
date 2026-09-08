@@ -1,6 +1,6 @@
 ---
 name: ws-spec-memo
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 description: >-
   workflow-skills ↔ spec-memo bridge only: wire config.json memory backends, import/migrate
@@ -39,7 +39,7 @@ Do **not** merge these skills. Do **not** vendor spec-memo `SURFACE.md` or re-li
 1. This skill (or configure-project) writes flags → print MCP snippet → stop.
 2. Host registers `spec-memo` MCP (`{specMemo.cli} serve`).
 3. Ensure `/ws-memo` (+ `/ws-session-tracking`) loadable — `/ws-memo` `install_skills` installs both by default.
-4. Day-to-day: aliases in [`tools.md`](../ws-shared/tools.md); memory vault half via **`/ws-memo`**; prompt/session via **`/ws-session-tracking`**. Session memory brief with `bootstrapOnSession` → **`/ws-memo` bootstrap**, not this skill.
+4. Day-to-day: aliases in [`tools.md`](../ws-shared/runtime/tools.md); memory vault half via **`/ws-memo`**; prompt/session via **`/ws-session-tracking`**. Session memory brief with `bootstrapOnSession` → **`/ws-memo` bootstrap**, not this skill.
 
 **Also invoked from:** [`ws-configure-project`](../ws-configure-project/SKILL.md) step 7 / `--section specMemo`.
 
@@ -64,9 +64,9 @@ Do **not** merge these skills. Do **not** vendor spec-memo `SURFACE.md` or re-li
 
 ## Entry check
 
-Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Missing `{sharedDir}/config.json` → `user-gate` recommending `ws-configure-project` before setup (check/bootstrap may still run with defaults).
+Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Missing `{sharedDir}/config.json` → `user-gate` recommending `ws-configure-project` before setup (check/bootstrap may still run with defaults).
 
-Expand path tokens from [`tools.md`](../ws-shared/tools.md) before shell. Use `{specMemo.cli}` (never hardcode `memo`).
+Expand path tokens from [`tools.md`](../ws-shared/runtime/tools.md) before shell. Use `{specMemo.cli}` (never hardcode `memo`).
 
 ## Steps — setup (default)
 
@@ -147,7 +147,7 @@ If MCP `user-spec-memo` / `spec-memo` is already registered, load **`/ws-memo`**
 
 ## Lifecycle translation
 
-Other skills keep their contracts. This bridge owns **which backends** run; **`/ws-memo`** owns **how** vault tools are called. Never load this skill to execute upsert/append/search when MCP is registered — load `/ws-memo` instead. Follow [`tools.md`](../ws-shared/tools.md) and [`INTEGRATION.md`](references/INTEGRATION.md) § Lifecycle translation:
+Other skills keep their contracts. This bridge owns **which backends** run; **`/ws-memo`** owns **how** vault tools are called. Never load this skill to execute upsert/append/search when MCP is registered — load `/ws-memo` instead. Follow [`tools.md`](../ws-shared/runtime/tools.md) and [`INTEGRATION.md`](references/INTEGRATION.md) § Lifecycle translation:
 
 | Hook | Alias | Local files | Vault (`enableSpecMemoIntegration`) |
 |------|-------|-------------|-------------------------------------|

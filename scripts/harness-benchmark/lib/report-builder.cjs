@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { loadJsonSchema, validateNode } = require('../../../.agents/skills/ws-shared/scripts/validate_json_schema.cjs');
+const { loadJsonSchema, validateNode } = require('../../../.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs');
 const { INDEX_WEIGHTS } = require('./paths.cjs');
 
 function computeIndex(dimensions) {

@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, toRepoRelative, resolveMinVerifyScore } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, toRepoRelative, resolveMinVerifyScore } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const SEVERITY = { Critical: 0, Warning: 1, Suggestion: 2 };
 

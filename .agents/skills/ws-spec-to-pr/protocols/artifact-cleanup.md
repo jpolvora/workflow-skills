@@ -2,7 +2,7 @@
 
 Two phases. **Phase A (git runtime)** is mandatory when **shipping is terminal** (`shipStatus`: `skipped` \| `merged` \| `stopped`, or equivalent skip-ship after close with no Step 9). **Phase B (plan-dir temps)** runs only when the user chooses delete temps. Never run auto-cleanup while `status: active`, on **Pause workflow**, or for `failed` / `cancelled` / `paused` (those skip Phase A unless the script is invoked explicitly).
 
-Gate options for Phase B (folded into close implementation gate "delete temps" in [`gates.md`](../../ws-shared/gates.md)):
+Gate options for Phase B (folded into close implementation gate "delete temps" in [`gates.md`](../../ws-shared/runtime/gates.md)):
 
 - **Delete temporary artifacts** — plan-dir exec/dag/issue/report/testing files, baseline, archive only
 - **Keep all artifacts** (audit) — still runs **Phase A**; skips Phase B only

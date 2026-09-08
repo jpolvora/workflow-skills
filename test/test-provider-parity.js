@@ -10,7 +10,7 @@ import { fileURLToPath, pathToFileURL } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SKILLS = path.join(REPO, '.agents/skills');
-const CONTRACT = path.join(SKILLS, 'ws-shared/scm-provider-contract.md');
+const CONTRACT = path.join(SKILLS, 'ws-shared/runtime/scm-provider-contract.md');
 
 let failures = 0;
 
@@ -567,8 +567,8 @@ assert(
 
 const { HUB_WHITELIST } = await import(pathToFileURL(path.join(REPO, 'bin/install-rules.js')).href);
 assert(
-  HUB_WHITELIST.includes('scm-provider-contract.md'),
-  'HUB_WHITELIST includes scm-provider-contract.md',
+  HUB_WHITELIST.includes('runtime'),
+  'HUB_WHITELIST includes manifest runtime root for scm-provider-contract.md',
 );
 
 if (failures) {

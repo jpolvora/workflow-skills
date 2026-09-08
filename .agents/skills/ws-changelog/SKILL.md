@@ -1,6 +1,6 @@
 ---
 name: ws-changelog
-version: 0.4.3
+version: 0.4.4
 description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
 invocation_names:
   - changelog
@@ -11,7 +11,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-changelog loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 **Mandatory completion gate** — run after [ws-self-learning](../ws-self-learning/SKILL.md) at the end of implementation tasks.
 
@@ -32,7 +32,7 @@ Resolve the target file from `{sharedDir}/config.json`:
 
 Do **not** create or require a repo-root `CHANGELOG.md` unless the consumer explicitly set `rules.changelogFile` to that path (e.g. `"CHANGELOG.md"`).
 
-**Vault dual-write:** when `enableSpecMemoIntegration: true`, also follow [`tools.md`](../ws-shared/tools.md) **`update-ws-changelog`** (vault `append` via **`/ws-memo`**). Do not load `ws-spec-memo` for the append itself. Skip the in-repo file when `enableMemoryFiles` is false and vault-only mode is active.
+**Vault dual-write:** when `enableSpecMemoIntegration: true`, also follow [`tools.md`](../ws-shared/runtime/tools.md) **`update-ws-changelog`** (vault `append` via **`/ws-memo`**). Do not load `ws-spec-memo` for the append itself. Skip the in-repo file when `enableMemoryFiles` is false and vault-only mode is active.
 
 ## Process
 

@@ -63,7 +63,7 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
   const shared = path.join(root, '.agents', 'skills', 'ws-shared');
   fs.mkdirSync(shared, { recursive: true });
   const template = fs.readFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/autoload.md'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md'),
     'utf8',
   );
   if (withAutoload) {
@@ -112,7 +112,7 @@ function parseJsonOut(result) {
   const { HUB_WHITELIST } = await import(
     pathToFileURL(path.join(REPO_ROOT, 'bin', 'install-rules.js')).href
   );
-  assert(HUB_WHITELIST.includes('autoload.md'), 'HUB_WHITELIST includes autoload.md');
+  assert(HUB_WHITELIST.includes('runtime'), 'HUB_WHITELIST includes manifest runtime root');
 }
 
 {
@@ -483,10 +483,10 @@ function parseJsonOut(result) {
 
 function seedConfigExample(root) {
   const shared = path.join(root, '.agents', 'skills', 'ws-shared');
-  fs.mkdirSync(shared, { recursive: true });
+  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/config.json.example'),
-    path.join(shared, 'config.json.example'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
+    path.join(shared, 'templates', 'config.json.example'),
   );
 }
 
@@ -510,7 +510,7 @@ function seedConfigExample(root) {
   const cfgPath = path.join(rootOmitted, '.agents/skills/ws-shared/config.json');
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(rootOmitted, '.agents/skills/ws-shared/config.json.example'),
+      path.join(rootOmitted, '.agents/skills/ws-shared/templates/config.json.example'),
       'utf8',
     ),
   );
@@ -637,7 +637,7 @@ function seedConfigExample(root) {
   seedConfigExample(root);
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(root, '.agents/skills/ws-shared/config.json.example'),
+      path.join(root, '.agents/skills/ws-shared/templates/config.json.example'),
       'utf8',
     ),
   );

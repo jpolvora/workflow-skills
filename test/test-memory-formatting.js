@@ -59,7 +59,7 @@ function assert(cond, message) {
 console.log("Running memory formatting test...");
 
 const templateContent = fs.readFileSync(
-  path.join(rootDir, ".agents", "skills", "ws-shared", "MEMORY.md.template"),
+  path.join(rootDir, ".agents", "skills", "ws-shared", "templates", "MEMORY.md.template"),
   "utf-8",
 );
 assert(templateContent.includes("under `{sharedDir}/memory/`"), "MEMORY.md.template missing canonical path token");

@@ -33,7 +33,7 @@ import urllib.request
 from datetime import date
 from pathlib import Path
 
-_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts"
+_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "runtime" / "scripts"
 if str(_SHARED_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SHARED_SCRIPTS))
 from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
@@ -385,7 +385,7 @@ def invoke_ingest_helper(
 ) -> int:
     if skip_assets or not urls:
         return 0
-    helper = Path(__file__).resolve().parents[2] / "ws-shared" / "scripts" / "ingest_visual_attachments.cjs"
+    helper = Path(__file__).resolve().parents[2] / "ws-shared" / "runtime" / "scripts" / "ingest_visual_attachments.cjs"
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as handle:
         json.dump(urls, handle)
         urls_path = handle.name
