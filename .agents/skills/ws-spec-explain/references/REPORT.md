@@ -42,4 +42,4 @@ Concrete steps for a human in **this** repo: screens, routes, CLI, or config key
 
 ## How to test
 
-Prefer `config.json` → `verification.*` aliases from [`tools.md`](../../ws-shared/tools.md). Else name test files/commands found in the plan. Do not invent unconfigured commands.
+Prefer `config.json` → `verification.*` aliases from [`tools.md`](../../ws-shared/runtime/tools.md). Else name test files/commands found in the plan. Do not invent unconfigured commands.

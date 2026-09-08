@@ -28,7 +28,7 @@ Auto: HS-3/4/5 apply; HS-1/2 N/A.
 
 ### Transition Discipline
 
-**Normal:** dispatch → finish (`update_state.cjs`) → G2-code after Step 5 (and after Step 6 review-fix if dirty) → checkpoint → `validate_state.cjs --pre-advance {N+1}` → Board → Transition Gate. Canonical recipes: [`protocols/state-hygiene.md`](protocols/state-hygiene.md). G2-code algorithm: [`gates.md`](../ws-shared/gates.md) § Required G2-code save points. `dryRun` prints paths and does not `git commit`.
+**Normal:** dispatch → finish (`update_state.cjs`) → G2-code after Step 5 (and after Step 6 review-fix if dirty) → checkpoint → `validate_state.cjs --pre-advance {N+1}` → Board → Transition Gate. Canonical recipes: [`protocols/state-hygiene.md`](protocols/state-hygiene.md). G2-code algorithm: [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points. `dryRun` prints paths and does not `git commit`.
 
 **Auto:** auto-gate + dispatch N+1 same turn (`autoMode` commits G2-code when the stage set is non-empty).
 
@@ -63,11 +63,11 @@ Available at **every** transition gate (normal mode; under **More options…** w
 
 Rules: multiple `needs_user` → one by design-tree priority. **End refinement and advance** → log `assumed-default`, set `shared_understanding: confirmed`, skip 2e. Block Step 3 only if interview ran and `refine.shared_understanding !== confirmed`.
 
-**Conditional skip:** See [`gates.md`](../ws-shared/gates.md) § Conditional interview. Step 2 grills the **plan**, not the spec.
+**Conditional skip:** See [`gates.md`](../ws-shared/runtime/gates.md) § Conditional interview. Step 2 grills the **plan**, not the spec.
 
 ### Complexity / Dynamic Execution
 
-Before Step 1, classify per [`gates.md`](../ws-shared/gates.md) § Complexity gate. User may override when ambiguous: **Simple path** / **Standard path** (rec) / **Full grill**.
+Before Step 1, classify per [`gates.md`](../ws-shared/runtime/gates.md) § Complexity gate. User may override when ambiguous: **Simple path** / **Standard path** (rec) / **Full grill**.
 
 **Simple path:** stub `step-01-{slug}.plan.md`, `execMode: sequential`, skip Steps 1–2–3, jump to Step 4.
 
@@ -93,7 +93,7 @@ No in-gate model picker. At every transition, show the gates.md banner (`Orchest
 
 The orchestrator session ALWAYS executes under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels`, and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent`. Pass the resolved id on `dispatch-agent` and record it with `--model` / optional `--substep` on `update_state.cjs`. Step 7 uses the `testingModel` → `executionModel` → session chain after preset/`stepModels` overrides. Step 9 internal roles use `fixPrPlan` → `reviewerModel` and `fixPrExec` → `executionModel`; they bypass numeric `"9"`, resolve from one captured session fallback, emit dispatch events only, and leave the single Step 9 finish to the outer orchestrator. On subagent switch failure or unconfigured model, gracefully fall back to the captured `currentModel`.
 
-When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
+When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/runtime/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
 ### Step Dispatch & Isolation
 
@@ -119,10 +119,10 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 
 | Score | Behavior |
 |-------|----------|
-| ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5 scoring; when Reach-10 conditions in [`gates.md`](../ws-shared/gates.md) hold, offer Reach-10 before G2-code; otherwise G2-code then Advance to 6 |
+| ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5 scoring; when Reach-10 conditions in [`gates.md`](../ws-shared/runtime/gates.md) hold, offer Reach-10 before G2-code; otherwise G2-code then Advance to 6 |
 | below `defaults.minVerifyScore` | **scoreAndRefine** until ≥ `defaults.minVerifyScore` (default 9) (max 3 rounds, then Pause). Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
-`--strict`: always run full verification matrix regardless of score. `autoMode`: skip the Reach-10 offer and advance at the current passing score; still auto-run scoreAndRefine rounds below the bar — do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`. Contract: [`gates.md`](../ws-shared/gates.md) § Check-implementation gate · § Reach-10 offer.
+`--strict`: always run full verification matrix regardless of score. `autoMode`: skip the Reach-10 offer and advance at the current passing score; still auto-run scoreAndRefine rounds below the bar — do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`. Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate · § Reach-10 offer.
 
 ### Code review + fix → re-review loop (Step 6)
 
@@ -204,7 +204,7 @@ python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id 
 
 Do **not** invoke Phase A at close when `shipStatus` is still `pending`/`pr-open`/`pushed`. Phase B stays optional (delete-temps only). Keep-all still runs Phase A when shipping is terminal. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.
 
-**Close gate** ([`gates.md`](../ws-shared/gates.md) § Close implementation + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
+**Close gate** ([`gates.md`](../ws-shared/runtime/gates.md) § Close implementation + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
 
 1. **Commit configured delivery artifacts** (Recommended when `fullMode`)
 2. **Skip delivery commit**
@@ -260,7 +260,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 8 combined gate (not `fullMode`) | **Commit configured delivery artifacts, skip PR** |
 | Step 9 fix-pr | **Run ws-goal-fix-pr loop** |
 
-Shared defaults: [`gates.md`](../ws-shared/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.
+Shared defaults: [`gates.md`](../ws-shared/runtime/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.
 
 ### Checkpoints
 
@@ -307,13 +307,13 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 
 ### Resume / reset
 
-→ [`setup.md`](../ws-shared/setup.md) § Resume / reset
+→ [`setup.md`](../ws-shared/runtime/setup.md) § Resume / reset
 
 ### Base Prompt Prefix (`dispatch-agent` body)
 
 ```markdown
 # Subagent — Step {STEP} — {Label}
-Read state: `{us-dir}/{workflow-id}.state.json` (machine SoT) and `{workflow-id}.state.md` `## Step outputs (compact)` plus at most the two most recent full step outputs. Read `{us-dir}/handoff/step-{NN}.json` for the prior step. Do not reload full `step-06-*.review.md` or `step-07-*.testing.*` bodies unless ARTIFACTS.md names that file as required for this step.
+Read state: `{us-dir}/{workflow-id}.state.json` (machine SoT), including `state.handoffs[String(previousStep)]`, and `{workflow-id}.state.md` `## Step outputs (compact)` plus at most the two most recent full step outputs. Do not reload full `step-06-*.review.md` or `step-07-*.testing.*` bodies unless ARTIFACTS.md names that file as required for this step.
 Skill: {SKILL.md path} — required sections: `## Subagent contract` and the step sections named by STEP-DISPATCH (never the full skill body).
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
 Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
@@ -344,15 +344,15 @@ Post-step: `update_state` (+ JSONL) → checkpoint (`Shell` tag) → pre-advance
 | Mode | Tool |
 |------|------|
 | auto | auto-gate table → immediate `dispatch-agent`/`Shell` |
-| normal | Prefer `user-gate`; slim menu per [`gates.md`](../ws-shared/gates.md) |
+| normal | Prefer `user-gate`; slim menu per [`gates.md`](../ws-shared/runtime/gates.md) |
 
-Shows gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only. Native modal gate returning any recommended advance option (**Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent) is explicit confirmation — continue in the same turn; markdown fallback yields the turn and never dispatches in the same turn (see [`gates.md`](../ws-shared/gates.md) § Interactive execution cadence and rule 7).
+Shows gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume) and `**Next step:** {N+1} — {Label}`. Primary: **Advance** (Recommended) / **More options…** (universal controls). Soft tips at F1→F2 / F3→F4 only. Native modal gate returning any recommended advance option (**Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent) is explicit confirmation — continue in the same turn; markdown fallback yields the turn and never dispatches in the same turn (see [`gates.md`](../ws-shared/runtime/gates.md) § Interactive execution cadence and rule 7).
 
 ---
 
 ## Bootstrap & Entry
 
-→ [`setup.md`](../ws-shared/setup.md) § Bootstrap & Entry
+→ [`setup.md`](../ws-shared/runtime/setup.md) § Bootstrap & Entry
 
 ## Step instructions
 

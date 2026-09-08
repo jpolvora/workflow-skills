@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-goal-fix-pr loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
 
@@ -37,7 +37,7 @@ Before executing, restate the parsed parameters: PR number, success criterion, m
 
 ## SCM resolution
 
-Resolve per [config-resolution.md](../ws-shared/config-resolution.md).
+Resolve per [config-resolution.md](../ws-shared/runtime/config-resolution.md).
 
 | `providers.scm` | Provider skill | Intent used here |
 |-----------------|----------------|-------------------|
@@ -104,5 +104,5 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 - Require one complete plan gate and one execute/proactive evidence set for each Act-round batch before resolve or push; never call `finish --step 9` from an internal role.
 - After every Act round, record accepted reviewer/CI defects via `ws-self-learning` (and pattern files when those flags are on).
 - Return rounds, stop condition, final active-thread evidence, remaining blockers, and `Learning:` titles.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

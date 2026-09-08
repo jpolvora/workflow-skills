@@ -3,7 +3,7 @@ import utils from './harness-test-utils.cjs';
 
 const require = createRequire(import.meta.url);
 const { assert, path, repoRoot, run } = utils;
-const { fetchRetry } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/http_retry.cjs'));
+const { fetchRetry } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/http_retry.cjs'));
 
 const validate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs');
 const memory = path.join(repoRoot, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');

@@ -4,6 +4,7 @@ slug: plan-artifacts-consolidation
 title: "Plan Directory Artifacts Consolidation & Minimal Runtime Footprint"
 source: local
 specDate: 2026-09-07
+status: completed
 ---
 
 # Specification — Plan Directory Artifacts Consolidation & Minimal Runtime Footprint

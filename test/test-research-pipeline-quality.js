@@ -4,11 +4,11 @@ import utils from './harness-test-utils.cjs';
 
 const require = createRequire(import.meta.url);
 const { assert, path, repoRoot, temp, run, write } = utils;
-const { validateNode, loadJsonSchema } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/validate_json_schema.cjs'));
+const { validateNode, loadJsonSchema } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs'));
 const { sanitizeMemoryBody } = require(path.join(repoRoot, '.agents/skills/ws-self-learning/scripts/sanitize_memory.cjs'));
 const { mergeJuryReports } = require(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/merge_verify_review.cjs'));
 
-const schema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/config.schema.json'), 'config');
+const schema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/runtime/config.schema.json'), 'config');
 const defaultsSchema = schema.properties.defaults;
 assert.ok(defaultsSchema.properties.providerCompat, 'providerCompat in schema');
 assert.ok(defaultsSchema.properties.contextHygiene, 'contextHygiene in schema');
@@ -241,7 +241,7 @@ try {
   fs.rmSync(corruptFixture, { recursive: true, force: true });
 }
 
-const telemetrySchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/telemetry.schema.json'), 'telemetry');
+const telemetrySchema = loadJsonSchema(path.join(repoRoot, '.agents/skills/ws-shared/runtime/telemetry.schema.json'), 'telemetry');
 const sampleEvent = {
   schemaVersion: 1,
   type: 'dispatch',
@@ -305,5 +305,42 @@ assert.strictEqual(finishRes.status, 0, finishRes.stderr);
 const stateJson = JSON.parse(fs.readFileSync(path.join(handoffFixture, '.agents/plans/demo/wf.state.json'), 'utf8'));
 assert.ok(stateJson.handoffs && stateJson.handoffs['4'], 'step-04 handoff exists in state.handoffs');
 assert.deepStrictEqual(stateJson.handoffs['4'].artifactPaths, ['src/abs-created.js', 'src/abs-modified.js']);
+
+const largeHandoffPath = path.join(handoffFixture, 'large-handoff.json');
+const largeOutputPath = path.join(handoffFixture, 'large-output.json');
+write(largeOutputPath, JSON.stringify({ summary: 'bounded custom handoff' }));
+write(
+  largeHandoffPath,
+  JSON.stringify({
+    step: 4,
+    slug: 'demo',
+    workflowId: 'wf-demo',
+    workflowType: 'standard',
+    status: 'completed',
+    artifactPaths: Array.from({ length: 1000 }, (_, index) => `src/generated-${index}.js`),
+    acRefs: Array.from({ length: 1000 }, () => 'AC1'),
+    summary: 's'.repeat(10000),
+    nextAction: 'n'.repeat(10000),
+    findings: { critical: 0, warning: 0, suggestion: 0, info: 0 },
+  }),
+);
+const boundedFinish = run(updateStateScript, [
+  'finish',
+  stateRel,
+  '--step', '4',
+  '--handoff', 'large-handoff.json',
+  '--step-output', 'large-output.json',
+  '--timestamp', '2026-08-27T12:00:00.000Z',
+  '--jsonl-out', '.agents/plans/demo/telemetry/step-04-bounded.jsonl',
+  '--repo-root', handoffFixture,
+]);
+assert.strictEqual(boundedFinish.status, 0, boundedFinish.stderr);
+const boundedState = JSON.parse(
+  fs.readFileSync(path.join(handoffFixture, '.agents/plans/demo/wf.state.json'), 'utf8'),
+);
+assert(
+  Buffer.byteLength(`${JSON.stringify(boundedState.handoffs['4'])}\n`, 'utf8') <= 8192,
+  'custom handoff payload is bounded to 8 KiB before state serialization',
+);
 
 console.log('test-research-pipeline-quality: ok');

@@ -31,7 +31,7 @@ Resolve from the **consumer project** only — never invent stack commands:
 | Consumer hubs + ship docs (see §6 scan list) | Prepare / before-push / before-publish steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
 
-Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../ws-shared/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../ws-shared/tools.md) § Path tokens).
+Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configured build+test; else `verification.*` via [`tools.md`](../ws-shared/runtime/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens).
 
 ## Checklist items
 
@@ -100,7 +100,7 @@ Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.sh` when it covers configu
 **Done when:** all discovered required steps ✅, or ⏭ with scan evidence.
 
 ### 7. Show board & gate
-Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resolves (`providers.scm` per [config-resolution.md](../ws-shared/config-resolution.md)). Unresolved SCM or `shipAction: skip` → stop after board.  
+Print full board. Commit/push/PR **only** if required rows ✅/⏭ and SCM resolves (`providers.scm` per [config-resolution.md](../ws-shared/runtime/config-resolution.md)). Unresolved SCM or `shipAction: skip` → stop after board.
 **Done when:** user saw board; ship gate decision explicit.
 
 ## Rationalizations

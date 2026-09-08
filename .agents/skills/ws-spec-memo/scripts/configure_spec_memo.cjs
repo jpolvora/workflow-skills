@@ -11,7 +11,7 @@ const { spawnSync } = require('child_process');
 const {
   resolveConsumerContext,
   toRepoRelative,
-} = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const SCRIPT_FILE = __filename;
 const ALLOWED_MODES = new Set(['vault', 'hybrid']);
@@ -95,7 +95,7 @@ function main() {
   const ctx = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: SCRIPT_FILE });
   const repoRoot = ctx.repoRoot;
   const configPath = path.join(ctx.sharedDir, 'config.json');
-  const examplePath = path.join(ctx.sharedDir, 'config.json.example');
+  const examplePath = path.join(ctx.templateSource, 'config.json.example');
 
   if (!fs.existsSync(configPath)) {
     if (!fs.existsSync(examplePath)) {

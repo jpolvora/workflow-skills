@@ -4,7 +4,7 @@ import utils from './harness-test-utils.cjs';
 
 const require = createRequire(import.meta.url);
 const { assert, path, repoRoot, temp, run, write } = utils;
-const { parseFrontmatter, stateIdentityHash, sha256 } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/workflow_state.cjs'));
+const { parseFrontmatter, stateIdentityHash, sha256 } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs'));
 const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
 const update = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
 const validate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs');

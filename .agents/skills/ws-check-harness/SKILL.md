@@ -2,7 +2,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.4.3
+version: 0.4.4
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -50,7 +50,7 @@ Invoke: `/ws-check-harness`, `@ws-check-harness`, or “audit the harness”. Dr
 
 ## Path token map (load in Phase 0)
 
-Canonical: [`tools.md`](../ws-shared/tools.md) § Path tokens · [`config-resolution.md`](../ws-shared/config-resolution.md).
+Canonical: [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens · [`config-resolution.md`](../ws-shared/runtime/config-resolution.md).
 
 | Token | Resolve (first match) | Default |
 |-------|----------------------|---------|
@@ -97,7 +97,7 @@ Step ↔ Phase: Step 1 = Phases 0–5c · Step 2 = Phase 6 · Step 3 = Phase 7.
 
 ## Output
 
-Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REPORT-FORMAT.md`](REPORT-FORMAT.md). On explicit persist, write the completed report to a temporary input file and run `node {skillsRoot}/ws-shared/scripts/persist_diagnostic.cjs --kind harness --input <report>`; the helper stores a timestamped comparable artifact under `plans.diagnosticsDir` (default `.agents/plans/diagnostics`). Default audit remains read-only.
+Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REPORT-FORMAT.md`](REPORT-FORMAT.md). On explicit persist, write the completed report to a temporary input file and run `node {skillsRoot}/ws-shared/runtime/scripts/persist_diagnostic.cjs --kind harness --input <report>`; the helper stores a timestamped comparable artifact under `plans.diagnosticsDir` (default `.agents/plans/diagnostics`). Default audit remains read-only.
 
 ## Guardrails
 

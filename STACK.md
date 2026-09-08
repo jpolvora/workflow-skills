@@ -35,10 +35,10 @@ Human-readable companion to `.agents/skills/ws-shared/config.json`.
 ## Conventions
 
 - All skill content and user-facing pipeline output: **English (en-us)**.
-- `config.json` is gitignored; commit `config.json.example` only.
+- Track non-secret `config.json` and maintained `STACK.md`; keep credentials as environment-variable references. Ignore generated memory/history, installer metadata, and managed `runtime/` / `templates/` copies. The setup seed is `ws-shared/templates/config.json.example`.
 - Consumers install via `npx github:jpolvora/workflow-skills`; this repo is the canonical upstream.
 - Runtime tokens: git tags/worktrees use prefix `uswf/`; plan slugs use `us-{id}` or feature slug.
-- **Script launchers:** invoke managed skill scripts with `python` / `node` / `bash` (see `.agents/skills/ws-shared/tools.md` § Script launchers). Do not rewrite managed scripts for shell quirks; run `verification.*` unchanged.
+- **Script launchers:** invoke managed skill scripts with `python` / `node` / `bash` (see `.agents/skills/ws-shared/runtime/tools.md` § Script launchers). Do not rewrite managed scripts for shell quirks; run `verification.*` unchanged.
 
 ## Issue trackers
 

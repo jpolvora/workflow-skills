@@ -25,14 +25,14 @@ function read(relPath) {
 }
 
 const example = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.json.example'), 'utf8'),
+  fs.readFileSync(path.join(SHARED, 'templates', 'config.json.example'), 'utf8'),
 );
 const configPath = path.join(SHARED, 'config.json');
 const config = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, 'utf8'))
   : null;
 const schema = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.schema.json'), 'utf8'),
+  fs.readFileSync(path.join(SHARED, 'runtime', 'config.schema.json'), 'utf8'),
 );
 
 const defaultsProps = schema.properties?.defaults?.properties || {};
@@ -136,7 +136,7 @@ assert(
   'PROTOCOLS.md requires explicit true to append the addendum',
 );
 
-const configResolution = read('.agents/skills/ws-shared/config-resolution.md');
+const configResolution = read('.agents/skills/ws-shared/runtime/config-resolution.md');
 assert(
   configResolution.includes('defaults.verboseMode'),
   'config-resolution.md has Verbose step preview section',
@@ -156,7 +156,7 @@ assert(
   'INTERVIEW.md recommends verboseMode true when writing',
 );
 
-const gates = read('.agents/skills/ws-shared/gates.md');
+const gates = read('.agents/skills/ws-shared/runtime/gates.md');
 assert(
   gates.includes('defaults.verboseMode'),
   'gates.md dual-mode table documents verboseMode',

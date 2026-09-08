@@ -9,6 +9,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SHARED = path.join(REPO, '.agents/skills/ws-shared');
+const RUNTIME = path.join(SHARED, 'runtime');
+const TEMPLATES = path.join(SHARED, 'templates');
 
 let failures = 0;
 
@@ -21,10 +23,10 @@ function assert(cond, msg) {
 }
 
 const example = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.json.example'), 'utf8'),
+  fs.readFileSync(path.join(TEMPLATES, 'config.json.example'), 'utf8'),
 );
 const schema = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.schema.json'), 'utf8'),
+  fs.readFileSync(path.join(RUNTIME, 'config.schema.json'), 'utf8'),
 );
 
 const dca = example.defaults?.deliveryCommitArtifacts;
@@ -66,7 +68,7 @@ assert(
   'ARTIFACTS.md no longer hardcodes unconditional plan+result list',
 );
 
-const gates = fs.readFileSync(path.join(SHARED, 'gates.md'), 'utf8');
+const gates = fs.readFileSync(path.join(RUNTIME, 'gates.md'), 'utf8');
 assert(
   gates.includes('Commit configured delivery artifacts'),
   'gates.md uses configured delivery artifacts wording',
@@ -76,7 +78,7 @@ assert(
   'gates.md has no mandatory Commit plan + result',
 );
 
-const tools = fs.readFileSync(path.join(SHARED, 'tools.md'), 'utf8');
+const tools = fs.readFileSync(path.join(RUNTIME, 'tools.md'), 'utf8');
 assert(
   tools.includes('defaults.deliveryCommitArtifacts'),
   'tools.md commit-delivery references config',

@@ -23,14 +23,14 @@ function read(rel) {
   return fs.readFileSync(path.join(REPO, rel), 'utf8');
 }
 
-const gates = read('.agents/skills/ws-shared/gates.md');
+const gates = read('.agents/skills/ws-shared/runtime/gates.md');
 const dispatch = read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 const implement = read('.agents/skills/ws-implement-tasks/SKILL.md');
 const verify = read('.agents/skills/ws-plan-verify/SKILL.md');
 const lite = read('.agents/skills/ws-spec-to-pr-lite/SKILL.md');
-const schema = read('.agents/skills/ws-shared/config.schema.json');
-const example = read('.agents/skills/ws-shared/config.json.example');
-const setup = read('.agents/skills/ws-shared/setup.md');
+const schema = read('.agents/skills/ws-shared/runtime/config.schema.json');
+const example = read('.agents/skills/ws-shared/templates/config.json.example');
+const setup = read('.agents/skills/ws-shared/runtime/setup.md');
 const faq = read('.agents/skills/ws-spec-to-pr/docs/faq.md');
 const site = read('docs/index.html');
 const features = read('FEATURES.md');

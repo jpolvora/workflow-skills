@@ -7,7 +7,7 @@ const {
   resolveConsumerContext,
   resolveMemoryRouting,
   toRepoRelative,
-} = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 const { sanitizeMemoryBody } = require('./sanitize_memory.cjs');
 
 const FIELD_DEFS = [

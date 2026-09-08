@@ -48,10 +48,11 @@ check-workflows-report.md
 .agents/plans/**/*.baseline/
 .agents/codereviews/PR*.md
 
-# ws-shared hub: consumer installs get hub.gitignore written as .gitignore (config.json,
-# STACK.md, MEMORY.md, CHANGELOG.md, memory/* stay local-only in consumer repos).
-# This upstream repo tracks those dogfood files in git; package.json still excludes
-# them from the npm tarball. Skill bodies under .agents/skills/ws-* are tracked SoT.
+# ws-shared hub: consumer installs get templates/hub.gitignore written as .gitignore.
+# The upstream SoT tracks runtime/ and templates/ under ws-shared; package.json
+# excludes consumer-owned config/state from the npm tarball. Consumer defaults
+# track non-secret config.json and maintained STACK.md, while generated state and
+# installer metadata are ignored by the installed hub .gitignore.
 .tmp-ws-cleanup-approved.json
 .tmp-*/
 

@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "hub": "ws-shared",
+  "legacyPaths": {
+    "AGENTS.md": "runtime/AGENTS.md",
+    "CATALOG.md": "runtime/CATALOG.md",
+    "CROSS-PLATFORM.md": "runtime/CROSS-PLATFORM.md",
+    "config-resolution.md": "runtime/config-resolution.md",
+    "config.schema.json": "runtime/config.schema.json",
+    "gates.md": "runtime/gates.md",
+    "host-dispatch.md": "runtime/host-dispatch.md",
+    "scm-provider-contract.md": "runtime/scm-provider-contract.md",
+    "setup.md": "runtime/setup.md",
+    "tools.md": "runtime/tools.md",
+    "skill-dependencies.json": "runtime/skill-dependencies.json",
+    "ac-ledger.schema.json": "runtime/ac-ledger.schema.json",
+    "evals.schema.json": "runtime/evals.schema.json",
+    "plan-index.schema.json": "runtime/plan-index.schema.json",
+    "plans-index.schema.json": "runtime/plans-index.schema.json",
+    "run.schema.json": "runtime/run.schema.json",
+    "step-artifact.schema.json": "runtime/step-artifact.schema.json",
+    "telemetry.schema.json": "runtime/telemetry.schema.json",
+    "workflow-state.schema.json": "runtime/workflow-state.schema.json",
+    "schemas": "runtime/schemas",
+    "scripts": "runtime/scripts",
+    "stacks": "runtime/stacks",
+    "CHANGELOG.md.template": "templates/CHANGELOG.md.template",
+    "MEMORY.md.template": "templates/MEMORY.md.template",
+    "STACK.md.example": "templates/STACK.md.example",
+    "config.json.example": "templates/config.json.example",
+    "stack.md.example": "templates/STACK.md.example",
+    "hub.gitignore": ".gitignore"
+  },
+  "categories": {
+    "runtime": {
+      "roots": [
+        "runtime"
+      ],
+      "copy": true,
+      "sourceControl": "managed"
+    },
+    "templates": {
+      "roots": [
+        "templates"
+      ],
+      "copy": true,
+      "sourceControl": "managed",
+      "destinationAliases": {
+        "templates/hub.gitignore": ".gitignore"
+      }
+    },
+    "consumerOwned": {
+      "paths": [
+        "config.json",
+        "STACK.md",
+        "backend.md",
+        "frontend.md"
+      ],
+      "sourceControl": "track-when-maintained"
+    },
+    "generatedLocal": {
+      "paths": [
+        "AGENTS.md",
+        "autoload.md",
+        "CHANGELOG.md",
+        "MEMORY.md",
+        "memory"
+      ],
+      "sourceControl": "ignore-by-default"
+    },
+    "installerMetadata": {
+      "paths": [
+        "installed-skills.json",
+        "skill-integrity-local.json",
+        "host-capabilities.json"
+      ],
+      "sourceControl": "ignore"
+    }
+  }
+}

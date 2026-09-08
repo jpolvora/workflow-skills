@@ -47,7 +47,7 @@ assert.match(skillContent, /ws-spec-archive.*ws-cleanup/s, 'documents distinctio
 // 3. Packaging & Dependencies Registration (AC11)
 console.log('3. Checking skill-dependencies.json registration');
 const depsBin = JSON.parse(fs.readFileSync(path.join(REPO, 'bin/skill-dependencies.json'), 'utf8'));
-const depsShared = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/skill-dependencies.json'), 'utf8'));
+const depsShared = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/runtime/skill-dependencies.json'), 'utf8'));
 
 assert.ok(depsBin.packages.workflows.skills.includes('ws-spec-manager'), 'ws-spec-manager in bin workflows package');
 assert.ok(depsShared.packages.workflows.skills.includes('ws-spec-manager'), 'ws-spec-manager in ws-shared workflows package');
@@ -76,16 +76,20 @@ for (const dep of expectedDeps) {
 
 // 4. Autoload & Router Integration (AC10)
 console.log('4. Checking autoload.md router and keyword quick map');
-const autoload = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/autoload.md'), 'utf8');
+const autoload = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/runtime/autoload.md'), 'utf8');
 
-assert.match(autoload, /\[`ws-spec-manager`\]\(\.\.\/ws-spec-manager\/SKILL\.md\)/, 'autoload.md router table contains ws-spec-manager');
+assert.match(
+  autoload,
+  /\[`ws-spec-manager`\]\(\.\.\/\.\.\/ws-spec-manager\/SKILL\.md\)/,
+  'autoload.md router table contains ws-spec-manager',
+);
 assert.match(autoload, /manage specs.*`ws-spec-manager`/, 'autoload.md quick map routes manage specs to ws-spec-manager');
 assert.match(autoload, /\/spec, \/specs.*`ws-spec-manager`/, 'autoload.md quick map routes /spec to ws-spec-manager');
 
 // 5. Catalogs & Guide Documentation (AC12)
 console.log('5. Checking CATALOG.md and SPEC-MANAGEMENT.md');
 const catalogRoot = fs.readFileSync(path.join(REPO, 'CATALOG.md'), 'utf8');
-const catalogShared = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/CATALOG.md'), 'utf8');
+const catalogShared = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/runtime/CATALOG.md'), 'utf8');
 const specGuide = fs.readFileSync(path.join(REPO, 'SPEC-MANAGEMENT.md'), 'utf8');
 
 assert.match(catalogRoot, /`ws-spec-manager`/, 'root CATALOG.md includes ws-spec-manager');

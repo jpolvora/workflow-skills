@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const { resolveMinVerifyScore } = require(
-  path.join(REPO, '.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs'),
+  path.join(REPO, '.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs'),
 );
 const CLASSIFY = path.join(REPO, '.agents/skills/ws-classify-complexity/scripts/classify.cjs');
 
@@ -36,17 +36,17 @@ assert(resolveMinVerifyScore({ defaults: { minVerifyScore: 11 } }) === 9, '11 �
 assert(resolveMinVerifyScore({ defaults: { minVerifyScore: 9.5 } }) === 9, 'non-integer → 9');
 assert(resolveMinVerifyScore({ defaults: { minVerifyScore: '9' } }) === 9, 'string → 9');
 
-const schema = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/config.schema.json'), 'utf8'));
+const schema = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/runtime/config.schema.json'), 'utf8'));
 const prop = schema.properties?.defaults?.properties?.minVerifyScore || {};
 assert(prop.type === 'integer' && prop.minimum === 1 && prop.maximum === 10 && prop.default === 9, 'schema shape');
 
-const example = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/config.json.example'), 'utf8'));
+const example = JSON.parse(fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/templates/config.json.example'), 'utf8'));
 assert(example.defaults.minVerifyScore === 9, 'example seeds 9');
 
 function read(rel) {
   return fs.readFileSync(path.join(REPO, rel), 'utf8');
 }
-const gates = read('.agents/skills/ws-shared/gates.md');
+const gates = read('.agents/skills/ws-shared/runtime/gates.md');
 assert(gates.includes('defaults.minVerifyScore'), 'gates.md names defaults.minVerifyScore');
 assert(/Reach 10 before advance/i.test(gates), 'gates.md Reach-10 user-gate');
 assert(/autoMode.*skip.*Reach-10|skip the Reach-10 offer/i.test(gates), 'gates.md autoMode skips Reach-10');
@@ -69,7 +69,7 @@ const interview = read('.agents/skills/ws-configure-project/INTERVIEW.md');
 assert(interview.includes('minVerifyScore'), 'INTERVIEW.md asks minVerifyScore');
 assert(/Recommended.*9/.test(interview), 'INTERVIEW.md Recommended 9');
 
-const autoload = read('.agents/skills/ws-shared/autoload.md');
+const autoload = read('.agents/skills/ws-shared/runtime/autoload.md');
 assert(autoload.includes('defaults.minVerifyScore'), 'autoload.md names defaults.minVerifyScore');
 
 const site = read('docs/index.html');

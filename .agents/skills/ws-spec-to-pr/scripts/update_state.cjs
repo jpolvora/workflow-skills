@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const { runUpdateCli } = require('../../ws-shared/scripts/workflow_state.cjs');
+const { runUpdateCli } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 runUpdateCli({
   pipeline: 'standard',

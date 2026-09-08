@@ -17,8 +17,8 @@ const requiredDocs = [
   'CATALOG.md',
   'docs/index.html',
   '.agents/skills/ws-shared/AGENTS.md',
-  '.agents/skills/ws-shared/CATALOG.md',
-  '.agents/skills/ws-shared/CROSS-PLATFORM.md',
+  '.agents/skills/ws-shared/runtime/CATALOG.md',
+  '.agents/skills/ws-shared/runtime/CROSS-PLATFORM.md',
 ];
 if (featuresMdEnabled) requiredDocs.splice(1, 0, 'FEATURES.md');
 for (const relative of requiredDocs) {

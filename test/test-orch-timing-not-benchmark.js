@@ -18,7 +18,7 @@ const orch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/S
 const lite = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/SKILL.md'), 'utf8');
 const testing = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-testing/SKILL.md'), 'utf8');
 const consumerCatalog = fs.readFileSync(
-  path.join(repoRoot, '.agents/skills/ws-shared/CATALOG.md'),
+  path.join(repoRoot, '.agents/skills/ws-shared/runtime/CATALOG.md'),
   'utf8',
 );
 

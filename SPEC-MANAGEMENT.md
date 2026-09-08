@@ -321,6 +321,6 @@ Batch queues. Interactive pick-one delegates to `ws-spec-list`.
 ## See Also
 
 - Format SoT: `.agents/skills/ws-spec-format/FORMAT.md`
-- Router: `.agents/skills/ws-shared/autoload.md`
+- Router: `.agents/skills/ws-shared/runtime/autoload.md`
 - Hub: `AGENTS.md` · Consumer hub: `.agents/skills/ws-shared/AGENTS.md`
 - Related (not spec-management): `ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-plan-write`, `ws-plan-verify`, `ws-cleanup`, `ws-spec-memo`

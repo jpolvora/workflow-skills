@@ -1,5 +1,45 @@
 # Changelog
 
+### [2026-09-08 14:56] Agent: GPT-5.6 Luna
+- **Prompt**: Follow up on harness and adversarial audits for the open ship PR.
+- **Done**: Fixed global-hybrid autoload writers to read `externalSkills` from the selected global runtime graph and to materialize the local hub pointer referenced by generated root `AGENTS.md`; added minimal global-only regression coverage.
+- **Result**: Targeted autoload, external-companion, shared-layout, integrity, invariant, and workflow checks pass; full regression is in progress. Learning: autoload writers must use the selected global runtime.
+
+### [2026-09-08 14:37] Agent: GPT-5.6 Luna
+- **Prompt**: `/ws-ship-pr` resumed after PR #290 review identified an incomplete standalone `ws-doctor` retired-skill fallback.
+- **Done**: Mirrored all canonical 0.3.56 retired skill IDs in the no-runtime fallback, added coverage for every renamed folder, regenerated integrity, and completed targeted plus full regression verification.
+- **Result**: Review fix is ready to push; PR remains open and unmerged. Learning: fallback registries must be tested without their optional canonical runtime.
+
+### [2026-09-08 10:18] Agent: GPT-5.6 Luna
+- **Prompt**: `/ws-ship-pr` after applying the approved installer, hybrid-runtime, handoff-size, and artifact-reference fixes.
+- **Done**: Completed pre-ship verification, corrected remaining root-relative autoload repair coverage, regenerated integrity, and prepared the `develop` → `main` PR handoff with merge disabled.
+- **Result**: `npm run test`, targeted regression tests, integrity, site, workflow, invariant, and harness gates passed; no high-confidence leak findings. Learning: retain an explicit caveat when optional leak-scan patterns are not observable.
+
+### [2026-09-08 09:47] Agent: GPT-5.6 Luna
+- **Prompt**: Run the live `fx-node-helper` benchmark for 0.4.4.
+- **Done**: Completed the isolated lite workflow, collected the live report, promoted `0.4.4-fx-node-helper-live`, refreshed comparison reports, and compared it with the 0.3.61 live baseline.
+- **Result**: Live run PASS at 81/100, up from 78; completeness, verification, and discrimination remained stable; wall time scored 10. Learning: N/A (standard benchmark run)
+
+### [2026-09-08 09:30] Agent: GPT-5.6 Luna
+- **Prompt**: Promote the 0.4.4 benchmark runs and generate `table-0.4.4.md`.
+- **Done**: Snapshotted all 5 static 0.4.4 fixture runs into named baselines and regenerated the evolution and per-version reports.
+- **Result**: Snapshot commands exit 0; comparison update exit 0; `table-0.4.4.md` reports 5 PASS / 0 FAIL. Learning: N/A (standard benchmark report update)
+
+### [2026-09-08 09:26] Agent: GPT-5.6 Luna
+- **Prompt**: Run new benchmarks to update results via `/ws-benchmarks`.
+- **Done**: Completed static benchmark run `static-2026-09-08T132552461Z` across 5 fixtures and refreshed the evolution plus version-specific result reports.
+- **Result**: Benchmark run exit 0; comparison update exit 0; 5/5 fixtures completed; 13 historical snapshots remain 13 PASS / 0 FAIL. Learning: N/A (standard benchmark run)
+
+### [2026-09-08 08:10] Agent: GPT-5.6 Luna
+- **Prompt**: Implement `0070-ws-shared-hybrid-config-layout`.
+- **Done**: Split managed hub content into manifest-classified `runtime/` and `templates/` trees; aligned hybrid resolution, installer migration, integrity, configure-project reporting, docs, and regression coverage.
+- **Result**: `npm test`, `npm run verify-integrity`, spec validation, and Phase 5a harness gates passed. Learning: flat hub path assumptions must be resolved through `hub-layout.json`; generated root autoload mirrors are not independent runtime sources.
+
+### [2026-09-08 08:01] Agent: GPT-5.6 Luna
+- **Prompt**: Define a clearer ws-shared layout and local/global configuration contract for hybrid installations.
+- **Done**: Added and validated the `ws-shared-hybrid-config-layout` specification and context companion; tracked the spec in `index.PRD`.
+- **Result**: Authoring validation passed with 17 acceptance criteria; implementation remains for a follow-up workflow. Learning: N/A (standard specification authoring)
+
 ### [2026-09-07 17:50] Agent: Cursor Grok 4.6
 - **Prompt**: PR 289 review threads on configure_autoload externalSkills handling
 - **Done**: Skip remaining Always-applied checks after companion warning; drop external ids in write_root_agents; poison tests for missing-skill suppression and root pointer

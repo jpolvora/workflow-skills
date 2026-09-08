@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const skillMd = path.join(root, '.agents/skills/ws-megabrain/SKILL.md');
 const depsPath = path.join(root, 'bin/skill-dependencies.json');
-const autoloadPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+const autoloadPath = path.join(root, '.agents/skills/ws-shared/runtime/autoload.md');
 const configurePy = path.join(
   root,
   '.agents/skills/ws-configure-project/scripts/configure_autoload.py',

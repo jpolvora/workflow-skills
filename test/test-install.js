@@ -45,6 +45,9 @@ const ignoredPatterns = [
   /(^|[\\/])ws-shared[\\/]CHANGELOG\.md\.template$/,
   /(^|[\\/])ws-shared[\\/]backend\.md\.template$/,
   /(^|[\\/])ws-shared[\\/]frontend\.md\.template$/,
+  /(^|[\\/])ws-shared[\\/]templates[\\/]hub\.gitignore$/,
+  /(^|[\\/])ws-shared[\\/]AGENTS\.md$/,
+  /(^|[\\/])ws-shared[\\/]autoload\.md$/,
   /(^|[\\/])ws-self-learning[\\/]MEMORY\.md$/,
   /(^|[\\/])ws-self-learning[\\/]memory([\\/]|$)/
 ];
@@ -180,13 +183,13 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   const required = [
     '.agents/skills/ws-spec-to-pr/ARTIFACTS.md',
-    '.agents/skills/ws-shared/config.schema.json',
-    '.agents/skills/ws-shared/config.json.example',
-    '.agents/skills/ws-shared/tools.md',
-    '.agents/skills/ws-shared/STACK.md.example',
-    '.agents/skills/ws-shared/MEMORY.md.template',
-    '.agents/skills/ws-shared/CHANGELOG.md.template',
-    '.agents/skills/ws-shared/setup.md',
+    '.agents/skills/ws-shared/runtime/config.schema.json',
+    '.agents/skills/ws-shared/templates/config.json.example',
+    '.agents/skills/ws-shared/runtime/tools.md',
+    '.agents/skills/ws-shared/templates/STACK.md.example',
+    '.agents/skills/ws-shared/templates/MEMORY.md.template',
+    '.agents/skills/ws-shared/templates/CHANGELOG.md.template',
+    '.agents/skills/ws-shared/runtime/setup.md',
     '.agents/skills/ws-spec-to-pr/ws-spec-to-pr-run-test.md',
     '.agents/skills/ws-spec-to-pr/SKILL.md',
     '.agents/skills/ws-check-harness/SKILL.md',
@@ -227,7 +230,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fs.readFileSync(path.join(parentDir, 'bin/skill-dependencies.json'), 'utf8')
   );
   const sharedDepMap = JSON.parse(
-    fs.readFileSync(path.join(parentDir, '.agents/skills/ws-shared/skill-dependencies.json'), 'utf8')
+    fs.readFileSync(path.join(parentDir, '.agents/skills/ws-shared/runtime/skill-dependencies.json'), 'utf8')
   );
   if (!depMap.packages?.workflows?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json workflows package missing ws-spec-to-pr');
@@ -236,13 +239,13 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('bin/skill-dependencies.json workflows package missing ws-spec-multi');
   }
   if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-spec-multi')) {
-    fail('.agents/skills/ws-shared/skill-dependencies.json workflows package missing ws-spec-multi');
+    fail('.agents/skills/ws-shared/runtime/skill-dependencies.json workflows package missing ws-spec-multi');
   }
   if (!depMap.packages?.workflows?.skills?.includes('ws-senior-developer')) {
     fail('bin/skill-dependencies.json workflows package missing ws-senior-developer');
   }
   if (!sharedDepMap.packages?.workflows?.skills?.includes('ws-senior-developer')) {
-    fail('.agents/skills/ws-shared/skill-dependencies.json workflows package missing ws-senior-developer');
+    fail('.agents/skills/ws-shared/runtime/skill-dependencies.json workflows package missing ws-senior-developer');
   }
   if (depMap.packages?.extra?.skills?.includes('ws-spec-to-pr')) {
     fail('skill-dependencies.json Extra must not include workflow orchestrators');
@@ -251,19 +254,19 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('bin/skill-dependencies.json Extra package missing ws-preview');
   }
   if (!sharedDepMap.packages?.extra?.skills?.includes('ws-preview')) {
-    fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-preview');
+    fail('.agents/skills/ws-shared/runtime/skill-dependencies.json Extra package missing ws-preview');
   }
   if (!depMap.packages?.extra?.skills?.includes('ws-run-benchmark')) {
     fail('bin/skill-dependencies.json Extra package missing ws-run-benchmark');
   }
   if (!sharedDepMap.packages?.extra?.skills?.includes('ws-run-benchmark')) {
-    fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-run-benchmark');
+    fail('.agents/skills/ws-shared/runtime/skill-dependencies.json Extra package missing ws-run-benchmark');
   }
   if (!depMap.packages?.extra?.skills?.includes('ws-benchmarks')) {
     fail('bin/skill-dependencies.json Extra package missing ws-benchmarks');
   }
   if (!sharedDepMap.packages?.extra?.skills?.includes('ws-benchmarks')) {
-    fail('.agents/skills/ws-shared/skill-dependencies.json Extra package missing ws-benchmarks');
+    fail('.agents/skills/ws-shared/runtime/skill-dependencies.json Extra package missing ws-benchmarks');
   }
   {
     const extraDemoted = ['ws-activity-report', 'ws-fable-domain', 'ws-plan-update'];
@@ -482,7 +485,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     fail('AGENTS.md still maps Step 11 to ws-implement-tasks');
   }
   const example = JSON.parse(
-    fs.readFileSync(path.join(parentDir, '.agents/skills/ws-shared/config.json.example'), 'utf8')
+    fs.readFileSync(path.join(parentDir, '.agents/skills/ws-shared/templates/config.json.example'), 'utf8')
   );
   if (!example.project?.workingBranch) fail('config.json.example missing project.workingBranch');
   if (!example.plans?.dir) fail('config.json.example missing plans.dir');
@@ -820,18 +823,23 @@ child.on('close', async (code) => {
     fail(`Installer must only write under .agents/skills/; found stray docs: ${strayDocs.join(', ')}`);
   }
   const sharedAgents = path.join(testSkillsDir, 'ws-shared', 'AGENTS.md');
-  if (!fs.existsSync(sharedAgents)) {
+  const sharedRuntimeAgents = path.join(testSkillsDir, 'ws-shared', 'runtime', 'AGENTS.md');
+  if (!fs.existsSync(sharedAgents) || !fs.existsSync(sharedRuntimeAgents)) {
     fail('ws-shared/AGENTS.md not installed into consumer test/.agents/skills/ws-shared/');
   }
   const sharedAgentsBody = fs.readFileSync(sharedAgents, 'utf8');
-  if (!/External dependencies/i.test(sharedAgentsBody)) {
-    fail('Consumer ws-shared/AGENTS.md missing External dependencies section');
+  const sharedRuntimeBody = fs.readFileSync(sharedRuntimeAgents, 'utf8');
+  if (!/External dependencies/i.test(sharedRuntimeBody)) {
+    fail('Consumer ws-shared/runtime/AGENTS.md missing External dependencies section');
   }
-  if (!/Skill loading \(mandatory\)/i.test(sharedAgentsBody)) {
-    fail('Consumer ws-shared/AGENTS.md missing Skill loading section');
+  if (!/Skill loading \(mandatory\)/i.test(sharedRuntimeBody)) {
+    fail('Consumer ws-shared/runtime/AGENTS.md missing Skill loading section');
   }
-  if (!/ws-check-harness/i.test(sharedAgentsBody) || !/ws-check-workflows/i.test(sharedAgentsBody)) {
-    fail('Consumer ws-shared/AGENTS.md must route ws-check-harness and ws-check-workflows');
+  if (!/runtime\/AGENTS\.md/i.test(sharedAgentsBody) || !/global-hybrid/i.test(sharedAgentsBody)) {
+    fail('Consumer ws-shared/AGENTS.md must point to the runtime contract');
+  }
+  if (!/ws-check-harness/i.test(sharedRuntimeBody) || !/ws-check-workflows/i.test(sharedRuntimeBody)) {
+    fail('Consumer ws-shared/runtime/AGENTS.md must route ws-check-harness and ws-check-workflows');
   }
   ok('ws-check-harness + ws-shared/AGENTS.md hub shipped to consumer (no stray docs above .agents/skills/)');
   for (const name of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops', 'ws-spec-provider-local']) {
@@ -1034,7 +1042,7 @@ child.on('close', async (code) => {
   ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
-    const schemaInTest = path.join(testSkillsDir, 'ws-shared', 'config.schema.json');
+    const schemaInTest = path.join(testSkillsDir, 'ws-shared', 'runtime', 'config.schema.json');
     const artifactsInTest = path.join(testSkillsDir, 'ws-spec-to-pr', 'ARTIFACTS.md');
     if (!fs.existsSync(schemaInTest)) fail('config.schema.json not installed into consumer');
     if (!fs.existsSync(artifactsInTest)) fail('ARTIFACTS.md not installed into consumer');
@@ -1059,7 +1067,7 @@ child.on('close', async (code) => {
         fail(`Promoted skill still nested under ws-shared/ in consumer: ${slug}`);
       }
     }
-    if (!fs.existsSync(path.join(testSkillsDir, 'ws-shared', 'config.json.example'))) {
+    if (!fs.existsSync(path.join(testSkillsDir, 'ws-shared', 'templates', 'config.json.example'))) {
       fail('ws-shared/ hub missing config.json.example after install');
     }
     if (fs.existsSync(path.join(testSkillsDir, 'ws-shared', 'ws-self-learning'))) {
@@ -1121,7 +1129,7 @@ child.on('close', async (code) => {
         fail(`Workflows package did not install ${rel}`);
       }
     }
-    if (!fs.existsSync(path.join(pkgSkills, 'ws-shared', 'config.json.example'))) {
+    if (!fs.existsSync(path.join(pkgSkills, 'ws-shared', 'templates', 'config.json.example'))) {
       fail('Workflows package did not install ws-shared/ hub');
     }
     if (fs.existsSync(path.join(pkgSkills, 'security-review'))) {
@@ -1373,14 +1381,14 @@ child.on('close', async (code) => {
     const destConfig = path.join(memDir, '.agents', 'skills', 'ws-shared', 'config.json');
     const destChangelog = path.join(memDir, '.agents', 'skills', 'ws-shared', 'CHANGELOG.md');
     const destAutoload = path.join(memDir, '.agents', 'skills', 'ws-shared', 'autoload.md');
-    const destScmContract = path.join(memDir, '.agents', 'skills', 'ws-shared', 'scm-provider-contract.md');
+    const destScmContract = path.join(memDir, '.agents', 'skills', 'ws-shared', 'runtime', 'scm-provider-contract.md');
     const destRootAgents = path.join(memDir, 'AGENTS.md');
     if (!fs.existsSync(destMem)) fail('Fresh install must seed ws-shared/MEMORY.md');
     if (!fs.existsSync(destStack)) fail('Fresh install must seed ws-shared/STACK.md');
     if (!fs.existsSync(destConfig)) fail('Fresh install must seed ws-shared/config.json');
     if (!fs.existsSync(destChangelog)) fail('Fresh install must seed ws-shared/CHANGELOG.md');
     if (!fs.existsSync(destAutoload)) fail('Fresh install must copy ws-shared/autoload.md from hub whitelist');
-    if (!fs.existsSync(destScmContract)) fail('Fresh install must copy ws-shared/scm-provider-contract.md from hub whitelist');
+    if (!fs.existsSync(destScmContract)) fail('Fresh install must copy ws-shared/runtime/scm-provider-contract.md from hub whitelist');
     if (fs.existsSync(destRootAgents)) {
       fail('Installer must not write consumer root AGENTS.md');
     }
@@ -1651,7 +1659,14 @@ child.on('close', async (code) => {
         fail(`update altered consumer-owned ws-shared/${f} (AC5)`);
       }
     }
-    // AC6: second update is idempotent (exit 0, no retired-id return, stable autoload).
+    // AC6: update repairs root-relative hub links in an otherwise current autoload.
+    const brokenLinksAutoload = afterAutoload
+      .replaceAll('](runtime/tools.md)', '](tools.md)')
+      .replaceAll('](../ws-spec-manager/SKILL.md)', '](../../ws-spec-manager/SKILL.md)');
+    if (brokenLinksAutoload === afterAutoload) {
+      fail('hybrid autoload fixture did not contain expected managed links (AC6)');
+    }
+    fs.writeFileSync(path.join(shared, 'autoload.md'), brokenLinksAutoload);
     const upd2 = runUpdate();
     if (upd2.status !== 0) {
       console.error(`${upd2.stdout || ''}${upd2.stderr || ''}`);
@@ -1719,6 +1734,41 @@ child.on('close', async (code) => {
     if (manifest.skills.includes('ws-memo') || manifest.skills.includes('ws-session-tracking')) {
       fail('installed-skills.json must not list spec-memo external companions');
     }
+    const poisonedManifest = {
+      ...manifest,
+      skills: [...manifest.skills, 'ws-memo', 'ws-session-tracking'],
+      selected: [...manifest.selected, 'ws-memo'],
+    };
+    fs.writeFileSync(manifestPath, `${JSON.stringify(poisonedManifest, null, 2)}\n`);
+    const poisonedAudit = cp.spawnSync(process.execPath, [cliPath, 'integrity'], {
+      cwd: uDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 120000,
+    });
+    if (poisonedAudit.status !== 0) {
+      console.error(`${poisonedAudit.stdout || ''}${poisonedAudit.stderr || ''}`);
+      fail('integrity audit must ignore external companion ids in an existing manifest');
+    }
+    const poisonedUpdate = cp.spawnSync(process.execPath, [cliPath, 'update', '--yes'], {
+      cwd: uDir,
+      encoding: 'utf8',
+      env: { ...process.env, FORCE_COLOR: '0' },
+      timeout: 120000,
+    });
+    if (poisonedUpdate.status !== 0) {
+      console.error(`${poisonedUpdate.stdout || ''}${poisonedUpdate.stderr || ''}`);
+      fail('update must sanitize external companion ids from an existing manifest');
+    }
+    const sanitizedManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    if (
+      sanitizedManifest.skills.includes('ws-memo') ||
+      sanitizedManifest.skills.includes('ws-session-tracking') ||
+      sanitizedManifest.selected.includes('ws-memo')
+    ) {
+      fail('update left external companion ids in installed-skills.json');
+    }
+    ok('integrity/update ignore and remove external companion ids from legacy manifests');
 
     const markerCfg = path.join(uDir, '.agents', 'skills', 'ws-shared', 'config.json');
     fs.writeFileSync(
@@ -1784,7 +1834,7 @@ child.on('close', async (code) => {
       hashFileBytes,
       canonicalizeForHash,
     } = await import(pathToFileURL(path.join(parentDir, 'bin', 'skill-integrity-lib.js')).href);
-    const { HUB_WHITELIST, CONSUMER_OWNED_HUB_FILES } = await import(
+    const { HUB_WHITELIST, HUB_DEST_ALIASES, CONSUMER_OWNED_HUB_FILES } = await import(
       pathToFileURL(path.join(parentDir, 'bin', 'install-rules.js')).href
     );
 
@@ -1804,15 +1854,21 @@ child.on('close', async (code) => {
     }
     for (const rel of Object.keys(manifest.hub?.files || {})) {
       const top = rel.split('/')[0];
-      if (!HUB_WHITELIST.includes(top) && !HUB_WHITELIST.includes(rel)) {
+      const hubAliasDestinations = new Set(Object.values(HUB_DEST_ALIASES));
+      if (
+        !HUB_WHITELIST.includes(top) &&
+        !HUB_WHITELIST.includes(rel) &&
+        !hubAliasDestinations.has(top) &&
+        !hubAliasDestinations.has(rel)
+      ) {
         fail(`Hub file not on whitelist: ${rel}`);
       }
       if (CONSUMER_OWNED_HUB_FILES.has(rel) || CONSUMER_OWNED_HUB_FILES.has(top)) {
         fail(`Consumer-owned path hashed in hub: ${rel}`);
       }
     }
-    if (!manifest.hub?.files?.['hub.gitignore']) {
-      fail('Hub manifest must include hub.gitignore (packable stand-in for consumer .gitignore)');
+    if (!manifest.hub?.files?.['.gitignore']) {
+      fail('Hub manifest must include .gitignore (installed from templates/hub.gitignore)');
     }
     ok('integrity manifest covers installable skills + hub whitelist');
 

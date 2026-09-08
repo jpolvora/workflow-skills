@@ -1,6 +1,6 @@
 ---
 name: ws-spec-manager
-version: 0.4.3
+version: 0.4.4
 description: Unified specification router and lifecycle manager — routes spec creation, listing, inspection, drift updating, index synchronization, organization, and archiving to specialized ws-spec-* skills.
 disable-model-invocation: true
 invocation_names:
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-manager loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check. Verify that `{sharedDir}/config.json` exists in the current repository. If missing or unconfigured, halt and prompt via `user-gate` recommending running `ws-configure-project`.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Verify that `{sharedDir}/config.json` exists in the current repository. If missing or unconfigured, halt and prompt via `user-gate` recommending running `ws-configure-project`.
 
 Single memorable entry point (`/spec-manager`, `/ws-spec-manager`) and authoritative router for all specification operations across the `ws-spec-*` family.
 
@@ -68,7 +68,7 @@ Displays an interactive structured `user-gate` with 11 distinct actions.
 ## Steps
 
 ### 1. Resolve & Entry Check
-- Read `{sharedDir}/config.json` via [`config-resolution.md`](../ws-shared/config-resolution.md).
+- Read `{sharedDir}/config.json` via [`config-resolution.md`](../ws-shared/runtime/config-resolution.md).
 - Resolve path tokens: `{specsDir}` (`plans.specsDir`, default `.agents/specs`), `{plansDir}` (`plans.dir`, default `.agents/plans`), `{skillsRoot}`, and `{sharedDir}`.
 - If config is missing, stop and prompt to run `ws-configure-project`.
 - **Done when:** Path tokens are resolved and verified in context.

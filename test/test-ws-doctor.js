@@ -671,7 +671,7 @@ function testStaleRetiredArtifactsReported() {
   const scriptsDir = path.join(sharedDir, 'scripts');
   fs.mkdirSync(scriptsDir, { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/retired_artifacts.cjs'),
     path.join(scriptsDir, 'retired_artifacts.cjs'),
   );
   fs.writeFileSync(
@@ -723,6 +723,38 @@ function testStaleRetiredArtifactsReported() {
   );
 }
 
+function testStandaloneFallbackRetiredRenameDirsReported() {
+  console.log('\n--- testStandaloneFallbackRetiredRenameDirsReported ---');
+  const root = mkTmp('ws-doctor-fallback-retired-');
+  const { skillsRoot, sharedDir, doctorScript } = setupTmpDoctorProject(root);
+  fs.writeFileSync(
+    path.join(sharedDir, 'config.json'),
+    `${JSON.stringify({ defaults: {} }, null, 2)}\n`,
+    'utf8',
+  );
+  const renamedRetiredDirs = [
+    'ws-write-spec',
+    'ws-sync-spec',
+    'ws-multi-spec',
+    'ws-github-provider',
+    'ws-azure-devops-provider',
+    'ws-local-spec-provider',
+    'ws-write-plan',
+    'ws-verify-plan',
+    'ws-update-plan-implementation',
+    'ws-interview',
+  ];
+  for (const id of renamedRetiredDirs) fs.mkdirSync(path.join(skillsRoot, id));
+
+  const { ok: exitedOk, report, error } = runDoctorJson([], { cwd: root, doctor: doctorScript });
+  assert(exitedOk, `standalone fallback doctor exits 0: ${error || ''}`);
+  if (!report) return;
+  const found = report.sections.configuration?.staleRetired?.skillDirs?.project || [];
+  for (const id of renamedRetiredDirs) {
+    assert(found.includes(id), `standalone fallback reports renamed retired folder ${id}`);
+  }
+}
+
 function testGlobalStaleHubFileReported() {
   console.log('\n--- testGlobalStaleHubFileReported ---');
   const project = mkTmp('ws-doctor-stale-proj-');
@@ -731,7 +763,7 @@ function testGlobalStaleHubFileReported() {
   const scriptsDir = path.join(sharedDir, 'scripts');
   fs.mkdirSync(scriptsDir, { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/retired_artifacts.cjs'),
     path.join(scriptsDir, 'retired_artifacts.cjs'),
   );
   fs.writeFileSync(
@@ -784,7 +816,7 @@ function testGlobalStaleConfigKeysReported() {
   const scriptsDir = path.join(sharedDir, 'scripts');
   fs.mkdirSync(scriptsDir, { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/retired_artifacts.cjs'),
     path.join(scriptsDir, 'retired_artifacts.cjs'),
   );
   fs.writeFileSync(
@@ -832,6 +864,50 @@ function testGlobalStaleConfigKeysReported() {
   );
 }
 
+function testGlobalHybridUsesGlobalRuntimeSource() {
+  console.log('\n--- testGlobalHybridUsesGlobalRuntimeSource ---');
+  const project = mkTmp('ws-doctor-hybrid-runtime-project-');
+  const globalRoot = mkTmp('ws-doctor-hybrid-runtime-global-');
+  const projectShared = path.join(project, '.agents', 'skills', 'ws-shared');
+  fs.mkdirSync(projectShared, { recursive: true });
+  fs.writeFileSync(
+    path.join(projectShared, 'config.json'),
+    `${JSON.stringify({ project: { name: 'hybrid', baseBranch: 'main' } }, null, 2)}\n`,
+    'utf8',
+  );
+
+  const globalDoctorDir = path.join(globalRoot, 'ws-doctor');
+  fs.mkdirSync(path.join(globalDoctorDir, 'scripts'), { recursive: true });
+  fs.copyFileSync(DOCTOR, path.join(globalDoctorDir, 'scripts', 'doctor.js'));
+  fs.copyFileSync(SHIPPED_DOCTOR_PACKAGE_JSON, path.join(globalDoctorDir, 'package.json'));
+  const globalRuntime = path.join(globalRoot, 'ws-shared', 'runtime');
+  fs.mkdirSync(path.join(globalRuntime, 'scripts'), { recursive: true });
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs'),
+    path.join(globalRuntime, 'scripts', 'resolve_consumer_root.cjs'),
+  );
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config.schema.json'),
+    path.join(globalRuntime, 'config.schema.json'),
+  );
+
+  const { ok: exitedOk, report, error } = runDoctorJson([], {
+    cwd: project,
+    doctor: path.join(globalDoctorDir, 'scripts', 'doctor.js'),
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  assert(exitedOk, `global-hybrid runtime doctor exits 0: ${error || ''}`);
+  if (!report) return;
+  assert(
+    report.sections.configuration?.available === true,
+    'global-hybrid runtime keeps project config available',
+  );
+  assert(
+    report.sections.configuration?.schemaAware === true,
+    'global-hybrid runtime resolves config.schema.json from the global hub',
+  );
+}
+
 function testWsDoctorSuiteExitZero() {
   console.log('\n--- testWsDoctorSuiteExitZero ---');
   ok('suite process will exit 0 when all prior tests pass (AC8)');
@@ -853,8 +929,10 @@ function main() {
     testBareDoctorJsCopyWithoutMarkerFails();
     testMissingConfigDoesNotInventValues();
     testStaleRetiredArtifactsReported();
+    testStandaloneFallbackRetiredRenameDirsReported();
     testGlobalStaleHubFileReported();
     testGlobalStaleConfigKeysReported();
+    testGlobalHybridUsesGlobalRuntimeSource();
     testGithubCanonicalRegisterRowHasNodeLauncher();
     testAzureCanonicalRegisterRowHasNodeLauncher();
     testProviderRegisterRowsNotMissingLaunchers();

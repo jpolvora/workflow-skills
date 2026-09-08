@@ -1,7 +1,7 @@
 ---
 name: ws-plan-write
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - plan-write
@@ -12,13 +12,13 @@ invocation_names:
 
 > When this skill is loaded, output "ws-plan-write loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Draft an implementation blueprint from the spec.
 
 **Canonical path:** `{us-dir}/step-01-{slug}.plan.md` (`{us-dir}` = `{plansDir}/{slug}/`).
 
-**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult knowledge via [`tools.md`](../ws-shared/tools.md) **`read-memory`** / [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (local MEMORY and/or spec-memo vault per routing).
+**Reads:** `config.json` (stack, layers, invariants), `tools.md` / `STACK.md`; consult knowledge via [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** / [`ws-self-learning`](../ws-self-learning/SKILL.md) § Pre-work (local MEMORY and/or spec-memo vault per routing).
 
 ## Invocation
 
@@ -46,7 +46,7 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 
 2. **Draft plan** — Write `{us-dir}/step-01-{slug}.plan.md` following [`references/PLAN-TEMPLATE.md`](references/PLAN-TEMPLATE.md) (sections 0–8).
-   - Mandate `## 6. Stack & Security Invariants Verification Plan` identifying touched framework boundaries (authorization, async safety, DTO validation, subscription cleanup) loaded from `{sharedDir}/stacks/`.
+   - Mandate `## 6. Stack & Security Invariants Verification Plan` identifying touched framework boundaries (authorization, async safety, DTO validation, subscription cleanup) loaded from `{sharedDir}/runtime/stacks/`.
    - For bugfix/regression ACs: §3 Step-by-Step Plan and §5 Test Coverage must name **defect-class sibling sweep** (repo-wide) and **sabotage verification** (`run_sabotage.py` when mutation unset).
    - Done when: every section 0–8 is filled; each requirement maps to ≥1 Step-by-Step Plan entry; every AC maps to ≥1 test case in section 5; section 6 establishes verification for all touched framework boundaries.
 
@@ -65,5 +65,5 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 - Map every AC to implementation work, expected files, and a named test so `plan_index.cjs` can build `{us-dir}/plan.index.json`.
 - Record unresolved design choices explicitly instead of choosing silently.
 - Write only the assigned plan artifact and return its path.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

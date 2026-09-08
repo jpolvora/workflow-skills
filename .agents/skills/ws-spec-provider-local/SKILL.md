@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-local
 description: Local Markdown spec provider — detects, normalizes, and registers hand-written *.spec.md feature specifications into canonical pipeline artifacts.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - spec-provider-local
@@ -12,16 +12,16 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-provider-local loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Filesystem local-spec entry: detect/configure `plans.specsDir` (default **`.agents/specs`**; prefer existing repo-root `specs/`), then register/normalize any `*.spec.md` into **two ordered artifacts** — spec of record (path from `ws-spec-organizer` `resolve_spec_path.cjs`: `{specsDir}/{slug}.spec.md` or `{specsDir}/NNNN-{slug}.spec.md`), then workflow copy `{us-dir}/step-00-{slug}.spec.md` (plan folder and filename stay unprefixed). No remote trackers.
 
 **Promotion primitive:** this skill's `register_local_spec.cjs` is the **single invoked** promotion path for every provider. Specs of record written under `{specsDir}` (drafted or enhanced via [`ws-spec-write`](../ws-spec-write/SKILL.md) for local or tracker origins) are promoted to the canonical workflow copy `{us-dir}/step-00-{slug}.spec.md` with `--source {origin}`, so `source:` reflects the real origin. The Python helper remains a supported frozen equivalent.
 
-**Specs family:** Role = bridge `{specsDir}` ↔ `{us-dir}` (register / fetch-to-spec). Drafts and reformulations come from [`ws-spec-write`](../ws-spec-write/SKILL.md) or hand-written files; format SoT [`ws-spec-format`](../ws-spec-format/SKILL.md). Orch entry for local files. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = bridge `{specsDir}` ↔ `{us-dir}` (register / fetch-to-spec). Drafts and reformulations come from [`ws-spec-write`](../ws-spec-write/SKILL.md) or hand-written files; format SoT [`ws-spec-format`](../ws-spec-format/SKILL.md). Orch entry for local files. Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 
-**PR/thread/merge:** hybrid — load `providers.scm` skill ([ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) / [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md)) and call the shared intents in [`scm-provider-contract.md`](../ws-shared/scm-provider-contract.md). Never no-op silently. Reject `scm: "local"`.
+**PR/thread/merge:** hybrid — load `providers.scm` skill ([ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) / [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md)) and call the shared intents in [`scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md). Never no-op silently. Reject `scm: "local"`.
 
 ## Invocation
 

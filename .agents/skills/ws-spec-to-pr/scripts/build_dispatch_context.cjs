@@ -4,7 +4,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, resolveConfiguredPath, toRepoRelative } = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, resolveConfiguredPath, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const FIXED_LIMIT = 18000;
 const MEMORY_LIMIT = 4000;

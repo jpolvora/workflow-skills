@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { loadJsonSchema, validateNode } = require('../.agents/skills/ws-shared/scripts/validate_json_schema.cjs');
+const { loadJsonSchema, validateNode } = require('../.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs');
 
 function walk(directory, result = []) {
   if (!fs.existsSync(directory)) return result;
@@ -28,7 +28,14 @@ function validateAgainstSchema(value, schema, file) {
 
 function main() {
   const repoRoot = path.resolve(process.argv[2] || path.join(__dirname, '..'));
-  const schemaPath = path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'evals.schema.json');
+  const schemaPath = path.join(
+    repoRoot,
+    '.agents',
+    'skills',
+    'ws-shared',
+    'runtime',
+    'evals.schema.json',
+  );
   const schema = loadJsonSchema(schemaPath, 'evals schema');
   const files = walk(path.join(repoRoot, '.agents', 'skills')).sort();
   const errors = [];

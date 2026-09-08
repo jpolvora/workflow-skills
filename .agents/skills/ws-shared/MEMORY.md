@@ -6,6 +6,60 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-08] ws-shared runtime/templates migration path audit
+- **Layer**: `Tooling`
+- **Module**: `ws-shared installer, configure-project, and harness checks`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/{runtime,templates}/**; bin/**; test/**`
+- **Scenario / Context**: Moving managed hub content below `runtime/` and `templates/` requires updating consumers, tests, documentation links, integrity enumeration, and generated root autoload copies together.
+- **DO NOT**: Leave flat managed-path assumptions or treat the generated root `autoload.md` mirror as an independent runtime source.
+- **INSTEAD DO**: Resolve managed paths from `hub-layout.json`; keep consumer configuration at `{sharedDir}`; use the selected local/global runtime and template source; exclude manifest-classified generated copies from duplicate-content audits.
+
+### [2026-09-08] Ship gates must isolate benchmark-generated artifacts
+- **Layer**: `Tests`
+- **Module**: `ws-ship-pr / test and benchmark outputs`
+- **Severity**: `Medium`
+- **PathPattern**: `benchmarks/results/**`; `benchmarks/baselines/**`; `.agents/skills/ws-shared/CHANGELOG.md`
+- **Scenario / Context**: Running the package test or benchmark tooling during a ship audit can rewrite generated report timestamps, create versioned benchmark baselines, and append a changelog entry while another worker is active. Those files are outside the committed release range and may be concurrent work.
+- **DO NOT**: Stage or delete benchmark outputs or consumer-owned changelog changes merely because the ship audit made the tree dirty. Do not claim a clean worktree without checking after the final audit.
+- **INSTEAD DO**: Capture the initial status, preserve unrelated worker files, restore only test artifacts created by this session, and verify the committed `base...HEAD` range separately before push/PR.
+
+### [2026-09-08] Ship command bodies must not use shell substitutions
+- **Layer**: `Tooling`
+- **Module**: `ws-ship-pr / GitHub provider`
+- **Severity**: `High`
+- **PathPattern**: `**/ws-ship-pr/**;**/ws-spec-provider-github/**`
+- **Scenario / Context**: An inline PR body containing Markdown backticks was passed through a shell command. The shell executed the backticked verification commands before invoking the provider, produced a too-large argument, and the PR create intent failed.
+- **DO NOT**: Put backticks, `$()` expressions, or other shell-active syntax directly inside an inline `gh` body argument.
+- **INSTEAD DO**: Write the body through a safe file tool or use a shell-quoted body-file path, then pass it to the provider without command substitution.
+
+### [2026-09-08] Ship audit leak-scan observability
+- **Layer**: `Tooling`
+- **Module**: `ws-ship-pr / ws-secrets-leak-review`
+- **Severity**: `High`
+- **PathPattern**: `bin/**;.agents/skills/ws-ship-pr/**;test/**`
+- **Scenario / Context**: An ignore-aware search invocation failed on a Windows path form during a pre-ship leak audit. Known secret-pattern checks and sensitive-file globs returned no high-confidence findings, but the optional connection-string and internal-host pass was not fully observed.
+- **DO NOT**: Claim a complete leak audit from partial pattern coverage when a scanner invocation failed.
+- **INSTEAD DO**: Record the failed pattern pass as `UNVERIFIABLE`, retry with a supported ignore-aware path form or inspect the changed-file scope manually, and retain the ship-gate caveat until evidence is complete.
+
+### [2026-09-08] Doctor fallback retired registry parity
+- **Layer**: `Tooling`
+- **Module**: `ws-doctor` standalone and hybrid retired-artifact diagnostics`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-doctor/scripts/doctor.js;test/test-ws-doctor.js`
+- **Scenario / Context**: When the optional shared runtime is absent, `ws-doctor` uses a local retired-artifact fallback. A partial fallback registry can miss renamed legacy skill folders even though the canonical runtime registry detects them.
+- **DO NOT**: Maintain the standalone fallback retired-skill list as a subset of the canonical registry or test only the runtime-backed path.
+- **INSTEAD DO**: Mirror every canonical retired skill ID in the fallback and exercise all renamed IDs through a fixture that omits the shared runtime helper.
+
+### [2026-09-08] Autoload writers must use the selected global runtime
+- **Layer**: `Tooling`
+- **Module**: `ws-configure-project` autoload and root-pointer generation`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.py;test/test-autoload-configure.js`
+- **Scenario / Context**: Global-hybrid consumers can keep skill bodies and the dependency graph under the global hub while project-local `ws-shared/` contains only consumer data. Autoload writers and checks must use that selected global runtime.
+- **DO NOT**: Read `externalSkills` only from the local graph or generate `AGENTS.md` that points to a local hub file which was never materialized.
+- **INSTEAD DO**: Resolve the selected local/global runtime for every graph lookup and create a thin project-local hub pointer before emitting a root pointer; cover a minimal global-only fixture.
+
 ### [2026-09-07] Do not vendor spec-memo runtime skills into this package
 - **Scenario / Context**: Consumer ws-check-harness reported phantom routes for ws-memo / ws-session-tracking after a workflows install. Those ids are owned by spec-memo, not this SoT.
 - **DO NOT**: Add them to packages.workflows or Extra, add Layer rows with `.agents/skills/ws-memo/SKILL.md` literals, or list them in Always-applied as mandatory.

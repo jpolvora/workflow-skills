@@ -25,10 +25,10 @@ function read(rel) {
 }
 
 const example = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.json.example'), 'utf8'),
+  fs.readFileSync(path.join(SHARED, 'templates', 'config.json.example'), 'utf8'),
 );
 const schema = JSON.parse(
-  fs.readFileSync(path.join(SHARED, 'config.schema.json'), 'utf8'),
+  fs.readFileSync(path.join(SHARED, 'runtime', 'config.schema.json'), 'utf8'),
 );
 
 const defaultsProps = schema.properties?.defaults?.properties || {};
@@ -78,7 +78,7 @@ assert(
   'ws-spec-to-pr SKILL.md narrows reviewerModel to Steps 5-6',
 );
 
-const tools = read('.agents/skills/ws-shared/tools.md');
+const tools = read('.agents/skills/ws-shared/runtime/tools.md');
 assert(tools.includes('testingModel'), 'tools.md mentions testingModel');
 assert(
   tools.includes('standard Steps 5–6') || tools.includes('standard Steps 5-6'),
@@ -144,7 +144,7 @@ assert(
   'resolve: both empty/omitted keeps session model',
 );
 
-const updateStateCjs = read('.agents/skills/ws-shared/scripts/workflow_state.cjs');
+const updateStateCjs = read('.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs');
 assert(
   updateStateCjs.includes('function resolvePhaseModel'),
   'workflow_state.cjs contains resolvePhaseModel helper',
@@ -156,7 +156,7 @@ assert(
   'PROTOCOLS.md documents subagent model preferences',
 );
 
-const gates = read('.agents/skills/ws-shared/gates.md');
+const gates = read('.agents/skills/ws-shared/runtime/gates.md');
 assert(
   gates.includes('Subagent phase model: {targetSubagentModel}'),
   'gates.md documents Subagent phase model in banner',

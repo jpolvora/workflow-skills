@@ -14,7 +14,7 @@ const {
   RETIRED_BARE_IDS,
   RETIRED_TO_CANONICAL,
   listRetiredManifestIds,
-} = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/retired_artifacts.cjs'));
+} = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/retired_artifacts.cjs'));
 
 function tempDir() {
   const dir = path.join(__dirname, `.tmp-consumer-migration-${Date.now()}-${Math.random().toString(36).slice(2)}`);

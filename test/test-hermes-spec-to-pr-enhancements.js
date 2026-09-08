@@ -26,7 +26,7 @@ function read(rel) {
   return fs.readFileSync(path.join(REPO, rel), 'utf8');
 }
 
-const contract = read('.agents/skills/ws-shared/scm-provider-contract.md');
+const contract = read('.agents/skills/ws-shared/runtime/scm-provider-contract.md');
 const ghSkill = read('.agents/skills/ws-spec-provider-github/SKILL.md');
 const ghIntents = read('.agents/skills/ws-spec-provider-github/INTENTS.md');
 const adoSkill = read('.agents/skills/ws-spec-provider-azure-devops/SKILL.md');
@@ -43,7 +43,7 @@ const writePlan = read('.agents/skills/ws-plan-write/SKILL.md');
 const ship = read('.agents/skills/ws-ship-pr/SKILL.md');
 const fixPr = read('.agents/skills/ws-fix-pr/SKILL.md');
 const goalFix = read('.agents/skills/ws-goal-fix-pr/SKILL.md');
-const tools = read('.agents/skills/ws-shared/tools.md');
+const tools = read('.agents/skills/ws-shared/runtime/tools.md');
 const readme = read('README.md');
 const catalog = read('docs/index.html');
 

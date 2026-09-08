@@ -1,0 +1,18 @@
+# Managed/generated hub content is not source-controlled by default.
+# Track config.json and a maintained STACK.md when they contain no secrets.
+# Shipped as hub.gitignore (npm cannot pack files named .gitignore); installer writes consumer .gitignore.
+
+AGENTS.md
+autoload.md
+runtime/
+templates/
+config.local.json
+stack.md
+MEMORY.md
+CHANGELOG.md
+backend.md
+frontend.md
+installed-skills.json
+skill-integrity-local.json
+host-capabilities.json
+memory/**

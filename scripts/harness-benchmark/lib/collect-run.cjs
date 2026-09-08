@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { resolveConsumerContext } = require('../../../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext } = require('../../../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 const { scoreLedger } = require('../../../.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
 const {
   resolvePaths,

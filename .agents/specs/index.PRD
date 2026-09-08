@@ -119,6 +119,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] ws-spec-manager: unified specification router and lifecycle manager (`spec: 0065-ws-spec-manager-skill.spec.md`)
 - [ ] Separate consumer ws-shared hub from upstream root AGENTS.md (`spec: 0066-ws-shared-hub-agents-separation.spec.md`)
 - [x] Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention (`spec: 0067-reviewer-aligned-implementation-gates.spec.md`)
+- [x] Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (`spec: 0069-us-288.spec.md`) — PR #289 MERGED
+- [x] Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (`spec: 0068-plan-artifacts-consolidation.spec.md`) — PR #286 MERGED
+- [ ] Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs (`spec: 0070-ws-shared-hybrid-config-layout.spec.md`)
+
+
+
 
 
 
@@ -224,6 +230,12 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`.
 
 | 73 | `reviewer-aligned-implementation-gates` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention |
 
+| 74 | `us-288` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (PR #289) |
+
+| 75 | `plan-artifacts-consolidation` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (PR #286) |
+
+| 76 | `ws-shared-hybrid-config-layout` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs |
+
 ## 9. Inbox
 
 - Advanced multi-repository orchestrator support
@@ -300,6 +312,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`.
 | 2026-09-05 | `hermes-spec-to-pr-enhancements` | Hermes Agent Inspirations: duplicate sweep, design intent, class fixes, sabotage, CI triage, close-loop (verify 10/10) | [PR #278](https://github.com/jpolvora/workflow-skills/pull/278) |
 | 2026-09-03 | `skill-family-naming` | Regroup skill ids as `ws-{family}-{verb}` (10 renames, release 0.3.56) | [PR #266](https://github.com/jpolvora/workflow-skills/pull/266) |
 | 2026-09-06 | `transition-gate-continuation` | Native gate advance options continue same-turn across all step boundaries; markdown fallback yields (issue #280, release 0.3.62) | [PR #281](https://github.com/jpolvora/workflow-skills/pull/281) |
+| 2026-09-07 | `us-288` | Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) | [PR #289](https://github.com/jpolvora/workflow-skills/pull/289) |
+| 2026-09-07 | `plan-artifacts-consolidation` | Plan Directory Artifacts Consolidation & Minimal Runtime Footprint | [PR #286](https://github.com/jpolvora/workflow-skills/pull/286) |
 
 ## 11. Maintenance checklist
 

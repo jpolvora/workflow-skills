@@ -77,6 +77,6 @@ assert.strictEqual(run(merge, ['--verify', 'verify8.json', '--review', 'review-e
 const mergedMin8 = JSON.parse(fs.readFileSync(path.join(rootMin8, 'merged-min8.json'), 'utf8'));
 assert.strictEqual(mergedMin8.requiresFix, false, 'minVerifyScore 8 allows score 8 with no Critical/Warning findings');
 
-const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/gates.md'), 'utf8');
+const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/gates.md'), 'utf8');
 assert.match(gates, /at most five blocking gates/i);
 console.log('test-convergence-gates: ok');

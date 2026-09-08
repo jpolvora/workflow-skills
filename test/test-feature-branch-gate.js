@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
-const SHARED = path.join(REPO_ROOT, '.agents/skills/ws-shared');
+const SHARED = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime');
 const SETUP_MD = path.join(SHARED, 'setup.md');
 const GATES_MD = path.join(SHARED, 'gates.md');
 const SHIP_SKILL = path.join(REPO_ROOT, '.agents/skills/ws-ship-pr/SKILL.md');

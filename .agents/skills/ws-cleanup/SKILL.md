@@ -1,6 +1,6 @@
 ---
 name: ws-cleanup
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 description: >-
   Lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps,
@@ -40,7 +40,7 @@ cleanup workflow leftovers
 
 ## Steps
 
-1. **Resolve roots** — Expand `{plansDir}` / `{reviewsDir}` / `{sharedDir}` / `{skillsRoot}` from `$PWD` config + [`../ws-shared/tools.md`](../ws-shared/tools.md). Missing config → defaults `.agents/plans`, `.agents/codereviews`, gap `config-missing`.
+1. **Resolve roots** — Expand `{plansDir}` / `{reviewsDir}` / `{sharedDir}` / `{skillsRoot}` from `$PWD` config + [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Missing config → defaults `.agents/plans`, `.agents/codereviews`, gap `config-missing`.
    - Done when: repo root and scan roots are fixed.
 
 2. **List candidates** — Run:

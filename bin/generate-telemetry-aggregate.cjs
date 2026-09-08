@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext } = require('../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext } = require('../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const DEFAULT_PLANS_REL = '.agents/plans';

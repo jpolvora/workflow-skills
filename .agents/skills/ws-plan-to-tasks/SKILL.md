@@ -1,7 +1,7 @@
 ---
 name: ws-plan-to-tasks
 description: Task DAG breakdown generator — transforms approved implementation plans into atomic, dependency-mapped task execution graphs.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - plan-to-tasks
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-plan-to-tasks loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Read the finalized plan (`step-02-{slug}.plan.refined.md`, or `step-01-{slug}.plan.md` if Step 2 was bypassed) and decompose it into atomic tasks. 
 
@@ -62,7 +62,7 @@ Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` i
    - Done when: every plan step maps to ≥1 task, every task has non-empty `files` and `coderPrompt`, and no file collision exists within a level.
 
 4. **Handoff** — Return both output paths for [ws-implement-tasks](../ws-implement-tasks/SKILL.md).
-   - Done when: caller has the `step-03-` exec.md and dag.json paths. After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+   - Done when: caller has the `step-03-` exec.md and dag.json paths. After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 
 ## Rules of Engagement
 

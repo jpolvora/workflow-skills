@@ -39,7 +39,7 @@ function layerBlock(catalog) {
 }
 
 const binGraph = loadGraph('bin/skill-dependencies.json');
-const sharedGraph = loadGraph('.agents/skills/ws-shared/skill-dependencies.json');
+const sharedGraph = loadGraph('.agents/skills/ws-shared/runtime/skill-dependencies.json');
 for (const graph of [binGraph, sharedGraph]) {
   const packaged = new Set([
     ...(graph.packages?.workflows?.skills || []),
@@ -61,7 +61,7 @@ for (const graph of [binGraph, sharedGraph]) {
 }
 
 const autoload = fs.readFileSync(
-  path.join(repoRoot, '.agents/skills/ws-shared/autoload.md'),
+  path.join(repoRoot, '.agents/skills/ws-shared/runtime/autoload.md'),
   'utf8',
 );
 const alwaysIds = alwaysAppliedIds(autoload);
@@ -89,7 +89,7 @@ assert(
 );
 
 const consumerCatalog = fs.readFileSync(
-  path.join(repoRoot, '.agents/skills/ws-shared/CATALOG.md'),
+  path.join(repoRoot, '.agents/skills/ws-shared/runtime/CATALOG.md'),
   'utf8',
 );
 assert(
@@ -101,7 +101,7 @@ assert(
   'consumer CATALOG membership should link same-folder skill-dependencies.json',
 );
 
-for (const rel of ['CATALOG.md', '.agents/skills/ws-shared/CATALOG.md']) {
+for (const rel of ['CATALOG.md', '.agents/skills/ws-shared/runtime/CATALOG.md']) {
   const catalog = fs.readFileSync(path.join(repoRoot, rel), 'utf8');
   const layers = layerBlock(catalog);
   assert(
@@ -159,14 +159,14 @@ try {
   }
 
   const poisoned = path.join(tmp, 'poison-autoload');
-  fs.mkdirSync(path.join(poisoned, '.agents', 'skills', 'ws-shared'), { recursive: true });
+  fs.mkdirSync(path.join(poisoned, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
   fs.copyFileSync(
-    path.join(repoRoot, '.agents/skills/ws-shared/autoload.md'),
+    path.join(repoRoot, '.agents/skills/ws-shared/runtime/autoload.md'),
     path.join(poisoned, '.agents/skills/ws-shared/autoload.md'),
   );
   fs.copyFileSync(
-    path.join(repoRoot, '.agents/skills/ws-shared/skill-dependencies.json'),
-    path.join(poisoned, '.agents/skills/ws-shared/skill-dependencies.json'),
+    path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+    path.join(poisoned, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
   );
   let text = fs.readFileSync(path.join(poisoned, '.agents/skills/ws-shared/autoload.md'), 'utf8');
   if (!text.includes('| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |')) {

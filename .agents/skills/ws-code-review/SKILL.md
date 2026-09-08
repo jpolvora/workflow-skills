@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -14,7 +14,7 @@ invocation_names:
 
 Review modified files vs the base branch for correctness, security, policy, and diff quality. Clear Critical/Warning via fix → re-review before Advance. For a consumer-configured local dry-run preview (no PR threads), use [`ws-preview`](../ws-preview/SKILL.md) instead.
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 **Canonical output:** `{us-dir}/step-06-{slug}.review.md`. Optional fix summary: `{us-dir}/step-06-{slug}.fix.report.md`.
 
@@ -65,7 +65,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 ## Steps
 
-1. **Detect stack, diff & rule pack**: read `config.json.stack` and load the applicable project stack invariant rule pack from `{sharedDir}/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`, or custom override in `$PWD/.agents/skills/ws-shared/stacks/`). Exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
+1. **Detect stack, diff & rule pack**: read `config.json.stack` and load the applicable project stack invariant rule pack from `{sharedDir}/runtime/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`, or custom override in `$PWD/.agents/skills/ws-shared/runtime/stacks/`). Exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
    - Done when: the in-scope modified file list and active stack invariant rule pack are known.
 
 2. **Phase 1: Triage**: adversarial scan of the committed diff against loaded stack invariant rules and domain constraints. Flag lines with concrete defect hypotheses; discard cosmetic nits, untouched pre-existing code, and low-risk UI without security or concurrency surface.
@@ -87,8 +87,8 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
    - Done when: memory entries have been swept against the diff, and any confirmed violations are listed.
 
 6. **Check invariants & Local Reviewer Dry-Run**:
-   - Run deterministic scan `node {skillsRoot}/ws-shared/scripts/scan_stack_invariants.cjs` against modified files.
-   - Cross-check `config.json.invariants` and the project stack rule pack (`{sharedDir}/stacks/`).
+   - Run deterministic scan `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against modified files.
+   - Cross-check `config.json.invariants` and the project stack rule pack (`{sharedDir}/runtime/stacks/`).
    - **Local CI Reviewer Dry-Run Gate:** When `cursor-reviewer` or an equivalent review runner is detected in the workspace (`scripts/cursor-reviewer` or `config.json.verification.localReviewCommand` / `config.json.preview.localReviewCommand`), execute the local dry-run command (`--dry-run` against the diff) in read-only mode to catch reviewer-aligned defects before Step 8 ship. Ingest any reported critical issues into the review findings.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) for Weakened Checks, False Completion, Scope Creep, Unauthorized Action. Report detected frauds as Critical or Warning.
    - Done when: stack invariant scan, local reviewer dry-run (if configured/detected), and invariant checklists are evaluated.
@@ -112,4 +112,4 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 - Treat ineffective assertions, tests, gates, and checks as minimum Warning.
 - Write only the assigned review draft; the orchestrator persists rounds and ledger links.
 - Return findings sorted by severity, path, line, and id.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.

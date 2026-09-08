@@ -63,6 +63,6 @@ Non-negotiable architectural, security, concurrency, and lifecycle invariant rul
 - [ ] Verify `[Authorize]` decorations on all newly exposed application services or controllers.
 - [ ] Verify `*abpPermission` directives on all newly added action buttons in Angular templates.
 - [ ] Verify subscription disposal via `takeUntilDestroyed()` or `async` pipe.
-- [ ] Run invariant scan: `node .agents/skills/ws-shared/scripts/scan_stack_invariants.cjs --stack abp-angular`
+- [ ] Run invariant scan: `node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs --stack abp-angular`
 - [ ] Run backend tests: `dotnet test`
 - [ ] Run frontend tests: `npm test`

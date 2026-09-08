@@ -63,7 +63,7 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
   const shared = path.join(root, '.agents', 'skills', 'ws-shared');
   fs.mkdirSync(shared, { recursive: true });
   const template = fs.readFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/autoload.md'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md'),
     'utf8',
   );
   if (withAutoload) {
@@ -112,7 +112,7 @@ function parseJsonOut(result) {
   const { HUB_WHITELIST } = await import(
     pathToFileURL(path.join(REPO_ROOT, 'bin', 'install-rules.js')).href
   );
-  assert(HUB_WHITELIST.includes('autoload.md'), 'HUB_WHITELIST includes autoload.md');
+  assert(HUB_WHITELIST.includes('runtime'), 'HUB_WHITELIST includes manifest runtime root');
 }
 
 {
@@ -135,6 +135,11 @@ function parseJsonOut(result) {
     assert(
       autoText.includes('.agents/skills/ws-senior-developer/SKILL.md'),
       'local install emits .agents/skills paths in autoload.md',
+    );
+    assert(autoText.includes('](runtime/tools.md)'), 'consumer autoload rewrites runtime-relative hub links');
+    assert(
+      autoText.includes('](../ws-spec-manager/SKILL.md)'),
+      'consumer autoload rewrites skill-relative links',
     );
     assert(
       rootText.includes('autoload.md') && rootText.includes('ws-shared/AGENTS.md'),
@@ -483,10 +488,10 @@ function parseJsonOut(result) {
 
 function seedConfigExample(root) {
   const shared = path.join(root, '.agents', 'skills', 'ws-shared');
-  fs.mkdirSync(shared, { recursive: true });
+  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents/skills/ws-shared/config.json.example'),
-    path.join(shared, 'config.json.example'),
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
+    path.join(shared, 'templates', 'config.json.example'),
   );
 }
 
@@ -510,7 +515,7 @@ function seedConfigExample(root) {
   const cfgPath = path.join(rootOmitted, '.agents/skills/ws-shared/config.json');
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(rootOmitted, '.agents/skills/ws-shared/config.json.example'),
+      path.join(rootOmitted, '.agents/skills/ws-shared/templates/config.json.example'),
       'utf8',
     ),
   );
@@ -637,7 +642,7 @@ function seedConfigExample(root) {
   seedConfigExample(root);
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(root, '.agents/skills/ws-shared/config.json.example'),
+      path.join(root, '.agents/skills/ws-shared/templates/config.json.example'),
       'utf8',
     ),
   );
@@ -782,6 +787,71 @@ function seedConfigExample(root) {
     /--set-autoload-task-lifecycle false` then `--write-autoload`/.test(interview),
     'INTERVIEW.md No path requires --write-autoload after false',
   );
+}
+
+{
+  // Global-only hybrid: use the selected global dependency graph and create the
+  // local hub pointer referenced by generated root AGENTS.md.
+  const root = mkTmp('ws-autoload-global-minimal-');
+  const globalRoot = mkTmp('ws-autoload-global-minimal-skills-');
+  const globalRuntime = path.join(globalRoot, 'ws-shared', 'runtime');
+  fs.mkdirSync(globalRuntime, { recursive: true });
+  const runtimeSource = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime');
+  const sourceAutoload = fs.readFileSync(path.join(runtimeSource, 'autoload.md'), 'utf8');
+  const poisonedAutoload = sourceAutoload.replace(
+    /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)/,
+    '$1| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |\n',
+  );
+  fs.writeFileSync(path.join(globalRuntime, 'autoload.md'), poisonedAutoload, 'utf8');
+  fs.copyFileSync(path.join(runtimeSource, 'AGENTS.md'), path.join(globalRuntime, 'AGENTS.md'));
+  fs.writeFileSync(
+    path.join(globalRuntime, 'skill-dependencies.json'),
+    JSON.stringify({ externalSkills: ['ws-memo'] }) + '\n',
+    'utf8',
+  );
+  for (const id of [
+    'ws-senior-developer',
+    'ws-self-learning',
+    'ws-changelog',
+    'ws-fable-method',
+    'ws-tdah',
+    'ws-megabrain',
+  ]) {
+    const skillDir = path.join(globalRoot, id);
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'), `# ${id}\n`, 'utf8');
+  }
+  const result = runPy([
+    '--repo-root',
+    root,
+    '--global-skills-root',
+    globalRoot,
+    '--write-autoload',
+    '--write-root-agents',
+    '--check',
+    '--json',
+  ]);
+  const data = parseJsonOut(result);
+  if (data) {
+    const autoloadPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+    const rootAgentsPath = path.join(root, 'AGENTS.md');
+    const hubPointerPath = path.join(root, '.agents/skills/ws-shared/AGENTS.md');
+    const autoloadText = fs.readFileSync(autoloadPath, 'utf8');
+    const hubPointer = fs.readFileSync(hubPointerPath, 'utf8');
+    const alwaysTableStart = autoloadText.indexOf('| Skill | Path | Trigger |');
+    const alwaysTableEnd = autoloadText.indexOf('## External companion skills', alwaysTableStart);
+    const alwaysTable = autoloadText.slice(alwaysTableStart, alwaysTableEnd);
+    assert(result.status === 0, 'global-only minimal setup exits 0');
+    assert(!alwaysTable.includes('| `ws-memo` |'), 'global external companion row is dropped');
+    assert(fs.existsSync(rootAgentsPath), 'global-only setup writes root AGENTS.md');
+    assert(fs.existsSync(hubPointerPath), 'global-only setup writes local hub pointer');
+    assert(hubPointer.includes('{globalSkillsRoot}/ws-shared/runtime/'), 'hub pointer names global runtime fallback');
+    assert(data.rootAgents?.hubPointerWritten === true, 'reports global-hybrid hub pointer creation');
+    assert(
+      !(data.check?.findings || []).some((finding) => /external companion `ws-memo`/i.test(finding.message)),
+      'global dependency graph suppresses external companion warning after write',
+    );
+  }
 }
 
 cleanup();

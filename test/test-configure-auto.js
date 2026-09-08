@@ -73,18 +73,24 @@ function parseJson(result, what) {
 
 function seedHub(root, { withConfig = false } = {}) {
   const shared = path.join(root, '.agents', 'skills', 'ws-shared');
-  fs.mkdirSync(shared, { recursive: true });
+  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
+  fs.mkdirSync(path.join(shared, 'runtime'), { recursive: true });
+  fs.mkdirSync(path.join(shared, 'runtime'), { recursive: true });
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.json.example'),
-    path.join(shared, 'config.json.example'),
+    path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'),
+    path.join(shared, 'templates', 'config.json.example'),
   );
   fs.copyFileSync(
-    path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'config.schema.json'),
-    path.join(shared, 'config.schema.json'),
+    path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'config.schema.json'),
+    path.join(shared, 'runtime', 'config.schema.json'),
+  );
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'),
+    path.join(shared, 'runtime', 'hub-layout.json'),
   );
   if (withConfig) {
     fs.copyFileSync(
-      path.join(shared, 'config.json.example'),
+      path.join(shared, 'templates', 'config.json.example'),
       path.join(shared, 'config.json'),
     );
   }

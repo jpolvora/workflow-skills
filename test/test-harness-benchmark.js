@@ -8,7 +8,7 @@ const { assert, path, repoRoot, temp, run, write } = utils;
 
 const cli = path.join(repoRoot, 'scripts/harness-benchmark/cli.cjs');
 const schemaPath = path.join(repoRoot, 'benchmarks/schema/report.schema.json');
-const { loadJsonSchema, validateNode } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/validate_json_schema.cjs'));
+const { loadJsonSchema, validateNode } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs'));
 const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
 const validateSpecScript = path.join(repoRoot, '.agents/skills/ws-spec-format/scripts/validate_spec.cjs');
 
@@ -197,7 +197,7 @@ assert.ok(collectReport.perAc.some((row) => row.score === 0 && row.evidence === 
 
 // V14: judge detects fraud when ledger file not in diff
 const { detectFrauds, mapVerdict } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/judge-checks.cjs'));
-const { resolveConsumerContext } = require(path.join(repoRoot, '.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs'));
+const { resolveConsumerContext } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs'));
 const judgeRoot = temp('hb-judge-');
 write(path.join(judgeRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
   verification: { backendTest: 'exit 0' },

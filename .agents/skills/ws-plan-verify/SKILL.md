@@ -1,7 +1,7 @@
 ---
 name: ws-plan-verify
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - plan-verify
@@ -18,7 +18,7 @@ invocation_names:
 > - **DO NOT hypothesize or guess file locations or test names in reasoning.** Immediately run tools (`grep_search`, `view_file`, test runners) to observe actual ground truth.
 > - Execute the mechanical 4-step verification flow directly without analytical prelude.
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Audit implementation deliverables against the specification and plan. 
 
@@ -48,7 +48,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: the resolved plan (and, in full mode, spec) path is known.
 
 2. **Evaluate**: Inspect code and tests using tools. Quick Score evaluates Completeness, Correctness & Style, and Testing. US Verification maps every plan feature and acceptance criterion to **Implemented**, **Not implemented**, or **Implemented differently**, each with file:line evidence. Also map spec **negative test** scenarios (`negativeScenarios` from Validation Notes / failing cases) to covering tests before advancing; missing negative coverage is a gap, not an implicit pass.
-   - Run **Stack Invariant Audit**: execute `node {skillsRoot}/ws-shared/scripts/scan_stack_invariants.cjs` against touched files and project framework invariant rules (`{sharedDir}/stacks/`). Flag anti-patterns (`.Result`, `.Wait()`, missing `[Authorize]`, unchecked `any`, floating Promises, unmanaged subscriptions).
+   - Run **Stack Invariant Audit**: execute `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against touched files and project framework invariant rules (`{sharedDir}/runtime/stacks/`). Flag anti-patterns (`.Result`, `.Wait()`, missing `[Authorize]`, unchecked `any`, floating Promises, unmanaged subscriptions).
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) against `git diff` ground truth. Record verdict (`VERIFIED`, `VERIFIED WITH CAVEATS`, `REFUTED`) and fraud findings in the report.
    - Done when: every planned feature/AC, spec negative scenario, and stack invariant audit has observed evidence.
 
@@ -66,7 +66,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
 5. **Handoff**: return the score and report path.
-   - Workflow: the orchestrator owns the gate after reading the report: score `>= defaults.minVerifyScore` (default 9) advances to Step 6 (optional `scoreAndRefine` second pass first when the flag is on — [`gates.md`](../ws-shared/gates.md) § Score & Refine); score below `defaults.minVerifyScore` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= defaults.minVerifyScore` (default 9) (max 3 rounds per visit, then Pause). Do not auto-approve below `defaults.minVerifyScore`.
+   - Workflow: the orchestrator owns the gate after reading the report: score `>= defaults.minVerifyScore` (default 9) advances to Step 6 (optional `scoreAndRefine` second pass first when the flag is on — [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine); score below `defaults.minVerifyScore` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= defaults.minVerifyScore` (default 9) (max 3 rounds per visit, then Pause). Do not auto-approve below `defaults.minVerifyScore`.
    - Standalone: apply the same `>= defaults.minVerifyScore` (default 9) / below-bar threshold; recommend `scoreAndRefine` until `>= defaults.minVerifyScore` (default 9) when below bar.
    - Done when: the caller has the score and report path.
 
@@ -76,5 +76,5 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
 - Link only observed semantic, file-line, test, alias, sabotage, and verdict evidence.
 - Derive the score through `ac_ledger.cjs`; never author or override it.
 - Write only the assigned verification report and return score plus findings.
-- After step finish, orch persists `{us-dir}/handoff/step-{NN}.json`.
+- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

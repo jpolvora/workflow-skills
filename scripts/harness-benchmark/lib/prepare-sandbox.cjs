@@ -52,9 +52,9 @@ function prepareSandbox(options = {}) {
     fs.mkdirSync(sandboxRoot, { recursive: true });
   }
 
-  const sandboxContext = require('../../../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs')
+  const sandboxContext = require('../../../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs')
     .resolveConsumerContext({ repoRoot: sandboxRoot });
-  const specsDir = require('../../../.agents/skills/ws-shared/scripts/resolve_consumer_root.cjs')
+  const specsDir = require('../../../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs')
     .resolveConfiguredPath(sandboxRoot, sandboxContext.config?.plans?.specsDir, '.agents/specs');
   fs.mkdirSync(specsDir, { recursive: true });
 

@@ -45,7 +45,7 @@ assert.match(faq, /ac-ledger\.json is required before advance/);
 assert.match(faq, /ac_ledger\.cjs init/);
 const testing = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-testing/SKILL.md'), 'utf8');
 assert.match(testing, /probe_test_surface\.cjs/);
-const setup = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/setup.md'), 'utf8');
+const setup = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/setup.md'), 'utf8');
 assert.match(setup, /index\.json/);
 assert.match(setup, /Missing `plan\.index\.json`/);
 assert.match(setup, /Missing `ac-ledger\.json`/);

@@ -15,7 +15,7 @@ Shipped skills in this harness are **agent- and IDE-neutral**. Core workflows de
 2. **Context Pointers Architecture (Zero Transcript Dumping):**
    - Communication between the orchestrator and subagents must be **sparse**.
    - The orchestrator does **not** dump entire conversation histories or transcripts into subagents.
-   - The orchestrator communicates primarily through **discrete file pointers** (`{us-dir}/step-00-{slug}.spec.md`, `{us-dir}/plan.index.json`, `{us-dir}/ac-ledger.json`, `{us-dir}/handoff/step-{NN}.json`).
+   - The orchestrator communicates primarily through **discrete artifact pointers** (`{us-dir}/step-00-{slug}.spec.md`, `{us-dir}/plan.index.json`, `{us-dir}/ac-ledger.json`) plus the prior entry in `{workflow-id}.state.json` under `state.handoffs`.
 3. **Orchestrator Immutability (with isolated-mode exception):** The orchestrator session stays on the active session model (`currentModel`) and never edits application product files directly, except when operating under Inline Isolated Execution where the session model temporarily adopts the step persona (see §3 Tier 3). All other file modifications are delegated to subagents.
 
 ---
@@ -62,7 +62,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 
 - **When:** both `subagentTool` and `backgroundTaskTool` are `none`, or resolved mode is `inline-isolated`.
 - **How:** The session model temporarily adopts the specific step persona (e.g. Coder for Step 4, Reviewer for Step 6) within a strict context boundary:
-  1. Load **only** the pointed artifacts (`{us-dir}/handoff/step-{NN-1}.json`, `plan.index.json`, `ac-ledger.json`, spec/plan of record).
+  1. Load **only** the pointed artifacts (`{workflow-id}.state.json` → `state.handoffs[String(N-1)]`, `plan.index.json`, `ac-ledger.json`, spec/plan of record).
   2. Execute the step actions (reading, modifying via native file tools, running configured verification).
   3. Emit the structured `step-output` block (`status`, `files_touched`, `notes`, `next_step_ready`).
   4. Call `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish --step {N} ...`.
@@ -122,7 +122,7 @@ CONTEXT POINTERS:
 - Context (optional): {resolvedContextPath}  # same helper with --context
 - Plan Index: {us-dir}/plan.index.json
 - AC Ledger: {us-dir}/ac-ledger.json
-- Prior Handoff: {us-dir}/handoff/step-{NN-1}.json
+- Prior Handoff: {workflow-id}.state.json → state.handoffs[String(N-1)]
 
 INSTRUCTIONS:
 1. Read the referenced context pointers. Do not request or expect full conversation history.

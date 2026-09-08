@@ -27,7 +27,7 @@ Detect **Install mode** and **Skills scan root** before routing audits (summary 
 - If root `AGENTS.md` is absent or product-owned: do **not** emit a correction-plan item **unless** effective `defaults.autoload` is `true` (see flag-gated bullet below). At most a one-line informational note suggesting a thin pointer when the flag is off.
 - Links to `ws-shared/config.json` are healthy when the file exists. Unconfigured seed placeholders → **informational** (`ws-configure-project`), not a correction-plan item.
 - Empty optional rule keys (e.g. `rules.seniorDeveloper: ""`) must **not** appear as numbered correction-plan items.
-- Missing `config.json` when `config.json.example` exists → **warning** (seed + ws-configure-project).
+- Missing `config.json` when `{sharedDir}/templates/config.json.example` exists → **warning** (seed + ws-configure-project).
 - Pipeline / orch / provider skills may be intentionally omitted from the promoted table when the hub marks them orch-only.
 - Sections titled **Extra package (optional)**: missing Extra skill paths are **intentional omission**. When Extra skills **are** on disk, they must appear in that section (else unrouted warning).
 - **External companion skills** (`skill-dependencies.json` → `externalSkills`): missing local bodies are **intentional omission** (not phantom/critical). Hybrid `{globalSkillsRoot}` presence is OK. Always-applied must not list those ids as mandatory.
@@ -39,7 +39,7 @@ Detect **Install mode** and **Skills scan root** before routing audits (summary 
 
 ## Path token expand algorithm
 
-Canonical contract: [`../ws-shared/tools.md`](../ws-shared/tools.md) § Path tokens.
+Canonical contract: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md) § Path tokens.
 
 1. If the cited string contains `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` / `{us-dir}`, substitute from the map (nested: expand `{sharedDir}` after `{skillsRoot}` if needed).
 2. Result is **repo-root-relative**. Check existence from **repo root**, not from the citing file’s directory.
@@ -230,7 +230,7 @@ export PYTHONIOENCODING=utf-8
 ```
 
 5. **Python heredoc string escapes (Windows / bash):** never write `replace('\', '/')` inside `python - <<'PY'` — the `\'` ends the string early → `SyntaxError: unterminated string literal`. Prefer `Path.as_posix()`, or write a temp `.py` file, or use `replace(chr(92), "/")` / `replace("\\", "/")` with a double-quoted Python string. Prefer compiling skill scripts with `python -m py_compile` over ad-hoc one-liners when validating syntax.
-6. **Load path token map** (§ Path token map) from `{sharedDir}/config.json` when present (else `config.json.example` defaults) + [`tools.md`](../ws-shared/tools.md) § Path tokens. Record the resolved map in the Phase 0 notes / report. **Do not** run Phase 1/2 path existence or relative rewrites until this map is loaded.
+6. **Load path token map** (§ Path token map) from `{sharedDir}/config.json` when present (else `{sharedDir}/templates/config.json.example` defaults) + [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens. Record the resolved map in the Phase 0 notes / report. **Do not** run Phase 1/2 path existence or relative rewrites until this map is loaded.
 
 ### Phase 1 — Reference extraction
 
@@ -278,7 +278,7 @@ For each internal reference (post-expansion when applicable):
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
 | Bare relative link resolution | Link `docs/faq.md` inside a skill directory resolved from repo root (`docs/faq.md`) instead of containing folder (`.agents/skills/.../docs/faq.md`) → **warning**; resolution must use containing directory |
 | Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-multi-spec`, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. **Family rule (fail closed):** any packaged skill folder or `skill-dependencies.json` id matching `^ws-(?!spec-)[a-z0-9-]*spec` (token `spec` not immediately after `ws-`) or equal to a retired host-first provider id (`ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`) is **critical** everywhere (new skills cannot reintroduce `ws-*-spec`). Executable mirror: `ws-shared/scripts/retired_artifacts.cjs` `STALE_LIVE_REFERENCE_PATTERNS` (`ws-*-spec family violation`). Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; `FEATURES.md` version-history rows for shipped releases; FAQ/docs with an explicit LEGACY banner only |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-multi-spec`, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. **Family rule (fail closed):** any packaged skill folder or `skill-dependencies.json` id matching `^ws-(?!spec-)[a-z0-9-]*spec` (token `spec` not immediately after `ws-`) or equal to a retired host-first provider id (`ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`) is **critical** everywhere (new skills cannot reintroduce `ws-*-spec`). Executable mirror: `ws-shared/runtime/scripts/retired_artifacts.cjs` `STALE_LIVE_REFERENCE_PATTERNS` (`ws-*-spec family violation`). Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; `FEATURES.md` version-history rows for shipped releases; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / `{sharedDir}/AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and `{sharedDir}/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
@@ -286,7 +286,7 @@ For each internal reference (post-expansion when applicable):
 | Hybrid skill body | Hub Markdown `../ws-<id>/SKILL.md` from `{sharedDir}`: existence is **OK** when `SKILL.md` is under consumer `{skillsRoot}` **or** `{globalSkillsRoot}` (do not flag phantom solely because the sibling folder is missing locally) |
 | Hybrid harness resolution | Consumer hybrid tree (skills under `{globalSkillsRoot}`, project-local `ws-shared/` with consumer data): configured `rules.harness` must resolve — local `{sharedDir}/AGENTS.md` present (full hub or thin global pointer seeded by installer `update`), **or** `{globalSkillsRoot}/ws-shared/AGENTS.md` present as the documented fallback (`config-resolution.md` § Harness entrypoint fallback). Missing local file with no global hub → **warning** (run installer `update` to seed the pointer) |
 | Upstream-only package docs | Hub maintainer checklist citing package-root `FEATURES.md` — missing in a consumer clone is **intentional omission** (not a broken hub link) |
-| Consumer `config.json` | Missing while `config.json.example` exists → **warning** (seed/copy); placeholders after seed → **suggestion** (`ws-configure-project`), not a broken-link warning |
+| Consumer `config.json` | Missing while `{sharedDir}/templates/config.json.example` exists → **warning** (seed/copy); placeholders after seed → **suggestion** (`ws-configure-project`), not a broken-link warning |
 | `autoload.md` Always-applied paths | Absolute path → **critical**; non-portable path form → **warning**; skill id missing under `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (install or remove row). Helper: `configure_autoload.py --check` |
 | Root `AGENTS.md` + `autoload.md` | When root references `autoload.md`, Always-applied vs shared-hub on-demand mismatch is **intentional override** (not drift). Missing root remains **OK** when `defaults.autoload` effective false |
 | `defaults.autoload` + root `AGENTS.md` | When effective `defaults.autoload` is **true**: missing root or root without `autoload.md` Always-applied instruction → **critical** (suggest `ws-configure-project --section autoload`). When false/omitted/missing config: missing root **OK**. Helper: `configure_autoload.py --check` |
@@ -320,7 +320,7 @@ rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|0
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' \
   --glob '!**/MEMORY.md' --glob '!**/memory/**' \
   --glob '!**/ws-check-harness/PHASES.md' \
-  --glob '!**/ws-shared/scripts/retired_artifacts.cjs' \
+  --glob '!**/ws-shared/runtime/scripts/retired_artifacts.cjs' \
   --glob '!**/ws-doctor/scripts/doctor.js'
 # Install mode consumer (guard missing hubs / skills root):
 rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|08-fix-pr|09-goal-fix-pr|10-update-plan-implementation|ws-integration-validation|session_lease|sessionLeases|session-lease\.schema|ws-patterns|ws-audit|enableAuditing' \
@@ -328,7 +328,7 @@ rg -n '00-write-spec|08-ship-pr|09-fix-pr|07-integration-validation|11-ship-pr|0
   --glob '!**/CHANGELOG.md' --glob '!**/docs/faq.md' \
   --glob '!**/MEMORY.md' --glob '!**/memory/**' \
   --glob '!**/ws-check-harness/PHASES.md' \
-  --glob '!**/ws-shared/scripts/retired_artifacts.cjs' \
+  --glob '!**/ws-shared/runtime/scripts/retired_artifacts.cjs' \
   --glob '!**/ws-doctor/scripts/doctor.js' 2>/dev/null || true
 ```
 
@@ -357,7 +357,7 @@ Check:
 5. **Dead ends** — "see X" instruction where X does not exist or does not route forward.
 6. **Orchestrator dependency closure** (when upstream `bin/skill-dependencies.json` present) — for each orchestrator (e.g. `ws-spec-to-pr`, `ws-spec-to-pr-lite`), extract every dispatched skill id (step-table `ws-*` ids, providers from the shared entry matrix, fix-pr loop skills) and assert each appears in `dependencies["<orch>"]`, directly or transitively via another listed dep. Missing id → **critical** (selective install of that orchestrator yields a broken workflow).
 7. **Skill integrity manifest** (upstream Install mode only) — when `bin/skill-integrity.json` is expected, confirm it is present and `node bin/generate-skill-integrity.js --check` (or `npm run verify-integrity`) exits 0 (committed digests match hashed package SoT / installer inputs and `package.json` version). Stale/missing → **critical** for release hygiene. **Consumer Install mode:** skip / do not require `bin/skill-integrity.json`. **Correction (do not invent digests):** `npm run generate-integrity`, then re-run `--check`, and commit `bin/skill-integrity.json` with the skill/package change (root `AGENTS.md` § Upstream skill integrity regenerate). Never tell consumers to use `--force-integrity` as the fix for upstream drift.
-8. **SCM provider intent parity** (when both `ws-spec-provider-github` and `ws-spec-provider-azure-devops` exist) — required intents from [`../ws-shared/scm-provider-contract.md`](../ws-shared/scm-provider-contract.md) must appear in both `SKILL.md` intent tables and both `INTENTS.md` headings. An extra intent on one SCM without the other (and without an allowlist row) → **critical**. Mechanical check: `node test/test-provider-parity.js`.
+8. **SCM provider intent parity** (when both `ws-spec-provider-github` and `ws-spec-provider-azure-devops` exist) — required intents from [`../ws-shared/runtime/scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md) must appear in both `SKILL.md` intent tables and both `INTENTS.md` headings. An extra intent on one SCM without the other (and without an allowlist row) → **critical**. Mechanical check: `node test/test-provider-parity.js`.
 
 ### Phase 4 — Skills/rules not routed in the resolved hub
 
@@ -471,8 +471,8 @@ node {skillsRoot}/ws-check-harness/scripts/check_pipeline_handoff.cjs --json --r
 
 - `check_duplicates.cjs`: exit 1 when any normative block (≥ 6 lines) repeats across tracked files outside the allowlist.
 - `measure_harness.cjs`: exit 1 when `fixedPreambleBytes > 18000`, harness reduction is under 45%, artifact-read reduction is under 40%, or `defaults.gateGranularity` is `phase` with more than 5 blocking gates. Resolve each measured skill via `resolveSkillMdPath` (local `.agents/skills/<id>/SKILL.md`, else `{globalSkillsRoot}/<id>/SKILL.md`). Do **not** use wholesale `context.skillsRoot` when a consumer hub folder exists but workflow skills live only globally.
-- `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `ws-shared/scripts/extract_frontmatter_field.cjs`.
-- `check_pipeline_handoff.cjs`: exit 1 when any of the eleven pipeline SKILL.md files omits the substring `handoff/step-`.
+- `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `ws-shared/runtime/scripts/extract_frontmatter_field.cjs`.
+- `check_pipeline_handoff.cjs`: exit 1 when any of the eleven pipeline SKILL.md files omits the substring `state.handoffs`.
 - Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
 
 On `--json`, keep the stdout payloads in the scan evidence. Skip neither script in upstream Install mode.

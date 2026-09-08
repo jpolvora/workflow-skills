@@ -7,12 +7,12 @@ const {
   resolveConsumerContext,
   resolveConfiguredPath,
   toRepoRelative,
-} = require('../../ws-shared/scripts/resolve_consumer_root.cjs');
+} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 const {
   parseFrontmatter,
   upsertArtifactFrontmatter,
   artifactStampFields,
-} = require('../../ws-shared/scripts/workflow_state.cjs');
+} = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 function argsOf(argv) {
   const args = { source: 'local', force: false, json: false };

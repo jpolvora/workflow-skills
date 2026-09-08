@@ -1,49 +1,135 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { fileURLToPath } from 'url';
 
 /**
  * Shared installer include/skip rules — used by cli.js copy paths and skill-integrity hashing.
  * Keep copy and hash enumeration in lockstep; do not diverge these sets.
  */
 
-/** Hub files copied into consumer ws-shared/ (upstream templates/docs — not consumer data). */
-export const HUB_WHITELIST = [
-  'config.json.example',
-  'config.schema.json',
-  'tools.md',
-  'STACK.md.example',
-  'setup.md',
-  'gates.md',
-  'config-resolution.md',
-  'host-dispatch.md',
-  'scm-provider-contract.md',
-  'AGENTS.md',
-  'CATALOG.md',
-  'CROSS-PLATFORM.md',
-  'autoload.md',
-  'ac-ledger.schema.json',
-  'plan-index.schema.json',
-  'plans-index.schema.json',
-  'run.schema.json',
-  'step-artifact.schema.json',
-  'telemetry.schema.json',
-  'workflow-state.schema.json',
-  'evals.schema.json',
-  'schemas',
-  // npm cannot pack a file named .gitignore; ship hub.gitignore → install as .gitignore
-  'hub.gitignore',
-  'MEMORY.md.template',
-  'CHANGELOG.md.template',
-  'skill-dependencies.json',
-  'scripts',
-  'stacks',
+const INSTALL_RULES_DIR = path.dirname(fileURLToPath(import.meta.url));
+const SOURCE_HUB_DIR = path.join(INSTALL_RULES_DIR, '..', '.agents', 'skills', 'ws-shared');
+const HUB_LAYOUT_PATH = path.join(SOURCE_HUB_DIR, 'runtime', 'hub-layout.json');
+
+function readHubLayout() {
+  let layout;
+  try {
+    layout = JSON.parse(fs.readFileSync(HUB_LAYOUT_PATH, 'utf8'));
+  } catch (err) {
+    throw new Error(`Unable to read ws-shared hub layout manifest: ${err.message}`);
+  }
+  if (!layout || layout.version !== 1 || !layout.categories) {
+    throw new Error('Invalid ws-shared hub layout manifest: expected version 1 categories');
+  }
+  return layout;
+}
+
+export const HUB_LAYOUT = readHubLayout();
+export const HUB_LAYOUT_MANIFEST = 'runtime/hub-layout.json';
+
+const HUB_LAYOUT_CATEGORIES = [
+  'runtime',
+  'templates',
+  'consumerOwned',
+  'generatedLocal',
+  'installerMetadata',
 ];
 
-/** Dest name when whitelist source name differs (pack vs consumer layout). */
-export const HUB_DEST_ALIASES = {
-  'hub.gitignore': '.gitignore',
-};
+function normalizeHubPath(value) {
+  return String(value).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+}
+
+function layoutCategoryMatches(layout, relativePath) {
+  const normalized = normalizeHubPath(relativePath);
+  const matches = [];
+  for (const [name, category] of Object.entries(layout.categories || {})) {
+    for (const root of category.roots || []) {
+      const normalizedRoot = normalizeHubPath(root);
+      if (normalized === normalizedRoot || normalized.startsWith(`${normalizedRoot}/`)) {
+        matches.push(name);
+      }
+    }
+    for (const entry of category.paths || []) {
+      const normalizedEntry = normalizeHubPath(entry);
+      const isDirectory = !path.extname(normalizedEntry);
+      if (
+        normalized === normalizedEntry ||
+        (isDirectory && normalized.startsWith(`${normalizedEntry}/`))
+      ) {
+        matches.push(name);
+      }
+    }
+  }
+  for (const [sourceName, destinationName] of Object.entries(
+    Object.values(layout.categories || {}).reduce(
+      (aliases, category) => ({ ...aliases, ...(category.destinationAliases || {}) }),
+      {},
+    ),
+  )) {
+    if (normalized === normalizeHubPath(destinationName)) {
+      const sourceMatches = layoutCategoryMatches(layout, sourceName);
+      matches.push(...sourceMatches);
+    }
+  }
+  return [...new Set(matches)];
+}
+
+export function validateHubLayout(sharedRoot = SOURCE_HUB_DIR, layout = HUB_LAYOUT) {
+  const errors = [];
+  if (layout.version !== 1 || !layout.categories) {
+    errors.push('manifest must declare version 1 and categories');
+    return { ok: false, errors, unclassified: [], multiplyClassified: [] };
+  }
+  for (const name of HUB_LAYOUT_CATEGORIES) {
+    if (!layout.categories[name]) errors.push(`missing category: ${name}`);
+  }
+
+  const unclassified = [];
+  const multiplyClassified = [];
+  const walk = (directory, relativeBase = '') => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const relative = relativeBase ? path.join(relativeBase, entry.name) : entry.name;
+      const matches = layoutCategoryMatches(layout, relative);
+      if (matches.length === 0) unclassified.push(normalizeHubPath(relative));
+      if (matches.length > 1) {
+        multiplyClassified.push({ path: normalizeHubPath(relative), categories: matches });
+      }
+      if (entry.isDirectory()) walk(path.join(directory, entry.name), relative);
+    }
+  };
+  if (fs.existsSync(sharedRoot)) walk(sharedRoot);
+  if (unclassified.length) errors.push(`unclassified entries: ${unclassified.join(', ')}`);
+  if (multiplyClassified.length) {
+    errors.push(
+      `multiply classified entries: ${multiplyClassified
+        .map((entry) => `${entry.path} (${entry.categories.join(', ')})`)
+        .join(', ')}`,
+    );
+  }
+  return { ok: errors.length === 0, errors, unclassified, multiplyClassified };
+}
+
+const HUB_LAYOUT_VALIDATION = validateHubLayout();
+if (!HUB_LAYOUT_VALIDATION.ok) {
+  throw new Error(`Invalid ws-shared hub layout: ${HUB_LAYOUT_VALIDATION.errors.join('; ')}`);
+}
+
+/** Hub roots copied into consumer ws-shared/ from the layout manifest. */
+export const HUB_WHITELIST = Object.values(HUB_LAYOUT.categories)
+  .filter((category) => category.copy === true && Array.isArray(category.roots))
+  .flatMap((category) => category.roots)
+  .filter((value, index, values) => values.indexOf(value) === index);
+
+/** Dest paths for nested managed files whose installed name differs. */
+export const HUB_DEST_ALIASES = Object.fromEntries(
+  Object.values(HUB_LAYOUT.categories)
+    .flatMap((category) => Object.entries(category.destinationAliases || {})),
+);
+
+function categoryPaths(categoryName) {
+  return new Set(HUB_LAYOUT.categories[categoryName]?.paths || []);
+}
 
 export const HUB_DIR = 'ws-shared';
 export const INSTALLED_SKILLS_FILE = 'installed-skills.json';
@@ -53,19 +139,29 @@ export const SKILL_INTEGRITY_LOCAL_FILE = 'skill-integrity-local.json';
  * Consumer-owned artifacts under ws-shared/ — never copy upstream content into consumers.
  * Fresh install seeds empty templates; existing consumer files are preserved.
  */
-export const CONSUMER_OWNED_HUB_FILES = new Set([
-  'config.json',
-  'MEMORY.md',
-  'STACK.md',
-  'CHANGELOG.md',
-  'backend.md',
-  'frontend.md',
-  INSTALLED_SKILLS_FILE,
-  SKILL_INTEGRITY_LOCAL_FILE,
-  'host-capabilities.json',
-]);
+export const CONSUMER_OWNED_HUB_FILES = new Set(
+  [...categoryPaths('consumerOwned'), ...categoryPaths('generatedLocal'), ...categoryPaths('installerMetadata')]
+    .filter((entry) => !entry.includes('/')),
+);
 
-export const CONSUMER_OWNED_HUB_DIRS = new Set(['memory']);
+export const CONSUMER_OWNED_HUB_DIRS = new Set(
+  [...categoryPaths('consumerOwned'), ...categoryPaths('generatedLocal'), ...categoryPaths('installerMetadata')]
+    .filter((entry) => !path.extname(entry)),
+);
+
+export const GENERATED_LOCAL_HUB_PATHS = categoryPaths('generatedLocal');
+export const INSTALLER_METADATA_HUB_PATHS = categoryPaths('installerMetadata');
+
+export function hubLayoutPathCategory(relativePath) {
+  const normalized = String(relativePath).replace(/\\/g, '/').replace(/^\/+|\/+$/g, '');
+  for (const [name, category] of Object.entries(HUB_LAYOUT.categories)) {
+    for (const root of category.roots || []) {
+      if (normalized === root || normalized.startsWith(`${root}/`)) return name;
+    }
+    if ((category.paths || []).includes(normalized)) return name;
+  }
+  return null;
+}
 
 /** Pack / VCS metadata / bytecode / ephemeral runs — never install into consumer skill trees. */
 export const SKIP_INSTALL_FILES = new Set(['.npmignore', '.gitignore', '__pycache__', 'runs']);
@@ -109,7 +205,7 @@ export function isWorkflowSkillsSourceTree(dir) {
   }
   return (
     fs.existsSync(path.join(root, 'bin', 'skill-dependencies.json')) ||
-    fs.existsSync(path.join(root, '.agents', 'skills', 'ws-shared', 'skill-dependencies.json'))
+    fs.existsSync(path.join(root, '.agents', 'skills', 'ws-shared', 'runtime', 'skill-dependencies.json'))
   );
 }
 

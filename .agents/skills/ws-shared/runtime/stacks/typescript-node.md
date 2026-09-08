@@ -40,6 +40,6 @@ Non-negotiable architectural, security, concurrency, and lifecycle invariant rul
 - [ ] Verify all Promise invocations are awaited or handled.
 - [ ] Verify schema validation at external boundaries.
 - [ ] Verify path containment on filesystem and subprocess invocations.
-- [ ] Run invariant scan: `node .agents/skills/ws-shared/scripts/scan_stack_invariants.cjs --stack typescript-node`
+- [ ] Run invariant scan: `node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs --stack typescript-node`
 - [ ] Run lint & typecheck: `npm run lint && npm run build`
 - [ ] Run test suite: `npm test`

@@ -23,7 +23,7 @@ RBAC permissions, tenant data leakage isolation checks, dynamic i18n strings.
 Map each AC (AC1, AC2, ...) to specific test cases and method names.
 
 ## 6. Stack & Security Invariants Verification Plan
-Reiterate strict architectural invariants from config.json.invariants and project stack rule pack ({sharedDir}/stacks/{stack}.md). Explicitly identify touched framework boundaries:
+Reiterate strict architectural invariants from config.json.invariants and project stack rule pack ({sharedDir}/runtime/stacks/{stack}.md). Explicitly identify touched framework boundaries:
 - Authorization & endpoint protection (attributes, policies, route guards)
 - Concurrency & async safety (zero sync-over-async, cancellation propagation, floating promises)
 - Input validation & DTO boundary (schemas, attributes, injection defenses)

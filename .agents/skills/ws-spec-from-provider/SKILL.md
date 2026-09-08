@@ -1,7 +1,7 @@
 ---
 name: ws-spec-from-provider
 description: Bulk-import open GitHub issues or ADO User Stories into local specs (spec-write + register). Trigger when importing tracker backlog to {specsDir} for ws-spec-list / ws-spec-multi.
-version: 0.4.3
+version: 0.4.4
 disable-model-invocation: true
 invocation_names:
   - spec-from-provider
@@ -12,11 +12,11 @@ invocation_names:
 
 > When this skill is loaded, output "ws-spec-from-provider loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/config-resolution.md) § Entry check.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}` specs + full `register_local_spec` (`step-00` under `{plansDir}`). Downstream: [`ws-spec-list`](../ws-spec-list/SKILL.md) / [`ws-spec-multi`](../ws-spec-multi/SKILL.md).
 
-**Specs family:** Role = batch tracker → local specs. Single-id fetch stays on providers. Router: [`../ws-shared/autoload.md`](../ws-shared/autoload.md).
+**Specs family:** Role = batch tracker → local specs. Single-id fetch stays on providers. Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
 ## Invocation
 

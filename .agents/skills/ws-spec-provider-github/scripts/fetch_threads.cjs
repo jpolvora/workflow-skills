@@ -1,6 +1,6 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
-const { fetchRetry } = require('../../ws-shared/scripts/http_retry.cjs');
+const { fetchRetry } = require('../../ws-shared/runtime/scripts/http_retry.cjs');
 
 function loadDotEnv() {
   if (!fs.existsSync('.env')) return;

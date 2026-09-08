@@ -1,6 +1,6 @@
 # Spec-to-PR — Diagrams (FSM 0–9)
 
-> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`; folder == `name:`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../ws-shared/gates.md), [`config-resolution.md`](../ws-shared/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
+> **Architecture:** Steps 0–9. Pipeline skills live under `.agents/skills/ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`; folder == `name:`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (lite steps 0–5). Canonical artifacts: [`ARTIFACTS.md`](ARTIFACTS.md). Gates/config: [`gates.md`](../ws-shared/runtime/gates.md), [`config-resolution.md`](../ws-shared/runtime/config-resolution.md). Agent contract: [`SKILL.md`](SKILL.md).
 
 ---
 
@@ -90,13 +90,13 @@ flowchart LR
   Context --> Disp[dispatch-agent / inline]
   Disp --> Ingest[Validate step-output + AC evidence]
   Ingest --> State[Atomic Node state update]
-  State --> Derived[run.json + run.md + plans index + telemetry]
+  State --> Derived[state.json + state.md + plans index + telemetry]
   Derived --> Gate
 ```
 
 Step 5 derives its score from `ac-ledger.json`. Review rounds remain immutable, and optional parallel verify/review uses one pinned product commit before deterministic finding merge.
 
-Universal controls ([`gates.md`](../ws-shared/gates.md)): **Next**, **Previous**, **Replay**, **Refine→Replay**, **Commit**, **Undo**.
+Universal controls ([`gates.md`](../ws-shared/runtime/gates.md)): **Next**, **Previous**, **Replay**, **Refine→Replay**, **Commit**, **Undo**.
 
 ---
 

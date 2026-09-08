@@ -76,7 +76,7 @@ def resolve_skills_dir(repo_root: Path) -> Path:
 
 
 SKILLS_DIR = resolve_skills_dir(REPO_ROOT)
-SHARED_DEPS_PATH = SKILLS_DIR / "ws-shared" / "skill-dependencies.json"
+SHARED_DEPS_PATH = SKILLS_DIR / "ws-shared" / "runtime" / "skill-dependencies.json"
 BIN_DEPS_PATH = REPO_ROOT / "bin" / "skill-dependencies.json"
 
 
@@ -151,7 +151,7 @@ class WorkflowChecker:
                 if shared_wf_skills != bin_wf_skills:
                     diff_missing = bin_wf_skills - shared_wf_skills
                     diff_extra = shared_wf_skills - bin_wf_skills
-                    msg = "Package skills mismatch between bin/skill-dependencies.json and ws-shared/skill-dependencies.json."
+                    msg = "Package skills mismatch between bin/skill-dependencies.json and ws-shared/runtime/skill-dependencies.json."
                     if diff_missing:
                         msg += f" Missing in ws-shared: {sorted(diff_missing)}."
                     if diff_extra:
@@ -160,9 +160,9 @@ class WorkflowChecker:
                         Issue(
                             "CRITICAL",
                             "Dependency Graph Sync",
-                            "ws-shared/skill-dependencies.json",
+                            "ws-shared/runtime/skill-dependencies.json",
                             msg,
-                            "Sync .agents/skills/ws-shared/skill-dependencies.json with bin/skill-dependencies.json.",
+                            "Sync .agents/skills/ws-shared/runtime/skill-dependencies.json with bin/skill-dependencies.json.",
                         )
                     )
             except Exception:
@@ -462,7 +462,7 @@ class WorkflowChecker:
     def check_state_isolation_and_config(self) -> None:
         """Verify state update files and provider scripts target shared/config.json and serialize workflowType."""
         std_update = SKILLS_DIR / "ws-spec-to-pr" / "scripts" / "update_state.cjs"
-        shared_state = SKILLS_DIR / "ws-shared" / "scripts" / "workflow_state.cjs"
+        shared_state = SKILLS_DIR / "ws-shared" / "runtime" / "scripts" / "workflow_state.cjs"
         if std_update.exists():
             wrapper = std_update.read_text(encoding="utf-8", errors="replace")
             sot = shared_state.read_text(encoding="utf-8", errors="replace") if shared_state.exists() else ""
@@ -519,8 +519,8 @@ class WorkflowChecker:
         protocols = _read("ws-spec-to-pr/PROTOCOLS.md")
         dispatch = _read("ws-spec-to-pr/STEP-DISPATCH.md")
         lite = _read("ws-spec-to-pr-lite/SKILL.md")
-        tools = _read("ws-shared/tools.md")
-        gates = _read("ws-shared/gates.md")
+        tools = _read("ws-shared/runtime/tools.md")
+        gates = _read("ws-shared/runtime/gates.md")
         review = _read("ws-code-review/SKILL.md")
         std_text = protocols + "\n" + dispatch
 
@@ -546,7 +546,7 @@ class WorkflowChecker:
             self.add_issue(
                 "CRITICAL",
                 "G2-code Contract",
-                "ws-shared/tools.md",
+                "ws-shared/runtime/tools.md",
                 "commit-code still uses directory-wide git add src/ web/ tests/.",
                 "Stage explicit workflow files_touched paths only (never git add src/ web/ tests/).",
             )
@@ -555,14 +555,14 @@ class WorkflowChecker:
             self.add_issue(
                 "CRITICAL",
                 "G2-code Contract",
-                "ws-shared/gates.md",
+                "ws-shared/runtime/gates.md",
                 "gates.md auto-gate table is missing Post-verify G2-code / Post-review-fix G2-code save points.",
                 "Add auto-gate rows for Post-verify G2-code and Post-review-fix G2-code.",
             )
 
         leftover_files = {
-            "ws-shared/tools.md": tools,
-            "ws-shared/gates.md": gates,
+            "ws-shared/runtime/tools.md": tools,
+            "ws-shared/runtime/gates.md": gates,
             "ws-spec-to-pr/PROTOCOLS.md": protocols,
             "ws-spec-to-pr/STEP-DISPATCH.md": dispatch,
             "ws-spec-to-pr-lite/SKILL.md": lite,
