@@ -1,6 +1,6 @@
 ---
 name: ws-spec-organizer
-version: 0.4.4
+version: 0.4.5
 description: Spec-of-record path resolution and chronological NNNN- spec organizer.
 disable-model-invocation: true
 invocation_names:

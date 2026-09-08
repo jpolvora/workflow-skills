@@ -10,6 +10,7 @@ import {
   HUB_WHITELIST,
   HUB_DEST_ALIASES,
   HUB_LAYOUT,
+  isHubBackupArtifact,
   INSTALLED_SKILLS_FILE,
   SKILL_INTEGRITY_LOCAL_FILE,
   CONSUMER_OWNED_HUB_FILES,
@@ -709,6 +710,11 @@ function sameManagedEntry(source, destination) {
   return fs.readFileSync(source).equals(fs.readFileSync(destination));
 }
 
+/** Case-insensitive dedup key for legacy hub paths (Windows stack.md.example === STACK.md.example). */
+function legacyHubSourceKey(filePath) {
+  return path.resolve(filePath).toLowerCase();
+}
+
 function isGeneratedHubEntrypoint(filePath) {
   if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) return false;
   const content = fs.readFileSync(filePath, 'utf8');
@@ -730,6 +736,12 @@ function migrateLegacyFlatHub(destShared) {
       console.log(`    Removed obsolete ws-shared/${retiredName}`);
     }
   }
+  for (const name of fs.readdirSync(destShared)) {
+    if (!isHubBackupArtifact(name)) continue;
+    const artifactPath = path.join(destShared, name);
+    fs.rmSync(artifactPath, { recursive: true, force: true });
+    console.log(`    Removed ws-shared backup artifact: ${name}`);
+  }
   const allowedRootNames = new Set([
     'runtime',
     'templates',
@@ -749,6 +761,7 @@ function migrateLegacyFlatHub(destShared) {
   }
 
   const moves = [];
+  const queuedSources = new Set();
   for (const [legacyName, canonicalName] of Object.entries(legacyPaths)) {
     const source = path.join(destShared, legacyName);
     const destination = path.join(destShared, canonicalName);
@@ -760,6 +773,9 @@ function migrateLegacyFlatHub(destShared) {
     // runtime copy is installed separately and must not replace local policy.
     if (legacyName === 'autoload.md') continue;
     if (path.resolve(source) === path.resolve(destination)) continue;
+    const sourceKey = legacyHubSourceKey(source);
+    if (queuedSources.has(sourceKey)) continue;
+    queuedSources.add(sourceKey);
     if (fs.existsSync(destination)) {
       if (!sameManagedEntry(source, destination)) {
         throw new Error(
@@ -773,6 +789,7 @@ function migrateLegacyFlatHub(destShared) {
   }
 
   for (const move of moves) {
+    if (!fs.existsSync(move.source)) continue;
     if (move.removeOnly) {
       fs.rmSync(move.source, { recursive: true, force: true });
       continue;
