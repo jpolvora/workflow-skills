@@ -51,6 +51,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Maintain the standalone fallback retired-skill list as a subset of the canonical registry or test only the runtime-backed path.
 - **INSTEAD DO**: Mirror every canonical retired skill ID in the fallback and exercise all renamed IDs through a fixture that omits the shared runtime helper.
 
+### [2026-09-08] Autoload writers must use the selected global runtime
+- **Layer**: `Tooling`
+- **Module**: `ws-configure-project` autoload and root-pointer generation`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.py;test/test-autoload-configure.js`
+- **Scenario / Context**: Global-hybrid consumers can keep skill bodies and the dependency graph under the global hub while project-local `ws-shared/` contains only consumer data. Autoload writers and checks must use that selected global runtime.
+- **DO NOT**: Read `externalSkills` only from the local graph or generate `AGENTS.md` that points to a local hub file which was never materialized.
+- **INSTEAD DO**: Resolve the selected local/global runtime for every graph lookup and create a thin project-local hub pointer before emitting a root pointer; cover a minimal global-only fixture.
+
 ### [2026-09-07] Do not vendor spec-memo runtime skills into this package
 - **Scenario / Context**: Consumer ws-check-harness reported phantom routes for ws-memo / ws-session-tracking after a workflows install. Those ids are owned by spec-memo, not this SoT.
 - **DO NOT**: Add them to packages.workflows or Extra, add Layer rows with `.agents/skills/ws-memo/SKILL.md` literals, or list them in Always-applied as mandatory.

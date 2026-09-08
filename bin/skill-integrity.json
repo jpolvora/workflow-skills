@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "2694bf310b455fcbbc6e8da76e747081206fe5dbb21893bbb4f2e818a7019295",
+  "fullPackageDigest": "5aeef38ce1d41c8fb505178fee23835515f3eb3151ef4ccbcf578b0dfd5ee259",
   "hub": {
     "files": {
       ".gitignore": "95aca4a4bae6399996a76999fb0e2151b635070558d56f55789ec40da30b6876",
@@ -135,11 +135,11 @@
         "evals/evals.json": "208c267e350a5896a2033c0a4d2045b33c1842dff770bff9781e76b65831f4fe",
         "INTERVIEW.md": "6304374ca335b88acfb3d2dd85e2b5a7d5ca04e7d8966663a91729268208b049",
         "scripts/auto_configure.cjs": "96d3aa4ac3a67df9616817ca01a72d5630dbeaf779cb904f153b9d9e9330325b",
-        "scripts/configure_autoload.py": "b6473760e0351d2695a83c6d6dcf40f709b1ea13ca9488b435dd4b0fb381659b",
+        "scripts/configure_autoload.py": "73ba2298e4da79afcfc6db0ed1154937292b3374172b82ee49147b9bb076c0c8",
         "scripts/stack_fingerprint.cjs": "49dc0a8ed8f018871e30152d2d8ff2bc41cfa738b16ee22c70b4361f93f58d33",
         "SKILL.md": "84e3b7fc0be2b2e012678fba628fae83754ff8e367af58a221697c444ef660e6"
       },
-      "skillDigest": "4e765f2c1b59dba66d1a1238066c0376251fb0c4674cf80246874f2807ab9abd"
+      "skillDigest": "b2c88da83c2b2f899ac6270c5d6851695072e119aeb0973f1f6d9ab612814d8e"
     },
     "ws-doctor": {
       "files": {

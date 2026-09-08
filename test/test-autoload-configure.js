@@ -789,6 +789,71 @@ function seedConfigExample(root) {
   );
 }
 
+{
+  // Global-only hybrid: use the selected global dependency graph and create the
+  // local hub pointer referenced by generated root AGENTS.md.
+  const root = mkTmp('ws-autoload-global-minimal-');
+  const globalRoot = mkTmp('ws-autoload-global-minimal-skills-');
+  const globalRuntime = path.join(globalRoot, 'ws-shared', 'runtime');
+  fs.mkdirSync(globalRuntime, { recursive: true });
+  const runtimeSource = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime');
+  const sourceAutoload = fs.readFileSync(path.join(runtimeSource, 'autoload.md'), 'utf8');
+  const poisonedAutoload = sourceAutoload.replace(
+    /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)/,
+    '$1| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |\n',
+  );
+  fs.writeFileSync(path.join(globalRuntime, 'autoload.md'), poisonedAutoload, 'utf8');
+  fs.copyFileSync(path.join(runtimeSource, 'AGENTS.md'), path.join(globalRuntime, 'AGENTS.md'));
+  fs.writeFileSync(
+    path.join(globalRuntime, 'skill-dependencies.json'),
+    JSON.stringify({ externalSkills: ['ws-memo'] }) + '\n',
+    'utf8',
+  );
+  for (const id of [
+    'ws-senior-developer',
+    'ws-self-learning',
+    'ws-changelog',
+    'ws-fable-method',
+    'ws-tdah',
+    'ws-megabrain',
+  ]) {
+    const skillDir = path.join(globalRoot, id);
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.writeFileSync(path.join(skillDir, 'SKILL.md'), `# ${id}\n`, 'utf8');
+  }
+  const result = runPy([
+    '--repo-root',
+    root,
+    '--global-skills-root',
+    globalRoot,
+    '--write-autoload',
+    '--write-root-agents',
+    '--check',
+    '--json',
+  ]);
+  const data = parseJsonOut(result);
+  if (data) {
+    const autoloadPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+    const rootAgentsPath = path.join(root, 'AGENTS.md');
+    const hubPointerPath = path.join(root, '.agents/skills/ws-shared/AGENTS.md');
+    const autoloadText = fs.readFileSync(autoloadPath, 'utf8');
+    const hubPointer = fs.readFileSync(hubPointerPath, 'utf8');
+    const alwaysTableStart = autoloadText.indexOf('| Skill | Path | Trigger |');
+    const alwaysTableEnd = autoloadText.indexOf('## External companion skills', alwaysTableStart);
+    const alwaysTable = autoloadText.slice(alwaysTableStart, alwaysTableEnd);
+    assert(result.status === 0, 'global-only minimal setup exits 0');
+    assert(!alwaysTable.includes('| `ws-memo` |'), 'global external companion row is dropped');
+    assert(fs.existsSync(rootAgentsPath), 'global-only setup writes root AGENTS.md');
+    assert(fs.existsSync(hubPointerPath), 'global-only setup writes local hub pointer');
+    assert(hubPointer.includes('{globalSkillsRoot}/ws-shared/runtime/'), 'hub pointer names global runtime fallback');
+    assert(data.rootAgents?.hubPointerWritten === true, 'reports global-hybrid hub pointer creation');
+    assert(
+      !(data.check?.findings || []).some((finding) => /external companion `ws-memo`/i.test(finding.message)),
+      'global dependency graph suppresses external companion warning after write',
+    );
+  }
+}
+
 cleanup();
 
 if (failures > 0) {

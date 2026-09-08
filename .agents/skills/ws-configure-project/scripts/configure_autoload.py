@@ -341,12 +341,20 @@ def emit_skill_path(
     return f"{{skillsRoot}}/{skill_id}/SKILL.md", True
 
 
-def load_external_skill_ids(repo_root: Path) -> set[str]:
-    """Ids in skill-dependencies.json externalSkills (spec-memo companions, not packaged)."""
-    candidates = [
-        repo_root / "bin" / "skill-dependencies.json",
-        repo_root / ".agents" / "skills" / "ws-shared" / "runtime" / "skill-dependencies.json",
-    ]
+def load_external_skill_ids(
+    repo_root: Path,
+    *,
+    global_skills_root: Path | None = None,
+    allow_global_source: bool = False,
+) -> set[str]:
+    """Ids in the selected skill-dependencies.json externalSkills graph."""
+    candidates = [repo_root / "bin" / "skill-dependencies.json"]
+    runtime = resolve_runtime_source(
+        repo_root,
+        global_skills_root or resolve_execution_global_skills_root(None),
+        allow_global_source=allow_global_source,
+    )
+    candidates.append(runtime / "skill-dependencies.json")
     for candidate in candidates:
         if not candidate.is_file():
             continue
@@ -369,8 +377,18 @@ def load_external_skill_ids(repo_root: Path) -> set[str]:
     return set()
 
 
-def drop_external_companion_members(membership: list[dict], repo_root: Path) -> list[dict]:
-    external = load_external_skill_ids(repo_root)
+def drop_external_companion_members(
+    membership: list[dict],
+    repo_root: Path,
+    *,
+    global_skills_root: Path | None = None,
+    allow_global_source: bool = False,
+) -> list[dict]:
+    external = load_external_skill_ids(
+        repo_root,
+        global_skills_root=global_skills_root,
+        allow_global_source=allow_global_source,
+    )
     if not external:
         return membership
     return [row for row in membership if row.get("skill") not in external]
@@ -468,7 +486,12 @@ def ensure_autoload_md(
     existing = parse_always_applied_rows(text)
     preserved = membership_from_existing_rows(existing)
     membership = preserved if preserved else default_always_applied_membership()
-    membership = drop_external_companion_members(membership, repo_root)
+    membership = drop_external_companion_members(
+        membership,
+        repo_root,
+        global_skills_root=global_skills_root,
+        allow_global_source=allow_global_source,
+    )
     if resolve_autoload_task_lifecycle(repo_root):
         membership = ensure_task_lifecycle_member(membership)
     else:
@@ -510,6 +533,16 @@ def ensure_autoload_md(
     }
 
 
+LOCAL_HUB_POINTER_MD = """# Shared - Workflow Config & Consumer Data Hub (local pointer)
+
+This project-local pointer keeps the consumer hub stable for global-hybrid installs. Managed hub runtime is resolved from the project-local `runtime/` when present, otherwise from `{globalSkillsRoot}/ws-shared/runtime/`. Project consumer data lives in this folder (`config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `CHANGELOG.md`, `installed-skills.json`).
+
+- Full hub contract: `runtime/AGENTS.md` (resolve the managed runtime locally or from `{globalSkillsRoot}/ws-shared/runtime/`).
+- Config always resolves project-local first: `$PWD/.agents/skills/ws-shared/config.json` overrides the global hub.
+- `rules.harness` default (`.agents/skills/ws-shared/AGENTS.md`) resolves to this file; follow the canonical runtime link above.
+"""
+
+
 ROOT_AGENTS_TEMPLATE = """# AGENTS.md — Consumer root override
 
 **Audience: agents.** Thin pointer only. Full consumer hub: [`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
@@ -541,6 +574,7 @@ def write_root_agents(
     repo_root: Path,
     *,
     global_skills_root: Path | None = None,
+    allow_global_source: bool = False,
     dry_run: bool = False,
     force: bool = False,
 ) -> dict:
@@ -553,7 +587,12 @@ def write_root_agents(
         )
         if preserved:
             membership = preserved
-    membership = drop_external_companion_members(membership, repo_root)
+    membership = drop_external_companion_members(
+        membership,
+        repo_root,
+        global_skills_root=global_skills_root,
+        allow_global_source=allow_global_source,
+    )
 
     table_lines = [
         "| Skill | Path |",
@@ -586,6 +625,14 @@ def write_root_agents(
                 shutil.copy2(dest, dest.with_suffix(".md.bak"))
                 backed_up = True
 
+    pointer_path = repo_root / SHARED_AUTOLOAD_REL.parent / "AGENTS.md"
+    pointer_written = False
+    if not pointer_path.is_file():
+        if not dry_run:
+            pointer_path.parent.mkdir(parents=True, exist_ok=True)
+            pointer_path.write_text(LOCAL_HUB_POINTER_MD, encoding="utf-8")
+            pointer_written = True
+
     written = False
     if not dry_run:
         dest.write_text(body, encoding="utf-8", newline="\n")
@@ -595,6 +642,7 @@ def write_root_agents(
         "rootAgentsPath": "AGENTS.md",
         "written": written,
         "backedUp": backed_up,
+        "hubPointerWritten": pointer_written,
         "skills": meta,
     }
 
@@ -690,6 +738,7 @@ def check_autoload(
     repo_root: Path,
     *,
     global_skills_root: Path | None = None,
+    allow_global_source: bool = False,
 ) -> dict:
     findings: list[dict] = []
     shared = repo_root / ".agents" / "skills" / "ws-shared"
@@ -729,7 +778,11 @@ def check_autoload(
         )
 
     for row in parse_always_applied_rows(text):
-        if row["skill"] in load_external_skill_ids(repo_root):
+        if row["skill"] in load_external_skill_ids(
+            repo_root,
+            global_skills_root=global_skills_root,
+            allow_global_source=allow_global_source,
+        ):
             findings.append(
                 {
                     "severity": "warning",
@@ -913,6 +966,7 @@ def main() -> int:
         out["rootAgents"] = write_root_agents(
             repo_root,
             global_skills_root=groot,
+            allow_global_source=allow_global_source,
             dry_run=args.dry_run,
             force=args.force,
         )
@@ -926,7 +980,11 @@ def main() -> int:
         )
 
     if args.check:
-        out["check"] = check_autoload(repo_root, global_skills_root=groot)
+        out["check"] = check_autoload(
+            repo_root,
+            global_skills_root=groot,
+            allow_global_source=allow_global_source,
+        )
 
     if args.json:
         print(json.dumps(out, indent=2, ensure_ascii=False))

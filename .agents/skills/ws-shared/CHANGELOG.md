@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-08 14:56] Agent: GPT-5.6 Luna
+- **Prompt**: Follow up on harness and adversarial audits for the open ship PR.
+- **Done**: Fixed global-hybrid autoload writers to read `externalSkills` from the selected global runtime graph and to materialize the local hub pointer referenced by generated root `AGENTS.md`; added minimal global-only regression coverage.
+- **Result**: Targeted autoload, external-companion, shared-layout, integrity, invariant, and workflow checks pass; full regression is in progress. Learning: autoload writers must use the selected global runtime.
+
 ### [2026-09-08 14:37] Agent: GPT-5.6 Luna
 - **Prompt**: `/ws-ship-pr` resumed after PR #290 review identified an incomplete standalone `ws-doctor` retired-skill fallback.
 - **Done**: Mirrored all canonical 0.3.56 retired skill IDs in the no-runtime fallback, added coverage for every renamed folder, regenerated integrity, and completed targeted plus full regression verification.
