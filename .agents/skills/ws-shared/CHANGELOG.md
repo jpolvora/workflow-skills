@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-09 17:04] Agent: GPT-5.6 Luna
+- **Prompt**: Resolve the remaining PR review thread for nested host capability model fallback.
+- **Done**: Collected `supportedModels` recursively through `binding` and added file-backed fallback regression coverage.
+- **Result**: Targeted tests, full `npm run test`, harness-efficiency tests, and integrity verification passed. Learning: N/A (review fix matched the documented host-capabilities shape).
+
+### [2026-09-09 16:58] Agent: GPT-5.6 Luna
+- **Prompt**: Compile or recompile `.cursor/agents`.
+- **Done**: Ran the canonical Cursor host-subagent compiler for the repository.
+- **Result**: All 10 generated agents were already current; verification passed with no file changes.
+
 ### [2026-09-09 16:47] Agent: GPT-5.6 Luna
 - **Prompt**: Implement all currently open upstream issues, release the package, update the site and docs, test, and ship the changes.
 - **Done**: Fixed hybrid dispatch and model fallback, enforced Step 2 interview artifacts, normalized telemetry, made `scoreAndRefine` explicit, and added the read-only `ws-monitor` skill with projections, docs, schemas, and regression tests.

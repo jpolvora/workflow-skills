@@ -249,6 +249,14 @@ const hostContext = {
   sharedDir: fs.mkdtempSync(path.join(os.tmpdir(), 'ws-model-capabilities-')),
   config: { defaults: {} },
 };
+fs.writeFileSync(
+  path.join(hostContext.sharedDir, 'host-capabilities.json'),
+  JSON.stringify({
+    'test-host::session-model': {
+      binding: { supportedModels: ['composer-2.5'] },
+    },
+  }),
+);
 const fallback = resolveDispatchModel(
   hostContext,
   { hostBinding: { supportedModels: ['composer-2.5'] } },
@@ -260,6 +268,18 @@ assert(
     fallback.configuredModel === 'cursor-grok-4.6-high' &&
     fallback.fallbackReason === 'unsupported-host-model',
   'unsupported configured model falls back to captured session model',
+);
+const fileFallback = resolveDispatchModel(
+  hostContext,
+  { hostBinding: {} },
+  'cursor-grok-4.6-high',
+  session,
+);
+assert(
+  fileFallback.model === session &&
+    fileFallback.configuredModel === 'cursor-grok-4.6-high' &&
+    fileFallback.fallbackReason === 'unsupported-host-model',
+  'host-capabilities binding models trigger session fallback',
 );
 assert(
   resolveDispatchModel(

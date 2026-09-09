@@ -1001,7 +1001,7 @@ function collectModelIds(value, target) {
     return;
   }
   if (typeof value !== 'object') return;
-  for (const key of ['supportedModels', 'models']) collectModelIds(value[key], target);
+  for (const key of ['supportedModels', 'models', 'binding']) collectModelIds(value[key], target);
 }
 
 function resolveSupportedHostModels(context, state) {

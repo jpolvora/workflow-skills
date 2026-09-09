@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "18b59d73fb91734e891d627e24ca921b1300d1d823581a37c70f819583114944",
+  "fullPackageDigest": "146bf0e1afdb86e5ce170d9013c818b9d39c22a31b362332c6b22395bff89862",
   "hub": {
     "files": {
       ".gitignore": "95aca4a4bae6399996a76999fb0e2151b635070558d56f55789ec40da30b6876",
@@ -38,7 +38,7 @@
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "runtime/scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
-      "runtime/scripts/workflow_state.cjs": "a5578f743cc85818c7943c27b3f56cec2d7c36eb7c6ccbfc3cb54972930deefa",
+      "runtime/scripts/workflow_state.cjs": "a91557ff2b554e0efc0efff361d25b6b609660e71d04f65fbf2545456de82b12",
       "runtime/setup.md": "3f04ade2fd15c169983af236790b5691ab1174b2f8d59b6ea1382918a51682a8",
       "runtime/skill-dependencies.json": "73d6302fe7c235cb832426f62e1debb9d9598b37bf7fa2d1296f33864fcb1c36",
       "runtime/stacks/abp-angular.md": "afd0426d06b2e2cd048fae3aa9a120ebed221d261713e3373840ef01f5ac629d",
@@ -54,7 +54,7 @@
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "05fb5a9376be85d0af1b96559ce74d8bf35b497311b4d29236678c7b2d6d9474"
+    "skillDigest": "7961196fa8c2ed29d13e7a606915ce2734dd6416eb3bcc5879a0605a49d4fe2b"
   },
   "packageVersion": "0.4.8",
   "skills": {
