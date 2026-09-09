@@ -135,6 +135,23 @@ function parseObject(value, label) {
     if (!object || typeof object !== 'object' || Array.isArray(object)) throw new Error();
     return object;
   } catch {
+    if (typeof value === 'string' && value.includes('=')) {
+      const parsed = {};
+      const numericKeys = new Set(['step', 'round', 'exitCode', 'lineStart', 'lineEnd']);
+      for (const pair of value.split(',')) {
+        const eq = pair.indexOf('=');
+        if (eq > 0) {
+          const k = pair.slice(0, eq).trim();
+          const v = pair.slice(eq + 1).trim();
+          if (k) {
+            parsed[k] = numericKeys.has(k) && /^-?\d+$/.test(v) ? Number(v) : v;
+          }
+        }
+      }
+      if (Object.keys(parsed).length > 0) {
+        return parsed;
+      }
+    }
     throw new Error(`${label} must be a JSON object`);
   }
 }
@@ -205,9 +222,18 @@ function link(options, context) {
       }
     }
   }
-  const eventAlreadyApplied = ledger.acceptanceCriteria.some((row) => row.linkEventIds.includes(options.eventId))
-    || ledger.negativeScenarios.some((row) => row.linkEventIds.includes(options.eventId));
-  if (eventAlreadyApplied) return ledger;
+  const targetAcs = acIds.map((id) => (ledger.acceptanceCriteria || []).find((row) => row.id === id)).filter(Boolean);
+  const targetNs = nsIds.map((id) => (ledger.negativeScenarios || []).find((row) => row.id === id)).filter(Boolean);
+  const hasExplicitTargets = targetAcs.length > 0 || targetNs.length > 0;
+  const eventAlreadyApplied = hasExplicitTargets
+    ? targetAcs.every((row) => (row.linkEventIds || []).includes(options.eventId))
+      && targetNs.every((row) => (row.linkEventIds || []).includes(options.eventId))
+    : (ledger.acceptanceCriteria || []).some((row) => (row.linkEventIds || []).includes(options.eventId))
+      || (ledger.negativeScenarios || []).some((row) => (row.linkEventIds || []).includes(options.eventId));
+  if (eventAlreadyApplied) {
+    process.stderr.write(`NOTICE: event-id "${options.eventId}" already applied to target criteria; skipping link payload\n`);
+    return ledger;
+  }
   for (const ac of acIds) {
     const row = ledger.acceptanceCriteria.find((item) => item.id === ac);
     if (!row) throw new Error(`unknown AC: ${ac}`);
@@ -252,8 +278,10 @@ function link(options, context) {
       const exitCode = Number(options.sabotageExit);
       row.sabotage = { required: true, status: exitCode === 0 ? 'passed' : 'failed', exitCode };
     }
-    row.linkEventIds.push(options.eventId);
-    row.linkEventIds.sort();
+    if (!row.linkEventIds.includes(options.eventId)) {
+      row.linkEventIds.push(options.eventId);
+      row.linkEventIds.sort();
+    }
   }
   for (const id of nsIds) {
     const row = ledger.negativeScenarios.find((item) => item.id === id);
@@ -263,8 +291,10 @@ function link(options, context) {
       row.tests = [...row.tests.filter((entry) => !(entry.name === item.name && entry.phase === item.phase)), item]
         .sort((a, b) => a.name.localeCompare(b.name) || a.phase.localeCompare(b.phase));
     }
-    row.linkEventIds.push(options.eventId);
-    row.linkEventIds.sort();
+    if (!row.linkEventIds.includes(options.eventId)) {
+      row.linkEventIds.push(options.eventId);
+      row.linkEventIds.sort();
+    }
   }
   for (const value of options.aliasResult || []) {
     const result = parseObject(value, 'alias-result');

@@ -1171,6 +1171,34 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     const status = String(options.status || 'completed');
     if (!['completed', 'failed', 'skipped'].includes(status)) throw new Error('finish status must be completed, failed, or skipped');
     const isInternalSubstep = options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep);
+    let derivedScore = null;
+    if (options.verificationScore !== undefined || (pipeline === 'standard' && step === 5 && status === 'completed' && !isInternalSubstep)) {
+      const ledgerFile = path.join(paths.usDir, 'ac-ledger.json');
+      let ledger = null;
+      if (fs.existsSync(ledgerFile)) {
+        ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
+        state.acLedger = ledger;
+      } else {
+        ledger = state.acLedger;
+      }
+      if (options.verificationScore !== undefined) {
+        if (!ledger) throw new Error('verification score requires ac-ledger.json or state.acLedger');
+        const derived = scoreLedger(ledger, options.scoreBoundary || 'step5', context);
+        if (Number(options.verificationScore) !== derived.score) {
+          throw new Error(`verification score mismatch: supplied ${options.verificationScore}, derived ${derived.score}`);
+        }
+        derivedScore = derived.score;
+        state.verificationScore = derivedScore;
+      } else if (ledger) {
+        try {
+          const derived = scoreLedger(ledger, options.scoreBoundary || 'step5', context);
+          derivedScore = derived.score;
+          state.verificationScore = derivedScore;
+        } catch {
+          // ignore derivation error here; gate check below will catch invalid or missing score
+        }
+      }
+    }
     if (pipeline === 'standard' && step === 5 && status === 'completed' && !isInternalSubstep) {
       const minVerifyScore = resolveMinVerifyScore(context.config);
       const score = options.verificationScore !== undefined
@@ -1231,24 +1259,6 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     }
     const gateDecision = validateGateDecision(options.gateDecision);
     if (gateDecision) state.gateDecision = gateDecision;
-    let derivedScore = null;
-    if (options.verificationScore !== undefined) {
-      const ledgerFile = path.join(paths.usDir, 'ac-ledger.json');
-      let ledger = null;
-      if (fs.existsSync(ledgerFile)) {
-        ledger = JSON.parse(fs.readFileSync(ledgerFile, 'utf8'));
-        state.acLedger = ledger;
-      } else {
-        ledger = state.acLedger;
-      }
-      if (!ledger) throw new Error('verification score requires ac-ledger.json or state.acLedger');
-      const derived = scoreLedger(ledger, options.scoreBoundary || 'step5', context);
-      if (Number(options.verificationScore) !== derived.score) {
-        throw new Error(`verification score mismatch: supplied ${options.verificationScore}, derived ${derived.score}`);
-      }
-      derivedScore = derived.score;
-      state.verificationScore = derivedScore;
-    }
     if (options.fableVerdict !== undefined) {
       if (fableBlocks(context.config?.fable?.auditVerdictsBlockShip, options.fableVerdict)) throw new Error(`fable verdict blocks this transition: ${options.fableVerdict}`);
       state.fableVerdict = options.fableVerdict;

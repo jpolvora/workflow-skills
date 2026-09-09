@@ -1401,6 +1401,95 @@ ${scoreLine}
   }
 }
 
+// Issue #301: Step 5 finish auto-derives verificationScore from ac-ledger.json when omitted
+{
+  const s5Root = temp('ws-state-s5-derive-');
+  const slug = 's5derive';
+  const workflowId = 'wf-s5derive';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(s5Root, '.agents/plans', slug);
+  const common = ['--repo-root', s5Root, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
+  write(path.join(s5Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'derive' },
+    plans: { dir: '.agents/plans' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  function setupS5State(initialScoreLine = '') {
+    write(path.join(s5Root, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+autoMode: true
+status: active
+currentStep: 5
+completedSteps: [0, 1, 2, 3, 4]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 1
+${initialScoreLine}
+---
+# State
+`);
+  }
+
+  // 1. Without ac-ledger.json and without --verification-score: finish fails with score (missing)
+  setupS5State('');
+  const failNoLedger = run(update, ['finish', stateRel, '--step', '5', '--timestamp', '2026-08-21T21:00:00.000Z', ...common]);
+  assert.notStrictEqual(failNoLedger.status, 0, 'finish step 5 without score or ledger is rejected');
+  assert.match(`${failNoLedger.stdout}${failNoLedger.stderr}`, /score \(missing\) is below minVerifyScore \(9\)/);
+
+  // Set up ac-ledger.json in usDir with a score of 9
+  write(path.join(s5Root, 'feature.spec.md'), '## Acceptance Criteria\n- AC1: First behavior.\n');
+  write(path.join(s5Root, 'impl.js'), 'export const val = 1;\n');
+  write(path.join(s5Root, 'feature.test.js'), 'test("first behavior", () => {});\n');
+  write(path.join(usDir, 'plan.index.json'), JSON.stringify({
+    acceptanceCriteria: [{ id: 'AC1', taskIds: ['T1'], planSectionIds: ['S1'], expectedTestNames: ['first behavior'] }],
+  }));
+  const ledgerRel = `.agents/plans/${slug}/ac-ledger.json`;
+  assert.strictEqual(run(ledgerScript, ['init', '--spec', 'feature.spec.md', '--plan-index', `.agents/plans/${slug}/plan.index.json`, '--output', ledgerRel, '--workflow-id', workflowId, '--slug', slug, '--repo-root', s5Root]).status, 0);
+  assert.strictEqual(run(ledgerScript, [
+    'link', '--ledger', ledgerRel, '--event-id', 'link-ac1', '--ac', 'AC1',
+    '--status', 'Implemented', '--file', 'impl.js:L1-L1',
+    '--test', JSON.stringify({ name: 'first behavior', sourceFile: 'feature.test.js', phase: 'observed', exitCode: 0 }),
+    '--repo-root', s5Root,
+  ]).status, 0);
+
+  // 2. Omitted --verification-score derives 10 from ac-ledger.json and completes step 5
+  setupS5State('');
+  const okDerive = run(update, ['finish', stateRel, '--step', '5', '--timestamp', '2026-08-21T21:00:05.000Z', ...common]);
+  assert.strictEqual(okDerive.status, 0, okDerive.stderr);
+  const stateAfterDerive = JSON.parse(fs.readFileSync(path.join(s5Root, `.agents/plans/${slug}/wf.state.json`), 'utf8'));
+  assert.strictEqual(stateAfterDerive.verificationScore, 10, 'auto-derived score 10 is persisted to state');
+  assert.strictEqual(stateAfterDerive.currentStep, 6, 'step 5 finished, advanced to 6');
+  assert.ok(stateAfterDerive.completedSteps.includes(5), 'step 5 recorded in completedSteps');
+
+  // 3. Explicit matching --verification-score 10 succeeds
+  setupS5State('');
+  const okExplicit = run(update, ['finish', stateRel, '--step', '5', '--verification-score', '10', '--timestamp', '2026-08-21T21:00:10.000Z', ...common]);
+  assert.strictEqual(okExplicit.status, 0, okExplicit.stderr);
+
+  // 4. Mismatched explicit score fails with mismatch error
+  setupS5State('');
+  const failMismatch = run(update, ['finish', stateRel, '--step', '5', '--verification-score', '8', '--timestamp', '2026-08-21T21:00:15.000Z', ...common]);
+  assert.notStrictEqual(failMismatch.status, 0, 'mismatched verification score is rejected');
+  assert.match(`${failMismatch.stdout}${failMismatch.stderr}`, /verification score mismatch: supplied 8, derived 10/);
+
+  // 5. Capped ledger (score 8 < minVerifyScore 9): auto-derivation fails closed with score (8)
+  assert.strictEqual(run(ledgerScript, [
+    'link', '--ledger', ledgerRel, '--event-id', 'defect', '--ac', 'AC1',
+    '--finding', JSON.stringify({ id: 'CR-001', severity: 'Warning', state: 'open', round: 1, evidence: 'impl.js:L1-L1' }),
+    '--sabotage-exit', '1',
+    '--repo-root', s5Root,
+  ]).status, 0);
+  setupS5State('');
+  const failLowScore = run(update, ['finish', stateRel, '--step', '5', '--timestamp', '2026-08-21T21:00:20.000Z', ...common]);
+  assert.notStrictEqual(failLowScore.status, 0, 'below-bar derived score is rejected');
+  assert.match(`${failLowScore.stdout}${failLowScore.stderr}`, /score \(8\) is below minVerifyScore \(9\)/);
+}
+
 // Step 4 dispatch guard applies to fresh states with no completed steps
 {
   const emptyRoot = temp('ws-state-guard-s4empty-');
