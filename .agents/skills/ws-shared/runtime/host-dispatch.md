@@ -43,11 +43,17 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 
 ## 3. Subagent Execution Tiers (normative)
 
-### Tier 1 — Native subagent tool
+### Tier 1 — Native subagent tool (Specialized Named Subagent vs Generic Subagent)
 
-- **When:** `subagentTool` is bound and resolved mode is `auto` or `native-tool`.
-- **How:** Dispatch via the native tool with `description: "STP step {N} — {Label}"`, model hint from `defaults.modelsPreset` / `stepModels` when the tool supports it, and discrete context pointers only (see §5).
-- **Telemetry:** standard dispatch/finish events.
+- **Specialized Named Subagent Dispatch (when enabled):**
+  - **Preconditions:** `defaults.specializedSubagents.enabled` is `true`, and the host supports named subagents (e.g. Cursor IDE `.cursor/agents/ws-step-*.md`).
+  - **Resolution:** The orchestrator targets the step-specific named subagent matching `{prefix}-step-{step}-{role}` (e.g. `ws-step-04-implement-tasks`).
+  - **Zero-Turn Bootstrap:** Because the specialized subagent definition already contains the complete canonical skill instructions, invariants, and guidelines, the orchestrator prompt omits redundant skill markdown and transmits **discrete context pointers only** (see §5), achieving near-zero token bootstrap overhead.
+  - **Fail-safe Fallback:** If the named specialized subagent is unavailable, missing, or errors, dispatch transparently falls back to generic subagent invocation (Tier 1 generic) or inline isolated execution (Tier 3) without failing the workflow run.
+- **Generic Subagent Dispatch (standard Tier 1):**
+  - **When:** `subagentTool` is bound, resolved mode is `auto` or `native-tool`, and specialized subagents are disabled or fell back.
+  - **How:** Dispatch via the native subagent tool with `description: "STP step {N} — {Label}"`, model hint from `defaults.modelsPreset` / `stepModels` when supported, and discrete context pointers.
+- **Telemetry:** standard dispatch/finish events (record `specialized-subagent-dispatch` or `generic-subagent-dispatch`).
 
 ### Tier 2 — Background CLI runner
 
@@ -94,6 +100,13 @@ Projects can configure and customize subagent dispatch behavior in `.agents/skil
           "browserTool": "browser-mcp"
         }
       }
+    },
+    "specializedSubagents": {
+      "enabled": false,
+      "_comment_enabled": "When true, compiles and targets host-native specialized subagents",
+      "targetHost": "auto",
+      "_comment_targetHost": "Target host dialect: cursor | claude | generic | auto",
+      "agentPrefix": "ws"
     }
   }
 }
@@ -141,6 +154,14 @@ OUTPUT FORMAT:
 ```
 ========================================
 ```
+
+### Specialized Subagents Zero-Turn Bootstrap
+
+When `defaults.specializedSubagents.enabled` is `true` and the orchestrator dispatches to a compiled specialized subagent (e.g. `ws-step-04-implement-tasks`):
+- The subagent system definition already embeds the canonical skill instructions, negative constraints, and verification protocols.
+- The orchestrator omits redundant skill markdown from the dispatch payload.
+- The dispatch payload consists strictly of the task metadata, `CONTEXT POINTERS`, and `OUTPUT FORMAT`.
+- The specialized subagent proceeds directly to execution without burning turns on reading the skill body.
 
 ---
 

@@ -50,6 +50,7 @@ const ALLOWED_SECTIONS = new Set([
   'fable',
   'pathTokens',
   'toolsFile',
+  'specializedSubagents',
 ]);
 
 const PLACEHOLDER_RE = /<[^<>\n]*>/;
@@ -548,6 +549,13 @@ function buildWanted(repoRoot, example, schema) {
   wantFallback('defaults.convergence.maxIterations');
   wantFallback('defaults.hostAdapter.mode');
   wantFallback('defaults.hostAdapter.browserTool');
+  let detectedSubagentHost = 'auto';
+  if (fileExists(repoRoot, '.cursor') || fileExists(repoRoot, '.cursorrules')) {
+    detectedSubagentHost = 'cursor';
+  }
+  want('defaults.specializedSubagents.enabled', false, 'fallback');
+  want('defaults.specializedSubagents.targetHost', detectedSubagentHost, detectedSubagentHost !== 'auto' ? 'detected' : 'fallback');
+  want('defaults.specializedSubagents.agentPrefix', 'ws', 'fallback');
   for (const k of ['includeRefinedPlan', 'includeDeliveryResult', 'includeSpec',
     'includeCheckReport', 'includeCodeReview', 'includeTestingReport']) {
     wantFallback(`defaults.deliveryCommitArtifacts.${k}`);
@@ -639,6 +647,13 @@ function buildWanted(repoRoot, example, schema) {
 }
 
 function mergeAuto(existing, wanted, sources, schema, example, section, force, stats, details) {
+  if (section === 'specializedSubagents') {
+    if (wanted.defaults && wanted.defaults.specializedSubagents) {
+      if (existing.defaults === undefined) existing.defaults = {};
+      mergeNode(existing.defaults, wanted.defaults, sources, 'specializedSubagents', force, stats, details, 'defaults.specializedSubagents');
+    }
+    return;
+  }
   const topKeys = section ? [section] : Object.keys(wanted);
   for (const topKey of topKeys) {
     if (topKey === 'toolsFile') {
@@ -838,6 +853,25 @@ function main() {
     written = true;
   }
 
+  let compiledSubagents = null;
+  if (!args.dryRun && config?.defaults?.specializedSubagents?.enabled === true) {
+    const compilerScript = path.join(ctx.runtimeSource, 'scripts', 'compile_host_subagents.cjs');
+    if (fs.existsSync(compilerScript)) {
+      const compileArgs = [compilerScript, '--repo-root', repoRoot, '--json'];
+      if (args.force) compileArgs.push('--force');
+      const runCompile = spawnSync(process.execPath, compileArgs, {
+        encoding: 'utf8',
+        cwd: repoRoot,
+      });
+      try {
+        const outJson = JSON.parse(runCompile.stdout || '{}');
+        compiledSubagents = outJson;
+      } catch {
+        compiledSubagents = { ok: runCompile.status === 0, output: (runCompile.stdout || runCompile.stderr || '').trim() };
+      }
+    }
+  }
+
   const pkg = readPackageJson(repoRoot);
   const detectedFramework = detectFrameworkStack(repoRoot, pkg);
   let trapsSeeded = false;
@@ -874,6 +908,7 @@ function main() {
     unresolved: details.filter((d) => d.action === 'unresolved').map((d) => d.path),
     copiedPaths: createdFromExample && !args.dryRun ? [toRepoRelative(repoRoot, configPath, { allowOutside: true })] : [],
     sourceControl: buildSourceControlReport(layout),
+    compiledSubagents,
   };
 
   if (args.json) {
@@ -884,6 +919,11 @@ function main() {
     console.log('  source-control: track non-secret config.json and maintained STACK.md; ignore runtime/templates copies, generated memory/history, and installer metadata');
     for (const c of result.changes) console.log(`  + ${c.path} (${c.source})`);
     if (trapsSeeded) console.log(`  + seeded framework traps into MEMORY.md for stack: ${detectedFramework}`);
+    if (compiledSubagents && compiledSubagents.ok) {
+      console.log(`  + compiled specialized subagents (${compiledSubagents.compiled ? compiledSubagents.compiled.length : 0} agents into ${compiledSubagents.targetDir || 'host directory'})`);
+    } else if (compiledSubagents && !compiledSubagents.ok) {
+      console.log(`  ! specialized subagents compilation warning: ${compiledSubagents.error || compiledSubagents.output || 'failed'}`);
+    }
     if (result.unresolved.length) {
       console.log('unresolved (no detection/default — fill manually):');
       for (const u of result.unresolved) console.log(`  ? ${u}`);

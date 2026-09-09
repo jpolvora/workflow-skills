@@ -176,6 +176,12 @@
       "browserTool": "browser-mcp"
     },
     "_comment_hostAdapter": "Optional. Skills call portable dispatch-agent / browser-mcp. mode auto|native-tool|cli-command|inline-isolated or a named host mapping from host-dispatch.md.",
+    "specializedSubagents": {
+      "enabled": false,
+      "targetHost": "auto",
+      "agentPrefix": "ws"
+    },
+    "_comment_specializedSubagents": "Optional. When enabled: true, compile and use specialized host subagent projections (e.g. .cursor/agents/) with pre-baked skill prompts and disable-model-invocation: true.",
     "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
     "deliveryCommitArtifacts": {
       "includeRefinedPlan": true,

@@ -75,6 +75,12 @@
         "host-capabilities.json"
       ],
       "sourceControl": "ignore"
+    },
+    "generatedHostProjections": {
+      "roots": [
+        ".cursor/agents"
+      ],
+      "sourceControl": "optional-track-or-ignore"
     }
   }
 }
