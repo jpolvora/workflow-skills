@@ -1,6 +1,6 @@
 ---
 name: ws-cleanup
-version: 0.4.4
+version: 0.4.6
 disable-model-invocation: true
 description: >-
   Lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps,

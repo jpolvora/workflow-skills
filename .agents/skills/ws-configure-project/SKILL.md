@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.4
+version: 0.4.6
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -27,7 +27,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 | Flag | Effect |
 |------|--------|
-| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`preview`**, **`autoload`**, **`specMemo`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
+| `--section` | Only interview that top-level key (`project`, `stack`, `providers`, `verification`, `plans`, `reviews`, `rules`, `domain`, `fable`, `defaults`, **`preview`**, **`autoload`**, **`specMemo`**, **`specializedSubagents`**). `defaults` includes delivery-commit artifacts, `modelsPreset` / `modelPresets`, and optional `stepModels`. |
 | `--detect-only` | Print detections + suggestions; do not write |
 | `--force` | Re-interview even when required fields look filled |
 | `--auto` | Run non-interactive `auto_configure.cjs`; fills only gaps, emits JSON when requested, and never invents secrets |
@@ -37,6 +37,8 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 **`--section autoload`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`) and optional `defaults.autoloadTaskLifecycle` (default / Recommended = `false`). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
 
 **`--section specMemo`:** optional external vault bridge via [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Runs preflight, interviews enable/mode/import/hook/bootstrap, writes `specMemo.*` through `configure_spec_memo.cjs`. Default / Recommended = `specMemo.enabled: false` (in-repo MEMORY). After enable: **`/ws-memo`** for runtime vault ops (not this wizard).
+
+**`--section specializedSubagents`:** optional specialized subagents compiler and host projection for workflow subagents (`defaults.specializedSubagents`). Interviews enable/targetHost/agentPrefix, writes `defaults.specializedSubagents` to `config.json`, and triggers subagent compilation via `compile_host_subagents.cjs` when enabled. Default / Recommended = `defaults.specializedSubagents.enabled: false`.
 
 ## Steps
 
@@ -104,6 +106,13 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
    - Never auto-installed or enforced on install; presented strictly as an optional interview gate.
    - Done when: user selection handled; hook installed if explicitly requested.
 
+8b. **Specialized subagents projection (optional)** — Run when full interview reaches optional extras (or standalone `--section specializedSubagents`).
+   1. Detect host: `cursor` if `.cursor/` or `.cursorrules` exists, else `auto`.
+   2. user-gate: **Enable host-native specialized subagents projection?** — **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
+   3. On **Yes (`true`)**: user-gate for target host (`cursor`, `claude`, `generic`, `auto`; Recommended detected). Write `defaults.specializedSubagents` (`enabled: true`, `targetHost`, `agentPrefix: "ws"`).
+   4. Immediately trigger compilation: `node {skillsRoot}/ws-shared/runtime/scripts/compile_host_subagents.cjs --repo-root {repoRoot}`.
+   - Done when: `defaults.specializedSubagents` written and compiled if enabled, or left disabled/skipped.
+
 9. **Validate & handoff** — Confirm JSON parses (when config touched); required fields non-placeholder; print summary table (`key` → `value`). For autoload: run `--check` and print findings (includes `effectiveAutoload`). For specMemo: re-run `check_spec_memo.cjs` when section ran. Tell caller: resume setup / run `/ws-spec-to-pr` or `/ws-spec-to-pr-lite`; when vault enabled and MCP registered, session brief → **`/ws-memo` bootstrap**. When MCP is down, `/ws-spec-memo bootstrap` may run CLI bootstrap (any vault mode); hybrid falls back to MEMORY on CLI failure; vault-only STOPs.
    - Done when: summary shown; `--detect-only` ends after step 2 with no write.
 
@@ -118,3 +127,4 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Models (`defaults` / `--section defaults`): pick `modelsPreset` from shipped `config.json.example` sample keys, then optional `stepModels` (`"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`); keep empty legacy phase keys unless the user wants an advanced override. Token `"current"` uses the session model. Explain that `fixPrPlan` falls back to `reviewerModel`, `fixPrExec` falls back to `executionModel`, both bypass numeric `"9"`, and lite ignores role model switches while preserving plan-before-edit.
 - Min verify score (`defaults` / `--section defaults`): interview `defaults.minVerifyScore` per [`INTERVIEW.md`](INTERVIEW.md) (Recommended 9; runtime omitted/invalid → 9).
 - Preview (`preview` / `--section preview`): interview `preview.dryRunCommand` per [`INTERVIEW.md`](INTERVIEW.md) § Preview; infer from harness docs before asking; empty is allowed.
+- Specialized subagents (`defaults.specializedSubagents`): interview under `defaults` or `--section specializedSubagents` per [`INTERVIEW.md`](INTERVIEW.md); recommended = disabled (`enabled: false`). When enabled, compilation generates `.cursor/agents/` projection with `@generated` signatures.

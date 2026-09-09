@@ -75,6 +75,15 @@
         "host-capabilities.json"
       ],
       "sourceControl": "ignore"
+    },
+    "generatedHostProjections": {
+      "roots": [
+        ".cursor/agents",
+        ".claude/agents",
+        ".agents/projections"
+      ],
+      "sourceControl": "optional-track-or-ignore",
+      "note": "Opt-in compiler output (compile_host_subagents.cjs). Commit per team policy or gitignore; never required for portable dispatch."
     }
   }
 }

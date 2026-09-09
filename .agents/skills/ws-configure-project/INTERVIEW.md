@@ -13,7 +13,7 @@ Disclosed detail for [`SKILL.md`](SKILL.md). Load when detecting or interviewing
 
 ## Optional (offer once, skippable)
 
-`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`preview`** (`preview.dryRunCommand` for `ws-preview`; empty OK), **`autoload`** (persists `defaults.autoload` + optional `defaults.autoloadTaskLifecycle` + Always-applied path refresh; optional root `AGENTS.md` when enabled), **`specMemo`** (external vault bridge via `ws-spec-memo`; default disabled).
+`stack`, `domain`, `fable`, `reviews`, `rules` (non-empty paths only), `defaults`, `dagThresholds`, `issueTrackers` details, `orchestration` / DB fields under `stack`, **`preview`** (`preview.dryRunCommand` for `ws-preview`; empty OK), **`autoload`** (persists `defaults.autoload` + optional `defaults.autoloadTaskLifecycle` + Always-applied path refresh; optional root `AGENTS.md` when enabled), **`specMemo`** (external vault bridge via `ws-spec-memo`; default disabled), **`specializedSubagents`** (compiler and host projection for workflow subagents; default disabled).
 
 ## Detection heuristics
 
@@ -45,6 +45,7 @@ Scan consumer **repo root** (not this skill package alone):
 | `memo` or `npx spec-memo` on PATH | `specMemo.cli` → `memo` (Recommended) |
 | CLI missing | Recommend `npm install -g spec-memo` or `specMemo.cli: "npx -y spec-memo"` before enable |
 | Non-empty `preview.dryRunCommand` already set | Keep current (**Recommended** unless `--force`) |
+| Host-native agent dir or rules marker detected | Suggest detected compiler dialect (`defaults.specializedSubagents.targetHost`; valid ids `cursor`, `claude`, `generic`, `auto`) |
 | `package.json` scripts named like `preview`, `review:dry`, `pipeline-review`, `code-review:dry`, `*dry-run*review*`, `*review*dry*` | Suggest `npm run <script>` (or `npm run <script> -- …` only if the script docs require args) |
 | Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` / `python <relpath>` per extension ([`tools.md`](../ws-shared/runtime/tools.md) launchers) |
 | Consumer skill under `.agents/skills/` or `{globalSkillsRoot}` with id/name containing `preview`, `pipeline-review`, `dry-run`, or `code-review` (excluding packaged `ws-preview` / `ws-code-review` bodies) | Extract the primary Shell recipe from that `SKILL.md` (first concrete command block); cite skill path as source |
@@ -139,6 +140,7 @@ The configure result includes `executionScope`, `runtimeSource`, `templateSource
     - User-gate: **Install git pre-commit secrets leak review hook (`ws-secrets-leak-review`)?**
     - Options: **No (`false`, Recommended)** / Yes (`true`) / Skip.
     - Execution on Yes: `bash {skillsRoot}/ws-secrets-leak-review/scripts/install-hook.sh`.
+12. `specializedSubagents` — optional (or standalone `--section specializedSubagents`); see § Specialized Subagents below
 
 Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit…** / **Skip**.
 
@@ -266,6 +268,28 @@ node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repo
 
 When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MCP-TEMPLATE.json) and [`INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md). Next action after enable: register MCP, then **`/ws-memo`** for runtime vault ops (session bootstrap included). Prefer `/ws-memo` bootstrap when MCP is up; `/ws-spec-memo bootstrap` only when MCP is down (CLI any vault mode; hybrid MEMORY fallback on CLI fail). Never write credentials to `{sharedDir}/config.json`.
 
+## Specialized Subagents
+
+Configure optional projection of canonical workflow skills into host-native specialized subagents (e.g. host agent directory projections matching `{prefix}-step-*.md`).
+**Recommended default:** disabled (`defaults.specializedSubagents.enabled: false`).
+
+| Key | Type | Default | Meaning |
+|-----|------|---------|---------|
+| `defaults.specializedSubagents.enabled` | boolean | `false` | When `true`, enables compilation and runtime dispatch to specialized subagents |
+| `defaults.specializedSubagents.targetHost` | string | `"auto"` | Compiler target dialect: `cursor`, `claude`, `generic`, or `auto` (detect; schema source of truth) |
+| `defaults.specializedSubagents.agentPrefix` | string | `"ws"` | Filename prefix for generated subagents (e.g. `ws-step-00-...`) |
+
+### Gates
+
+1. Gate: **Enable host-native specialized subagents projection?**
+   - Options: **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
+2. When Yes: Gate: **Select target host dialect?**
+   - Options: **Detected (from host marker when present, Recommended)** / `auto` / `cursor` / `claude` / `generic` / Keep current. (Full id list; schema enum is source of truth.)
+3. On enable: immediately execute:
+   ```bash
+   node {skillsRoot}/ws-shared/runtime/scripts/compile_host_subagents.cjs --repo-root {repoRoot}
+   ```
+
 ## Write rules
 
 - Merge into existing JSON; do not delete unknown keys.
@@ -274,3 +298,4 @@ When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MC
 - Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.
 - Preview writes: `preview.dryRunCommand` in `{sharedDir}/config.json` only (never commit). Cite inference source in the session summary when Accept inferred.
 - specMemo writes: `specMemo.*` in `{sharedDir}/config.json` only; optional `memo import` / `memo hook install` via `configure_spec_memo.cjs` when user opts in.
+- specializedSubagents writes: `defaults.specializedSubagents.*` in `{sharedDir}/config.json` only; triggers compilation via `compile_host_subagents.cjs` when enabled. Compiled host projections (`{hostAgentsDir}/`, one dir per dialect) are optional generated output: commit per team policy or add to `.gitignore`; refresh with `--check` / recompile after skill updates.

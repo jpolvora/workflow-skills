@@ -190,6 +190,12 @@ try {
     fs.writeFileSync(path.join(legacyShared, name), content, 'utf8');
   }
   fs.writeFileSync(path.join(legacyShared, 'tools.md'), '# legacy runtime\n', 'utf8');
+  fs.writeFileSync(path.join(legacyShared, 'STACK.md.example'), '# legacy stack template\n', 'utf8');
+  fs.writeFileSync(
+    path.join(legacyShared, 'CATALOG.md.bak_20260907-1756'),
+    '# stale hub backup\n',
+    'utf8',
+  );
   const install = cp.spawnSync(
     process.execPath,
     [path.join(repoRoot, 'bin', 'cli.js'), 'install', '--skills', 'ws-tdah', '--yes'],
@@ -198,7 +204,16 @@ try {
   assert(install.status === 0, `${install.stdout || ''}${install.stderr || ''}`);
   assert(fs.existsSync(path.join(legacyShared, 'runtime', 'tools.md')), 'migration moves flat runtime files');
   assert(fs.existsSync(path.join(legacyShared, 'templates', 'config.json.example')), 'migration installs templates');
+  assert(
+    fs.existsSync(path.join(legacyShared, 'templates', 'STACK.md.example')),
+    'migration moves STACK.md.example without case-alias ENOENT',
+  );
+  assert(!fs.existsSync(path.join(legacyShared, 'STACK.md.example')), 'migration removes legacy flat STACK.md.example');
   assert(!fs.existsSync(path.join(legacyShared, 'tools.md')), 'migration removes the legacy flat runtime file');
+  assert(
+    !fs.existsSync(path.join(legacyShared, 'CATALOG.md.bak_20260907-1756')),
+    'migration prunes hub backup artifacts instead of failing',
+  );
   assert(fs.existsSync(path.join(legacyShared, '.gitignore')), 'migration installs the aliased hub ignore file');
   const localPointer = fs.readFileSync(path.join(legacyShared, 'AGENTS.md'), 'utf8');
   assert(localPointer.includes('`runtime/AGENTS.md`'), 'local hub pointer links to the installed runtime contract');
