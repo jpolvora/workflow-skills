@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.4** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.5** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -73,6 +73,15 @@ Runs a queue of specs one at a time. A blank `/ws-spec-multi` scan lists only pe
 ### 1.4 Direct problem solving — `ws-fable-method`
 
 A 7-step loop for work that does not warrant a full pipeline: classify the problem, define done, gather primary-source evidence, decide, act surgically, verify adversarially, report. Triviality and Fit gates keep it from firing on trivial asks.
+
+### 1.5 Specialized host subagents & projections
+
+Projects canonical skills (`.agents/skills/ws-*`) into native host agent definitions (`.cursor/agents/ws-step-*.md`). Subagents run with zero-turn bootstrap overhead, direct embedded domain instructions, and canonical JSON `step-output` schemas.
+
+- **Host detection & autoconfig:** `ws-configure-project --section specializedSubagents` autodetects Cursor workspaces (`.cursor/`) and compiles projections automatically.
+- **Compiler CLI (`compile_host_subagents.cjs`):** Supports `--repo-root`, `--host <cursor|claude|generic|auto>`, `--prefix`, `--clean`, `--check` (drift detection), `--json`, and `--force`.
+- **Integrity protection:** Signs generated files with `@generated` SHA-256 hashes and non-clobber protection so human-authored custom agents are never overwritten or deleted.
+- **Fail-safe fallback ladder:** `host-dispatch.md` implements Tier 1 (named specialized subagent) → Tier 2 (generic subagent reading `SKILL.md`) → Tier 3 (inline execution), preserving 100% harness portability.
 
 ---
 
@@ -274,6 +283,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-06).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.5** | Sep 9 | **Specialized subagents compiler & host projections:** `compile_host_subagents.cjs` projects canonical skills into `.cursor/agents/ws-step-*.md` with zero-turn bootstrap, `@generated` collision-proof signatures, drift check (`--check`), auto-configure wizard section, and fail-safe 3-tier dispatch ladder |
 | **0.4.3** | Sep 7 | **External spec-memo companions:** `externalSkills` for `ws-memo` / `ws-session-tracking`; Always-applied no longer mandates them; consumer CATALOG membership links shipped `skill-dependencies.json`; `ws-check-harness` treats missing companions as intentional omission |
 | **0.3.63** | Sep 6 | **OpenCode agentic PR reviews + new skills:** CI switches active reviewer to OpenCode (`opencode-code-review.yml`); ships `ws-benchmarks` (interactive benchmark suite) and `ws-spec-manager` (unified spec router); catalog counts and dependency graph aligned (45 workflows / 8 extra) |
 | **0.3.56** | Sep 3 | **Skill family naming migration (`ws-{family}-{verb}`):** Renamed 10 skills across `spec`, `spec-provider`, and `plan` families (`ws-spec-write`, `ws-spec-update`, `ws-spec-multi`, `ws-spec-provider-github`, `ws-spec-provider-azure-devops`, `ws-spec-provider-local`, `ws-plan-write`, `ws-plan-verify`, `ws-plan-update`, `ws-plan-interview`); fail-closed harness gate `ws-(?!spec-).*spec`; anti-regression memory hook in `ws-spec-update` |

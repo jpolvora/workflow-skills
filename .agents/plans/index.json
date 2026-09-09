@@ -1,8 +1,78 @@
 {
   "schemaVersion": 1,
-  "revision": 18,
-  "generatedAt": "2026-09-05T02:30:46Z",
+  "revision": 24,
+  "generatedAt": "2026-09-09T13:05:24Z",
   "workflows": [
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T191636Z.state.md",
+      "stateSha256": "8c996d503a63fd115ff8de0a12478f12b4acfe7a50cc9389fcb965a858580864",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-12T20:43:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260812T191636Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T204614Z.state.md",
+      "stateSha256": "fd5ac96efdea7646792ba05c72a78f59eaa441c34bf19fa042662fd61dad2dfb",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-12T20:47:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260812T204614Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260815T171347Z.state.md",
+      "stateSha256": "335b36e5c5ae3dfc7af26664b8bfc7d2df8f6269d14b3edb163c8fde1e18417a",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-15T19:12:13Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260815T171347Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260822T204000Z.state.md",
+      "stateSha256": "cf3437a6a688799461c9c02caf0d0c49e24607697bdc598685d895145be2a9e8",
+      "status": "implemented",
+      "currentStep": 0,
+      "updatedAt": "2026-08-22T21:30:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260822T204000Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260823T151035Z.state.md",
+      "stateSha256": "23d18a3c58a17ba8dc458e21f424c880fe5e5e7da2e8cd8c1c07c2128fed3f5f",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-23T16:32:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260823T151035Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-spec-multi",
+      "statePath": ".agents/plans/ws-spec-multi/ms-20260903T104720Z.state.md",
+      "stateSha256": "1285043432fa2082993d10751124dc222b35b1b5eb2293c74c435d910692a863",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-09-03T11:20:45Z",
+      "runPath": ".agents/plans/ws-spec-multi/ms-20260903T104720Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-spec-multi",
+      "statePath": ".agents/plans/ws-spec-multi/ms-20260905T015320Z.state.md",
+      "stateSha256": "fb217d59a08e9d35393de9a5d96a9ea294d07ac30d9a8cf52a82e518f185ba18",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-09-05T01:53:20Z",
+      "runPath": ".agents/plans/ws-spec-multi/ms-20260905T015320Z.state.json"
+    },
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
       "slug": "agents-skills-as-sot",
@@ -12,7 +82,7 @@
       "status": "completed",
       "currentStep": 10,
       "updatedAt": "2026-08-08T08:30:09Z",
-      "runPath": ".agents/plans/agents-skills-as-sot/run.json"
+      "runPath": ".agents/plans/agents-skills-as-sot/agents-skills-as-sot-20260808T072631Z.state.json"
     },
     {
       "workflowId": "auto-mode-model-preferences",
@@ -23,7 +93,7 @@
       "status": "completed",
       "currentStep": 6,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/auto-mode-model-preferences/auto-mode-model-preferences.archive/run.json"
+      "runPath": ".agents/plans/auto-mode-model-preferences/auto-mode-model-preferences.archive/auto-mode-model-preferences.state.json"
     },
     {
       "workflowId": "autoload-skills-overlap-audit-20260808T154444Z",
@@ -34,7 +104,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-08T22:30:00Z",
-      "runPath": ".agents/plans/autoload-skills-overlap-audit/run.json"
+      "runPath": ".agents/plans/autoload-skills-overlap-audit/autoload-skills-overlap-audit-20260808T154444Z.state.json"
     },
     {
       "workflowId": "check-harness-upstream-sot-20260808T020602Z",
@@ -45,7 +115,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-08T22:34:00Z",
-      "runPath": ".agents/plans/check-harness-upstream-sot/run.json"
+      "runPath": ".agents/plans/check-harness-upstream-sot/check-harness-upstream-sot-20260808T020602Z.state.json"
     },
     {
       "workflowId": "clear-learning-memory-instructions-20260730T122000Z",
@@ -56,7 +126,7 @@
       "status": "completed",
       "currentStep": 6,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/clear-learning-memory-instructions/clear-learning-memory-instructions-20260730T122000Z.archive/run.json"
+      "runPath": ".agents/plans/clear-learning-memory-instructions/clear-learning-memory-instructions-20260730T122000Z.archive/clear-learning-memory-instructions-20260730T122000Z.state.json"
     },
     {
       "workflowId": "configurable-consumer-autoload-20260810T194555Z",
@@ -67,7 +137,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-10T20:09:04Z",
-      "runPath": ".agents/plans/configurable-consumer-autoload/run.json"
+      "runPath": ".agents/plans/configurable-consumer-autoload/configurable-consumer-autoload-20260810T194555Z.state.json"
     },
     {
       "workflowId": "continuous-ai-verification-quality-gates-20260728T091100Z",
@@ -78,7 +148,7 @@
       "status": "completed",
       "currentStep": 10,
       "updatedAt": "2026-07-28T10:55:34Z",
-      "runPath": ".agents/plans/continuous-ai-verification-quality-gates/continuous-ai-verification-quality-gates-20260728T091100Z.state.archive/run.json"
+      "runPath": ".agents/plans/continuous-ai-verification-quality-gates/continuous-ai-verification-quality-gates-20260728T091100Z.state.archive/continuous-ai-verification-quality-gates-20260728T091100Z.state.json"
     },
     {
       "workflowId": "deepseek-harness-improvements-20260816T204345Z",
@@ -89,7 +159,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-24T02:35:46Z",
-      "runPath": ".agents/plans/deepseek-harness-improvements/run.json"
+      "runPath": ".agents/plans/deepseek-harness-improvements/deepseek-harness-improvements-20260816T204345Z.state.json"
     },
     {
       "workflowId": "enable-auditing-20260812T020840Z",
@@ -100,7 +170,7 @@
       "status": "completed",
       "currentStep": 8,
       "updatedAt": "2026-08-12T19:13:30Z",
-      "runPath": ".agents/plans/enable-auditing/run.json"
+      "runPath": ".agents/plans/enable-auditing/enable-auditing-20260812T020840Z.state.json"
     },
     {
       "workflowId": "fix-pr-batch-plan-exec-20260825T163900Z",
@@ -111,7 +181,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-25T17:57:43Z",
-      "runPath": ".agents/plans/fix-pr-batch-plan-exec/run.json"
+      "runPath": ".agents/plans/fix-pr-batch-plan-exec/fix-pr-batch-plan-exec-20260825T163900Z.state.json"
     },
     {
       "workflowId": "hermes-spec-to-pr-enhancements-20260905T015600Z",
@@ -122,7 +192,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-05T02:21:19Z",
-      "runPath": ".agents/plans/hermes-spec-to-pr-enhancements/run.json"
+      "runPath": ".agents/plans/hermes-spec-to-pr-enhancements/hermes-spec-to-pr-enhancements-20260905T015600Z.state.json"
     },
     {
       "workflowId": "interview-project-context-auto-answer-20260808T034812Z",
@@ -133,7 +203,7 @@
       "status": "completed",
       "currentStep": 6,
       "updatedAt": "2026-08-08T04:13:29Z",
-      "runPath": ".agents/plans/interview-project-context-auto-answer/run.json"
+      "runPath": ".agents/plans/interview-project-context-auto-answer/interview-project-context-auto-answer-20260808T034812Z.state.json"
     },
     {
       "workflowId": "post-workflow-worktree-tag-cleanup-20260801T180142Z",
@@ -144,7 +214,7 @@
       "status": "completed",
       "currentStep": 8,
       "updatedAt": "2026-08-01T18:51:10Z",
-      "runPath": ".agents/plans/post-workflow-worktree-tag-cleanup/post-workflow-worktree-tag-cleanup-20260801T180142Z.archive/run.json"
+      "runPath": ".agents/plans/post-workflow-worktree-tag-cleanup/post-workflow-worktree-tag-cleanup-20260801T180142Z.archive/post-workflow-worktree-tag-cleanup-20260801T180142Z.state.json"
     },
     {
       "workflowId": "pr-232-20260822T225000Z",
@@ -155,7 +225,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-22T23:00:20Z",
-      "runPath": ".agents/plans/pr-232/run.json"
+      "runPath": ".agents/plans/pr-232/pr-232-20260822T225000Z.state.json"
     },
     {
       "workflowId": "provider-fetch-visual-attachments-20260903T131113Z",
@@ -165,8 +235,8 @@
       "stateSha256": "6c4ee85b84706f96fd8fc0f29d50ff8e84aee7424d5feda42b4d0543d7d39428",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-03T15:12:17Z",
-      "runPath": ".agents/plans/provider-fetch-visual-attachments/run.json"
+      "updatedAt": "2026-09-03T15:09:12Z",
+      "runPath": ".agents/plans/provider-fetch-visual-attachments/provider-fetch-visual-attachments-20260903T131113Z.state.json"
     },
     {
       "workflowId": "refine-ws-activity-report-human-timing-20260812T023033Z",
@@ -177,7 +247,7 @@
       "status": "completed",
       "currentStep": 8,
       "updatedAt": "2026-08-12T02:30:33Z",
-      "runPath": ".agents/plans/refine-ws-activity-report-human-timing/run.json"
+      "runPath": ".agents/plans/refine-ws-activity-report-human-timing/refine-ws-activity-report-human-timing-20260812T023033Z.state.json"
     },
     {
       "workflowId": "remove-consumer-agents-md-requirement-20260807T214300Z",
@@ -188,7 +258,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-03T13:12:02Z",
-      "runPath": ".agents/plans/remove-consumer-agents-md-requirement/run.json"
+      "runPath": ".agents/plans/remove-consumer-agents-md-requirement/workflow.state.json"
     },
     {
       "workflowId": "skill-family-naming-20260902T215014Z",
@@ -199,7 +269,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-05T02:30:46Z",
-      "runPath": ".agents/plans/skill-family-naming/run.json"
+      "runPath": ".agents/plans/skill-family-naming/skill-family-naming-20260902T215014Z.state.json"
     },
     {
       "workflowId": "skill-loaded-banner-instruction",
@@ -210,7 +280,7 @@
       "status": "completed",
       "currentStep": 6,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/skill-loaded-banner-instruction/skill-loaded-banner-instruction.archive/run.json"
+      "runPath": ".agents/plans/skill-loaded-banner-instruction/skill-loaded-banner-instruction.archive/skill-loaded-banner-instruction.state.json"
     },
     {
       "workflowId": "spec-dor-tdd-refinement-hardening-20260828T042229Z",
@@ -221,7 +291,18 @@
       "status": "active",
       "currentStep": 0,
       "updatedAt": "2026-08-28T04:26:15Z",
-      "runPath": ".agents/plans/spec-dor-tdd-refinement-hardening/run.json"
+      "runPath": ".agents/plans/spec-dor-tdd-refinement-hardening/spec-dor-tdd-refinement-hardening-20260828T042229Z.state.json"
+    },
+    {
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "slug": "specialized-subagents-compiler",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/specialized-subagents-compiler/specialized-subagents-compiler-20260909T120930Z.state.md",
+      "stateSha256": "bbc71138ffe9e15b9e83ca4defb6e2e187b2ed22cb6b38ce2f2ff10f769c8533",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-09T13:03:58Z",
+      "runPath": ".agents/plans/specialized-subagents-compiler/specialized-subagents-compiler-20260909T120930Z.state.json"
     },
     {
       "workflowId": "testing-executor-model-20260812T192105Z",
@@ -232,7 +313,7 @@
       "status": "completed",
       "currentStep": 8,
       "updatedAt": "2026-08-15T16:55:00Z",
-      "runPath": ".agents/plans/testing-executor-model/run.json"
+      "runPath": ".agents/plans/testing-executor-model/testing-executor-model-20260812T192105Z.state.json"
     },
     {
       "workflowId": "us-101",
@@ -243,7 +324,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-07-22T20:22:30Z",
-      "runPath": ".agents/plans/us-101/us-101.archive/run.json"
+      "runPath": ".agents/plans/us-101/us-101.archive/us-101.state.json"
     },
     {
       "workflowId": "us-103-20260722-1726",
@@ -254,7 +335,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-07-22T17:29:50Z",
-      "runPath": ".agents/plans/us-103/us-103.archive/run.json"
+      "runPath": ".agents/plans/us-103/us-103.archive/us-103.state.json"
     },
     {
       "workflowId": "us-113-20260723-2121",
@@ -265,7 +346,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-07-23T21:26:46Z",
-      "runPath": ".agents/plans/us-113/us-113-20260723-2121.archive/run.json"
+      "runPath": ".agents/plans/us-113/us-113-20260723-2121.archive/us-113-20260723-2121.state.json"
     },
     {
       "workflowId": "us-125-20260725T220300Z",
@@ -276,7 +357,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-07-25T22:08:19Z",
-      "runPath": ".agents/plans/us-125/us-125-20260725T220300Z.archive/run.json"
+      "runPath": ".agents/plans/us-125/us-125-20260725T220300Z.archive/us-125-20260725T220300Z.state.json"
     },
     {
       "workflowId": "us-129-20260725T231200Z",
@@ -287,7 +368,7 @@
       "status": "completed",
       "currentStep": 6,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/us-129/us-129-20260725T231200Z.archive/run.json"
+      "runPath": ".agents/plans/us-129/us-129-20260725T231200Z.archive/us-129-20260725T231200Z.state.json"
     },
     {
       "workflowId": "us-134-20260725T213900Z",
@@ -298,7 +379,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-07-25T21:39:00Z",
-      "runPath": ".agents/plans/us-134/us-134-20260725T213900Z.archive/run.json"
+      "runPath": ".agents/plans/us-134/us-134-20260725T213900Z.archive/us-134-20260725T213900Z.state.json"
     },
     {
       "workflowId": "us-150-20260726T204200Z",
@@ -309,7 +390,7 @@
       "status": "completed",
       "currentStep": 8,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/us-150/us-150-20260726T204200Z.archive/run.json"
+      "runPath": ".agents/plans/us-150/us-150-20260726T204200Z.archive/us-150-20260726T204200Z.state.json"
     },
     {
       "workflowId": "us-153-20260727T042800Z",
@@ -320,7 +401,7 @@
       "status": "completed",
       "currentStep": 6,
       "updatedAt": "2026-07-27T04:55:01Z",
-      "runPath": ".agents/plans/us-153/us-153-20260727T042800Z.archive/run.json"
+      "runPath": ".agents/plans/us-153/us-153-20260727T042800Z.archive/us-153-20260727T042800Z.state.json"
     },
     {
       "workflowId": "us-156",
@@ -331,7 +412,7 @@
       "status": "completed",
       "currentStep": 6,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/us-156/us-156.archive/run.json"
+      "runPath": ".agents/plans/us-156/us-156.archive/us-156.state.json"
     },
     {
       "workflowId": "us-168-resolve-review-thread",
@@ -342,7 +423,7 @@
       "status": "completed",
       "currentStep": 10,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/us-168-resolve-review-thread/us-168-resolve-review-thread.archive/run.json"
+      "runPath": ".agents/plans/us-168-resolve-review-thread/us-168-resolve-review-thread.archive/us-168-resolve-review-thread.state.json"
     },
     {
       "workflowId": "us-183-20260809T015646Z",
@@ -353,7 +434,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-09T03:19:07Z",
-      "runPath": ".agents/plans/us-183/run.json"
+      "runPath": ".agents/plans/us-183/us-183-20260809T015646Z.state.json"
     },
     {
       "workflowId": "us-202-20260813T181505Z",
@@ -364,7 +445,7 @@
       "status": "completed",
       "currentStep": 10,
       "updatedAt": "2026-08-13T19:20:14Z",
-      "runPath": ".agents/plans/us-202/run.json"
+      "runPath": ".agents/plans/us-202/us-202-20260813T181505Z.state.json"
     },
     {
       "workflowId": "us-209-20260815T175409Z",
@@ -375,7 +456,7 @@
       "status": "completed",
       "currentStep": 5,
       "updatedAt": "2026-08-24T02:35:46Z",
-      "runPath": ".agents/plans/us-209/run.json"
+      "runPath": ".agents/plans/us-209/us-209-20260815T175409Z.state.json"
     },
     {
       "workflowId": "us-210-20260815T181800Z",
@@ -386,7 +467,7 @@
       "status": "completed",
       "currentStep": 5,
       "updatedAt": "2026-08-15T19:12:13Z",
-      "runPath": ".agents/plans/us-210/run.json"
+      "runPath": ".agents/plans/us-210/us-210-20260815T181800Z.state.json"
     },
     {
       "workflowId": "us-211-20260815T165926Z",
@@ -397,7 +478,7 @@
       "status": "cancelled",
       "currentStep": 0,
       "updatedAt": "2026-08-24T02:35:46Z",
-      "runPath": ".agents/plans/us-211/run.json"
+      "runPath": ".agents/plans/us-211/us-211-20260815T165926Z.state.json"
     },
     {
       "workflowId": "us-211-20260815T171820Z",
@@ -408,7 +489,7 @@
       "status": "completed",
       "currentStep": 5,
       "updatedAt": "2026-08-24T02:35:46Z",
-      "runPath": ".agents/plans/us-211/run.json"
+      "runPath": ".agents/plans/us-211/us-211-20260815T171820Z.state.json"
     },
     {
       "workflowId": "us-217-20260819T121800Z",
@@ -419,7 +500,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-24T02:35:46Z",
-      "runPath": ".agents/plans/us-217/run.json"
+      "runPath": ".agents/plans/us-217/us-217-20260819T121800Z.state.json"
     },
     {
       "workflowId": "us-220-20260819T132248Z",
@@ -430,7 +511,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-19T13:32:54Z",
-      "runPath": ".agents/plans/us-220/run.json"
+      "runPath": ".agents/plans/us-220/us-220-20260819T132248Z.state.json"
     },
     {
       "workflowId": "us-235-20260823T151631Z",
@@ -441,7 +522,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-23T16:33:01Z",
-      "runPath": ".agents/plans/us-235/run.json"
+      "runPath": ".agents/plans/us-235/us-235-20260823T151631Z.state.json"
     },
     {
       "workflowId": "us-236-20260823T195756Z",
@@ -452,7 +533,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-23T22:01:45Z",
-      "runPath": ".agents/plans/us-236/run.json"
+      "runPath": ".agents/plans/us-236/us-236-20260823T195756Z.state.json"
     },
     {
       "workflowId": "us-243-20260826T052032Z",
@@ -463,7 +544,7 @@
       "status": "active",
       "currentStep": 9,
       "updatedAt": "2026-08-26T05:36:22Z",
-      "runPath": ".agents/plans/us-243/run.json"
+      "runPath": ".agents/plans/us-243/us-243-20260826T052032Z.state.json"
     },
     {
       "workflowId": "us-250-20260827T143734Z",
@@ -474,7 +555,7 @@
       "status": "active",
       "currentStep": 5,
       "updatedAt": "2026-08-27T15:12:08Z",
-      "runPath": ".agents/plans/us-250/run.json"
+      "runPath": ".agents/plans/us-250/us-250-20260827T143734Z.state.json"
     },
     {
       "workflowId": "us-272-20260903T165000Z",
@@ -484,8 +565,8 @@
       "stateSha256": "ebfaf64624938ba1f291603797e23cba7a847841f64f85041f6b5d78588cd49e",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-03T17:51:28Z",
-      "runPath": ".agents/plans/us-272/run.json"
+      "updatedAt": "2026-09-03T17:44:53Z",
+      "runPath": ".agents/plans/us-272/us-272-20260903T165000Z.state.json"
     },
     {
       "workflowId": "us-275-20260904T020000Z",
@@ -496,7 +577,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-04T02:50:19Z",
-      "runPath": ".agents/plans/us-275/run.json"
+      "runPath": ".agents/plans/us-275/us-275-20260904T020000Z.state.json"
     },
     {
       "workflowId": "us-global-vs-project-skill-installation",
@@ -507,7 +588,7 @@
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-08-01T16:52:02Z",
-      "runPath": ".agents/plans/global-vs-project-skill-installation/us-global-vs-project-skill-installation.archive/run.json"
+      "runPath": ".agents/plans/global-vs-project-skill-installation/us-global-vs-project-skill-installation.archive/us-global-vs-project-skill-installation.state.json"
     },
     {
       "workflowId": "workflow-bootstrap-feature-branch-20260812T180942Z",
@@ -518,7 +599,7 @@
       "status": "completed",
       "currentStep": 8,
       "updatedAt": "2026-08-12T18:55:00Z",
-      "runPath": ".agents/plans/workflow-bootstrap-feature-branch/run.json"
+      "runPath": ".agents/plans/workflow-bootstrap-feature-branch/workflow-bootstrap-feature-branch-20260812T180942Z.state.json"
     },
     {
       "workflowId": "ws-doctor-20260812T015156Z",
@@ -529,7 +610,7 @@
       "status": "completed",
       "currentStep": 10,
       "updatedAt": "2026-08-12T04:07:51Z",
-      "runPath": ".agents/plans/ws-doctor/run.json"
+      "runPath": ".agents/plans/ws-doctor/ws-doctor-20260812T015156Z.state.json"
     },
     {
       "workflowId": "ws-doctor-204-205-20260814T013818Z",
@@ -540,7 +621,7 @@
       "status": "completed",
       "currentStep": 10,
       "updatedAt": "2026-08-14T11:23:51Z",
-      "runPath": ".agents/plans/ws-doctor-204-205/run.json"
+      "runPath": ".agents/plans/ws-doctor-204-205/ws-doctor-204-205-20260814T013818Z.state.json"
     }
   ]
 }

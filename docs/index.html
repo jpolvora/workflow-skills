@@ -80,6 +80,7 @@
 
 <aside class="dot-nav" aria-label="Section navigation">
   <a href="#features" class="dot-nav-item"><span class="tooltip">Features</span></a>
+  <a href="#specialized-subagents" class="dot-nav-item"><span class="tooltip">Subagents</span></a>
   <a href="#how-it-works" class="dot-nav-item"><span class="tooltip">How It Works</span></a>
   <a href="#workflows" class="dot-nav-item"><span class="tooltip">Workflows</span></a>
   <a href="#catalog" class="dot-nav-item"><span class="tooltip">Catalog</span></a>
@@ -97,6 +98,7 @@
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
+      <a href="#specialized-subagents">Subagents</a>
       <a href="#how-it-works">How It Works</a>
       <a href="#workflows">Workflows</a>
       <a href="#catalog">Catalog</a>
@@ -121,11 +123,19 @@
 </nav>
 
 <header class="hero">
+  <div style="display:flex;justify-content:center;margin-bottom:14px;">
+    <a href="#specialized-subagents" class="hero-announcement">
+      <span class="announcement-badge">NEW IN v0.4.5</span>
+      <span class="announcement-title">Specialized Subagents:</span>
+      <span class="announcement-desc">Native host projections for Cursor &amp; zero-turn bootstrap</span>
+      <span class="announcement-link">Explore &rarr;</span>
+    </a>
+  </div>
   <a href="#features" class="hero-badge">
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.3.57</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.5</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
@@ -198,6 +208,13 @@
   </div>
   <div class="role-matrix-grid">
   <!-- efficiency-verifiability:start -->
+    <div class="role-matrix-card featured-highlight-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">⚡</div>
+        <h4 class="role-card-title">Specialized host subagents (Cursor &amp; agents)</h4>
+      </div>
+      <p class="role-card-desc">Compile canonical skills into host-native specialized subagents (<code>.cursor/agents/ws-step-*.md</code>) with zero-turn bootstrap overhead, direct embedded instructions, non-clobbering custom agent protection, and a fail-safe fallback ladder.</p>
+    </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">KB</div>
@@ -340,6 +357,100 @@
           <div class="vs-card-title">Anti-Regression Memory Engine</div>
         </div>
         <p class="vs-card-desc"><code>ws-self-learning</code> inspects project <code>MEMORY.md</code> and external spec-memo vaults before planning or editing, turning previous coding mistakes into hard rules that subagents must respect.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="specialized-subagents">
+  <div class="subagents-hero-card">
+    <div class="subagents-header-badge">Host Projections &bull; Zero-Turn Bootstrap</div>
+    <h2 style="font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: var(--text-heading); margin-bottom: 12px; letter-spacing: -0.03em;">
+      Specialized Host Subagents <span class="gradient-text">for Coding Agents</span>
+    </h2>
+    <p class="section-subtitle" style="margin: 0; max-width: 820px; font-size: 1.05rem;">
+      Compile canonical skills into host-native specialized subagents (<code style="color:var(--accent-cyan); background:rgba(56,189,248,0.1); padding:2px 6px; border-radius:4px;">.cursor/agents/ws-step-*.md</code>).
+      Subagents start instantly with embedded domain instructions and JSON output schemas&mdash;eliminating boot-time disk reads while preserving 100% harness portability.
+    </p>
+
+    <div class="subagents-grid">
+      <div class="subagents-pillar-card">
+        <div class="pillar-icon-wrap">⚡</div>
+        <div class="pillar-title">Zero-Turn Bootstrap</div>
+        <p class="pillar-desc">
+          Eliminates prompt token waste. Domain instructions, behavioral invariants, checklists, and the canonical <code>step-output</code> schema are baked directly into the agent definition. No turn spent reading <code>SKILL.md</code> on boot.
+        </p>
+      </div>
+
+      <div class="subagents-pillar-card">
+        <div class="pillar-icon-wrap">🛡️</div>
+        <div class="pillar-title">Collision-Proof Integrity</div>
+        <p class="pillar-desc">
+          Generated agents include <code>@generated</code> SHA-256 header signatures. Non-generated custom agents are never touched. Automatic drift detection (<code>--check</code>) warns if projections drift from canonical skills.
+        </p>
+      </div>
+
+      <div class="subagents-pillar-card">
+        <div class="pillar-icon-wrap">🪜</div>
+        <div class="pillar-title">Fail-Safe 3-Tier Fallback</div>
+        <p class="pillar-desc">
+          Tier 1 named specialized subagent (&commat;ws-step-*) &rarr; Tier 2 generic prompt reading SKILL.md &rarr; Tier 3 inline execution. The workflow never breaks if host tool capabilities differ or evolve.
+        </p>
+      </div>
+    </div>
+
+    <div class="subagents-showcase-split">
+      <div class="showcase-terminal-card">
+        <div class="showcase-header">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Generated Projection (.cursor/agents)
+          </h4>
+          <span class="showcase-header-tag">disable-model-invocation: true</span>
+        </div>
+        <pre class="code-snippet-box"><code>---
+name: ws-step-04-implement-tasks
+description: "Executes implementation tasks for ws-spec-to-pr. Reserved for orchestrator dispatch."
+disable-model-invocation: true
+---
+&lt;!-- @generated signed-content sha256:7a018f39... --&gt;
+# ws-step-04-implement-tasks
+
+## Behavioral Invariants &amp; Pre-Checks
+- Consult project MEMORY.md and stack rules before edits
+- Apply red-then-green TDD for acceptance criteria
+- Output parseable step-output JSON schema on exit</code></pre>
+      </div>
+
+      <div class="showcase-ladder-card">
+        <div class="showcase-header">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+            Adaptive Dispatch Ladder
+          </h4>
+          <span class="showcase-header-tag">host-dispatch.md</span>
+        </div>
+        <div class="ladder-step">
+          <span class="ladder-badge t1">Tier 1</span>
+          <div class="ladder-content">
+            <h5>Named Specialized Subagent</h5>
+            <p>Direct delegation to <code>ws-step-04-implement-tasks</code> with zero overhead and direct context handoff.</p>
+          </div>
+        </div>
+        <div class="ladder-step">
+          <span class="ladder-badge t2">Tier 2</span>
+          <div class="ladder-content">
+            <h5>Generic Subagent Prompt</h5>
+            <p>Dynamic fallback reading canonical <code>SKILL.md</code> when host lacks named subagent routing.</p>
+          </div>
+        </div>
+        <div class="ladder-step">
+          <span class="ladder-badge t3">Tier 3</span>
+          <div class="ladder-content">
+            <h5>Inline Step Execution</h5>
+            <p>Orchestrator adopts step persona temporarily if tool invocation is completely unsupported.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2480,6 +2591,23 @@ npx --yes github:jpolvora/workflow-skills --global
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p>Optional model preference for <strong>standard Step 7</strong> (testing). <code>modelsPreset</code> / <code>stepModels</code> overrides apply first. When set, the orchestrator prefers that model for the test executor subagent. Empty or omitted falls back to <code>defaults.executionModel</code>, then the active session model. Lite has no Testing step and does not read <code>testingModel</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q12 (Specialized Subagents) -->
+    <div class="faq-item" data-faq-cat="architecture" data-search="specialized subagents cursor compile compile_host_subagents projection zero-turn host-dispatch">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Architecture</span>
+          <span>How do Specialized Host Subagents work in Cursor and other IDEs?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Specialized subagents project canonical <code>.agents/skills/ws-*</code> definitions into native host agent formats, such as <code>.cursor/agents/ws-step-*.md</code>. Each compiled subagent embeds domain instructions, behavioral rules, and JSON schemas directly into its prompt with <code>disable-model-invocation: true</code>, eliminating the prompt token tax of reading <code>SKILL.md</code> on boot.</p>
+          <p>Canonical skills remain the single source of truth: <code>compile_host_subagents.cjs</code> signs generated files with <code>@generated</code> hashes to prevent clobbering human-authored agents and detects drift via <code>--check</code>. If specialized subagents are disabled or unsupported, the orchestrator automatically falls back to generic subagent prompts or inline execution.</p>
         </div>
       </div>
     </div>

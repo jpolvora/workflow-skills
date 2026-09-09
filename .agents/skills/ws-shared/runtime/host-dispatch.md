@@ -46,7 +46,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 ### Tier 1 — Native subagent tool (Specialized Named Subagent vs Generic Subagent)
 
 - **Specialized Named Subagent Dispatch (when enabled):**
-  - **Preconditions:** `defaults.specializedSubagents.enabled` is `true`, and the host supports named subagents (e.g. Cursor IDE `.cursor/agents/ws-step-*.md`).
+  - **Preconditions:** `defaults.specializedSubagents.enabled` is `true`, and the host supports named subagents (e.g. host agent directory projections matching `{prefix}-step-*.md`).
   - **Resolution:** The orchestrator targets the step-specific named subagent matching `{prefix}-step-{step}-{role}` (e.g. `ws-step-04-implement-tasks`).
   - **Zero-Turn Bootstrap:** Because the specialized subagent definition already contains the complete canonical skill instructions, invariants, and guidelines, the orchestrator prompt omits redundant skill markdown and transmits **discrete context pointers only** (see §5), achieving near-zero token bootstrap overhead.
   - **Fail-safe Fallback:** If the named specialized subagent is unavailable, missing, or errors, dispatch transparently falls back to generic subagent invocation (Tier 1 generic) or inline isolated execution (Tier 3) without failing the workflow run.
@@ -105,7 +105,7 @@ Projects can configure and customize subagent dispatch behavior in `.agents/skil
       "enabled": false,
       "_comment_enabled": "When true, compiles and targets host-native specialized subagents",
       "targetHost": "auto",
-      "_comment_targetHost": "Target host dialect: cursor | claude | generic | auto",
+      "_comment_targetHost": "Target host dialect: dialect-id | generic | auto",
       "agentPrefix": "ws"
     }
   }

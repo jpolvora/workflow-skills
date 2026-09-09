@@ -370,6 +370,13 @@ const indexPath = path.join(root, 'docs', 'index.html');
 let html = fs.readFileSync(indexPath, 'utf-8');
 
 const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
+    <div class="role-matrix-card featured-highlight-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">⚡</div>
+        <h4 class="role-card-title">Specialized host subagents (Cursor &amp; agents)</h4>
+      </div>
+      <p class="role-card-desc">Compile canonical skills into host-native specialized subagents (<code>.cursor/agents/ws-step-*.md</code>) with zero-turn bootstrap overhead, direct embedded instructions, non-clobbering custom agent protection, and a fail-safe fallback ladder.</p>
+    </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">KB</div>
@@ -420,6 +427,13 @@ if (featuresStart < 0 || featuresEnd < '</section>'.length || featuresGrid < 0 |
   process.exit(1);
 }
 html = html.slice(0, featuresInsertAt) + efficiencyFeatureBlock + html.slice(featuresInsertAt);
+
+// Sync hero version badge
+html = html.replace(
+  /(<a href="#features" class="hero-badge">[\s\S]*?<span style="color:var\(--accent-cyan\);font-family:var\(--font-mono\)">)v\d+\.\d+\.\d+(<\/span>)/,
+  `$1v${siteVersion}$2`
+);
+
 
 // Remove Portuguese section entirely
 const catPtStart = html.indexOf('<section id="catalogo">');

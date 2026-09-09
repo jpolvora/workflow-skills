@@ -45,7 +45,7 @@ Scan consumer **repo root** (not this skill package alone):
 | `memo` or `npx spec-memo` on PATH | `specMemo.cli` → `memo` (Recommended) |
 | CLI missing | Recommend `npm install -g spec-memo` or `specMemo.cli: "npx -y spec-memo"` before enable |
 | Non-empty `preview.dryRunCommand` already set | Keep current (**Recommended** unless `--force`) |
-| `.cursor/` or `.cursorrules` present | Suggest `defaults.specializedSubagents.targetHost: "cursor"` |
+| Host directory or rules marker detected | Suggest detected host dialect |
 | `package.json` scripts named like `preview`, `review:dry`, `pipeline-review`, `code-review:dry`, `*dry-run*review*`, `*review*dry*` | Suggest `npm run <script>` (or `npm run <script> -- …` only if the script docs require args) |
 | Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` / `python <relpath>` per extension ([`tools.md`](../ws-shared/runtime/tools.md) launchers) |
 | Consumer skill under `.agents/skills/` or `{globalSkillsRoot}` with id/name containing `preview`, `pipeline-review`, `dry-run`, or `code-review` (excluding packaged `ws-preview` / `ws-code-review` bodies) | Extract the primary Shell recipe from that `SKILL.md` (first concrete command block); cite skill path as source |
@@ -270,13 +270,13 @@ When spec-memo enabled, show [`MCP-TEMPLATE.json`](../ws-spec-memo/references/MC
 
 ## Specialized Subagents
 
-Configure optional projection of canonical workflow skills into host-native specialized subagents (e.g. `.cursor/agents/ws-step-*.md`).
+Configure optional projection of canonical workflow skills into host-native specialized subagents (e.g. host agent directory projections matching `{prefix}-step-*.md`).
 **Recommended default:** disabled (`defaults.specializedSubagents.enabled: false`).
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
 | `defaults.specializedSubagents.enabled` | boolean | `false` | When `true`, enables compilation and runtime dispatch to specialized subagents |
-| `defaults.specializedSubagents.targetHost` | string | `"auto"` | Target host dialect (`cursor`, `claude`, `generic`, `auto`) |
+| `defaults.specializedSubagents.targetHost` | string | `"auto"` | Target host dialect (`auto`, detected host, `generic`) |
 | `defaults.specializedSubagents.agentPrefix` | string | `"ws"` | Filename prefix for generated subagents (e.g. `ws-step-00-...`) |
 
 ### Gates
@@ -284,7 +284,7 @@ Configure optional projection of canonical workflow skills into host-native spec
 1. Gate: **Enable host-native specialized subagents projection?**
    - Options: **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
 2. When Yes: Gate: **Select target host dialect?**
-   - Options: **Detected (`cursor` if `.cursor/` exists, Recommended)** / `auto` / `claude` / `generic` / Keep current.
+   - Options: **Detected (Recommended)** / `auto` / `generic` / Keep current.
 3. On enable: immediately execute:
    ```bash
    node {skillsRoot}/ws-shared/runtime/scripts/compile_host_subagents.cjs --repo-root {repoRoot}
