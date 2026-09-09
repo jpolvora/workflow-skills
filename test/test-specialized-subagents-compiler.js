@@ -4,7 +4,7 @@
  * Tests:
  * - AC1: Schema validation for defaults.specializedSubagents
  * - AC2, AC3, AC4: ws-configure-project integration & auto-compile on enable
- * - AC5, AC6, AC7, AC8, AC9, AC15: Cursor subagent generation, frontmatter, readonly: true on Step 5, disable-model-invocation: true, signature header
+ * - AC5, AC6, AC7, AC8, AC9, AC15: Cursor subagent generation, frontmatter, no host readonly on Step 5, disable-model-invocation: true, signature header
  * - AC10, AC11, AC16: host-dispatch protocol, fail-safe fallback, context-pointer zero-turn bootstrap
  * - AC12, AC14: Hub layout classification, clean mode protecting custom agents
  * - AC13, NS2: Drift detection in check mode
@@ -249,6 +249,10 @@ function testHostDispatchContract() {
     content.includes('specializedSubagents'),
     'host-dispatch.md references defaults.specializedSubagents configuration'
   );
+  assert(
+    content.includes('Product-tree readonly'),
+    'host-dispatch.md warns that Step 5 product-readonly is not host question-only readonly'
+  );
 }
 
 // -------------------------------------------------------------
@@ -281,11 +285,15 @@ function testCompilerGeneration() {
   assert(/do not invoke autonomously/i.test(step00Content), 'Description restricts autonomous delegation');
   assert(!step00Content.includes('readonly: true'), 'Step 00 does not have readonly: true');
 
-  // Test Step 05 (readonly: true)
+  // Test Step 05: product-tree readonly in body, never host Ask-mode readonly
   const step05Path = path.join(agentsDir, 'ws-step-05-plan-verify.md');
   assert(fs.existsSync(step05Path), 'ws-step-05-plan-verify.md exists');
   const step05Content = fs.readFileSync(step05Path, 'utf8');
-  assert(step05Content.includes('readonly: true'), 'Step 05 plan-verify has readonly: true');
+  const step05Fm = step05Content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  assert(step05Fm, 'Step 05 has YAML frontmatter');
+  assert(!/^readonly:\s*true\s*$/m.test(step05Fm[1]), 'Step 05 frontmatter omits host readonly: true (question-only mode blocks Shell)');
+  assert(step05Content.includes('Product-tree readonly (not host question-only mode)'), 'Step 05 body states product-tree readonly contract');
+  assert(step05Content.includes('ac_ledger.cjs'), 'Step 05 body allows ledger/Shell verification');
   assert(step05Content.includes('name: ws-step-05-plan-verify'), 'Step 05 name is correct');
 
   // Test custom prefix

@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.4.6
+version: 0.4.7
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -25,7 +25,7 @@ Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Params: `{sharedDir}/confi
 
 | Intent | Alias | Rule |
 |--------|-------|------|
-| Step work | `dispatch-agent` | `generalPurpose`\|`shell`; `description: "STP step {N} — {Label}"`; readonly step 5; step 4 DAG ≤3 parallel only when `defaults.enableDag: true` |
+| Step work | `dispatch-agent` | `generalPurpose`\|`shell`; `description: "STP step {N} — {Label}"`; Step 5 product-tree readonly (never host `readonly`); step 4 DAG ≤3 parallel only when `defaults.enableDag: true` |
 | User gate | `user-gate` / `user-gate-auto` | **Every step boundary:** in normal mode use `user-gate` per [`gates.md`](../ws-shared/runtime/gates.md) (cached `askQuestionTool` when bound — MUST invoke it instead of text; markdown fallback MUST output only question/options with zero tool calls in that turn); ≥2 options; cancel → HS-1; **`autoMode`:** zero prompts of any kind at every boundary, auto-select recommended option (index 0) and proceed automatically |
 | Verification / SCM | `Shell` | `config.json.verification`; cite real `gh`/`git` output |
 | State | `read-state` / `write-state` | Hygiene before Progress Board |
@@ -64,7 +64,7 @@ First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `val
 | F0 Bootstrap | 0 | Orch + spec subagent | 0 |
 | F1 Planning | 1–3 | Planner | 1–3 |
 | F2 Implementation | 4 | Coder (sequential default; DAG ≤3 parallel when `enableDag: true`) | 4 |
-| F3 Verification | 5 | Verifier (readonly) | 5 |
+| F3 Verification | 5 | Verifier (product-tree readonly; Shell required) | 5 |
 | F4 Review + Fix | 6 (+ fix) | Reviewer + Coder | 6 |
 | F5 Testing | 7 | Verifier + optional browser | 7 |
 | F6 Ship + Fix-PR | 8–9 | Orch + shell (+ fix-pr) | 8 (ship) / 9 (fix-pr complete) |

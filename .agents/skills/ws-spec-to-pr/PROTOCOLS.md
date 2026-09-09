@@ -103,7 +103,9 @@ Orch calls **`dispatch-agent`** — never inline step impl.
 dispatch-agent:
   subagent_type: generalPurpose | shell
   description: "STP step {N} — {Label}"
-  readonly: true   # step 5 only
+  # Step 5 is product-tree immutable (no application source edits) but MUST
+  # run Shell and write {us-dir} reports/ledger. Never set host readonly
+  # (question-only session) on the verifier subagent.
   run_in_background: false   # step 4 parallel (DAG): ≤3 parallel, same worktree, no file overlap
 ```
 

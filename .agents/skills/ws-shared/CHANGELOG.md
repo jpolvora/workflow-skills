@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-09 10:57] Agent: Cursor Grok 4.6
+- **Prompt**: Generate `.cursor/agents` via `/ws-configure-project`; test specialized dispatch; diagnose Step 5 Ask-mode / readonly failure.
+- **Done**: Enabled `defaults.specializedSubagents` (cursor / `ws`); compiled 10 `ws-step-*` agents; stopped emitting host `readonly: true` on Step 5; product-tree readonly stays in the compiled prompt; dispatch docs and compiler tests updated.
+- **Result**: Compiler suite 15/15 pass; local `--check` OK; Step 5 frontmatter has no host readonly; custom `spec-to-pr.md` preserved. Learning: host `readonly` on the verifier maps to a question-only session and blocks Shell.
+
 ### [2026-09-09 09:00] Agent: Antigravity
 - **Prompt**: /ws-spec-to-pr .agents/specs/0071-specialized-subagents-compiler.spec.md
 - **Done**: Implemented optional host subagents compiler `compile_host_subagents.cjs`, `.cursor/agents` projection with `@generated` markers, autodetection in `auto_configure.cjs`, Tier 1 dispatch and fallback ladder in `host-dispatch.md`, hub layout classification, and 9/9 automated tests.
