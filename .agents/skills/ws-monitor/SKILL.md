@@ -32,7 +32,7 @@ Upstream issue text must be anonymized before filing: remove consumer repository
 /ws-monitor --watch --interval <seconds> --iterations <count>
 ```
 
-The command observes all workflow folders under the configured `plans.dir` by default. Use `--json` for machine-readable output and `--report <path>` to save a consumer-local report. `--watch` requires `--iterations` and repeats snapshots for that bounded count.
+The command observes all workflow folders under the configured `plans.dir` by default. Use `--json` for machine-readable output and `--report <path>` to save a consumer-local report. `--watch` requires positive-integer `--iterations` and repeats snapshots for that bounded count; `--interval` must also be a positive integer when supplied.
 
 ## Steps
 

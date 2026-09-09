@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
 const script = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs');
 const require = createRequire(import.meta.url);
-const { parseArgs } = require(script);
+const { parseArgs, classifyWorkflow } = require(script);
 const tempRoots = [];
 
 function write(file, content) {
@@ -27,6 +27,15 @@ function run(args, cwd) {
     encoding: 'utf8',
     env: { ...process.env },
   });
+}
+
+const importProbe = cp.spawnSync(
+  process.execPath,
+  ['-e', `require(${JSON.stringify(script)}); process.stdout.write('import-ok\\n');`],
+  { cwd: repoRoot, encoding: 'utf8', env: { ...process.env } },
+);
+if (importProbe.status !== 0 || importProbe.stdout.trim() !== 'import-ok') {
+  throw new Error(`monitor import has side effects: ${importProbe.stderr || importProbe.stdout}`);
 }
 
 function assertMissingValue(args) {
@@ -124,14 +133,54 @@ for (const artifact of [
   `step-03-${markdownSlug}.plan.exec.md`,
   `step-05-${markdownSlug}.plan.report.md`,
 ]) {
-  write(path.join(markdownWorkflowDir, artifact), '');
+  write(path.join(markdownWorkflowDir, artifact), 'artifact\n');
 }
+const emptySlug = 'empty-demo';
+const emptyWorkflowDir = path.join(root, '.agents', 'plans', emptySlug);
+write(
+  path.join(emptyWorkflowDir, 'wf-empty.state.json'),
+  JSON.stringify({
+    stateVersion: 3,
+    revision: 1,
+    workflowId: 'wf-empty',
+    slug: emptySlug,
+    workflowType: 'standard',
+    status: 'active',
+    currentStep: 1,
+    completedSteps: [0],
+    skippedSteps: [],
+    verificationScore: 9,
+  }),
+);
+write(path.join(emptyWorkflowDir, `step-00-${emptySlug}.spec.md`), '');
 const transcripts = path.join(root, 'transcripts');
 write(path.join(transcripts, 'agent.jsonl'), 'ENOENT while loading build_dispatch_context; unsupported model id\n');
 
 const unboundedWatch = run(['--repo-root', root, '--watch', '--json'], root);
 if (unboundedWatch.status === 0 || !unboundedWatch.stderr.includes('--watch requires --iterations <count>')) {
   throw new Error('monitor did not reject unbounded watch mode');
+}
+for (const [flag, value] of [
+  ['--iterations', '0'],
+  ['--iterations', 'not-a-number'],
+  ['--interval', '0'],
+  ['--interval', 'not-a-number'],
+]) {
+  const invalidNumeric = run(
+    [
+      '--repo-root',
+      root,
+      '--watch',
+      ...(flag === '--interval' ? ['--iterations', '1'] : []),
+      flag,
+      value,
+      '--json',
+    ],
+    root,
+  );
+  if (invalidNumeric.status === 0 || !invalidNumeric.stderr.includes(`${flag} requires a positive integer`)) {
+    throw new Error(`monitor did not reject invalid ${flag} value`);
+  }
 }
 
 const result = run([
@@ -162,8 +211,16 @@ const expectedPaths = report.workflows
 if (!expectedPaths.includes(`.agents/plans/${slug}/step-00-${slug}.spec.md`)) {
   throw new Error('monitor did not report expected artifact paths from repository root');
 }
-if (!expectedPaths.includes(`.agents/plans/${slug}`)) {
-  throw new Error('monitor did not report score gate evidence from repository root');
+if (
+  report.findings
+    .filter((finding) => finding.code === 'missing-artifact')
+    .some((finding) => finding.message.includes('scoreAndRefine'))
+) {
+  throw new Error('monitor duplicated the score gate as a missing artifact');
+}
+const scoreDrift = report.findings.find((finding) => finding.code === 'step-drift');
+if (!scoreDrift?.evidence.includes(`.agents/plans/${slug}`)) {
+  throw new Error('monitor did not report score drift evidence from repository root');
 }
 const markdownResult = run(['--repo-root', root, '--slug', markdownSlug, '--json'], root);
 if (markdownResult.status !== 0) {
@@ -176,6 +233,27 @@ if (!markdownWorkflow || !markdownWorkflow.completedSteps.includes(5)) {
 }
 if (markdownWorkflow.findings.some((finding) => finding.code === 'missing-artifact')) {
   throw new Error('monitor reported false missing artifacts for markdown state');
+}
+const emptyResult = run(['--repo-root', root, '--slug', emptySlug, '--json'], root);
+if (emptyResult.status !== 0) {
+  throw new Error(emptyResult.stderr || emptyResult.stdout);
+}
+const emptyReport = JSON.parse(emptyResult.stdout);
+if (!emptyReport.findings.some((finding) => finding.code === 'missing-artifact')) {
+  throw new Error('monitor treated an empty artifact as present');
+}
+const legacyFindings = classifyWorkflow(
+  { slug: 'legacy-demo', currentStep: 0, verificationScore: 9 },
+  root,
+  {
+    events: [{ type: 'finish', step: 4, filesTouched: ['src/legacy.js'] }],
+    errors: [],
+  },
+  9,
+  root,
+);
+if (legacyFindings.some((finding) => finding.code === 'empty-files-touched')) {
+  throw new Error('monitor warned on non-empty legacy filesTouched array');
 }
 if (!fs.existsSync(path.join(root, '.agents/plans/monitor-demo/workflow-monitor.report.md'))) {
   throw new Error('monitor did not write the explicit report path');

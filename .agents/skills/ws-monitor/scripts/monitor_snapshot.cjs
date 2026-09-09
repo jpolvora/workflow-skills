@@ -54,6 +54,15 @@ function readJson(file) {
   }
 }
 
+function isNonEmptyFile(file) {
+  try {
+    const stat = fs.statSync(file);
+    return stat.isFile() && stat.size > 0;
+  } catch {
+    return false;
+  }
+}
+
 function readState(file) {
   const jsonFile = file.endsWith('.state.json') ? file : file.replace(/\.state\.md$/, '.state.json');
   const json = readJson(jsonFile);
@@ -118,7 +127,7 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
     path: toRepoRelative(repoRoot, path.join(workflowDir, name), { allowOutside: true }),
     name,
     reason,
-    present: fs.existsSync(path.join(workflowDir, name)),
+    present: isNonEmptyFile(path.join(workflowDir, name)),
   });
   if (Number(state.currentStep) >= 1 || isCompleted(state, 0)) add(`step-00-${slug}.spec.md`, 'Step 0 completed');
   if (Number(state.currentStep) >= 2 || isCompleted(state, 1)) add(`step-01-${slug}.plan.md`, 'Step 1 completed');
@@ -135,14 +144,6 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
     add(`step-07-${slug}.testing.report.md`, 'Step 7 completed');
   }
   if (Number(state.currentStep) >= 9 || isCompleted(state, 8)) add(`step-08-${slug}.result.md`, 'Step 8 completed');
-  if (Number(state.currentStep) > 5 && Number(state.verificationScore) < minVerifyScore) {
-    expected.push({
-      path: toRepoRelative(repoRoot, workflowDir, { allowOutside: true }),
-      name: 'scoreAndRefine',
-      reason: `Step 5 score must reach ${minVerifyScore} before Step 6`,
-      present: false,
-    });
-  }
   return expected;
 }
 
@@ -172,7 +173,8 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
       addFinding(findings, 'warning', 'package-version-unknown', 'Telemetry event has packageVersion "unknown"', []);
     }
     if (event.type === 'finish' && event.substep === 'scoreAndRefine') continue;
-    const touched = event.filesTouched || {};
+    const rawTouched = event.filesTouched ?? event.files_touched;
+    const touched = Array.isArray(rawTouched) ? { created: rawTouched } : (rawTouched || {});
     const hasTouched = ['created', 'modified', 'deleted'].some((key) => Array.isArray(touched[key]) && touched[key].length);
     if (event.type === 'finish' && event.step !== 5 && MUTATING_STEPS.has(Number(event.step)) && event.skipReason == null && !hasTouched) {
       addFinding(findings, 'warning', 'empty-files-touched', `Completed mutating Step ${event.step} reported no filesTouched`, []);
@@ -346,6 +348,14 @@ function sleep(seconds) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
 }
 
+function requirePositiveInteger(value, token) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number <= 0) {
+    throw new Error(`${token} requires a positive integer`);
+  }
+  return number;
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
@@ -355,8 +365,14 @@ function main() {
   if (options.watch && options.iterations === undefined) {
     throw new Error('--watch requires --iterations <count> for a bounded run');
   }
+  if (options.interval !== undefined) {
+    options.interval = requirePositiveInteger(options.interval, '--interval');
+  }
+  if (options.watch) {
+    options.iterations = requirePositiveInteger(options.iterations, '--iterations');
+  }
   const iterations = options.watch
-    ? (options.iterations === undefined ? 0 : Math.max(1, Number(options.iterations)))
+    ? options.iterations
     : 1;
   let count = 0;
   do {
@@ -374,11 +390,13 @@ function main() {
   } while (iterations === 0 || count < iterations);
 }
 
-try {
-  main();
-} catch (error) {
-  process.stderr.write(`ERROR: ${error.message}\n`);
-  process.exitCode = 1;
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    process.stderr.write(`ERROR: ${error.message}\n`);
+    process.exitCode = 1;
+  }
 }
 
 module.exports = {
