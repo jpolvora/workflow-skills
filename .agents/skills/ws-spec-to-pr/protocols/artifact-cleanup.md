@@ -56,7 +56,7 @@ Script behavior (namespace `uswf/{workflow-id}` only):
 2. Remove baseline: `rm -rf {us-dir}/{workflow-id}.baseline/`
 3. Remove archive: `rm -rf {us-dir}/{workflow-id}.archive/`
 
-**Preserved:** `step-01-{slug}.plan.md`, `step-02-{slug}.plan.refined.md`, `step-08-{slug}.result.md`, `step-00-{slug}.spec.md`, `{workflow-id}.state.md`, `{workflow-id}.state.json`, `telemetry.jsonl` (while `status: active`).
+**Preserved:** `step-01-{slug}.plan.md`, `step-02-{slug}.plan-interview.md`, `step-02-{slug}.plan.refined.md`, `step-08-{slug}.result.md`, `step-00-{slug}.spec.md`, `{workflow-id}.state.md`, `{workflow-id}.state.json`, `telemetry.jsonl` (while `status: active`).
 
 ## Shared contract
 

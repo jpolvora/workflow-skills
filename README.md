@@ -31,6 +31,7 @@
 | **A faster path** | Lite pipeline: spec, plan, implement, commit, review, ship (steps 0–5). Same GitHub or Azure PR ops. |
 | **A configurable verify bar** | Standard Step 5 advances only at a ledger-derived score **≥ `defaults.minVerifyScore`** (default **9**, range 1–10). Evidence links, configured checks, findings, and sabotage outcomes determine the score; agents cannot author or override it. Below the bar, scoreAndRefine re-implements flagged tasks. Optional Reach-10 user-gate when effort is low. When already ≥ the bar, optional `scoreAndRefine` second pass reviews the full diff for overengineering and unused workflow-introduced artifacts. |
 | **Verifiable runtime artifacts** | Atomic Node state updates publish `{workflow-id}.state.json` (machine SoT with embedded `state.handoffs` and AC ledger), `{workflow-id}.state.md`, a repo plans index, a single `telemetry.jsonl` stream, and deterministic scoring. |
+| **Live workflow observation** | On-demand `ws-monitor` snapshots active state, telemetry, expected artifacts, and explicitly configured transcript roots; it classifies drift without editing the run. |
 | **Hybrid-safe hub tooling** | Consumer-root `autoload.md` receives root-relative hub/skill links, `ws-doctor` validates the local or global runtime source, and installer manifests exclude external companion skills from update/integrity ownership. |
 | **Smaller dispatch context** | Bounded subagent contracts and indexed plan slices replace repeated full-document payloads. Context and MEMORY budgets fail closed when exceeded. |
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
@@ -62,6 +63,8 @@ Two delivery workflows (install independently; both share `.agents/skills/ws-sha
 | **[`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md)** | Direct problem solving | 7-step loop with Triviality & Fit gates (classify → define done → evidence → decide → act → verify → report) |
 
 Fix-PR batches plan before they edit: `fixPrPlan` uses reviewer-class model resolution to write the complete gate, then `fixPrExec` uses execution-class resolution to validate and apply it. Standard keeps this inside outer Step 9; lite runs the same order inline on its current session model.
+
+Standard Step 2 emits a dedicated `step-02-{slug}.plan-interview.md` registry alongside the refined plan. If Step 5 is below the configured verify bar, `scoreAndRefine` is recorded as an explicit telemetry substep and cannot advance the workflow until re-verification passes.
 
 See **Features** above for the operating model. Gates: [`gates.md`](.agents/skills/ws-shared/runtime/gates.md). Agent contract: [`AGENTS.md`](AGENTS.md) § Dual-mode. Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md). Site FAQ: [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills#faq).
 
@@ -240,6 +243,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | Audit routing, links, portability |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs, hybrid runtime source) |
+| [`ws-monitor`](.agents/skills/ws-monitor/SKILL.md) | Read-only live workflow observer for state, telemetry, artifacts, and configured transcripts |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 | [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Run consumer-configured local pipeline review dry-run via `preview.dryRunCommand` (Extra; configure with `/ws-configure-project --section preview`) |

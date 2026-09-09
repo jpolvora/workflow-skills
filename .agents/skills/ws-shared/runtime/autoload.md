@@ -124,6 +124,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | multi-spec, batch specs, run all specs | `ws-spec-multi` |
 | explain spec, spec status, what did US deliver, /explain | `ws-spec-explain` |
 | cleanup workflow, clean plan leftovers, delete telemetry/.runtime | `ws-cleanup` |
+| monitor workflow, watch Spec-to-PR, live workflow audit, workflow observer | `ws-monitor` |
 | spec-memo-setup, /ws-spec-memo, external vault setup, off-repo memory, configure vault, import/migrate MEMORY, vault preflight check, hybrid fallback bootstrap | `ws-spec-memo` |
 | spec-memo search/get/upsert/bootstrap (runtime), /ws-memo, memo vault ops, canvas, doctor | `ws-memo` (external; skip if `SKILL.md` missing) |
 | prompt tracking, session_start/end, vault activity report, /ws-session-tracking, derive_rules from prompts | `ws-session-tracking` (external; skip if `SKILL.md` missing) |

@@ -1,7 +1,7 @@
 ---
 name: ws-plan-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.4.7
+version: 0.4.8
 disable-model-invocation: true
 invocation_names:
   - plan-interview
@@ -16,7 +16,7 @@ invocation_names:
 
 Audit and interrogate the draft plan (`step-01-{slug}.plan.md`) against acceptance criteria, codebase structure, tenancy rules, and invariants.
 
-**Canonical path:** writes `{us-dir}/step-02-{slug}.plan.refined.md`, leaving `step-01-{slug}.plan.md` untouched.
+**Canonical outputs:** always writes `{us-dir}/step-02-{slug}.plan-interview.md` with the complete interview registry and a separate `{us-dir}/step-02-{slug}.plan.refined.md` with the resolved plan. Both outputs are distinct; `step-01-{slug}.plan.md` remains untouched.
 
 ## Invocation
 
@@ -68,7 +68,8 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 
 ## Outputs
 
-- `step-02-{slug}.plan.refined.md` with frontmatter `status: "plan refined ok"` and an appended `## Interview registry` table (include `resolutionSource` / evidence columns when available).
+- `step-02-{slug}.plan-interview.md` with frontmatter identifying Step 2 and an `## Interview registry` table (include `resolutionSource` / evidence columns when available). This artifact is mandatory even when autoMode resolves every gap.
+- `step-02-{slug}.plan.refined.md` with frontmatter `status: "plan refined ok"` and the resolved plan content. It is additive to the interview artifact and may include a concise registry reference.
 
 ### step-output (workflow mode)
 
@@ -93,6 +94,6 @@ needs_user:
 - Audit the plan against the supplied spec, memory traps, and project evidence.
 - Resolve project-observable gaps before escalating one blocking question.
 - Preserve every AC mapping and record resolution source.
-- Write only the refined plan and return the closed/open registry.
+- Write the dedicated interview artifact and, when applicable, the refined plan. Return the closed/open registry.
 - After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
 

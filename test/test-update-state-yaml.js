@@ -89,6 +89,19 @@ function seedConsumer(dir) {
 }
 
 function finishStep(script, root, stateRel, step) {
+  if (script === UPDATE_STANDARD && step === 2) {
+    const stateText = fs.readFileSync(path.join(root, stateRel), 'utf8');
+    const slug = stateText.match(/^slug:\s*(\S+)/m)?.[1];
+    if (slug) {
+      for (const name of [
+        `step-02-${slug}.plan-interview.md`,
+        `step-02-${slug}.plan.refined.md`,
+      ]) {
+        const file = path.join(root, path.dirname(stateRel), name);
+        if (!fs.existsSync(file)) fs.writeFileSync(file, '# Test Step 2 artifact\n', 'utf8');
+      }
+    }
+  }
   const jsonl = path.posix.join(
     path.dirname(stateRel).replace(/\\/g, '/'),
     `telemetry/step-${String(step).padStart(2, '0')}.jsonl`,

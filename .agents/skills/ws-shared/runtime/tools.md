@@ -130,7 +130,7 @@ The orchestrator session ALWAYS runs under the active session model (`currentMod
 
 **Portable parameterization:** when `dispatch-agent` exposes a model field, pass the configured identifier through that field. Otherwise include `Model: {modelName}` in the dispatch header when the host supports model hints.
 
-**Non-blocking fallback:** if a configured model string is empty, rejected, or unsupported by the session host, the orchestrator and subagent continue under the active session model without interrupting workflow execution.
+**Non-blocking fallback:** if a configured model string is empty, rejected, or unsupported by the session host, the orchestrator and subagent continue under the active session model without interrupting workflow execution. Record the configured id as `configuredModel` when the actual model differs so telemetry remains auditable.
 
 **Provider-compat host hints** (`defaults.providerCompat`, omitted object = these defaults): `stabilizeStaticPrefix` (default true) means keep the orch static dispatch prefix byte-stable from token 0 when the host caches prefixes. `thinkingToolCompat` (default false) is an optional host hint to preserve reasoning/assistant text across tool turns and not force tool choice when the host rejects it. Skill bodies never hardcode vendor HTTP flags or require a named model host.
 

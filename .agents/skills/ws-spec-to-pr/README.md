@@ -103,7 +103,7 @@ Node state helpers update the workflow atomically and publish deterministic `{wo
 |---|------|----------------|-----------|
 | **0** | Spec | providers / `ws-spec-write` (+ register) | `{specsDir}/{slug}.spec.md` spec of record first, then workflow `step-00-{slug}.spec.md` after register |
 | **1** | Plan | `ws-plan-write` | `step-01-{slug}.plan.md` |
-| **2** | Interview | `ws-plan-interview` | `step-02-{slug}.plan.refined.md` |
+| **2** | Interview | `ws-plan-interview` | `step-02-{slug}.plan-interview.md` + `step-02-{slug}.plan.refined.md` |
 | **3** | Plan-to-tasks | `ws-plan-to-tasks` | exec + DAG |
 | **4** | Implement | `ws-implement-tasks` | Code |
 | **5** | Check-implementation | `ws-plan-verify` | Score 0–10; ≥ `defaults.minVerifyScore` (default 9) to Advance (`scoreAndRefine` until bar); then required G2-code of workflow product files |

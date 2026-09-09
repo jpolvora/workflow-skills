@@ -90,7 +90,7 @@ Checks (per [`ARTIFACTS.md`](../ARTIFACTS.md) step-input table): checkpoint tag 
 |------|----------|------|
 | 1 | `step-00-{slug}.spec.md` + `ac-ledger.json` | same |
 | 2 | `step-01-{slug}.plan.md` | same |
-| 3 | `step-02-{slug}.plan.refined.md` (skip if `interview-not-required`) | — |
+| 3 | `step-02-{slug}.plan-interview.md` + `step-02-{slug}.plan.refined.md` (skip if `interview-not-required`) | — |
 | 4 | `step-03-{slug}.plan.exec.md` + `plan.index.json` | `step-06-{slug}.review.md` + `plan.index.json` |
 | 5 | — | `step-08-{slug}.result.md` |
 | 6 | `step-05-{slug}.plan.report.md` + ledger score ≥ `defaults.minVerifyScore` (default 9) | — |

@@ -130,7 +130,7 @@ flowchart TD
 
 ### Step 2: Plan Refinement (Interview)
 *   **Executor**: Planner subagent (`ws-plan-interview` / `ws-plan-interview`).
-*   **Role**: Audits the plan against the spec and codebase. If there are ambiguities, escalates to the user for confirmation (max 3 rounds) and outputs `step-02-{slug}.plan.refined.md`.
+*   **Role**: Audits the plan against the spec and codebase. If there are ambiguities, escalates to the user for confirmation (max 3 rounds) and outputs the mandatory `step-02-{slug}.plan-interview.md` registry plus `step-02-{slug}.plan.refined.md`.
 *   **Conditional Skip**: Skipped automatically if complexity is simple, no open questions exist in the plan, and no blocking gaps are detected.
 
 ### Step 3: Execution Plan and DAG

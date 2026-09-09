@@ -250,6 +250,14 @@ function testHostDispatchContract() {
     'host-dispatch.md references defaults.specializedSubagents configuration'
   );
   assert(
+    content.includes('Never resolve a project projection from the global skill installation'),
+    'host-dispatch.md keeps named projections consumer-local in hybrid installs'
+  );
+  assert(
+    content.includes('configuredModel'),
+    'host-dispatch.md documents configured-versus-actual model telemetry'
+  );
+  assert(
     content.includes('Product-tree readonly'),
     'host-dispatch.md warns that Step 5 product-readonly is not host question-only readonly'
   );
@@ -284,6 +292,13 @@ function testCompilerGeneration() {
   assert(step00Content.includes('disable-model-invocation: true'), 'Frontmatter contains disable-model-invocation: true');
   assert(/do not invoke autonomously/i.test(step00Content), 'Description restricts autonomous delegation');
   assert(!step00Content.includes('readonly: true'), 'Step 00 does not have readonly: true');
+  assert(
+    step00Content.includes('"files_touched": {') &&
+      step00Content.includes('"created": []') &&
+      step00Content.includes('"modified": []') &&
+      step00Content.includes('"deleted": []'),
+    'compiled step output contract uses categorized files_touched',
+  );
 
   // Test Step 05: product-tree readonly in body, never host Ask-mode readonly
   const step05Path = path.join(agentsDir, 'ws-step-05-plan-verify.md');

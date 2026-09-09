@@ -73,6 +73,11 @@ assert(
   'STEP-DISPATCH dispatches wide-context second pass even with zero flagged tasks',
 );
 assert(
+  /--substep scoreAndRefine/.test(dispatch) &&
+    /finish --step 5 --substep scoreAndRefine/.test(read('.agents/skills/ws-shared/runtime/host-dispatch.md')),
+  'scoreAndRefine uses explicit dispatch and finish telemetry',
+);
+assert(
   /simplifications\/deletions/.test(dispatch),
   'STEP-DISPATCH second-pass report includes simplifications/deletions',
 );

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-09 16:47] Agent: GPT-5.6 Luna
+- **Prompt**: Implement all currently open upstream issues, release the package, update the site and docs, test, and ship the changes.
+- **Done**: Fixed hybrid dispatch and model fallback, enforced Step 2 interview artifacts, normalized telemetry, made `scoreAndRefine` explicit, and added the read-only `ws-monitor` skill with projections, docs, schemas, and regression tests.
+- **Result**: Version 0.4.8, generated site/catalog/docs and integrity synchronized; full `npm run test`, harness, workflow, portability, and security checks passed. Ship/PR handoff follows.
+
 ### [2026-09-09 10:57] Agent: Cursor Grok 4.6
 - **Prompt**: Generate `.cursor/agents` via `/ws-configure-project`; test specialized dispatch; diagnose Step 5 Ask-mode / readonly failure.
 - **Done**: Enabled `defaults.specializedSubagents` (cursor / `ws`); compiled 10 `ws-step-*` agents; stopped emitting host `readonly: true` on Step 5; product-tree readonly stays in the compiled prompt; dispatch docs and compiler tests updated.

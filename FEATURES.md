@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.6** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.8** · 54 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -42,10 +42,10 @@ A finite state machine that carries one feature from an idea to a merged pull re
 |------|--------------|----------|
 | 0 | Entry gate, tracker fetch, **prior-work sweep**, spec authoring (`ws-spec-write`), register, `ac_ledger.cjs init` | `{specsDir}/{slug}.spec.md` → `step-00-{slug}.spec.md` + `ac-ledger.json` |
 | 1 | Implementation plan (`ws-plan-write`), MEMORY conflict check, `plan_index.cjs build` | `step-01-{slug}.plan.md` + `plan.index.json` |
-| 2 | Optional plan interrogation (`ws-plan-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan.refined.md` |
+| 2 | Optional plan interrogation (`ws-plan-interview`); skipped unless `force_interview` or other skip rules fail | `step-02-{slug}.plan-interview.md` + `step-02-{slug}.plan.refined.md` |
 | 3 | Sequential exec stub (`write_sequential_dag.cjs`) unless `enableDag: true` then `ws-plan-to-tasks` | `step-03-{slug}.plan.exec.md` + `.exec.dag.json` |
 | 4 | Implementation (`ws-implement-tasks`) with memory consult proof | code + build/test verification |
-| 5 | Spec-compliance scoring 0–10 (`ws-plan-verify`); **advances only at ≥ `defaults.minVerifyScore`** (default 9) | `step-05-{slug}.plan.report.md` |
+| 5 | Spec-compliance scoring 0–10 (`ws-plan-verify`); **advances only at ≥ `defaults.minVerifyScore`** (default 9); below-bar refinement is a telemetry-backed `scoreAndRefine` substep | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
 | 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then ship gate, push/PR (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
@@ -193,6 +193,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-harness` | Routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
+| `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
@@ -213,6 +214,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
+| `ws-monitor` | Snapshots active workflow runs, classifies live execution signals, and emits an optional consumer-local report without applying fixes |
 
 ---
 

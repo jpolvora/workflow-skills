@@ -9,6 +9,11 @@ const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/a
 const update = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
 const validate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs');
 const root = temp('ws-state-contract-');
+fs.mkdirSync(path.join(root, '.agents/skills/ws-shared/runtime'), { recursive: true });
+fs.copyFileSync(
+  path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+  path.join(root, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+);
 write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   verification: {},
@@ -47,6 +52,8 @@ const events = fs.readFileSync(path.join(root, '.agents/plans/demo/telemetry.jso
 assert.deepStrictEqual(events.map((event) => event.type), ['dispatch', 'finish']);
 assert.strictEqual(events[1].elapsedSec, 5);
 assert.strictEqual(events[1].estimated, false);
+const packageManifest = JSON.parse(fs.readFileSync(path.join(repoRoot, 'bin/skill-dependencies.json'), 'utf8'));
+assert.strictEqual(events[0].packageVersion, packageManifest.packageVersion, 'telemetry resolves packageVersion from skill dependencies');
 const index = JSON.parse(fs.readFileSync(path.join(root, '.agents/plans/index.json'), 'utf8'));
 assert.strictEqual(index.workflows[0].workflowId, 'wf');
 assert.ok(index.workflows[0].statePath.includes('/demo/') && !index.workflows[0].statePath.includes('\\'));
@@ -67,6 +74,24 @@ assert.strictEqual(run(update, [
 ]).status, 0);
 assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^step: 0$/m);
 assert.match(fs.readFileSync(path.join(root, '.agents/plans/demo/step-00-demo.spec.md'), 'utf8'), /^workflowId: wf$/m);
+
+const outputFixture = path.join(root, 'step-output.json');
+write(outputFixture, JSON.stringify({
+  status: 'completed',
+  files_touched: ['src/generated-from-agent.js'],
+  promptTokens: 17,
+  completionTokens: 29,
+  summary: 'agent output telemetry',
+}));
+assert.strictEqual(run(update, [
+  'finish', stateRel, '--step', '1', '--step-output', outputFixture,
+  '--timestamp', '2026-08-21T20:00:09.000Z', ...common,
+]).status, 0);
+const outputEvents = fs.readFileSync(path.join(root, '.agents/plans/demo/telemetry.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
+const outputEvent = outputEvents.at(-1);
+assert.deepStrictEqual(outputEvent.filesTouched.created, ['src/generated-from-agent.js']);
+assert.strictEqual(outputEvent.promptTokens, 17);
+assert.strictEqual(outputEvent.completionTokens, 29);
 const missingLedger = run(validate, [stateRel, '--pre-advance', '1', '--repo-root', root]);
 assert.notStrictEqual(missingLedger.status, 0, 'pre-advance 1 requires ac-ledger.json');
 assert.match(`${missingLedger.stdout}${missingLedger.stderr}`, /ac-ledger\.json is required before advance/);
@@ -178,10 +203,15 @@ verificationScore: 9
   stampArtifact(usDir, `step-03-${slug}.plan.exec.md`, 3, slug, workflowId);
   stampArtifact(usDir, `step-05-${slug}.plan.report.md`, 5, slug, workflowId);
   const common = ['--repo-root', pa6Root, '--jsonl-out', `.agents/plans/${slug}/telemetry/step-05.jsonl`];
-  assert.strictEqual(run(update, [
+  const setupFinish = run(update, [
     'finish', stateRel, '--step', '5', '--timestamp', '2026-08-21T20:01:00.000Z',
     '--verification-score', '9', '--score-boundary', 'pre-step6', ...common,
-  ]).status, 0);
+  ]);
+  if (Number(options.minVerifyScore) === 10) {
+    assert.notStrictEqual(setupFinish.status, 0, 'below-bar fixture finish is rejected');
+  } else {
+    assert.strictEqual(setupFinish.status, 0, setupFinish.stderr || setupFinish.stdout);
+  }
   return { pa6Root, stateRel, slug, workflowId, usDir, common, ledger };
 }
 
@@ -1126,6 +1156,17 @@ T00 implements AC1 in \`src/${slug}.js\` with V1:${slug}.
     scoreState: null,
   }));
   if (opts.refined) {
+    write(path.join(usDir, `step-02-${slug}.plan-interview.md`), `---
+step: 2
+slug: ${slug}
+workflowId: ${workflowId}
+status: completed
+startedAt: 2026-08-21T20:00:00.000Z
+endedAt: 2026-08-21T20:00:05.000Z
+acRefs: [AC1]
+---
+# Interview registry
+`);
     write(path.join(usDir, `step-02-${slug}.plan.refined.md`), `---
 step: 2
 slug: ${slug}
@@ -1215,6 +1256,52 @@ acImplemented: 0
   assert.match(`${failStep3.stdout}${failStep3.stderr}`, /step 3 must be completed or skipped with reason dag-disabled/);
 }
 
+// Step 2 completion requires the dedicated interview artifact and refined plan
+{
+  const interviewRoot = temp('ws-state-interview-artifact-');
+  const slug = 'interview-artifact';
+  const workflowId = 'wf-interview-artifact';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(interviewRoot, '.agents/plans', slug);
+  write(path.join(interviewRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    defaults: {},
+  }));
+  write(path.join(interviewRoot, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+status: active
+currentStep: 2
+completedSteps: [0, 1]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+---
+# State
+`);
+  write(path.join(usDir, `step-02-${slug}.plan.refined.md`), '# Refined plan\n');
+  const missingInterview = run(update, [
+    'finish', stateRel, '--step', '2', '--timestamp', '2026-08-21T22:00:00.000Z',
+    '--repo-root', interviewRoot,
+  ]);
+  assert.notStrictEqual(missingInterview.status, 0, 'Step 2 finish rejects a missing plan-interview artifact');
+  assert.match(`${missingInterview.stdout}${missingInterview.stderr}`, /plan-interview\.md/);
+  write(path.join(usDir, `step-02-${slug}.plan-interview.md`), '# Interview registry\n');
+  const completeInterview = run(update, [
+    'finish', stateRel, '--step', '2', '--timestamp', '2026-08-21T22:00:00.000Z',
+    '--repo-root', interviewRoot,
+  ]);
+  assert.strictEqual(completeInterview.status, 0, completeInterview.stderr);
+  for (const artifact of [
+    `step-02-${slug}.plan-interview.md`,
+    `step-02-${slug}.plan.refined.md`,
+  ]) {
+    assert.match(fs.readFileSync(path.join(usDir, artifact), 'utf8'), /^step: 2$/m, `${artifact} is stamped`);
+  }
+}
+
 // Step 5 scoreAndRefine and Step 6 dispatch guard tests
 {
   const guardRoot = temp('ws-state-guard-s5-');
@@ -1249,6 +1336,12 @@ verificationScore: 7
   const failDispatch6 = run(update, ['dispatch', stateRel, '--step', '6', '--timestamp', '2026-08-21T21:00:00.000Z', ...common]);
   assert.notStrictEqual(failDispatch6.status, 0, 'dispatch step 6 fails when step 5 is not completed');
   assert.match(`${failDispatch6.stdout}${failDispatch6.stderr}`, /cannot dispatch step 6/);
+
+  const failFinish5 = run(update, [
+    'finish', stateRel, '--step', '5', '--timestamp', '2026-08-21T21:00:30.000Z', ...common,
+  ]);
+  assert.notStrictEqual(failFinish5.status, 0, 'Step 5 cannot advance with a below-bar score');
+  assert.match(`${failFinish5.stdout}${failFinish5.stderr}`, /scoreAndRefine/);
 
   // 2. Finishing scoreAndRefine substep keeps currentStep at 5 and stepStatus active
   const refineFinish = run(update, [

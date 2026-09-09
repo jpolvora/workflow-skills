@@ -115,6 +115,7 @@ Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`a
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
+| Observe a live Spec-to-PR workflow run | `ws-monitor` |
 | Prompt-driven task (not Spec-to-PR) | `ws-task-lifecycle` |
 
 **Product commits:** standard after Step 5 reaches `minVerifyScore` (default 9); lite after Step 2. Commit only `files_touched`; review `{base}...HEAD`; commit review fixes separately. `{plansDir}` only at Step 8 / lite 4; never `git add -A`. Fix-PR: `fixPrPlan` (reviewer) before `fixPrExec` (execution) inside standard Step 9; lite inline.

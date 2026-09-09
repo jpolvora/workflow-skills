@@ -47,7 +47,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 
 - **Specialized Named Subagent Dispatch (when enabled):**
   - **Preconditions:** `defaults.specializedSubagents.enabled` is `true`, and the host supports named subagents (e.g. host agent directory projections matching `{prefix}-step-*.md`).
-  - **Resolution:** The orchestrator targets the step-specific named subagent matching `{prefix}-step-{step}-{role}` (e.g. `ws-step-04-implement-tasks`).
+  - **Resolution:** Resolve the host projection directory from the consumer `{repoRoot}` and configured `targetHost`, then target the step-specific named subagent matching `{prefix}-step-{step}-{role}` (for example, `ws-step-04-implement-tasks`). Never resolve a project projection from the global skill installation.
   - **Zero-Turn Bootstrap:** Because the specialized subagent definition already contains the complete canonical skill instructions, invariants, and guidelines, the orchestrator prompt omits redundant skill markdown and transmits **discrete context pointers only** (see §5), achieving near-zero token bootstrap overhead.
   - **Fail-safe Fallback:** If the named specialized subagent is unavailable, missing, or errors, dispatch transparently falls back to generic subagent invocation (Tier 1 generic) or inline isolated execution (Tier 3) without failing the workflow run.
 - **Product-tree readonly (Step 5):** `ws-plan-verify` must not edit application product files, but it **must** run Shell (tests, scans, `ac_ledger.cjs`) and write `{us-dir}` reports. Do **not** set host `readonly: true` on `ws-step-05-plan-verify`. That flag maps to a question-only session that blocks Shell. If a host still opens the verifier without Shell, fall back to generic `generalPurpose`/`shell` or Tier 3 inline.
@@ -55,6 +55,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
   - **When:** `subagentTool` is bound, resolved mode is `auto` or `native-tool`, and specialized subagents are disabled or fell back.
   - **How:** Dispatch via the native subagent tool with `description: "STP step {N} — {Label}"`, model hint from `defaults.modelsPreset` / `stepModels` when supported, and discrete context pointers.
 - **Telemetry:** standard dispatch/finish events (record `specialized-subagent-dispatch` or `generic-subagent-dispatch`).
+- **Model fallback:** Before dispatch, compare the configured model id with the optional `supportedModels` list in the bound host capability record. If the host rejects or does not advertise that id, retry under the captured session model, preserve the configured id as `configuredModel`, and continue without aborting the step.
 
 ### Tier 2 — Background CLI runner
 
@@ -117,7 +118,7 @@ Legacy named host values (if present in older configs) resolve to neutral tiers:
 
 ### Probe cache file (`{sharedDir}/host-capabilities.json`)
 
-Consumer-local, gitignored (see `hub.gitignore`), never shipped upstream. JSON object mapping each `hostId::orchestratorModel` key to `{ binding: { askQuestionTool, subagentTool, backgroundTaskTool, browserTool }, probedAt: ISO, hostAdapterMode: string }`. Key segments are runtime data values; skill contract tables keep neutral alias names only.
+Consumer-local, gitignored (see `hub.gitignore`), never shipped upstream. JSON object mapping each `hostId::orchestratorModel` key to `{ binding: { askQuestionTool, subagentTool, backgroundTaskTool, browserTool, supportedModels?: string[] }, probedAt: ISO, hostAdapterMode: string }`. `supportedModels` is optional host capability data used for fail-soft model selection. Key segments are runtime data values; skill contract tables keep neutral alias names only.
 
 ---
 
@@ -148,7 +149,11 @@ OUTPUT FORMAT:
 ```json
 {
   "status": "completed | failed | skipped",
-  "files_touched": ["..."],
+  "files_touched": {
+    "created": [],
+    "modified": [],
+    "deleted": []
+  },
   "notes": "...",
   "next_step_ready": true
 }
@@ -163,6 +168,10 @@ When `defaults.specializedSubagents.enabled` is `true` and the orchestrator disp
 - The orchestrator omits redundant skill markdown from the dispatch payload.
 - The dispatch payload consists strictly of the task metadata, `CONTEXT POINTERS`, and `OUTPUT FORMAT`.
 - The specialized subagent proceeds directly to execution without burning turns on reading the skill body.
+
+### Score-and-refine substep
+
+When Step 5 is below `defaults.minVerifyScore`, score-and-refine is an explicit Step 5 substep, not an untracked prompt. Emit `dispatch --step 5 --substep scoreAndRefine` before the repair dispatch and `finish --step 5 --substep scoreAndRefine` after it. The internal finish keeps `currentStep` at 5; only a later Step 5 finish at or above the configured score may advance to Step 6.
 
 ---
 
