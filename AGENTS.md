@@ -167,6 +167,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-goal-loop` | Primitive | Convergence loop |
 | `ws-spec-memo` | Utility | External spec-memo vault **setup/bridge** (`specMemo.*`, import, hybrid fallback, write-block hook interview) via `ws-configure-project --section specMemo` or `/ws-spec-memo`. Runtime vault ops → **`ws-memo`** from [spec-memo](https://github.com/jpolvora/spec-memo) (not packaged here) |
 | `ws-benchmarks` | Utility | Harness benchmark management suite — interactive menu to inspect evolution results, run static/live benchmarks, and update comparison reports (Extra) |
+| `ws-monitor` | Utility | Read-only live observation of active workflow state, telemetry, artifacts, and configured transcripts |
 
 ---
 
@@ -386,7 +387,7 @@ On demand: [`CATALOG.md`](CATALOG.md). Package membership: [`bin/skill-dependenc
 
 ## Task router
 
-Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup` / `ws-spec-memo`). Vault runtime ops after setup → `ws-memo` (spec-memo package / `{globalSkillsRoot}`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
+Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup` / `ws-spec-memo` / `ws-monitor`). Vault runtime ops after setup → `ws-memo` (spec-memo package / `{globalSkillsRoot}`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
 
 ## Verification (before claim complete / commit)
 

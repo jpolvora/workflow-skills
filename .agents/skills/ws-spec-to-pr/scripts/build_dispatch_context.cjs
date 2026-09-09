@@ -4,7 +4,12 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, resolveConfiguredPath, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+const {
+  resolveConsumerContext,
+  resolveConfiguredPath,
+  resolveSkillMdPath,
+  toRepoRelative,
+} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const FIXED_LIMIT = 18000;
 const MEMORY_LIMIT = 4000;
@@ -94,6 +99,15 @@ function optionalFile(context, file) {
   return fs.existsSync(candidate) ? fs.readFileSync(candidate, 'utf8') : '';
 }
 
+function resolveTargetSkillPath(context, requested) {
+  const candidate = path.resolve(context.repoRoot, requested);
+  if (fs.existsSync(candidate)) return candidate;
+  const normalized = String(requested).replace(/\\/g, '/');
+  const match = normalized.match(/(?:^|\/)(ws-[^/]+)(?:\/SKILL\.md)?$/);
+  if (match) return resolveSkillMdPath(context, match[1]);
+  throw new Error(`skill file not found: ${toRepoRelative(context.repoRoot, candidate, { allowOutside: true })}`);
+}
+
 function formatHandoffPayload(parsed) {
   const pretty = `## Handoff\n\n\`\`\`json\n${JSON.stringify(parsed)}\n\`\`\`\n`;
   if (bytes(pretty) <= 8192) return pretty;
@@ -157,7 +171,7 @@ function main() {
     return;
   }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
-  const skillPath = path.resolve(context.repoRoot, options.skill);
+  const skillPath = resolveTargetSkillPath(context, options.skill);
   const targetText = fs.readFileSync(skillPath, 'utf8');
   const header = [
     '# Portable workflow dispatch',
@@ -167,7 +181,7 @@ function main() {
     '',
   ].join('\n');
   const contracts = ENHANCING_SKILLS.map((skill) => {
-    const file = path.join(context.skillsRoot, skill, 'SKILL.md');
+    const file = resolveSkillMdPath(context, skill);
     const contract = section(fs.readFileSync(file, 'utf8'), 'Subagent contract');
     if (contract.split('\n').length - 1 > 40) throw new Error(`${skill} Subagent contract exceeds 40 lines`);
     return contract;
@@ -207,7 +221,7 @@ function main() {
     omitted,
     memoryBytes: bytes(memory),
     acRefs: options.ac,
-    sourceSkill: toRepoRelative(context.repoRoot, skillPath),
+    sourceSkill: toRepoRelative(context.repoRoot, skillPath, { allowOutside: true }),
   };
   if (options.output) fs.writeFileSync(path.resolve(context.repoRoot, options.output), output.replace(/\r\n?/g, '\n'), 'utf8');
   else process.stdout.write(output);

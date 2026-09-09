@@ -97,6 +97,7 @@ After close (`status: completed`, `shipStatus` set) and optional ship phase, con
 | `{workflow-id}.state.md` | Status: `completed`, `shipStatus` terminal or `pending` after close, `dryRun: true`, completed steps through 8 (and 9 if PR simulated) |
 | `step-00-test-workflow.spec.md` | Copied from `specs/` |
 | `step-01-test-workflow.plan.md` | Present |
+| `step-02-test-workflow.plan-interview.md` | Present when Step 2 ran |
 | `step-02-test-workflow.plan.refined.md` | Present (or skipped if Step 2 bypassed) |
 | `step-03-test-workflow.plan.exec.md` | Present (unless Simple path) |
 | `step-03-test-workflow.exec.dag.json` | Present (both modes; task groups only when `execMode: parallel`) |

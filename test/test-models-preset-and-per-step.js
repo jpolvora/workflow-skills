@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SHARED = path.join(REPO, '.agents/skills/ws-shared');
-const { resolvePhaseModel } = require(path.join(SHARED, 'runtime', 'scripts', 'workflow_state.cjs'));
+const { resolvePhaseModel, resolveDispatchModel } = require(path.join(SHARED, 'runtime', 'scripts', 'workflow_state.cjs'));
 
 let failures = 0;
 
@@ -243,6 +243,52 @@ assert(
     { step: 7, pipeline: 'standard', sessionModel: session },
   ) === 'step7-override',
   'stepModels step 7 overrides before testing chain',
+);
+
+const hostContext = {
+  sharedDir: fs.mkdtempSync(path.join(os.tmpdir(), 'ws-model-capabilities-')),
+  config: { defaults: {} },
+};
+fs.writeFileSync(
+  path.join(hostContext.sharedDir, 'host-capabilities.json'),
+  JSON.stringify({
+    'test-host::session-model': {
+      binding: { supportedModels: ['composer-2.5'] },
+    },
+  }),
+);
+const fallback = resolveDispatchModel(
+  hostContext,
+  { hostBinding: { supportedModels: ['composer-2.5'] } },
+  'cursor-grok-4.6-high',
+  session,
+);
+assert(
+  fallback.model === session &&
+    fallback.configuredModel === 'cursor-grok-4.6-high' &&
+    fallback.fallbackReason === 'unsupported-host-model',
+  'unsupported configured model falls back to captured session model',
+);
+const fileFallback = resolveDispatchModel(
+  hostContext,
+  { hostBinding: {} },
+  'cursor-grok-4.6-high',
+  session,
+);
+assert(
+  fileFallback.model === session &&
+    fileFallback.configuredModel === 'cursor-grok-4.6-high' &&
+    fileFallback.fallbackReason === 'unsupported-host-model',
+  'host-capabilities binding models trigger session fallback',
+);
+assert(
+  resolveDispatchModel(
+    hostContext,
+    { hostBinding: { supportedModels: ['composer-2.5'] } },
+    'composer-2.5',
+    session,
+  ).model === 'composer-2.5',
+  'supported configured model is retained',
 );
 
 const liteDefaults = {

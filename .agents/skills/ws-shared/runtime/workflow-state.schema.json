@@ -63,7 +63,8 @@
         "properties": {
           "step": { "type": "integer", "minimum": 0, "maximum": 9 },
           "dispatchedAt": { "type": "string", "format": "date-time" },
-          "substep": { "type": "string", "minLength": 1 }
+          "substep": { "type": "string", "minLength": 1 },
+          "configuredModel": { "type": "string", "minLength": 1 }
         }
       }
     },
@@ -85,6 +86,7 @@
       }
     },
     "currentModel": { "type": "string" },
+    "configuredModel": { "type": "string" },
     "nextAction": { "type": "string" },
     "pendingGate": { "type": ["object", "null"] },
     "acTotal": { "type": "integer", "minimum": 0 },

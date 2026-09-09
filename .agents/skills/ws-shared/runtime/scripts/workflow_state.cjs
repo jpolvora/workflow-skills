@@ -220,9 +220,7 @@ function writeHandoffFile({ usDir, state, pipeline, step, options, context, outp
     payload = JSON.parse(fs.readFileSync(path.resolve(context.repoRoot, options.handoff), 'utf8'));
     payload.artifactPaths = normalizeHandoffPaths(context.repoRoot, payload.artifactPaths || []);
   } else {
-    const created = listArg(options.created || output.files_touched?.created?.join(','));
-    const modified = listArg(options.modified || output.files_touched?.modified?.join(','));
-    const deleted = listArg(options.deleted || output.files_touched?.deleted?.join(','));
+    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot);
     const touched = [...new Set([...created, ...modified, ...deleted])];
     payload = {
       step: Number(step),
@@ -458,18 +456,23 @@ function artifactStampFields(state, step, now) {
   };
 }
 
-function finishArtifactName(slug, step) {
+function finishArtifactNames(slug, step, pipeline = 'standard') {
   const names = {
     0: `step-00-${slug}.spec.md`,
     1: `step-01-${slug}.plan.md`,
-    2: `step-02-${slug}.plan.refined.md`,
     3: `step-03-${slug}.plan.exec.md`,
     5: `step-05-${slug}.plan.report.md`,
     6: `step-06-${slug}.review.md`,
     7: `step-07-${slug}.testing.report.md`,
     8: `step-08-${slug}.result.md`,
   };
-  return names[step];
+  if (pipeline === 'standard' && step === 2) {
+    return [
+      `step-02-${slug}.plan-interview.md`,
+      `step-02-${slug}.plan.refined.md`,
+    ];
+  }
+  return names[step] ? [names[step]] : [];
 }
 
 function stampStepArtifact(file, state, step) {
@@ -540,8 +543,39 @@ function appendJsonl(file, record) {
 }
 
 function listArg(value) {
-  if (!value) return [];
+  if (Array.isArray(value)) return value.flatMap((item) => listArg(item));
+  if (value === undefined || value === null || value === '') return [];
   return String(value).split(',').map((item) => item.trim().replace(/\\/g, '/')).filter(Boolean);
+}
+
+function normalizeFileList(repoRoot, value) {
+  return [...new Set(
+    listArg(value).map((item) => {
+      const clean = String(item).trim();
+      if (!clean) return '';
+      const absolute = path.isAbsolute(clean) ? clean : path.resolve(repoRoot, clean);
+      return toRepoRelative(repoRoot, absolute, { allowOutside: true });
+    }).filter(Boolean),
+  )];
+}
+
+function normalizeFilesTouched(output, options, repoRoot) {
+  const reported = output?.files_touched ?? output?.filesTouched;
+  const source = Array.isArray(reported) ? { created: reported } : (reported || {});
+  return {
+    created: normalizeFileList(
+      repoRoot,
+      options.created !== undefined ? options.created : source.created,
+    ),
+    modified: normalizeFileList(
+      repoRoot,
+      options.modified !== undefined ? options.modified : source.modified,
+    ),
+    deleted: normalizeFileList(
+      repoRoot,
+      options.deleted !== undefined ? options.deleted : source.deleted,
+    ),
+  };
 }
 
 function redactSecrets(value) {
@@ -614,15 +648,13 @@ function fableBlocks(value, verdict) {
 }
 
 function commonEvent(state, pipeline, step, type, timestamp, options, context) {
-  const packageFile = path.join(context.repoRoot, 'package.json');
-  const packageVersion = fs.existsSync(packageFile) ? JSON.parse(fs.readFileSync(packageFile, 'utf8')).version : 'unknown';
-  return {
+  const event = {
     schemaVersion: SCHEMA_VERSION,
     type,
     timestamp,
     workflowId: String(state.workflowId || ''),
     pipeline,
-    packageVersion,
+    packageVersion: resolvePackageVersion(context),
     step,
     ...(isNonEmptyModel(options.substep) ? { substep: String(options.substep).trim() } : {}),
     model: String(options.model || state.currentModel || 'unknown'),
@@ -634,6 +666,53 @@ function commonEvent(state, pipeline, step, type, timestamp, options, context) {
     acTotal: Number(options.acTotal || state.acTotal || 0),
     acImplemented: Number(options.acImplemented || state.acImplemented || 0),
   };
+  if (isNonEmptyModel(options.configuredModel)) {
+    event.configuredModel = String(options.configuredModel).trim();
+  }
+  return event;
+}
+
+function readJsonFile(file) {
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function resolvePackageVersion(context) {
+  const candidates = [
+    context.runtimeSource && path.join(context.runtimeSource, 'skill-dependencies.json'),
+    path.join(context.skillsRoot, 'ws-shared', 'runtime', 'skill-dependencies.json'),
+    path.join(context.globalSkillsRoot, 'ws-shared', 'runtime', 'skill-dependencies.json'),
+    path.join(context.repoRoot, 'package.json'),
+  ].filter(Boolean);
+  for (const file of [...new Set(candidates)]) {
+    if (!fs.existsSync(file)) continue;
+    const parsed = readJsonFile(file);
+    const version = parsed?.packageVersion || parsed?.version;
+    if (typeof version === 'string' && version.trim()) return version.trim();
+  }
+  return 'unknown';
+}
+
+function tokenCount(options, output, key) {
+  const snake = key === 'promptTokens' ? 'prompt_tokens' : 'completion_tokens';
+  const candidates = [
+    options[key],
+    output?.[key],
+    output?.[snake],
+    output?.telemetry?.[key],
+    output?.telemetry?.[snake],
+    output?.metrics?.[key],
+    output?.metrics?.[snake],
+  ];
+  for (const value of candidates) {
+    if (value === undefined || value === null || value === '') continue;
+    const parsed = Number(value);
+    if (Number.isFinite(parsed) && parsed >= 0) return Math.floor(parsed);
+  }
+  return 0;
 }
 
 function readStepOutput(value, context) {
@@ -915,19 +994,76 @@ function resolvePhaseModel(defaults, { step, role, pipeline = 'standard', sessio
   return sessionModel || 'unknown';
 }
 
-function resolveRecordedModel(options, context, state, pipeline, step) {
-  if (options.model && String(options.model).trim()) return String(options.model).trim();
+function collectModelIds(value, target) {
+  if (!value) return;
+  if (Array.isArray(value)) {
+    for (const item of value) if (typeof item === 'string' && item.trim()) target.add(item.trim());
+    return;
+  }
+  if (typeof value !== 'object') return;
+  for (const key of ['supportedModels', 'models', 'binding']) collectModelIds(value[key], target);
+}
+
+function resolveSupportedHostModels(context, state) {
+  const models = new Set();
+  collectModelIds(state?.hostBinding, models);
+  collectModelIds(context.config?.defaults?.hostAdapter, models);
+  const capabilityFile = path.join(context.sharedDir, 'host-capabilities.json');
+  const capabilities = readJsonFile(capabilityFile);
+  collectModelIds(capabilities, models);
+  if (capabilities && typeof capabilities === 'object') {
+    for (const value of Object.values(capabilities)) collectModelIds(value, models);
+  }
+  return [...models];
+}
+
+function resolveDispatchModel(context, state, configuredModel, sessionModel) {
+  const configured = String(configuredModel || '').trim() || String(sessionModel || 'unknown');
+  const session = String(sessionModel || 'unknown').trim() || 'unknown';
+  const supported = resolveSupportedHostModels(context, state);
+  if (supported.length && configured !== session && !supported.includes(configured)) {
+    return {
+      model: session,
+      configuredModel: configured,
+      fallbackReason: 'unsupported-host-model',
+    };
+  }
+  return { model: configured, configuredModel: null, fallbackReason: null };
+}
+
+function resolveRecordedModelDetails(options, context, state, pipeline, step) {
+  const sessionModel = String(state.currentModel || 'unknown');
   let role = options.substep;
   if (!role || !String(role).trim()) {
     const prior = (state.stepDispatches || []).find((item) => Number(item.step) === Number(step));
     role = prior?.substep;
   }
-  return resolvePhaseModel(context.config?.defaults || {}, {
+  const phaseModel = resolvePhaseModel(context.config?.defaults || {}, {
     step,
     role,
     pipeline,
-    sessionModel: String(state.currentModel || 'unknown'),
+    sessionModel,
   });
+  const configuredModel = isNonEmptyModel(options.configuredModel)
+    ? String(options.configuredModel).trim()
+    : isNonEmptyModel(options.model)
+      ? String(options.model).trim()
+      : phaseModel;
+  const actualModel = isNonEmptyModel(options.configuredModel) && isNonEmptyModel(options.model)
+    ? String(options.model).trim()
+    : configuredModel;
+  if (isNonEmptyModel(options.configuredModel) && isNonEmptyModel(options.model)) {
+    return {
+      model: actualModel,
+      configuredModel: actualModel === configuredModel ? null : configuredModel,
+      fallbackReason: actualModel === configuredModel ? null : 'host-dispatch-fallback',
+    };
+  }
+  return resolveDispatchModel(context, state, configuredModel, sessionModel);
+}
+
+function resolveRecordedModel(options, context, state, pipeline, step) {
+  return resolveRecordedModelDetails(options, context, state, pipeline, step).model;
 }
 
 function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, options) {
@@ -990,6 +1126,12 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
           if (!isNonEmptyFile(planPath)) {
             throw new Error(`cannot dispatch step 4: required plan artifact missing: ${toRepoRelative(context.repoRoot, planPath, { allowOutside: true })}`);
           }
+          if (needRefined) {
+            const interviewPath = path.join(paths.usDir, `step-02-${slug}.plan-interview.md`);
+            if (!isNonEmptyFile(interviewPath)) {
+              throw new Error(`cannot dispatch step 4: required plan interview artifact missing: ${toRepoRelative(context.repoRoot, interviewPath, { allowOutside: true })}`);
+            }
+          }
           const planIndex = path.join(paths.usDir, 'plan.index.json');
           const runtimePlanIndex = path.join(paths.usDir, '.runtime', 'plan.index.json');
           const indexPath = fs.existsSync(planIndex) ? planIndex : runtimePlanIndex;
@@ -1005,8 +1147,17 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     if (options.substep && String(options.substep).trim()) {
       dispatch.substep = String(options.substep).trim();
     }
+    const modelDetails = resolveRecordedModelDetails(options, context, state, pipeline, step);
+    if (modelDetails.configuredModel) dispatch.configuredModel = modelDetails.configuredModel;
     state.stepDispatches = [...state.stepDispatches.filter((item) => Number(item.step) !== step), dispatch].sort((a, b) => a.step - b.step);
-    state.currentModel = resolveRecordedModel(options, context, state, pipeline, step);
+    state.currentModel = modelDetails.model;
+    if (modelDetails.configuredModel) {
+      state.configuredModel = modelDetails.configuredModel;
+      options.configuredModel = modelDetails.configuredModel;
+    } else {
+      delete state.configuredModel;
+      delete options.configuredModel;
+    }
     options.model = state.currentModel;
     state.nextAction = `Finish step ${step}`;
     event = commonEvent(state, pipeline, step, 'dispatch', timestamp, options, context);
@@ -1019,6 +1170,23 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     const estimated = !dispatchedAt;
     const status = String(options.status || 'completed');
     if (!['completed', 'failed', 'skipped'].includes(status)) throw new Error('finish status must be completed, failed, or skipped');
+    const isInternalSubstep = options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep);
+    if (pipeline === 'standard' && step === 5 && status === 'completed' && !isInternalSubstep) {
+      const minVerifyScore = resolveMinVerifyScore(context.config);
+      const score = options.verificationScore !== undefined
+        ? Number(options.verificationScore)
+        : Number(state.verificationScore);
+      if (!Number.isFinite(score) || score < minVerifyScore) {
+        throw new Error(`cannot finish step 5 above the advance bar: score (${Number.isFinite(score) ? score : 'missing'}) is below minVerifyScore (${minVerifyScore}); finish scoreAndRefine first`);
+      }
+    }
+    if (pipeline === 'standard' && step === 2 && status === 'completed') {
+      const missing = finishArtifactNames(state.slug || state.us, step, pipeline)
+        .filter((name) => !isNonEmptyFile(path.join(paths.usDir, name)));
+      if (missing.length) {
+        throw new Error(`cannot finish step 2: required artifacts missing: ${missing.join(', ')}`);
+      }
+    }
     if (status === 'skipped') {
       if (!SKIP_REASONS.has(options.reason)) throw new Error(`skip reason must be one of: ${[...SKIP_REASONS].join(', ')}`);
       state.skippedSteps = [...(Array.isArray(state.skippedSteps) ? state.skippedSteps : []).filter((item) => Number(item.step) !== step), {
@@ -1027,7 +1195,6 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         evidence: String(options.evidence || ''),
       }].sort((a, b) => a.step - b.step);
     }
-    const isInternalSubstep = options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep);
     if (!isInternalSubstep) {
       state.completedSteps = [...new Set([...(state.completedSteps || []).map(Number), step])].sort((a, b) => a - b);
       state.stepStatus[String(step)] = status;
@@ -1036,23 +1203,25 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       state.currentStep = step;
       state.stepStatus[String(step)] = 'active';
     }
-    state.currentModel = resolveRecordedModel(options, context, state, pipeline, step);
+    state.currentModel = String(options.model || state.currentModel || 'unknown');
+    if (isNonEmptyModel(options.configuredModel)) state.configuredModel = String(options.configuredModel).trim();
+    if (isNonEmptyModel(state.configuredModel)) options.configuredModel = state.configuredModel;
     options.model = state.currentModel;
     state.nextAction = isInternalSubstep
       ? `Resume step ${step} (${options.substep})`
       : status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
     const output = readStepOutput(options.stepOutput, context);
     finishOutput = output;
-    const created = listArg(options.created || output.files_touched?.created?.join(','));
-    const modified = listArg(options.modified || output.files_touched?.modified?.join(','));
-    const deleted = listArg(options.deleted || output.files_touched?.deleted?.join(','));
+    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot);
+    const promptTokens = tokenCount(options, output, 'promptTokens');
+    const completionTokens = tokenCount(options, output, 'completionTokens');
     applyFinishTelemetry(state, labels, step, {
       dispatchedAt,
       finishedAt,
       elapsedSec,
       estimated,
-      promptTokens: Number(options.promptTokens || 0),
-      completionTokens: Number(options.completionTokens || 0),
+      promptTokens,
+      completionTokens,
       model: state.currentModel,
       filesTouched: { created, modified, deleted },
     });
@@ -1099,8 +1268,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       finishedAt,
       elapsedSec,
       estimated,
-      promptTokens: Number(options.promptTokens || 0),
-      completionTokens: Number(options.completionTokens || 0),
+      promptTokens,
+      completionTokens,
       filesTouched: { created, modified, deleted },
       gateDecision,
       score: derivedScore,
@@ -1124,6 +1293,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         const dispatchedAt = dispatchTimestamp(item);
         const row = { step: Number(item.step), dispatchedAt };
         if (item.substep && String(item.substep).trim()) row.substep = String(item.substep).trim();
+        if (item.configuredModel && String(item.configuredModel).trim()) row.configuredModel = String(item.configuredModel).trim();
         return dispatchedAt ? row : null;
       })
       .filter(Boolean)
@@ -1177,8 +1347,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   atomicWrite(absoluteState, stateContent);
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
   if (operation === 'finish') {
-    const artifact = finishArtifactName(state.slug, step);
-    if (artifact) stampStepArtifact(path.join(paths.usDir, artifact), state, step);
+    for (const artifact of finishArtifactNames(state.slug, step, pipeline)) {
+      stampStepArtifact(path.join(paths.usDir, artifact), state, step);
+    }
   }
   validateSnapshot({ stateFile: absoluteState, indexFile: index.file, context, maxStep, pipeline });
   return { ok: true, operation, step, revision: state.revision, stateSha256: stateHash, runPath: toRepoRelative(context.repoRoot, paths.jsonFile) };
@@ -1242,9 +1413,9 @@ function stepSkipped(state, step) {
   return (state.skippedSteps || []).some((row) => Number(row.step) === Number(step));
 }
 
-function requiredAdvanceArtifact(pipeline, next, state) {
+function requiredAdvanceArtifacts(pipeline, next, state) {
   const slug = state.slug || state.us;
-  if (!slug) return null;
+  if (!slug) return [];
   if (pipeline === 'lite') {
     const lite = {
       1: { file: `step-00-${slug}.spec.md`, expectedStep: 0 },
@@ -1252,25 +1423,34 @@ function requiredAdvanceArtifact(pipeline, next, state) {
       4: { file: `step-06-${slug}.review.md`, expectedStep: 6 },
       5: { file: `step-08-${slug}.result.md`, expectedStep: 8 },
     };
-    return lite[next] || null;
+    return lite[next] ? [lite[next]] : [];
   }
-  if (next === 3 && skippedReason(state, 2) === 'interview-not-required') return null;
-  if (next === 4 && skippedReason(state, 3) === 'dag-disabled') return null;
+  if (next === 3 && skippedReason(state, 2) === 'interview-not-required') return [];
+  if (next === 4 && skippedReason(state, 3) === 'dag-disabled') return [];
   if (next === 8) {
     const skip = skippedReason(state, 7);
-    if (skip === 'testing-disabled' || skip === 'no-test-surface') return null;
+    if (skip === 'testing-disabled' || skip === 'no-test-surface') return [];
   }
   const standard = {
     1: { file: `step-00-${slug}.spec.md`, expectedStep: 0 },
     2: { file: `step-01-${slug}.plan.md`, expectedStep: 1 },
-    3: { file: `step-02-${slug}.plan.refined.md`, expectedStep: 2 },
     4: { file: `step-03-${slug}.plan.exec.md`, expectedStep: 3 },
     6: { file: `step-05-${slug}.plan.report.md`, expectedStep: 5 },
     7: { file: `step-06-${slug}.review.md`, expectedStep: 6 },
     8: { file: `step-07-${slug}.testing.report.md`, expectedStep: 7 },
     9: { file: `step-08-${slug}.result.md`, expectedStep: 8 },
   };
-  return standard[next] || null;
+  if (next === 3) {
+    return [
+      { file: `step-02-${slug}.plan-interview.md`, expectedStep: 2 },
+      { file: `step-02-${slug}.plan.refined.md`, expectedStep: 2 },
+    ];
+  }
+  return standard[next] ? [standard[next]] : [];
+}
+
+function requiredAdvanceArtifact(pipeline, next, state) {
+  return requiredAdvanceArtifacts(pipeline, next, state)[0] || null;
 }
 
 function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, pipeline }) {
@@ -1314,12 +1494,12 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
   if (preAdvance !== undefined) {
     const next = Number(preAdvance);
     const flow = pipeline || state.workflowType || 'standard';
-    const required = requiredAdvanceArtifact(flow, next, state);
-    if (required) {
-      const file = path.join(path.dirname(mdPath), required.file);
+    const required = requiredAdvanceArtifacts(flow, next, state);
+    for (const artifact of required) {
+      const file = path.join(path.dirname(mdPath), artifact.file);
       if (!fs.existsSync(file)) errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, file, { allowOutside: true })}`);
       else {
-        try { artifactMetadata(file, required.expectedStep, state); } catch (error) { errors.push(error.message); }
+        try { artifactMetadata(file, artifact.expectedStep, state); } catch (error) { errors.push(error.message); }
       }
     }
     const implementFrom = flow === 'lite' ? 2 : 4;
@@ -1350,6 +1530,12 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
         const planPath = path.join(usDir, planFile);
         if (!fs.existsSync(planPath)) {
           errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, planPath, { allowOutside: true })}`);
+        }
+        if (needRefined) {
+          const interviewPath = path.join(usDir, `step-02-${slug}.plan-interview.md`);
+          if (!fs.existsSync(interviewPath)) {
+            errors.push(`required artifact missing: ${toRepoRelative(context.repoRoot, interviewPath, { allowOutside: true })}`);
+          }
         }
       }
     }
@@ -1545,6 +1731,9 @@ module.exports = {
   upsertArtifactFrontmatter,
   artifactStampFields,
   stampStepArtifact,
+  normalizeFilesTouched,
+  resolvePackageVersion,
+  resolveDispatchModel,
   performUpdate,
   resolvePhaseModel,
   validateSnapshot,

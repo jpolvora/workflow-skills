@@ -31,6 +31,7 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 | **Spec (canonical)** | `step-00-{slug}.spec.md` | Step 0 / issue→spec / local register | **Yes (Step 8)** when `includeSpec` |
 | Complexity classification | `step-00-{slug}.classify.md` | Step 0 (`ws-classify-complexity`) | No |
 | Plan | `step-01-{slug}.plan.md` | Step 1 | **Yes (Step 8)** when `includeRefinedPlan` and no refined plan |
+| Plan interview | `step-02-{slug}.plan-interview.md` | Step 2 (`ws-plan-interview`) | No |
 | Refined plan | `step-02-{slug}.plan.refined.md` | Step 2 | **Yes (Step 8)** when `includeRefinedPlan` and present (replaces plan) |
 | Exec plan | `step-03-{slug}.plan.exec.md` | Step 3 (`ws-plan-to-tasks` when `enableDag` is true) | No |
 | DAG | `step-03-{slug}.exec.dag.json` | Step 3 (`ws-plan-to-tasks` when `enableDag` is true) | No |
@@ -53,7 +54,7 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 |-------------------|----------------------------|
 | 1 | `step-00-{slug}.spec.md` + `ac-ledger.json` |
 | 2 | `step-00-{slug}.spec.md` + `step-01-{slug}.plan.md` |
-| 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` (Step 2 skipped `interview-not-required`) |
+| 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan-interview.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` (Step 2 skipped `interview-not-required`) |
 | 4 | plan of record + `.runtime/plan.index.json` (plus `step-03-{slug}.plan.exec.md` when `enableDag` is true; sequential mode skips Step 3 with `dag-disabled`, no stubs written) |
 | 5 | plan or refined plan + implementation tree (state manifest `created` / `artifacts` non-empty, or `dryRun`) |
 | 6 | `step-05-{slug}.plan.report.md` |

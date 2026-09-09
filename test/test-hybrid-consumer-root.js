@@ -383,6 +383,38 @@ function testMeasureHarnessReadsGlobalWhenLocalHubExists() {
   );
 }
 
+function testBuildDispatchContextReadsGlobalEnhancingSkills() {
+  console.log('\n--- testBuildDispatchContextReadsGlobalEnhancingSkills ---');
+  const consumer = mkTmp('ws-hybrid-dispatch-context-');
+  writeConsumerHub(consumer);
+  const script = path.join(
+    GLOBAL_SKILLS,
+    'ws-spec-to-pr',
+    'scripts',
+    'build_dispatch_context.cjs',
+  );
+  const result = run(
+    process.execPath,
+    [
+      script,
+      '--repo-root',
+      consumer,
+      '--skill',
+      '.agents/skills/ws-implement-tasks/SKILL.md',
+      '--json',
+    ],
+    { cwd: consumer },
+  );
+  assert(
+    result.status === 0,
+    `build_dispatch_context resolves global skills (${result.stderr || result.stdout})`,
+  );
+  assert(
+    result.stdout.includes('# Portable workflow dispatch') && !result.stderr.includes('SKILL.md not found'),
+    'dispatch context includes the global enhancing-skill preamble',
+  );
+}
+
 function main() {
   testSelfLearningCompileTargetsConsumer();
   testRepoRootOverrideWins();
@@ -390,6 +422,7 @@ function main() {
   testClassifyUsesConsumerThresholds();
   testValidateStateResolvesConsumerPlansDir();
   testMeasureHarnessReadsGlobalWhenLocalHubExists();
+  testBuildDispatchContextReadsGlobalEnhancingSkills();
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);

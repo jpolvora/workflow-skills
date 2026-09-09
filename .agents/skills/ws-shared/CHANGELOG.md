@@ -1,5 +1,25 @@
 # Changelog
 
+### [2026-09-09 17:09] Agent: GPT-5.6 Luna
+- **Prompt**: Verify and fix missing-value handling in the `ws-monitor` snapshot CLI.
+- **Done**: Added fail-fast validation for value-taking flags and regression coverage for omitted and flag-like values.
+- **Result**: Invalid watch invocations now exit with a clear error instead of entering an unbounded loop. Learning: recorded a reproduction-command trap.
+
+### [2026-09-09 17:04] Agent: GPT-5.6 Luna
+- **Prompt**: Resolve the remaining PR review thread for nested host capability model fallback.
+- **Done**: Collected `supportedModels` recursively through `binding` and added file-backed fallback regression coverage.
+- **Result**: Targeted tests, full `npm run test`, harness-efficiency tests, and integrity verification passed. Learning: N/A (review fix matched the documented host-capabilities shape).
+
+### [2026-09-09 16:58] Agent: GPT-5.6 Luna
+- **Prompt**: Compile or recompile `.cursor/agents`.
+- **Done**: Ran the canonical Cursor host-subagent compiler for the repository.
+- **Result**: All 10 generated agents were already current; verification passed with no file changes.
+
+### [2026-09-09 16:47] Agent: GPT-5.6 Luna
+- **Prompt**: Implement all currently open upstream issues, release the package, update the site and docs, test, and ship the changes.
+- **Done**: Fixed hybrid dispatch and model fallback, enforced Step 2 interview artifacts, normalized telemetry, made `scoreAndRefine` explicit, and added the read-only `ws-monitor` skill with projections, docs, schemas, and regression tests.
+- **Result**: Version 0.4.8, generated site/catalog/docs and integrity synchronized; full `npm run test`, harness, workflow, portability, and security checks passed. Ship/PR handoff follows.
+
 ### [2026-09-09 10:57] Agent: Cursor Grok 4.6
 - **Prompt**: Generate `.cursor/agents` via `/ws-configure-project`; test specialized dispatch; diagnose Step 5 Ask-mode / readonly failure.
 - **Done**: Enabled `defaults.specializedSubagents` (cursor / `ws`); compiled 10 `ws-step-*` agents; stopped emitting host `readonly: true` on Step 5; product-tree readonly stays in the compiled prompt; dispatch docs and compiler tests updated.

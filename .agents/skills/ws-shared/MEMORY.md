@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-09] ws-monitor missing-value reproduction
+- **Layer**: `Tests`
+- **Module**: `ws-monitor argument parsing`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs`; `test/test-ws-monitor.js`
+- **Scenario / Context**: Reproducing a missing `--iterations` value from Git Bash on Windows while checking that watch mode cannot remain unbounded.
+- **DO NOT**: Put a boolean flag after the intentionally missing value, because the parser may treat that flag as the value; assume `/tmp` output paths map to the repository drive.
+- **INSTEAD DO**: Place boolean flags before the missing value, for example `--watch --json --iterations`, and use a repository-relative output path or a platform-resolved temporary path.
+
 ### [2026-09-09] Step 5 verifier must not use host readonly
 - **Layer**: `Infrastructure`
 - **Module**: `compile_host_subagents / ws-plan-verify`
@@ -15,6 +24,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Set host `readonly: true` on the Step 5 specialized subagent, or dispatch the verifier in a question-only session.
 - **INSTEAD DO**: Encode product-tree immutability in the compiled prompt. Allow Shell and `{us-dir}` report/ledger writes. On question-only failure, fall back to generic `generalPurpose`/`shell` or Tier 3 inline.
 
+### [2026-09-09] Release verification with hybrid runtime fixtures
+- **Layer**: `Tests`
+- **Module**: `Workflow telemetry and release integrity`
+- **Severity**: `Medium`
+- **PathPattern**: `**/workflow_state.cjs`; `test/**`; `bin/skill-integrity.json`
+- **Scenario / Context**: A package release changes the upstream package version while isolated consumer fixtures resolve runtime metadata from a separately installed global skills root.
+- **DO NOT**: Compare telemetry from an isolated consumer fixture with the upstream package manifest unless the fixture includes the intended runtime manifest. Do not treat an integrity check as final before all package-tree edits, generated projections, and intended new skills are present.
+- **INSTEAD DO**: Seed the fixture's consumer-local runtime manifest when asserting the current release version, then regenerate and verify integrity only after the complete intended tree is stable.
+
 ### [2026-09-09] Mechanical harness 5a is not a full Phases 0-5c walk
 - **Layer**: `Infrastructure`
 - **Module**: `ws-ship-pr / specialized-subagents`
@@ -23,6 +41,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Pre-ship audit of the host-readonly compiler fix.
 - **DO NOT**: Treat mechanical Phase 5a script exits as a full ws-check-harness Phases 0-5c walk.
 - **INSTEAD DO**: Credit Phase 5a + check_workflows (via npm test) with an explicit caveat; keep auditVerdictsBlockShip as refuted so caveats do not block push.
+
+### [2026-09-09] Integrity regeneration follows final skill edits
+- **Layer**: `Release verification`
+- **Module**: `generate-skill-integrity` / package verification`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/skill-integrity.json`; `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: A shipped skill body or documentation edit made after integrity generation causes the full install verification phase to reject the package as stale.
+- **DO NOT**: Start the full test or package verification suite while continuing to edit hashed skill files, or treat a stale manifest as a test defect.
+- **INSTEAD DO**: Finish all hashed skill edits first, run `npm run generate-integrity && npm run verify-integrity`, then run the full verification suite without concurrent source edits.
 
 ### [2026-09-09] Host projection bare sibling link resolution
 - **Layer**: `Harness`

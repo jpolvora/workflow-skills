@@ -2,13 +2,13 @@
 
 **Audience: agents.** Load this file when you need the full skill inventory or intent→skill router tables. Do **not** load it every prompt. Root `AGENTS.md` keeps progressive-disclosure rules; this companion holds the indexes.
 
-Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool calls.
+Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full upstream inventory. Membership is [`bin/skill-dependencies.json`](bin/skill-dependencies.json) (`workflows` = 45, `extra` = 8). Extra rows are absent from Workflows-only installs. `externalSkills` are not packaged here. Consumer routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope:** 46 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
-> **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
+> **Index only.** Load skills per root `AGENTS.md` § Progressive disclosure.
 
 ### Layer 0 — Harness
 
@@ -17,6 +17,7 @@ Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool 
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics, including hybrid local/global hub resolution |
+| `ws-monitor` | `.agents/skills/ws-monitor/SKILL.md` | Read-only live workflow observer |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
@@ -49,10 +50,6 @@ Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool 
 | — | `ws-spec-provider-github` | `.agents/skills/ws-spec-provider-github/SKILL.md` |
 | — | `ws-spec-provider-azure-devops` | `.agents/skills/ws-spec-provider-azure-devops/SKILL.md` |
 | — | `ws-spec-provider-local` | `.agents/skills/ws-spec-provider-local/SKILL.md` |
-
-### Layer 3 — Discovery (reserved)
-
-Install via `using-superpowers` / `find-skills` until routed here.
 
 ### Layer 4 — Review & audit
 
@@ -88,7 +85,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
 | `ws-spec-update` | `.agents/skills/ws-spec-update/SKILL.md` | Auto-update specs after code changes |
-| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Harness ↔ spec-memo **bridge** only (`config.json`, import, hybrid fallback); runtime vault ops → `ws-memo` |
+| `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Spec-memo setup/bridge; runtime ops → `ws-memo` |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
 | `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
@@ -151,6 +148,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Check workflows | `ws-check-workflows` |
+| Observe a live workflow | `ws-monitor` |
 | Grill plan vs docs | `grill-with-docs` |
 | Record learning | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-self-learning` only when authoring that skill) |
 | Convergence loop | `ws-goal-loop` |
