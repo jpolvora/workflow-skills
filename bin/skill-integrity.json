@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "146bf0e1afdb86e5ce170d9013c818b9d39c22a31b362332c6b22395bff89862",
+  "fullPackageDigest": "858ee5be1da9960d6b69e5fa3744a444c1ff3b9530edff5dc8562c118e5342fc",
   "hub": {
     "files": {
       ".gitignore": "95aca4a4bae6399996a76999fb0e2151b635070558d56f55789ec40da30b6876",
@@ -246,10 +246,10 @@
         "examples.md": "a996d59fe8b9eb6439d32e968b274035acece62259601ff9fcc4d3a5a85adc5a",
         "references/audit-report-template.md": "9c8f11b2ebe6c00cd89a9b00208cf128d62b338ba1cc71c3710deca83603d39a",
         "references/upstream-issue-template.md": "ab0c45d7e23b3cf78e4a05dd7923dff7e8fe8db2b80d49a8c83015a5ac59a311",
-        "scripts/monitor_snapshot.cjs": "44a4f40be1ff2d1398893b62eaf0dbdb915c47598053cb760ecfcaca450bd524",
-        "SKILL.md": "02a42c10224d5bc323f27af2e0f9314b4e9a9caf7ea793dd373774d831b59bb4"
+        "scripts/monitor_snapshot.cjs": "b3c512aaf4f24e7a6ef8440156ac3b092e2e8216e04d57400ebadff38f21e4f1",
+        "SKILL.md": "7fd773973081621255a432171c3af1a8b9c3cb58374a30c6c486c9e078b1c329"
       },
-      "skillDigest": "da47ba3300c72abaebf7b00b665b175c48432a8c9bc2e4872c55a6543bd22a2c"
+      "skillDigest": "2c216383a82e021f99b27d1edc66579d92dfa7d863e86f63e06f6ee19c6b9de5"
     },
     "ws-plan-interview": {
       "files": {

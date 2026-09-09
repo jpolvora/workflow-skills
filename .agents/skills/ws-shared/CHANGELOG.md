@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-09 17:09] Agent: GPT-5.6 Luna
+- **Prompt**: Verify and fix missing-value handling in the `ws-monitor` snapshot CLI.
+- **Done**: Added fail-fast validation for value-taking flags and regression coverage for omitted and flag-like values.
+- **Result**: Invalid watch invocations now exit with a clear error instead of entering an unbounded loop. Learning: recorded a reproduction-command trap.
+
 ### [2026-09-09 17:04] Agent: GPT-5.6 Luna
 - **Prompt**: Resolve the remaining PR review thread for nested host capability model fallback.
 - **Done**: Collected `supportedModels` recursively through `binding` and added file-backed fallback regression coverage.

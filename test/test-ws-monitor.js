@@ -6,11 +6,14 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import cp from 'child_process';
+import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
 const script = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs');
+const require = createRequire(import.meta.url);
+const { parseArgs } = require(script);
 const tempRoots = [];
 
 function write(file, content) {
@@ -24,6 +27,31 @@ function run(args, cwd) {
     encoding: 'utf8',
     env: { ...process.env },
   });
+}
+
+function assertMissingValue(args) {
+  let error = null;
+  try {
+    parseArgs(args);
+  } catch (caught) {
+    error = caught;
+  }
+  if (!error || error.message !== `${args[0]} requires a value`) {
+    throw new Error(`expected ${args[0]} to reject a missing value`);
+  }
+}
+
+for (const args of [
+  ['--iterations'],
+  ['--iterations', '--json'],
+  ['--interval'],
+  ['--transcript-root'],
+  ['--repo-root'],
+  ['--slug'],
+  ['--workflow-id'],
+  ['--report'],
+]) {
+  assertMissingValue(args);
 }
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-'));

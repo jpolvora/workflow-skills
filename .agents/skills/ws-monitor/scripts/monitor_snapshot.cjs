@@ -15,6 +15,13 @@ const DEFAULT_INTERVAL_SECONDS = 10;
 
 function parseArgs(argv) {
   const options = { transcriptRoots: [] };
+  const requireValue = (index, token) => {
+    const value = argv[index + 1];
+    if (value === undefined || value.startsWith('--')) {
+      throw new Error(`${token} requires a value`);
+    }
+    return value;
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--help' || token === '-h') {
@@ -24,14 +31,16 @@ function parseArgs(argv) {
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
     const key = token.slice(2).replace(/-([a-z])/g, (_, character) => character.toUpperCase());
     if (key === 'transcriptRoot') {
-      options.transcriptRoots.push(argv[++index]);
+      options.transcriptRoots.push(requireValue(index, token));
+      index += 1;
       continue;
     }
     if (['json', 'watch'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) {
       options[key] = true;
       continue;
     }
-    options[key] = argv[++index];
+    options[key] = requireValue(index, token);
+    index += 1;
   }
   return options;
 }
