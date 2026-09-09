@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-09 09:00] Agent: Antigravity
+- **Prompt**: /ws-spec-to-pr .agents/specs/0071-specialized-subagents-compiler.spec.md
+- **Done**: Implemented optional host subagents compiler `compile_host_subagents.cjs`, `.cursor/agents` projection with `@generated` markers, autodetection in `auto_configure.cjs`, Tier 1 dispatch and fallback ladder in `host-dispatch.md`, hub layout classification, and 9/9 automated tests.
+- **Result**: Verification 10/10; review approved; testing passed; product committed as e44cc96e.
+
 ### [2026-09-08 14:56] Agent: GPT-5.6 Luna
 - **Prompt**: Follow up on harness and adversarial audits for the open ship PR.
 - **Done**: Fixed global-hybrid autoload writers to read `externalSkills` from the selected global runtime graph and to materialize the local hub pointer referenced by generated root `AGENTS.md`; added minimal global-only regression coverage.

@@ -1,0 +1,1699 @@
+{
+  "acImplemented": 17,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/config.schema.json:L249-L275"
+        ],
+        "files": [
+          {
+            "lineEnd": 275,
+            "lineStart": 249,
+            "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+            "sha256": "8556a76dc3d4c004b917bfb10c7bb92884956d68f0d6ae64c41598f489047d13"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "evt-ac1",
+          "evt-commit-ac1-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-010",
+          "section-015",
+          "section-017",
+          "section-020"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testSchemaValidation",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:45:06.816Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`config.json` schema (`config.schema.json`) and template (`config.json.example`) define `defaults.specializedSubagents` with properties `enabled` (boolean, default: `false`), `targetHost` (enum: `\"auto\"`, `\"cursor\"`, `\"claude\"`, `\"generic\"`, default: `\"auto\"`), and `agentPrefix` (string, default: `\"ws\"`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-configure-project/scripts/auto_configure.cjs:L50-L60"
+        ],
+        "files": [
+          {
+            "lineEnd": 60,
+            "lineStart": 50,
+            "path": ".agents/skills/ws-configure-project/scripts/auto_configure.cjs",
+            "sha256": "6cdc2a1b03a5a377dcd16266b811af41fe99667613ada90167a0bd40d001b67d"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "evt-ac2",
+          "evt-commit-ac2-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-013",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testAutoConfigureIntegration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:32.917Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`ws-configure-project` includes an interactive interview step and `--section specializedSubagents` flag that asks the user whether to enable specialized subagents via a `user-gate` with Option 1 (Recommended) defaulting to `false` (standard portable dispatch).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-configure-project/scripts/auto_configure.cjs:L850-L875"
+        ],
+        "files": [
+          {
+            "lineEnd": 875,
+            "lineStart": 850,
+            "path": ".agents/skills/ws-configure-project/scripts/auto_configure.cjs",
+            "sha256": "6cdc2a1b03a5a377dcd16266b811af41fe99667613ada90167a0bd40d001b67d"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "evt-ac3",
+          "evt-commit-ac3-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-013",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testAutoConfigureIntegration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:32.971Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "When `defaults.specializedSubagents.enabled` is `true`, `ws-configure-project` automatically runs `compile_host_subagents.cjs` to materialize the compiled agent projections for the detected or configured host IDE without manual user intervention.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-configure-project/scripts/auto_configure.cjs:L645-L660"
+        ],
+        "files": [
+          {
+            "lineEnd": 660,
+            "lineStart": 645,
+            "path": ".agents/skills/ws-configure-project/scripts/auto_configure.cjs",
+            "sha256": "6cdc2a1b03a5a377dcd16266b811af41fe99667613ada90167a0bd40d001b67d"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "evt-ac4",
+          "evt-commit-ac4-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-013",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testAutoConfigureIntegration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.067Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`auto_configure.cjs` supports `--section specializedSubagents` and `--auto` mode, defaulting `defaults.specializedSubagents.enabled` to `false` when missing or unconfigured, preserving existing configuration values.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L40-L65"
+        ],
+        "files": [
+          {
+            "lineEnd": 65,
+            "lineStart": 40,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "evt-ac5",
+          "evt-commit-ac5-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCompilerGeneration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.124Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "A dedicated compiler script `node {skillsRoot}/ws-shared/runtime/scripts/compile_host_subagents.cjs` compiles canonical skills into host-specific agent definitions supporting arguments `--repo-root <dir>`, `--host <cursor|claude|generic|auto>`, `--clean`, `--check`, and `--json`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L25-L38"
+        ],
+        "files": [
+          {
+            "lineEnd": 38,
+            "lineStart": 25,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "evt-ac6",
+          "evt-commit-ac6-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCompilerGeneration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.181Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "For Cursor IDE (`targetHost: \"cursor\"` or detected `.cursor/` workspace), the compiler generates agent definition files under `.cursor/agents/` named `{agentPrefix}-step-{N}-{role}.md` (e.g., `ws-step-00-spec-write.md`, `ws-step-01-plan-write.md`, `ws-step-04-implement-tasks.md`, `ws-step-05-plan-verify.md`, `ws-step-06-code-review.md`, `ws-step-07-testing.md`, `ws-step-08-ship-pr.md`, `ws-step-09-fix-pr.md`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L97-L125"
+        ],
+        "files": [
+          {
+            "lineEnd": 125,
+            "lineStart": 97,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "evt-ac7",
+          "evt-commit-ac7-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCompilerGeneration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.240Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Every compiled Cursor subagent file contains valid YAML frontmatter specifying `name`, `description`, and mandatory `disable-model-invocation: true`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L106-L109"
+        ],
+        "files": [
+          {
+            "lineEnd": 109,
+            "lineStart": 106,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "evt-ac8",
+          "evt-commit-ac8-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCompilerGeneration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.298Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "The `description` frontmatter field in all compiled subagents explicitly restricts invocation to workflow orchestrator dispatch and excludes general conversational keywords to prevent opportunistic rogue auto-delegation.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L112-L124"
+        ],
+        "files": [
+          {
+            "lineEnd": 124,
+            "lineStart": 112,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "evt-ac9",
+          "evt-commit-ac9-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCompilerGeneration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.354Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "The compiled subagent body contains the extracted domain instructions, behavioral invariants, checklists, and the canonical JSON `step-output` schema from the corresponding `ws-*` skill, eliminating the need for the subagent to read `SKILL.md` on boot.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/host-dispatch.md:L46-L65"
+        ],
+        "files": [
+          {
+            "lineEnd": 65,
+            "lineStart": 46,
+            "path": ".agents/skills/ws-shared/runtime/host-dispatch.md",
+            "sha256": "6d8ede4b71020d9e98a1dd051180ea185cc49bf22db43a47097de8dbb49e620e"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "evt-ac10",
+          "evt-commit-ac10-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-014",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHostDispatchContract",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.406Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "[`host-dispatch.md`](file:///l:/source/workflow-skills/.agents/skills/ws-shared/runtime/host-dispatch.md) Tier 1 dispatch protocol is updated: when `defaults.specializedSubagents.enabled` is `true` and a matching compiled agent exists, `dispatch-agent` delegates to the specialized agent by name; otherwise, it executes via the existing generic subagent prompt.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/host-dispatch.md:L51-L54"
+        ],
+        "files": [
+          {
+            "lineEnd": 54,
+            "lineStart": 51,
+            "path": ".agents/skills/ws-shared/runtime/host-dispatch.md",
+            "sha256": "6d8ede4b71020d9e98a1dd051180ea185cc49bf22db43a47097de8dbb49e620e"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "evt-ac11",
+          "evt-commit-ac11-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-014",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHostDispatchContract",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.460Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "When `defaults.specializedSubagents.enabled` is `false`, disabled, or unconfigured, `dispatch-agent` operates identically to the baseline implementation, spawning generic subagents with context pointers and dynamic skill reading.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L127-L170"
+        ],
+        "files": [
+          {
+            "lineEnd": 170,
+            "lineStart": 127,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "evt-ac12",
+          "evt-commit-ac12-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCleanAndCustomFileProtection",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.519Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Compiler clean mode (`--clean`) removes compiled subagent files from the target host directory without affecting canonical skills or consumer-owned configuration.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L172-L218"
+        ],
+        "files": [
+          {
+            "lineEnd": 218,
+            "lineStart": 172,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "evt-ac13",
+          "evt-commit-ac13-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testDriftDetection",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.574Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Compiler check mode (`--check`) compares on-disk compiled agent files against canonical skills and exits non-zero if compiled agents are missing, stale, or have drifted from upstream skills.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/hub-layout.json:L79-L85"
+        ],
+        "files": [
+          {
+            "lineEnd": 85,
+            "lineStart": 79,
+            "path": ".agents/skills/ws-shared/runtime/hub-layout.json",
+            "sha256": "4b1ed6a46525f3b62a8ac4a28eac5a0b5249ad8ed568d753cc710b9815d8687c"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "evt-ac14",
+          "evt-commit-ac14-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-011",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHubLayoutClassification",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.629Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Compiled host agents are classified in `hub-layout.json` as generated host projections; documentation clarifies that `.cursor/agents/` may either be gitignored or committed to version control per team policy.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs:L280-L310"
+        ],
+        "files": [
+          {
+            "lineEnd": 310,
+            "lineStart": 280,
+            "path": ".agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs",
+            "sha256": "7a018f3946c30eb83fd68e051e2d504cf9590dd6765ac549d04ca86445e1dc2a"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [
+          "evt-ac15",
+          "evt-commit-ac15-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-012",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCompilerGeneration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.686Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Pre-advance validation (`validate_state.cjs --pre-advance <N>`), state recording (`update_state.cjs`), AC ledger tracking (`ac_ledger.cjs`), and quality gates remain mandatory and unchanged regardless of whether specialized subagents are enabled.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/host-dispatch.md:L147-L157"
+        ],
+        "files": [
+          {
+            "lineEnd": 157,
+            "lineStart": 147,
+            "path": ".agents/skills/ws-shared/runtime/host-dispatch.md",
+            "sha256": "6d8ede4b71020d9e98a1dd051180ea185cc49bf22db43a47097de8dbb49e620e"
+          }
+        ],
+        "findings": [],
+        "id": "AC16",
+        "linkEventIds": [
+          "evt-ac16",
+          "evt-commit-ac16-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-014",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHostDispatchContract",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.745Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "When the subagent tool does not support named subagent routing or if dispatching to a named specialized subagent fails, `dispatch-agent` falls back silently to Tier 1 generic dispatch or Tier 3 inline execution without failing the workflow step.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "e44cc96e6d9a81a02e32b4733c534015c27d5f98",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-specialized-subagents-compiler.js:L1-L450"
+        ],
+        "files": [
+          {
+            "lineEnd": 450,
+            "lineStart": 1,
+            "path": "test/test-specialized-subagents-compiler.js",
+            "sha256": "ef8122f9d0fbc7dc40377f958f796614490c108052d848a122f0bbcbdaf7afbb"
+          }
+        ],
+        "findings": [],
+        "id": "AC17",
+        "linkEventIds": [
+          "evt-ac17",
+          "evt-commit-ac17-v1"
+        ],
+        "planSections": [
+          "section-009",
+          "section-015",
+          "section-017",
+          "section-020"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCompilerGeneration",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:33.800Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`npm run test`, `ws-check-harness`, and compiler unit tests exit 0, verifying compiler idempotence, syntax validity of generated markdown, and non-regression of default workflow paths.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "c8f666f7c83b6be82b0f70ef785f739cbd211579709ba55a6acd35f7c8515add",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "evt-ns1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testUnsupportedHostRejection",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:15.681Z"
+          }
+        ],
+        "text": "**Scenario 1 (Compiler invalid host target):** Executing `compile_host_subagents.cjs --host unsupported-ide` exits with code 1, emitting an actionable error message listing supported hosts (`cursor`, `claude`, `generic`, `auto`)."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "evt-ns2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testDriftDetection",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:15.734Z"
+          }
+        ],
+        "text": "**Scenario 2 (Stale agent detection in check mode):** When a canonical skill `SKILL.md` is updated and `compile_host_subagents.cjs --check` is run, it detects the content hash mismatch, outputs the drifting agent names, and exits with code 1."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "evt-ns3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHostDispatchContract",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:23.069Z"
+          }
+        ],
+        "text": "**Scenario 3 (Disabled fallback):** When `defaults.specializedSubagents.enabled` is `false`, `dispatch-agent` emits `specialized-subagent-fallback | reason=disabled` and executes via the generic prompt without attempting to call named specialized agents."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "evt-ns4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHostDispatchContract",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:23.117Z"
+          }
+        ],
+        "text": "**Scenario 4 (Missing agent graceful fallback):** When `defaults.specializedSubagents.enabled` is `true` but a specific step agent file (e.g. `ws-step-06-code-review.md`) was deleted from `.cursor/agents/`, `dispatch-agent` logs `specialized-subagent-fallback | reason=missing` and falls back to standard Tier 1 dispatch without throwing an unhandled exception or aborting the workflow."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "evt-ns5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testRefusalToOverwriteWithoutForce",
+            "phase": "observed",
+            "sourceFile": "test/test-specialized-subagents-compiler.js",
+            "timestamp": "2026-09-09T12:44:15.873Z"
+          }
+        ],
+        "text": "**Scenario 5 (Refusal to overwrite modified non-generated agents):** If a user has a custom agent in `.cursor/agents/` that does not contain the generated compiler signature header, the compiler refuses to overwrite it without an explicit `--force` flag."
+      }
+    ],
+    "planIndexPath": ".agents/plans/specialized-subagents-compiler/.runtime/plan.index.json",
+    "revision": 48,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "ship",
+      "computedAt": "2026-09-09T13:00:23.335Z",
+      "earnedUnits": 170,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 170
+    },
+    "slug": "specialized-subagents-compiler",
+    "specPath": ".agents/plans/specialized-subagents-compiler/step-00-specialized-subagents-compiler.spec.md",
+    "testingSkip": null,
+    "workflowId": "specialized-subagents-compiler"
+  },
+  "acTotal": 17,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "14928a7018266ee857db6f5608b0538e92ada4a2",
+  "branch": "feat/specialized-subagents-compiler",
+  "branchStrategy": "from-current",
+  "checkpoints": [
+    {
+      "sha": "14928a7018266ee857db6f5608b0538e92ada4a2",
+      "step": 0,
+      "tag": "uswf/specialized-subagents-compiler-20260909T120930Z/before-step-0"
+    }
+  ],
+  "commits": [],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "currentModel": "composer-2.5",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-09T12:58:46Z",
+  "execMode": "sequential",
+  "fableVerdict": null,
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 0,
+      "summary": "Step 0 completed: Registered local spec, initialized ac-ledger.json (17 ACs, 5 negative scenarios), classified complexity (standard/sequential), configured autoMode=true and fullMode=true.",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 1,
+      "summary": "Step 1 completed: drafted implementation plan step-01-specialized-subagents-compiler.plan.md covering AC1-AC17 and NS1-NS5; built plan.index.json; memory sweep detected relevant traps, requiring Step 2 interview.",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 2,
+      "summary": "Step 2 completed: refined plan incorporating memory traps and Cursor subagents documentation; updated plan.index.json.",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "specialized-subagents-compiler",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Step 3 skipped: defaults.enableDag is false, executing sequentially.",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "specialized-subagents-compiler",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "pendingGate": {
+    "gate": "step-entry",
+    "step": 0
+  },
+  "preExistingDirty": [
+    ".agents/specs/index.PRD",
+    "benchmarks/results/BENCHMARK_EVOLUTION.md",
+    "benchmarks/results/table-0.3.48.md",
+    "benchmarks/results/table-0.3.50.md",
+    "benchmarks/results/table-0.3.61.md",
+    "benchmarks/results/table-0.4.4.md",
+    "test/package.json",
+    ".agents/specs/0071-specialized-subagents-compiler.spec.md"
+  ],
+  "revision": 21,
+  "scoreAndRefine": false,
+  "shipStatus": "pending",
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "specialized-subagents-compiler",
+  "specPath": ".agents/plans/specialized-subagents-compiler/step-00-specialized-subagents-compiler.spec.md",
+  "specSource": "local",
+  "startedAt": "2026-09-09T12:09:30Z",
+  "statePath": ".agents/plans/specialized-subagents-compiler/specialized-subagents-compiler-20260909T120930Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "dispatchedAt": "2026-09-09T12:15:46Z",
+      "step": 0
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:21:06Z",
+      "step": 1
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:26:03Z",
+      "step": 2
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:27:00Z",
+      "step": 3
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:27:45Z",
+      "step": 4
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:46:37Z",
+      "step": 5
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:52:54Z",
+      "step": 6
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:54:07Z",
+      "step": 7
+    },
+    {
+      "dispatchedAt": "2026-09-09T12:55:21Z",
+      "step": 8
+    },
+    {
+      "dispatchedAt": "2026-09-09T13:03:58Z",
+      "step": 9
+    }
+  ],
+  "stepModels": [],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "loc": {
+      "baseline": 0
+    },
+    "steps": [
+      {
+        "N": 0,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:15:46Z",
+        "elapsedSec": 277,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:20:23Z",
+        "label": "Spec",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0
+      },
+      {
+        "N": 1,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:21:06Z",
+        "elapsedSec": 159,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:23:45Z",
+        "label": "Planning",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0
+      },
+      {
+        "N": 2,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:26:03Z",
+        "elapsedSec": 40,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:26:43Z",
+        "label": "Interview",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0
+      },
+      {
+        "N": 3,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:27:00Z",
+        "elapsedSec": 9,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:27:09Z",
+        "label": "Plan to tasks",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0
+      },
+      {
+        "N": 4,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:27:45Z",
+        "elapsedSec": 1119,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:46:24Z",
+        "label": "Implement",
+        "model": "composer-2.5",
+        "promptTokens": 0
+      },
+      {
+        "N": 5,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:46:37Z",
+        "elapsedSec": 368,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:52:45Z",
+        "label": "Verify",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0
+      },
+      {
+        "N": 6,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:52:54Z",
+        "elapsedSec": 32,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:53:26Z",
+        "label": "Code review",
+        "model": "cursor-grok-4.6-medium",
+        "promptTokens": 0
+      },
+      {
+        "N": 7,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:54:07Z",
+        "elapsedSec": 39,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:54:46Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0
+      },
+      {
+        "N": 8,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T12:55:21Z",
+        "elapsedSec": 205,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T12:58:46Z",
+        "label": "Ship",
+        "model": "composer-2.5",
+        "promptTokens": 0
+      },
+      {
+        "N": 9,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-09T13:03:58Z",
+        "elapsedSec": 79,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-09T13:05:17Z",
+        "label": "Fix PR",
+        "model": "composer-2.5",
+        "promptTokens": 0
+      }
+    ],
+    "totalElapsedSec": 2327,
+    "totalTokens": 0,
+    "workflowStartedAt": "2026-09-09T12:09:30Z"
+  },
+  "title": "Optional Compiler and Host Projection for Specialized Workflow Subagents",
+  "us": null,
+  "verificationScore": 10,
+  "workflowId": "specialized-subagents-compiler-20260909T120930Z",
+  "workflowManifest": {
+    "created": [],
+    "deleted": [],
+    "modified": []
+  },
+  "workflowType": "standard"
+}
