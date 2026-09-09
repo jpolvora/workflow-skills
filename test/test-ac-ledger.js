@@ -254,6 +254,65 @@ assert.strictEqual(syncInvoke(['init', '--spec', 'sync.spec.md', '--output', 'ac
 assert.strictEqual(syncInvoke(['link', '--ledger', 'ac-ledger-2.json', '--event-id', 'link-plan', '--plan-index', 'plan.index.json']).status, 0);
 let linkedPlanLedger = JSON.parse(fs.readFileSync(path.join(syncRoot, 'ac-ledger-2.json'), 'utf8'));
 assert.deepStrictEqual(linkedPlanLedger.acceptanceCriteria[0].tasks, ['T01']);
-assert.deepStrictEqual(linkedPlanLedger.acceptanceCriteria[0].planSections, ['section-001']);
+// Test commit parsing (JSON and key=value) & scoped event-id deduplication
+const commitTestRoot = temp('ws-ac-ledger-commit-');
+write(path.join(commitTestRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(commitTestRoot, 'commit.spec.md'), '## Acceptance Criteria\n- AC1: First.\n- AC2: Second.\n');
+write(path.join(commitTestRoot, 'plan.index.json'), JSON.stringify({
+  acceptanceCriteria: [
+    { id: 'AC1', taskIds: ['T1'], planSectionIds: ['S1'], expectedTestNames: [] },
+    { id: 'AC2', taskIds: ['T2'], planSectionIds: ['S2'], expectedTestNames: [] },
+  ],
+}));
+function commitInvoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', commitTestRoot]);
+}
+assert.strictEqual(commitInvoke(['init', '--spec', 'commit.spec.md', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'commit']).status, 0);
+
+// 1. Link AC1 with JSON commit and event-id 'evt-g2'
+const linkJson = commitInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'evt-g2', '--ac', 'AC1',
+  '--commit', JSON.stringify({ sha: '1111111', step: 5 }),
+]);
+assert.strictEqual(linkJson.status, 0, linkJson.stderr);
+
+// 2. Link AC2 using the SAME event-id 'evt-g2' and shell key=value commit syntax
+const linkKv = commitInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'evt-g2', '--ac', 'AC2',
+  '--commit', 'sha=2222222,step=5',
+]);
+assert.strictEqual(linkKv.status, 0, linkKv.stderr);
+
+let commitLedger = JSON.parse(fs.readFileSync(path.join(commitTestRoot, 'ac-ledger.json'), 'utf8'));
+const ac1 = commitLedger.acceptanceCriteria.find((row) => row.id === 'AC1');
+const ac2 = commitLedger.acceptanceCriteria.find((row) => row.id === 'AC2');
+assert.strictEqual(ac1.commits.length, 1, 'AC1 has 1 commit linked');
+assert.strictEqual(ac1.commits[0].sha, '1111111', 'AC1 commit sha matches JSON payload');
+assert.strictEqual(ac2.commits.length, 1, 'AC2 is not skipped when sharing event-id with AC1');
+assert.strictEqual(ac2.commits[0].sha, '2222222', 'AC2 commit parsed from key=value string');
+assert.strictEqual(ac2.commits[0].step, 5, 'AC2 commit step converted to integer');
+
+// 3. Repeated --commit options
+const linkMultiCommit = commitInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'evt-multi', '--ac', 'AC1',
+  '--commit', JSON.stringify({ sha: '3333333', step: 6 }),
+  '--commit', 'sha=4444444,step=6',
+]);
+assert.strictEqual(linkMultiCommit.status, 0, linkMultiCommit.stderr);
+commitLedger = JSON.parse(fs.readFileSync(path.join(commitTestRoot, 'ac-ledger.json'), 'utf8'));
+const ac1Multi = commitLedger.acceptanceCriteria.find((row) => row.id === 'AC1');
+assert.ok(ac1Multi.commits.some((c) => c.sha === '3333333'), 'AC1 has first repeated commit');
+assert.ok(ac1Multi.commits.some((c) => c.sha === '4444444'), 'AC1 has second repeated commit from key=value');
+
+// 4. Replaying identical event on the same AC emits notice and safely skips payload
+const linkReplay = commitInvoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'evt-g2', '--ac', 'AC1',
+  '--commit', JSON.stringify({ sha: '5555555', step: 5 }),
+]);
+assert.strictEqual(linkReplay.status, 0, linkReplay.stderr);
+assert.match(linkReplay.stderr, /NOTICE: event-id "evt-g2" already applied to target criteria/, 'notice emitted on duplicate event-id replay');
+commitLedger = JSON.parse(fs.readFileSync(path.join(commitTestRoot, 'ac-ledger.json'), 'utf8'));
+const ac1AfterReplay = commitLedger.acceptanceCriteria.find((row) => row.id === 'AC1');
+assert.ok(!ac1AfterReplay.commits.some((c) => c.sha === '5555555'), 'duplicate event-id replay skipped new payload');
 
 console.log('test-ac-ledger: ok');

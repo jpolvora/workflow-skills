@@ -94,6 +94,13 @@ When overall score is below `minVerifyScore`, run `scoreAndRefine` even if `defa
 
 `autoMode`: auto-run scoreAndRefine rounds; auto-select **Proceed with Second Pass Refinement**; do **not** call `update_state finish --step 5` or dispatch Step 6 below `minVerifyScore` — Pause only after max rounds still below `minVerifyScore`. When refinement completes: re-verify, G2-code if score ≥ `minVerifyScore`, then complete Step 5 and dispatch Step 6.
 
+**Step 5 Completion & G2 Commit Linking:**
+1. Finish Step 5 propagating the verified score:
+   `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish {plansDir}/{slug}/{workflow-id}.state.md --step 5 --status completed --verification-score {score} --model {modelName} --jsonl-out {plansDir}/{slug}/telemetry.jsonl`
+   (If `--verification-score` is omitted, `update_state.cjs` auto-derives and validates it from `{us-dir}/ac-ledger.json`).
+2. After Step 5 G2-code product commit, link the commit SHA into `ac-ledger.json` before Step 6 pre-advance:
+   `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {plansDir}/{slug}/ac-ledger.json --event-id g2-commit-{sha} --ac AC1 [--ac AC2...] --commit '{"sha":"{sha}","step":5}'`
+
 Await each `dispatch-agent` subagent before its matching `finish`: dispatching the next step while a refine or fix runner is still active orphans it, and the Step 6 dispatch and pre-advance guards stay red until the active round finishes.
 
 Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate and § Score & Refine gate.
